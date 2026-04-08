@@ -5,6 +5,7 @@ import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
 import { Capacitor } from './devices/capacitor.js';
 import { Inductor } from './devices/inductor.js';
+import { Diode } from './devices/diode.js';
 import { StubDevice } from './devices/stub-device.js';
 import { GROUND_NODE } from './types.js';
 
@@ -205,7 +206,12 @@ export class Circuit {
           devices.push(new Inductor(desc.name, nodeIndices, bi, desc.value!));
           break;
         }
-        case 'D':
+        case 'D': {
+          const modelName = desc.modelName;
+          const modelParams = modelName ? this._models.get(modelName)?.params ?? {} : {};
+          devices.push(new Diode(desc.name, nodeIndices, modelParams));
+          break;
+        }
         case 'Q':
         case 'M':
           // Not yet implemented — stub placeholder tracked for future tasks
