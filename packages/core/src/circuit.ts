@@ -3,6 +3,7 @@ import type { AnalysisCommand, SourceWaveform, ModelParams } from './types.js';
 import { Resistor } from './devices/resistor.js';
 import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
+import { StubDevice } from './devices/stub-device.js';
 import { GROUND_NODE } from './types.js';
 
 export interface CompiledCircuit {
@@ -130,15 +131,17 @@ export class Circuit {
           step: params!.step as number,
         });
         break;
-      case 'tran':
-        this._analyses.push({
+      case 'tran': {
+        const tranCmd: { type: 'tran'; timestep: number; stopTime: number; startTime?: number; maxTimestep?: number } = {
           type: 'tran',
           timestep: params!.timestep as number,
           stopTime: params!.stopTime as number,
-          startTime: params?.startTime as number | undefined,
-          maxTimestep: params?.maxTimestep as number | undefined,
-        });
+        };
+        if (params?.startTime !== undefined) tranCmd.startTime = params.startTime as number;
+        if (params?.maxTimestep !== undefined) tranCmd.maxTimestep = params.maxTimestep as number;
+        this._analyses.push(tranCmd);
         break;
+      }
       case 'ac':
         this._analyses.push({
           type: 'ac',
@@ -190,6 +193,14 @@ export class Circuit {
         }
         case 'I':
           devices.push(new CurrentSource(desc.name, nodeIndices, resolveWaveform(desc.waveform)));
+          break;
+        case 'C':
+        case 'L':
+        case 'D':
+        case 'Q':
+        case 'M':
+          // Not yet implemented — stub placeholder tracked for future tasks
+          devices.push(new StubDevice(desc.name, nodeIndices, desc.type));
           break;
         default:
           throw new Error(`Device type '${desc.type}' not yet implemented`);
