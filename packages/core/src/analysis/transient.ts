@@ -38,7 +38,16 @@ export function solveTransient(
   }
 
   let time = 0;
+
+  // Compute initial b(0) for trapezoidal history on the first step
   let prevB: Float64Array | undefined;
+  if (options.integrationMethod === 'trapezoidal') {
+    assembler.clear();
+    assembler.setTime(0, 0);
+    const initCtx = assembler.getStampContext();
+    for (const device of devices) device.stamp(initCtx);
+    prevB = new Float64Array(assembler.b);
+  }
 
   while (time < analysis.stopTime - dt * 0.001) {
     const prevSol = new Float64Array(assembler.solution);

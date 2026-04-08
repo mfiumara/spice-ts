@@ -117,6 +117,26 @@ describe('Transient Analysis', () => {
     expect(lastV).toBeCloseTo(5, 0);
   });
 
+  it('simulates RC charging with backward Euler', async () => {
+    const ckt = new Circuit();
+    ckt.addVoltageSource('V1', '1', '0', {
+      type: 'pulse', v1: 0, v2: 5, delay: 0, rise: 1e-9,
+      width: 10e-3, fall: 1e-9, period: 20e-3,
+    });
+    ckt.addResistor('R1', '1', '2', 1000);
+    ckt.addCapacitor('C1', '2', '0', 1e-6);
+    ckt.addAnalysis('tran', { timestep: 10e-6, stopTime: 5e-3, maxTimestep: 10e-6 });
+
+    const result = await simulate(ckt, { integrationMethod: 'euler' });
+
+    expect(result.transient).toBeDefined();
+    const vout = result.transient!.voltage('2');
+
+    // Should charge to near 5V
+    const lastV = vout[vout.length - 1];
+    expect(lastV).toBeCloseTo(5, 0);
+  });
+
   it('produces correct time points', async () => {
     const ckt = new Circuit();
     ckt.addVoltageSource('V1', '1', '0', { dc: 1 });
