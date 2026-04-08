@@ -4,6 +4,7 @@ import { parse } from './parser/index.js';
 import type { SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
 import { resolveOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
+import { solveTransient } from './analysis/transient.js';
 import type { SimulationResult } from './results.js';
 import { InvalidCircuitError } from './errors.js';
 
@@ -32,7 +33,9 @@ export async function simulate(
         break;
       }
       case 'tran': {
-        // Transient — will be implemented in Task 11
+        const opts = resolveOptions(options, analysis.stopTime);
+        const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
+        result.transient = solveTransient(compiled, analysis, opts, dcAsm.solution);
         break;
       }
       case 'ac': {
