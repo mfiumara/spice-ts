@@ -6,6 +6,7 @@ export interface StampContext {
   getCurrent(branch: number): number;
   time: number;
   dt: number;
+  numNodes: number;
 }
 
 export interface DeviceModel {
