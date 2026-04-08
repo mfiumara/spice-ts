@@ -3,6 +3,8 @@ import type { AnalysisCommand, SourceWaveform, ModelParams } from './types.js';
 import { Resistor } from './devices/resistor.js';
 import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
+import { Capacitor } from './devices/capacitor.js';
+import { Inductor } from './devices/inductor.js';
 import { StubDevice } from './devices/stub-device.js';
 import { GROUND_NODE } from './types.js';
 
@@ -195,7 +197,14 @@ export class Circuit {
           devices.push(new CurrentSource(desc.name, nodeIndices, resolveWaveform(desc.waveform)));
           break;
         case 'C':
-        case 'L':
+          devices.push(new Capacitor(desc.name, nodeIndices, desc.value!));
+          break;
+        case 'L': {
+          const bi = branchIndex++;
+          branchNames.push(desc.name);
+          devices.push(new Inductor(desc.name, nodeIndices, bi, desc.value!));
+          break;
+        }
         case 'D':
         case 'Q':
         case 'M':
