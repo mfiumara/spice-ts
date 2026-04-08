@@ -38,6 +38,7 @@ export function solveTransient(
   }
 
   let time = 0;
+  let prevB: Float64Array | undefined;
 
   while (time < analysis.stopTime - dt * 0.001) {
     const prevSol = new Float64Array(assembler.solution);
@@ -49,7 +50,7 @@ export function solveTransient(
     let converged = false;
 
     for (let iter = 0; iter < options.maxTransientIterations; iter++) {
-      buildCompanionSystem(assembler, devices, actualDt, options.integrationMethod, prevSol);
+      buildCompanionSystem(assembler, devices, actualDt, options.integrationMethod, prevSol, prevB);
 
       const x = solveLU(assembler.G, new Float64Array(assembler.b));
 
@@ -69,6 +70,15 @@ export function solveTransient(
       }
       assembler.solution.set(prevSol);
       continue;
+    }
+
+    // Save the DC-stamped b for trapezoidal history on next step
+    if (options.integrationMethod === 'trapezoidal') {
+      // Re-stamp to get the clean b(n+1) for use as prevB next step
+      assembler.clear();
+      const stampCtx = assembler.getStampContext();
+      for (const device of devices) device.stamp(stampCtx);
+      prevB = new Float64Array(assembler.b);
     }
 
     // Record result

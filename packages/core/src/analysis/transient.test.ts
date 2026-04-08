@@ -81,6 +81,42 @@ describe('Transient Analysis', () => {
     expect(iL[iL.length - 1]).toBeCloseTo(0.05, 3);
   });
 
+  it('simulates RC charging curve with pulse source', async () => {
+    // Pulse from 0 to 5V at t=0: RC charging τ = R*C = 1k * 1µF = 1ms
+    const ckt = new Circuit();
+    ckt.addVoltageSource('V1', '1', '0', {
+      type: 'pulse', v1: 0, v2: 5, delay: 0, rise: 1e-9,
+      width: 10e-3, fall: 1e-9, period: 20e-3,
+    });
+    ckt.addResistor('R1', '1', '2', 1000);
+    ckt.addCapacitor('C1', '2', '0', 1e-6);
+    ckt.addAnalysis('tran', { timestep: 10e-6, stopTime: 5e-3, maxTimestep: 10e-6 });
+
+    const result = await simulate(ckt);
+
+    expect(result.transient).toBeDefined();
+    const time = result.transient!.time;
+    const vout = result.transient!.voltage('2');
+
+    // At t=0, capacitor is uncharged (DC OP with V1=0V)
+    expect(vout[0]).toBeCloseTo(0, 1);
+
+    // Voltage should be monotonically increasing
+    for (let i = 1; i < vout.length; i++) {
+      expect(vout[i]).toBeGreaterThanOrEqual(vout[i - 1] - 1e-6);
+    }
+
+    // At t ≈ τ (1ms), V ≈ 5*(1-e^-1) ≈ 3.16V (within 15% for numerical method)
+    const idxTau = time.findIndex(t => t >= 1e-3);
+    const expected = 5 * (1 - Math.exp(-1));
+    expect(vout[idxTau]).toBeGreaterThan(expected * 0.85);
+    expect(vout[idxTau]).toBeLessThan(expected * 1.15);
+
+    // At t ≈ 5τ (5ms), fully charged ≈ 5V
+    const lastV = vout[vout.length - 1];
+    expect(lastV).toBeCloseTo(5, 0);
+  });
+
   it('produces correct time points', async () => {
     const ckt = new Circuit();
     ckt.addVoltageSource('V1', '1', '0', { dc: 1 });
