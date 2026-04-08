@@ -74,11 +74,9 @@ export function buildCompanionSystem(
       // Subtract G*x(n)
       assembler.b[i] -= Gx[i];
 
-      // Add b(n) — use prevB if available, otherwise assume same as current
+      // Add b(n)
       if (prevB) {
         assembler.b[i] += prevB[i];
-      } else {
-        assembler.b[i] += bCurrent[i];
       }
     }
   }
