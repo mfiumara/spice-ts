@@ -26,7 +26,4 @@ export class Capacitor implements DeviceModel {
     }
   }
 
-  stampAC(ctx: StampContext, omega: number): void {
-    this.stampDynamic(ctx);
-  }
 }

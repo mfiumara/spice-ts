@@ -15,7 +15,7 @@ export class Inductor implements DeviceModel {
 
   stamp(ctx: StampContext): void {
     const [nPlus, nMinus] = this.nodes;
-    const bi = ctx.numNodes + this.branchIndex;  // CRITICAL: relative -> absolute
+    const bi = ctx.numNodes + this.branchIndex;
 
     // KCL: branch current enters positive node, leaves negative
     if (nPlus >= 0) ctx.stampG(nPlus, bi, 1);
@@ -28,7 +28,7 @@ export class Inductor implements DeviceModel {
   }
 
   stampDynamic(ctx: StampContext): void {
-    const bi = ctx.numNodes + this.branchIndex;  // CRITICAL: relative -> absolute
+    const bi = ctx.numNodes + this.branchIndex;
     // Branch equation dynamic part: -L * dI/dt term
     ctx.stampC(bi, bi, -this.inductance);
   }
