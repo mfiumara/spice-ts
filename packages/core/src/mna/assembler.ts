@@ -32,6 +32,7 @@ export class MNAAssembler {
       getCurrent: (branch) => this.solution[this.numNodes + branch],
       time: this.time,
       dt: this.dt,
+      numNodes: this.numNodes,
     };
   }
 
