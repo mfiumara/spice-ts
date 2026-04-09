@@ -7,7 +7,7 @@ import { Capacitor } from './devices/capacitor.js';
 import { Inductor } from './devices/inductor.js';
 import { Diode } from './devices/diode.js';
 import { BJT } from './devices/bjt.js';
-import { StubDevice } from './devices/stub-device.js';
+import { MOSFET } from './devices/mosfet.js';
 import { GROUND_NODE } from './types.js';
 
 export interface CompiledCircuit {
@@ -221,10 +221,14 @@ export class Circuit {
           devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }));
           break;
         }
-        case 'M':
-          // Not yet implemented — stub placeholder tracked for future tasks
-          devices.push(new StubDevice(desc.name, nodeIndices, desc.type));
+        case 'M': {
+          const modelName = desc.modelName;
+          const model = modelName ? this._models.get(modelName) : undefined;
+          const modelParams = model?.params ?? {};
+          const polarity = model?.type === 'PMOS' ? -1 : 1;
+          devices.push(new MOSFET(desc.name, nodeIndices, { ...modelParams, polarity }));
           break;
+        }
         default:
           throw new Error(`Device type '${desc.type}' not yet implemented`);
       }
