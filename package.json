@@ -4,9 +4,13 @@
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",
-    "lint": "pnpm -r lint"
+    "lint": "pnpm -r lint",
+    "bench": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/run.ts"
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
   }
 }
