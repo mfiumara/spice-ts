@@ -1,0 +1,7 @@
+* Diode half-wave rectifier
+.model DMOD D(IS=1e-10 N=1.5)
+V1 1 0 SIN(0 5 1k)
+R1 2 0 1k
+D1 1 2 DMOD
+.tran 10u 3m
+.end
