@@ -5,6 +5,7 @@ import type { SimulationOptions, SimulationWarning, TransientStep, ACPoint } fro
 import { resolveOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
 import { solveTransient } from './analysis/transient.js';
+import { solveAC } from './analysis/ac.js';
 import type { SimulationResult } from './results.js';
 import { InvalidCircuitError } from './errors.js';
 
@@ -39,7 +40,9 @@ export async function simulate(
         break;
       }
       case 'ac': {
-        // AC — will be implemented in Task 15
+        const opts = resolveOptions(options);
+        const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
+        result.ac = solveAC(compiled, analysis, opts, dcAsm.solution);
         break;
       }
     }
