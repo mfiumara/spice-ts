@@ -12,6 +12,7 @@ export type {
   SourceWaveform,
   ModelParams,
 } from './types.js';
+export type { DeviceModel, StampContext } from './devices/device.js';
 export {
   SpiceError,
   ParseError,
