@@ -3,6 +3,7 @@ import { Circuit } from '../circuit.js';
 import { solveDCSweep } from './dc-sweep.js';
 import { resolveOptions } from '../types.js';
 import type { DCSweepAnalysis } from '../types.js';
+import { simulate } from '../simulate.js';
 
 describe('DC Sweep', () => {
   it('sweeps a voltage divider', () => {
@@ -110,5 +111,27 @@ describe('DC Sweep', () => {
     expect(() => solveDCSweep(compiled, analysis, options)).toThrow(
       "DC sweep source 'V99' not found",
     );
+  });
+});
+
+describe('DC Sweep via simulate()', () => {
+  it('runs DC sweep from netlist string', async () => {
+    const result = await simulate(`
+      V1 1 0 DC 0
+      R1 1 2 1k
+      R2 2 0 2k
+      .dc V1 0 5 1
+      .end
+    `);
+
+    expect(result.dcSweep).toBeDefined();
+    const sweep = result.dcSweep!;
+    expect(sweep.sweepValues.length).toBe(6);
+
+    const v2 = sweep.voltage('2');
+    for (let i = 0; i < 6; i++) {
+      const vsrc = i;
+      expect(v2[i]).toBeCloseTo(vsrc * 2000 / 3000, 6);
+    }
   });
 });
