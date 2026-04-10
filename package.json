@@ -8,7 +8,7 @@
     "bench": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/run.ts"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "devDependencies": {
     "@types/node": "^25.5.2",
