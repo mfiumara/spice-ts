@@ -67,10 +67,24 @@ export class ACResult {
   }
 }
 
-export interface DCSweepResult {
-  sweepValues: number[];
-  voltages: Map<string, number[]>;
-  currents: Map<string, number[]>;
+export class DCSweepResult {
+  constructor(
+    public readonly sweepValues: Float64Array,
+    private readonly voltageArrays: Map<string, Float64Array>,
+    private readonly currentArrays: Map<string, Float64Array>,
+  ) {}
+
+  voltage(node: string): Float64Array {
+    const v = this.voltageArrays.get(node);
+    if (v === undefined) throw new Error(`Unknown node: ${node}`);
+    return v;
+  }
+
+  current(source: string): Float64Array {
+    const i = this.currentArrays.get(source);
+    if (i === undefined) throw new Error(`Unknown branch: ${source}`);
+    return i;
+  }
 }
 
 export interface SimulationResult {
