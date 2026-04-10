@@ -120,9 +120,28 @@ bjt-diff-pair-vout         V(out) DC bias      ...          ...          ...    
 
 All circuits from `generators.ts` + all SPICE3 reference circuits (Part 3) are included.
 
-### Script is not a CI gate
+### CI integration
 
-`bench:accuracy` is informational — it does not fail the CI build. It is meant to be run locally or on a schedule, not on every PR.
+`bench:accuracy` runs on every PR and push to `main` as a dedicated `accuracy` job in `.github/workflows/ci.yml`. It:
+
+1. Installs ngspice via `apt-get install -y ngspice`
+2. Builds `@spice-ts/core`
+3. Runs `npx tsx benchmarks/accuracy.ts --ci`
+4. The `--ci` flag makes the script exit non-zero if **any circuit exceeds the 15% error threshold** vs the analytical expected value
+5. The ngspice diff (spice-ts vs ngspice node voltages) is **informational only** — printed to the job log but does not gate the build. This avoids CI failures caused by ngspice version differences or model discrepancies.
+6. Uploads `benchmarks/accuracy-results.json` as a GitHub Actions artifact so results are browseable per run.
+
+The `vitest bench` job (Part 1) also runs on every PR on Node 22 only. Its output is uploaded as an artifact (`vitest-bench-results.json`) for trend inspection but does **not** gate the build — benchmark times are inherently noisy on shared CI runners and should not block merges.
+
+### Summary of CI gates
+
+| Check | Gates PR? | Notes |
+|-------|-----------|-------|
+| `pnpm lint` | Yes | TypeScript type errors |
+| `pnpm test:coverage` | Yes | Unit + integration tests |
+| `pnpm bench` (vitest) | No | Artifact only — runners are noisy |
+| `accuracy.ts --ci` | Yes | Fails if error > 15% vs analytical |
+| ngspice diff in accuracy | No | Informational, printed to log |
 
 ---
 
@@ -304,3 +323,4 @@ Placed at repo root. Structured as a table linking to GitHub Issues. Sections:
 | Modify | `package.json` (update bench/bench:accuracy scripts) |
 | Create | `ROADMAP.md` |
 | Create | 11 GitHub Issues |
+| Modify | `.github/workflows/ci.yml` (add `accuracy` job with ngspice + `bench` job with vitest) |
