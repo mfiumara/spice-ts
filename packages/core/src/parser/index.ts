@@ -113,6 +113,19 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
 function parseSourceWaveform(tokens: string[], startIdx: number): SourceWaveform {
   if (startIdx >= tokens.length) return { type: 'dc', value: 0 };
 
+  // Scan for AC keyword anywhere in the remaining tokens (e.g. "DC 0 AC 1")
+  const upper = tokens.slice(startIdx).map(t => t.toUpperCase());
+  const acIdx = upper.indexOf('AC');
+  if (acIdx >= 0) {
+    const absIdx = startIdx + acIdx;
+    const magnitude = parseNumber(tokens[absIdx + 1]);
+    const maybePhase = tokens[absIdx + 2]?.toUpperCase();
+    const phase = (maybePhase && maybePhase !== 'DC' && !maybePhase.startsWith('.'))
+      ? parseNumber(tokens[absIdx + 2])
+      : 0;
+    return { type: 'ac', magnitude, phase };
+  }
+
   const keyword = tokens[startIdx].toUpperCase();
 
   if (keyword === 'DC') {
