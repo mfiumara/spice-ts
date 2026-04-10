@@ -21,7 +21,8 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "bench": "vitest bench --config vitest.bench.config.ts"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.4",
