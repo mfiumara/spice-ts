@@ -22,7 +22,10 @@ export function solveTransient(
     assembler.solution.set(initialSolution);
   }
 
-  const maxDt = analysis.maxTimestep ?? (analysis.stopTime / 50);
+  // SPICE convention: the user-specified timestep caps the internal timestep.
+  // An explicit .tran maxTimestep overrides; otherwise use the lesser of
+  // the user timestep and stopTime/50.
+  const maxDt = analysis.maxTimestep ?? Math.min(analysis.timestep, analysis.stopTime / 50);
   let dt = Math.min(analysis.timestep, maxDt);
 
   // Storage for results

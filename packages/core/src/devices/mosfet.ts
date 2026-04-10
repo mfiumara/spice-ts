@@ -45,24 +45,29 @@ export class MOSFET implements DeviceModel {
     const vGS = polarity * (vG - vS);
     const vDS = polarity * (vD - vS);
 
+    // Threshold in polarity-adjusted domain: for PMOS, VTO from model card is
+    // negative (e.g. -0.5V). After the polarity flip vGS is positive, so we
+    // need |VTO| as the positive threshold.
+    const Vth = Math.abs(VTO);
+
     let ID: number;
     let gm: number;   // dID/dVGS
     let gds: number;  // dID/dVDS
 
-    if (vGS <= VTO) {
+    if (vGS <= Vth) {
       // Cutoff
       ID = 0;
       gm = 0;
       gds = 0;
-    } else if (vDS < vGS - VTO) {
+    } else if (vDS < vGS - Vth) {
       // Linear/triode region
-      const vov = vGS - VTO;
+      const vov = vGS - Vth;
       ID = KP * WL * (vov * vDS - vDS * vDS / 2) * (1 + LAMBDA * vDS);
       gm = KP * WL * vDS * (1 + LAMBDA * vDS);
       gds = KP * WL * (vov - vDS) * (1 + LAMBDA * vDS) + KP * WL * (vov * vDS - vDS * vDS / 2) * LAMBDA;
     } else {
       // Saturation region
-      const vov = vGS - VTO;
+      const vov = vGS - Vth;
       ID = (KP * WL / 2) * vov * vov * (1 + LAMBDA * vDS);
       gm = KP * WL * vov * (1 + LAMBDA * vDS);
       gds = (KP * WL / 2) * vov * vov * LAMBDA;
