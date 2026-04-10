@@ -299,21 +299,20 @@ async function checkRCLadder5(): Promise<AccuracyResult> {
     }
   }
 
-  // ngspice reference -3dB for 5-stage RC (R=1k, C=1µF): measured ≈ 7.2 Hz
-  const ngspiceRef = 7.2; // Hz — verified against ngspice-42 locally
-  const errorPct = f3db > 0 ? pct(f3db, ngspiceRef) : 100;
+  // Analytical -3dB for 5-stage RC ladder (R=1k, C=1µF):
+  // H = 1/(1+15p+35p²+28p³+9p⁴+p⁵), p=jωRC → |H|=1/√2 at q≈0.08, f≈12.73 Hz
+  const analyticalRef = 12.73; // Hz — derived from KCL transfer function
+  const errorPct = f3db > 0 ? pct(f3db, analyticalRef) : 100;
 
   return {
     circuit: 'spice3-rc-ladder-5',
     metric: 'f_-3dB (Hz)',
     spiceTs: f3db,
-    expected: ngspiceRef,
+    expected: analyticalRef,
     errorPct,
     ngspice: null,
     ngspiceDiffPct: null,
     status: errorStatus(errorPct),
-    informational: true,
-    note: 'Informational: multi-stage AC accuracy limitation. Expected = ngspice-42 reference.',
   };
 }
 

@@ -4,6 +4,8 @@ export interface MOSFETParams {
   VTO: number;
   KP: number;
   LAMBDA: number;
+  W: number;
+  L: number;
   polarity: number; // 1 for NMOS, -1 for PMOS
 }
 
@@ -23,12 +25,15 @@ export class MOSFET implements DeviceModel {
       VTO: params.VTO ?? 1,
       KP: params.KP ?? 2e-5,
       LAMBDA: params.LAMBDA ?? 0,
+      W: params.W ?? 1,
+      L: params.L ?? 1,
       polarity: params.polarity ?? 1,
     };
   }
 
   stamp(ctx: StampContext): void {
-    const { VTO, KP, LAMBDA, polarity } = this.params;
+    const { VTO, KP, LAMBDA, W, L, polarity } = this.params;
+    const WL = W / L;
     const [nD, nG, nS] = this.nodes;
 
     // Get node voltages
@@ -52,15 +57,15 @@ export class MOSFET implements DeviceModel {
     } else if (vDS < vGS - VTO) {
       // Linear/triode region
       const vov = vGS - VTO;
-      ID = KP * (vov * vDS - vDS * vDS / 2) * (1 + LAMBDA * vDS);
-      gm = KP * vDS * (1 + LAMBDA * vDS);
-      gds = KP * (vov - vDS) * (1 + LAMBDA * vDS) + KP * (vov * vDS - vDS * vDS / 2) * LAMBDA;
+      ID = KP * WL * (vov * vDS - vDS * vDS / 2) * (1 + LAMBDA * vDS);
+      gm = KP * WL * vDS * (1 + LAMBDA * vDS);
+      gds = KP * WL * (vov - vDS) * (1 + LAMBDA * vDS) + KP * WL * (vov * vDS - vDS * vDS / 2) * LAMBDA;
     } else {
       // Saturation region
       const vov = vGS - VTO;
-      ID = (KP / 2) * vov * vov * (1 + LAMBDA * vDS);
-      gm = KP * vov * (1 + LAMBDA * vDS);
-      gds = (KP / 2) * vov * vov * LAMBDA;
+      ID = (KP * WL / 2) * vov * vov * (1 + LAMBDA * vDS);
+      gm = KP * WL * vov * (1 + LAMBDA * vDS);
+      gds = (KP * WL / 2) * vov * vov * LAMBDA;
     }
 
     // Add GMIN for convergence

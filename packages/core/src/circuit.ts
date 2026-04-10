@@ -106,11 +106,16 @@ export class Circuit {
     this.descriptors.push({ type: 'Q', name, nodes: [nodeCollector, nodeBase, nodeEmitter], modelName });
   }
 
-  addMOSFET(name: string, nodeDrain: string, nodeGate: string, nodeSource: string, modelName: string): void {
+  addMOSFET(
+    name: string,
+    nodeDrain: string, nodeGate: string, nodeSource: string,
+    modelName: string,
+    instanceParams?: Record<string, number>,
+  ): void {
     this.nodeSet.add(nodeDrain);
     this.nodeSet.add(nodeGate);
     this.nodeSet.add(nodeSource);
-    this.descriptors.push({ type: 'M', name, nodes: [nodeDrain, nodeGate, nodeSource], modelName });
+    this.descriptors.push({ type: 'M', name, nodes: [nodeDrain, nodeGate, nodeSource], modelName, params: instanceParams });
   }
 
   addModel(params: ModelParams): void {
@@ -226,7 +231,8 @@ export class Circuit {
           const model = modelName ? this._models.get(modelName) : undefined;
           const modelParams = model?.params ?? {};
           const polarity = model?.type === 'PMOS' ? -1 : 1;
-          devices.push(new MOSFET(desc.name, nodeIndices, { ...modelParams, polarity }));
+          // Instance params (W, L) take precedence over model params
+          devices.push(new MOSFET(desc.name, nodeIndices, { ...modelParams, ...desc.params, polarity }));
           break;
         }
         default:
