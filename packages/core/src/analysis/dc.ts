@@ -3,7 +3,6 @@ import type { CompiledCircuit } from '../circuit.js';
 import { MNAAssembler } from '../mna/assembler.js';
 import { newtonRaphson } from './newton-raphson.js';
 import { DCResult } from '../results.js';
-import type { DCSweepResult } from '../results.js';
 import { InvalidCircuitError } from '../errors.js';
 
 export function solveDCOperatingPoint(
