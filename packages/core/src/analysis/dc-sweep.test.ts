@@ -70,4 +70,29 @@ describe('DC Sweep', () => {
       expect(-iV1[i]).toBeGreaterThanOrEqual(-iV1[i - 1] - 1e-12);
     }
   });
+
+  it('sweeps a current source', () => {
+    const ckt = new Circuit();
+    ckt.addCurrentSource('I1', '1', '0', { dc: 0 });
+    ckt.addResistor('R1', '1', '0', 1000);
+
+    const compiled = ckt.compile();
+    const options = resolveOptions();
+    const analysis: DCSweepAnalysis = {
+      type: 'dc', source: 'I1', start: 0, stop: 0.001, step: 0.0001,
+    };
+
+    const result = solveDCSweep(compiled, analysis, options);
+
+    // 11 points: 0, 0.1m, 0.2m, ..., 1.0m
+    expect(result.sweepValues.length).toBe(11);
+
+    const v1 = result.voltage('1');
+    expect(v1.length).toBe(11);
+    for (let i = 0; i < 11; i++) {
+      const current = analysis.start + i * analysis.step;
+      // V = I * R (current injected into node 1, flows through R1 to ground)
+      expect(v1[i]).toBeCloseTo(current * 1000, 6);
+    }
+  });
 });
