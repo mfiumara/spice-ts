@@ -8,7 +8,7 @@ export class CurrentSource implements DeviceModel {
   constructor(
     readonly name: string,
     readonly nodes: number[],
-    readonly waveform: SourceWaveform,
+    public waveform: SourceWaveform,
   ) {}
 
   stamp(ctx: StampContext): void {
