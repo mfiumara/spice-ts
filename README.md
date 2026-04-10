@@ -141,7 +141,7 @@ Parses a SPICE netlist into a `Circuit` object without running any analysis.
 
 ## Benchmarks
 
-Measured on an AMD Ryzen machine running Node.js v22 and ngspice-42. spice-ts times are the mean of 5 runs (after 1 warmup). ngspice times include process spawn + file I/O overhead.
+Measured on an AMD Ryzen machine running Node.js v22 and ngspice-42. spice-ts times are from `vitest bench` (tinybench, statistically stabilised). ngspice times include process spawn + file I/O overhead.
 
 ### Scalability — DC (.op)
 
@@ -193,9 +193,12 @@ For small nonlinear circuits, spice-ts avoids ngspice's process spawn overhead a
 |---|---|---|---|---|
 | RC step response | V(out) at t=τ | 3.167 V | 3.161 V | **0.20%** |
 | BJT CE amplifier | V(base) DC bias | 2.048 V | 2.105 V | **2.7%** |
-| RLC resonance | oscillation frequency | 1242 Hz | 1592 Hz | 21.9%* |
+| RLC bandpass | peak frequency | 1585 Hz | 1592 Hz | **0.4%** |
+| RLC resonance (transient) | oscillation frequency | 1242 Hz | 1592 Hz | 21.9%† |
 
-*The RLC resonance error is due to numerical damping in the trapezoidal integrator with the default timestep. Use a finer timestep or `integrationMethod: 'euler'` to improve accuracy for resonant circuits.
+†RLC transient resonance error is due to numerical damping in the trapezoidal integrator with the default timestep. Use a finer timestep or `integrationMethod: 'euler'` to reduce it. AC analysis of the same circuit gives 0.4% error (see RLC bandpass above).
+
+Run `pnpm bench:accuracy` to see the full accuracy report including SPICE3 Quarles reference circuits.
 
 ## Limitations
 
@@ -210,10 +213,17 @@ For small nonlinear circuits, spice-ts avoids ngspice's process spawn overhead a
 git clone https://github.com/mfiumara/spice-ts
 cd spice-ts
 pnpm install
-pnpm test        # run all tests
-pnpm build       # build @spice-ts/core
-pnpm bench       # run benchmark suite (requires ngspice for comparison)
+pnpm test              # run all tests
+pnpm build             # build @spice-ts/core
+pnpm bench             # vitest bench (ops/sec, mean, p99 — no external deps)
+pnpm bench:accuracy    # accuracy vs analytical + ngspice diff (requires ngspice)
 ```
+
+The `bench` script uses [vitest bench](https://vitest.dev/guide/benchmarking) (backed by tinybench) for statistically sound ops/sec and latency metrics. Results are written to `benchmarks/vitest-bench-results.json`.
+
+The `bench:accuracy` script runs 8 reference circuits through spice-ts, compares them against analytical expected values, and optionally diffs against ngspice. Results are written to `benchmarks/accuracy-results.json`. Pass `--ci` to exit non-zero if any gated circuit exceeds 15% error.
+
+See [ROADMAP.md](ROADMAP.md) for planned features.
 
 ## License
 
