@@ -7,6 +7,7 @@ import { resolveOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
 import { solveTransient } from './analysis/transient.js';
 import { solveAC } from './analysis/ac.js';
+import { solveDCSweep } from './analysis/dc-sweep.js';
 import type { SimulationResult } from './results.js';
 import { InvalidCircuitError, TimestepTooSmallError } from './errors.js';
 import { MNAAssembler } from './mna/assembler.js';
@@ -35,7 +36,8 @@ export async function simulate(
         break;
       }
       case 'dc': {
-        // DC sweep — will be implemented later
+        const opts = resolveOptions(options);
+        result.dcSweep = solveDCSweep(compiled, analysis, opts);
         break;
       }
       case 'tran': {
