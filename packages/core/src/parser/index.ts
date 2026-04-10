@@ -102,9 +102,24 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
     case 'Q':
       circuit.addBJT(name, tokens[1], tokens[2], tokens[3], tokens[4]);
       break;
-    case 'M':
-      circuit.addMOSFET(name, tokens[1], tokens[2], tokens[3], tokens[4]);
+    case 'M': {
+      // SPICE MOSFET: M name D G S [B] modelName [W=x L=y ...]
+      // tokens[4] is either the body node (4-terminal) or the model name (3-terminal).
+      // Heuristic: if tokens[5] exists and does not contain '=', then tokens[4] is the
+      // body node and tokens[5] is the model name; otherwise tokens[4] is the model name.
+      let modelName: string;
+      let instanceParamStart: number;
+      if (tokens[5] && !tokens[5].includes('=')) {
+        modelName = tokens[5];       // 4-terminal form: D G S B model
+        instanceParamStart = 6;
+      } else {
+        modelName = tokens[4];       // 3-terminal form: D G S model
+        instanceParamStart = 5;
+      }
+      const instanceParams = parseInstanceParams(tokens, instanceParamStart);
+      circuit.addMOSFET(name, tokens[1], tokens[2], tokens[3], modelName, instanceParams);
       break;
+    }
     default:
       throw new ParseError(`Unknown device type: '${type}'`, lineNumber, tokens.join(' '));
   }
@@ -160,4 +175,21 @@ function parseSourceWaveform(tokens: string[], startIdx: number): SourceWaveform
   }
 
   return { type: 'dc', value: parseNumber(tokens[startIdx]) };
+}
+
+/**
+ * Parse key=value instance parameters such as W=10u L=1u.
+ * Returns a map of uppercase keys to numeric values.
+ */
+function parseInstanceParams(tokens: string[], startIdx: number): Record<string, number> {
+  const params: Record<string, number> = {};
+  for (let i = startIdx; i < tokens.length; i++) {
+    const eqIdx = tokens[i].indexOf('=');
+    if (eqIdx > 0) {
+      const key = tokens[i].slice(0, eqIdx).toUpperCase();
+      const val = parseNumber(tokens[i].slice(eqIdx + 1));
+      params[key] = val;
+    }
+  }
+  return params;
 }

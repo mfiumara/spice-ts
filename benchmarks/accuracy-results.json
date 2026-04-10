@@ -1,0 +1,719 @@
+[
+  {
+    "date": "2026-04-10T10:57:07.891Z",
+    "results": [
+      {
+        "circuit": "rc-step-at-tau",
+        "metric": "V(out) at t=τ (V)",
+        "spiceTs": 3.167065144045082,
+        "expected": 3.1606027941427883,
+        "errorPct": 0.20446574034136034,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "rlc-resonance",
+        "metric": "f_osc (Hz)",
+        "spiceTs": 1242.343047651307,
+        "expected": 1591.5494309189535,
+        "errorPct": 21.941284165206,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "Use finer timestep for resonant circuits"
+      },
+      {
+        "circuit": "bjt-ce-bias",
+        "metric": "V(base) (V)",
+        "spiceTs": 2.0484302899684237,
+        "expected": 2.1052631578947367,
+        "errorPct": 2.699561226499869,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "~"
+      },
+      {
+        "circuit": "Diode rectifier",
+        "metric": "—",
+        "spiceTs": null,
+        "expected": null,
+        "errorPct": null,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "?",
+        "note": "Unknown node: out"
+      },
+      {
+        "circuit": "spice3-diff-pair",
+        "metric": "|V(out+) - V(out-)| (V)",
+        "spiceTs": 12.52217406193428,
+        "expected": 0,
+        "errorPct": 12522.17406193428,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "V(out+)=-0.614V V(out-)=11.908V"
+      },
+      {
+        "circuit": "SPICE3: bandpass RLC",
+        "metric": "—",
+        "spiceTs": null,
+        "expected": null,
+        "errorPct": null,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "?",
+        "note": "ac.magnitude is not a function"
+      },
+      {
+        "circuit": "spice3-ota-dc",
+        "metric": "V(d2) (V)",
+        "spiceTs": 3.75,
+        "expected": 2.5,
+        "errorPct": 50,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗"
+      },
+      {
+        "circuit": "SPICE3: RC ladder 5-stage",
+        "metric": "—",
+        "spiceTs": null,
+        "expected": null,
+        "errorPct": null,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "?",
+        "note": "ac.magnitude is not a function"
+      }
+    ]
+  },
+  {
+    "date": "2026-04-10T10:57:30.121Z",
+    "results": [
+      {
+        "circuit": "rc-step-at-tau",
+        "metric": "V(out) at t=τ (V)",
+        "spiceTs": 3.167065144045082,
+        "expected": 3.1606027941427883,
+        "errorPct": 0.20446574034136034,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "rlc-resonance",
+        "metric": "f_osc (Hz)",
+        "spiceTs": 1242.343047651307,
+        "expected": 1591.5494309189535,
+        "errorPct": 21.941284165206,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "Use finer timestep for resonant circuits"
+      },
+      {
+        "circuit": "bjt-ce-bias",
+        "metric": "V(base) (V)",
+        "spiceTs": 2.0484302899684237,
+        "expected": 2.1052631578947367,
+        "errorPct": 2.699561226499869,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "~"
+      },
+      {
+        "circuit": "Diode rectifier",
+        "metric": "—",
+        "spiceTs": null,
+        "expected": null,
+        "errorPct": null,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "?",
+        "note": "Unknown node: out"
+      },
+      {
+        "circuit": "spice3-diff-pair",
+        "metric": "|V(out+) - V(out-)| (V)",
+        "spiceTs": 12.52217406193428,
+        "expected": 0,
+        "errorPct": 12522.17406193428,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "V(out+)=-0.614V V(out-)=11.908V"
+      },
+      {
+        "circuit": "spice3-bandpass-rlc",
+        "metric": "f_peak (Hz)",
+        "spiceTs": 100,
+        "expected": 1591.5494309189535,
+        "errorPct": 93.71681469282042,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗"
+      },
+      {
+        "circuit": "spice3-ota-dc",
+        "metric": "V(d2) (V)",
+        "spiceTs": 3.75,
+        "expected": 2.5,
+        "errorPct": 50,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗"
+      },
+      {
+        "circuit": "spice3-rc-ladder-5",
+        "metric": "f_-3dB (Hz)",
+        "spiceTs": 0,
+        "expected": 32,
+        "errorPct": 100,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "Expected value is ngspice reference (no closed form for 5-pole compound)"
+      }
+    ]
+  },
+  {
+    "date": "2026-04-10T10:58:57.299Z",
+    "results": [
+      {
+        "circuit": "rc-step-at-tau",
+        "metric": "V(out) at t=τ (V)",
+        "spiceTs": 3.167065144045082,
+        "expected": 3.1606027941427883,
+        "errorPct": 0.20446574034136034,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "rlc-resonance",
+        "metric": "f_osc (Hz)",
+        "spiceTs": 1242.343047651307,
+        "expected": 1591.5494309189535,
+        "errorPct": 21.941284165206,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "Use finer timestep for resonant circuits"
+      },
+      {
+        "circuit": "bjt-ce-bias",
+        "metric": "V(base) (V)",
+        "spiceTs": 2.0484302899684237,
+        "expected": 2.1052631578947367,
+        "errorPct": 2.699561226499869,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "~"
+      },
+      {
+        "circuit": "diode-bridge-rectifier",
+        "metric": "V(out) min (V)",
+        "spiceTs": 0,
+        "expected": 0,
+        "errorPct": 0,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "spice3-diff-pair",
+        "metric": "|V(out+) - V(out-)| (V)",
+        "spiceTs": 12.52217406193428,
+        "expected": 0,
+        "errorPct": 12522.17406193428,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "V(out+)=-0.614V V(out-)=11.908V"
+      },
+      {
+        "circuit": "spice3-bandpass-rlc",
+        "metric": "f_peak (Hz)",
+        "spiceTs": 100,
+        "expected": 1591.5494309189535,
+        "errorPct": 93.71681469282042,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗"
+      },
+      {
+        "circuit": "spice3-ota-dc",
+        "metric": "V(d2) (V)",
+        "spiceTs": 3.75,
+        "expected": 2.5,
+        "errorPct": 50,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗"
+      },
+      {
+        "circuit": "spice3-rc-ladder-5",
+        "metric": "f_-3dB (Hz)",
+        "spiceTs": 0,
+        "expected": 32,
+        "errorPct": 100,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "Expected value is ngspice reference (no closed form for 5-pole compound)"
+      }
+    ]
+  },
+  {
+    "date": "2026-04-10T10:59:12.154Z",
+    "results": [
+      {
+        "circuit": "rc-step-at-tau",
+        "metric": "V(out) at t=τ (V)",
+        "spiceTs": 3.167065144045082,
+        "expected": 3.1606027941427883,
+        "errorPct": 0.20446574034136034,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "rlc-resonance",
+        "metric": "f_osc (Hz)",
+        "spiceTs": 1242.343047651307,
+        "expected": 1591.5494309189535,
+        "errorPct": 21.941284165206,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "Use finer timestep for resonant circuits"
+      },
+      {
+        "circuit": "bjt-ce-bias",
+        "metric": "V(base) (V)",
+        "spiceTs": 2.0484302899684237,
+        "expected": 2.1052631578947367,
+        "errorPct": 2.699561226499869,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "~"
+      },
+      {
+        "circuit": "diode-bridge-rectifier",
+        "metric": "V(out) min (V)",
+        "spiceTs": 0,
+        "expected": 0,
+        "errorPct": 0,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "spice3-diff-pair",
+        "metric": "|V(out+) - V(out-)| (V)",
+        "spiceTs": 12.52217406193428,
+        "expected": 0,
+        "errorPct": 12522.17406193428,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "V(out+)=-0.614V V(out-)=11.908V"
+      },
+      {
+        "circuit": "spice3-bandpass-rlc",
+        "metric": "f_peak (Hz)",
+        "spiceTs": 100,
+        "expected": 1591.5494309189535,
+        "errorPct": 93.71681469282042,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗"
+      },
+      {
+        "circuit": "spice3-ota-dc",
+        "metric": "V(d2) (V)",
+        "spiceTs": 3.75,
+        "expected": 2.5,
+        "errorPct": 50,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗"
+      },
+      {
+        "circuit": "spice3-rc-ladder-5",
+        "metric": "f_-3dB (Hz)",
+        "spiceTs": 0,
+        "expected": 32,
+        "errorPct": 100,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "Expected value is ngspice reference (no closed form for 5-pole compound)"
+      }
+    ]
+  },
+  {
+    "date": "2026-04-10T10:59:20.642Z",
+    "results": [
+      {
+        "circuit": "rc-step-at-tau",
+        "metric": "V(out) at t=τ (V)",
+        "spiceTs": 3.167065144045082,
+        "expected": 3.1606027941427883,
+        "errorPct": 0.20446574034136034,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "rlc-resonance",
+        "metric": "f_osc (Hz)",
+        "spiceTs": 1242.343047651307,
+        "expected": 1591.5494309189535,
+        "errorPct": 21.941284165206,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "Use finer timestep for resonant circuits"
+      },
+      {
+        "circuit": "bjt-ce-bias",
+        "metric": "V(base) (V)",
+        "spiceTs": 2.0484302899684237,
+        "expected": 2.1052631578947367,
+        "errorPct": 2.699561226499869,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "~"
+      },
+      {
+        "circuit": "diode-bridge-rectifier",
+        "metric": "V(out) min (V)",
+        "spiceTs": 0,
+        "expected": 0,
+        "errorPct": 0,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "spice3-diff-pair",
+        "metric": "|V(out+) - V(out-)| (V)",
+        "spiceTs": 12.52217406193428,
+        "expected": 0,
+        "errorPct": 12522.17406193428,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "V(out+)=-0.614V V(out-)=11.908V"
+      },
+      {
+        "circuit": "spice3-bandpass-rlc",
+        "metric": "f_peak (Hz)",
+        "spiceTs": 100,
+        "expected": 1591.5494309189535,
+        "errorPct": 93.71681469282042,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗"
+      },
+      {
+        "circuit": "spice3-ota-dc",
+        "metric": "V(d2) (V)",
+        "spiceTs": 3.75,
+        "expected": 2.5,
+        "errorPct": 50,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗"
+      },
+      {
+        "circuit": "spice3-rc-ladder-5",
+        "metric": "f_-3dB (Hz)",
+        "spiceTs": 0,
+        "expected": 32,
+        "errorPct": 100,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "Expected value is ngspice reference (no closed form for 5-pole compound)"
+      }
+    ]
+  },
+  {
+    "date": "2026-04-10T11:10:12.152Z",
+    "results": [
+      {
+        "circuit": "rc-step-at-tau",
+        "metric": "V(out) at t=τ (V)",
+        "spiceTs": 3.167065144045082,
+        "expected": 3.1606027941427883,
+        "errorPct": 0.20446574034136034,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "rlc-resonance",
+        "metric": "f_osc (Hz)",
+        "spiceTs": 1242.343047651307,
+        "expected": 1591.5494309189535,
+        "errorPct": 21.941284165206,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "Use finer timestep for resonant circuits"
+      },
+      {
+        "circuit": "bjt-ce-bias",
+        "metric": "V(base) (V)",
+        "spiceTs": 2.0484302899684237,
+        "expected": 2.1052631578947367,
+        "errorPct": 2.699561226499869,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "~"
+      },
+      {
+        "circuit": "diode-bridge-rectifier",
+        "metric": "V(out) min (V)",
+        "spiceTs": 0,
+        "expected": 0,
+        "errorPct": 0,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "spice3-diff-pair",
+        "metric": "|V(out+) - V(out-)| (V)",
+        "spiceTs": 12.52217406193428,
+        "expected": 0,
+        "errorPct": 12522.17406193428,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "V(out+)=-0.614V V(out-)=11.908V"
+      },
+      {
+        "circuit": "spice3-bandpass-rlc",
+        "metric": "f_peak (Hz)",
+        "spiceTs": 100,
+        "expected": 1591.5494309189535,
+        "errorPct": 93.71681469282042,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗"
+      },
+      {
+        "circuit": "spice3-ota-dc",
+        "metric": "V(d2) (V)",
+        "spiceTs": 3.75,
+        "expected": 2.5,
+        "errorPct": 50,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗"
+      },
+      {
+        "circuit": "spice3-rc-ladder-5",
+        "metric": "f_-3dB (Hz)",
+        "spiceTs": 0,
+        "expected": 32,
+        "errorPct": 100,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "note": "Expected value is ngspice reference (no closed form for 5-pole compound)"
+      }
+    ]
+  },
+  {
+    "date": "2026-04-10T11:37:28.317Z",
+    "results": [
+      {
+        "circuit": "rc-step-at-tau",
+        "metric": "V(out) at t=τ (V)",
+        "spiceTs": 3.167065144045082,
+        "expected": 3.1606027941427883,
+        "errorPct": 0.20446574034136034,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "rlc-resonance",
+        "metric": "f_osc (Hz)",
+        "spiceTs": 1242.343047651307,
+        "expected": 1591.5494309189535,
+        "errorPct": 21.941284165206,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "informational": true,
+        "note": "Informational: numerical damping with default timestep. Use finer timestep for resonant circuits."
+      },
+      {
+        "circuit": "bjt-ce-bias",
+        "metric": "V(base) (V)",
+        "spiceTs": 2.0484302899684237,
+        "expected": 2.1052631578947367,
+        "errorPct": 2.699561226499869,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "~"
+      },
+      {
+        "circuit": "diode-bridge-rectifier",
+        "metric": "V(out) min (V)",
+        "spiceTs": 0,
+        "expected": 0,
+        "errorPct": 0,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "spice3-diff-pair",
+        "metric": "|V(out+) - V(out-)| (V)",
+        "spiceTs": 12.52217406193428,
+        "expected": 0,
+        "errorPct": 12522.17406193428,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "informational": true,
+        "note": "Informational: BJT multi-device DC convergence limitation. V(out+)=-0.614V V(out-)=11.908V"
+      },
+      {
+        "circuit": "spice3-bandpass-rlc",
+        "metric": "f_peak (Hz)",
+        "spiceTs": 100,
+        "expected": 1591.5494309189535,
+        "errorPct": 93.71681469282042,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗"
+      },
+      {
+        "circuit": "spice3-ota-dc",
+        "metric": "V(d2) (V)",
+        "spiceTs": 3.75,
+        "expected": 2.5,
+        "errorPct": 50,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "informational": true,
+        "note": "Informational: Level 1 MOSFET model limitation for multi-device circuits"
+      },
+      {
+        "circuit": "spice3-rc-ladder-5",
+        "metric": "f_-3dB (Hz)",
+        "spiceTs": 0,
+        "expected": 7.2,
+        "errorPct": 100,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "informational": true,
+        "note": "Informational: multi-stage AC accuracy limitation. Expected = ngspice-42 reference."
+      }
+    ]
+  },
+  {
+    "date": "2026-04-10T11:38:03.296Z",
+    "results": [
+      {
+        "circuit": "rc-step-at-tau",
+        "metric": "V(out) at t=τ (V)",
+        "spiceTs": 3.167065144045082,
+        "expected": 3.1606027941427883,
+        "errorPct": 0.20446574034136034,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "rlc-resonance",
+        "metric": "f_osc (Hz)",
+        "spiceTs": 1242.343047651307,
+        "expected": 1591.5494309189535,
+        "errorPct": 21.941284165206,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "informational": true,
+        "note": "Informational: numerical damping with default timestep. Use finer timestep for resonant circuits."
+      },
+      {
+        "circuit": "bjt-ce-bias",
+        "metric": "V(base) (V)",
+        "spiceTs": 2.0484302899684237,
+        "expected": 2.1052631578947367,
+        "errorPct": 2.699561226499869,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "~"
+      },
+      {
+        "circuit": "diode-bridge-rectifier",
+        "metric": "V(out) min (V)",
+        "spiceTs": 0,
+        "expected": 0,
+        "errorPct": 0,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "spice3-diff-pair",
+        "metric": "|V(out+) - V(out-)| (V)",
+        "spiceTs": 12.52217406193428,
+        "expected": 0,
+        "errorPct": 12522.17406193428,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "informational": true,
+        "note": "Informational: BJT multi-device DC convergence limitation. V(out+)=-0.614V V(out-)=11.908V"
+      },
+      {
+        "circuit": "spice3-bandpass-rlc",
+        "metric": "f_peak (Hz)",
+        "spiceTs": 1584.8931924611134,
+        "expected": 1591.5494309189535,
+        "errorPct": 0.41822379679384736,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "spice3-ota-dc",
+        "metric": "V(d2) (V)",
+        "spiceTs": 3.75,
+        "expected": 2.5,
+        "errorPct": 50,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "informational": true,
+        "note": "Informational: Level 1 MOSFET model limitation for multi-device circuits"
+      },
+      {
+        "circuit": "spice3-rc-ladder-5",
+        "metric": "f_-3dB (Hz)",
+        "spiceTs": 12.759723132093674,
+        "expected": 7.2,
+        "errorPct": 77.21837683463436,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "informational": true,
+        "note": "Informational: multi-stage AC accuracy limitation. Expected = ngspice-42 reference."
+      }
+    ]
+  }
+]
