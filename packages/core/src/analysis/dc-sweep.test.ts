@@ -95,4 +95,20 @@ describe('DC Sweep', () => {
       expect(v1[i]).toBeCloseTo(current * 1000, 6);
     }
   });
+
+  it('throws on unknown sweep source', () => {
+    const ckt = new Circuit();
+    ckt.addVoltageSource('V1', '1', '0', { dc: 5 });
+    ckt.addResistor('R1', '1', '0', 1000);
+
+    const compiled = ckt.compile();
+    const options = resolveOptions();
+    const analysis: DCSweepAnalysis = {
+      type: 'dc', source: 'V99', start: 0, stop: 5, step: 1,
+    };
+
+    expect(() => solveDCSweep(compiled, analysis, options)).toThrow(
+      "DC sweep source 'V99' not found",
+    );
+  });
 });
