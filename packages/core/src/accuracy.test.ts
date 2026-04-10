@@ -23,7 +23,7 @@ function withinPct(actual: number, expected: number, pct: number): boolean {
 //    Expected f_osc ≈ 1591.5 Hz (1/(2π√LC)), simulator measures ~1242 Hz (22% off)
 // ---------------------------------------------------------------------------
 describe('Accuracy regressions', () => {
-  it.fails('rlc-resonance: oscillation frequency within 10% of 1591.5 Hz', async () => {
+  it('rlc-resonance: oscillation frequency within 10% of 1591.5 Hz', async () => {
     const netlist = [
       '* RLC series resonance — f_res ≈ 1.59kHz, Q = 10',
       'V1 1 0 PULSE(0 1 0 1n 1n 10u 100)',
@@ -64,17 +64,17 @@ describe('Accuracy regressions', () => {
   });
 
   // ---------------------------------------------------------------------------
-  // 2. BJT differential pair — multi-device DC convergence limitation
-  //    At balanced input the outputs should be symmetric: |V(out+)−V(out-)| < 50 mV
-  //    Simulator currently produces ~12.5 V imbalance
+  // 2. BJT differential pair — symmetric DC operating point
+  //    At truly balanced input (both bases at same voltage) the outputs
+  //    should be symmetric: |V(out+)−V(out-)| < 50 mV
   // ---------------------------------------------------------------------------
-  it.fails('spice3-diff-pair: balanced outputs within 50 mV of each other', async () => {
+  it('spice3-diff-pair: balanced outputs within 50 mV of each other', async () => {
     const netlist = [
       '* Quarles diff pair — 2N2222 NPN BJT',
       'VCC vcc 0 DC 12',
       'VEE 0 vee DC 12',
-      'VIN+ in+ 0 DC 0.1',
-      'VIN- in- 0 DC -0.1',
+      'VIN+ in+ 0 DC 0',
+      'VIN- in- 0 DC 0',
       'Q1 out+ in+ emit NPN2222',
       'Q2 out- in- emit NPN2222',
       'RC1 vcc out+ 10k',
@@ -95,10 +95,12 @@ describe('Accuracy regressions', () => {
   });
 
   // ---------------------------------------------------------------------------
-  // 3. One-stage OTA (DC) — Level 1 MOSFET model limitation
-  //    Expected V(d2) ≈ VDD/2 = 2.5 V at balanced input, simulator gives 3.75 V (50% off)
+  // 3. One-stage OTA (DC) — Level 1 MOSFET current-mirror loaded OTA
+  //    At balanced input, V(d1) (diode-connected mirror side) is well-determined.
+  //    V(d2) is under-determined with LAMBDA=0 (no channel-length modulation).
+  //    ngspice reference: V(d1) ≈ 4.105 V, V(tail) ≈ 1.75 V.
   // ---------------------------------------------------------------------------
-  it.fails('spice3-ota-dc: V(d2) within 10% of 2.5 V (VDD/2)', async () => {
+  it('spice3-ota-dc: V(d1) within 10% of 4.1 V and V(tail) within 10% of 1.75 V', async () => {
     const netlist = [
       '* Quarles one-stage OTA',
       'VDD vdd 0 DC 5',
@@ -118,10 +120,13 @@ describe('Accuracy regressions', () => {
     ].join('\n');
 
     const result = await simulate(netlist);
-    const vd2 = result.dc?.voltage('d2') ?? 0;
-    const expectedVd2 = 2.5; // VDD/2 at balanced input
+    const vd1 = result.dc?.voltage('d1') ?? 0;
+    const vtail = result.dc?.voltage('tail') ?? 0;
 
-    expect(withinPct(vd2, expectedVd2, 10)).toBe(true);
+    // V(d1) is well-determined by the diode-connected PMOS mirror
+    expect(withinPct(vd1, 4.1, 10)).toBe(true);
+    // V(tail) set by MBIAS in saturation
+    expect(withinPct(vtail, 1.75, 10)).toBe(true);
   });
 
   // ---------------------------------------------------------------------------
