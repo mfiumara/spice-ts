@@ -40,4 +40,34 @@ describe('DC Sweep', () => {
       expect(iV1[i]).toBeCloseTo(-vsrc / 3000, 9);
     }
   });
+
+  it('sweeps diode I-V curve', () => {
+    const ckt = new Circuit();
+    ckt.addVoltageSource('V1', '1', '0', { dc: 0 });
+    ckt.addResistor('R1', '1', '2', 1000);
+    ckt.addDiode('D1', '2', '0');
+
+    const compiled = ckt.compile();
+    const options = resolveOptions();
+    const analysis: DCSweepAnalysis = {
+      type: 'dc', source: 'V1', start: -1, stop: 1, step: 0.1,
+    };
+
+    const result = solveDCSweep(compiled, analysis, options);
+
+    // 21 points: -1.0, -0.9, ..., 0.9, 1.0
+    expect(result.sweepValues.length).toBe(21);
+
+    // At V1 = -1V, diode is reverse biased: current magnitude near zero
+    const iV1 = result.current('V1');
+    expect(Math.abs(iV1[0])).toBeLessThan(1e-6);
+
+    // At V1 = 1V, diode is forward biased: significant current flows
+    expect(Math.abs(iV1[20])).toBeGreaterThan(1e-4);
+
+    // Current should monotonically increase across sweep
+    for (let i = 1; i < 21; i++) {
+      expect(-iV1[i]).toBeGreaterThanOrEqual(-iV1[i - 1] - 1e-12);
+    }
+  });
 });
