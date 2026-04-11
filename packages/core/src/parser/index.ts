@@ -3,6 +3,8 @@ import { ParseError } from '../errors.js';
 import { tokenizeNetlist, parseNumber } from './tokenizer.js';
 import { parseModelCard } from './model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
+import { preprocess } from './preprocessor.js';
+import type { IncludeResolver } from '../types.js';
 
 export { parseSourceWaveform } from './waveform-parser.js';
 
@@ -69,6 +71,14 @@ export function parse(netlist: string): Circuit {
   }
 
   return circuit;
+}
+
+export async function parseAsync(
+  netlist: string,
+  resolver?: IncludeResolver,
+): Promise<Circuit> {
+  const preprocessed = await preprocess(netlist, resolver);
+  return parse(preprocessed);
 }
 
 function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number): void {
