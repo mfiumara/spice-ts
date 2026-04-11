@@ -132,6 +132,55 @@ describe('evaluateExpression', () => {
     });
   });
 
+  describe('SI suffixes in expressions', () => {
+    it('evaluates 10k as 10000', () => {
+      expect(evaluateExpression('10k', {})).toBe(10000);
+    });
+
+    it('evaluates 4.7k as 4700', () => {
+      expect(evaluateExpression('4.7k', {})).toBe(4700);
+    });
+
+    it('evaluates 100n as 1e-7', () => {
+      expect(evaluateExpression('100n', {})).toBe(1e-7);
+    });
+
+    it('evaluates 1u as 1e-6', () => {
+      expect(evaluateExpression('1u', {})).toBe(1e-6);
+    });
+
+    it('evaluates 2.2meg as 2.2e6', () => {
+      expect(evaluateExpression('2.2meg', {})).toBe(2.2e6);
+    });
+
+    it('evaluates SI suffix in arithmetic: 10k * 2', () => {
+      expect(evaluateExpression('10k * 2', {})).toBe(20000);
+    });
+
+    it('evaluates mixed SI: 1k + 500', () => {
+      expect(evaluateExpression('1k + 500', {})).toBe(1500);
+    });
+
+    it('is case-sensitive: m = milli, M = mega', () => {
+      expect(evaluateExpression('1m', {})).toBe(0.001);
+      expect(evaluateExpression('1M', {})).toBe(1e6);
+      expect(evaluateExpression('10K', {})).toBe(10000);
+      expect(evaluateExpression('1MEG', {})).toBe(1e6);
+    });
+
+    it('evaluates embedded suffix notation: 3k3 = 3300', () => {
+      expect(evaluateExpression('3k3', {})).toBe(3300);
+    });
+
+    it('evaluates embedded suffix notation: 4M7 = 4700000', () => {
+      expect(evaluateExpression('4M7', {})).toBe(4700000);
+    });
+
+    it('evaluates embedded suffix in arithmetic: 4k7 + 300', () => {
+      expect(evaluateExpression('4k7 + 300', {})).toBe(5000);
+    });
+  });
+
   describe('edge cases', () => {
     it('handles empty string', () => {
       expect(() => evaluateExpression('', {})).toThrow();
