@@ -173,6 +173,109 @@ describe('Circuit', () => {
       expect(compiled.nodeNames).toContain('X0.mid');
     });
 
+    it('expands subcircuit with BJT (Q device)', () => {
+      const ckt = new Circuit();
+      ckt.addModel({ name: 'QMOD', type: 'NPN', params: { BF: 100, IS: 1e-15 } });
+      ckt.addSubcircuit({
+        name: 'amp',
+        ports: ['c', 'b', 'e'],
+        params: {},
+        body: ['Q1 c b e QMOD'],
+      });
+      ckt.addSubcircuitInstance('X1', ['3', '2', '0'], 'amp');
+      ckt.addVoltageSource('V1', '3', '0', { dc: 5 });
+      ckt.addVoltageSource('V2', '2', '0', { dc: 0.7 });
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      const bjt = compiled.devices.find(d => d.name === 'X1.Q1');
+      expect(bjt).toBeDefined();
+    });
+
+    it('expands subcircuit with MOSFET (M device)', () => {
+      const ckt = new Circuit();
+      ckt.addModel({ name: 'NMOD', type: 'NMOS', params: { VTO: 0.5, KP: 120e-6 } });
+      ckt.addSubcircuit({
+        name: 'inv',
+        ports: ['in', 'out', 'vdd', 'vss'],
+        params: { W: 1e-6, L: 100e-9 },
+        body: ['M1 out in vss NMOD W={W} L={L}'],
+      });
+      ckt.addSubcircuitInstance('X1', ['1', '2', '3', '0'], 'inv');
+      ckt.addVoltageSource('V1', '3', '0', { dc: 1.8 });
+      ckt.addVoltageSource('V2', '1', '0', { dc: 0.9 });
+      ckt.addResistor('RL', '2', '0', 1e3);
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      const mosfet = compiled.devices.find(d => d.name === 'X1.M1');
+      expect(mosfet).toBeDefined();
+    });
+
+    it('expands subcircuit with 4-terminal MOSFET (bulk node)', () => {
+      const ckt = new Circuit();
+      ckt.addModel({ name: 'PMOD', type: 'PMOS', params: { VTO: -0.5, KP: 60e-6 } });
+      ckt.addSubcircuit({
+        name: 'pgate',
+        ports: ['in', 'out', 'vdd'],
+        params: {},
+        body: ['M1 out in vdd vdd PMOD W=2u L=100n'],
+      });
+      ckt.addSubcircuitInstance('X1', ['1', '2', '3'], 'pgate');
+      ckt.addVoltageSource('V1', '3', '0', { dc: 1.8 });
+      ckt.addVoltageSource('V2', '1', '0', { dc: 0.9 });
+      ckt.addResistor('RL', '2', '0', 1e3);
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      const mosfet = compiled.devices.find(d => d.name === 'X1.M1');
+      expect(mosfet).toBeDefined();
+    });
+
+    it('expands subcircuit with current source (I device)', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuit({
+        name: 'isrc',
+        ports: ['p', 'n'],
+        params: {},
+        body: ['I1 p n DC 1m'],
+      });
+      ckt.addSubcircuitInstance('X1', ['1', '0'], 'isrc');
+      ckt.addResistor('R1', '1', '0', 1e3);
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      const csrc = compiled.devices.find(d => d.name === 'X1.I1');
+      expect(csrc).toBeDefined();
+    });
+
+    it('expands subcircuit with voltage source waveform', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuit({
+        name: 'vgen',
+        ports: ['p', 'n'],
+        params: {},
+        body: ['V1 p n PULSE ( 0 5 0 1n 1n 5u 10u )'],
+      });
+      ckt.addSubcircuitInstance('X1', ['1', '0'], 'vgen');
+      ckt.addResistor('R1', '1', '0', 1e3);
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      const vsrc = compiled.devices.find(d => d.name === 'X1.V1');
+      expect(vsrc).toBeDefined();
+    });
+
+    it('expands subcircuit with .param inside body', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuit({
+        name: 'paramtest',
+        ports: ['a', 'b'],
+        params: {},
+        body: ['.param rval = 2k', 'R1 a b {rval}'],
+      });
+      ckt.addSubcircuitInstance('X1', ['1', '0'], 'paramtest');
+      ckt.addVoltageSource('V1', '1', '0', { dc: 5 });
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      expect(compiled.devices).toHaveLength(2);
+    });
+
     it('scopes local .model to subcircuit', () => {
       const ckt = new Circuit();
       ckt.addSubcircuit({
