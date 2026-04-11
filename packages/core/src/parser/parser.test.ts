@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parse } from './index.js';
+import { parse, parseAsync } from './index.js';
 
 describe('SPICE netlist parser', () => {
   it('parses a simple voltage divider', () => {
@@ -213,6 +213,33 @@ describe('SPICE netlist parser', () => {
 
     it('throws ParseError on .lib with file', () => {
       expect(() => parse(`.lib 'models.lib' TT\n.op`)).toThrow('async');
+    });
+  });
+
+  describe('parseAsync', () => {
+    it('parses a simple netlist without resolver', async () => {
+      const ckt = await parseAsync(`
+        V1 1 0 DC 5
+        R1 1 0 1k
+        .op
+      `);
+      const compiled = ckt.compile();
+      expect(compiled.devices).toHaveLength(2);
+    });
+
+    it('resolves .include with resolver', async () => {
+      const resolver = async (path: string) => {
+        if (path === 'models.lib') return '.model DMOD D(IS=1e-14)';
+        throw new Error(`Unknown: ${path}`);
+      };
+      const ckt = await parseAsync(`
+        .include 'models.lib'
+        V1 1 0 DC 0.7
+        D1 1 0 DMOD
+        .op
+      `, resolver);
+      const compiled = ckt.compile();
+      expect(compiled.models.has('DMOD')).toBe(true);
     });
   });
 });
