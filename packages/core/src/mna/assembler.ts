@@ -21,6 +21,7 @@ export class MNAAssembler {
   private _rowIdx: Int32Array | null = null;
   private _diagIdx: Int32Array | null = null;
   private _posMap: Int32Array | null = null;
+  private _cachedFastCtx: StampContext | null = null;
 
   constructor(
     public readonly numNodes: number,
@@ -61,6 +62,11 @@ export class MNAAssembler {
   get diagIdx(): Int32Array {
     if (!this._diagIdx) throw new Error('lockTopology() has not been called');
     return this._diagIdx;
+  }
+
+  get posMap(): Int32Array {
+    if (!this._posMap) throw new Error('lockTopology() has not been called');
+    return this._posMap;
   }
 
   /**
@@ -148,25 +154,31 @@ export class MNAAssembler {
 
   getStampContext(): StampContext {
     if (this._fastPath) {
-      const n = this.systemSize;
-      const posMap = this._posMap!;
-      const gValues = this._gValues!;
-      const cValues = this._cValues!;
-      return {
-        stampG: (row, col, value) => {
-          gValues[posMap[row * n + col]] += value;
-        },
-        stampB: (row, value) => { this.b[row] += value; },
-        stampC: (row, col, value) => {
-          cValues[posMap[row * n + col]] += value;
-        },
-        getVoltage: (node) => this.solution[node],
-        getCurrent: (branch) => this.solution[this.numNodes + branch],
-        time: this.time,
-        dt: this.dt,
-        numNodes: this.numNodes,
-        sourceScale: this.sourceScale,
-      };
+      if (!this._cachedFastCtx) {
+        const n = this.systemSize;
+        const posMap = this._posMap!;
+        const gValues = this._gValues!;
+        const cValues = this._cValues!;
+        this._cachedFastCtx = {
+          stampG: (row, col, value) => {
+            gValues[posMap[row * n + col]] += value;
+          },
+          stampB: (row, value) => { this.b[row] += value; },
+          stampC: (row, col, value) => {
+            cValues[posMap[row * n + col]] += value;
+          },
+          getVoltage: (node) => this.solution[node],
+          getCurrent: (branch) => this.solution[this.numNodes + branch],
+          time: 0,
+          dt: 0,
+          numNodes: this.numNodes,
+          sourceScale: 1,
+        };
+      }
+      this._cachedFastCtx.time = this.time;
+      this._cachedFastCtx.dt = this.dt;
+      this._cachedFastCtx.sourceScale = this.sourceScale;
+      return this._cachedFastCtx;
     }
 
     return {
