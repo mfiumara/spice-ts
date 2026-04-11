@@ -1,5 +1,5 @@
 import type { DeviceModel } from './devices/device.js';
-import type { AnalysisCommand, SourceWaveform, ModelParams } from './types.js';
+import type { AnalysisCommand, SourceWaveform, ModelParams, SubcktDefinition } from './types.js';
 import { Resistor } from './devices/resistor.js';
 import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
@@ -10,6 +10,10 @@ import { BJT } from './devices/bjt.js';
 import { MOSFET } from './devices/mosfet.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
 import { GROUND_NODE } from './types.js';
+import { evaluateExpression } from './parser/expression.js';
+import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
+import { parseModelCard } from './parser/model-parser.js';
+import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 
 export interface CompiledCircuit {
   devices: DeviceModel[];
@@ -20,6 +24,7 @@ export interface CompiledCircuit {
   branchNames: string[];
   analyses: AnalysisCommand[];
   models: Map<string, ModelParams>;
+  subcircuits: Map<string, SubcktDefinition>;
 }
 
 interface DeviceDescriptor {
@@ -36,6 +41,7 @@ export class Circuit {
   private descriptors: DeviceDescriptor[] = [];
   private _analyses: AnalysisCommand[] = [];
   private _models = new Map<string, ModelParams>();
+  private _subcircuits = new Map<string, SubcktDefinition>();
   private nodeSet = new Set<string>();
 
   get analyses(): AnalysisCommand[] {
@@ -125,6 +131,22 @@ export class Circuit {
     });
   }
 
+  addSubcircuit(def: SubcktDefinition): void {
+    this._subcircuits.set(def.name.toUpperCase(), def);
+  }
+
+  addSubcircuitInstance(
+    name: string,
+    ports: string[],
+    subcktName: string,
+    params?: Record<string, number>,
+  ): void {
+    for (const p of ports) this.nodeSet.add(p);
+    this.descriptors.push({
+      type: 'X', name, nodes: ports, modelName: subcktName, params,
+    });
+  }
+
   addModel(params: ModelParams): void {
     this._models.set(params.name, params);
   }
@@ -171,6 +193,16 @@ export class Circuit {
   }
 
   compile(): CompiledCircuit {
+    // Pre-expand subcircuit instances into flat device descriptors
+    const expandedDescriptors = this.expandAllSubcircuits();
+
+    // Collect all nodes from expanded descriptors
+    for (const desc of expandedDescriptors) {
+      for (const n of desc.nodes) {
+        this.nodeSet.add(n);
+      }
+    }
+
     const nodeNames = [...this.nodeSet].filter(n => n !== GROUND_NODE).sort();
     const nodeIndexMap = new Map<string, number>();
     nodeNames.forEach((name, i) => nodeIndexMap.set(name, i));
@@ -194,7 +226,7 @@ export class Circuit {
 
     const devices: DeviceModel[] = [];
 
-    for (const desc of this.descriptors) {
+    for (const desc of expandedDescriptors) {
       const nodeIndices = desc.nodes.map(resolveNode);
 
       switch (desc.type) {
@@ -270,6 +302,270 @@ export class Circuit {
       devices, nodeCount, branchCount: branchNames.length,
       nodeNames, nodeIndexMap, branchNames,
       analyses: this._analyses, models: this._models,
+      subcircuits: this._subcircuits,
     };
+  }
+
+  /**
+   * Expand all subcircuit instances (type 'X') in the descriptor list
+   * into flat device descriptors. Non-X descriptors pass through unchanged.
+   */
+  private expandAllSubcircuits(): DeviceDescriptor[] {
+    const result: DeviceDescriptor[] = [];
+    for (const desc of this.descriptors) {
+      if (desc.type === 'X') {
+        const expanded = this.expandSubcircuit(
+          desc.name,
+          desc.nodes,
+          desc.modelName!,
+          desc.params ?? {},
+          new Set<string>(),
+        );
+        result.push(...expanded);
+      } else {
+        result.push(desc);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Recursively expand a single subcircuit instance into flat device descriptors.
+   *
+   * @param instanceName  e.g. "X1" or "X0.X1" for nested
+   * @param connectedPorts  actual node names connected to this instance's ports
+   * @param subcktName  name of the subcircuit definition to instantiate
+   * @param instanceParams  parameter overrides from the X line
+   * @param visited  set of subcircuit names currently being expanded (cycle detection)
+   */
+  private expandSubcircuit(
+    instanceName: string,
+    connectedPorts: string[],
+    subcktName: string,
+    instanceParams: Record<string, number>,
+    visited: Set<string>,
+  ): DeviceDescriptor[] {
+    const key = subcktName.toUpperCase();
+
+    if (visited.has(key)) {
+      throw new Error(`Recursive subcircuit instantiation detected: ${subcktName}`);
+    }
+
+    const def = this._subcircuits.get(key);
+    if (!def) {
+      throw new Error(`Undefined subcircuit '${subcktName}'`);
+    }
+
+    if (connectedPorts.length !== def.ports.length) {
+      throw new Error(
+        `Subcircuit '${subcktName}' expects ${def.ports.length} port(s) but ${connectedPorts.length} provided`,
+      );
+    }
+
+    // Build port-to-node mapping
+    const portMap = new Map<string, string>();
+    for (let i = 0; i < def.ports.length; i++) {
+      portMap.set(def.ports[i].toUpperCase(), connectedPorts[i]);
+    }
+
+    // Merge parameters: definition defaults overridden by instance params
+    const mergedParams: Record<string, number> = { ...def.params };
+    for (const [k, v] of Object.entries(instanceParams)) {
+      mergedParams[k.toUpperCase()] = v;
+    }
+
+    // Map a node name from the subcircuit body to the actual circuit node
+    const mapNode = (bodyNode: string): string => {
+      if (bodyNode === GROUND_NODE) return GROUND_NODE;
+      const upper = bodyNode.toUpperCase();
+      // If it's a port, map to the connected node
+      if (portMap.has(upper)) return portMap.get(upper)!;
+      // Otherwise it's an internal node — prefix with instance name
+      return `${instanceName}.${bodyNode}`;
+    };
+
+    // Evaluate {expr} in a token using merged parameters
+    const evalToken = (token: string): string => {
+      if (token.startsWith('{') && token.endsWith('}')) {
+        const expr = token.slice(1, -1);
+        const value = evaluateExpression(expr, mergedParams);
+        return value.toString();
+      }
+      return token;
+    };
+
+    // Local models scoped to this subcircuit instance
+    const localModels = new Map<string, ModelParams>();
+
+    // Local params from .param lines inside subcircuit body
+    const localParams: Record<string, number> = { ...mergedParams };
+
+    const result: DeviceDescriptor[] = [];
+
+    // Tokenize body lines
+    const parsedLines = tokenizeNetlist(def.body.join('\n'));
+
+    for (const { tokens } of parsedLines) {
+      if (tokens.length === 0) continue;
+      const first = tokens[0].toUpperCase();
+
+      // Handle .model inside subcircuit — register locally AND globally
+      if (first === '.MODEL') {
+        const modelParams = parseModelCard(tokens, 0);
+        localModels.set(modelParams.name, modelParams);
+        // Register in the circuit's global model map so compile() can find it
+        this._models.set(modelParams.name, modelParams);
+        continue;
+      }
+
+      // Handle .param inside subcircuit body
+      if (first === '.PARAM') {
+        const paramContent = tokens.slice(1).join(' ');
+        const eqIdx = paramContent.indexOf('=');
+        if (eqIdx > 0) {
+          const name = paramContent.slice(0, eqIdx).trim().toUpperCase();
+          let valStr = paramContent.slice(eqIdx + 1).trim();
+          if (valStr.startsWith('{') && valStr.endsWith('}')) {
+            valStr = valStr.slice(1, -1);
+          }
+          try {
+            localParams[name] = evaluateExpression(valStr, localParams);
+          } catch {
+            localParams[name] = parseNumber(valStr);
+          }
+        }
+        continue;
+      }
+
+      // Skip other dot commands (like .ends that leaked, etc.)
+      if (first.startsWith('.')) continue;
+
+      const devName = `${instanceName}.${tokens[0]}`;
+      const devType = tokens[0][0].toUpperCase();
+
+      switch (devType) {
+        case 'R': {
+          const valStr = evalToken(tokens[3]);
+          result.push({
+            type: 'R', name: devName,
+            nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
+            value: parseNumber(valStr),
+          });
+          break;
+        }
+        case 'C': {
+          const valStr = evalToken(tokens[3]);
+          result.push({
+            type: 'C', name: devName,
+            nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
+            value: parseNumber(valStr),
+          });
+          break;
+        }
+        case 'L': {
+          const valStr = evalToken(tokens[3]);
+          result.push({
+            type: 'L', name: devName,
+            nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
+            value: parseNumber(valStr),
+          });
+          break;
+        }
+        case 'V': {
+          const mappedTokens = [devName, mapNode(tokens[1]), mapNode(tokens[2])];
+          // Evaluate expressions in remaining tokens
+          for (let i = 3; i < tokens.length; i++) {
+            mappedTokens.push(evalToken(tokens[i]));
+          }
+          const waveform = parseSourceWaveform(mappedTokens, 3);
+          result.push({
+            type: 'V', name: devName,
+            nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
+            waveform,
+          });
+          break;
+        }
+        case 'I': {
+          const mappedTokens = [devName, mapNode(tokens[1]), mapNode(tokens[2])];
+          for (let i = 3; i < tokens.length; i++) {
+            mappedTokens.push(evalToken(tokens[i]));
+          }
+          const waveform = parseSourceWaveform(mappedTokens, 3);
+          result.push({
+            type: 'I', name: devName,
+            nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
+            waveform,
+          });
+          break;
+        }
+        case 'D': {
+          const modelName = tokens[3];
+          result.push({
+            type: 'D', name: devName,
+            nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
+            modelName,
+          });
+          break;
+        }
+        case 'Q': {
+          result.push({
+            type: 'Q', name: devName,
+            nodes: [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3])],
+            modelName: tokens[4],
+          });
+          break;
+        }
+        case 'M': {
+          let modelName: string;
+          let instanceParamStart: number;
+          let bulkNode: string | undefined;
+          if (tokens[5] && !tokens[5].includes('=')) {
+            bulkNode = mapNode(tokens[4]);
+            modelName = tokens[5];
+            instanceParamStart = 6;
+          } else {
+            modelName = tokens[4];
+            instanceParamStart = 5;
+          }
+          // Evaluate {expr} in instance params
+          const evaluatedTokens = tokens.map(t => evalToken(t));
+          const mParams = parseInstanceParams(evaluatedTokens, instanceParamStart);
+          const nodes = bulkNode
+            ? [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3]), bulkNode]
+            : [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3])];
+          result.push({
+            type: 'M', name: devName, nodes, modelName, params: mParams,
+          });
+          break;
+        }
+        case 'X': {
+          // Nested subcircuit instance — recursively expand
+          let subcktIdx = tokens.length - 1;
+          while (subcktIdx > 1 && tokens[subcktIdx].includes('=')) {
+            subcktIdx--;
+          }
+          const nestedSubcktName = tokens[subcktIdx];
+          const nestedPorts = tokens.slice(1, subcktIdx).map(mapNode);
+          const evaluatedTokens = tokens.map(t => evalToken(t));
+          const nestedParams = parseInstanceParams(evaluatedTokens, subcktIdx + 1);
+
+          const newVisited = new Set(visited);
+          newVisited.add(key);
+
+          const nested = this.expandSubcircuit(
+            devName,
+            nestedPorts,
+            nestedSubcktName,
+            nestedParams,
+            newVisited,
+          );
+          result.push(...nested);
+          break;
+        }
+        // Skip unknown device types inside subcircuits silently
+      }
+    }
+
+    return result;
   }
 }
