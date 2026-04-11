@@ -95,6 +95,70 @@ describe('Circuit', () => {
     });
   });
 
+  describe('controlled source compilation', () => {
+    it('compiles VCCS into a device', () => {
+      const ckt = new Circuit();
+      ckt.addVoltageSource('V1', '1', '0', { dc: 1 });
+      ckt.addVCCS('G1', '2', '0', '1', '0', 0.01);
+      ckt.addResistor('RL', '2', '0', 1e3);
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      expect(compiled.devices.find(d => d.name === 'G1')).toBeDefined();
+    });
+
+    it('compiles VCVS with a branch', () => {
+      const ckt = new Circuit();
+      ckt.addVoltageSource('V1', '1', '0', { dc: 1 });
+      ckt.addVCVS('E1', '2', '0', '1', '0', 10);
+      ckt.addResistor('RL', '2', '0', 1e3);
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      expect(compiled.branchCount).toBe(2);
+      expect(compiled.devices.find(d => d.name === 'E1')).toBeDefined();
+    });
+
+    it('compiles CCCS resolving controlling V-source', () => {
+      const ckt = new Circuit();
+      ckt.addVoltageSource('Vsense', '1', '2', { dc: 0 });
+      ckt.addResistor('R1', '2', '0', 1e3);
+      ckt.addCCCS('F1', '3', '0', 'Vsense', 5);
+      ckt.addResistor('RL', '3', '0', 1e3);
+      ckt.addVoltageSource('V1', '1', '0', { dc: 1 });
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      expect(compiled.devices.find(d => d.name === 'F1')).toBeDefined();
+    });
+
+    it('compiles CCVS with own branch + controlling reference', () => {
+      const ckt = new Circuit();
+      ckt.addVoltageSource('Vsense', '1', '2', { dc: 0 });
+      ckt.addResistor('R1', '2', '0', 1e3);
+      ckt.addCCVS('H1', '3', '0', 'Vsense', 1000);
+      ckt.addResistor('RL', '3', '0', 1e3);
+      ckt.addVoltageSource('V1', '1', '0', { dc: 1 });
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      expect(compiled.branchCount).toBe(3);
+      expect(compiled.devices.find(d => d.name === 'H1')).toBeDefined();
+    });
+
+    it('throws when CCCS references undefined V-source', () => {
+      const ckt = new Circuit();
+      ckt.addCCCS('F1', '1', '0', 'Vnope', 5);
+      ckt.addResistor('R1', '1', '0', 1e3);
+      ckt.addAnalysis('op');
+      expect(() => ckt.compile()).toThrow('Vnope');
+    });
+
+    it('throws when CCVS references undefined V-source', () => {
+      const ckt = new Circuit();
+      ckt.addCCVS('H1', '1', '0', 'Vnope', 1000);
+      ckt.addResistor('R1', '1', '0', 1e3);
+      ckt.addAnalysis('op');
+      expect(() => ckt.compile()).toThrow('Vnope');
+    });
+  });
+
   describe('subcircuit expansion', () => {
     it('expands a simple subcircuit with correct nodes', () => {
       const ckt = new Circuit();

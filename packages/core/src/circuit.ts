@@ -9,6 +9,10 @@ import { Diode } from './devices/diode.js';
 import { BJT } from './devices/bjt.js';
 import { MOSFET } from './devices/mosfet.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
+import { VCCS } from './devices/vccs.js';
+import { VCVS } from './devices/vcvs.js';
+import { CCCS } from './devices/cccs.js';
+import { CCVS } from './devices/ccvs.js';
 import { GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
@@ -257,9 +261,11 @@ export class Circuit {
     };
 
     const devices: DeviceModel[] = [];
+    const deviceMap = new Map<string, DeviceModel>();
 
     for (const desc of expandedDescriptors) {
       const nodeIndices = desc.nodes.map(resolveNode);
+      const prevLength = devices.length;
 
       switch (desc.type) {
         case 'R':
@@ -325,8 +331,46 @@ export class Circuit {
           }
           break;
         }
+        case 'G': {
+          devices.push(new VCCS(desc.name, nodeIndices, desc.value!));
+          break;
+        }
+        case 'E': {
+          const bi = branchIndex++;
+          branchNames.push(desc.name);
+          devices.push(new VCVS(desc.name, nodeIndices, bi, desc.value!));
+          break;
+        }
+        case 'F': {
+          const ctrlName = desc.controlSource!;
+          const ctrlDev = deviceMap.get(ctrlName);
+          if (!ctrlDev || ctrlDev.branches.length === 0) {
+            throw new Error(
+              `CCCS '${desc.name}' references unknown or branchless source '${ctrlName}'`,
+            );
+          }
+          devices.push(new CCCS(desc.name, nodeIndices, ctrlDev.branches[0], desc.value!));
+          break;
+        }
+        case 'H': {
+          const ctrlName = desc.controlSource!;
+          const ctrlDev = deviceMap.get(ctrlName);
+          if (!ctrlDev || ctrlDev.branches.length === 0) {
+            throw new Error(
+              `CCVS '${desc.name}' references unknown or branchless source '${ctrlName}'`,
+            );
+          }
+          const bi = branchIndex++;
+          branchNames.push(desc.name);
+          devices.push(new CCVS(desc.name, nodeIndices, ctrlDev.branches[0], bi, desc.value!));
+          break;
+        }
         default:
           throw new Error(`Device type '${desc.type}' not yet implemented`);
+      }
+
+      if (devices.length > prevLength) {
+        deviceMap.set(desc.name, devices[devices.length - 1]);
       }
     }
 
