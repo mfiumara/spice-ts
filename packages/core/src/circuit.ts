@@ -14,6 +14,7 @@ import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
+import { CycleError } from './errors.js';
 
 export interface CompiledCircuit {
   devices: DeviceModel[];
@@ -348,7 +349,7 @@ export class Circuit {
     const key = subcktName.toUpperCase();
 
     if (visited.has(key)) {
-      throw new Error(`Recursive subcircuit instantiation detected: ${subcktName}`);
+      throw new CycleError([...visited, key]);
     }
 
     const def = this._subcircuits.get(key);
@@ -394,9 +395,6 @@ export class Circuit {
       return token;
     };
 
-    // Local models scoped to this subcircuit instance
-    const localModels = new Map<string, ModelParams>();
-
     // Local params from .param lines inside subcircuit body
     const localParams: Record<string, number> = { ...mergedParams };
 
@@ -412,7 +410,6 @@ export class Circuit {
       // Handle .model inside subcircuit — register locally AND globally
       if (first === '.MODEL') {
         const modelParams = parseModelCard(tokens, 0);
-        localModels.set(modelParams.name, modelParams);
         // Register in the circuit's global model map so compile() can find it
         this._models.set(modelParams.name, modelParams);
         continue;
