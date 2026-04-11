@@ -168,10 +168,21 @@ export class DCSweepResult {
   }
 }
 
+/**
+ * Aggregate result object returned by {@link simulate}.
+ *
+ * Each field is populated only if the corresponding analysis was requested
+ * in the netlist. For example, `.op` populates `dc`, `.tran` populates `transient`.
+ */
 export interface SimulationResult {
+  /** DC operating point result (from `.op`) */
   dc?: DCResult;
+  /** DC sweep result (from `.dc`) */
   dcSweep?: DCSweepResult;
+  /** Transient analysis result (from `.tran`) */
   transient?: TransientResult;
+  /** AC small-signal analysis result (from `.ac`) */
   ac?: ACResult;
+  /** Warnings collected during simulation */
   warnings: SimulationWarning[];
 }

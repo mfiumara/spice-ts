@@ -4,47 +4,64 @@ export type NodeName = string;
 /** Ground node is always '0' */
 export const GROUND_NODE = '0';
 
-/** Analysis command types */
+/** Supported analysis command types. */
 export type AnalysisType = 'op' | 'dc' | 'tran' | 'ac';
 
-/** DC analysis command */
+/** DC operating point analysis (`.op`). */
 export interface DCAnalysis {
   type: 'op';
 }
 
-/** DC sweep analysis command */
+/** DC sweep analysis (`.dc`). Sweeps a source over a range. */
 export interface DCSweepAnalysis {
   type: 'dc';
+  /** Name of the source to sweep (e.g., `'V1'`) */
   source: string;
+  /** Start value of the sweep (volts or amps) */
   start: number;
+  /** Stop value of the sweep */
   stop: number;
+  /** Step size between sweep points */
   step: number;
 }
 
-/** Transient analysis command */
+/** Transient analysis (`.tran`). Time-domain simulation. */
 export interface TransientAnalysis {
   type: 'tran';
+  /** Suggested timestep in seconds */
   timestep: number;
+  /** Simulation end time in seconds */
   stopTime: number;
+  /** Simulation start time in seconds (default: 0) */
   startTime?: number;
+  /** Maximum allowed timestep in seconds */
   maxTimestep?: number;
 }
 
-/** AC analysis command */
+/** AC small-signal analysis (`.ac`). Frequency sweep. */
 export interface ACAnalysis {
   type: 'ac';
+  /** Frequency sweep variation: `'dec'` (decades), `'oct'` (octaves), or `'lin'` (linear) */
   variation: 'dec' | 'oct' | 'lin';
+  /** Number of points per decade/octave, or total for linear */
   points: number;
+  /** Start frequency in Hz */
   startFreq: number;
+  /** Stop frequency in Hz */
   stopFreq: number;
 }
 
+/** Union of all analysis command types. Discriminated on the `type` field. */
 export type AnalysisCommand = DCAnalysis | DCSweepAnalysis | TransientAnalysis | ACAnalysis;
 
 /** Integration methods for transient analysis */
 export type IntegrationMethod = 'euler' | 'trapezoidal';
 
-/** Simulation options with SPICE-convention defaults */
+/**
+ * Options for controlling simulation behavior.
+ *
+ * All fields are optional; SPICE-convention defaults are used when omitted.
+ */
 export interface SimulationOptions {
   /** Absolute current tolerance (A). Default: 1e-12 */
   abstol?: number;
@@ -107,76 +124,125 @@ export function resolveOptions(opts?: SimulationOptions, stopTime?: number): Res
   };
 }
 
-/** A single transient timestep result */
+/**
+ * A single transient simulation timestep, yielded by {@link simulateStream}.
+ */
 export interface TransientStep {
+  /** Simulation time in seconds */
   time: number;
+  /** Node voltages at this timestep (node name to volts) */
   voltages: Map<string, number>;
+  /** Branch currents at this timestep (device name to amps) */
   currents: Map<string, number>;
 }
 
-/** A single AC frequency point result */
+/**
+ * A single AC frequency point, yielded by {@link simulateStream}.
+ */
 export interface ACPoint {
+  /** Frequency in Hz */
   frequency: number;
+  /** Node voltage phasors (node name to magnitude/phase in degrees) */
   voltages: Map<string, { magnitude: number; phase: number }>;
+  /** Branch current phasors (device name to magnitude/phase in degrees) */
   currents: Map<string, { magnitude: number; phase: number }>;
 }
 
-/** Device model parameter set parsed from .model card */
+/**
+ * Device model parameters parsed from a `.model` card.
+ */
 export interface ModelParams {
+  /** Model name as declared in the netlist */
   name: string;
+  /** Model type (e.g., `'NPN'`, `'PNP'`, `'NMOS'`, `'PMOS'`, `'D'`) */
   type: string;
+  /** Key-value parameter map (e.g., `{ BF: 100, IS: 1e-14 }`) */
   params: Record<string, number>;
 }
 
-/** Source waveform types */
+/** DC source waveform. Constant value. */
 export interface DCSource {
   type: 'dc';
+  /** DC value in volts (for voltage sources) or amps (for current sources) */
   value: number;
 }
 
+/** Pulse source waveform (PULSE). */
 export interface PulseSource {
   type: 'pulse';
+  /** Initial value */
   v1: number;
+  /** Pulsed value */
   v2: number;
+  /** Delay before first pulse in seconds */
   delay: number;
+  /** Rise time in seconds */
   rise: number;
+  /** Fall time in seconds */
   fall: number;
+  /** Pulse width in seconds */
   width: number;
+  /** Period in seconds */
   period: number;
 }
 
+/** Sinusoidal source waveform (SIN). */
 export interface SinSource {
   type: 'sin';
+  /** DC offset */
   offset: number;
+  /** Peak amplitude */
   amplitude: number;
+  /** Frequency in Hz */
   frequency: number;
+  /** Delay before sine starts in seconds */
   delay?: number;
+  /** Damping factor (1/s) */
   damping?: number;
+  /** Phase offset in degrees */
   phase?: number;
 }
 
+/** AC small-signal source (AC). Used for `.ac` analysis excitation. */
 export interface ACSource {
   type: 'ac';
+  /** AC magnitude */
   magnitude: number;
+  /** AC phase in degrees */
   phase: number;
 }
 
+/** Union of all source waveform types. Discriminated on the `type` field. */
 export type SourceWaveform = DCSource | PulseSource | SinSource | ACSource;
 
-/** Warning collected during simulation */
+/** Warning collected during simulation (non-fatal). */
 export interface SimulationWarning {
+  /** Warning category (e.g., `'convergence'`, `'topology'`) */
   type: string;
+  /** Human-readable warning message */
   message: string;
+  /** Related node name, if applicable */
   node?: string;
 }
 
-/** Async resolver for .include and .lib file references */
+/**
+ * Async function that resolves `.include` and `.lib` file paths to their contents.
+ *
+ * @param path - File path as it appears in the `.include` or `.lib` directive
+ * @returns The file contents as a string
+ */
 export type IncludeResolver = (path: string) => Promise<string>;
 
-/** Subcircuit definition parsed from .subckt/.ends block */
+/**
+ * Subcircuit definition parsed from a `.subckt`/`.ends` block.
+ */
 export interface SubcktDefinition {
+  /** Subcircuit name (case-insensitive) */
   name: string;
+  /** Ordered list of port node names */
   ports: string[];
+  /** Default parameter values (can be overridden per instance) */
   params: Record<string, number>;
+  /** Raw netlist lines between `.subckt` and `.ends` */
   body: string[];
 }

@@ -34,13 +34,17 @@ Requires Node.js ≥ 20.
 - **DC sweep** — `.dc` transfer curves and I-V characteristics
 - **Transient analysis** — backward Euler and trapezoidal integration with adaptive timestep
 - **AC small-signal** — frequency sweep (dec/oct/lin) via complex LU solve
-- **Device models** — R, C, L, V, I, Diode (Shockley), BJT (Ebers-Moll NPN/PNP), MOSFET (Level 1 Shichman-Hodges NMOS/PMOS)
+- **Device models** — R, C, L, V, I, Diode (Shockley), BJT (Ebers-Moll NPN/PNP), MOSFET (Level 1 Shichman-Hodges NMOS/PMOS), BSIM3v3 (LEVEL=49)
+- **Controlled sources** — VCVS (E), VCCS (G), CCVS (H), CCCS (F) with DC, AC, and subcircuit support
+- **Sparse solver** — Gilbert-Peierls LU with symbolic/numeric split, typed-array stamping, batch MOSFET evaluation. Competitive with ngspice-WASM on DC, AC, and nonlinear circuits
+- **Complex AC solver** — native complex sparse LU (no 2n×2n real expansion)
 - **Subcircuits** — `.subckt`/`.ends` definitions with `X` device instantiation, nested expansion, parameterized subcircuits
 - **Library support** — `.include` file resolution, `.lib`/`.endl` section selection (process corners), `.param` expressions with SI suffixes
 - **Async parsing** — `parseAsync()` with platform-agnostic `IncludeResolver` callback for loading external files
 - **Streaming API** — `simulateStream()` yields results as an `AsyncIterableIterator`
 - **Programmatic API** — build circuits in code with `Circuit`, or parse SPICE netlists with `parse()`
 - **Typed errors** — `ConvergenceError`, `SingularMatrixError`, `ParseError`, `CycleError`, and more
+- **Full TSDoc** — every public API export has JSDoc comments for IDE hover-docs
 
 ## Usage
 
