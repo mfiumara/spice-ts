@@ -276,6 +276,11 @@ function* streamAC(
   for (const device of devices) device.stamp(ctx);
   for (const device of devices) device.stampDynamic?.(ctx);
 
+  // Add GMIN to diagonal for numerical stability (same as DC/transient paths)
+  for (let i = 0; i < nodeCount; i++) {
+    assembler.G.add(i, i, options.gmin ?? 1e-12);
+  }
+
   const G = assembler.G;
   const C = assembler.C;
 

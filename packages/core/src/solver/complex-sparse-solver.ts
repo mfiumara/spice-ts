@@ -308,14 +308,19 @@ export class ComplexSparseSolver {
         throw new Error(`Singular matrix at column ${j}`);
       }
 
-      // Prefer natural diagonal if sufficiently large
+      // For complex MNA matrices, strongly prefer the natural diagonal row.
+      // The MNA ordering is structurally correct: node diagonals have GMIN + jwC,
+      // branch diagonals have structural 1s or -L. Only swap if the natural
+      // row is truly zero (< 1e-18), not based on threshold comparison —
+      // threshold pivoting incorrectly swaps small purely-imaginary diagonals
+      // (from jwC at low frequencies) with larger real off-diagonals.
       const natOrigRow = perm[j];
       let chosenOrigRow: number;
       if (pinv[natOrigRow] < 0) {
         const natRe = wsRe[natOrigRow];
         const natIm = wsIm[natOrigRow];
         const natMag = Math.sqrt(natRe * natRe + natIm * natIm);
-        if (natMag >= this.pivotThreshold * maxMag) {
+        if (natMag >= 1e-18) {
           chosenOrigRow = natOrigRow;
         } else {
           chosenOrigRow = maxOrigRow;
@@ -375,6 +380,7 @@ export class ComplexSparseSolver {
         wsRe[idx] = 0;
         wsIm[idx] = 0;
       }
+
     }
 
     lColPtr[n] = lp;
