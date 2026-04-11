@@ -13,7 +13,7 @@ import { InvalidCircuitError, TimestepTooSmallError } from './errors.js';
 import { MNAAssembler } from './mna/assembler.js';
 import { buildCompanionSystem } from './mna/companion.js';
 import { SparseMatrix } from './solver/sparse-matrix.js';
-import { toCsc, updateCscValues, type ScatterMap, type CscMatrix } from './solver/csc-matrix.js';
+import { toCsc, updateCscValues, countNnz, type ScatterMap, type CscMatrix } from './solver/csc-matrix.js';
 import { createSparseSolver } from './solver/sparse-solver.js';
 
 export async function simulate(
@@ -169,9 +169,9 @@ function* streamTransient(
         solver.analyzePattern(csc);
         patternAnalyzed = true;
       } else {
-        const result = toCsc(assembler.G);
-        const nnz = result.csc.values.length;
+        const nnz = countNnz(assembler.G);
         if (nnz !== prevNnz) {
+          const result = toCsc(assembler.G);
           csc = result.csc;
           scatter = result.scatter;
           prevNnz = nnz;

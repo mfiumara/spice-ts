@@ -1,7 +1,7 @@
 import type { DeviceModel } from '../devices/device.js';
 import type { MNAAssembler } from '../mna/assembler.js';
 import type { ResolvedOptions } from '../types.js';
-import { toCsc, updateCscValues, type ScatterMap, type CscMatrix } from '../solver/csc-matrix.js';
+import { toCsc, updateCscValues, countNnz, type ScatterMap, type CscMatrix } from '../solver/csc-matrix.js';
 import { createSparseSolver } from '../solver/sparse-solver.js';
 import { ConvergenceError } from '../errors.js';
 
@@ -43,13 +43,12 @@ export function newtonRaphson(
       solver.analyzePattern(csc);
       patternAnalyzed = true;
     } else {
-      // Rebuild CSC from scratch every iteration to handle any structural
-      // changes (e.g. a MOSFET moving between cutoff and saturation may
-      // stamp different non-zero positions).
-      const result = toCsc(assembler.G);
-      const nnz = result.csc.values.length;
+      // Check for structural changes (e.g. MOSFET moving between cutoff
+      // and saturation stamps different non-zero positions) without
+      // doing a full CSC rebuild.
+      const nnz = countNnz(assembler.G);
       if (nnz !== prevNnz) {
-        // Pattern changed — must re-analyze
+        const result = toCsc(assembler.G);
         csc = result.csc;
         scatter = result.scatter;
         prevNnz = nnz;
