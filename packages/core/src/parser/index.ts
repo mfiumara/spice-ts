@@ -201,6 +201,26 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
       circuit.addSubcircuitInstance(name, ports, subcktName, xParams);
       break;
     }
+    case 'E': {
+      const gain = parseNumber(tokens[5]);
+      circuit.addVCVS(name, tokens[1], tokens[2], tokens[3], tokens[4], gain);
+      break;
+    }
+    case 'G': {
+      const gm = parseNumber(tokens[5]);
+      circuit.addVCCS(name, tokens[1], tokens[2], tokens[3], tokens[4], gm);
+      break;
+    }
+    case 'H': {
+      const gain = parseNumber(tokens[4]);
+      circuit.addCCVS(name, tokens[1], tokens[2], tokens[3], gain);
+      break;
+    }
+    case 'F': {
+      const gain = parseNumber(tokens[4]);
+      circuit.addCCCS(name, tokens[1], tokens[2], tokens[3], gain);
+      break;
+    }
     default:
       throw new ParseError(`Unknown device type: '${type}'`, lineNumber, tokens.join(' '));
   }

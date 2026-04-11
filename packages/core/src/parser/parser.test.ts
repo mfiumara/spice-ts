@@ -216,6 +216,70 @@ describe('SPICE netlist parser', () => {
     });
   });
 
+  describe('controlled source parsing', () => {
+    it('parses VCCS (G element)', () => {
+      const ckt = parse(`
+        V1 1 0 DC 1
+        G1 2 0 1 0 10m
+        R1 2 0 1k
+        .op
+      `);
+      const compiled = ckt.compile();
+      expect(compiled.devices.find(d => d.name === 'G1')).toBeDefined();
+      expect(compiled.branchCount).toBe(1);
+    });
+
+    it('parses VCVS (E element)', () => {
+      const ckt = parse(`
+        V1 1 0 DC 1
+        E1 2 0 1 0 10
+        R1 2 0 1k
+        .op
+      `);
+      const compiled = ckt.compile();
+      expect(compiled.devices.find(d => d.name === 'E1')).toBeDefined();
+      expect(compiled.branchCount).toBe(2);
+    });
+
+    it('parses CCCS (F element)', () => {
+      const ckt = parse(`
+        V1 1 0 DC 1
+        Vsense 1 2 DC 0
+        R1 2 0 1k
+        F1 3 0 Vsense 5
+        R2 3 0 1k
+        .op
+      `);
+      const compiled = ckt.compile();
+      expect(compiled.devices.find(d => d.name === 'F1')).toBeDefined();
+    });
+
+    it('parses CCVS (H element)', () => {
+      const ckt = parse(`
+        V1 1 0 DC 1
+        Vsense 1 2 DC 0
+        R1 2 0 1k
+        H1 3 0 Vsense 1k
+        R2 3 0 1k
+        .op
+      `);
+      const compiled = ckt.compile();
+      expect(compiled.devices.find(d => d.name === 'H1')).toBeDefined();
+      expect(compiled.branchCount).toBe(3);
+    });
+
+    it('is case-insensitive for controlled sources', () => {
+      const ckt = parse(`
+        v1 1 0 dc 1
+        g1 2 0 1 0 10m
+        r1 2 0 1k
+        .op
+      `);
+      const compiled = ckt.compile();
+      expect(compiled.devices.find(d => d.name === 'g1')).toBeDefined();
+    });
+  });
+
   describe('parseAsync', () => {
     it('parses a simple netlist without resolver', async () => {
       const ckt = await parseAsync(`
