@@ -2,6 +2,29 @@
   "name": "@spice-ts/core",
   "version": "0.1.0",
   "description": "TypeScript-native SPICE circuit simulator engine",
+  "license": "MIT",
+  "author": "Mattia Fiumara",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mfiumara/spice-ts.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/mfiumara/spice-ts",
+  "keywords": [
+    "spice",
+    "circuit",
+    "simulator",
+    "electronics",
+    "eda",
+    "netlist",
+    "typescript",
+    "mna",
+    "transient",
+    "ac-analysis"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

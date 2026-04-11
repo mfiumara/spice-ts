@@ -31,12 +31,16 @@ Requires Node.js ≥ 20.
 ## Features
 
 - **DC operating point** — Newton-Raphson with voltage limiting for convergence
+- **DC sweep** — `.dc` transfer curves and I-V characteristics
 - **Transient analysis** — backward Euler and trapezoidal integration with adaptive timestep
 - **AC small-signal** — frequency sweep (dec/oct/lin) via complex LU solve
 - **Device models** — R, C, L, V, I, Diode (Shockley), BJT (Ebers-Moll NPN/PNP), MOSFET (Level 1 Shichman-Hodges NMOS/PMOS)
+- **Subcircuits** — `.subckt`/`.ends` definitions with `X` device instantiation, nested expansion, parameterized subcircuits
+- **Library support** — `.include` file resolution, `.lib`/`.endl` section selection (process corners), `.param` expressions with SI suffixes
+- **Async parsing** — `parseAsync()` with platform-agnostic `IncludeResolver` callback for loading external files
 - **Streaming API** — `simulateStream()` yields results as an `AsyncIterableIterator`
 - **Programmatic API** — build circuits in code with `Circuit`, or parse SPICE netlists with `parse()`
-- **Typed errors** — `ConvergenceError`, `SingularMatrixError`, `ParseError`, and more
+- **Typed errors** — `ConvergenceError`, `SingularMatrixError`, `ParseError`, `CycleError`, and more
 
 ## Usage
 
@@ -65,10 +69,10 @@ const { time, voltage } = result.transient!;
 import { Circuit, simulate } from '@spice-ts/core';
 
 const ckt = new Circuit();
-ckt.addVoltageSource('V1', 'in', '0', { type: 'dc', value: 5 });
+ckt.addVoltageSource('V1', 'in', '0', { dc: 5 });
 ckt.addResistor('R1', 'in', 'out', 1000);
 ckt.addResistor('R2', 'out', '0', 1000);
-ckt.addAnalysis({ type: 'op' });
+ckt.addAnalysis('op');
 
 const result = await simulate(ckt);
 console.log(result.dc?.voltage('out')); // 2.5
@@ -80,7 +84,7 @@ console.log(result.dc?.voltage('out')); // 2.5
 import { simulateStream } from '@spice-ts/core';
 
 for await (const step of simulateStream(netlist)) {
-  if (step.type === 'transient') {
+  if ('time' in step) {
     console.log(`t=${step.time}  V(out)=${step.voltages.get('out')}`);
   }
 }
@@ -126,7 +130,26 @@ Yields each timestep/frequency point as it is computed.
 parse(netlist: string): Circuit
 ```
 
-Parses a SPICE netlist into a `Circuit` object without running any analysis.
+Parses a SPICE netlist into a `Circuit` object without running any analysis. Throws `ParseError` if the netlist contains `.include` or `.lib` directives — use `parseAsync()` for those.
+
+### `parseAsync(netlist, resolver?)`
+
+```ts
+parseAsync(netlist: string, resolver?: IncludeResolver): Promise<Circuit>
+```
+
+Async variant of `parse()` that runs the preprocessor first, resolving `.include`, `.lib`/`.endl`, and `.param` directives. The optional `resolver` callback loads external files:
+
+```ts
+import { parseAsync } from '@spice-ts/core';
+import { readFile } from 'fs/promises';
+
+const ckt = await parseAsync(netlist, async (path) => {
+  return readFile(path, 'utf-8');
+});
+```
+
+The resolver is platform-agnostic — use `fetch()` in the browser, `readFile()` in Node, or return bundled strings for static assets.
 
 ### `SimulationOptions`
 
@@ -138,6 +161,7 @@ Parses a SPICE netlist into a `Circuit` object without running any analysis.
 | `maxIterations` | `100` | Max Newton-Raphson iterations (DC) |
 | `maxTransientIterations` | `50` | Max NR iterations per timestep |
 | `integrationMethod` | `'trapezoidal'` | `'euler'` or `'trapezoidal'` |
+| `resolveInclude` | — | Async callback `(path: string) => Promise<string>` for `.include`/`.lib` |
 
 ## Benchmarks
 
@@ -203,9 +227,8 @@ Run `pnpm bench:accuracy` to see the full accuracy report including SPICE3 Quarl
 ## Limitations
 
 - **Dense LU solver:** The current solver converts the sparse MNA matrix to dense before factoring. This is O(n³) and impractical above ~200-300 nodes. A future release will use a sparse LU (KLU-style).
-- **No DC sweep:** `.dc` sweep analysis is parsed but not yet executed.
-- **No `.subckt`:** Subcircuit definitions are not yet supported.
-- **Level 1 MOSFET only:** No Level 2/3/BSIM models.
+- **Level 1 MOSFET only:** No Level 2/3/BSIM models (BSIM3v3 is in progress).
+- **No controlled sources:** VCVS, VCCS, CCVS, CCCS (E/F/G/H devices) are not yet supported.
 
 ## Development
 

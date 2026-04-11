@@ -19,13 +19,13 @@ This document tracks planned enhancements. Each item links to a GitHub Issue for
 | Feature | Issue | Notes |
 |---------|-------|-------|
 | Sparse LU solver (replace dense O(n³)) | [#8](https://github.com/mfiumara/spice-ts/issues/8) | KLU-style; enables >300-node circuits |
-| DC sweep analysis (.dc command) | [#9](https://github.com/mfiumara/spice-ts/issues/9) | Transfer curves, I-V characteristics |
+| DC sweep analysis (.dc command) | [#9](https://github.com/mfiumara/spice-ts/issues/9) | **Done** (v0.1.0) |
 
 ## Language
 
 | Feature | Issue | Notes |
 |---------|-------|-------|
-| .subckt subcircuit support | [#10](https://github.com/mfiumara/spice-ts/issues/10) | Hierarchical netlists |
+| .subckt subcircuit support | [#10](https://github.com/mfiumara/spice-ts/issues/10) | **Done** (v0.1.0) — includes .include, .lib/.endl, .param |
 
 ## Packages
 
