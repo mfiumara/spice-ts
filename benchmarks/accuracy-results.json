@@ -715,5 +715,96 @@
         "note": "Informational: multi-stage AC accuracy limitation. Expected = ngspice-42 reference."
       }
     ]
+  },
+  {
+    "date": "2026-04-11T16:14:38.828Z",
+    "results": [
+      {
+        "circuit": "rc-step-at-tau",
+        "metric": "V(out) at t=τ (V)",
+        "spiceTs": 3.1513749976069345,
+        "expected": 3.1606027941427883,
+        "errorPct": 0.29196318350900397,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "rlc-resonance",
+        "metric": "f_osc (Hz)",
+        "spiceTs": 1578.9672409432699,
+        "expected": 1591.5494309189535,
+        "errorPct": 0.790562311873575,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓",
+        "informational": true,
+        "note": "Informational: numerical damping with default timestep. Use finer timestep for resonant circuits."
+      },
+      {
+        "circuit": "bjt-ce-bias",
+        "metric": "V(base) (V)",
+        "spiceTs": 2.048430284730696,
+        "expected": 2.1052631578947367,
+        "errorPct": 2.69956147529193,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "~"
+      },
+      {
+        "circuit": "diode-bridge-rectifier",
+        "metric": "V(out) min (V)",
+        "spiceTs": 0,
+        "expected": 0,
+        "errorPct": 0,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "spice3-diff-pair",
+        "metric": "|V(out+) - V(out-)| (V)",
+        "spiceTs": 12.522174059056471,
+        "expected": 0,
+        "errorPct": 12522.174059056471,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "informational": true,
+        "note": "Informational: BJT multi-device DC convergence limitation. V(out+)=-0.614V V(out-)=11.908V"
+      },
+      {
+        "circuit": "spice3-bandpass-rlc",
+        "metric": "f_peak (Hz)",
+        "spiceTs": 1584.8931924611134,
+        "expected": 1591.5494309189535,
+        "errorPct": 0.41822379679384736,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "spice3-ota-dc",
+        "metric": "V(d2) (V)",
+        "spiceTs": 4.104714814041376,
+        "expected": 2.5,
+        "errorPct": 64.18859256165504,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✗",
+        "informational": true,
+        "note": "Informational: Level 1 MOSFET model limitation for multi-device circuits"
+      },
+      {
+        "circuit": "spice3-rc-ladder-5",
+        "metric": "f_-3dB (Hz)",
+        "spiceTs": 12.759723132093674,
+        "expected": 12.73,
+        "errorPct": 0.23348886169421443,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      }
+    ]
   }
 ]

@@ -33,7 +33,7 @@ Assembly (unchanged)          Compute representation       Solver
 ────────────────────          ─────────────────────        ──────────
 SparseMatrix                  CscMatrix                    SparseSolver (interface)
 Map-of-Maps                   typed arrays                   ├── GilbertPeierlsSolver (TS)
-Good for incremental   ──▶   colPtr/rowIdx/values    ──▶    └── KluWasmSolver (future)
+Good for incremental   ──▶    colPtr/rowIdx/values    ──▶    └── KluWasmSolver (future)
 stamping                      Good for factorization
 ```
 
