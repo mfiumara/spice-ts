@@ -2,7 +2,6 @@ import type { ResolvedOptions, TransientAnalysis } from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
 import { MNAAssembler } from '../mna/assembler.js';
 import { buildCompanionSystem } from '../mna/companion.js';
-import { toCsc, updateCscValues, countNnz, type ScatterMap, type CscMatrix } from '../solver/csc-matrix.js';
 import { createSparseSolver } from '../solver/sparse-solver.js';
 import { TimestepTooSmallError } from '../errors.js';
 import { TransientResult } from '../results.js';
@@ -44,10 +43,7 @@ export function solveTransient(
   let time = 0;
 
   const solver = createSparseSolver();
-  let csc: CscMatrix | null = null;
-  let scatter: ScatterMap | null = null;
   let patternAnalyzed = false;
-  let prevNnz = -1;
 
   // Compute initial b(0) for trapezoidal history on the first step
   let prevB: Float64Array | undefined;
@@ -71,26 +67,12 @@ export function solveTransient(
     for (let iter = 0; iter < options.maxTransientIterations; iter++) {
       buildCompanionSystem(assembler, devices, actualDt, options.integrationMethod, prevSol, prevB, options.gmin);
 
+      if (!assembler.isFastPath) assembler.lockTopology();
       if (!patternAnalyzed) {
-        const result = toCsc(assembler.G);
-        csc = result.csc;
-        scatter = result.scatter;
-        prevNnz = csc.values.length;
-        solver.analyzePattern(csc);
+        solver.analyzePattern(assembler.getCscMatrix());
         patternAnalyzed = true;
-      } else {
-        const nnz = countNnz(assembler.G);
-        if (nnz !== prevNnz) {
-          const result = toCsc(assembler.G);
-          csc = result.csc;
-          scatter = result.scatter;
-          prevNnz = nnz;
-          solver.analyzePattern(csc);
-        } else {
-          updateCscValues(csc!, assembler.G, scatter!);
-        }
       }
-      solver.factorize(csc!);
+      solver.factorize(assembler.getCscMatrix());
       const x = solver.solve(new Float64Array(assembler.b));
 
       const prev = new Float64Array(assembler.solution);
