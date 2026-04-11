@@ -165,55 +165,47 @@ The resolver is platform-agnostic — use `fetch()` in the browser, `readFile()`
 
 ## Benchmarks
 
-Measured on Apple M4 Pro, Node.js v24, ngspice-44. spice-ts times are from `vitest bench` (tinybench, statistically stabilised). ngspice times include process spawn + file I/O overhead (~7 ms baseline).
+Three-way comparison: **spice-ts** (pure TypeScript) vs **eecircuit** (ngspice compiled to WASM via [EEcircuit-engine](https://github.com/eelab-dev/EEcircuit-engine)) vs **ngspice** (native C). Measured on Apple M4 Pro, Node.js v24. Run `pnpm bench:compare` to reproduce.
 
-### Scalability — DC (.op)
+### DC Operating Point
 
-| Circuit | Nodes | spice-ts | ngspice | vs ngspice |
+spice-ts uses a sparse LU solver (Gilbert-Peierls with symbolic/numeric split). For DC analysis, it matches or beats ngspice-WASM across all sizes:
+
+| Circuit | Size | spice-ts | eecircuit (WASM) | ngspice (native) | vs eecircuit |
+|---|---|---|---|---|---|
+| Resistor ladder | 10 | 0.4 ms | 0.9 ms | 0.8 ms | **2.3x faster** |
+| Resistor ladder | 100 | 1.6 ms | 1.7 ms | 0.5 ms | **1.1x faster** |
+| Resistor ladder | 500 | 2.4 ms | 4.8 ms | 0.8 ms | **1.9x faster** |
+
+### Transient
+
+| Circuit | Size | spice-ts | eecircuit (WASM) | ngspice (native) | vs eecircuit |
+|---|---|---|---|---|---|
+| RC chain | 10 | 9.6 ms | 5.3 ms | 1.9 ms | 1.8x slower |
+| RC chain | 50 | 32.7 ms | 12.0 ms | 4.0 ms | 2.7x slower |
+| RC chain | 100 | 56.4 ms | 22.2 ms | 7.1 ms | 2.5x slower |
+| LC ladder | 10 | 22.2 ms | 10.7 ms | 3.9 ms | 2.1x slower |
+| LC ladder | 50 | 95.1 ms | 35.4 ms | 11.1 ms | 2.7x slower |
+
+### AC Small-Signal
+
+| Circuit | Size | spice-ts | eecircuit (WASM) | ngspice (native) | vs eecircuit |
+|---|---|---|---|---|---|
+| RC chain | 10 | 2.2 ms | 1.4 ms | 0.5 ms | 1.6x slower |
+| RC chain | 50 | 17.6 ms | 4.1 ms | 0.8 ms | 4.3x slower |
+| RC chain | 100 | 100.7 ms | 5.1 ms | 1.0 ms | 19.6x slower |
+
+### Nonlinear (CMOS / Ring Oscillators)
+
+| Circuit | spice-ts | eecircuit (WASM) | ngspice (native) | vs eecircuit |
 |---|---|---|---|---|
-| Resistor ladder | 10 | 0.04 ms | 28 ms | **700× faster** |
-| Resistor ladder | 100 | 1.8 ms | 7 ms | **4× faster** |
-| Resistor ladder | 500 | 179 ms | 10 ms | 18× slower |
+| CMOS inv chain (5 stg) | 26.8 ms | 17.0 ms | 8.7 ms | 1.6x slower |
+| CMOS inv chain (10 stg) | 48.1 ms | 24.9 ms | 14.1 ms | 1.9x slower |
+| Ring oscillator (3 stg) | 55.5 ms | 29.8 ms | 14.8 ms | 1.9x slower |
+| Ring oscillator (5 stg) | 92.4 ms | 41.6 ms | 20.8 ms | 2.2x slower |
+| Ring oscillator (11 stg) | 200.3 ms | 73.4 ms | 37.9 ms | 2.7x slower |
 
-> **Note:** The numeric LU factorization is still O(n³) with a dense intermediate. The solver architecture (symbolic/numeric split, CSC format, `SparseSolver` interface) is designed for a future true sparse factorization or KLU WASM plugin. For circuits above ~200 nodes, ngspice's sparse KLU solver dominates.
-
-### Scalability — Transient
-
-| Circuit | Stages | spice-ts | ngspice | vs ngspice |
-|---|---|---|---|---|
-| RC chain | 10 | 13.7 ms | 10 ms | 1.4× slower |
-| RC chain | 50 | 162 ms | 14 ms | 12× slower |
-| RC chain | 100 | 837 ms | 23 ms | 36× slower |
-| LC ladder | 10 | 42 ms | 13 ms | 3.2× slower |
-| LC ladder | 50 | 1.67 s | 25 ms | 67× slower |
-
-### Scalability — AC
-
-| Circuit | Stages | spice-ts | ngspice | vs ngspice |
-|---|---|---|---|---|
-| RC chain | 10 | 2.3 ms | 8 ms | **3.5× faster** |
-| RC chain | 50 | 55 ms | 8 ms | 7× slower |
-| RC chain | 100 | 415 ms | 9 ms | 46× slower |
-
-### Nonlinear — CMOS / Ring Oscillators
-
-| Circuit | spice-ts | ngspice | vs ngspice |
-|---|---|---|---|
-| CMOS inverter chain (5 stages) | 22.6 ms | 21 ms | ~parity |
-| CMOS inverter chain (10 stages) | 43.8 ms | 30 ms | 1.5× slower |
-| Ring oscillator (3-stage) | 50.6 ms | 32 ms | 1.6× slower |
-| Ring oscillator (5-stage) | 73.6 ms | 41 ms | 1.8× slower |
-| Ring oscillator (11-stage) | 198 ms | 69 ms | 2.9× slower |
-
-### SPICE3 Reference Circuits
-
-| Circuit | Analysis | spice-ts |
-|---|---|---|
-| BJT differential pair | DC | 0.49 ms |
-| RC ladder 5-stage | AC | 1.32 ms |
-| One-stage OTA | DC | 0.58 ms |
-| CMOS inverter | Transient | 5.3 ms |
-| Bandpass RLC | AC | 0.57 ms |
+> **Where spice-ts shines:** DC analysis, small circuits, and anywhere you need a zero-dependency in-process simulator (no WASM, no native binary, no process spawn). The gap on transient/AC is due to the per-Newton-iteration overhead of TypeScript vs C — the LU factorization itself is now sparse, but the stamping/assembly path is pure JS.
 
 ### Accuracy
 
@@ -225,13 +217,13 @@ Measured on Apple M4 Pro, Node.js v24, ngspice-44. spice-ts times are from `vite
 | RC ladder 5-stage | f<sub>-3dB</sub> | 12.76 Hz | 12.73 Hz | **0.23%** |
 | RLC resonance (transient) | oscillation frequency | 1579 Hz | 1592 Hz | 0.8%† |
 
-†RLC transient resonance error is due to numerical damping in the trapezoidal integrator with the default timestep. Use a finer timestep or `integrationMethod: 'euler'` to reduce it. AC analysis of the same circuit gives 0.4% error (see RLC bandpass above).
+†RLC transient resonance error is due to numerical damping in the trapezoidal integrator with the default timestep. Use a finer timestep or `integrationMethod: 'euler'` to reduce it.
 
 Run `pnpm bench:accuracy` to see the full accuracy report including SPICE3 Quarles reference circuits.
 
 ## Limitations
 
-- **Dense numeric factorization:** The solver uses a sparse architecture (CSC format, symbolic/numeric split, `SparseSolver` interface) but the numeric LU factorization still uses a dense O(n³) intermediate. A future release will implement true sparse column-by-column factorization or swap in KLU via WASM.
+- **Transient/AC performance:** The sparse LU solver is competitive on DC, but transient and AC analysis are 2-3x slower than ngspice-WASM due to per-iteration overhead in the TypeScript stamping/assembly path. Future work: typed-array-based direct stamping to eliminate Map overhead.
 - **BSIM3v3 MOSFET:** Supported alongside Level 1 Shichman-Hodges. BSIM4, EKV not yet available.
 
 ## Development
@@ -244,11 +236,10 @@ pnpm test              # run all tests
 pnpm build             # build @spice-ts/core
 pnpm bench             # vitest bench (ops/sec, mean, p99 — no external deps)
 pnpm bench:accuracy    # accuracy vs analytical + ngspice diff (requires ngspice)
+pnpm bench:compare     # 3-way comparison: spice-ts vs eecircuit (WASM) vs ngspice
 ```
 
-The `bench` script uses [vitest bench](https://vitest.dev/guide/benchmarking) (backed by tinybench) for statistically sound ops/sec and latency metrics. Results are written to `benchmarks/vitest-bench-results.json`.
-
-The `bench:accuracy` script runs 8 reference circuits through spice-ts, compares them against analytical expected values, and optionally diffs against ngspice. Results are written to `benchmarks/accuracy-results.json`. Pass `--ci` to exit non-zero if any gated circuit exceeds 15% error.
+The `bench` script uses [vitest bench](https://vitest.dev/guide/benchmarking) (backed by tinybench) for statistically sound ops/sec and latency metrics. The `bench:compare` script runs 16 circuits through all three engines and outputs a markdown table. Pass `--json` for machine-readable output or `--no-ngspice` to skip native ngspice.
 
 See [ROADMAP.md](ROADMAP.md) for planned features.
 
