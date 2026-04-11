@@ -65,6 +65,36 @@ describe('Circuit', () => {
     expect(idx1).not.toBe(idx2);
   });
 
+  describe('controlled source API', () => {
+    it('addVCCS registers 4 nodes and no branches', () => {
+      const ckt = new Circuit();
+      ckt.addVCCS('G1', 'out', '0', 'in', '0', 0.01);
+      expect(ckt.nodeCount).toBe(2);
+      expect(ckt.branchCount).toBe(0);
+    });
+
+    it('addVCVS registers 4 nodes and 1 branch', () => {
+      const ckt = new Circuit();
+      ckt.addVCVS('E1', 'out', '0', 'in', '0', 10);
+      expect(ckt.nodeCount).toBe(2);
+      expect(ckt.branchCount).toBe(1);
+    });
+
+    it('addCCCS registers 2 output nodes and no branch', () => {
+      const ckt = new Circuit();
+      ckt.addVoltageSource('Vsense', '1', '0', { dc: 0 });
+      ckt.addCCCS('F1', 'out', '0', 'Vsense', 3);
+      expect(ckt.branchCount).toBe(1);
+    });
+
+    it('addCCVS registers 2 output nodes and 1 branch', () => {
+      const ckt = new Circuit();
+      ckt.addVoltageSource('Vsense', '1', '0', { dc: 0 });
+      ckt.addCCVS('H1', 'out', '0', 'Vsense', 1000);
+      expect(ckt.branchCount).toBe(2);
+    });
+  });
+
   describe('subcircuit expansion', () => {
     it('expands a simple subcircuit with correct nodes', () => {
       const ckt = new Circuit();

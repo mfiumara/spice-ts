@@ -57,7 +57,9 @@ export class Circuit {
   }
 
   get branchCount(): number {
-    return this.descriptors.filter(d => d.type === 'V' || d.type === 'L').length;
+    return this.descriptors.filter(d =>
+      d.type === 'V' || d.type === 'L' || d.type === 'E' || d.type === 'H',
+    ).length;
   }
 
   getNodeIndex(name: string): number {
@@ -100,6 +102,34 @@ export class Circuit {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
     this.descriptors.push({ type: 'I', name, nodes: [nodePos, nodeNeg], waveform });
+  }
+
+  addVCVS(name: string, nOutP: string, nOutN: string, nCtrlP: string, nCtrlN: string, gain: number): void {
+    this.nodeSet.add(nOutP);
+    this.nodeSet.add(nOutN);
+    this.nodeSet.add(nCtrlP);
+    this.nodeSet.add(nCtrlN);
+    this.descriptors.push({ type: 'E', name, nodes: [nOutP, nOutN, nCtrlP, nCtrlN], value: gain });
+  }
+
+  addVCCS(name: string, nOutP: string, nOutN: string, nCtrlP: string, nCtrlN: string, gm: number): void {
+    this.nodeSet.add(nOutP);
+    this.nodeSet.add(nOutN);
+    this.nodeSet.add(nCtrlP);
+    this.nodeSet.add(nCtrlN);
+    this.descriptors.push({ type: 'G', name, nodes: [nOutP, nOutN, nCtrlP, nCtrlN], value: gm });
+  }
+
+  addCCVS(name: string, nOutP: string, nOutN: string, controlSource: string, gain: number): void {
+    this.nodeSet.add(nOutP);
+    this.nodeSet.add(nOutN);
+    this.descriptors.push({ type: 'H', name, nodes: [nOutP, nOutN], value: gain, controlSource });
+  }
+
+  addCCCS(name: string, nOutP: string, nOutN: string, controlSource: string, gain: number): void {
+    this.nodeSet.add(nOutP);
+    this.nodeSet.add(nOutN);
+    this.descriptors.push({ type: 'F', name, nodes: [nOutP, nOutN], value: gain, controlSource });
   }
 
   addDiode(name: string, nodeAnode: string, nodeCathode: string, modelName?: string): void {
