@@ -64,4 +64,131 @@ describe('Circuit', () => {
     expect(idx2).toBeGreaterThanOrEqual(0);
     expect(idx1).not.toBe(idx2);
   });
+
+  describe('subcircuit expansion', () => {
+    it('expands a simple subcircuit with correct nodes', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuit({
+        name: 'mydiv',
+        ports: ['a', 'b'],
+        params: {},
+        body: ['R1 a b 1k'],
+      });
+      ckt.addSubcircuitInstance('X1', ['1', '0'], 'mydiv');
+      ckt.addVoltageSource('V1', '1', '0', { dc: 5 });
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      expect(compiled.devices).toHaveLength(2);
+    });
+
+    it('prefixes internal nodes', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuit({
+        name: 'buf',
+        ports: ['in', 'out'],
+        params: {},
+        body: ['R1 in mid 1k', 'R2 mid out 1k'],
+      });
+      ckt.addSubcircuitInstance('X1', ['1', '2'], 'buf');
+      ckt.addVoltageSource('V1', '1', '0', { dc: 5 });
+      ckt.addResistor('RL', '2', '0', 1e3);
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      expect(compiled.nodeNames).toContain('X1.mid');
+    });
+
+    it('never prefixes ground node', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuit({
+        name: 'grounded',
+        ports: ['a'],
+        params: {},
+        body: ['R1 a 0 1k'],
+      });
+      ckt.addSubcircuitInstance('X1', ['1'], 'grounded');
+      ckt.addVoltageSource('V1', '1', '0', { dc: 5 });
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      expect(compiled.nodeNames).not.toContain('X1.0');
+    });
+
+    it('applies parameter overrides', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuit({
+        name: 'paramres',
+        ports: ['a', 'b'],
+        params: { R: 1000 },
+        body: ['R1 a b {R}'],
+      });
+      ckt.addSubcircuitInstance('X1', ['1', '0'], 'paramres', { R: 2000 });
+      ckt.addVoltageSource('V1', '1', '0', { dc: 5 });
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      expect(compiled.devices).toHaveLength(2);
+    });
+
+    it('throws on undefined subcircuit', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuitInstance('X1', ['1', '0'], 'nonexistent');
+      ckt.addVoltageSource('V1', '1', '0', { dc: 5 });
+      ckt.addAnalysis('op');
+      expect(() => ckt.compile()).toThrow('nonexistent');
+    });
+
+    it('throws on wrong port count', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuit({
+        name: 'twoport',
+        ports: ['a', 'b'],
+        params: {},
+        body: ['R1 a b 1k'],
+      });
+      ckt.addSubcircuitInstance('X1', ['1', '2', '3'], 'twoport');
+      ckt.addVoltageSource('V1', '1', '0', { dc: 5 });
+      ckt.addAnalysis('op');
+      expect(() => ckt.compile()).toThrow('port');
+    });
+
+    it('handles nested subcircuit expansion', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuit({
+        name: 'inner',
+        ports: ['a', 'b'],
+        params: {},
+        body: ['R1 a b 1k'],
+      });
+      ckt.addSubcircuit({
+        name: 'outer',
+        ports: ['x', 'y'],
+        params: {},
+        body: ['X1 x mid inner', 'X2 mid y inner'],
+      });
+      ckt.addSubcircuitInstance('X0', ['1', '0'], 'outer');
+      ckt.addVoltageSource('V1', '1', '0', { dc: 5 });
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      // Should have V1 + 2 resistors from nested expansion
+      const resistors = compiled.devices.filter(d => d.name.includes('X0'));
+      expect(resistors.length).toBe(2);
+      expect(compiled.nodeNames).toContain('X0.mid');
+    });
+
+    it('scopes local .model to subcircuit', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuit({
+        name: 'withmodel',
+        ports: ['a', 'b'],
+        params: {},
+        body: [
+          '.model DLOCAL D(IS=1e-14)',
+          'D1 a b DLOCAL',
+        ],
+      });
+      ckt.addSubcircuitInstance('X1', ['1', '0'], 'withmodel');
+      ckt.addVoltageSource('V1', '1', '0', { dc: 0.7 });
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      expect(compiled.devices).toHaveLength(2);
+    });
+  });
 });

@@ -138,4 +138,81 @@ describe('SPICE netlist parser', () => {
     const compiled = ckt.compile();
     expect(compiled.devices).toHaveLength(2);
   });
+
+  describe('.subckt parsing', () => {
+    it('parses a simple subcircuit definition', () => {
+      const ckt = parse(`
+        .subckt inv in out vdd vss
+        M1 out in vdd vdd PMOD
+        M2 out in vss vss NMOD
+        .ends inv
+        .op
+      `);
+      const compiled = ckt.compile();
+      expect(compiled.subcircuits.has('INV')).toBe(true);
+      const sub = compiled.subcircuits.get('INV')!;
+      expect(sub.ports).toEqual(['in', 'out', 'vdd', 'vss']);
+      expect(sub.body).toHaveLength(2);
+    });
+
+    it('parses subcircuit with default parameters', () => {
+      const ckt = parse(`
+        .subckt inv in out vdd vss W=1u L=100n
+        M1 out in vdd vdd PMOD W={W}
+        .ends inv
+        .op
+      `);
+      const compiled = ckt.compile();
+      const sub = compiled.subcircuits.get('INV')!;
+      expect(sub.params.W).toBeCloseTo(1e-6);
+      expect(sub.params.L).toBeCloseTo(100e-9);
+    });
+
+    it('parses .ends without name', () => {
+      const ckt = parse(`
+        .subckt buf in out
+        R1 in out 1k
+        .ends
+        .op
+      `);
+      const compiled = ckt.compile();
+      expect(compiled.subcircuits.has('BUF')).toBe(true);
+    });
+  });
+
+  describe('X device parsing', () => {
+    it('parses a subcircuit instance', () => {
+      const ckt = parse(`
+        .subckt res2 a b
+        R1 a b 1k
+        .ends res2
+        X1 1 0 res2
+        .op
+      `);
+      const compiled = ckt.compile();
+      expect(compiled.devices.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('parses X device with parameter overrides', () => {
+      const ckt = parse(`
+        .subckt myres a b R=1k
+        R1 a b {R}
+        .ends myres
+        X1 1 0 myres R=2k
+        .op
+      `);
+      const compiled = ckt.compile();
+      expect(compiled.devices.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe('.include/.lib guards in sync parse', () => {
+    it('throws ParseError on .include', () => {
+      expect(() => parse(`.include 'models.lib'\n.op`)).toThrow('async');
+    });
+
+    it('throws ParseError on .lib with file', () => {
+      expect(() => parse(`.lib 'models.lib' TT\n.op`)).toThrow('async');
+    });
+  });
 });
