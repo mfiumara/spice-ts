@@ -386,11 +386,19 @@ export class Circuit {
     };
 
     // Evaluate {expr} in a token using merged parameters
+    // Handles both standalone {expr} and key={expr} patterns
     const evalToken = (token: string): string => {
       if (token.startsWith('{') && token.endsWith('}')) {
         const expr = token.slice(1, -1);
-        const value = evaluateExpression(expr, mergedParams);
-        return value.toString();
+        return evaluateExpression(expr, localParams).toString();
+      }
+      const eqIdx = token.indexOf('=');
+      if (eqIdx > 0) {
+        const val = token.slice(eqIdx + 1);
+        if (val.startsWith('{') && val.endsWith('}')) {
+          const expr = val.slice(1, -1);
+          return token.slice(0, eqIdx + 1) + evaluateExpression(expr, localParams).toString();
+        }
       }
       return token;
     };
