@@ -8,7 +8,6 @@
  *   npx tsx benchmarks/accuracy.ts --no-ngspice  # skip ngspice comparison
  *
  * CI gate: exits non-zero if any circuit's error vs analytical > 15%.
- * ngspice diff: always informational only — printed but never gates exit code.
  */
 import { simulate } from '@spice-ts/core';
 import { writeFileSync, existsSync, readFileSync } from 'fs';
@@ -45,8 +44,6 @@ interface AccuracyResult {
   ngspice: number | null;
   ngspiceDiffPct: number | null;
   status: '✓' | '~' | '!' | '✗' | '?';
-  /** If true, this result is informational only — not included in the CI gate. */
-  informational?: boolean;
   note?: string;
 }
 
@@ -150,8 +147,6 @@ async function checkRLCResonance(): Promise<AccuracyResult> {
     ngspice: null,
     ngspiceDiffPct: null,
     status: errorStatus(errorPct),
-    informational: true,
-    note: 'Informational: numerical damping with default timestep. Use finer timestep for resonant circuits.',
   };
 }
 
@@ -223,8 +218,7 @@ async function checkDiffPair(): Promise<AccuracyResult> {
     ngspice: ngspiceDiff,
     ngspiceDiffPct: ngspiceDiff !== null ? (ngspiceDiff / Math.max(Math.abs(vout_p), 1e-9)) * 100 : null,
     status: diff < 0.05 ? '✓' : diff < 0.2 ? '~' : '✗',
-    informational: true,
-    note: `Informational: BJT multi-device DC convergence limitation. V(out+)=${vout_p.toFixed(3)}V V(out-)=${vout_n.toFixed(3)}V`,
+    note: `V(out+)=${vout_p.toFixed(3)}V V(out-)=${vout_n.toFixed(3)}V`,
   };
 }
 
@@ -275,8 +269,6 @@ async function checkOneStageOpAmp(): Promise<AccuracyResult> {
     ngspice: ngspiceVal,
     ngspiceDiffPct: ngspiceVal !== null ? pct(vd2, ngspiceVal) : null,
     status: errorStatus(errorPct),
-    informational: true,
-    note: 'Informational: Level 1 MOSFET model limitation for multi-device circuits',
   };
 }
 
@@ -331,9 +323,8 @@ function printTable(results: AccuracyResult[]): void {
     const err = r.errorPct !== null ? r.errorPct.toFixed(2) + '%' : '—';
     const ng = r.ngspice !== null ? r.ngspice.toPrecision(5) : '—';
     const diff = r.ngspiceDiffPct !== null ? r.ngspiceDiffPct.toFixed(2) + '%' : '—';
-    const infoTag = r.informational ? ' [info]' : '';
     console.log(
-      `${r.circuit.padEnd(W.circuit)}  ${r.metric.padEnd(W.metric)}  ${val.padStart(W.val)}  ${err.padStart(W.err)}  ${ng.padStart(W.ng)}  ${diff.padStart(W.diff)}  ${r.status}${infoTag}${r.note ? `  (${r.note})` : ''}`,
+      `${r.circuit.padEnd(W.circuit)}  ${r.metric.padEnd(W.metric)}  ${val.padStart(W.val)}  ${err.padStart(W.err)}  ${ng.padStart(W.ng)}  ${diff.padStart(W.diff)}  ${r.status}${r.note ? `  (${r.note})` : ''}`,
     );
   }
   console.log(hr);
@@ -395,20 +386,15 @@ async function main(): Promise<void> {
   writeFileSync(outPath, JSON.stringify(history, null, 2));
   console.log(`\nResults saved to ${outPath}`);
 
-  // CI gate (informational circuits are excluded)
+  // CI gate — all circuits must pass
   if (CI_MODE) {
-    const failures = results.filter(r => r.status === '✗' && !r.informational);
+    const failures = results.filter(r => r.status === '✗');
     if (failures.length > 0) {
       console.error(`\n✗ ${failures.length} circuit(s) exceeded 15% error threshold:`);
-      for (const f of failures) console.error(`  - ${f.circuit}: ${f.errorPct?.toFixed(1)}%`);
+      for (const f of failures) console.error(`  - ${f.circuit}: ${f.errorPct?.toFixed(1)}%${f.note ? ` (${f.note})` : ''}`);
       process.exit(1);
     }
-    const infoFails = results.filter(r => r.status === '✗' && r.informational);
-    if (infoFails.length > 0) {
-      console.log(`\n⚠ ${infoFails.length} informational circuit(s) with known limitations (not gating):`);
-      for (const f of infoFails) console.log(`  - ${f.circuit}: ${f.errorPct?.toFixed(1)}% (${f.note})`);
-    }
-    console.log('\n✓ All gated circuits within acceptable error bounds.');
+    console.log('\n✓ All circuits within acceptable error bounds.');
   }
 }
 
