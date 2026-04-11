@@ -5,6 +5,20 @@ import type { IncludeResolver } from '../types.js';
 
 const MAX_DEPTH = 64;
 
+/**
+ * Preprocess a SPICE netlist: resolve `.include`/`.lib` directives,
+ * evaluate `.param` definitions, and substitute `{expression}` tokens.
+ *
+ * This is called internally by {@link parseAsync} but can be used
+ * standalone when you need the fully-expanded netlist text.
+ *
+ * @param netlist - Raw SPICE netlist text
+ * @param resolver - Async function that returns file contents given a path;
+ *   required if the netlist contains `.include` or `.lib` directives
+ * @returns The preprocessed netlist with all includes inlined and expressions evaluated
+ * @throws {@link ParseError} if include depth exceeds 64 or resolver is missing
+ * @throws {@link CycleError} if includes form a circular dependency
+ */
 export async function preprocess(
   netlist: string,
   resolver?: IncludeResolver,

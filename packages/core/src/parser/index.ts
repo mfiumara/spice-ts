@@ -8,6 +8,28 @@ import type { IncludeResolver } from '../types.js';
 
 export { parseSourceWaveform } from './waveform-parser.js';
 
+/**
+ * Parse a SPICE netlist string into a {@link Circuit} object.
+ *
+ * Handles device lines (R, C, L, V, I, D, Q, M, E, G, H, F, X),
+ * dot commands (`.op`, `.dc`, `.tran`, `.ac`, `.model`, `.subckt`),
+ * and subcircuit definitions. Does not resolve `.include` or `.lib`
+ * directives -- use {@link parseAsync} for netlists with file includes.
+ *
+ * @param netlist - SPICE netlist text (may include line continuations with `+`)
+ * @returns A {@link Circuit} ready for compilation and simulation
+ * @throws {@link ParseError} if the netlist contains syntax errors or unknown device types
+ * @example
+ * ```ts
+ * const circuit = parse(`
+ *   V1 in 0 DC 5
+ *   R1 in out 1k
+ *   R2 out 0 1k
+ *   .op
+ * `);
+ * const compiled = circuit.compile();
+ * ```
+ */
 export function parse(netlist: string): Circuit {
   const lines = tokenizeNetlist(netlist);
   const circuit = new Circuit();
@@ -73,6 +95,24 @@ export function parse(netlist: string): Circuit {
   return circuit;
 }
 
+/**
+ * Parse a SPICE netlist with async resolution of `.include` and `.lib` directives.
+ *
+ * Preprocesses the netlist first (resolving includes, `.param` substitution,
+ * expression evaluation), then delegates to {@link parse}.
+ *
+ * @param netlist - SPICE netlist text, possibly containing `.include`/`.lib` directives
+ * @param resolver - Async function that returns file contents given a path
+ * @returns A {@link Circuit} ready for compilation and simulation
+ * @throws {@link ParseError} if the netlist contains syntax errors
+ * @throws {@link CycleError} if `.include`/`.lib` directives form a circular dependency
+ * @example
+ * ```ts
+ * const circuit = await parseAsync(netlist, async (path) => {
+ *   return await fs.readFile(path, 'utf-8');
+ * });
+ * ```
+ */
 export async function parseAsync(
   netlist: string,
   resolver?: IncludeResolver,

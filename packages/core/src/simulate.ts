@@ -16,6 +16,29 @@ import { toCsc } from './solver/csc-matrix.js';
 import { createSparseSolver } from './solver/sparse-solver.js';
 import { ComplexSparseSolver } from './solver/complex-sparse-solver.js';
 
+/**
+ * Run all analyses declared in a SPICE netlist or {@link Circuit} object.
+ *
+ * Parses the input (if a string), compiles the circuit, and executes every
+ * analysis command (`.op`, `.dc`, `.tran`, `.ac`) found in the netlist.
+ *
+ * @param input - A SPICE netlist string or a pre-built {@link Circuit} object
+ * @param options - Simulation options (tolerances, integration method, include resolver)
+ * @returns Simulation results with `.dc`, `.transient`, `.ac`, `.dcSweep` fields
+ * @throws {@link ParseError} if the netlist is malformed
+ * @throws {@link InvalidCircuitError} if the circuit has no nodes or no analysis command
+ * @throws {@link ConvergenceError} if Newton-Raphson fails to converge
+ * @example
+ * ```ts
+ * const result = await simulate(`
+ *   V1 in 0 DC 5
+ *   R1 in out 1k
+ *   R2 out 0 1k
+ *   .op
+ * `);
+ * console.log(result.dc?.voltage('out')); // 2.5
+ * ```
+ */
 export async function simulate(
   input: string | Circuit,
   options?: SimulationOptions,
@@ -68,6 +91,27 @@ export async function simulate(
   return result;
 }
 
+/**
+ * Stream simulation results one timestep or frequency point at a time.
+ *
+ * Only `.tran` and `.ac` analyses produce streamed output. Use this for
+ * large simulations where you want to process results incrementally
+ * rather than waiting for the full result set.
+ *
+ * @param input - A SPICE netlist string or a pre-built {@link Circuit} object
+ * @param options - Simulation options (tolerances, integration method, include resolver)
+ * @yields {@link TransientStep} for `.tran` analyses, {@link ACPoint} for `.ac` analyses
+ * @throws {@link ParseError} if the netlist is malformed
+ * @throws {@link InvalidCircuitError} if the circuit has no nodes or no analysis command
+ * @throws {@link ConvergenceError} if Newton-Raphson fails to converge
+ * @throws {@link TimestepTooSmallError} if the adaptive timestep shrinks below 1e-18
+ * @example
+ * ```ts
+ * for await (const step of simulateStream('V1 1 0 DC 5\nR1 1 0 1k\n.tran 1u 1m')) {
+ *   if ('time' in step) console.log(step.time, step.voltages.get('1'));
+ * }
+ * ```
+ */
 export async function* simulateStream(
   input: string | Circuit,
   options?: SimulationOptions,

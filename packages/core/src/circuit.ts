@@ -20,15 +20,30 @@ import { parseModelCard } from './parser/model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 import { CycleError } from './errors.js';
 
+/**
+ * The compiled representation of a circuit, ready for numerical simulation.
+ *
+ * Produced by {@link Circuit.compile}. Contains instantiated device models,
+ * node/branch mappings, and analysis commands.
+ */
 export interface CompiledCircuit {
+  /** Instantiated device models with resolved node indices */
   devices: DeviceModel[];
+  /** Number of non-ground nodes */
   nodeCount: number;
+  /** Number of MNA branches (voltage sources, inductors, controlled sources) */
   branchCount: number;
+  /** Ordered list of node names (excludes ground) */
   nodeNames: string[];
+  /** Map from node name to its matrix index (-1 for ground) */
   nodeIndexMap: Map<string, number>;
+  /** Ordered list of branch names */
   branchNames: string[];
+  /** Analysis commands to execute */
   analyses: AnalysisCommand[];
+  /** Device model parameter cards */
   models: Map<string, ModelParams>;
+  /** Subcircuit definitions */
   subcircuits: Map<string, SubcktDefinition>;
 }
 
@@ -43,6 +58,22 @@ interface DeviceDescriptor {
   controlSource?: string;
 }
 
+/**
+ * Programmatic circuit builder for constructing SPICE circuits without a netlist.
+ *
+ * Add devices, models, subcircuits, and analysis commands via the `add*` methods,
+ * then call {@link Circuit.compile} to produce a {@link CompiledCircuit} for simulation.
+ *
+ * @example
+ * ```ts
+ * const ckt = new Circuit();
+ * ckt.addVoltageSource('V1', 'in', '0', { dc: 5 });
+ * ckt.addResistor('R1', 'in', 'out', 1000);
+ * ckt.addResistor('R2', 'out', '0', 1000);
+ * ckt.addAnalysis('op');
+ * const result = await simulate(ckt);
+ * ```
+ */
 export class Circuit {
   private descriptors: DeviceDescriptor[] = [];
   private _analyses: AnalysisCommand[] = [];
@@ -72,24 +103,56 @@ export class Circuit {
     return nodes.indexOf(name);
   }
 
+  /**
+   * Add a resistor to the circuit.
+   *
+   * @param name - Device name (e.g., `'R1'`)
+   * @param nodePos - Positive terminal node
+   * @param nodeNeg - Negative terminal node
+   * @param resistance - Resistance value in ohms
+   */
   addResistor(name: string, nodePos: string, nodeNeg: string, resistance: number): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
     this.descriptors.push({ type: 'R', name, nodes: [nodePos, nodeNeg], value: resistance });
   }
 
+  /**
+   * Add a capacitor to the circuit.
+   *
+   * @param name - Device name (e.g., `'C1'`)
+   * @param nodePos - Positive terminal node
+   * @param nodeNeg - Negative terminal node
+   * @param capacitance - Capacitance value in farads
+   */
   addCapacitor(name: string, nodePos: string, nodeNeg: string, capacitance: number): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
     this.descriptors.push({ type: 'C', name, nodes: [nodePos, nodeNeg], value: capacitance });
   }
 
+  /**
+   * Add an inductor to the circuit.
+   *
+   * @param name - Device name (e.g., `'L1'`)
+   * @param nodePos - Positive terminal node
+   * @param nodeNeg - Negative terminal node
+   * @param inductance - Inductance value in henries
+   */
   addInductor(name: string, nodePos: string, nodeNeg: string, inductance: number): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
     this.descriptors.push({ type: 'L', name, nodes: [nodePos, nodeNeg], value: inductance });
   }
 
+  /**
+   * Add a voltage source to the circuit.
+   *
+   * @param name - Device name (e.g., `'V1'`)
+   * @param nodePos - Positive terminal node
+   * @param nodeNeg - Negative terminal node
+   * @param waveform - Source waveform specification (DC, pulse, sine, or AC)
+   */
   addVoltageSource(
     name: string, nodePos: string, nodeNeg: string,
     waveform: Partial<SourceWaveform> & { dc?: number },
@@ -99,6 +162,14 @@ export class Circuit {
     this.descriptors.push({ type: 'V', name, nodes: [nodePos, nodeNeg], waveform });
   }
 
+  /**
+   * Add a current source to the circuit.
+   *
+   * @param name - Device name (e.g., `'I1'`)
+   * @param nodePos - Positive terminal node (current flows from pos to neg)
+   * @param nodeNeg - Negative terminal node
+   * @param waveform - Source waveform specification (DC, pulse, sine, or AC)
+   */
   addCurrentSource(
     name: string, nodePos: string, nodeNeg: string,
     waveform: Partial<SourceWaveform> & { dc?: number },
@@ -108,6 +179,16 @@ export class Circuit {
     this.descriptors.push({ type: 'I', name, nodes: [nodePos, nodeNeg], waveform });
   }
 
+  /**
+   * Add a voltage-controlled voltage source (VCVS, E-element).
+   *
+   * @param name - Device name (e.g., `'E1'`)
+   * @param nOutP - Positive output node
+   * @param nOutN - Negative output node
+   * @param nCtrlP - Positive control (sensing) node
+   * @param nCtrlN - Negative control (sensing) node
+   * @param gain - Voltage gain (V/V)
+   */
   addVCVS(name: string, nOutP: string, nOutN: string, nCtrlP: string, nCtrlN: string, gain: number): void {
     this.nodeSet.add(nOutP);
     this.nodeSet.add(nOutN);
@@ -116,6 +197,16 @@ export class Circuit {
     this.descriptors.push({ type: 'E', name, nodes: [nOutP, nOutN, nCtrlP, nCtrlN], value: gain });
   }
 
+  /**
+   * Add a voltage-controlled current source (VCCS, G-element).
+   *
+   * @param name - Device name (e.g., `'G1'`)
+   * @param nOutP - Positive output node
+   * @param nOutN - Negative output node
+   * @param nCtrlP - Positive control (sensing) node
+   * @param nCtrlN - Negative control (sensing) node
+   * @param gm - Transconductance (A/V)
+   */
   addVCCS(name: string, nOutP: string, nOutN: string, nCtrlP: string, nCtrlN: string, gm: number): void {
     this.nodeSet.add(nOutP);
     this.nodeSet.add(nOutN);
@@ -124,24 +215,59 @@ export class Circuit {
     this.descriptors.push({ type: 'G', name, nodes: [nOutP, nOutN, nCtrlP, nCtrlN], value: gm });
   }
 
+  /**
+   * Add a current-controlled voltage source (CCVS, H-element).
+   *
+   * @param name - Device name (e.g., `'H1'`)
+   * @param nOutP - Positive output node
+   * @param nOutN - Negative output node
+   * @param controlSource - Name of the voltage source whose current controls this device
+   * @param gain - Transresistance (V/A)
+   */
   addCCVS(name: string, nOutP: string, nOutN: string, controlSource: string, gain: number): void {
     this.nodeSet.add(nOutP);
     this.nodeSet.add(nOutN);
     this.descriptors.push({ type: 'H', name, nodes: [nOutP, nOutN], value: gain, controlSource });
   }
 
+  /**
+   * Add a current-controlled current source (CCCS, F-element).
+   *
+   * @param name - Device name (e.g., `'F1'`)
+   * @param nOutP - Positive output node
+   * @param nOutN - Negative output node
+   * @param controlSource - Name of the voltage source whose current controls this device
+   * @param gain - Current gain (A/A)
+   */
   addCCCS(name: string, nOutP: string, nOutN: string, controlSource: string, gain: number): void {
     this.nodeSet.add(nOutP);
     this.nodeSet.add(nOutN);
     this.descriptors.push({ type: 'F', name, nodes: [nOutP, nOutN], value: gain, controlSource });
   }
 
+  /**
+   * Add a diode to the circuit.
+   *
+   * @param name - Device name (e.g., `'D1'`)
+   * @param nodeAnode - Anode node
+   * @param nodeCathode - Cathode node
+   * @param modelName - Name of a `.model D` card (optional; uses default diode model if omitted)
+   */
   addDiode(name: string, nodeAnode: string, nodeCathode: string, modelName?: string): void {
     this.nodeSet.add(nodeAnode);
     this.nodeSet.add(nodeCathode);
     this.descriptors.push({ type: 'D', name, nodes: [nodeAnode, nodeCathode], modelName });
   }
 
+  /**
+   * Add a bipolar junction transistor (BJT) to the circuit.
+   *
+   * @param name - Device name (e.g., `'Q1'`)
+   * @param nodeCollector - Collector node
+   * @param nodeBase - Base node
+   * @param nodeEmitter - Emitter node
+   * @param modelName - Name of a `.model NPN` or `.model PNP` card
+   */
   addBJT(name: string, nodeCollector: string, nodeBase: string, nodeEmitter: string, modelName: string): void {
     this.nodeSet.add(nodeCollector);
     this.nodeSet.add(nodeBase);
@@ -149,6 +275,19 @@ export class Circuit {
     this.descriptors.push({ type: 'Q', name, nodes: [nodeCollector, nodeBase, nodeEmitter], modelName });
   }
 
+  /**
+   * Add a MOSFET to the circuit.
+   *
+   * Supports Level 1 (Shichman-Hodges) and Level 49/8 (BSIM3v3) models.
+   *
+   * @param name - Device name (e.g., `'M1'`)
+   * @param nodeDrain - Drain node
+   * @param nodeGate - Gate node
+   * @param nodeSource - Source node
+   * @param modelName - Name of a `.model NMOS` or `.model PMOS` card
+   * @param instanceParams - Per-instance parameters (e.g., `{ W: 1e-6, L: 0.18e-6 }`)
+   * @param nodeBulk - Bulk/body node (optional; defaults to source if omitted)
+   */
   addMOSFET(
     name: string,
     nodeDrain: string, nodeGate: string, nodeSource: string,
@@ -167,10 +306,26 @@ export class Circuit {
     });
   }
 
+  /**
+   * Register a subcircuit definition for later instantiation with {@link addSubcircuitInstance}.
+   *
+   * @param def - Subcircuit definition (name, ports, default parameters, and body lines)
+   */
   addSubcircuit(def: SubcktDefinition): void {
     this._subcircuits.set(def.name.toUpperCase(), def);
   }
 
+  /**
+   * Instantiate a subcircuit (X-element).
+   *
+   * The subcircuit must have been previously registered via {@link addSubcircuit}.
+   * Internal nodes are automatically prefixed with the instance name.
+   *
+   * @param name - Instance name (e.g., `'X1'`)
+   * @param ports - Actual node names to connect to the subcircuit's ports
+   * @param subcktName - Name of the subcircuit definition to instantiate
+   * @param params - Parameter overrides for this instance
+   */
   addSubcircuitInstance(
     name: string,
     ports: string[],
@@ -183,10 +338,22 @@ export class Circuit {
     });
   }
 
+  /**
+   * Register a device model parameter card (`.model`).
+   *
+   * @param params - Model parameters including name, type (e.g., `'NPN'`, `'NMOS'`), and parameter values
+   */
   addModel(params: ModelParams): void {
     this._models.set(params.name, params);
   }
 
+  /**
+   * Add a simulation analysis command to the circuit.
+   *
+   * @param type - Analysis type: `'op'` (DC operating point), `'dc'` (DC sweep),
+   *   `'tran'` (transient), or `'ac'` (AC small-signal)
+   * @param params - Analysis-specific parameters (not required for `'op'`)
+   */
   addAnalysis(type: 'op'): void;
   addAnalysis(type: 'dc', params: { source: string; start: number; stop: number; step: number }): void;
   addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number }): void;
@@ -228,6 +395,16 @@ export class Circuit {
     }
   }
 
+  /**
+   * Compile the circuit into a form ready for numerical simulation.
+   *
+   * Expands subcircuit instances, assigns node indices, instantiates device
+   * models, and resolves model parameter cards.
+   *
+   * @returns A {@link CompiledCircuit} with device models and node/branch mappings
+   * @throws Error if a referenced subcircuit or control source is undefined
+   * @throws {@link CycleError} if subcircuit instances form a circular dependency
+   */
   compile(): CompiledCircuit {
     // Pre-expand subcircuit instances into flat device descriptors
     const expandedDescriptors = this.expandAllSubcircuits();
