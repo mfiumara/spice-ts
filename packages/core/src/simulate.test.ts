@@ -29,6 +29,22 @@ describe('simulate (end-to-end)', () => {
     expect(result.dc!.voltage('2')).toBeCloseTo(10 / 3, 6);
   });
 
+  it('simulates with .include resolved via resolveInclude', async () => {
+    const result = await simulate(
+      `.include 'divider.lib'\n.op`,
+      {
+        resolveInclude: async (path) => {
+          if (path === 'divider.lib') {
+            return 'V1 1 0 DC 5\nR1 1 2 1k\nR2 2 0 2k';
+          }
+          throw new Error(`Unknown: ${path}`);
+        },
+      },
+    );
+    expect(result.dc).toBeDefined();
+    expect(result.dc!.voltage('2')).toBeCloseTo(10 / 3, 6);
+  });
+
   it('returns warnings array', async () => {
     const result = await simulate(`
       V1 1 0 DC 5
