@@ -12,3 +12,7 @@ export { MOSFET } from './mosfet.js';
 export type { MOSFETParams } from './mosfet.js';
 export { BSIM3v3 } from './bsim3v3.js';
 export type { BSIM3v3ModelParams, BSIM3v3InstanceParams } from './bsim3v3-params.js';
+export { VCCS } from './vccs.js';
+export { VCVS } from './vcvs.js';
+export { CCCS } from './cccs.js';
+export { CCVS } from './ccvs.js';
