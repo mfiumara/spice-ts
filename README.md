@@ -169,43 +169,43 @@ Three-way comparison: **spice-ts** (pure TypeScript) vs **eecircuit** (ngspice c
 
 ### DC Operating Point
 
-spice-ts uses a sparse LU solver (Gilbert-Peierls with symbolic/numeric split). For DC analysis, it matches or beats ngspice-WASM across all sizes:
+spice-ts uses a sparse LU solver (Gilbert-Peierls with symbolic/numeric split) and typed-array direct stamping. For DC analysis, it beats ngspice-WASM across all sizes:
 
 | Circuit | Size | spice-ts | eecircuit (WASM) | ngspice (native) | vs eecircuit |
 |---|---|---|---|---|---|
-| Resistor ladder | 10 | 0.4 ms | 0.9 ms | 0.8 ms | **2.3x faster** |
-| Resistor ladder | 100 | 1.6 ms | 1.7 ms | 0.5 ms | **1.1x faster** |
-| Resistor ladder | 500 | 2.4 ms | 4.8 ms | 0.8 ms | **1.9x faster** |
+| Resistor ladder | 10 | 0.16 ms | 0.9 ms | 0.9 ms | **5.5x faster** |
+| Resistor ladder | 100 | 1.2 ms | 1.4 ms | 0.5 ms | **1.2x faster** |
+| Resistor ladder | 500 | 2.2 ms | 4.0 ms | 0.7 ms | **1.8x faster** |
 
 ### Transient
 
 | Circuit | Size | spice-ts | eecircuit (WASM) | ngspice (native) | vs eecircuit |
 |---|---|---|---|---|---|
-| RC chain | 10 | 9.6 ms | 5.3 ms | 1.9 ms | 1.8x slower |
-| RC chain | 50 | 32.7 ms | 12.0 ms | 4.0 ms | 2.7x slower |
-| RC chain | 100 | 56.4 ms | 22.2 ms | 7.1 ms | 2.5x slower |
-| LC ladder | 10 | 22.2 ms | 10.7 ms | 3.9 ms | 2.1x slower |
-| LC ladder | 50 | 95.1 ms | 35.4 ms | 11.1 ms | 2.7x slower |
+| RC chain | 10 | 5.1 ms | 4.2 ms | 1.6 ms | 1.2x slower |
+| RC chain | 50 | 14.7 ms | 17.1 ms | 4.0 ms | **1.2x faster** |
+| RC chain | 100 | 25.9 ms | 21.0 ms | 7.0 ms | 1.2x slower |
+| LC ladder | 10 | 10.7 ms | 10.6 ms | 3.7 ms | ~parity |
+| LC ladder | 50 | 41.6 ms | 35.9 ms | 11.2 ms | 1.2x slower |
 
 ### AC Small-Signal
 
 | Circuit | Size | spice-ts | eecircuit (WASM) | ngspice (native) | vs eecircuit |
 |---|---|---|---|---|---|
-| RC chain | 10 | 2.2 ms | 1.4 ms | 0.5 ms | 1.6x slower |
-| RC chain | 50 | 17.6 ms | 4.1 ms | 0.8 ms | 4.3x slower |
-| RC chain | 100 | 100.7 ms | 5.1 ms | 1.0 ms | 19.6x slower |
+| RC chain | 10 | 0.95 ms | 1.3 ms | 0.5 ms | **1.4x faster** |
+| RC chain | 50 | 14.2 ms | 3.4 ms | 0.7 ms | 4.1x slower |
+| RC chain | 100 | 98.2 ms | 5.9 ms | 1.1 ms | 16.7x slower |
 
 ### Nonlinear (CMOS / Ring Oscillators)
 
 | Circuit | spice-ts | eecircuit (WASM) | ngspice (native) | vs eecircuit |
 |---|---|---|---|---|
-| CMOS inv chain (5 stg) | 26.8 ms | 17.0 ms | 8.7 ms | 1.6x slower |
-| CMOS inv chain (10 stg) | 48.1 ms | 24.9 ms | 14.1 ms | 1.9x slower |
-| Ring oscillator (3 stg) | 55.5 ms | 29.8 ms | 14.8 ms | 1.9x slower |
-| Ring oscillator (5 stg) | 92.4 ms | 41.6 ms | 20.8 ms | 2.2x slower |
-| Ring oscillator (11 stg) | 200.3 ms | 73.4 ms | 37.9 ms | 2.7x slower |
+| CMOS inv chain (5 stg) | 18.2 ms | 16.6 ms | 8.7 ms | ~parity |
+| CMOS inv chain (10 stg) | 28.2 ms | 25.3 ms | 13.5 ms | ~parity |
+| Ring oscillator (3 stg) | 33.6 ms | 30.6 ms | 15.0 ms | ~parity |
+| Ring oscillator (5 stg) | 58.6 ms | 41.6 ms | 20.4 ms | 1.4x slower |
+| Ring oscillator (11 stg) | 120.2 ms | 70.8 ms | 37.3 ms | 1.7x slower |
 
-> **Where spice-ts shines:** DC analysis, small circuits, and anywhere you need a zero-dependency in-process simulator (no WASM, no native binary, no process spawn). The gap on transient/AC is due to the per-Newton-iteration overhead of TypeScript vs C — the LU factorization itself is now sparse, but the stamping/assembly path is pure JS.
+> **Where spice-ts shines:** DC analysis (up to 5.5x faster than WASM), transient on small-to-medium circuits (parity or faster), and anywhere you need a zero-dependency in-process simulator (no WASM, no native binary, no process spawn). The remaining gap on large nonlinear circuits and AC sweeps is due to the 2n×2n complex matrix expansion and TypeScript overhead in tight numerical loops.
 
 ### Accuracy
 
@@ -223,7 +223,7 @@ Run `pnpm bench:accuracy` to see the full accuracy report including SPICE3 Quarl
 
 ## Limitations
 
-- **Transient/AC performance:** The sparse LU solver is competitive on DC, but transient and AC analysis are 2-3x slower than ngspice-WASM due to per-iteration overhead in the TypeScript stamping/assembly path. Future work: typed-array-based direct stamping to eliminate Map overhead.
+- **AC performance on large circuits:** AC analysis builds a 2n×2n real matrix for complex solves. For large circuits (100+ nodes), this expansion dominates and is 4-17x slower than ngspice-WASM. A native complex sparse solver would close this gap.
 - **BSIM3v3 MOSFET:** Supported alongside Level 1 Shichman-Hodges. BSIM4, EKV not yet available.
 
 ## Development
