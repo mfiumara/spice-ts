@@ -112,4 +112,83 @@ export class MOSFET implements DeviceModel {
       ctx.stampB(nS, polarity * Ieq);
     }
   }
+
+  /**
+   * Batch-stamp multiple MOSFETs with direct typed-array writes,
+   * bypassing StampContext closures for better performance on the fast path.
+   */
+  static batchStamp(
+    mosfets: MOSFET[],
+    gValues: Float64Array,
+    b: Float64Array,
+    solution: Float64Array,
+    posMap: Int32Array,
+    systemSize: number,
+  ): void {
+    const n = systemSize;
+    for (let m = 0; m < mosfets.length; m++) {
+      const mosfet = mosfets[m];
+      const { VTO, KP, LAMBDA, W, L, polarity } = mosfet.params;
+      const WL = W / L;
+      const nD = mosfet.nodes[0];
+      const nG = mosfet.nodes[1];
+      const nS = mosfet.nodes[2];
+
+      // Get node voltages
+      const vD = nD >= 0 ? solution[nD] : 0;
+      const vG = nG >= 0 ? solution[nG] : 0;
+      const vS = nS >= 0 ? solution[nS] : 0;
+
+      // Internal voltages adjusted for polarity (PMOS flips)
+      const vGS = polarity * (vG - vS);
+      const vDS = polarity * (vD - vS);
+
+      const Vth = Math.abs(VTO);
+
+      let ID: number;
+      let gm: number;
+      let gds: number;
+
+      if (vGS <= Vth) {
+        // Cutoff
+        ID = 0;
+        gm = 0;
+        gds = 0;
+      } else if (vDS < vGS - Vth) {
+        // Linear/triode region
+        const vov = vGS - Vth;
+        ID = KP * WL * (vov * vDS - vDS * vDS / 2) * (1 + LAMBDA * vDS);
+        gm = KP * WL * vDS * (1 + LAMBDA * vDS);
+        gds = KP * WL * (vov - vDS) * (1 + LAMBDA * vDS) + KP * WL * (vov * vDS - vDS * vDS / 2) * LAMBDA;
+      } else {
+        // Saturation region
+        const vov = vGS - Vth;
+        ID = (KP * WL / 2) * vov * vov * (1 + LAMBDA * vDS);
+        gm = KP * WL * vov * (1 + LAMBDA * vDS);
+        gds = (KP * WL / 2) * vov * vov * LAMBDA;
+      }
+
+      // Add GMIN for convergence
+      gds += GMIN;
+
+      // NR companion: Ieq = ID0 - gm*VGS0 - gds*VDS0
+      const Ieq = ID - gm * vGS - gds * vDS;
+
+      // Stamp drain row (current into drain) — direct array writes
+      if (nD >= 0) {
+        if (nG >= 0) gValues[posMap[nD * n + nG]] += gm;
+        if (nD >= 0) gValues[posMap[nD * n + nD]] += gds;
+        if (nS >= 0) gValues[posMap[nD * n + nS]] -= (gm + gds);
+        b[nD] -= polarity * Ieq;
+      }
+
+      // Stamp source row (current into source = -current into drain)
+      if (nS >= 0) {
+        if (nG >= 0) gValues[posMap[nS * n + nG]] -= gm;
+        if (nD >= 0) gValues[posMap[nS * n + nD]] -= gds;
+        if (nS >= 0) gValues[posMap[nS * n + nS]] += (gm + gds);
+        b[nS] += polarity * Ieq;
+      }
+    }
+  }
 }

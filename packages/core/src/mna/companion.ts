@@ -1,6 +1,7 @@
 import { MNAAssembler } from './assembler.js';
 import type { DeviceModel } from '../devices/device.js';
 import type { IntegrationMethod } from '../types.js';
+import { MOSFET } from '../devices/mosfet.js';
 
 /**
  * Build the effective conductance matrix for transient analysis.
@@ -21,8 +22,24 @@ export function buildCompanionSystem(
   assembler.clear();
   const ctx = assembler.getStampContext();
 
-  for (const device of devices) {
-    device.stamp(ctx);
+  if (assembler.isFastPath) {
+    // Batch-stamp MOSFETs with direct array writes, fall back for others
+    let hasMosfets = false;
+    const mosfets: MOSFET[] = [];
+    for (const d of devices) {
+      if (d instanceof MOSFET) { mosfets.push(d); hasMosfets = true; }
+      else d.stamp(ctx);
+    }
+    if (hasMosfets) {
+      MOSFET.batchStamp(
+        mosfets, assembler.gValues, assembler.b, assembler.solution,
+        assembler.posMap, assembler.systemSize,
+      );
+    }
+  } else {
+    for (const device of devices) {
+      device.stamp(ctx);
+    }
   }
 
   for (const device of devices) {

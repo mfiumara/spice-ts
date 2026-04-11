@@ -3,6 +3,7 @@ import type { MNAAssembler } from '../mna/assembler.js';
 import type { ResolvedOptions } from '../types.js';
 import { createSparseSolver } from '../solver/sparse-solver.js';
 import { ConvergenceError } from '../errors.js';
+import { MOSFET } from '../devices/mosfet.js';
 
 export function newtonRaphson(
   assembler: MNAAssembler,
@@ -14,13 +15,25 @@ export function newtonRaphson(
   const solver = createSparseSolver();
   let patternAnalyzed = false;
 
+  // Pre-classify devices for batch stamping (built lazily after first iteration)
+  let mosfets: MOSFET[] | null = null;
+  let otherDevices: DeviceModel[] | null = null;
+
   for (let iter = 0; iter < maxIter; iter++) {
     assembler.saveSolution();
     assembler.clear();
 
     const ctx = assembler.getStampContext();
-    for (const device of devices) {
-      device.stamp(ctx);
+
+    if (assembler.isFastPath && mosfets !== null && mosfets.length > 0) {
+      // Fast path: batch-stamp MOSFETs with direct array writes
+      MOSFET.batchStamp(
+        mosfets, assembler.gValues, assembler.b, assembler.solution,
+        assembler.posMap, assembler.systemSize,
+      );
+      for (const device of otherDevices!) device.stamp(ctx);
+    } else {
+      for (const device of devices) device.stamp(ctx);
     }
 
     if (!assembler.isFastPath) {
@@ -29,6 +42,13 @@ export function newtonRaphson(
         assembler.G.add(i, i, options.gmin);
       }
       assembler.lockTopology();
+      // Classify devices for batch stamping now that fast path is active
+      mosfets = [];
+      otherDevices = [];
+      for (const d of devices) {
+        if (d instanceof MOSFET) mosfets.push(d);
+        else otherDevices.push(d);
+      }
     } else {
       // Fast path: GMIN via direct array write
       const gv = assembler.gValues;
