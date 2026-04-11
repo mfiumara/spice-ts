@@ -9,7 +9,7 @@ export async function preprocess(
   netlist: string,
   resolver?: IncludeResolver,
 ): Promise<string> {
-  return preprocessInternal(netlist, resolver, new Set(), [], 0);
+  return preprocessInternal(netlist, resolver, new Set(), [], 0, {});
 }
 
 async function preprocessInternal(
@@ -18,13 +18,13 @@ async function preprocessInternal(
   visited: Set<string>,
   chain: string[],
   depth: number,
+  params: Record<string, number>,
 ): Promise<string> {
   if (depth > MAX_DEPTH) {
     throw new ParseError(`Include depth limit exceeded (${MAX_DEPTH})`, 0, '');
   }
 
   const lines = netlist.split('\n');
-  const params: Record<string, number> = {};
   const output: string[] = [];
   let inSubckt = 0;
 
@@ -88,7 +88,7 @@ async function preprocessInternal(
       visited.add(path);
       const content = await resolver(path);
       const processed = await preprocessInternal(
-        content, resolver, visited, [...chain, path], depth + 1,
+        content, resolver, visited, [...chain, path], depth + 1, params,
       );
       visited.delete(path);
       output.push(processed);
@@ -119,7 +119,7 @@ async function preprocessInternal(
         const content = await resolver(filePath);
         const extracted = extractLibSection(content, section);
         const processed = await preprocessInternal(
-          extracted, resolver, visited, [...chain, visitKey], depth + 1,
+          extracted, resolver, visited, [...chain, visitKey], depth + 1, params,
         );
         visited.delete(visitKey);
         output.push(processed);
