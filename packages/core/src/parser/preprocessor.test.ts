@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { preprocess } from './preprocessor.js';
+import type { IncludeResolver } from '../types.js';
 
 describe('preprocessor', () => {
   describe('.param substitution', () => {
@@ -46,6 +47,76 @@ describe('preprocessor', () => {
       const input = `.param vdd = 1.8\nV1 1 0 DC {vdd}\n.op`;
       const result = await preprocess(input);
       expect(result).toContain('V1 1 0 DC 1.8');
+    });
+  });
+
+  describe('.include resolution', () => {
+    it('resolves a simple .include', async () => {
+      const resolver: IncludeResolver = async (path) => {
+        if (path === 'models.lib') return '.model DMOD D(IS=1e-14)';
+        throw new Error(`Unknown file: ${path}`);
+      };
+      const input = `.include 'models.lib'\nD1 1 0 DMOD\n.op`;
+      const result = await preprocess(input, resolver);
+      expect(result).toContain('.model DMOD D(IS=1e-14)');
+      expect(result).toContain('D1 1 0 DMOD');
+      expect(result).not.toContain('.include');
+    });
+
+    it('strips quotes from include path', async () => {
+      const paths: string[] = [];
+      const resolver: IncludeResolver = async (path) => {
+        paths.push(path);
+        return '* empty';
+      };
+      await preprocess(`.include "file.lib"\n.op`, resolver);
+      expect(paths).toEqual(['file.lib']);
+    });
+
+    it('handles unquoted include path', async () => {
+      const paths: string[] = [];
+      const resolver: IncludeResolver = async (path) => {
+        paths.push(path);
+        return '* empty';
+      };
+      await preprocess(`.include file.lib\n.op`, resolver);
+      expect(paths).toEqual(['file.lib']);
+    });
+
+    it('resolves recursive includes', async () => {
+      const resolver: IncludeResolver = async (path) => {
+        if (path === 'a.lib') return `.include 'b.lib'\n.model A D(IS=1e-14)`;
+        if (path === 'b.lib') return '.model B D(IS=2e-14)';
+        throw new Error(`Unknown: ${path}`);
+      };
+      const result = await preprocess(`.include 'a.lib'\n.op`, resolver);
+      expect(result).toContain('.model A D(IS=1e-14)');
+      expect(result).toContain('.model B D(IS=2e-14)');
+    });
+
+    it('detects circular includes', async () => {
+      const resolver: IncludeResolver = async (path) => {
+        if (path === 'a.lib') return `.include 'b.lib'`;
+        if (path === 'b.lib') return `.include 'a.lib'`;
+        throw new Error(`Unknown: ${path}`);
+      };
+      await expect(preprocess(`.include 'a.lib'\n.op`, resolver))
+        .rejects.toThrow('Circular dependency detected');
+    });
+
+    it('throws when resolver is not provided', async () => {
+      await expect(preprocess(`.include 'file.lib'\n.op`))
+        .rejects.toThrow();
+    });
+
+    it('throws on depth limit exceeded', async () => {
+      const resolver: IncludeResolver = async (path) => {
+        const n = parseInt(path.replace('file', '').replace('.lib', ''));
+        if (n < 65) return `.include 'file${n + 1}.lib'`;
+        return '* end';
+      };
+      await expect(preprocess(`.include 'file0.lib'\n.op`, resolver))
+        .rejects.toThrow();
     });
   });
 });
