@@ -618,6 +618,44 @@ export class Circuit {
           });
           break;
         }
+        case 'E': {
+          const valStr = evalToken(tokens[5]);
+          result.push({
+            type: 'E', name: devName,
+            nodes: [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3]), mapNode(tokens[4])],
+            value: parseNumber(valStr),
+          });
+          break;
+        }
+        case 'G': {
+          const valStr = evalToken(tokens[5]);
+          result.push({
+            type: 'G', name: devName,
+            nodes: [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3]), mapNode(tokens[4])],
+            value: parseNumber(valStr),
+          });
+          break;
+        }
+        case 'H': {
+          const valStr = evalToken(tokens[4]);
+          result.push({
+            type: 'H', name: devName,
+            nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
+            controlSource: `${instanceName}.${tokens[3]}`,
+            value: parseNumber(valStr),
+          });
+          break;
+        }
+        case 'F': {
+          const valStr = evalToken(tokens[4]);
+          result.push({
+            type: 'F', name: devName,
+            nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
+            controlSource: `${instanceName}.${tokens[3]}`,
+            value: parseNumber(valStr),
+          });
+          break;
+        }
         case 'X': {
           // Nested subcircuit instance — recursively expand
           let subcktIdx = tokens.length - 1;

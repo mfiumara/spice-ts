@@ -387,5 +387,68 @@ describe('Circuit', () => {
       const compiled = ckt.compile();
       expect(compiled.devices).toHaveLength(2);
     });
+
+    it('expands subcircuit with VCCS (G device)', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuit({
+        name: 'gamp',
+        ports: ['inp', 'out', 'gnd'],
+        params: {},
+        body: ['G1 out gnd inp gnd 10m', 'R1 out gnd 1k'],
+      });
+      ckt.addSubcircuitInstance('X1', ['1', '2', '0'], 'gamp');
+      ckt.addVoltageSource('V1', '1', '0', { dc: 1 });
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      expect(compiled.devices.find(d => d.name === 'X1.G1')).toBeDefined();
+    });
+
+    it('expands subcircuit with VCVS (E device)', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuit({
+        name: 'eamp',
+        ports: ['inp', 'out', 'gnd'],
+        params: {},
+        body: ['E1 out gnd inp gnd 10'],
+      });
+      ckt.addSubcircuitInstance('X1', ['1', '2', '0'], 'eamp');
+      ckt.addVoltageSource('V1', '1', '0', { dc: 1 });
+      ckt.addResistor('RL', '2', '0', 1e3);
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      expect(compiled.devices.find(d => d.name === 'X1.E1')).toBeDefined();
+    });
+
+    it('expands subcircuit with CCCS (F device)', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuit({
+        name: 'famp',
+        ports: ['inp', 'out', 'gnd'],
+        params: {},
+        body: ['Vs inp mid DC 0', 'R1 mid gnd 1k', 'F1 out gnd Vs 5'],
+      });
+      ckt.addSubcircuitInstance('X1', ['1', '2', '0'], 'famp');
+      ckt.addVoltageSource('V1', '1', '0', { dc: 1 });
+      ckt.addResistor('RL', '2', '0', 1e3);
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      expect(compiled.devices.find(d => d.name === 'X1.F1')).toBeDefined();
+    });
+
+    it('expands subcircuit with CCVS (H device)', () => {
+      const ckt = new Circuit();
+      ckt.addSubcircuit({
+        name: 'hamp',
+        ports: ['inp', 'out', 'gnd'],
+        params: {},
+        body: ['Vs inp mid DC 0', 'R1 mid gnd 1k', 'H1 out gnd Vs 1k'],
+      });
+      ckt.addSubcircuitInstance('X1', ['1', '2', '0'], 'hamp');
+      ckt.addVoltageSource('V1', '1', '0', { dc: 1 });
+      ckt.addResistor('RL', '2', '0', 1e3);
+      ckt.addAnalysis('op');
+      const compiled = ckt.compile();
+      expect(compiled.devices.find(d => d.name === 'X1.H1')).toBeDefined();
+    });
   });
 });
