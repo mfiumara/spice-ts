@@ -3,6 +3,7 @@ import { MNAAssembler } from '../mna/assembler.js';
 import { VCCS } from './vccs.js';
 import { VCVS } from './vcvs.js';
 import { CCCS } from './cccs.js';
+import { CCVS } from './ccvs.js';
 
 describe('VCCS (G element)', () => {
   it('stamps transconductance gm between output and control nodes', () => {
@@ -145,5 +146,62 @@ describe('CCCS (F element)', () => {
     const biCtrl = 2;
     expect(asm.G.get(0, biCtrl)).toBe(3);
     expect(asm.G.get(1, biCtrl)).toBe(-3);
+  });
+});
+
+describe('CCVS (H element)', () => {
+  it('stamps branch equation with controlling branch coupling', () => {
+    // 2 nodes: 0=out+, 1=out-. 2 branches: 0=controlling V-source, 1=this CCVS.
+    const asm = new MNAAssembler(2, 2);
+    const h = new CCVS('H1', [0, 1], 0, 1, 1000);
+    h.stamp(asm.getStampContext());
+
+    const bi = 2 + 1;     // numNodes(2) + branchIndex(1) = 3
+    const biCtrl = 2 + 0; // numNodes(2) + controlBranchIndex(0) = 2
+
+    // KCL coupling
+    expect(asm.G.get(0, bi)).toBe(1);
+    expect(asm.G.get(1, bi)).toBe(-1);
+
+    // KVL constraint row
+    expect(asm.G.get(bi, 0)).toBe(1);
+    expect(asm.G.get(bi, 1)).toBe(-1);
+
+    // Control coupling: -gain on controlling branch column
+    expect(asm.G.get(bi, biCtrl)).toBe(-1000);
+
+    // RHS = 0
+    expect(asm.b[bi]).toBe(0);
+  });
+
+  it('handles ground on output negative node', () => {
+    // out- = ground: nodes [0, -1]. 2 branches.
+    const asm = new MNAAssembler(1, 2);
+    const h = new CCVS('H1', [0, -1], 0, 1, 500);
+    h.stamp(asm.getStampContext());
+
+    const bi = 1 + 1;     // numNodes(1) + branchIndex(1)
+    const biCtrl = 1 + 0; // numNodes(1) + controlBranchIndex(0)
+
+    expect(asm.G.get(0, bi)).toBe(1);
+    expect(asm.G.get(bi, 0)).toBe(1);
+    expect(asm.G.get(bi, biCtrl)).toBe(-500);
+  });
+
+  it('is linear with one branch', () => {
+    const h = new CCVS('H1', [0, 1], 0, 1, 1000);
+    expect(h.isNonlinear).toBe(false);
+    expect(h.branches).toEqual([1]);
+  });
+
+  it('stampAC produces identical stamps', () => {
+    const asm = new MNAAssembler(2, 2);
+    const h = new CCVS('H1', [0, 1], 0, 1, 1000);
+    h.stampAC!(asm.getStampContext(), 2 * Math.PI * 1000);
+
+    const bi = 3;
+    const biCtrl = 2;
+    expect(asm.G.get(0, bi)).toBe(1);
+    expect(asm.G.get(bi, biCtrl)).toBe(-1000);
   });
 });
