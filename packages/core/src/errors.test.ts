@@ -7,6 +7,7 @@ import {
   SingularMatrixError,
   ConvergenceError,
   TimestepTooSmallError,
+  CycleError,
 } from './errors.js';
 
 describe('SpiceError hierarchy', () => {
@@ -49,5 +50,15 @@ describe('SpiceError hierarchy', () => {
     const err = new InvalidCircuitError('no ground node');
     expect(err).toBeInstanceOf(SpiceError);
     expect(err.message).toBe('no ground node');
+  });
+});
+
+describe('CycleError', () => {
+  it('formats the dependency chain', () => {
+    const err = new CycleError(['a.lib', 'b.lib', 'a.lib']);
+    expect(err.name).toBe('CycleError');
+    expect(err.message).toBe('Circular dependency detected: a.lib → b.lib → a.lib');
+    expect(err.chain).toEqual(['a.lib', 'b.lib', 'a.lib']);
+    expect(err).toBeInstanceOf(SpiceError);
   });
 });

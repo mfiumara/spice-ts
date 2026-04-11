@@ -167,3 +167,14 @@ export interface SimulationWarning {
   message: string;
   node?: string;
 }
+
+/** Async resolver for .include and .lib file references */
+export type IncludeResolver = (path: string) => Promise<string>;
+
+/** Subcircuit definition parsed from .subckt/.ends block */
+export interface SubcktDefinition {
+  name: string;
+  ports: string[];
+  params: Record<string, number>;
+  body: string[];
+}

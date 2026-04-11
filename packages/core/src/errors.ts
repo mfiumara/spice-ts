@@ -58,3 +58,12 @@ export class TimestepTooSmallError extends SpiceError {
     this.name = 'TimestepTooSmallError';
   }
 }
+
+export class CycleError extends SpiceError {
+  constructor(
+    public readonly chain: string[],
+  ) {
+    super(`Circular dependency detected: ${chain.join(' → ')}`);
+    this.name = 'CycleError';
+  }
+}
