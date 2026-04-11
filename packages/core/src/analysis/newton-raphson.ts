@@ -1,7 +1,6 @@
 import type { DeviceModel } from '../devices/device.js';
 import type { MNAAssembler } from '../mna/assembler.js';
 import type { ResolvedOptions } from '../types.js';
-import { toCsc, updateCscValues, countNnz, type ScatterMap, type CscMatrix } from '../solver/csc-matrix.js';
 import { createSparseSolver } from '../solver/sparse-solver.js';
 import { ConvergenceError } from '../errors.js';
 
@@ -13,10 +12,7 @@ export function newtonRaphson(
   nodeNames: string[],
 ): number {
   const solver = createSparseSolver();
-  let csc: CscMatrix | null = null;
-  let scatter: ScatterMap | null = null;
   let patternAnalyzed = false;
-  let prevNnz = -1;
 
   for (let iter = 0; iter < maxIter; iter++) {
     assembler.saveSolution();
@@ -27,38 +23,26 @@ export function newtonRaphson(
       device.stamp(ctx);
     }
 
-    for (let i = 0; i < assembler.numNodes; i++) {
-      assembler.G.add(i, i, options.gmin);
-    }
-
-    // Convert sparse matrix to CSC format.
-    // On the first iteration (or if the sparsity pattern changes), do a full
-    // conversion and (re-)analyze the symbolic structure. On subsequent
-    // iterations with the same pattern, only update the numeric values.
-    if (!patternAnalyzed) {
-      const result = toCsc(assembler.G);
-      csc = result.csc;
-      scatter = result.scatter;
-      prevNnz = csc.values.length;
-      solver.analyzePattern(csc);
-      patternAnalyzed = true;
+    if (!assembler.isFastPath) {
+      // First iteration: Map-based stamp completed. Add GMIN via Map, then lock topology.
+      for (let i = 0; i < assembler.numNodes; i++) {
+        assembler.G.add(i, i, options.gmin);
+      }
+      assembler.lockTopology();
     } else {
-      // Check for structural changes (e.g. MOSFET moving between cutoff
-      // and saturation stamps different non-zero positions) without
-      // doing a full CSC rebuild.
-      const nnz = countNnz(assembler.G);
-      if (nnz !== prevNnz) {
-        const result = toCsc(assembler.G);
-        csc = result.csc;
-        scatter = result.scatter;
-        prevNnz = nnz;
-        solver.analyzePattern(csc);
-      } else {
-        updateCscValues(csc!, assembler.G, scatter!);
+      // Fast path: GMIN via direct array write
+      const gv = assembler.gValues;
+      const diag = assembler.diagIdx;
+      for (let i = 0; i < assembler.numNodes; i++) {
+        gv[diag[i]] += options.gmin;
       }
     }
 
-    solver.factorize(csc!);
+    if (!patternAnalyzed) {
+      solver.analyzePattern(assembler.getCscMatrix());
+      patternAnalyzed = true;
+    }
+    solver.factorize(assembler.getCscMatrix());
     const x = solver.solve(new Float64Array(assembler.b));
     assembler.solution.set(x);
 

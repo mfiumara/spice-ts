@@ -18,6 +18,18 @@ export class SparseMatrix {
     rowMap.set(col, (rowMap.get(col) ?? 0) + value);
   }
 
+  /** Register a structural non-zero position without adding a value. */
+  touch(row: number, col: number): void {
+    let rowMap = this.rows.get(row);
+    if (!rowMap) {
+      rowMap = new Map();
+      this.rows.set(row, rowMap);
+    }
+    if (!rowMap.has(col)) {
+      rowMap.set(col, 0);
+    }
+  }
+
   get(row: number, col: number): number {
     return this.rows.get(row)?.get(col) ?? 0;
   }
