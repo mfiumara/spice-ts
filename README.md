@@ -165,60 +165,65 @@ The resolver is platform-agnostic — use `fetch()` in the browser, `readFile()`
 
 ## Benchmarks
 
-Measured on an AMD Ryzen machine running Node.js v22 and ngspice-42. spice-ts times are from `vitest bench` (tinybench, statistically stabilised). ngspice times include process spawn + file I/O overhead.
+Measured on Apple M4 Pro, Node.js v24, ngspice-44. spice-ts times are from `vitest bench` (tinybench, statistically stabilised). ngspice times include process spawn + file I/O overhead (~7 ms baseline).
 
 ### Scalability — DC (.op)
 
 | Circuit | Nodes | spice-ts | ngspice | vs ngspice |
 |---|---|---|---|---|
-| Resistor ladder | 10 | 0.53 ms | ~5 ms | 9× faster |
-| Resistor ladder | 100 | 2.92 ms | ~5 ms | 1.7× faster |
-| Resistor ladder | 500 | 163 ms | ~5 ms | 31× slower |
-| Resistor ladder | 1000 | 1572 ms | ~5 ms | 314× slower |
+| Resistor ladder | 10 | 0.04 ms | 28 ms | **700× faster** |
+| Resistor ladder | 100 | 1.8 ms | 7 ms | **4× faster** |
+| Resistor ladder | 500 | 179 ms | 10 ms | 18× slower |
 
-> **Note:** The dense LU solver is O(n³). For large circuits (>200 nodes), performance degrades sharply compared to ngspice's sparse KLU solver. This is a [known limitation](#limitations) targeted for a future release.
+> **Note:** The numeric LU factorization is still O(n³) with a dense intermediate. The solver architecture (symbolic/numeric split, CSC format, `SparseSolver` interface) is designed for a future true sparse factorization or KLU WASM plugin. For circuits above ~200 nodes, ngspice's sparse KLU solver dominates.
 
 ### Scalability — Transient
 
-| Circuit | Nodes | spice-ts | ngspice | vs ngspice |
+| Circuit | Stages | spice-ts | ngspice | vs ngspice |
 |---|---|---|---|---|
-| RC chain | 10 | 4.5 ms | 5 ms | 1.1× faster |
-| RC chain | 50 | 15 ms | 6 ms | 2.5× slower |
-| RC chain | 100 | 85 ms | 7 ms | 12× slower |
-| RC chain | 200 | 554 ms | 10 ms | 55× slower |
-| LC ladder | 10 | 4.9 ms | 22 ms | 4.5× faster |
-| LC ladder | 50 | 82 ms | 31 ms | 2.7× slower |
-| LC ladder | 100 | 588 ms | 41 ms | 14× slower |
+| RC chain | 10 | 13.7 ms | 10 ms | 1.4× slower |
+| RC chain | 50 | 162 ms | 14 ms | 12× slower |
+| RC chain | 100 | 837 ms | 23 ms | 36× slower |
+| LC ladder | 10 | 42 ms | 13 ms | 3.2× slower |
+| LC ladder | 50 | 1.67 s | 25 ms | 67× slower |
 
 ### Scalability — AC
 
-| Circuit | Nodes | spice-ts | ngspice | vs ngspice |
+| Circuit | Stages | spice-ts | ngspice | vs ngspice |
 |---|---|---|---|---|
-| RC chain | 10 | 3.6 ms | 1 ms | 3.6× slower |
-| RC chain | 50 | 47 ms | 1 ms | 47× slower |
-| RC chain | 100 | 325 ms | 2 ms | 163× slower |
-| RC chain | 200 | 2454 ms | 4 ms | 614× slower |
+| RC chain | 10 | 2.3 ms | 8 ms | **3.5× faster** |
+| RC chain | 50 | 55 ms | 8 ms | 7× slower |
+| RC chain | 100 | 415 ms | 9 ms | 46× slower |
 
 ### Nonlinear — CMOS / Ring Oscillators
 
-For small nonlinear circuits, spice-ts avoids ngspice's process spawn overhead and is substantially faster:
-
 | Circuit | spice-ts | ngspice | vs ngspice |
 |---|---|---|---|
-| CMOS inverter chain (5 stages) | 2.8 ms | 52 ms | **19× faster** |
-| CMOS inverter chain (10 stages) | 2.8 ms | 55 ms | **20× faster** |
-| Ring oscillator (3-stage) | 0.8 ms | 112 ms | **140× faster** |
-| Ring oscillator (5-stage) | 0.7 ms | 124 ms | **170× faster** |
-| Ring oscillator (11-stage) | 1.2 ms | 147 ms | **127× faster** |
+| CMOS inverter chain (5 stages) | 22.6 ms | 21 ms | ~parity |
+| CMOS inverter chain (10 stages) | 43.8 ms | 30 ms | 1.5× slower |
+| Ring oscillator (3-stage) | 50.6 ms | 32 ms | 1.6× slower |
+| Ring oscillator (5-stage) | 73.6 ms | 41 ms | 1.8× slower |
+| Ring oscillator (11-stage) | 198 ms | 69 ms | 2.9× slower |
+
+### SPICE3 Reference Circuits
+
+| Circuit | Analysis | spice-ts |
+|---|---|---|
+| BJT differential pair | DC | 0.49 ms |
+| RC ladder 5-stage | AC | 1.32 ms |
+| One-stage OTA | DC | 0.58 ms |
+| CMOS inverter | Transient | 5.3 ms |
+| Bandpass RLC | AC | 0.57 ms |
 
 ### Accuracy
 
 | Test | Metric | spice-ts | Expected | Error |
 |---|---|---|---|---|
-| RC step response | V(out) at t=τ | 3.167 V | 3.161 V | **0.20%** |
+| RC step response | V(out) at t=τ | 3.151 V | 3.161 V | **0.29%** |
 | BJT CE amplifier | V(base) DC bias | 2.048 V | 2.105 V | **2.7%** |
 | RLC bandpass | peak frequency | 1585 Hz | 1592 Hz | **0.4%** |
-| RLC resonance (transient) | oscillation frequency | 1242 Hz | 1592 Hz | 21.9%† |
+| RC ladder 5-stage | f<sub>-3dB</sub> | 12.76 Hz | 12.73 Hz | **0.23%** |
+| RLC resonance (transient) | oscillation frequency | 1579 Hz | 1592 Hz | 0.8%† |
 
 †RLC transient resonance error is due to numerical damping in the trapezoidal integrator with the default timestep. Use a finer timestep or `integrationMethod: 'euler'` to reduce it. AC analysis of the same circuit gives 0.4% error (see RLC bandpass above).
 
@@ -226,9 +231,8 @@ Run `pnpm bench:accuracy` to see the full accuracy report including SPICE3 Quarl
 
 ## Limitations
 
-- **Dense LU solver:** The current solver converts the sparse MNA matrix to dense before factoring. This is O(n³) and impractical above ~200-300 nodes. A future release will use a sparse LU (KLU-style).
-- **Level 1 MOSFET only:** No Level 2/3/BSIM models (BSIM3v3 is in progress).
-- **No controlled sources:** VCVS, VCCS, CCVS, CCCS (E/F/G/H devices) are not yet supported.
+- **Dense numeric factorization:** The solver uses a sparse architecture (CSC format, symbolic/numeric split, `SparseSolver` interface) but the numeric LU factorization still uses a dense O(n³) intermediate. A future release will implement true sparse column-by-column factorization or swap in KLU via WASM.
+- **BSIM3v3 MOSFET:** Supported alongside Level 1 Shichman-Hodges. BSIM4, EKV not yet available.
 
 ## Development
 
