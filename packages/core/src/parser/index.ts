@@ -2,17 +2,61 @@ import { Circuit } from '../circuit.js';
 import { ParseError } from '../errors.js';
 import { tokenizeNetlist, parseNumber } from './tokenizer.js';
 import { parseModelCard } from './model-parser.js';
-import type { SourceWaveform, PulseSource, SinSource } from '../types.js';
+import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
+
+export { parseSourceWaveform } from './waveform-parser.js';
 
 export function parse(netlist: string): Circuit {
   const lines = tokenizeNetlist(netlist);
   const circuit = new Circuit();
+
+  let subcktCollector: { name: string; ports: string[]; params: Record<string, number>; body: string[]; depth: number } | null = null;
 
   for (const { tokens, lineNumber, raw } of lines) {
     if (tokens.length === 0) continue;
     const first = tokens[0].toUpperCase();
 
     try {
+      // Inside a .subckt — collect raw lines until .ends
+      if (subcktCollector !== null) {
+        if (first === '.SUBCKT') {
+          subcktCollector.depth++;
+          subcktCollector.body.push(raw);
+        } else if (first === '.ENDS') {
+          if (subcktCollector.depth > 0) {
+            subcktCollector.depth--;
+            subcktCollector.body.push(raw);
+          } else {
+            circuit.addSubcircuit({
+              name: subcktCollector.name,
+              ports: subcktCollector.ports,
+              params: subcktCollector.params,
+              body: subcktCollector.body,
+            });
+            subcktCollector = null;
+          }
+        } else {
+          subcktCollector.body.push(raw);
+        }
+        continue;
+      }
+
+      if (first === '.SUBCKT') {
+        const subcktName = tokens[1];
+        const ports: string[] = [];
+        const params: Record<string, number> = {};
+        for (let i = 2; i < tokens.length; i++) {
+          const eqIdx = tokens[i].indexOf('=');
+          if (eqIdx > 0) {
+            params[tokens[i].slice(0, eqIdx).toUpperCase()] = parseNumber(tokens[i].slice(eqIdx + 1));
+          } else {
+            ports.push(tokens[i]);
+          }
+        }
+        subcktCollector = { name: subcktName, ports, params, body: [], depth: 0 };
+        continue;
+      }
+
       if (first.startsWith('.')) {
         parseDotCommand(circuit, tokens, lineNumber);
       } else {
@@ -60,6 +104,19 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
     }
     case '.MODEL':
       circuit.addModel(parseModelCard(tokens, lineNumber));
+      break;
+    case '.INCLUDE':
+      throw new ParseError(
+        '.include directive requires async parsing. Use parseAsync() with a resolveInclude option.',
+        lineNumber, tokens.join(' '),
+      );
+    case '.LIB':
+      if (tokens.length >= 3) {
+        throw new ParseError(
+          '.lib directive with file requires async parsing. Use parseAsync() with a resolveInclude option.',
+          lineNumber, tokens.join(' '),
+        );
+      }
       break;
     default:
       break;
@@ -118,80 +175,23 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
         modelName = tokens[4];       // 3-terminal form: D G S model
         instanceParamStart = 5;
       }
-      const instanceParams = parseInstanceParams(tokens, instanceParamStart);
-      circuit.addMOSFET(name, tokens[1], tokens[2], tokens[3], modelName, instanceParams, bulkNode);
+      const mosfetParams = parseInstanceParams(tokens, instanceParamStart);
+      circuit.addMOSFET(name, tokens[1], tokens[2], tokens[3], modelName, mosfetParams, bulkNode);
+      break;
+    }
+    case 'X': {
+      // X<name> <port1> <port2> ... <subcktName> [param=val ...]
+      let subcktIdx = tokens.length - 1;
+      while (subcktIdx > 1 && tokens[subcktIdx].includes('=')) {
+        subcktIdx--;
+      }
+      const subcktName = tokens[subcktIdx];
+      const ports = tokens.slice(1, subcktIdx);
+      const xParams = parseInstanceParams(tokens, subcktIdx + 1);
+      circuit.addSubcircuitInstance(name, ports, subcktName, xParams);
       break;
     }
     default:
       throw new ParseError(`Unknown device type: '${type}'`, lineNumber, tokens.join(' '));
   }
-}
-
-function parseSourceWaveform(tokens: string[], startIdx: number): SourceWaveform {
-  if (startIdx >= tokens.length) return { type: 'dc', value: 0 };
-
-  // Scan for AC keyword anywhere in the remaining tokens (e.g. "DC 0 AC 1")
-  const upper = tokens.slice(startIdx).map(t => t.toUpperCase());
-  const acIdx = upper.indexOf('AC');
-  if (acIdx >= 0) {
-    const absIdx = startIdx + acIdx;
-    const magnitude = parseNumber(tokens[absIdx + 1]);
-    const maybePhase = tokens[absIdx + 2]?.toUpperCase();
-    const phase = (maybePhase && maybePhase !== 'DC' && !maybePhase.startsWith('.'))
-      ? parseNumber(tokens[absIdx + 2])
-      : 0;
-    return { type: 'ac', magnitude, phase };
-  }
-
-  const keyword = tokens[startIdx].toUpperCase();
-
-  if (keyword === 'DC') {
-    return { type: 'dc', value: parseNumber(tokens[startIdx + 1]) };
-  }
-
-  if (keyword === 'AC') {
-    const magnitude = parseNumber(tokens[startIdx + 1]);
-    const phase = tokens[startIdx + 2] ? parseNumber(tokens[startIdx + 2]) : 0;
-    return { type: 'ac', magnitude, phase };
-  }
-
-  if (keyword === 'PULSE') {
-    const parenStart = tokens.indexOf('(', startIdx);
-    const parenEnd = tokens.indexOf(')', startIdx);
-    const args = tokens.slice(parenStart + 1, parenEnd).map(parseNumber);
-    return {
-      type: 'pulse', v1: args[0] ?? 0, v2: args[1] ?? 0,
-      delay: args[2] ?? 0, rise: args[3] ?? 1e-12, fall: args[4] ?? 1e-12,
-      width: args[5] ?? Infinity, period: args[6] ?? Infinity,
-    } satisfies PulseSource;
-  }
-
-  if (keyword === 'SIN') {
-    const parenStart = tokens.indexOf('(', startIdx);
-    const parenEnd = tokens.indexOf(')', startIdx);
-    const args = tokens.slice(parenStart + 1, parenEnd).map(parseNumber);
-    return {
-      type: 'sin', offset: args[0] ?? 0, amplitude: args[1] ?? 0,
-      frequency: args[2] ?? 0, delay: args[3], damping: args[4], phase: args[5],
-    } satisfies SinSource;
-  }
-
-  return { type: 'dc', value: parseNumber(tokens[startIdx]) };
-}
-
-/**
- * Parse key=value instance parameters such as W=10u L=1u.
- * Returns a map of uppercase keys to numeric values.
- */
-function parseInstanceParams(tokens: string[], startIdx: number): Record<string, number> {
-  const params: Record<string, number> = {};
-  for (let i = startIdx; i < tokens.length; i++) {
-    const eqIdx = tokens[i].indexOf('=');
-    if (eqIdx > 0) {
-      const key = tokens[i].slice(0, eqIdx).toUpperCase();
-      const val = parseNumber(tokens[i].slice(eqIdx + 1));
-      params[key] = val;
-    }
-  }
-  return params;
 }
