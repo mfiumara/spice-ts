@@ -2,7 +2,7 @@ import type { ResolvedOptions, TransientAnalysis } from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
 import { MNAAssembler } from '../mna/assembler.js';
 import { buildCompanionSystem } from '../mna/companion.js';
-import { toCsc, updateCscValues, type ScatterMap, type CscMatrix } from '../solver/csc-matrix.js';
+import { toCsc, updateCscValues, countNnz, type ScatterMap, type CscMatrix } from '../solver/csc-matrix.js';
 import { createSparseSolver } from '../solver/sparse-solver.js';
 import { TimestepTooSmallError } from '../errors.js';
 import { TransientResult } from '../results.js';
@@ -79,9 +79,9 @@ export function solveTransient(
         solver.analyzePattern(csc);
         patternAnalyzed = true;
       } else {
-        const result = toCsc(assembler.G);
-        const nnz = result.csc.values.length;
+        const nnz = countNnz(assembler.G);
         if (nnz !== prevNnz) {
+          const result = toCsc(assembler.G);
           csc = result.csc;
           scatter = result.scatter;
           prevNnz = nnz;

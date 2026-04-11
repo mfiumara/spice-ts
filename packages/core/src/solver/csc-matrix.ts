@@ -48,6 +48,14 @@ export function toCsc(sparse: SparseMatrix): { csc: CscMatrix; scatter: ScatterM
   return { csc: { size: n, colPtr, rowIdx, values }, scatter };
 }
 
+export function countNnz(sparse: SparseMatrix): number {
+  let count = 0;
+  for (let i = 0; i < sparse.size; i++) {
+    count += sparse.getRow(i).size;
+  }
+  return count;
+}
+
 export function updateCscValues(
   csc: CscMatrix,
   sparse: SparseMatrix,
