@@ -8,6 +8,7 @@ import { Inductor } from './devices/inductor.js';
 import { Diode } from './devices/diode.js';
 import { BJT } from './devices/bjt.js';
 import { MOSFET } from './devices/mosfet.js';
+import { BSIM3v3 } from './devices/bsim3v3.js';
 import { GROUND_NODE } from './types.js';
 
 export interface CompiledCircuit {
@@ -111,11 +112,17 @@ export class Circuit {
     nodeDrain: string, nodeGate: string, nodeSource: string,
     modelName: string,
     instanceParams?: Record<string, number>,
+    nodeBulk?: string,
   ): void {
     this.nodeSet.add(nodeDrain);
     this.nodeSet.add(nodeGate);
     this.nodeSet.add(nodeSource);
-    this.descriptors.push({ type: 'M', name, nodes: [nodeDrain, nodeGate, nodeSource], modelName, params: instanceParams });
+    if (nodeBulk) this.nodeSet.add(nodeBulk);
+    this.descriptors.push({
+      type: 'M', name,
+      nodes: nodeBulk ? [nodeDrain, nodeGate, nodeSource, nodeBulk] : [nodeDrain, nodeGate, nodeSource],
+      modelName, params: instanceParams,
+    });
   }
 
   addModel(params: ModelParams): void {
@@ -231,8 +238,27 @@ export class Circuit {
           const model = modelName ? this._models.get(modelName) : undefined;
           const modelParams = model?.params ?? {};
           const polarity = model?.type === 'PMOS' ? -1 : 1;
-          // Instance params (W, L) take precedence over model params
-          devices.push(new MOSFET(desc.name, nodeIndices, { ...modelParams, ...desc.params, polarity }));
+          const level = modelParams.LEVEL ?? 1;
+
+          if (level === 49 || level === 8) {
+            // BSIM3v3 — 4-terminal
+            const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2]; // default bulk=source
+            const nodeIdxs = [
+              resolveNode(desc.nodes[0]),
+              resolveNode(desc.nodes[1]),
+              resolveNode(desc.nodes[2]),
+              resolveNode(bulkNode),
+            ];
+            devices.push(new BSIM3v3(
+              desc.name, nodeIdxs, modelParams,
+              { W: desc.params?.W ?? 1e-6, L: desc.params?.L ?? 1e-6 },
+              polarity,
+            ));
+          } else {
+            // Level 1 — existing behavior
+            const nodeIdxs = desc.nodes.slice(0, 3).map(resolveNode);
+            devices.push(new MOSFET(desc.name, nodeIdxs, { ...modelParams, ...desc.params, polarity }));
+          }
           break;
         }
         default:

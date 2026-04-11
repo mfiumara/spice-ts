@@ -109,7 +109,9 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
       // body node and tokens[5] is the model name; otherwise tokens[4] is the model name.
       let modelName: string;
       let instanceParamStart: number;
+      let bulkNode: string | undefined;
       if (tokens[5] && !tokens[5].includes('=')) {
+        bulkNode = tokens[4];
         modelName = tokens[5];       // 4-terminal form: D G S B model
         instanceParamStart = 6;
       } else {
@@ -117,7 +119,7 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
         instanceParamStart = 5;
       }
       const instanceParams = parseInstanceParams(tokens, instanceParamStart);
-      circuit.addMOSFET(name, tokens[1], tokens[2], tokens[3], modelName, instanceParams);
+      circuit.addMOSFET(name, tokens[1], tokens[2], tokens[3], modelName, instanceParams, bulkNode);
       break;
     }
     default:
