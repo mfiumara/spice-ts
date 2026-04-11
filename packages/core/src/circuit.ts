@@ -36,6 +36,7 @@ interface DeviceDescriptor {
   waveform?: Partial<SourceWaveform> & { dc?: number };
   modelName?: string;
   params?: Record<string, number>;
+  controlSource?: string;
 }
 
 export class Circuit {
