@@ -42,4 +42,47 @@ describe('MNAAssembler', () => {
     expect(asm.b[0]).toBe(0);
     expect(asm.solution[0]).toBe(2.5);
   });
+
+  it('lockTopology enables fast-path stamping', () => {
+    const asm = new MNAAssembler(2, 0);
+    const ctx1 = asm.getStampContext();
+    ctx1.stampG(0, 0, 1); ctx1.stampG(0, 1, -1);
+    ctx1.stampG(1, 0, -1); ctx1.stampG(1, 1, 1);
+    ctx1.stampC(0, 0, 0.5);
+    asm.lockTopology();
+    expect(asm.isFastPath).toBe(true);
+
+    asm.clear();
+    const ctx2 = asm.getStampContext();
+    ctx2.stampG(0, 0, 2); ctx2.stampG(0, 1, -2);
+    ctx2.stampG(1, 0, -2); ctx2.stampG(1, 1, 2);
+    expect(asm.gValues[asm.diagIdx[0]]).toBe(2);
+    expect(asm.gValues[asm.diagIdx[1]]).toBe(2);
+  });
+
+  it('getCscMatrix returns valid CSC with fast-path values', () => {
+    const asm = new MNAAssembler(2, 0);
+    const ctx = asm.getStampContext();
+    ctx.stampG(0, 0, 3); ctx.stampG(0, 1, 1);
+    ctx.stampG(1, 0, 1); ctx.stampG(1, 1, 3);
+    asm.lockTopology();
+    const csc = asm.getCscMatrix();
+    expect(csc.size).toBe(2);
+    expect(csc.colPtr.length).toBe(3);
+    const vals = Array.from(csc.values);
+    expect(vals).toContain(3);
+    expect(vals).toContain(1);
+  });
+
+  it('clear resets gValues and cValues when fast-path active', () => {
+    const asm = new MNAAssembler(2, 0);
+    const ctx = asm.getStampContext();
+    ctx.stampG(0, 0, 5);
+    ctx.stampC(0, 0, 1);
+    asm.lockTopology();
+    expect(asm.gValues[asm.diagIdx[0]]).toBe(5);
+    asm.clear();
+    expect(asm.gValues[asm.diagIdx[0]]).toBe(0);
+    expect(asm.cValues[asm.diagIdx[0]]).toBe(0);
+  });
 });
