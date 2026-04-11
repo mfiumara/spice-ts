@@ -199,15 +199,17 @@ spice-ts uses a native complex sparse LU solver — no 2n×2n real expansion. Fa
 
 ### Nonlinear (CMOS / Ring Oscillators)
 
+Batch MOSFET evaluation bypasses polymorphic dispatch — all transistors in a model group are evaluated in one tight loop with direct array writes:
+
 | Circuit | spice-ts | eecircuit (WASM) | ngspice (native) | vs eecircuit |
 |---|---|---|---|---|
-| CMOS inv chain (5 stg) | 18.2 ms | 16.6 ms | 8.7 ms | ~parity |
-| CMOS inv chain (10 stg) | 28.2 ms | 25.3 ms | 13.5 ms | ~parity |
-| Ring oscillator (3 stg) | 33.6 ms | 30.6 ms | 15.0 ms | ~parity |
-| Ring oscillator (5 stg) | 58.6 ms | 41.6 ms | 20.4 ms | 1.4x slower |
-| Ring oscillator (11 stg) | 120.2 ms | 70.8 ms | 37.3 ms | 1.7x slower |
+| CMOS inv chain (5 stg) | 13.2 ms | 16.9 ms | 8.5 ms | **1.3x faster** |
+| CMOS inv chain (10 stg) | 21.7 ms | 28.4 ms | 13.3 ms | **1.3x faster** |
+| Ring oscillator (3 stg) | 25.7 ms | 29.8 ms | 14.5 ms | **1.2x faster** |
+| Ring oscillator (5 stg) | 37.6 ms | 40.5 ms | 20.8 ms | **1.1x faster** |
+| Ring oscillator (11 stg) | 84.3 ms | 69.8 ms | 37.4 ms | 1.2x slower |
 
-> **Where spice-ts shines:** DC (up to 5.5x faster than WASM), AC (1.8-3.1x faster via native complex sparse solver), and small-to-medium transient (parity). All with zero dependencies — no WASM, no native binary, no process spawn. The remaining gap on large nonlinear transient circuits is TypeScript overhead in tight numerical loops.
+> **Where spice-ts shines:** DC (up to 5x faster than WASM), AC (1.6-3x faster via native complex sparse solver), nonlinear CMOS (1.1-1.3x faster), and small-medium transient (parity). All with zero dependencies — no WASM, no native binary, no process spawn. The only remaining gap is the largest ring oscillator (11-stage, 1.2x slower than WASM).
 
 ### Accuracy
 
@@ -225,7 +227,7 @@ Run `pnpm bench:accuracy` to see the full accuracy report including SPICE3 Quarl
 
 ## Limitations
 
-- **Large nonlinear transient:** Ring oscillators and large CMOS chains are 1.4-1.7x slower than ngspice-WASM due to TypeScript overhead in tight Newton-Raphson iteration loops.
+- **Large ring oscillators:** The 11-stage ring oscillator is 1.2x slower than ngspice-WASM. This is near the fundamental TypeScript-vs-compiled-C overhead floor.
 - **BSIM3v3 MOSFET:** Supported alongside Level 1 Shichman-Hodges. BSIM4, EKV not yet available.
 
 ## Development
