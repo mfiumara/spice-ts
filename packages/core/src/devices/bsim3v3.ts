@@ -25,7 +25,7 @@ export class BSIM3v3 implements DeviceModel {
     for (const key of Object.keys(modelParams)) {
       const upper = key.toUpperCase();
       if (upper in merged) {
-        (merged as Record<string, number>)[upper] = modelParams[key];
+        (merged as unknown as Record<string, number>)[upper] = modelParams[key];
       }
     }
     this.params = merged;
