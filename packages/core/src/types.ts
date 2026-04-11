@@ -62,6 +62,8 @@ export interface SimulationOptions {
   integrationMethod?: IntegrationMethod;
   /** Trapezoidal truncation error factor. Default: 7 */
   trtol?: number;
+  /** Minimum conductance added to all node diagonals for gmin stepping. Default: 0 (disabled) */
+  gmin?: number;
 }
 
 /** Resolved options with all defaults filled in */
@@ -74,6 +76,7 @@ export interface ResolvedOptions {
   maxTimestep: number;
   integrationMethod: IntegrationMethod;
   trtol: number;
+  gmin: number;
 }
 
 export const DEFAULT_OPTIONS: ResolvedOptions = {
@@ -85,6 +88,7 @@ export const DEFAULT_OPTIONS: ResolvedOptions = {
   maxTimestep: Infinity,
   integrationMethod: 'trapezoidal',
   trtol: 7,
+  gmin: 0,
 };
 
 export function resolveOptions(opts?: SimulationOptions, stopTime?: number): ResolvedOptions {
@@ -97,6 +101,7 @@ export function resolveOptions(opts?: SimulationOptions, stopTime?: number): Res
     maxTimestep: opts?.maxTimestep ?? (stopTime ? stopTime / 50 : DEFAULT_OPTIONS.maxTimestep),
     integrationMethod: opts?.integrationMethod ?? DEFAULT_OPTIONS.integrationMethod,
     trtol: opts?.trtol ?? DEFAULT_OPTIONS.trtol,
+    gmin: opts?.gmin ?? DEFAULT_OPTIONS.gmin,
   };
 }
 

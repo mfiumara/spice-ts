@@ -17,7 +17,7 @@ export class VoltageSource implements DeviceModel {
   stamp(ctx: StampContext): void {
     const [nPlus, nMinus] = this.nodes;
     const bi = ctx.numNodes + this.branchIndex;
-    const voltage = this.getVoltageAtTime(ctx.time);
+    const voltage = this.getVoltageAtTime(ctx.time) * ctx.sourceScale;
 
     // KCL: branch current enters positive node, leaves negative
     if (nPlus >= 0) ctx.stampG(nPlus, bi, 1);

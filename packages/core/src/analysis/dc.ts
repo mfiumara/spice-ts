@@ -12,6 +12,24 @@ export function solveDCOperatingPoint(
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
   const assembler = new MNAAssembler(nodeCount, branchCount);
 
+  // Source ramping: gradually ramp source voltages to help NR convergence
+  // for circuits with many nonlinear devices (e.g., CMOS inverter chains).
+  const hasNonlinear = devices.some(d => d.isNonlinear);
+  if (hasNonlinear) {
+    const rampSteps = [0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+    for (const scale of rampSteps) {
+      const savedSolution = new Float64Array(assembler.solution);
+      assembler.sourceScale = scale;
+      try {
+        newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames);
+      } catch {
+        // Restore last good solution so divergence doesn't cascade
+        assembler.solution.set(savedSolution);
+      }
+    }
+    assembler.sourceScale = 1.0;
+  }
+
   newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames);
 
   const voltageMap = new Map<string, number>();

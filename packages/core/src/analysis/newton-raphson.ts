@@ -20,6 +20,12 @@ export function newtonRaphson(
       device.stamp(ctx);
     }
 
+    // Add GMIN to all node diagonals for numerical stability
+    // (standard SPICE practice — prevents singular matrix from cutoff devices)
+    for (let i = 0; i < assembler.numNodes; i++) {
+      assembler.G.add(i, i, options.gmin);
+    }
+
     const x = solveLU(assembler.G, new Float64Array(assembler.b));
     assembler.solution.set(x);
 

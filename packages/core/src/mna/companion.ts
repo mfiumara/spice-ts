@@ -15,6 +15,7 @@ export function buildCompanionSystem(
   method: IntegrationMethod,
   prevSolution: Float64Array,
   prevB?: Float64Array,
+  gmin = 1e-12,
 ): void {
   // Clear and re-stamp at current time
   assembler.clear();
@@ -26,6 +27,11 @@ export function buildCompanionSystem(
 
   for (const device of devices) {
     device.stampDynamic?.(ctx);
+  }
+
+  // Add GMIN to all node diagonals for numerical stability
+  for (let i = 0; i < assembler.numNodes; i++) {
+    assembler.G.add(i, i, gmin);
   }
 
   if (method === 'euler') {

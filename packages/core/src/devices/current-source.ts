@@ -13,7 +13,7 @@ export class CurrentSource implements DeviceModel {
 
   stamp(ctx: StampContext): void {
     const [nPlus, nMinus] = this.nodes;
-    const current = this.getCurrentAtTime(ctx.time);
+    const current = this.getCurrentAtTime(ctx.time) * ctx.sourceScale;
 
     if (nPlus >= 0) ctx.stampB(nPlus, current);
     if (nMinus >= 0) ctx.stampB(nMinus, -current);

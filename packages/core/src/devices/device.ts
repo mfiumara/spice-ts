@@ -7,6 +7,7 @@ export interface StampContext {
   time: number;
   dt: number;
   numNodes: number;
+  sourceScale: number;
 }
 
 export interface DeviceModel {

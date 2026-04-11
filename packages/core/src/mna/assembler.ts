@@ -10,6 +10,7 @@ export class MNAAssembler {
   public readonly systemSize: number;
   public time = 0;
   public dt = 0;
+  public sourceScale = 1;
 
   constructor(
     public readonly numNodes: number,
@@ -33,6 +34,7 @@ export class MNAAssembler {
       time: this.time,
       dt: this.dt,
       numNodes: this.numNodes,
+      sourceScale: this.sourceScale,
     };
   }
 

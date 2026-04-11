@@ -62,7 +62,7 @@ export function solveTransient(
     let converged = false;
 
     for (let iter = 0; iter < options.maxTransientIterations; iter++) {
-      buildCompanionSystem(assembler, devices, actualDt, options.integrationMethod, prevSol, prevB);
+      buildCompanionSystem(assembler, devices, actualDt, options.integrationMethod, prevSol, prevB, options.gmin);
 
       const x = solveLU(assembler.G, new Float64Array(assembler.b));
 
