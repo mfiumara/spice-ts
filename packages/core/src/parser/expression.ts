@@ -63,13 +63,11 @@ class ExprParser {
   }
 
   private parseExp(): number {
-    let left = this.parseUnary();
-    while (this.pos < this.src.length) {
-      this.skipWhitespace();
-      if (this.src[this.pos] === '*' && this.src[this.pos + 1] === '*') {
-        this.pos += 2;
-        left = left ** this.parseUnary();
-      } else break;
+    const left = this.parseUnary();
+    this.skipWhitespace();
+    if (this.src[this.pos] === '*' && this.src[this.pos + 1] === '*') {
+      this.pos += 2;
+      return left ** this.parseExp(); // recursive = right-associative
     }
     return left;
   }
@@ -150,6 +148,6 @@ class ExprParser {
   }
 
   skipWhitespace(): void {
-    while (this.pos < this.src.length && this.src[this.pos] === ' ') this.pos++;
+    while (this.pos < this.src.length && (this.src[this.pos] === ' ' || this.src[this.pos] === '\t')) this.pos++;
   }
 }

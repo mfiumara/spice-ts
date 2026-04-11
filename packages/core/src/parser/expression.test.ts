@@ -23,6 +23,10 @@ describe('evaluateExpression', () => {
       expect(evaluateExpression('2**3', {})).toBe(8);
     });
 
+    it('treats exponentiation as right-associative', () => {
+      expect(evaluateExpression('2**3**2', {})).toBe(512); // 2**(3**2), not (2**3)**2
+    });
+
     it('respects operator precedence (mul before add)', () => {
       expect(evaluateExpression('2+3*4', {})).toBe(14);
     });
