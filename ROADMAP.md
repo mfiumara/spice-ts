@@ -12,6 +12,7 @@ This document tracks planned enhancements. Each item links to a GitHub Issue for
 | Gummel-Poon BJT model | [#5](https://github.com/mfiumara/spice-ts/issues/5) | Full GP model replacing Ebers-Moll |
 | Voltage/current controlled sources (VCVS, VCCS, CCVS, CCCS) | [#6](https://github.com/mfiumara/spice-ts/issues/6) | Essential for amplifier modelling |
 | Lossless transmission line | [#7](https://github.com/mfiumara/spice-ts/issues/7) | High-speed interconnect simulation |
+| Compiled model plugin API (WASM) | | Vendor-supplied binary models via plugin interface |
 
 ## Solver & Analysis
 

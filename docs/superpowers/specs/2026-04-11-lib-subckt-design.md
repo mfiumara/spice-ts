@@ -141,7 +141,18 @@ This is a combined `.include` + section selection: resolve the file via the asyn
 
 ### Cycle Detection
 
-The preprocessor tracks a visited set of `(filename, section)` pairs and throws a `ParseError` on cycles.
+The preprocessor tracks a visited set of `(filename, section)` pairs and throws a `CycleError` (a new `SpiceError` subclass) on cycles. `CycleError` includes the chain of files/sections that formed the cycle, making it easy to diagnose.
+
+```typescript
+class CycleError extends SpiceError {
+  constructor(
+    public readonly chain: string[],  // e.g., ['a.lib', 'b.lib', 'a.lib']
+  ) {
+    super(`Circular dependency detected: ${chain.join(' → ')}`);
+    this.name = 'CycleError';
+  }
+}
+```
 
 ---
 
