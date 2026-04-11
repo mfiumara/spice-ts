@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { MNAAssembler } from '../mna/assembler.js';
 import { VCCS } from './vccs.js';
 import { VCVS } from './vcvs.js';
+import { CCCS } from './cccs.js';
 
 describe('VCCS (G element)', () => {
   it('stamps transconductance gm between output and control nodes', () => {
@@ -101,5 +102,48 @@ describe('VCVS (E element)', () => {
     const bi = 4;
     expect(asm.G.get(0, bi)).toBe(1);
     expect(asm.G.get(bi, 2)).toBe(-10);
+  });
+});
+
+describe('CCCS (F element)', () => {
+  it('stamps gain into controlling branch column at output nodes', () => {
+    // 2 nodes + 1 branch (from controlling V-source).
+    // nodes: 0=out+, 1=out-. controlBranchIndex=0.
+    const asm = new MNAAssembler(2, 1);
+    const f = new CCCS('F1', [0, 1], 0, 3);
+    f.stamp(asm.getStampContext());
+
+    const biCtrl = 2; // numNodes(2) + controlBranchIndex(0)
+
+    // G(out+, biCtrl) += gain
+    expect(asm.G.get(0, biCtrl)).toBe(3);
+    // G(out-, biCtrl) -= gain
+    expect(asm.G.get(1, biCtrl)).toBe(-3);
+  });
+
+  it('handles ground on output negative node', () => {
+    // out- = ground: nodes [0, -1]. 1 branch.
+    const asm = new MNAAssembler(1, 1);
+    const f = new CCCS('F1', [0, -1], 0, 5);
+    f.stamp(asm.getStampContext());
+
+    const biCtrl = 1; // numNodes(1) + 0
+    expect(asm.G.get(0, biCtrl)).toBe(5);
+  });
+
+  it('is linear with no branches of its own', () => {
+    const f = new CCCS('F1', [0, 1], 0, 3);
+    expect(f.isNonlinear).toBe(false);
+    expect(f.branches).toEqual([]);
+  });
+
+  it('stampAC produces identical stamps', () => {
+    const asm = new MNAAssembler(2, 1);
+    const f = new CCCS('F1', [0, 1], 0, 3);
+    f.stampAC!(asm.getStampContext(), 2 * Math.PI * 1000);
+
+    const biCtrl = 2;
+    expect(asm.G.get(0, biCtrl)).toBe(3);
+    expect(asm.G.get(1, biCtrl)).toBe(-3);
   });
 });
