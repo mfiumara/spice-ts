@@ -170,9 +170,16 @@ export class MNAAssembler {
     }
 
     return {
-      stampG: (row, col, value) => this.G.add(row, col, value),
+      stampG: (row, col, value) => {
+        this.G.add(row, col, value);
+        // Always register position so lockTopology() captures the full pattern
+        if (value === 0) this.G.touch(row, col);
+      },
       stampB: (row, value) => { this.b[row] += value; },
-      stampC: (row, col, value) => this.C.add(row, col, value),
+      stampC: (row, col, value) => {
+        this.C.add(row, col, value);
+        if (value === 0) this.C.touch(row, col);
+      },
       getVoltage: (node) => this.solution[node],
       getCurrent: (branch) => this.solution[this.numNodes + branch],
       time: this.time,
