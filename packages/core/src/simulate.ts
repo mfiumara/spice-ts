@@ -1,6 +1,6 @@
 import { Circuit } from './circuit.js';
 import type { CompiledCircuit } from './circuit.js';
-import { parse } from './parser/index.js';
+import { parse, parseAsync } from './parser/index.js';
 import type { SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
 import type { TransientAnalysis, ACAnalysis, ResolvedOptions } from './types.js';
 import { resolveOptions } from './types.js';
@@ -19,7 +19,16 @@ export async function simulate(
   input: string | Circuit,
   options?: SimulationOptions,
 ): Promise<SimulationResult> {
-  const circuit = typeof input === 'string' ? parse(input) : input;
+  let circuit: Circuit;
+  if (typeof input === 'string') {
+    if (options?.resolveInclude) {
+      circuit = await parseAsync(input, options.resolveInclude);
+    } else {
+      circuit = parse(input);
+    }
+  } else {
+    circuit = input;
+  }
   const compiled = circuit.compile();
   const warnings: SimulationWarning[] = [];
 
@@ -62,7 +71,16 @@ export async function* simulateStream(
   input: string | Circuit,
   options?: SimulationOptions,
 ): AsyncIterableIterator<TransientStep | ACPoint> {
-  const circuit = typeof input === 'string' ? parse(input) : input;
+  let circuit: Circuit;
+  if (typeof input === 'string') {
+    if (options?.resolveInclude) {
+      circuit = await parseAsync(input, options.resolveInclude);
+    } else {
+      circuit = parse(input);
+    }
+  } else {
+    circuit = input;
+  }
   const compiled = circuit.compile();
   const warnings: SimulationWarning[] = [];
   validateCircuit(compiled, warnings);

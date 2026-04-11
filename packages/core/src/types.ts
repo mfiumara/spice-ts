@@ -64,6 +64,8 @@ export interface SimulationOptions {
   trtol?: number;
   /** Minimum conductance added to all node diagonals for gmin stepping. Default: 0 (disabled) */
   gmin?: number;
+  /** Resolver for .include and .lib file directives */
+  resolveInclude?: IncludeResolver;
 }
 
 /** Resolved options with all defaults filled in */
