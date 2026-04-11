@@ -5,3 +5,5 @@ dist/
 coverage/
 .worktrees/
 benchmarks/results.json
+.superpowers/
+test-results.xml
