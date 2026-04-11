@@ -10,6 +10,14 @@
  *   primary  → NUMBER | IDENT | '(' expr ')'
  */
 
+// SI suffix exponents — case-sensitive for m (milli) vs M (mega)
+const SI_EXPONENTS: Record<string, string> = {
+  T: 'e12', t: 'e12', G: 'e9', g: 'e9',
+  K: 'e3', k: 'e3', M: 'e6', m: 'e-3',
+  U: 'e-6', u: 'e-6', N: 'e-9', n: 'e-9',
+  P: 'e-12', p: 'e-12', F: 'e-15', f: 'e-15',
+};
+
 const FUNCTIONS: Record<string, (...args: number[]) => number> = {
   sqrt: Math.sqrt,
   abs: Math.abs,
@@ -131,7 +139,30 @@ class ExprParser {
     const numMatch = this.src.slice(this.pos).match(/^(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/);
     if (numMatch) {
       this.pos += numMatch[0].length;
-      return Number(numMatch[0]);
+      const numStr = numMatch[0];
+      // Check for SI suffix immediately after the number (no space)
+      // Case-sensitive: m = milli, M = mega; MEG/meg = mega
+      const suffixMatch = this.src.slice(this.pos).match(/^([Mm][Ee][Gg]|[TtGgKkMmUuNnPpFf])/);
+      if (suffixMatch) {
+        const suffix = suffixMatch[0];
+        const afterSuffix = this.pos + suffix.length;
+        // Check for embedded fractional digits (e.g., 3k3 = 3.3k = 3300)
+        const fracMatch = this.src.slice(afterSuffix).match(/^(\d+)/);
+        let fullNumStr = numStr;
+        let endPos = afterSuffix;
+        if (fracMatch && !numStr.includes('.') && !numMatch[2]) {
+          fullNumStr = numStr + '.' + fracMatch[1];
+          endPos = afterSuffix + fracMatch[1].length;
+        }
+        // Only consume if not followed by alphanumeric (not part of an identifier)
+        const nextChar = this.src[endPos];
+        if (!nextChar || !/[a-zA-Z0-9_]/.test(nextChar)) {
+          const exp = suffix.length === 3 ? 'e6' : SI_EXPONENTS[suffix];
+          this.pos = endPos;
+          return Number(fullNumStr + exp);
+        }
+      }
+      return Number(numStr);
     }
 
     const varMatch = this.src.slice(this.pos).match(/^([a-zA-Z_]\w*)/);
