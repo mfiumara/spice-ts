@@ -95,6 +95,44 @@ async function preprocessInternal(
       continue;
     }
 
+    // .lib <filename> <section> — fetch file and extract section
+    if (upper.startsWith('.LIB ')) {
+      const libTokens = trimmed.slice(5).trim().split(/\s+/);
+      if (libTokens.length >= 2) {
+        if (!resolver) {
+          throw new ParseError(
+            '.lib directive with file requires a resolver. Use parseAsync() with a resolveInclude option.',
+            0, trimmed,
+          );
+        }
+        let filePath = libTokens.slice(0, -1).join(' ');
+        const section = libTokens[libTokens.length - 1];
+        if ((filePath.startsWith("'") && filePath.endsWith("'")) ||
+            (filePath.startsWith('"') && filePath.endsWith('"'))) {
+          filePath = filePath.slice(1, -1);
+        }
+        const visitKey = `${filePath}:${section}`;
+        if (visited.has(visitKey)) {
+          throw new CycleError([...chain, visitKey]);
+        }
+        visited.add(visitKey);
+        const content = await resolver(filePath);
+        const extracted = extractLibSection(content, section);
+        const processed = await preprocessInternal(
+          extracted, resolver, visited, [...chain, visitKey], depth + 1,
+        );
+        visited.delete(visitKey);
+        output.push(processed);
+        continue;
+      }
+      continue;
+    }
+
+    // .endl — skip (handled by extractLibSection)
+    if (upper.startsWith('.ENDL')) {
+      continue;
+    }
+
     // Substitute {expr} in all other lines
     const substituted = substituteExpressions(line, params);
     output.push(substituted);
@@ -116,4 +154,39 @@ function formatNumber(value: number): string {
   // This naturally satisfies all test expectations (e.g. 1e-7 → "1e-7",
   // 2e-6 → "0.000002", 1.8 → "1.8", 5 → "5").
   return value.toString();
+}
+
+function extractLibSection(content: string, section: string): string {
+  const lines = content.split('\n');
+  const output: string[] = [];
+  let currentSection: string | null = null;
+  const sectionUpper = section.toUpperCase();
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    const upper = trimmed.toUpperCase();
+
+    if (upper.startsWith('.LIB ')) {
+      const tokens = trimmed.slice(5).trim().split(/\s+/);
+      if (tokens.length === 1) {
+        currentSection = tokens[0].toUpperCase();
+        continue;
+      }
+      if (currentSection === null || currentSection === sectionUpper) {
+        output.push(line);
+      }
+      continue;
+    }
+
+    if (upper.startsWith('.ENDL')) {
+      currentSection = null;
+      continue;
+    }
+
+    if (currentSection === null || currentSection === sectionUpper) {
+      output.push(line);
+    }
+  }
+
+  return output.join('\n');
 }

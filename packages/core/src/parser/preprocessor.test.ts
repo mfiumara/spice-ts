@@ -119,4 +119,64 @@ describe('preprocessor', () => {
         .rejects.toThrow();
     });
   });
+
+  describe('.lib/.endl section selection', () => {
+    it('selects the requested section from a file', async () => {
+      const libContent = [
+        '.lib TT',
+        '.model nch nmos(VTO=0.5 KP=120u)',
+        '.endl TT',
+        '.lib FF',
+        '.model nch nmos(VTO=0.4 KP=140u)',
+        '.endl FF',
+      ].join('\n');
+      const resolver: IncludeResolver = async () => libContent;
+      const result = await preprocess(`.lib 'models.lib' TT\n.op`, resolver);
+      expect(result).toContain('VTO=0.5');
+      expect(result).not.toContain('VTO=0.4');
+    });
+
+    it('includes unconditional content outside sections', async () => {
+      const libContent = [
+        '* Shared content',
+        '.param vdd = 1.8',
+        '.lib TT',
+        '.model nch nmos(VTO=0.5)',
+        '.endl TT',
+      ].join('\n');
+      const resolver: IncludeResolver = async () => libContent;
+      const result = await preprocess(`.lib 'models.lib' TT\n.op`, resolver);
+      expect(result).toContain('VTO=0.5');
+    });
+
+    it('handles .lib with section containing .include', async () => {
+      const topLib = [
+        '.lib TT',
+        `.include 'tt-models.lib'`,
+        '.endl TT',
+      ].join('\n');
+      const resolver: IncludeResolver = async (path) => {
+        if (path === 'top.lib') return topLib;
+        if (path === 'tt-models.lib') return '.model nch nmos(VTO=0.5)';
+        throw new Error(`Unknown: ${path}`);
+      };
+      const result = await preprocess(`.lib 'top.lib' TT\n.op`, resolver);
+      expect(result).toContain('VTO=0.5');
+    });
+
+    it('detects circular .lib references', async () => {
+      const resolver: IncludeResolver = async (path) => {
+        if (path === 'a.lib') return `.lib TT\n.lib 'b.lib' TT\n.endl TT`;
+        if (path === 'b.lib') return `.lib TT\n.lib 'a.lib' TT\n.endl TT`;
+        throw new Error(`Unknown: ${path}`);
+      };
+      await expect(preprocess(`.lib 'a.lib' TT\n.op`, resolver))
+        .rejects.toThrow('Circular dependency detected');
+    });
+
+    it('throws when resolver not provided for .lib with file', async () => {
+      await expect(preprocess(`.lib 'models.lib' TT\n.op`))
+        .rejects.toThrow();
+    });
+  });
 });
