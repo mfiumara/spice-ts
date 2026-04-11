@@ -2,9 +2,21 @@ import type { ResolvedOptions, ACAnalysis } from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
 import { MNAAssembler } from '../mna/assembler.js';
 import { SparseMatrix } from '../solver/sparse-matrix.js';
-import { toCsc, updateCscValues, type ScatterMap, type CscMatrix } from '../solver/csc-matrix.js';
+import { toCsc, type CscMatrix } from '../solver/csc-matrix.js';
 import { createSparseSolver } from '../solver/sparse-solver.js';
 import { ACResult } from '../results.js';
+
+interface GMapping {
+  value: number;
+  topLeftIdx: number;
+  botRightIdx: number;
+}
+
+interface CMapping {
+  value: number;
+  topRightIdx: number;
+  botLeftIdx: number;
+}
 
 export function solveAC(
   compiled: CompiledCircuit,
@@ -48,64 +60,73 @@ export function solveAC(
   for (const name of nodeNames) voltageArrays.set(name, []);
   for (const name of branchNames) currentArrays.set(name, []);
 
+  // Build the combined 2n×2n CSC structure ONCE from G and C patterns.
+  // Use omega=1 as a representative to establish the full sparsity pattern.
+  const N = 2 * systemSize;
+  const pattern = new SparseMatrix(N);
+
+  for (let i = 0; i < systemSize; i++) {
+    for (const [j, val] of G.getRow(i)) {
+      pattern.add(i, j, val);
+      pattern.add(i + systemSize, j + systemSize, val);
+    }
+  }
+  for (let i = 0; i < systemSize; i++) {
+    for (const [j, cval] of C.getRow(i)) {
+      pattern.add(i, j + systemSize, -cval);
+      pattern.add(i + systemSize, j, cval);
+    }
+  }
+
+  const { csc: combinedCsc, scatter } = toCsc(pattern);
+
+  // Build index arrays mapping G and C entries to combined CSC positions.
+  const gMappings: GMapping[] = [];
+  for (let i = 0; i < systemSize; i++) {
+    for (const [j, val] of G.getRow(i)) {
+      const topLeftIdx = scatter.get(i * N + j)!;
+      const botRightIdx = scatter.get((i + systemSize) * N + (j + systemSize))!;
+      gMappings.push({ value: val, topLeftIdx, botRightIdx });
+    }
+  }
+
+  const cMappings: CMapping[] = [];
+  for (let i = 0; i < systemSize; i++) {
+    for (const [j, cval] of C.getRow(i)) {
+      const topRightIdx = scatter.get(i * N + (j + systemSize))!;
+      const botLeftIdx = scatter.get((i + systemSize) * N + j)!;
+      cMappings.push({ value: cval, topRightIdx, botLeftIdx });
+    }
+  }
+
   const solver = createSparseSolver();
-  let csc: CscMatrix | null = null;
-  let scatter: ScatterMap | null = null;
-  let patternAnalyzed = false;
-  let prevNnz = -1;
+  solver.analyzePattern(combinedCsc);
+
+  // Pre-compute RHS (constant across frequencies)
+  const b = new Float64Array(N);
+  if (excitationRow >= 0) {
+    const phaseRad = (excitationPhase * Math.PI) / 180;
+    b[excitationRow] = excitationMag * Math.cos(phaseRad);
+    b[excitationRow + systemSize] = excitationMag * Math.sin(phaseRad);
+  }
+
+  const vals = combinedCsc.values as Float64Array;
 
   for (const freq of frequencies) {
     const omega = 2 * Math.PI * freq;
 
-    // Build combined 2n×2n real matrix:
-    // [ G   -omega*C ]
-    // [ omega*C   G  ]
-    const N = 2 * systemSize;
-    const combined = new SparseMatrix(N);
-
-    for (let i = 0; i < systemSize; i++) {
-      for (const [j, val] of G.getRow(i)) {
-        combined.add(i, j, val);
-        combined.add(i + systemSize, j + systemSize, val);
-      }
+    // Fill combined CSC values via pre-built index arrays (O(nnz), no Map iteration)
+    vals.fill(0);
+    for (const e of gMappings) {
+      vals[e.topLeftIdx] = e.value;
+      vals[e.botRightIdx] = e.value;
     }
-    for (let i = 0; i < systemSize; i++) {
-      const row = C.getRow(i);
-      for (const [j, cval] of row) {
-        combined.add(i, j + systemSize, -omega * cval);
-        combined.add(i + systemSize, j, omega * cval);
-      }
+    for (const e of cMappings) {
+      vals[e.topRightIdx] = -omega * e.value;
+      vals[e.botLeftIdx] = omega * e.value;
     }
 
-    if (!patternAnalyzed) {
-      const result = toCsc(combined);
-      csc = result.csc;
-      scatter = result.scatter;
-      prevNnz = csc.values.length;
-      solver.analyzePattern(csc);
-      patternAnalyzed = true;
-    } else {
-      const result = toCsc(combined);
-      const nnz = result.csc.values.length;
-      if (nnz !== prevNnz) {
-        csc = result.csc;
-        scatter = result.scatter;
-        prevNnz = nnz;
-        solver.analyzePattern(csc);
-      } else {
-        updateCscValues(csc!, combined, scatter!);
-      }
-    }
-
-    // RHS from excitation
-    const b = new Float64Array(N);
-    if (excitationRow >= 0) {
-      const phaseRad = (excitationPhase * Math.PI) / 180;
-      b[excitationRow] = excitationMag * Math.cos(phaseRad);
-      b[excitationRow + systemSize] = excitationMag * Math.sin(phaseRad);
-    }
-
-    solver.factorize(csc!);
+    solver.factorize(combinedCsc);
     const x = solver.solve(b);
     const xReal = x.slice(0, systemSize);
     const xImag = x.slice(systemSize);
