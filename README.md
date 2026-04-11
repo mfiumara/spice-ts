@@ -189,11 +189,13 @@ spice-ts uses a sparse LU solver (Gilbert-Peierls with symbolic/numeric split) a
 
 ### AC Small-Signal
 
+spice-ts uses a native complex sparse LU solver — no 2n×2n real expansion. Faster than WASM across all sizes:
+
 | Circuit | Size | spice-ts | eecircuit (WASM) | ngspice (native) | vs eecircuit |
 |---|---|---|---|---|---|
-| RC chain | 10 | 0.95 ms | 1.3 ms | 0.5 ms | **1.4x faster** |
-| RC chain | 50 | 14.2 ms | 3.4 ms | 0.7 ms | 4.1x slower |
-| RC chain | 100 | 98.2 ms | 5.9 ms | 1.1 ms | 16.7x slower |
+| RC chain | 10 | 0.46 ms | 1.4 ms | 0.5 ms | **3.1x faster** |
+| RC chain | 50 | 1.7 ms | 4.1 ms | 0.7 ms | **2.4x faster** |
+| RC chain | 100 | 3.3 ms | 5.8 ms | 1.1 ms | **1.8x faster** |
 
 ### Nonlinear (CMOS / Ring Oscillators)
 
@@ -205,7 +207,7 @@ spice-ts uses a sparse LU solver (Gilbert-Peierls with symbolic/numeric split) a
 | Ring oscillator (5 stg) | 58.6 ms | 41.6 ms | 20.4 ms | 1.4x slower |
 | Ring oscillator (11 stg) | 120.2 ms | 70.8 ms | 37.3 ms | 1.7x slower |
 
-> **Where spice-ts shines:** DC analysis (up to 5.5x faster than WASM), transient on small-to-medium circuits (parity or faster), and anywhere you need a zero-dependency in-process simulator (no WASM, no native binary, no process spawn). The remaining gap on large nonlinear circuits and AC sweeps is due to the 2n×2n complex matrix expansion and TypeScript overhead in tight numerical loops.
+> **Where spice-ts shines:** DC (up to 5.5x faster than WASM), AC (1.8-3.1x faster via native complex sparse solver), and small-to-medium transient (parity). All with zero dependencies — no WASM, no native binary, no process spawn. The remaining gap on large nonlinear transient circuits is TypeScript overhead in tight numerical loops.
 
 ### Accuracy
 
@@ -223,7 +225,7 @@ Run `pnpm bench:accuracy` to see the full accuracy report including SPICE3 Quarl
 
 ## Limitations
 
-- **AC performance on large circuits:** AC analysis builds a 2n×2n real matrix for complex solves. For large circuits (100+ nodes), this expansion dominates and is 4-17x slower than ngspice-WASM. A native complex sparse solver would close this gap.
+- **Large nonlinear transient:** Ring oscillators and large CMOS chains are 1.4-1.7x slower than ngspice-WASM due to TypeScript overhead in tight Newton-Raphson iteration loops.
 - **BSIM3v3 MOSFET:** Supported alongside Level 1 Shichman-Hodges. BSIM4, EKV not yet available.
 
 ## Development
