@@ -1,0 +1,17 @@
+{
+  "name": "@spice-ts/examples",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "test": "tsx 01-voltage-divider.ts && tsx 02-rc-step-response.ts && tsx 03-ac-frequency-response.ts && tsx 04-cmos-inverter.ts && tsx 05-programmatic-api.ts && tsx 06-subcircuit-library.ts && tsx 07-streaming.ts"
+  },
+  "dependencies": {
+    "@spice-ts/core": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0",
+    "typescript": "^5.4.0"
+  }
+}
