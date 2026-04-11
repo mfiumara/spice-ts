@@ -2,7 +2,8 @@ import type { ResolvedOptions, ACAnalysis } from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
 import { MNAAssembler } from '../mna/assembler.js';
 import { SparseMatrix } from '../solver/sparse-matrix.js';
-import { solveComplexLU } from '../solver/lu-solver.js';
+import { toCsc, updateCscValues, type ScatterMap, type CscMatrix } from '../solver/csc-matrix.js';
+import { createSparseSolver } from '../solver/sparse-solver.js';
 import { ACResult } from '../results.js';
 
 export function solveAC(
@@ -47,28 +48,67 @@ export function solveAC(
   for (const name of nodeNames) voltageArrays.set(name, []);
   for (const name of branchNames) currentArrays.set(name, []);
 
+  const solver = createSparseSolver();
+  let csc: CscMatrix | null = null;
+  let scatter: ScatterMap | null = null;
+  let patternAnalyzed = false;
+  let prevNnz = -1;
+
   for (const freq of frequencies) {
     const omega = 2 * Math.PI * freq;
 
-    // Build imaginary part: omega * C
-    const Yimag = new SparseMatrix(systemSize);
+    // Build combined 2n×2n real matrix:
+    // [ G   -omega*C ]
+    // [ omega*C   G  ]
+    const N = 2 * systemSize;
+    const combined = new SparseMatrix(N);
+
+    for (let i = 0; i < systemSize; i++) {
+      for (const [j, val] of G.getRow(i)) {
+        combined.add(i, j, val);
+        combined.add(i + systemSize, j + systemSize, val);
+      }
+    }
     for (let i = 0; i < systemSize; i++) {
       const row = C.getRow(i);
       for (const [j, cval] of row) {
-        Yimag.add(i, j, omega * cval);
+        combined.add(i, j + systemSize, -omega * cval);
+        combined.add(i + systemSize, j, omega * cval);
+      }
+    }
+
+    if (!patternAnalyzed) {
+      const result = toCsc(combined);
+      csc = result.csc;
+      scatter = result.scatter;
+      prevNnz = csc.values.length;
+      solver.analyzePattern(csc);
+      patternAnalyzed = true;
+    } else {
+      const result = toCsc(combined);
+      const nnz = result.csc.values.length;
+      if (nnz !== prevNnz) {
+        csc = result.csc;
+        scatter = result.scatter;
+        prevNnz = nnz;
+        solver.analyzePattern(csc);
+      } else {
+        updateCscValues(csc!, combined, scatter!);
       }
     }
 
     // RHS from excitation
-    const bReal = new Float64Array(systemSize);
-    const bImag = new Float64Array(systemSize);
+    const b = new Float64Array(N);
     if (excitationRow >= 0) {
       const phaseRad = (excitationPhase * Math.PI) / 180;
-      bReal[excitationRow] = excitationMag * Math.cos(phaseRad);
-      bImag[excitationRow] = excitationMag * Math.sin(phaseRad);
+      b[excitationRow] = excitationMag * Math.cos(phaseRad);
+      b[excitationRow + systemSize] = excitationMag * Math.sin(phaseRad);
     }
 
-    const [xReal, xImag] = solveComplexLU(G, Yimag, bReal, bImag);
+    solver.factorize(csc!);
+    const x = solver.solve(b);
+    const xReal = x.slice(0, systemSize);
+    const xImag = x.slice(systemSize);
 
     // Extract results
     for (let i = 0; i < nodeNames.length; i++) {
