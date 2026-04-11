@@ -1,6 +1,6 @@
 import { evaluateExpression } from './expression.js';
 import { parseNumber } from './tokenizer.js';
-import { ParseError } from '../errors.js';
+import { CycleError, ParseError } from '../errors.js';
 import type { IncludeResolver } from '../types.js';
 
 const MAX_DEPTH = 64;
@@ -66,6 +66,32 @@ async function preprocessInternal(
           params[name] = parseNumber(valStr);
         }
       }
+      continue;
+    }
+
+    // .include directive
+    if (upper.startsWith('.INCLUDE ')) {
+      if (!resolver) {
+        throw new ParseError(
+          '.include directive requires a resolver. Use parseAsync() with a resolveInclude option.',
+          0, trimmed,
+        );
+      }
+      let path = trimmed.slice(9).trim();
+      if ((path.startsWith("'") && path.endsWith("'")) ||
+          (path.startsWith('"') && path.endsWith('"'))) {
+        path = path.slice(1, -1);
+      }
+      if (visited.has(path)) {
+        throw new CycleError([...chain, path]);
+      }
+      visited.add(path);
+      const content = await resolver(path);
+      const processed = await preprocessInternal(
+        content, resolver, visited, [...chain, path], depth + 1,
+      );
+      visited.delete(path);
+      output.push(processed);
       continue;
     }
 
