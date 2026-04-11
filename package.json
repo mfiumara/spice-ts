@@ -6,13 +6,15 @@
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "bench": "pnpm -C packages/core bench",
-    "bench:accuracy": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/accuracy.ts"
+    "bench:accuracy": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/accuracy.ts",
+    "bench:compare": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/comparison.ts"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
     "@types/node": "^25.5.2",
+    "eecircuit-engine": "^1.7.0",
     "tsx": "^4.21.0"
   }
 }
