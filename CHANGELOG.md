@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.1] - 2026-04-12
+
+### Fixes
+
+- **Complex sparse solver pivoting** — threshold pivoting incorrectly swapped small purely-imaginary diagonal entries (from jwC at low frequencies) with larger real off-diagonals, causing NaN results in AC analysis. Fixed by preferring the natural MNA diagonal row.
+- **AC GMIN injection** — added GMIN to diagonal in AC analysis path for numerical stability (was missing, unlike DC/transient paths).
+- **Accuracy test circuits** — diff pair redesigned with proper biasing (RC=1k, RE=10k, balanced inputs). OTA expected value corrected to ngspice-verified 4.105V.
+- **CI accuracy gate** — removed `informational` bypass. All accuracy circuits now gate CI equally.
+
 ## [0.2.0] - 2026-04-11
 
 ### Device Models
