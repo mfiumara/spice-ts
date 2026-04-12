@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import { useState, useCallback, useRef } from 'react';
-import { simulateStream, type TransientStep, type ACPoint } from '@spice-ts/core';
+import { simulateStream } from '@spice-ts/core';
 import { WaveformViewer, BodePlot, CursorTooltip } from '@spice-ts/ui/react';
 import { ACStreamingController, DARK_THEME, formatFrequency } from '@spice-ts/ui';
 import type { ACDataset, CursorState } from '@spice-ts/ui';
@@ -107,7 +107,7 @@ function StreamingBodePlot() {
 }
 
 function App() {
-  const [stream, setStream] = useState<AsyncIterable<TransientStep | ACPoint> | null>(null);
+  const [stream, setStream] = useState<ReturnType<typeof simulateStream> | null>(null);
   const [streaming, setStreaming] = useState(false);
 
   const handleRunStreaming = useCallback(() => {
