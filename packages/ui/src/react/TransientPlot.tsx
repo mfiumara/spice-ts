@@ -47,22 +47,20 @@ export function TransientPlot({
 }: TransientPlotProps) {
   const rendererRef = useRef<TransientRenderer | null>(null);
   const interactionRef = useRef<InteractionHandler | null>(null);
+  const onCursorMoveRef = useRef(onCursorMove);
+  onCursorMoveRef.current = onCursorMove;
   const resolvedTheme = resolveTheme(theme);
 
-  const handleResize = useCallback(
-    (_canvas: HTMLCanvasElement) => {
-      if (rendererRef.current) {
-        rendererRef.current.render();
-      }
-    },
-    [],
-  );
+  const handleResize = useCallback(() => {
+    rendererRef.current?.render();
+  }, []);
 
   const { refCallback } = useCanvas(handleResize);
 
+  // Create renderer and interaction handler once when canvas mounts.
+  // Does NOT depend on data, signals, or colors — those update via useEffect below.
   const canvasRefCallback = useCallback(
     (canvas: HTMLCanvasElement | null) => {
-      // Cleanup previous
       rendererRef.current?.destroy();
       interactionRef.current?.destroy();
       rendererRef.current = null;
@@ -74,22 +72,9 @@ export function TransientPlot({
         const renderer = new TransientRenderer(canvas, { theme: resolvedTheme });
         rendererRef.current = renderer;
 
-        const datasets = normalizeTransientData(data, signals);
-        renderer.setData(datasets, signals);
-
-        if (xDomain) {
-          renderer.setFixedXDomain(xDomain);
-        }
-
-        if (colors) {
-          for (const [name, color] of Object.entries(colors)) {
-            renderer.setSignalColor(name, color);
-          }
-        }
-
-        if (onCursorMove) {
-          renderer.on('cursorMove', onCursorMove);
-        }
+        renderer.on('cursorMove', (state) => {
+          onCursorMoveRef.current?.(state);
+        });
 
         const interaction = new InteractionHandler(canvas, {
           onCursorMove: (pixelX) => {
@@ -120,12 +105,32 @@ export function TransientPlot({
             },
           };
         }
-
-        renderer.render();
       }
     },
-    [data, signals, resolvedTheme, colors, onCursorMove, refCallback, handleRef, xDomain],
+    [resolvedTheme, refCallback, handleRef],
   );
+
+  // Update data on the existing renderer without recreating it.
+  // This preserves zoom/pan state during streaming.
+  useEffect(() => {
+    const renderer = rendererRef.current;
+    if (!renderer) return;
+
+    const datasets = normalizeTransientData(data, signals);
+    renderer.setData(datasets, signals);
+
+    if (xDomain) {
+      renderer.setFixedXDomain(xDomain);
+    }
+
+    if (colors) {
+      for (const [name, color] of Object.entries(colors)) {
+        renderer.setSignalColor(name, color);
+      }
+    }
+
+    renderer.render();
+  }, [data, signals, colors, xDomain]);
 
   // Update visibility when prop changes
   useEffect(() => {
