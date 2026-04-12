@@ -39,6 +39,8 @@ export class BodeRenderer {
   private cursorState: CursorState | null = null;
   private destroyed = false;
   private fixedXDomain: [number, number] | null = null;
+  private userHasZoomed = false;
+  private hasData = false;
   private listeners: Partial<{ [K in keyof RendererEvents]: RendererEvents[K][] }> = {};
 
   constructor(magCanvas: HTMLCanvasElement, phaseCanvas: HTMLCanvasElement, options: BodeRendererOptions) {
@@ -78,8 +80,11 @@ export class BodeRenderer {
       }
     }
 
-    this.computeDefaultDomains();
+    if (!this.hasData || !this.userHasZoomed) {
+      this.computeDefaultDomains();
+    }
     this.updateScales();
+    this.hasData = true;
   }
 
   setFixedXDomain(domain: [number, number] | null): void {
@@ -159,16 +164,17 @@ export class BodeRenderer {
     this.emit('cursorMove', this.cursorState);
   }
 
-  zoomAt(pixelX: number, factor: number): void {
-    const centerX = this.xScale.invert(pixelX - this.margin.left);
-    const logCenter = Math.log10(centerX);
+  zoomAt(_pixelX: number, factor: number): void {
+    this.userHasZoomed = true;
     const [lx0, lx1] = [Math.log10(this.xDomain[0]), Math.log10(this.xDomain[1])];
+    const logCenter = (lx0 + lx1) / 2;
     const halfSpan = (lx1 - lx0) / 2 / factor;
     this.xDomain = [Math.pow(10, logCenter - halfSpan), Math.pow(10, logCenter + halfSpan)];
     this.updateScales();
   }
 
   pan(dx: number, _dy: number): void {
+    this.userHasZoomed = true;
     const plotWidth = this.getPlotWidth(this.magCanvas);
     const [lx0, lx1] = [Math.log10(this.xDomain[0]), Math.log10(this.xDomain[1])];
     const logShift = (dx / plotWidth) * (lx1 - lx0);
@@ -177,6 +183,7 @@ export class BodeRenderer {
   }
 
   fitToData(): void {
+    this.userHasZoomed = false;
     this.computeDefaultDomains();
     this.updateScales();
   }
