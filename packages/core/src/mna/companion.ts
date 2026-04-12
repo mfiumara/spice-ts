@@ -8,6 +8,12 @@ import { MOSFET } from '../devices/mosfet.js';
  *
  * Backward Euler: (G + C/dt) * x(n+1) = b(n+1) + (C/dt) * x(n)
  * Trapezoidal:    (G + 2C/dt) * x(n+1) = b(n+1) + b(n) + (2C/dt - G) * x(n)
+ *
+ * IMPORTANT: For the trapezoidal method, the history terms (b(n) - G*x(n))
+ * are only applied to DYNAMIC rows (rows with non-zero C entries). Algebraic
+ * rows (C=0) are solved as G*x(n+1) = b(n+1) without history coupling. This
+ * prevents NR oscillation on nonlinear algebraic equations (e.g., diode KCL
+ * at nodes without capacitors).
  */
 export function buildCompanionSystem(
   assembler: MNAAssembler,
@@ -22,7 +28,7 @@ export function buildCompanionSystem(
   assembler.clear();
   const ctx = assembler.getStampContext();
 
-  if (assembler.isFastPath) {
+  if (assembler.isFastPath && assembler.posMap.length > 0) {
     // Batch-stamp MOSFETs with direct array writes, fall back for others
     let hasMosfets = false;
     const mosfets: MOSFET[] = [];
@@ -79,14 +85,23 @@ export function buildCompanionSystem(
       }
     } else {
       // Trapezoidal: G_eff = G + 2C/dt
-      // b_eff = b(n+1) + b(n) + (2C/dt)*x(n) - G*x(n)
+      // b_eff depends on whether a row is dynamic (C≠0) or algebraic (C=0):
+      //   Dynamic: b(n+1) + (2C/dt)*x(n) - G*x(n) + b(n)
+      //   Algebraic: b(n+1) only
       const factor = 2 / dt;
       const nnz = colPtr[n];
+
+      // Determine which rows have dynamic (C≠0) entries
+      const isDynamic = new Uint8Array(n);
+      for (let p = 0; p < nnz; p++) {
+        if (cv[p] !== 0) isDynamic[rowIdx[p]] = 1;
+      }
 
       // Save b(n+1) before modification
       const bCurrent = new Float64Array(b);
 
       // Compute G*x(n) before modifying G — CSC SpMV
+      // Only needed for dynamic rows, but computing for all is simpler
       const Gx = new Float64Array(n);
       for (let j = 0; j < n; j++) {
         const xj = prevSolution[j];
@@ -99,13 +114,13 @@ export function buildCompanionSystem(
       // G_eff = G + 2C/dt (one tight loop)
       for (let i = 0; i < nnz; i++) gv[i] += factor * cv[i];
 
-      // Build b_eff = b(n+1) + (2C/dt)*x(n) - G*x(n) + b(n)
+      // Build b_eff
       b.fill(0);
 
-      // Start with b(n+1)
+      // Start with b(n+1) for all rows
       for (let i = 0; i < n; i++) b[i] = bCurrent[i];
 
-      // Add (2C/dt)*x(n) — CSC SpMV
+      // Add (2C/dt)*x(n) — CSC SpMV (only affects dynamic rows via cv)
       for (let j = 0; j < n; j++) {
         const xj = prevSolution[j];
         if (xj === 0) continue;
@@ -114,10 +129,12 @@ export function buildCompanionSystem(
         }
       }
 
-      // Subtract G*x(n) and add b(n)
+      // Subtract G*x(n) and add b(n) ONLY for dynamic rows
       for (let i = 0; i < n; i++) {
-        b[i] -= Gx[i];
-        if (prevB) b[i] += prevB[i];
+        if (isDynamic[i]) {
+          b[i] -= Gx[i];
+          if (prevB) b[i] += prevB[i];
+        }
       }
     }
   } else {
@@ -141,8 +158,7 @@ export function buildCompanionSystem(
       }
     } else {
       // Trapezoidal: G_eff = G + 2C/dt
-      // b_eff = b(n+1) + b(n) + (2C/dt - G)*x(n)
-      //       = b(n+1) + b(n) + (2C/dt)*x(n) - G*x(n)
+      // History terms only for dynamic rows (C≠0)
       const factor = 2 / dt;
 
       // Save b(n+1) and G before modification
@@ -160,23 +176,25 @@ export function buildCompanionSystem(
       // Modify G: G_eff = G + 2C/dt
       assembler.G.addMatrix(assembler.C, factor);
 
-      // Build b_eff = b(n+1) + (2C/dt)*x(n) - G*x(n) + b(n)
+      // Build b_eff
       assembler.b.fill(0);
       for (let i = 0; i < assembler.systemSize; i++) {
         assembler.b[i] = bCurrent[i]; // b(n+1)
 
-        // Add (2C/dt)*x(n)
-        const row = assembler.C.getRow(i);
-        for (const [j, cval] of row) {
+        const cRow = assembler.C.getRow(i);
+        const hasDynamic = cRow.size > 0;
+
+        // Add (2C/dt)*x(n) for dynamic rows
+        for (const [j, cval] of cRow) {
           assembler.b[i] += factor * cval * prevSolution[j];
         }
 
-        // Subtract G*x(n)
-        assembler.b[i] -= Gx[i];
-
-        // Add b(n)
-        if (prevB) {
-          assembler.b[i] += prevB[i];
+        // Subtract G*x(n) and add b(n) ONLY for dynamic rows
+        if (hasDynamic) {
+          assembler.b[i] -= Gx[i];
+          if (prevB) {
+            assembler.b[i] += prevB[i];
+          }
         }
       }
     }
