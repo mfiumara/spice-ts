@@ -1,3 +1,4 @@
 packages:
   - "packages/*"
   - "examples"
+  - "examples/08-waveform-viewer"
