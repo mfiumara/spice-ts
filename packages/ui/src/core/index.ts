@@ -12,4 +12,4 @@ export { GrowableBuffer } from './buffer.js';
 export { TransientRenderer, type TransientRendererOptions } from './renderer.js';
 export { BodeRenderer, type BodeRendererOptions } from './bode-renderer.js';
 export { InteractionHandler, type InteractionCallbacks } from './interaction.js';
-export { StreamingController } from './streaming.js';
+export { StreamingController, ACStreamingController } from './streaming.js';
