@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef, type CSSProperties } from 'react';
-import { TransientPlot, type TransientPlotProps } from './TransientPlot.js';
+import { TransientPlot, type TransientPlotProps, type TransientPlotHandle } from './TransientPlot.js';
 import { BodePlot, type BodePlotProps } from './BodePlot.js';
 import { Legend, type LegendSignal } from './Legend.js';
 import { CursorTooltip } from './CursorTooltip.js';
@@ -47,6 +47,7 @@ export function WaveformViewer({
   const [streamData, setStreamData] = useState<TransientDataset[] | null>(null);
   const controllerRef = useRef<StreamingController | null>(null);
   const rafRef = useRef<number>(0);
+  const transientHandleRef = useRef<TransientPlotHandle | null>(null);
 
   // Streaming: consume async iterator, update data on rAF
   useEffect(() => {
@@ -103,8 +104,26 @@ export function WaveformViewer({
     position: 'relative',
   };
 
+  const handleFit = useCallback(() => {
+    transientHandleRef.current?.fitToData();
+  }, []);
+
+  const buttonStyle: CSSProperties = {
+    fontSize: `${resolvedTheme.fontSize}px`,
+    fontFamily: resolvedTheme.font,
+    color: resolvedTheme.textMuted,
+    background: 'transparent',
+    border: `1px solid ${resolvedTheme.border}`,
+    borderRadius: '4px',
+    padding: '2px 8px',
+    cursor: 'pointer',
+  };
+
   return (
     <div style={containerStyle}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px', gap: '6px' }}>
+        <button style={buttonStyle} onClick={handleFit}>Reset Axes</button>
+      </div>
       {transientData != null && (
         <TransientPlot
           data={transientData}
@@ -113,6 +132,7 @@ export function WaveformViewer({
           theme={resolvedTheme}
           onCursorMove={setCursor}
           signalVisibility={visibility}
+          handleRef={transientHandleRef}
         />
       )}
       {ac != null && !stream && (

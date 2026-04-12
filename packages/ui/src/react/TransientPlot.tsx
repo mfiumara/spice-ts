@@ -6,6 +6,10 @@ import { InteractionHandler } from '../core/interaction.js';
 import type { ThemeConfig, CursorState } from '../core/types.js';
 import { useCanvas } from './use-renderer.js';
 
+export interface TransientPlotHandle {
+  fitToData(): void;
+}
+
 export interface TransientPlotProps {
   /** TransientResult from @spice-ts/core, or array of TransientDataset for overlay. */
   data: unknown;
@@ -23,6 +27,8 @@ export interface TransientPlotProps {
   onCursorMove?: (cursor: CursorState | null) => void;
   /** Signal visibility state (controlled). */
   signalVisibility?: Record<string, boolean>;
+  /** Ref to access imperative methods like fitToData(). */
+  handleRef?: React.MutableRefObject<TransientPlotHandle | null>;
 }
 
 export function TransientPlot({
@@ -34,6 +40,7 @@ export function TransientPlot({
   height = 300,
   onCursorMove,
   signalVisibility,
+  handleRef,
 }: TransientPlotProps) {
   const rendererRef = useRef<TransientRenderer | null>(null);
   const interactionRef = useRef<InteractionHandler | null>(null);
@@ -98,10 +105,19 @@ export function TransientPlot({
         });
         interactionRef.current = interaction;
 
+        if (handleRef) {
+          handleRef.current = {
+            fitToData() {
+              renderer.fitToData();
+              renderer.render();
+            },
+          };
+        }
+
         renderer.render();
       }
     },
-    [data, signals, resolvedTheme, colors, onCursorMove, refCallback],
+    [data, signals, resolvedTheme, colors, onCursorMove, refCallback, handleRef],
   );
 
   // Update visibility when prop changes
