@@ -179,12 +179,12 @@ export class TransientRenderer {
   }
 
   /** Zoom at a pixel x position by a factor (>1 zooms in, <1 zooms out). */
-  zoomAt(pixelX: number, factor: number): void {
+  zoomAt(_pixelX: number, factor: number): void {
     this.userHasZoomed = true;
-    const centerX = this.xScale.invert(pixelX - this.margin.left);
     const [x0, x1] = this.xDomain;
+    const center = (x0 + x1) / 2;
     const halfSpan = (x1 - x0) / 2 / factor;
-    this.xDomain = [centerX - halfSpan, centerX + halfSpan];
+    this.xDomain = [center - halfSpan, center + halfSpan];
     this.updateScales();
   }
 
