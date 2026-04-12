@@ -14,13 +14,12 @@ C1 out 0 100n
 `;
 
 const STREAM_NETLIST = `
-* Damped RLC Oscillation (streaming demo)
-* Pulse excites an underdamped RLC — produces decaying sinusoidal ringing
-V1 in 0 PULSE(0 5 0 1n 1n 1m 2m)
-R1 in mid 10
-L1 mid out 50m
-C1 out 0 10u
-.tran 0.5u 20m
+* RC Charging with repeated pulses (streaming demo)
+* Fine timestep + long duration = many data points for visible streaming
+V1 in 0 PULSE(0 5 0 10u 10u 2m 4m)
+R1 in out 10k
+C1 out 0 100n
+.tran 1u 20m
 `;
 
 const buttonStyle: React.CSSProperties = {
