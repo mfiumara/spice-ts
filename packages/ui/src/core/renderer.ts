@@ -123,6 +123,15 @@ export class TransientRenderer {
       return;
     }
 
+    // Clamp cursor to the plot area
+    const plotLeft = this.margin.left;
+    const plotRight = this.margin.left + this.getPlotWidth();
+    if (pixelX < plotLeft || pixelX > plotRight) {
+      this.cursorState = null;
+      this.emit('cursorMove', null);
+      return;
+    }
+
     const dataX = this.xScale.invert(pixelX - this.margin.left);
     const values: CursorValue[] = [];
 
