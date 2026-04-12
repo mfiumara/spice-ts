@@ -14,15 +14,12 @@ C1 out 0 100n
 `;
 
 const STREAM_NETLIST = `
-* Half-wave rectifier with RC smoothing (streaming demo)
-* Diode nonlinearity forces Newton-Raphson per step — visibly progressive
-V1 in 0 SIN(0 10 500)
-D1 in rect DMOD
-.model DMOD D (IS=1e-14 N=1.05 RS=0.5)
-R1 rect out 100
-C1 out 0 100u
-R2 out 0 1k
-.tran 0.1u 20m
+* RC pulse response (streaming demo)
+* maxTimestep forces 200k solver steps for visible progressive rendering
+V1 in 0 PULSE(0 5 0 10u 10u 2m 4m)
+R1 in out 10k
+C1 out 0 100n
+.tran 0.1u 20m 0 0.1u
 `;
 
 const buttonStyle: React.CSSProperties = {
