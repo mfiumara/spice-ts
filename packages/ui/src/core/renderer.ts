@@ -350,25 +350,54 @@ export class TransientRenderer {
     ctx.rect(left, top, plotWidth, plotHeight);
     ctx.clip();
 
+    // Max points to draw — roughly 2 per CSS pixel for visual fidelity
+    const maxPoints = Math.ceil(plotWidth * 2);
+
     for (const s of this.signalStates) {
       if (!s.visible) continue;
       const ds = this.datasets[s.datasetIndex];
       const yArr = ds.signals.get(s.name);
-      if (!yArr) continue;
+      if (!yArr || ds.time.length === 0) continue;
 
       ctx.strokeStyle = s.color;
       ctx.lineWidth = 1.5;
       ctx.beginPath();
 
-      let started = false;
-      for (let i = 0; i < ds.time.length; i++) {
-        const x = left + this.xScale(ds.time[i]);
-        const y = top + this.yScale(yArr[i]);
-        if (!started) {
-          ctx.moveTo(x, y);
-          started = true;
-        } else {
-          ctx.lineTo(x, y);
+      const n = ds.time.length;
+      if (n <= maxPoints) {
+        // Few enough points — draw them all
+        ctx.moveTo(left + this.xScale(ds.time[0]), top + this.yScale(yArr[0]));
+        for (let i = 1; i < n; i++) {
+          ctx.lineTo(left + this.xScale(ds.time[i]), top + this.yScale(yArr[i]));
+        }
+      } else {
+        // Min/max decimation: split data into buckets, draw min and max per bucket.
+        // This preserves peaks/spikes that stride-based sampling would miss.
+        const bucketSize = n / maxPoints;
+        ctx.moveTo(left + this.xScale(ds.time[0]), top + this.yScale(yArr[0]));
+
+        for (let b = 0; b < maxPoints; b++) {
+          const start = Math.floor(b * bucketSize);
+          const end = Math.min(Math.floor((b + 1) * bucketSize), n);
+          if (start >= end) continue;
+
+          let minVal = yArr[start];
+          let maxVal = yArr[start];
+          let minIdx = start;
+          let maxIdx = start;
+          for (let i = start + 1; i < end; i++) {
+            if (yArr[i] < minVal) { minVal = yArr[i]; minIdx = i; }
+            if (yArr[i] > maxVal) { maxVal = yArr[i]; maxIdx = i; }
+          }
+
+          // Draw min and max in time order to maintain waveform continuity
+          if (minIdx <= maxIdx) {
+            ctx.lineTo(left + this.xScale(ds.time[minIdx]), top + this.yScale(minVal));
+            ctx.lineTo(left + this.xScale(ds.time[maxIdx]), top + this.yScale(maxVal));
+          } else {
+            ctx.lineTo(left + this.xScale(ds.time[maxIdx]), top + this.yScale(maxVal));
+            ctx.lineTo(left + this.xScale(ds.time[minIdx]), top + this.yScale(minVal));
+          }
         }
       }
       ctx.stroke();
