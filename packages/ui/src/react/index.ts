@@ -1,2 +1,5 @@
-// React exports — populated as components are built
-export {};
+export { TransientPlot, type TransientPlotProps } from './TransientPlot.js';
+export { BodePlot, type BodePlotProps } from './BodePlot.js';
+export { Legend, type LegendProps, type LegendSignal } from './Legend.js';
+export { CursorTooltip, type CursorTooltipProps } from './CursorTooltip.js';
+export { WaveformViewer, type WaveformViewerProps } from './WaveformViewer.js';
