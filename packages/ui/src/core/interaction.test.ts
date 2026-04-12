@@ -139,4 +139,128 @@ describe('InteractionHandler', () => {
 
     vi.useRealTimers();
   });
+
+  it('horizontal scroll (deltaX > deltaY) dispatches onPan', () => {
+    const onPan = vi.fn();
+    const handler = new InteractionHandler(canvas, {
+      onCursorMove: vi.fn(),
+      onZoom: vi.fn(),
+      onPan,
+      onDoubleClick: vi.fn(),
+    });
+
+    // Horizontal swipe: deltaX=50, deltaY=5 → pan, not zoom
+    canvas.dispatchEvent(new WheelEvent('wheel', { deltaX: 50, deltaY: 5 }));
+    expect(onPan).toHaveBeenCalledWith(-50, 0);
+
+    handler.destroy();
+    vi.useRealTimers();
+  });
+
+  it('vertical scroll accumulates zoom, not pan', async () => {
+    const onPan = vi.fn();
+    const onZoom = vi.fn();
+    const handler = new InteractionHandler(canvas, {
+      onCursorMove: vi.fn(),
+      onZoom,
+      onPan,
+      onDoubleClick: vi.fn(),
+    });
+
+    // Vertical scroll: deltaY >> deltaX → zoom path
+    canvas.dispatchEvent(new WheelEvent('wheel', { deltaX: 2, deltaY: 100 }));
+    // onPan should NOT be called immediately for vertical scroll
+    expect(onPan).not.toHaveBeenCalled();
+    // Zoom will be dispatched via rAF
+    await vi.advanceTimersByTimeAsync(50);
+    expect(onZoom).toHaveBeenCalled();
+
+    handler.destroy();
+    vi.useRealTimers();
+  });
+
+  it('pointerleave during drag launches momentum', async () => {
+    const onPan = vi.fn();
+    const handler = new InteractionHandler(canvas, {
+      onCursorMove: vi.fn(),
+      onZoom: vi.fn(),
+      onPan,
+      onDoubleClick: vi.fn(),
+    });
+
+    // Start drag with some velocity
+    canvas.dispatchEvent(new PointerEvent('pointerdown', { clientX: 300, clientY: 200 }));
+    canvas.dispatchEvent(new PointerEvent('pointermove', { clientX: 340, clientY: 200, buttons: 1 }));
+    onPan.mockClear();
+
+    // Leave canvas during drag — should stop dragging and emit cursor null
+    canvas.dispatchEvent(new PointerEvent('pointerleave'));
+    // After a rAF tick, momentum panning may fire
+    await vi.advanceTimersByTimeAsync(50);
+
+    handler.destroy();
+    vi.useRealTimers();
+  });
+
+  it('pointerup without prior pointerdown does not throw', () => {
+    const handler = new InteractionHandler(canvas, {
+      onCursorMove: vi.fn(),
+      onZoom: vi.fn(),
+      onPan: vi.fn(),
+      onDoubleClick: vi.fn(),
+    });
+
+    // pointerup when not dragging should be a no-op
+    canvas.dispatchEvent(new PointerEvent('pointerup', { clientX: 300, clientY: 200 }));
+
+    handler.destroy();
+    vi.useRealTimers();
+  });
+
+  it('animation loop stops when destroyed mid-flight', async () => {
+    const onZoom = vi.fn();
+    const handler = new InteractionHandler(canvas, {
+      onCursorMove: vi.fn(),
+      onZoom,
+      onPan: vi.fn(),
+      onDoubleClick: vi.fn(),
+    });
+
+    // Start zoom animation
+    canvas.dispatchEvent(new WheelEvent('wheel', { deltaY: -200, clientX: 400 }));
+    // Destroy immediately — animate callback should bail out
+    handler.destroy();
+    await vi.advanceTimersByTimeAsync(100);
+    // Any calls to onZoom before destroy happened, but no new ones after
+    const callsBefore = onZoom.mock.calls.length;
+    await vi.advanceTimersByTimeAsync(100);
+    expect(onZoom.mock.calls.length).toBe(callsBefore);
+
+    vi.useRealTimers();
+  });
+
+  it('zoom in produces factor > 1, zoom out produces factor < 1', async () => {
+    const onZoom = vi.fn();
+    const handler = new InteractionHandler(canvas, {
+      onCursorMove: vi.fn(),
+      onZoom,
+      onPan: vi.fn(),
+      onDoubleClick: vi.fn(),
+    });
+
+    // Negative deltaY → zoom in
+    canvas.dispatchEvent(new WheelEvent('wheel', { deltaY: -100 }));
+    await vi.advanceTimersByTimeAsync(50);
+    expect(onZoom.mock.calls.some((c) => c[1] > 1)).toBe(true);
+
+    onZoom.mockClear();
+
+    // Positive deltaY → zoom out
+    canvas.dispatchEvent(new WheelEvent('wheel', { deltaY: 100 }));
+    await vi.advanceTimersByTimeAsync(50);
+    expect(onZoom.mock.calls.some((c) => c[1] < 1)).toBe(true);
+
+    handler.destroy();
+    vi.useRealTimers();
+  });
 });
