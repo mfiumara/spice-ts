@@ -9,7 +9,7 @@ export interface InteractionCallbacks {
   onDoubleClick: () => void;
 }
 
-const ZOOM_FRICTION = 0.75;
+const ZOOM_FRICTION = 0.4;
 const ZOOM_STOP_THRESHOLD = 0.0005;
 const PAN_FRICTION = 0.92;
 const PAN_STOP_THRESHOLD = 0.3;
