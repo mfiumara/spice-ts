@@ -1,6 +1,19 @@
 // src/test-setup.ts
 import { vi } from 'vitest';
 
+// Polyfill PointerEvent for jsdom (not available by default)
+if (typeof PointerEvent === 'undefined') {
+  class PointerEventPolyfill extends MouseEvent {
+    pointerId: number;
+    constructor(type: string, params: PointerEventInit = {}) {
+      super(type, params);
+      this.pointerId = params.pointerId ?? 0;
+    }
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (globalThis as any).PointerEvent = PointerEventPolyfill;
+}
+
 function createMockContext(): CanvasRenderingContext2D {
   return {
     canvas: document.createElement('canvas'),

@@ -11,3 +11,4 @@ export { normalizeTransientData, normalizeACData } from './data.js';
 export { GrowableBuffer } from './buffer.js';
 export { TransientRenderer, type TransientRendererOptions } from './renderer.js';
 export { BodeRenderer, type BodeRendererOptions } from './bode-renderer.js';
+export { InteractionHandler, type InteractionCallbacks } from './interaction.js';
