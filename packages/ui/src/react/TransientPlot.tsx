@@ -81,9 +81,9 @@ export function TransientPlot({
             renderer.setCursorPixelX(pixelX);
             renderer.render();
           },
-          onZoom: (pixelX, factor, shiftKey) => {
-            if (shiftKey) renderer.zoomY(factor);
-            else renderer.zoomAt(pixelX, factor);
+          onZoom: (pixelX, factor, _shiftKey) => {
+            renderer.zoomAt(pixelX, factor);
+            renderer.zoomY(factor);
             renderer.render();
           },
           onPan: (dx, dy) => {
