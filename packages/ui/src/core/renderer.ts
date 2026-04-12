@@ -3,6 +3,27 @@ import { formatTime, formatVoltage } from './format.js';
 import type { ThemeConfig, TransientDataset, CursorState, CursorValue, Margins, RendererEvents } from './types.js';
 import { DEFAULT_PALETTE } from './types.js';
 
+/** Linearly interpolate y at a given x between data points. */
+function interpolateAt(xArr: number[], yArr: number[], x: number): number {
+  if (xArr.length === 0) return 0;
+  if (x <= xArr[0]) return yArr[0];
+  if (x >= xArr[xArr.length - 1]) return yArr[yArr.length - 1];
+
+  // Binary search for the interval containing x
+  let lo = 0;
+  let hi = xArr.length - 1;
+  while (hi - lo > 1) {
+    const mid = (lo + hi) >> 1;
+    if (xArr[mid] <= x) lo = mid;
+    else hi = mid;
+  }
+
+  const x0 = xArr[lo];
+  const x1 = xArr[hi];
+  const t = (x - x0) / (x1 - x0);
+  return yArr[lo] + t * (yArr[hi] - yArr[lo]);
+}
+
 export interface TransientRendererOptions {
   theme: ThemeConfig;
   margin?: Partial<Margins>;
@@ -108,15 +129,17 @@ export class TransientRenderer {
     for (const s of this.signalStates) {
       if (!s.visible) continue;
       const ds = this.datasets[s.datasetIndex];
-      const idx = bisectData(ds.time as number[], dataX);
       const signalArr = ds.signals.get(s.name);
-      if (!signalArr) continue;
+      if (!signalArr || ds.time.length === 0) continue;
+
+      // Interpolate value at exact cursor X position
+      const interpValue = interpolateAt(ds.time, signalArr, dataX);
 
       const label = ds.label ? `${ds.label}: ${s.name}` : s.name;
       values.push({
         signalId: ds.label ? `${ds.label}:${s.name}` : s.name,
         label,
-        value: signalArr[idx],
+        value: interpValue,
         unit: 'V',
         color: s.color,
       });
@@ -378,31 +401,16 @@ export class TransientRenderer {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Dots at intersection with each visible signal
+    // Dots at intersection with each visible signal (on the waveform line)
     for (const v of this.cursorState.values) {
-      const dataX = this.cursorState.x;
-      // Find the y value for this signal
-      for (const s of this.signalStates) {
-        const matchId = this.datasets[s.datasetIndex].label
-          ? `${this.datasets[s.datasetIndex].label}:${s.name}`
-          : s.name;
-        if (matchId !== v.signalId || !s.visible) continue;
-
-        const ds = this.datasets[s.datasetIndex];
-        const idx = bisectData(ds.time as number[], dataX);
-        const yArr = ds.signals.get(s.name);
-        if (!yArr) continue;
-
-        const py = top + this.yScale(yArr[idx]);
-        ctx.fillStyle = v.color;
-        ctx.strokeStyle = this.theme.background;
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.arc(x, py, 4, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-        break;
-      }
+      const py = top + this.yScale(v.value);
+      ctx.fillStyle = v.color;
+      ctx.strokeStyle = this.theme.background;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(x, py, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
     }
   }
 }

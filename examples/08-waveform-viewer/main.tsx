@@ -14,11 +14,15 @@ C1 out 0 100n
 `;
 
 const STREAM_NETLIST = `
-* RC Low-Pass Filter (streaming)
-V1 in 0 PULSE(0 5 0 1n 1n 5m 10m)
-R1 in out 1k
-C1 out 0 100n
-.tran 1u 10m
+* CMOS Inverter Chain — heavy transient (streaming demo)
+.model NMOS NMOS (VTO=0.7 KP=110e-6 LAMBDA=0.04 CBD=5p CBS=5p)
+.model PMOS PMOS (VTO=-0.7 KP=50e-6 LAMBDA=0.05 CBD=5p CBS=5p)
+V1 vdd 0 DC 5
+V2 in 0 PULSE(0 5 0 0.1n 0.1n 50n 100n)
+M1 out in vdd vdd PMOS W=10u L=1u
+M2 out in 0 0 NMOS W=5u L=1u
+C1 out 0 1p
+.tran 0.05n 500n
 `;
 
 const buttonStyle: React.CSSProperties = {
