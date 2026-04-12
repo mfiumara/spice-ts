@@ -98,6 +98,14 @@ export class InteractionHandler {
   private handleWheel(e: WheelEvent): void {
     if (this.destroyed) return;
     e.preventDefault();
+
+    // Horizontal scroll (trackpad swipe or shift+scroll) → pan horizontally
+    if (e.deltaX !== 0) {
+      this.callbacks.onPan(-e.deltaX, 0);
+      return;
+    }
+
+    // Vertical scroll → zoom horizontal axis
     const zoomFactor = e.deltaY < 0 ? 1.05 : 1 / 1.05;
     this.callbacks.onZoom(this.toCanvasX(e.clientX), zoomFactor, e.shiftKey);
   }
