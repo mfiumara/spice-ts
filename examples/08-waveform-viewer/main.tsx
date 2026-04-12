@@ -1,9 +1,9 @@
 import { createRoot } from 'react-dom/client';
 import { useState, useCallback, useRef } from 'react';
 import { simulateStream } from '@spice-ts/core';
-import { WaveformViewer, BodePlot } from '@spice-ts/ui/react';
-import { ACStreamingController } from '@spice-ts/ui';
-import type { ACDataset } from '@spice-ts/ui';
+import { WaveformViewer, BodePlot, CursorTooltip } from '@spice-ts/ui/react';
+import { ACStreamingController, DARK_THEME, formatFrequency } from '@spice-ts/ui';
+import type { ACDataset, CursorState } from '@spice-ts/ui';
 
 const STREAM_TRAN_NETLIST = `
 * RC pulse response (streaming demo)
@@ -37,6 +37,7 @@ function StreamingBodePlot() {
   const [acData, setAcData] = useState<ACDataset[] | null>(null);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cursor, setCursor] = useState<CursorState | null>(null);
   const controllerRef = useRef<ACStreamingController | null>(null);
   const rafRef = useRef<number>(0);
 
@@ -85,13 +86,21 @@ function StreamingBodePlot() {
         </div>
       )}
       {acData && (
-        <BodePlot
-          data={acData}
-          signals={['out']}
-          colors={{ out: '#f97316' }}
-          theme="dark"
-          xDomain={[1, 10e6]}
-        />
+        <div style={{ position: 'relative' }}>
+          <BodePlot
+            data={acData}
+            signals={['out']}
+            colors={{ out: '#f97316' }}
+            theme="dark"
+            xDomain={[1, 10e6]}
+            onCursorMove={setCursor}
+          />
+          <CursorTooltip
+            cursor={cursor}
+            theme={DARK_THEME}
+            formatX={(x) => formatFrequency(x)}
+          />
+        </div>
       )}
     </div>
   );
