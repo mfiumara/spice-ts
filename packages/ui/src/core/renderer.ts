@@ -50,6 +50,8 @@ export class TransientRenderer {
   private xDomain: [number, number] = [0, 1];
   private yDomain: [number, number] = [0, 1];
   private fixedXDomain: [number, number] | null = null;
+  private userHasZoomed = false;
+  private hasData = false;
   private cursorState: CursorState | null = null;
   private destroyed = false;
 
@@ -88,8 +90,16 @@ export class TransientRenderer {
       }
     }
 
-    this.computeDefaultDomains();
-    this.updateScales();
+    // Only auto-set domains on first data load or if user hasn't manually zoomed.
+    // During streaming, we don't want to reset the user's zoom on every data update.
+    if (!this.hasData || !this.userHasZoomed) {
+      this.computeDefaultDomains();
+      this.updateScales();
+    } else {
+      // Just update scales (domain unchanged, but plot dimensions may have changed)
+      this.updateScales();
+    }
+    this.hasData = true;
   }
 
   /** Pin the x-axis to a fixed range (e.g. [0, stopTime] during streaming). */
@@ -170,6 +180,7 @@ export class TransientRenderer {
 
   /** Zoom at a pixel x position by a factor (>1 zooms in, <1 zooms out). */
   zoomAt(pixelX: number, factor: number): void {
+    this.userHasZoomed = true;
     const centerX = this.xScale.invert(pixelX - this.margin.left);
     const [x0, x1] = this.xDomain;
     const halfSpan = (x1 - x0) / 2 / factor;
@@ -188,6 +199,7 @@ export class TransientRenderer {
 
   /** Pan by pixel deltas. */
   pan(dx: number, dy: number): void {
+    this.userHasZoomed = true;
     const plotWidth = this.getPlotWidth();
     const plotHeight = this.getPlotHeight();
     const [x0, x1] = this.xDomain;
@@ -201,6 +213,7 @@ export class TransientRenderer {
 
   /** Reset zoom to show all data. */
   fitToData(): void {
+    this.userHasZoomed = false;
     this.computeDefaultDomains();
     this.updateScales();
   }
