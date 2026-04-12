@@ -44,12 +44,15 @@ export function BodePlot({
   const rendererRef = useRef<BodeRenderer | null>(null);
   const magInteractionRef = useRef<InteractionHandler | null>(null);
   const phaseInteractionRef = useRef<InteractionHandler | null>(null);
+  const onCursorMoveRef = useRef(onCursorMove);
+  onCursorMoveRef.current = onCursorMove;
   const resolvedTheme = resolveTheme(theme);
   const [magVisible, setMagVisible] = useState(defaultPanes !== 'phase');
   const [phaseVisible, setPhaseVisible] = useState(defaultPanes !== 'magnitude');
 
   const magCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const phaseCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const canvasesReady = useRef(false);
 
   const handleResize = useCallback(() => {
     rendererRef.current?.render();
@@ -58,15 +61,14 @@ export function BodePlot({
   const { refCallback: magRefCallback } = useCanvas(handleResize);
   const { refCallback: phaseRefCallback } = useCanvas(handleResize);
 
-  // Initialize renderer when both canvases are available
+  // Create renderer once when both canvases are mounted.
+  // Does NOT depend on data — data updates go through a separate useEffect.
   useEffect(() => {
     const magCanvas = magCanvasRef.current;
     const phaseCanvas = phaseCanvasRef.current;
     if (!magCanvas || !phaseCanvas) return;
-
-    rendererRef.current?.destroy();
-    magInteractionRef.current?.destroy();
-    phaseInteractionRef.current?.destroy();
+    if (canvasesReady.current) return; // already initialized
+    canvasesReady.current = true;
 
     const renderer = new BodeRenderer(magCanvas, phaseCanvas, {
       theme: resolvedTheme,
@@ -74,22 +76,9 @@ export function BodePlot({
     });
     rendererRef.current = renderer;
 
-    const datasets = normalizeACData(data, signals);
-    renderer.setData(datasets, signals);
-
-    if (xDomain) {
-      renderer.setFixedXDomain(xDomain);
-    }
-
-    if (colors) {
-      for (const [name, color] of Object.entries(colors)) {
-        renderer.setSignalColor(name, color);
-      }
-    }
-
-    if (onCursorMove) {
-      renderer.on('cursorMove', onCursorMove);
-    }
+    renderer.on('cursorMove', (state) => {
+      onCursorMoveRef.current?.(state);
+    });
 
     const createInteraction = (canvas: HTMLCanvasElement) =>
       new InteractionHandler(canvas, {
@@ -114,14 +103,35 @@ export function BodePlot({
     magInteractionRef.current = createInteraction(magCanvas);
     phaseInteractionRef.current = createInteraction(phaseCanvas);
 
-    renderer.render();
-
     return () => {
+      canvasesReady.current = false;
       renderer.destroy();
       magInteractionRef.current?.destroy();
       phaseInteractionRef.current?.destroy();
+      rendererRef.current = null;
     };
-  }, [data, signals, resolvedTheme, defaultPanes, colors, onCursorMove, xDomain]);
+  }, [resolvedTheme, defaultPanes]);
+
+  // Update data on existing renderer without recreating it.
+  useEffect(() => {
+    const renderer = rendererRef.current;
+    if (!renderer) return;
+
+    const datasets = normalizeACData(data, signals);
+    renderer.setData(datasets, signals);
+
+    if (xDomain) {
+      renderer.setFixedXDomain(xDomain);
+    }
+
+    if (colors) {
+      for (const [name, color] of Object.entries(colors)) {
+        renderer.setSignalColor(name, color);
+      }
+    }
+
+    renderer.render();
+  }, [data, signals, colors, xDomain]);
 
   // Sync pane visibility
   useEffect(() => {
