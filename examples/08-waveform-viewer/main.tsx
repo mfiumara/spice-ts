@@ -94,6 +94,7 @@ function App() {
           signals={['in', 'out']}
           colors={{ in: '#60a5fa', out: '#4ade80' }}
           theme="dark"
+          xDomain={[0, 20e-3]}
         />
       )}
 

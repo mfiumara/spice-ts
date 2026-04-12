@@ -22,6 +22,8 @@ export interface WaveformViewerProps {
   colors?: Record<string, string>;
   /** Theme preset or custom config. */
   theme?: 'dark' | 'light' | ThemeConfig;
+  /** Fixed x-axis domain [min, max] in seconds. Useful during streaming. */
+  xDomain?: [number, number];
 }
 
 /**
@@ -36,6 +38,7 @@ export function WaveformViewer({
   signals,
   colors,
   theme,
+  xDomain,
 }: WaveformViewerProps) {
   const resolvedTheme = resolveTheme(theme);
   const [cursor, setCursor] = useState<CursorState | null>(null);
@@ -139,6 +142,7 @@ export function WaveformViewer({
           onCursorMove={setCursor}
           signalVisibility={visibility}
           handleRef={transientHandleRef}
+          xDomain={xDomain}
         />
       )}
       {ac != null && !stream && (

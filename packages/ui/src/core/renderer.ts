@@ -49,6 +49,7 @@ export class TransientRenderer {
   private yScale: LinearScale = createLinearScale([0, 1], [0, 1]);
   private xDomain: [number, number] = [0, 1];
   private yDomain: [number, number] = [0, 1];
+  private fixedXDomain: [number, number] | null = null;
   private cursorState: CursorState | null = null;
   private destroyed = false;
 
@@ -89,6 +90,15 @@ export class TransientRenderer {
 
     this.computeDefaultDomains();
     this.updateScales();
+  }
+
+  /** Pin the x-axis to a fixed range (e.g. [0, stopTime] during streaming). */
+  setFixedXDomain(domain: [number, number] | null): void {
+    this.fixedXDomain = domain;
+    if (domain) {
+      this.xDomain = domain;
+      this.updateScales();
+    }
   }
 
   /** Update theme. */
@@ -263,17 +273,22 @@ export class TransientRenderer {
 
   private computeDefaultDomains(): void {
     if (this.datasets.length === 0) return;
-    // X domain: min/max time across all datasets
-    let xMin = Infinity;
-    let xMax = -Infinity;
-    for (const ds of this.datasets) {
-      if (ds.time.length > 0) {
-        xMin = Math.min(xMin, ds.time[0]);
-        xMax = Math.max(xMax, ds.time[ds.time.length - 1]);
+
+    // X domain: use fixed domain if set, otherwise compute from data
+    if (this.fixedXDomain) {
+      this.xDomain = this.fixedXDomain;
+    } else {
+      let xMin = Infinity;
+      let xMax = -Infinity;
+      for (const ds of this.datasets) {
+        if (ds.time.length > 0) {
+          xMin = Math.min(xMin, ds.time[0]);
+          xMax = Math.max(xMax, ds.time[ds.time.length - 1]);
+        }
       }
-    }
-    if (isFinite(xMin) && isFinite(xMax)) {
-      this.xDomain = [xMin, xMax];
+      if (isFinite(xMin) && isFinite(xMax)) {
+        this.xDomain = [xMin, xMax];
+      }
     }
 
     // Y domain: extent of all visible signals
