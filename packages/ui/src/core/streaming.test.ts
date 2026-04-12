@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { StreamingController } from './streaming.js';
 
 // Helper: create an async generator that yields TransientStep-like objects
-async function* mockStream(steps: { time: number; voltages: Map<string, number> }[]) {
+async function* mockStream(steps: { time: number; voltages: Map<string, number>; currents: Map<string, number> }[]) {
   for (const step of steps) {
     yield step;
   }
