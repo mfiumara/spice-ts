@@ -7,3 +7,4 @@ export { DARK_THEME, LIGHT_THEME, mergeTheme, resolveTheme } from './theme.js';
 export { formatSI, formatTime, formatFrequency, formatVoltage, formatCurrent, formatDB, formatPhase } from './format.js';
 export { createLinearScale, createLogScale, computeYExtent, bisectData } from './scales.js';
 export type { LinearScale, LogScale } from './scales.js';
+export { normalizeTransientData, normalizeACData } from './data.js';
