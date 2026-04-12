@@ -6,7 +6,8 @@ import { createSparseSolver } from '../solver/sparse-solver.js';
 import { TimestepTooSmallError } from '../errors.js';
 import { TransientResult } from '../results.js';
 
-const MIN_TIMESTEP = 1e-18;
+const MIN_TIMESTEP = 1e-15;
+const NR_VOLTAGE_LIMIT = 3.5; // Max node-voltage change per NR iteration
 
 export function solveTransient(
   compiled: CompiledCircuit,
@@ -45,6 +46,11 @@ export function solveTransient(
   const solver = createSparseSolver();
   let patternAnalyzed = false;
 
+  // LTE history tracking
+  let secondPrevSol: Float64Array | undefined;
+  let prevDt = dt;
+  let lteRejectCount = 0;
+
   // Compute initial b(0) for trapezoidal history on the first step
   let prevB: Float64Array | undefined;
   if (options.integrationMethod === 'trapezoidal') {
@@ -75,7 +81,16 @@ export function solveTransient(
       solver.factorize(assembler.getCscMatrix());
       const x = solver.solve(new Float64Array(assembler.b));
 
+      // NR damping: limit node-voltage change per iteration to aid convergence
+      // through device switching transitions (MOSFETs, diodes)
       const prev = new Float64Array(assembler.solution);
+      for (let i = 0; i < nodeCount; i++) {
+        const delta = x[i] - prev[i];
+        if (Math.abs(delta) > NR_VOLTAGE_LIMIT) {
+          x[i] = prev[i] + Math.sign(delta) * NR_VOLTAGE_LIMIT;
+        }
+      }
+
       assembler.solution.set(x);
 
       if (isConvergedTransient(x, prev, nodeCount, options)) {
@@ -85,12 +100,32 @@ export function solveTransient(
     }
 
     if (!converged) {
-      dt = dt / 4;
+      // Less aggressive than /4 — gives more attempts before hitting the floor
+      dt = dt / 2;
       if (dt < MIN_TIMESTEP) {
         throw new TimestepTooSmallError(time, dt);
       }
       assembler.solution.set(prevSol);
       continue;
+    }
+
+    // LTE-based timestep control: reject if local truncation error is too large.
+    // This catches inaccurate solutions that NR accepted (convergence != accuracy).
+    let lteRatio = 0;
+    if (secondPrevSol && lteRejectCount < 10) {
+      lteRatio = estimateLTE(
+        assembler.solution, prevSol, secondPrevSol,
+        actualDt, prevDt, nodeCount, options,
+      );
+      if (lteRatio > 1) {
+        // Reduce dt proportionally to the error ratio
+        const factor = Math.max(0.25, 0.9 / Math.sqrt(lteRatio));
+        dt = Math.max(actualDt * factor, MIN_TIMESTEP);
+        assembler.solution.set(prevSol);
+        lteRejectCount++;
+        continue;
+      }
+      lteRejectCount = 0;
     }
 
     // Save the DC-stamped b for trapezoidal history on next step
@@ -113,12 +148,59 @@ export function solveTransient(
       currentArrays.get(branchNames[i])!.push(assembler.solution[nodeCount + i]);
     }
 
-    // Adaptive: grow timestep if converged
-    dt = Math.min(dt * 1.5, maxDt, analysis.stopTime - time);
+    // Update LTE history
+    secondPrevSol = prevSol;
+    prevDt = actualDt;
+
+    // Adaptive: grow timestep based on LTE margin
+    const growFactor = lteRatio > 0.001
+      ? Math.min(2.0, 0.9 / Math.sqrt(lteRatio))
+      : 2.0;
+    dt = Math.min(actualDt * growFactor, maxDt, analysis.stopTime - time);
     if (dt < MIN_TIMESTEP && time < analysis.stopTime - MIN_TIMESTEP) break;
   }
 
   return new TransientResult(timePoints, voltageArrays, currentArrays);
+}
+
+/**
+ * Estimate the Local Truncation Error ratio for the current step.
+ *
+ * Uses a forward-Euler predictor compared against the actual solution:
+ *   predicted = x(n) + dt * (x(n) - x(n-1)) / prevDt
+ *   error = |actual - predicted| / 3   (for trapezoidal, order-2 corrector)
+ *   ratio = error / (trtol * tolerance)
+ *
+ * A ratio > 1 means the step should be rejected.
+ */
+function estimateLTE(
+  current: Float64Array,
+  previous: Float64Array,
+  secondPrev: Float64Array,
+  dt: number,
+  prevDt: number,
+  nodeCount: number,
+  options: ResolvedOptions,
+): number {
+  let maxRatio = 0;
+  const divider = options.integrationMethod === 'trapezoidal' ? 3 : 2;
+
+  for (let i = 0; i < nodeCount; i++) {
+    // Forward Euler prediction from the rate of change at the previous step
+    const slope = (previous[i] - secondPrev[i]) / prevDt;
+    const predicted = previous[i] + dt * slope;
+
+    // Error between corrector (actual NR result) and predictor
+    const error = Math.abs(current[i] - predicted) / divider;
+    const tol = options.trtol * (options.vntol + options.reltol * Math.abs(current[i]));
+
+    if (tol > 0) {
+      const ratio = error / tol;
+      if (ratio > maxRatio) maxRatio = ratio;
+    }
+  }
+
+  return maxRatio;
 }
 
 function isConvergedTransient(

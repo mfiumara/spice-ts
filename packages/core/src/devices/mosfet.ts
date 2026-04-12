@@ -34,16 +34,30 @@ export class MOSFET implements DeviceModel {
   stamp(ctx: StampContext): void {
     const { VTO, KP, LAMBDA, W, L, polarity } = this.params;
     const WL = W / L;
-    const [nD, nG, nS] = this.nodes;
 
-    // Get node voltages
+    // Get node voltages — may swap drain/source below
+    let nD = this.nodes[0];
+    const nG = this.nodes[1];
+    let nS = this.nodes[2];
+
     const vD = nD >= 0 ? ctx.getVoltage(nD) : 0;
     const vG = nG >= 0 ? ctx.getVoltage(nG) : 0;
     const vS = nS >= 0 ? ctx.getVoltage(nS) : 0;
 
     // Internal voltages adjusted for polarity (PMOS flips)
-    const vGS = polarity * (vG - vS);
-    const vDS = polarity * (vD - vS);
+    let vGS = polarity * (vG - vS);
+    let vDS = polarity * (vD - vS);
+
+    // Source-drain swap: if vDS < 0, the device operates in reverse mode.
+    // Standard SPICE Level 1 handles this by swapping drain and source
+    // internally so that vDS >= 0 for the model equations.
+    if (vDS < 0) {
+      const tmp = nD;
+      nD = nS;
+      nS = tmp;
+      vGS = vGS - vDS; // vG - vD (gate to new effective source)
+      vDS = -vDS;       // |vDS|
+    }
 
     // Threshold in polarity-adjusted domain: for PMOS, VTO from model card is
     // negative (e.g. -0.5V). After the polarity flip vGS is positive, so we
@@ -80,23 +94,14 @@ export class MOSFET implements DeviceModel {
     // Equivalent current: Ieq = ID0 - gm*VGS0 - gds*VDS0
     const Ieq = ID - gm * vGS - gds * vDS;
 
-    // Physical current into drain = polarity * ID
-    // VGS = polarity*(vG - vS), VDS = polarity*(vD - vS)
-    // dVGS/dvG = polarity, dVGS/dvS = -polarity
-    // dVDS/dvD = polarity, dVDS/dvS = -polarity
+    // Physical current into effective drain = polarity * ID
+    // The stamps below use the (possibly swapped) nD, nG, nS.
     //
-    // ID_node = polarity * (gm*VGS + gds*VDS + Ieq)
-    //
-    // dID_node/dvG = polarity * gm * polarity = gm
-    // dID_node/dvD = polarity * gds * polarity = gds
-    // dID_node/dvS = polarity * (-gm*polarity - gds*polarity) = -(gm + gds)
-    //
-    // IS_node = -ID_node (KCL, gate draws no current)
-    // dIS_node/dvG = -gm
-    // dIS_node/dvD = -gds
-    // dIS_node/dvS = gm + gds
+    // dID_node/dvG = gm
+    // dID_node/dvD = gds
+    // dID_node/dvS = -(gm + gds)
 
-    // Stamp drain row (current into drain)
+    // Stamp drain row (current into effective drain)
     if (nD >= 0) {
       if (nG >= 0) ctx.stampG(nD, nG, gm);
       if (nD >= 0) ctx.stampG(nD, nD, gds);
@@ -104,7 +109,7 @@ export class MOSFET implements DeviceModel {
       ctx.stampB(nD, -polarity * Ieq);
     }
 
-    // Stamp source row (current into source = -current into drain)
+    // Stamp source row (current into effective source = -current into effective drain)
     if (nS >= 0) {
       if (nG >= 0) ctx.stampG(nS, nG, -gm);
       if (nD >= 0) ctx.stampG(nS, nD, -gds);
@@ -130,18 +135,28 @@ export class MOSFET implements DeviceModel {
       const mosfet = mosfets[m];
       const { VTO, KP, LAMBDA, W, L, polarity } = mosfet.params;
       const WL = W / L;
-      const nD = mosfet.nodes[0];
-      const nG = mosfet.nodes[1];
-      const nS = mosfet.nodes[2];
 
-      // Get node voltages
+      // Get node voltages — may swap drain/source below
+      let nD = mosfet.nodes[0];
+      const nG = mosfet.nodes[1];
+      let nS = mosfet.nodes[2];
+
       const vD = nD >= 0 ? solution[nD] : 0;
       const vG = nG >= 0 ? solution[nG] : 0;
       const vS = nS >= 0 ? solution[nS] : 0;
 
       // Internal voltages adjusted for polarity (PMOS flips)
-      const vGS = polarity * (vG - vS);
-      const vDS = polarity * (vD - vS);
+      let vGS = polarity * (vG - vS);
+      let vDS = polarity * (vD - vS);
+
+      // Source-drain swap for negative vDS
+      if (vDS < 0) {
+        const tmp = nD;
+        nD = nS;
+        nS = tmp;
+        vGS = vGS - vDS;
+        vDS = -vDS;
+      }
 
       const Vth = Math.abs(VTO);
 
@@ -174,7 +189,7 @@ export class MOSFET implements DeviceModel {
       // NR companion: Ieq = ID0 - gm*VGS0 - gds*VDS0
       const Ieq = ID - gm * vGS - gds * vDS;
 
-      // Stamp drain row (current into drain) — direct array writes
+      // Stamp drain row — direct array writes using (possibly swapped) nD, nS
       if (nD >= 0) {
         if (nG >= 0) gValues[posMap[nD * n + nG]] += gm;
         if (nD >= 0) gValues[posMap[nD * n + nD]] += gds;
@@ -182,7 +197,7 @@ export class MOSFET implements DeviceModel {
         b[nD] -= polarity * Ieq;
       }
 
-      // Stamp source row (current into source = -current into drain)
+      // Stamp source row
       if (nS >= 0) {
         if (nG >= 0) gValues[posMap[nS * n + nG]] -= gm;
         if (nD >= 0) gValues[posMap[nS * n + nD]] -= gds;
