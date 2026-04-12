@@ -98,7 +98,7 @@ export class InteractionHandler {
   private handleWheel(e: WheelEvent): void {
     if (this.destroyed) return;
     e.preventDefault();
-    const zoomFactor = e.deltaY < 0 ? 1.2 : 1 / 1.2;
+    const zoomFactor = e.deltaY < 0 ? 1.05 : 1 / 1.05;
     this.callbacks.onZoom(this.toCanvasX(e.clientX), zoomFactor, e.shiftKey);
   }
 
