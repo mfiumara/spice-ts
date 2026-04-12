@@ -38,6 +38,7 @@ export class BodeRenderer {
   private phaseVisible = true;
   private cursorState: CursorState | null = null;
   private destroyed = false;
+  private fixedXDomain: [number, number] | null = null;
   private listeners: Partial<{ [K in keyof RendererEvents]: RendererEvents[K][] }> = {};
 
   constructor(magCanvas: HTMLCanvasElement, phaseCanvas: HTMLCanvasElement, options: BodeRendererOptions) {
@@ -79,6 +80,14 @@ export class BodeRenderer {
 
     this.computeDefaultDomains();
     this.updateScales();
+  }
+
+  setFixedXDomain(domain: [number, number] | null): void {
+    this.fixedXDomain = domain;
+    if (domain) {
+      this.xDomain = domain;
+      this.updateScales();
+    }
   }
 
   setTheme(theme: ThemeConfig): void {
@@ -350,17 +359,21 @@ export class BodeRenderer {
   private computeDefaultDomains(): void {
     if (this.datasets.length === 0) return;
 
-    // X domain: min/max frequency
-    let fMin = Infinity;
-    let fMax = -Infinity;
-    for (const ds of this.datasets) {
-      if (ds.frequencies.length > 0) {
-        fMin = Math.min(fMin, ds.frequencies[0]);
-        fMax = Math.max(fMax, ds.frequencies[ds.frequencies.length - 1]);
+    // X domain: use fixed domain if set, otherwise compute from data
+    if (this.fixedXDomain) {
+      this.xDomain = this.fixedXDomain;
+    } else {
+      let fMin = Infinity;
+      let fMax = -Infinity;
+      for (const ds of this.datasets) {
+        if (ds.frequencies.length > 0) {
+          fMin = Math.min(fMin, ds.frequencies[0]);
+          fMax = Math.max(fMax, ds.frequencies[ds.frequencies.length - 1]);
+        }
       }
-    }
-    if (isFinite(fMin) && isFinite(fMax) && fMin > 0) {
-      this.xDomain = [fMin, fMax];
+      if (isFinite(fMin) && isFinite(fMax) && fMin > 0) {
+        this.xDomain = [fMin, fMax];
+      }
     }
 
     // Magnitude Y domain
