@@ -57,6 +57,11 @@ export class InteractionHandler {
     this.canvas.removeEventListener('dblclick', this.boundDblClick);
   }
 
+  private toCanvasX(clientX: number): number {
+    const rect = this.canvas.getBoundingClientRect();
+    return clientX - rect.left;
+  }
+
   private handlePointerMove(e: PointerEvent): void {
     if (this.destroyed) return;
 
@@ -67,7 +72,7 @@ export class InteractionHandler {
       this.lastY = e.clientY;
       this.callbacks.onPan(dx, dy);
     } else {
-      this.callbacks.onCursorMove(e.clientX);
+      this.callbacks.onCursorMove(this.toCanvasX(e.clientX));
     }
   }
 
@@ -94,7 +99,7 @@ export class InteractionHandler {
     if (this.destroyed) return;
     e.preventDefault();
     const zoomFactor = e.deltaY < 0 ? 1.2 : 1 / 1.2;
-    this.callbacks.onZoom(e.clientX, zoomFactor, e.shiftKey);
+    this.callbacks.onZoom(this.toCanvasX(e.clientX), zoomFactor, e.shiftKey);
   }
 
   private handleDblClick(_e: MouseEvent): void {
