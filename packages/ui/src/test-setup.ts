@@ -1,6 +1,16 @@
 // src/test-setup.ts
 import { vi } from 'vitest';
 
+// Polyfill ResizeObserver for jsdom (not available by default)
+if (typeof ResizeObserver === 'undefined') {
+  class ResizeObserverPolyfill {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
+  (globalThis as unknown as Record<string, unknown>).ResizeObserver = ResizeObserverPolyfill;
+}
+
 // Polyfill PointerEvent for jsdom (not available by default)
 if (typeof PointerEvent === 'undefined') {
   class PointerEventPolyfill extends MouseEvent {
