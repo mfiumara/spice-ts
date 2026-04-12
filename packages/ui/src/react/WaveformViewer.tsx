@@ -45,6 +45,7 @@ export function WaveformViewer({
     return v;
   });
   const [streamData, setStreamData] = useState<TransientDataset[] | null>(null);
+  const [streamError, setStreamError] = useState<string | null>(null);
   const controllerRef = useRef<StreamingController | null>(null);
   const rafRef = useRef<number>(0);
   const transientHandleRef = useRef<TransientPlotHandle | null>(null);
@@ -52,6 +53,7 @@ export function WaveformViewer({
   // Streaming: consume async iterator, update data on rAF
   useEffect(() => {
     if (!stream) return;
+    setStreamError(null);
 
     let dirty = false;
     const controller = new StreamingController(signals, () => { dirty = true; });
@@ -72,7 +74,11 @@ export function WaveformViewer({
     };
     rafRef.current = requestAnimationFrame(loop);
 
-    controller.consume(stream as AsyncIterable<Parameters<typeof controller.consume>[0] extends AsyncIterable<infer T> ? T : never>);
+    controller.consume(stream as AsyncIterable<Parameters<typeof controller.consume>[0] extends AsyncIterable<infer T> ? T : never>)
+      .catch((err: unknown) => {
+        const msg = err instanceof Error ? err.message : String(err);
+        setStreamError(msg);
+      });
 
     return () => {
       controller.stop();
@@ -145,6 +151,11 @@ export function WaveformViewer({
             onCursorMove={transientData == null ? setCursor : undefined}
             signalVisibility={visibility}
           />
+        </div>
+      )}
+      {streamError && (
+        <div style={{ color: '#f87171', fontSize: `${resolvedTheme.fontSize}px`, padding: '8px 0' }}>
+          Simulation error: {streamError}
         </div>
       )}
       <Legend signals={legendSignals} onToggle={handleToggle} />
