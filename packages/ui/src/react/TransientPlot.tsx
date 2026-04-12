@@ -29,6 +29,8 @@ export interface TransientPlotProps {
   signalVisibility?: Record<string, boolean>;
   /** Ref to access imperative methods like fitToData(). */
   handleRef?: React.MutableRefObject<TransientPlotHandle | null>;
+  /** Fixed x-axis domain [min, max] in seconds. Useful for streaming. */
+  xDomain?: [number, number];
 }
 
 export function TransientPlot({
@@ -41,6 +43,7 @@ export function TransientPlot({
   onCursorMove,
   signalVisibility,
   handleRef,
+  xDomain,
 }: TransientPlotProps) {
   const rendererRef = useRef<TransientRenderer | null>(null);
   const interactionRef = useRef<InteractionHandler | null>(null);
@@ -73,6 +76,10 @@ export function TransientPlot({
 
         const datasets = normalizeTransientData(data, signals);
         renderer.setData(datasets, signals);
+
+        if (xDomain) {
+          renderer.setFixedXDomain(xDomain);
+        }
 
         if (colors) {
           for (const [name, color] of Object.entries(colors)) {
@@ -117,7 +124,7 @@ export function TransientPlot({
         renderer.render();
       }
     },
-    [data, signals, resolvedTheme, colors, onCursorMove, refCallback, handleRef],
+    [data, signals, resolvedTheme, colors, onCursorMove, refCallback, handleRef, xDomain],
   );
 
   // Update visibility when prop changes
