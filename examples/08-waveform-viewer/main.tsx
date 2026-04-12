@@ -1,25 +1,34 @@
 import { createRoot } from 'react-dom/client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { simulate, simulateStream } from '@spice-ts/core';
-import { WaveformViewer } from '@spice-ts/ui/react';
-import type { SimulationResult } from '@spice-ts/core';
+import { WaveformViewer, BodePlot } from '@spice-ts/ui/react';
+import { ACStreamingController } from '@spice-ts/ui';
+import type { SimulationResult, ACResult } from '@spice-ts/core';
+import type { ACDataset } from '@spice-ts/ui';
 
 const RC_NETLIST = `
 * RC Low-Pass Filter
-V1 in 0 PULSE(0 5 0 1n 1n 5m 10m)
+V1 in 0 PULSE(0 5 0 1n 1n 5m 10m) AC 1
 R1 in out 1k
 C1 out 0 100n
 .tran 1u 10m
 .ac dec 20 1 10Meg
 `;
 
-const STREAM_NETLIST = `
+const STREAM_TRAN_NETLIST = `
 * RC pulse response (streaming demo)
-* maxTimestep forces 200k solver steps for visible progressive rendering
 V1 in 0 PULSE(0 5 0 10u 10u 2m 4m)
 R1 in out 10k
 C1 out 0 100n
 .tran 0.1u 20m 0 0.1u
+`;
+
+const STREAM_AC_NETLIST = `
+* RC Low-Pass AC sweep (streaming demo)
+V1 in 0 AC 1
+R1 in out 1k
+C1 out 0 100n
+.ac dec 100 1 10Meg
 `;
 
 const buttonStyle: React.CSSProperties = {
@@ -33,6 +42,65 @@ const buttonStyle: React.CSSProperties = {
   cursor: 'pointer',
   fontWeight: 500,
 };
+
+function StreamingBodePlot() {
+  const [acData, setAcData] = useState<ACDataset[] | null>(null);
+  const [running, setRunning] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const controllerRef = useRef<ACStreamingController | null>(null);
+  const rafRef = useRef<number>(0);
+
+  const handleRun = useCallback(() => {
+    // Cleanup previous
+    controllerRef.current?.stop();
+    cancelAnimationFrame(rafRef.current);
+    setAcData(null);
+    setError(null);
+    setRunning(true);
+
+    let dirty = false;
+    const controller = new ACStreamingController(['out'], () => { dirty = true; });
+    controllerRef.current = controller;
+
+    const loop = () => {
+      if (dirty) {
+        dirty = false;
+        setAcData([controller.getDataset()]);
+      }
+      if (controller.isRunning()) {
+        rafRef.current = requestAnimationFrame(loop);
+      } else {
+        setAcData([controller.getDataset()]);
+        setRunning(false);
+      }
+    };
+    rafRef.current = requestAnimationFrame(loop);
+
+    const stream = simulateStream(STREAM_AC_NETLIST);
+    controller.consume(stream as AsyncIterable<any>).catch((err: unknown) => {
+      setError(err instanceof Error ? err.message : String(err));
+      setRunning(false);
+    });
+  }, []);
+
+  return (
+    <div>
+      <div style={{ marginBottom: '12px' }}>
+        <button style={buttonStyle} onClick={handleRun}>
+          {running ? '⏳ Running...' : acData ? '↻ Re-run AC' : '▶ Run AC Sweep'}
+        </button>
+      </div>
+      {error && (
+        <div style={{ color: '#f87171', fontSize: '13px', marginBottom: '8px' }}>
+          Simulation error: {error}
+        </div>
+      )}
+      {acData && (
+        <BodePlot data={acData} signals={['out']} colors={{ out: '#f97316' }} theme="dark" />
+      )}
+    </div>
+  );
+}
 
 function App() {
   const [result, setResult] = useState<SimulationResult | null>(null);
@@ -49,9 +117,8 @@ function App() {
   const handleRunStreaming = useCallback(() => {
     setStream(null);
     setStreaming(true);
-    // Small delay to let React clear the previous stream
     setTimeout(() => {
-      const s = simulateStream(STREAM_NETLIST);
+      const s = simulateStream(STREAM_TRAN_NETLIST);
       setStream(s as AsyncIterableIterator<unknown>);
     }, 50);
   }, []);
@@ -79,9 +146,9 @@ function App() {
         theme="dark"
       />
 
-      <h2>Streaming Simulation</h2>
+      <h2>Streaming Transient</h2>
       <p style={{ fontSize: '13px', color: 'hsl(215, 20%, 55%)', marginBottom: '12px' }}>
-        Click "Run" to watch the simulation draw in real-time.
+        Watch the RC pulse response draw in real-time.
       </p>
       <div style={{ marginBottom: '12px' }}>
         <button style={buttonStyle} onClick={handleRunStreaming}>
@@ -97,6 +164,12 @@ function App() {
           xDomain={[0, 20e-3]}
         />
       )}
+
+      <h2>Streaming AC Sweep</h2>
+      <p style={{ fontSize: '13px', color: 'hsl(215, 20%, 55%)', marginBottom: '12px' }}>
+        Watch the Bode plot build frequency-by-frequency.
+      </p>
+      <StreamingBodePlot />
 
       <h2>Light Theme</h2>
       <WaveformViewer
