@@ -169,10 +169,32 @@ export class DCSweepResult {
 }
 
 /**
+ * Result of a single parametric step (`.step` directive).
+ *
+ * Contains the parameter name and value for this step, along with
+ * the analysis results computed at that parameter value.
+ */
+export interface StepResult {
+  /** Name of the swept parameter or component */
+  paramName: string;
+  /** Parameter value for this step */
+  paramValue: number;
+  /** DC operating point result (from `.op`), if present */
+  dc?: DCResult;
+  /** DC sweep result (from `.dc`), if present */
+  dcSweep?: DCSweepResult;
+  /** Transient analysis result (from `.tran`), if present */
+  transient?: TransientResult;
+  /** AC small-signal analysis result (from `.ac`), if present */
+  ac?: ACResult;
+}
+
+/**
  * Aggregate result object returned by {@link simulate}.
  *
  * Each field is populated only if the corresponding analysis was requested
  * in the netlist. For example, `.op` populates `dc`, `.tran` populates `transient`.
+ * When a `.step` directive is present, the `steps` array contains per-step results.
  */
 export interface SimulationResult {
   /** DC operating point result (from `.op`) */
@@ -183,6 +205,8 @@ export interface SimulationResult {
   transient?: TransientResult;
   /** AC small-signal analysis result (from `.ac`) */
   ac?: ACResult;
+  /** Per-step results when a `.step` directive is used */
+  steps?: StepResult[];
   /** Warnings collected during simulation */
   warnings: SimulationWarning[];
 }

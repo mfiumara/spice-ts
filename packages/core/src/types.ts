@@ -54,6 +54,57 @@ export interface ACAnalysis {
 /** Union of all analysis command types. Discriminated on the `type` field. */
 export type AnalysisCommand = DCAnalysis | DCSweepAnalysis | TransientAnalysis | ACAnalysis;
 
+/** Linear parametric sweep: `.step param <name> <start> <stop> <increment>` */
+export interface StepLinear {
+  sweepType: 'linear';
+  /** Parameter or component name to sweep (e.g., `'R1'`) */
+  paramName: string;
+  /** Start value */
+  start: number;
+  /** Stop value */
+  stop: number;
+  /** Increment between sweep points */
+  step: number;
+}
+
+/** List parametric sweep: `.step param <name> list <val1> <val2> ...` */
+export interface StepList {
+  sweepType: 'list';
+  /** Parameter or component name to sweep */
+  paramName: string;
+  /** Explicit list of values to sweep */
+  values: number[];
+}
+
+/** Logarithmic (decade) parametric sweep: `.step dec param <name> <start> <stop> <numPoints>` */
+export interface StepDec {
+  sweepType: 'dec';
+  /** Parameter or component name to sweep */
+  paramName: string;
+  /** Start value */
+  start: number;
+  /** Stop value */
+  stop: number;
+  /** Number of points per decade */
+  pointsPerDecade: number;
+}
+
+/** Logarithmic (octave) parametric sweep: `.step oct param <name> <start> <stop> <numPoints>` */
+export interface StepOct {
+  sweepType: 'oct';
+  /** Parameter or component name to sweep */
+  paramName: string;
+  /** Start value */
+  start: number;
+  /** Stop value */
+  stop: number;
+  /** Number of points per octave */
+  pointsPerOctave: number;
+}
+
+/** Union of all step directive types. Discriminated on the `sweepType` field. */
+export type StepDirective = StepLinear | StepList | StepDec | StepOct;
+
 /** Integration methods for transient analysis */
 export type IntegrationMethod = 'euler' | 'trapezoidal';
 

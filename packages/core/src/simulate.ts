@@ -1,14 +1,14 @@
 import { Circuit } from './circuit.js';
 import type { CompiledCircuit } from './circuit.js';
 import { parse, parseAsync } from './parser/index.js';
-import type { SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
+import type { SimulationOptions, SimulationWarning, TransientStep, ACPoint, StepDirective } from './types.js';
 import type { TransientAnalysis, ACAnalysis, ResolvedOptions } from './types.js';
 import { resolveOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
 import { solveTransient } from './analysis/transient.js';
 import { solveAC } from './analysis/ac.js';
 import { solveDCSweep } from './analysis/dc-sweep.js';
-import type { SimulationResult } from './results.js';
+import type { SimulationResult, StepResult } from './results.js';
 import { InvalidCircuitError, TimestepTooSmallError } from './errors.js';
 import { MNAAssembler } from './mna/assembler.js';
 import { buildCompanionSystem } from './mna/companion.js';
@@ -58,6 +58,55 @@ export async function simulate(
 
   validateCircuit(compiled, warnings);
 
+  // If step directives are present, run parametric sweep
+  if (compiled.steps.length > 0) {
+    const stepDirective = compiled.steps[0]; // Support one .step directive
+    const stepValues = generateStepValues(stepDirective);
+    const steps: StepResult[] = [];
+
+    for (const value of stepValues) {
+      const modifiedCircuit = circuit.cloneWithOverride(stepDirective.paramName, value);
+      const modifiedCompiled = modifiedCircuit.compile();
+      const stepResult: StepResult = {
+        paramName: stepDirective.paramName,
+        paramValue: value,
+      };
+
+      for (const analysis of modifiedCompiled.analyses) {
+        switch (analysis.type) {
+          case 'op': {
+            const opts = resolveOptions(options);
+            const { result: dcResult } = solveDCOperatingPoint(modifiedCompiled, opts);
+            stepResult.dc = dcResult;
+            break;
+          }
+          case 'dc': {
+            const opts = resolveOptions(options);
+            stepResult.dcSweep = solveDCSweep(modifiedCompiled, analysis, opts);
+            break;
+          }
+          case 'tran': {
+            const opts = resolveOptions(options, analysis.stopTime);
+            const { assembler: dcAsm } = solveDCOperatingPoint(modifiedCompiled, opts);
+            stepResult.transient = solveTransient(modifiedCompiled, analysis, opts, dcAsm.solution);
+            break;
+          }
+          case 'ac': {
+            const opts = resolveOptions(options);
+            const { assembler: dcAsm } = solveDCOperatingPoint(modifiedCompiled, opts);
+            stepResult.ac = solveAC(modifiedCompiled, analysis, opts, dcAsm.solution);
+            break;
+          }
+        }
+      }
+
+      steps.push(stepResult);
+    }
+
+    return { steps, warnings };
+  }
+
+  // No step directives — run analyses normally
   const result: SimulationResult = { warnings };
 
   for (const analysis of compiled.analyses) {
@@ -144,6 +193,46 @@ export async function* simulateStream(
         yield* streamAC(compiled, analysis, opts, dcAsm.solution);
         break;
       }
+    }
+  }
+}
+
+/**
+ * Generate the array of parameter values for a `.step` directive.
+ */
+function generateStepValues(step: StepDirective): number[] {
+  switch (step.sweepType) {
+    case 'linear': {
+      const values: number[] = [];
+      const direction = step.step > 0 ? 1 : -1;
+      for (
+        let v = step.start;
+        direction > 0 ? v <= step.stop + step.step * 1e-9 : v >= step.stop + step.step * 1e-9;
+        v += step.step
+      ) {
+        values.push(v);
+      }
+      return values;
+    }
+    case 'list':
+      return [...step.values];
+    case 'dec': {
+      const values: number[] = [];
+      const decades = Math.log10(step.stop / step.start);
+      const totalPoints = Math.round(decades * step.pointsPerDecade);
+      for (let i = 0; i <= totalPoints; i++) {
+        values.push(step.start * Math.pow(10, i / step.pointsPerDecade));
+      }
+      return values;
+    }
+    case 'oct': {
+      const values: number[] = [];
+      const octaves = Math.log2(step.stop / step.start);
+      const totalPoints = Math.round(octaves * step.pointsPerOctave);
+      for (let i = 0; i <= totalPoints; i++) {
+        values.push(step.start * Math.pow(2, i / step.pointsPerOctave));
+      }
+      return values;
     }
   }
 }

@@ -4,7 +4,7 @@ import { tokenizeNetlist, parseNumber } from './tokenizer.js';
 import { parseModelCard } from './model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
 import { preprocess } from './preprocessor.js';
-import type { IncludeResolver } from '../types.js';
+import type { IncludeResolver, StepDirective } from '../types.js';
 
 export { parseSourceWaveform } from './waveform-parser.js';
 
@@ -155,6 +155,9 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
     case '.MODEL':
       circuit.addModel(parseModelCard(tokens, lineNumber));
       break;
+    case '.STEP':
+      circuit.addStep(parseStepDirective(tokens, lineNumber));
+      break;
     case '.INCLUDE':
       throw new ParseError(
         '.include directive requires async parsing. Use parseAsync() with a resolveInclude option.',
@@ -171,6 +174,72 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
     default:
       break;
   }
+}
+
+function parseStepDirective(tokens: string[], lineNumber: number): StepDirective {
+  // Supported forms:
+  //   .step param <name> <start> <stop> <step>
+  //   .step param <name> list <val1> <val2> ...
+  //   .step dec param <name> <start> <stop> <pointsPerDecade>
+  //   .step oct param <name> <start> <stop> <pointsPerOctave>
+  let idx = 1; // skip '.step'
+  const firstArg = tokens[idx]?.toUpperCase();
+
+  // Check for dec/oct prefix
+  if (firstArg === 'DEC' || firstArg === 'OCT') {
+    const logType = firstArg;
+    idx++; // skip 'dec'/'oct'
+    // expect 'param'
+    if (tokens[idx]?.toUpperCase() !== 'PARAM') {
+      throw new ParseError(`Expected 'param' after '.step ${logType.toLowerCase()}'`, lineNumber, tokens.join(' '));
+    }
+    idx++; // skip 'param'
+    const paramName = tokens[idx++];
+    if (!paramName) {
+      throw new ParseError('Missing parameter name in .step directive', lineNumber, tokens.join(' '));
+    }
+    const start = parseNumber(tokens[idx++]);
+    const stop = parseNumber(tokens[idx++]);
+    const points = parseInt(tokens[idx++], 10);
+    if (isNaN(points)) {
+      throw new ParseError('Invalid number of points in .step directive', lineNumber, tokens.join(' '));
+    }
+    if (logType === 'DEC') {
+      return { sweepType: 'dec', paramName, start, stop, pointsPerDecade: points };
+    } else {
+      return { sweepType: 'oct', paramName, start, stop, pointsPerOctave: points };
+    }
+  }
+
+  // Expect 'param'
+  if (firstArg !== 'PARAM') {
+    throw new ParseError(`Expected 'param' or 'dec'/'oct' after '.step'`, lineNumber, tokens.join(' '));
+  }
+  idx++; // skip 'param'
+
+  const paramName = tokens[idx++];
+  if (!paramName) {
+    throw new ParseError('Missing parameter name in .step directive', lineNumber, tokens.join(' '));
+  }
+
+  // Check for 'list' keyword
+  if (tokens[idx]?.toUpperCase() === 'LIST') {
+    idx++; // skip 'list'
+    const values: number[] = [];
+    while (idx < tokens.length) {
+      values.push(parseNumber(tokens[idx++]));
+    }
+    if (values.length === 0) {
+      throw new ParseError('Empty value list in .step directive', lineNumber, tokens.join(' '));
+    }
+    return { sweepType: 'list', paramName, values };
+  }
+
+  // Linear sweep: param <name> <start> <stop> <step>
+  const start = parseNumber(tokens[idx++]);
+  const stop = parseNumber(tokens[idx++]);
+  const step = parseNumber(tokens[idx++]);
+  return { sweepType: 'linear', paramName, start, stop, step };
 }
 
 function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): void {

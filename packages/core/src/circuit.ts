@@ -1,5 +1,5 @@
 import type { DeviceModel } from './devices/device.js';
-import type { AnalysisCommand, SourceWaveform, ModelParams, SubcktDefinition } from './types.js';
+import type { AnalysisCommand, SourceWaveform, ModelParams, SubcktDefinition, StepDirective } from './types.js';
 import { Resistor } from './devices/resistor.js';
 import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
@@ -45,6 +45,8 @@ export interface CompiledCircuit {
   models: Map<string, ModelParams>;
   /** Subcircuit definitions */
   subcircuits: Map<string, SubcktDefinition>;
+  /** Step directives for parametric sweeps */
+  steps: StepDirective[];
 }
 
 interface DeviceDescriptor {
@@ -79,6 +81,7 @@ export class Circuit {
   private _analyses: AnalysisCommand[] = [];
   private _models = new Map<string, ModelParams>();
   private _subcircuits = new Map<string, SubcktDefinition>();
+  private _steps: StepDirective[] = [];
   private nodeSet = new Set<string>();
 
   get analyses(): AnalysisCommand[] {
@@ -348,6 +351,18 @@ export class Circuit {
   }
 
   /**
+   * Add a `.step` parametric sweep directive.
+   *
+   * Causes the simulation to run all analyses multiple times, varying
+   * the specified component value across the sweep range.
+   *
+   * @param directive - Step directive specifying the sweep type and parameters
+   */
+  addStep(directive: StepDirective): void {
+    this._steps.push(directive);
+  }
+
+  /**
    * Add a simulation analysis command to the circuit.
    *
    * @param type - Analysis type: `'op'` (DC operating point), `'dc'` (DC sweep),
@@ -393,6 +408,34 @@ export class Circuit {
         });
         break;
     }
+  }
+
+  /**
+   * Create a shallow clone of this circuit with a specific component value overridden.
+   *
+   * Used internally by the parametric sweep (`.step`) engine to produce
+   * a modified circuit for each step value.
+   *
+   * @param componentName - Device name to override (e.g., `'R1'`, `'C1'`)
+   * @param value - New value for the component
+   * @returns A new {@link Circuit} with the specified component value changed
+   */
+  cloneWithOverride(componentName: string, value: number): Circuit {
+    const clone = new Circuit();
+    const nameUpper = componentName.toUpperCase();
+    for (const desc of this.descriptors) {
+      if (desc.name.toUpperCase() === nameUpper) {
+        clone.descriptors.push({ ...desc, value });
+      } else {
+        clone.descriptors.push({ ...desc });
+      }
+    }
+    clone._analyses = [...this._analyses];
+    clone._steps = []; // Don't copy steps into the cloned circuit
+    for (const [k, v] of this._models) clone._models.set(k, v);
+    for (const [k, v] of this._subcircuits) clone._subcircuits.set(k, v);
+    clone.nodeSet = new Set(this.nodeSet);
+    return clone;
   }
 
   /**
@@ -556,6 +599,7 @@ export class Circuit {
       nodeNames, nodeIndexMap, branchNames,
       analyses: this._analyses, models: this._models,
       subcircuits: this._subcircuits,
+      steps: this._steps,
     };
   }
 
