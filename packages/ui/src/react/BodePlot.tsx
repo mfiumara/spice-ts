@@ -25,6 +25,8 @@ export interface BodePlotProps {
   onCursorMove?: (cursor: CursorState | null) => void;
   /** Signal visibility state (controlled). */
   signalVisibility?: Record<string, boolean>;
+  /** Fixed x-axis domain [minHz, maxHz]. Useful for streaming. */
+  xDomain?: [number, number];
 }
 
 export function BodePlot({
@@ -37,6 +39,7 @@ export function BodePlot({
   height,
   onCursorMove,
   signalVisibility,
+  xDomain,
 }: BodePlotProps) {
   const rendererRef = useRef<BodeRenderer | null>(null);
   const magInteractionRef = useRef<InteractionHandler | null>(null);
@@ -73,6 +76,10 @@ export function BodePlot({
 
     const datasets = normalizeACData(data, signals);
     renderer.setData(datasets, signals);
+
+    if (xDomain) {
+      renderer.setFixedXDomain(xDomain);
+    }
 
     if (colors) {
       for (const [name, color] of Object.entries(colors)) {
@@ -114,7 +121,7 @@ export function BodePlot({
       magInteractionRef.current?.destroy();
       phaseInteractionRef.current?.destroy();
     };
-  }, [data, signals, resolvedTheme, defaultPanes, colors, onCursorMove]);
+  }, [data, signals, resolvedTheme, defaultPanes, colors, onCursorMove, xDomain]);
 
   // Sync pane visibility
   useEffect(() => {

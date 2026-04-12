@@ -1,19 +1,9 @@
 import { createRoot } from 'react-dom/client';
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { simulate, simulateStream } from '@spice-ts/core';
+import { useState, useCallback, useRef } from 'react';
+import { simulateStream } from '@spice-ts/core';
 import { WaveformViewer, BodePlot } from '@spice-ts/ui/react';
 import { ACStreamingController } from '@spice-ts/ui';
-import type { SimulationResult, ACResult } from '@spice-ts/core';
 import type { ACDataset } from '@spice-ts/ui';
-
-const RC_NETLIST = `
-* RC Low-Pass Filter
-V1 in 0 PULSE(0 5 0 1n 1n 5m 10m) AC 1
-R1 in out 1k
-C1 out 0 100n
-.tran 1u 10m
-.ac dec 20 1 10Meg
-`;
 
 const STREAM_TRAN_NETLIST = `
 * RC pulse response (streaming demo)
@@ -51,7 +41,6 @@ function StreamingBodePlot() {
   const rafRef = useRef<number>(0);
 
   const handleRun = useCallback(() => {
-    // Cleanup previous
     controllerRef.current?.stop();
     cancelAnimationFrame(rafRef.current);
     setAcData(null);
@@ -96,23 +85,21 @@ function StreamingBodePlot() {
         </div>
       )}
       {acData && (
-        <BodePlot data={acData} signals={['out']} colors={{ out: '#f97316' }} theme="dark" />
+        <BodePlot
+          data={acData}
+          signals={['out']}
+          colors={{ out: '#f97316' }}
+          theme="dark"
+          xDomain={[1, 10e6]}
+        />
       )}
     </div>
   );
 }
 
 function App() {
-  const [result, setResult] = useState<SimulationResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [stream, setStream] = useState<AsyncIterableIterator<unknown> | null>(null);
   const [streaming, setStreaming] = useState(false);
-
-  useEffect(() => {
-    simulate(RC_NETLIST)
-      .then(setResult)
-      .catch((e: Error) => setError(e.message));
-  }, []);
 
   const handleRunStreaming = useCallback(() => {
     setStream(null);
@@ -123,28 +110,9 @@ function App() {
     }, 50);
   }, []);
 
-  if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
-  if (!result) return <div>Running simulation...</div>;
-
   return (
     <div>
       <h1>spice-ts Waveform Viewer</h1>
-
-      <h2>Transient — RC Step Response</h2>
-      <WaveformViewer
-        transient={result.transient}
-        signals={['out', 'in']}
-        colors={{ out: '#4ade80', in: '#60a5fa' }}
-        theme="dark"
-      />
-
-      <h2>AC — Bode Plot</h2>
-      <WaveformViewer
-        ac={result.ac}
-        signals={['out']}
-        colors={{ out: '#f97316' }}
-        theme="dark"
-      />
 
       <h2>Streaming Transient</h2>
       <p style={{ fontSize: '13px', color: 'hsl(215, 20%, 55%)', marginBottom: '12px' }}>
@@ -170,14 +138,6 @@ function App() {
         Watch the Bode plot build frequency-by-frequency.
       </p>
       <StreamingBodePlot />
-
-      <h2>Light Theme</h2>
-      <WaveformViewer
-        transient={result.transient}
-        signals={['out']}
-        colors={{ out: '#16a34a' }}
-        theme="light"
-      />
     </div>
   );
 }
