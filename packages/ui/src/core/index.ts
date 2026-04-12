@@ -10,3 +10,4 @@ export type { LinearScale, LogScale } from './scales.js';
 export { normalizeTransientData, normalizeACData } from './data.js';
 export { GrowableBuffer } from './buffer.js';
 export { TransientRenderer, type TransientRendererOptions } from './renderer.js';
+export { BodeRenderer, type BodeRendererOptions } from './bode-renderer.js';
