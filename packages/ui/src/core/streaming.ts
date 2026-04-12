@@ -30,6 +30,7 @@ export class StreamingController {
   /** Consume an async iterator of streaming steps. Resolves when done or stopped. */
   async consume(stream: AsyncIterable<StreamingStep>): Promise<void> {
     this.running = true;
+    let count = 0;
     for await (const step of stream) {
       if (!this.running) break;
 
@@ -40,6 +41,13 @@ export class StreamingController {
         buf.push(value);
       }
       this.onData();
+
+      // Yield to the event loop every N steps so requestAnimationFrame
+      // can fire and update the display. Without this, the for-await loop
+      // runs entirely in microtasks and never gives the browser a paint frame.
+      if (++count % 200 === 0) {
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      }
     }
     this.running = false;
   }
