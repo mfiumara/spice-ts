@@ -8,3 +8,4 @@ export { formatSI, formatTime, formatFrequency, formatVoltage, formatCurrent, fo
 export { createLinearScale, createLogScale, computeYExtent, bisectData } from './scales.js';
 export type { LinearScale, LogScale } from './scales.js';
 export { normalizeTransientData, normalizeACData } from './data.js';
+export { GrowableBuffer } from './buffer.js';
