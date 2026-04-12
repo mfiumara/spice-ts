@@ -9,3 +9,4 @@ export { createLinearScale, createLogScale, computeYExtent, bisectData } from '.
 export type { LinearScale, LogScale } from './scales.js';
 export { normalizeTransientData, normalizeACData } from './data.js';
 export { GrowableBuffer } from './buffer.js';
+export { TransientRenderer, type TransientRendererOptions } from './renderer.js';
