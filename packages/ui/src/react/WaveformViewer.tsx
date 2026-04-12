@@ -15,7 +15,7 @@ export interface WaveformViewerProps {
   /** AC result or dataset array. */
   ac?: BodePlotProps['data'];
   /** Async stream from simulateStream(). Renders progressively as data arrives. */
-  stream?: AsyncIterable<{ time: number; voltages: Map<string, number>; currents: Map<string, number> }>;
+  stream?: AsyncIterable<unknown>;
   /** Signal names to display. */
   signals: string[];
   /** Signal color overrides. */

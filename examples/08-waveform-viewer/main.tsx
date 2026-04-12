@@ -107,7 +107,7 @@ function StreamingBodePlot() {
 }
 
 function App() {
-  const [stream, setStream] = useState<AsyncIterableIterator<unknown> | null>(null);
+  const [stream, setStream] = useState<AsyncIterable<unknown> | null>(null);
   const [streaming, setStreaming] = useState(false);
 
   const handleRunStreaming = useCallback(() => {
@@ -115,7 +115,7 @@ function App() {
     setStreaming(true);
     setTimeout(() => {
       const s = simulateStream(STREAM_TRAN_NETLIST);
-      setStream(s as AsyncIterableIterator<unknown>);
+      setStream(s);
     }, 50);
   }, []);
 
