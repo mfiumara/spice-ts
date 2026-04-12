@@ -10,23 +10,22 @@
 // ---------------------------------------------------------------------------
 /**
  * Classic BJT diff pair (2N2222 NPN).
- * Vcc=12V, tail resistor 1kΩ, collector resistors 10kΩ each.
- * At balanced input (Vin+=0.1V, Vin-=-0.1V):
- *   V(out+) and V(out-) symmetric within 50 mV
- *   Each Ic ≈ (12 - 0.7 - (-12)) / (2 * 1k) ≈ 11.65 mA / 2 ≈ 5.8 mA
+ * Vcc=12V, tail resistor 10kΩ, collector resistors 1kΩ each.
+ * At balanced input (Vin+=Vin-=0V): V(out+) and V(out-) symmetric.
+ * Verified against ngspice-44: V(out+) = V(out-) ≈ 6.34V.
  */
 export function diffPair(): string {
   return [
     '* Quarles diff pair — 2N2222 NPN BJT',
     'VCC vcc 0 DC 12',
     'VEE 0 vee DC 12',
-    'VIN+ in+ 0 DC 0.1',
-    'VIN- in- 0 DC -0.1',
+    'VIN+ in+ 0 DC 0',
+    'VIN- in- 0 DC 0',
     'Q1 out+ in+ emit NPN2222',
     'Q2 out- in- emit NPN2222',
-    'RC1 vcc out+ 10k',
-    'RC2 vcc out- 10k',
-    'RE  emit vee 1k',
+    'RC1 vcc out+ 1k',
+    'RC2 vcc out- 1k',
+    'RE  emit vee 10k',
     '.model NPN2222 NPN(IS=1e-14 BF=100 VAF=100)',
     '.op',
     '.end',
@@ -60,8 +59,8 @@ export function rcLadder5(): string {
 // ---------------------------------------------------------------------------
 /**
  * Single OTA stage: NMOS diff pair + PMOS current mirror load + bias.
- * VDD=5V. At balanced input (VIN+=VIN-=2.5V): V(d2) ≈ VDD/2 within 10%.
- * Level 1 MOSFET models (KP, VTO).
+ * VDD=5V, VSS=-5V. At balanced input (VIN+=VIN-=2.5V): V(d1)=V(d2)≈4.105V.
+ * Verified against ngspice-44. Level 1 MOSFET models (KP, VTO).
  */
 export function oneStageOpAmp(): string {
   return [

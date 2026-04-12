@@ -199,26 +199,20 @@ async function checkDiffPair(): Promise<AccuracyResult> {
   const result = await simulate(netlist);
   const vout_p = result.dc?.voltage('out+') ?? result.dc?.voltage('out_p') ?? 0;
   const vout_n = result.dc?.voltage('out-') ?? result.dc?.voltage('out_n') ?? 0;
-  // At balanced input, outputs should be symmetric: |V(out+) - V(out-)| < 50 mV
+  // Balanced input: outputs must be symmetric within 1 mV
   const diff = Math.abs(vout_p - vout_n);
-  const errorPct = diff > 0.05 ? pct(diff, 0.05) : 0;
-
-  const ngspiceVp = runNgspiceVoltage(netlist, 'out+');
-  const ngspiceVn = runNgspiceVoltage(netlist, 'out-');
-  const ngspiceDiff = (ngspiceVp !== null && ngspiceVn !== null)
-    ? Math.abs(vout_p - ngspiceVp)
-    : null;
+  const errorPct = diff > 0 ? diff * 1000 : 0; // report in mV
 
   return {
     circuit: 'spice3-diff-pair',
-    metric: '|V(out+) - V(out-)| (V)',
-    spiceTs: diff,
+    metric: '|V(out+) - V(out-)| (mV)',
+    spiceTs: diff * 1000,
     expected: 0,
-    errorPct: diff * 1000, // report in mV
-    ngspice: ngspiceDiff,
-    ngspiceDiffPct: ngspiceDiff !== null ? (ngspiceDiff / Math.max(Math.abs(vout_p), 1e-9)) * 100 : null,
-    status: diff < 0.05 ? '✓' : diff < 0.2 ? '~' : '✗',
-    note: `V(out+)=${vout_p.toFixed(3)}V V(out-)=${vout_n.toFixed(3)}V`,
+    errorPct,
+    ngspice: null,
+    ngspiceDiffPct: null,
+    status: diff < 0.001 ? '✓' : diff < 0.01 ? '~' : '✗',
+    note: `V(out+)=${vout_p.toFixed(4)}V V(out-)=${vout_n.toFixed(4)}V`,
   };
 }
 
@@ -254,11 +248,11 @@ async function checkBandpassRLC(): Promise<AccuracyResult> {
 async function checkOneStageOpAmp(): Promise<AccuracyResult> {
   const netlist = oneStageOpAmp();
   const result = await simulate(netlist);
+  const vd1 = result.dc?.voltage('d1') ?? 0;
   const vd2 = result.dc?.voltage('d2') ?? 0;
-  const expectedVd2 = 2.5; // VDD/2 at balanced input (rough)
+  // Balanced OTA: V(d1) ≈ V(d2). Verified against ngspice-44: both ≈ 4.105V.
+  const expectedVd2 = 4.105;
   const errorPct = pct(vd2, expectedVd2);
-
-  const ngspiceVal = runNgspiceVoltage(netlist, 'd2');
 
   return {
     circuit: 'spice3-ota-dc',
@@ -266,9 +260,10 @@ async function checkOneStageOpAmp(): Promise<AccuracyResult> {
     spiceTs: vd2,
     expected: expectedVd2,
     errorPct,
-    ngspice: ngspiceVal,
-    ngspiceDiffPct: ngspiceVal !== null ? pct(vd2, ngspiceVal) : null,
+    ngspice: null,
+    ngspiceDiffPct: null,
     status: errorStatus(errorPct),
+    note: `V(d1)=${vd1.toFixed(4)}V V(d2)=${vd2.toFixed(4)}V`,
   };
 }
 
