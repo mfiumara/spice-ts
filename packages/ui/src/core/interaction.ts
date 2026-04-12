@@ -9,9 +9,14 @@ export interface InteractionCallbacks {
   onDoubleClick: () => void;
 }
 
+const ZOOM_FRICTION = 0.75;
+const ZOOM_STOP_THRESHOLD = 0.0005;
+const PAN_FRICTION = 0.92;
+const PAN_STOP_THRESHOLD = 0.3;
+
 /**
  * Attaches pointer/wheel event listeners to a canvas for zoom, pan, and cursor interaction.
- * Framework-agnostic — works with any HTMLCanvasElement.
+ * Includes smooth zoom animation and momentum panning for a premium feel.
  */
 export class InteractionHandler {
   private canvas: HTMLCanvasElement;
@@ -19,7 +24,17 @@ export class InteractionHandler {
   private dragging = false;
   private lastX = 0;
   private lastY = 0;
+  private lastDragTime = 0;
   private destroyed = false;
+
+  // Animation state
+  private animFrameId = 0;
+  private zoomAccumulator = 0;  // accumulated zoom input (log-space)
+  private panMomentumX = 0;     // momentum velocity in px/frame
+  private animating = false;
+
+  // Drag velocity tracking (exponential moving average)
+  private dragVelocityX = 0;
 
   private boundPointerMove: (e: PointerEvent) => void;
   private boundPointerDown: (e: PointerEvent) => void;
@@ -49,6 +64,7 @@ export class InteractionHandler {
 
   destroy(): void {
     this.destroyed = true;
+    cancelAnimationFrame(this.animFrameId);
     this.canvas.removeEventListener('pointermove', this.boundPointerMove);
     this.canvas.removeEventListener('pointerdown', this.boundPointerDown);
     this.canvas.removeEventListener('pointerup', this.boundPointerUp);
@@ -62,15 +78,68 @@ export class InteractionHandler {
     return clientX - rect.left;
   }
 
+  // --- Animation loop ---
+
+  private startAnimation(): void {
+    if (this.animating) return;
+    this.animating = true;
+    this.animFrameId = requestAnimationFrame(this.animate);
+  }
+
+  private animate = (): void => {
+    if (this.destroyed) { this.animating = false; return; }
+
+    let needsMore = false;
+
+    // Smooth zoom: apply a fraction of the accumulated zoom each frame
+    if (Math.abs(this.zoomAccumulator) > ZOOM_STOP_THRESHOLD) {
+      const factor = Math.exp(this.zoomAccumulator * (1 - ZOOM_FRICTION));
+      this.callbacks.onZoom(0, factor, false);
+      this.zoomAccumulator *= ZOOM_FRICTION;
+      needsMore = true;
+    } else {
+      this.zoomAccumulator = 0;
+    }
+
+    // Momentum pan: apply decaying velocity
+    if (Math.abs(this.panMomentumX) > PAN_STOP_THRESHOLD) {
+      this.callbacks.onPan(this.panMomentumX, 0);
+      this.panMomentumX *= PAN_FRICTION;
+      needsMore = true;
+    } else {
+      this.panMomentumX = 0;
+    }
+
+    if (needsMore) {
+      this.animFrameId = requestAnimationFrame(this.animate);
+    } else {
+      this.animating = false;
+    }
+  };
+
+  // --- Event handlers ---
+
   private handlePointerMove(e: PointerEvent): void {
     if (this.destroyed) return;
 
     if (this.dragging && (e.buttons & 1)) {
       const dx = e.clientX - this.lastX;
-      const dy = e.clientY - this.lastY;
+      const now = performance.now();
+      const dt = now - this.lastDragTime;
+
+      // Track velocity with exponential moving average
+      if (dt > 0 && dt < 100) {
+        const instantVelocity = dx / dt * 16; // normalize to ~per-frame at 60fps
+        this.dragVelocityX = this.dragVelocityX * 0.5 + instantVelocity * 0.5;
+      }
+
       this.lastX = e.clientX;
       this.lastY = e.clientY;
-      this.callbacks.onPan(dx, dy);
+      this.lastDragTime = now;
+
+      // Stop any ongoing momentum and apply pan directly
+      this.panMomentumX = 0;
+      this.callbacks.onPan(dx, 0);
     } else {
       this.callbacks.onCursorMove(this.toCanvasX(e.clientX));
     }
@@ -81,17 +150,36 @@ export class InteractionHandler {
     this.dragging = true;
     this.lastX = e.clientX;
     this.lastY = e.clientY;
+    this.lastDragTime = performance.now();
+    this.dragVelocityX = 0;
+    this.panMomentumX = 0; // stop any coasting
     this.canvas.setPointerCapture?.(e.pointerId);
   }
 
   private handlePointerUp(e: PointerEvent): void {
+    if (!this.dragging) return;
     this.dragging = false;
     this.canvas.releasePointerCapture?.(e.pointerId);
+
+    // Launch momentum with the tracked drag velocity
+    if (Math.abs(this.dragVelocityX) > PAN_STOP_THRESHOLD) {
+      this.panMomentumX = this.dragVelocityX;
+      this.startAnimation();
+    }
+    this.dragVelocityX = 0;
   }
 
   private handlePointerLeave(_e: PointerEvent): void {
     if (this.destroyed) return;
-    this.dragging = false;
+    if (this.dragging) {
+      // Don't stop momentum — let it coast
+      this.dragging = false;
+      if (Math.abs(this.dragVelocityX) > PAN_STOP_THRESHOLD) {
+        this.panMomentumX = this.dragVelocityX;
+        this.startAnimation();
+      }
+      this.dragVelocityX = 0;
+    }
     this.callbacks.onCursorMove(null);
   }
 
@@ -99,15 +187,15 @@ export class InteractionHandler {
     if (this.destroyed) return;
     e.preventDefault();
 
-    // Horizontal scroll (trackpad swipe or shift+scroll) → pan horizontally
-    if (e.deltaX !== 0) {
+    // Horizontal scroll (trackpad swipe) → pan horizontally
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
       this.callbacks.onPan(-e.deltaX, 0);
       return;
     }
 
-    // Vertical scroll → zoom horizontal axis
-    const zoomFactor = e.deltaY < 0 ? 1.05 : 1 / 1.05;
-    this.callbacks.onZoom(this.toCanvasX(e.clientX), zoomFactor, e.shiftKey);
+    // Vertical scroll → accumulate zoom (applied smoothly in animation loop)
+    this.zoomAccumulator += e.deltaY * -0.003;
+    this.startAnimation();
   }
 
   private handleDblClick(_e: MouseEvent): void {
