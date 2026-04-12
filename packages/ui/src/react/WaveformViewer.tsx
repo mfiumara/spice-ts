@@ -6,9 +6,8 @@ import { CursorTooltip } from './CursorTooltip.js';
 import { StreamingController } from '../core/streaming.js';
 import { resolveTheme } from '../core/theme.js';
 import { formatTime, formatFrequency } from '../core/format.js';
-import type { ThemeConfig, CursorState, TransientDataset } from '../core/types.js';
+import type { ThemeConfig, CursorState, TransientDataset, StreamingTransientStep, StreamingACPoint } from '../core/types.js';
 import { DEFAULT_PALETTE } from '../core/types.js';
-import type { TransientStep, ACPoint } from '@spice-ts/core';
 
 export interface WaveformViewerProps {
   /** Transient result or dataset array. */
@@ -16,7 +15,7 @@ export interface WaveformViewerProps {
   /** AC result or dataset array. */
   ac?: BodePlotProps['data'];
   /** Async stream from simulateStream(). Renders progressively as data arrives. */
-  stream?: AsyncIterable<TransientStep | ACPoint>;
+  stream?: AsyncIterable<StreamingTransientStep | StreamingACPoint>;
   /** Signal names to display. */
   signals: string[];
   /** Signal color overrides. */
