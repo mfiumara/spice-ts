@@ -99,9 +99,12 @@ export class BodeRenderer {
     this.theme = theme;
   }
 
+  /** Override color for a signal. Accepts plain name or "label:name" composite key. */
   setSignalColor(name: string, color: string): void {
     for (const s of this.signalStates) {
-      if (s.name === name) s.color = color;
+      const ds = this.datasets[s.datasetIndex];
+      const compositeId = ds.label ? `${ds.label}:${s.name}` : s.name;
+      if (s.name === name || compositeId === name) s.color = color;
     }
   }
 
