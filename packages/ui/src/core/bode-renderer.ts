@@ -105,9 +105,12 @@ export class BodeRenderer {
     }
   }
 
+  /** Toggle signal visibility. Accepts plain name or "label:name" composite key. */
   setSignalVisibility(name: string, visible: boolean): void {
     for (const s of this.signalStates) {
-      if (s.name === name) s.visible = visible;
+      const ds = this.datasets[s.datasetIndex];
+      const compositeId = ds.label ? `${ds.label}:${s.name}` : s.name;
+      if (s.name === name || compositeId === name) s.visible = visible;
     }
   }
 
