@@ -128,7 +128,7 @@ export async function simulate(
 export async function* simulateStream(
   input: string | Circuit,
   options?: SimulationOptions,
-): AsyncIterableIterator<TransientStep | ACPoint | StepStreamEvent> {
+): AsyncIterableIterator<TransientStep | ACPoint> {
   let circuit: Circuit;
   if (typeof input === 'string') {
     if (options?.resolveInclude) {
@@ -144,10 +144,9 @@ export async function* simulateStream(
   validateCircuit(compiled, warnings);
 
   if (compiled.steps.length > 0) {
-    if (compiled.steps.length > 1) {
-      // Multiple .step directives: only the first is used; nested sweeps are not yet supported.
+    for (const event of streamWithSteps(compiled, compiled.steps[0], options)) {
+      yield event.point;
     }
-    yield* streamWithSteps(compiled, compiled.steps[0], options);
     return;
   }
 
@@ -164,6 +163,63 @@ export async function* simulateStream(
         const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
         yield* streamAC(compiled, analysis, opts, dcAsm.solution);
         break;
+      }
+    }
+  }
+}
+
+/**
+ * Stream simulation results with step metadata for parametric sweeps.
+ *
+ * Each yielded event includes the step index, parameter name/value, and the
+ * inner {@link TransientStep} or {@link ACPoint}. Use this instead of
+ * {@link simulateStream} when you need to distinguish which step each point
+ * belongs to.
+ *
+ * @param input - A SPICE netlist string or a pre-built {@link Circuit} object
+ * @param options - Simulation options
+ * @yields {@link StepStreamEvent} for each inner time/frequency point across all steps
+ */
+export async function* simulateStepStream(
+  input: string | Circuit,
+  options?: SimulationOptions,
+): AsyncIterableIterator<StepStreamEvent> {
+  let circuit: Circuit;
+  if (typeof input === 'string') {
+    if (options?.resolveInclude) {
+      circuit = await parseAsync(input, options.resolveInclude);
+    } else {
+      circuit = parse(input);
+    }
+  } else {
+    circuit = input;
+  }
+  const compiled = circuit.compile();
+  const warnings: SimulationWarning[] = [];
+  validateCircuit(compiled, warnings);
+
+  if (compiled.steps.length > 0) {
+    yield* streamWithSteps(compiled, compiled.steps[0], options);
+  } else {
+    // No steps — yield events with stepIndex 0 and empty param info
+    for (const analysis of compiled.analyses) {
+      switch (analysis.type) {
+        case 'tran': {
+          const opts = resolveOptions(options, analysis.stopTime);
+          const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
+          for (const point of streamTransient(compiled, analysis, opts, dcAsm.solution)) {
+            yield { stepIndex: 0, paramName: '', paramValue: 0, point };
+          }
+          break;
+        }
+        case 'ac': {
+          const opts = resolveOptions(options);
+          const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
+          for (const point of streamAC(compiled, analysis, opts, dcAsm.solution)) {
+            yield { stepIndex: 0, paramName: '', paramValue: 0, point };
+          }
+          break;
+        }
       }
     }
   }

@@ -184,7 +184,7 @@ describe('.step netlist parsing', () => {
   });
 });
 
-import { simulate, simulateStream } from '../simulate.js';
+import { simulate, simulateStepStream } from '../simulate.js';
 import type { StepStreamEvent } from '../types.js';
 
 describe('.step + .op integration', () => {
@@ -300,14 +300,14 @@ describe('.step + .tran integration', () => {
 describe('.step streaming', () => {
   it('streams step events for .ac', async () => {
     const events: StepStreamEvent[] = [];
-    for await (const event of simulateStream(`
+    for await (const event of simulateStepStream(`
       V1 1 0 AC 1 0
       R1 1 2 1k
       C1 2 0 1n
       .ac dec 5 1k 100k
       .step param C1 list 1n 10n
     `)) {
-      events.push(event as StepStreamEvent);
+      events.push(event);
     }
 
     expect(events.length).toBeGreaterThan(0);
@@ -330,14 +330,14 @@ describe('.step streaming', () => {
 
   it('streams step events for .tran', async () => {
     const events: StepStreamEvent[] = [];
-    for await (const event of simulateStream(`
+    for await (const event of simulateStepStream(`
       V1 1 0 PULSE(0 5 0 1n 1n 1m 2m)
       R1 1 2 1k
       C1 2 0 100n
       .tran 10u 500u
       .step param R1 list 1k 10k
     `)) {
-      events.push(event as StepStreamEvent);
+      events.push(event);
     }
 
     expect(events.length).toBeGreaterThan(0);
