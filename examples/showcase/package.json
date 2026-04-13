@@ -1,5 +1,5 @@
 {
-  "name": "@spice-ts/example-waveform-viewer",
+  "name": "showcase",
   "private": true,
   "version": "0.0.0",
   "type": "module",
