@@ -246,3 +246,36 @@ export interface SubcktDefinition {
   /** Raw netlist lines between `.subckt` and `.ends` */
   body: string[];
 }
+
+/** Sweep mode for .step directive */
+export type StepSweepMode = 'lin' | 'dec' | 'oct' | 'list';
+
+/** .step directive — parametric sweep configuration. */
+export interface StepAnalysis {
+  type: 'step';
+  /** Device name (e.g., 'R1') or global param name to sweep */
+  param: string;
+  /** Sweep mode */
+  sweepMode: StepSweepMode;
+  /** Start value (lin/dec/oct) */
+  start?: number;
+  /** Stop value (lin/dec/oct) */
+  stop?: number;
+  /** Step increment (lin) */
+  increment?: number;
+  /** Points per decade or octave (dec/oct) */
+  points?: number;
+  /** Explicit list of values (list mode) */
+  values?: number[];
+}
+
+/**
+ * A single streaming event from a stepped simulation.
+ * Wraps a TransientStep or ACPoint with step metadata.
+ */
+export interface StepStreamEvent {
+  stepIndex: number;
+  paramName: string;
+  paramValue: number;
+  point: TransientStep | ACPoint;
+}

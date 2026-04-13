@@ -169,6 +169,25 @@ export class DCSweepResult {
 }
 
 /**
+ * Result of a single parametric step.
+ * Contains the same result fields as a non-stepped simulation.
+ */
+export interface StepResult {
+  /** Name of the swept parameter or device */
+  paramName: string;
+  /** Value of the parameter for this step */
+  paramValue: number;
+  /** DC operating point result (from .op) */
+  dc?: DCResult;
+  /** DC sweep result (from .dc) */
+  dcSweep?: DCSweepResult;
+  /** Transient analysis result (from .tran) */
+  transient?: TransientResult;
+  /** AC small-signal analysis result (from .ac) */
+  ac?: ACResult;
+}
+
+/**
  * Aggregate result object returned by {@link simulate}.
  *
  * Each field is populated only if the corresponding analysis was requested
@@ -183,6 +202,8 @@ export interface SimulationResult {
   transient?: TransientResult;
   /** AC small-signal analysis result (from `.ac`) */
   ac?: ACResult;
+  /** Parametric sweep results (from .step). When present, top-level result fields are empty. */
+  steps?: StepResult[];
   /** Warnings collected during simulation */
   warnings: SimulationWarning[];
 }
