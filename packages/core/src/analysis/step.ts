@@ -15,6 +15,16 @@ export function generateStepValues(step: StepAnalysis): number[] {
   switch (step.sweepMode) {
     case 'lin': {
       const { start, stop, increment } = step;
+      if (start! > stop!) {
+        throw new InvalidCircuitError(
+          `.step linear sweep: start (${start}) must be <= stop (${stop})`,
+        );
+      }
+      if (increment! <= 0) {
+        throw new InvalidCircuitError(
+          `.step linear sweep: increment must be positive`,
+        );
+      }
       const values: number[] = [];
       const n = Math.round((stop! - start!) / increment!) + 1;
       for (let i = 0; i < n; i++) {
@@ -24,6 +34,11 @@ export function generateStepValues(step: StepAnalysis): number[] {
     }
     case 'dec': {
       const { start, stop, points } = step;
+      if (start! <= 0 || stop! <= 0) {
+        throw new InvalidCircuitError(
+          `.step decade sweep: start and stop must be positive`,
+        );
+      }
       const decades = Math.log10(stop! / start!);
       const totalPoints = Math.round(decades * points!);
       const values: number[] = [];
@@ -34,6 +49,11 @@ export function generateStepValues(step: StepAnalysis): number[] {
     }
     case 'oct': {
       const { start, stop, points } = step;
+      if (start! <= 0 || stop! <= 0) {
+        throw new InvalidCircuitError(
+          `.step octave sweep: start and stop must be positive`,
+        );
+      }
       const octaves = Math.log2(stop! / start!);
       const totalPoints = Math.round(octaves * points!);
       const values: number[] = [];

@@ -386,6 +386,34 @@ describe('.step via Circuit builder API', () => {
   });
 });
 
+describe('.step + .dc integration', () => {
+  it('sweeps component while doing DC source sweep', async () => {
+    const result = await simulate(`
+      V1 1 0 DC 0
+      R1 1 2 1k
+      R2 2 0 1k
+      .dc V1 0 5 1
+      .step param R2 list 1k 2k
+    `);
+
+    expect(result.steps).toBeDefined();
+    expect(result.steps!.length).toBe(2);
+
+    // Step 1: R2=1k, V(2) = V1 * 1k/(1k+1k) = V1/2
+    const sweep1 = result.steps![0].dcSweep!;
+    expect(sweep1.sweepValues.length).toBe(6);
+    for (let i = 0; i < 6; i++) {
+      expect(sweep1.voltage('2')[i]).toBeCloseTo(i * 1000 / 2000, 4);
+    }
+
+    // Step 2: R2=2k, V(2) = V1 * 2k/(1k+2k) = V1*2/3
+    const sweep2 = result.steps![1].dcSweep!;
+    for (let i = 0; i < 6; i++) {
+      expect(sweep2.voltage('2')[i]).toBeCloseTo(i * 2000 / 3000, 4);
+    }
+  });
+});
+
 describe('.step error handling', () => {
   it('throws on unknown device name', async () => {
     await expect(simulate(`
