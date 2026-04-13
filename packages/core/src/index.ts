@@ -4,7 +4,7 @@ export { preprocess } from './parser/preprocessor.js';
 export { Circuit } from './circuit.js';
 export type { CompiledCircuit } from './circuit.js';
 export { DCResult, TransientResult, ACResult, DCSweepResult } from './results.js';
-export type { SimulationResult } from './results.js';
+export type { SimulationResult, StepResult } from './results.js';
 export type {
   SimulationOptions,
   TransientStep,
@@ -14,6 +14,9 @@ export type {
   ModelParams,
   SubcktDefinition,
   IncludeResolver,
+  StepAnalysis,
+  StepSweepMode,
+  StepStreamEvent,
 } from './types.js';
 export type { DeviceModel, StampContext } from './devices/device.js';
 export { VCVS } from './devices/vcvs.js';
