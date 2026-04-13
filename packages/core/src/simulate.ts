@@ -8,6 +8,7 @@ import { solveDCOperatingPoint } from './analysis/dc.js';
 import { solveTransient } from './analysis/transient.js';
 import { solveAC } from './analysis/ac.js';
 import { solveDCSweep } from './analysis/dc-sweep.js';
+import { solveStep } from './analysis/step.js';
 import type { SimulationResult } from './results.js';
 import { InvalidCircuitError, TimestepTooSmallError } from './errors.js';
 import { MNAAssembler } from './mna/assembler.js';
@@ -57,6 +58,11 @@ export async function simulate(
   const warnings: SimulationWarning[] = [];
 
   validateCircuit(compiled, warnings);
+
+  if (compiled.steps.length > 0) {
+    const stepResults = solveStep(compiled, compiled.steps[0], options, warnings);
+    return { steps: stepResults, warnings };
+  }
 
   const result: SimulationResult = { warnings };
 

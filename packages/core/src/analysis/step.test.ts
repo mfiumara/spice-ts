@@ -183,3 +183,48 @@ describe('.step netlist parsing', () => {
     expect(compiled.steps[0].values).toEqual([1000, 10000, 100000]);
   });
 });
+
+import { simulate } from '../simulate.js';
+
+describe('.step + .op integration', () => {
+  it('sweeps resistor in voltage divider', async () => {
+    const result = await simulate(`
+      V1 1 0 DC 10
+      R1 1 2 1k
+      R2 2 0 1k
+      .op
+      .step param R2 1k 5k 1k
+    `);
+
+    expect(result.steps).toBeDefined();
+    expect(result.steps!.length).toBe(5); // 1k, 2k, 3k, 4k, 5k
+    expect(result.dc).toBeUndefined();
+
+    for (let i = 0; i < 5; i++) {
+      const step = result.steps![i];
+      const r2 = 1000 + i * 1000;
+      expect(step.paramName).toBe('R2');
+      expect(step.paramValue).toBeCloseTo(r2);
+      expect(step.dc).toBeDefined();
+      const expected = 10 * r2 / (1000 + r2);
+      expect(step.dc!.voltage('2')).toBeCloseTo(expected, 4);
+    }
+  });
+
+  it('sweeps with list mode', async () => {
+    const result = await simulate(`
+      V1 1 0 DC 10
+      R1 1 2 1k
+      R2 2 0 1k
+      .op
+      .step param R2 list 1k 10k
+    `);
+
+    expect(result.steps!.length).toBe(2);
+    expect(result.steps![0].paramValue).toBeCloseTo(1000);
+    expect(result.steps![1].paramValue).toBeCloseTo(10000);
+
+    expect(result.steps![0].dc!.voltage('2')).toBeCloseTo(10 * 1000 / 2000, 4);
+    expect(result.steps![1].dc!.voltage('2')).toBeCloseTo(10 * 10000 / 11000, 4);
+  });
+});
