@@ -1,4 +1,4 @@
-export { simulate, simulateStream } from './simulate.js';
+export { simulate, simulateStream, simulateStepStream } from './simulate.js';
 export { parse, parseAsync } from './parser/index.js';
 export { preprocess } from './parser/preprocessor.js';
 export { Circuit } from './circuit.js';
