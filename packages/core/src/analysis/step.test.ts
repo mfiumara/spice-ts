@@ -345,3 +345,43 @@ describe('.step streaming', () => {
     expect(stepIndices.size).toBe(2);
   });
 });
+
+describe('.step via Circuit builder API', () => {
+  it('sweeps resistor using addStep', async () => {
+    const ckt = new Circuit();
+    ckt.addVoltageSource('V1', '1', '0', { dc: 10 });
+    ckt.addResistor('R1', '1', '2', 1000);
+    ckt.addResistor('R2', '2', '0', 1000);
+    ckt.addAnalysis('op');
+    ckt.addStep('R2', { start: 1000, stop: 3000, step: 1000 });
+
+    const result = await simulate(ckt);
+
+    expect(result.steps).toBeDefined();
+    expect(result.steps!.length).toBe(3);
+
+    for (let i = 0; i < 3; i++) {
+      const r2 = 1000 + i * 1000;
+      const expected = 10 * r2 / (1000 + r2);
+      expect(result.steps![i].dc!.voltage('2')).toBeCloseTo(expected, 4);
+    }
+  });
+
+  it('sweeps capacitor with decade mode using addStep', async () => {
+    const ckt = new Circuit();
+    ckt.addVoltageSource('V1', '1', '0', { type: 'ac', magnitude: 1, phase: 0 });
+    ckt.addResistor('R1', '1', '2', 1000);
+    ckt.addCapacitor('C1', '2', '0', 1e-9);
+    ckt.addAnalysis('ac', { variation: 'dec', points: 5, startFreq: 1000, stopFreq: 1e6 });
+    ckt.addStep('C1', { mode: 'dec', start: 1e-9, stop: 1e-7, points: 1 });
+
+    const result = await simulate(ckt);
+
+    expect(result.steps).toBeDefined();
+    expect(result.steps!.length).toBe(3);
+    for (const step of result.steps!) {
+      expect(step.ac).toBeDefined();
+      expect(step.ac!.frequencies.length).toBeGreaterThan(0);
+    }
+  });
+});
