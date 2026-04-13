@@ -184,7 +184,8 @@ describe('.step netlist parsing', () => {
   });
 });
 
-import { simulate } from '../simulate.js';
+import { simulate, simulateStream } from '../simulate.js';
+import type { StepStreamEvent } from '../types.js';
 
 describe('.step + .op integration', () => {
   it('sweeps resistor in voltage divider', async () => {
@@ -293,5 +294,54 @@ describe('.step + .tran integration', () => {
     const v2 = step2.transient!.voltage('2');
     const lastIdx = v1.length - 1;
     expect(v1[lastIdx]).toBeGreaterThan(v2[lastIdx]);
+  });
+});
+
+describe('.step streaming', () => {
+  it('streams step events for .ac', async () => {
+    const events: StepStreamEvent[] = [];
+    for await (const event of simulateStream(`
+      V1 1 0 AC 1 0
+      R1 1 2 1k
+      C1 2 0 1n
+      .ac dec 5 1k 100k
+      .step param C1 list 1n 10n
+    `)) {
+      events.push(event as StepStreamEvent);
+    }
+
+    expect(events.length).toBeGreaterThan(0);
+    for (const e of events) {
+      expect(e.stepIndex).toBeDefined();
+      expect(e.paramName).toBe('C1');
+      expect(e.paramValue).toBeDefined();
+    }
+
+    const stepIndices = new Set(events.map(e => e.stepIndex));
+    expect(stepIndices.size).toBe(2);
+    expect(stepIndices.has(0)).toBe(true);
+    expect(stepIndices.has(1)).toBe(true);
+
+    // Step 0 events should come before step 1 events
+    const firstStep1Idx = events.findIndex(e => e.stepIndex === 1);
+    const lastStep0Idx = events.length - 1 - [...events].reverse().findIndex(e => e.stepIndex === 0);
+    expect(lastStep0Idx).toBeLessThan(firstStep1Idx);
+  });
+
+  it('streams step events for .tran', async () => {
+    const events: StepStreamEvent[] = [];
+    for await (const event of simulateStream(`
+      V1 1 0 PULSE(0 5 0 1n 1n 1m 2m)
+      R1 1 2 1k
+      C1 2 0 100n
+      .tran 10u 500u
+      .step param R1 list 1k 10k
+    `)) {
+      events.push(event as StepStreamEvent);
+    }
+
+    expect(events.length).toBeGreaterThan(0);
+    const stepIndices = new Set(events.map(e => e.stepIndex));
+    expect(stepIndices.size).toBe(2);
   });
 });
