@@ -71,6 +71,7 @@ export function solveStep(
 
   const originalValue = device.getParameter();
   const results: StepResult[] = [];
+  let prevDCSolution: Float64Array | undefined;
 
   try {
     for (const value of values) {
@@ -81,8 +82,9 @@ export function solveStep(
         switch (analysis.type) {
           case 'op': {
             const opts = resolveOptions(options);
-            const { result: dcResult } = solveDCOperatingPoint(compiled, opts);
+            const { result: dcResult, assembler } = solveDCOperatingPoint(compiled, opts, prevDCSolution);
             stepResult.dc = dcResult;
+            prevDCSolution = new Float64Array(assembler.solution);
             break;
           }
           case 'dc': {
@@ -92,14 +94,16 @@ export function solveStep(
           }
           case 'tran': {
             const opts = resolveOptions(options, analysis.stopTime);
-            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
+            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts, prevDCSolution);
             stepResult.transient = solveTransient(compiled, analysis, opts, dcAsm.solution);
+            prevDCSolution = new Float64Array(dcAsm.solution);
             break;
           }
           case 'ac': {
             const opts = resolveOptions(options);
-            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
+            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts, prevDCSolution);
             stepResult.ac = solveAC(compiled, analysis, opts, dcAsm.solution);
+            prevDCSolution = new Float64Array(dcAsm.solution);
             break;
           }
         }

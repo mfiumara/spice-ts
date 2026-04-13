@@ -8,9 +8,14 @@ import { InvalidCircuitError } from '../errors.js';
 export function solveDCOperatingPoint(
   compiled: CompiledCircuit,
   options: ResolvedOptions,
+  initialSolution?: Float64Array,
 ): { result: DCResult; assembler: MNAAssembler } {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
   const assembler = new MNAAssembler(nodeCount, branchCount);
+
+  if (initialSolution) {
+    assembler.solution.set(initialSolution);
+  }
 
   // Source ramping: gradually ramp source voltages to help NR convergence
   // for circuits with many nonlinear devices (e.g., CMOS inverter chains).
