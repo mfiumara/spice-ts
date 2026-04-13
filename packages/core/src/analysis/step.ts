@@ -1,4 +1,12 @@
-import type { StepAnalysis } from '../types.js';
+import type { StepAnalysis, SimulationWarning, SimulationOptions } from '../types.js';
+import { resolveOptions } from '../types.js';
+import type { CompiledCircuit } from '../circuit.js';
+import type { StepResult } from '../results.js';
+import { solveDCOperatingPoint } from './dc.js';
+import { solveDCSweep } from './dc-sweep.js';
+import { solveTransient } from './transient.js';
+import { solveAC } from './ac.js';
+import { InvalidCircuitError } from '../errors.js';
 
 /**
  * Generate the array of parameter values for a .step sweep.
@@ -37,4 +45,71 @@ export function generateStepValues(step: StepAnalysis): number[] {
     case 'list':
       return step.values!.slice();
   }
+}
+
+/**
+ * Execute a parametric sweep: for each step value, update the target device
+ * parameter and run all declared analyses.
+ */
+export function solveStep(
+  compiled: CompiledCircuit,
+  step: StepAnalysis,
+  options: SimulationOptions | undefined,
+  warnings: SimulationWarning[],
+): StepResult[] {
+  const values = generateStepValues(step);
+
+  const device = compiled.devices.find(d => d.name === step.param);
+  if (!device) {
+    throw new InvalidCircuitError(`Step parameter device '${step.param}' not found`);
+  }
+  if (!device.setParameter || !device.getParameter) {
+    throw new InvalidCircuitError(
+      `Device '${step.param}' does not support parametric sweep`,
+    );
+  }
+
+  const originalValue = device.getParameter();
+  const results: StepResult[] = [];
+
+  try {
+    for (const value of values) {
+      device.setParameter(value);
+      const stepResult: StepResult = { paramName: step.param, paramValue: value };
+
+      for (const analysis of compiled.analyses) {
+        switch (analysis.type) {
+          case 'op': {
+            const opts = resolveOptions(options);
+            const { result: dcResult } = solveDCOperatingPoint(compiled, opts);
+            stepResult.dc = dcResult;
+            break;
+          }
+          case 'dc': {
+            const opts = resolveOptions(options);
+            stepResult.dcSweep = solveDCSweep(compiled, analysis, opts);
+            break;
+          }
+          case 'tran': {
+            const opts = resolveOptions(options, analysis.stopTime);
+            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
+            stepResult.transient = solveTransient(compiled, analysis, opts, dcAsm.solution);
+            break;
+          }
+          case 'ac': {
+            const opts = resolveOptions(options);
+            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
+            stepResult.ac = solveAC(compiled, analysis, opts, dcAsm.solution);
+            break;
+          }
+        }
+      }
+
+      results.push(stepResult);
+    }
+  } finally {
+    device.setParameter(originalValue);
+  }
+
+  return results;
 }
