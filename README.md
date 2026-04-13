@@ -6,6 +6,8 @@
 
 A zero-dependency TypeScript SPICE circuit simulator. Parse netlists and run DC, transient, and AC analysis directly in Node.js or the browser — no native binaries, no WASM.
 
+**[Live Showcase](https://mfiumara.github.io/spice-ts/)** — interactive demos with streaming parametric sweeps running entirely in your browser.
+
 ```ts
 import { simulate } from '@spice-ts/core';
 
