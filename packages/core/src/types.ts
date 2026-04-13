@@ -253,7 +253,7 @@ export type StepSweepMode = 'lin' | 'dec' | 'oct' | 'list';
 /** .step directive — parametric sweep configuration. */
 export interface StepAnalysis {
   type: 'step';
-  /** Device name (e.g., 'R1') or global param name to sweep */
+  /** Device name to sweep (e.g., 'R1') */
   param: string;
   /** Sweep mode */
   sweepMode: StepSweepMode;

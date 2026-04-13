@@ -401,7 +401,7 @@ export class Circuit {
   /**
    * Add a .step parametric sweep directive.
    *
-   * @param param - Device name (e.g., 'R1') or global parameter name to sweep
+   * @param param - Device name to sweep (e.g., 'R1')
    * @param opts - Sweep configuration
    */
   addStep(param: string, opts: {

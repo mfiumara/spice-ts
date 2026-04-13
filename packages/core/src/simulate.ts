@@ -61,6 +61,12 @@ export async function simulate(
   validateCircuit(compiled, warnings);
 
   if (compiled.steps.length > 0) {
+    if (compiled.steps.length > 1) {
+      warnings.push({
+        type: 'unsupported',
+        message: 'Multiple .step directives found; only the first is used. Nested sweeps are not yet supported.',
+      });
+    }
     const stepResults = solveStep(compiled, compiled.steps[0], options, warnings);
     return { steps: stepResults, warnings };
   }
@@ -138,6 +144,9 @@ export async function* simulateStream(
   validateCircuit(compiled, warnings);
 
   if (compiled.steps.length > 0) {
+    if (compiled.steps.length > 1) {
+      // Multiple .step directives: only the first is used; nested sweeps are not yet supported.
+    }
     yield* streamWithSteps(compiled, compiled.steps[0], options);
     return;
   }
@@ -175,6 +184,7 @@ function* streamWithSteps(
   }
 
   const originalValue = device.getParameter();
+  let prevDCSolution: Float64Array | undefined;
 
   try {
     for (let stepIndex = 0; stepIndex < values.length; stepIndex++) {
@@ -185,7 +195,8 @@ function* streamWithSteps(
         switch (analysis.type) {
           case 'tran': {
             const opts = resolveOptions(options, analysis.stopTime);
-            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
+            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts, prevDCSolution);
+            prevDCSolution = new Float64Array(dcAsm.solution);
             for (const point of streamTransient(compiled, analysis, opts, dcAsm.solution)) {
               yield { stepIndex, paramName: step.param, paramValue: value, point };
             }
@@ -193,7 +204,8 @@ function* streamWithSteps(
           }
           case 'ac': {
             const opts = resolveOptions(options);
-            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
+            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts, prevDCSolution);
+            prevDCSolution = new Float64Array(dcAsm.solution);
             for (const point of streamAC(compiled, analysis, opts, dcAsm.solution)) {
               yield { stepIndex, paramName: step.param, paramValue: value, point };
             }
