@@ -7,8 +7,16 @@ export class Capacitor implements DeviceModel {
   constructor(
     readonly name: string,
     readonly nodes: number[],
-    readonly capacitance: number,
+    public capacitance: number,
   ) {}
+
+  setParameter(value: number): void {
+    this.capacitance = value;
+  }
+
+  getParameter(): number {
+    return this.capacitance;
+  }
 
   stamp(_ctx: StampContext): void {
     // Capacitor has no DC conductance (open circuit at DC)

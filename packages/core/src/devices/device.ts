@@ -48,4 +48,8 @@ export interface DeviceModel {
   readonly isNonlinear: boolean;
   /** Return AC excitation info if this device is an AC source, or null. */
   getACExcitation?(): { magnitude: number; phase: number; branch: number } | null;
+  /** Set the device's primary parameter value (resistance, capacitance, etc.). */
+  setParameter?(value: number): void;
+  /** Get the device's primary parameter value. */
+  getParameter?(): number;
 }

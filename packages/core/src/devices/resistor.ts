@@ -7,8 +7,16 @@ export class Resistor implements DeviceModel {
   constructor(
     readonly name: string,
     readonly nodes: number[],
-    readonly resistance: number,
+    public resistance: number,
   ) {}
+
+  setParameter(value: number): void {
+    this.resistance = value;
+  }
+
+  getParameter(): number {
+    return this.resistance;
+  }
 
   stamp(ctx: StampContext): void {
     const [n1, n2] = this.nodes;

@@ -8,9 +8,17 @@ export class Inductor implements DeviceModel {
     readonly name: string,
     readonly nodes: number[],
     readonly branchIndex: number,
-    readonly inductance: number,
+    public inductance: number,
   ) {
     this.branches = [branchIndex];
+  }
+
+  setParameter(value: number): void {
+    this.inductance = value;
+  }
+
+  getParameter(): number {
+    return this.inductance;
   }
 
   stamp(ctx: StampContext): void {
