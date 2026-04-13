@@ -85,3 +85,44 @@ describe('generateStepValues', () => {
     expect(values).toEqual([1000]);
   });
 });
+
+import { Circuit } from '../circuit.js';
+
+describe('Circuit.addStep', () => {
+  it('stores step and includes it in compiled output', () => {
+    const ckt = new Circuit();
+    ckt.addVoltageSource('V1', '1', '0', { dc: 5 });
+    ckt.addResistor('R1', '1', '0', 1000);
+    ckt.addAnalysis('op');
+    ckt.addStep('R1', { start: 1000, stop: 5000, step: 1000 });
+
+    const compiled = ckt.compile();
+    expect(compiled.steps.length).toBe(1);
+    expect(compiled.steps[0].param).toBe('R1');
+    expect(compiled.steps[0].sweepMode).toBe('lin');
+  });
+
+  it('stores decade sweep step', () => {
+    const ckt = new Circuit();
+    ckt.addVoltageSource('V1', '1', '0', { dc: 5 });
+    ckt.addCapacitor('C1', '1', '0', 1e-12);
+    ckt.addAnalysis('op');
+    ckt.addStep('C1', { mode: 'dec', start: 1e-12, stop: 1e-6, points: 10 });
+
+    const compiled = ckt.compile();
+    expect(compiled.steps[0].sweepMode).toBe('dec');
+    expect(compiled.steps[0].points).toBe(10);
+  });
+
+  it('stores list sweep step', () => {
+    const ckt = new Circuit();
+    ckt.addVoltageSource('V1', '1', '0', { dc: 5 });
+    ckt.addResistor('R1', '1', '0', 1000);
+    ckt.addAnalysis('op');
+    ckt.addStep('R1', { values: [1000, 10000, 100000] });
+
+    const compiled = ckt.compile();
+    expect(compiled.steps[0].sweepMode).toBe('list');
+    expect(compiled.steps[0].values).toEqual([1000, 10000, 100000]);
+  });
+});

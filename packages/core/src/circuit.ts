@@ -1,5 +1,5 @@
 import type { DeviceModel } from './devices/device.js';
-import type { AnalysisCommand, SourceWaveform, ModelParams, SubcktDefinition } from './types.js';
+import type { AnalysisCommand, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis } from './types.js';
 import { Resistor } from './devices/resistor.js';
 import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
@@ -45,6 +45,8 @@ export interface CompiledCircuit {
   models: Map<string, ModelParams>;
   /** Subcircuit definitions */
   subcircuits: Map<string, SubcktDefinition>;
+  /** Step directives for parametric sweeps */
+  steps: StepAnalysis[];
 }
 
 interface DeviceDescriptor {
@@ -77,6 +79,7 @@ interface DeviceDescriptor {
 export class Circuit {
   private descriptors: DeviceDescriptor[] = [];
   private _analyses: AnalysisCommand[] = [];
+  private _steps: StepAnalysis[] = [];
   private _models = new Map<string, ModelParams>();
   private _subcircuits = new Map<string, SubcktDefinition>();
   private nodeSet = new Set<string>();
@@ -396,6 +399,33 @@ export class Circuit {
   }
 
   /**
+   * Add a .step parametric sweep directive.
+   *
+   * @param param - Device name (e.g., 'R1') or global parameter name to sweep
+   * @param opts - Sweep configuration
+   */
+  addStep(param: string, opts: {
+    mode?: 'lin' | 'dec' | 'oct';
+    start?: number;
+    stop?: number;
+    step?: number;
+    points?: number;
+    values?: number[];
+  }): void {
+    if (opts.values) {
+      this._steps.push({ type: 'step', param, sweepMode: 'list', values: opts.values });
+    } else {
+      const sweepMode = opts.mode ?? 'lin';
+      this._steps.push({
+        type: 'step', param, sweepMode,
+        start: opts.start, stop: opts.stop,
+        increment: sweepMode === 'lin' ? opts.step : undefined,
+        points: sweepMode !== 'lin' ? opts.points : undefined,
+      });
+    }
+  }
+
+  /**
    * Compile the circuit into a form ready for numerical simulation.
    *
    * Expands subcircuit instances, assigns node indices, instantiates device
@@ -556,6 +586,7 @@ export class Circuit {
       nodeNames, nodeIndexMap, branchNames,
       analyses: this._analyses, models: this._models,
       subcircuits: this._subcircuits,
+      steps: this._steps,
     };
   }
 
