@@ -8,7 +8,8 @@ import { solveDCOperatingPoint } from './analysis/dc.js';
 import { solveTransient } from './analysis/transient.js';
 import { solveAC } from './analysis/ac.js';
 import { solveDCSweep } from './analysis/dc-sweep.js';
-import { solveStep } from './analysis/step.js';
+import { solveStep, generateStepValues } from './analysis/step.js';
+import type { StepStreamEvent, StepAnalysis } from './types.js';
 import type { SimulationResult } from './results.js';
 import { InvalidCircuitError, TimestepTooSmallError } from './errors.js';
 import { MNAAssembler } from './mna/assembler.js';
@@ -121,7 +122,7 @@ export async function simulate(
 export async function* simulateStream(
   input: string | Circuit,
   options?: SimulationOptions,
-): AsyncIterableIterator<TransientStep | ACPoint> {
+): AsyncIterableIterator<TransientStep | ACPoint | StepStreamEvent> {
   let circuit: Circuit;
   if (typeof input === 'string') {
     if (options?.resolveInclude) {
@@ -135,6 +136,11 @@ export async function* simulateStream(
   const compiled = circuit.compile();
   const warnings: SimulationWarning[] = [];
   validateCircuit(compiled, warnings);
+
+  if (compiled.steps.length > 0) {
+    yield* streamWithSteps(compiled, compiled.steps[0], options);
+    return;
+  }
 
   for (const analysis of compiled.analyses) {
     switch (analysis.type) {
@@ -151,6 +157,53 @@ export async function* simulateStream(
         break;
       }
     }
+  }
+}
+
+function* streamWithSteps(
+  compiled: CompiledCircuit,
+  step: StepAnalysis,
+  options: SimulationOptions | undefined,
+): Generator<StepStreamEvent> {
+  const values = generateStepValues(step);
+
+  const device = compiled.devices.find(d => d.name === step.param);
+  if (!device?.setParameter || !device?.getParameter) {
+    throw new InvalidCircuitError(
+      `Device '${step.param}' does not support parametric sweep`,
+    );
+  }
+
+  const originalValue = device.getParameter();
+
+  try {
+    for (let stepIndex = 0; stepIndex < values.length; stepIndex++) {
+      const value = values[stepIndex];
+      device.setParameter(value);
+
+      for (const analysis of compiled.analyses) {
+        switch (analysis.type) {
+          case 'tran': {
+            const opts = resolveOptions(options, analysis.stopTime);
+            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
+            for (const point of streamTransient(compiled, analysis, opts, dcAsm.solution)) {
+              yield { stepIndex, paramName: step.param, paramValue: value, point };
+            }
+            break;
+          }
+          case 'ac': {
+            const opts = resolveOptions(options);
+            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
+            for (const point of streamAC(compiled, analysis, opts, dcAsm.solution)) {
+              yield { stepIndex, paramName: step.param, paramValue: value, point };
+            }
+            break;
+          }
+        }
+      }
+    }
+  } finally {
+    device.setParameter(originalValue);
   }
 }
 
