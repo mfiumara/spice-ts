@@ -233,7 +233,12 @@ function* streamWithSteps(
   const values = generateStepValues(step);
 
   const device = compiled.devices.find(d => d.name === step.param);
-  if (!device?.setParameter || !device?.getParameter) {
+  if (!device) {
+    throw new InvalidCircuitError(
+      `Step parameter device '${step.param}' not found`,
+    );
+  }
+  if (!device.setParameter || !device.getParameter) {
     throw new InvalidCircuitError(
       `Device '${step.param}' does not support parametric sweep`,
     );
