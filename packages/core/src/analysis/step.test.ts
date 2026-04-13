@@ -228,3 +228,70 @@ describe('.step + .op integration', () => {
     expect(result.steps![1].dc!.voltage('2')).toBeCloseTo(10 * 10000 / 11000, 4);
   });
 });
+
+describe('.step + .ac integration', () => {
+  it('sweeps capacitor in RC low-pass filter', async () => {
+    // RC low-pass: V1 -> R1 -> out -> C1 -> GND
+    // Cutoff freq = 1 / (2*pi*R*C)
+    const result = await simulate(`
+      V1 1 0 AC 1 0
+      R1 1 2 1k
+      C1 2 0 1n
+      .ac dec 10 1k 10Meg
+      .step param C1 list 1n 10n
+    `);
+
+    expect(result.steps).toBeDefined();
+    expect(result.steps!.length).toBe(2);
+    expect(result.ac).toBeUndefined();
+
+    // With C=1n, fc ~ 159kHz; with C=10n, fc ~ 15.9kHz
+    // At 1kHz both should be near unity gain
+    const step1 = result.steps![0];
+    const step2 = result.steps![1];
+    expect(step1.ac).toBeDefined();
+    expect(step2.ac).toBeDefined();
+
+    // First frequency point (1kHz) should have near-unity magnitude for both
+    const v1_1k = step1.ac!.voltage('2')[0];
+    const v2_1k = step2.ac!.voltage('2')[0];
+    expect(v1_1k.magnitude).toBeGreaterThan(0.9);
+    expect(v2_1k.magnitude).toBeGreaterThan(0.9);
+
+    // At high frequencies, larger C should have lower magnitude
+    const lastIdx = step1.ac!.frequencies.length - 1;
+    const v1_high = step1.ac!.voltage('2')[lastIdx];
+    const v2_high = step2.ac!.voltage('2')[lastIdx];
+    expect(v2_high.magnitude).toBeLessThan(v1_high.magnitude);
+  });
+});
+
+describe('.step + .tran integration', () => {
+  it('sweeps resistor in RC circuit transient', async () => {
+    // RC charging: V1(step) -> R1 -> out -> C1 -> GND
+    const result = await simulate(`
+      V1 1 0 PULSE(0 5 0 1n 1n 10m 20m)
+      R1 1 2 1k
+      C1 2 0 1u
+      .tran 10u 5m
+      .step param R1 list 1k 10k
+    `);
+
+    expect(result.steps).toBeDefined();
+    expect(result.steps!.length).toBe(2);
+    expect(result.transient).toBeUndefined();
+
+    const step1 = result.steps![0]; // R=1k, tau=1ms
+    const step2 = result.steps![1]; // R=10k, tau=10ms
+
+    expect(step1.transient).toBeDefined();
+    expect(step2.transient).toBeDefined();
+
+    // At t=5ms (~5*tau for R=1k, ~0.5*tau for R=10k)
+    // R=1k should be closer to 5V, R=10k should be lower
+    const v1 = step1.transient!.voltage('2');
+    const v2 = step2.transient!.voltage('2');
+    const lastIdx = v1.length - 1;
+    expect(v1[lastIdx]).toBeGreaterThan(v2[lastIdx]);
+  });
+});
