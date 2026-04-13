@@ -168,6 +168,34 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
         );
       }
       break;
+    case '.STEP': {
+      let idx = 1;
+      let sweepMode: 'lin' | 'dec' | 'oct' = 'lin';
+      const modeToken = tokens[idx].toUpperCase();
+      if (modeToken === 'DEC' || modeToken === 'OCT') {
+        sweepMode = modeToken.toLowerCase() as 'dec' | 'oct';
+        idx++;
+      }
+      if (tokens[idx].toUpperCase() === 'PARAM') idx++;
+      const paramName = tokens[idx++];
+      if (tokens[idx] && tokens[idx].toUpperCase() === 'LIST') {
+        idx++;
+        const values: number[] = [];
+        for (; idx < tokens.length; idx++) {
+          values.push(parseNumber(tokens[idx]));
+        }
+        circuit.addStep(paramName, { values });
+      } else {
+        const start = parseNumber(tokens[idx++]);
+        const stop = parseNumber(tokens[idx++]);
+        if (sweepMode === 'lin') {
+          circuit.addStep(paramName, { mode: 'lin', start, stop, step: parseNumber(tokens[idx]) });
+        } else {
+          circuit.addStep(paramName, { mode: sweepMode, start, stop, points: parseInt(tokens[idx], 10) });
+        }
+      }
+      break;
+    }
     default:
       break;
   }
