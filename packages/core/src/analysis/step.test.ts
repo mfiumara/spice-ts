@@ -87,6 +87,7 @@ describe('generateStepValues', () => {
 });
 
 import { Circuit } from '../circuit.js';
+import { parse } from '../parser/index.js';
 
 describe('Circuit.addStep', () => {
   it('stores step and includes it in compiled output', () => {
@@ -121,6 +122,62 @@ describe('Circuit.addStep', () => {
     ckt.addAnalysis('op');
     ckt.addStep('R1', { values: [1000, 10000, 100000] });
 
+    const compiled = ckt.compile();
+    expect(compiled.steps[0].sweepMode).toBe('list');
+    expect(compiled.steps[0].values).toEqual([1000, 10000, 100000]);
+  });
+});
+
+describe('.step netlist parsing', () => {
+  it('parses linear step', () => {
+    const ckt = parse(`
+      V1 1 0 DC 5
+      R1 1 0 1k
+      .op
+      .step param R1 1k 100k 10k
+    `);
+    const compiled = ckt.compile();
+    expect(compiled.steps.length).toBe(1);
+    expect(compiled.steps[0].param).toBe('R1');
+    expect(compiled.steps[0].sweepMode).toBe('lin');
+    expect(compiled.steps[0].start).toBeCloseTo(1000);
+    expect(compiled.steps[0].stop).toBeCloseTo(100000);
+    expect(compiled.steps[0].increment).toBeCloseTo(10000);
+  });
+
+  it('parses decade step', () => {
+    const ckt = parse(`
+      V1 1 0 DC 5
+      C1 1 0 1p
+      .op
+      .step dec param C1 1p 1u 10
+    `);
+    const compiled = ckt.compile();
+    expect(compiled.steps[0].sweepMode).toBe('dec');
+    expect(compiled.steps[0].start).toBeCloseTo(1e-12);
+    expect(compiled.steps[0].stop).toBeCloseTo(1e-6);
+    expect(compiled.steps[0].points).toBe(10);
+  });
+
+  it('parses octave step', () => {
+    const ckt = parse(`
+      V1 1 0 DC 5
+      C1 1 0 1p
+      .op
+      .step oct param C1 100 800 1
+    `);
+    const compiled = ckt.compile();
+    expect(compiled.steps[0].sweepMode).toBe('oct');
+    expect(compiled.steps[0].points).toBe(1);
+  });
+
+  it('parses list step', () => {
+    const ckt = parse(`
+      V1 1 0 DC 5
+      R1 1 0 1k
+      .op
+      .step param R1 list 1k 10k 100k
+    `);
     const compiled = ckt.compile();
     expect(compiled.steps[0].sweepMode).toBe('list');
     expect(compiled.steps[0].values).toEqual([1000, 10000, 100000]);
