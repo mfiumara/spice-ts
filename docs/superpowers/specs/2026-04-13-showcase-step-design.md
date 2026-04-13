@@ -109,3 +109,11 @@ The `BodeRenderer` follows the same pattern. Both renderers, plus `Legend` and `
 - `examples/showcase/package.json`: same deps as the old `08-waveform-viewer` (react, @spice-ts/core, @spice-ts/ui, vite)
 - Update workspace references if the old path was hardcoded anywhere (pnpm-workspace.yaml, CI)
 - Keep existing `tsconfig.json` and `vite.config.ts` patterns
+
+## Vercel Deployment
+
+- Add `vercel.json` at the repo root configuring the showcase as the deploy target
+- Build command: `pnpm install && pnpm --filter @spice-ts/core build && pnpm --filter @spice-ts/ui build && pnpm --filter showcase build` (dependencies must build first since the showcase imports from both packages)
+- Output directory: `examples/showcase/dist`
+- Framework preset: Vite
+- The simulation runs entirely client-side (no server needed) — static site deployment
