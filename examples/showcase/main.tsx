@@ -696,22 +696,22 @@ function App() {
           </div>
         </div>
 
-        {/* Netlist panel */}
-        {diagramNetlist && (
-          <div className="netlist-panel">
-            <div className="netlist-panel-header">
-              <span className="netlist-panel-label">Netlist</span>
-              <span className="netlist-panel-name">{circuit.name}</span>
-              {circuit.tag && <span className="panel-badge">{circuit.tag}</span>}
-            </div>
-            <div className="netlist-panel-body">
-              <NetlistView netlist={diagramNetlist} />
-            </div>
-          </div>
-        )}
-
         {/* Panels */}
         <div className="panels">
+          {/* Netlist panel */}
+          {diagramNetlist && (
+            <div className="panel">
+              <div className="panel-header">
+                <span className="netlist-panel-label">Netlist</span>
+                <span className="netlist-panel-name">{circuit.name}</span>
+                {circuit.tag && <span className="panel-badge">{circuit.tag}</span>}
+              </div>
+              <div className="netlist-panel-body">
+                <NetlistView netlist={diagramNetlist} />
+              </div>
+            </div>
+          )}
+
           {error && <div className="panel"><div className="panel-error">Simulation error: {error}</div></div>}
 
           {!hasNetlist && (

@@ -595,22 +595,7 @@ body {
   animation: vault-tec-activate 0.6s ease-out;
 }
 
-/* ─── Netlist panel (main area, above waveform) ─── */
-
-.netlist-panel {
-  border-bottom: 1px solid var(--border-subtle);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-}
-
-.netlist-panel-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  border-bottom: 1px solid var(--border-subtle);
-}
+/* ─── Netlist panel (main area, inside .panels) ─── */
 
 .netlist-panel-label {
   font-family: var(--font-mono);
@@ -631,13 +616,12 @@ body {
   overflow-y: auto;
   max-height: 160px;
   padding: 8px 16px;
-  background: var(--bg-panel);
 }
 
 .netlist-panel-body .netlist-view {
   border: none;
   border-radius: 0;
-  background: var(--bg-panel);
+  background: transparent;
   padding: 0;
 }
 
