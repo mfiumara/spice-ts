@@ -754,6 +754,7 @@ function App() {
                       theme={vaultTecTheme ?? 'dark'}
                       colors={vaultTecColors(dcData, circuit.signals)}
                       height={280}
+                      xLabel={circuit.xLabel ?? 'Sweep (V)'}
                       onCursorMove={setDcCursor}
                       signalVisibility={visibility}
                     />

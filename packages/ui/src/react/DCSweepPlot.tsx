@@ -20,6 +20,8 @@ export interface DCSweepPlotProps {
   height?: number | string;
   /** Fixed x-axis domain [min, max]. Reserved for future use. */
   xDomain?: [number, number];
+  /** X-axis label. Default 'Sweep (V)'. */
+  xLabel?: string;
   /** Cursor move callback. */
   onCursorMove?: (cursor: CursorState | null) => void;
   /** Signal visibility state (controlled). */
@@ -34,6 +36,7 @@ export function DCSweepPlot({
   width = '100%',
   height = 300,
   xDomain: _xDomain, // reserved for future use — not yet forwarded to renderer
+  xLabel = 'Sweep (V)',
   onCursorMove,
   signalVisibility,
 }: DCSweepPlotProps) {
@@ -129,6 +132,7 @@ export function DCSweepPlot({
         ref={canvasRefCallback}
         style={{ width: '100%', height: '100%', display: 'block' }}
       />
+      <div style={{ textAlign: 'center', fontSize: 11, color: '#666', marginTop: 2 }}>{xLabel}</div>
     </div>
   );
 }
