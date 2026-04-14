@@ -7,3 +7,5 @@ coverage/
 benchmarks/results.json
 .superpowers/
 test-results.xml
+.claude/
+.claire/
