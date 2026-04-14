@@ -301,6 +301,17 @@ function buildDCSweepDatasets(result: DCSweepResult, signals: string[]): DCSweep
   return [{ sweepValues, signals: signalsMap, label: '' }];
 }
 
+// ─── Simulation parameter helpers ───────────────────────────────────
+
+function parseTranParams(netlist: string): { stop: string; step: string } {
+  const m = netlist.match(/\.tran\s+(\S+)\s+(\S+)/i);
+  return m ? { step: m[1], stop: m[2] } : { step: '0.1u', stop: '10m' };
+}
+
+function injectTranParams(netlist: string, step: string, stop: string): string {
+  return netlist.replace(/\.tran\s+\S+\s+\S+[^\n]*/i, `.tran ${step} ${stop}`);
+}
+
 function buildLegendSignals(datasets: { label: string }[], signals: string[], visibility: Record<string, boolean>, palette?: string[]): LegendSignal[] {
   const pal = palette ?? DEFAULT_PALETTE as unknown as string[];
   const result: LegendSignal[] = [];
@@ -402,6 +413,8 @@ function App() {
   const [activeView, setActiveView] = useState<'tran' | 'ac' | 'dc'>('tran');
   const [searchQuery, setSearchQuery] = useState('');
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [tranStop, setTranStop] = useState(() => parseTranParams(CIRCUITS[0].tranNetlist!).stop);
+  const [tranStep, setTranStep] = useState(() => parseTranParams(CIRCUITS[0].tranNetlist!).step);
   useKonamiCode(useCallback(() => setVaultTec(prev => !prev), []));
 
   // Apply vault-tec class to body for scanlines/vignette pseudo-elements
@@ -485,7 +498,9 @@ function App() {
       return;
     }
 
-    const netlist = activeView === 'tran' ? circuit.tranNetlist : circuit.acNetlist;
+    const netlist = activeView === 'tran'
+      ? injectTranParams(circuit.tranNetlist!, tranStep, tranStop)
+      : circuit.acNetlist;
     if (!netlist) return;
 
     if (activeView === 'tran') setTranData(null); else setAcData(null);
@@ -542,7 +557,7 @@ function App() {
       setError(err instanceof Error ? err.message : String(err));
       setRunning(false);
     });
-  }, [circuit, activeView]);
+  }, [circuit, activeView, tranStop, tranStep]);
 
   const handleStop = useCallback(() => { stopRef.current = true; }, []);
 
@@ -554,6 +569,11 @@ function App() {
     const c = CIRCUITS.find(x => x.id === id)!;
     setActiveCircuit(id);
     setActiveView(c.tranNetlist ? 'tran' : c.acNetlist ? 'ac' : 'dc');
+    if (c.tranNetlist) {
+      const p = parseTranParams(c.tranNetlist);
+      setTranStop(p.stop);
+      setTranStep(p.step);
+    }
     setTranData(null);
     setAcData(null);
     setDcData(null);
@@ -688,6 +708,27 @@ function App() {
               className={`toolbar-btn ${activeView === 'dc' ? 'active' : ''}`}
               onClick={() => setActiveView('dc')}
             >DC Sweep</button>
+          )}
+          {activeView === 'tran' && circuit.tranNetlist && (
+            <>
+              <div className="toolbar-sep" />
+              <label className="param-label">Stop</label>
+              <input
+                className="param-input"
+                value={tranStop}
+                onChange={e => setTranStop(e.target.value)}
+                disabled={running}
+                title="Total simulation time (e.g. 10m, 200u)"
+              />
+              <label className="param-label">Step</label>
+              <input
+                className="param-input"
+                value={tranStep}
+                onChange={e => setTranStep(e.target.value)}
+                disabled={running}
+                title="Maximum timestep (e.g. 0.1u, 1n)"
+              />
+            </>
           )}
           <div className="toolbar-info">
             {elapsed !== null && (

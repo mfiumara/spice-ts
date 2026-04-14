@@ -399,6 +399,28 @@ body {
 }
 .toolbar-info .value { color: var(--phosphor-dim); }
 
+.param-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.param-input {
+  width: 56px;
+  padding: 3px 7px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.param-input:focus { border-color: var(--border-active); }
+.param-input:disabled { opacity: 0.4; }
+
 /* ======== WAVEFORM PANELS ======== */
 
 .panels {
