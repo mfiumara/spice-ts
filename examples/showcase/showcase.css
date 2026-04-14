@@ -661,7 +661,16 @@ body {
   border-radius: 4px;
   overflow-x: auto;
   white-space: pre;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-default) transparent;
 }
+.netlist-view::-webkit-scrollbar { height: 4px; width: 4px; }
+.netlist-view::-webkit-scrollbar-track { background: transparent; }
+.netlist-view::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 2px; }
+
+.diagram-body::-webkit-scrollbar { width: 4px; }
+.diagram-body::-webkit-scrollbar-track { background: transparent; }
+.diagram-body::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 2px; }
 
 .nl-comment  { color: #666; }
 .nl-ref      { color: #7ec8e3; }
