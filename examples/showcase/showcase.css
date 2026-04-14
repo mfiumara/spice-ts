@@ -631,12 +631,13 @@ body {
   overflow-y: auto;
   max-height: 160px;
   padding: 8px 16px;
+  background: var(--bg-panel);
 }
 
 .netlist-panel-body .netlist-view {
   border: none;
   border-radius: 0;
-  background: transparent;
+  background: var(--bg-panel);
   padding: 0;
 }
 
