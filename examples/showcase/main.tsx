@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { simulateStepStream, simulate } from '@spice-ts/core';
 import type { StepStreamEvent, DCSweepResult } from '@spice-ts/core';
-import { TransientPlot, BodePlot, DCSweepPlot, CursorTooltip, Legend } from '@spice-ts/ui/react';
+import { TransientPlot, BodePlot, DCSweepPlot, CursorTooltip, Legend, SchematicView } from '@spice-ts/ui/react';
 import type { LegendSignal } from '@spice-ts/ui/react';
 import { DARK_THEME, formatTime, formatFrequency, formatVoltage, formatSI, DEFAULT_PALETTE } from '@spice-ts/ui';
 import type { TransientDataset, ACDataset, DCSweepDataset, CursorState } from '@spice-ts/ui';
@@ -169,9 +169,9 @@ C1 out 0 10n
     icon: '\u26A1', group: 'Power Electronics', tag: '.tran', signals: ['out'],
     tranNetlist: `
 * Buck converter — NMOS switch + freewheeling diode + LC filter
-* Vin=12V, D=50%, f=100kHz, Vout\u22486V
+* Vin=12V, D=50%, f=100kHz, Vout~6V
 Vin in 0 DC 12
-Vg gate 0 PULSE(0 15 0 1n 1n 5u 10u)
+Vg gate 0 PULSE(0 15 0 100n 100n 4.8u 10u)
 .model NMOD NMOS(VTO=2 KP=10)
 .model DMOD D(IS=1e-14 N=1)
 M1 sw gate in 0 NMOD W=1m L=1u
@@ -179,16 +179,16 @@ D1 0 sw DMOD
 L1 sw out 100u
 C1 out 0 100u
 Rload out 0 10
-.tran 100n 200u`,
+.tran 50n 500u`,
   },
   {
     id: 'boost', name: 'Boost Converter', desc: '5V \u2192 ~10V, 50% duty',
     icon: '\u26A1', group: 'Power Electronics', tag: '.tran', signals: ['out'],
     tranNetlist: `
 * Boost converter — inductor charges from Vin, discharges through D to Cout
-* Vin=5V, D=50%, f=100kHz, Vout\u224810V
+* Vin=5V, D=50%, f=100kHz, Vout~10V
 Vin in 0 DC 5
-Vg gate 0 PULSE(0 15 0 1n 1n 5u 10u)
+Vg gate 0 PULSE(0 15 0 100n 100n 4.8u 10u)
 .model NMOD NMOS(VTO=2 KP=10)
 .model DMOD D(IS=1e-14 N=1)
 L1 in sw 100u
@@ -196,7 +196,7 @@ M1 sw gate 0 0 NMOD W=1m L=1u
 D1 sw out DMOD
 C1 out 0 100u
 Rload out 0 10
-.tran 100n 300u`,
+.tran 50n 500u`,
   },
   {
     id: 'buck-boost', name: 'Buck-Boost Converter', desc: '12V \u2192 \u2013Vout (inverting)',
@@ -205,7 +205,7 @@ Rload out 0 10
 * Buck-boost (inverting) — neg node is the negative output rail
 * Vin=12V, D=50%, f=100kHz
 Vin in 0 DC 12
-Vg gate 0 PULSE(0 15 0 1n 1n 5u 10u)
+Vg gate 0 PULSE(0 15 0 100n 100n 4.8u 10u)
 .model NMOD NMOS(VTO=2 KP=10)
 .model DMOD D(IS=1e-14 N=1)
 M1 in gate sw 0 NMOD W=1m L=1u
@@ -213,7 +213,7 @@ L1 sw n1 100u
 D1 n1 0 DMOD
 C1 n1 neg 100u
 Rload neg 0 10
-.tran 100n 200u`,
+.tran 50n 500u`,
   },
 ];
 
@@ -767,6 +767,22 @@ function App() {
                   onChange={e => setEditedNetlist(e.target.value)}
                   spellCheck={false}
                   disabled={running}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Schematic panel */}
+          {editedNetlist && (
+            <div className="panel">
+              <div className="panel-header">
+                <h3>Schematic</h3>
+              </div>
+              <div className="panel-body">
+                <SchematicView
+                  netlist={editedNetlist}
+                  theme={vaultTecTheme ?? 'dark'}
+                  height={300}
                 />
               </div>
             </div>
