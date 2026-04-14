@@ -595,57 +595,49 @@ body {
   animation: vault-tec-activate 0.6s ease-out;
 }
 
-/* ─── Circuit diagram sidebar panel ─── */
+/* ─── Netlist panel (main area, above waveform) ─── */
 
-.diagram-section {
-  border-top: 1px solid var(--border-subtle);
+.netlist-panel {
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
   flex-shrink: 0;
 }
 
-.diagram-toggle {
+.netlist-panel-header {
   display: flex;
   align-items: center;
-  gap: 6px;
-  width: 100%;
-  padding: 8px 12px;
-  background: none;
-  border: none;
-  color: var(--text-muted);
+  gap: 8px;
+  padding: 6px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.netlist-panel-label {
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  cursor: pointer;
-  text-align: left;
+  color: var(--text-muted);
 }
 
-.diagram-toggle:hover {
+.netlist-panel-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
   color: var(--text-secondary);
 }
 
-.diagram-toggle .chevron {
-  width: 12px;
-  height: 12px;
-  transition: transform 0.15s;
-  transform: rotate(0deg);
-  flex-shrink: 0;
-}
-
-.diagram-toggle .chevron.open {
-  transform: rotate(90deg);
-}
-
-.diagram-body {
-  padding: 0 8px 8px;
+.netlist-panel-body {
   overflow-y: auto;
-  max-height: 240px;
+  max-height: 160px;
+  padding: 8px 16px;
 }
 
-.diagram-empty {
-  color: var(--text-muted);
-  font-size: 12px;
-  padding: 8px 4px;
+.netlist-panel-body .netlist-view {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
 }
 
 /* ─── Netlist view syntax highlighting ─── */
@@ -668,9 +660,9 @@ body {
 .netlist-view::-webkit-scrollbar-track { background: transparent; }
 .netlist-view::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 2px; }
 
-.diagram-body::-webkit-scrollbar { width: 4px; }
-.diagram-body::-webkit-scrollbar-track { background: transparent; }
-.diagram-body::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 2px; }
+.netlist-panel-body::-webkit-scrollbar { width: 4px; }
+.netlist-panel-body::-webkit-scrollbar-track { background: transparent; }
+.netlist-panel-body::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 2px; }
 
 .nl-comment  { color: #666; }
 .nl-ref      { color: #7ec8e3; }

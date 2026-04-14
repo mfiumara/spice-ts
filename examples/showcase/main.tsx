@@ -402,8 +402,6 @@ function App() {
   const [activeView, setActiveView] = useState<'tran' | 'ac' | 'dc'>('tran');
   const [searchQuery, setSearchQuery] = useState('');
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
-  const [diagramOpen, setDiagramOpen] = useState(true);
-
   useKonamiCode(useCallback(() => setVaultTec(prev => !prev), []));
 
   // Apply vault-tec class to body for scanlines/vignette pseudo-elements
@@ -660,28 +658,6 @@ function App() {
             <div className="sidebar-empty">No circuits match your search</div>
           )}
         </div>
-        {/* ── Circuit diagram ── */}
-        <div className="diagram-section">
-          <button
-            className="diagram-toggle"
-            onClick={() => setDiagramOpen(prev => !prev)}
-          >
-            <svg
-              className={`chevron ${diagramOpen ? 'open' : ''}`}
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-            >
-              <path d="m9 18 6-6-6-6" />
-            </svg>
-            <span>Circuit</span>
-          </button>
-          {diagramOpen && (
-            <div className="diagram-body">
-              {diagramNetlist
-                ? <NetlistView netlist={diagramNetlist} />
-                : <div className="diagram-empty">Not yet implemented</div>}
-            </div>
-          )}
-        </div>
       </aside>
 
       {/* ── Main Content ── */}
@@ -719,6 +695,20 @@ function App() {
             )}
           </div>
         </div>
+
+        {/* Netlist panel */}
+        {diagramNetlist && (
+          <div className="netlist-panel">
+            <div className="netlist-panel-header">
+              <span className="netlist-panel-label">Netlist</span>
+              <span className="netlist-panel-name">{circuit.name}</span>
+              {circuit.tag && <span className="panel-badge">{circuit.tag}</span>}
+            </div>
+            <div className="netlist-panel-body">
+              <NetlistView netlist={diagramNetlist} />
+            </div>
+          </div>
+        )}
 
         {/* Panels */}
         <div className="panels">
