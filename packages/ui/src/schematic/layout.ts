@@ -62,7 +62,11 @@ export function layoutSchematic(graph: SchematicGraph): SchematicLayout {
     }
   }
 
-  // Convert to pixel positions
+  // Convert to pixel positions.
+  // Vertically offset each component so its first non-ground signal pin
+  // aligns on a shared horizontal rail per row. This ensures wires between
+  // components in the same row are straight horizontal lines.
+  const SIGNAL_RAIL_Y = MARGIN + GRID * 2; // baseline for row 0 signal pins
   const placedComponents: PlacedComponent[] = [];
 
   for (const comp of graph.components) {
@@ -70,7 +74,14 @@ export function layoutSchematic(graph: SchematicGraph): SchematicLayout {
     const symbol = getSymbol(comp.type, comp.displayValue);
 
     const x = MARGIN + pos.col * COL_SPACING;
-    const y = MARGIN + pos.row * ROW_SPACING;
+
+    // Find the first non-ground pin's dy offset — that pin should sit on the rail
+    const signalPinIdx = comp.nodes.findIndex(n => n !== '0');
+    const signalPinDy = signalPinIdx >= 0 && signalPinIdx < symbol.pins.length
+      ? symbol.pins[signalPinIdx].dy
+      : symbol.pins[0].dy;
+    const railY = SIGNAL_RAIL_Y + pos.row * ROW_SPACING;
+    const y = railY - signalPinDy;
 
     const pins: Pin[] = symbol.pins.map((p, i) => ({
       net: i < comp.nodes.length ? comp.nodes[i] : '0',
