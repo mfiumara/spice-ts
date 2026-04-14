@@ -46,6 +46,15 @@ export interface ACDataset {
   label: string;
 }
 
+export interface DCSweepDataset {
+  /** The swept source values (e.g. volts for a voltage sweep). */
+  sweepValues: number[];
+  /** Node voltages or branch currents at each sweep point. */
+  signals: Map<string, number[]>;
+  /** Optional label for .step overlays. */
+  label: string;
+}
+
 export interface Margins {
   top: number;
   right: number;

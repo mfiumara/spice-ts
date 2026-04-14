@@ -1,6 +1,6 @@
 export type {
   ThemeConfig, CursorState, CursorValue, SignalConfig,
-  TransientDataset, ACDataset, Margins, RendererEvents,
+  TransientDataset, ACDataset, DCSweepDataset, Margins, RendererEvents,
   StreamingTransientStep, StreamingACPoint,
 } from './types.js';
 export { DEFAULT_PALETTE } from './types.js';
