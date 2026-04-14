@@ -652,8 +652,8 @@ body {
 
 .netlist-view {
   font-family: var(--font-mono);
-  font-size: 10.5px;
-  line-height: 1.65;
+  font-size: 11px;
+  line-height: 1.7;
   margin: 0;
   padding: 8px;
   background: #0d0d0d;
@@ -663,10 +663,10 @@ body {
   white-space: pre;
 }
 
-.nl-comment  { color: #555; }
+.nl-comment  { color: #666; }
 .nl-ref      { color: #7ec8e3; }
 .nl-node     { color: #aaaaaa; }
 .nl-value    { color: #f0b97a; }
 .nl-keyword  { color: #aaaaaa; }
 .nl-directive{ color: #c8a3e3; }
-.nl-muted    { color: #888; }
+.nl-muted    { color: #ccc; }
