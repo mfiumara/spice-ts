@@ -76,7 +76,7 @@ R1 in n1 10k
 R2 n1 n2 10k
 C1 n1 out 10n
 C2 n2 0 10n
-E1 out 0 n2 0 1e6
+E1 out 0 n2 out 1e6
 .ac dec 100 10 1Meg`,
   },
   {
