@@ -137,6 +137,57 @@ L1 n1 out 10m
 C1 out 0 10n
 .tran 100n 200u`,
   },
+  {
+    id: 'buck', name: 'Buck Converter', desc: '12V \u2192 ~6V, 50% duty',
+    icon: '\u26A1', group: 'Power Electronics', tag: '.tran', signals: ['out'],
+    tranNetlist: `
+* Buck converter — NMOS switch + freewheeling diode + LC filter
+* Vin=12V, D=50%, f=100kHz, Vout\u22486V
+Vin in 0 DC 12
+Vg gate 0 PULSE(0 15 0 1n 1n 5u 10u)
+.model NMOD NMOS(VTO=2 KP=10)
+.model DMOD D(IS=1e-14 N=1)
+M1 sw gate in 0 NMOD W=1m L=1u
+D1 0 sw DMOD
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 10
+.tran 100n 200u`,
+  },
+  {
+    id: 'boost', name: 'Boost Converter', desc: '5V \u2192 ~10V, 50% duty',
+    icon: '\u26A1', group: 'Power Electronics', tag: '.tran', signals: ['out'],
+    tranNetlist: `
+* Boost converter — inductor charges from Vin, discharges through D to Cout
+* Vin=5V, D=50%, f=100kHz, Vout\u224810V
+Vin in 0 DC 5
+Vg gate 0 PULSE(0 15 0 1n 1n 5u 10u)
+.model NMOD NMOS(VTO=2 KP=10)
+.model DMOD D(IS=1e-14 N=1)
+L1 in sw 100u
+M1 sw gate 0 0 NMOD W=1m L=1u
+D1 sw out DMOD
+C1 out 0 100u
+Rload out 0 10
+.tran 100n 300u`,
+  },
+  {
+    id: 'buck-boost', name: 'Buck-Boost Converter', desc: '12V \u2192 \u2013Vout (inverting)',
+    icon: '\u26A1', group: 'Power Electronics', tag: '.tran', signals: ['neg'],
+    tranNetlist: `
+* Buck-boost (inverting) — neg node is the negative output rail
+* Vin=12V, D=50%, f=100kHz
+Vin in 0 DC 12
+Vg gate 0 PULSE(0 15 0 1n 1n 5u 10u)
+.model NMOD NMOS(VTO=2 KP=10)
+.model DMOD D(IS=1e-14 N=1)
+M1 in gate sw 0 NMOD W=1m L=1u
+L1 sw n1 100u
+D1 n1 0 DMOD
+C1 n1 neg 100u
+Rload neg 0 10
+.tran 100n 200u`,
+  },
 ];
 
 // ─── Streaming accumulators ─────────────────────────────────────────
