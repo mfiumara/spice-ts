@@ -434,7 +434,6 @@ function App() {
           setElapsed(Math.round(performance.now() - t0));
         })
         .catch((err: unknown) => {
-          stopRef.current = true;
           setError(err instanceof Error ? err.message : String(err));
           setRunning(false);
         });
@@ -513,6 +512,9 @@ function App() {
     setTranData(null);
     setAcData(null);
     setDcData(null);
+    setTranCursor(null);
+    setAcCursor(null);
+    setDcCursor(null);
     setError(null);
     setElapsed(null);
     setVisibility({});
