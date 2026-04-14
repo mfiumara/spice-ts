@@ -743,44 +743,29 @@ function App() {
 
         {/* Panels */}
         <div className="panels">
-          {/* Editable netlist panel */}
-          {editedNetlist !== undefined && (
+          {/* Netlist panel */}
+          {diagramNetlist && (
             <div className="panel">
               <div className="panel-header">
                 <span className="netlist-panel-label">Netlist</span>
                 <span className="netlist-panel-name">{circuit.name}</span>
                 {circuit.tag && <span className="panel-badge">{circuit.tag}</span>}
-                <button
-                  className="toolbar-btn"
-                  style={{ marginLeft: 'auto', padding: '3px 10px', fontSize: '10px' }}
-                  onClick={() => {
-                    const nl = activeView === 'dc' ? circuit.dcNetlist : activeView === 'ac' ? circuit.acNetlist : circuit.tranNetlist;
-                    setEditedNetlist((nl ?? '').trim());
-                  }}
-                  title="Reset to default netlist"
-                >Reset</button>
               </div>
               <div className="netlist-panel-body">
-                <textarea
-                  className="netlist-editor"
-                  value={editedNetlist}
-                  onChange={e => setEditedNetlist(e.target.value)}
-                  spellCheck={false}
-                  disabled={running}
-                />
+                <NetlistView netlist={diagramNetlist} />
               </div>
             </div>
           )}
 
           {/* Schematic panel */}
-          {editedNetlist && (
+          {diagramNetlist && (
             <div className="panel">
               <div className="panel-header">
                 <h3>Schematic</h3>
               </div>
               <div className="panel-body">
                 <SchematicView
-                  netlist={editedNetlist}
+                  netlist={diagramNetlist}
                   theme={vaultTecTheme ?? 'dark'}
                   height={300}
                 />

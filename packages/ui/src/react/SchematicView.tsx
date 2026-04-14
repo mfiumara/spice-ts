@@ -97,7 +97,7 @@ export function SchematicView({ netlist, theme, width = '100%', height = 400, on
             {wire.segments.map((seg, si) => (
               <line key={si}
                 x1={seg.x1} y1={seg.y1} x2={seg.x2} y2={seg.y2}
-                stroke={stroke} strokeWidth={1} opacity={0.5}
+                stroke={stroke} strokeWidth={1.5} opacity={0.7}
               />
             ))}
           </g>
