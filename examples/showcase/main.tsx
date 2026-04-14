@@ -82,14 +82,41 @@ E1 out 0 n2 out 1e6
   {
     id: 'cmos-inverter', name: 'CMOS Inverter', desc: 'DC transfer curve',
     icon: '\u23DA', group: 'Non-Linear', tag: '.dc', signals: ['out'],
+    xLabel: 'Vin (V)',
+    dcNetlist: `
+* CMOS inverter DC transfer curve — BSIM3v3 (Level 49)
+VDD vdd 0 DC 1.8
+VIN in 0 DC 0
+.model NMOD NMOS (LEVEL=49 VTH0=0.5 U0=400 TOX=4n)
+.model PMOD PMOS (LEVEL=49 VTH0=-0.5 U0=150 TOX=4n)
+MP out in vdd vdd PMOD W=20u L=0.18u
+MN out in 0   0  NMOD W=10u L=0.18u
+.dc VIN 0 1.8 0.01`,
   },
   {
     id: 'rectifier', name: 'Half-Wave Rectifier', desc: 'Diode clipping',
-    icon: '\u23DA', group: 'Non-Linear', tag: '.tran', signals: ['out'],
+    icon: '\u23DA', group: 'Non-Linear', tag: '.tran', signals: ['in', 'out'],
+    tranNetlist: `
+* Half-wave rectifier — sine in, rectified out
+V1 in 0 SIN(0 5 1k)
+Rs in anode 10
+D1 anode out DMOD
+Rl out 0 10k
+Cl out 0 10u
+.model DMOD D(IS=1e-14 N=1)
+.tran 1u 4m`,
   },
   {
     id: 'cs-amp', name: 'Common-Source Amp', desc: 'MOSFET gain stage',
     icon: '\u23DA', group: 'Non-Linear', tag: '.ac', signals: ['out'],
+    acNetlist: `
+* NMOS common-source amplifier — Bode plot
+VDD vdd 0 DC 5
+VGS in 0 DC 1.5 AC 1
+.model NMOD NMOS(VTO=1 KP=1e-4)
+M1 out in 0 0 NMOD W=100u L=1u
+RD vdd out 10k
+.ac dec 100 1 10Meg`,
   },
   {
     id: 'inv-amp', name: 'Inverting Amplifier', desc: '.step Rf: 1k\u20131 00k',
