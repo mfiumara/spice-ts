@@ -785,7 +785,6 @@ function App() {
                       theme={vaultTecTheme ?? 'dark'}
                       colors={vaultTecColors(tranData, circuit.signals)}
                       height={280}
-                      xDomain={[0, 10e-3]}
                       onCursorMove={setTranCursor}
                       signalVisibility={visibility}
                     />
