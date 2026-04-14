@@ -113,6 +113,11 @@ export class DCSweepRenderer {
     return this.signalStates;
   }
 
+  /** Update theme. */
+  setTheme(theme: ThemeConfig): void {
+    this.theme = theme;
+  }
+
   setCursorPixelX(pixelX: number | null): void {
     if (pixelX === null) {
       this.cursorState = null;
@@ -185,7 +190,6 @@ export class DCSweepRenderer {
   render(): void {
     if (this.destroyed || !this.ctx) return;
     const ctx = this.ctx;
-    const w = this.canvas.width / this.dpr;
     const h = this.canvas.height / this.dpr;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     ctx.save();
