@@ -325,6 +325,52 @@ const FileIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor
 const GearIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
 const HelpIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>;
 
+// ─── Netlist syntax highlighting ────────────────────────────────────
+
+const DEVICE_PREFIXES = ['V','R','C','L','M','D','E','F','G','H','Q','I','B'];
+
+function NetlistLine({ line }: { line: string }) {
+  const trimmed = line.trim();
+  if (!trimmed) return <div style={{ height: '1em' }} />;
+  if (trimmed.startsWith('*')) {
+    return <div><span className="nl-comment">{trimmed}</span></div>;
+  }
+  const tokens = trimmed.split(/\s+/);
+  const first = tokens[0];
+  const upper = first.toUpperCase();
+
+  if (upper === '.STEP' || upper === '.MODEL') {
+    return <div><span className="nl-directive">{trimmed}</span></div>;
+  }
+  if (upper.startsWith('.')) {
+    return <div><span className="nl-keyword">{trimmed}</span></div>;
+  }
+  if (DEVICE_PREFIXES.some(p => upper.startsWith(p))) {
+    const ref = tokens[0];
+    const rest = tokens.slice(1);
+    if (rest.length === 0) return <div><span className="nl-ref">{ref}</span></div>;
+    const value = rest[rest.length - 1];
+    const nodes = rest.slice(0, -1);
+    return (
+      <div>
+        <span className="nl-ref">{ref}</span>{' '}
+        <span className="nl-node">{nodes.join(' ')}</span>{' '}
+        <span className="nl-value">{value}</span>
+      </div>
+    );
+  }
+  return <div><span className="nl-muted">{trimmed}</span></div>;
+}
+
+function NetlistView({ netlist }: { netlist: string }) {
+  const lines = netlist.split('\n');
+  return (
+    <pre className="netlist-view">
+      {lines.map((line, i) => <NetlistLine key={i} line={line} />)}
+    </pre>
+  );
+}
+
 // ─── Konami code hook ───────────────────────────────────────────────
 
 const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
@@ -356,6 +402,7 @@ function App() {
   const [activeView, setActiveView] = useState<'tran' | 'ac' | 'dc'>('tran');
   const [searchQuery, setSearchQuery] = useState('');
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [diagramOpen, setDiagramOpen] = useState(true);
 
   useKonamiCode(useCallback(() => setVaultTec(prev => !prev), []));
 
@@ -541,6 +588,9 @@ function App() {
   }, []);
 
   const hasNetlist = !!(circuit.tranNetlist || circuit.acNetlist || circuit.dcNetlist);
+  const diagramNetlist = activeView === 'dc' ? circuit.dcNetlist
+    : activeView === 'ac' ? circuit.acNetlist
+    : circuit.tranNetlist;
 
   return (
     <div className="app">
@@ -608,6 +658,29 @@ function App() {
           ))}
           {filteredGroups.size === 0 && (
             <div className="sidebar-empty">No circuits match your search</div>
+          )}
+        </div>
+        {/* ── Circuit diagram ── */}
+        <div className="diagram-section">
+          <button
+            className="diagram-toggle"
+            onClick={() => setDiagramOpen(prev => !prev)}
+          >
+            <svg
+              className={`chevron ${diagramOpen ? 'open' : ''}`}
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+            >
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+            <span>Circuit</span>
+          </button>
+          {diagramOpen && diagramNetlist && (
+            <div className="diagram-body">
+              <NetlistView netlist={diagramNetlist} />
+            </div>
+          )}
+          {diagramOpen && !diagramNetlist && (
+            <div className="diagram-body diagram-empty">Not yet implemented</div>
           )}
         </div>
       </aside>

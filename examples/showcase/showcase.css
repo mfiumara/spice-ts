@@ -594,3 +594,79 @@ body {
 .vault-tec-enter {
   animation: vault-tec-activate 0.6s ease-out;
 }
+
+/* ─── Circuit diagram sidebar panel ─── */
+
+.diagram-section {
+  border-top: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.diagram-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: left;
+}
+
+.diagram-toggle:hover {
+  color: var(--text-secondary);
+}
+
+.diagram-toggle .chevron {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.15s;
+  transform: rotate(0deg);
+  flex-shrink: 0;
+}
+
+.diagram-toggle .chevron.open {
+  transform: rotate(90deg);
+}
+
+.diagram-body {
+  padding: 0 8px 8px;
+  overflow-y: auto;
+  max-height: 240px;
+}
+
+.diagram-empty {
+  color: var(--text-muted);
+  font-size: 12px;
+  padding: 8px 4px;
+}
+
+/* ─── Netlist view syntax highlighting ─── */
+
+.netlist-view {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  line-height: 1.65;
+  margin: 0;
+  padding: 8px;
+  background: #0d0d0d;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.nl-comment  { color: #555; }
+.nl-ref      { color: #7ec8e3; }
+.nl-node     { color: #aaaaaa; }
+.nl-value    { color: #f0b97a; }
+.nl-keyword  { color: #aaaaaa; }
+.nl-directive{ color: #c8a3e3; }
+.nl-muted    { color: #888; }
