@@ -674,13 +674,12 @@ function App() {
             </svg>
             <span>Circuit</span>
           </button>
-          {diagramOpen && diagramNetlist && (
+          {diagramOpen && (
             <div className="diagram-body">
-              <NetlistView netlist={diagramNetlist} />
+              {diagramNetlist
+                ? <NetlistView netlist={diagramNetlist} />
+                : <div className="diagram-empty">Not yet implemented</div>}
             </div>
-          )}
-          {diagramOpen && !diagramNetlist && (
-            <div className="diagram-body diagram-empty">Not yet implemented</div>
           )}
         </div>
       </aside>
