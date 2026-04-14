@@ -231,7 +231,7 @@ class StepTransientAccumulator {
       for (const name of this.signalNames) signals.set(name, []);
       this.steps.set(event.stepIndex, {
         time: [], signals,
-        label: `${event.paramName}=${formatSI(event.paramValue)}\u03A9`,
+        label: event.paramName ? `${event.paramName}=${formatSI(event.paramValue)}\u03A9` : '',
       });
     }
     const step = this.steps.get(event.stepIndex)!;
@@ -264,7 +264,7 @@ class StepACAccumulator {
       for (const name of this.signalNames) { magnitudes.set(name, []); phases.set(name, []); }
       this.steps.set(event.stepIndex, {
         frequencies: [], magnitudes, phases,
-        label: `${event.paramName}=${formatSI(event.paramValue)}\u03A9`,
+        label: event.paramName ? `${event.paramName}=${formatSI(event.paramValue)}\u03A9` : '',
       });
     }
     const step = this.steps.get(event.stepIndex)!;
@@ -309,7 +309,7 @@ function parseTranParams(netlist: string): { stop: string; step: string } {
 }
 
 function injectTranParams(netlist: string, step: string, stop: string): string {
-  return netlist.replace(/\.tran\s+\S+\s+\S+[^\n]*/i, `.tran ${step} ${stop}`);
+  return netlist.replace(/\.tran\s+\S+\s+\S+([^\n]*)/i, `.tran ${step} ${stop}$1`);
 }
 
 function buildLegendSignals(datasets: { label: string }[], signals: string[], visibility: Record<string, boolean>, palette?: string[]): LegendSignal[] {
@@ -415,6 +415,7 @@ function App() {
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [tranStop, setTranStop] = useState(() => parseTranParams(CIRCUITS[0].tranNetlist!).stop);
   const [tranStep, setTranStep] = useState(() => parseTranParams(CIRCUITS[0].tranNetlist!).step);
+  const [editedNetlist, setEditedNetlist] = useState<string>(() => (CIRCUITS[0].tranNetlist ?? '').trim());
   useKonamiCode(useCallback(() => setVaultTec(prev => !prev), []));
 
   // Apply vault-tec class to body for scanlines/vignette pseudo-elements
@@ -475,7 +476,7 @@ function App() {
   const handleRun = useCallback(() => {
     // DC sweep path — synchronous simulate(), no streaming
     if (activeView === 'dc') {
-      if (!circuit.dcNetlist) return;
+      if (!editedNetlist) return;
       setDcData(null);
       setError(null);
       setRunning(true);
@@ -483,7 +484,7 @@ function App() {
       setVisibility({});
       stopRef.current = false;
       const t0 = performance.now();
-      simulate(circuit.dcNetlist)
+      simulate(editedNetlist)
         .then(result => {
           if (stopRef.current) return;
           if (!result.dcSweep) { setError('No DC sweep result'); setRunning(false); return; }
@@ -498,10 +499,10 @@ function App() {
       return;
     }
 
+    if (!editedNetlist) return;
     const netlist = activeView === 'tran'
-      ? injectTranParams(circuit.tranNetlist!, tranStep, tranStop)
-      : circuit.acNetlist;
-    if (!netlist) return;
+      ? injectTranParams(editedNetlist, tranStep, tranStop)
+      : editedNetlist;
 
     if (activeView === 'tran') setTranData(null); else setAcData(null);
     setError(null);
@@ -557,7 +558,7 @@ function App() {
       setError(err instanceof Error ? err.message : String(err));
       setRunning(false);
     });
-  }, [circuit, activeView, tranStop, tranStep]);
+  }, [circuit, activeView, tranStop, tranStep, editedNetlist]);
 
   const handleStop = useCallback(() => { stopRef.current = true; }, []);
 
@@ -567,13 +568,16 @@ function App() {
 
   const handleSelectCircuit = useCallback((id: string) => {
     const c = CIRCUITS.find(x => x.id === id)!;
+    const defaultView = c.tranNetlist ? 'tran' : c.acNetlist ? 'ac' : 'dc';
     setActiveCircuit(id);
-    setActiveView(c.tranNetlist ? 'tran' : c.acNetlist ? 'ac' : 'dc');
+    setActiveView(defaultView);
     if (c.tranNetlist) {
       const p = parseTranParams(c.tranNetlist);
       setTranStop(p.stop);
       setTranStep(p.step);
     }
+    const nl = defaultView === 'dc' ? c.dcNetlist : defaultView === 'ac' ? c.acNetlist : c.tranNetlist;
+    setEditedNetlist((nl ?? '').trim());
     setTranData(null);
     setAcData(null);
     setDcData(null);
@@ -694,19 +698,19 @@ function App() {
           {circuit.tranNetlist && (
             <button
               className={`toolbar-btn ${activeView === 'tran' ? 'active' : ''}`}
-              onClick={() => setActiveView('tran')}
+              onClick={() => { setActiveView('tran'); setEditedNetlist((circuit.tranNetlist ?? '').trim()); }}
             >Transient</button>
           )}
           {circuit.acNetlist && (
             <button
               className={`toolbar-btn ${activeView === 'ac' ? 'active' : ''}`}
-              onClick={() => setActiveView('ac')}
+              onClick={() => { setActiveView('ac'); setEditedNetlist((circuit.acNetlist ?? '').trim()); }}
             >AC Sweep</button>
           )}
           {circuit.dcNetlist && (
             <button
               className={`toolbar-btn ${activeView === 'dc' ? 'active' : ''}`}
-              onClick={() => setActiveView('dc')}
+              onClick={() => { setActiveView('dc'); setEditedNetlist((circuit.dcNetlist ?? '').trim()); }}
             >DC Sweep</button>
           )}
           {activeView === 'tran' && circuit.tranNetlist && (
@@ -739,16 +743,31 @@ function App() {
 
         {/* Panels */}
         <div className="panels">
-          {/* Netlist panel */}
-          {diagramNetlist && (
+          {/* Editable netlist panel */}
+          {editedNetlist !== undefined && (
             <div className="panel">
               <div className="panel-header">
                 <span className="netlist-panel-label">Netlist</span>
                 <span className="netlist-panel-name">{circuit.name}</span>
                 {circuit.tag && <span className="panel-badge">{circuit.tag}</span>}
+                <button
+                  className="toolbar-btn"
+                  style={{ marginLeft: 'auto', padding: '3px 10px', fontSize: '10px' }}
+                  onClick={() => {
+                    const nl = activeView === 'dc' ? circuit.dcNetlist : activeView === 'ac' ? circuit.acNetlist : circuit.tranNetlist;
+                    setEditedNetlist((nl ?? '').trim());
+                  }}
+                  title="Reset to default netlist"
+                >Reset</button>
               </div>
               <div className="netlist-panel-body">
-                <NetlistView netlist={diagramNetlist} />
+                <textarea
+                  className="netlist-editor"
+                  value={editedNetlist}
+                  onChange={e => setEditedNetlist(e.target.value)}
+                  spellCheck={false}
+                  disabled={running}
+                />
               </div>
             </div>
           )}

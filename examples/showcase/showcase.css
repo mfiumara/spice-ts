@@ -647,6 +647,30 @@ body {
   padding: 0;
 }
 
+.netlist-editor {
+  width: 100%;
+  min-height: 120px;
+  max-height: 240px;
+  resize: vertical;
+  background: #0d0d0d;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  color: var(--phosphor);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.7;
+  padding: 8px 12px;
+  outline: none;
+  tab-size: 2;
+  transition: border-color 0.15s;
+}
+.netlist-editor:focus {
+  border-color: var(--phosphor-dim);
+  box-shadow: 0 0 0 2px var(--phosphor-glow);
+}
+.netlist-editor:disabled { opacity: 0.4; cursor: not-allowed; }
+.netlist-editor::placeholder { color: var(--text-muted); }
+
 /* ─── Netlist view syntax highlighting ─── */
 
 .netlist-view {
