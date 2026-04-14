@@ -33,7 +33,7 @@ export function DCSweepPlot({
   theme,
   width = '100%',
   height = 300,
-  xDomain: _xDomain,
+  xDomain: _xDomain, // reserved for future use — not yet forwarded to renderer
   onCursorMove,
   signalVisibility,
 }: DCSweepPlotProps) {
@@ -71,11 +71,11 @@ export function DCSweepPlot({
             renderer.setCursorPixelX(pixelX);
             renderer.render();
           },
-          onZoom: (pixelX, factor) => {
+          onZoom: (pixelX, factor, _shiftKey) => {
             renderer.zoomAt(pixelX, factor);
             renderer.render();
           },
-          onPan: (dx) => {
+          onPan: (dx, _dy) => {
             renderer.pan(dx, 0);
             renderer.render();
           },
