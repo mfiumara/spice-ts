@@ -14,17 +14,23 @@ function componentNets(comp: IRComponent): string[] {
  * Get the pin index to use for vertical rail alignment.
  * Multi-terminal devices align by their input pin (gate, base, +in).
  * Two-terminal devices align by the first non-ground pin.
+ * Falls back to any non-ground pin if the preferred pin is ground.
  */
 function alignmentPinIndex(comp: IRComponent, nets: string[]): number {
+  // Preferred input pin indices per device type
+  const preferred: number[] = [];
   switch (comp.type) {
-    case 'M': return 1; // gate (IR port order: drain=0, gate=1, source=2)
-    case 'Q': return 1; // base (IR port order: collector=0, base=1, emitter=2)
-    case 'E': case 'G': return 0; // ctrlP / +in (IR port order: ctrlP=0, ctrlN=1, outP=2, outN=3)
-    default: {
-      const idx = nets.findIndex(n => n !== '0');
-      return idx >= 0 ? idx : 0;
-    }
+    case 'M': preferred.push(1); break; // gate
+    case 'Q': preferred.push(1); break; // base
+    case 'E': case 'G': preferred.push(0, 1); break; // ctrlP, ctrlN
   }
+
+  // Try preferred pins first, fall back to any non-ground
+  for (const idx of preferred) {
+    if (idx < nets.length && nets[idx] !== '0') return idx;
+  }
+  const fallback = nets.findIndex(n => n !== '0');
+  return fallback >= 0 ? fallback : 0;
 }
 
 /**
@@ -76,13 +82,21 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
   const placed = new Map<string, { col: number; row: number }>();
   const visited = new Set<string>();
 
+  // Build a map from each non-ground net to the source row that owns it,
+  // so non-source components can be placed on the same row as their source.
+  const netToSourceRow = new Map<string, number>();
   sources.forEach((s, i) => {
     placed.set(s.id, { col: 0, row: i });
     visited.add(s.id);
+    for (const n of componentNets(s)) {
+      if (n !== '0' && !netToSourceRow.has(n)) netToSourceRow.set(n, i);
+    }
   });
 
   let frontier = [...sources];
   let col = 1;
+  let nextFreeRow = sources.length; // for components that don't match any source row
+
   while (frontier.length > 0 && visited.size < circuit.components.length) {
     const nextFrontier: typeof frontier = [];
     const frontierNets = new Set<string>();
@@ -92,31 +106,59 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
       }
     }
 
-    let row = 0;
+    // Track which rows are taken in this column
+    const rowsTaken = new Set<number>();
 
-    // Pass 1: place components whose input nets match frontier (signal flow priority)
+    // Place components that match the frontier, assigning rows based on
+    // which source they connect to (so related components share a row).
+    const toPlace: { comp: IRComponent; inputMatch: boolean }[] = [];
+
     for (const comp of others) {
       if (visited.has(comp.id)) continue;
       const inNets = inputNets(comp);
+      const allNets = componentNets(comp);
       const matchesInput = [...inNets].some(n => frontierNets.has(n));
+      const sharesAny = allNets.some(n => n !== '0' && frontierNets.has(n));
       if (matchesInput) {
-        placed.set(comp.id, { col, row });
-        visited.add(comp.id);
-        nextFrontier.push(comp);
-        row++;
+        toPlace.push({ comp, inputMatch: true });
+      } else if (sharesAny) {
+        toPlace.push({ comp, inputMatch: false });
       }
     }
 
-    // Pass 2: place remaining components that share any net
-    for (const comp of others) {
-      if (visited.has(comp.id)) continue;
-      const nets = componentNets(comp);
-      const sharesNet = nets.some(n => n !== '0' && frontierNets.has(n));
-      if (sharesNet) {
-        placed.set(comp.id, { col, row });
-        visited.add(comp.id);
-        nextFrontier.push(comp);
-        row++;
+    // Sort: input-match first (signal flow priority)
+    toPlace.sort((a, b) => (b.inputMatch ? 1 : 0) - (a.inputMatch ? 1 : 0));
+
+    for (const { comp } of toPlace) {
+      // Find the best row: prefer the row of a source this component connects to
+      const allNets = componentNets(comp);
+      let bestRow = -1;
+      for (const n of allNets) {
+        if (n !== '0' && netToSourceRow.has(n)) {
+          const srcRow = netToSourceRow.get(n)!;
+          if (!rowsTaken.has(srcRow)) {
+            bestRow = srcRow;
+            break;
+          }
+        }
+      }
+      if (bestRow < 0) {
+        // No source row available — use next free row
+        while (rowsTaken.has(nextFreeRow)) nextFreeRow++;
+        bestRow = nextFreeRow;
+        nextFreeRow++;
+      }
+
+      placed.set(comp.id, { col, row: bestRow });
+      visited.add(comp.id);
+      rowsTaken.add(bestRow);
+      nextFrontier.push(comp);
+
+      // Propagate: this component's nets also belong to its row
+      for (const n of allNets) {
+        if (n !== '0' && !netToSourceRow.has(n)) {
+          netToSourceRow.set(n, bestRow);
+        }
       }
     }
 
