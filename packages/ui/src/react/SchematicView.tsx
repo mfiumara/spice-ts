@@ -146,15 +146,31 @@ export function SchematicView({ netlist, theme, width = '100%', height = 400, on
           );
         })}
 
-        {/* Ground symbols */}
+        {/* Ground symbols — side pins (left/right edge) get a downward stub first */}
         {layout.components.flatMap((pc, ci) =>
-          pc.pins.filter(p => p.net === '0').map((p, gi) => {
+          pc.pins.flatMap((p, pi) => {
+            if (p.net !== '0') return [];
             const gnd = groundSymbol();
-            return (
-              <g key={`gnd-${ci}-${gi}`} transform={`translate(${p.x - gnd.width / 2},${p.y})`}>
+            const compSym = getSymbol(pc.component.type, pc.component.displayValue);
+            const symPin = pi < compSym.pins.length ? compSym.pins[pi] : null;
+            const isSidePin = symPin !== null && (symPin.dx <= 1 || symPin.dx >= compSym.width - 1);
+            const stubLen = GRID * 1.5;
+            if (isSidePin) {
+              return [(
+                <g key={`gnd-${ci}-${pi}`}>
+                  <line x1={p.x} y1={p.y} x2={p.x} y2={p.y + stubLen}
+                    stroke={stroke} strokeWidth={1.5} strokeLinecap="round" />
+                  <g transform={`translate(${p.x - gnd.width / 2},${p.y + stubLen})`}>
+                    {gnd.elements.map((el, i) => renderSvgElement(el, i, stroke))}
+                  </g>
+                </g>
+              )];
+            }
+            return [(
+              <g key={`gnd-${ci}-${pi}`} transform={`translate(${p.x - gnd.width / 2},${p.y})`}>
                 {gnd.elements.map((el, i) => renderSvgElement(el, i, stroke))}
               </g>
-            );
+            )];
           })
         )}
       </svg>

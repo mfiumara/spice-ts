@@ -24,13 +24,13 @@ export interface SymbolDef {
 const PIN_R = 2.5;
 
 function resistorSymbol(): SymbolDef {
-  const w = GRID * 3, h = GRID;
+  const w = GRID * 2, h = GRID;
   const cy = h / 2;
-  const lead = GRID * 0.5;
+  const lead = GRID * 0.3;
   const bodyW = w - lead * 2;
-  const peaks = 6;
+  const peaks = 4;
   const segW = bodyW / peaks;
-  const amp = h * 0.35;
+  const amp = h * 0.38;
 
   let d = `M0,${cy} L${lead},${cy}`;
   for (let i = 0; i < peaks; i++) {
@@ -163,30 +163,27 @@ function diodeSymbol(): SymbolDef {
 }
 
 function mosfetSymbol(): SymbolDef {
-  const w = GRID * 2, h = GRID * 2;
-  const gateX = w * 0.3;
-  const bodyX = w * 0.45;
-  const termX = w * 0.7;
+  const w = GRID * 2.5, h = GRID * 2.5;
   const cy = h / 2;
+  const gx = w * 0.28;   // gate vertical line x
+  const bx = w * 0.44;   // body (channel) line x — gap = gate oxide
+  const gy0 = h * 0.28;  // drain y
+  const gy1 = h * 0.72;  // source y
 
   return {
     elements: [
-      { tag: 'line', attrs: { x1: 0, y1: cy, x2: gateX, y2: cy } },
-      { tag: 'line', attrs: { x1: bodyX, y1: h * 0.2, x2: bodyX, y2: h * 0.8 } },
-      { tag: 'line', attrs: { x1: gateX, y1: h * 0.25, x2: gateX, y2: h * 0.75 } },
-      { tag: 'line', attrs: { x1: bodyX, y1: h * 0.3, x2: termX, y2: h * 0.3 } },
-      { tag: 'line', attrs: { x1: bodyX, y1: cy, x2: termX, y2: cy } },
-      { tag: 'line', attrs: { x1: bodyX, y1: h * 0.7, x2: termX, y2: h * 0.7 } },
-      { tag: 'line', attrs: { x1: termX, y1: h * 0.3, x2: termX, y2: 0 } },
-      { tag: 'line', attrs: { x1: termX, y1: 0, x2: w, y2: 0 } },
-      { tag: 'line', attrs: { x1: termX, y1: h * 0.7, x2: termX, y2: h } },
-      { tag: 'line', attrs: { x1: termX, y1: h, x2: w, y2: h } },
-      { tag: 'polyline', attrs: { points: `${bodyX + 2},${cy - 3} ${termX},${cy} ${bodyX + 2},${cy + 3}`, fill: 'none' } },
+      { tag: 'line', attrs: { x1: 0, y1: cy, x2: gx, y2: cy } },               // gate lead
+      { tag: 'line', attrs: { x1: gx, y1: gy0, x2: gx, y2: gy1 } },             // gate vline
+      { tag: 'line', attrs: { x1: bx, y1: gy0, x2: bx, y2: gy1 } },             // body line
+      { tag: 'line', attrs: { x1: bx, y1: gy0, x2: w, y2: gy0 } },               // drain tap
+      { tag: 'line', attrs: { x1: bx, y1: gy1, x2: w, y2: gy1 } },               // source tap
+      // arrow at source pointing toward body (NMOS style)
+      { tag: 'polyline', attrs: { points: `${bx + 6},${gy1 - 4} ${bx},${gy1} ${bx + 6},${gy1 + 4}`, fill: 'none' } },
     ],
     pins: [
-      { dx: 0, dy: cy },
-      { dx: w, dy: 0 },
-      { dx: w, dy: h },
+      { dx: 0, dy: cy },    // gate  (left centre)
+      { dx: w, dy: gy0 },   // drain (right upper)
+      { dx: w, dy: gy1 },   // source (right lower)
     ],
     width: w, height: h,
   };
