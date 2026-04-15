@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { buildSchematicGraph } from '../schematic/graph.js';
+import type { CircuitIR } from '@spice-ts/core';
 import { layoutSchematic } from '../schematic/layout.js';
 import { getSymbol, groundSymbol, GRID } from '../schematic/symbols.js';
 import type { SvgElement } from '../schematic/symbols.js';
@@ -8,8 +8,8 @@ import type { ThemeConfig } from '../core/types.js';
 import { resolveTheme } from '../core/theme.js';
 
 export interface SchematicViewProps {
-  /** SPICE netlist string to render */
-  netlist: string;
+  /** CircuitIR to render as a schematic */
+  circuit: CircuitIR;
   /** Theme preset or custom config */
   theme?: 'dark' | 'light' | ThemeConfig;
   /** Width of the container */
@@ -45,7 +45,7 @@ function renderSvgElement(el: SvgElement, i: number, stroke: string) {
   }
 }
 
-export function SchematicView({ netlist, theme, width = '100%', height = 400, onNodeClick }: SchematicViewProps) {
+export function SchematicView({ circuit, theme, width = '100%', height = 400, onNodeClick }: SchematicViewProps) {
   const resolvedTheme = resolveTheme(theme ?? 'dark');
   const stroke = resolvedTheme.text;
   const [hovered, setHovered] = useState<PlacedComponent | null>(null);
@@ -53,12 +53,11 @@ export function SchematicView({ netlist, theme, width = '100%', height = 400, on
 
   const { layout, error } = useMemo(() => {
     try {
-      const graph = buildSchematicGraph(netlist);
-      return { layout: layoutSchematic(graph), error: null };
+      return { layout: layoutSchematic(circuit), error: null };
     } catch (e) {
-      return { layout: null, error: e instanceof Error ? e.message : 'Failed to parse netlist' };
+      return { layout: null, error: e instanceof Error ? e.message : 'Failed to layout schematic' };
     }
-  }, [netlist]);
+  }, [circuit]);
 
   if (error) {
     return (
@@ -113,7 +112,7 @@ export function SchematicView({ netlist, theme, width = '100%', height = 400, on
 
         {/* Components */}
         {layout.components.map((pc, ci) => {
-          const sym = getSymbol(pc.component.type, pc.component.displayValue);
+          const sym = getSymbol(pc.component.type, pc.component.displayValue ?? '');
           return (
             <g key={ci} transform={`translate(${pc.x},${pc.y})`}
               style={{ cursor: 'pointer' }}
@@ -151,7 +150,7 @@ export function SchematicView({ netlist, theme, width = '100%', height = 400, on
           pc.pins.flatMap((p, pi) => {
             if (p.net !== '0') return [];
             const gnd = groundSymbol();
-            const compSym = getSymbol(pc.component.type, pc.component.displayValue);
+            const compSym = getSymbol(pc.component.type, pc.component.displayValue ?? '');
             const symPin = pi < compSym.pins.length ? compSym.pins[pi] : null;
             const isSidePin = symPin !== null && (symPin.dx <= 1 || symPin.dx >= compSym.width - 1);
             const stubLen = GRID * 1.5;

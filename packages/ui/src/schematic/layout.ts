@@ -1,51 +1,58 @@
-import type { SchematicGraph, SchematicLayout, PlacedComponent, Wire, Junction, Pin } from './types.js';
+import type { CircuitIR, IRComponent } from '@spice-ts/core';
+import type { SchematicLayout, PlacedComponent, Wire, Junction, Pin } from './types.js';
 import { getSymbol, GRID } from './symbols.js';
 
 const COL_SPACING = GRID * 5;
 const ROW_SPACING = GRID * 4;
 const MARGIN = GRID * 2;
 
+/** Extract net names from an IR component's ports. */
+function componentNets(comp: IRComponent): string[] {
+  return comp.ports.map(p => p.net);
+}
+
 /**
- * Auto-layout a schematic graph using left-to-right signal flow.
+ * Auto-layout a circuit IR using left-to-right signal flow.
  *
  * 1. Sources (V, I) placed in column 0
  * 2. BFS through nets to place remaining components in subsequent columns
  * 3. Wire routing: orthogonal L-shaped segments connecting pins on the same net
  */
-export function layoutSchematic(graph: SchematicGraph): SchematicLayout {
-  if (graph.components.length === 0) {
+export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
+  if (circuit.components.length === 0) {
     return { components: [], wires: [], junctions: [], bounds: { width: 0, height: 0 } };
   }
 
-  const sources = graph.components.filter(c => c.type === 'V' || c.type === 'I');
-  const others = graph.components.filter(c => c.type !== 'V' && c.type !== 'I');
+  const sources = circuit.components.filter(c => c.type === 'V' || c.type === 'I');
+  const others = circuit.components.filter(c => c.type !== 'V' && c.type !== 'I');
 
   // Assign grid positions via BFS from sources
   const placed = new Map<string, { col: number; row: number }>();
   const visited = new Set<string>();
 
   sources.forEach((s, i) => {
-    placed.set(s.name, { col: 0, row: i });
-    visited.add(s.name);
+    placed.set(s.id, { col: 0, row: i });
+    visited.add(s.id);
   });
 
   let frontier = [...sources];
   let col = 1;
-  while (frontier.length > 0 && visited.size < graph.components.length) {
+  while (frontier.length > 0 && visited.size < circuit.components.length) {
     const nextFrontier: typeof frontier = [];
     const frontierNets = new Set<string>();
     for (const comp of frontier) {
-      for (const n of comp.nodes) {
+      for (const n of componentNets(comp)) {
         if (n !== '0') frontierNets.add(n);
       }
     }
     let row = 0;
     for (const comp of others) {
-      if (visited.has(comp.name)) continue;
-      const sharesNet = comp.nodes.some(n => n !== '0' && frontierNets.has(n));
+      if (visited.has(comp.id)) continue;
+      const nets = componentNets(comp);
+      const sharesNet = nets.some(n => n !== '0' && frontierNets.has(n));
       if (sharesNet) {
-        placed.set(comp.name, { col, row });
-        visited.add(comp.name);
+        placed.set(comp.id, { col, row });
+        visited.add(comp.id);
         nextFrontier.push(comp);
         row++;
       }
@@ -55,9 +62,9 @@ export function layoutSchematic(graph: SchematicGraph): SchematicLayout {
   }
 
   // Place any remaining unvisited components
-  for (const comp of graph.components) {
-    if (!visited.has(comp.name)) {
-      placed.set(comp.name, { col, row: 0 });
+  for (const comp of circuit.components) {
+    if (!visited.has(comp.id)) {
+      placed.set(comp.id, { col, row: 0 });
       col++;
     }
   }
@@ -69,14 +76,15 @@ export function layoutSchematic(graph: SchematicGraph): SchematicLayout {
   const SIGNAL_RAIL_Y = MARGIN + GRID * 2; // baseline for row 0 signal pins
   const placedComponents: PlacedComponent[] = [];
 
-  for (const comp of graph.components) {
-    const pos = placed.get(comp.name)!;
-    const symbol = getSymbol(comp.type, comp.displayValue);
+  for (const comp of circuit.components) {
+    const pos = placed.get(comp.id)!;
+    const nets = componentNets(comp);
+    const symbol = getSymbol(comp.type, comp.displayValue ?? '');
 
     const x = MARGIN + pos.col * COL_SPACING;
 
     // Find the first non-ground pin's dy offset — that pin should sit on the rail
-    const signalPinIdx = comp.nodes.findIndex(n => n !== '0');
+    const signalPinIdx = nets.findIndex(n => n !== '0');
     const signalPinDy = signalPinIdx >= 0 && signalPinIdx < symbol.pins.length
       ? symbol.pins[signalPinIdx].dy
       : symbol.pins[0].dy;
@@ -84,7 +92,7 @@ export function layoutSchematic(graph: SchematicGraph): SchematicLayout {
     const y = railY - signalPinDy;
 
     const pins: Pin[] = symbol.pins.map((p, i) => ({
-      net: i < comp.nodes.length ? comp.nodes[i] : '0',
+      net: i < nets.length ? nets[i] : '0',
       x: x + p.dx,
       y: y + p.dy,
     }));
@@ -149,7 +157,7 @@ export function layoutSchematic(graph: SchematicGraph): SchematicLayout {
   // Bounds
   let maxX = 0, maxY = 0;
   for (const pc of placedComponents) {
-    const sym = getSymbol(pc.component.type, pc.component.displayValue);
+    const sym = getSymbol(pc.component.type, pc.component.displayValue ?? '');
     maxX = Math.max(maxX, pc.x + sym.width);
     maxY = Math.max(maxY, pc.y + sym.height);
   }
