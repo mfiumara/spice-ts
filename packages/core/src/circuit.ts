@@ -1,5 +1,7 @@
 import type { DeviceModel } from './devices/device.js';
 import type { AnalysisCommand, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis } from './types.js';
+import type { CircuitIR } from './ir/types.js';
+import { buildIR } from './ir/builder.js';
 import { Resistor } from './devices/resistor.js';
 import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
@@ -423,6 +425,19 @@ export class Circuit {
         points: sweepMode !== 'lin' ? opts.points : undefined,
       });
     }
+  }
+
+  /**
+   * Convert the circuit to an intermediate representation (IR).
+   *
+   * The IR is a flat, serialisable snapshot of every component with named ports,
+   * typed parameters, and human-readable display values. It is suitable for
+   * visualisation, export, or further transformation without running a simulation.
+   *
+   * @returns A {@link CircuitIR} with components and net names
+   */
+  toIR(): CircuitIR {
+    return buildIR(this.descriptors, this._models);
   }
 
   /**
