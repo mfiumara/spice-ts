@@ -79,6 +79,25 @@ describe('layoutSchematic', () => {
     expect(drainPin.x).toBeGreaterThan(gatePin.x);
   });
 
+  it('aligns MOSFET by gate pin (input), not drain', () => {
+    const circuit = makeCircuit(
+      { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 5 }, displayValue: 'DC 5' },
+      { type: 'M', id: 'M1', name: 'M1', ports: [
+        { name: 'drain', net: 'vdd' },
+        { name: 'gate', net: 'in' },
+        { name: 'source', net: '0' },
+      ], params: { modelName: 'NMOD', channelType: 'n' }, displayValue: 'NMOD' },
+    );
+    const layout = layoutSchematic(circuit);
+    const v1 = layout.components.find(c => c.component.id === 'V1')!;
+    const m1 = layout.components.find(c => c.component.id === 'M1')!;
+
+    // V1's positive pin and M1's gate pin should be on the same signal rail (same Y)
+    const v1Signal = v1.pins.find(p => p.net === 'in')!;
+    const m1Gate = m1.pins.find(p => p.net === 'in')!;
+    expect(m1Gate.y).toBe(v1Signal.y);
+  });
+
   it('handles empty circuit', () => {
     const layout = layoutSchematic({ components: [], nets: [] });
     expect(layout.components).toHaveLength(0);
