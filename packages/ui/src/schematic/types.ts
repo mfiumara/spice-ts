@@ -1,21 +1,4 @@
-/** A component extracted from a netlist for schematic rendering. */
-export interface SchematicComponent {
-  /** Device type letter: 'R', 'C', 'L', 'V', 'I', 'D', 'Q', 'M', 'E', 'G', 'F', 'H' */
-  type: string;
-  /** Device instance name, e.g. 'R1', 'M1' */
-  name: string;
-  /** Net names this component connects to, in netlist order */
-  nodes: string[];
-  /** Human-readable value string for display, e.g. '1k', '100n', 'DC 5' */
-  displayValue: string;
-}
-
-/** Abstract circuit graph for schematic rendering. */
-export interface SchematicGraph {
-  components: SchematicComponent[];
-  /** All unique net names (excluding ground '0') */
-  nets: string[];
-}
+import type { IRComponent } from '@spice-ts/core';
 
 /** Pin location on a placed component. */
 export interface Pin {
@@ -29,7 +12,7 @@ export interface Pin {
 
 /** A component with computed position in the schematic. */
 export interface PlacedComponent {
-  component: SchematicComponent;
+  component: IRComponent;
   /** Top-left x on the grid */
   x: number;
   /** Top-left y on the grid */
