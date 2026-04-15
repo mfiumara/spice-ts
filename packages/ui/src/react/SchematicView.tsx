@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import type { CircuitIR } from '@spice-ts/core';
+import type { CircuitIR } from '../schematic/types.js';
 import { layoutSchematic } from '../schematic/layout.js';
 import { getSymbol, groundSymbol, GRID } from '../schematic/symbols.js';
 import type { SvgElement } from '../schematic/symbols.js';

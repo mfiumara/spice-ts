@@ -16,6 +16,7 @@ export { InteractionHandler, type InteractionCallbacks } from './interaction.js'
 export { StreamingController, ACStreamingController } from './streaming.js';
 export { DCSweepRenderer, type DCSweepRendererOptions } from './dc-sweep-renderer.js';
 export type {
+  CircuitIR, IRComponent, IRPort, ComponentType,
   SchematicLayout, PlacedComponent, Pin, Wire, Junction, WireSegment,
 } from '../schematic/types.js';
 export { layoutSchematic } from '../schematic/layout.js';

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { layoutSchematic } from './layout.js';
-import type { CircuitIR } from '@spice-ts/core';
+import type { CircuitIR } from './types.js';
 
 /** Helper to build a simple CircuitIR for testing. */
 function makeCircuit(...components: CircuitIR['components']): CircuitIR {

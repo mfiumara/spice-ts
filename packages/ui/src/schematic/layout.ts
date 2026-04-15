@@ -1,5 +1,4 @@
-import type { CircuitIR, IRComponent } from '@spice-ts/core';
-import type { SchematicLayout, PlacedComponent, Wire, Junction, Pin } from './types.js';
+import type { CircuitIR, IRComponent, SchematicLayout, PlacedComponent, Wire, Junction, Pin } from './types.js';
 import { getSymbol, GRID } from './symbols.js';
 
 const COL_SPACING = GRID * 5;
