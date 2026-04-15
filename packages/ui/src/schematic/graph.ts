@@ -51,21 +51,18 @@ function parseDeviceLine(type: string, name: string, tokens: string[]): Schemati
       return { type, name, nodes: [tokens[1], tokens[2], tokens[3]], displayValue: tokens[4] ?? '' };
 
     case 'M': {
-      let nodes: string[];
-      let modelName: string;
-      if (tokens[5] && !tokens[5].includes('=')) {
-        nodes = [tokens[1], tokens[2], tokens[3], tokens[4]];
-        modelName = tokens[5];
-      } else {
-        nodes = [tokens[1], tokens[2], tokens[3]];
-        modelName = tokens[4] ?? '';
-      }
-      return { type, name, nodes, displayValue: modelName };
+      // SPICE: M name drain gate source [bulk] model [params]
+      // Remap to [gate, drain, source] to match symbol pin order
+      const modelIdx = tokens.findIndex((t, i) => i >= 4 && t && !t.includes('='));
+      const modelName = modelIdx >= 0 ? tokens[modelIdx] : '';
+      return { type, name, nodes: [tokens[2], tokens[1], tokens[3]], displayValue: modelName };
     }
 
     case 'E':
     case 'G':
-      return { type, name, nodes: [tokens[1], tokens[2], tokens[3], tokens[4]], displayValue: tokens[5] ?? '' };
+      // SPICE VCVS: E name n+ n- nc+ nc- gain
+      // Remap to [nc+, nc-, n+] = [+input, -input, output] to match opamp symbol pins
+      return { type, name, nodes: [tokens[3], tokens[4], tokens[1]], displayValue: tokens[5] ?? '' };
 
     case 'F':
     case 'H':

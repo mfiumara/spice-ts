@@ -2,7 +2,7 @@ import type { SchematicGraph, SchematicLayout, PlacedComponent, Wire, Junction, 
 import { getSymbol, GRID } from './symbols.js';
 
 const COL_SPACING = GRID * 5;
-const ROW_SPACING = GRID * 3;
+const ROW_SPACING = GRID * 4;
 const MARGIN = GRID * 2;
 
 /**
