@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { buildSchematicGraph } from '../schematic/graph.js';
 import { layoutSchematic } from '../schematic/layout.js';
 import { getSymbol, groundSymbol, GRID } from '../schematic/symbols.js';
 import type { SvgElement } from '../schematic/symbols.js';
+import type { PlacedComponent } from '../schematic/types.js';
 import type { ThemeConfig } from '../core/types.js';
 import { resolveTheme } from '../core/theme.js';
 
@@ -47,6 +48,8 @@ function renderSvgElement(el: SvgElement, i: number, stroke: string) {
 export function SchematicView({ netlist, theme, width = '100%', height = 400, onNodeClick }: SchematicViewProps) {
   const resolvedTheme = resolveTheme(theme ?? 'dark');
   const stroke = resolvedTheme.text;
+  const [hovered, setHovered] = useState<PlacedComponent | null>(null);
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const { layout, error } = useMemo(() => {
     try {
@@ -83,12 +86,12 @@ export function SchematicView({ netlist, theme, width = '100%', height = 400, on
   const padded = { width: bounds.width + GRID, height: bounds.height + GRID };
 
   return (
-    <div style={{ width, height: typeof height === 'number' ? height : undefined, overflow: 'auto' }}>
+    <div style={{ width, height: typeof height === 'number' ? height : undefined, overflow: 'auto', position: 'relative' }}>
       <svg
         viewBox={`0 0 ${padded.width} ${padded.height}`}
         width="100%"
         height="100%"
-        style={{ display: 'block' }}
+        style={{ display: 'block', opacity: 0.55 }}
         preserveAspectRatio="xMidYMid meet"
       >
         {/* Wires */}
@@ -97,7 +100,7 @@ export function SchematicView({ netlist, theme, width = '100%', height = 400, on
             {wire.segments.map((seg, si) => (
               <line key={si}
                 x1={seg.x1} y1={seg.y1} x2={seg.x2} y2={seg.y2}
-                stroke={stroke} strokeWidth={1.5} opacity={0.7}
+                stroke={stroke} strokeWidth={1.5}
               />
             ))}
           </g>
@@ -112,38 +115,33 @@ export function SchematicView({ netlist, theme, width = '100%', height = 400, on
         {layout.components.map((pc, ci) => {
           const sym = getSymbol(pc.component.type, pc.component.displayValue);
           return (
-            <g key={ci} transform={`translate(${pc.x},${pc.y})`}>
-              {/* Symbol */}
+            <g key={ci} transform={`translate(${pc.x},${pc.y})`}
+              style={{ cursor: 'pointer' }}
+              onMouseEnter={(e) => {
+                setHovered(pc);
+                const rect = (e.currentTarget.ownerSVGElement as SVGSVGElement).getBoundingClientRect();
+                const svgEl = e.currentTarget.ownerSVGElement as SVGSVGElement;
+                const point = svgEl.createSVGPoint();
+                point.x = pc.x + sym.width / 2;
+                point.y = pc.y;
+                const ctm = svgEl.getScreenCTM();
+                if (ctm) {
+                  const screenPt = point.matrixTransform(ctm);
+                  setTooltipPos({ x: screenPt.x - rect.left, y: screenPt.y - rect.top - 8 });
+                }
+              }}
+              onMouseLeave={() => setHovered(null)}
+              onClick={() => {
+                if (onNodeClick) {
+                  const mainPin = pc.pins.find(p => p.net !== '0');
+                  if (mainPin) onNodeClick(mainPin.net);
+                }
+              }}
+            >
+              {/* Invisible hit area for hover/click */}
+              <rect x={-4} y={-4} width={sym.width + 8} height={sym.height + 8}
+                fill="transparent" stroke="none" />
               {sym.elements.map((el, i) => renderSvgElement(el, i, stroke))}
-
-              {/* Pin dots */}
-              {sym.pins.map((p, i) => (
-                <circle key={`p-${i}`} cx={p.dx} cy={p.dy} r={2.5}
-                  fill={stroke} opacity={0.7}
-                  style={{ cursor: onNodeClick ? 'pointer' : undefined }}
-                  onClick={() => onNodeClick?.(pc.pins[i]?.net ?? '')}
-                />
-              ))}
-
-              {/* Component name (designator) label */}
-              <text
-                x={sym.width / 2} y={-6}
-                textAnchor="middle" fill={stroke}
-                fontSize={10} fontFamily="'JetBrains Mono', monospace"
-                opacity={0.8}
-              >
-                {pc.component.name}
-              </text>
-
-              {/* Value label */}
-              <text
-                x={sym.width / 2} y={sym.height + 12}
-                textAnchor="middle" fill={stroke}
-                fontSize={9} fontFamily="'JetBrains Mono', monospace"
-                opacity={0.5}
-              >
-                {pc.component.displayValue}
-              </text>
             </g>
           );
         })}
@@ -160,6 +158,30 @@ export function SchematicView({ netlist, theme, width = '100%', height = 400, on
           })
         )}
       </svg>
+
+      {/* Tooltip */}
+      {hovered && (
+        <div style={{
+          position: 'absolute',
+          left: tooltipPos.x,
+          top: tooltipPos.y,
+          transform: 'translate(-50%, -100%)',
+          background: resolvedTheme.tooltipBg,
+          border: `1px solid ${resolvedTheme.tooltipBorder}`,
+          borderRadius: 4,
+          padding: '4px 8px',
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: 11,
+          color: resolvedTheme.text,
+          pointerEvents: 'none',
+          whiteSpace: 'nowrap',
+        }}>
+          <div style={{ fontWeight: 600 }}>{hovered.component.name}</div>
+          {hovered.component.displayValue && (
+            <div style={{ color: resolvedTheme.textMuted }}>{hovered.component.displayValue}</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

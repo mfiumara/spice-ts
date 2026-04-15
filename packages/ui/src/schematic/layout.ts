@@ -108,7 +108,7 @@ export function layoutSchematic(graph: SchematicGraph): SchematicLayout {
   }
 
   for (const [net, pins] of netPins) {
-    if (pins.length < 2) continue;
+    if (net === '0' || pins.length < 2) continue;
     const segments: { x1: number; y1: number; x2: number; y2: number }[] = [];
 
     const sorted = [...pins].sort((a, b) => a.x - b.x || a.y - b.y);

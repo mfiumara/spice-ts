@@ -634,9 +634,29 @@ body {
   color: var(--text-secondary);
 }
 
+.netlist-schematic-split {
+  display: flex;
+  min-height: 0;
+}
+
+.netlist-schematic-split .netlist-panel-body {
+  flex: 1;
+  min-width: 0;
+  border-right: 1px solid var(--border-subtle);
+}
+
+.schematic-split-pane {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
 .netlist-panel-body {
   overflow-y: auto;
-  max-height: 160px;
+  max-height: 250px;
   padding: 8px 16px;
 }
 

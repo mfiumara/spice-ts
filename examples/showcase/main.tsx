@@ -743,7 +743,17 @@ function App() {
 
         {/* Panels */}
         <div className="panels">
-          {/* Netlist panel */}
+          {error && <div className="panel"><div className="panel-error">Simulation error: {error}</div></div>}
+
+          {!hasNetlist && (
+            <div className="panel">
+              <div className="panel-placeholder">
+                Circuit not yet implemented &mdash; coming soon
+              </div>
+            </div>
+          )}
+
+          {/* Netlist + Schematic panel */}
           {diagramNetlist && (
             <div className="panel">
               <div className="panel-header">
@@ -751,34 +761,17 @@ function App() {
                 <span className="netlist-panel-name">{circuit.name}</span>
                 {circuit.tag && <span className="panel-badge">{circuit.tag}</span>}
               </div>
-              <div className="netlist-panel-body">
-                <NetlistView netlist={diagramNetlist} />
-              </div>
-            </div>
-          )}
-
-          {/* Schematic panel */}
-          {diagramNetlist && (
-            <div className="panel">
-              <div className="panel-header">
-                <h3>Schematic</h3>
-              </div>
-              <div className="panel-body">
-                <SchematicView
-                  netlist={diagramNetlist}
-                  theme={vaultTecTheme ?? 'dark'}
-                  height={300}
-                />
-              </div>
-            </div>
-          )}
-
-          {error && <div className="panel"><div className="panel-error">Simulation error: {error}</div></div>}
-
-          {!hasNetlist && (
-            <div className="panel">
-              <div className="panel-placeholder">
-                Circuit not yet implemented &mdash; coming soon
+              <div className="netlist-schematic-split">
+                <div className="netlist-panel-body">
+                  <NetlistView netlist={diagramNetlist} />
+                </div>
+                <div className="schematic-split-pane">
+                  <SchematicView
+                    netlist={diagramNetlist}
+                    theme={vaultTecTheme ?? 'dark'}
+                    height={250}
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -892,6 +885,7 @@ function App() {
               </div>
             </div>
           )}
+
         </div>
 
         {/* Status Bar */}
