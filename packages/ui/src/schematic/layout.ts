@@ -28,6 +28,36 @@ function alignmentPinIndex(comp: IRComponent, nets: string[]): number {
 }
 
 /**
+ * Get the "input" nets for a component — the nets most meaningful for
+ * signal-flow column placement.
+ */
+function inputNets(comp: IRComponent): Set<string> {
+  const nets = new Set<string>();
+  switch (comp.type) {
+    case 'M':
+      if (comp.ports[1]?.net !== '0') nets.add(comp.ports[1].net);
+      break;
+    case 'Q':
+      if (comp.ports[1]?.net !== '0') nets.add(comp.ports[1].net);
+      break;
+    case 'E': case 'G':
+      if (comp.ports[0]?.net !== '0') nets.add(comp.ports[0].net);
+      if (comp.ports[1]?.net !== '0') nets.add(comp.ports[1].net);
+      break;
+    default:
+      for (const p of comp.ports) {
+        if (p.net !== '0') nets.add(p.net);
+      }
+  }
+  if (nets.size === 0) {
+    for (const p of comp.ports) {
+      if (p.net !== '0') nets.add(p.net);
+    }
+  }
+  return nets;
+}
+
+/**
  * Auto-layout a circuit IR using left-to-right signal flow.
  *
  * 1. Sources (V, I) placed in column 0
@@ -61,7 +91,23 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
         if (n !== '0') frontierNets.add(n);
       }
     }
+
     let row = 0;
+
+    // Pass 1: place components whose input nets match frontier (signal flow priority)
+    for (const comp of others) {
+      if (visited.has(comp.id)) continue;
+      const inNets = inputNets(comp);
+      const matchesInput = [...inNets].some(n => frontierNets.has(n));
+      if (matchesInput) {
+        placed.set(comp.id, { col, row });
+        visited.add(comp.id);
+        nextFrontier.push(comp);
+        row++;
+      }
+    }
+
+    // Pass 2: place remaining components that share any net
     for (const comp of others) {
       if (visited.has(comp.id)) continue;
       const nets = componentNets(comp);
@@ -73,6 +119,7 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
         row++;
       }
     }
+
     frontier = nextFrontier;
     col++;
   }
