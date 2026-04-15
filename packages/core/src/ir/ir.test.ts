@@ -196,10 +196,10 @@ describe('Circuit.toIR()', () => {
     const e1 = ir.components.find(c => c.id === 'E1')!;
     expect(e1.type).toBe('E');
     expect(e1.ports).toEqual([
-      { name: 'outP', net: 'o1' },
-      { name: 'outN', net: 'o2' },
       { name: 'ctrlP', net: 'c1' },
       { name: 'ctrlN', net: 'c2' },
+      { name: 'outP', net: 'o1' },
+      { name: 'outN', net: 'o2' },
     ]);
     expect(e1.params).toEqual({ gain: 10 });
     expect(e1.displayValue).toBe('10');
@@ -208,10 +208,10 @@ describe('Circuit.toIR()', () => {
     const g1 = ir.components.find(c => c.id === 'G1')!;
     expect(g1.type).toBe('G');
     expect(g1.ports).toEqual([
-      { name: 'outP', net: 'o3' },
-      { name: 'outN', net: 'o4' },
       { name: 'ctrlP', net: 'c3' },
       { name: 'ctrlN', net: 'c4' },
+      { name: 'outP', net: 'o3' },
+      { name: 'outN', net: 'o4' },
     ]);
     expect(g1.params).toEqual({ gm: 0.005 });
     expect(g1.displayValue).toBe('0.005');
