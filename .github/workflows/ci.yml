@@ -26,6 +26,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - run: pnpm -C packages/core build
+
       - run: pnpm lint
 
       - run: pnpm -r run test:coverage

@@ -1,4 +1,7 @@
-import type { IRComponent } from '@spice-ts/core';
+import type { CircuitIR, IRComponent } from '@spice-ts/core';
+
+export type { CircuitIR, IRComponent };
+export type { IRPort, ComponentType } from '@spice-ts/core';
 
 /** Pin location on a placed component. */
 export interface Pin {
