@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
-import { simulateStepStream, simulate } from '@spice-ts/core';
+import { simulateStepStream, simulate, parse } from '@spice-ts/core';
 import type { StepStreamEvent, DCSweepResult } from '@spice-ts/core';
 import { TransientPlot, BodePlot, DCSweepPlot, CursorTooltip, Legend, SchematicView } from '@spice-ts/ui/react';
 import type { LegendSignal } from '@spice-ts/ui/react';
@@ -614,6 +614,15 @@ function App() {
     : activeView === 'ac' ? circuit.acNetlist
     : circuit.tranNetlist;
 
+  const diagramCircuit = useMemo(() => {
+    if (!diagramNetlist) return null;
+    try {
+      return parse(diagramNetlist).toIR();
+    } catch {
+      return null;
+    }
+  }, [diagramNetlist]);
+
   return (
     <div className="app">
       {/* ── Top Bar ── */}
@@ -765,13 +774,15 @@ function App() {
                 <div className="netlist-panel-body">
                   <NetlistView netlist={diagramNetlist} />
                 </div>
-                <div className="schematic-split-pane">
-                  <SchematicView
-                    netlist={diagramNetlist}
-                    theme={vaultTecTheme ?? 'dark'}
-                    height={250}
-                  />
-                </div>
+                {diagramCircuit && (
+                  <div className="schematic-split-pane">
+                    <SchematicView
+                      circuit={diagramCircuit}
+                      theme={vaultTecTheme ?? 'dark'}
+                      height={250}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )}
