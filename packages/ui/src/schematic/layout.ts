@@ -178,6 +178,9 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
     }
   }
 
+  const CORRIDOR_OFFSET = GRID * 0.4;
+  const corridorMap = new Map<string, number>();
+
   for (const [net, pins] of netPins) {
     if (net === '0' || pins.length < 2) continue;
     const segments: { x1: number; y1: number; x2: number; y2: number }[] = [];
@@ -189,7 +192,11 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
       if (from.y === to.y) {
         segments.push({ x1: from.x, y1: from.y, x2: to.x, y2: to.y });
       } else {
-        const midX = (from.x + to.x) / 2;
+        const colKey = `${Math.round(from.x / COL_SPACING)}-${Math.round(to.x / COL_SPACING)}`;
+        const offsetIdx = corridorMap.get(colKey) ?? 0;
+        corridorMap.set(colKey, offsetIdx + 1);
+        const midX = (from.x + to.x) / 2 + (offsetIdx - 0.5) * CORRIDOR_OFFSET;
+
         segments.push({ x1: from.x, y1: from.y, x2: midX, y2: from.y });
         segments.push({ x1: midX, y1: from.y, x2: midX, y2: to.y });
         segments.push({ x1: midX, y1: to.y, x2: to.x, y2: to.y });
