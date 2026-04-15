@@ -181,9 +181,9 @@ function mosfetSymbol(): SymbolDef {
       { tag: 'polyline', attrs: { points: `${bx + 6},${gy1 - 4} ${bx},${gy1} ${bx + 6},${gy1 + 4}`, fill: 'none' } },
     ],
     pins: [
-      { dx: 0, dy: cy },    // gate  (left centre)
-      { dx: w, dy: gy0 },   // drain (right upper)
-      { dx: w, dy: gy1 },   // source (right lower)
+      { dx: w, dy: gy0 },   // drain (right upper)  — matches IR port 0
+      { dx: 0, dy: cy },    // gate  (left centre)   — matches IR port 1
+      { dx: w, dy: gy1 },   // source (right lower)  — matches IR port 2
     ],
     width: w, height: h,
   };
@@ -250,6 +250,24 @@ function groundSymbol(): SymbolDef {
   };
 }
 
+function dependentSourceSymbol(): SymbolDef {
+  const size = GRID * 2;
+  const cx = size / 2, cy = size / 2;
+
+  return {
+    elements: [
+      { tag: 'line', attrs: { x1: cx, y1: 0, x2: cx, y2: cy - size * 0.35 } },
+      { tag: 'line', attrs: { x1: cx, y1: cy + size * 0.35, x2: cx, y2: size } },
+      { tag: 'path', attrs: {
+        d: `M${cx},${cy - size * 0.35} L${cx + size * 0.35},${cy} L${cx},${cy + size * 0.35} L${cx - size * 0.35},${cy} Z`,
+        fill: 'none',
+      }},
+    ],
+    pins: [{ dx: cx, dy: 0 }, { dx: cx, dy: size }],
+    width: size, height: size,
+  };
+}
+
 /** Look up the symbol definition for a device type. */
 export function getSymbol(type: string, displayValue?: string): SymbolDef {
   switch (type) {
@@ -265,7 +283,7 @@ export function getSymbol(type: string, displayValue?: string): SymbolDef {
     case 'Q': return bjtSymbol();
     case 'M': return mosfetSymbol();
     case 'E': case 'G': return opampSymbol();
-    case 'F': case 'H': return resistorSymbol();
+    case 'F': case 'H': return dependentSourceSymbol();
     default: return resistorSymbol();
   }
 }
