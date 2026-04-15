@@ -238,15 +238,15 @@ function opampSymbol(): SymbolDef {
 }
 
 function groundSymbol(): SymbolDef {
-  const w = GRID, h = GRID * 0.7;
+  const w = GRID, h = GRID * 0.5;
   const cx = w / 2;
+  const barGap = h / 3;
 
   return {
     elements: [
-      { tag: 'line', attrs: { x1: cx, y1: 0, x2: cx, y2: h * 0.3 } },
-      { tag: 'line', attrs: { x1: cx - w * 0.4, y1: h * 0.3, x2: cx + w * 0.4, y2: h * 0.3 } },
-      { tag: 'line', attrs: { x1: cx - w * 0.25, y1: h * 0.6, x2: cx + w * 0.25, y2: h * 0.6 } },
-      { tag: 'line', attrs: { x1: cx - w * 0.1, y1: h * 0.9, x2: cx + w * 0.1, y2: h * 0.9 } },
+      { tag: 'line', attrs: { x1: cx - w * 0.4, y1: 0, x2: cx + w * 0.4, y2: 0 } },
+      { tag: 'line', attrs: { x1: cx - w * 0.25, y1: barGap, x2: cx + w * 0.25, y2: barGap } },
+      { tag: 'line', attrs: { x1: cx - w * 0.1, y1: barGap * 2, x2: cx + w * 0.1, y2: barGap * 2 } },
     ],
     pins: [{ dx: cx, dy: 0 }],
     width: w, height: h,

@@ -194,7 +194,7 @@ export function BodePlot({
         style={paneHeaderStyle}
         onClick={() => setPhaseVisible((v) => !v)}
       >
-        {phaseVisible ? '\u25be' : '\u25b8'} Phase (\u00b0)
+        {phaseVisible ? '\u25be' : '\u25b8'} Phase (°)
       </div>
       <div style={{ height: phaseVisible ? (typeof paneHeight === 'number' ? `${paneHeight}px` : paneHeight) : 0, overflow: 'hidden' }}>
         <canvas
