@@ -19,6 +19,7 @@ export type {
   StepStreamEvent,
 } from './types.js';
 export type { DeviceModel, StampContext } from './devices/device.js';
+export type { CircuitIR, IRComponent, IRPort, ComponentType } from './ir/types.js';
 export { VCVS } from './devices/vcvs.js';
 export { VCCS } from './devices/vccs.js';
 export { CCVS } from './devices/ccvs.js';
