@@ -53,9 +53,16 @@ function parseDeviceLine(type: string, name: string, tokens: string[]): Schemati
     case 'M': {
       // SPICE: M name drain gate source [bulk] model [params]
       // Remap to [gate, drain, source] to match symbol pin order
-      const modelIdx = tokens.findIndex((t, i) => i >= 4 && t && !t.includes('='));
-      const modelName = modelIdx >= 0 ? tokens[modelIdx] : '';
-      return { type, name, nodes: [tokens[2], tokens[1], tokens[3]], displayValue: modelName };
+      let nodes: string[];
+      let modelName: string;
+      if (tokens[5] && !tokens[5].includes('=')) {
+        nodes = [tokens[2], tokens[1], tokens[3]];
+        modelName = tokens[5];
+      } else {
+        nodes = [tokens[2], tokens[1], tokens[3]];
+        modelName = tokens[4] ?? '';
+      }
+      return { type, name, nodes, displayValue: modelName };
     }
 
     case 'E':
