@@ -32,8 +32,8 @@ const PORT_NAMES: Record<string, readonly string[]> = {
   D: ['anode', 'cathode'],
   Q: ['collector', 'base', 'emitter'],
   // M handled specially (3 or 4 nodes)
-  E: ['outP', 'outN', 'ctrlP', 'ctrlN'],
-  G: ['outP', 'outN', 'ctrlP', 'ctrlN'],
+  E: ['ctrlP', 'ctrlN', 'outP', 'outN'],
+  G: ['ctrlP', 'ctrlN', 'outP', 'outN'],
   H: ['outP', 'outN'],
   F: ['outP', 'outN'],
   // X handled specially (variable port count)
@@ -204,6 +204,18 @@ function buildPorts(desc: DeviceDescriptor): IRPort[] {
 
   if (desc.type === 'X') {
     return desc.nodes.map((net, i) => ({ name: `port${i + 1}`, net }));
+  }
+
+  if (desc.type === 'E' || desc.type === 'G') {
+    // SPICE order: outP outN ctrlP ctrlN
+    // Symbol order: ctrlP ctrlN outP outN (inputs left, output right)
+    const [outP, outN, ctrlP, ctrlN] = desc.nodes;
+    return [
+      { name: 'ctrlP', net: ctrlP },
+      { name: 'ctrlN', net: ctrlN },
+      { name: 'outP', net: outP },
+      { name: 'outN', net: outN },
+    ];
   }
 
   const names = PORT_NAMES[desc.type];
