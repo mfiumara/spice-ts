@@ -60,6 +60,25 @@ describe('layoutSchematic', () => {
     }
   });
 
+  it('maps MOSFET IR ports to correct symbol pins', () => {
+    const circuit = makeCircuit(
+      { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'vdd' }, { name: 'n', net: '0' }], params: { dc: 5 }, displayValue: 'DC 5' },
+      { type: 'M', id: 'M1', name: 'M1', ports: [
+        { name: 'drain', net: 'vdd' },
+        { name: 'gate', net: 'ctrl' },
+        { name: 'source', net: '0' },
+      ], params: { modelName: 'NMOD', channelType: 'n' }, displayValue: 'NMOD' },
+    );
+    const layout = layoutSchematic(circuit);
+    const m1 = layout.components.find(c => c.component.id === 'M1')!;
+
+    // drain pin (port 0) should be at right upper (higher x than gate)
+    // gate pin (port 1) should be at left center (lower x)
+    const drainPin = m1.pins[0]; // drain
+    const gatePin = m1.pins[1];  // gate
+    expect(drainPin.x).toBeGreaterThan(gatePin.x);
+  });
+
   it('handles empty circuit', () => {
     const layout = layoutSchematic({ components: [], nets: [] });
     expect(layout.components).toHaveLength(0);
