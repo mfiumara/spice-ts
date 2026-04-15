@@ -216,19 +216,22 @@ function opampSymbol(): SymbolDef {
   const tipX = w;
   const cy = h / 2;
 
+  // Convention: -in at top, +in at bottom (feedback path stays horizontal)
+  // Pin order matches IR: [ctrlP(+in)=0, ctrlN(-in)=1, outP=2]
+  // but visually -in is upper, +in is lower
   return {
     elements: [
       { tag: 'path', attrs: { d: `M${GRID * 0.5},0 L${tipX},${cy} L${GRID * 0.5},${h} Z`, fill: 'none' } },
       { tag: 'line', attrs: { x1: 0, y1: h * 0.3, x2: GRID * 0.5, y2: h * 0.3 } },
       { tag: 'line', attrs: { x1: 0, y1: h * 0.7, x2: GRID * 0.5, y2: h * 0.7 } },
-      { tag: 'text', attrs: { x: GRID * 0.65, y: h * 0.35, 'font-size': 10 }, text: '+' },
-      { tag: 'text', attrs: { x: GRID * 0.65, y: h * 0.75, 'font-size': 10 }, text: '\u2013' },
+      { tag: 'text', attrs: { x: GRID * 0.65, y: h * 0.35, 'font-size': 10 }, text: '\u2013' },
+      { tag: 'text', attrs: { x: GRID * 0.65, y: h * 0.75, 'font-size': 10 }, text: '+' },
       { tag: 'line', attrs: { x1: tipX, y1: cy, x2: tipX + GRID * 0.5, y2: cy } },
     ],
     pins: [
-      { dx: 0, dy: h * 0.3 },
-      { dx: 0, dy: h * 0.7 },
-      { dx: tipX + GRID * 0.5, dy: cy },
+      { dx: 0, dy: h * 0.7 },             // ctrlP (+in) — bottom
+      { dx: 0, dy: h * 0.3 },             // ctrlN (-in) — top
+      { dx: tipX + GRID * 0.5, dy: cy },  // outP — right
     ],
     width: tipX + GRID * 0.5, height: h,
   };
