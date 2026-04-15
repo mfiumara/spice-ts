@@ -11,6 +11,23 @@ function componentNets(comp: IRComponent): string[] {
 }
 
 /**
+ * Get the pin index to use for vertical rail alignment.
+ * Multi-terminal devices align by their input pin (gate, base, +in).
+ * Two-terminal devices align by the first non-ground pin.
+ */
+function alignmentPinIndex(comp: IRComponent, nets: string[]): number {
+  switch (comp.type) {
+    case 'M': return 1; // gate (IR port order: drain=0, gate=1, source=2)
+    case 'Q': return 1; // base (IR port order: collector=0, base=1, emitter=2)
+    case 'E': case 'G': return 0; // ctrlP / +in (IR port order: ctrlP=0, ctrlN=1, outP=2, outN=3)
+    default: {
+      const idx = nets.findIndex(n => n !== '0');
+      return idx >= 0 ? idx : 0;
+    }
+  }
+}
+
+/**
  * Auto-layout a circuit IR using left-to-right signal flow.
  *
  * 1. Sources (V, I) placed in column 0
@@ -83,9 +100,9 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
     const x = MARGIN + pos.col * COL_SPACING;
 
     // Find the first non-ground pin's dy offset — that pin should sit on the rail
-    const signalPinIdx = nets.findIndex(n => n !== '0');
-    const signalPinDy = signalPinIdx >= 0 && signalPinIdx < symbol.pins.length
-      ? symbol.pins[signalPinIdx].dy
+    const alignIdx = alignmentPinIndex(comp, nets);
+    const signalPinDy = alignIdx < symbol.pins.length
+      ? symbol.pins[alignIdx].dy
       : symbol.pins[0].dy;
     const railY = SIGNAL_RAIL_Y + pos.row * ROW_SPACING;
     const y = railY - signalPinDy;
