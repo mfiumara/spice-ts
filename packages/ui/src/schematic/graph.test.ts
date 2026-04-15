@@ -48,7 +48,7 @@ describe('buildSchematicGraph', () => {
       .op
     `);
     expect(g.components.find(c => c.name === 'M1')).toEqual({
-      type: 'M', name: 'M1', nodes: ['out', 'in', '0', '0'],
+      type: 'M', name: 'M1', nodes: ['in', 'out', '0'],
       displayValue: 'NMOD',
     });
   });
