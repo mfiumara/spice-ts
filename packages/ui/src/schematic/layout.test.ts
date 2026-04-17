@@ -92,4 +92,94 @@ describe('layoutSchematic', () => {
     expect(layout.bounds.width).toBe(0);
     expect(layout.bounds.height).toBe(0);
   });
+
+  describe('buck-boost inverting topology', () => {
+    function makeBuckBoost(): CircuitIR {
+      return makeCircuit(
+        { type: 'V', id: 'Vin',   name: 'Vin',   ports: [{ name: 'p', net: 'in' },   { name: 'n', net: '0' }], params: { dc: 12 }, displayValue: 'DC 12' },
+        { type: 'V', id: 'Vg',    name: 'Vg',    ports: [{ name: 'p', net: 'gate' }, { name: 'n', net: '0' }], params: { dc: 0 },  displayValue: 'PULSE' },
+        { type: 'M', id: 'M1',    name: 'M1',    ports: [
+          { name: 'drain',  net: 'in' },
+          { name: 'gate',   net: 'gate' },
+          { name: 'source', net: 'sw' },
+          { name: 'bulk',   net: '0' },
+        ], params: { modelName: 'NMOD', channelType: 'n' }, displayValue: 'NMOD' },
+        { type: 'L', id: 'L1',    name: 'L1',    ports: [{ name: 'p', net: 'sw' },   { name: 'n', net: 'n1' }],  params: { inductance: 100e-6 }, displayValue: '100u' },
+        { type: 'D', id: 'D1',    name: 'D1',    ports: [{ name: 'p', net: 'n1' },   { name: 'n', net: '0' }],  params: { modelName: 'DMOD' },   displayValue: 'DMOD' },
+        { type: 'C', id: 'C1',    name: 'C1',    ports: [{ name: 'p', net: 'n1' },   { name: 'n', net: 'neg' }], params: { capacitance: 100e-6 }, displayValue: '100u' },
+        { type: 'R', id: 'Rload', name: 'Rload', ports: [{ name: 'p', net: 'neg' },  { name: 'n', net: '0' }],  params: { resistance: 10 },      displayValue: '10' },
+      );
+    }
+
+    function horizontalBusY(layout: ReturnType<typeof layoutSchematic>, net: string): number | undefined {
+      const w = layout.wires.find(w => w.net === net);
+      if (!w) return undefined;
+      const hSeg = w.segments.find(s => s.y1 === s.y2);
+      return hSeg?.y1;
+    }
+
+    it('assigns distinct vertical positions to in, gate, sw nets', () => {
+      const layout = layoutSchematic(makeBuckBoost());
+      const inY = horizontalBusY(layout, 'in');
+      const gateY = horizontalBusY(layout, 'gate');
+      const swY = horizontalBusY(layout, 'sw');
+
+      expect(inY).toBeDefined();
+      expect(gateY).toBeDefined();
+      expect(swY).toBeDefined();
+      const ys = new Set([inY, gateY, swY]);
+      expect(ys.size).toBe(3);
+    });
+
+    it('orders nets by potential: in above sw above n1 (lower Y = higher on screen)', () => {
+      const layout = layoutSchematic(makeBuckBoost());
+      const inY = horizontalBusY(layout, 'in')!;
+      const swY = horizontalBusY(layout, 'sw')!;
+      const n1Y = horizontalBusY(layout, 'n1')!;
+
+      expect(inY).toBeLessThan(swY);
+      expect(swY).toBeLessThan(n1Y);
+    });
+
+    it('places M1 with drain pin above source pin', () => {
+      const layout = layoutSchematic(makeBuckBoost());
+      const m1 = layout.components.find(c => c.component.id === 'M1')!;
+      const drain = m1.pins[0];
+      const source = m1.pins[2];
+      expect(drain.y).toBeLessThan(source.y);
+    });
+
+    it('places no two-terminal component degenerately (endpoints on the same rank)', () => {
+      const layout = layoutSchematic(makeBuckBoost());
+      const twoTerm = ['Vin', 'L1', 'D1', 'C1', 'Rload'];
+      for (const id of twoTerm) {
+        const pc = layout.components.find(c => c.component.id === id)!;
+        const busYs = pc.pins.map(p => horizontalBusY(layout, p.net) ?? p.y);
+        const distinctYs = new Set(busYs);
+        expect(distinctYs.size, `${id} endpoints should span distinct vertical positions`).toBeGreaterThan(1);
+      }
+    });
+
+    it('does not draw horizontal buses of different nets on the same pixel row with overlapping x ranges', () => {
+      const layout = layoutSchematic(makeBuckBoost());
+      type HSeg = { net: string; y: number; xMin: number; xMax: number };
+      const hSegs: HSeg[] = [];
+      for (const w of layout.wires) {
+        for (const s of w.segments) {
+          if (s.y1 === s.y2) {
+            hSegs.push({ net: w.net, y: s.y1, xMin: Math.min(s.x1, s.x2), xMax: Math.max(s.x1, s.x2) });
+          }
+        }
+      }
+      for (let i = 0; i < hSegs.length; i++) {
+        for (let j = i + 1; j < hSegs.length; j++) {
+          const a = hSegs[i], b = hSegs[j];
+          if (a.net === b.net) continue;
+          if (a.y !== b.y) continue;
+          const overlap = Math.min(a.xMax, b.xMax) - Math.max(a.xMin, b.xMin);
+          expect(overlap, `nets ${a.net} and ${b.net} overlap on y=${a.y}`).toBeLessThanOrEqual(0);
+        }
+      }
+    });
+  });
 });
