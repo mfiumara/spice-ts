@@ -37,12 +37,16 @@ function componentEndpoints(comp: IRComponent): [string, string] {
 /* ------------------------------------------------------------------ */
 
 /**
- * Assign vertical ranks to nodes using directed longest-path from ground.
+ * Assign vertical ranks to nodes by longest path from ground in a mixed graph.
  *
- * Uses component-type-aware directed edges (drain→source for MOSFET,
- * anode→cathode for diode, pos→neg for sources) to build a DAG, then
- * computes the longest path from ground to each node. This gives proper
- * intermediate ranks (e.g., sw between in and 0 in a buck converter).
+ * 1. BFS distance from ground through the undirected component graph.
+ * 2. Orient each undirected edge from the node closer to ground toward the one
+ *    farther away (lexicographic tiebreak for equal distance), so every edge
+ *    contributes rank separation.
+ * 3. Override with known polarity (V/I: + above −, MOSFET: drain above source,
+ *    BJT: collector above emitter, E/G: outP above outN) — reversing the
+ *    oriented edge if necessary.
+ * 4. Longest path from ground in the resulting DAG via Bellman–Ford relaxation.
  *
  * Ground = rank 0 (bottom of schematic, highest Y).
  * Higher rank = higher potential = top of schematic (lowest Y).
@@ -50,101 +54,105 @@ function componentEndpoints(comp: IRComponent): [string, string] {
 function rankNodes(circuit: CircuitIR): Map<string, number> {
   const GND = '0';
 
-  // Collect all unique nets
   const allNets = new Set<string>();
   for (const comp of circuit.components) {
     for (const p of comp.ports) allNets.add(p.net);
   }
+  allNets.add(GND);
 
-  // Build directed adjacency: highNet → lowNet edges (current flow direction)
-  // Also keep undirected for fallback connectivity
-  const directedDown = new Map<string, Set<string>>(); // high → low
-  const directedUp = new Map<string, Set<string>>();   // low → high
-  const undirected = new Map<string, Set<string>>();
-  for (const n of allNets) {
-    directedDown.set(n, new Set());
-    directedUp.set(n, new Set());
-    undirected.set(n, new Set());
-  }
+  // Gather edges. Every component contributes an undirected edge between its
+  // two primary endpoints; components with known polarity also contribute a
+  // directed high→low constraint.
+  const undirectedPairs: Array<[string, string]> = [];
+  const directedHighLow: Array<[string, string]> = [];
 
   for (const comp of circuit.components) {
     const [a, b] = componentEndpoints(comp);
-    undirected.get(a)!.add(b);
-    undirected.get(b)!.add(a);
+    if (a !== b) undirectedPairs.push([a, b]);
 
-    // Only add directed edges for components with known polarity.
-    // Passive components (R, L, C) are undirected — we don't know voltage direction.
     let high: string | null = null, low: string | null = null;
     switch (comp.type) {
       case 'V': case 'I':
-        high = comp.ports[0].net; // positive terminal
-        low = comp.ports[1].net;  // negative terminal
-        break;
+        high = comp.ports[0].net; low = comp.ports[1].net; break;
       case 'M':
-        high = comp.ports[0].net; // drain
-        low = comp.ports[2].net;  // source
-        break;
+        high = comp.ports[0].net; low = comp.ports[2].net; break;
       case 'Q':
-        high = comp.ports[0].net; // collector
-        low = comp.ports[2].net;  // emitter
-        break;
-      // D (diode): polarity depends on circuit context (forward vs freewheeling).
-      // Treat as undirected — let other directed edges determine rank ordering.
+        high = comp.ports[0].net; low = comp.ports[2].net; break;
       case 'E': case 'G':
-        high = comp.ports[2].net; // outP
-        low = comp.ports[3].net;  // outN
-        break;
-      // R, L, C, F, H, X: no directed edge — undirected only
+        high = comp.ports[2].net; low = comp.ports[3].net; break;
+      // D, R, L, C, F, H, X: undirected only
     }
-
-    if (high !== null && low !== null) {
-      directedDown.get(high)!.add(low);
-      directedUp.get(low)!.add(high);
+    if (high !== null && low !== null && high !== low) {
+      directedHighLow.push([high, low]);
     }
   }
 
-  // Longest path from ground upward using directed edges
-  // Use iterative relaxation (Bellman-Ford style for longest path in DAG)
-  const rank = new Map<string, number>();
-  for (const n of allNets) rank.set(n, -1);
-  rank.set(GND, 0);
+  // Undirected adjacency for BFS.
+  const undirected = new Map<string, Set<string>>();
+  for (const n of allNets) undirected.set(n, new Set());
+  for (const [a, b] of undirectedPairs) {
+    undirected.get(a)!.add(b);
+    undirected.get(b)!.add(a);
+  }
 
-  // Relaxation: repeatedly update ranks via directed-up edges
-  let changed = true;
-  let iterations = 0;
-  while (changed && iterations < allNets.size + 1) {
-    changed = false;
-    for (const [node, currentRank] of rank) {
-      if (currentRank < 0) continue;
-      // Follow edges upward: neighbors that are at higher potential
-      for (const higher of directedUp.get(node) ?? []) {
-        const newRank = currentRank + 1;
-        if (newRank > (rank.get(higher) ?? -1)) {
-          rank.set(higher, newRank);
+  // Step 1: BFS distance from ground through undirected graph.
+  const dist = new Map<string, number>();
+  for (const n of allNets) dist.set(n, Infinity);
+  dist.set(GND, 0);
+  const bfs: string[] = [GND];
+  while (bfs.length > 0) {
+    const node = bfs.shift()!;
+    const d = dist.get(node)!;
+    for (const neighbor of undirected.get(node)!) {
+      if (dist.get(neighbor)! > d + 1) {
+        dist.set(neighbor, d + 1);
+        bfs.push(neighbor);
+      }
+    }
+  }
+  // Isolated nets (no path to ground) get a small positive distance so
+  // longest-path relaxation still places them above ground.
+  for (const n of allNets) {
+    if (dist.get(n) === Infinity) dist.set(n, 1);
+  }
+
+  // Step 2: Build DAG by orienting each undirected edge from lower to higher
+  // BFS distance. Equal distances use lexicographic tiebreak.
+  const dagFrom = new Map<string, Set<string>>();
+  for (const n of allNets) dagFrom.set(n, new Set());
+  for (const [a, b] of undirectedPairs) {
+    const da = dist.get(a)!, db = dist.get(b)!;
+    let lo: string, hi: string;
+    if (da < db) { lo = a; hi = b; }
+    else if (db < da) { lo = b; hi = a; }
+    else { [lo, hi] = a < b ? [a, b] : [b, a]; }
+    dagFrom.get(lo)!.add(hi);
+  }
+
+  // Step 3: Apply directed polarity. For each high→low pair, ensure the edge
+  // runs low→high in the DAG (reverse the existing edge if needed).
+  for (const [high, low] of directedHighLow) {
+    dagFrom.get(high)?.delete(low);
+    dagFrom.get(low)?.add(high);
+  }
+
+  // Step 4: Longest path from ground via Bellman–Ford-style relaxation.
+  const rank = new Map<string, number>();
+  for (const n of allNets) rank.set(n, 0);
+
+  const maxIter = allNets.size * 2 + 1;
+  for (let i = 0; i < maxIter; i++) {
+    let changed = false;
+    for (const [from, tos] of dagFrom) {
+      const fromRank = rank.get(from)!;
+      for (const to of tos) {
+        if (fromRank + 1 > rank.get(to)!) {
+          rank.set(to, fromRank + 1);
           changed = true;
         }
       }
     }
-    iterations++;
-  }
-
-  // Fallback: unranked nodes connected via undirected edges (R, L, C)
-  // get the SAME rank as their ranked neighbor — they're at similar potential.
-  const queue = [...allNets].filter(n => (rank.get(n) ?? -1) >= 0);
-  while (queue.length > 0) {
-    const current = queue.shift()!;
-    const currentRank = rank.get(current)!;
-    for (const neighbor of undirected.get(current) ?? []) {
-      if ((rank.get(neighbor) ?? -1) < 0) {
-        rank.set(neighbor, currentRank); // same rank, not +1
-        queue.push(neighbor);
-      }
-    }
-  }
-
-  // Final fallback: truly disconnected nodes
-  for (const n of allNets) {
-    if ((rank.get(n) ?? -1) < 0) rank.set(n, 1);
+    if (!changed) break;
   }
 
   return rank;
@@ -273,17 +281,34 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
     }
   }
 
-  // Route each net: connect all pins with orthogonal segments
-  // Use a shared horizontal bus at the net's rank Y, then vertical drops to each pin
+  // Route each net: connect all pins with orthogonal segments.
+  // Each net has a dedicated horizontal bus at its rank Y; when several nets
+  // share a rank, they are fanned out around the base Y so their buses don't
+  // render on the same pixel row.
   const CORRIDOR_OFFSET = GRID * 0.4;
+
+  const netsByRank = new Map<number, string[]>();
+  for (const net of netPins.keys()) {
+    if (net === '0') continue;
+    const r = nodeRanks.get(net) ?? 0;
+    if (!netsByRank.has(r)) netsByRank.set(r, []);
+    netsByRank.get(r)!.push(net);
+  }
+  const netBusY = new Map<string, number>();
+  for (const [r, nets] of netsByRank) {
+    const baseY = MARGIN + (maxRank - r) * RANK_SPACING;
+    nets.sort();
+    nets.forEach((net, i) => {
+      const offset = (i - (nets.length - 1) / 2) * CORRIDOR_OFFSET;
+      netBusY.set(net, baseY + offset);
+    });
+  }
 
   for (const [net, pins] of netPins) {
     if (net === '0' || pins.length < 2) continue;
     const segments: { x1: number; y1: number; x2: number; y2: number }[] = [];
 
-    // Compute the bus Y for this net (at its rank level)
-    const netRank = nodeRanks.get(net) ?? 0;
-    const busY = MARGIN + (maxRank - netRank) * RANK_SPACING;
+    const busY = netBusY.get(net)!;
 
     const sorted = [...pins].sort((a, b) => a.x - b.x || a.y - b.y);
 
