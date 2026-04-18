@@ -70,19 +70,25 @@ function capacitorSymbol(stretchH?: number): SymbolDef {
   };
 }
 
-/** Horizontal capacitor variant — used when both endpoints share a rank. */
-function horizontalCapacitorSymbol(): SymbolDef {
-  const w = GRID * 2, h = GRID;
+/** Horizontal capacitor variant — used when both endpoints share a rank.
+ * `stretchW` extends the side leads so the body spans a wider section of the
+ * schematic (e.g. a Sallen-Key feedback cap whose plates sit between the
+ * leftmost input-side pin and the rightmost output-side pin). */
+function horizontalCapacitorSymbol(stretchW?: number): SymbolDef {
+  const naturalW = GRID * 2;
+  const w = Math.max(naturalW, stretchW ?? naturalW);
+  const h = GRID;
   const cy = h / 2;
   const gap = 6;
   const plateH = h * 0.7;
+  const cx = w / 2;
 
   return {
     elements: [
-      { tag: 'line', attrs: { x1: 0, y1: cy, x2: w / 2 - gap / 2, y2: cy } },
-      { tag: 'line', attrs: { x1: w / 2 - gap / 2, y1: cy - plateH / 2, x2: w / 2 - gap / 2, y2: cy + plateH / 2 } },
-      { tag: 'line', attrs: { x1: w / 2 + gap / 2, y1: cy - plateH / 2, x2: w / 2 + gap / 2, y2: cy + plateH / 2 } },
-      { tag: 'line', attrs: { x1: w / 2 + gap / 2, y1: cy, x2: w, y2: cy } },
+      { tag: 'line', attrs: { x1: 0, y1: cy, x2: cx - gap / 2, y2: cy } },
+      { tag: 'line', attrs: { x1: cx - gap / 2, y1: cy - plateH / 2, x2: cx - gap / 2, y2: cy + plateH / 2 } },
+      { tag: 'line', attrs: { x1: cx + gap / 2, y1: cy - plateH / 2, x2: cx + gap / 2, y2: cy + plateH / 2 } },
+      { tag: 'line', attrs: { x1: cx + gap / 2, y1: cy, x2: w, y2: cy } },
     ],
     pins: [{ dx: 0, dy: cy }, { dx: w, dy: cy }],
     width: w, height: h,
@@ -307,10 +313,11 @@ export function getSymbol(
   displayValue?: string,
   horizontal = false,
   stretchH?: number,
+  stretchW?: number,
 ): SymbolDef {
   switch (type) {
     case 'R': return resistorSymbol();
-    case 'C': return horizontal ? horizontalCapacitorSymbol() : capacitorSymbol(stretchH);
+    case 'C': return horizontal ? horizontalCapacitorSymbol(stretchW) : capacitorSymbol(stretchH);
     case 'L': return inductorSymbol();
     case 'V': return voltageSourceSymbol(
       (displayValue ?? '').toUpperCase().startsWith('AC') ||

@@ -28,6 +28,9 @@ export interface PlacedComponent {
   /** Total height (in pixels) requested for a stretchable vertical symbol so
    * its pins sit flush on the top and bottom rank rails. */
   stretchH?: number;
+  /** Total width requested for a stretchable horizontal symbol (e.g. a
+   * feedback capacitor spanning the chain width). */
+  stretchW?: number;
   /** Pin positions after placement + rotation */
   pins: Pin[];
 }
