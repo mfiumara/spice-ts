@@ -22,6 +22,9 @@ export interface PlacedComponent {
   y: number;
   /** Rotation in degrees: 0, 90, 180, 270 */
   rotation: number;
+  /** True when the component uses its horizontal-orientation symbol variant
+   * (e.g. a capacitor between two nets on the same rail). */
+  horizontal?: boolean;
   /** Pin positions after placement + rotation */
   pins: Pin[];
 }

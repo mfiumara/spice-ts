@@ -67,6 +67,25 @@ function capacitorSymbol(): SymbolDef {
   };
 }
 
+/** Horizontal capacitor variant — used when both endpoints share a rank. */
+function horizontalCapacitorSymbol(): SymbolDef {
+  const w = GRID * 2, h = GRID;
+  const cy = h / 2;
+  const gap = 6;
+  const plateH = h * 0.7;
+
+  return {
+    elements: [
+      { tag: 'line', attrs: { x1: 0, y1: cy, x2: w / 2 - gap / 2, y2: cy } },
+      { tag: 'line', attrs: { x1: w / 2 - gap / 2, y1: cy - plateH / 2, x2: w / 2 - gap / 2, y2: cy + plateH / 2 } },
+      { tag: 'line', attrs: { x1: w / 2 + gap / 2, y1: cy - plateH / 2, x2: w / 2 + gap / 2, y2: cy + plateH / 2 } },
+      { tag: 'line', attrs: { x1: w / 2 + gap / 2, y1: cy, x2: w, y2: cy } },
+    ],
+    pins: [{ dx: 0, dy: cy }, { dx: w, dy: cy }],
+    width: w, height: h,
+  };
+}
+
 function inductorSymbol(): SymbolDef {
   const w = GRID * 3, h = GRID;
   const cy = h / 2;
@@ -272,10 +291,10 @@ function dependentSourceSymbol(): SymbolDef {
 }
 
 /** Look up the symbol definition for a device type. */
-export function getSymbol(type: string, displayValue?: string): SymbolDef {
+export function getSymbol(type: string, displayValue?: string, horizontal = false): SymbolDef {
   switch (type) {
     case 'R': return resistorSymbol();
-    case 'C': return capacitorSymbol();
+    case 'C': return horizontal ? horizontalCapacitorSymbol() : capacitorSymbol();
     case 'L': return inductorSymbol();
     case 'V': return voltageSourceSymbol(
       (displayValue ?? '').toUpperCase().startsWith('AC') ||
