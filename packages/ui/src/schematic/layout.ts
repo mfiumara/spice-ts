@@ -355,9 +355,15 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
   // ground stubs would overlap. Each sub-column consumes one SLOT_SPACING of
   // horizontal space.
   const STACK_GAP = GRID / 2;
+  const STRETCH_TYPES = new Set(['V', 'I', 'C']);
   const symbolFor = (pl: Placement) => {
     const horizontal = pl.comp.type === 'C' && pl.topRank === pl.bottomRank;
-    return { horizontal, sym: getSymbol(pl.comp.type, pl.comp.displayValue ?? '', horizontal) };
+    // Vertical 2-terminal symbols stretch to match the rank span so their pins
+    // align with both rail Ys without a dangling lead-wire at either end.
+    const stretchH = !horizontal && STRETCH_TYPES.has(pl.comp.type) && pl.topRank > pl.bottomRank
+      ? (pl.topRank - pl.bottomRank) * RANK_SPACING
+      : undefined;
+    return { horizontal, stretchH, sym: getSymbol(pl.comp.type, pl.comp.displayValue ?? '', horizontal, stretchH) };
   };
   const centerYFor = (pl: Placement) => {
     const topY = MARGIN + (maxRank - pl.topRank) * RANK_SPACING;
@@ -414,7 +420,7 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
   for (const pl of placements) {
     const { comp, topRank, bottomRank } = pl;
 
-    const { horizontal, sym: symbol } = symbolFor(pl);
+    const { horizontal, stretchH, sym: symbol } = symbolFor(pl);
     const nets = comp.ports.map(p => p.net);
 
     const centerY = centerYFor(pl);
@@ -445,7 +451,7 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
 
     placedComponents.push({
       component: comp,
-      x, y, rotation: 0, horizontal,
+      x, y, rotation: 0, horizontal, stretchH,
       pins,
     });
   }
@@ -544,7 +550,7 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
   // --- Bounds ---
   let maxX = 0, maxY = 0;
   for (const pc of placedComponents) {
-    const sym = getSymbol(pc.component.type, pc.component.displayValue ?? '', pc.horizontal);
+    const sym = getSymbol(pc.component.type, pc.component.displayValue ?? '', pc.horizontal, pc.stretchH);
     maxX = Math.max(maxX, pc.x + sym.width);
     maxY = Math.max(maxY, pc.y + sym.height);
   }

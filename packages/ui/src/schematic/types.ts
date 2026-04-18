@@ -25,6 +25,9 @@ export interface PlacedComponent {
   /** True when the component uses its horizontal-orientation symbol variant
    * (e.g. a capacitor between two nets on the same rail). */
   horizontal?: boolean;
+  /** Total height (in pixels) requested for a stretchable vertical symbol so
+   * its pins sit flush on the top and bottom rank rails. */
+  stretchH?: number;
   /** Pin positions after placement + rotation */
   pins: Pin[];
 }

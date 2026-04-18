@@ -254,6 +254,21 @@ describe('layoutSchematic', () => {
       expect(inY).toBeLessThan(outY);
     });
 
+    it('RC low-pass: V1, R1, C1 top pins all sit on a single horizontal rail', () => {
+      const circuit = makeCircuit(
+        { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 5 }, displayValue: 'DC 5' },
+        { type: 'R', id: 'R1', name: 'R1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: 'out' }], params: { resistance: 1000 }, displayValue: '1k' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { capacitance: 100e-9 }, displayValue: '100n' },
+      );
+      const layout = layoutSchematic(circuit);
+      const v1in = layout.components.find(c => c.component.id === 'V1')!.pins.find(p => p.net === 'in')!;
+      const r1in = layout.components.find(c => c.component.id === 'R1')!.pins.find(p => p.net === 'in')!;
+      const r1out = layout.components.find(c => c.component.id === 'R1')!.pins.find(p => p.net === 'out')!;
+      const c1out = layout.components.find(c => c.component.id === 'C1')!.pins.find(p => p.net === 'out')!;
+      expect(v1in.y).toBe(r1in.y);
+      expect(r1out.y).toBe(c1out.y);
+    });
+
     it('RC low-pass: components flow V1 → R1 → C1 from left to right', () => {
       const circuit = makeCircuit(
         { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 5 }, displayValue: 'DC 5' },
