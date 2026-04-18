@@ -474,6 +474,18 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
   // render on the same pixel row.
   const CORRIDOR_OFFSET = GRID * 0.4;
 
+  // Group nets by rank, and within each rank group further partition by
+  // transitive x-range overlap. Only nets whose horizontal buses would
+  // actually collide need a corridor offset; disjoint nets can share the
+  // base rail Y, which keeps the rail perfectly horizontal through their
+  // pins.
+  const xRangeByNet = new Map<string, [number, number]>();
+  for (const [net, pins] of netPins) {
+    if (net === '0' || pins.length < 2) continue;
+    const xs = pins.map(p => p.x);
+    xRangeByNet.set(net, [Math.min(...xs), Math.max(...xs)]);
+  }
+
   const netsByRank = new Map<number, string[]>();
   for (const net of netPins.keys()) {
     if (net === '0') continue;
@@ -481,14 +493,38 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
     if (!netsByRank.has(r)) netsByRank.set(r, []);
     netsByRank.get(r)!.push(net);
   }
+
   const netBusY = new Map<string, number>();
   for (const [r, nets] of netsByRank) {
     const baseY = MARGIN + (maxRank - r) * RANK_SPACING;
-    nets.sort();
-    nets.forEach((net, i) => {
-      const offset = (i - (nets.length - 1) / 2) * CORRIDOR_OFFSET;
-      netBusY.set(net, baseY + offset);
+    // Partition into x-overlap groups. Sort by minX first so scan is linear.
+    const sorted = [...nets].sort((a, b) => {
+      const ra = xRangeByNet.get(a), rb = xRangeByNet.get(b);
+      if (!ra || !rb) return a.localeCompare(b);
+      return ra[0] - rb[0];
     });
+    const groups: string[][] = [];
+    for (const net of sorted) {
+      const range = xRangeByNet.get(net);
+      const current = groups[groups.length - 1];
+      if (current && range) {
+        const overlaps = current.some(other => {
+          const o = xRangeByNet.get(other);
+          return o && !(range[1] < o[0] || o[1] < range[0]);
+        });
+        if (overlaps) { current.push(net); continue; }
+      }
+      groups.push([net]);
+    }
+
+    for (const g of groups) {
+      if (g.length === 1) { netBusY.set(g[0], baseY); continue; }
+      g.sort();
+      g.forEach((net, i) => {
+        const offset = (i - (g.length - 1) / 2) * CORRIDOR_OFFSET;
+        netBusY.set(net, baseY + offset);
+      });
+    }
   }
 
   for (const [net, pins] of netPins) {
