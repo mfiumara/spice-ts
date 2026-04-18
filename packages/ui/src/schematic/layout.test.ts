@@ -305,6 +305,31 @@ describe('layoutSchematic', () => {
       expect(xs[2]).toBeLessThan(xs[3]);
     });
 
+    it('Sallen-Key: in, n1, n2, and out all sit on one signal rail', () => {
+      // Unity-gain VCVS: E1 pins outN=0 and ctrlN=out, so out is electrically
+      // at the opamp's output — same DC potential as the input via feedback.
+      // Expect a single signal rail, not a second rank above it.
+      const circuit = makeCircuit(
+        { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { ac: 1 }, displayValue: 'AC 1' },
+        { type: 'R', id: 'R1', name: 'R1', ports: [{ name: 'p', net: 'in' },  { name: 'n', net: 'n1' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'R', id: 'R2', name: 'R2', ports: [{ name: 'p', net: 'n1' }, { name: 'n', net: 'n2' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'n1' }, { name: 'n', net: 'out' }], params: { capacitance: 10e-9 }, displayValue: '10n' },
+        { type: 'C', id: 'C2', name: 'C2', ports: [{ name: 'p', net: 'n2' }, { name: 'n', net: '0' }],  params: { capacitance: 10e-9 }, displayValue: '10n' },
+        { type: 'E', id: 'E1', name: 'E1', ports: [
+          { name: 'ctrlP', net: 'n2' },
+          { name: 'ctrlN', net: 'out' },
+          { name: 'outP',  net: 'out' },
+          { name: 'outN',  net: '0' },
+        ], params: { gain: 1e6 }, displayValue: '1e6' },
+      );
+      const layout = layoutSchematic(circuit);
+      const y = (net: string) => horizontalBusY(layout, net);
+      const inY = y('in')!, n1Y = y('n1')!, n2Y = y('n2')!, outY = y('out')!;
+      for (const [a, b, name] of [[inY, n1Y, 'in/n1'], [n1Y, n2Y, 'n1/n2'], [n2Y, outY, 'n2/out']] as const) {
+        expect(Math.abs(a - b), `${name} not on same rail`).toBeLessThanOrEqual(GRID * 2);
+      }
+    });
+
     it('CMOS inverter: MP and MN stack in the same column', () => {
       const circuit = makeCircuit(
         { type: 'V', id: 'VDD', name: 'VDD', ports: [{ name: 'p', net: 'vdd' }, { name: 'n', net: '0' }], params: { dc: 1.8 }, displayValue: 'DC 1.8' },

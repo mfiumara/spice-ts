@@ -132,20 +132,40 @@ function rankNodes(circuit: CircuitIR): Map<string, number> {
   }
 
   // --- Edge collection at set level -----------------------------------
-  // Non-source components contribute an undirected edge (between set
-  // representatives) used for BFS distance. Rank-preserving R/L are already
-  // collapsed via union-find, so their edges are self-loops and dropped.
-  // Source components (V/I/E/G/F/H) contribute only a directed polarity
-  // constraint; their terminals define the voltage hierarchy rather than a
-  // hop in the signal chain.
+  // Rank-preserving R/L are already collapsed via union-find, so their edges
+  // are self-loops and dropped. Every other component contributes an
+  // undirected edge between set representatives; sources (V/I/E/G/F/H) also
+  // contribute a directed polarity constraint.
+  //
+  // The undirected edges feed two things:
+  //   - BFS distance from ground (used for orienting edges away from ground).
+  //   - The DAG itself (longest-path relaxation).
+  // Source components participate in BFS so the side they drive (e.g. the
+  // opamp output) picks up a finite distance from ground, but they are not
+  // added as DAG edges: their polarity constraint handles ordering. A
+  // differentiating R/L whose endpoints happen to share a BFS distance must
+  // still contribute a rank step (e.g. RD in a common-source amp where both
+  // vdd and out are dist 1 via VDD and M1's drain), so it stays in the DAG
+  // with a lexicographic tiebreak.
   const SOURCE_TYPES = new Set(['V', 'I', 'E', 'G', 'F', 'H']);
-  const undirectedPairs: Array<[string, string]> = [];
+  interface UEdge { a: string; b: string; keepAtSameDist: boolean }
+  const bfsEdges: Array<[string, string]> = [];
+  const dagCandidates: UEdge[] = [];
   const directedHighLow: Array<[string, string]> = [];
 
   for (const comp of circuit.components) {
     const [a, b] = componentEndpoints(comp);
     const sa = find(a), sb = find(b);
-    if (sa !== sb && !SOURCE_TYPES.has(comp.type)) undirectedPairs.push([sa, sb]);
+    if (sa !== sb) {
+      bfsEdges.push([sa, sb]);
+      if (!SOURCE_TYPES.has(comp.type)) {
+        // Differentiating R/L is the only type that must insist on a rank
+        // step even when BFS distance is equal.
+        const isRL = comp.type === 'R' || comp.type === 'L';
+        const keepAtSameDist = isRL && !rankPreserving.has(comp.id);
+        dagCandidates.push({ a: sa, b: sb, keepAtSameDist });
+      }
+    }
 
     let high: string | null = null, low: string | null = null;
     switch (comp.type) {
@@ -180,7 +200,7 @@ function rankNodes(circuit: CircuitIR): Map<string, number> {
   const gndRep = find(GND);
   const undirected = new Map<string, Set<string>>();
   for (const r of reps) undirected.set(r, new Set());
-  for (const [a, b] of undirectedPairs) {
+  for (const [a, b] of bfsEdges) {
     undirected.get(a)!.add(b);
     undirected.get(b)!.add(a);
   }
@@ -205,17 +225,29 @@ function rankNodes(circuit: CircuitIR): Map<string, number> {
 
   // --- Step 2: Build DAG at set level ----------------------------------
   // Orient each undirected edge from the lower-distance endpoint to the
-  // higher-distance one. Drop edges whose endpoints share a BFS distance —
-  // those carry no rank-ordering information and would otherwise introduce a
-  // spurious rank step (e.g., a feedback capacitor between two nodes that
-  // are both on the same signal rail).
+  // higher-distance one. Drop same-distance edges unless the component
+  // insists on a rank step (see `keepAtSameDist` above) — that keeps feedback
+  // caps and similar soft links from introducing a spurious extra rank. When
+  // a same-distance edge IS kept, orient it so the V-source-driven endpoint
+  // ends up at the higher rank (e.g. vdd above out across RD in a
+  // common-source amp, in above out across R1 in a voltage divider).
+  const vPlusReps = new Set<string>();
+  for (const comp of circuit.components) {
+    if (comp.type === 'V' || comp.type === 'I') vPlusReps.add(find(comp.ports[0].net));
+  }
   const dagFrom = new Map<string, Set<string>>();
   for (const r of reps) dagFrom.set(r, new Set());
-  for (const [a, b] of undirectedPairs) {
+  for (const { a, b, keepAtSameDist } of dagCandidates) {
     const da = dist.get(a)!, db = dist.get(b)!;
-    if (da === db) continue;
-    const [lo, hi] = da < db ? [a, b] : [b, a];
-    dagFrom.get(lo)!.add(hi);
+    if (da < db) dagFrom.get(a)!.add(b);
+    else if (db < da) dagFrom.get(b)!.add(a);
+    else if (keepAtSameDist) {
+      let lo: string, hi: string;
+      if (vPlusReps.has(a) && !vPlusReps.has(b)) { hi = a; lo = b; }
+      else if (vPlusReps.has(b) && !vPlusReps.has(a)) { hi = b; lo = a; }
+      else { [lo, hi] = a < b ? [a, b] : [b, a]; }
+      dagFrom.get(lo)!.add(hi);
+    }
   }
 
   // --- Step 3: Apply directed polarity overrides -----------------------
