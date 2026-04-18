@@ -112,7 +112,7 @@ export function SchematicView({ circuit, theme, width = '100%', height = 400, on
 
         {/* Components */}
         {layout.components.map((pc, ci) => {
-          const sym = getSymbol(pc.component.type, pc.component.displayValue ?? '', pc.horizontal, pc.stretchH);
+          const sym = getSymbol(pc.component.type, pc.component.displayValue ?? '', pc.horizontal, pc.stretchH, pc.stretchW);
           return (
             <g key={ci} transform={`translate(${pc.x},${pc.y})`}
               style={{ cursor: 'pointer' }}
@@ -150,7 +150,7 @@ export function SchematicView({ circuit, theme, width = '100%', height = 400, on
           pc.pins.flatMap((p, pi) => {
             if (p.net !== '0') return [];
             const gnd = groundSymbol();
-            const compSym = getSymbol(pc.component.type, pc.component.displayValue ?? '', pc.horizontal, pc.stretchH);
+            const compSym = getSymbol(pc.component.type, pc.component.displayValue ?? '', pc.horizontal, pc.stretchH, pc.stretchW);
             const symPin = pi < compSym.pins.length ? compSym.pins[pi] : null;
             const isSidePin = symPin !== null && (symPin.dx <= 1 || symPin.dx >= compSym.width - 1);
             const stubLen = GRID * 1.5;

@@ -305,6 +305,29 @@ describe('layoutSchematic', () => {
       expect(xs[2]).toBeLessThan(xs[3]);
     });
 
+    it('Sallen-Key: feedback cap C1 stretches across the opamp feedback span', () => {
+      const circuit = makeCircuit(
+        { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { ac: 1 }, displayValue: 'AC 1' },
+        { type: 'R', id: 'R1', name: 'R1', ports: [{ name: 'p', net: 'in' },  { name: 'n', net: 'n1' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'R', id: 'R2', name: 'R2', ports: [{ name: 'p', net: 'n1' }, { name: 'n', net: 'n2' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'n1' }, { name: 'n', net: 'out' }], params: { capacitance: 10e-9 }, displayValue: '10n' },
+        { type: 'C', id: 'C2', name: 'C2', ports: [{ name: 'p', net: 'n2' }, { name: 'n', net: '0' }],  params: { capacitance: 10e-9 }, displayValue: '10n' },
+        { type: 'E', id: 'E1', name: 'E1', ports: [
+          { name: 'ctrlP', net: 'n2' },
+          { name: 'ctrlN', net: 'out' },
+          { name: 'outP',  net: 'out' },
+          { name: 'outN',  net: '0' },
+        ], params: { gain: 1e6 }, displayValue: '1e6' },
+      );
+      const layout = layoutSchematic(circuit);
+      const c1 = layout.components.find(c => c.component.id === 'C1')!;
+      // The feedback cap's two pins span from the leftmost n1 pin on the
+      // chain to the rightmost out pin at the opamp, so the loop visibly
+      // brackets the signal chain instead of sitting in one narrow column.
+      const capWidth = Math.abs(c1.pins[0].x - c1.pins[1].x);
+      expect(capWidth).toBeGreaterThan(GRID * 10);
+    });
+
     it('Sallen-Key: feedback cap C1 is elevated above the main signal rail', () => {
       // C1 connects n1 to out, both on the signal rail. Conventional
       // schematics draw it as a loop above the chain rather than in-line,

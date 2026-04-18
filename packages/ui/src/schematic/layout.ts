@@ -416,6 +416,9 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
 
   const byCol = new Map<number, Placement[]>();
   for (const pl of placements) {
+    // Feedback caps are positioned in a second pass once the main chain is
+    // laid out — they span the x-range between their endpoints' other pins.
+    if (isFeedbackCap(pl)) continue;
     if (!byCol.has(pl.col)) byCol.set(pl.col, []);
     byCol.get(pl.col)!.push(pl);
   }
@@ -461,8 +464,8 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
   const placedComponents: PlacedComponent[] = [];
 
   for (const pl of placements) {
-    const { comp, topRank, bottomRank } = pl;
-
+    if (isFeedbackCap(pl)) continue;
+    const { comp } = pl;
     const { horizontal, stretchH, sym: symbol } = symbolFor(pl);
     const nets = comp.ports.map(p => p.net);
 
@@ -470,12 +473,6 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
     const x = xForComp.get(comp.id)!;
     const y = centerY - symbol.height / 2;
 
-    // Map IR port i to a symbol pin position. For PMOS / PNP, swap the
-    // drain/collector and source/emitter positions so the "source-side" pin
-    // (which sits at higher potential) renders above the drain/collector.
-    // For undirected 2-terminal symbols (R, L, C, D) whose IR port ordering
-    // happens to put the lower-rank net first, swap pins 0 and 1 so the
-    // higher-rank net always renders at the top/left of the symbol body.
     const flipForP =
       (comp.type === 'M' && comp.params?.channelType === 'p') ||
       (comp.type === 'Q' && comp.params?.type === 'pnp');
@@ -492,9 +489,47 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
       return { net, x: x + sp.dx, y: y + sp.dy };
     });
 
+    placedComponents.push({ component: comp, x, y, rotation: 0, horizontal, stretchH, pins });
+  }
+
+  // --- Pass 2: feedback caps ----------------------------------------------
+  // Now that the main chain is positioned, stretch each feedback cap so its
+  // two pins span the feedback region: left pin sits over the leftmost other
+  // pin on net A, right pin over the rightmost other pin on net B.
+  for (const pl of placements) {
+    if (!isFeedbackCap(pl)) continue;
+    const { comp } = pl;
+    const netA = comp.ports[0].net;
+    const netB = comp.ports[1].net;
+    const rankA = nodeRanks.get(netA) ?? 0;
+    const rankB = nodeRanks.get(netB) ?? 0;
+    // Orient so the lower-rank net is on the left side of the cap (matches
+    // the 2-terminal symbol-pin flip logic used elsewhere).
+    const leftNet  = rankA <= rankB ? netA : netB;
+    const rightNet = rankA <= rankB ? netB : netA;
+    const flipPorts = leftNet !== netA;
+
+    const collectX = (net: string) =>
+      placedComponents.flatMap(pc => pc.pins.filter(p => p.net === net).map(p => p.x));
+    const leftXs  = collectX(leftNet);
+    const rightXs = collectX(rightNet);
+    const leftX   = leftXs.length  ? Math.min(...leftXs)  : MARGIN;
+    const rightX  = rightXs.length ? Math.max(...rightXs) : leftX + GRID * 2;
+    const width   = Math.max(GRID * 2, rightX - leftX);
+
+    const symbol = getSymbol(comp.type, comp.displayValue ?? '', true, undefined, width);
+    const centerY = centerYFor(pl);
+    const y = centerY - symbol.height / 2;
+    const x = leftX;
+
+    const pins: Pin[] = [
+      { net: flipPorts ? rightNet : leftNet,  x: x + symbol.pins[0].dx, y: y + symbol.pins[0].dy },
+      { net: flipPorts ? leftNet  : rightNet, x: x + symbol.pins[1].dx, y: y + symbol.pins[1].dy },
+    ];
+
     placedComponents.push({
       component: comp,
-      x, y, rotation: 0, horizontal, stretchH,
+      x, y, rotation: 0, horizontal: true, stretchW: width,
       pins,
     });
   }
@@ -641,7 +676,7 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
   // --- Bounds ---
   let maxX = 0, maxY = 0;
   for (const pc of placedComponents) {
-    const sym = getSymbol(pc.component.type, pc.component.displayValue ?? '', pc.horizontal, pc.stretchH);
+    const sym = getSymbol(pc.component.type, pc.component.displayValue ?? '', pc.horizontal, pc.stretchH, pc.stretchW);
     maxX = Math.max(maxX, pc.x + sym.width);
     maxY = Math.max(maxY, pc.y + sym.height);
   }
