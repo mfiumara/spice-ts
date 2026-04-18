@@ -397,10 +397,21 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
       : undefined;
     return { horizontal, stretchH, sym: getSymbol(pl.comp.type, pl.comp.displayValue ?? '', horizontal, stretchH) };
   };
+  // Feedback caps (a capacitor whose two endpoints are both non-ground nets
+  // collapsed onto a single rail) are conventionally drawn as a loop ABOVE
+  // the signal chain, with short drop-wires joining each pin to the rail.
+  // Detect them and shift their centerY up by one rank-spacing so the rail
+  // runs uninterrupted through the rest of the chain.
+  const isFeedbackCap = (pl: Placement): boolean =>
+    pl.comp.type === 'C' &&
+    pl.topRank === pl.bottomRank &&
+    pl.comp.ports[0].net !== '0' &&
+    pl.comp.ports[1].net !== '0';
   const centerYFor = (pl: Placement) => {
     const topY = MARGIN + (maxRank - pl.topRank) * RANK_SPACING;
     const bottomY = MARGIN + (maxRank - pl.bottomRank) * RANK_SPACING;
-    return (topY + bottomY) / 2;
+    const base = (topY + bottomY) / 2;
+    return isFeedbackCap(pl) ? base - RANK_SPACING : base;
   };
 
   const byCol = new Map<number, Placement[]>();
@@ -488,6 +499,18 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
     });
   }
 
+  // If any elevated feedback caps pushed a component above the top margin,
+  // shift everyone down so the top of the schematic still honors MARGIN.
+  let minY = Infinity;
+  for (const pc of placedComponents) minY = Math.min(minY, pc.y);
+  const yShift = minY < MARGIN ? MARGIN - minY : 0;
+  if (yShift > 0) {
+    for (const pc of placedComponents) {
+      pc.y += yShift;
+      for (const p of pc.pins) p.y += yShift;
+    }
+  }
+
   // --- Wire routing ---
   // Collect all pins per net
   const wires: Wire[] = [];
@@ -528,7 +551,7 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
 
   const netBusY = new Map<string, number>();
   for (const [r, nets] of netsByRank) {
-    const baseY = MARGIN + (maxRank - r) * RANK_SPACING;
+    const baseY = MARGIN + (maxRank - r) * RANK_SPACING + yShift;
     // Partition into x-overlap groups. Sort by minX first so scan is linear.
     const sorted = [...nets].sort((a, b) => {
       const ra = xRangeByNet.get(a), rb = xRangeByNet.get(b);
