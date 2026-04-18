@@ -305,6 +305,29 @@ describe('layoutSchematic', () => {
       expect(xs[2]).toBeLessThan(xs[3]);
     });
 
+    it('Sallen-Key: feedback cap C1 is elevated above the main signal rail', () => {
+      // C1 connects n1 to out, both on the signal rail. Conventional
+      // schematics draw it as a loop above the chain rather than in-line,
+      // so C1's pins must sit at a smaller Y than R1/R2's pins.
+      const circuit = makeCircuit(
+        { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { ac: 1 }, displayValue: 'AC 1' },
+        { type: 'R', id: 'R1', name: 'R1', ports: [{ name: 'p', net: 'in' },  { name: 'n', net: 'n1' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'R', id: 'R2', name: 'R2', ports: [{ name: 'p', net: 'n1' }, { name: 'n', net: 'n2' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'n1' }, { name: 'n', net: 'out' }], params: { capacitance: 10e-9 }, displayValue: '10n' },
+        { type: 'C', id: 'C2', name: 'C2', ports: [{ name: 'p', net: 'n2' }, { name: 'n', net: '0' }],  params: { capacitance: 10e-9 }, displayValue: '10n' },
+        { type: 'E', id: 'E1', name: 'E1', ports: [
+          { name: 'ctrlP', net: 'n2' },
+          { name: 'ctrlN', net: 'out' },
+          { name: 'outP',  net: 'out' },
+          { name: 'outN',  net: '0' },
+        ], params: { gain: 1e6 }, displayValue: '1e6' },
+      );
+      const layout = layoutSchematic(circuit);
+      const c1 = layout.components.find(c => c.component.id === 'C1')!;
+      const r1 = layout.components.find(c => c.component.id === 'R1')!;
+      expect(c1.pins[0].y).toBeLessThan(r1.pins[0].y - GRID * 2);
+    });
+
     it('Sallen-Key: in, n1, n2, and out all sit on one signal rail', () => {
       // Unity-gain VCVS: E1 pins outN=0 and ctrlN=out, so out is electrically
       // at the opamp's output — same DC potential as the input via feedback.
