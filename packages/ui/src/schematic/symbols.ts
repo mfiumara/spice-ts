@@ -49,18 +49,21 @@ function resistorSymbol(): SymbolDef {
   };
 }
 
-function capacitorSymbol(): SymbolDef {
-  const w = GRID, h = GRID * 2;
+function capacitorSymbol(stretchH?: number): SymbolDef {
+  const w = GRID;
+  const naturalH = GRID * 2;
+  const h = Math.max(naturalH, stretchH ?? naturalH);
   const cx = w / 2;
   const gap = 6;
   const plateW = w * 0.7;
+  const cy = h / 2;
 
   return {
     elements: [
-      { tag: 'line', attrs: { x1: cx, y1: 0, x2: cx, y2: h / 2 - gap / 2 } },
-      { tag: 'line', attrs: { x1: cx - plateW / 2, y1: h / 2 - gap / 2, x2: cx + plateW / 2, y2: h / 2 - gap / 2 } },
-      { tag: 'line', attrs: { x1: cx - plateW / 2, y1: h / 2 + gap / 2, x2: cx + plateW / 2, y2: h / 2 + gap / 2 } },
-      { tag: 'line', attrs: { x1: cx, y1: h / 2 + gap / 2, x2: cx, y2: h } },
+      { tag: 'line', attrs: { x1: cx, y1: 0, x2: cx, y2: cy - gap / 2 } },
+      { tag: 'line', attrs: { x1: cx - plateW / 2, y1: cy - gap / 2, x2: cx + plateW / 2, y2: cy - gap / 2 } },
+      { tag: 'line', attrs: { x1: cx - plateW / 2, y1: cy + gap / 2, x2: cx + plateW / 2, y2: cy + gap / 2 } },
+      { tag: 'line', attrs: { x1: cx, y1: cy + gap / 2, x2: cx, y2: h } },
     ],
     pins: [{ dx: cx, dy: 0 }, { dx: cx, dy: h }],
     width: w, height: h,
@@ -109,14 +112,17 @@ function inductorSymbol(): SymbolDef {
   };
 }
 
-function voltageSourceSymbol(isAC: boolean): SymbolDef {
-  const size = GRID * 2;
-  const cx = size / 2, cy = size / 2;
-  const r = size * 0.38;
+function voltageSourceSymbol(isAC: boolean, stretchH?: number): SymbolDef {
+  const naturalSize = GRID * 2;
+  const w = naturalSize;
+  const h = Math.max(naturalSize, stretchH ?? naturalSize);
+  const cx = w / 2;
+  const cy = h / 2;
+  const r = naturalSize * 0.38;
 
   const elements: SvgElement[] = [
     { tag: 'line', attrs: { x1: cx, y1: 0, x2: cx, y2: cy - r } },
-    { tag: 'line', attrs: { x1: cx, y1: cy + r, x2: cx, y2: size } },
+    { tag: 'line', attrs: { x1: cx, y1: cy + r, x2: cx, y2: h } },
     { tag: 'circle', attrs: { cx, cy, r, fill: 'none' } },
   ];
 
@@ -140,26 +146,29 @@ function voltageSourceSymbol(isAC: boolean): SymbolDef {
 
   return {
     elements,
-    pins: [{ dx: cx, dy: 0 }, { dx: cx, dy: size }],
-    width: size, height: size,
+    pins: [{ dx: cx, dy: 0 }, { dx: cx, dy: h }],
+    width: w, height: h,
   };
 }
 
-function currentSourceSymbol(): SymbolDef {
-  const size = GRID * 2;
-  const cx = size / 2, cy = size / 2;
-  const r = size * 0.38;
+function currentSourceSymbol(stretchH?: number): SymbolDef {
+  const naturalSize = GRID * 2;
+  const w = naturalSize;
+  const h = Math.max(naturalSize, stretchH ?? naturalSize);
+  const cx = w / 2;
+  const cy = h / 2;
+  const r = naturalSize * 0.38;
 
   return {
     elements: [
       { tag: 'line', attrs: { x1: cx, y1: 0, x2: cx, y2: cy - r } },
-      { tag: 'line', attrs: { x1: cx, y1: cy + r, x2: cx, y2: size } },
+      { tag: 'line', attrs: { x1: cx, y1: cy + r, x2: cx, y2: h } },
       { tag: 'circle', attrs: { cx, cy, r, fill: 'none' } },
       { tag: 'line', attrs: { x1: cx, y1: cy + r * 0.5, x2: cx, y2: cy - r * 0.5 } },
       { tag: 'polyline', attrs: { points: `${cx - 4},${cy - r * 0.2} ${cx},${cy - r * 0.5} ${cx + 4},${cy - r * 0.2}`, fill: 'none' } },
     ],
-    pins: [{ dx: cx, dy: 0 }, { dx: cx, dy: size }],
-    width: size, height: size,
+    pins: [{ dx: cx, dy: 0 }, { dx: cx, dy: h }],
+    width: w, height: h,
   };
 }
 
@@ -290,17 +299,25 @@ function dependentSourceSymbol(): SymbolDef {
   };
 }
 
-/** Look up the symbol definition for a device type. */
-export function getSymbol(type: string, displayValue?: string, horizontal = false): SymbolDef {
+/** Look up the symbol definition for a device type. `stretchH` extends the
+ * leads of vertical two-terminal symbols (V, I, C) so their pins sit flush on
+ * the rank rails instead of needing a vertical drop-wire at each end. */
+export function getSymbol(
+  type: string,
+  displayValue?: string,
+  horizontal = false,
+  stretchH?: number,
+): SymbolDef {
   switch (type) {
     case 'R': return resistorSymbol();
-    case 'C': return horizontal ? horizontalCapacitorSymbol() : capacitorSymbol();
+    case 'C': return horizontal ? horizontalCapacitorSymbol() : capacitorSymbol(stretchH);
     case 'L': return inductorSymbol();
     case 'V': return voltageSourceSymbol(
       (displayValue ?? '').toUpperCase().startsWith('AC') ||
-      (displayValue ?? '').toUpperCase().startsWith('SIN')
+      (displayValue ?? '').toUpperCase().startsWith('SIN'),
+      stretchH,
     );
-    case 'I': return currentSourceSymbol();
+    case 'I': return currentSourceSymbol(stretchH);
     case 'D': return diodeSymbol();
     case 'Q': return bjtSymbol();
     case 'M': return mosfetSymbol();
