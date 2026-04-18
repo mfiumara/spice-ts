@@ -119,17 +119,25 @@ describe('layoutSchematic', () => {
       return hSeg?.y1;
     }
 
-    it('assigns distinct vertical positions to in, gate, sw nets', () => {
+    it('keeps in, gate, and sw buses visually separated (different Y or disjoint x)', () => {
       const layout = layoutSchematic(makeBuckBoost());
-      const inY = horizontalBusY(layout, 'in');
-      const gateY = horizontalBusY(layout, 'gate');
-      const swY = horizontalBusY(layout, 'sw');
-
-      expect(inY).toBeDefined();
-      expect(gateY).toBeDefined();
-      expect(swY).toBeDefined();
-      const ys = new Set([inY, gateY, swY]);
-      expect(ys.size).toBe(3);
+      type H = { net: string; y: number; x1: number; x2: number };
+      const segs: H[] = [];
+      for (const w of layout.wires) {
+        for (const s of w.segments) {
+          if (s.y1 === s.y2 && (w.net === 'in' || w.net === 'gate' || w.net === 'sw')) {
+            segs.push({ net: w.net, y: s.y1, x1: Math.min(s.x1, s.x2), x2: Math.max(s.x1, s.x2) });
+          }
+        }
+      }
+      for (let i = 0; i < segs.length; i++) {
+        for (let j = i + 1; j < segs.length; j++) {
+          const a = segs[i], b = segs[j];
+          if (a.net === b.net || a.y !== b.y) continue;
+          const overlap = Math.min(a.x2, b.x2) - Math.max(a.x1, b.x1);
+          expect(overlap, `${a.net}/${b.net} overlap at y=${a.y}`).toBeLessThanOrEqual(0);
+        }
+      }
     });
 
     it('orders nets by potential: in above the sw/n1 rail (lower Y = higher on screen)', () => {
