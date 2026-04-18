@@ -60,46 +60,135 @@ function rankNodes(circuit: CircuitIR): Map<string, number> {
   }
   allNets.add(GND);
 
-  // Gather edges. Every component contributes an undirected edge between its
-  // two primary endpoints; components with known polarity also contribute a
-  // directed high→low constraint.
+  // --- Rank-preservation via DC-loop analysis ---------------------------
+  // A resistor or inductor has no DC voltage drop when no DC current flows
+  // through it — i.e., when it's terminated by a capacitor or an opamp input
+  // rather than by a path back to the same supply. Detect this by checking
+  // whether the endpoints stay connected in the graph of DC-conductive
+  // components after the R/L is removed. If they do, current can flow and the
+  // component differentiates ranks; if they don't, the component is a
+  // "signal-chain" hop whose endpoints are at the same DC potential and
+  // should share a rank.
+  const DC_TYPES = new Set(['V', 'I', 'R', 'L', 'M', 'Q', 'E', 'G', 'F', 'H']);
+  const dcEdges: Array<{ id: string; a: string; b: string }> = [];
+  for (const comp of circuit.components) {
+    if (!DC_TYPES.has(comp.type)) continue;
+    const [a, b] = componentEndpoints(comp);
+    if (a !== b) dcEdges.push({ id: comp.id, a, b });
+  }
+
+  const dcConnectedSkipping = (skip: string, from: string, to: string): boolean => {
+    if (from === to) return true;
+    const visited = new Set<string>([from]);
+    const queue = [from];
+    while (queue.length > 0) {
+      const node = queue.shift()!;
+      for (const e of dcEdges) {
+        if (e.id === skip) continue;
+        const other = e.a === node ? e.b : e.b === node ? e.a : null;
+        if (other === null || visited.has(other)) continue;
+        if (other === to) return true;
+        visited.add(other);
+        queue.push(other);
+      }
+    }
+    return false;
+  };
+
+  const rankPreserving = new Set<string>();
+  for (const comp of circuit.components) {
+    if (comp.type !== 'R' && comp.type !== 'L') continue;
+    const [a, b] = componentEndpoints(comp);
+    if (a === b) continue;
+    if (!dcConnectedSkipping(comp.id, a, b)) rankPreserving.add(comp.id);
+  }
+
+  // --- Union-find: merge nets joined by rank-preserving R/L ------------
+  const parent = new Map<string, string>();
+  for (const n of allNets) parent.set(n, n);
+  const find = (n: string): string => {
+    let r = n;
+    while (parent.get(r)! !== r) r = parent.get(r)!;
+    let cur = n;
+    while (parent.get(cur)! !== r) {
+      const next = parent.get(cur)!;
+      parent.set(cur, r);
+      cur = next;
+    }
+    return r;
+  };
+  const union = (a: string, b: string) => {
+    const ra = find(a), rb = find(b);
+    if (ra === rb) return;
+    // Prefer ground as the set root so GND stays at rank 0.
+    if (ra === GND) parent.set(rb, ra);
+    else if (rb === GND) parent.set(ra, rb);
+    else parent.set(ra, rb);
+  };
+  for (const comp of circuit.components) {
+    if (!rankPreserving.has(comp.id)) continue;
+    const [a, b] = componentEndpoints(comp);
+    if (a !== b) union(a, b);
+  }
+
+  // --- Edge collection at set level -----------------------------------
+  // Non-source components contribute an undirected edge (between set
+  // representatives) used for BFS distance. Rank-preserving R/L are already
+  // collapsed via union-find, so their edges are self-loops and dropped.
+  // Source components (V/I/E/G/F/H) contribute only a directed polarity
+  // constraint; their terminals define the voltage hierarchy rather than a
+  // hop in the signal chain.
+  const SOURCE_TYPES = new Set(['V', 'I', 'E', 'G', 'F', 'H']);
   const undirectedPairs: Array<[string, string]> = [];
   const directedHighLow: Array<[string, string]> = [];
 
   for (const comp of circuit.components) {
     const [a, b] = componentEndpoints(comp);
-    if (a !== b) undirectedPairs.push([a, b]);
+    const sa = find(a), sb = find(b);
+    if (sa !== sb && !SOURCE_TYPES.has(comp.type)) undirectedPairs.push([sa, sb]);
 
     let high: string | null = null, low: string | null = null;
     switch (comp.type) {
       case 'V': case 'I':
         high = comp.ports[0].net; low = comp.ports[1].net; break;
-      case 'M':
-        high = comp.ports[0].net; low = comp.ports[2].net; break;
-      case 'Q':
-        high = comp.ports[0].net; low = comp.ports[2].net; break;
+      case 'M': {
+        const isP = comp.params?.channelType === 'p';
+        high = isP ? comp.ports[2].net : comp.ports[0].net;
+        low  = isP ? comp.ports[0].net : comp.ports[2].net;
+        break;
+      }
+      case 'Q': {
+        const isPnp = comp.params?.type === 'pnp';
+        high = isPnp ? comp.ports[2].net : comp.ports[0].net;
+        low  = isPnp ? comp.ports[0].net : comp.ports[2].net;
+        break;
+      }
       case 'E': case 'G':
         high = comp.ports[2].net; low = comp.ports[3].net; break;
-      // D, R, L, C, F, H, X: undirected only
+      // D, C, X: undirected only
     }
-    if (high !== null && low !== null && high !== low) {
-      directedHighLow.push([high, low]);
+    if (high !== null && low !== null) {
+      const sh = find(high), sl = find(low);
+      if (sh !== sl) directedHighLow.push([sh, sl]);
     }
   }
 
-  // Undirected adjacency for BFS.
+  const reps = new Set<string>();
+  for (const n of allNets) reps.add(find(n));
+
+  // --- Step 1: BFS distance from ground's set through undirected edges --
+  const gndRep = find(GND);
   const undirected = new Map<string, Set<string>>();
-  for (const n of allNets) undirected.set(n, new Set());
+  for (const r of reps) undirected.set(r, new Set());
   for (const [a, b] of undirectedPairs) {
     undirected.get(a)!.add(b);
     undirected.get(b)!.add(a);
   }
 
-  // Step 1: BFS distance from ground through undirected graph.
   const dist = new Map<string, number>();
-  for (const n of allNets) dist.set(n, Infinity);
-  dist.set(GND, 0);
-  const bfs: string[] = [GND];
+  for (const r of reps) dist.set(r, Infinity);
+  dist.set(gndRep, 0);
+  const bfs: string[] = [gndRep];
   while (bfs.length > 0) {
     const node = bfs.shift()!;
     const d = dist.get(node)!;
@@ -110,44 +199,43 @@ function rankNodes(circuit: CircuitIR): Map<string, number> {
       }
     }
   }
-  // Isolated nets (no path to ground) get a small positive distance so
-  // longest-path relaxation still places them above ground.
-  for (const n of allNets) {
-    if (dist.get(n) === Infinity) dist.set(n, 1);
+  for (const r of reps) {
+    if (dist.get(r) === Infinity) dist.set(r, 1);
   }
 
-  // Step 2: Build DAG by orienting each undirected edge from lower to higher
-  // BFS distance. Equal distances use lexicographic tiebreak.
+  // --- Step 2: Build DAG at set level ----------------------------------
+  // Orient each undirected edge from the lower-distance endpoint to the
+  // higher-distance one. Drop edges whose endpoints share a BFS distance —
+  // those carry no rank-ordering information and would otherwise introduce a
+  // spurious rank step (e.g., a feedback capacitor between two nodes that
+  // are both on the same signal rail).
   const dagFrom = new Map<string, Set<string>>();
-  for (const n of allNets) dagFrom.set(n, new Set());
+  for (const r of reps) dagFrom.set(r, new Set());
   for (const [a, b] of undirectedPairs) {
     const da = dist.get(a)!, db = dist.get(b)!;
-    let lo: string, hi: string;
-    if (da < db) { lo = a; hi = b; }
-    else if (db < da) { lo = b; hi = a; }
-    else { [lo, hi] = a < b ? [a, b] : [b, a]; }
+    if (da === db) continue;
+    const [lo, hi] = da < db ? [a, b] : [b, a];
     dagFrom.get(lo)!.add(hi);
   }
 
-  // Step 3: Apply directed polarity. For each high→low pair, ensure the edge
-  // runs low→high in the DAG (reverse the existing edge if needed).
+  // --- Step 3: Apply directed polarity overrides -----------------------
   for (const [high, low] of directedHighLow) {
     dagFrom.get(high)?.delete(low);
     dagFrom.get(low)?.add(high);
   }
 
-  // Step 4: Longest path from ground via Bellman–Ford-style relaxation.
-  const rank = new Map<string, number>();
-  for (const n of allNets) rank.set(n, 0);
+  // --- Step 4: Longest path from ground's set --------------------------
+  const rankByRep = new Map<string, number>();
+  for (const r of reps) rankByRep.set(r, 0);
 
-  const maxIter = allNets.size * 2 + 1;
+  const maxIter = reps.size * 2 + 1;
   for (let i = 0; i < maxIter; i++) {
     let changed = false;
     for (const [from, tos] of dagFrom) {
-      const fromRank = rank.get(from)!;
+      const fromRank = rankByRep.get(from)!;
       for (const to of tos) {
-        if (fromRank + 1 > rank.get(to)!) {
-          rank.set(to, fromRank + 1);
+        if (fromRank + 1 > rankByRep.get(to)!) {
+          rankByRep.set(to, fromRank + 1);
           changed = true;
         }
       }
@@ -155,6 +243,9 @@ function rankNodes(circuit: CircuitIR): Map<string, number> {
     if (!changed) break;
   }
 
+  // --- Step 5: Project set ranks back onto every net -------------------
+  const rank = new Map<string, number>();
+  for (const n of allNets) rank.set(n, rankByRep.get(find(n))!);
   return rank;
 }
 
@@ -164,37 +255,81 @@ function rankNodes(circuit: CircuitIR): Map<string, number> {
 
 interface Placement {
   comp: IRComponent;
-  col: number;   // horizontal slot
+  col: number;   // BFS distance from the nearest source component
   topRank: number;    // higher-potential node rank
   bottomRank: number; // lower-potential node rank
 }
 
+/** Assign each component a column by BFS from voltage/current sources through
+ * shared non-ground nets. The result reflects signal flow: V1 at col 0, a
+ * series R between V1's + and the output at col 1, the output capacitor at
+ * col 2, and so on. Components that share the same intermediate net (e.g. MP
+ * and MN both touching `out` in a CMOS inverter) land in the same column. */
+function assignColumns(circuit: CircuitIR): Map<string, number> {
+  const col = new Map<string, number>();
+  const netToComps = new Map<string, string[]>();
+  for (const c of circuit.components) {
+    for (const p of c.ports) {
+      if (p.net === '0') continue;
+      if (!netToComps.has(p.net)) netToComps.set(p.net, []);
+      netToComps.get(p.net)!.push(c.id);
+    }
+  }
+  const compById = new Map(circuit.components.map(c => [c.id, c]));
+
+  const queue: string[] = [];
+  for (const c of circuit.components) {
+    if (c.type === 'V' || c.type === 'I') {
+      col.set(c.id, 0);
+      queue.push(c.id);
+    }
+  }
+  // Degenerate circuit with no sources — anchor BFS on the first component.
+  if (queue.length === 0 && circuit.components.length > 0) {
+    col.set(circuit.components[0].id, 0);
+    queue.push(circuit.components[0].id);
+  }
+
+  while (queue.length > 0) {
+    const cid = queue.shift()!;
+    const c = compById.get(cid)!;
+    const next = col.get(cid)! + 1;
+    const seen = new Set<string>();
+    for (const p of c.ports) {
+      if (p.net === '0') continue;
+      for (const nid of netToComps.get(p.net) ?? []) {
+        if (nid === cid || seen.has(nid)) continue;
+        seen.add(nid);
+        if (!col.has(nid)) {
+          col.set(nid, next);
+          queue.push(nid);
+        }
+      }
+    }
+  }
+
+  // Any unreached components (isolated) get placed after the rest.
+  let fallback = Math.max(0, ...col.values()) + 1;
+  for (const c of circuit.components) {
+    if (!col.has(c.id)) col.set(c.id, fallback++);
+  }
+  return col;
+}
+
 function placeComponents(circuit: CircuitIR, nodeRanks: Map<string, number>): Placement[] {
+  const columns = assignColumns(circuit);
   const placements: Placement[] = [];
-
-  // Group components by which pair of ranks they span
-  const spanGroups = new Map<string, IRComponent[]>();
-
   for (const comp of circuit.components) {
     const [netA, netB] = componentEndpoints(comp);
     const rankA = nodeRanks.get(netA) ?? 0;
     const rankB = nodeRanks.get(netB) ?? 0;
-    const topRank = Math.max(rankA, rankB);
-    const bottomRank = Math.min(rankA, rankB);
-    const key = `${topRank}-${bottomRank}`;
-
-    if (!spanGroups.has(key)) spanGroups.set(key, []);
-    spanGroups.get(key)!.push(comp);
-  }
-
-  // Assign columns within each span group
-  for (const [key, comps] of spanGroups) {
-    const [topRank, bottomRank] = key.split('-').map(Number);
-    comps.forEach((comp, i) => {
-      placements.push({ comp, col: i, topRank, bottomRank });
+    placements.push({
+      comp,
+      col: columns.get(comp.id) ?? 0,
+      topRank: Math.max(rankA, rankB),
+      bottomRank: Math.min(rankA, rankB),
     });
   }
-
   return placements;
 }
 
@@ -214,57 +349,103 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
   // --- Component placement ---
   const placements = placeComponents(circuit, nodeRanks);
 
-  // Compute the global column count per span group to avoid overlap
-  // We need to assign absolute X positions so components don't collide
-  // Strategy: lay out all components left-to-right, grouped by their span
-  const spanCols = new Map<string, number>(); // span key → starting absolute column
-  let nextAbsCol = 0;
+  // Within each BFS column, pack components into sub-columns. Two placements
+  // can share a sub-column (stack vertically) only when their symbol Y ranges
+  // are separated by at least STACK_GAP pixels — otherwise their bodies or
+  // ground stubs would overlap. Each sub-column consumes one SLOT_SPACING of
+  // horizontal space.
+  const STACK_GAP = GRID / 2;
+  const symbolFor = (pl: Placement) => {
+    const horizontal = pl.comp.type === 'C' && pl.topRank === pl.bottomRank;
+    return { horizontal, sym: getSymbol(pl.comp.type, pl.comp.displayValue ?? '', horizontal) };
+  };
+  const centerYFor = (pl: Placement) => {
+    const topY = MARGIN + (maxRank - pl.topRank) * RANK_SPACING;
+    const bottomY = MARGIN + (maxRank - pl.bottomRank) * RANK_SPACING;
+    return (topY + bottomY) / 2;
+  };
 
-  // Sort span groups: prioritize spans that include higher ranks (appear more to the left)
-  const spanKeys = [...new Set(placements.map(p => `${p.topRank}-${p.bottomRank}`))];
-  spanKeys.sort((a, b) => {
-    const [aTop] = a.split('-').map(Number);
-    const [bTop] = b.split('-').map(Number);
-    return bTop - aTop; // higher rank first
-  });
+  const byCol = new Map<number, Placement[]>();
+  for (const pl of placements) {
+    if (!byCol.has(pl.col)) byCol.set(pl.col, []);
+    byCol.get(pl.col)!.push(pl);
+  }
 
-  for (const key of spanKeys) {
-    const count = placements.filter(p => `${p.topRank}-${p.bottomRank}` === key).length;
-    spanCols.set(key, nextAbsCol);
-    nextAbsCol += count;
+  const xForComp = new Map<string, number>();
+  let nextAbsX = MARGIN;
+  const cols = [...byCol.keys()].sort((a, b) => a - b);
+
+  for (const col of cols) {
+    const pls = byCol.get(col)!;
+    // Sort top-to-bottom (highest rank first = lowest Y)
+    pls.sort((a, b) => {
+      if (a.topRank !== b.topRank) return b.topRank - a.topRank;
+      return b.bottomRank - a.bottomRank;
+    });
+
+    // Greedy column packing: place each component in the first sub-column
+    // that still has vertical room below the last component.
+    const subCols: { bottomY: number }[] = [];
+    const subColForComp = new Map<string, number>();
+    for (const pl of pls) {
+      const { sym } = symbolFor(pl);
+      const cy = centerYFor(pl);
+      const topY = cy - sym.height / 2;
+      const bottomY = cy + sym.height / 2;
+      let sc = -1;
+      for (let i = 0; i < subCols.length; i++) {
+        if (topY >= subCols[i].bottomY + STACK_GAP) { sc = i; break; }
+      }
+      if (sc === -1) { sc = subCols.length; subCols.push({ bottomY }); }
+      else subCols[sc].bottomY = bottomY;
+      subColForComp.set(pl.comp.id, sc);
+    }
+
+    for (const pl of pls) {
+      const sc = subColForComp.get(pl.comp.id)!;
+      xForComp.set(pl.comp.id, nextAbsX + sc * SLOT_SPACING);
+    }
+    nextAbsX += subCols.length * SLOT_SPACING;
   }
 
   // --- Pixel positions ---
   const placedComponents: PlacedComponent[] = [];
 
   for (const pl of placements) {
-    const { comp, col, topRank, bottomRank } = pl;
-    const spanKey = `${topRank}-${bottomRank}`;
-    const absCol = (spanCols.get(spanKey) ?? 0) + col;
+    const { comp, topRank, bottomRank } = pl;
 
-    const symbol = getSymbol(comp.type, comp.displayValue ?? '');
+    const { horizontal, sym: symbol } = symbolFor(pl);
     const nets = comp.ports.map(p => p.net);
 
-    // Y position: center the component between its top and bottom rank rails
-    // Ranks are inverted for display: highest rank = top of screen (lowest Y)
-    const topY = MARGIN + (maxRank - topRank) * RANK_SPACING;
-    const bottomY = MARGIN + (maxRank - bottomRank) * RANK_SPACING;
-    const centerY = (topY + bottomY) / 2;
-
-    // X position based on absolute column
-    const x = MARGIN + absCol * SLOT_SPACING;
+    const centerY = centerYFor(pl);
+    const x = xForComp.get(comp.id)!;
     const y = centerY - symbol.height / 2;
 
-    // Map pins: symbol pins get assigned to component port nets
-    const pins: Pin[] = symbol.pins.map((p, i) => ({
-      net: i < nets.length ? nets[i] : '0',
-      x: x + p.dx,
-      y: y + p.dy,
-    }));
+    // Map IR port i to a symbol pin position. For PMOS / PNP, swap the
+    // drain/collector and source/emitter positions so the "source-side" pin
+    // (which sits at higher potential) renders above the drain/collector.
+    // For undirected 2-terminal symbols (R, L, C, D) whose IR port ordering
+    // happens to put the lower-rank net first, swap pins 0 and 1 so the
+    // higher-rank net always renders at the top/left of the symbol body.
+    const flipForP =
+      (comp.type === 'M' && comp.params?.channelType === 'p') ||
+      (comp.type === 'Q' && comp.params?.type === 'pnp');
+    const flip2Term =
+      symbol.pins.length === 2 &&
+      (nodeRanks.get(nets[0]) ?? 0) < (nodeRanks.get(nets[1]) ?? 0);
+    const symIdx = (i: number): number => {
+      if (flipForP && (i === 0 || i === 2)) return i === 0 ? 2 : 0;
+      if (flip2Term && (i === 0 || i === 1)) return 1 - i;
+      return i;
+    };
+    const pins: Pin[] = nets.slice(0, symbol.pins.length).map((net, i) => {
+      const sp = symbol.pins[symIdx(i)];
+      return { net, x: x + sp.dx, y: y + sp.dy };
+    });
 
     placedComponents.push({
       component: comp,
-      x, y, rotation: 0,
+      x, y, rotation: 0, horizontal,
       pins,
     });
   }
@@ -363,7 +544,7 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
   // --- Bounds ---
   let maxX = 0, maxY = 0;
   for (const pc of placedComponents) {
-    const sym = getSymbol(pc.component.type, pc.component.displayValue ?? '');
+    const sym = getSymbol(pc.component.type, pc.component.displayValue ?? '', pc.horizontal);
     maxX = Math.max(maxX, pc.x + sym.width);
     maxY = Math.max(maxY, pc.y + sym.height);
   }
