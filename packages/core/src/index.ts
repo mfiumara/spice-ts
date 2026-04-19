@@ -1,4 +1,6 @@
 export { simulate, simulateStream, simulateStepStream } from './simulate.js';
+export { createTransientSim } from './analysis/transient-driver.js';
+export type { TransientSim, TransientSimOptions } from './analysis/transient-driver.js';
 export { parse, parseAsync } from './parser/index.js';
 export { preprocess } from './parser/preprocessor.js';
 export { Circuit } from './circuit.js';
@@ -33,3 +35,4 @@ export {
   TimestepTooSmallError,
   CycleError,
 } from './errors.js';
+export type { ConvergenceFailureKind } from './errors.js';
