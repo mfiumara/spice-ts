@@ -2,7 +2,9 @@
 
 [![CI](https://github.com/mfiumara/spice-ts/actions/workflows/ci.yml/badge.svg)](https://github.com/mfiumara/spice-ts/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/mfiumara/spice-ts/graph/badge.svg)](https://codecov.io/gh/mfiumara/spice-ts)
-[![npm](https://img.shields.io/npm/v/@spice-ts/core)](https://www.npmjs.com/package/@spice-ts/core)
+[![npm @spice-ts/core](https://img.shields.io/npm/v/@spice-ts/core?label=%40spice-ts%2Fcore)](https://www.npmjs.com/package/@spice-ts/core)
+[![npm @spice-ts/ui](https://img.shields.io/npm/v/@spice-ts/ui?label=%40spice-ts%2Fui)](https://www.npmjs.com/package/@spice-ts/ui)
+[![GitHub stars](https://img.shields.io/github/stars/mfiumara/spice-ts?style=social)](https://github.com/mfiumara/spice-ts/stargazers)
 
 A zero-dependency TypeScript SPICE circuit simulator. Parse netlists and run DC, transient, and AC analysis directly in Node.js or the browser — no native binaries, no WASM.
 
