@@ -211,44 +211,56 @@ function currentSourceSymbol(stretchH?: number): SymbolDef {
   };
 }
 
-function diodeSymbol(): SymbolDef {
+function diodeSymbol(flipped = false): SymbolDef {
   const w = GRID * 1.5, h = GRID;
   const cy = h / 2;
   const triW = h * 0.6;
   const cx = w / 2;
+  // Non-flipped: anode left, triangle points right. Flipped: anode right,
+  // triangle points left. Keeps pin positions identical so layout logic
+  // (which remaps IR ports via flip2Term) does not need to know.
+  const tipX = flipped ? cx - triW / 2 : cx + triW / 2;
+  const baseX = flipped ? cx + triW / 2 : cx - triW / 2;
+  const barX = tipX;
 
   return {
     elements: [
-      { tag: 'line', attrs: { x1: 0, y1: cy, x2: cx - triW / 2, y2: cy } },
-      { tag: 'path', attrs: { d: `M${cx - triW / 2},${cy - h * 0.35} L${cx + triW / 2},${cy} L${cx - triW / 2},${cy + h * 0.35} Z`, fill: 'none' } },
-      { tag: 'line', attrs: { x1: cx + triW / 2, y1: cy - h * 0.35, x2: cx + triW / 2, y2: cy + h * 0.35 } },
-      { tag: 'line', attrs: { x1: cx + triW / 2, y1: cy, x2: w, y2: cy } },
+      { tag: 'line', attrs: { x1: 0, y1: cy, x2: flipped ? barX : baseX, y2: cy } },
+      { tag: 'path', attrs: { d: `M${baseX},${cy - h * 0.35} L${tipX},${cy} L${baseX},${cy + h * 0.35} Z`, fill: 'none' } },
+      { tag: 'line', attrs: { x1: barX, y1: cy - h * 0.35, x2: barX, y2: cy + h * 0.35 } },
+      { tag: 'line', attrs: { x1: flipped ? baseX : barX, y1: cy, x2: w, y2: cy } },
     ],
     pins: [{ dx: 0, dy: cy }, { dx: w, dy: cy }],
     width: w, height: h,
   };
 }
 
-/** Vertical diode — pins on top (anode) and bottom (cathode). Used when the
+/** Vertical diode — pins on top (pin 0) and bottom (pin 1). Used when the
  * diode connects rails at different ranks (e.g. a freewheel diode hanging
- * from the switching node to ground in a buck converter). */
-function verticalDiodeSymbol(stretchH?: number): SymbolDef {
+ * from the switching node to ground in a buck converter). `flipped` points
+ * the triangle upward (tip at top) when the IR port-0 (anode) gets remapped
+ * to the bottom pin position via rank-driven flip — keeps current-flow arrow
+ * running from anode to cathode visually. */
+function verticalDiodeSymbol(stretchH?: number, flipped = false): SymbolDef {
   const w = GRID;
   const naturalH = GRID * 1.5;
   const h = Math.max(naturalH, stretchH ?? naturalH);
   const cx = w / 2;
-  const triH = w * 0.6;
   const bodyCenterY = h / 2;
-  // Triangle points downward toward the cathode bar (current flows anode→cathode).
   const triTop = bodyCenterY - w * 0.35;
   const triBot = bodyCenterY + w * 0.35;
+  // Non-flipped: tip at triBot (triangle points down), cathode bar at triBot.
+  // Flipped: tip at triTop (triangle points up), cathode bar at triTop.
+  const tipY = flipped ? triTop : triBot;
+  const baseY = flipped ? triBot : triTop;
+  const barY = tipY;
 
   return {
     elements: [
-      { tag: 'line', attrs: { x1: cx, y1: 0, x2: cx, y2: triTop } },
-      { tag: 'path', attrs: { d: `M${cx - w * 0.35},${triTop} L${cx + w * 0.35},${triTop} L${cx},${triBot} Z`, fill: 'none' } },
-      { tag: 'line', attrs: { x1: cx - w * 0.35, y1: triBot, x2: cx + w * 0.35, y2: triBot } },
-      { tag: 'line', attrs: { x1: cx, y1: triBot, x2: cx, y2: h } },
+      { tag: 'line', attrs: { x1: cx, y1: 0, x2: cx, y2: flipped ? barY : baseY } },
+      { tag: 'path', attrs: { d: `M${cx - w * 0.35},${baseY} L${cx + w * 0.35},${baseY} L${cx},${tipY} Z`, fill: 'none' } },
+      { tag: 'line', attrs: { x1: cx - w * 0.35, y1: barY, x2: cx + w * 0.35, y2: barY } },
+      { tag: 'line', attrs: { x1: cx, y1: flipped ? baseY : barY, x2: cx, y2: h } },
     ],
     pins: [{ dx: cx, dy: 0 }, { dx: cx, dy: h }],
     width: w, height: h,
@@ -380,6 +392,7 @@ export function getSymbol(
   horizontal = false,
   stretchH?: number,
   stretchW?: number,
+  flipped = false,
 ): SymbolDef {
   switch (type) {
     case 'R': return horizontal ? resistorSymbol(stretchW) : verticalResistorSymbol(stretchH);
@@ -391,7 +404,7 @@ export function getSymbol(
       stretchH,
     );
     case 'I': return currentSourceSymbol(stretchH);
-    case 'D': return horizontal ? diodeSymbol() : verticalDiodeSymbol(stretchH);
+    case 'D': return horizontal ? diodeSymbol(flipped) : verticalDiodeSymbol(stretchH, flipped);
     case 'Q': return bjtSymbol();
     case 'M': return mosfetSymbol();
     case 'E': case 'G': return opampSymbol();

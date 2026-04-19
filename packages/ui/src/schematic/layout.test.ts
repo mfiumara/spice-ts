@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { layoutSchematic } from './layout.js';
-import { GRID } from './symbols.js';
+import { GRID, getSymbol } from './symbols.js';
 import type { CircuitIR } from './types.js';
 
 /** Helper to build a simple CircuitIR for testing. */
@@ -704,6 +704,38 @@ describe('layoutSchematic', () => {
         const yInBody = s.y1 >= vgBodyYMin && s.y1 <= vgBodyYMax;
         expect(xCrosses && yInBody, `in bus at y=${s.y1} x=[${xMin},${xMax}] crosses Vg body at x=${vgCenterX} y=[${vgBodyYMin},${vgBodyYMax}]`).toBe(false);
       }
+    });
+
+    it('diode with anode at lower rank flips its triangle so it points from anode to cathode', () => {
+      // A freewheel-style diode with anode=gnd (rank 0) and cathode=sw
+      // (higher rank) must render with the triangle apex at the TOP (cathode
+      // side) and the anode lead coming from the BOTTOM. Without flipping
+      // the symbol, the triangle points from cathode to anode — backwards.
+      const circuit = makeCircuit(
+        { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 5 }, displayValue: 'DC 5' },
+        { type: 'R', id: 'R1', name: 'R1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: 'out' }], params: { resistance: 1 }, displayValue: '1' },
+        { type: 'D', id: 'D1', name: 'D1', ports: [{ name: 'p', net: '0' }, { name: 'n', net: 'out' }], params: { modelName: 'DMOD' }, displayValue: 'DMOD' },
+      );
+      const layout = layoutSchematic(circuit);
+      const d1 = layout.components.find(c => c.component.id === 'D1')!;
+      const anode = d1.pins.find(p => p.net === '0')!;
+      const cathode = d1.pins.find(p => p.net === 'out')!;
+      // Anode (ground) is physically below cathode.
+      expect(anode.y).toBeGreaterThan(cathode.y);
+      // The symbol's triangle path must now point UP (tip closer to cathode y
+      // than base). We detect this by checking the triangle path in the
+      // symbol: the tip y-coordinate sits above the base y-coordinate.
+      const sym = getSymbol('D', d1.component.displayValue ?? '', d1.horizontal ?? false, d1.stretchH, d1.stretchW, d1.flipped ?? false);
+      const trianglePath = sym.elements.find(el => el.tag === 'path')!;
+      const d = trianglePath.attrs.d as string;
+      // Triangle path format: M<x>,<y> L<x>,<y> L<x>,<y> Z. For a vertical
+      // diode flipped so triangle points up, the tip y is the SMALLEST y
+      // among the three points (tip at top, base spans across bottom).
+      const matches = [...d.matchAll(/[ML]\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)/g)];
+      const ys = matches.map(m => parseFloat(m[2]));
+      const tipY = ys[2]; // third point is the tip in our M L L Z pattern
+      const baseY1 = ys[0], baseY2 = ys[1];
+      expect(tipY).toBeLessThan(Math.min(baseY1, baseY2));
     });
 
     it('buck converter: freewheel diode D1 (anode=0, cathode=sw) draws vertically', () => {

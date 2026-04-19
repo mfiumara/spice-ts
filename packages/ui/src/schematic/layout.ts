@@ -621,7 +621,11 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
       return { net, x: x + sp.dx, y: y + sp.dy };
     });
 
-    placedComponents.push({ component: comp, x, y, rotation: 0, horizontal, stretchH, pins });
+    // Diodes are directional: when flip2Term remaps the anode to pin 1 (so it
+    // renders at the cathode's visual position), the triangle must also flip
+    // so the arrow still points from anode to cathode.
+    const flipped = comp.type === 'D' && flip2Term;
+    placedComponents.push({ component: comp, x, y, rotation: 0, horizontal, stretchH, flipped, pins });
   }
 
   // --- Pin alignment: pull vertical 2-terminal R's onto their peer's column
