@@ -109,24 +109,18 @@ describe('TransientSim convergence (GMIN stepping)', () => {
   });
 
   it('hitting the dt floor throws TimestepTooSmallError with kind=dt-floor', async () => {
-    // A pathological circuit designed to stress NR beyond GMIN stepping's reach.
-    // If GMIN stepping recovers this, that's fine — adjust the fixture or skip.
-    const pathological = `
+    // Force dt-floor by starving NR of iterations. Every attemptStep call
+    // returns ok=false immediately; no GMIN value can recover this since the
+    // NR loop itself never runs. The driver halves dt until MIN_TIMESTEP and
+    // throws.
+    const sim = await createTransientSim(`
 V1 1 0 DC 5
-.model DBAD D(IS=1e-60 N=0.01)
-D1 1 0 DBAD
-.tran 1n 1u
-`;
-    const sim = await createTransientSim(pathological);
+R1 1 2 1k
+C1 2 0 1u
+.tran 1u 1m
+`, { maxTransientIterations: 0 });
     try {
-      const doRun = () => sim.advanceUntil(1e-6);
-      // It MAY throw TimestepTooSmallError, or GMIN stepping may recover.
-      // The test is: IF it throws, the error class must be TimestepTooSmallError
-      // (not a plain error or DC-side ConvergenceError).
-      try { doRun(); }
-      catch (err) {
-        expect(err).toBeInstanceOf(TimestepTooSmallError);
-      }
+      expect(() => sim.advanceUntil(1e-6)).toThrow(TimestepTooSmallError);
     } finally {
       sim.dispose();
     }
