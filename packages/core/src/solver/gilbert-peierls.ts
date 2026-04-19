@@ -153,6 +153,10 @@ export class GilbertPeierlsSolver implements SparseSolver {
     this.factorized = false;
   }
 
+  isPatternAnalyzed(): boolean {
+    return this.analyzed;
+  }
+
   /**
    * Left-looking column-Crout factorization with threshold partial pivoting.
    *

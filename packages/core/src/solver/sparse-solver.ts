@@ -10,6 +10,9 @@ export interface SparseSolver {
 
   /** Solve Ax = b, returns solution vector */
   solve(b: Float64Array): Float64Array;
+
+  /** Returns true if {@link analyzePattern} has been called. */
+  isPatternAnalyzed(): boolean;
 }
 
 /** Create a new sparse LU solver instance (Gilbert-Peierls algorithm). */
