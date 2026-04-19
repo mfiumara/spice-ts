@@ -161,7 +161,9 @@ class TransientSimImpl implements TransientSim {
       //   - Start with currentGmin (user gmin, or last used elevated level if decaying).
       //   - If currentGmin < BASELINE_GMIN, include BASELINE_GMIN before the full schedule.
       //   - Then include all GMIN_FALLBACK_SCHEDULE entries above currentGmin.
-      // This ensures: user-configured gmin is tried first, then baseline, then escalating.
+      // Tried in schedule-declaration order (largest-first for fast recovery on
+      // hard-switching transients). currentGmin comes first so we don't bump gmin
+      // unnecessarily on circuits that are converging fine.
       const gminCandidates: number[] = [this.currentGmin];
       if (this.currentGmin < BASELINE_GMIN) gminCandidates.push(BASELINE_GMIN);
       for (const g of GMIN_FALLBACK_SCHEDULE) {
@@ -228,12 +230,14 @@ class TransientSimImpl implements TransientSim {
       if (gminElevated) {
         // The committed solution is GMIN-distorted: the artificial shunts have
         // shifted the operating point away from the true physics. Reset ALL
-        // history (LTE basis, trapezoidal history, lteRejectCount) so that
-        // subsequent steps start fresh without propagating the distortion.
+        // history (trapezoidal history) so that subsequent steps start fresh
+        // without propagating the distortion.
         // SPICE convention: discard integration history after any GMIN-stepped commit.
         this.secondPrevSol = undefined;
         this.prevB = undefined;
-        this.lteRejectCount = 0;
+        // LTE is bypassed for the following step too — secondPrevSol=undefined makes
+        // checkLTE return 0 until history re-accumulates. Intentional: the first step
+        // after an elevated commit has no basis for trapezoidal prediction.
       } else {
         // Update trapezoidal history from the clean (undistorted) solution
         if (this.options.integrationMethod === 'trapezoidal') {
