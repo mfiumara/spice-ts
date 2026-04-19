@@ -10,6 +10,11 @@ import { TimestepTooSmallError, InvalidCircuitError } from '../errors.js';
 
 const MIN_TIMESTEP = 1e-15;
 const NR_VOLTAGE_LIMIT = 3.5;
+/**
+ * After this many consecutive LTE rejections, stop LTE-checking to avoid
+ * pathological shrink loops on stiff problems. SPICE-convention heuristic.
+ */
+const MAX_LTE_REJECTS_BEFORE_BYPASS = 10;
 
 /**
  * Resumable transient simulation driver.
@@ -126,7 +131,7 @@ class TransientSimImpl implements TransientSim {
           time: nextTime,
           prevSolution: prevSol,
           prevB: this.prevB,
-          gmin: this.options.gmin || 1e-12,
+          gmin: this.options.gmin,
           voltageLimit: NR_VOLTAGE_LIMIT,
         },
       );
@@ -213,7 +218,7 @@ class TransientSimImpl implements TransientSim {
   }
 
   private checkLTE(current: Float64Array, previous: Float64Array, dt: number): number {
-    if (!this.secondPrevSol || this.lteRejectCount >= 10) return 0;
+    if (!this.secondPrevSol || this.lteRejectCount >= MAX_LTE_REJECTS_BEFORE_BYPASS) return 0;
     let maxRatio = 0;
     const divider = this.options.integrationMethod === 'trapezoidal' ? 3 : 2;
     const { nodeCount } = this.compiled;
