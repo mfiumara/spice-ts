@@ -53,7 +53,7 @@ describe('attemptStep', () => {
     }
   });
 
-  it('does not modify the input assembler.solution on failure', () => {
+  it('leaves assembler.solution unchanged when maxTransientIterations=0 (loop never runs)', () => {
     const { compiled, options, assembler, solver } = buildRCContext();
     const brokenOpts = { ...options, maxTransientIterations: 0 };
     const prevSol = new Float64Array(assembler.solution);
@@ -64,6 +64,9 @@ describe('attemptStep', () => {
       { dt: 1e-6, time: 1e-6, prevSolution: prevSol, prevB: undefined, gmin: 1e-12, voltageLimit: 3.5 },
     );
 
+    // When the loop never enters, nothing gets stamped or solved, so the
+    // assembler.solution is guaranteed unchanged. This documents the loop-
+    // not-entered edge case; the failure-on-iter-N contract is "indeterminate".
     expect(Array.from(assembler.solution)).toEqual(Array.from(snapshot));
   });
 });

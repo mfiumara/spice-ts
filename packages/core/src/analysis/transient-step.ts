@@ -5,9 +5,11 @@ import type { SparseSolver } from '../solver/sparse-solver.js';
 import { buildCompanionSystem } from '../mna/companion.js';
 
 /**
- * Shared context for an NR step attempt. Lives for the lifetime of a driver.
- * Mutated only by `attemptStep` itself (via `assembler` and `solver`); callers
- * should treat it as opaque.
+ * Shared context for an NR step attempt. The assembler and solver are
+ * long-lived — reused across retries so pattern analysis and typed-array
+ * allocations amortize. `attemptStep` mutates `assembler` internally; the
+ * driver wrapping it may additionally reset `assembler.solution` between
+ * retries to restore from a previous snapshot.
  */
 export interface StepContext {
   readonly compiled: CompiledCircuit;
