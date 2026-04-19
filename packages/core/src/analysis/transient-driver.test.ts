@@ -59,4 +59,22 @@ describe('createTransientSim', () => {
     sim.dispose();
     expect(() => sim.advance()).toThrow();
   });
+
+  it('matches simulate() trajectory on RC circuit', async () => {
+    const { simulate } = await import('../simulate.js');
+    const baseline = await simulate(RC_NETLIST);
+    const baselineV2 = baseline.transient!.voltage('2');
+
+    const sim = await createTransientSim(RC_NETLIST);
+    const steps = sim.advanceUntil(1e-3);
+    sim.dispose();
+
+    // The driver produces its own timestep schedule (may not match exactly
+    // but should converge to the same RC step response within ~1e-9 at common
+    // points). Compare steady-state value only as a lightweight check.
+    const finalDriver = steps[steps.length - 1];
+    const driverV2 = finalDriver.voltages.get('2')!;
+    const baselineFinal = baselineV2[baselineV2.length - 1];
+    expect(driverV2).toBeCloseTo(baselineFinal, 9);
+  });
 });
