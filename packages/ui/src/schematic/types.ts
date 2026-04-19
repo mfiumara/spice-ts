@@ -31,6 +31,10 @@ export interface PlacedComponent {
   /** Total width requested for a stretchable horizontal symbol (e.g. a
    * feedback capacitor spanning the chain width). */
   stretchW?: number;
+  /** True when the symbol must be flipped along its primary axis so its
+   * directional graphics (e.g. a diode triangle) stay consistent with the
+   * net polarity after a rank-driven pin swap. */
+  flipped?: boolean;
   /** Pin positions after placement + rotation */
   pins: Pin[];
 }
