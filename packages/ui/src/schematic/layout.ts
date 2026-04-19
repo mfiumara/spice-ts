@@ -69,7 +69,12 @@ function rankNodes(circuit: CircuitIR): Map<string, number> {
   // component differentiates ranks; if they don't, the component is a
   // "signal-chain" hop whose endpoints are at the same DC potential and
   // should share a rank.
-  const DC_TYPES = new Set(['V', 'I', 'R', 'L', 'M', 'Q', 'E', 'G', 'F', 'H']);
+  // Independent sources and devices whose DC-bias path is part of the static
+  // voltage/current graph. Dependent sources (E/G/F/H) are excluded so an
+  // opamp's output→ground dc edge doesn't create a spurious parallel path
+  // for every resistor touching the feedback rail. D is included because a
+  // forward-biased diode conducts DC current like a resistor.
+  const DC_TYPES = new Set(['V', 'I', 'R', 'L', 'M', 'Q', 'D']);
   const dcEdges: Array<{ id: string; a: string; b: string }> = [];
   for (const comp of circuit.components) {
     if (!DC_TYPES.has(comp.type)) continue;
@@ -95,12 +100,53 @@ function rankNodes(circuit: CircuitIR): Map<string, number> {
     return false;
   };
 
+  // Nets that a diode touches. Used to recognise signal-path resistors that
+  // feed or follow a diode (e.g. the source resistor in a half-wave
+  // rectifier) — those R's should stay on the same rail as the diode.
+  const diodeNets = new Set<string>();
+  for (const comp of circuit.components) {
+    if (comp.type === 'D') {
+      for (const p of comp.ports) diodeNets.add(p.net);
+    }
+  }
+
   const rankPreserving = new Set<string>();
   for (const comp of circuit.components) {
-    if (comp.type !== 'R' && comp.type !== 'L') continue;
+    if (comp.type !== 'R' && comp.type !== 'L' && comp.type !== 'D') continue;
     const [a, b] = componentEndpoints(comp);
     if (a === b) continue;
-    if (!dcConnectedSkipping(comp.id, a, b)) rankPreserving.add(comp.id);
+    // Ideal inductor — zero DC drop regardless of loop topology.
+    if (comp.type === 'L') {
+      rankPreserving.add(comp.id);
+      continue;
+    }
+    // Signal-path diode (neither endpoint ground): drawn in-line on the rail
+    // with its ~0.7 V drop visually suppressed. A diode with a ground
+    // endpoint (Zener, freewheel) must differentiate so it can hang off the
+    // rail toward ground.
+    if (comp.type === 'D') {
+      if (a !== GND && b !== GND) rankPreserving.add(comp.id);
+      continue;
+    }
+    // R preserves when current cannot flow through it (no parallel DC path)
+    // or when it sits next to a diode in a non-ground chain — the rectifier
+    // pattern V → Rs → D → R_load should draw Rs and D horizontally even
+    // though Rs has a parallel DC path through the load.
+    const bothNonGround = a !== GND && b !== GND;
+    const adjacentToDiode = bothNonGround && (diodeNets.has(a) || diodeNets.has(b));
+    // Exception: a load resistor (one endpoint on ground, other on a cap
+    // output plate) should always differentiate even without a DC parallel
+    // path. The cap blocks DC in steady-state analysis, but the R is still
+    // visually a vertical pull-down.
+    const nonGndEnd = a === GND ? b : (b === GND ? a : null);
+    const isCapLoad = nonGndEnd !== null && circuit.components.some(c =>
+      c.type === 'C' && c.id !== comp.id && c.ports.some(p => p.net === nonGndEnd)
+    );
+    if (isCapLoad) {
+      // Explicitly differentiating — skip rank-preserving.
+    } else if (!dcConnectedSkipping(comp.id, a, b) || adjacentToDiode) {
+      rankPreserving.add(comp.id);
+    }
   }
 
   // --- Union-find: merge nets joined by rank-preserving R/L ------------
@@ -153,6 +199,27 @@ function rankNodes(circuit: CircuitIR): Map<string, number> {
   const dagCandidates: UEdge[] = [];
   const directedHighLow: Array<[string, string]> = [];
 
+  // Series output capacitors (e.g. C1 in an inverting buck-boost spanning n1
+  // and neg, where each side has its own R/D shunt to ground) must rank-
+  // separate their endpoints so the cap draws vertically. Feedback caps over
+  // an opamp loop lack such ground shunts and stay same-rank (horizontal arc).
+  const hasGndShunt = (net: string, exceptId: string): boolean =>
+    circuit.components.some(c =>
+      c.id !== exceptId &&
+      (c.type === 'R' || c.type === 'D') &&
+      c.ports.some(p => p.net === net) &&
+      c.ports.some(p => p.net === GND)
+    );
+  const seriesOutputCaps = new Set<string>();
+  for (const comp of circuit.components) {
+    if (comp.type !== 'C' || comp.ports.length !== 2) continue;
+    const a = comp.ports[0].net, b = comp.ports[1].net;
+    if (a === GND || b === GND || a === b) continue;
+    if (hasGndShunt(a, comp.id) && hasGndShunt(b, comp.id)) {
+      seriesOutputCaps.add(comp.id);
+    }
+  }
+
   for (const comp of circuit.components) {
     const [a, b] = componentEndpoints(comp);
     const sa = find(a), sb = find(b);
@@ -162,7 +229,8 @@ function rankNodes(circuit: CircuitIR): Map<string, number> {
         // Differentiating R/L is the only type that must insist on a rank
         // step even when BFS distance is equal.
         const isRL = comp.type === 'R' || comp.type === 'L';
-        const keepAtSameDist = isRL && !rankPreserving.has(comp.id);
+        const isSeriesCap = seriesOutputCaps.has(comp.id);
+        const keepAtSameDist = (isRL && !rankPreserving.has(comp.id)) || isSeriesCap;
         dagCandidates.push({ a: sa, b: sb, keepAtSameDist });
       }
     }
@@ -185,7 +253,23 @@ function rankNodes(circuit: CircuitIR): Map<string, number> {
       }
       case 'E': case 'G':
         high = comp.ports[2].net; low = comp.ports[3].net; break;
-      // D, C, X: undirected only
+      case 'C': {
+        if (!seriesOutputCaps.has(comp.id)) break;
+        // Whichever side has more non-gnd-shunt DC neighbors is upstream.
+        const [na, nb] = [comp.ports[0].net, comp.ports[1].net];
+        const upstreamCount = (net: string) => circuit.components.filter(c =>
+          c.id !== comp.id && DC_TYPES.has(c.type) &&
+          c.ports.some(p => p.net === net) &&
+          !c.ports.some(p => p.net === GND)
+        ).length;
+        const ca = upstreamCount(na), cb = upstreamCount(nb);
+        if (ca !== cb) {
+          high = ca > cb ? na : nb;
+          low  = ca > cb ? nb : na;
+        }
+        break;
+      }
+      // D, X: undirected only
     }
     if (high !== null && low !== null) {
       const sh = find(high), sl = find(low);
@@ -345,6 +429,28 @@ function assignColumns(circuit: CircuitIR): Map<string, number> {
   for (const c of circuit.components) {
     if (!col.has(c.id)) col.set(c.id, fallback++);
   }
+
+  // Refinement: a component whose net's FIRST carrier sits earlier in the
+  // BFS should be pulled back to that carrier's column. This keeps shunts
+  // (e.g. a freewheel diode from sw→gnd) in the SAME column as the source
+  // that drives their live net, leaving the next column free for the chain
+  // that continues onward (e.g. the inductor out of sw). Without this, a
+  // buck converter ends up with D1 placed to the RIGHT of L1 and the sw bus
+  // visually runs through L1's body.
+  const netMinCol = new Map<string, number>();
+  for (const [net, comps] of netToComps) {
+    if (comps.length === 0) continue;
+    netMinCol.set(net, Math.min(...comps.map(id => col.get(id) ?? 0)));
+  }
+  for (const c of circuit.components) {
+    let m = 0;
+    for (const p of c.ports) {
+      if (p.net === '0') continue;
+      const nc = netMinCol.get(p.net);
+      if (nc !== undefined) m = Math.max(m, nc);
+    }
+    col.set(c.id, m);
+  }
   return col;
 }
 
@@ -387,38 +493,64 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
   // ground stubs would overlap. Each sub-column consumes one SLOT_SPACING of
   // horizontal space.
   const STACK_GAP = GRID / 2;
+  // V/I/C have a natural central body (circle, plates) that tolerates lead
+  // extension when stretched. Resistors are stretched only when one endpoint
+  // is ground — the stretch keeps the ground pin on the ground rail so a
+  // row of pull-down R's and decoupling C's share a single ground line.
+  // A pull-up R between two live rails (e.g. RD in a common-source amp)
+  // keeps natural size to avoid the elongated zigzag look.
   const STRETCH_TYPES = new Set(['V', 'I', 'C']);
   const symbolFor = (pl: Placement) => {
-    const horizontal = pl.comp.type === 'C' && pl.topRank === pl.bottomRank;
-    // Vertical 2-terminal symbols stretch to match the rank span so their pins
-    // align with both rail Ys without a dangling lead-wire at either end.
-    const stretchH = !horizontal && STRETCH_TYPES.has(pl.comp.type) && pl.topRank > pl.bottomRank
+    const sameRank = pl.topRank === pl.bottomRank;
+    const horizontal =
+      (pl.comp.type === 'C' && sameRank) ||
+      (pl.comp.type === 'R' && sameRank) ||
+      (pl.comp.type === 'D' && sameRank);
+    const hasGroundEndpoint = pl.comp.ports.some(p => p.net === '0');
+    const stretchEligible = STRETCH_TYPES.has(pl.comp.type) ||
+      ((pl.comp.type === 'R' || pl.comp.type === 'D') && hasGroundEndpoint);
+    const stretchH = !horizontal && stretchEligible && pl.topRank > pl.bottomRank
       ? (pl.topRank - pl.bottomRank) * RANK_SPACING
       : undefined;
     return { horizontal, stretchH, sym: getSymbol(pl.comp.type, pl.comp.displayValue ?? '', horizontal, stretchH) };
   };
-  // Feedback caps (a capacitor whose two endpoints are both non-ground nets
-  // collapsed onto a single rail) are conventionally drawn as a loop ABOVE
-  // the signal chain, with short drop-wires joining each pin to the rail.
-  // Detect them and shift their centerY up by one rank-spacing so the rail
-  // runs uninterrupted through the rest of the chain.
-  const isFeedbackCap = (pl: Placement): boolean =>
-    pl.comp.type === 'C' &&
-    pl.topRank === pl.bottomRank &&
-    pl.comp.ports[0].net !== '0' &&
-    pl.comp.ports[1].net !== '0';
+  // Feedback components span a loop that closes back through an opamp or over
+  // a signal rail — a capacitor between two non-ground same-rank nets, or a
+  // resistor whose endpoints sit on the same rail AND coincide with an
+  // opamp's input/output pair. Feedback components render as an arc ABOVE the
+  // signal chain with short drop-wires joining each pin to the rail.
+  const opampLoops = new Set<string>();
+  for (const comp of circuit.components) {
+    if (comp.type !== 'E' && comp.type !== 'G') continue;
+    const ctrlP = comp.ports[0]?.net, ctrlN = comp.ports[1]?.net, outP = comp.ports[2]?.net;
+    for (const input of [ctrlP, ctrlN]) {
+      if (input && outP && input !== outP) {
+        opampLoops.add(`${input}|${outP}`);
+        opampLoops.add(`${outP}|${input}`);
+      }
+    }
+  }
+  const isFeedback = (pl: Placement): boolean => {
+    if (pl.comp.type !== 'C' && pl.comp.type !== 'R') return false;
+    if (pl.topRank !== pl.bottomRank) return false;
+    const a = pl.comp.ports[0].net;
+    const b = pl.comp.ports[1].net;
+    if (a === '0' || b === '0') return false;
+    if (pl.comp.type === 'C') return true;
+    return opampLoops.has(`${a}|${b}`);
+  };
   const centerYFor = (pl: Placement) => {
     const topY = MARGIN + (maxRank - pl.topRank) * RANK_SPACING;
     const bottomY = MARGIN + (maxRank - pl.bottomRank) * RANK_SPACING;
     const base = (topY + bottomY) / 2;
-    return isFeedbackCap(pl) ? base - RANK_SPACING : base;
+    return isFeedback(pl) ? base - RANK_SPACING : base;
   };
 
   const byCol = new Map<number, Placement[]>();
   for (const pl of placements) {
     // Feedback caps are positioned in a second pass once the main chain is
     // laid out — they span the x-range between their endpoints' other pins.
-    if (isFeedbackCap(pl)) continue;
+    if (isFeedback(pl)) continue;
     if (!byCol.has(pl.col)) byCol.set(pl.col, []);
     byCol.get(pl.col)!.push(pl);
   }
@@ -464,7 +596,7 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
   const placedComponents: PlacedComponent[] = [];
 
   for (const pl of placements) {
-    if (isFeedbackCap(pl)) continue;
+    if (isFeedback(pl)) continue;
     const { comp } = pl;
     const { horizontal, stretchH, sym: symbol } = symbolFor(pl);
     const nets = comp.ports.map(p => p.net);
@@ -492,12 +624,39 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
     placedComponents.push({ component: comp, x, y, rotation: 0, horizontal, stretchH, pins });
   }
 
-  // --- Pass 2: feedback caps ----------------------------------------------
-  // Now that the main chain is positioned, stretch each feedback cap so its
-  // two pins span the feedback region: left pin sits over the leftmost other
-  // pin on net A, right pin over the rightmost other pin on net B.
+  // --- Pin alignment: pull vertical 2-terminal R's onto their peer's column
+  // When a vertical R shares a net with a transistor in the same BFS column,
+  // shift the R horizontally so its pin sits directly above/below the
+  // transistor pin. Without this, a pull-up/pull-down resistor renders with
+  // a jog in the connecting wire rather than a straight vertical line.
+  for (const pc of placedComponents) {
+    if (pc.component.type !== 'R' || pc.horizontal) continue;
+    if (pc.pins.length !== 2) continue;
+    for (const pin of pc.pins) {
+      if (pin.net === '0') continue;
+      const peer = placedComponents.find(other =>
+        other !== pc &&
+        (other.component.type === 'M' || other.component.type === 'Q') &&
+        Math.abs(other.x - pc.x) < SLOT_SPACING / 2 &&
+        other.pins.some(p => p.net === pin.net)
+      );
+      if (!peer) continue;
+      const peerPin = peer.pins.find(p => p.net === pin.net)!;
+      const dx = peerPin.x - pin.x;
+      if (dx === 0) break;
+      pc.x += dx;
+      for (const p of pc.pins) p.x += dx;
+      break;
+    }
+  }
+
+  // --- Pass 2: feedback components ----------------------------------------
+  // Now that the main chain is positioned, stretch each feedback cap or
+  // resistor so its two pins span the feedback region: left pin sits over
+  // the leftmost other pin on net A, right pin over the rightmost other pin
+  // on net B.
   for (const pl of placements) {
-    if (!isFeedbackCap(pl)) continue;
+    if (!isFeedback(pl)) continue;
     const { comp } = pl;
     const netA = comp.ports[0].net;
     const netB = comp.ports[1].net;
@@ -543,6 +702,111 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
     for (const pc of placedComponents) {
       pc.y += yShift;
       for (const p of pc.pins) p.y += yShift;
+    }
+  }
+
+  // --- Shrink V/I sources whose top pin is crossed by a through-bus ---
+  // In circuits with multiple V sources sharing a column (e.g. Vin and Vg in a
+  // buck/boost converter), a stretched V-source puts its top pin right on the
+  // rail, and an unrelated rail bus passing between other components ends up
+  // routing THROUGH that pin. Detecting the conflict and shrinking the V
+  // source to natural size (bottom pin stays on the ground rail, top pin
+  // drops to between-rank height) moves the top pin out of the bus path.
+  {
+    const roughXRange = new Map<string, [number, number]>();
+    for (const pc of placedComponents) {
+      for (const p of pc.pins) {
+        const r = roughXRange.get(p.net);
+        if (!r) roughXRange.set(p.net, [p.x, p.x]);
+        else { r[0] = Math.min(r[0], p.x); r[1] = Math.max(r[1], p.x); }
+      }
+    }
+    for (const pc of placedComponents) {
+      if (pc.component.type !== 'V' && pc.component.type !== 'I') continue;
+      if (pc.pins.length !== 2 || !pc.stretchH) continue;
+      const topPin = pc.pins[0].y < pc.pins[1].y ? pc.pins[0] : pc.pins[1];
+      let conflict = false;
+      for (const [net, [xMin, xMax]] of roughXRange) {
+        if (net === topPin.net || net === '0') continue;
+        if (topPin.x <= xMin || topPin.x >= xMax) continue;
+        // The other net has pins at topPin.y (on the same rail)?
+        const hits = placedComponents.some(pc2 =>
+          pc2 !== pc && pc2.pins.some(p => p.net === net && Math.abs(p.y - topPin.y) < 1)
+        );
+        if (hits) { conflict = true; break; }
+      }
+      if (!conflict) continue;
+      // Target the modal Y of the top net's OTHER pins so the gate-side wire
+      // runs straight into the driven pin (e.g. Vg's + lines up with the
+      // MOSFET gate). If no other pin is available, fall back to natural
+      // shrink (top pin below the blocking bus).
+      const bottomPin = pc.pins[0].y > pc.pins[1].y ? pc.pins[0] : pc.pins[1];
+      const topNet = topPin.net, bottomNet = bottomPin.net;
+      const otherYs = placedComponents.flatMap(pc2 =>
+        pc2 === pc ? [] : pc2.pins.filter(p => p.net === topNet).map(p => p.y)
+      );
+      let targetY: number;
+      if (otherYs.length > 0) {
+        const counts = new Map<number, number>();
+        for (const y of otherYs) counts.set(y, (counts.get(y) ?? 0) + 1);
+        let bestY = otherYs[0], bestC = 0;
+        for (const [y, c] of counts) if (c > bestC) { bestC = c; bestY = y; }
+        targetY = bestY;
+      } else {
+        const naturalH = getSymbol(pc.component.type, pc.component.displayValue ?? '', false).height;
+        targetY = bottomPin.y - naturalH;
+      }
+      const newH = bottomPin.y - targetY;
+      const sym = getSymbol(pc.component.type, pc.component.displayValue ?? '', false, newH);
+      pc.y = targetY;
+      pc.stretchH = newH > sym.height - 1 && newH > GRID * 2 ? newH : undefined;
+      pc.pins = [
+        { net: topNet,    x: pc.x + sym.pins[0].dx, y: targetY + sym.pins[0].dy },
+        { net: bottomNet, x: pc.x + sym.pins[1].dx, y: targetY + sym.pins[1].dy },
+      ];
+    }
+  }
+
+  // --- Reorder V/I sources whose stretched body blocks a peer's bus ---
+  // After the stretch pass, one V/I source's body may span across another's
+  // horizontal bus Y. If the blocker sits to the RIGHT of the victim, their
+  // bus runs visually through the blocker's body (Vin→M1.in crossing Vg in a
+  // buck converter). Swap the two sources so the blocker is on the outside.
+  // Skip when both sources would block each other — swapping can't help.
+  {
+    const sources = placedComponents.filter(pc =>
+      (pc.component.type === 'V' || pc.component.type === 'I') && pc.pins.length === 2
+    );
+    for (let i = 0; i < sources.length; i++) {
+      for (let j = i + 1; j < sources.length; j++) {
+        const [left, right] = sources[i].x < sources[j].x
+          ? [sources[i], sources[j]]
+          : [sources[j], sources[i]];
+        if (right.x - left.x > SLOT_SPACING * 1.5) continue;
+        const leftTop = left.pins[0].y < left.pins[1].y ? left.pins[0] : left.pins[1];
+        const rightTop = right.pins[0].y < right.pins[1].y ? right.pins[0] : right.pins[1];
+        const peers = placedComponents
+          .filter(pc => pc !== left)
+          .flatMap(pc => pc.pins.filter(p => p.net === leftTop.net).map(p => p.x));
+        if (peers.length === 0) continue;
+        const busXMin = Math.min(leftTop.x, ...peers);
+        const busXMax = Math.max(leftTop.x, ...peers);
+        const rBodyMin = Math.min(right.pins[0].y, right.pins[1].y);
+        const rBodyMax = Math.max(right.pins[0].y, right.pins[1].y);
+        const rBodyX = right.pins[0].x;
+        const lBodyMin = Math.min(left.pins[0].y, left.pins[1].y);
+        const lBodyMax = Math.max(left.pins[0].y, left.pins[1].y);
+        if (leftTop.y < rBodyMin || leftTop.y > rBodyMax) continue;
+        if (rBodyX <= busXMin || rBodyX >= busXMax) continue;
+        // If swapping would just move the crossing (left also blocks right's
+        // bus Y), leave them alone.
+        if (rightTop.y >= lBodyMin && rightTop.y <= lBodyMax) continue;
+        const dx = right.x - left.x;
+        left.x += dx;
+        for (const p of left.pins) p.x += dx;
+        right.x -= dx;
+        for (const p of right.pins) p.x -= dx;
+      }
     }
   }
 
@@ -607,13 +871,103 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
       groups.push([net]);
     }
 
+    // Nets with disjoint x-ranges may share the same bus Y without visually
+    // overlapping; separately, two nets that sit on the same rail because an
+    // L or same-rank R/D bridges them (e.g. sw and out across a buck-inductor)
+    // may also share a Y — their combined bus reads as a single rail, which
+    // is what the reader expects.
+    const sameRailSet = new Map<string, string>();
+    const findRail = (n: string): string => {
+      let r = n;
+      while (sameRailSet.get(r) !== r) r = sameRailSet.get(r)!;
+      return r;
+    };
+    for (const net of netPins.keys()) sameRailSet.set(net, net);
+    for (const comp of circuit.components) {
+      if (comp.type !== 'R' && comp.type !== 'L' && comp.type !== 'D') continue;
+      if (comp.ports.length !== 2) continue;
+      const a = comp.ports[0].net, b = comp.ports[1].net;
+      if (a === '0' || b === '0' || a === b) continue;
+      if (nodeRanks.get(a) === nodeRanks.get(b)) {
+        const ra = findRail(a), rb = findRail(b);
+        if (ra !== rb) sameRailSet.set(ra, rb);
+      }
+    }
+    const yUsersX = new Map<number, Array<{ xMin: number; xMax: number; net: string }>>();
     for (const g of groups) {
       if (g.length === 1) { netBusY.set(g[0], baseY); continue; }
-      g.sort();
-      g.forEach((net, i) => {
-        const offset = (i - (g.length - 1) / 2) * CORRIDOR_OFFSET;
-        netBusY.set(net, baseY + offset);
+      // Wider nets go closest to baseY — they cover more components, so a
+      // small corridor offset is enough to clear the rail while keeping the
+      // bus from sinking deep into a transistor body sitting above the rail.
+      g.sort((a, b) => {
+        const ra = xRangeByNet.get(a)!, rb = xRangeByNet.get(b)!;
+        const wa = ra[1] - ra[0], wb = rb[1] - rb[0];
+        if (wa !== wb) return wb - wa;
+        return a.localeCompare(b);
       });
+      // For each net, pick the Y closest to its natural pin Y (preferring the
+      // modal pin Y, then baseY, then stepwise corridor offsets above the
+      // rail). Skip Ys that would plant the bus inside another component's
+      // body or overlap another net's bus in the x-range.
+      for (const net of g) {
+        const range = xRangeByNet.get(net)!;
+        const [xMin, xMax] = range;
+        const forbidden: Array<{ y1: number; y2: number; pinYs: number[] }> = [];
+        for (const pc of placedComponents) {
+          const sym = getSymbol(pc.component.type, pc.component.displayValue ?? '', pc.horizontal, pc.stretchH, pc.stretchW);
+          const bX1 = pc.x, bX2 = pc.x + sym.width;
+          let bY1 = pc.y, bY2 = pc.y + sym.height;
+          if (xMax <= bX1 || xMin >= bX2) continue;
+          // A stretched V/I source is mostly a long thin lead with a natural-
+          // sized body (the circle) at the vertical centre. Shrink the
+          // forbidden region to that central circle so a through-bus can
+          // legitimately cross the lead without being pushed off the rail.
+          if ((pc.component.type === 'V' || pc.component.type === 'I') && pc.stretchH) {
+            const center = (bY1 + bY2) / 2;
+            const half = GRID * 0.9;
+            bY1 = center - half;
+            bY2 = center + half;
+          }
+          forbidden.push({ y1: bY1, y2: bY2, pinYs: pc.pins.map(p => p.y) });
+        }
+        // Prefer the modal pin Y when it's a safe candidate — that lets the
+        // bus run straight through the pins instead of dropping off the rail.
+        const pinYs = netPins.get(net)!.map(p => Math.round(p.y));
+        const yCounts = new Map<number, number>();
+        for (const y of pinYs) yCounts.set(y, (yCounts.get(y) ?? 0) + 1);
+        let modalY = baseY, modalCount = 0;
+        for (const [y, c] of yCounts) {
+          if (c > modalCount) { modalCount = c; modalY = y; }
+        }
+        const candidates: number[] = [];
+        const seen = new Set<number>();
+        const add = (y: number) => { if (!seen.has(y)) { seen.add(y); candidates.push(y); } };
+        add(modalY);
+        add(baseY);
+        for (let k = 1; k < 30; k++) add(baseY - k * CORRIDOR_OFFSET);
+        for (const y of candidates) {
+          // A horizontal component's pin row (e.g. an inductor's leads at y=cy)
+          // coincides with the bus when the bus is at pinY — that's not a body
+          // crossing, it's the bus passing through the pin on its way to
+          // another pin on the same net, so don't mark it as forbidden.
+          const inBody = forbidden.some(({ y1, y2, pinYs }) =>
+            y > y1 && y < y2 && !pinYs.some(py => Math.abs(py - y) < 1)
+          );
+          if (inBody) continue;
+          const occupants = yUsersX.get(y) ?? [];
+          const netRail = findRail(net);
+          const overlaps = occupants.some(({ xMin: ox1, xMax: ox2, net: other }) => {
+            if (findRail(other) === netRail) return false;
+            return !(xMax < ox1 || ox2 < xMin);
+          });
+          if (overlaps) continue;
+          netBusY.set(net, y);
+          if (!yUsersX.has(y)) yUsersX.set(y, []);
+          yUsersX.get(y)!.push({ xMin, xMax, net });
+          break;
+        }
+        if (!netBusY.has(net)) netBusY.set(net, baseY);
+      }
     }
   }
 

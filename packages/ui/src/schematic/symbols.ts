@@ -23,28 +23,61 @@ export interface SymbolDef {
 
 const PIN_R = 2.5;
 
-function resistorSymbol(): SymbolDef {
-  const w = GRID * 2, h = GRID;
+function resistorSymbol(stretchW?: number): SymbolDef {
+  const naturalW = GRID * 2;
+  const w = Math.max(naturalW, stretchW ?? naturalW);
+  const h = GRID;
   const cy = h / 2;
-  const lead = GRID * 0.3;
-  const bodyW = w - lead * 2;
+  const bodyW = naturalW * 0.4 * 2; // same zigzag width as natural
+  const leadLeft = (w - bodyW) / 2;
   const peaks = 4;
   const segW = bodyW / peaks;
   const amp = h * 0.38;
 
-  let d = `M0,${cy} L${lead},${cy}`;
+  let d = `M0,${cy} L${leadLeft},${cy}`;
   for (let i = 0; i < peaks; i++) {
-    const x1 = lead + i * segW + segW * 0.25;
-    const x2 = lead + i * segW + segW * 0.75;
+    const x1 = leadLeft + i * segW + segW * 0.25;
+    const x2 = leadLeft + i * segW + segW * 0.75;
     const y1 = i % 2 === 0 ? cy - amp : cy + amp;
     const y2 = i % 2 === 0 ? cy + amp : cy - amp;
     d += ` L${x1},${y1} L${x2},${y2}`;
   }
-  d += ` L${w - lead},${cy} L${w},${cy}`;
+  d += ` L${leadLeft + bodyW},${cy} L${w},${cy}`;
 
   return {
     elements: [{ tag: 'path', attrs: { d, fill: 'none' } }],
     pins: [{ dx: 0, dy: cy }, { dx: w, dy: cy }],
+    width: w, height: h,
+  };
+}
+
+/** Vertical resistor — pins on top and bottom, zigzag runs down. Used when
+ * a resistor's endpoints sit on different rank rails (e.g. a load resistor
+ * from the signal rail to ground or a pull-up from supply to output). */
+function verticalResistorSymbol(stretchH?: number): SymbolDef {
+  const w = GRID;
+  const naturalH = GRID * 2;
+  const h = Math.max(naturalH, stretchH ?? naturalH);
+  const cx = w / 2;
+  const bodyH = naturalH * 0.4 * 2;
+  const leadTop = (h - bodyH) / 2;
+  const peaks = 4;
+  const segH = bodyH / peaks;
+  const amp = w * 0.38;
+
+  let d = `M${cx},0 L${cx},${leadTop}`;
+  for (let i = 0; i < peaks; i++) {
+    const y1 = leadTop + i * segH + segH * 0.25;
+    const y2 = leadTop + i * segH + segH * 0.75;
+    const x1 = i % 2 === 0 ? cx - amp : cx + amp;
+    const x2 = i % 2 === 0 ? cx + amp : cx - amp;
+    d += ` L${x1},${y1} L${x2},${y2}`;
+  }
+  d += ` L${cx},${leadTop + bodyH} L${cx},${h}`;
+
+  return {
+    elements: [{ tag: 'path', attrs: { d, fill: 'none' } }],
+    pins: [{ dx: cx, dy: 0 }, { dx: cx, dy: h }],
     width: w, height: h,
   };
 }
@@ -196,6 +229,32 @@ function diodeSymbol(): SymbolDef {
   };
 }
 
+/** Vertical diode — pins on top (anode) and bottom (cathode). Used when the
+ * diode connects rails at different ranks (e.g. a freewheel diode hanging
+ * from the switching node to ground in a buck converter). */
+function verticalDiodeSymbol(stretchH?: number): SymbolDef {
+  const w = GRID;
+  const naturalH = GRID * 1.5;
+  const h = Math.max(naturalH, stretchH ?? naturalH);
+  const cx = w / 2;
+  const triH = w * 0.6;
+  const bodyCenterY = h / 2;
+  // Triangle points downward toward the cathode bar (current flows anode→cathode).
+  const triTop = bodyCenterY - w * 0.35;
+  const triBot = bodyCenterY + w * 0.35;
+
+  return {
+    elements: [
+      { tag: 'line', attrs: { x1: cx, y1: 0, x2: cx, y2: triTop } },
+      { tag: 'path', attrs: { d: `M${cx - w * 0.35},${triTop} L${cx + w * 0.35},${triTop} L${cx},${triBot} Z`, fill: 'none' } },
+      { tag: 'line', attrs: { x1: cx - w * 0.35, y1: triBot, x2: cx + w * 0.35, y2: triBot } },
+      { tag: 'line', attrs: { x1: cx, y1: triBot, x2: cx, y2: h } },
+    ],
+    pins: [{ dx: cx, dy: 0 }, { dx: cx, dy: h }],
+    width: w, height: h,
+  };
+}
+
 function mosfetSymbol(): SymbolDef {
   const w = GRID * 2.5, h = GRID * 2.5;
   const cy = h / 2;
@@ -246,28 +305,35 @@ function bjtSymbol(): SymbolDef {
 }
 
 function opampSymbol(): SymbolDef {
-  const w = GRID * 2.5, h = GRID * 3;
-  const tipX = w;
+  const bodyW = GRID * 2.5;
+  const h = GRID * 3;
+  // The +in lead is extended further left than the -in lead. In the common
+  // non-inverting topology (e.g. Sallen-Key voltage follower), the +in pin
+  // connects to the external signal chain on the left while the -in pin
+  // closes a local feedback loop to the output on the right. Putting +in
+  // further left keeps each input's bus on its own side of the body so the
+  // drop-wires do not cross each other's horizontal bus.
+  const leadOffset = GRID;
+  const bodyLeft = leadOffset + GRID * 0.5;
+  const tipX = leadOffset + bodyW;
+  const totalW = tipX + GRID * 0.5;
   const cy = h / 2;
 
-  // Convention: -in at top, +in at bottom (feedback path stays horizontal)
-  // Pin order matches IR: [ctrlP(+in)=0, ctrlN(-in)=1, outP=2]
-  // but visually -in is upper, +in is lower
   return {
     elements: [
-      { tag: 'path', attrs: { d: `M${GRID * 0.5},0 L${tipX},${cy} L${GRID * 0.5},${h} Z`, fill: 'none' } },
-      { tag: 'line', attrs: { x1: 0, y1: h * 0.3, x2: GRID * 0.5, y2: h * 0.3 } },
-      { tag: 'line', attrs: { x1: 0, y1: h * 0.7, x2: GRID * 0.5, y2: h * 0.7 } },
-      { tag: 'text', attrs: { x: GRID * 0.65, y: h * 0.35, 'font-size': 10 }, text: '\u2013' },
-      { tag: 'text', attrs: { x: GRID * 0.65, y: h * 0.75, 'font-size': 10 }, text: '+' },
-      { tag: 'line', attrs: { x1: tipX, y1: cy, x2: tipX + GRID * 0.5, y2: cy } },
+      { tag: 'path', attrs: { d: `M${bodyLeft},0 L${tipX},${cy} L${bodyLeft},${h} Z`, fill: 'none' } },
+      { tag: 'line', attrs: { x1: leadOffset, y1: h * 0.3, x2: bodyLeft, y2: h * 0.3 } },
+      { tag: 'line', attrs: { x1: 0,          y1: h * 0.7, x2: bodyLeft, y2: h * 0.7 } },
+      { tag: 'text', attrs: { x: bodyLeft + GRID * 0.15, y: h * 0.35, 'font-size': 10 }, text: '\u2013' },
+      { tag: 'text', attrs: { x: bodyLeft + GRID * 0.15, y: h * 0.75, 'font-size': 10 }, text: '+' },
+      { tag: 'line', attrs: { x1: tipX, y1: cy, x2: totalW, y2: cy } },
     ],
     pins: [
-      { dx: 0, dy: h * 0.7 },             // ctrlP (+in) — bottom
-      { dx: 0, dy: h * 0.3 },             // ctrlN (-in) — top
-      { dx: tipX + GRID * 0.5, dy: cy },  // outP — right
+      { dx: 0,          dy: h * 0.7 },   // ctrlP (+in) — bottom, extended left
+      { dx: leadOffset, dy: h * 0.3 },   // ctrlN (-in) — top
+      { dx: totalW,     dy: cy },        // outP — right
     ],
-    width: tipX + GRID * 0.5, height: h,
+    width: totalW, height: h,
   };
 }
 
@@ -316,7 +382,7 @@ export function getSymbol(
   stretchW?: number,
 ): SymbolDef {
   switch (type) {
-    case 'R': return resistorSymbol();
+    case 'R': return horizontal ? resistorSymbol(stretchW) : verticalResistorSymbol(stretchH);
     case 'C': return horizontal ? horizontalCapacitorSymbol(stretchW) : capacitorSymbol(stretchH);
     case 'L': return inductorSymbol();
     case 'V': return voltageSourceSymbol(
@@ -325,7 +391,7 @@ export function getSymbol(
       stretchH,
     );
     case 'I': return currentSourceSymbol(stretchH);
-    case 'D': return diodeSymbol();
+    case 'D': return horizontal ? diodeSymbol() : verticalDiodeSymbol(stretchH);
     case 'Q': return bjtSymbol();
     case 'M': return mosfetSymbol();
     case 'E': case 'G': return opampSymbol();

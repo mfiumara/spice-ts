@@ -250,16 +250,18 @@ describe('layoutSchematic', () => {
 
     it('voltage divider: R in a DC loop stays rank-differentiating', () => {
       // V-R1-R2-gnd: removing either R leaves a DC path via the other R and V,
-      // so both R's carry DC current and must separate ranks.
+      // so both R's carry DC current and must separate ranks. R1 and R2 stack
+      // in one column so the `out` tap between them sits strictly below `in`.
       const circuit = makeCircuit(
         { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' },  { name: 'n', net: '0' }], params: { dc: 5 }, displayValue: 'DC 5' },
         { type: 'R', id: 'R1', name: 'R1', ports: [{ name: 'p', net: 'in' },  { name: 'n', net: 'out' }], params: { resistance: 1000 }, displayValue: '1k' },
         { type: 'R', id: 'R2', name: 'R2', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }],  params: { resistance: 2000 }, displayValue: '2k' },
       );
       const layout = layoutSchematic(circuit);
-      const inY  = horizontalBusY(layout, 'in')!;
-      const outY = horizontalBusY(layout, 'out')!;
-      expect(inY).toBeLessThan(outY);
+      const r1 = layout.components.find(c => c.component.id === 'R1')!;
+      const inPinY = r1.pins.find(p => p.net === 'in')!.y;
+      const outPinY = r1.pins.find(p => p.net === 'out')!.y;
+      expect(inPinY).toBeLessThan(outPinY);
     });
 
     it('RC low-pass: V1, R1, C1 top pins all sit on a single horizontal rail', () => {
@@ -374,6 +376,483 @@ describe('layoutSchematic', () => {
       for (const [a, b, name] of [[inY, n1Y, 'in/n1'], [n1Y, n2Y, 'n1/n2'], [n2Y, outY, 'n2/out']] as const) {
         expect(Math.abs(a - b), `${name} not on same rail`).toBeLessThanOrEqual(GRID * 2);
       }
+    });
+
+    it('Sallen-Key: no wire segments cross at the opamp inputs', () => {
+      // When -in and +in connect to different nets whose buses sit on the
+      // same side of the opamp, the drop-wires must neither overlap (same x)
+      // nor cross (one net's drop passing through another's bus). This test
+      // checks the stronger property: for any two distinct-net segments
+      // (one vertical, one horizontal), they don't intersect in the plane.
+      const circuit = makeCircuit(
+        { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { ac: 1 }, displayValue: 'AC 1' },
+        { type: 'R', id: 'R1', name: 'R1', ports: [{ name: 'p', net: 'in' },  { name: 'n', net: 'n1' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'R', id: 'R2', name: 'R2', ports: [{ name: 'p', net: 'n1' }, { name: 'n', net: 'n2' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'n1' }, { name: 'n', net: 'out' }], params: { capacitance: 10e-9 }, displayValue: '10n' },
+        { type: 'C', id: 'C2', name: 'C2', ports: [{ name: 'p', net: 'n2' }, { name: 'n', net: '0' }],  params: { capacitance: 10e-9 }, displayValue: '10n' },
+        { type: 'E', id: 'E1', name: 'E1', ports: [
+          { name: 'ctrlP', net: 'n2' },
+          { name: 'ctrlN', net: 'out' },
+          { name: 'outP',  net: 'out' },
+          { name: 'outN',  net: '0' },
+        ], params: { gain: 1e6 }, displayValue: '1e6' },
+      );
+      const layout = layoutSchematic(circuit);
+      type Seg = { net: string; x1: number; y1: number; x2: number; y2: number };
+      const segs: Seg[] = [];
+      for (const w of layout.wires) for (const s of w.segments) segs.push({ net: w.net, ...s });
+      for (let i = 0; i < segs.length; i++) {
+        for (let j = i + 1; j < segs.length; j++) {
+          const a = segs[i], b = segs[j];
+          if (a.net === b.net) continue;
+          const aH = a.y1 === a.y2, bH = b.y1 === b.y2;
+          if (aH === bH) continue; // both horizontal or both vertical — skip
+          const h = aH ? a : b, v = aH ? b : a;
+          const xMin = Math.min(h.x1, h.x2), xMax = Math.max(h.x1, h.x2);
+          const yMin = Math.min(v.y1, v.y2), yMax = Math.max(v.y1, v.y2);
+          // Strict interior intersection (endpoints touching is fine).
+          const xi = v.x1, yi = h.y1;
+          if (xi > xMin && xi < xMax && yi > yMin && yi < yMax) {
+            throw new Error(`Crossing at (${xi},${yi}): net ${h.net} horizontal crosses net ${v.net} vertical`);
+          }
+        }
+      }
+    });
+
+    it('Sallen-Key: opamp input pins do not share an x-coordinate', () => {
+      // ctrlP (+in) connects to n2 whose bus is above the opamp; ctrlN (-in)
+      // connects to out whose bus is also above. If both pins sit at the same
+      // x, their vertical drop-wires to those two different buses run atop
+      // each other and visually merge into one line. The symbol must separate
+      // them horizontally so each drop has its own corridor.
+      const circuit = makeCircuit(
+        { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { ac: 1 }, displayValue: 'AC 1' },
+        { type: 'R', id: 'R1', name: 'R1', ports: [{ name: 'p', net: 'in' },  { name: 'n', net: 'n1' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'R', id: 'R2', name: 'R2', ports: [{ name: 'p', net: 'n1' }, { name: 'n', net: 'n2' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'n1' }, { name: 'n', net: 'out' }], params: { capacitance: 10e-9 }, displayValue: '10n' },
+        { type: 'C', id: 'C2', name: 'C2', ports: [{ name: 'p', net: 'n2' }, { name: 'n', net: '0' }],  params: { capacitance: 10e-9 }, displayValue: '10n' },
+        { type: 'E', id: 'E1', name: 'E1', ports: [
+          { name: 'ctrlP', net: 'n2' },
+          { name: 'ctrlN', net: 'out' },
+          { name: 'outP',  net: 'out' },
+          { name: 'outN',  net: '0' },
+        ], params: { gain: 1e6 }, displayValue: '1e6' },
+      );
+      const layout = layoutSchematic(circuit);
+      const e1 = layout.components.find(c => c.component.id === 'E1')!;
+      const ctrlP = e1.pins[0], ctrlN = e1.pins[1];
+      expect(ctrlP.x).not.toBe(ctrlN.x);
+    });
+
+    it('half-wave rectifier: out rail sits above ground, not collapsed onto it', () => {
+      // Rl carries the rectified DC current from out to ground through the
+      // diode path V1→0 ... anode←D1←out. Without diodes treated as DC-
+      // conductive, the DC-path check for Rl falsely concludes there's no
+      // other route from out to 0 and marks Rl rank-preserving. That collapses
+      // 'out' onto the ground rank, drawing Rl and Cl horizontally along the
+      // bus — so the horizontal out-bus wire runs through Rl's body.
+      const circuit = makeCircuit(
+        { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { ac: 5 }, displayValue: 'SIN 0 5 1k' },
+        { type: 'R', id: 'Rs', name: 'Rs', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: 'anode' }], params: { resistance: 10 }, displayValue: '10' },
+        { type: 'D', id: 'D1', name: 'D1', ports: [{ name: 'p', net: 'anode' }, { name: 'n', net: 'out' }], params: { modelName: 'DMOD' }, displayValue: 'DMOD' },
+        { type: 'R', id: 'Rl', name: 'Rl', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'C', id: 'Cl', name: 'Cl', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { capacitance: 10e-6 }, displayValue: '10u' },
+      );
+      const layout = layoutSchematic(circuit);
+      const rl = layout.components.find(c => c.component.id === 'Rl')!;
+      const outPin = rl.pins.find(p => p.net === 'out')!;
+      const gndPin = rl.pins.find(p => p.net === '0')!;
+      // Sanity: the ground pin sits visibly below the out pin (load resistor
+      // drops its current toward ground, not collapsed onto the ground rail).
+      expect(gndPin.y).toBeGreaterThan(outPin.y);
+    });
+
+    it('half-wave rectifier: Rl draws vertically between out rail and ground', () => {
+      const circuit = makeCircuit(
+        { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { ac: 5 }, displayValue: 'SIN 0 5 1k' },
+        { type: 'R', id: 'Rs', name: 'Rs', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: 'anode' }], params: { resistance: 10 }, displayValue: '10' },
+        { type: 'D', id: 'D1', name: 'D1', ports: [{ name: 'p', net: 'anode' }, { name: 'n', net: 'out' }], params: { modelName: 'DMOD' }, displayValue: 'DMOD' },
+        { type: 'R', id: 'Rl', name: 'Rl', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'C', id: 'Cl', name: 'Cl', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { capacitance: 10e-6 }, displayValue: '10u' },
+      );
+      const layout = layoutSchematic(circuit);
+      const rl = layout.components.find(c => c.component.id === 'Rl')!;
+      const outPin = rl.pins.find(p => p.net === 'out')!;
+      const gndPin = rl.pins.find(p => p.net === '0')!;
+      // A vertical resistor has its rail-side pin strictly above its ground
+      // pin (pin-Y differs by the full rank span, not both sitting on a
+      // horizontal body).
+      expect(outPin.y).toBeLessThan(gndPin.y - GRID);
+    });
+
+    it('half-wave rectifier: V1, Rl, and Cl ground pins share a single ground rail Y', () => {
+      const circuit = makeCircuit(
+        { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { ac: 5 }, displayValue: 'SIN 0 5 1k' },
+        { type: 'R', id: 'Rs', name: 'Rs', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: 'anode' }], params: { resistance: 10 }, displayValue: '10' },
+        { type: 'D', id: 'D1', name: 'D1', ports: [{ name: 'p', net: 'anode' }, { name: 'n', net: 'out' }], params: { modelName: 'DMOD' }, displayValue: 'DMOD' },
+        { type: 'R', id: 'Rl', name: 'Rl', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'C', id: 'Cl', name: 'Cl', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { capacitance: 10e-6 }, displayValue: '10u' },
+      );
+      const layout = layoutSchematic(circuit);
+      const gnds = ['V1', 'Rl', 'Cl'].map(id =>
+        layout.components.find(c => c.component.id === id)!.pins.find(p => p.net === '0')!.y
+      );
+      for (let i = 1; i < gnds.length; i++) expect(gnds[i]).toBe(gnds[0]);
+    });
+
+    it('buck/boost converter: horizontal buses do not pass through V-source bodies', () => {
+      // A common same-rank topology has multiple V sources driving different
+      // input nets (Vin for the supply, Vg for the gate). Horizontal buses
+      // between other components must skirt above the V-source bodies, which
+      // hang from the rail down to ground.
+      function check(circuit: CircuitIR) {
+        const layout = layoutSchematic(circuit);
+        const vBodies: Array<{ x1: number; x2: number; y1: number; y2: number }> = [];
+        for (const pc of layout.components) {
+          if (pc.component.type !== 'V' && pc.component.type !== 'I') continue;
+          const xs = pc.pins.map(p => p.x);
+          const ys = pc.pins.map(p => p.y);
+          // The actual symbol body is a circle of ~GRID*0.9 radius centered
+          // between the pins; long connecting leads stretch between the body
+          // and each pin when the source spans multiple ranks. A bus crossing
+          // a lead is acceptable (standard no-junction crossing); crossing
+          // the body circle is not.
+          const yMin = Math.min(...ys), yMax = Math.max(...ys);
+          const center = (yMin + yMax) / 2;
+          const half = Math.min((yMax - yMin) / 2, GRID * 0.9);
+          vBodies.push({ x1: Math.min(...xs), x2: Math.max(...xs), y1: center - half, y2: center + half });
+        }
+        const vPins = new Set<string>();
+        for (const pc of layout.components) {
+          if (pc.component.type !== 'V' && pc.component.type !== 'I') continue;
+          for (const p of pc.pins) vPins.add(`${p.x},${p.y}`);
+        }
+        for (const w of layout.wires) {
+          for (const s of w.segments) {
+            if (s.y1 !== s.y2) continue; // only horizontal bus segments
+            const x1 = Math.min(s.x1, s.x2), x2 = Math.max(s.x1, s.x2);
+            for (const b of vBodies) {
+              if (s.y1 <= b.y1 || s.y1 >= b.y2) continue;
+              if (x2 <= b.x1 || x1 >= b.x2) continue;
+              // The bus y is strictly inside the V body y-range AND x-ranges overlap.
+              const crossesVPin = vPins.has(`${b.x1},${s.y1}`) || vPins.has(`${b.x2},${s.y1}`);
+              if (!crossesVPin) {
+                throw new Error(`wire on net ${w.net} at y=${s.y1} crosses through V body [${b.x1}..${b.x2}, ${b.y1}..${b.y2}]`);
+              }
+            }
+          }
+        }
+      }
+      check(makeCircuit(
+        { type: 'V', id: 'Vin', name: 'Vin', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 12 }, displayValue: 'DC 12' },
+        { type: 'V', id: 'Vg', name: 'Vg', ports: [{ name: 'p', net: 'gate' }, { name: 'n', net: '0' }], params: { dc: 0 }, displayValue: 'PULSE' },
+        { type: 'M', id: 'M1', name: 'M1', ports: [
+          { name: 'drain', net: 'sw' }, { name: 'gate', net: 'gate' },
+          { name: 'source', net: 'in' }, { name: 'bulk', net: '0' },
+        ], params: { modelName: 'NMOD', channelType: 'n' }, displayValue: 'NMOD' },
+        { type: 'D', id: 'D1', name: 'D1', ports: [{ name: 'p', net: '0' }, { name: 'n', net: 'sw' }], params: { modelName: 'DMOD' }, displayValue: 'DMOD' },
+        { type: 'L', id: 'L1', name: 'L1', ports: [{ name: 'p', net: 'sw' }, { name: 'n', net: 'out' }], params: { inductance: 100e-6 }, displayValue: '100u' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { capacitance: 100e-6 }, displayValue: '100u' },
+        { type: 'R', id: 'Rload', name: 'Rload', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { resistance: 10 }, displayValue: '10' },
+      ));
+      check(makeCircuit(
+        { type: 'V', id: 'Vin', name: 'Vin', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 5 }, displayValue: 'DC 5' },
+        { type: 'V', id: 'Vg', name: 'Vg', ports: [{ name: 'p', net: 'gate' }, { name: 'n', net: '0' }], params: { dc: 0 }, displayValue: 'PULSE' },
+        { type: 'L', id: 'L1', name: 'L1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: 'sw' }], params: { inductance: 100e-6 }, displayValue: '100u' },
+        { type: 'M', id: 'M1', name: 'M1', ports: [
+          { name: 'drain', net: 'sw' }, { name: 'gate', net: 'gate' },
+          { name: 'source', net: '0' }, { name: 'bulk', net: '0' },
+        ], params: { modelName: 'NMOD', channelType: 'n' }, displayValue: 'NMOD' },
+        { type: 'D', id: 'D1', name: 'D1', ports: [{ name: 'p', net: 'sw' }, { name: 'n', net: 'out' }], params: { modelName: 'DMOD' }, displayValue: 'DMOD' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { capacitance: 100e-6 }, displayValue: '100u' },
+        { type: 'R', id: 'Rload', name: 'Rload', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { resistance: 10 }, displayValue: '10' },
+      ));
+    });
+
+    it('buck converter: L1 inductor stays straight horizontal (no drops at its pins)', () => {
+      const circuit = makeCircuit(
+        { type: 'V', id: 'Vin', name: 'Vin', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 12 }, displayValue: 'DC 12' },
+        { type: 'V', id: 'Vg', name: 'Vg', ports: [{ name: 'p', net: 'gate' }, { name: 'n', net: '0' }], params: { dc: 0 }, displayValue: 'PULSE' },
+        { type: 'M', id: 'M1', name: 'M1', ports: [
+          { name: 'drain', net: 'sw' }, { name: 'gate', net: 'gate' },
+          { name: 'source', net: 'in' }, { name: 'bulk', net: '0' },
+        ], params: { modelName: 'NMOD', channelType: 'n' }, displayValue: 'NMOD' },
+        { type: 'D', id: 'D1', name: 'D1', ports: [{ name: 'p', net: '0' }, { name: 'n', net: 'sw' }], params: { modelName: 'DMOD' }, displayValue: 'DMOD' },
+        { type: 'L', id: 'L1', name: 'L1', ports: [{ name: 'p', net: 'sw' }, { name: 'n', net: 'out' }], params: { inductance: 100e-6 }, displayValue: '100u' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { capacitance: 100e-6 }, displayValue: '100u' },
+        { type: 'R', id: 'Rload', name: 'Rload', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { resistance: 10 }, displayValue: '10' },
+      );
+      const layout = layoutSchematic(circuit);
+      const l1 = layout.components.find(c => c.component.id === 'L1')!;
+      const swPin = l1.pins.find(p => p.net === 'sw')!;
+      const outPin = l1.pins.find(p => p.net === 'out')!;
+      // Both pins sit on the rail — neither net's bus should force a drop at
+      // the inductor ends.
+      const swBusY = layout.wires.find(w => w.net === 'sw')?.segments.find(s => s.y1 === s.y2)?.y1;
+      const outBusY = layout.wires.find(w => w.net === 'out')?.segments.find(s => s.y1 === s.y2)?.y1;
+      expect(swBusY).toBe(swPin.y);
+      expect(outBusY).toBe(outPin.y);
+    });
+
+    it('boost converter: L1 inductor and sw bus share the rail (no drops at its pins)', () => {
+      const circuit = makeCircuit(
+        { type: 'V', id: 'Vin', name: 'Vin', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 5 }, displayValue: 'DC 5' },
+        { type: 'V', id: 'Vg', name: 'Vg', ports: [{ name: 'p', net: 'gate' }, { name: 'n', net: '0' }], params: { dc: 0 }, displayValue: 'PULSE' },
+        { type: 'L', id: 'L1', name: 'L1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: 'sw' }], params: { inductance: 100e-6 }, displayValue: '100u' },
+        { type: 'M', id: 'M1', name: 'M1', ports: [
+          { name: 'drain', net: 'sw' }, { name: 'gate', net: 'gate' },
+          { name: 'source', net: '0' }, { name: 'bulk', net: '0' },
+        ], params: { modelName: 'NMOD', channelType: 'n' }, displayValue: 'NMOD' },
+        { type: 'D', id: 'D1', name: 'D1', ports: [{ name: 'p', net: 'sw' }, { name: 'n', net: 'out' }], params: { modelName: 'DMOD' }, displayValue: 'DMOD' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { capacitance: 100e-6 }, displayValue: '100u' },
+        { type: 'R', id: 'Rload', name: 'Rload', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { resistance: 10 }, displayValue: '10' },
+      );
+      const layout = layoutSchematic(circuit);
+      const l1 = layout.components.find(c => c.component.id === 'L1')!;
+      const inPin = l1.pins.find(p => p.net === 'in')!;
+      const swPin = l1.pins.find(p => p.net === 'sw')!;
+      const inBusY = layout.wires.find(w => w.net === 'in')?.segments.find(s => s.y1 === s.y2)?.y1;
+      const swBusY = layout.wires.find(w => w.net === 'sw')?.segments.find(s => s.y1 === s.y2)?.y1;
+      expect(inBusY).toBe(inPin.y);
+      expect(swBusY).toBe(swPin.y);
+    });
+
+    it('buck converter: in bus does not route through M1 transistor body', () => {
+      const circuit = makeCircuit(
+        { type: 'V', id: 'Vin', name: 'Vin', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 12 }, displayValue: 'DC 12' },
+        { type: 'V', id: 'Vg', name: 'Vg', ports: [{ name: 'p', net: 'gate' }, { name: 'n', net: '0' }], params: { dc: 0 }, displayValue: 'PULSE' },
+        { type: 'M', id: 'M1', name: 'M1', ports: [
+          { name: 'drain', net: 'sw' }, { name: 'gate', net: 'gate' },
+          { name: 'source', net: 'in' }, { name: 'bulk', net: '0' },
+        ], params: { modelName: 'NMOD', channelType: 'n' }, displayValue: 'NMOD' },
+        { type: 'D', id: 'D1', name: 'D1', ports: [{ name: 'p', net: '0' }, { name: 'n', net: 'sw' }], params: { modelName: 'DMOD' }, displayValue: 'DMOD' },
+        { type: 'L', id: 'L1', name: 'L1', ports: [{ name: 'p', net: 'sw' }, { name: 'n', net: 'out' }], params: { inductance: 100e-6 }, displayValue: '100u' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { capacitance: 100e-6 }, displayValue: '100u' },
+        { type: 'R', id: 'Rload', name: 'Rload', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { resistance: 10 }, displayValue: '10' },
+      );
+      const layout = layoutSchematic(circuit);
+      const m1 = layout.components.find(c => c.component.id === 'M1')!;
+      // M1's symbol bounding box
+      const m1X1 = m1.x, m1X2 = m1.x + 50;  // MOSFET width 2.5*GRID
+      const m1Y1 = m1.y, m1Y2 = m1.y + 50;  // MOSFET height 2.5*GRID
+      const inWire = layout.wires.find(w => w.net === 'in')!;
+      for (const s of inWire.segments) {
+        if (s.y1 !== s.y2) continue; // only horizontal buses
+        const xMin = Math.min(s.x1, s.x2), xMax = Math.max(s.x1, s.x2);
+        const xOverlaps = xMax > m1X1 && xMin < m1X2;
+        const yStrictlyInside = s.y1 > m1Y1 && s.y1 < m1Y2;
+        const atPin = m1.pins.some(p => Math.abs(p.y - s.y1) < 1);
+        expect(!(xOverlaps && yStrictlyInside && !atPin), `in bus at y=${s.y1} routes through M1 body [${m1X1}..${m1X2}, ${m1Y1}..${m1Y2}]`).toBe(true);
+      }
+    });
+
+    it('buck-boost inverting: Rload draws vertically from neg rail down to ground', () => {
+      // In an inverting buck-boost, the output cap C1 sits on the `neg` rail
+      // and Rload pulls `neg` toward ground. Without a parallel DC path via
+      // other components, the rank heuristic wrongly collapses `neg` onto the
+      // ground rail — Rload ends up horizontal. A load resistor on a cap
+      // output must always draw vertically.
+      const circuit = makeCircuit(
+        { type: 'V', id: 'Vin', name: 'Vin', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 12 }, displayValue: 'DC 12' },
+        { type: 'V', id: 'Vg', name: 'Vg', ports: [{ name: 'p', net: 'gate' }, { name: 'n', net: '0' }], params: { dc: 0 }, displayValue: 'PULSE' },
+        { type: 'M', id: 'M1', name: 'M1', ports: [
+          { name: 'drain', net: 'in' }, { name: 'gate', net: 'gate' },
+          { name: 'source', net: 'sw' }, { name: 'bulk', net: '0' },
+        ], params: { modelName: 'NMOD', channelType: 'n' }, displayValue: 'NMOD' },
+        { type: 'L', id: 'L1', name: 'L1', ports: [{ name: 'p', net: 'sw' }, { name: 'n', net: 'n1' }], params: { inductance: 100e-6 }, displayValue: '100u' },
+        { type: 'D', id: 'D1', name: 'D1', ports: [{ name: 'p', net: 'n1' }, { name: 'n', net: '0' }], params: { modelName: 'DMOD' }, displayValue: 'DMOD' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'n1' }, { name: 'n', net: 'neg' }], params: { capacitance: 100e-6 }, displayValue: '100u' },
+        { type: 'R', id: 'Rload', name: 'Rload', ports: [{ name: 'p', net: 'neg' }, { name: 'n', net: '0' }], params: { resistance: 10 }, displayValue: '10' },
+      );
+      const layout = layoutSchematic(circuit);
+      const rload = layout.components.find(c => c.component.id === 'Rload')!;
+      const negPin = rload.pins.find(p => p.net === 'neg')!;
+      const gndPin = rload.pins.find(p => p.net === '0')!;
+      // Pins on different Y (vertical body), ground strictly below neg.
+      expect(negPin.y).toBeLessThan(gndPin.y - GRID);
+    });
+
+    it('buck converter: in bus does not cross Vg source body', () => {
+      // In a buck converter with two V sources (Vin driving `in`, Vg driving
+      // `gate`), Vg gets stretched upward so its + pin lines up with the
+      // MOSFET gate. That stretches Vg's body across the `in` bus Y, so Vin
+      // must be placed to the RIGHT of Vg; otherwise Vin's bus runs through
+      // Vg's body.
+      const circuit = makeCircuit(
+        { type: 'V', id: 'Vin', name: 'Vin', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 12 }, displayValue: 'DC 12' },
+        { type: 'V', id: 'Vg', name: 'Vg', ports: [{ name: 'p', net: 'gate' }, { name: 'n', net: '0' }], params: { dc: 0 }, displayValue: 'PULSE' },
+        { type: 'M', id: 'M1', name: 'M1', ports: [
+          { name: 'drain', net: 'sw' }, { name: 'gate', net: 'gate' },
+          { name: 'source', net: 'in' }, { name: 'bulk', net: '0' },
+        ], params: { modelName: 'NMOD', channelType: 'n' }, displayValue: 'NMOD' },
+        { type: 'D', id: 'D1', name: 'D1', ports: [{ name: 'p', net: '0' }, { name: 'n', net: 'sw' }], params: { modelName: 'DMOD' }, displayValue: 'DMOD' },
+        { type: 'L', id: 'L1', name: 'L1', ports: [{ name: 'p', net: 'sw' }, { name: 'n', net: 'out' }], params: { inductance: 100e-6 }, displayValue: '100u' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { capacitance: 100e-6 }, displayValue: '100u' },
+        { type: 'R', id: 'Rload', name: 'Rload', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { resistance: 10 }, displayValue: '10' },
+      );
+      const layout = layoutSchematic(circuit);
+      const vg = layout.components.find(c => c.component.id === 'Vg')!;
+      const vgBodyYMin = Math.min(vg.pins[0].y, vg.pins[1].y);
+      const vgBodyYMax = Math.max(vg.pins[0].y, vg.pins[1].y);
+      // V-source body circle is at pin-center x, use a tight horizontal band.
+      const vgCenterX = vg.pins[0].x;
+      const inWire = layout.wires.find(w => w.net === 'in')!;
+      for (const s of inWire.segments) {
+        if (s.y1 !== s.y2) continue;
+        const xMin = Math.min(s.x1, s.x2), xMax = Math.max(s.x1, s.x2);
+        const xCrosses = vgCenterX > xMin && vgCenterX < xMax;
+        const yInBody = s.y1 >= vgBodyYMin && s.y1 <= vgBodyYMax;
+        expect(xCrosses && yInBody, `in bus at y=${s.y1} x=[${xMin},${xMax}] crosses Vg body at x=${vgCenterX} y=[${vgBodyYMin},${vgBodyYMax}]`).toBe(false);
+      }
+    });
+
+    it('buck converter: freewheel diode D1 (anode=0, cathode=sw) draws vertically', () => {
+      // D1 bridges ground (rank 0) to the switch node (higher rank). A
+      // horizontal diode body would put both pins on a midline row with long
+      // drop-wires on each side. Drawing vertically keeps the cathode on the
+      // sw rail and the anode on the ground rail.
+      const circuit = makeCircuit(
+        { type: 'V', id: 'Vin', name: 'Vin', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 12 }, displayValue: 'DC 12' },
+        { type: 'V', id: 'Vg', name: 'Vg', ports: [{ name: 'p', net: 'gate' }, { name: 'n', net: '0' }], params: { dc: 0 }, displayValue: 'PULSE' },
+        { type: 'M', id: 'M1', name: 'M1', ports: [
+          { name: 'drain', net: 'sw' }, { name: 'gate', net: 'gate' },
+          { name: 'source', net: 'in' }, { name: 'bulk', net: '0' },
+        ], params: { modelName: 'NMOD', channelType: 'n' }, displayValue: 'NMOD' },
+        { type: 'D', id: 'D1', name: 'D1', ports: [{ name: 'p', net: '0' }, { name: 'n', net: 'sw' }], params: { modelName: 'DMOD' }, displayValue: 'DMOD' },
+        { type: 'L', id: 'L1', name: 'L1', ports: [{ name: 'p', net: 'sw' }, { name: 'n', net: 'out' }], params: { inductance: 100e-6 }, displayValue: '100u' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { capacitance: 100e-6 }, displayValue: '100u' },
+        { type: 'R', id: 'Rload', name: 'Rload', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { resistance: 10 }, displayValue: '10' },
+      );
+      const layout = layoutSchematic(circuit);
+      const d1 = layout.components.find(c => c.component.id === 'D1')!;
+      const swPin = d1.pins.find(p => p.net === 'sw')!;
+      const gndPin = d1.pins.find(p => p.net === '0')!;
+      // Vertical diode: cathode on sw rail, anode strictly below on ground.
+      expect(swPin.y).toBeLessThan(gndPin.y - GRID);
+      // x-coordinates coincide (pins stacked, not side by side).
+      expect(swPin.x).toBe(gndPin.x);
+    });
+
+    it('buck converter: sw bus does not pass through L1 inductor body', () => {
+      // D1 (freewheel) sits on the sw node, same as M1.drain and L1.sw. If D1
+      // is placed to the RIGHT of L1, the horizontal sw bus connecting them
+      // runs visually through L1's body at the top rail — the inductor looks
+      // like "a line is going through it." Canonical buck draws D1 between M1
+      // and L1 so the bus stays on M1's side of L1.
+      const circuit = makeCircuit(
+        { type: 'V', id: 'Vin', name: 'Vin', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 12 }, displayValue: 'DC 12' },
+        { type: 'V', id: 'Vg', name: 'Vg', ports: [{ name: 'p', net: 'gate' }, { name: 'n', net: '0' }], params: { dc: 0 }, displayValue: 'PULSE' },
+        { type: 'M', id: 'M1', name: 'M1', ports: [
+          { name: 'drain', net: 'sw' }, { name: 'gate', net: 'gate' },
+          { name: 'source', net: 'in' }, { name: 'bulk', net: '0' },
+        ], params: { modelName: 'NMOD', channelType: 'n' }, displayValue: 'NMOD' },
+        { type: 'D', id: 'D1', name: 'D1', ports: [{ name: 'p', net: '0' }, { name: 'n', net: 'sw' }], params: { modelName: 'DMOD' }, displayValue: 'DMOD' },
+        { type: 'L', id: 'L1', name: 'L1', ports: [{ name: 'p', net: 'sw' }, { name: 'n', net: 'out' }], params: { inductance: 100e-6 }, displayValue: '100u' },
+        { type: 'C', id: 'C1', name: 'C1', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { capacitance: 100e-6 }, displayValue: '100u' },
+        { type: 'R', id: 'Rload', name: 'Rload', ports: [{ name: 'p', net: 'out' }, { name: 'n', net: '0' }], params: { resistance: 10 }, displayValue: '10' },
+      );
+      const layout = layoutSchematic(circuit);
+      const l1 = layout.components.find(c => c.component.id === 'L1')!;
+      const l1SwPin = l1.pins.find(p => p.net === 'sw')!;
+      const l1OutPin = l1.pins.find(p => p.net === 'out')!;
+      const l1X1 = Math.min(l1SwPin.x, l1OutPin.x);
+      const l1X2 = Math.max(l1SwPin.x, l1OutPin.x);
+      const swWire = layout.wires.find(w => w.net === 'sw')!;
+      for (const s of swWire.segments) {
+        if (s.y1 !== s.y2) continue; // horizontal only
+        const xMin = Math.min(s.x1, s.x2), xMax = Math.max(s.x1, s.x2);
+        // Segments must not cross INTO L1's x-range (touching a pin is OK:
+        // xMax <= l1X1 or xMin >= l1X2).
+        const strictOverlap = xMax > l1X1 && xMin < l1X2;
+        expect(strictOverlap, `sw bus segment [${xMin},${xMax}] crosses L1 body [${l1X1},${l1X2}]`).toBe(false);
+      }
+    });
+
+    it('common-source amp: RD aligns horizontally with M1 drain (straight line)', () => {
+      const circuit = makeCircuit(
+        { type: 'V', id: 'VDD', name: 'VDD', ports: [{ name: 'p', net: 'vdd' }, { name: 'n', net: '0' }], params: { dc: 5 }, displayValue: 'DC 5' },
+        { type: 'V', id: 'VGS', name: 'VGS', ports: [{ name: 'p', net: 'in' },  { name: 'n', net: '0' }], params: { dc: 1.5 }, displayValue: 'AC 1' },
+        { type: 'M', id: 'M1',  name: 'M1',  ports: [
+          { name: 'drain',  net: 'out' },
+          { name: 'gate',   net: 'in' },
+          { name: 'source', net: '0' },
+          { name: 'bulk',   net: '0' },
+        ], params: { modelName: 'NMOD', channelType: 'n' }, displayValue: 'NMOD' },
+        { type: 'R', id: 'RD',  name: 'RD',  ports: [{ name: 'p', net: 'vdd' }, { name: 'n', net: 'out' }], params: { resistance: 10000 }, displayValue: '10k' },
+      );
+      const layout = layoutSchematic(circuit);
+      const rd = layout.components.find(c => c.component.id === 'RD')!;
+      const m1 = layout.components.find(c => c.component.id === 'M1')!;
+      const rdOut = rd.pins.find(p => p.net === 'out')!;
+      const m1Drain = m1.pins.find(p => p.net === 'out')!;
+      // RD's bottom pin should sit directly above M1's drain — no horizontal
+      // jog in the out net between them.
+      expect(rdOut.x).toBe(m1Drain.x);
+    });
+
+    it('common-source amp: RD draws vertically between vdd rail and out', () => {
+      const circuit = makeCircuit(
+        { type: 'V', id: 'VDD', name: 'VDD', ports: [{ name: 'p', net: 'vdd' }, { name: 'n', net: '0' }], params: { dc: 5 }, displayValue: 'DC 5' },
+        { type: 'V', id: 'VGS', name: 'VGS', ports: [{ name: 'p', net: 'in' },  { name: 'n', net: '0' }], params: { dc: 1.5 }, displayValue: 'AC 1' },
+        { type: 'M', id: 'M1',  name: 'M1',  ports: [
+          { name: 'drain',  net: 'out' },
+          { name: 'gate',   net: 'in' },
+          { name: 'source', net: '0' },
+          { name: 'bulk',   net: '0' },
+        ], params: { modelName: 'NMOD', channelType: 'n' }, displayValue: 'NMOD' },
+        { type: 'R', id: 'RD',  name: 'RD',  ports: [{ name: 'p', net: 'vdd' }, { name: 'n', net: 'out' }], params: { resistance: 10000 }, displayValue: '10k' },
+      );
+      const layout = layoutSchematic(circuit);
+      const rd = layout.components.find(c => c.component.id === 'RD')!;
+      const vddPin = rd.pins.find(p => p.net === 'vdd')!;
+      const outPin = rd.pins.find(p => p.net === 'out')!;
+      expect(vddPin.y).toBeLessThan(outPin.y - GRID);
+    });
+
+    it('inverting amp: Rin lies on the main signal rail (straight line into opamp -in)', () => {
+      // Rin connects V1+ to the opamp's -in. With the feedback resistor Rf
+      // closing the loop from -in back to out, Rin must stay on the same
+      // horizontal rail as V1 and the opamp's -in — no detour above or below.
+      const circuit = makeCircuit(
+        { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 0.1 }, displayValue: 'PULSE' },
+        { type: 'R', id: 'Rin', name: 'Rin', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: 'nm' }], params: { resistance: 1000 }, displayValue: '1k' },
+        { type: 'R', id: 'Rf', name: 'Rf', ports: [{ name: 'p', net: 'nm' }, { name: 'n', net: 'out' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'E', id: 'E1', name: 'E1', ports: [
+          { name: 'ctrlP', net: '0' }, { name: 'ctrlN', net: 'nm' },
+          { name: 'outP',  net: 'out' }, { name: 'outN',  net: '0' },
+        ], params: { gain: 1e6 }, displayValue: '1e6' },
+      );
+      const layout = layoutSchematic(circuit);
+      const v1 = layout.components.find(c => c.component.id === 'V1')!;
+      const rin = layout.components.find(c => c.component.id === 'Rin')!;
+      const e1 = layout.components.find(c => c.component.id === 'E1')!;
+      const v1InPin = v1.pins.find(p => p.net === 'in')!;
+      const rinInPin = rin.pins.find(p => p.net === 'in')!;
+      const rinNmPin = rin.pins.find(p => p.net === 'nm')!;
+      const e1NmPin = e1.pins.find(p => p.net === 'nm')!;
+      // V1+ and Rin's in pin on same rail
+      expect(Math.abs(v1InPin.y - rinInPin.y)).toBeLessThanOrEqual(GRID);
+      // Rin's two pins on same Y (horizontal body)
+      expect(rinInPin.y).toBe(rinNmPin.y);
+      // Rin's nm pin and opamp's -in pin on the same rail (± one grid for the
+      // opamp lead offset we added earlier).
+      expect(Math.abs(rinNmPin.y - e1NmPin.y)).toBeLessThanOrEqual(GRID * 2);
+    });
+
+    it('inverting amp: Rf is elevated as a feedback loop above the rail', () => {
+      const circuit = makeCircuit(
+        { type: 'V', id: 'V1', name: 'V1', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: '0' }], params: { dc: 0.1 }, displayValue: 'PULSE' },
+        { type: 'R', id: 'Rin', name: 'Rin', ports: [{ name: 'p', net: 'in' }, { name: 'n', net: 'nm' }], params: { resistance: 1000 }, displayValue: '1k' },
+        { type: 'R', id: 'Rf', name: 'Rf', ports: [{ name: 'p', net: 'nm' }, { name: 'n', net: 'out' }], params: { resistance: 10000 }, displayValue: '10k' },
+        { type: 'E', id: 'E1', name: 'E1', ports: [
+          { name: 'ctrlP', net: '0' }, { name: 'ctrlN', net: 'nm' },
+          { name: 'outP',  net: 'out' }, { name: 'outN',  net: '0' },
+        ], params: { gain: 1e6 }, displayValue: '1e6' },
+      );
+      const layout = layoutSchematic(circuit);
+      const rin = layout.components.find(c => c.component.id === 'Rin')!;
+      const rf = layout.components.find(c => c.component.id === 'Rf')!;
+      expect(rf.pins[0].y).toBeLessThan(rin.pins[0].y - GRID * 2);
     });
 
     it('CMOS inverter: MP and MN stack in the same column', () => {
