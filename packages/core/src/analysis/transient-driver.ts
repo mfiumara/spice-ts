@@ -76,6 +76,8 @@ interface InternalTransientConfig {
   stopTime: number | undefined;
   timestep: number;
   maxTimestep: number;
+  /** Optional pre-computed DC solution. When provided, skips internal DC op point. */
+  initialSolution?: Float64Array;
 }
 
 class TransientSimImpl implements TransientSim {
@@ -103,7 +105,13 @@ class TransientSimImpl implements TransientSim {
     this.assembler = new MNAAssembler(compiled.nodeCount, compiled.branchCount);
     this.solver = createSparseSolver();
 
-    this.initDC();
+    if (config.initialSolution) {
+      // Caller already computed DC — skip internal DC and seed directly.
+      this.assembler.solution.set(config.initialSolution);
+      this.stampPrevB();
+    } else {
+      this.initDC();
+    }
   }
 
   get simTime(): number { return this.time; }
@@ -207,14 +215,7 @@ class TransientSimImpl implements TransientSim {
   /** Seed the driver's assembler with an externally-computed solution (e.g., DC from caller). */
   seedSolution(s: Float64Array): void {
     this.assembler.solution.set(s);
-    // Recompute prevB for trapezoidal with the seeded solution
-    if (this.options.integrationMethod === 'trapezoidal') {
-      this.assembler.clear();
-      this.assembler.setTime(0, 0);
-      const ctx = this.assembler.getStampContext();
-      for (const d of this.compiled.devices) d.stamp(ctx);
-      this.prevB = new Float64Array(this.assembler.b);
-    }
+    this.stampPrevB();
   }
 
   /** Returns the current state at t=0 (or whatever the current simTime is) as a TransientStep. */
@@ -222,17 +223,19 @@ class TransientSimImpl implements TransientSim {
     return this.buildStep(this.assembler.solution);
   }
 
+  private stampPrevB(): void {
+    if (this.options.integrationMethod !== 'trapezoidal') return;
+    this.assembler.clear();
+    this.assembler.setTime(0, 0);
+    const ctx = this.assembler.getStampContext();
+    for (const d of this.compiled.devices) d.stamp(ctx);
+    this.prevB = new Float64Array(this.assembler.b);
+  }
+
   private initDC(): void {
     const { assembler: dcAsm } = solveDCOperatingPoint(this.compiled, this.options);
     this.assembler.solution.set(dcAsm.solution);
-
-    if (this.options.integrationMethod === 'trapezoidal') {
-      this.assembler.clear();
-      this.assembler.setTime(0, 0);
-      const ctx = this.assembler.getStampContext();
-      for (const d of this.compiled.devices) d.stamp(ctx);
-      this.prevB = new Float64Array(this.assembler.b);
-    }
+    this.stampPrevB();
   }
 
   private checkLTE(current: Float64Array, previous: Float64Array, dt: number): number {
@@ -286,7 +289,7 @@ export function createDriverFromCompiled(
     stopTime: config.stopTime,
     timestep: config.timestep,
     maxTimestep: config.maxTimestep,
+    initialSolution: config.initialSolution,
   });
-  if (config.initialSolution) impl.seedSolution(config.initialSolution);
   return impl;
 }
