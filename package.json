@@ -7,12 +7,16 @@
     "lint": "pnpm -r lint",
     "bench": "pnpm -C packages/core bench",
     "bench:accuracy": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/accuracy.ts",
-    "bench:compare": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/comparison.ts"
+    "bench:compare": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/comparison.ts",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "pnpm build && changeset publish"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@types/node": "^25.5.2",
     "eecircuit-engine": "^1.7.0",
     "tsx": "^4.21.0"
