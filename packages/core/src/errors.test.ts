@@ -62,3 +62,38 @@ describe('CycleError', () => {
     expect(err).toBeInstanceOf(SpiceError);
   });
 });
+
+describe('ConvergenceError (extended)', () => {
+  it('carries a kind discriminator', () => {
+    const err = new ConvergenceError(
+      'NR failed', 1e-9, ['n1'], new Float64Array([1]), new Float64Array([0]),
+      'nr-divergence', 1e-12, 1e-8,
+    );
+    expect(err.kind).toBe('nr-divergence');
+    expect(err.dt).toBe(1e-12);
+    expect(err.gmin).toBe(1e-8);
+  });
+
+  it('defaults kind to nr-divergence when omitted', () => {
+    const err = new ConvergenceError(
+      'm', 0, [], new Float64Array(0), new Float64Array(0),
+    );
+    expect(err.kind).toBe('nr-divergence');
+  });
+});
+
+describe('TimestepTooSmallError (now extends ConvergenceError)', () => {
+  it('is instanceof ConvergenceError', () => {
+    const err = new TimestepTooSmallError(1e-9, 1e-18);
+    expect(err).toBeInstanceOf(ConvergenceError);
+    expect(err).toBeInstanceOf(TimestepTooSmallError);
+  });
+
+  it('has kind=dt-floor and preserves timestep getter', () => {
+    const err = new TimestepTooSmallError(1e-9, 1e-18);
+    expect(err.kind).toBe('dt-floor');
+    expect(err.timestep).toBe(1e-18);
+    expect(err.time).toBe(1e-9);
+    expect(err.dt).toBe(1e-18);
+  });
+});

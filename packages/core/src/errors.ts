@@ -53,14 +53,21 @@ export class SingularMatrixError extends SpiceError {
   }
 }
 
+/** Discriminator for {@link ConvergenceError} subclasses. */
+export type ConvergenceFailureKind = 'nr-divergence' | 'lte-cascade' | 'dt-floor';
+
 /**
  * Thrown when Newton-Raphson iteration fails to converge within the
- * allowed number of iterations.
+ * allowed number of iterations, when LTE rejects too many steps in a row,
+ * or when the adaptive timestep shrinks below the floor.
  *
- * Contains diagnostic information including the oscillating nodes
- * and the last two solution vectors.
+ * Contains diagnostic information including the oscillating nodes,
+ * the last two solution vectors, the timestep and GMIN value in effect,
+ * and a `kind` discriminator identifying the failure mode.
  */
 export class ConvergenceError extends SpiceError {
+  public readonly kind: ConvergenceFailureKind;
+
   constructor(
     message: string,
     /** Simulation time at which convergence failed (undefined for DC) */
@@ -71,28 +78,44 @@ export class ConvergenceError extends SpiceError {
     public readonly lastSolution: Float64Array,
     /** Solution vector from the second-to-last iteration */
     public readonly prevSolution: Float64Array,
+    /** Failure mode discriminator. Defaults to `'nr-divergence'`. */
+    kind: ConvergenceFailureKind = 'nr-divergence',
+    /** Timestep in effect when the failure occurred (undefined for DC) */
+    public readonly dt?: number,
+    /** GMIN value in effect at the time of failure */
+    public readonly gmin?: number,
   ) {
     super(
       `Convergence failed${time !== undefined ? ` at t=${time}` : ''}: ${message}` +
         (oscillatingNodes.length > 0 ? ` (oscillating nodes: ${oscillatingNodes.join(', ')})` : ''),
     );
     this.name = 'ConvergenceError';
+    this.kind = kind;
   }
 }
 
 /**
  * Thrown during transient analysis when the adaptive timestep shrinks
- * below the minimum threshold (1e-18 s).
+ * below the minimum threshold (see `MIN_TIMESTEP` in `transient-driver.ts`).
+ *
+ * Subclass of {@link ConvergenceError} with `kind === 'dt-floor'`.
  */
-export class TimestepTooSmallError extends SpiceError {
+export class TimestepTooSmallError extends ConvergenceError {
   constructor(
     /** Simulation time at which the error occurred */
-    public readonly time: number,
+    time: number,
     /** The timestep that was too small */
     public readonly timestep: number,
   ) {
-    super(`Timestep too small at t=${time}: dt=${timestep}`);
+    super(
+      `Timestep too small: dt=${timestep}`,
+      time, [], new Float64Array(0), new Float64Array(0),
+      'dt-floor', timestep, undefined,
+    );
     this.name = 'TimestepTooSmallError';
+    // Override the message to preserve the old format verbatim so string
+    // comparisons in consumer code keep working.
+    this.message = `Timestep too small at t=${time}: dt=${timestep}`;
   }
 }
 
