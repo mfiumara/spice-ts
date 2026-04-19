@@ -204,6 +204,24 @@ class TransientSimImpl implements TransientSim {
     this.disposed = true;
   }
 
+  /** Seed the driver's assembler with an externally-computed solution (e.g., DC from caller). */
+  seedSolution(s: Float64Array): void {
+    this.assembler.solution.set(s);
+    // Recompute prevB for trapezoidal with the seeded solution
+    if (this.options.integrationMethod === 'trapezoidal') {
+      this.assembler.clear();
+      this.assembler.setTime(0, 0);
+      const ctx = this.assembler.getStampContext();
+      for (const d of this.compiled.devices) d.stamp(ctx);
+      this.prevB = new Float64Array(this.assembler.b);
+    }
+  }
+
+  /** Returns the current state at t=0 (or whatever the current simTime is) as a TransientStep. */
+  peekInitialStep(): TransientStep {
+    return this.buildStep(this.assembler.solution);
+  }
+
   private initDC(): void {
     const { assembler: dcAsm } = solveDCOperatingPoint(this.compiled, this.options);
     this.assembler.solution.set(dcAsm.solution);
@@ -247,4 +265,28 @@ class TransientSimImpl implements TransientSim {
 
 function validateCircuit(compiled: CompiledCircuit): void {
   if (compiled.nodeCount === 0) throw new InvalidCircuitError('Circuit has no nodes');
+}
+
+/**
+ * Internal constructor used by `solveTransient` / `streamTransient` to avoid
+ * re-parsing circuits. Exposes `peekInitialStep()` and `seedSolution()` for
+ * t=0 seeding.
+ */
+export function createDriverFromCompiled(
+  compiled: CompiledCircuit,
+  options: ResolvedOptions,
+  config: {
+    stopTime: number | undefined;
+    timestep: number;
+    maxTimestep: number;
+    initialSolution?: Float64Array;
+  },
+): TransientSim & { peekInitialStep(): TransientStep; seedSolution(s: Float64Array): void } {
+  const impl = new TransientSimImpl(compiled, options, {
+    stopTime: config.stopTime,
+    timestep: config.timestep,
+    maxTimestep: config.maxTimestep,
+  });
+  if (config.initialSolution) impl.seedSolution(config.initialSolution);
+  return impl;
 }

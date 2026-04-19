@@ -11,12 +11,11 @@ import { solveDCSweep } from './analysis/dc-sweep.js';
 import { solveStep, generateStepValues } from './analysis/step.js';
 import type { StepStreamEvent, StepAnalysis } from './types.js';
 import type { SimulationResult } from './results.js';
-import { InvalidCircuitError, TimestepTooSmallError } from './errors.js';
+import { InvalidCircuitError } from './errors.js';
 import { MNAAssembler } from './mna/assembler.js';
-import { buildCompanionSystem } from './mna/companion.js';
 import { toCsc } from './solver/csc-matrix.js';
-import { createSparseSolver } from './solver/sparse-solver.js';
 import { ComplexSparseSolver } from './solver/complex-sparse-solver.js';
+import { createDriverFromCompiled } from './analysis/transient-driver.js';
 
 /**
  * Run all analyses declared in a SPICE netlist or {@link Circuit} object.
@@ -289,171 +288,27 @@ function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[
   }
 }
 
-const MIN_TIMESTEP = 1e-15;
-const NR_VOLTAGE_LIMIT = 3.5;
-
 function* streamTransient(
   compiled: CompiledCircuit,
   analysis: TransientAnalysis,
   options: ResolvedOptions,
   initialSolution: Float64Array,
 ): Generator<TransientStep> {
-  const { devices, nodeCount, branchCount, nodeNames, branchNames, nodeIndexMap } = compiled;
-  const assembler = new MNAAssembler(nodeCount, branchCount);
-  assembler.solution.set(initialSolution);
+  const driver = createDriverFromCompiled(compiled, options, {
+    stopTime: analysis.stopTime,
+    timestep: analysis.timestep,
+    maxTimestep: analysis.maxTimestep ?? (analysis.stopTime / 50),
+    initialSolution,
+  });
 
-  const maxDt = analysis.maxTimestep ?? (analysis.stopTime / 50);
-  let dt = Math.min(analysis.timestep, maxDt);
-
-  // Yield initial state at t=0
-  yield buildTransientStep(0, assembler.solution, nodeNames, branchNames, nodeCount, nodeIndexMap);
-
-  let time = 0;
-
-  const solver = createSparseSolver();
-  let patternAnalyzed = false;
-
-  // LTE history tracking
-  let secondPrevSol: Float64Array | undefined;
-  let prevDt = dt;
-  let lteRejectCount = 0;
-
-  // Compute initial b(0) for trapezoidal history on the first step
-  let prevB: Float64Array | undefined;
-  if (options.integrationMethod === 'trapezoidal') {
-    assembler.clear();
-    assembler.setTime(0, 0);
-    const initCtx = assembler.getStampContext();
-    for (const device of devices) device.stamp(initCtx);
-    prevB = new Float64Array(assembler.b);
+  try {
+    yield driver.peekInitialStep();
+    while (!driver.isDone) {
+      yield driver.advance();
+    }
+  } finally {
+    driver.dispose();
   }
-
-  while (time < analysis.stopTime - dt * 0.001) {
-    const prevSol = new Float64Array(assembler.solution);
-    const nextTime = Math.min(time + dt, analysis.stopTime);
-    const actualDt = nextTime - time;
-
-    assembler.setTime(nextTime, actualDt);
-
-    let converged = false;
-
-    for (let iter = 0; iter < options.maxTransientIterations; iter++) {
-      buildCompanionSystem(assembler, devices, actualDt, options.integrationMethod, prevSol, prevB, options.gmin);
-
-      if (!assembler.isFastPath) assembler.lockTopology();
-      if (!patternAnalyzed) {
-        solver.analyzePattern(assembler.getCscMatrix());
-        patternAnalyzed = true;
-      }
-      solver.factorize(assembler.getCscMatrix());
-      const x = solver.solve(new Float64Array(assembler.b));
-
-      // NR damping: limit node-voltage change per iteration
-      const prev = new Float64Array(assembler.solution);
-      for (let i = 0; i < nodeCount; i++) {
-        const delta = x[i] - prev[i];
-        if (Math.abs(delta) > NR_VOLTAGE_LIMIT) {
-          x[i] = prev[i] + Math.sign(delta) * NR_VOLTAGE_LIMIT;
-        }
-      }
-
-      assembler.solution.set(x);
-
-      if (isStreamConverged(x, prev, nodeCount, options)) {
-        converged = true;
-        break;
-      }
-    }
-
-    if (!converged) {
-      dt = dt / 2;
-      if (dt < MIN_TIMESTEP) {
-        throw new TimestepTooSmallError(time, dt);
-      }
-      assembler.solution.set(prevSol);
-      continue;
-    }
-
-    // LTE-based timestep control
-    let lteRatio = 0;
-    if (secondPrevSol && lteRejectCount < 10) {
-      lteRatio = streamEstimateLTE(
-        assembler.solution, prevSol, secondPrevSol,
-        actualDt, prevDt, nodeCount, options,
-      );
-      if (lteRatio > 1) {
-        const factor = Math.max(0.25, 0.9 / Math.sqrt(lteRatio));
-        dt = Math.max(actualDt * factor, MIN_TIMESTEP);
-        assembler.solution.set(prevSol);
-        lteRejectCount++;
-        continue;
-      }
-      lteRejectCount = 0;
-    }
-
-    // Save the DC-stamped b for trapezoidal history on next step
-    if (options.integrationMethod === 'trapezoidal') {
-      assembler.clear();
-      const stampCtx = assembler.getStampContext();
-      for (const device of devices) device.stamp(stampCtx);
-      prevB = new Float64Array(assembler.b);
-    }
-
-    time = nextTime;
-    yield buildTransientStep(time, assembler.solution, nodeNames, branchNames, nodeCount, nodeIndexMap);
-
-    // Update LTE history
-    secondPrevSol = prevSol;
-    prevDt = actualDt;
-
-    // Adaptive: grow timestep based on LTE margin
-    const growFactor = lteRatio > 0.001
-      ? Math.min(2.0, 0.9 / Math.sqrt(lteRatio))
-      : 2.0;
-    dt = Math.min(actualDt * growFactor, maxDt, analysis.stopTime - time);
-    if (dt < MIN_TIMESTEP && time < analysis.stopTime - MIN_TIMESTEP) break;
-  }
-}
-
-function streamEstimateLTE(
-  current: Float64Array,
-  previous: Float64Array,
-  secondPrev: Float64Array,
-  dt: number,
-  prevDt: number,
-  nodeCount: number,
-  options: ResolvedOptions,
-): number {
-  let maxRatio = 0;
-  const divider = options.integrationMethod === 'trapezoidal' ? 3 : 2;
-
-  for (let i = 0; i < nodeCount; i++) {
-    const slope = (previous[i] - secondPrev[i]) / prevDt;
-    const predicted = previous[i] + dt * slope;
-    const error = Math.abs(current[i] - predicted) / divider;
-    const tol = options.trtol * (options.vntol + options.reltol * Math.abs(current[i]));
-    if (tol > 0) {
-      const ratio = error / tol;
-      if (ratio > maxRatio) maxRatio = ratio;
-    }
-  }
-
-  return maxRatio;
-}
-
-function buildTransientStep(
-  time: number,
-  solution: Float64Array,
-  nodeNames: string[],
-  branchNames: string[],
-  nodeCount: number,
-  nodeIndexMap: Map<string, number>,
-): TransientStep {
-  const voltages = new Map<string, number>();
-  for (const name of nodeNames) voltages.set(name, solution[nodeIndexMap.get(name)!]);
-  const currents = new Map<string, number>();
-  for (let i = 0; i < branchNames.length; i++) currents.set(branchNames[i], solution[nodeCount + i]);
-  return { time, voltages, currents };
 }
 
 function* streamAC(
@@ -566,18 +421,3 @@ function generateStreamFreqs(analysis: ACAnalysis): number[] {
   return frequencies;
 }
 
-function isStreamConverged(
-  current: Float64Array,
-  previous: Float64Array,
-  numNodes: number,
-  options: ResolvedOptions,
-): boolean {
-  for (let i = 0; i < current.length; i++) {
-    const diff = Math.abs(current[i] - previous[i]);
-    const tol = i < numNodes
-      ? options.vntol + options.reltol * Math.abs(current[i])
-      : options.abstol + options.reltol * Math.abs(current[i]);
-    if (diff > tol) return false;
-  }
-  return true;
-}
