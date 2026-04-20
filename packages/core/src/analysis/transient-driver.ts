@@ -286,12 +286,6 @@ class TransientSimImpl implements TransientSim {
     this.disposed = true;
   }
 
-  /** Seed the driver's assembler with an externally-computed solution (e.g., DC from caller). */
-  seedSolution(s: Float64Array): void {
-    this.assembler.solution.set(s);
-    this.stampPrevB();
-  }
-
   /** Returns the current state at t=0 (or whatever the current simTime is) as a TransientStep. */
   peekInitialStep(): TransientStep {
     return this.buildStep(this.assembler.solution);
@@ -346,8 +340,7 @@ function validateCircuit(compiled: CompiledCircuit): void {
 
 /**
  * Internal constructor used by `solveTransient` / `streamTransient` to avoid
- * re-parsing circuits. Exposes `peekInitialStep()` and `seedSolution()` for
- * t=0 seeding.
+ * re-parsing circuits. Exposes `peekInitialStep()` for t=0 inspection.
  */
 export function createDriverFromCompiled(
   compiled: CompiledCircuit,
@@ -358,7 +351,7 @@ export function createDriverFromCompiled(
     maxTimestep: number;
     initialSolution?: Float64Array;
   },
-): TransientSim & { peekInitialStep(): TransientStep; seedSolution(s: Float64Array): void } {
+): TransientSim & { peekInitialStep(): TransientStep } {
   const impl = new TransientSimImpl(compiled, options, {
     stopTime: config.stopTime,
     timestep: config.timestep,
