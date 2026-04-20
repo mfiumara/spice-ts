@@ -45,6 +45,8 @@ export type StepResult =
       readonly solution: Float64Array;
       /** Number of NR iterations used. */
       readonly iterations: number;
+      /** True if the damping loop detected NR sign-flip oscillation on any node. */
+      readonly oscillated: boolean;
     }
   | {
       readonly ok: false;
@@ -52,6 +54,7 @@ export type StepResult =
       readonly iterations: number;
       readonly lastSolution: Float64Array;
       readonly prevIterSolution: Float64Array;
+      readonly oscillated: boolean;
     };
 
 /**
@@ -67,11 +70,15 @@ export type StepResult =
 export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult {
   const { compiled, assembler, solver, options } = ctx;
   const { devices, nodeCount } = compiled;
-  const { dt, time, prevSolution, prevB, gmin, voltageLimit } = attempt;
+  const { dt, time, prevSolution, prevB, gmin } = attempt;
+  let voltageLimit = attempt.voltageLimit;
+  const TIGHT_LIMIT = 0.5;
 
   assembler.setTime(time, dt);
 
   let prevIterSolution = new Float64Array(assembler.solution);
+  let prevDelta: Float64Array | undefined;
+  let oscillated = false;
 
   for (let iter = 0; iter < options.maxTransientIterations; iter++) {
     buildCompanionSystem(assembler, devices, dt, options.integrationMethod, prevSolution, prevB, gmin);
@@ -84,8 +91,24 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
     const x = solver.solve(new Float64Array(assembler.b));
 
     const prev = new Float64Array(assembler.solution);
+
+    // Compute raw deltas before damping so oscillation detection sees the actual iterate
+    const rawDelta = new Float64Array(nodeCount);
+    for (let i = 0; i < nodeCount; i++) rawDelta[i] = x[i] - prev[i];
+
+    if (prevDelta) {
+      for (let i = 0; i < nodeCount; i++) {
+        if (rawDelta[i] * prevDelta[i] < 0 && Math.abs(rawDelta[i]) > options.vntol) {
+          oscillated = true;
+          if (voltageLimit > TIGHT_LIMIT) voltageLimit = TIGHT_LIMIT;
+          break;
+        }
+      }
+    }
+
+    // Apply damping
     for (let i = 0; i < nodeCount; i++) {
-      const delta = x[i] - prev[i];
+      const delta = rawDelta[i];
       if (Math.abs(delta) > voltageLimit) {
         x[i] = prev[i] + Math.sign(delta) * voltageLimit;
       }
@@ -94,9 +117,15 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
     assembler.solution.set(x);
 
     if (isConvergedTransient(x, prev, nodeCount, options)) {
-      return { ok: true, solution: new Float64Array(x), iterations: iter + 1 };
+      return {
+        ok: true,
+        solution: new Float64Array(x),
+        iterations: iter + 1,
+        oscillated,
+      };
     }
     prevIterSolution = prev;
+    prevDelta = rawDelta;
   }
 
   return {
@@ -105,6 +134,7 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
     iterations: options.maxTransientIterations,
     lastSolution: new Float64Array(assembler.solution),
     prevIterSolution,
+    oscillated,
   };
 }
 
