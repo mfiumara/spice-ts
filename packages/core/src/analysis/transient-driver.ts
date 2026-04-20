@@ -26,7 +26,7 @@ const MAX_LTE_REJECTS_BEFORE_BYPASS = 10;
  *         shunt conductance for NR to converge across the sharp gate transition.
  * 1e-10, 1e-12 — fine-grained fallback for softer nonlinearities.
  */
-const GMIN_FALLBACK_SCHEDULE = [1e0, 1e-10, 1e-12] as const;
+const GMIN_FALLBACK_SCHEDULE = [1e8, 1e6, 1e4, 1e2, 1e0, 1e-10, 1e-12] as const;
 /** Smallest useful GMIN: anything below this has negligible conditioning effect. */
 const BASELINE_GMIN = 1e-12;
 /** Per-step multiplicative decay applied to currentGmin after a successful step. */
