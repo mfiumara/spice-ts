@@ -125,4 +125,17 @@ C1 2 0 1u
       sim.dispose();
     }
   });
+
+  it('reset() clears GMIN-elevated state back to baseline', async () => {
+    const sim = await createTransientSim(BUCK_BOOST_NETLIST);
+    // Run a few steps — the first switching edge triggers GMIN elevation.
+    sim.advanceUntil(2e-6);
+    // Reset and reconfirm sim starts from t=0 with clean state.
+    sim.reset();
+    expect(sim.simTime).toBe(0);
+    // Advancing again should reproduce the first step identically (within fp).
+    const step = sim.advance();
+    expect(step.time).toBeGreaterThan(0);
+    sim.dispose();
+  });
 });

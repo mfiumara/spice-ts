@@ -116,7 +116,7 @@ export async function simulate(
  * @throws {@link ParseError} if the netlist is malformed
  * @throws {@link InvalidCircuitError} if the circuit has no nodes or no analysis command
  * @throws {@link ConvergenceError} if Newton-Raphson fails to converge
- * @throws {@link TimestepTooSmallError} if the adaptive timestep shrinks below 1e-18
+ * @throws {@link TimestepTooSmallError} if the adaptive timestep shrinks below 1e-12
  * @example
  * ```ts
  * for await (const step of simulateStream('V1 1 0 DC 5\nR1 1 0 1k\n.tran 1u 1m')) {
