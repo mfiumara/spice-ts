@@ -1526,5 +1526,92 @@
         "status": "✓"
       }
     ]
+  },
+  {
+    "date": "2026-04-20T18:02:27.372Z",
+    "results": [
+      {
+        "circuit": "rc-step-at-tau",
+        "metric": "V(out) at t=τ (V)",
+        "spiceTs": 3.154807807019063,
+        "expected": 3.1606027941427883,
+        "errorPct": 0.1833506929268214,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "rlc-resonance",
+        "metric": "f_osc (Hz)",
+        "spiceTs": 1578.986970556749,
+        "expected": 1591.5494309189535,
+        "errorPct": 0.7893226636982955,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "bjt-ce-bias",
+        "metric": "V(base) (V)",
+        "spiceTs": 2.0484302847306957,
+        "expected": 2.1052631578947367,
+        "errorPct": 2.699561475291951,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "~"
+      },
+      {
+        "circuit": "diode-bridge-rectifier",
+        "metric": "V(out) min (V)",
+        "spiceTs": 0,
+        "expected": 0,
+        "errorPct": 0,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "spice3-diff-pair",
+        "metric": "|V(out+) - V(out-)| (mV)",
+        "spiceTs": 1.7763568394002505e-12,
+        "expected": 0,
+        "errorPct": 1.7763568394002505e-12,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓",
+        "note": "V(out+)=11.4376V V(out-)=11.4376V"
+      },
+      {
+        "circuit": "spice3-bandpass-rlc",
+        "metric": "f_peak (Hz)",
+        "spiceTs": 1584.8931924611134,
+        "expected": 1591.5494309189535,
+        "errorPct": 0.41822379679384736,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      },
+      {
+        "circuit": "spice3-ota-dc",
+        "metric": "V(d2) (V)",
+        "spiceTs": 4.104715048761087,
+        "expected": 4.105,
+        "errorPct": 0.006941564894351882,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓",
+        "note": "V(d1)=4.1047V V(d2)=4.1047V"
+      },
+      {
+        "circuit": "spice3-rc-ladder-5",
+        "metric": "f_-3dB (Hz)",
+        "spiceTs": 12.759723132093637,
+        "expected": 12.73,
+        "errorPct": 0.23348886169392138,
+        "ngspice": null,
+        "ngspiceDiffPct": null,
+        "status": "✓"
+      }
+    ]
   }
 ]
