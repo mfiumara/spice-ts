@@ -8,7 +8,14 @@ import { solveDCOperatingPoint } from './dc.js';
 import { attemptStep } from './transient-step.js';
 import { TimestepTooSmallError, InvalidCircuitError } from '../errors.js';
 
-const MIN_TIMESTEP = 1e-12;
+/**
+ * Smallest allowed timestep (femtosecond). Must be small enough that LTE can
+ * shrink dt to satisfy accuracy at fast switching edges (rise/fall ~100 ns).
+ * Raising this above ~1e-13 causes the LTE bypass to trigger pathologically
+ * often on hard-switching circuits like the buck, inflating timepoint counts
+ * by 10–15× — keep at 1e-15.
+ */
+const MIN_TIMESTEP = 1e-15;
 const NR_VOLTAGE_LIMIT = 3.5;
 /**
  * After this many consecutive LTE rejections, stop LTE-checking to avoid
