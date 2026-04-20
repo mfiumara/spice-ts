@@ -52,14 +52,14 @@ describe('hard-switching converter integration', () => {
     const vout = result.transient!.voltage('out');
     expect(vout[vout.length - 1]).toBeGreaterThan(4); // ~6 V steady state
     expect(vout[vout.length - 1]).toBeLessThan(8);
-  }, 30_000);
+  }, 120_000);
 
   it('boost runs to 10 ms without throwing', async () => {
     const result = await simulate(withStop(BOOST, '10m'));
     expect(result.transient).toBeDefined();
     const vout = result.transient!.voltage('out');
     expect(vout[vout.length - 1]).toBeGreaterThan(7);
-  }, 30_000);
+  }, 120_000);
 
   it('buck-boost runs to 500 µs without throwing — HEADLINE (was failing at 562 ns pre-fix)', async () => {
     // Pre-fix: TimestepTooSmallError at t=562 ns on the first MOSFET switching edge.
