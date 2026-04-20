@@ -5,6 +5,14 @@ import type { SparseSolver } from '../solver/sparse-solver.js';
 import { buildCompanionSystem } from '../mna/companion.js';
 
 /**
+ * When sign-flip oscillation is detected on any node, the per-iteration
+ * voltage delta cap tightens to this value for the remainder of the attempt.
+ * Empirically chosen to land the iterate in the valley between oscillating
+ * candidate solutions (NR-classic adaptive damping; SPICE3 convention).
+ */
+const TIGHT_LIMIT = 0.5;
+
+/**
  * Shared context for an NR step attempt. The assembler and solver are
  * long-lived — reused across retries so pattern analysis and typed-array
  * allocations amortize. `attemptStep` mutates `assembler` internally; the
@@ -72,7 +80,6 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
   const { devices, nodeCount } = compiled;
   const { dt, time, prevSolution, prevB, gmin } = attempt;
   let voltageLimit = attempt.voltageLimit;
-  const TIGHT_LIMIT = 0.5;
 
   assembler.setTime(time, dt);
 
