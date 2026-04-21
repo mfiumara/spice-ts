@@ -413,6 +413,7 @@ function App() {
   const [activeView, setActiveView] = useState<'tran' | 'ac' | 'dc'>('tran');
   const [searchQuery, setSearchQuery] = useState('');
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tranStop, setTranStop] = useState(() => parseTranParams(CIRCUITS[0].tranNetlist!).stop);
   const [tranStep, setTranStep] = useState(() => parseTranParams(CIRCUITS[0].tranNetlist!).step);
   const [editedNetlist, setEditedNetlist] = useState<string>(() => (CIRCUITS[0].tranNetlist ?? '').trim());
@@ -589,6 +590,7 @@ function App() {
     setVisibility({});
     stopRef.current = true;
     setRunning(false);
+    setSidebarOpen(false);
   }, []);
 
   // Filter and group circuits
@@ -635,13 +637,30 @@ function App() {
 
       {/* ── Icon Rail ── */}
       <nav className="rail">
-        <button className="rail-btn active" title="Circuits"><GridIcon /></button>
+        <button
+          className={`rail-btn active ${sidebarOpen ? 'rail-btn-mobile-open' : ''}`}
+          title="Circuits"
+          onClick={() => setSidebarOpen(prev => !prev)}
+          aria-expanded={sidebarOpen}
+          aria-controls="circuits-sidebar"
+        >
+          <GridIcon />
+        </button>
         <div className="rail-spacer" />
         <button className="rail-btn" title="Help"><HelpIcon /></button>
       </nav>
 
+      {/* ── Mobile backdrop — only visible when sidebar is open on mobile ── */}
+      {sidebarOpen && (
+        <div
+          className="sidebar-backdrop"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* ── Sidebar ── */}
-      <aside className="sidebar">
+      <aside id="circuits-sidebar" className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
         <div className="sidebar-header">
           <h2>Circuits</h2>
           <input

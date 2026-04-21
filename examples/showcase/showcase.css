@@ -506,12 +506,58 @@ body {
 .statusbar .sep { width: 1px; height: 14px; background: var(--border-subtle); }
 .statusbar .ok { color: var(--phosphor-dim); }
 
+/* ======== SIDEBAR BACKDROP (mobile only) ======== */
+
+.sidebar-backdrop {
+  display: none;
+}
+
 /* ======== RESPONSIVE ======== */
 
 @media (max-width: 900px) {
   .app { grid-template-columns: 56px 1fr; }
-  .sidebar { display: none; }
   .main { grid-column: 2; }
+
+  /* Sidebar becomes a slide-in drawer on top of the main content.
+     The grid slot (column 2) is no longer used; we take it out of
+     normal flow and absolutely position it over the rail+main. */
+  .sidebar {
+    position: fixed;
+    top: 48px;           /* below the topbar */
+    bottom: 0;
+    left: 56px;          /* flush with the rail */
+    width: min(280px, calc(100vw - 56px));
+    z-index: 20;
+    transform: translateX(-110%);
+    transition: transform 0.22s ease;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.45);
+  }
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+
+  /* Dim the main content and allow tap-to-close */
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    top: 48px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 15;
+    animation: sidebar-backdrop-fade 0.2s ease;
+  }
+
+  /* Visual hint on the rail button when the drawer is open */
+  .rail-btn.rail-btn-mobile-open {
+    background: var(--phosphor-faint);
+  }
+}
+
+@keyframes sidebar-backdrop-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ======== VAULT-TEC CRT EASTER EGG ======== */
