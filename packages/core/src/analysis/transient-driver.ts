@@ -24,20 +24,12 @@ const NR_VOLTAGE_LIMIT = 3.5;
 const MAX_LTE_REJECTS_BEFORE_BYPASS = 10;
 
 /**
- * GMIN fallback schedule for NR failures. Tried in order when NR diverges;
- * first entry large enough to condition the Jacobian usually wins.
- * The schedule must include BASELINE_GMIN as its minimum useful value.
- *
- * 1e0  — required: the MOSFET switching edge in the buck-boost fixture drives
- *         the Jacobian severely ill-conditioned; only gmin=1 S provides enough
- *         shunt conductance for NR to converge across the sharp gate transition.
- * 1e-10, 1e-12 — fine-grained fallback for softer nonlinearities.
+ * On NR failure, divide dt by this factor and retry. ngspice `dctran.c` uses 8.
+ * GMIN stepping is NOT applied per-step here — it's a DC-OP technique and
+ * committing GMIN-distorted solutions as real output samples breaks LC tanks,
+ * boost converters, and other reactive circuits (see issues #42, #43, #45).
  */
-const GMIN_FALLBACK_SCHEDULE = [1e8, 1e6, 1e4, 1e2, 1e0, 1e-10, 1e-12] as const;
-/** Smallest useful GMIN: anything below this has negligible conditioning effect. */
-const BASELINE_GMIN = 1e-12;
-/** Per-step multiplicative decay applied to currentGmin after a successful step. */
-const GMIN_DECAY_FACTOR = 0.01;
+const DT_CUT_FACTOR = 8;
 
 /**
  * Resumable transient simulation driver.
@@ -117,8 +109,6 @@ class TransientSimImpl implements TransientSim {
   private prevDt: number;
   private lteRejectCount = 0;
   private disposed = false;
-  /** Current GMIN state. Starts at user-specified gmin (default 0). Elevated on NR failure. */
-  private currentGmin: number;
 
   constructor(compiled: CompiledCircuit, options: ResolvedOptions, config: InternalTransientConfig) {
     this.compiled = compiled;
@@ -126,8 +116,6 @@ class TransientSimImpl implements TransientSim {
     this.config = config;
     this.dt = Math.min(config.timestep, config.maxTimestep);
     this.prevDt = this.dt;
-    // Start at user-specified gmin (typically 0). Escalated only when NR fails.
-    this.currentGmin = options.gmin;
 
     this.assembler = new MNAAssembler(compiled.nodeCount, compiled.branchCount);
     this.solver = createSparseSolver();
@@ -151,61 +139,38 @@ class TransientSimImpl implements TransientSim {
     if (this.disposed) throw new InvalidCircuitError('TransientSim has been disposed');
 
     const prevSol = new Float64Array(this.assembler.solution);
-    // userGmin: the user-configured gmin (default 0). First NR attempt always
-    // uses this value — zero-gmin circuits (linear RLC etc.) need this to be exact.
-    const userGmin = this.options.gmin;
-    // elevatedThreshold: any gmin > this is considered "elevated" (GMIN-stepped),
-    // meaning the solution is physically distorted and needs history cleanup.
-    const elevatedThreshold = Math.max(userGmin, BASELINE_GMIN);
 
     while (true) {
-      const nextTime = this.config.stopTime !== undefined
+      // Guard against dt=0 when caller advance()s past a done simulation.
+      // stopTime clamping below can drive dt to 0 exactly at the boundary;
+      // once past stopTime we just continue at the configured timestep.
+      if (this.dt <= 0) {
+        this.dt = Math.min(this.config.timestep, this.config.maxTimestep);
+      }
+
+      const nextTime = this.config.stopTime !== undefined && this.time < this.config.stopTime
         ? Math.min(this.time + this.dt, this.config.stopTime)
         : this.time + this.dt;
       const actualDt = nextTime - this.time;
 
-      // Build the GMIN attempt list:
-      //   - Start with currentGmin (user gmin, or last used elevated level if decaying).
-      //   - If currentGmin < BASELINE_GMIN, include BASELINE_GMIN before the full schedule.
-      //   - Then include all GMIN_FALLBACK_SCHEDULE entries above currentGmin.
-      // Tried in schedule-declaration order (largest-first for fast recovery on
-      // hard-switching transients). currentGmin comes first so we don't bump gmin
-      // unnecessarily on circuits that are converging fine.
-      const gminCandidates: number[] = [this.currentGmin];
-      if (this.currentGmin < BASELINE_GMIN) gminCandidates.push(BASELINE_GMIN);
-      for (const g of GMIN_FALLBACK_SCHEDULE) {
-        if (g > this.currentGmin) gminCandidates.push(g);
-      }
-      // Deduplicate while preserving order (currentGmin may equal BASELINE_GMIN)
-      const gminAttempts = gminCandidates.filter((g, i) => gminCandidates.indexOf(g) === i);
+      this.assembler.solution.set(prevSol);
+      const result = attemptStep(
+        { compiled: this.compiled, assembler: this.assembler, solver: this.solver, options: this.options },
+        {
+          dt: actualDt,
+          time: nextTime,
+          prevSolution: prevSol,
+          prevB: this.prevB,
+          gmin: this.options.gmin,
+          voltageLimit: NR_VOLTAGE_LIMIT,
+        },
+      );
 
-      let converged = false;
-      let solution: Float64Array | undefined;
-      let usedGmin = userGmin;
-
-      for (const gmin of gminAttempts) {
-        this.assembler.solution.set(prevSol);
-        const result = attemptStep(
-          { compiled: this.compiled, assembler: this.assembler, solver: this.solver, options: this.options },
-          {
-            dt: actualDt,
-            time: nextTime,
-            prevSolution: prevSol,
-            prevB: this.prevB,
-            gmin,
-            voltageLimit: NR_VOLTAGE_LIMIT,
-          },
-        );
-        if (result.ok) {
-          converged = true;
-          solution = result.solution;
-          usedGmin = gmin;
-          break;
-        }
-      }
-
-      if (!converged) {
-        this.dt = this.dt / 2;
+      if (!result.ok) {
+        // ngspice dctran.c convention: aggressive dt cut, no per-step GMIN
+        // stepping. Committing GMIN-distorted solutions breaks reactive
+        // circuits (LC tank, boost, rectifier — see issues #42, #43, #45).
+        this.dt = this.dt / DT_CUT_FACTOR;
         if (this.dt < MIN_TIMESTEP) {
           throw new TimestepTooSmallError(this.time, this.dt);
         }
@@ -213,13 +178,8 @@ class TransientSimImpl implements TransientSim {
         continue;
       }
 
-      const sol = solution!;
-
-      // LTE rejection — skipped when GMIN is elevated because the artificially
-      // shunted solution predictably fails LTE. Commit unconditionally and let
-      // GMIN decay restore accuracy on subsequent steps.
-      const gminElevated = usedGmin > elevatedThreshold;
-      const lteRatio = gminElevated ? 0 : this.checkLTE(sol, prevSol, actualDt);
+      const sol = result.solution;
+      const lteRatio = this.checkLTE(sol, prevSol, actualDt);
       if (lteRatio > 1) {
         const factor = Math.max(0.25, 0.9 / Math.sqrt(lteRatio));
         this.dt = Math.max(actualDt * factor, MIN_TIMESTEP);
@@ -229,38 +189,25 @@ class TransientSimImpl implements TransientSim {
       }
       this.lteRejectCount = 0;
 
-      // Decay GMIN for next step:
-      //   - Success at elevated GMIN: decay toward userGmin for next step.
-      //   - Success at userGmin (or below elevatedThreshold): reset to userGmin.
-      this.currentGmin = gminElevated ? Math.max(userGmin, usedGmin * GMIN_DECAY_FACTOR) : userGmin;
-
-      if (gminElevated) {
-        // The committed solution is GMIN-distorted: the artificial shunts have
-        // shifted the operating point away from the true physics. Reset ALL
-        // history (trapezoidal history) so that subsequent steps start fresh
-        // without propagating the distortion.
-        // SPICE convention: discard integration history after any GMIN-stepped commit.
-        this.secondPrevSol = undefined;
-        this.prevB = undefined;
-        // LTE is bypassed for the following step too — secondPrevSol=undefined makes
-        // checkLTE return 0 until history re-accumulates. Intentional: the first step
-        // after an elevated commit has no basis for trapezoidal prediction.
-      } else {
-        // Update trapezoidal history from the clean (undistorted) solution
-        if (this.options.integrationMethod === 'trapezoidal') {
-          this.assembler.clear();
-          const ctx = this.assembler.getStampContext();
-          for (const d of this.compiled.devices) d.stamp(ctx);
-          this.prevB = new Float64Array(this.assembler.b);
-        }
-        this.secondPrevSol = prevSol;
+      // Update trapezoidal history.
+      if (this.options.integrationMethod === 'trapezoidal') {
+        this.assembler.clear();
+        const ctx = this.assembler.getStampContext();
+        for (const d of this.compiled.devices) d.stamp(ctx);
+        this.prevB = new Float64Array(this.assembler.b);
       }
+      this.secondPrevSol = prevSol;
       this.prevDt = actualDt;
       this.time = nextTime;
 
       const growFactor = lteRatio > 0.001 ? Math.min(2.0, 0.9 / Math.sqrt(lteRatio)) : 2.0;
-      this.dt = Math.min(actualDt * growFactor, this.config.maxTimestep,
-        this.config.stopTime !== undefined ? this.config.stopTime - this.time : Infinity);
+      // Guard against `stopTime - this.time === 0` at the boundary: that would
+      // set dt=0, which causes division-by-zero in companion stamps if the
+      // caller keeps calling advance() past isDone=true.
+      const remaining = this.config.stopTime !== undefined && this.config.stopTime > this.time
+        ? this.config.stopTime - this.time
+        : Infinity;
+      this.dt = Math.min(actualDt * growFactor, this.config.maxTimestep, remaining);
 
       return this.buildStep(sol);
     }
@@ -285,7 +232,6 @@ class TransientSimImpl implements TransientSim {
     this.prevB = undefined;
     this.secondPrevSol = undefined;
     this.lteRejectCount = 0;
-    this.currentGmin = this.options.gmin;
     this.initDC();
   }
 

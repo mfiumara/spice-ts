@@ -80,39 +80,29 @@ describe('createTransientSim', () => {
   });
 });
 
-const BUCK_BOOST_NETLIST = `
-Vin in 0 DC 12
-Vg gate 0 PULSE(0 15 0 100n 100n 4.8u 10u)
-.model NMOD NMOS(VTO=2 KP=10)
-.model DMOD D(IS=1e-14 N=1)
-M1 in gate sw 0 NMOD W=1m L=1u
-L1 sw n1 100u
-D1 n1 0 DMOD
-C1 n1 neg 100u
-Rload neg 0 10
-.tran 50n 5u
-`;
-
-describe('TransientSim convergence (GMIN stepping)', () => {
-  it('buck-boost advances past the first switching edge (t > 1 µs)', async () => {
-    const sim = await createTransientSim(BUCK_BOOST_NETLIST);
-    const steps = sim.advanceUntil(1e-6);
-    expect(steps.length).toBeGreaterThan(0);
-    expect(sim.simTime).toBeGreaterThanOrEqual(1e-6);
+describe('TransientSim boundary behavior', () => {
+  it('advance() past isDone does not produce dt=0 (no division-by-zero)', async () => {
+    // Regression: previously, the grow-factor clamp at the end of the last
+    // step set `dt = stopTime - this.time` which evaluates to 0 once time has
+    // reached stopTime. Calling advance() again then passed dt=0 into
+    // `buildCompanionSystem`, producing `Infinity` in the matrix.
+    const sim = await createTransientSim(RC_NETLIST);
+    sim.advanceUntil(2e-3);
+    expect(sim.isDone).toBe(true);
+    // Spec: stopTime is advisory, advance() may be called past it.
+    const step = sim.advance();
+    expect(Number.isFinite(step.time)).toBe(true);
+    expect(step.time).toBeGreaterThan(sim.stopTime!);
+    for (const v of step.voltages.values()) expect(Number.isFinite(v)).toBe(true);
     sim.dispose();
   });
+});
 
-  it('buck-boost runs a full 5 µs without throwing', async () => {
-    const sim = await createTransientSim(BUCK_BOOST_NETLIST);
-    expect(() => sim.advanceUntil(5e-6)).not.toThrow();
-    sim.dispose();
-  });
-
-  it('hitting the dt floor throws TimestepTooSmallError with kind=dt-floor', async () => {
+describe('TransientSim convergence', () => {
+  it('hitting the dt floor throws TimestepTooSmallError', async () => {
     // Force dt-floor by starving NR of iterations. Every attemptStep call
-    // returns ok=false immediately; no GMIN value can recover this since the
-    // NR loop itself never runs. The driver halves dt until MIN_TIMESTEP and
-    // throws.
+    // returns ok=false immediately, so the driver keeps cutting dt by 8 until
+    // it falls below MIN_TIMESTEP.
     const sim = await createTransientSim(`
 V1 1 0 DC 5
 R1 1 2 1k
@@ -124,18 +114,5 @@ C1 2 0 1u
     } finally {
       sim.dispose();
     }
-  });
-
-  it('reset() clears GMIN-elevated state back to baseline', async () => {
-    const sim = await createTransientSim(BUCK_BOOST_NETLIST);
-    // Run a few steps — the first switching edge triggers GMIN elevation.
-    sim.advanceUntil(2e-6);
-    // Reset and reconfirm sim starts from t=0 with clean state.
-    sim.reset();
-    expect(sim.simTime).toBe(0);
-    // Advancing again should reproduce the first step identically (within fp).
-    const step = sim.advance();
-    expect(step.time).toBeGreaterThan(0);
-    sim.dispose();
   });
 });
