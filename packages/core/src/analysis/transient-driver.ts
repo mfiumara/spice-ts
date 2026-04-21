@@ -163,6 +163,8 @@ class TransientSimImpl implements TransientSim {
           prevB: this.prevB,
           gmin: this.options.gmin,
           voltageLimit: NR_VOLTAGE_LIMIT,
+          prevPrevSolution: this.secondPrevSol,
+          prevDt: this.secondPrevSol ? this.prevDt : undefined,
         },
       );
 
@@ -262,7 +264,9 @@ class TransientSimImpl implements TransientSim {
   private checkLTE(current: Float64Array, previous: Float64Array, dt: number): number {
     if (!this.secondPrevSol || this.lteRejectCount >= MAX_LTE_REJECTS_BEFORE_BYPASS) return 0;
     let maxRatio = 0;
-    const divider = this.options.integrationMethod === 'trapezoidal' ? 3 : 2;
+    // 2nd-order methods (trap, gear2) have O(dt³) LTE → larger divider; BE is O(dt²).
+    const method = this.options.integrationMethod;
+    const divider = method === 'trapezoidal' || method === 'gear2' ? 3 : 2;
     const { nodeCount } = this.compiled;
     for (let i = 0; i < nodeCount; i++) {
       const slope = (previous[i] - this.secondPrevSol[i]) / this.prevDt;

@@ -55,7 +55,7 @@ export interface ACAnalysis {
 export type AnalysisCommand = DCAnalysis | DCSweepAnalysis | TransientAnalysis | ACAnalysis;
 
 /** Integration methods for transient analysis */
-export type IntegrationMethod = 'euler' | 'trapezoidal';
+export type IntegrationMethod = 'euler' | 'trapezoidal' | 'gear2';
 
 /**
  * Options for controlling simulation behavior.

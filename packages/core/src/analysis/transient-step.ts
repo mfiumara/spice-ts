@@ -44,6 +44,10 @@ export interface StepAttempt {
   readonly gmin: number;
   /** Per-iteration node-voltage damping cap (volts). */
   readonly voltageLimit: number;
+  /** Solution two steps back — x(n-1). Gear-2 only; undefined triggers BE bootstrap. */
+  readonly prevPrevSolution?: Float64Array;
+  /** Previous timestep dt(n-1). Gear-2 only. */
+  readonly prevDt?: number;
 }
 
 export type StepResult =
@@ -78,7 +82,7 @@ export type StepResult =
 export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult {
   const { compiled, assembler, solver, options } = ctx;
   const { devices, nodeCount } = compiled;
-  const { dt, time, prevSolution, prevB, gmin } = attempt;
+  const { dt, time, prevSolution, prevB, gmin, prevPrevSolution, prevDt } = attempt;
   let voltageLimit = attempt.voltageLimit;
 
   assembler.setTime(time, dt);
@@ -88,7 +92,10 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
   let oscillated = false;
 
   for (let iter = 0; iter < options.maxTransientIterations; iter++) {
-    buildCompanionSystem(assembler, devices, dt, options.integrationMethod, prevSolution, prevB, gmin);
+    buildCompanionSystem(
+      assembler, devices, dt, options.integrationMethod,
+      prevSolution, prevB, gmin, prevPrevSolution, prevDt,
+    );
 
     if (!assembler.isFastPath) assembler.lockTopology();
     if (!solver.isPatternAnalyzed()) {
