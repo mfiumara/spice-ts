@@ -8,12 +8,22 @@ import { MOSFET } from '../devices/mosfet.js';
  *
  * Backward Euler: (G + C/dt) * x(n+1) = b(n+1) + (C/dt) * x(n)
  * Trapezoidal:    (G + 2C/dt) * x(n+1) = b(n+1) + b(n) + (2C/dt - G) * x(n)
+ * Gear-2 (BDF2):  (G + a1*C) * x(n+1) = b(n+1) + a2*C*x(n) - a3*C*x(n-1)  (dynamic rows)
  *
- * IMPORTANT: For the trapezoidal method, the history terms (b(n) - G*x(n))
- * are only applied to DYNAMIC rows (rows with non-zero C entries). Algebraic
- * rows (C=0) are solved as G*x(n+1) = b(n+1) without history coupling. This
- * prevents NR oscillation on nonlinear algebraic equations (e.g., diode KCL
- * at nodes without capacitors).
+ * For BDF2 with variable timestep, let α = dt(n-1) / dt(n). Then dx/dt at t(n+1)
+ * is approximated by the Lagrange-interpolated polynomial through
+ * (t(n-1), x(n-1)), (t(n), x(n)), (t(n+1), x(n+1)):
+ *   a1 = (2 + α)     / ((1 + α) * dt(n))        // coef of x(n+1) in dx/dt
+ *   a2 = (1 + α)     /  (α * dt(n))             // coef of x(n) (moved to RHS)
+ *   a3 = 1           / (α * (1 + α) * dt(n))    // coef of x(n-1)
+ * At α = 1 (constant step): a1 = 3/(2dt), a2 = 2/dt, a3 = 1/(2dt) — standard BDF2.
+ * On the first step (no x(n-1)), BDF2 bootstraps with Backward Euler.
+ *
+ * IMPORTANT: For trap and gear2, history terms (b(n) for trap, C*x history
+ * for gear2) apply only to DYNAMIC rows (rows with non-zero C entries).
+ * Algebraic rows (C=0) are solved as G*x(n+1) = b(n+1) without history
+ * coupling. This prevents NR oscillation on nonlinear algebraic equations
+ * (e.g., diode KCL at nodes without capacitors).
  */
 export function buildCompanionSystem(
   assembler: MNAAssembler,
@@ -23,6 +33,8 @@ export function buildCompanionSystem(
   prevSolution: Float64Array,
   prevB?: Float64Array,
   gmin = 1e-12,
+  prevPrevSolution?: Float64Array,
+  prevDt?: number,
 ): void {
   // Clear and re-stamp at current time
   assembler.clear();
@@ -52,6 +64,11 @@ export function buildCompanionSystem(
     device.stampDynamic?.(ctx);
   }
 
+  // Gear-2 bootstraps with Backward Euler when x(n-1) is unavailable.
+  const useGear2 = method === 'gear2' && prevPrevSolution !== undefined && prevDt !== undefined;
+  const effectiveMethod: IntegrationMethod =
+    method === 'gear2' && !useGear2 ? 'euler' : method;
+
   if (assembler.isFastPath) {
     // ---- Fast path: typed-array CSC arithmetic ----
     const gv = assembler.gValues;
@@ -67,7 +84,7 @@ export function buildCompanionSystem(
       gv[diag[i]] += gmin;
     }
 
-    if (method === 'euler') {
+    if (effectiveMethod === 'euler') {
       // BE: G_eff = G + C/dt, b_eff = b(n+1) + (C/dt)*x(n)
       const factor = 1 / dt;
       const nnz = colPtr[n];
@@ -82,6 +99,46 @@ export function buildCompanionSystem(
         for (let p = colPtr[j]; p < colPtr[j + 1]; p++) {
           b[rowIdx[p]] += factor * cv[p] * xj;
         }
+      }
+    } else if (effectiveMethod === 'gear2') {
+      // Gear-2 (BDF2) with variable timestep. α = prevDt / dt.
+      const alpha = prevDt! / dt;
+      const a1 = (2 + alpha) / ((1 + alpha) * dt);
+      const a2 = (1 + alpha) / (alpha * dt);
+      const a3 = 1 / (alpha * (1 + alpha) * dt);
+      const nnz = colPtr[n];
+
+      // Dynamic-row mask (C has at least one non-zero entry in that row)
+      const isDynamic = new Uint8Array(n);
+      for (let p = 0; p < nnz; p++) {
+        if (cv[p] !== 0) isDynamic[rowIdx[p]] = 1;
+      }
+
+      // Save b(n+1) before we overwrite it with the BDF2 RHS
+      const bCurrent = new Float64Array(b);
+
+      // G_eff = G + a1 * C
+      for (let i = 0; i < nnz; i++) gv[i] += a1 * cv[i];
+
+      // Build b_eff: for dynamic rows use the BDF2 RHS; algebraic rows keep b(n+1)
+      // Compute (a2 * C * x(n) - a3 * C * x(n-1)) via two CSC SpMV passes
+      const histDyn = new Float64Array(n);
+      const xNm1 = prevPrevSolution!;
+      for (let j = 0; j < n; j++) {
+        const xj = prevSolution[j];
+        const xjm1 = xNm1[j];
+        if (xj === 0 && xjm1 === 0) continue;
+        for (let p = colPtr[j]; p < colPtr[j + 1]; p++) {
+          const cp = cv[p];
+          if (cp === 0) continue;
+          histDyn[rowIdx[p]] += a2 * cp * xj - a3 * cp * xjm1;
+        }
+      }
+
+      b.fill(0);
+      for (let i = 0; i < n; i++) {
+        b[i] = bCurrent[i];
+        if (isDynamic[i]) b[i] += histDyn[i];
       }
     } else {
       // Trapezoidal: G_eff = G + 2C/dt
@@ -145,7 +202,7 @@ export function buildCompanionSystem(
       assembler.G.add(i, i, gmin);
     }
 
-    if (method === 'euler') {
+    if (effectiveMethod === 'euler') {
       // BE: G_eff = G + C/dt, b_eff = b(n+1) + (C/dt)*x(n)
       const factor = 1 / dt;
       assembler.G.addMatrix(assembler.C, factor);
@@ -154,6 +211,26 @@ export function buildCompanionSystem(
         const row = assembler.C.getRow(i);
         for (const [j, cval] of row) {
           assembler.b[i] += factor * cval * prevSolution[j];
+        }
+      }
+    } else if (effectiveMethod === 'gear2') {
+      // Gear-2 (BDF2) with variable timestep — slow-path sparse operations.
+      const alpha = prevDt! / dt;
+      const a1 = (2 + alpha) / ((1 + alpha) * dt);
+      const a2 = (1 + alpha) / (alpha * dt);
+      const a3 = 1 / (alpha * (1 + alpha) * dt);
+
+      const bCurrent = new Float64Array(assembler.b);
+      assembler.G.addMatrix(assembler.C, a1);
+
+      assembler.b.fill(0);
+      const xNm1 = prevPrevSolution!;
+      for (let i = 0; i < assembler.systemSize; i++) {
+        assembler.b[i] = bCurrent[i];
+        const cRow = assembler.C.getRow(i);
+        if (cRow.size === 0) continue; // algebraic row — leave as b(n+1)
+        for (const [j, cval] of cRow) {
+          assembler.b[i] += a2 * cval * prevSolution[j] - a3 * cval * xNm1[j];
         }
       }
     } else {
