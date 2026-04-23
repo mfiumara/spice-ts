@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { simulateStepStream, simulate, parse } from '@spice-ts/core';
-import type { StepStreamEvent, DCSweepResult } from '@spice-ts/core';
+import type { StepStreamEvent, DCSweepResult, IntegrationMethod } from '@spice-ts/core';
 import { TransientPlot, BodePlot, DCSweepPlot, CursorTooltip, Legend, SchematicView } from '@spice-ts/ui/react';
 import type { LegendSignal } from '@spice-ts/ui/react';
 import { DARK_THEME, formatTime, formatFrequency, formatVoltage, formatSI, DEFAULT_PALETTE } from '@spice-ts/ui';
@@ -22,6 +22,7 @@ interface CircuitDef {
   dcNetlist?: string;
   xLabel?: string;
   signals: string[];
+  integrationMethod?: IntegrationMethod;
 }
 
 const CIRCUITS: CircuitDef[] = [
@@ -165,6 +166,7 @@ C1 out 0 10n
 .tran 100n 200u`,
   },
   {
+    integrationMethod: 'gear2',
     id: 'buck', name: 'Buck Converter', desc: '12V \u2192 ~6V, 50% duty',
     icon: '\u26A1', group: 'Power Electronics', tag: '.tran', signals: ['out'],
     tranNetlist: `
@@ -182,6 +184,7 @@ Rload out 0 10
 .tran 50n 500u`,
   },
   {
+    integrationMethod: 'gear2',
     id: 'boost', name: 'Boost Converter', desc: '5V \u2192 ~10V, 50% duty',
     icon: '\u26A1', group: 'Power Electronics', tag: '.tran', signals: ['out'],
     tranNetlist: `
@@ -199,6 +202,7 @@ Rload out 0 10
 .tran 50n 500u`,
   },
   {
+    integrationMethod: 'gear2',
     id: 'buck-boost', name: 'Buck-Boost Converter', desc: '12V \u2192 \u2013Vout (inverting)',
     icon: '\u26A1', group: 'Power Electronics', tag: '.tran', signals: ['neg'],
     tranNetlist: `
@@ -524,7 +528,7 @@ function App() {
         requestAnimationFrame(raf);
 
         let count = 0;
-        for await (const event of simulateStepStream(netlist)) {
+        for await (const event of simulateStepStream(netlist, { integrationMethod: circuit.integrationMethod })) {
           if (stopRef.current) break;
           acc.push(event); dirty = true;
           if (++count % 500 === 0) await new Promise<void>(r => setTimeout(r, 0));
@@ -540,7 +544,7 @@ function App() {
         requestAnimationFrame(raf);
 
         let count = 0;
-        for await (const event of simulateStepStream(netlist)) {
+        for await (const event of simulateStepStream(netlist, { integrationMethod: circuit.integrationMethod })) {
           if (stopRef.current) break;
           acc.push(event); dirty = true;
           if (++count % 50 === 0) await new Promise<void>(r => setTimeout(r, 0));
