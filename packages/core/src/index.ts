@@ -9,6 +9,7 @@ export { DCResult, TransientResult, ACResult, DCSweepResult } from './results.js
 export type { SimulationResult, StepResult } from './results.js';
 export type {
   SimulationOptions,
+  IntegrationMethod,
   TransientStep,
   ACPoint,
   AnalysisCommand,
