@@ -67,11 +67,17 @@ export class VoltageSource implements DeviceModel {
  * derivative discontinuity: rising-edge start, rising-edge end, falling-edge
  * start, falling-edge end, repeated each period. Times at or below zero are
  * filtered (the simulation starts at t=0 anyway).
+ *
+ * Period offsets are computed as `delay + n * period` rather than an additive
+ * accumulator so that breakpoints at high `n` land exactly on their analytic
+ * values (no FP drift).
  */
 export function pulseBreakpoints(p: PulseSource, stopTime: number): number[] {
   const { delay, rise, width, fall, period } = p;
   const result: number[] = [];
-  for (let periodStart = delay; periodStart < stopTime; periodStart += period) {
+  if (period <= 0) return result; // invalid period → no breakpoints
+  for (let n = 0; delay + n * period < stopTime; n++) {
+    const periodStart = delay + n * period;
     const corners = [
       periodStart,                       // rising-edge start
       periodStart + rise,                // rising-edge end
@@ -81,7 +87,6 @@ export function pulseBreakpoints(p: PulseSource, stopTime: number): number[] {
     for (const t of corners) {
       if (t > 0 && t <= stopTime) result.push(t);
     }
-    if (period <= 0) break; // defensive — avoid infinite loop on invalid periods
   }
   return result;
 }
