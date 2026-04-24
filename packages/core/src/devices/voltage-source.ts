@@ -53,6 +53,37 @@ export class VoltageSource implements DeviceModel {
     }
     return null;
   }
+
+  getBreakpoints(stopTime: number): number[] {
+    if (this.waveform.type === 'pulse') {
+      return pulseBreakpoints(this.waveform, stopTime);
+    }
+    return [];
+  }
+}
+
+/**
+ * Return all times in (0, stopTime] at which a PULSE waveform has a
+ * derivative discontinuity: rising-edge start, rising-edge end, falling-edge
+ * start, falling-edge end, repeated each period. Times at or below zero are
+ * filtered (the simulation starts at t=0 anyway).
+ */
+export function pulseBreakpoints(p: PulseSource, stopTime: number): number[] {
+  const { delay, rise, width, fall, period } = p;
+  const result: number[] = [];
+  for (let periodStart = delay; periodStart < stopTime; periodStart += period) {
+    const corners = [
+      periodStart,                       // rising-edge start
+      periodStart + rise,                // rising-edge end
+      periodStart + rise + width,        // falling-edge start
+      periodStart + rise + width + fall, // falling-edge end
+    ];
+    for (const t of corners) {
+      if (t > 0 && t <= stopTime) result.push(t);
+    }
+    if (period <= 0) break; // defensive — avoid infinite loop on invalid periods
+  }
+  return result;
 }
 
 function evaluatePulse(p: PulseSource, time: number): number {
