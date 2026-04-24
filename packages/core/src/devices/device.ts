@@ -52,4 +52,13 @@ export interface DeviceModel {
   setParameter?(value: number): void;
   /** Get the device's primary parameter value. */
   getParameter?(): number;
+  /**
+   * Return times in [currentTime, stopTime] at which this device has a
+   * discontinuity in its waveform or its derivatives. The transient driver
+   * uses these as breakpoints — it will step exactly to each one, reset
+   * integration history, and cut dt. Optional; devices without
+   * discontinuities (resistors, capacitors, diodes, MOSFETs with DC gates)
+   * should omit this method.
+   */
+  getBreakpoints?(stopTime: number): number[];
 }
