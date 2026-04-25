@@ -1,5 +1,6 @@
 import type { DeviceModel, StampContext } from './device.js';
 import type { SourceWaveform, PulseSource, SinSource } from '../types.js';
+import { pulseBreakpoints } from './voltage-source.js';
 
 export class CurrentSource implements DeviceModel {
   readonly branches: number[] = [];
@@ -46,5 +47,12 @@ export class CurrentSource implements DeviceModel {
       case 'ac':
         return 0;
     }
+  }
+
+  getBreakpoints(stopTime: number): number[] {
+    if (this.waveform.type === 'pulse') {
+      return pulseBreakpoints(this.waveform, stopTime);
+    }
+    return [];
   }
 }
