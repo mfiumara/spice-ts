@@ -163,9 +163,17 @@ class TransientSimImpl implements TransientSim {
         this.dt = Math.min(this.config.timestep, this.config.maxTimestep);
       }
 
-      const nextTime = this.config.stopTime !== undefined && this.time < this.config.stopTime
-        ? Math.min(this.time + this.dt, this.config.stopTime)
-        : this.time + this.dt;
+      let nextTime = this.time + this.dt;
+      if (this.config.stopTime !== undefined && this.time < this.config.stopTime) {
+        nextTime = Math.min(nextTime, this.config.stopTime);
+      }
+      const nextBreak = this.breakpoints.peek();
+      if (nextBreak !== undefined && nextTime >= nextBreak - MIN_BREAK) {
+        // Snap to the breakpoint — either we'd cross it, or we're within
+        // tolerance and would leave a microscopic leftover step on the
+        // other side.
+        nextTime = nextBreak;
+      }
       const actualDt = nextTime - this.time;
 
       this.assembler.solution.set(prevSol);
@@ -216,6 +224,11 @@ class TransientSimImpl implements TransientSim {
       this.secondPrevSol = prevSol;
       this.prevDt = actualDt;
       this.time = nextTime;
+
+      if (this.breakpoints.isNear(this.time)) {
+        this.breakpoints.pop();
+        this.justCrossedBreakpoint = true;
+      }
 
       const growFactor = lteRatio > 0.001 ? Math.min(2.0, 0.9 / Math.sqrt(lteRatio)) : 2.0;
       // Guard against `stopTime - this.time === 0` at the boundary: that would
