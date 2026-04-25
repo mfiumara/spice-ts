@@ -64,10 +64,15 @@ export function buildCompanionSystem(
     device.stampDynamic?.(ctx);
   }
 
-  // Gear-2 bootstraps with Backward Euler when x(n-1) is unavailable.
+  // Gear-2 bootstraps with BE when x(n-1) is unavailable.
+  // Trapezoidal bootstraps with BE when b(n) is unavailable — this is how
+  // the driver resets history after crossing a breakpoint.
   const useGear2 = method === 'gear2' && prevPrevSolution !== undefined && prevDt !== undefined;
+  const useTrap = method === 'trapezoidal' && prevB !== undefined;
   const effectiveMethod: IntegrationMethod =
-    method === 'gear2' && !useGear2 ? 'euler' : method;
+    (method === 'gear2' && !useGear2) || (method === 'trapezoidal' && !useTrap)
+      ? 'euler'
+      : method;
 
   if (assembler.isFastPath) {
     // ---- Fast path: typed-array CSC arithmetic ----
