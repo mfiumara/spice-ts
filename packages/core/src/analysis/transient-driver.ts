@@ -7,6 +7,7 @@ import { createSparseSolver, type SparseSolver } from '../solver/sparse-solver.j
 import { solveDCOperatingPoint } from './dc.js';
 import { attemptStep } from './transient-step.js';
 import { TimestepTooSmallError, InvalidCircuitError } from '../errors.js';
+import { BreakpointQueue } from './breakpoint-queue.js';
 
 /**
  * Smallest allowed timestep (femtosecond). Must be small enough that LTE can
@@ -30,6 +31,16 @@ const MAX_LTE_REJECTS_BEFORE_BYPASS = 10;
  * boost converters, and other reactive circuits (see issues #42, #43, #45).
  */
 const DT_CUT_FACTOR = 8;
+
+/**
+ * "Indistinguishably close" threshold for a step landing on a breakpoint.
+ * ngspice calls this CKTminBreak; we use 10× MIN_TIMESTEP so the snap is
+ * always well above floating-point noise but far below any real timestep.
+ */
+const MIN_BREAK = 1e-14;
+
+/** dt is divided by this on the first step after a breakpoint (ngspice dctran.c). */
+const POST_BREAK_DT_CUT = 10;
 
 /**
  * Resumable transient simulation driver.
@@ -109,6 +120,8 @@ class TransientSimImpl implements TransientSim {
   private prevDt: number;
   private lteRejectCount = 0;
   private disposed = false;
+  private breakpoints: BreakpointQueue;
+  private justCrossedBreakpoint = false;
 
   constructor(compiled: CompiledCircuit, options: ResolvedOptions, config: InternalTransientConfig) {
     this.compiled = compiled;
@@ -127,6 +140,8 @@ class TransientSimImpl implements TransientSim {
     } else {
       this.initDC();
     }
+
+    this.breakpoints = this.collectBreakpoints();
   }
 
   get simTime(): number { return this.time; }
@@ -234,7 +249,9 @@ class TransientSimImpl implements TransientSim {
     this.prevB = undefined;
     this.secondPrevSol = undefined;
     this.lteRejectCount = 0;
+    this.justCrossedBreakpoint = false;
     this.initDC();
+    this.breakpoints = this.collectBreakpoints();
   }
 
   dispose(): void {
@@ -244,6 +261,21 @@ class TransientSimImpl implements TransientSim {
   /** Returns the current state at t=0 (or whatever the current simTime is) as a TransientStep. */
   peekInitialStep(): TransientStep {
     return this.buildStep(this.assembler.solution);
+  }
+
+  /** Test-only accessor; returns the remaining breakpoints in order. */
+  breakpointTimes(): readonly number[] {
+    return this.breakpoints.remaining();
+  }
+
+  private collectBreakpoints(): BreakpointQueue {
+    const stop = this.config.stopTime;
+    if (stop === undefined) return new BreakpointQueue([], MIN_BREAK);
+    const times: number[] = [];
+    for (const d of this.compiled.devices) {
+      if (d.getBreakpoints) times.push(...d.getBreakpoints(stop));
+    }
+    return new BreakpointQueue(times, MIN_BREAK);
   }
 
   private stampPrevB(): void {
