@@ -76,3 +76,58 @@ C1 out 0 1u
     sim.dispose();
   });
 });
+
+describe('TransientSim post-breakpoint behavior', () => {
+  it('takes a small step immediately after a PULSE edge (dt cut)', async () => {
+    const sim = await createTransientSim(`
+V1 in 0 PULSE(0 1 0 100n 100n 4.8u 10u)
+R1 in out 1k
+C1 out 0 1u
+.tran 1u 20u`, { integrationMethod: 'gear2' });
+
+    // Walk the sim and find the sample that landed exactly on a PULSE edge,
+    // then check the dt of the immediately following step.
+    const steps: { time: number }[] = [];
+    while (!sim.isDone) {
+      const step = sim.advance();
+      steps.push(step);
+      // Stop after we have at least one post-edge step to compare.
+      if (step.time > 5.0e-6) break;
+    }
+    const onEdge = steps.findIndex(s => Math.abs(s.time - 5.0e-6) < 1e-13);
+    expect(onEdge).toBeGreaterThan(0);
+    expect(onEdge).toBeLessThan(steps.length - 1);
+    const dtBefore = steps[onEdge].time - steps[onEdge - 1].time;
+    const dtAfter = steps[onEdge + 1].time - steps[onEdge].time;
+    // Before the breakpoint the driver was taking up-to-1µs steps (.tran 1u …).
+    // Post-breakpoint must be at least 10× smaller.
+    expect(dtAfter).toBeLessThan(dtBefore / 5); // be a bit lenient: ngspice's /10 + LTE growth
+    sim.dispose();
+  });
+
+  it('clears justCrossedBreakpoint after one step', async () => {
+    // Two breakpoints: one falling edge at 5u, one rising edge at 10u. The
+    // dt cut must apply ONCE per breakpoint (not persist past one step).
+    const sim = await createTransientSim(`
+V1 in 0 PULSE(0 1 0 100n 100n 4.8u 10u)
+R1 in out 1k
+C1 out 0 1u
+.tran 500n 20u`, { integrationMethod: 'gear2' });
+
+    const steps: { time: number }[] = [];
+    while (!sim.isDone) {
+      steps.push(sim.advance());
+      if (steps[steps.length - 1].time > 6.0e-6) break;
+    }
+    // Find the step that landed on 5.0u, then walk forward — dt should grow
+    // back, not stay tiny forever.
+    const onEdge = steps.findIndex(s => Math.abs(s.time - 5.0e-6) < 1e-13);
+    expect(onEdge).toBeGreaterThan(0);
+    // Look 5 steps later — dt should have started recovering.
+    const lateIdx = Math.min(onEdge + 5, steps.length - 1);
+    const dtJustAfter = steps[onEdge + 1].time - steps[onEdge].time;
+    const dtFiveStepsLater = steps[lateIdx].time - steps[lateIdx - 1].time;
+    expect(dtFiveStepsLater).toBeGreaterThan(dtJustAfter);
+    sim.dispose();
+  });
+});
