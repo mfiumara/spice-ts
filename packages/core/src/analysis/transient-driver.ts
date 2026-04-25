@@ -156,6 +156,17 @@ class TransientSimImpl implements TransientSim {
     const prevSol = new Float64Array(this.assembler.solution);
 
     while (true) {
+      if (this.justCrossedBreakpoint) {
+        // ngspice dctran.c convention: drop 2nd-order history and take a
+        // tiny Backward-Euler step to settle through the edge, then let LTE
+        // grow dt back up. Both prevB (trap) and secondPrevSol (gear2) being
+        // undefined makes the companion fall back to BE for one step.
+        this.secondPrevSol = undefined;
+        this.prevB = undefined;
+        this.dt = Math.max(this.dt / POST_BREAK_DT_CUT, MIN_TIMESTEP);
+        this.justCrossedBreakpoint = false;
+      }
+
       // Guard against dt=0 when caller advance()s past a done simulation.
       // stopTime clamping below can drive dt to 0 exactly at the boundary;
       // once past stopTime we just continue at the configured timestep.
@@ -237,7 +248,12 @@ class TransientSimImpl implements TransientSim {
       const remaining = this.config.stopTime !== undefined && this.config.stopTime > this.time
         ? this.config.stopTime - this.time
         : Infinity;
-      this.dt = Math.min(actualDt * growFactor, this.config.maxTimestep, remaining);
+      // When a breakpoint was just crossed, suppress the LTE-based grow so that
+      // the /POST_BREAK_DT_CUT at the top of the next iteration starts from the
+      // raw step size, not an already-doubled value. The next advance() will cut
+      // this.dt by POST_BREAK_DT_CUT and let LTE regrow from there.
+      const dtBase = this.justCrossedBreakpoint ? actualDt : actualDt * growFactor;
+      this.dt = Math.min(dtBase, this.config.maxTimestep, remaining);
 
       return this.buildStep(sol);
     }
