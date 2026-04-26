@@ -163,6 +163,7 @@ class TransientSimImpl implements TransientSim {
         // undefined makes the companion fall back to BE for one step.
         this.secondPrevSol = undefined;
         this.prevB = undefined;
+        this.lteRejectCount = 0;
         this.dt = Math.max(this.dt / POST_BREAK_DT_CUT, MIN_TIMESTEP);
         this.justCrossedBreakpoint = false;
       }
