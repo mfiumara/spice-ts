@@ -54,16 +54,26 @@ describe('hard-switching converter integration', () => {
     expect(vout[vout.length - 1]).toBeLessThan(8);
   }, 120_000);
 
-  // Boost still fails even with BDF2 — the L→sw→D topology drives the MOSFET
-  // Jacobian pathologically during turn-off when L tries to maintain current
-  // through the D's near-zero off-state conductance. Tracked as follow-up
-  // (device-model smoothing / diode off-current floor).
-  it.skip('boost runs to 2 ms without throwing (device smoothing follow-up)', async () => {
-    const result = await simulate(withStop(BOOST, '2m'), { integrationMethod: 'gear2' });
+  // The original user-reported failure mode (visible in the showcase) was
+  // TimestepTooSmallError at t≈565 ns — the very first falling edge of the
+  // gate pulse. Breakpoints fix that: the driver now lands exactly on each
+  // PULSE corner, resets integration history, and cuts dt by 10×, letting
+  // the NR settle through the diode commutation.
+  it('boost survives the first switching cycle (breakpoints fix the original UI failure)', async () => {
+    const result = await simulate(withStop(BOOST, '15u'), { integrationMethod: 'gear2' });
     expect(result.transient).toBeDefined();
-    const vout = result.transient!.voltage('out');
-    expect(vout[vout.length - 1]).toBeGreaterThan(6);
-  }, 120_000);
+    expect(result.transient!.time.at(-1)).toBeCloseTo(15e-6, 8);
+  }, 30_000);
+
+  // Running the full 500 µs still fails at t≈20 µs (start of period 3) with
+  // NR divergence on the `sw` node during MOSFET turn-on: cutoff gds=GMIN=1e-12
+  // makes the on/off Jacobian transition near-singular. This is a device-model
+  // smoothing issue (separate from breakpoints) and is tracked as follow-up.
+  it.skip('boost runs to 500 µs without throwing (needs device-model smoothing)', async () => {
+    const result = await simulate(withStop(BOOST, '500u'), { integrationMethod: 'gear2' });
+    expect(result.transient).toBeDefined();
+    expect(result.transient!.time.at(-1)).toBeCloseTo(500e-6, 8);
+  }, 60_000);
 
   it('buck-boost runs to 500 µs without throwing (gear2)', async () => {
     const result = await simulate(withStop(BUCK_BOOST, '500u'), { integrationMethod: 'gear2' });
