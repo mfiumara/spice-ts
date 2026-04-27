@@ -28,21 +28,28 @@ function resistorSymbol(stretchW?: number): SymbolDef {
   const w = Math.max(naturalW, stretchW ?? naturalW);
   const h = GRID;
   const cy = h / 2;
-  const bodyW = naturalW * 0.4 * 2; // same zigzag width as natural
+  // Klein-style 3-peak ANSI zigzag: pure triangle wave (no horizontal
+  // segments). 7 segments total — narrower entry/exit half-segments and 5
+  // full-amplitude transitions in between, matching klein's 3-5-5-5-5-5-4
+  // proportions across a 32-wide body. Leads stretch with stretchW; the
+  // zigzag body stays at natural proportions.
+  const bodyW = naturalW * 0.8;
   const leadLeft = (w - bodyW) / 2;
-  const peaks = 4;
-  const segW = bodyW / peaks;
-  const amp = h * 0.38;
+  const amp = h * 0.45;
+  const enter = (bodyW * 3) / 32;
+  const full = (bodyW * 5) / 32;
+  const exit = (bodyW * 4) / 32;
 
-  let d = `M0,${cy} L${leadLeft},${cy}`;
-  for (let i = 0; i < peaks; i++) {
-    const x1 = leadLeft + i * segW + segW * 0.25;
-    const x2 = leadLeft + i * segW + segW * 0.75;
-    const y1 = i % 2 === 0 ? cy - amp : cy + amp;
-    const y2 = i % 2 === 0 ? cy + amp : cy - amp;
-    d += ` L${x1},${y1} L${x2},${y2}`;
+  let x = leadLeft + enter;
+  let d = `M0,${cy} L${leadLeft},${cy} L${x},${cy - amp}`;
+  let above = false;
+  for (let i = 0; i < 5; i++) {
+    x += full;
+    d += ` L${x},${above ? cy - amp : cy + amp}`;
+    above = !above;
   }
-  d += ` L${leadLeft + bodyW},${cy} L${w},${cy}`;
+  x += exit;
+  d += ` L${x},${cy} L${w},${cy}`;
 
   return {
     elements: [{ tag: 'path', attrs: { d, fill: 'none' } }],
@@ -59,21 +66,26 @@ function verticalResistorSymbol(stretchH?: number): SymbolDef {
   const naturalH = GRID * 2;
   const h = Math.max(naturalH, stretchH ?? naturalH);
   const cx = w / 2;
-  const bodyH = naturalH * 0.4 * 2;
+  // Klein-style triangle-wave zigzag, vertical orientation. Same 3-peak shape
+  // as the horizontal resistor, just rotated 90°. Leads grow with stretchH;
+  // body stays at natural proportions.
+  const bodyH = naturalH * 0.8;
   const leadTop = (h - bodyH) / 2;
-  const peaks = 4;
-  const segH = bodyH / peaks;
-  const amp = w * 0.38;
+  const amp = w * 0.45;
+  const enter = (bodyH * 3) / 32;
+  const full = (bodyH * 5) / 32;
+  const exit = (bodyH * 4) / 32;
 
-  let d = `M${cx},0 L${cx},${leadTop}`;
-  for (let i = 0; i < peaks; i++) {
-    const y1 = leadTop + i * segH + segH * 0.25;
-    const y2 = leadTop + i * segH + segH * 0.75;
-    const x1 = i % 2 === 0 ? cx - amp : cx + amp;
-    const x2 = i % 2 === 0 ? cx + amp : cx - amp;
-    d += ` L${x1},${y1} L${x2},${y2}`;
+  let y = leadTop + enter;
+  let d = `M${cx},0 L${cx},${leadTop} L${cx - amp},${y}`;
+  let left = false;
+  for (let i = 0; i < 5; i++) {
+    y += full;
+    d += ` L${left ? cx - amp : cx + amp},${y}`;
+    left = !left;
   }
-  d += ` L${cx},${leadTop + bodyH} L${cx},${h}`;
+  y += exit;
+  d += ` L${cx},${y} L${cx},${h}`;
 
   return {
     elements: [{ tag: 'path', attrs: { d, fill: 'none' } }],
@@ -87,8 +99,11 @@ function capacitorSymbol(stretchH?: number): SymbolDef {
   const naturalH = GRID * 2;
   const h = Math.max(naturalH, stretchH ?? naturalH);
   const cx = w / 2;
-  const gap = 6;
-  const plateW = w * 0.7;
+  // Klein-style: wide plates (90% of bbox), tight gap (~25% of plate width).
+  // Makes the cap read as two long parallel bars close together rather than
+  // two stubby segments with a wide gap.
+  const gap = 5;
+  const plateW = w * 0.9;
   const cy = h / 2;
 
   return {
@@ -112,8 +127,9 @@ function horizontalCapacitorSymbol(stretchW?: number): SymbolDef {
   const w = Math.max(naturalW, stretchW ?? naturalW);
   const h = GRID;
   const cy = h / 2;
-  const gap = 6;
-  const plateH = h * 0.7;
+  // Klein-style proportions matching `capacitorSymbol`.
+  const gap = 5;
+  const plateH = h * 0.9;
   const cx = w / 2;
 
   return {
@@ -226,7 +242,7 @@ function diodeSymbol(flipped = false): SymbolDef {
   return {
     elements: [
       { tag: 'line', attrs: { x1: 0, y1: cy, x2: flipped ? barX : baseX, y2: cy } },
-      { tag: 'path', attrs: { d: `M${baseX},${cy - h * 0.35} L${tipX},${cy} L${baseX},${cy + h * 0.35} Z`, fill: 'none' } },
+      { tag: 'path', attrs: { d: `M${baseX},${cy - h * 0.35} L${tipX},${cy} L${baseX},${cy + h * 0.35} Z`, fill: 'currentColor' } },
       { tag: 'line', attrs: { x1: barX, y1: cy - h * 0.35, x2: barX, y2: cy + h * 0.35 } },
       { tag: 'line', attrs: { x1: flipped ? baseX : barX, y1: cy, x2: w, y2: cy } },
     ],
@@ -258,7 +274,7 @@ function verticalDiodeSymbol(stretchH?: number, flipped = false): SymbolDef {
   return {
     elements: [
       { tag: 'line', attrs: { x1: cx, y1: 0, x2: cx, y2: flipped ? barY : baseY } },
-      { tag: 'path', attrs: { d: `M${cx - w * 0.35},${baseY} L${cx + w * 0.35},${baseY} L${cx},${tipY} Z`, fill: 'none' } },
+      { tag: 'path', attrs: { d: `M${cx - w * 0.35},${baseY} L${cx + w * 0.35},${baseY} L${cx},${tipY} Z`, fill: 'currentColor' } },
       { tag: 'line', attrs: { x1: cx - w * 0.35, y1: barY, x2: cx + w * 0.35, y2: barY } },
       { tag: 'line', attrs: { x1: cx, y1: flipped ? baseY : barY, x2: cx, y2: h } },
     ],
@@ -267,28 +283,52 @@ function verticalDiodeSymbol(stretchH?: number, flipped = false): SymbolDef {
   };
 }
 
-function mosfetSymbol(): SymbolDef {
+/** Klein-style MOSFET. Pads exit upward and downward via L-shaped routes to
+ * top/bottom edges (instead of straight off the right side). NMOS gets its
+ * arrow on the bottom L-pad pointing right (out of body); PMOS gets it on the
+ * top L-pad pointing left (into body). Pin geometry is always NMOS-shaped —
+ * port 0 (drain) at top, port 2 (source) at bottom — and `layout.ts`'s
+ * `flipForP` already swaps the port-to-symbol-pin mapping for PMOS, so the
+ * source semantically sits at the top edge in the placed schematic. */
+function mosfetSymbol(displayValue?: string): SymbolDef {
+  const isPMOS = (displayValue ?? '').toUpperCase().startsWith('P');
   const w = GRID * 2.5, h = GRID * 2.5;
   const cy = h / 2;
-  const gx = w * 0.28;   // gate vertical line x
-  const bx = w * 0.44;   // body (channel) line x — gap = gate oxide
-  const gy0 = h * 0.28;  // drain y
-  const gy1 = h * 0.72;  // source y
+  // Klein proportions (60×60 reference) scaled to the layout's 50×50 bbox.
+  const gx = (w * 16) / 60;       // gate vertical line x
+  const bx = (w * 22) / 60;       // channel (body) line x
+  const padX = (w * 45) / 60;     // L-pad turn x
+  const gateTopY = (h * 18) / 60; // gate vline span
+  const gateBotY = (h * 42) / 60;
+  const chTopY = (h * 15) / 60;   // channel vline span (longer than gate)
+  const chBotY = (h * 45) / 60;
+  const topPadY = (h * 20) / 60;  // y where top L-pad branches off channel
+  const botPadY = (h * 40) / 60;
+
+  // Arrow on the source pad. The layout swaps drain/source positions for
+  // PMOS, so we just draw the arrow at whichever L-pad ends up holding the
+  // source after the flip:
+  //   NMOS: arrow on bottom L-pad, points right (out of body).
+  //   PMOS: arrow on top L-pad, points left (into body).
+  const arrowY = isPMOS ? topPadY : botPadY;
+  const arrowTipX = isPMOS ? w * 0.50 : w * 0.63;
+  const arrowBaseX = isPMOS ? w * 0.63 : w * 0.50;
+  const arrowHalfBase = 3.5;
+  const arrow = `M${arrowTipX} ${arrowY} L${arrowBaseX} ${arrowY - arrowHalfBase} L${arrowBaseX} ${arrowY + arrowHalfBase} Z`;
 
   return {
     elements: [
-      { tag: 'line', attrs: { x1: 0, y1: cy, x2: gx, y2: cy } },               // gate lead
-      { tag: 'line', attrs: { x1: gx, y1: gy0, x2: gx, y2: gy1 } },             // gate vline
-      { tag: 'line', attrs: { x1: bx, y1: gy0, x2: bx, y2: gy1 } },             // body line
-      { tag: 'line', attrs: { x1: bx, y1: gy0, x2: w, y2: gy0 } },               // drain tap
-      { tag: 'line', attrs: { x1: bx, y1: gy1, x2: w, y2: gy1 } },               // source tap
-      // arrow at source pointing toward body (NMOS style)
-      { tag: 'polyline', attrs: { points: `${bx + 6},${gy1 - 4} ${bx},${gy1} ${bx + 6},${gy1 + 4}`, fill: 'none' } },
+      { tag: 'line', attrs: { x1: 0, y1: cy, x2: gx, y2: cy } },
+      { tag: 'line', attrs: { x1: gx, y1: gateTopY, x2: gx, y2: gateBotY } },
+      { tag: 'line', attrs: { x1: bx, y1: chTopY, x2: bx, y2: chBotY } },
+      { tag: 'path', attrs: { d: `M${bx} ${topPadY} L${padX} ${topPadY} L${padX} 0`, fill: 'none' } },
+      { tag: 'path', attrs: { d: `M${bx} ${botPadY} L${padX} ${botPadY} L${padX} ${h}`, fill: 'none' } },
+      { tag: 'path', attrs: { d: arrow, fill: 'currentColor' } },
     ],
     pins: [
-      { dx: w, dy: gy0 },   // drain (right upper)  — matches IR port 0
-      { dx: 0, dy: cy },    // gate  (left centre)   — matches IR port 1
-      { dx: w, dy: gy1 },   // source (right lower)  — matches IR port 2
+      { dx: padX, dy: 0 },  // port 0 (drain for NMOS / source for PMOS after flip)
+      { dx: 0,    dy: cy }, // port 1 (gate)
+      { dx: padX, dy: h },  // port 2 (source for NMOS / drain for PMOS after flip)
     ],
     width: w, height: h,
   };
@@ -318,7 +358,10 @@ function bjtSymbol(): SymbolDef {
 
 function opampSymbol(): SymbolDef {
   const bodyW = GRID * 2.5;
-  const h = GRID * 3;
+  // Triangle proportions match klein's elongated 40×50 body (tip extends 0.8×
+  // base height, vs the squatter 0.67× we had before). Reducing h from 3·GRID
+  // to 2.5·GRID also tightens the input lead spread.
+  const h = GRID * 2.5;
   // The +in lead is extended further left than the -in lead. In the common
   // non-inverting topology (e.g. Sallen-Key voltage follower), the +in pin
   // connects to the external signal chain on the left while the -in pin
@@ -331,18 +374,30 @@ function opampSymbol(): SymbolDef {
   const totalW = tipX + GRID * 0.5;
   const cy = h / 2;
 
+  // Klein-style +/- markers, drawn as line strokes (no unicode glyphs). Klein
+  // spreads the input leads near the triangle corners (y=20% / y=80%) and
+  // tucks the +/- markers ~10% of bbox-height inboard from the leads — so the
+  // marker reads as a label on its input rather than crowding the centerline.
+  const inMinusY = h * 0.2;
+  const inPlusY = h * 0.8;
+  const markX = bodyLeft + GRID * 0.4;
+  const markBar = GRID * 0.18;
+  const minusY = h * 0.3;
+  const plusY = h * 0.7;
+
   return {
     elements: [
       { tag: 'path', attrs: { d: `M${bodyLeft},0 L${tipX},${cy} L${bodyLeft},${h} Z`, fill: 'none' } },
-      { tag: 'line', attrs: { x1: leadOffset, y1: h * 0.3, x2: bodyLeft, y2: h * 0.3 } },
-      { tag: 'line', attrs: { x1: 0,          y1: h * 0.7, x2: bodyLeft, y2: h * 0.7 } },
-      { tag: 'text', attrs: { x: bodyLeft + GRID * 0.15, y: h * 0.35, 'font-size': 10 }, text: '\u2013' },
-      { tag: 'text', attrs: { x: bodyLeft + GRID * 0.15, y: h * 0.75, 'font-size': 10 }, text: '+' },
+      { tag: 'line', attrs: { x1: leadOffset, y1: inMinusY, x2: bodyLeft, y2: inMinusY } },
+      { tag: 'line', attrs: { x1: 0,          y1: inPlusY,  x2: bodyLeft, y2: inPlusY } },
+      { tag: 'line', attrs: { x1: markX - markBar, y1: minusY, x2: markX + markBar, y2: minusY } },
+      { tag: 'line', attrs: { x1: markX - markBar, y1: plusY,  x2: markX + markBar, y2: plusY } },
+      { tag: 'line', attrs: { x1: markX,           y1: plusY - markBar, x2: markX, y2: plusY + markBar } },
       { tag: 'line', attrs: { x1: tipX, y1: cy, x2: totalW, y2: cy } },
     ],
     pins: [
-      { dx: 0,          dy: h * 0.7 },   // ctrlP (+in) — bottom, extended left
-      { dx: leadOffset, dy: h * 0.3 },   // ctrlN (-in) — top
+      { dx: 0,          dy: inPlusY },   // ctrlP (+in) — bottom, extended left
+      { dx: leadOffset, dy: inMinusY },  // ctrlN (-in) — top
       { dx: totalW,     dy: cy },        // outP — right
     ],
     width: totalW, height: h,
@@ -350,15 +405,19 @@ function opampSymbol(): SymbolDef {
 }
 
 function groundSymbol(): SymbolDef {
-  const w = GRID, h = GRID * 0.5;
+  // Klein-flavored: three graduated bars at 4px vertical spacing, widths
+  // shrinking 18 → 12 → 6 (a 3:2:1 progression — klein's signature). Stays
+  // within a 20×12 bbox so the layout's vertical reservation for ground stubs
+  // doesn't shift. No stem — the layout already adds a downward stub for
+  // side-pin ground connections.
+  const w = GRID, h = 12;
   const cx = w / 2;
-  const barGap = h / 3;
 
   return {
     elements: [
-      { tag: 'line', attrs: { x1: cx - w * 0.4, y1: 0, x2: cx + w * 0.4, y2: 0 } },
-      { tag: 'line', attrs: { x1: cx - w * 0.25, y1: barGap, x2: cx + w * 0.25, y2: barGap } },
-      { tag: 'line', attrs: { x1: cx - w * 0.1, y1: barGap * 2, x2: cx + w * 0.1, y2: barGap * 2 } },
+      { tag: 'line', attrs: { x1: cx - 9, y1: 0, x2: cx + 9, y2: 0 } },
+      { tag: 'line', attrs: { x1: cx - 6, y1: 4, x2: cx + 6, y2: 4 } },
+      { tag: 'line', attrs: { x1: cx - 3, y1: 8, x2: cx + 3, y2: 8 } },
     ],
     pins: [{ dx: cx, dy: 0 }],
     width: w, height: h,
@@ -406,7 +465,7 @@ export function getSymbol(
     case 'I': return currentSourceSymbol(stretchH);
     case 'D': return horizontal ? diodeSymbol(flipped) : verticalDiodeSymbol(stretchH, flipped);
     case 'Q': return bjtSymbol();
-    case 'M': return mosfetSymbol();
+    case 'M': return mosfetSymbol(displayValue);
     case 'E': case 'G': return opampSymbol();
     case 'F': case 'H': return dependentSourceSymbol();
     default: return resistorSymbol();

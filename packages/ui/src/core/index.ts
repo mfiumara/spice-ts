@@ -20,3 +20,5 @@ export type {
   SchematicLayout, PlacedComponent, Pin, Wire, Junction, WireSegment,
 } from '../schematic/types.js';
 export { layoutSchematic } from '../schematic/layout.js';
+export { SYMBOL_STYLES, DEFAULT_STYLE_ID } from '../schematic/symbol-styles.js';
+export type { SymbolStyle, SymbolStyleId, ComponentName } from '../schematic/symbol-styles.js';

@@ -20,17 +20,23 @@ export interface SchematicViewProps {
   onNodeClick?: (node: string) => void;
 }
 
+// Klein's signature stroke weight — heavier than a drafting pen, lighter than
+// a marker. Used for symbol bodies, wires, and ground stubs so the schematic
+// reads consistently bold across every primitive.
+const STROKE_W = 2.2;
+
 function renderSvgElement(el: SvgElement, i: number, stroke: string) {
-  const common = { key: i, stroke, strokeWidth: 1.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  // `key` must be passed directly, not via spread — React warns otherwise.
+  const common = { stroke, strokeWidth: STROKE_W, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   switch (el.tag) {
     case 'path':
-      return <path {...common} d={el.attrs.d as string} fill={(el.attrs.fill as string) ?? 'none'} />;
+      return <path key={i} {...common} d={el.attrs.d as string} fill={(el.attrs.fill as string) ?? 'none'} />;
     case 'line':
-      return <line {...common} x1={el.attrs.x1} y1={el.attrs.y1} x2={el.attrs.x2} y2={el.attrs.y2} />;
+      return <line key={i} {...common} x1={el.attrs.x1} y1={el.attrs.y1} x2={el.attrs.x2} y2={el.attrs.y2} />;
     case 'circle':
-      return <circle {...common} cx={el.attrs.cx} cy={el.attrs.cy} r={el.attrs.r} fill={(el.attrs.fill as string) ?? 'none'} />;
+      return <circle key={i} {...common} cx={el.attrs.cx} cy={el.attrs.cy} r={el.attrs.r} fill={(el.attrs.fill as string) ?? 'none'} />;
     case 'polyline':
-      return <polyline {...common} points={el.attrs.points as string} fill={(el.attrs.fill as string) ?? 'none'} />;
+      return <polyline key={i} {...common} points={el.attrs.points as string} fill={(el.attrs.fill as string) ?? 'none'} />;
     case 'text':
       return (
         <text key={i} x={el.attrs.x} y={el.attrs.y}
@@ -99,7 +105,7 @@ export function SchematicView({ circuit, theme, width = '100%', height = 400, on
             {wire.segments.map((seg, si) => (
               <line key={si}
                 x1={seg.x1} y1={seg.y1} x2={seg.x2} y2={seg.y2}
-                stroke={stroke} strokeWidth={1.5}
+                stroke={stroke} strokeWidth={STROKE_W}
               />
             ))}
           </g>
@@ -115,7 +121,7 @@ export function SchematicView({ circuit, theme, width = '100%', height = 400, on
           const sym = getSymbol(pc.component.type, pc.component.displayValue ?? '', pc.horizontal, pc.stretchH, pc.stretchW, pc.flipped);
           return (
             <g key={ci} transform={`translate(${pc.x},${pc.y})`}
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer', color: stroke }}
               onMouseEnter={(e) => {
                 setHovered(pc);
                 const rect = (e.currentTarget.ownerSVGElement as SVGSVGElement).getBoundingClientRect();
@@ -145,33 +151,41 @@ export function SchematicView({ circuit, theme, width = '100%', height = 400, on
           );
         })}
 
-        {/* Ground symbols — side pins (left/right edge) get a downward stub first */}
-        {layout.components.flatMap((pc, ci) =>
-          pc.pins.flatMap((p, pi) => {
-            if (p.net !== '0') return [];
-            const gnd = groundSymbol();
-            const compSym = getSymbol(pc.component.type, pc.component.displayValue ?? '', pc.horizontal, pc.stretchH, pc.stretchW, pc.flipped);
-            const symPin = pi < compSym.pins.length ? compSym.pins[pi] : null;
-            const isSidePin = symPin !== null && (symPin.dx <= 1 || symPin.dx >= compSym.width - 1);
-            const stubLen = GRID * 1.5;
-            if (isSidePin) {
-              return [(
-                <g key={`gnd-${ci}-${pi}`}>
-                  <line x1={p.x} y1={p.y} x2={p.x} y2={p.y + stubLen}
-                    stroke={stroke} strokeWidth={1.5} strokeLinecap="round" />
-                  <g transform={`translate(${p.x - gnd.width / 2},${p.y + stubLen})`}>
-                    {gnd.elements.map((el, i) => renderSvgElement(el, i, stroke))}
-                  </g>
+        {/* Ground symbols — unified to a single horizontal rail.
+            All `0`-net pins land on the same Y so the ground glyphs read as a
+            common rail along the bottom of the schematic. Each pin draws a
+            vertical stub down to that rail; pins already at the rail draw no
+            stub. Side pins (left/right edge of their host symbol) force the
+            rail down by `stubLen` to give breathing room from the body. */}
+        {(() => {
+          const stubLen = GRID * 1.5;
+          const gnd = groundSymbol();
+          const gndPins = layout.components.flatMap((pc, ci) =>
+            pc.pins.flatMap((p, pi) => {
+              if (p.net !== '0') return [];
+              const compSym = getSymbol(pc.component.type, pc.component.displayValue ?? '', pc.horizontal, pc.stretchH, pc.stretchW, pc.flipped);
+              const symPin = pi < compSym.pins.length ? compSym.pins[pi] : null;
+              const isSidePin = symPin !== null && (symPin.dx <= 1 || symPin.dx >= compSym.width - 1);
+              return [{ ci, pi, p, isSidePin }];
+            })
+          );
+          if (gndPins.length === 0) return null;
+          const gndY = Math.max(...gndPins.map(g => g.isSidePin ? g.p.y + stubLen : g.p.y));
+          return gndPins.map(({ ci, pi, p }) => {
+            const stub = gndY - p.y;
+            return (
+              <g key={`gnd-${ci}-${pi}`}>
+                {stub > 0.5 && (
+                  <line x1={p.x} y1={p.y} x2={p.x} y2={gndY}
+                    stroke={stroke} strokeWidth={STROKE_W} strokeLinecap="round" />
+                )}
+                <g transform={`translate(${p.x - gnd.width / 2},${gndY})`}>
+                  {gnd.elements.map((el, i) => renderSvgElement(el, i, stroke))}
                 </g>
-              )];
-            }
-            return [(
-              <g key={`gnd-${ci}-${pi}`} transform={`translate(${p.x - gnd.width / 2},${p.y})`}>
-                {gnd.elements.map((el, i) => renderSvgElement(el, i, stroke))}
               </g>
-            )];
-          })
-        )}
+            );
+          });
+        })()}
       </svg>
 
       {/* Tooltip */}
