@@ -380,22 +380,30 @@ export class TransientRenderer {
       ctx.lineWidth = 1.5;
       ctx.beginPath();
 
-      const n = ds.time.length;
+      // Restrict to the visible x-window so decimation buckets align with
+      // the current zoom — otherwise a periodic signal aliases into a
+      // sawtooth when zoomed in (bucket boundaries don't track the window).
+      // Pad by one sample on each side so line segments continue past edges.
+      const total = ds.time.length;
+      const lo = Math.max(0, bisectData(ds.time, this.xDomain[0]) - 1);
+      const hi = Math.min(total - 1, bisectData(ds.time, this.xDomain[1]) + 1);
+      const n = hi - lo + 1;
+
       if (n <= maxPoints) {
         // Few enough points — draw them all
-        ctx.moveTo(left + this.xScale(ds.time[0]), top + this.yScale(yArr[0]));
-        for (let i = 1; i < n; i++) {
+        ctx.moveTo(left + this.xScale(ds.time[lo]), top + this.yScale(yArr[lo]));
+        for (let i = lo + 1; i <= hi; i++) {
           ctx.lineTo(left + this.xScale(ds.time[i]), top + this.yScale(yArr[i]));
         }
       } else {
         // Min/max decimation: split data into buckets, draw min and max per bucket.
         // This preserves peaks/spikes that stride-based sampling would miss.
         const bucketSize = n / maxPoints;
-        ctx.moveTo(left + this.xScale(ds.time[0]), top + this.yScale(yArr[0]));
+        ctx.moveTo(left + this.xScale(ds.time[lo]), top + this.yScale(yArr[lo]));
 
         for (let b = 0; b < maxPoints; b++) {
-          const start = Math.floor(b * bucketSize);
-          const end = Math.min(Math.floor((b + 1) * bucketSize), n);
+          const start = lo + Math.floor(b * bucketSize);
+          const end = Math.min(lo + Math.floor((b + 1) * bucketSize), hi + 1);
           if (start >= end) continue;
 
           let minVal = yArr[start];
