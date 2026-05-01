@@ -23,6 +23,8 @@ interface CircuitDef {
   xLabel?: string;
   signals: string[];
   integrationMethod?: IntegrationMethod;
+  /** If true, render the plot with equal-length axes (square inner plot). */
+  squarePlot?: boolean;
 }
 
 const CIRCUITS: CircuitDef[] = [
@@ -84,6 +86,7 @@ E1 out 0 n2 out 1e6
     id: 'cmos-inverter', name: 'CMOS Inverter', desc: 'DC transfer curve',
     icon: '\u23DA', group: 'Non-Linear', tag: '.dc', signals: ['out'],
     xLabel: 'Vin (V)',
+    squarePlot: true,
     dcNetlist: `
 * CMOS inverter DC transfer curve — BSIM3v3 (Level 49)
 VDD vdd 0 DC 1.8
@@ -136,11 +139,13 @@ E1 out 0 0 nm 1e6
     icon: '\u25B3', group: 'Opamp Circuits', tag: '.tran', signals: ['in', 'out'],
     tranNetlist: `
 * Opamp integrator — square wave in, triangle wave out
-V1 in 0 PULSE(-1 1 0 1n 1n 5m 10m)
+* Rf parallel with Cf bounds DC gain so the ideal VCVS does not saturate at OP
+V1 in 0 PULSE(-0.1 0.1 0 1n 1n 0.5m 1m)
 Rin in nm 10k
-Cf nm out 100n
+Cf nm out 10n
+Rf nm out 100k
 E1 out 0 0 nm 1e6
-.tran 10u 20m`,
+.tran 5u 5m`,
   },
   {
     id: 'rlc-step', name: 'RLC Step Response', desc: '.step R: under/over-damped',
@@ -880,16 +885,19 @@ function App() {
                 )}
                 {dcData && (
                   <div style={{ position: 'relative' }}>
-                    <DCSweepPlot
-                      data={dcData}
-                      signals={circuit.signals}
-                      theme={vaultTecTheme ?? 'dark'}
-                      colors={vaultTecColors(dcData, circuit.signals)}
-                      height={280}
-                      xLabel={circuit.xLabel ?? 'Sweep (V)'}
-                      onCursorMove={setDcCursor}
-                      signalVisibility={visibility}
-                    />
+                    <div style={circuit.squarePlot ? { width: 490, margin: '0 auto' } : undefined}>
+                      <DCSweepPlot
+                        data={dcData}
+                        signals={circuit.signals}
+                        theme={vaultTecTheme ?? 'dark'}
+                        colors={vaultTecColors(dcData, circuit.signals)}
+                        width={circuit.squarePlot ? 490 : '100%'}
+                        height={circuit.squarePlot ? 460 : 280}
+                        xLabel={circuit.xLabel ?? 'Sweep (V)'}
+                        onCursorMove={setDcCursor}
+                        signalVisibility={visibility}
+                      />
+                    </div>
                     <Legend
                       signals={buildLegendSignals(dcData, circuit.signals, visibility, vaultTec ? vaultTecPalette : undefined)}
                       onToggle={handleToggle}
