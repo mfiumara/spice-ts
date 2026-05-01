@@ -659,6 +659,9 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
   // resistor so its two pins span the feedback region: left pin sits over
   // the leftmost other pin on net A, right pin over the rightmost other pin
   // on net B.
+  // Stack parallel feedback components (e.g. Cf || Rf between the same node
+   // pair) so they don't draw on top of each other.
+  const feedbackStackIdx = new Map<string, number>();
   for (const pl of placements) {
     if (!isFeedback(pl)) continue;
     const { comp } = pl;
@@ -671,6 +674,9 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
     const leftNet  = rankA <= rankB ? netA : netB;
     const rightNet = rankA <= rankB ? netB : netA;
     const flipPorts = leftNet !== netA;
+    const stackKey = leftNet < rightNet ? `${leftNet}|${rightNet}` : `${rightNet}|${leftNet}`;
+    const stackIdx = feedbackStackIdx.get(stackKey) ?? 0;
+    feedbackStackIdx.set(stackKey, stackIdx + 1);
 
     const collectX = (net: string) =>
       placedComponents.flatMap(pc => pc.pins.filter(p => p.net === net).map(p => p.x));
@@ -681,7 +687,7 @@ export function layoutSchematic(circuit: CircuitIR): SchematicLayout {
     const width   = Math.max(GRID * 2, rightX - leftX);
 
     const symbol = getSymbol(comp.type, comp.displayValue ?? '', true, undefined, width);
-    const centerY = centerYFor(pl);
+    const centerY = centerYFor(pl) - stackIdx * RANK_SPACING;
     const y = centerY - symbol.height / 2;
     const x = leftX;
 
