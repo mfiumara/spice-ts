@@ -297,7 +297,12 @@ function* streamTransient(
   const driver = createDriverFromCompiled(compiled, options, {
     stopTime: analysis.stopTime,
     timestep: analysis.timestep,
-    maxTimestep: analysis.maxTimestep ?? (analysis.stopTime / 50),
+    // SPICE convention: when `.tran` doesn't supply `tmax` (4th arg), bound
+    // dt by `min(tstep, tstop/50)`. The previous `tstop/50` alone let dt grow
+    // way past the user's tstep resolution hint — at long stop times that
+    // aliases lightly-damped oscillations (RLC, LC tank). Mirrors the same
+    // formula already used in the synchronous `transient.ts` path.
+    maxTimestep: analysis.maxTimestep ?? Math.min(analysis.timestep, analysis.stopTime / 50),
     initialSolution,
   });
 
