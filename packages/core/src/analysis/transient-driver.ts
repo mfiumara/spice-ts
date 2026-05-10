@@ -104,6 +104,13 @@ interface InternalTransientConfig {
   maxTimestep: number;
   /** Optional pre-computed DC solution. When provided, skips internal DC op point. */
   initialSolution?: Float64Array;
+  /**
+   * The seed is a UIC initial-condition solution rather than a DC operating
+   * point. The companion model has no valid history at t=0, so the first
+   * step must bootstrap with Backward Euler and a cut dt — same pattern the
+   * driver uses after crossing a waveform breakpoint.
+   */
+  seedIsUIC?: boolean;
 }
 
 class TransientSimImpl implements TransientSim {
@@ -136,7 +143,15 @@ class TransientSimImpl implements TransientSim {
     if (config.initialSolution) {
       // Caller already computed DC — skip internal DC and seed directly.
       this.assembler.solution.set(config.initialSolution);
-      this.stampPrevB();
+      if (config.seedIsUIC) {
+        // Force BE bootstrap on the first step: leave prevB undefined and
+        // trigger the post-breakpoint dt cut. The seeded UIC solution does
+        // not satisfy any prior companion equation, so any trap/gear-2
+        // history term we built here would be mathematically inconsistent.
+        this.justCrossedBreakpoint = true;
+      } else {
+        this.stampPrevB();
+      }
     } else {
       this.initDC();
     }
@@ -369,6 +384,7 @@ export function createDriverFromCompiled(
     timestep: number;
     maxTimestep: number;
     initialSolution?: Float64Array;
+    seedIsUIC?: boolean;
   },
 ): TransientSim & { peekInitialStep(): TransientStep } {
   const impl = new TransientSimImpl(compiled, options, {
@@ -376,6 +392,7 @@ export function createDriverFromCompiled(
     timestep: config.timestep,
     maxTimestep: config.maxTimestep,
     initialSolution: config.initialSolution,
+    seedIsUIC: config.seedIsUIC,
   });
   return impl;
 }

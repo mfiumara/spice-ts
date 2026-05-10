@@ -6,6 +6,7 @@ import type { TransientAnalysis, ACAnalysis, ResolvedOptions } from './types.js'
 import { resolveOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
 import { solveTransient } from './analysis/transient.js';
+import { computeUICInitialSolution } from './analysis/uic.js';
 import { solveAC } from './analysis/ac.js';
 import { solveDCSweep } from './analysis/dc-sweep.js';
 import { solveStep, generateStepValues } from './analysis/step.js';
@@ -87,8 +88,10 @@ export async function simulate(
       }
       case 'tran': {
         const opts = resolveOptions(options, analysis.stopTime);
-        const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
-        result.transient = solveTransient(compiled, analysis, opts, dcAsm.solution);
+        const seed = analysis.uic
+          ? computeUICInitialSolution(circuit, compiled, opts)
+          : solveDCOperatingPoint(compiled, opts).assembler.solution;
+        result.transient = solveTransient(compiled, analysis, opts, seed, analysis.uic);
         break;
       }
       case 'ac': {

@@ -12,6 +12,7 @@ export function solveTransient(
   analysis: TransientAnalysis,
   options: ResolvedOptions,
   initialSolution?: Float64Array,
+  seedIsUIC?: boolean,
 ): TransientResult {
   const { nodeNames, branchNames } = compiled;
   const driver = createDriverFromCompiled(compiled, options, {
@@ -19,6 +20,7 @@ export function solveTransient(
     timestep: analysis.timestep,
     maxTimestep: analysis.maxTimestep ?? Math.min(analysis.timestep, analysis.stopTime / 50),
     initialSolution,
+    seedIsUIC,
   });
 
   const timePoints: number[] = [0];

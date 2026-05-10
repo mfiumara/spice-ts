@@ -36,6 +36,12 @@ export interface TransientAnalysis {
   startTime?: number;
   /** Maximum allowed timestep in seconds */
   maxTimestep?: number;
+  /**
+   * Use Initial Conditions: skip the DC operating point and seed the
+   * transient from `ic=` values declared on capacitors and inductors.
+   * Storage elements without an explicit `ic` settle from V=0 / I=0.
+   */
+  uic?: boolean;
 }
 
 /** AC small-signal analysis (`.ac`). Frequency sweep. */

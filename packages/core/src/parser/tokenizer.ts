@@ -36,10 +36,22 @@ export function parseNumber(token: string): number {
   }
 
   // Single-char suffixes — case-sensitive (m = milli, M = mega)
-  const suffixMatch = trimmed.match(/^([+-]?[\d.]+(?:[eE][+-]?\d+)?)([TtGgKkMmUuNnPpFf])$/);
+  // Trailing alphabetic chars after the multiplier are treated as unit
+  // annotations (e.g. "1uF", "10kHz") and ignored — SPICE convention.
+  const suffixMatch = trimmed.match(/^([+-]?[\d.]+(?:[eE][+-]?\d+)?)([TtGgKkMmUuNnPpFf])([A-Za-z]*)$/);
   if (suffixMatch) {
     const exp = SI_SUFFIX_MAP[suffixMatch[2]];
     const val = Number(suffixMatch[1] + exp);
+    if (!isNaN(val)) return val;
+  }
+
+  // Plain number followed by unit letters (e.g. "2H", "5V", "100Ohm").
+  // Only matches when the entire trailing portion is alphabetic — keeps
+  // ambiguous cases like "5F" out of this branch since the SI suffix
+  // parse above will already have handled them as femto-units.
+  const plainWithUnit = trimmed.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)([A-Za-z]+)$/);
+  if (plainWithUnit) {
+    const val = Number(plainWithUnit[1]);
     if (!isNaN(val)) return val;
   }
 

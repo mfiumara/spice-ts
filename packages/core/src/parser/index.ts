@@ -3,6 +3,19 @@ import { ParseError } from '../errors.js';
 import { tokenizeNetlist, parseNumber } from './tokenizer.js';
 import { parseModelCard } from './model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
+
+/** Extract `IC=N` from a token list (case-insensitive). Returns undefined if absent. */
+function pickIC(tokens: string[], startIdx: number): number | undefined {
+  for (let i = startIdx; i < tokens.length; i++) {
+    const t = tokens[i];
+    const eq = t.indexOf('=');
+    if (eq <= 0) continue;
+    if (t.slice(0, eq).toLowerCase() === 'ic') {
+      return parseNumber(t.slice(eq + 1));
+    }
+  }
+  return undefined;
+}
 import { preprocess } from './preprocessor.js';
 import type { IncludeResolver } from '../types.js';
 
@@ -137,11 +150,18 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
       break;
     }
     case '.TRAN': {
-      const timestep = parseNumber(tokens[1]);
-      const stopTime = parseNumber(tokens[2]);
-      const startTime = tokens[3] ? parseNumber(tokens[3]) : undefined;
-      const maxTimestep = tokens[4] ? parseNumber(tokens[4]) : undefined;
-      circuit.addAnalysis('tran', { timestep, stopTime, startTime, maxTimestep });
+      // Trailing 'UIC' flag is a positional keyword, not a number.
+      const numericTokens: string[] = [];
+      let uic = false;
+      for (let i = 1; i < tokens.length; i++) {
+        if (tokens[i].toUpperCase() === 'UIC') uic = true;
+        else numericTokens.push(tokens[i]);
+      }
+      const timestep = parseNumber(numericTokens[0]);
+      const stopTime = parseNumber(numericTokens[1]);
+      const startTime = numericTokens[2] ? parseNumber(numericTokens[2]) : undefined;
+      const maxTimestep = numericTokens[3] ? parseNumber(numericTokens[3]) : undefined;
+      circuit.addAnalysis('tran', { timestep, stopTime, startTime, maxTimestep, uic });
       break;
     }
     case '.AC': {
@@ -213,12 +233,20 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
     }
     case 'C': {
       const value = parseNumber(tokens[3]);
-      circuit.addCapacitor(name, tokens[1], tokens[2], value);
+      const ic = pickIC(tokens, 4);
+      circuit.addCapacitor(name, tokens[1], tokens[2], value, ic);
       break;
     }
     case 'L': {
       const value = parseNumber(tokens[3]);
-      circuit.addInductor(name, tokens[1], tokens[2], value);
+      const ic = pickIC(tokens, 4);
+      circuit.addInductor(name, tokens[1], tokens[2], value, ic);
+      break;
+    }
+    case 'K': {
+      // K<name> <Lname1> <Lname2> <coefficient>
+      const k = parseNumber(tokens[3]);
+      circuit.addInductorCoupling(name, tokens[1], tokens[2], k);
       break;
     }
     case 'V': {

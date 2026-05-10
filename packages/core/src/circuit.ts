@@ -7,6 +7,7 @@ import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
 import { Capacitor } from './devices/capacitor.js';
 import { Inductor } from './devices/inductor.js';
+import { MutualInductor } from './devices/mutual-inductor.js';
 import { Diode } from './devices/diode.js';
 import { BJT } from './devices/bjt.js';
 import { MOSFET } from './devices/mosfet.js';
@@ -60,6 +61,11 @@ interface DeviceDescriptor {
   modelName?: string;
   params?: Record<string, number>;
   controlSource?: string;
+  /** Initial condition (volts for caps, amps for inductors). */
+  ic?: number;
+  /** For 'K' descriptors: names of the two inductors being coupled. */
+  coupledA?: string;
+  coupledB?: string;
 }
 
 /**
@@ -130,10 +136,10 @@ export class Circuit {
    * @param nodeNeg - Negative terminal node
    * @param capacitance - Capacitance value in farads
    */
-  addCapacitor(name: string, nodePos: string, nodeNeg: string, capacitance: number): void {
+  addCapacitor(name: string, nodePos: string, nodeNeg: string, capacitance: number, ic?: number): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
-    this.descriptors.push({ type: 'C', name, nodes: [nodePos, nodeNeg], value: capacitance });
+    this.descriptors.push({ type: 'C', name, nodes: [nodePos, nodeNeg], value: capacitance, ic });
   }
 
   /**
@@ -144,10 +150,30 @@ export class Circuit {
    * @param nodeNeg - Negative terminal node
    * @param inductance - Inductance value in henries
    */
-  addInductor(name: string, nodePos: string, nodeNeg: string, inductance: number): void {
+  addInductor(name: string, nodePos: string, nodeNeg: string, inductance: number, ic?: number): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
-    this.descriptors.push({ type: 'L', name, nodes: [nodePos, nodeNeg], value: inductance });
+    this.descriptors.push({ type: 'L', name, nodes: [nodePos, nodeNeg], value: inductance, ic });
+  }
+
+  /**
+   * Couple two inductors via a coupling coefficient k (K-element).
+   *
+   * The mutual inductance is M = k * sqrt(L_a * L_b), with |k| ≤ 1 for a
+   * physically realizable coupling. Both inductors must already exist via
+   * {@link addInductor}; their dot convention is implicit in their declared
+   * node order.
+   *
+   * @param name - K-element name (e.g., `'K1'`)
+   * @param indA - First inductor name (e.g., `'L1'`)
+   * @param indB - Second inductor name (e.g., `'L2'`)
+   * @param k - Coupling coefficient (positive or negative)
+   */
+  addInductorCoupling(name: string, indA: string, indB: string, k: number): void {
+    this.descriptors.push({
+      type: 'K', name, nodes: [],
+      coupledA: indA, coupledB: indB, value: k,
+    });
   }
 
   /**
@@ -361,7 +387,7 @@ export class Circuit {
    */
   addAnalysis(type: 'op'): void;
   addAnalysis(type: 'dc', params: { source: string; start: number; stop: number; step: number }): void;
-  addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number }): void;
+  addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; uic?: boolean }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
     switch (type) {
@@ -378,13 +404,14 @@ export class Circuit {
         });
         break;
       case 'tran': {
-        const tranCmd: { type: 'tran'; timestep: number; stopTime: number; startTime?: number; maxTimestep?: number } = {
+        const tranCmd: { type: 'tran'; timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; uic?: boolean } = {
           type: 'tran',
           timestep: params!.timestep as number,
           stopTime: params!.stopTime as number,
         };
         if (params?.startTime !== undefined) tranCmd.startTime = params.startTime as number;
         if (params?.maxTimestep !== undefined) tranCmd.maxTimestep = params.maxTimestep as number;
+        if (params?.uic) tranCmd.uic = true;
         this._analyses.push(tranCmd);
         break;
       }
@@ -450,9 +477,47 @@ export class Circuit {
    * @throws Error if a referenced subcircuit or control source is undefined
    * @throws {@link CycleError} if subcircuit instances form a circular dependency
    */
+  /**
+   * Compile a UIC seed circuit: capacitors with `ic=` are replaced by DC
+   * voltage sources of that value, and inductors with `ic=` are replaced
+   * by DC current sources. Storage elements without `ic` keep their default
+   * DC behaviour (caps open, inductors short). K-elements are dropped (they
+   * have no DC contribution). Used to compute the t=0 seed for `.tran ... uic`.
+   */
+  compileForUIC(): CompiledCircuit {
+    return this.compileWith(d => this.toUICDescriptor(d));
+  }
+
+  private toUICDescriptor(desc: DeviceDescriptor): DeviceDescriptor | null {
+    if (desc.type === 'C' && desc.ic !== undefined) {
+      return {
+        type: 'V', name: desc.name, nodes: desc.nodes,
+        waveform: { type: 'dc', value: desc.ic },
+      };
+    }
+    if (desc.type === 'L' && desc.ic !== undefined) {
+      // Inductor convention: positive branch current flows from n+ to n-,
+      // i.e., LEAVES n+. SPICE current source convention: positive value
+      // INJECTS into n+. Flip the node order so an I source of +ic models
+      // an inductor with branch current +ic.
+      return {
+        type: 'I', name: desc.name, nodes: [desc.nodes[1], desc.nodes[0]],
+        waveform: { type: 'dc', value: desc.ic },
+      };
+    }
+    if (desc.type === 'K') return null; // no DC effect
+    return desc;
+  }
+
   compile(): CompiledCircuit {
+    return this.compileWith(d => d);
+  }
+
+  private compileWith(transform: (d: DeviceDescriptor) => DeviceDescriptor | null): CompiledCircuit {
     // Pre-expand subcircuit instances into flat device descriptors
-    const expandedDescriptors = this.expandAllSubcircuits();
+    const expandedDescriptors = this.expandAllSubcircuits()
+      .map(transform)
+      .filter((d): d is DeviceDescriptor => d !== null);
 
     // Collect all nodes from expanded descriptors
     for (const desc of expandedDescriptors) {
@@ -503,12 +568,24 @@ export class Circuit {
           devices.push(new CurrentSource(desc.name, nodeIndices, resolveWaveform(desc.waveform)));
           break;
         case 'C':
-          devices.push(new Capacitor(desc.name, nodeIndices, desc.value!));
+          devices.push(new Capacitor(desc.name, nodeIndices, desc.value!, desc.ic));
           break;
         case 'L': {
           const bi = branchIndex++;
           branchNames.push(desc.name);
-          devices.push(new Inductor(desc.name, nodeIndices, bi, desc.value!));
+          devices.push(new Inductor(desc.name, nodeIndices, bi, desc.value!, desc.ic));
+          break;
+        }
+        case 'K': {
+          // Resolve the two coupled inductor names to their device instances.
+          const a = deviceMap.get(desc.coupledA!);
+          const b = deviceMap.get(desc.coupledB!);
+          if (!(a instanceof Inductor) || !(b instanceof Inductor)) {
+            throw new Error(
+              `K-element '${desc.name}' references unknown or non-inductor device(s): ${desc.coupledA}, ${desc.coupledB}`,
+            );
+          }
+          devices.push(new MutualInductor(desc.name, a, b, desc.value!));
           break;
         }
         case 'D': {

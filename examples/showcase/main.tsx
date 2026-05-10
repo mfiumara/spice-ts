@@ -207,6 +207,38 @@ Rload out 0 10
 .tran 50n 500u`,
   },
   {
+    id: 'chua-lin',
+    name: 'Chua & Lin 8-7',
+    desc: 'Coupled inductors + UIC',
+    icon: '\u29c9',
+    group: 'Benchmarks',
+    tag: '.tran',
+    signals: ['x', 'y', 'out'],
+    tranNetlist: `
+* Chua & Lin "Computer-Aided Analysis" 8-7 (page 343).
+* Three magnetically-coupled inductors (K1/K2/K3) with two capacitor and
+* one inductor initial conditions. A classic SPICE benchmark \u2014 every
+* simulator gives a slightly different answer because it forces the
+* engine to handle three things at once: the K-element coupling matrix,
+* the .tran "uic" flag, and a stiff multi-time-scale transient.
+V1 inp 0 DC 1
+R10 inp x 0.5
+C2 x 0 2
+L8 x c 2H ic=2
+C12 x y 5 ic=2
+L9 y c 2H
+C3 y 0 4 ic=5
+R11 y out 0.25
+R5 out 0 2
+I1 0 out DC 1
+L6 c n1 4H
+R4 n1 0 1
+K1 L6 L8 -0.3535534
+K2 L6 L9 -0.3535534
+K3 L8 L9 -0.5
+.tran 0.2 200 0 0.2 uic`,
+  },
+  {
     integrationMethod: 'gear2',
     id: 'buck-boost', name: 'Buck-Boost Converter', desc: '12V \u2192 \u2013Vout (inverting)',
     icon: '\u26A1', group: 'Power Electronics', tag: '.tran', signals: ['neg'],
