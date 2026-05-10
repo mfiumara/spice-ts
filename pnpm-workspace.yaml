@@ -2,3 +2,4 @@ packages:
   - "packages/*"
   - "examples"
   - "examples/showcase"
+  - "examples/editor"

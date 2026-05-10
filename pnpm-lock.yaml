@@ -34,6 +34,37 @@ importers:
         specifier: ^5.4.0
         version: 5.9.3
 
+  examples/editor:
+    dependencies:
+      '@spice-ts/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@spice-ts/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      react:
+        specifier: ^18.3.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.0
+        version: 18.3.28
+      '@types/react-dom':
+        specifier: ^18.3.0
+        version: 18.3.7(@types/react@18.3.28)
+      '@vitejs/plugin-react':
+        specifier: ^6.0.1
+        version: 6.0.1(vite@8.0.8(@types/node@25.5.2)(esbuild@0.27.7)(tsx@4.21.0))
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
+      vite:
+        specifier: ^8.0.8
+        version: 8.0.8(@types/node@25.5.2)(esbuild@0.27.7)(tsx@4.21.0)
+
   examples/showcase:
     dependencies:
       '@spice-ts/core':

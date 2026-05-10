@@ -91,7 +91,7 @@ export function SchematicView({ circuit, theme, width = '100%', height = 400, on
   const padded = { width: bounds.width + GRID, height: bounds.height + GRID };
 
   return (
-    <div style={{ width, height: typeof height === 'number' ? height : undefined, overflow: 'auto', position: 'relative' }}>
+    <div style={{ width, height, overflow: 'auto', position: 'relative' }}>
       <svg
         viewBox={`0 0 ${padded.width} ${padded.height}`}
         width="100%"
