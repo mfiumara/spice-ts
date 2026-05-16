@@ -1,6 +1,7 @@
 import type { CircuitIR, IRComponent, IRPort, ComponentType } from './types.js';
 import type { SourceWaveform, ModelParams } from '../types.js';
 import { GROUND_NODE } from '../types.js';
+import { resolveCapacitorModel, resolveInductorModel } from '../devices/passive-model.js';
 
 /**
  * Device descriptor — mirrors the private interface in circuit.ts.
@@ -159,9 +160,9 @@ function buildDisplayValue(
     case 'R':
       return formatSI(desc.value ?? 0);
     case 'C':
-      return formatSI(desc.value ?? 0, 'F');
+      return formatSI((componentParams.capacitance as number) ?? 0, 'F');
     case 'L':
-      return formatSI(desc.value ?? 0, 'H');
+      return formatSI((componentParams.inductance as number) ?? 0, 'H');
     case 'V':
     case 'I':
       return waveformDisplayValue(componentParams);
@@ -239,9 +240,41 @@ function buildParams(
     case 'R':
       return { resistance: desc.value ?? 0 };
     case 'C':
-      return { capacitance: desc.value ?? 0 };
+      {
+        const model = desc.modelName ? models.get(desc.modelName) : undefined;
+        const resolved = resolveCapacitorModel(desc.value, model, desc.params);
+        const result: Record<string, number | string | boolean> = {
+          capacitance: resolved.capacitance,
+        };
+        if (desc.modelName) result.modelName = desc.modelName;
+        if (resolved.seriesResistance > 0) result.seriesResistance = resolved.seriesResistance;
+        if (resolved.seriesInductance > 0) result.seriesInductance = resolved.seriesInductance;
+        if (Number.isFinite(resolved.parallelResistance)) result.parallelResistance = resolved.parallelResistance;
+        if (desc.params) {
+          for (const [k, v] of Object.entries(desc.params)) {
+            result[k] = v;
+          }
+        }
+        return result;
+      }
     case 'L':
-      return { inductance: desc.value ?? 0 };
+      {
+        const model = desc.modelName ? models.get(desc.modelName) : undefined;
+        const resolved = resolveInductorModel(desc.value, model, desc.params);
+        const result: Record<string, number | string | boolean> = {
+          inductance: resolved.inductance,
+        };
+        if (desc.modelName) result.modelName = desc.modelName;
+        if (resolved.seriesResistance > 0) result.seriesResistance = resolved.seriesResistance;
+        if (Number.isFinite(resolved.parallelResistance)) result.parallelResistance = resolved.parallelResistance;
+        if (resolved.parallelCapacitance > 0) result.parallelCapacitance = resolved.parallelCapacitance;
+        if (desc.params) {
+          for (const [k, v] of Object.entries(desc.params)) {
+            result[k] = v;
+          }
+        }
+        return result;
+      }
     case 'V':
     case 'I':
       return flattenWaveform(desc.waveform);

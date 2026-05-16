@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/v/@spice-ts/core)](https://www.npmjs.com/package/@spice-ts/core)
 [![CI](https://github.com/mfiumara/spice-ts/actions/workflows/ci.yml/badge.svg)](https://github.com/mfiumara/spice-ts/actions/workflows/ci.yml)
 
-Zero-dependency TypeScript SPICE circuit simulator. Parse netlists and run DC, transient, and AC analysis directly in Node.js or the browser — no native binaries, no WASM.
+TypeScript-native SPICE circuit simulator. Parse netlists and run DC, transient, and AC analysis directly in Node.js or the browser with the built-in solver, or swap to an optional ngspice WASM backend.
 
 ```ts
 import { simulate } from '@spice-ts/core';
@@ -34,6 +34,7 @@ Requires Node.js ≥ 20.
 - **Transient analysis** — backward Euler and trapezoidal integration with adaptive timestep
 - **AC small-signal** — frequency sweep (dec/oct/lin) via complex LU solve
 - **Device models** — R, C, L, V, I, Diode (Shockley), BJT (Ebers-Moll NPN/PNP), MOSFET (Level 1 Shichman-Hodges NMOS/PMOS), BSIM3v3 (LEVEL=49)
+- **Passive parasitics** — capacitor ESR/ESL/leakage and inductor DCR/core-loss/winding-capacitance expansion for AC and transient analysis
 - **Controlled sources** — VCVS (E), VCCS (G), CCVS (H), CCCS (F) with DC, AC, and subcircuit support
 - **Sparse solver** — Gilbert-Peierls LU with symbolic/numeric split, typed-array stamping, batch MOSFET evaluation. Competitive with ngspice-WASM on DC, AC, and nonlinear circuits
 - **Complex AC solver** — native complex sparse LU (no 2n×2n real expansion)
@@ -41,6 +42,7 @@ Requires Node.js ≥ 20.
 - **Library support** — `.include` file resolution, `.lib`/`.endl` section selection (process corners), `.param` expressions with SI suffixes
 - **Async parsing** — `parseAsync()` with platform-agnostic `IncludeResolver` callback for loading external files
 - **Streaming API** — `simulateStream()` yields results as an `AsyncIterableIterator`
+- **Swappable simulator backend** — use the default TypeScript solver or select optional `ngspice-wasm` via `simulate(..., { simulator })`
 - **Programmatic API** — build circuits in code with `Circuit`, or parse SPICE netlists with `parse()`
 - **Typed errors** — `ConvergenceError`, `SingularMatrixError`, `ParseError`, `CycleError`, and more
 
@@ -79,6 +81,35 @@ ckt.addAnalysis('op');
 const result = await simulate(ckt);
 console.log(result.dc?.voltage('out')); // 2.5
 ```
+
+### Passive parasitics
+
+Capacitor and inductor instances can carry model or instance parameters. The native solver expands these into equivalent primitive networks before AC and transient analysis.
+
+```spice
+.model CLOSS C(CAP=1u ESR=250m ESL=10n RLEAK=1meg)
+C1 in 0 CLOSS
+
+.model LLOSS L(IND=10u RSER=400m RPAR=2k CPAR=3p)
+L1 out 0 LLOSS
+```
+
+Capacitors support `CAP`, geometry/temperature parameters, `ESR`/`RSER`/`RS`, `ESL`/`LSER`/`LS`, `RLEAK`/`RPAR`, and loss-derived `DF` or `Q` with `FREQ`. Inductors support `IND`/`L`, geometry/temperature parameters, `RSER`/`DCR`/`RDC`, `RPAR`, `CPAR`, `Q` with `FREQ`, and `SRF`-derived parallel capacitance.
+
+### Swappable backend
+
+The TypeScript solver is used by default. To run through ngspice compiled to WASM, install `eecircuit-engine` and pass `simulator: 'ngspice-wasm'`:
+
+```ts
+const result = await simulate(`
+  V1 1 0 DC 5
+  R1 1 2 1k
+  R2 2 0 2k
+  .op
+`, { simulator: 'ngspice-wasm' });
+```
+
+Custom adapters can also be passed via `simulator` when they implement `simulate(input, options)`.
 
 ### Streaming
 
@@ -140,6 +171,7 @@ The resolver is platform-agnostic — use `fetch()` in the browser, `readFile()`
 | `maxIterations` | `100` | Max Newton-Raphson iterations (DC) |
 | `maxTransientIterations` | `50` | Max NR iterations per timestep |
 | `integrationMethod` | `'trapezoidal'` | `'euler'` or `'trapezoidal'` |
+| `simulator` | `'spice-ts'` | Built-in TypeScript solver, `'ngspice-wasm'`, or a custom simulator adapter |
 | `resolveInclude` | — | Async callback for `.include`/`.lib` |
 
 All public exports have TSDoc comments for IDE hover-docs.

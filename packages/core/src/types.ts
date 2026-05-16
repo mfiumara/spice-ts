@@ -83,7 +83,30 @@ export interface SimulationOptions {
   gmin?: number;
   /** Resolver for .include and .lib file directives */
   resolveInclude?: IncludeResolver;
+  /**
+   * Simulation backend to use. Defaults to `'spice-ts'`, the TypeScript-native
+   * solver. Use `'ngspice-wasm'` to run through the optional ngspice WASM
+   * adapter, or pass a custom simulator adapter.
+   */
+  simulator?: SimulatorBackend;
 }
+
+/** Built-in simulator backend names. */
+export type SimulatorBackendName = 'spice-ts' | 'ngspice-wasm';
+
+/** Pluggable simulator adapter compatible with {@link simulate}. */
+export interface SimulatorAdapter {
+  /** Human-readable backend name for diagnostics. */
+  readonly name?: string;
+  /** Run a simulation and return the standard spice-ts result shape. */
+  simulate(
+    input: string | import('./circuit.js').Circuit,
+    options?: SimulationOptions,
+  ): Promise<import('./results.js').SimulationResult>;
+}
+
+/** Simulation backend selector accepted by {@link SimulationOptions}. */
+export type SimulatorBackend = SimulatorBackendName | SimulatorAdapter;
 
 /** Resolved options with all defaults filled in */
 export interface ResolvedOptions {

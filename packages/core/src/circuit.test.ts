@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { Circuit } from './circuit.js';
+import { Capacitor } from './devices/capacitor.js';
+import { Inductor } from './devices/inductor.js';
+import { Resistor } from './devices/resistor.js';
 
 describe('Circuit', () => {
   it('maps node names to indices, with ground at -1', () => {
@@ -50,6 +53,81 @@ describe('Circuit', () => {
     expect(compiled.branchCount).toBe(1);
     expect(compiled.nodeNames).toContain('1');
     expect(compiled.nodeNames).toContain('2');
+  });
+
+  it('resolves programmatic capacitor model cards', () => {
+    const ckt = new Circuit();
+    ckt.addModel({ name: 'CSTD', type: 'C', params: { CAP: 3e-9 } });
+    ckt.addCapacitor('C1', '1', '0', undefined, 'CSTD');
+    ckt.addAnalysis('op');
+
+    const compiled = ckt.compile();
+    const cap = compiled.devices.find(d => d.name === 'C1');
+    expect(cap).toBeInstanceOf(Capacitor);
+    expect((cap as Capacitor).capacitance).toBeCloseTo(3e-9);
+  });
+
+  it('resolves programmatic inductor model cards', () => {
+    const ckt = new Circuit();
+    ckt.addModel({ name: 'LSTD', type: 'L', params: { IND: 3e-9 } });
+    ckt.addInductor('L1', '1', '0', undefined, 'LSTD');
+    ckt.addAnalysis('op');
+
+    const compiled = ckt.compile();
+    const ind = compiled.devices.find(d => d.name === 'L1');
+    expect(ind).toBeInstanceOf(Inductor);
+    expect((ind as Inductor).inductance).toBeCloseTo(3e-9);
+  });
+
+  it('expands capacitor parasitics into an equivalent primitive network', () => {
+    const ckt = new Circuit();
+    ckt.addCapacitor('C1', 'in', '0', 1e-6, undefined, {
+      ESR: 0.25,
+      ESL: 10e-9,
+      RLEAK: 1e6,
+    });
+    ckt.addAnalysis('op');
+
+    const compiled = ckt.compile();
+    const names = compiled.devices.map(d => d.name);
+
+    expect(names).toContain('C1.RLEAK');
+    expect(names).toContain('C1.ESL');
+    expect(names).toContain('C1.ESR');
+    expect(names).toContain('C1');
+    expect(compiled.nodeNames).toContain('C1.esl');
+    expect(compiled.nodeNames).toContain('C1.esr');
+    expect(compiled.branchNames).toContain('C1.ESL');
+
+    expect(compiled.devices.find(d => d.name === 'C1.RLEAK')).toBeInstanceOf(Resistor);
+    expect(compiled.devices.find(d => d.name === 'C1.ESL')).toBeInstanceOf(Inductor);
+    expect(compiled.devices.find(d => d.name === 'C1.ESR')).toBeInstanceOf(Resistor);
+    expect(compiled.devices.find(d => d.name === 'C1')).toBeInstanceOf(Capacitor);
+  });
+
+  it('expands inductor parasitics into an equivalent primitive network', () => {
+    const ckt = new Circuit();
+    ckt.addInductor('L1', 'in', '0', 10e-6, undefined, {
+      RSER: 0.4,
+      RPAR: 2e3,
+      CPAR: 3e-12,
+    });
+    ckt.addAnalysis('op');
+
+    const compiled = ckt.compile();
+    const names = compiled.devices.map(d => d.name);
+
+    expect(names).toContain('L1.RPAR');
+    expect(names).toContain('L1.CPAR');
+    expect(names).toContain('L1.RSER');
+    expect(names).toContain('L1');
+    expect(compiled.nodeNames).toContain('L1.rser');
+    expect(compiled.branchNames).toContain('L1');
+
+    expect(compiled.devices.find(d => d.name === 'L1.RPAR')).toBeInstanceOf(Resistor);
+    expect(compiled.devices.find(d => d.name === 'L1.CPAR')).toBeInstanceOf(Capacitor);
+    expect(compiled.devices.find(d => d.name === 'L1.RSER')).toBeInstanceOf(Resistor);
+    expect(compiled.devices.find(d => d.name === 'L1')).toBeInstanceOf(Inductor);
   });
 
   it('provides node name to index mapping', () => {

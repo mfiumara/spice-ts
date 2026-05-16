@@ -86,6 +86,16 @@ export class TransientResult {
     if (i === undefined) throw new Error(`Unknown branch: ${source}`);
     return i;
   }
+
+  /** Copy of all node voltage waveforms as a Map. */
+  get voltages(): Map<string, number[]> {
+    return new Map(this.voltageArrays);
+  }
+
+  /** Copy of all branch current waveforms as a Map. */
+  get currents(): Map<string, number[]> {
+    return new Map(this.currentArrays);
+  }
 }
 
 /**
@@ -125,6 +135,16 @@ export class ACResult {
     const i = this.currentArrays.get(source);
     if (i === undefined) throw new Error(`Unknown branch: ${source}`);
     return i;
+  }
+
+  /** Copy of all node voltage phasors as a Map. */
+  get voltages(): Map<string, { magnitude: number; phase: number }[]> {
+    return new Map(this.voltageArrays);
+  }
+
+  /** Copy of all branch current phasors as a Map. */
+  get currents(): Map<string, { magnitude: number; phase: number }[]> {
+    return new Map(this.currentArrays);
   }
 }
 

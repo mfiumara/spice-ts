@@ -39,6 +39,14 @@
   "files": [
     "dist"
   ],
+  "peerDependencies": {
+    "eecircuit-engine": "^1.7.0"
+  },
+  "peerDependenciesMeta": {
+    "eecircuit-engine": {
+      "optional": true
+    }
+  },
   "scripts": {
     "build": "tsup",
     "test": "vitest run",

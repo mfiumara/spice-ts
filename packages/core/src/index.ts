@@ -1,6 +1,8 @@
-export { simulate, simulateStream, simulateStepStream } from './simulate.js';
+export { simulate, simulateStream, simulateStepStream, createSimulator } from './simulate.js';
 export { createTransientSim } from './analysis/transient-driver.js';
 export type { TransientSim, TransientSimOptions } from './analysis/transient-driver.js';
+export { WasmNgspiceSimulator } from './simulators/ngspice-wasm.js';
+export type { WasmNgspiceSimulatorOptions } from './simulators/ngspice-wasm.js';
 export { parse, parseAsync } from './parser/index.js';
 export { preprocess } from './parser/preprocessor.js';
 export { Circuit } from './circuit.js';
@@ -20,6 +22,9 @@ export type {
   StepAnalysis,
   StepSweepMode,
   StepStreamEvent,
+  SimulatorBackend,
+  SimulatorBackendName,
+  SimulatorAdapter,
 } from './types.js';
 export type { DeviceModel, StampContext } from './devices/device.js';
 export type { CircuitIR, IRComponent, IRPort, ComponentType } from './ir/types.js';
