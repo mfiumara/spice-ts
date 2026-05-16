@@ -2,7 +2,7 @@ import { Circuit } from './circuit.js';
 import type { CompiledCircuit } from './circuit.js';
 import { parse, parseAsync } from './parser/index.js';
 import type { SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
-import type { TransientAnalysis, ACAnalysis, ResolvedOptions } from './types.js';
+import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, SimulatorBackend } from './types.js';
 import { resolveOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
 import { solveTransient } from './analysis/transient.js';
@@ -10,12 +10,46 @@ import { solveAC } from './analysis/ac.js';
 import { solveDCSweep } from './analysis/dc-sweep.js';
 import { solveStep, generateStepValues } from './analysis/step.js';
 import type { StepStreamEvent, StepAnalysis } from './types.js';
-import type { SimulationResult } from './results.js';
+import type { SimulationResult, StepResult } from './results.js';
 import { InvalidCircuitError } from './errors.js';
 import { MNAAssembler } from './mna/assembler.js';
 import { toCsc } from './solver/csc-matrix.js';
 import { ComplexSparseSolver } from './solver/complex-sparse-solver.js';
 import { createDriverFromCompiled } from './analysis/transient-driver.js';
+import { WasmNgspiceSimulator } from './simulators/ngspice-wasm.js';
+
+class SpiceTsSimulator implements SimulatorAdapter {
+  readonly name = 'spice-ts';
+
+  async simulate(input: string | Circuit, options?: SimulationOptions): Promise<SimulationResult> {
+    return simulate(input, { ...options, simulator: 'spice-ts' });
+  }
+}
+
+export function createSimulator(simulator: SimulatorBackend = 'spice-ts'): SimulatorAdapter {
+  if (typeof simulator !== 'string') return simulator;
+
+  switch (simulator) {
+    case 'spice-ts':
+      return new SpiceTsSimulator();
+    case 'ngspice-wasm':
+      return new WasmNgspiceSimulator();
+    default:
+      throw new InvalidCircuitError(`Unknown simulator backend '${simulator}'`);
+  }
+}
+
+function withoutSimulator(options?: SimulationOptions): SimulationOptions | undefined {
+  if (!options) return undefined;
+  const { simulator: _simulator, ...rest } = options;
+  return rest;
+}
+
+function selectedExternalSimulator(options?: SimulationOptions): SimulatorAdapter | null {
+  const simulator = options?.simulator;
+  if (!simulator || simulator === 'spice-ts') return null;
+  return createSimulator(simulator);
+}
 
 /**
  * Run all analyses declared in a SPICE netlist or {@link Circuit} object.
@@ -44,6 +78,11 @@ export async function simulate(
   input: string | Circuit,
   options?: SimulationOptions,
 ): Promise<SimulationResult> {
+  const simulator = selectedExternalSimulator(options);
+  if (simulator) {
+    return simulator.simulate(input, withoutSimulator(options));
+  }
+
   let circuit: Circuit;
   if (typeof input === 'string') {
     if (options?.resolveInclude) {
@@ -128,6 +167,12 @@ export async function* simulateStream(
   input: string | Circuit,
   options?: SimulationOptions,
 ): AsyncIterableIterator<TransientStep | ACPoint> {
+  if (selectedExternalSimulator(options)) {
+    const result = await simulate(input, options);
+    yield* streamFromSimulationResult(result);
+    return;
+  }
+
   let circuit: Circuit;
   if (typeof input === 'string') {
     if (options?.resolveInclude) {
@@ -183,6 +228,19 @@ export async function* simulateStepStream(
   input: string | Circuit,
   options?: SimulationOptions,
 ): AsyncIterableIterator<StepStreamEvent> {
+  if (selectedExternalSimulator(options)) {
+    const result = await simulate(input, options);
+    if (result.steps) {
+      for (let stepIndex = 0; stepIndex < result.steps.length; stepIndex++) {
+        const step = result.steps[stepIndex];
+        yield* streamEventsFromStepResult(step, stepIndex, step.paramName, step.paramValue);
+      }
+    } else {
+      yield* streamEventsFromStepResult(result, 0, '', 0);
+    }
+    return;
+  }
+
   let circuit: Circuit;
   if (typeof input === 'string') {
     if (options?.resolveInclude) {
@@ -286,6 +344,63 @@ function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[
   if (compiled.analyses.length === 0) {
     throw new InvalidCircuitError('No analysis command specified');
   }
+}
+
+function* streamFromSimulationResult(result: SimulationResult): Generator<TransientStep | ACPoint> {
+  if (result.steps) {
+    for (const step of result.steps) {
+      yield* streamPointsFromStepResult(step);
+    }
+    return;
+  }
+  yield* streamPointsFromStepResult(result);
+}
+
+function* streamPointsFromStepResult(
+  result: StepResult | SimulationResult,
+): Generator<TransientStep | ACPoint> {
+  if (result.transient) {
+    const voltages = result.transient.voltages;
+    const currents = result.transient.currents;
+    for (let i = 0; i < result.transient.time.length; i++) {
+      yield {
+        time: result.transient.time[i],
+        voltages: mapAtIndex(voltages, i),
+        currents: mapAtIndex(currents, i),
+      };
+    }
+  }
+
+  if (result.ac) {
+    const voltages = result.ac.voltages;
+    const currents = result.ac.currents;
+    for (let i = 0; i < result.ac.frequencies.length; i++) {
+      yield {
+        frequency: result.ac.frequencies[i],
+        voltages: mapAtIndex(voltages, i),
+        currents: mapAtIndex(currents, i),
+      };
+    }
+  }
+}
+
+function* streamEventsFromStepResult(
+  result: StepResult | SimulationResult,
+  stepIndex: number,
+  paramName: string,
+  paramValue: number,
+): Generator<StepStreamEvent> {
+  for (const point of streamPointsFromStepResult(result)) {
+    yield { stepIndex, paramName, paramValue, point };
+  }
+}
+
+function mapAtIndex<T>(arrays: Map<string, T[]>, index: number): Map<string, T> {
+  const result = new Map<string, T>();
+  for (const [name, values] of arrays) {
+    result.set(name, values[index]);
+  }
+  return result;
 }
 
 function* streamTransient(
@@ -425,4 +540,3 @@ function generateStreamFreqs(analysis: ACAnalysis): number[] {
   }
   return frequencies;
 }
-

@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { parse, parseAsync } from './index.js';
+import { Capacitor } from '../devices/capacitor.js';
+import { Inductor } from '../devices/inductor.js';
 
 describe('SPICE netlist parser', () => {
   it('parses a simple voltage divider', () => {
@@ -113,6 +115,111 @@ describe('SPICE netlist parser', () => {
     const compiled = ckt.compile();
     expect(compiled.models.has('DMOD')).toBe(true);
     expect(compiled.models.get('DMOD')!.params.IS).toBeCloseTo(1e-14);
+  });
+
+  it('parses capacitor .model values and instance parameters', () => {
+    const ckt = parse(`
+      .model CSTD C(CAP=1n TC1=0.001 TC2=0.0001)
+      C1 1 0 CSTD M=2 SCALE=0.5 TEMP=37
+      .op
+      .end
+    `);
+    const compiled = ckt.compile();
+    const cap = compiled.devices.find(d => d.name === 'C1');
+
+    expect(cap).toBeInstanceOf(Capacitor);
+    expect((cap as Capacitor).capacitance).toBeCloseTo(1.02e-9);
+  });
+
+  it('parses semiconductor capacitor geometry from model and instance dimensions', () => {
+    const ckt = parse(`
+      .model CMOD C(CJ=5e-5 CJSW=2e-11 DEFW=2u)
+      C1 1 0 CMOD L=10u W=1u
+      .op
+      .end
+    `);
+    const compiled = ckt.compile();
+    const cap = compiled.devices.find(d => d.name === 'C1');
+
+    expect(cap).toBeInstanceOf(Capacitor);
+    expect((cap as Capacitor).capacitance).toBeCloseTo(9.4e-16);
+  });
+
+  it('parses capacitor values with separated physical units', () => {
+    const ckt = parse(`
+      C1 1 0 1 uF
+      .op
+      .end
+    `);
+    const compiled = ckt.compile();
+    const cap = compiled.devices.find(d => d.name === 'C1');
+
+    expect(cap).toBeInstanceOf(Capacitor);
+    expect((cap as Capacitor).capacitance).toBeCloseTo(1e-6);
+  });
+
+  it('parses capacitor parasitic model parameters', () => {
+    const ckt = parse(`
+      .model CLOSS C(CAP=1u ESR=250m ESL=10n RLEAK=1meg)
+      C1 1 0 CLOSS
+      .op
+      .end
+    `);
+    const compiled = ckt.compile();
+
+    expect(compiled.devices.map(d => d.name)).toEqual([
+      'C1.RLEAK',
+      'C1.ESL',
+      'C1.ESR',
+      'C1',
+    ]);
+    expect(compiled.branchNames).toEqual(['C1.ESL']);
+  });
+
+  it('parses inductor .model values and multiplicity', () => {
+    const ckt = parse(`
+      .model LSTD L(IND=10u TC1=0.001)
+      L1 1 0 LSTD M=2 SCALE=0.5 TEMP=37
+      .op
+      .end
+    `);
+    const compiled = ckt.compile();
+    const ind = compiled.devices.find(d => d.name === 'L1');
+
+    expect(ind).toBeInstanceOf(Inductor);
+    expect((ind as Inductor).inductance).toBeCloseTo(2.525e-6);
+  });
+
+  it('parses geometric inductor models', () => {
+    const ckt = parse(`
+      .model LGEOM L(LENGTH=10u CSECT=4p NT=20 MU=2)
+      L1 1 0 LGEOM
+      .op
+      .end
+    `);
+    const compiled = ckt.compile();
+    const ind = compiled.devices.find(d => d.name === 'L1');
+
+    expect(ind).toBeInstanceOf(Inductor);
+    expect((ind as Inductor).inductance).toBeCloseTo(4.021238596594944e-10);
+  });
+
+  it('parses inductor parasitic model parameters', () => {
+    const ckt = parse(`
+      .model LLOSS L(IND=10u RSER=400m RPAR=2k CPAR=3p)
+      L1 1 0 LLOSS
+      .op
+      .end
+    `);
+    const compiled = ckt.compile();
+
+    expect(compiled.devices.map(d => d.name)).toEqual([
+      'L1.RPAR',
+      'L1.CPAR',
+      'L1.RSER',
+      'L1',
+    ]);
+    expect(compiled.branchNames).toEqual(['L1']);
   });
 
   it('parses DC sweep', () => {

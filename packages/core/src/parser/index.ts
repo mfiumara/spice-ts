@@ -3,6 +3,7 @@ import { ParseError } from '../errors.js';
 import { tokenizeNetlist, parseNumber } from './tokenizer.js';
 import { parseModelCard } from './model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
+import { parsePassiveElement } from './passive-parser.js';
 import { preprocess } from './preprocessor.js';
 import type { IncludeResolver } from '../types.js';
 
@@ -212,13 +213,13 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
       break;
     }
     case 'C': {
-      const value = parseNumber(tokens[3]);
-      circuit.addCapacitor(name, tokens[1], tokens[2], value);
+      const parsed = parsePassiveElement(tokens, 3, 'C');
+      circuit.addCapacitor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, parsed.params);
       break;
     }
     case 'L': {
-      const value = parseNumber(tokens[3]);
-      circuit.addInductor(name, tokens[1], tokens[2], value);
+      const parsed = parsePassiveElement(tokens, 3, 'L');
+      circuit.addInductor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, parsed.params);
       break;
     }
     case 'V': {

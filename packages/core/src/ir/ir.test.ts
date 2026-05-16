@@ -349,6 +349,55 @@ describe('Circuit.toIR()', () => {
     expect(l1.displayValue).toBe('10mH');
   });
 
+  it('should resolve passive model values in IR params and display', () => {
+    const ckt = new Circuit();
+    ckt.addModel({ name: 'CSTD', type: 'C', params: { CAP: 3e-9 } });
+    ckt.addModel({ name: 'LSTD', type: 'L', params: { IND: 4e-6 } });
+    ckt.addCapacitor('C1', 'a', 'b', undefined, 'CSTD');
+    ckt.addInductor('L1', 'c', 'd', undefined, 'LSTD', { M: 2 });
+
+    const ir = ckt.toIR();
+
+    const c1 = ir.components.find(c => c.id === 'C1')!;
+    expect(c1.params.capacitance).toBeCloseTo(3e-9);
+    expect(c1.params.modelName).toBe('CSTD');
+    expect(c1.displayValue).toBe('3nF');
+
+    const l1 = ir.components.find(c => c.id === 'L1')!;
+    expect(l1.params.inductance).toBeCloseTo(2e-6);
+    expect(l1.params.modelName).toBe('LSTD');
+    expect(l1.params.M).toBe(2);
+    expect(l1.displayValue).toBe('2uH');
+  });
+
+  it('should include passive parasitic metadata in IR params', () => {
+    const ckt = new Circuit();
+    ckt.addCapacitor('C1', 'a', 'b', 1e-6, undefined, {
+      ESR: 0.2,
+      ESL: 10e-9,
+      RLEAK: 1e6,
+    });
+    ckt.addInductor('L1', 'c', 'd', 10e-6, undefined, {
+      RSER: 0.5,
+      RPAR: 2e3,
+      CPAR: 4e-12,
+    });
+
+    const ir = ckt.toIR();
+
+    const c1 = ir.components.find(c => c.id === 'C1')!;
+    expect(c1.params.capacitance).toBeCloseTo(1e-6);
+    expect(c1.params.seriesResistance).toBeCloseTo(0.2);
+    expect(c1.params.seriesInductance).toBeCloseTo(10e-9);
+    expect(c1.params.parallelResistance).toBeCloseTo(1e6);
+
+    const l1 = ir.components.find(c => c.id === 'L1')!;
+    expect(l1.params.inductance).toBeCloseTo(10e-6);
+    expect(l1.params.seriesResistance).toBeCloseTo(0.5);
+    expect(l1.params.parallelResistance).toBeCloseTo(2e3);
+    expect(l1.params.parallelCapacitance).toBeCloseTo(4e-12);
+  });
+
   it('should convert subcircuit instance to IR', () => {
     const ckt = new Circuit();
     ckt.addSubcircuitInstance('X1', ['in', 'out', '0'], 'OPAMP', { GAIN: 1e5 });

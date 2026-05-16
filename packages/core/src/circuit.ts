@@ -20,6 +20,15 @@ import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
+import { parsePassiveElement } from './parser/passive-parser.js';
+import {
+  resolveCapacitance,
+  resolveCapacitorModel,
+  resolveInductance,
+  resolveInductorModel,
+  type ResolvedCapacitorModel,
+  type ResolvedInductorModel,
+} from './devices/passive-model.js';
 import { CycleError } from './errors.js';
 
 /**
@@ -60,6 +69,140 @@ interface DeviceDescriptor {
   modelName?: string;
   params?: Record<string, number>;
   controlSource?: string;
+}
+
+function formatNumber(value: number): string {
+  return Number.isFinite(value) ? value.toString() : String(value);
+}
+
+function formatParams(params?: Record<string, number>): string {
+  if (!params) return '';
+  return Object.entries(params)
+    .map(([key, value]) => `${key}=${formatNumber(value)}`)
+    .join(' ');
+}
+
+function formatModel(model: ModelParams): string {
+  const params = formatParams(model.params);
+  return params
+    ? `.model ${model.name} ${model.type} (${params})`
+    : `.model ${model.name} ${model.type}`;
+}
+
+function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string {
+  if (!wf) return 'DC 0';
+  if (wf.dc !== undefined) return `DC ${formatNumber(wf.dc)}`;
+  if (!wf.type) return 'DC 0';
+
+  switch (wf.type) {
+    case 'dc':
+      return `DC ${formatNumber(wf.value ?? 0)}`;
+    case 'ac':
+      return `AC ${formatNumber(wf.magnitude ?? 1)} ${formatNumber(wf.phase ?? 0)}`;
+    case 'pulse':
+      return `PULSE(${[
+        wf.v1 ?? 0,
+        wf.v2 ?? 0,
+        wf.delay ?? 0,
+        wf.rise ?? 1e-12,
+        wf.fall ?? 1e-12,
+        wf.width ?? Infinity,
+        wf.period ?? Infinity,
+      ].map(formatNumber).join(' ')})`;
+    case 'sin':
+      return `SIN(${[
+        wf.offset ?? 0,
+        wf.amplitude ?? 0,
+        wf.frequency ?? 0,
+        wf.delay,
+        wf.damping,
+        wf.phase,
+      ].filter(v => v !== undefined).map(v => formatNumber(v as number)).join(' ')})`;
+    default:
+      return 'DC 0';
+  }
+}
+
+function formatDevice(desc: DeviceDescriptor): string {
+  const params = formatParams(desc.params);
+  const tail = params ? ` ${params}` : '';
+
+  switch (desc.type) {
+    case 'R':
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatNumber(desc.value ?? 0)}`;
+    case 'C':
+    case 'L': {
+      const value = desc.value !== undefined ? formatNumber(desc.value) : undefined;
+      const valueAndModel = [value, desc.modelName].filter(Boolean).join(' ');
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${valueAndModel || '0'}${tail}`;
+    }
+    case 'V':
+    case 'I':
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatWaveform(desc.waveform)}`;
+    case 'D':
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.modelName ?? ''}`.trim();
+    case 'Q':
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.nodes[2]} ${desc.modelName ?? ''}`.trim();
+    case 'M':
+      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail}`.trim();
+    case 'E':
+    case 'G':
+      return `${desc.name} ${desc.nodes.join(' ')} ${formatNumber(desc.value ?? 0)}`;
+    case 'F':
+    case 'H':
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.controlSource ?? ''} ${formatNumber(desc.value ?? 0)}`.trim();
+    case 'X':
+      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail}`.trim();
+    default:
+      return `${desc.name} ${desc.nodes.join(' ')}`;
+  }
+}
+
+function formatAnalysis(analysis: AnalysisCommand): string {
+  switch (analysis.type) {
+    case 'op':
+      return '.op';
+    case 'dc':
+      return `.dc ${analysis.source} ${formatNumber(analysis.start)} ${formatNumber(analysis.stop)} ${formatNumber(analysis.step)}`;
+    case 'tran': {
+      const parts = ['.tran', formatNumber(analysis.timestep), formatNumber(analysis.stopTime)];
+      if (analysis.startTime !== undefined) parts.push(formatNumber(analysis.startTime));
+      if (analysis.maxTimestep !== undefined) parts.push(formatNumber(analysis.maxTimestep));
+      return parts.join(' ');
+    }
+    case 'ac':
+      return `.ac ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
+  }
+}
+
+function formatStep(step: StepAnalysis): string {
+  if (step.sweepMode === 'list') {
+    return `.step ${step.param} LIST ${(step.values ?? []).map(formatNumber).join(' ')}`;
+  }
+  if (step.sweepMode === 'lin') {
+    return `.step ${step.param} ${formatNumber(step.start ?? 0)} ${formatNumber(step.stop ?? 0)} ${formatNumber(step.increment ?? 0)}`;
+  }
+  return `.step ${step.sweepMode.toUpperCase()} ${step.param} ${formatNumber(step.start ?? 0)} ${formatNumber(step.stop ?? 0)} ${step.points ?? 0}`;
+}
+
+function isPositiveFinite(value: number): boolean {
+  return Number.isFinite(value) && value > 0;
+}
+
+function hasCapacitorParasitics(model: ResolvedCapacitorModel): boolean {
+  return isPositiveFinite(model.seriesResistance)
+    || isPositiveFinite(model.seriesInductance)
+    || isPositiveFinite(model.parallelResistance);
+}
+
+function hasInductorParasitics(model: ResolvedInductorModel): boolean {
+  return isPositiveFinite(model.seriesResistance)
+    || isPositiveFinite(model.parallelResistance)
+    || isPositiveFinite(model.parallelCapacitance);
+}
+
+function internalNodeName(deviceName: string, suffix: string): string {
+  return `${deviceName}.${suffix}`;
 }
 
 /**
@@ -128,12 +271,28 @@ export class Circuit {
    * @param name - Device name (e.g., `'C1'`)
    * @param nodePos - Positive terminal node
    * @param nodeNeg - Negative terminal node
-   * @param capacitance - Capacitance value in farads
+   * @param capacitance - Capacitance value in farads. Omit when using a `.model C` card value.
+   * @param modelName - Optional name of a `.model C` card
+   * @param instanceParams - Per-instance model parameters (e.g., `{ L: 10e-6, W: 1e-6, M: 2 }`)
    */
-  addCapacitor(name: string, nodePos: string, nodeNeg: string, capacitance: number): void {
+  addCapacitor(
+    name: string,
+    nodePos: string,
+    nodeNeg: string,
+    capacitance?: number,
+    modelName?: string,
+    instanceParams?: Record<string, number>,
+  ): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
-    this.descriptors.push({ type: 'C', name, nodes: [nodePos, nodeNeg], value: capacitance });
+    this.descriptors.push({
+      type: 'C',
+      name,
+      nodes: [nodePos, nodeNeg],
+      value: capacitance,
+      modelName,
+      params: instanceParams,
+    });
   }
 
   /**
@@ -142,12 +301,28 @@ export class Circuit {
    * @param name - Device name (e.g., `'L1'`)
    * @param nodePos - Positive terminal node
    * @param nodeNeg - Negative terminal node
-   * @param inductance - Inductance value in henries
+   * @param inductance - Inductance value in henries. Omit when using a `.model L` card value.
+   * @param modelName - Optional name of a `.model L` card
+   * @param instanceParams - Per-instance model parameters (e.g., `{ NT: 10, SCALE: 2 }`)
    */
-  addInductor(name: string, nodePos: string, nodeNeg: string, inductance: number): void {
+  addInductor(
+    name: string,
+    nodePos: string,
+    nodeNeg: string,
+    inductance?: number,
+    modelName?: string,
+    instanceParams?: Record<string, number>,
+  ): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
-    this.descriptors.push({ type: 'L', name, nodes: [nodePos, nodeNeg], value: inductance });
+    this.descriptors.push({
+      type: 'L',
+      name,
+      nodes: [nodePos, nodeNeg],
+      value: inductance,
+      modelName,
+      params: instanceParams,
+    });
   }
 
   /**
@@ -441,6 +616,43 @@ export class Circuit {
   }
 
   /**
+   * Serialize the programmatic circuit to a SPICE-like netlist.
+   *
+   * This is primarily used by external simulator backends that consume text
+   * netlists. Raw subcircuit bodies are preserved exactly as registered.
+   */
+  toNetlist(): string {
+    const lines: string[] = ['* spice-ts generated netlist'];
+
+    for (const model of this._models.values()) {
+      lines.push(formatModel(model));
+    }
+
+    for (const subckt of this._subcircuits.values()) {
+      const params = formatParams(subckt.params);
+      const header = `.subckt ${subckt.name} ${subckt.ports.join(' ')}${params ? ` ${params}` : ''}`;
+      lines.push(header.trim());
+      lines.push(...subckt.body);
+      lines.push(`.ends ${subckt.name}`);
+    }
+
+    for (const desc of this.descriptors) {
+      lines.push(formatDevice(desc));
+    }
+
+    for (const step of this._steps) {
+      lines.push(formatStep(step));
+    }
+
+    for (const analysis of this._analyses) {
+      lines.push(formatAnalysis(analysis));
+    }
+
+    lines.push('.end');
+    return lines.join('\n');
+  }
+
+  /**
    * Compile the circuit into a form ready for numerical simulation.
    *
    * Expands subcircuit instances, assigns node indices, instantiates device
@@ -452,7 +664,7 @@ export class Circuit {
    */
   compile(): CompiledCircuit {
     // Pre-expand subcircuit instances into flat device descriptors
-    const expandedDescriptors = this.expandAllSubcircuits();
+    const expandedDescriptors = this.expandPassiveParasitics(this.expandAllSubcircuits());
 
     // Collect all nodes from expanded descriptors
     for (const desc of expandedDescriptors) {
@@ -502,13 +714,24 @@ export class Circuit {
         case 'I':
           devices.push(new CurrentSource(desc.name, nodeIndices, resolveWaveform(desc.waveform)));
           break;
-        case 'C':
-          devices.push(new Capacitor(desc.name, nodeIndices, desc.value!));
+        case 'C': {
+          const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
+          if (desc.modelName && !model) {
+            throw new Error(`Capacitor '${desc.name}' references unknown model '${desc.modelName}'`);
+          }
+          const { value } = resolveCapacitance(desc.value, model, desc.params);
+          devices.push(new Capacitor(desc.name, nodeIndices, value));
           break;
+        }
         case 'L': {
+          const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
+          if (desc.modelName && !model) {
+            throw new Error(`Inductor '${desc.name}' references unknown model '${desc.modelName}'`);
+          }
+          const { value } = resolveInductance(desc.value, model, desc.params);
           const bi = branchIndex++;
           branchNames.push(desc.name);
-          devices.push(new Inductor(desc.name, nodeIndices, bi, desc.value!));
+          devices.push(new Inductor(desc.name, nodeIndices, bi, value));
           break;
         }
         case 'D': {
@@ -625,6 +848,140 @@ export class Circuit {
         result.push(desc);
       }
     }
+    return result;
+  }
+
+  private expandPassiveParasitics(descriptors: DeviceDescriptor[]): DeviceDescriptor[] {
+    const result: DeviceDescriptor[] = [];
+
+    for (const desc of descriptors) {
+      if (desc.type === 'C') {
+        const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
+        if (desc.modelName && !model) {
+          throw new Error(`Capacitor '${desc.name}' references unknown model '${desc.modelName}'`);
+        }
+        const resolved = resolveCapacitorModel(desc.value, model, desc.params);
+        if (hasCapacitorParasitics(resolved)) {
+          result.push(...this.expandCapacitorDescriptor(desc, resolved));
+        } else {
+          result.push(desc);
+        }
+        continue;
+      }
+
+      if (desc.type === 'L') {
+        const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
+        if (desc.modelName && !model) {
+          throw new Error(`Inductor '${desc.name}' references unknown model '${desc.modelName}'`);
+        }
+        const resolved = resolveInductorModel(desc.value, model, desc.params);
+        if (hasInductorParasitics(resolved)) {
+          result.push(...this.expandInductorDescriptor(desc, resolved));
+        } else {
+          result.push(desc);
+        }
+        continue;
+      }
+
+      result.push(desc);
+    }
+
+    return result;
+  }
+
+  private expandCapacitorDescriptor(
+    desc: DeviceDescriptor,
+    model: ResolvedCapacitorModel,
+  ): DeviceDescriptor[] {
+    const [p, n] = desc.nodes;
+    const result: DeviceDescriptor[] = [];
+
+    if (isPositiveFinite(model.parallelResistance)) {
+      result.push({
+        type: 'R',
+        name: `${desc.name}.RLEAK`,
+        nodes: [p, n],
+        value: model.parallelResistance,
+      });
+    }
+
+    let left = p;
+    if (isPositiveFinite(model.seriesInductance)) {
+      const right = internalNodeName(desc.name, 'esl');
+      result.push({
+        type: 'L',
+        name: `${desc.name}.ESL`,
+        nodes: [left, right],
+        value: model.seriesInductance,
+      });
+      left = right;
+    }
+
+    if (isPositiveFinite(model.seriesResistance)) {
+      const right = internalNodeName(desc.name, 'esr');
+      result.push({
+        type: 'R',
+        name: `${desc.name}.ESR`,
+        nodes: [left, right],
+        value: model.seriesResistance,
+      });
+      left = right;
+    }
+
+    result.push({
+      type: 'C',
+      name: desc.name,
+      nodes: [left, n],
+      value: model.capacitance,
+    });
+
+    return result;
+  }
+
+  private expandInductorDescriptor(
+    desc: DeviceDescriptor,
+    model: ResolvedInductorModel,
+  ): DeviceDescriptor[] {
+    const [p, n] = desc.nodes;
+    const result: DeviceDescriptor[] = [];
+
+    if (isPositiveFinite(model.parallelResistance)) {
+      result.push({
+        type: 'R',
+        name: `${desc.name}.RPAR`,
+        nodes: [p, n],
+        value: model.parallelResistance,
+      });
+    }
+
+    if (isPositiveFinite(model.parallelCapacitance)) {
+      result.push({
+        type: 'C',
+        name: `${desc.name}.CPAR`,
+        nodes: [p, n],
+        value: model.parallelCapacitance,
+      });
+    }
+
+    let left = p;
+    if (isPositiveFinite(model.seriesResistance)) {
+      const right = internalNodeName(desc.name, 'rser');
+      result.push({
+        type: 'R',
+        name: `${desc.name}.RSER`,
+        nodes: [left, right],
+        value: model.seriesResistance,
+      });
+      left = right;
+    }
+
+    result.push({
+      type: 'L',
+      name: desc.name,
+      nodes: [left, n],
+      value: model.inductance,
+    });
+
     return result;
   }
 
@@ -757,20 +1114,26 @@ export class Circuit {
           break;
         }
         case 'C': {
-          const valStr = evalToken(tokens[3]);
+          const evaluatedTokens = tokens.map(t => evalToken(t));
+          const parsed = parsePassiveElement(evaluatedTokens, 3, 'C');
           result.push({
             type: 'C', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
-            value: parseNumber(valStr),
+            value: parsed.value,
+            modelName: parsed.modelName,
+            params: parsed.params,
           });
           break;
         }
         case 'L': {
-          const valStr = evalToken(tokens[3]);
+          const evaluatedTokens = tokens.map(t => evalToken(t));
+          const parsed = parsePassiveElement(evaluatedTokens, 3, 'L');
           result.push({
             type: 'L', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
-            value: parseNumber(valStr),
+            value: parsed.value,
+            modelName: parsed.modelName,
+            params: parsed.params,
           });
           break;
         }

@@ -50,4 +50,22 @@ describe('AC Small-Signal Analysis', () => {
     const f0 = 1 / (2 * Math.PI * Math.sqrt(10e-3 * 100e-9));
     expect(freqs[maxIdx]).toBeCloseTo(f0, -2);
   });
+
+  it('includes capacitor ESR and ESL in AC response', async () => {
+    const fLow = 1 / (2 * Math.PI * 1e3 * 1e-6);
+    const fRes = 1 / (2 * Math.PI * Math.sqrt(1e-6 * 1e-6));
+
+    const result = await simulate(`
+      V1 in 0 AC 1 0
+      C1 in 0 1u ESR=1 ESL=1u RLEAK=1e12
+      .ac lin 1 ${fLow} ${fRes}
+      .end
+    `);
+
+    expect(result.ac).toBeDefined();
+    const sourceCurrent = result.ac!.current('V1');
+
+    expect(sourceCurrent[0].magnitude).toBeCloseTo(1e-3, 2);
+    expect(sourceCurrent[1].magnitude).toBeCloseTo(1, 1);
+  });
 });
