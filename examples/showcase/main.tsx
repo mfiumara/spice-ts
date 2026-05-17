@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { simulateStepStream, simulate, parse } from '@spice-ts/core';
-import type { StepStreamEvent, DCSweepResult, IntegrationMethod } from '@spice-ts/core';
+import type { StepStreamEvent, DCSweepResult, IntegrationMethod, SimulationOptions } from '@spice-ts/core';
 import { TransientPlot, BodePlot, DCSweepPlot, CursorTooltip, Legend, SchematicView } from '@spice-ts/ui/react';
 import type { LegendSignal } from '@spice-ts/ui/react';
 import { DARK_THEME, formatTime, formatFrequency, formatVoltage, formatSI, DEFAULT_PALETTE } from '@spice-ts/ui';
@@ -23,6 +23,7 @@ interface CircuitDef {
   xLabel?: string;
   signals: string[];
   integrationMethod?: IntegrationMethod;
+  simulationOptions?: SimulationOptions;
   /** If true, render the plot with equal-length axes (square inner plot). */
   squarePlot?: boolean;
 }
@@ -88,11 +89,11 @@ E1 out 0 n2 out 1e6
     xLabel: 'Vin (V)',
     squarePlot: true,
     dcNetlist: `
-* CMOS inverter DC transfer curve — BSIM3v3 (Level 49)
+* CMOS inverter DC transfer curve — Level 1 MOS
 VDD vdd 0 DC 1.8
 VIN in 0 DC 0
-.model NMOD NMOS (LEVEL=49 VTH0=0.5 U0=400 TOX=4n)
-.model PMOD PMOS (LEVEL=49 VTH0=-0.5 U0=150 TOX=4n)
+.model NMOD NMOS (VTO=0.5 KP=400u)
+.model PMOD PMOS (VTO=-0.5 KP=150u)
 MP out in vdd vdd PMOD W=20u L=0.18u
 MN out in 0   0  NMOD W=10u L=0.18u
 .dc VIN 0 1.8 0.01`,
@@ -190,6 +191,7 @@ Rload out 0 10
   },
   {
     integrationMethod: 'gear2',
+    simulationOptions: { integrationMethod: 'gear2', reltol: 1e-2 },
     id: 'boost', name: 'Boost Converter', desc: '5V \u2192 ~10V, 50% duty',
     icon: '\u26A1', group: 'Power Electronics', tag: '.tran', signals: ['out'],
     tranNetlist: `
@@ -319,6 +321,11 @@ function parseTranParams(netlist: string): { stop: string; step: string } {
 
 function injectTranParams(netlist: string, step: string, stop: string): string {
   return netlist.replace(/\.tran\s+\S+\s+\S+([^\n]*)/i, `.tran ${step} ${stop}$1`);
+}
+
+function simulationOptionsFor(circuit: CircuitDef): SimulationOptions | undefined {
+  return circuit.simulationOptions
+    ?? (circuit.integrationMethod ? { integrationMethod: circuit.integrationMethod } : undefined);
 }
 
 function buildLegendSignals(datasets: { label: string }[], signals: string[], visibility: Record<string, boolean>, palette?: string[]): LegendSignal[] {
@@ -483,6 +490,8 @@ function App() {
   const circuit = CIRCUITS.find(c => c.id === activeCircuit)!;
 
   const handleRun = useCallback(() => {
+    const simulationOptions = simulationOptionsFor(circuit);
+
     // DC sweep path — synchronous simulate(), no streaming
     if (activeView === 'dc') {
       if (!editedNetlist) return;
@@ -493,7 +502,7 @@ function App() {
       setVisibility({});
       stopRef.current = false;
       const t0 = performance.now();
-      simulate(editedNetlist)
+      simulate(editedNetlist, simulationOptions)
         .then(result => {
           if (stopRef.current) return;
           if (!result.dcSweep) { setError('No DC sweep result'); setRunning(false); return; }
@@ -533,7 +542,7 @@ function App() {
         requestAnimationFrame(raf);
 
         let count = 0;
-        for await (const event of simulateStepStream(netlist, { integrationMethod: circuit.integrationMethod })) {
+        for await (const event of simulateStepStream(netlist, simulationOptions)) {
           if (stopRef.current) break;
           acc.push(event); dirty = true;
           if (++count % 500 === 0) await new Promise<void>(r => setTimeout(r, 0));
@@ -549,7 +558,7 @@ function App() {
         requestAnimationFrame(raf);
 
         let count = 0;
-        for await (const event of simulateStepStream(netlist, { integrationMethod: circuit.integrationMethod })) {
+        for await (const event of simulateStepStream(netlist, simulationOptions)) {
           if (stopRef.current) break;
           acc.push(event); dirty = true;
           if (++count % 50 === 0) await new Promise<void>(r => setTimeout(r, 0));

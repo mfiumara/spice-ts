@@ -4,8 +4,12 @@ import type { SourceWaveform, PulseSource, SinSource } from '../types.js';
 export function parseSourceWaveform(tokens: string[], startIdx: number): SourceWaveform {
   if (startIdx >= tokens.length) return { type: 'dc', value: 0 };
 
-  // Scan for AC keyword anywhere in the remaining tokens (e.g. "DC 0 AC 1")
+  // Scan for AC keyword anywhere in the remaining tokens (e.g. "DC 1.5 AC 1").
+  // In SPICE syntax the DC operating-point value and AC small-signal
+  // excitation coexist; the DC bias must still be used for .op/.tran and as
+  // the linearization point for .ac.
   const upper = tokens.slice(startIdx).map(t => t.toUpperCase());
+  const dcIdx = upper.indexOf('DC');
   const acIdx = upper.indexOf('AC');
   if (acIdx >= 0) {
     const absIdx = startIdx + acIdx;
@@ -14,7 +18,17 @@ export function parseSourceWaveform(tokens: string[], startIdx: number): SourceW
     const phase = (maybePhase && maybePhase !== 'DC' && !maybePhase.startsWith('.'))
       ? parseNumber(tokens[absIdx + 2])
       : 0;
-    return { type: 'ac', magnitude, phase };
+    let dc = 0;
+    if (dcIdx >= 0) {
+      dc = parseNumber(tokens[startIdx + dcIdx + 1]);
+    } else if (acIdx > 0) {
+      try {
+        dc = parseNumber(tokens[startIdx]);
+      } catch {
+        dc = 0;
+      }
+    }
+    return { type: 'ac', dc, magnitude, phase };
   }
 
   const keyword = tokens[startIdx].toUpperCase();

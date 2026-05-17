@@ -91,14 +91,15 @@ function formatModel(model: ModelParams): string {
 
 function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string {
   if (!wf) return 'DC 0';
-  if (wf.dc !== undefined) return `DC ${formatNumber(wf.dc)}`;
-  if (!wf.type) return 'DC 0';
+  if (!wf.type) return wf.dc !== undefined ? `DC ${formatNumber(wf.dc)}` : 'DC 0';
 
   switch (wf.type) {
     case 'dc':
       return `DC ${formatNumber(wf.value ?? 0)}`;
-    case 'ac':
-      return `AC ${formatNumber(wf.magnitude ?? 1)} ${formatNumber(wf.phase ?? 0)}`;
+    case 'ac': {
+      const ac = `AC ${formatNumber(wf.magnitude ?? 1)} ${formatNumber(wf.phase ?? 0)}`;
+      return wf.dc !== undefined ? `DC ${formatNumber(wf.dc)} ${ac}` : ac;
+    }
     case 'pulse':
       return `PULSE(${[
         wf.v1 ?? 0,
@@ -689,6 +690,14 @@ export class Circuit {
 
     const resolveWaveform = (wf?: Partial<SourceWaveform> & { dc?: number }): SourceWaveform => {
       if (!wf) return { type: 'dc', value: 0 };
+      if (wf.type === 'ac') {
+        return {
+          type: 'ac',
+          dc: wf.dc ?? 0,
+          magnitude: wf.magnitude ?? 1,
+          phase: wf.phase ?? 0,
+        };
+      }
       if (wf.dc !== undefined) return { type: 'dc', value: wf.dc };
       if (wf.type) return wf as SourceWaveform;
       return { type: 'dc', value: 0 };

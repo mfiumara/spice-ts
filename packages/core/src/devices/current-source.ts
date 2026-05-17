@@ -45,7 +45,7 @@ export class CurrentSource implements DeviceModel {
           Math.sin(2 * Math.PI * s.frequency * t + (phase * Math.PI) / 180);
       }
       case 'ac':
-        return 0;
+        return this.waveform.dc ?? 0;
     }
   }
 

@@ -39,7 +39,7 @@ export class VoltageSource implements DeviceModel {
       case 'sin':
         return evaluateSin(this.waveform, time);
       case 'ac':
-        return 0;
+        return this.waveform.dc ?? 0;
     }
   }
 

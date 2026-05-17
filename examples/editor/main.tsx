@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { useState, useDeferredValue, useMemo, useRef, useCallback, useEffect } from 'react';
 import { parse, simulate, simulateStream, ParseError } from '@spice-ts/core';
-import type { CircuitIR, AnalysisCommand } from '@spice-ts/core';
+import type { CircuitIR, AnalysisCommand, SimulatorBackendName } from '@spice-ts/core';
 import { SchematicView, TransientPlot, BodePlot, DCSweepPlot, Legend } from '@spice-ts/ui/react';
 import type { LegendSignal } from '@spice-ts/ui/react';
 import type { TransientDataset, ACDataset, DCSweepDataset } from '@spice-ts/ui';
@@ -18,6 +18,16 @@ C1 out 0 100n
 `;
 
 type AnalysisKind = 'tran' | 'ac' | 'dc';
+type EditorSimulator = SimulatorBackendName;
+
+const SIMULATOR_OPTIONS: Array<{ value: EditorSimulator; label: string; title: string }> = [
+  { value: 'spice-ts', label: 'spice-ts', title: 'Use the TypeScript simulator core' },
+  { value: 'ngspice-wasm', label: 'ngspice', title: 'Use the ngspice WASM simulator core' },
+];
+
+function simulatorLabel(simulator: EditorSimulator): string {
+  return SIMULATOR_OPTIONS.find(option => option.value === simulator)?.label ?? simulator;
+}
 
 interface ParseResult {
   ir: CircuitIR | null;
@@ -61,6 +71,7 @@ function buildLegend(signals: string[], visibility: Record<string, boolean>): Le
 function App() {
   const [netlist, setNetlist] = useState(STARTER);
   const [signalsText, setSignalsText] = useState('');
+  const [simulator, setSimulator] = useState<EditorSimulator>('spice-ts');
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState<number | null>(null);
@@ -134,6 +145,7 @@ function App() {
     setRunId(n => n + 1);
     stopRef.current = false;
     const t0 = performance.now();
+    const simulationOptions = { simulator };
 
     try {
       const kind = fresh.analysis.type;
@@ -157,7 +169,7 @@ function App() {
         requestAnimationFrame(raf);
 
         let count = 0;
-        for await (const step of simulateStream(netlist)) {
+        for await (const step of simulateStream(netlist, simulationOptions)) {
           if (stopRef.current) break;
           if (!('time' in step)) continue;
           time.push(step.time);
@@ -192,7 +204,7 @@ function App() {
         requestAnimationFrame(raf);
 
         let count = 0;
-        for await (const point of simulateStream(netlist)) {
+        for await (const point of simulateStream(netlist, simulationOptions)) {
           if (stopRef.current) break;
           if (!('frequency' in point)) continue;
           frequencies.push(point.frequency);
@@ -210,7 +222,7 @@ function App() {
         setRunId(n => n + 1);
         stopRef.current = true;
       } else if (kind === 'dc') {
-        const r = await simulate(netlist);
+        const r = await simulate(netlist, simulationOptions);
         if (!r.dcSweep) throw new Error('No DC sweep result');
         const sweepValues = Array.from(r.dcSweep.sweepValues);
         const sigMap = new Map<string, number[]>();
@@ -231,7 +243,7 @@ function App() {
       setRunning(false);
       stopRef.current = true;
     }
-  }, [netlist, signalsText, running]);
+  }, [netlist, signalsText, running, simulator]);
 
   const stop = useCallback(() => { stopRef.current = true; setRunning(false); }, []);
 
@@ -240,7 +252,7 @@ function App() {
   useEffect(() => {
     if (running) { stopRef.current = true; setRunning(false); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [netlist]);
+  }, [netlist, simulator]);
 
   const toggleVisibility = useCallback((id: string) => {
     setVisibility(prev => ({ ...prev, [id]: !(prev[id] ?? true) }));
@@ -317,6 +329,22 @@ function App() {
         <span style={{ color: 'var(--text)', fontSize: 12 }}>
           {analysisKind ? `.${analysisKind}` : <span style={{ color: 'var(--text-muted)' }}>none — add a .tran / .ac / .dc directive</span>}
         </span>
+        <span className="label">core</span>
+        <div className="core-switch" role="group" aria-label="Simulator core">
+          {SIMULATOR_OPTIONS.map(option => (
+            <button
+              key={option.value}
+              type="button"
+              className={`core-option${simulator === option.value ? ' active' : ''}`}
+              onClick={() => setSimulator(option.value)}
+              disabled={running}
+              aria-pressed={simulator === option.value}
+              title={option.title}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
         <span className="label">signals</span>
         <input
           className="signals-input"
@@ -327,8 +355,8 @@ function App() {
         />
         <span className="info">
           {error ? <span className="err">error: {error}</span>
-            : running ? `simulating… (#${runId})`
-            : elapsed !== null ? <span className="ok">done in {elapsed}ms (#{runId}, {tranData?.[0]?.time.length ?? acData?.[0]?.frequencies.length ?? dcData?.[0]?.sweepValues.length ?? 0} pts)</span>
+            : running ? `simulating with ${simulatorLabel(simulator)}… (#${runId})`
+            : elapsed !== null ? <span className="ok">done in {elapsed}ms (#{runId}, {simulatorLabel(simulator)}, {tranData?.[0]?.time.length ?? acData?.[0]?.frequencies.length ?? dcData?.[0]?.sweepValues.length ?? 0} pts)</span>
             : '—'}
         </span>
       </div>

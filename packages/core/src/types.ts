@@ -229,6 +229,8 @@ export interface SinSource {
 /** AC small-signal source (AC). Used for `.ac` analysis excitation. */
 export interface ACSource {
   type: 'ac';
+  /** DC operating-point value used before small-signal AC excitation. */
+  dc?: number;
   /** AC magnitude */
   magnitude: number;
   /** AC phase in degrees */

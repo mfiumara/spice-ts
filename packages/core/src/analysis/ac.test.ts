@@ -68,4 +68,17 @@ describe('AC Small-Signal Analysis', () => {
     expect(sourceCurrent[0].magnitude).toBeCloseTo(1e-3, 2);
     expect(sourceCurrent[1].magnitude).toBeCloseTo(1, 1);
   });
+
+  it('keeps DC source bias when AC excitation is also declared', async () => {
+    const result = await simulate(`
+      V1 in 0 DC 1.5 AC 1
+      R1 in 0 1k
+      .op
+      .ac lin 1 1 1
+      .end
+    `);
+
+    expect(result.dc!.voltage('in')).toBeCloseTo(1.5, 6);
+    expect(result.ac!.voltage('in')[0].magnitude).toBeCloseTo(1, 6);
+  });
 });

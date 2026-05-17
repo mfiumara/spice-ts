@@ -156,6 +156,7 @@ body {
 .sim-toolbar {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
   padding: 8px 14px;
   border-top: 1px solid var(--border);
@@ -189,6 +190,38 @@ body {
   font-weight: 600;
 }
 .btn.primary:hover:not(:disabled) { filter: brightness(1.08); }
+.core-switch {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(82px, 1fr));
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--bg);
+}
+.core-option {
+  min-width: 0;
+  padding: 5px 9px;
+  border: 0;
+  border-left: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.core-option:first-child { border-left: 0; }
+.core-option:hover:not(:disabled) { color: var(--text); }
+.core-option.active {
+  background: var(--accent);
+  color: hsl(224, 50%, 6%);
+  font-weight: 600;
+}
+.core-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
 .signals-input {
   flex: 0 1 280px;
   padding: 5px 10px;
