@@ -922,7 +922,7 @@ function App() {
 
         {/* Status Bar */}
         <div className="statusbar">
-          <span>spice-ts v0.2.1</span>
+          <span>spice-ts v0.3.0</span>
           <span className="sep" />
           <span>Browser Runtime</span>
           <span className="sep" />

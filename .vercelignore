@@ -1,0 +1,7 @@
+node_modules/
+dist/
+coverage/
+.worktrees/
+test-results.xml
+output.gif
+packages/ui/.codex/

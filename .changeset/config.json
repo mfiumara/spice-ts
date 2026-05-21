@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@spice-ts/examples", "showcase"]
+  "ignore": ["@spice-ts/examples", "showcase", "editor"]
 }

@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "pnpm --filter @spice-ts/core build && pnpm --filter @spice-ts/ui build && VITE_BASE_PATH=/ pnpm --dir examples/showcase build",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "outputDirectory": "examples/showcase/dist"
+}

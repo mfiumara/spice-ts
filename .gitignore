@@ -9,3 +9,5 @@ benchmarks/results.json
 test-results.xml
 .claude/
 .claire/
+.vercel/
+.vercel
