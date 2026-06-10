@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
+import type { MutableRefObject } from 'react';
 import { simulateStepStream, simulate, parse } from '@spice-ts/core';
 import type { StepStreamEvent, DCSweepResult, IntegrationMethod, SimulationOptions } from '@spice-ts/core';
 import { TransientPlot, BodePlot, DCSweepPlot, CursorTooltip, Legend, SchematicView } from '@spice-ts/ui/react';
@@ -27,6 +28,8 @@ interface CircuitDef {
   /** If true, render the plot with equal-length axes (square inner plot). */
   squarePlot?: boolean;
 }
+
+type AnalysisView = 'tran' | 'ac' | 'dc';
 
 const CIRCUITS: CircuitDef[] = [
   {
@@ -328,6 +331,179 @@ function simulationOptionsFor(circuit: CircuitDef): SimulationOptions | undefine
     ?? (circuit.integrationMethod ? { integrationMethod: circuit.integrationMethod } : undefined);
 }
 
+function defaultViewFor(circuit: CircuitDef): AnalysisView {
+  return circuit.tranNetlist ? 'tran' : circuit.acNetlist ? 'ac' : 'dc';
+}
+
+function netlistForView(circuit: CircuitDef, view: AnalysisView): string {
+  if (view === 'dc') return circuit.dcNetlist ?? '';
+  if (view === 'ac') return circuit.acNetlist ?? '';
+  return circuit.tranNetlist ?? '';
+}
+
+function hasViewNetlist(circuit: CircuitDef, view: AnalysisView): boolean {
+  return netlistForView(circuit, view).trim().length > 0;
+}
+
+function resetRuntimeState({
+  setTranData,
+  setAcData,
+  setDcData,
+  setTranCursor,
+  setAcCursor,
+  setDcCursor,
+  setError,
+  setElapsed,
+  setVisibility,
+  stopRef,
+  setRunning,
+}: {
+  setTranData: (data: TransientDataset[] | null) => void;
+  setAcData: (data: ACDataset[] | null) => void;
+  setDcData: (data: DCSweepDataset[] | null) => void;
+  setTranCursor: (cursor: CursorState | null) => void;
+  setAcCursor: (cursor: CursorState | null) => void;
+  setDcCursor: (cursor: CursorState | null) => void;
+  setError: (error: string | null) => void;
+  setElapsed: (elapsed: number | null) => void;
+  setVisibility: (visibility: Record<string, boolean>) => void;
+  stopRef: MutableRefObject<boolean>;
+  setRunning: (running: boolean) => void;
+}) {
+  setTranData(null);
+  setAcData(null);
+  setDcData(null);
+  setTranCursor(null);
+  setAcCursor(null);
+  setDcCursor(null);
+  setError(null);
+  setElapsed(null);
+  setVisibility({});
+  stopRef.current = true;
+  setRunning(false);
+}
+
+interface SharedState {
+  v: 1;
+  circuit: string;
+  view: AnalysisView;
+  netlist: string;
+  tranStop?: string;
+  tranStep?: string;
+}
+
+interface EditorState {
+  activeCircuit: string;
+  activeView: AnalysisView;
+  tranStop: string;
+  tranStep: string;
+  editedNetlist: string;
+  shareStatus: string | null;
+}
+
+function isAnalysisView(value: unknown): value is AnalysisView {
+  return value === 'tran' || value === 'ac' || value === 'dc';
+}
+
+function bytesToBase64Url(bytes: Uint8Array): string {
+  let binary = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  }
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function base64UrlToBytes(value: string): Uint8Array {
+  const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
+  const binary = atob(padded);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+function encodeShareState(state: SharedState): string {
+  return bytesToBase64Url(new TextEncoder().encode(JSON.stringify(state)));
+}
+
+function decodeShareState(hash: string): SharedState | null {
+  const rawHash = hash.startsWith('#') ? hash.slice(1) : hash;
+  if (!rawHash) return null;
+  const encoded = new URLSearchParams(rawHash).get('s');
+  if (!encoded) return null;
+
+  try {
+    const decoded = new TextDecoder().decode(base64UrlToBytes(encoded));
+    const value = JSON.parse(decoded) as Partial<SharedState>;
+    if (value.v !== 1 || typeof value.circuit !== 'string' || !isAnalysisView(value.view) || typeof value.netlist !== 'string') {
+      return null;
+    }
+    return {
+      v: 1,
+      circuit: value.circuit,
+      view: value.view,
+      netlist: value.netlist,
+      tranStop: typeof value.tranStop === 'string' ? value.tranStop : undefined,
+      tranStep: typeof value.tranStep === 'string' ? value.tranStep : undefined,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function editorStateFromSharedState(shared: SharedState | null): EditorState {
+  const fallbackCircuit = CIRCUITS[0];
+  if (!shared) {
+    const params = parseTranParams(fallbackCircuit.tranNetlist ?? '');
+    return {
+      activeCircuit: fallbackCircuit.id,
+      activeView: defaultViewFor(fallbackCircuit),
+      tranStop: params.stop,
+      tranStep: params.step,
+      editedNetlist: (fallbackCircuit.tranNetlist ?? '').trim(),
+      shareStatus: null,
+    };
+  }
+
+  const circuit = CIRCUITS.find(c => c.id === shared.circuit) ?? fallbackCircuit;
+  const activeView = hasViewNetlist(circuit, shared.view) ? shared.view : defaultViewFor(circuit);
+  const netlist = shared.netlist.trim() || netlistForView(circuit, activeView).trim();
+  const params = parseTranParams(netlist || circuit.tranNetlist || '');
+
+  return {
+    activeCircuit: circuit.id,
+    activeView,
+    tranStop: shared.tranStop ?? params.stop,
+    tranStep: shared.tranStep ?? params.step,
+    editedNetlist: netlist,
+    shareStatus: 'Loaded shared link',
+  };
+}
+
+function readInitialEditorState(): EditorState {
+  if (typeof window === 'undefined') return editorStateFromSharedState(null);
+  const shared = decodeShareState(window.location.hash);
+  return editorStateFromSharedState(shared);
+}
+
+async function copyText(text: string): Promise<void> {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.setAttribute('readonly', '');
+  textarea.style.position = 'fixed';
+  textarea.style.left = '-9999px';
+  document.body.appendChild(textarea);
+  textarea.select();
+  const copied = document.execCommand('copy');
+  document.body.removeChild(textarea);
+  if (!copied) throw new Error('Clipboard copy failed');
+}
+
 function buildLegendSignals(datasets: { label: string }[], signals: string[], visibility: Record<string, boolean>, palette?: string[]): LegendSignal[] {
   const pal = palette ?? DEFAULT_PALETTE as unknown as string[];
   const result: LegendSignal[] = [];
@@ -346,6 +522,7 @@ function buildLegendSignals(datasets: { label: string }[], signals: string[], vi
 
 const PlayIcon = () => <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21"/></svg>;
 const StopIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>;
+const LinkIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L11 4.93"/><path d="M14 11a5 5 0 0 0-7.07 0L4.81 13.1a5 5 0 0 0 7.07 7.07L13 19.07"/></svg>;
 const WaveIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h4l3-9 4 18 3-9h6"/></svg>;
 const GridIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>;
 const FileIcon = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>;
@@ -424,14 +601,19 @@ function useKonamiCode(onActivate: () => void) {
 // ─── App ────────────────────────────────────────────────────────────
 
 function App() {
+  const initialStateRef = useRef<EditorState | null>(null);
+  if (!initialStateRef.current) initialStateRef.current = readInitialEditorState();
+  const initialState = initialStateRef.current;
+
   const [vaultTec, setVaultTec] = useState(false);
-  const [activeCircuit, setActiveCircuit] = useState('rc-lowpass');
-  const [activeView, setActiveView] = useState<'tran' | 'ac' | 'dc'>('tran');
+  const [activeCircuit, setActiveCircuit] = useState(initialState.activeCircuit);
+  const [activeView, setActiveView] = useState<AnalysisView>(initialState.activeView);
   const [searchQuery, setSearchQuery] = useState('');
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
-  const [tranStop, setTranStop] = useState(() => parseTranParams(CIRCUITS[0].tranNetlist!).stop);
-  const [tranStep, setTranStep] = useState(() => parseTranParams(CIRCUITS[0].tranNetlist!).step);
-  const [editedNetlist, setEditedNetlist] = useState<string>(() => (CIRCUITS[0].tranNetlist ?? '').trim());
+  const [tranStop, setTranStop] = useState(initialState.tranStop);
+  const [tranStep, setTranStep] = useState(initialState.tranStep);
+  const [editedNetlist, setEditedNetlist] = useState<string>(initialState.editedNetlist);
+  const [shareStatus, setShareStatus] = useState<string | null>(initialState.shareStatus);
   useKonamiCode(useCallback(() => setVaultTec(prev => !prev), []));
 
   // Apply vault-tec class to body for scanlines/vignette pseudo-elements
@@ -486,8 +668,37 @@ function App() {
   const [acCursor, setAcCursor] = useState<CursorState | null>(null);
   const [visibility, setVisibility] = useState<Record<string, boolean>>({});
   const stopRef = useRef(false);
+  const shareStatusTimerRef = useRef<number | null>(null);
 
-  const circuit = CIRCUITS.find(c => c.id === activeCircuit)!;
+  const circuit = CIRCUITS.find(c => c.id === activeCircuit) ?? CIRCUITS[0];
+
+  const resetSimulationState = useCallback(() => {
+    resetRuntimeState({
+      setTranData,
+      setAcData,
+      setDcData,
+      setTranCursor,
+      setAcCursor,
+      setDcCursor,
+      setError,
+      setElapsed,
+      setVisibility,
+      stopRef,
+      setRunning,
+    });
+  }, []);
+
+  const clearShareStatusLater = useCallback(() => {
+    if (shareStatusTimerRef.current !== null) window.clearTimeout(shareStatusTimerRef.current);
+    shareStatusTimerRef.current = window.setTimeout(() => {
+      setShareStatus(null);
+      shareStatusTimerRef.current = null;
+    }, 2500);
+  }, []);
+
+  useEffect(() => () => {
+    if (shareStatusTimerRef.current !== null) window.clearTimeout(shareStatusTimerRef.current);
+  }, []);
 
   const handleRun = useCallback(() => {
     const simulationOptions = simulationOptionsFor(circuit);
@@ -586,7 +797,7 @@ function App() {
 
   const handleSelectCircuit = useCallback((id: string) => {
     const c = CIRCUITS.find(x => x.id === id)!;
-    const defaultView = c.tranNetlist ? 'tran' : c.acNetlist ? 'ac' : 'dc';
+    const defaultView = defaultViewFor(c);
     setActiveCircuit(id);
     setActiveView(defaultView);
     if (c.tranNetlist) {
@@ -594,20 +805,63 @@ function App() {
       setTranStop(p.stop);
       setTranStep(p.step);
     }
-    const nl = defaultView === 'dc' ? c.dcNetlist : defaultView === 'ac' ? c.acNetlist : c.tranNetlist;
+    const nl = netlistForView(c, defaultView);
     setEditedNetlist((nl ?? '').trim());
-    setTranData(null);
-    setAcData(null);
-    setDcData(null);
-    setTranCursor(null);
-    setAcCursor(null);
-    setDcCursor(null);
-    setError(null);
-    setElapsed(null);
-    setVisibility({});
-    stopRef.current = true;
-    setRunning(false);
-  }, []);
+    setShareStatus(null);
+    resetSimulationState();
+  }, [resetSimulationState]);
+
+  const applySharedState = useCallback((shared: SharedState) => {
+    const next = editorStateFromSharedState(shared);
+    setActiveCircuit(next.activeCircuit);
+    setActiveView(next.activeView);
+    setTranStop(next.tranStop);
+    setTranStep(next.tranStep);
+    setEditedNetlist(next.editedNetlist);
+    setShareStatus(next.shareStatus);
+    clearShareStatusLater();
+    resetSimulationState();
+  }, [clearShareStatusLater, resetSimulationState]);
+
+  const handleNetlistChange = useCallback((value: string) => {
+    setEditedNetlist(value);
+    setShareStatus(null);
+    resetSimulationState();
+  }, [resetSimulationState]);
+
+  useEffect(() => {
+    const onHashChange = () => {
+      const shared = decodeShareState(window.location.hash);
+      if (shared) applySharedState(shared);
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, [applySharedState]);
+
+  const buildCurrentShareUrl = useCallback(() => {
+    const url = new URL(window.location.href);
+    url.hash = `s=${encodeShareState({
+      v: 1,
+      circuit: activeCircuit,
+      view: activeView,
+      netlist: editedNetlist,
+      tranStop: activeView === 'tran' ? tranStop : undefined,
+      tranStep: activeView === 'tran' ? tranStep : undefined,
+    })}`;
+    return url.toString();
+  }, [activeCircuit, activeView, editedNetlist, tranStop, tranStep]);
+
+  const handleCopyShareLink = useCallback(async () => {
+    const url = buildCurrentShareUrl();
+    window.history.replaceState(null, '', url.toString());
+    try {
+      await copyText(url);
+      setShareStatus('Link copied');
+    } catch {
+      setShareStatus('Share link added to address bar');
+    }
+    clearShareStatusLater();
+  }, [buildCurrentShareUrl, clearShareStatusLater]);
 
   // Filter and group circuits
   const filteredGroups = useMemo(() => {
@@ -627,10 +881,11 @@ function App() {
     setCollapsed(prev => ({ ...prev, [group]: !prev[group] }));
   }, []);
 
-  const hasNetlist = !!(circuit.tranNetlist || circuit.acNetlist || circuit.dcNetlist);
-  const diagramNetlist = activeView === 'dc' ? circuit.dcNetlist
-    : activeView === 'ac' ? circuit.acNetlist
-    : circuit.tranNetlist;
+  const hasNetlist = editedNetlist.trim().length > 0;
+  const effectiveNetlist = activeView === 'tran' && editedNetlist.trim()
+    ? injectTranParams(editedNetlist, tranStep, tranStop)
+    : editedNetlist;
+  const diagramNetlist = effectiveNetlist.trim();
 
   const diagramCircuit = useMemo(() => {
     if (!diagramNetlist) return null;
@@ -721,23 +976,45 @@ function App() {
           <button className="toolbar-btn" onClick={handleStop} disabled={!running}>
             <StopIcon /> Stop
           </button>
+          <button className="toolbar-btn" onClick={handleCopyShareLink} disabled={!hasNetlist} title="Copy share link">
+            <LinkIcon /> Copy Link
+          </button>
           <div className="toolbar-sep" />
           {circuit.tranNetlist && (
             <button
               className={`toolbar-btn ${activeView === 'tran' ? 'active' : ''}`}
-              onClick={() => { setActiveView('tran'); setEditedNetlist((circuit.tranNetlist ?? '').trim()); }}
+              onClick={() => {
+                const netlist = circuit.tranNetlist ?? '';
+                const params = parseTranParams(netlist);
+                setActiveView('tran');
+                setTranStop(params.stop);
+                setTranStep(params.step);
+                setEditedNetlist(netlist.trim());
+                setShareStatus(null);
+                resetSimulationState();
+              }}
             >Transient</button>
           )}
           {circuit.acNetlist && (
             <button
               className={`toolbar-btn ${activeView === 'ac' ? 'active' : ''}`}
-              onClick={() => { setActiveView('ac'); setEditedNetlist((circuit.acNetlist ?? '').trim()); }}
+              onClick={() => {
+                setActiveView('ac');
+                setEditedNetlist((circuit.acNetlist ?? '').trim());
+                setShareStatus(null);
+                resetSimulationState();
+              }}
             >AC Sweep</button>
           )}
           {circuit.dcNetlist && (
             <button
               className={`toolbar-btn ${activeView === 'dc' ? 'active' : ''}`}
-              onClick={() => { setActiveView('dc'); setEditedNetlist((circuit.dcNetlist ?? '').trim()); }}
+              onClick={() => {
+                setActiveView('dc');
+                setEditedNetlist((circuit.dcNetlist ?? '').trim());
+                setShareStatus(null);
+                resetSimulationState();
+              }}
             >DC Sweep</button>
           )}
           {activeView === 'tran' && circuit.tranNetlist && (
@@ -762,6 +1039,9 @@ function App() {
             </>
           )}
           <div className="toolbar-info">
+            {shareStatus && (
+              <span><span className="value">{shareStatus}</span></span>
+            )}
             {elapsed !== null && (
               <span>Elapsed: <span className="value">{elapsed}ms</span></span>
             )}
@@ -790,7 +1070,14 @@ function App() {
               </div>
               <div className="netlist-schematic-split">
                 <div className="netlist-panel-body">
-                  <NetlistView netlist={diagramNetlist} />
+                  <textarea
+                    className="netlist-editor"
+                    value={editedNetlist}
+                    onChange={e => handleNetlistChange(e.target.value)}
+                    spellCheck={false}
+                    wrap="off"
+                    aria-label={`${circuit.name} netlist`}
+                  />
                 </div>
                 {diagramCircuit && (
                   <div className="schematic-split-pane">
