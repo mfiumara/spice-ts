@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "name": "ngspice",
+    "repository": "https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/",
+    "revision": "3ef069fb1f04177a153f342a32d941fc20ff047e",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/COPYING",
+    "redistributionDecision": "Allowed. Upstream COPYING applies Modified BSD to source code, tests, and examples except listed paths; none of these fixtures is in an exception path.",
+    "mechanicalAdaptation": "The terminal newline is omitted during ingestion; all circuit content and internal line endings are otherwise preserved. No circuit values or tolerances are changed."
+  },
+  "circuits": [
+    {
+      "id": "vbic-fo",
+      "category": "op-dc",
+      "analyses": ["dc"],
+      "sourcePath": "tests/vbic/FO.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/vbic/FO.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/vbic/FO.cir",
+      "sha256": "de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92",
+      "spiceTs": { "status": "parse-eligible" }
+    },
+    {
+      "id": "vbic-temperature",
+      "category": "op-dc",
+      "analyses": ["dc"],
+      "sourcePath": "tests/vbic/temp.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/vbic/temp.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/vbic/temp.cir",
+      "sha256": "5dfd5fb1e620eac69af1eed64463aac62efd23dee169f2a3773d1091088f31e7",
+      "spiceTs": { "status": "parse-eligible" }
+    },
+    {
+      "id": "mos6-inverter-dc",
+      "category": "op-dc",
+      "analyses": ["dc"],
+      "sourcePath": "tests/mos6/mos6inv.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/mos6/mos6inv.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/mos6/mos6inv.cir",
+      "sha256": "c1ee39a6f458dc2b527ab1de29d6d6a4858e35c6acc4ff760ac45774512534dc",
+      "spiceTs": { "status": "parse-eligible" }
+    },
+    {
+      "id": "jfet-vds-vgs",
+      "category": "op-dc",
+      "analyses": ["op", "dc"],
+      "sourcePath": "tests/jfet/jfet_vds-vgs.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/jfet/jfet_vds-vgs.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/jfet/jfet_vds-vgs.cir",
+      "sha256": "64d61d79415c585195fcda1a21a170bda67f863e20b9492eaeb33e1efc9fd72a",
+      "spiceTs": { "status": "unsupported", "reason": "JFET (J device) is not implemented by the spice-ts parser." }
+    },
+    {
+      "id": "rc-lowpass-ac",
+      "category": "ac",
+      "analyses": ["op", "ac"],
+      "sourcePath": "tests/filters/lowpass.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/filters/lowpass.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/filters/lowpass.cir",
+      "sha256": "aa48cf8809bb62ada7bd48b8d81808589126a69f784482e5fb0c80cc3fbf718d",
+      "spiceTs": { "status": "unsupported", "reason": "The unstarred title begins with A and is parsed as a device by spice-ts." }
+    },
+    {
+      "id": "ac-zero-frequency",
+      "category": "ac",
+      "analyses": ["ac"],
+      "sourcePath": "tests/regression/misc/ac-zero.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/regression/misc/ac-zero.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/regression/misc/ac-zero.cir",
+      "sha256": "40371f8363b2d3b494a05c604ab2e4b20052fd5b413fba4b5ceeedbc9104ecb6",
+      "spiceTs": { "status": "unsupported", "reason": "The source dc=0/ac=1 assignment syntax is not accepted by spice-ts." }
+    },
+    {
+      "id": "vbic-common-emitter-ac",
+      "category": "ac",
+      "analyses": ["ac", "pz"],
+      "sourcePath": "tests/vbic/CEamp.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/vbic/CEamp.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/vbic/CEamp.cir",
+      "sha256": "088d1ebede86588ff8b823ba45219006bfeec34939af69e10c176e23d8a020ab",
+      "spiceTs": { "status": "unsupported", "reason": "The unstarred title begins with V and is parsed as a voltage source by spice-ts." }
+    },
+    {
+      "id": "probe-ac",
+      "category": "ac",
+      "analyses": ["ac"],
+      "sourcePath": "examples/probe/ac-test.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/probe/ac-test.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/examples/probe/ac-test.cir",
+      "sha256": "3afb9105918f939cbbdab957f8f872bbc886209fb83dbd27003c605977916479",
+      "spiceTs": { "status": "unsupported", "reason": "ngspice .control commands are not accepted as netlist devices by spice-ts." }
+    },
+    {
+      "id": "rc-transient",
+      "category": "tran",
+      "analyses": ["tran"],
+      "sourcePath": "tests/general/rc.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/general/rc.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/general/rc.cir",
+      "sha256": "293c22e9953f3e28efcae55d6c00cab0b929d2c3fdf88810ab27b7a71e900bfe",
+      "spiceTs": { "status": "unsupported", "reason": "The unstarred title begins with B and is parsed as a behavioral source by spice-ts." }
+    },
+    {
+      "id": "mos-amplifier-transient",
+      "category": "tran",
+      "analyses": ["tran"],
+      "sourcePath": "tests/general/mosamp.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/general/mosamp.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/general/mosamp.cir",
+      "sha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+      "spiceTs": { "status": "unsupported", "reason": "The ngspice time suffix spelling us is not accepted by spice-ts." }
+    },
+    {
+      "id": "mos6-simple-inverter-transient",
+      "category": "tran",
+      "analyses": ["tran"],
+      "sourcePath": "tests/mos6/simpleinv.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/mos6/simpleinv.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/mos6/simpleinv.cir",
+      "sha256": "3ad1ef05a4197b420b0d35b3a4c4c0aa2544025e200b619743a890e305b7e1b8",
+      "spiceTs": { "status": "parse-eligible" }
+    },
+    {
+      "id": "ltra-line-transient",
+      "category": "tran",
+      "analyses": ["tran"],
+      "sourcePath": "tests/transmission/ltra1_1_line.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/transmission/ltra1_1_line.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/transmission/ltra1_1_line.cir",
+      "sha256": "4e7cf33648f6d6039772716720afce93dfd5e44c9ad7eaf40eb7347b6c03b7d4",
+      "spiceTs": { "status": "unsupported", "reason": "Lossy transmission-line O devices are not implemented by spice-ts." }
+    },
+    {
+      "id": "hfet-inverter",
+      "category": "nonlinear",
+      "analyses": ["tran"],
+      "sourcePath": "tests/hfet/inverter.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/hfet/inverter.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/hfet/inverter.cir",
+      "sha256": "3fa93266e9036443173bf9416eb67e8ff4c2c24aeefc6ef687f355d8548239e1",
+      "spiceTs": { "status": "parse-eligible" }
+    },
+    {
+      "id": "mesa-oscillator",
+      "category": "nonlinear",
+      "analyses": ["tran"],
+      "sourcePath": "tests/mesa/mesosc.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/mesa/mesosc.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/mesa/mesosc.cir",
+      "sha256": "3cd4609cca7874775b7b2cac8cd0124bd2b8c5512064a0550a29de2da4896bcf",
+      "spiceTs": { "status": "parse-eligible" }
+    },
+    {
+      "id": "jimi-fuzz",
+      "category": "nonlinear",
+      "analyses": ["op", "tran"],
+      "sourcePath": "examples/wave/jimi_fuzz.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/wave/jimi_fuzz.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/examples/wave/jimi_fuzz.cir",
+      "sha256": "0607c7f358628d0ce60eff584b329a4d685ae215894c466622a19357c7163b0e",
+      "spiceTs": { "status": "parse-eligible" }
+    },
+    {
+      "id": "schmitt-trigger",
+      "category": "nonlinear",
+      "analyses": ["tran"],
+      "sourcePath": "tests/general/schmitt.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/general/schmitt.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/general/schmitt.cir",
+      "sha256": "c3e897ecd60c66cb5350c2a0fa7788f34af374803c10f4cf58d6f5ed01b00e55",
+      "spiceTs": { "status": "unsupported", "reason": "The unstarred title begins with S and is parsed as a switch device by spice-ts." }
+    },
+    {
+      "id": "inductive-positive-definite-2x2",
+      "category": "convergence",
+      "analyses": ["op"],
+      "sourcePath": "examples/inductive-systems/positive-definite-1.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/inductive-systems/positive-definite-1.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/examples/inductive-systems/positive-definite-1.cir",
+      "sha256": "47f725038c0199c042484ae480336ea3fd52f6de4d59d46d996824ad0eea1c2b",
+      "spiceTs": { "status": "unsupported", "reason": "Mutual-inductor expressions and ngspice .control commands are not supported by spice-ts." }
+    },
+    {
+      "id": "inductive-positive-definite-3x3",
+      "category": "convergence",
+      "analyses": ["op"],
+      "sourcePath": "examples/inductive-systems/positive-definite-2.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/inductive-systems/positive-definite-2.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/examples/inductive-systems/positive-definite-2.cir",
+      "sha256": "e5130509610d8f8b25861f00467fdf29be3b4a03c25a6652bb9961442443f62e",
+      "spiceTs": { "status": "unsupported", "reason": "Mutual-inductor expressions and ngspice .control commands are not supported by spice-ts." }
+    },
+    {
+      "id": "inductive-positive-definite-4x4",
+      "category": "convergence",
+      "analyses": ["op"],
+      "sourcePath": "examples/inductive-systems/positive-definite-3.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/inductive-systems/positive-definite-3.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/examples/inductive-systems/positive-definite-3.cir",
+      "sha256": "8ade81e9db6be13889c589c9a32656d415b462b8628fe4dd6fb2cc3dcc31ea56",
+      "spiceTs": { "status": "unsupported", "reason": "Mutual-inductor expressions and ngspice .control commands are not supported by spice-ts." }
+    },
+    {
+      "id": "inductive-positive-definite-ac",
+      "category": "convergence",
+      "analyses": ["op", "ac"],
+      "sourcePath": "examples/inductive-systems/positive-definite-4.cir",
+      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/inductive-systems/positive-definite-4.cir",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/examples/inductive-systems/positive-definite-4.cir",
+      "sha256": "cec36ec4288af28a58a2ce62a0904b075345684f794ffc9b732179a5d44f5782",
+      "spiceTs": { "status": "unsupported", "reason": "Mutual-inductor K devices and dc=/ac= source assignments are not supported by spice-ts." }
+    }
+  ]
+}
