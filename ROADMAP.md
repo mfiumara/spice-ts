@@ -4,9 +4,9 @@ spice-ts is pursuing correctness parity with ngspice before performance, AI-nati
 models. [CHARTER.md](CHARTER.md) is the source of truth for priorities and program rules; this document is the
 public issue map and measurable delivery sequence.
 
-Issue state below was verified on 2026-10-09. At that snapshot, all 12 open issues that predate the program and
-all seven program issues [#51](https://github.com/mfiumara/spice-ts/issues/51)–[#57](https://github.com/mfiumara/spice-ts/issues/57)
-are represented. This rewrite closes #51 when merged.
+Issue state below was verified on 2026-10-09. All 31 issues open at that snapshot are represented. This rewrite
+closes [#51](https://github.com/mfiumara/spice-ts/issues/51) when merged; later issue-state changes should be
+reconciled here rather than inferred from this snapshot.
 
 ## M1 Correctness parity
 
@@ -23,6 +23,12 @@ CI-able harness; a parity report is published; agreed error thresholds are met o
 | Public classic/app-note corpus | [#54](https://github.com/mfiumara/spice-ts/issues/54) | At least 20 circuits across at least four categories, with provenance |
 | Netlist compatibility audit | [#55](https://github.com/mfiumara/spice-ts/issues/55) | Fixture-backed supported/partial/unsupported matrix and filed gaps |
 | Convergence audit | [#56](https://github.com/mfiumara/spice-ts/issues/56) | At least three distinct hard-circuit regressions and before/after evidence |
+| Structured convergence and retry telemetry | [#64](https://github.com/mfiumara/spice-ts/issues/64) | Typed diagnostics expose failed phase, iteration counts, and retry history |
+| Diode commutation transient parity | [#65](https://github.com/mfiumara/spice-ts/issues/65) | RED regression and matched-point ngspice waveform comparison |
+| Initial-state semantics | [#73](https://github.com/mfiumara/spice-ts/issues/73) | Fixture-backed `.ic` and `.nodeset` behavior compared with ngspice |
+| Independent-source waveforms | [#74](https://github.com/mfiumara/spice-ts/issues/74) | PWL and remaining waveform forms covered by parser and execution tests |
+| Advanced analysis support | [#75](https://github.com/mfiumara/spice-ts/issues/75) | Explicit parser/execution coverage for advanced ngspice analyses |
+| Supported directives | [#77](https://github.com/mfiumara/spice-ts/issues/77) | Documented and tested options plus control/output directive behavior |
 | Advanced showcase circuits | [#30](https://github.com/mfiumara/spice-ts/issues/30) | Correctness-backed examples; demos do not substitute for parity evidence |
 | Keep this issue map current | [#51](https://github.com/mfiumara/spice-ts/issues/51) | This documentation-only rewrite |
 
@@ -36,6 +42,8 @@ must not weaken parity thresholds.
 |------|-------|----------------------------|
 | Parallel `.step` execution | [#27](https://github.com/mfiumara/spice-ts/issues/27) | Browser and Node worker paths with deterministic sequential fallback |
 | Long-running and continuous simulation performance | [#40](https://github.com/mfiumara/spice-ts/issues/40) | Reproducible long-run timing, bounded resource use, and correct converter results |
+| Allocation-free MNA stamp lookup | [#69](https://github.com/mfiumara/spice-ts/issues/69) | Replace dense O(n²) position storage with benchmarked sparse lookup |
+| Sparse symbolic-analysis reuse | [#70](https://github.com/mfiumara/spice-ts/issues/70) | Reuse unchanged topology with parity checks and before/after timings |
 
 Sparse LU is not future work. [Issue #8](https://github.com/mfiumara/spice-ts/issues/8) is closed and was delivered
 by merged [PR #18](https://github.com/mfiumara/spice-ts/pull/18), which added the Gilbert–Peierls sparse solver,
@@ -55,6 +63,11 @@ packaging must have explicit contracts.
 | Probe interactions in the schematic viewer | [#32](https://github.com/mfiumara/spice-ts/issues/32) | Node/branch probing across transient, AC, and DC views |
 | `circuit-json` adapter | [#35](https://github.com/mfiumara/spice-ts/issues/35) | Bidirectional typed conversion isolated from zero-dependency core/UI |
 | MCP, JSON, structured-error, and WASM API design | [#57](https://github.com/mfiumara/spice-ts/issues/57) | Concrete package/schema contracts and independently testable follow-ups |
+| Protocol v1 schemas and canonical JSON | [#59](https://github.com/mfiumara/spice-ts/issues/59) | Versioned schemas, deterministic serialization, and golden fixtures |
+| Core protocol adapter | [#60](https://github.com/mfiumara/spice-ts/issues/60) | Structured errors, cancellation, and resource limits over core simulation |
+| Bounded MCP simulation server | [#61](https://github.com/mfiumara/spice-ts/issues/61) | Typed tools with deterministic output and enforced execution bounds |
+| Worker and WASM facade | [#62](https://github.com/mfiumara/spice-ts/issues/62) | Protocol-compatible browser worker and WASM-facing API |
+| Executable agent workflows | [#63](https://github.com/mfiumara/spice-ts/issues/63) | Tested examples for tool-driven simulation and error recovery |
 
 ## M4 Device models
 
@@ -67,11 +80,13 @@ verified. Benchmark gaps determine model order; feature breadth does not outrank
 | EKV compact MOSFET model | [#4](https://github.com/mfiumara/spice-ts/issues/4) | Reference-circuit operating points across inversion regions |
 | Gummel–Poon BJT model | [#5](https://github.com/mfiumara/spice-ts/issues/5) | Reference operating points and multi-BJT convergence coverage |
 | Lossless transmission line | [#7](https://github.com/mfiumara/spice-ts/issues/7) | Matched and mismatched transient step-response comparisons |
+| Unsupported device-card coverage | [#76](https://github.com/mfiumara/spice-ts/issues/76) | Benchmark-driven parser matrix and explicit gaps for device cards |
 
 ## Benchmark policy
 
 - Record every circuit's source URL, revision, licence, redistribution decision, and adaptations in
-  `benchmarks/SOURCES.md`. If redistribution is forbidden, commit deterministic fetch instructions instead.
+  `benchmarks/SOURCES.md`. Do not commit material whose licence forbids redistribution; commit an executable fetch
+  script instead.
 - Run spice-ts and ngspice on semantically identical netlists. Record versions, machine, commands, analysis type,
   convergence status, runtime, and matched-point max/RMS absolute and relative waveform errors.
 - Publish failures, unsupported features, and speed losses alongside wins. Never cherry-pick circuits, hide errors
@@ -84,5 +99,5 @@ The program may create and update GitHub issues, labels, milestones, Projects, b
 `spice-ts-review` has accepted that same SHA.
 
 Without Mattia's approval, the program must not publish npm packages, create tags or releases, publish changeset
-versions, change Vercel production deployment, force-push `main`, spend money, touch secrets, edit
-`~/repos/spicets/web`, or post on social media.
+versions, change Vercel production deployment, force-push `main`, delete branches or issues not created by the
+program, spend money, touch secrets, edit `~/repos/spicets/web`, or post on social media.
