@@ -11,6 +11,7 @@ import {
   type ComparisonFixture,
   type EngineRun,
 } from './comparison-harness.js';
+import './corpus/classic/report.test.js';
 
 const real = (values: number[]) => values.map(re => ({ re, im: 0 }));
 const hasNgspice = spawnSync('ngspice', ['--version'], { encoding: 'utf8' }).status === 0;
