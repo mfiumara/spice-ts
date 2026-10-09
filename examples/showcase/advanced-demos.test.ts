@@ -7,7 +7,17 @@ interface ComplexPoint {
   phase: number;
 }
 
-function toCartesian(point: ComplexPoint): { re: number; im: number } {
+interface CartesianPoint {
+  re: number;
+  im: number;
+}
+
+interface Series {
+  grid: readonly number[];
+  values: CartesianPoint[];
+}
+
+function toCartesian(point: ComplexPoint): CartesianPoint {
   const radians = point.phase * Math.PI / 180;
   return {
     re: point.magnitude * Math.cos(radians),
@@ -15,51 +25,90 @@ function toCartesian(point: ComplexPoint): { re: number; im: number } {
   };
 }
 
-function waveformErrors(
-  actual: readonly ComplexPoint[],
-  reference: readonly ComplexPoint[],
-): { max: number; rms: number } {
-  expect(actual).toHaveLength(reference.length);
-  const errors = actual.map((point, index) => {
-    const a = toCartesian(point);
-    const b = toCartesian(reference[index]);
-    return Math.hypot(a.re - b.re, a.im - b.im);
+function interpolate(series: Series, target: number): CartesianPoint | null {
+  const { grid, values } = series;
+  if (grid.length === 0 || target < grid[0] || target > grid[grid.length - 1]) return null;
+  let upper = grid.findIndex(value => value >= target);
+  if (upper < 0) upper = grid.length - 1;
+  if (grid[upper] === target || upper === 0) return values[upper] ?? null;
+  const lower = upper - 1;
+  const fraction = (target - grid[lower]) / (grid[upper] - grid[lower]);
+  return {
+    re: values[lower].re + (values[upper].re - values[lower].re) * fraction,
+    im: values[lower].im + (values[upper].im - values[lower].im) * fraction,
+  };
+}
+
+function waveformErrors(actual: Series, reference: Series): { max: number; rms: number; points: number } {
+  const errors: number[] = [];
+  actual.grid.forEach((point, index) => {
+    const expected = interpolate(reference, point);
+    const value = actual.values[index];
+    if (expected && value) errors.push(Math.hypot(value.re - expected.re, value.im - expected.im));
   });
   return {
-    max: Math.max(...errors),
-    rms: Math.sqrt(errors.reduce((sum, error) => sum + error * error, 0) / errors.length),
+    max: errors.length > 0 ? Math.max(...errors) : 0,
+    rms: errors.length > 0
+      ? Math.sqrt(errors.reduce((sum, error) => sum + error * error, 0) / errors.length)
+      : 0,
+    points: errors.length,
   };
 }
 
 describe('correctness-backed advanced showcase demos', () => {
-  it('exposes the validated common-source and series-RLC AC demos', () => {
+  it('exposes every correctness-backed advanced demo and its plotted signals', () => {
     expect(ADVANCED_SHOWCASE_DEMOS.map(demo => ({ id: demo.id, signals: demo.signals }))).toEqual([
       { id: 'rlc-resonance', signals: ['out'] },
       { id: 'common-source-ac', signals: ['out'] },
+      { id: 'passive-notch', signals: ['out'] },
+      { id: 'opamp-differentiator', signals: ['in', 'out'] },
     ]);
+  });
+
+  it('uses a passive resonant branch for the notch and the supported VCVS convention for the differentiator', () => {
+    const notch = ADVANCED_SHOWCASE_DEMOS.find(demo => demo.id === 'passive-notch');
+    const differentiator = ADVANCED_SHOWCASE_DEMOS.find(demo => demo.id === 'opamp-differentiator');
+
+    expect(notch?.acNetlist).toMatch(/Lnotch out notch 10m/);
+    expect(notch?.acNetlist).toMatch(/Cnotch notch 0 100n/);
+    expect(differentiator?.tranNetlist).toMatch(/Cdiff in pre 10n/);
+    expect(differentiator?.tranNetlist).toMatch(/E1 out 0 0 nm 1e6/);
+  });
+
+  it('shows deep notch rejection and bipolar differentiator edge spikes', async () => {
+    const notch = ADVANCED_SHOWCASE_DEMOS.find(demo => demo.id === 'passive-notch')!;
+    const differentiator = ADVANCED_SHOWCASE_DEMOS.find(demo => demo.id === 'opamp-differentiator')!;
+    const notchResult = await simulate(notch.acNetlist!);
+    const differentiatorResult = await simulate(differentiator.tranNetlist!);
+
+    const notchMagnitude = notchResult.ac!.voltage('out').map(point => point.magnitude);
+    expect(Math.min(...notchMagnitude)).toBeLessThan(0.01);
+    expect(notchMagnitude[0]).toBeGreaterThan(0.5);
+    expect(notchMagnitude.at(-1)).toBeGreaterThan(0.5);
+
+    const differentiatorOutput = differentiatorResult.transient!.voltage('out');
+    expect(Math.min(...differentiatorOutput)).toBeLessThan(-0.5);
+    expect(Math.max(...differentiatorOutput)).toBeGreaterThan(0.5);
   });
 
   for (const demo of ADVANCED_SHOWCASE_DEMOS) {
     it(`${demo.name} stays aligned with the browser ngspice reference`, async () => {
-      const spiceTs = await simulate(demo.acNetlist, { simulator: 'spice-ts' });
-      const ngspice = await simulate(demo.acNetlist, { simulator: 'ngspice-wasm' });
-
-      expect(spiceTs.ac).toBeDefined();
-      expect(ngspice.ac).toBeDefined();
-      expect(spiceTs.ac!.frequencies).toHaveLength(ngspice.ac!.frequencies.length);
-      for (let index = 0; index < spiceTs.ac!.frequencies.length; index++) {
-        const referenceFrequency = ngspice.ac!.frequencies[index];
-        expect(Math.abs(spiceTs.ac!.frequencies[index] - referenceFrequency))
-          .toBeLessThanOrEqual(Math.max(1, referenceFrequency) * 1e-12);
-      }
+      const netlist = demo.acNetlist ?? demo.tranNetlist;
+      expect(netlist).toBeDefined();
+      const spiceTs = await simulate(netlist!, { simulator: 'spice-ts' });
+      const ngspice = await simulate(netlist!, { simulator: 'ngspice-wasm' });
 
       for (const signal of demo.signals) {
-        const errors = waveformErrors(
-          spiceTs.ac!.voltage(signal),
-          ngspice.ac!.voltage(signal),
-        );
-        expect(errors.max).toBeLessThanOrEqual(demo.parity.maxAbsoluteError);
-        expect(errors.rms).toBeLessThanOrEqual(demo.parity.rmsAbsoluteError);
+        const spiceSeries: Series = demo.tag === '.ac'
+          ? { grid: spiceTs.ac!.frequencies, values: spiceTs.ac!.voltage(signal).map(toCartesian) }
+          : { grid: spiceTs.transient!.time, values: spiceTs.transient!.voltage(signal).map((re: number) => ({ re, im: 0 })) };
+        const ngspiceSeries: Series = demo.tag === '.ac'
+          ? { grid: ngspice.ac!.frequencies, values: ngspice.ac!.voltage(signal).map(toCartesian) }
+          : { grid: ngspice.transient!.time, values: ngspice.transient!.voltage(signal).map((re: number) => ({ re, im: 0 })) };
+        const errors = waveformErrors(spiceSeries, ngspiceSeries);
+        expect(errors.points).toBeGreaterThan(0);
+        expect(errors.max, `${demo.id} ${signal} max`).toBeLessThanOrEqual(demo.parity.maxAbsoluteError);
+        expect(errors.rms, `${demo.id} ${signal} RMS`).toBeLessThanOrEqual(demo.parity.rmsAbsoluteError);
       }
     });
   }

@@ -7,7 +7,12 @@ import { TransientPlot, BodePlot, DCSweepPlot, CursorTooltip, Legend, SchematicV
 import type { LegendSignal } from '@spice-ts/ui/react';
 import { DARK_THEME, formatTime, formatFrequency, formatVoltage, formatSI, DEFAULT_PALETTE } from '@spice-ts/ui';
 import type { TransientDataset, ACDataset, DCSweepDataset, CursorState } from '@spice-ts/ui';
-import { COMMON_SOURCE_AC_DEMO, RLC_RESONANCE_DEMO } from './advanced-demos.js';
+import {
+  COMMON_SOURCE_AC_DEMO,
+  OPAMP_DIFFERENTIATOR_DEMO,
+  PASSIVE_NOTCH_DEMO,
+  RLC_RESONANCE_DEMO,
+} from './advanced-demos.js';
 import './showcase.css';
 
 // ─── Circuit definitions ────────────────────────────────────────────
@@ -57,6 +62,7 @@ C1 out 0 100n
 .step param R1 list 1k 5k 10k`,
   },
   RLC_RESONANCE_DEMO,
+  PASSIVE_NOTCH_DEMO,
   {
     id: 'sallen-key', name: 'Sallen-Key Low-Pass', desc: '2nd-order, \u201340dB/dec',
     icon: '\u2393', group: 'Filters', tag: '.ac', signals: ['out'],
@@ -124,6 +130,7 @@ Rf nm out 100k
 E1 out 0 0 nm 1e6
 .tran 5u 5m`,
   },
+  OPAMP_DIFFERENTIATOR_DEMO,
   {
     id: 'rlc-step', name: 'RLC Step Response', desc: '.step R: under/over-damped',
     icon: '\u223F', group: 'Impulse Response', tag: '.step', signals: ['n1'],
