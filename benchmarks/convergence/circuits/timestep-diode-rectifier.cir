@@ -1,0 +1,10 @@
+* CC0-1.0 fixture: stiff diode commutation at fast PULSE edges
+VPULSE in 0 PULSE(-10 10 1u 1n 1n 2u 5u)
+RS in rect 0.1
+D1 rect out DHARD
+C1 out 0 10u
+RLOAD out 0 10
+.model DHARD D(IS=1e-14 N=1 RS=0.01)
+.options reltol=1e-3 abstol=1e-12 vntol=1e-6 gmin=0 itl1=100 itl4=50 method=trap trtol=7
+.tran 100n 15u
+.end
