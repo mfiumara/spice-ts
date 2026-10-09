@@ -13,7 +13,7 @@ Executable fixtures live in [`packages/core/src/parser/ngspice-compatibility.tes
 | unsupported | 8 | 8 |
 | total | 28 | 28 |
 
-The two promotions are end-of-line comments and whitespace around `=` in model/instance parameters. Numeric scale/unit compatibility remains partial: this audit corrects `mil` to ngspice's `25.4e-6` factor, but does not claim the complete documented numeric grammar. Unsupported semantic directives and unsupported resistor parameters now fail with `ParseError` instead of being silently ignored.
+The two full-row promotions are end-of-line comments and whitespace around `=` in model/instance parameters. Independent-source PWL time/value lists are now supported within the still-partial source row. Numeric scale/unit compatibility remains partial: this audit corrects `mil` to ngspice's `25.4e-6` factor, but does not claim the complete documented numeric grammar. Unsupported semantic directives, unsupported resistor parameters, and the unimplemented EXP/SFFM/AM/trnoise/external waveform families fail explicitly instead of being silently ignored.
 
 ## Matrix
 
@@ -30,7 +30,7 @@ The two promotions are end-of-line comments and whitespace around `=` in model/i
 | Expressions | `.param` and brace expressions | partial | partial | Top-level ordered numeric parameters work through `parseAsync`; functions, conditionals, and full ngspice scoping do not. | [2.11](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-1366) |
 | Devices | `R` resistor | supported | supported | Scalar resistance is supported; unsupported temperature/AC/model instance options are explicitly rejected rather than discarded. | [3.3.1](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-2614) |
 | Devices | `C` capacitor and `L` inductor | supported | supported | Scalar values, implemented numeric model cards, and implemented instance parameters parse. | [3.3.6](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-3192), [3.3.10](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-3608) |
-| Sources | `V` / `I`: DC, AC, PULSE, SIN | partial | partial | EXP, PWL, SFFM, AM, trnoise, and external sources are rejected/not implemented. | [4.1](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-4248) |
+| Sources | `V` / `I`: DC, AC, PULSE, SIN, PWL | partial | partial | PWL supports ordered time/value pairs, linear interpolation, held endpoints, equal-time discontinuities, and transient breakpoints. EXP, SFFM, AM, trnoise, and external sources are explicitly rejected/not implemented. | [4.1](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-4248) |
 | Sources | Linear `E`, `F`, `G`, `H` | partial | partial | Scalar-gain forms work; POLY and behavioral forms are not implemented. | [4.2](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-5577) |
 | Devices | `D` diode | supported | supported | Basic diode card and model reference parse. | [7.2](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-7339) |
 | Devices | `Q` BJT | supported | supported | Three-terminal card parses; model-physics coverage is separate from parser compatibility. | [7.3.1](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-8958) |

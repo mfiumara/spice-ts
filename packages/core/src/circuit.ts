@@ -119,6 +119,11 @@ function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string 
         wf.damping,
         wf.phase,
       ].filter(v => v !== undefined).map(v => formatNumber(v as number)).join(' ')})`;
+    case 'pwl':
+      return `PWL(${(wf.points ?? [])
+        .flatMap(point => [point.time, point.value])
+        .map(formatNumber)
+        .join(' ')})`;
     default:
       return 'DC 0';
   }
