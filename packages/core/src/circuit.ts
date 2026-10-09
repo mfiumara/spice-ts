@@ -1,5 +1,5 @@
 import type { DeviceModel } from './devices/device.js';
-import type { AnalysisCommand, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis } from './types.js';
+import type { AnalysisCommand, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis, SimulationOptions } from './types.js';
 import type { CircuitIR } from './ir/types.js';
 import { buildIR } from './ir/builder.js';
 import { Resistor } from './devices/resistor.js';
@@ -58,6 +58,8 @@ export interface CompiledCircuit {
   subcircuits: Map<string, SubcktDefinition>;
   /** Step directives for parametric sweeps */
   steps: StepAnalysis[];
+  /** Solver options declared by `.options` cards in the netlist */
+  simulationOptions: SimulationOptions;
 }
 
 interface DeviceDescriptor {
@@ -233,10 +235,19 @@ export class Circuit {
   private _steps: StepAnalysis[] = [];
   private _models = new Map<string, ModelParams>();
   private _subcircuits = new Map<string, SubcktDefinition>();
+  private _simulationOptions: SimulationOptions = {};
   private nodeSet = new Set<string>();
 
   get analyses(): AnalysisCommand[] {
     return this._analyses;
+  }
+
+  get simulationOptions(): Readonly<SimulationOptions> {
+    return { ...this._simulationOptions };
+  }
+
+  setSimulationOptions(options: SimulationOptions): void {
+    this._simulationOptions = { ...this._simulationOptions, ...options };
   }
 
   get nodeCount(): number {
@@ -630,6 +641,22 @@ export class Circuit {
   toNetlist(): string {
     const lines: string[] = ['* spice-ts generated netlist'];
 
+    const optionNames: Array<[keyof SimulationOptions, string, (value: unknown) => string]> = [
+      ['abstol', 'abstol', String],
+      ['vntol', 'vntol', String],
+      ['reltol', 'reltol', String],
+      ['gmin', 'gmin', String],
+      ['maxIterations', 'itl1', String],
+      ['maxTransientIterations', 'itl4', String],
+      ['integrationMethod', 'method', value => value === 'trapezoidal' ? 'trap' : value === 'gear2' ? 'gear' : String(value)],
+      ['trtol', 'trtol', String],
+    ];
+    const serializedOptions = optionNames.flatMap(([key, name, format]) => {
+      const value = this._simulationOptions[key];
+      return value === undefined ? [] : [`${name}=${format(value)}`];
+    });
+    if (serializedOptions.length > 0) lines.push(`.options ${serializedOptions.join(' ')}`);
+
     for (const model of this._models.values()) {
       lines.push(formatModel(model));
     }
@@ -839,6 +866,7 @@ export class Circuit {
       analyses: this._analyses, models: this._models,
       subcircuits: this._subcircuits,
       steps: this._steps,
+      simulationOptions: { ...this._simulationOptions },
     };
   }
 

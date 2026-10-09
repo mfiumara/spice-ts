@@ -96,15 +96,19 @@ export async function createTransientSim(
     circuit = input;
   }
   const compiled = circuit.compile();
+  const effectiveOptions: TransientSimOptions = {
+    ...compiled.simulationOptions,
+    ...options,
+  };
   validateCircuit(compiled);
 
   const tranAnalysis = compiled.analyses.find(a => a.type === 'tran');
-  const stopTime = options?.stopTime ?? (tranAnalysis?.type === 'tran' ? tranAnalysis.stopTime : undefined);
-  const timestep = options?.timestep ?? (tranAnalysis?.type === 'tran' ? tranAnalysis.timestep : undefined) ?? (stopTime ? stopTime / 50 : 1e-6);
-  const maxTimestep = options?.maxTimestep
+  const stopTime = effectiveOptions.stopTime ?? (tranAnalysis?.type === 'tran' ? tranAnalysis.stopTime : undefined);
+  const timestep = effectiveOptions.timestep ?? (tranAnalysis?.type === 'tran' ? tranAnalysis.timestep : undefined) ?? (stopTime ? stopTime / 50 : 1e-6);
+  const maxTimestep = effectiveOptions.maxTimestep
     ?? (stopTime ? Math.min(timestep, stopTime / 50) : timestep * 10);
 
-  const resolved = resolveOptions(options, stopTime);
+  const resolved = resolveOptions(effectiveOptions, stopTime);
 
   return new TransientSimImpl(compiled, resolved, {
     stopTime, timestep, maxTimestep,

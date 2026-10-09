@@ -20,6 +20,8 @@ const supportedFixtures: Fixture[] = [
   { feature: '.dc', netlist: 'V1 in 0 0\nR1 in 0 1k\n.dc V1 0 1 0.1' },
   { feature: '.tran', netlist: 'V1 in 0 1\nR1 in 0 1k\n.tran 1n 10n' },
   { feature: '.ac', netlist: 'V1 in 0 AC 1\nR1 in 0 1k\n.ac dec 10 1 1Meg' },
+  { feature: 'solver-backed .options', netlist: '.options reltol=1e-4 itl1=50 method=trap\n.op' },
+  { feature: 'output-only directives', netlist: '.save v(out)\n.print tran v(out)\n.plot v(out)\n.op' },
 ];
 
 const unsupportedFixtures: Fixture[] = [
@@ -32,7 +34,8 @@ const unsupportedFixtures: Fixture[] = [
   { feature: 'external source waveform', netlist: 'V1 in 0 EXTERNAL\n.tran 1n 10n' },
   { feature: 'noise analysis', netlist: '.noise V(out) V1 dec 10 1 1Meg' },
   { feature: 'control blocks', netlist: '.control\nop\n.endc' },
-  { feature: 'semantic option directives', netlist: '.options reltol=1e-4\n.op' },
+  { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
+  { feature: 'measurements', netlist: '.measure tran peak MAX v(out)\n.op' },
   { feature: 'behavioral source', netlist: 'B1 out 0 V=V(in)*2\n.op' },
   { feature: 'JFET', netlist: 'J1 d g s JMOD\n.op' },
   { feature: 'switch', netlist: 'S1 out 0 ctrl 0 SMOD\n.op' },
