@@ -1,0 +1,49 @@
+Diode Circuit Netlist
+********************************************************************************
+* Tier No.:  2
+* Directory/Circuit Name: DIODE/DIODE.cir
+* Description:  Simple diode circuit to test the validity of the diode model.
+* Input:  VIN
+* Output: V(3), I(VMON)
+* Analysis:
+*
+* Note: This analysis is approximate, hence this is  Tier 2 test, not Tier 1.
+*
+* A diode is forward biased with a 5V input source, VIN.   With a 100fA 
+* saturation current, Is,  the diode current, I(VMON) or Id,  and voltage, Vd,  
+* are determined by the following equations:
+*
+*      (1) Id=Is[exp(Vd/Vt) - 1]
+*      (2) Vin=Id*R + Vd = Is[EXP(Vd/Vt)-1]*R + Vd
+*      where,
+*      Vt=25.86mV, R=2K, Is=100fA, Vin=5V
+*
+* The diode voltage can be calculated by finding the value of Vd that 
+* makes equation (2) true.  The diode current can be found by solving (1)  
+* after Vd is found.  Therefore,
+* 
+*      Vd=0.6158V  and Id=2.19mA
+*
+* Following the initial biasing the diode is run through a couple 
+* of cycles of reverse biasing to test the response over a variety 
+* of conditions.  In the reverse biasing of 1V the current should 
+* be: Is+gmin which gives an apparent resistance of 
+* 1/(1.e-13 + 1.e-12) = 9.09e+11, which is the last value tabulated.
+*
+*******************************************************************************
+*
+* NOTE:  The simulation in xyce results are:
+*	 Vd = .616V and Id=2.19mA
+*        This difference is currently being addressed (01/01)
+*
+************************************************************************* 
+VIN 1 0 PULSE ( 5 -1 0.05ms 100ns 100ns 0.1ms 0.2ms )
+R1 1 2 2K
+D1 3 0 DMOD
+VMON 2 3 0
+.MODEL DMOD D (IS=100FA)
+.TRAN 0 0.5ms
+.options timeint reltol=1.0e-4
+.PRINT TRAN I(VMON) V(3) {V(3)/I(VMON)}
+*
+.END
