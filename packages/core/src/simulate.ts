@@ -52,6 +52,10 @@ function selectedExternalSimulator(options?: SimulationOptions): SimulatorAdapte
   return createSimulator(simulator);
 }
 
+function withNetlistOptions(compiled: CompiledCircuit, options?: SimulationOptions): SimulationOptions {
+  return { ...compiled.simulationOptions, ...options };
+}
+
 /**
  * Run all analyses declared in a SPICE netlist or {@link Circuit} object.
  *
@@ -95,6 +99,7 @@ export async function simulate(
     circuit = input;
   }
   const compiled = circuit.compile();
+  options = withNetlistOptions(compiled, options);
   const warnings: SimulationWarning[] = [];
   const convergence = createConvergenceTelemetry();
 
@@ -190,6 +195,7 @@ export async function* simulateStream(
     circuit = input;
   }
   const compiled = circuit.compile();
+  options = withNetlistOptions(compiled, options);
   const warnings: SimulationWarning[] = [];
   validateCircuit(compiled, warnings);
 
@@ -258,6 +264,7 @@ export async function* simulateStepStream(
     circuit = input;
   }
   const compiled = circuit.compile();
+  options = withNetlistOptions(compiled, options);
   const warnings: SimulationWarning[] = [];
   validateCircuit(compiled, warnings);
 

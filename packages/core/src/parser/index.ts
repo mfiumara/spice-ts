@@ -5,7 +5,7 @@ import { parseModelCard } from './model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
 import { preprocess } from './preprocessor.js';
-import type { IncludeResolver } from '../types.js';
+import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 
 export { parseSourceWaveform } from './waveform-parser.js';
 
@@ -156,6 +156,15 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
     case '.MODEL':
       circuit.addModel(parseModelCard(tokens, lineNumber));
       break;
+    case '.OPTIONS':
+      circuit.setSimulationOptions(parseSimulationOptions(tokens.slice(1)));
+      break;
+    case '.SAVE':
+    case '.PRINT':
+    case '.PLOT':
+      // spice-ts returns all computed vectors through its result API, so these
+      // ngspice output-selection directives are intentionally metadata-only.
+      break;
     case '.INCLUDE':
       throw new ParseError(
         '.include directive requires async parsing. Use parseAsync() with a resolveInclude option.',
@@ -200,6 +209,53 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
         lineNumber, tokens.join(' '),
       );
   }
+}
+
+function parseSimulationOptions(tokens: string[]): SimulationOptions {
+  const options: SimulationOptions = {};
+
+  for (const token of tokens.filter(value => value !== '(' && value !== ')')) {
+    const separator = token.indexOf('=');
+    if (separator <= 0 || separator === token.length - 1) {
+      throw new Error(`Unsupported .options field: '${token}'`);
+    }
+
+    const name = token.slice(0, separator).toLowerCase();
+    const rawValue = token.slice(separator + 1);
+    if (name === 'method') {
+      const methods: Record<string, IntegrationMethod> = {
+        trap: 'trapezoidal',
+        gear: 'gear2',
+      };
+      const method = methods[rawValue.toLowerCase()];
+      if (!method) throw new Error(`Unsupported .options method: '${rawValue}'`);
+      options.integrationMethod = method;
+      continue;
+    }
+
+    const mappings: Record<string, keyof SimulationOptions> = {
+      abstol: 'abstol',
+      vntol: 'vntol',
+      reltol: 'reltol',
+      gmin: 'gmin',
+      itl1: 'maxIterations',
+      itl4: 'maxTransientIterations',
+      trtol: 'trtol',
+    };
+    const target = mappings[name];
+    if (!target) throw new Error(`Unsupported .options field: '${name}'`);
+
+    const value = parseNumber(rawValue);
+    if (!Number.isFinite(value) || value < 0) {
+      throw new Error(`Invalid .options ${name} value: '${rawValue}'`);
+    }
+    if ((name === 'itl1' || name === 'itl4') && !Number.isInteger(value)) {
+      throw new Error(`Invalid .options ${name} value: '${rawValue}'`);
+    }
+    Object.assign(options, { [target]: value });
+  }
+
+  return options;
 }
 
 function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): void {

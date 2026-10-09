@@ -1,6 +1,6 @@
 # ngspice parser compatibility
 
-This matrix audits the TypeScript parser against the ngspice 47+ user manual. It describes syntax acceptance, not numerical model parity. `supported` means the fixture is parsed with its represented semantics; `partial` names the accepted subset; `unsupported` means spice-ts rejects the syntax rather than silently discarding it.
+This matrix audits the TypeScript parser against the ngspice 47+ user manual. It describes syntax acceptance, not numerical model parity. `supported` means the fixture is parsed with its represented semantics; `partial` names the accepted subset; `ignored` is reserved for output-selection metadata that cannot change spice-ts's computed result; `unsupported` means spice-ts rejects the syntax rather than silently discarding it.
 
 Executable fixtures live in [`packages/core/src/parser/ngspice-compatibility.test.ts`](../packages/core/src/parser/ngspice-compatibility.test.ts). Focused lexical regressions live in [`tokenizer.test.ts`](../packages/core/src/parser/tokenizer.test.ts) and [`parser.test.ts`](../packages/core/src/parser/parser.test.ts).
 
@@ -8,12 +8,13 @@ Executable fixtures live in [`packages/core/src/parser/ngspice-compatibility.tes
 
 | State | Before this audit | After this audit |
 | --- | ---: | ---: |
-| supported | 13 | 15 |
+| supported | 13 | 16 |
 | partial | 7 | 5 |
-| unsupported | 8 | 8 |
-| total | 28 | 28 |
+| ignored output metadata | 0 | 1 |
+| unsupported | 8 | 9 |
+| total | 28 | 31 |
 
-The two full-row promotions are end-of-line comments and whitespace around `=` in model/instance parameters. Independent-source PWL time/value lists are now supported within the still-partial source row. Numeric scale/unit compatibility remains partial: this audit corrects `mil` to ngspice's `25.4e-6` factor, but does not claim the complete documented numeric grammar. Unsupported semantic directives, unsupported resistor parameters, and the unimplemented EXP/SFFM/AM/trnoise/external waveform families fail explicitly instead of being silently ignored.
+The full-row promotions are end-of-line comments, whitespace around `=` in model/instance parameters, and the solver-backed `.options` subset. Independent-source PWL time/value lists are now supported within the still-partial source row. Numeric scale/unit compatibility remains partial: this audit corrects `mil` to ngspice's `25.4e-6` factor, but does not claim the complete documented numeric grammar. Unsupported semantic directives, unsupported option fields, unsupported resistor parameters, and the unimplemented EXP/SFFM/AM/trnoise/external waveform families fail explicitly instead of being silently ignored.
 
 ## Matrix
 
@@ -46,8 +47,30 @@ The two full-row promotions are end-of-line comments and whitespace around `=` i
 | Initial state | `.ic` / `.nodeset` | unsupported | unsupported | Explicit parser error; this exposes the currently ineffective ring-oscillator benchmark `.ic`. | [11.2](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-23240) |
 | Analysis | `.noise`, `.tf`, `.pz`, `.sens`, `.disto` | unsupported | unsupported | Explicit parser error. | [11.3](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-23282) |
 | Control | `.control` / `.endc` scripts | unsupported | unsupported | Explicit parser error; the interactive command language is not interpreted. | [12.4.3](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-24862) |
-| Control/output | `.options`, `.temp`, `.save`, `.print`, `.plot`, `.measure` | unsupported | unsupported | Explicit parser error rather than claiming ignored semantics/output. | [dot-command index](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-494) |
+| Control | Solver-backed `.options` subset | unsupported | supported | See the exact field mapping below. Unknown fields and values reject explicitly; explicit `simulate()` API options override deck values. | [11.1 Variables (`.options`)](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-23069) |
+| Circuit state | `.temp` | unsupported | unsupported | Temperature changes device behavior, which spice-ts does not model yet, so the directive rejects explicitly. | [2.14 `.TEMP`](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-1536) |
+| Batch output | `.save`, `.print`, `.plot` | unsupported | ignored | Explicitly recognized as output-only metadata. spice-ts returns all computed vectors through its result API, so these cards do not alter simulation semantics. | [11.6 Batch Output](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-23708) |
+| Measurement | `.measure` | unsupported | unsupported | Measurement evaluation is not implemented; the parser rejects rather than silently omitting requested measurements. | [11.4 Measurements](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-23620) |
+
+## `.options` semantic mapping
+
+Only ngspice fields with a direct, solver-backed `SimulationOptions` counterpart are accepted. Values from later `.options` cards replace earlier deck values; explicit API options replace deck values.
+
+| ngspice field | spice-ts field | Accepted values / mapping | Classification |
+| --- | --- | --- | --- |
+| `abstol` | `abstol` | Non-negative finite number | implemented |
+| `vntol` | `vntol` | Non-negative finite number | implemented |
+| `reltol` | `reltol` | Non-negative finite number | implemented |
+| `gmin` | `gmin` | Non-negative finite number | implemented |
+| `itl1` | `maxIterations` | Non-negative integer | implemented |
+| `itl4` | `maxTransientIterations` | Non-negative integer | implemented |
+| `method=trap` | `integrationMethod='trapezoidal'` | Exact method mapping | implemented |
+| `method=gear` | `integrationMethod='gear2'` | spice-ts's implemented second-order Gear method | implemented |
+| `trtol` | `trtol` | Non-negative finite number | implemented |
+| Every other `.options` field/value | — | Explicit parse error | unsupported |
+
+The ngspice definitions and defaults for these fields are documented in [11.1.1 General Options](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-23074). `maxTimestep` remains controlled by `.tran ... tmax` or the API; it is not exposed through an invented ngspice `.options` spelling.
 
 ## Scope decisions
 
-This PR extends the bounded lexical/parser audit with PWL waveform support that is immediately useful to public benchmark netlists. It adds and wires a PWL evaluator for independent voltage and current sources, including held endpoints, linear interpolation, equal-time discontinuities, and transient breakpoints. It does not add solver state, new device implementations, new analyses, evaluators for the remaining unsupported waveform families, or a control-language interpreter. Those gaps are tracked as separate issues with the corresponding fixture from the compatibility test.
+This compatibility work implements bounded parser and runtime semantics already backed by the native solver: PWL evaluation and the `.options` fields listed above. It does not add device-temperature behavior, measurement evaluation, new analyses, the remaining source-waveform families, or a control-language interpreter. Those semantic gaps remain explicitly unsupported and keep their executable rejection fixtures.
