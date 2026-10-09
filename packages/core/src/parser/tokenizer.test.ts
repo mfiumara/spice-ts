@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseNumber } from './tokenizer.js';
+import { parseNumber, tokenizeNetlist } from './tokenizer.js';
 
 describe('parseNumber', () => {
   it('parses plain integers', () => {
@@ -33,6 +33,11 @@ describe('parseNumber', () => {
     it('parses meg/MEG as mega (1e6)', () => {
       expect(parseNumber('2.2meg')).toBe(2.2e6);
       expect(parseNumber('1MEG')).toBe(1e6);
+    });
+
+    it('parses mil as one thousandth of an inch', () => {
+      expect(parseNumber('1mil')).toBe(25.4e-6);
+      expect(parseNumber('10MIL')).toBe(254e-6);
     });
 
     it('parses u as micro (1e-6)', () => {
@@ -90,5 +95,16 @@ describe('parseNumber', () => {
 
   it('throws on unparseable tokens', () => {
     expect(() => parseNumber('abc')).toThrow('Cannot parse number');
+  });
+});
+
+describe('tokenizeNetlist', () => {
+  it('removes end-of-line comments before merging required continuation syntax', () => {
+    const lines = tokenizeNetlist('.tran 1n $ step\n+ 10n ; stop time\n.op // trailing comment');
+
+    expect(lines).toEqual([
+      { raw: '.tran 1n 10n', lineNumber: 1, tokens: ['.tran', '1n', '10n'] },
+      { raw: '.op', lineNumber: 3, tokens: ['.op'] },
+    ]);
   });
 });

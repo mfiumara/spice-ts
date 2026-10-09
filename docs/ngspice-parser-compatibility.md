@@ -8,18 +8,18 @@ Executable fixtures live in [`packages/core/src/parser/ngspice-compatibility.tes
 
 | State | Before this audit | After this audit |
 | --- | ---: | ---: |
-| supported | 13 | 16 |
-| partial | 7 | 4 |
+| supported | 13 | 15 |
+| partial | 7 | 5 |
 | unsupported | 8 | 8 |
 | total | 28 | 28 |
 
-The three promotions are ngspice numeric scale/unit rules, end-of-line comments, and whitespace around `=` in model/instance parameters. Unsupported semantic directives now fail with `ParseError` instead of being silently ignored.
+The two promotions are end-of-line comments and whitespace around `=` in model/instance parameters. Numeric scale/unit compatibility remains partial: this audit corrects `mil` to ngspice's `25.4e-6` factor, but does not claim the complete documented numeric grammar. Unsupported semantic directives and unsupported resistor parameters now fail with `ParseError` instead of being silently ignored.
 
 ## Matrix
 
 | Area | ngspice syntax / fixture | Before | Now | Notes | Manual |
 | --- | --- | --- | --- | --- | --- |
-| Lexing | Numeric fields and scale factors | partial | supported | `M`/`m` are milli, `Meg` is mega; trailing unit letters are ignored. RKM embedded notation remains accepted as an extension. | [2.1.3.2–3](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-319) |
+| Lexing | Numeric fields and scale factors | partial | partial | `M`/`m` are milli, `Meg` is mega, and `mil` is `25.4e-6`; trailing unit letters are ignored. RKM embedded notation remains accepted as an extension. Complete documented numeric-grammar coverage is not yet claimed. | [2.1.3.2–3](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-319) |
 | Lexing | Full-line and `$`, `;`, `//` end-of-line comments | partial | supported | Comment text is removed before continuation and tokenization. | [2.4.3–4](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-974) |
 | Lexing | `+` continuation lines | supported | supported | Leading-whitespace `+` continuation is merged with the preceding card. Backslash continuation is not implemented. | [2.4.5](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-1015) |
 | Basic lines | Title and `.end` | partial | partial | `.end` is recognized. Unmarked first-line titles and `.title` are not accepted because `parse()` also supports title-less netlist fragments. | [2.4.1–2](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-912) |
@@ -28,7 +28,7 @@ The three promotions are ngspice numeric scale/unit rules, end-of-line comments,
 | Structure | `.subckt` / `.ends` and `X` calls | supported | supported | Nested definitions and numeric parameter overrides are parsed. | [2.6](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-1237) |
 | Structure | `.include` and sectioned `.lib` | supported | supported | Requires `parseAsync` and an include resolver; cycles and depth are checked. | [2.8](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-1309), [2.10](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-1347) |
 | Expressions | `.param` and brace expressions | partial | partial | Top-level ordered numeric parameters work through `parseAsync`; functions, conditionals, and full ngspice scoping do not. | [2.11](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-1366) |
-| Devices | `R` resistor | supported | supported | Scalar resistance is supported; advanced temperature/AC/model instance options are outside this row. | [3.3.1](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-2614) |
+| Devices | `R` resistor | supported | supported | Scalar resistance is supported; unsupported temperature/AC/model instance options are explicitly rejected rather than discarded. | [3.3.1](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-2614) |
 | Devices | `C` capacitor and `L` inductor | supported | supported | Scalar values, implemented numeric model cards, and implemented instance parameters parse. | [3.3.6](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-3192), [3.3.10](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-3608) |
 | Sources | `V` / `I`: DC, AC, PULSE, SIN | partial | partial | EXP, PWL, SFFM, AM, trnoise, and external sources are rejected/not implemented. | [4.1](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-4248) |
 | Sources | Linear `E`, `F`, `G`, `H` | partial | partial | Scalar-gain forms work; POLY and behavioral forms are not implemented. | [4.2](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-5577) |

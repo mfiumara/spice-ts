@@ -7,7 +7,7 @@ interface Fixture {
 }
 
 const supportedFixtures: Fixture[] = [
-  { feature: 'comments and continuation', netlist: '* title\nV1 in 0 DC 1 $ bias\nR1 in out 1k ; load\n+ TC=0\nR2 out 0 1k\n.op // analysis' },
+  { feature: 'comments and continuation', netlist: '* title\nV1 in 0 DC 1 $ bias\nR1 in out 1k ; load\n.tran 1n // step\n+ 10n ; stop time' },
   { feature: '.model', netlist: '.model DMOD D ( IS = 1e-14 )\nD1 in 0 DMOD\n.op' },
   { feature: '.subckt and X', netlist: '.subckt divider in out\nR1 in out 1k\nR2 out 0 1k\n.ends divider\nX1 in out divider\n.op' },
   { feature: 'R/C/L', netlist: 'R1 in out 1kOhm\nC1 out 0 1uF\nL1 in 0 1mH\n.op' },
@@ -40,6 +40,16 @@ describe('ngspice parser compatibility fixtures', () => {
       expect(() => parse(fixture.netlist)).not.toThrow();
     });
   }
+
+  it('represents required syntax supplied by a continuation line', () => {
+    const circuit = parse('.tran 1n $ step\n+ 10n ; stop time');
+
+    expect(circuit.analyses).toEqual([{ type: 'tran', timestep: 1e-9, stopTime: 10e-9 }]);
+  });
+
+  it('rejects unsupported resistor parameters continued onto the card', () => {
+    expect(() => parse('R1 in out 1k\n+ TC=0')).toThrow('Unsupported resistor parameters');
+  });
 
   it('accepts .include, .lib, and top-level .param through parseAsync', async () => {
     const files: Record<string, string> = {

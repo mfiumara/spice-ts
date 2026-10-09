@@ -28,11 +28,13 @@ export function parseNumber(token: string): number {
 
   // Standard suffix: 10k, 100n, 2.2meg, etc.
   // Ngspice ignores alphabetic unit text after a number or scale factor.
-  const suffixMatch = trimmed.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)(meg|[tgkmunpfa])?([a-z]*)$/i);
+  const suffixMatch = trimmed.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)(meg|mil|[tgkmunpfa])?([a-z]*)$/i);
   if (suffixMatch) {
     const suffix = suffixMatch[2]?.toLowerCase();
-    const exp = suffix === 'meg' ? 'e6' : suffix ? SI_SUFFIX_MAP[suffix] : '';
-    const val = Number(suffixMatch[1] + exp);
+    const exp = suffix === 'meg' ? 'e6' : suffix && suffix !== 'mil' ? SI_SUFFIX_MAP[suffix] : '';
+    const val = suffix === 'mil'
+      ? Number(suffixMatch[1]) * 25.4e-6
+      : Number(suffixMatch[1] + exp);
     if (!isNaN(val)) return val;
   }
 

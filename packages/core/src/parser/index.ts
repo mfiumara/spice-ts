@@ -208,6 +208,12 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
 
   switch (type) {
     case 'R': {
+      if (tokens.length > 4) {
+        throw new ParseError(
+          `Unsupported resistor parameters: '${tokens.slice(4).join(' ')}'`,
+          lineNumber, tokens.join(' '),
+        );
+      }
       const value = parseNumber(tokens[3]);
       circuit.addResistor(name, tokens[1], tokens[2], value);
       break;
