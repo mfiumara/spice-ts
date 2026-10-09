@@ -1,5 +1,6 @@
 import { SparseMatrix } from '../solver/sparse-matrix.js';
 import type { CscMatrix } from '../solver/csc-matrix.js';
+import { createSparseSolver, type SparseSolver } from '../solver/sparse-solver.js';
 import type { StampContext } from '../devices/device.js';
 
 export class MNAAssembler {
@@ -22,10 +23,12 @@ export class MNAAssembler {
   private _diagIdx: Int32Array | null = null;
   private _stampIndex: ((row: number, col: number) => number) | null = null;
   private _cachedFastCtx: StampContext | null = null;
+  private _solver: SparseSolver | null = null;
 
   constructor(
     public readonly numNodes: number,
     public readonly numBranches: number,
+    private readonly solverFactory: () => SparseSolver = createSparseSolver,
   ) {
     this.systemSize = numNodes + numBranches;
     this.G = new SparseMatrix(this.systemSize);
@@ -80,6 +83,7 @@ export class MNAAssembler {
    * allocates typed arrays, copies current values, and enables fast-path stamping.
    */
   lockTopology(): void {
+    if (this._fastPath) return;
     const n = this.systemSize;
 
     // Collect union of all non-zero positions from G and C
@@ -177,6 +181,42 @@ export class MNAAssembler {
     this._stampIndex = stampIndex;
     this._diagIdx = diagIdx;
     this._fastPath = true;
+  }
+
+  /**
+   * Return the solver bound to the currently locked topology.
+   * Symbolic analysis runs once here; callers still factorize for every
+   * changed set of numeric matrix values.
+   */
+  getSparseSolver(): SparseSolver {
+    if (!this._fastPath) {
+      throw new Error('lockTopology() must be called before requesting a sparse solver');
+    }
+    if (!this._solver) {
+      this._solver = this.solverFactory();
+      this._solver.analyzePattern(this.getCscMatrix());
+    }
+    return this._solver;
+  }
+
+  /**
+   * Discard locked structural storage and its symbolic analysis before a
+   * caller re-stamps a different topology. Solution vectors are retained so
+   * they may be used as an initial guess after the topology change.
+   */
+  invalidateTopology(): void {
+    this._fastPath = false;
+    this._gValues = null;
+    this._cValues = null;
+    this._colPtr = null;
+    this._rowIdx = null;
+    this._diagIdx = null;
+    this._stampIndex = null;
+    this._cachedFastCtx = null;
+    this._solver = null;
+    this.G.clear();
+    this.C.clear();
+    this.b.fill(0);
   }
 
   /**

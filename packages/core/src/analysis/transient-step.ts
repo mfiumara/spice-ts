@@ -1,7 +1,6 @@
 import type { CompiledCircuit } from '../circuit.js';
 import type { ResolvedOptions } from '../types.js';
 import type { MNAAssembler } from '../mna/assembler.js';
-import type { SparseSolver } from '../solver/sparse-solver.js';
 import { buildCompanionSystem } from '../mna/companion.js';
 
 /**
@@ -23,8 +22,6 @@ export interface StepContext {
   readonly compiled: CompiledCircuit;
   /** Shared assembler — reused across attempts to avoid re-allocation. */
   readonly assembler: MNAAssembler;
-  /** Shared solver — callers are responsible for `analyzePattern` lifecycle. */
-  readonly solver: SparseSolver;
   readonly options: ResolvedOptions;
 }
 
@@ -80,7 +77,7 @@ export type StepResult =
  * their own snapshot (`prevSolution`).
  */
 export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult {
-  const { compiled, assembler, solver, options } = ctx;
+  const { compiled, assembler, options } = ctx;
   const { devices, nodeCount } = compiled;
   const { dt, time, prevSolution, prevB, gmin, prevPrevSolution, prevDt } = attempt;
   let voltageLimit = attempt.voltageLimit;
@@ -98,9 +95,7 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
     );
 
     if (!assembler.isFastPath) assembler.lockTopology();
-    if (!solver.isPatternAnalyzed()) {
-      solver.analyzePattern(assembler.getCscMatrix());
-    }
+    const solver = assembler.getSparseSolver();
     solver.factorize(assembler.getCscMatrix());
     const x = solver.solve(new Float64Array(assembler.b));
 

@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { parse } from '../parser/index.js';
 import { MNAAssembler } from '../mna/assembler.js';
-import { createSparseSolver } from '../solver/sparse-solver.js';
 import { resolveOptions } from '../types.js';
 import { attemptStep } from './transient-step.js';
 
@@ -15,17 +14,16 @@ C1 2 0 1u
   const compiled = ckt.compile();
   const options = resolveOptions(undefined, 1e-3);
   const assembler = new MNAAssembler(compiled.nodeCount, compiled.branchCount);
-  const solver = createSparseSolver();
-  return { compiled, options, assembler, solver };
+  return { compiled, options, assembler };
 }
 
 describe('attemptStep', () => {
   it('converges in a small number of iterations for a linear RC circuit', () => {
-    const { compiled, options, assembler, solver } = buildRCContext();
+    const { compiled, options, assembler } = buildRCContext();
     const prevSol = new Float64Array(assembler.solution);
 
     const result = attemptStep(
-      { compiled, assembler, solver, options },
+      { compiled, assembler, options },
       { dt: 1e-6, time: 1e-6, prevSolution: prevSol, prevB: undefined, gmin: 1e-12, voltageLimit: 3.5 },
     );
 
@@ -37,13 +35,13 @@ describe('attemptStep', () => {
   });
 
   it('returns ok=false with reason="nr-divergence" when NR cannot converge', () => {
-    const { compiled, options, assembler, solver } = buildRCContext();
+    const { compiled, options, assembler } = buildRCContext();
     // Force failure by setting maxTransientIterations to 0
     const brokenOpts = { ...options, maxTransientIterations: 0 };
     const prevSol = new Float64Array(assembler.solution);
 
     const result = attemptStep(
-      { compiled, assembler, solver, options: brokenOpts },
+      { compiled, assembler, options: brokenOpts },
       { dt: 1e-6, time: 1e-6, prevSolution: prevSol, prevB: undefined, gmin: 1e-12, voltageLimit: 3.5 },
     );
 
@@ -54,13 +52,13 @@ describe('attemptStep', () => {
   });
 
   it('leaves assembler.solution unchanged when maxTransientIterations=0 (loop never runs)', () => {
-    const { compiled, options, assembler, solver } = buildRCContext();
+    const { compiled, options, assembler } = buildRCContext();
     const brokenOpts = { ...options, maxTransientIterations: 0 };
     const prevSol = new Float64Array(assembler.solution);
     const snapshot = new Float64Array(assembler.solution);
 
     attemptStep(
-      { compiled, assembler, solver, options: brokenOpts },
+      { compiled, assembler, options: brokenOpts },
       { dt: 1e-6, time: 1e-6, prevSolution: prevSol, prevB: undefined, gmin: 1e-12, voltageLimit: 3.5 },
     );
 
@@ -83,11 +81,10 @@ D1 1 0 DSHARP
     const compiled = ckt.compile();
     const options = resolveOptions(undefined, 1e-3);
     const assembler = new MNAAssembler(compiled.nodeCount, compiled.branchCount);
-    const solver = createSparseSolver();
     const prevSol = new Float64Array(assembler.solution);
 
     const result = attemptStep(
-      { compiled, assembler, solver, options },
+      { compiled, assembler, options },
       { dt: 1e-6, time: 1e-6, prevSolution: prevSol, prevB: undefined, gmin: 1e-12, voltageLimit: 3.5 },
     );
 
@@ -109,16 +106,15 @@ R2 2 0 10
     const compiled = ckt.compile();
     const options = resolveOptions(undefined, 1e-3);
     const assembler = new MNAAssembler(compiled.nodeCount, compiled.branchCount);
-    const solver = createSparseSolver();
     const prevSol = new Float64Array(assembler.solution);
 
     const tight = attemptStep(
-      { compiled, assembler, solver, options },
+      { compiled, assembler, options },
       { dt: 1e-6, time: 1e-6, prevSolution: prevSol, prevB: undefined, gmin: 1e-12, voltageLimit: 1.0 },
     );
     assembler.solution.fill(0);
     const loose = attemptStep(
-      { compiled, assembler, solver, options },
+      { compiled, assembler, options },
       { dt: 1e-6, time: 1e-6, prevSolution: prevSol, prevB: undefined, gmin: 1e-12, voltageLimit: 100 },
     );
 

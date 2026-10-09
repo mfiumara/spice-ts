@@ -5,7 +5,6 @@ import type {
 import { resolveOptions } from '../types.js';
 import { parse, parseAsync } from '../parser/index.js';
 import { MNAAssembler } from '../mna/assembler.js';
-import { createSparseSolver, type SparseSolver } from '../solver/sparse-solver.js';
 import { solveDCOperatingPoint } from './dc.js';
 import { attemptStep } from './transient-step.js';
 import { TimestepTooSmallError, InvalidCircuitError } from '../errors.js';
@@ -127,7 +126,6 @@ interface InternalTransientConfig {
 
 class TransientSimImpl implements TransientSim {
   private assembler: MNAAssembler;
-  private solver: SparseSolver;
   private options: ResolvedOptions;
   private config: InternalTransientConfig;
   private compiled: CompiledCircuit;
@@ -152,7 +150,6 @@ class TransientSimImpl implements TransientSim {
     this.prevDt = this.dt;
 
     this.assembler = new MNAAssembler(compiled.nodeCount, compiled.branchCount);
-    this.solver = createSparseSolver();
 
     if (config.initialSolution) {
       // Caller already computed DC — skip internal DC and seed directly.
@@ -214,7 +211,7 @@ class TransientSimImpl implements TransientSim {
 
       this.assembler.solution.set(prevSol);
       const result = attemptStep(
-        { compiled: this.compiled, assembler: this.assembler, solver: this.solver, options: this.options },
+        { compiled: this.compiled, assembler: this.assembler, options: this.options },
         {
           dt: actualDt,
           time: nextTime,
@@ -310,7 +307,6 @@ class TransientSimImpl implements TransientSim {
   reset(): void {
     if (this.disposed) throw new InvalidCircuitError('TransientSim has been disposed');
     this.assembler = new MNAAssembler(this.compiled.nodeCount, this.compiled.branchCount);
-    this.solver = createSparseSolver();
     this.time = 0;
     this.dt = Math.min(this.config.timestep, this.config.maxTimestep);
     this.prevDt = this.dt;
