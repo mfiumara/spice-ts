@@ -28,12 +28,15 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "vitest run",
+    "test": "vitest run && pnpm test:packed-consumer",
+    "test:coverage": "vitest run && pnpm test:packed-consumer",
+    "test:packed-consumer": "pnpm -C ../core build && pnpm build && node scripts/packed-consumer.mjs",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
     "@spice-ts/core": "workspace:*",
-    "circuit-json": "^0.0.525"
+    "circuit-json": "^0.0.525",
+    "zod": "3"
   },
   "devDependencies": {
     "@types/node": "^25.5.2",

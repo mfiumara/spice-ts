@@ -116,6 +116,9 @@ importers:
       circuit-json:
         specifier: ^0.0.525
         version: 0.0.525(format-si-unit@0.0.14(typescript@5.9.3))
+      zod:
+        specifier: '3'
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^25.5.2
@@ -1957,6 +1960,9 @@ packages:
   xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
 
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
 snapshots:
 
   '@asamuzakjp/css-color@3.2.0':
@@ -3522,3 +3528,5 @@ snapshots:
   xml-name-validator@5.0.0: {}
 
   xmlchars@2.2.0: {}
+
+  zod@3.25.76: {}
