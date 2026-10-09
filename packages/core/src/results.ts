@@ -148,6 +148,22 @@ export class ACResult {
   }
 }
 
+/** Spectral voltage-noise densities from a `.noise` analysis. */
+export class NoiseResult {
+  constructor(
+    /** Frequency points in Hz. */
+    public readonly frequencies: number[],
+    /** Output node named by the `.noise` command. */
+    public readonly outputNode: string,
+    /** Input source named by the `.noise` command. */
+    public readonly inputSource: string,
+    /** Output-referred voltage-noise density in V/sqrt(Hz). */
+    public readonly outputNoiseDensity: number[],
+    /** Input-referred voltage-noise density in V/sqrt(Hz). */
+    public readonly inputNoiseDensity: number[],
+  ) {}
+}
+
 /**
  * Result of a DC sweep (`.dc`) analysis.
  *
@@ -222,6 +238,8 @@ export interface SimulationResult {
   transient?: TransientResult;
   /** AC small-signal analysis result (from `.ac`) */
   ac?: ACResult;
+  /** Resistor-noise spectral result (from `.noise`) */
+  noise?: NoiseResult;
   /** Parametric sweep results (from .step). When present, top-level result fields are empty. */
   steps?: StepResult[];
   /** Warnings collected during simulation */

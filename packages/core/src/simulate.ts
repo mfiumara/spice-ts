@@ -7,6 +7,7 @@ import { resolveOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
 import { solveTransient } from './analysis/transient.js';
 import { solveAC } from './analysis/ac.js';
+import { solveNoise } from './analysis/noise.js';
 import { solveDCSweep } from './analysis/dc-sweep.js';
 import { solveStep, generateStepValues } from './analysis/step.js';
 import type { StepStreamEvent, StepAnalysis } from './types.js';
@@ -142,6 +143,14 @@ export async function simulate(
           compiled, opts, undefined, convergence,
         );
         result.ac = solveAC(compiled, analysis, opts, dcAsm.solution);
+        break;
+      }
+      case 'noise': {
+        const opts = resolveOptions(options);
+        const { assembler: dcAsm } = solveDCOperatingPoint(
+          compiled, opts, undefined, convergence,
+        );
+        result.noise = solveNoise(compiled, analysis, opts, dcAsm.solution);
         break;
       }
     }
