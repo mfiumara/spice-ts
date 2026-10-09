@@ -3,11 +3,12 @@
   "private": true,
   "scripts": {
     "build": "pnpm -r build",
-    "test": "pnpm -r test",
+    "test": "pnpm -r test && tsx --test benchmarks/comparison-harness.test.ts",
     "lint": "pnpm -r lint",
     "bench": "pnpm -C packages/core bench",
     "bench:accuracy": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/accuracy.ts",
     "bench:compare": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/comparison.ts",
+    "bench:compare:v2": "pnpm -C packages/core build && tsx benchmarks/comparison-harness.ts",
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm build && changeset publish"
