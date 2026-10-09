@@ -4,15 +4,28 @@ export interface AdvancedShowcaseDemo {
   desc: string;
   icon: string;
   group: string;
-  tag: '.ac';
+  tag: '.ac' | '.tran';
   signals: string[];
-  acNetlist: string;
+  acNetlist?: string;
+  tranNetlist?: string;
   parity: {
     reference: 'ngspice-47';
     maxAbsoluteError: number;
     rmsAbsoluteError: number;
   };
 }
+
+const LINEAR_AC_PARITY = {
+  reference: 'ngspice-47' as const,
+  maxAbsoluteError: 1e-12,
+  rmsAbsoluteError: 1e-12,
+};
+
+const SHOWCASE_TRANSIENT_PARITY = {
+  reference: 'ngspice-47' as const,
+  maxAbsoluteError: 2e-3,
+  rmsAbsoluteError: 5e-4,
+};
 
 export const RLC_RESONANCE_DEMO: AdvancedShowcaseDemo = {
   id: 'rlc-resonance',
@@ -30,11 +43,7 @@ L1 mid out 10m
 C1 out 0 100n
 .ac dec 100 100 100k
 .end`,
-  parity: {
-    reference: 'ngspice-47',
-    maxAbsoluteError: 1e-12,
-    rmsAbsoluteError: 1e-12,
-  },
+  parity: LINEAR_AC_PARITY,
 };
 
 export const COMMON_SOURCE_AC_DEMO: AdvancedShowcaseDemo = {
@@ -62,7 +71,50 @@ RD vdd out 10k
   },
 };
 
+export const PASSIVE_NOTCH_DEMO: AdvancedShowcaseDemo = {
+  id: 'passive-notch',
+  name: 'Passive Notch Filter',
+  desc: '5.03kHz series-LC rejection',
+  icon: '\u236E',
+  group: 'Filters',
+  tag: '.ac',
+  signals: ['out'],
+  acNetlist: `
+* Passive notch — series LC shunts the 5.03 kHz stop frequency
+V1 in 0 AC 1
+Rsource in out 1k
+Rload out 0 10k
+Lnotch out notch 10m
+Cnotch notch 0 100n
+.ac dec 100 100 100k
+.end`,
+  parity: LINEAR_AC_PARITY,
+};
+
+export const OPAMP_DIFFERENTIATOR_DEMO: AdvancedShowcaseDemo = {
+  id: 'opamp-differentiator',
+  name: 'Op-Amp Differentiator',
+  desc: 'Square wave to edge spikes',
+  icon: '\u25B3',
+  group: 'Opamp Circuits',
+  tag: '.tran',
+  signals: ['in', 'out'],
+  tranNetlist: `
+* Practical opamp differentiator — VCVS convention used by the showcase
+V1 in 0 PULSE(-0.1 0.1 100u 10u 10u 490u 1m)
+Cdiff in pre 10n
+Rin pre nm 1k
+Rf nm out 10k
+Cf nm out 100p
+E1 out 0 0 nm 1e6
+.tran 0.25u 3m
+.end`,
+  parity: SHOWCASE_TRANSIENT_PARITY,
+};
+
 export const ADVANCED_SHOWCASE_DEMOS: AdvancedShowcaseDemo[] = [
   RLC_RESONANCE_DEMO,
   COMMON_SOURCE_AC_DEMO,
+  PASSIVE_NOTCH_DEMO,
+  OPAMP_DIFFERENTIATOR_DEMO,
 ];
