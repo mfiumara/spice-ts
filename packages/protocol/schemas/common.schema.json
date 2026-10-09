@@ -363,7 +363,7 @@
               "type": "object",
               "propertyNames": {
                 "type": "string",
-                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+                "pattern": "^(?!(?:.*//)|/)(?:(?!\\.{1,2}(?:/|$))[^/\\\\]+)(?:/(?!\\.{1,2}(?:/|$))[^/\\\\]+)*$"
               },
               "additionalProperties": {
                 "type": "string"

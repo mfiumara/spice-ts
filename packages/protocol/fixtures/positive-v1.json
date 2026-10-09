@@ -32,10 +32,23 @@
       { "type": "ac", "analysisIndex": 3, "frequencyHz": [10, 100], "voltagePhasors": { "out": [{ "magnitude": 1, "phaseDegrees": 0 }, { "magnitude": 0.5, "phaseDegrees": -45 }] }, "currentPhasors": { "V1": [{ "magnitude": 0.001, "phaseDegrees": 180 }, { "magnitude": 0.0005, "phaseDegrees": 135 }] } }
     ]
   },
+  "steppedResult": { "status": "complete", "analyses": [
+    { "type": "tran", "analysisIndex": 0, "step": { "index": 0, "parameter": "R", "value": 1 }, "timeS": [], "voltagesV": {}, "currentsA": {} },
+    { "type": "tran", "analysisIndex": 0, "step": { "index": 1, "parameter": "R", "value": 2 }, "timeS": [], "voltagesV": {}, "currentsA": {} },
+    { "type": "op", "analysisIndex": 1, "voltagesV": {}, "currentsA": {} }
+  ] },
+  "steppedEvents": [
+    { "type": "analysis-start", "analysis": "tran", "analysisIndex": 0, "step": { "index": 0, "parameter": "R", "value": 1 } },
+    { "type": "analysis-end", "analysis": "tran", "analysisIndex": 0, "step": { "index": 0, "parameter": "R", "value": 1 }, "pointCount": 0 },
+    { "type": "analysis-start", "analysis": "tran", "analysisIndex": 0, "step": { "index": 1, "parameter": "R", "value": 2 } },
+    { "type": "analysis-end", "analysis": "tran", "analysisIndex": 0, "step": { "index": 1, "parameter": "R", "value": 2 }, "pointCount": 0 },
+    { "type": "analysis-start", "analysis": "op", "analysisIndex": 1 },
+    { "type": "analysis-end", "analysis": "op", "analysisIndex": 1, "pointCount": 0 }
+  ],
   "events": [
-    { "type": "analysis-start", "analysis": "tran", "analysisIndex": 2 },
-    { "type": "point", "analysisIndex": 2, "pointIndex": 0, "point": { "type": "tran", "timeS": 0, "voltagesV": { "out": 0 }, "currentsA": { "V1": 0 } } },
-    { "type": "point", "analysisIndex": 2, "pointIndex": 1, "point": { "type": "tran", "timeS": 0.001, "voltagesV": { "out": 1 }, "currentsA": { "V1": -0.001 } } },
-    { "type": "analysis-end", "analysis": "tran", "analysisIndex": 2, "pointCount": 2 }
+    { "type": "analysis-start", "analysis": "tran", "analysisIndex": 0 },
+    { "type": "point", "analysisIndex": 0, "pointIndex": 0, "point": { "type": "tran", "timeS": 0, "voltagesV": { "out": 0 }, "currentsA": { "V1": 0 } } },
+    { "type": "point", "analysisIndex": 0, "pointIndex": 1, "point": { "type": "tran", "timeS": 0.001, "voltagesV": { "out": 1 }, "currentsA": { "V1": -0.001 } } },
+    { "type": "analysis-end", "analysis": "tran", "analysisIndex": 0, "pointCount": 2 }
   ]
 }

@@ -84,6 +84,18 @@ describe('protocol v1 JSON Schemas', () => {
     }
   });
 
+  it('rejects non-normalized virtual-file names', () => {
+    const id = 'https://spice-ts.dev/schemas/v1/simulation-request.schema.json';
+    for (const name of negative.nonNormalizedVirtualFiles) {
+      expect(validate(id, {
+        apiVersion: '1', input: { format: 'spice', source: '.op', virtualFiles: { [name]: '.op' } },
+      })).toBe(false);
+    }
+    expect(validate(id, {
+      apiVersion: '1', input: { format: 'spice', source: '.op', virtualFiles: { 'models/diode.lib': '.model D D' } },
+    })).toBe(true);
+  });
+
   it('requires complete success metadata and forbids result hashes on failure metadata', () => {
     const success: SuccessEnvelopeV1<SimulationResultV1> = {
       apiVersion: '1', ok: true, requestId: 'req-1', data: positive.result as SimulationResultV1,
@@ -134,6 +146,37 @@ describe('semantic conformance', () => {
     ])).toEqual([
       { code: 'NONCONTIGUOUS_POINT_INDEX', path: '/1/pointIndex', message: 'Expected pointIndex 0, received 1' },
       { code: 'POINT_ANALYSIS_MISMATCH', path: '/1/point/type', message: 'Point type tran does not match enclosing analysis dc' },
+    ]);
+  });
+
+  it('enforces zero-based analysis ordering and legal stepped reuse', () => {
+    expect(checkConformanceV1('simulation-result', positive.steppedResult)).toEqual([]);
+    expect(checkConformanceV1('simulation-result', negative.nonZeroFirstAnalysisIndex)).toEqual([{
+      code: 'NONCONTIGUOUS_ANALYSIS_INDEX', path: '/analyses/0/analysisIndex', message: 'Expected analysisIndex 0, received 2',
+    }]);
+    expect(checkConformanceV1('simulation-result', negative.gappedAnalysisIndexes)).toEqual([{
+      code: 'NONCONTIGUOUS_ANALYSIS_INDEX', path: '/analyses/1/analysisIndex', message: 'Expected analysisIndex 1, received 2',
+    }]);
+    expect(checkConformanceV1('simulation-result', negative.duplicateAnalysisIndexes)).toEqual([{
+      code: 'ILLEGAL_ANALYSIS_INDEX_REUSE', path: '/analyses/1/analysisIndex', message: 'analysisIndex 0 may repeat only for stepped results',
+    }]);
+    expect(checkConformanceV1('simulation-result', negative.duplicateStepIndexes)).toEqual([{
+      code: 'NONCONTIGUOUS_STEP_INDEX', path: '/analyses/1/step/index', message: 'Expected step.index 1, received 0',
+    }]);
+    expect(checkConformanceV1('simulation-result', negative.descendingStepIndexes)).toEqual([{
+      code: 'NONCONTIGUOUS_STEP_INDEX', path: '/analyses/2/step/index', message: 'Expected step.index 2, received 0',
+    }]);
+  });
+
+  it('enforces analysis and step ordering in streams', () => {
+    expect(checkConformanceV1('simulation-events', positive.steppedEvents)).toEqual([]);
+    expect(checkConformanceV1('simulation-events', negative.invalidEventOrdering)).toEqual([
+      { code: 'NONCONTIGUOUS_STEP_INDEX', path: '/2/step/index', message: 'Expected step.index 1, received 0' },
+      { code: 'NONCONTIGUOUS_STEP_INDEX', path: '/6/step/index', message: 'Expected step.index 2, received 0' },
+      { code: 'NONCONTIGUOUS_ANALYSIS_INDEX', path: '/8/analysisIndex', message: 'Expected analysisIndex 1, received 2' },
+    ]);
+    expect(checkConformanceV1('simulation-events', negative.duplicateUnsteppedEvents)).toEqual([
+      { code: 'ILLEGAL_ANALYSIS_INDEX_REUSE', path: '/2/analysisIndex', message: 'analysisIndex 0 may repeat only for stepped results' },
     ]);
   });
 

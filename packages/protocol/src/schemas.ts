@@ -42,7 +42,7 @@ const nativeDocument = object(['format', 'schemaVersion', 'circuit', 'analyses',
   analyses: array(ref('analysis')), models: array(ref('model')), subcircuits: array(ref('subcircuit')),
 });
 const simulationInput: Schema = { oneOf: [
-  object(['format', 'source'], { format: { const: 'spice' }, source: string, virtualFiles: { type: 'object', propertyNames: { type: 'string', pattern: '^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$' }, additionalProperties: string } }),
+  object(['format', 'source'], { format: { const: 'spice' }, source: string, virtualFiles: { type: 'object', propertyNames: { type: 'string', pattern: '^(?!(?:.*//)|/)(?:(?!\\.{1,2}(?:/|$))[^/\\\\]+)(?:/(?!\\.{1,2}(?:/|$))[^/\\\\]+)*$' }, additionalProperties: string } }),
   object(['format', 'document'], { format: { const: 'spice-ts' }, document: ref('nativeDocument') }),
   object(['format', 'circuit', 'analyses'], { format: { const: 'circuit-json' }, circuit: array(ref('jsonValue')), analyses: array(ref('analysis')) }),
 ] };

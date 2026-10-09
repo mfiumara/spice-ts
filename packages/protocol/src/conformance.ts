@@ -52,12 +52,76 @@ function sortedRecordDiagnostics(record: unknown, path: string): ConformanceDiag
   }];
 }
 
+interface AnalysisOrderingState {
+  activeIndex: number;
+  activeType?: string;
+  stepped: boolean;
+  stepParameter?: string;
+  nextStepIndex: number;
+}
+
+function orderingDiagnostics(
+  analysis: RecordValue,
+  path: string,
+  state: AnalysisOrderingState,
+): ConformanceDiagnosticV1[] {
+  if (typeof analysis.analysisIndex !== 'number') return [];
+  const diagnostics: ConformanceDiagnosticV1[] = [];
+  const analysisIndex = analysis.analysisIndex;
+  const step = isRecord(analysis.step) ? analysis.step : undefined;
+
+  if (analysisIndex === state.activeIndex) {
+    if (!state.stepped || step === undefined) {
+      diagnostics.push({
+        code: 'ILLEGAL_ANALYSIS_INDEX_REUSE', path: `${path}/analysisIndex`,
+        message: `analysisIndex ${analysisIndex} may repeat only for stepped results`,
+      });
+      return diagnostics;
+    }
+    if (typeof analysis.type === 'string' && analysis.type !== state.activeType) diagnostics.push({
+      code: 'ANALYSIS_TYPE_MISMATCH', path: `${path}/type`,
+      message: `Repeated analysisIndex ${analysisIndex} must keep analysis type ${String(state.activeType)}`,
+    });
+    if (typeof step.parameter === 'string' && step.parameter !== state.stepParameter) diagnostics.push({
+      code: 'STEP_PARAMETER_MISMATCH', path: `${path}/step/parameter`,
+      message: `Repeated analysisIndex ${analysisIndex} must keep step parameter ${String(state.stepParameter)}`,
+    });
+    if (typeof step.index === 'number' && step.index !== state.nextStepIndex) diagnostics.push({
+      code: 'NONCONTIGUOUS_STEP_INDEX', path: `${path}/step/index`,
+      message: `Expected step.index ${state.nextStepIndex}, received ${step.index}`,
+    });
+    if (typeof step.index === 'number') state.nextStepIndex = step.index + 1;
+    return diagnostics;
+  }
+
+  const expectedAnalysisIndex = state.activeIndex + 1;
+  if (analysisIndex !== expectedAnalysisIndex) diagnostics.push({
+    code: 'NONCONTIGUOUS_ANALYSIS_INDEX', path: `${path}/analysisIndex`,
+    message: `Expected analysisIndex ${expectedAnalysisIndex}, received ${analysisIndex}`,
+  });
+  state.activeIndex = analysisIndex;
+  state.activeType = typeof analysis.type === 'string' ? analysis.type : undefined;
+  state.stepped = step !== undefined;
+  state.stepParameter = typeof step?.parameter === 'string' ? step.parameter : undefined;
+  state.nextStepIndex = 0;
+  if (step !== undefined && typeof step.index === 'number') {
+    if (step.index !== 0) diagnostics.push({
+      code: 'NONCONTIGUOUS_STEP_INDEX', path: `${path}/step/index`,
+      message: `Expected step.index 0, received ${step.index}`,
+    });
+    state.nextStepIndex = step.index + 1;
+  }
+  return diagnostics;
+}
+
 function resultDiagnostics(value: unknown): ConformanceDiagnosticV1[] {
   if (!isRecord(value) || !Array.isArray(value.analyses)) return [];
   const diagnostics: ConformanceDiagnosticV1[] = [];
+  const ordering: AnalysisOrderingState = { activeIndex: -1, stepped: false, nextStepIndex: 0 };
   value.analyses.forEach((analysis, index) => {
     if (!isRecord(analysis)) return;
     const base = `/analyses/${index}`;
+    diagnostics.push(...orderingDiagnostics(analysis, base, ordering));
     const scalarRecords = analysis.type === 'op' ? ['voltagesV', 'currentsA'] : [];
     const seriesRecords = analysis.type === 'dc' || analysis.type === 'tran' ? ['voltagesV', 'currentsA'] : [];
     const phasorRecords = analysis.type === 'ac' ? ['voltagePhasors', 'currentPhasors'] : [];
@@ -84,11 +148,13 @@ function eventDiagnostics(value: unknown): ConformanceDiagnosticV1[] {
   const diagnostics: ConformanceDiagnosticV1[] = [];
   const analyses = new Map<string, string>();
   const nextIndexes = new Map<string, number>();
+  const ordering: AnalysisOrderingState = { activeIndex: -1, stepped: false, nextStepIndex: 0 };
   value.forEach((event, index) => {
     if (!isRecord(event)) return;
     const step = isRecord(event.step) ? event.step.index : '';
     const key = `${String(event.analysisIndex)}:${String(step)}`;
     if (event.type === 'analysis-start' && typeof event.analysis === 'string') {
+      diagnostics.push(...orderingDiagnostics({ ...event, type: event.analysis }, `/${index}`, ordering));
       analyses.set(key, event.analysis);
       nextIndexes.set(key, 0);
     } else if (event.type === 'point') {
