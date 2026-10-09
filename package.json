@@ -8,6 +8,7 @@
     "bench": "pnpm -C packages/core bench",
     "bench:accuracy": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/accuracy.ts",
     "bench:compare": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/comparison.ts",
+    "bench:convergence": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/convergence.ts",
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm build && changeset publish"
