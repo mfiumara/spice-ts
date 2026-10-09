@@ -1,4 +1,4 @@
-import type { SimulationWarning } from './types.js';
+import type { ConvergenceTelemetry, SimulationWarning } from './types.js';
 
 /**
  * Result of a DC operating point (`.op`) analysis.
@@ -226,4 +226,6 @@ export interface SimulationResult {
   steps?: StepResult[];
   /** Warnings collected during simulation */
   warnings: SimulationWarning[];
+  /** Native-solver convergence counters. External adapters may omit them. */
+  convergence?: ConvergenceTelemetry;
 }

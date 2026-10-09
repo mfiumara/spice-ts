@@ -250,6 +250,50 @@ export interface SimulationWarning {
   node?: string;
 }
 
+/** Aggregate Newton-Raphson and fallback work performed by DC analyses. */
+export interface DCConvergenceTelemetry {
+  /** Newton-Raphson iterations across every attempted DC solve. */
+  newtonIterations: number;
+  /** DC solves that converged, including homotopy intermediate solves. */
+  acceptedSolves: number;
+  /** DC solves that exhausted their Newton iteration budget. */
+  rejectedSolves: number;
+  /** Source-ramping homotopy levels attempted. */
+  sourceStepAttempts: number;
+  /** Source-ramping levels that did not converge. */
+  sourceStepFailures: number;
+  /** GMIN-stepping homotopy levels attempted. */
+  gminStepAttempts: number;
+  /** GMIN-stepping levels that did not converge. */
+  gminStepFailures: number;
+  /** Terminal failure classification; recoverable retries leave this null. */
+  failure: import('./errors.js').ConvergenceFailureKind | null;
+}
+
+/** Aggregate adaptive-step and Newton work performed by transient analyses. */
+export interface TransientConvergenceTelemetry {
+  /** Timesteps committed to the output waveform (the t=0 DC point is excluded). */
+  acceptedSteps: number;
+  /** Attempted timesteps rejected for either Newton or LTE reasons. */
+  rejectedSteps: number;
+  /** Newton-Raphson iterations across accepted and rejected attempts. */
+  newtonIterations: number;
+  /** Timesteps retried after Newton-Raphson failed to converge. */
+  nrRetries: number;
+  /** Timesteps retried after the local truncation error check failed. */
+  lteRetries: number;
+  /** Smallest committed timestep, or null when no transient step was accepted. */
+  minimumAcceptedTimestep: number | null;
+  /** Terminal failure classification; recoverable retries leave this null. */
+  failure: import('./errors.js').ConvergenceFailureKind | null;
+}
+
+/** Bounded, deterministic convergence counters for a simulation run. */
+export interface ConvergenceTelemetry {
+  dc: DCConvergenceTelemetry;
+  transient: TransientConvergenceTelemetry;
+}
+
 /**
  * Async function that resolves `.include` and `.lib` file paths to their contents.
  *

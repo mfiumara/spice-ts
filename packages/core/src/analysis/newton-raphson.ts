@@ -1,6 +1,6 @@
 import type { DeviceModel } from '../devices/device.js';
 import type { MNAAssembler } from '../mna/assembler.js';
-import type { ResolvedOptions } from '../types.js';
+import type { DCConvergenceTelemetry, ResolvedOptions } from '../types.js';
 import { createSparseSolver } from '../solver/sparse-solver.js';
 import { ConvergenceError } from '../errors.js';
 import { MOSFET } from '../devices/mosfet.js';
@@ -11,6 +11,7 @@ export function newtonRaphson(
   options: ResolvedOptions,
   maxIter: number,
   nodeNames: string[],
+  telemetry?: DCConvergenceTelemetry,
 ): number {
   const solver = createSparseSolver();
   let patternAnalyzed = false;
@@ -67,6 +68,10 @@ export function newtonRaphson(
     assembler.solution.set(x);
 
     if (isConverged(assembler.solution, assembler.prevSolution, assembler.numNodes, options)) {
+      if (telemetry) {
+        telemetry.newtonIterations += iter + 1;
+        telemetry.acceptedSolves++;
+      }
       return iter + 1;
     }
   }
@@ -75,6 +80,11 @@ export function newtonRaphson(
     assembler.solution, assembler.prevSolution,
     assembler.numNodes, nodeNames, options,
   );
+
+  if (telemetry) {
+    telemetry.newtonIterations += maxIter;
+    telemetry.rejectedSolves++;
+  }
 
   throw new ConvergenceError(
     `Did not converge in ${maxIter} iterations`,

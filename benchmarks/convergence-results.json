@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-09T20:53:59.892Z",
+  "generatedAt": "2026-10-09T21:28:59.930Z",
   "versions": {
     "spiceTs": "workspace",
     "ngspice": "ngspice-47",
@@ -27,7 +27,7 @@
     "note": "The same checked-in deck and numerical settings are used by both engines. The ngspice-only .control block exports data and rusage."
   },
   "retryTelemetry": {
-    "spiceTs": "not exposed by the public API; recorded explicitly instead of inferred from accepted samples",
+    "spiceTs": "SimulationResult.convergence counters; rejectedRetries is DC rejected solves or transient rejected steps",
     "ngspice": "Rejected timepoints from rusage (0 for operating-point fixtures)"
   },
   "results": [
@@ -40,10 +40,31 @@
       "spiceTs": {
         "converged": true,
         "error": null,
-        "runtimeMs": 0.704166999999984,
+        "runtimeMs": 0.2976249999999965,
         "acceptedPoints": 1,
-        "rejectedRetries": "not-exposed",
-        "iterations": "not-exposed",
+        "rejectedRetries": 0,
+        "iterations": 39,
+        "telemetry": {
+          "dc": {
+            "newtonIterations": 39,
+            "acceptedSolves": 14,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 13,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 0,
+            "rejectedSteps": 0,
+            "newtonIterations": 0,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": null,
+            "failure": null
+          }
+        },
         "series": {
           "x": [
             0
@@ -56,11 +77,12 @@
       "ngspice": {
         "converged": true,
         "error": null,
-        "runtimeMs": 21.778374999999983,
-        "analysisRuntimeMs": 0.694,
+        "runtimeMs": 10.824915999999988,
+        "analysisRuntimeMs": 0.41,
         "acceptedPoints": 1,
         "rejectedRetries": 0,
         "iterations": 3,
+        "telemetry": null,
         "series": {
           "x": [
             0
@@ -86,10 +108,31 @@
       "spiceTs": {
         "converged": true,
         "error": null,
-        "runtimeMs": 0.7373330000000351,
+        "runtimeMs": 0.35008300000001213,
         "acceptedPoints": 1,
-        "rejectedRetries": "not-exposed",
-        "iterations": "not-exposed",
+        "rejectedRetries": 0,
+        "iterations": 34,
+        "telemetry": {
+          "dc": {
+            "newtonIterations": 34,
+            "acceptedSolves": 14,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 13,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 0,
+            "rejectedSteps": 0,
+            "newtonIterations": 0,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": null,
+            "failure": null
+          }
+        },
         "series": {
           "x": [
             0
@@ -102,11 +145,12 @@
       "ngspice": {
         "converged": true,
         "error": null,
-        "runtimeMs": 45.63883299999998,
-        "analysisRuntimeMs": 6.507,
+        "runtimeMs": 11.302290999999997,
+        "analysisRuntimeMs": 0.412,
         "acceptedPoints": 1,
         "rejectedRetries": 0,
         "iterations": 6,
+        "telemetry": null,
         "series": {
           "x": [
             0
@@ -132,10 +176,31 @@
       "spiceTs": {
         "converged": true,
         "error": null,
-        "runtimeMs": 6.414375000000007,
+        "runtimeMs": 2.741624999999999,
         "acceptedPoints": 214,
-        "rejectedRetries": "not-exposed",
-        "iterations": "not-exposed",
+        "rejectedRetries": 0,
+        "iterations": 956,
+        "telemetry": {
+          "dc": {
+            "newtonIterations": 27,
+            "acceptedSolves": 14,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 13,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 213,
+            "rejectedSteps": 0,
+            "newtonIterations": 929,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": 9.999999999979575e-11,
+            "failure": null
+          }
+        },
         "series": {
           "x": [
             0,
@@ -574,11 +639,12 @@
       "ngspice": {
         "converged": true,
         "error": null,
-        "runtimeMs": 26.02329199999997,
-        "analysisRuntimeMs": 3.032,
+        "runtimeMs": 11.306999999999988,
+        "analysisRuntimeMs": 0.695,
         "acceptedPoints": 245,
         "rejectedRetries": 3,
         "iterations": 567,
+        "telemetry": null,
         "series": {
           "x": [
             0,
