@@ -24,8 +24,10 @@ const supportedFixtures: Fixture[] = [
 const unsupportedFixtures: Fixture[] = [
   { feature: 'initial conditions', netlist: '.ic V(out)=1\n.tran 1n 10n' },
   { feature: 'initial guesses', netlist: '.nodeset V(out)=1\n.op' },
+  { feature: 'PWL source waveform', netlist: 'V1 in 0 PWL(0 0 1n 1)\n.tran 0.1n 1n' },
   { feature: 'noise analysis', netlist: '.noise V(out) V1 dec 10 1 1Meg' },
   { feature: 'control blocks', netlist: '.control\nop\n.endc' },
+  { feature: 'semantic option directives', netlist: '.options reltol=1e-4\n.op' },
   { feature: 'behavioral source', netlist: 'B1 out 0 V=V(in)*2\n.op' },
   { feature: 'JFET', netlist: 'J1 d g s JMOD\n.op' },
   { feature: 'switch', netlist: 'S1 out 0 ctrl 0 SMOD\n.op' },
