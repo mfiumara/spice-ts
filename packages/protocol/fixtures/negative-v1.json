@@ -1,0 +1,68 @@
+{
+  "unsupportedVersion": { "apiVersion": "2", "input": { "format": "spice", "source": ".op" } },
+  "invalidUnion": { "apiVersion": "1", "input": { "format": "spice", "source": ".op", "document": {} } },
+  "internalBackend": { "apiVersion": "1", "input": { "format": "spice", "source": ".op" }, "options": { "backend": "spice-ts" } },
+  "nonNormalizedVirtualFiles": ["./child.cir", "a//b.cir", "C:\\secret.cir"],
+  "duplicateIds": {
+    "format": "spice-ts",
+    "schemaVersion": "1.0",
+    "circuit": {
+      "components": [
+        { "type": "R", "id": "R1", "name": "R1", "ports": [], "params": {} },
+        { "type": "R", "id": "r1", "name": "other", "ports": [], "params": {} }
+      ],
+      "nets": []
+    },
+    "analyses": [{ "type": "op" }],
+    "models": [],
+    "subcircuits": []
+  },
+  "mismatchedSeries": { "status": "complete", "analyses": [{ "type": "tran", "analysisIndex": 0, "timeS": [0, 1], "voltagesV": { "out": [0] }, "currentsA": {} }] },
+  "gappedAnalysisIndexes": { "status": "complete", "analyses": [
+    { "type": "op", "analysisIndex": 0, "voltagesV": {}, "currentsA": {} },
+    { "type": "op", "analysisIndex": 2, "voltagesV": {}, "currentsA": {} }
+  ] },
+  "nonZeroFirstAnalysisIndex": { "status": "complete", "analyses": [
+    { "type": "op", "analysisIndex": 2, "voltagesV": {}, "currentsA": {} }
+  ] },
+  "duplicateAnalysisIndexes": { "status": "complete", "analyses": [
+    { "type": "op", "analysisIndex": 0, "voltagesV": {}, "currentsA": {} },
+    { "type": "op", "analysisIndex": 0, "voltagesV": {}, "currentsA": {} }
+  ] },
+  "duplicateStepIndexes": { "status": "complete", "analyses": [
+    { "type": "tran", "analysisIndex": 0, "step": { "index": 0, "parameter": "R", "value": 1 }, "timeS": [], "voltagesV": {}, "currentsA": {} },
+    { "type": "tran", "analysisIndex": 0, "step": { "index": 0, "parameter": "R", "value": 2 }, "timeS": [], "voltagesV": {}, "currentsA": {} }
+  ] },
+  "descendingStepIndexes": { "status": "complete", "analyses": [
+    { "type": "tran", "analysisIndex": 0, "step": { "index": 0, "parameter": "R", "value": 1 }, "timeS": [], "voltagesV": {}, "currentsA": {} },
+    { "type": "tran", "analysisIndex": 0, "step": { "index": 1, "parameter": "R", "value": 2 }, "timeS": [], "voltagesV": {}, "currentsA": {} },
+    { "type": "tran", "analysisIndex": 0, "step": { "index": 0, "parameter": "R", "value": 3 }, "timeS": [], "voltagesV": {}, "currentsA": {} }
+  ] },
+  "invalidEventOrdering": [
+    { "type": "analysis-start", "analysis": "tran", "analysisIndex": 0, "step": { "index": 0, "parameter": "R", "value": 1 } },
+    { "type": "analysis-end", "analysis": "tran", "analysisIndex": 0, "step": { "index": 0, "parameter": "R", "value": 1 }, "pointCount": 0 },
+    { "type": "analysis-start", "analysis": "tran", "analysisIndex": 0, "step": { "index": 0, "parameter": "R", "value": 2 } },
+    { "type": "analysis-end", "analysis": "tran", "analysisIndex": 0, "step": { "index": 0, "parameter": "R", "value": 2 }, "pointCount": 0 },
+    { "type": "analysis-start", "analysis": "tran", "analysisIndex": 0, "step": { "index": 1, "parameter": "R", "value": 3 } },
+    { "type": "analysis-end", "analysis": "tran", "analysisIndex": 0, "step": { "index": 1, "parameter": "R", "value": 3 }, "pointCount": 0 },
+    { "type": "analysis-start", "analysis": "tran", "analysisIndex": 0, "step": { "index": 0, "parameter": "R", "value": 4 } },
+    { "type": "analysis-end", "analysis": "tran", "analysisIndex": 0, "step": { "index": 0, "parameter": "R", "value": 4 }, "pointCount": 0 },
+    { "type": "analysis-start", "analysis": "op", "analysisIndex": 2 },
+    { "type": "analysis-end", "analysis": "op", "analysisIndex": 2, "pointCount": 0 }
+  ],
+  "duplicateUnsteppedEvents": [
+    { "type": "analysis-start", "analysis": "op", "analysisIndex": 0 },
+    { "type": "analysis-end", "analysis": "op", "analysisIndex": 0, "pointCount": 0 },
+    { "type": "analysis-start", "analysis": "op", "analysisIndex": 0 },
+    { "type": "analysis-end", "analysis": "op", "analysisIndex": 0, "pointCount": 0 }
+  ],
+  "partialWithResultHash": {
+    "apiVersion": "1",
+    "ok": false,
+    "requestId": "req-1",
+    "error": { "code": "CANCELLED", "message": "cancelled", "retryable": true, "phase": "solve", "details": {} },
+    "diagnostics": [],
+    "metadata": { "resultSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+    "partial": { "status": "partial", "analyses": [], "partialEventSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" }
+  }
+}
