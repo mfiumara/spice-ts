@@ -19,14 +19,14 @@ const supportedFixtures: Fixture[] = [
   { feature: '.op', netlist: 'V1 in 0 1\nR1 in 0 1k\n.op' },
   { feature: '.dc', netlist: 'V1 in 0 0\nR1 in 0 1k\n.dc V1 0 1 0.1' },
   { feature: '.tran', netlist: 'V1 in 0 1\nR1 in 0 1k\n.tran 1n 10n' },
+  { feature: 'initial conditions', netlist: 'R1 out 0 1k\nC1 out 0 1p\n.ic V(out)=1\n.tran 1n 10n uic' },
+  { feature: 'initial guesses', netlist: 'V1 out 0 1\n.nodeset V(out)=0\n.op' },
   { feature: '.ac', netlist: 'V1 in 0 AC 1\nR1 in 0 1k\n.ac dec 10 1 1Meg' },
   { feature: 'solver-backed .options', netlist: '.options reltol=1e-4 itl1=50 method=trap\n.op' },
   { feature: 'output-only directives', netlist: '.save v(out)\n.print tran v(out)\n.plot v(out)\n.op' },
 ];
 
 const unsupportedFixtures: Fixture[] = [
-  { feature: 'initial conditions', netlist: '.ic V(out)=1\n.tran 1n 10n' },
-  { feature: 'initial guesses', netlist: '.nodeset V(out)=1\n.op' },
   { feature: 'EXP source waveform', netlist: 'V1 in 0 EXP(0 1 1n 1n)\n.tran 0.1n 1n' },
   { feature: 'SFFM source waveform', netlist: 'V1 in 0 SFFM(0 1 1k 1 10)\n.tran 1u 1m' },
   { feature: 'AM source waveform', netlist: 'V1 in 0 AM(1 1 1k 10k)\n.tran 1u 1m' },

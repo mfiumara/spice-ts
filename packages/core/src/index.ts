@@ -15,6 +15,7 @@ export type {
   TransientStep,
   ACPoint,
   AnalysisCommand,
+  NodeInitialState,
   SourceWaveform,
   ModelParams,
   SubcktDefinition,

@@ -4,6 +4,7 @@ export interface DiodeParams {
   IS: number;
   N: number;
   BV: number;
+  RS: number;
   CJ0?: number;
   VJ?: number;
   M?: number;
@@ -22,11 +23,13 @@ export class Diode implements DeviceModel {
     readonly name: string,
     readonly nodes: number[],
     params: Partial<DiodeParams>,
+    private readonly hasExternalSeriesResistance = false,
   ) {
     this.params = {
       IS: params.IS ?? 1e-14,
       N: params.N ?? 1,
       BV: params.BV ?? Infinity,
+      RS: params.RS ?? 0,
       CJ0: params.CJ0 ?? 0,
       VJ: params.VJ ?? 0.7,
       M: params.M ?? 0.5,
@@ -40,17 +43,20 @@ export class Diode implements DeviceModel {
     const vK = nK >= 0 ? ctx.getVoltage(nK) : 0;
     const vd = vA - vK;
 
-    const { IS, N } = this.params;
+    const { IS, N, RS } = this.params;
     const vt = N * VT;
 
-    const vdLim = limitVoltage(vd, vt, IS);
-    const expTerm = Math.exp(vdLim / vt);
-    const id = IS * (expTerm - 1);
-    const gd = (IS / vt) * expTerm + GMIN;
+    const { current: id, conductance, linearizationVoltage } = diodeCurrent(
+      vd,
+      vt,
+      IS,
+      RS,
+      !this.hasExternalSeriesResistance,
+    );
+    const gd = conductance + GMIN;
 
     // Newton-Raphson companion: I = gd * Vd + Ieq
-    // where Ieq = Id(vdLim) - gd * vdLim (use limited voltage consistently)
-    const ieq = id - gd * vdLim;
+    const ieq = id - gd * linearizationVoltage;
 
     if (nA >= 0) ctx.stampG(nA, nA, gd);
     if (nK >= 0) ctx.stampG(nK, nK, gd);
@@ -64,28 +70,44 @@ export class Diode implements DeviceModel {
   }
 
   stampDynamic(ctx: StampContext): void {
-    const { CJ0, VJ, M, TT, IS, N } = this.params;
+    const { CJ0, VJ, M, TT, IS, N, RS } = this.params;
     if (!CJ0 && !TT) return;
 
     const [nA, nK] = this.nodes;
     const vA = nA >= 0 ? ctx.getVoltage(nA) : 0;
     const vK = nK >= 0 ? ctx.getVoltage(nK) : 0;
-    const vd = vA - vK;
+    const terminalVoltage = vA - vK;
+    const vt = N * VT;
+
+    // RS separates the external terminal from the charge-storing junction. The
+    // two-terminal reduction therefore needs dVj/dVt as well as dQ/dVj.
+    const operatingPoint = RS > 0
+      ? diodeCurrent(terminalVoltage, vt, IS, RS)
+      : undefined;
+    const junctionVoltage = operatingPoint?.junctionVoltage ?? terminalVoltage;
+    const junctionVoltageGain = operatingPoint
+      ? 1 / (1 + RS * operatingPoint.junctionConductance)
+      : 1;
 
     let cj = 0;
     if (CJ0) {
-      if (vd < 0.5 * VJ!) {
-        cj = CJ0 / Math.pow(1 - vd / VJ!, M!);
+      if (junctionVoltage < 0.5 * VJ!) {
+        cj = CJ0 / Math.pow(1 - junctionVoltage / VJ!, M!);
       } else {
         cj = CJ0 / Math.pow(0.5, M!);
       }
     }
 
     if (TT) {
-      const vt = N * VT;
-      const gd = (IS / vt) * Math.exp(Math.min(vd / vt, 40));
-      cj += TT * gd;
+      const junctionConductance = operatingPoint?.junctionConductance
+        ?? (IS / vt) * Math.exp(Math.min(terminalVoltage / vt, 40));
+      cj += TT * junctionConductance;
     }
+
+    // A two-terminal fallback can only represent the low-frequency reduction.
+    // Compiled circuits expand RS into a physical resistor and internal junction
+    // node, preserving the complete frequency-dependent pole.
+    cj *= junctionVoltageGain * junctionVoltageGain;
 
     if (nA >= 0) ctx.stampC(nA, nA, cj);
     if (nK >= 0) ctx.stampC(nK, nK, cj);
@@ -96,10 +118,73 @@ export class Diode implements DeviceModel {
   }
 }
 
-function limitVoltage(vd: number, vt: number, IS: number): number {
-  const vcrit = vt * Math.log(vt / (Math.sqrt(2) * IS));
-  if (vd > vcrit) {
-    return vcrit + vt * Math.log(1 + (vd - vcrit) / vt);
+function diodeCurrent(
+  terminalVoltage: number,
+  thermalVoltage: number,
+  saturationCurrent: number,
+  seriesResistance: number,
+  limitJunctionVoltage = true,
+): {
+  current: number;
+  conductance: number;
+  junctionConductance: number;
+  junctionVoltage: number;
+  linearizationVoltage: number;
+} {
+  if (seriesResistance === 0) {
+    const limitedVoltage = limitJunctionVoltage
+      ? limitVoltage(terminalVoltage, thermalVoltage, saturationCurrent)
+      : terminalVoltage;
+    const exponential = safeExponential(limitedVoltage / thermalVoltage);
+    return {
+      current: saturationCurrent * (exponential - 1),
+      conductance: (saturationCurrent / thermalVoltage) * exponential,
+      junctionConductance: (saturationCurrent / thermalVoltage) * exponential,
+      junctionVoltage: limitedVoltage,
+      linearizationVoltage: limitedVoltage,
+    };
   }
-  return Math.max(vd, -40 * vt);
+
+  let junctionVoltage = terminalVoltage;
+  if (terminalVoltage > 0) {
+    junctionVoltage = Math.min(
+      terminalVoltage,
+      thermalVoltage * Math.log1p(terminalVoltage / (seriesResistance * saturationCurrent)),
+    );
+  }
+
+  for (let iteration = 0; iteration < 12; iteration++) {
+    const exponential = safeExponential(junctionVoltage / thermalVoltage);
+    const current = saturationCurrent * (exponential - 1);
+    const junctionConductance = (saturationCurrent / thermalVoltage) * exponential;
+    const correction = (junctionVoltage + seriesResistance * current - terminalVoltage)
+      / (1 + seriesResistance * junctionConductance);
+    junctionVoltage -= correction;
+    if (Math.abs(correction) <= 1e-12) break;
+  }
+
+  const exponential = safeExponential(junctionVoltage / thermalVoltage);
+  const current = saturationCurrent * (exponential - 1);
+  const junctionConductance = (saturationCurrent / thermalVoltage) * exponential;
+  return {
+    current,
+    conductance: junctionConductance / (1 + seriesResistance * junctionConductance),
+    junctionConductance,
+    junctionVoltage,
+    linearizationVoltage: terminalVoltage,
+  };
+}
+
+function limitVoltage(voltage: number, thermalVoltage: number, saturationCurrent: number): number {
+  const criticalVoltage = thermalVoltage
+    * Math.log(thermalVoltage / (Math.sqrt(2) * saturationCurrent));
+  if (voltage > criticalVoltage) {
+    return criticalVoltage
+      + thermalVoltage * Math.log(1 + (voltage - criticalVoltage) / thermalVoltage);
+  }
+  return Math.max(voltage, -40 * thermalVoltage);
+}
+
+function safeExponential(exponent: number): number {
+  return Math.exp(Math.min(exponent, 700));
 }
