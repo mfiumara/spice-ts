@@ -22,6 +22,12 @@ import {
  * by 10–15× — keep at 1e-15.
  */
 const MIN_TIMESTEP = 1e-15;
+/**
+ * Below this floor, voltage-predictor LTE estimates are dominated by the
+ * conditioning of reactive companion matrices rather than useful truncation
+ * error information. Let converged steps grow out of that numerical regime.
+ */
+const MIN_LTE_TIMESTEP = 100 * MIN_TIMESTEP;
 const NR_VOLTAGE_LIMIT = 3.5;
 /**
  * After this many consecutive LTE rejections, stop LTE-checking to avoid
@@ -355,7 +361,11 @@ class TransientSimImpl implements TransientSim {
   }
 
   private checkLTE(current: Float64Array, previous: Float64Array, dt: number): number {
-    if (!this.secondPrevSol || this.lteRejectCount >= MAX_LTE_REJECTS_BEFORE_BYPASS) return 0;
+    if (
+      !this.secondPrevSol
+      || dt <= MIN_LTE_TIMESTEP
+      || this.lteRejectCount >= MAX_LTE_REJECTS_BEFORE_BYPASS
+    ) return 0;
     let maxRatio = 0;
     // 2nd-order methods (trap, gear2) have O(dt³) LTE → larger divider; BE is O(dt²).
     const method = this.options.integrationMethod;
