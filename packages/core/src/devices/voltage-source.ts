@@ -1,5 +1,5 @@
 import type { DeviceModel, StampContext } from './device.js';
-import type { SourceWaveform, PulseSource, SinSource } from '../types.js';
+import type { SourceWaveform, PulseSource, SinSource, PWLSource } from '../types.js';
 
 export class VoltageSource implements DeviceModel {
   readonly branches: number[];
@@ -38,6 +38,8 @@ export class VoltageSource implements DeviceModel {
         return evaluatePulse(this.waveform, time);
       case 'sin':
         return evaluateSin(this.waveform, time);
+      case 'pwl':
+        return evaluatePwl(this.waveform, time);
       case 'ac':
         return this.waveform.dc ?? 0;
     }
@@ -57,6 +59,9 @@ export class VoltageSource implements DeviceModel {
   getBreakpoints(stopTime: number): number[] {
     if (this.waveform.type === 'pulse') {
       return pulseBreakpoints(this.waveform, stopTime);
+    }
+    if (this.waveform.type === 'pwl') {
+      return pwlBreakpoints(this.waveform, stopTime);
     }
     return [];
   }
@@ -89,6 +94,34 @@ export function pulseBreakpoints(p: PulseSource, stopTime: number): number[] {
     }
   }
   return result;
+}
+
+/** Return PWL corners in (0, stopTime], preserving their declared times. */
+export function pwlBreakpoints(pwl: PWLSource, stopTime: number): number[] {
+  return pwl.points
+    .map(point => point.time)
+    .filter(time => time > 0 && time <= stopTime);
+}
+
+/**
+ * Evaluate a PWL waveform with ngspice endpoint and duplicate-time semantics.
+ * Values are held outside the declared range. At equal-time points, the final
+ * value at that time wins, which represents an instantaneous discontinuity.
+ */
+export function evaluatePwl(pwl: PWLSource, time: number): number {
+  const { points } = pwl;
+  if (time < points[0].time) return points[0].value;
+
+  let left = points[0];
+  for (let i = 1; i < points.length; i++) {
+    const right = points[i];
+    if (time < right.time) {
+      const fraction = (time - left.time) / (right.time - left.time);
+      return left.value + (right.value - left.value) * fraction;
+    }
+    left = right;
+  }
+  return left.value;
 }
 
 function evaluatePulse(p: PulseSource, time: number): number {

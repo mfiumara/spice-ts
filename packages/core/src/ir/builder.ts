@@ -112,6 +112,13 @@ function flattenWaveform(wf: Partial<SourceWaveform> & { dc?: number } | undefin
           period: typed.period as number,
         };
       }
+      case 'pwl': {
+        const points = typed.points as Array<{ time: number; value: number }>;
+        return {
+          waveform: 'pwl',
+          points: points.map(point => `${point.time}:${point.value}`).join(','),
+        };
+      }
       case 'ac': {
         return {
           waveform: 'ac',
@@ -145,6 +152,8 @@ function waveformDisplayValue(params: Record<string, number | string>): string {
       return `SIN ${params.amplitude} ${formatSI(params.frequency as number)}Hz`;
     case 'pulse':
       return `PULSE ${params.v1}/${params.v2}`;
+    case 'pwl':
+      return `PWL ${(params.points as string).split(',').length} points`;
     case 'ac':
       return `AC ${params.magnitude}`;
     default:

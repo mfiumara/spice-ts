@@ -1,5 +1,7 @@
 import { parseNumber } from './tokenizer.js';
-import type { SourceWaveform, PulseSource, SinSource } from '../types.js';
+import type { SourceWaveform, PulseSource, SinSource, PWLSource } from '../types.js';
+
+const UNSUPPORTED_WAVEFORMS = new Set(['EXP', 'SFFM', 'AM', 'TRNOISE', 'EXTERNAL']);
 
 export function parseSourceWaveform(tokens: string[], startIdx: number): SourceWaveform {
   if (startIdx >= tokens.length) return { type: 'dc', value: 0 };
@@ -62,6 +64,34 @@ export function parseSourceWaveform(tokens: string[], startIdx: number): SourceW
       type: 'sin', offset: args[0] ?? 0, amplitude: args[1] ?? 0,
       frequency: args[2] ?? 0, delay: args[3], damping: args[4], phase: args[5],
     } satisfies SinSource;
+  }
+
+  if (keyword === 'PWL') {
+    const parenStart = tokens.indexOf('(', startIdx);
+    const parenEnd = tokens.indexOf(')', startIdx);
+    if (parenStart !== startIdx + 1 || parenEnd < parenStart) {
+      throw new Error('PWL source requires a parenthesized list of time/value pairs');
+    }
+    if (parenEnd !== tokens.length - 1) {
+      throw new Error(`Unsupported PWL source parameters: '${tokens.slice(parenEnd + 1).join(' ')}'`);
+    }
+    const args = tokens.slice(parenStart + 1, parenEnd).map(parseNumber);
+    if (args.length < 2 || args.length % 2 !== 0) {
+      throw new Error('PWL source requires one or more complete time/value pairs');
+    }
+    const points: PWLSource['points'] = [];
+    for (let i = 0; i < args.length; i += 2) {
+      const point = { time: args[i], value: args[i + 1] };
+      if (points.length > 0 && point.time < points[points.length - 1].time) {
+        throw new Error('PWL source times must be non-decreasing');
+      }
+      points.push(point);
+    }
+    return { type: 'pwl', points } satisfies PWLSource;
+  }
+
+  if (UNSUPPORTED_WAVEFORMS.has(keyword)) {
+    throw new Error(`Unsupported source waveform '${keyword}'`);
   }
 
   return { type: 'dc', value: parseNumber(tokens[startIdx]) };

@@ -226,6 +226,21 @@ export interface SinSource {
   phase?: number;
 }
 
+/** One time/value pair in a piecewise-linear source waveform. */
+export interface PWLPoint {
+  /** Time in seconds. Points are ordered by non-decreasing time. */
+  time: number;
+  /** Source value at this point. */
+  value: number;
+}
+
+/** Piecewise-linear source waveform (PWL). */
+export interface PWLSource {
+  type: 'pwl';
+  /** Ordered time/value pairs. Equal adjacent times describe a discontinuity. */
+  points: PWLPoint[];
+}
+
 /** AC small-signal source (AC). Used for `.ac` analysis excitation. */
 export interface ACSource {
   type: 'ac';
@@ -238,7 +253,7 @@ export interface ACSource {
 }
 
 /** Union of all source waveform types. Discriminated on the `type` field. */
-export type SourceWaveform = DCSource | PulseSource | SinSource | ACSource;
+export type SourceWaveform = DCSource | PulseSource | SinSource | PWLSource | ACSource;
 
 /** Warning collected during simulation (non-fatal). */
 export interface SimulationWarning {
