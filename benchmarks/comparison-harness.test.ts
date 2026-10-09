@@ -71,6 +71,34 @@ describe('comparison metrics', () => {
       missingFrom: ['spice-ts'],
     });
   });
+
+  it('compares a legal descending DC sweep when both engines succeed', async () => {
+    const fixture: ComparisonFixture = {
+      name: 'descending-dc',
+      analysis: 'dc',
+      netlist: '* descending DC sweep\nV1 in 0 0\nR1 in 0 1k\n.dc V1 5 0 -1\n.end',
+      signals: ['v(in)'],
+    };
+
+    const result = await compareFixture(fixture, {
+      runSpiceTs: async () => successfulRun([5, 4, 3, 2, 1, 0], { 'v(in)': [5, 4, 3, 2, 1, 0] }),
+      runNgspice: async () => successfulRun([5, 3, 1, 0], { 'v(in)': [5, 3, 1, 0] }),
+    });
+
+    assert.equal(result.spiceTs.status, 'success');
+    assert.equal(result.ngspice.status, 'success');
+    assert.equal(result.status, 'compared');
+    assert.deepEqual(result.metrics?.grid, {
+      spiceTsPoints: 6,
+      ngspicePoints: 4,
+      alignedPoints: 6,
+      excludedOutOfRange: 0,
+    });
+    const signal = result.metrics?.signals['v(in)'];
+    assert.equal(signal?.status, 'compared');
+    if (!signal || signal.status !== 'compared') throw new Error('expected compared signal');
+    assert.deepEqual(signal.absoluteError, { max: 0, rms: 0 });
+  });
 });
 
 describe('runner failure handling', () => {

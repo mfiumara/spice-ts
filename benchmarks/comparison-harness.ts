@@ -169,9 +169,12 @@ export function alignAndMeasure(
   ngspice: SampleSeries,
   requestedSignals: string[],
 ): ComparisonMetrics {
+  const referenceDescending = ngspice.grid.length > 1
+    && ngspice.grid[0] > ngspice.grid[ngspice.grid.length - 1];
+  const referenceGrid = referenceDescending ? [...ngspice.grid].reverse() : ngspice.grid;
   const targetIndexes = spiceTs.grid
     .map((point, index) => ({ point, index }))
-    .filter(({ point }) => ngspice.grid.length > 0 && point >= ngspice.grid[0] && point <= ngspice.grid[ngspice.grid.length - 1]);
+    .filter(({ point }) => referenceGrid.length > 0 && point >= referenceGrid[0] && point <= referenceGrid[referenceGrid.length - 1]);
   const signals: Record<string, SignalComparison> = {};
 
   for (const requestedName of requestedSignals) {
@@ -189,9 +192,10 @@ export function alignAndMeasure(
     const absoluteErrors: number[] = [];
     const relativeErrors: number[] = [];
     let excludedZeroReferences = 0;
+    const referenceValues = referenceDescending ? [...ngspiceValues].reverse() : ngspiceValues;
     for (const { point, index } of targetIndexes) {
       const actual = spiceValues[index];
-      const reference = interpolate(ngspice.grid, ngspiceValues, point);
+      const reference = interpolate(referenceGrid, referenceValues, point);
       if (actual === undefined || reference === null) continue;
       const absoluteError = difference(actual, reference);
       absoluteErrors.push(absoluteError);
