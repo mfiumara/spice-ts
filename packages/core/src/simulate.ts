@@ -1,7 +1,7 @@
 import { Circuit } from './circuit.js';
 import type { CompiledCircuit } from './circuit.js';
-import { parseAsync } from './parser/index.js';
-import type { SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
+import { parse, parseAsync } from './parser/index.js';
+import type { ConvergenceTelemetry, SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
 import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, SimulatorBackend } from './types.js';
 import { resolveOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
@@ -130,11 +130,7 @@ export async function simulate(
       }
       case 'tran': {
         const opts = resolveOptions(options, analysis.stopTime);
-        const seed = analysis.uic
-          ? computeUICInitialSolution(compiled)
-          : solveDCOperatingPoint(
-            compiled, opts, undefined, convergence,
-          ).assembler.solution;
+        const seed = transientInitialSolution(compiled, analysis, opts, undefined, convergence);
         result.transient = solveTransient(
           compiled, runnableTransient(analysis), opts, seed, convergence,
         );
@@ -207,9 +203,7 @@ export async function* simulateStream(
     switch (analysis.type) {
       case 'tran': {
         const opts = resolveOptions(options, analysis.stopTime);
-        const seed = analysis.uic
-          ? computeUICInitialSolution(compiled)
-          : solveDCOperatingPoint(compiled, opts).assembler.solution;
+        const seed = transientInitialSolution(compiled, analysis, opts);
         yield* streamTransient(compiled, runnableTransient(analysis), opts, seed);
         break;
       }
@@ -271,9 +265,7 @@ export async function* simulateStepStream(
       switch (analysis.type) {
         case 'tran': {
           const opts = resolveOptions(options, analysis.stopTime);
-          const seed = analysis.uic
-            ? computeUICInitialSolution(compiled)
-            : solveDCOperatingPoint(compiled, opts).assembler.solution;
+          const seed = transientInitialSolution(compiled, analysis, opts);
           for (const point of streamTransient(compiled, runnableTransient(analysis), opts, seed)) {
             yield { stepIndex: 0, paramName: '', paramValue: 0, point };
           }
@@ -323,10 +315,8 @@ function* streamWithSteps(
         switch (analysis.type) {
           case 'tran': {
             const opts = resolveOptions(options, analysis.stopTime);
-            const seed = analysis.uic
-              ? computeUICInitialSolution(compiled)
-              : solveDCOperatingPoint(compiled, opts, prevDCSolution).assembler.solution;
-            if (!analysis.uic) prevDCSolution = new Float64Array(seed);
+            const seed = transientInitialSolution(compiled, analysis, opts, prevDCSolution);
+            if (!analysis.useInitialConditions) prevDCSolution = new Float64Array(seed);
             for (const point of streamTransient(compiled, runnableTransient(analysis), opts, seed)) {
               yield { stepIndex, paramName: step.param, paramValue: value, point };
             }
@@ -364,6 +354,17 @@ function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[
   if (compiled.analyses.length === 0) {
     throw new InvalidCircuitError('No analysis command specified');
   }
+}
+
+function transientInitialSolution(
+  compiled: CompiledCircuit,
+  analysis: TransientAnalysis,
+  options: ResolvedOptions,
+  initialGuess?: Float64Array,
+  convergence?: ConvergenceTelemetry,
+): Float64Array {
+  if (analysis.useInitialConditions) return computeUICInitialSolution(compiled);
+  return solveDCOperatingPoint(compiled, options, initialGuess, convergence).assembler.solution;
 }
 
 function* streamFromSimulationResult(result: SimulationResult): Generator<TransientStep | ACPoint> {

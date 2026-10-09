@@ -139,7 +139,6 @@ describe('SPICE netlist parser', () => {
   });
 
   it('rejects unsupported semantic dot commands instead of silently accepting them', () => {
-    expect(() => parse('.ic V(out)=1\n.tran 1n 10n')).toThrow(/unsupported.*\.ic/i);
     expect(() => parse('.noise V(out) V1 dec 10 1 1Meg')).toThrow(/unsupported.*\.noise/i);
   });
 

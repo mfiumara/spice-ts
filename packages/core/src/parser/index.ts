@@ -138,15 +138,25 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
       break;
     }
     case '.TRAN': {
-      const args = tokens.slice(1).filter(token => token.toUpperCase() !== 'UIC');
-      const timestep = parseNumber(args[0]);
-      const stopTime = parseNumber(args[1]);
-      const startTime = args[2] ? parseNumber(args[2]) : undefined;
-      const maxTimestep = args[3] ? parseNumber(args[3]) : undefined;
-      const uic = tokens.some(token => token.toUpperCase() === 'UIC');
-      circuit.addAnalysis('tran', { timestep, stopTime, startTime, maxTimestep, uic });
+      const timestep = parseNumber(tokens[1]);
+      const stopTime = parseNumber(tokens[2]);
+      const args = tokens.slice(3);
+      const uicIndex = args.findIndex(token => token.toUpperCase() === 'UIC');
+      const useInitialConditions = uicIndex >= 0;
+      if (uicIndex >= 0) args.splice(uicIndex, 1);
+      const startTime = args[0] ? parseNumber(args[0]) : undefined;
+      const maxTimestep = args[1] ? parseNumber(args[1]) : undefined;
+      circuit.addAnalysis('tran', {
+        timestep, stopTime, startTime, maxTimestep, useInitialConditions,
+      });
       break;
     }
+    case '.IC':
+      parseNodeInitialState(circuit, 'ic', tokens, lineNumber);
+      break;
+    case '.NODESET':
+      parseNodeInitialState(circuit, 'nodeset', tokens, lineNumber);
+      break;
     case '.AC': {
       const variation = tokens[1].toLowerCase() as 'dec' | 'oct' | 'lin';
       const points = parseInt(tokens[2], 10);
@@ -258,6 +268,29 @@ function parseSimulationOptions(tokens: string[]): SimulationOptions {
   }
 
   return options;
+}
+
+function parseNodeInitialState(
+  circuit: Circuit,
+  kind: 'ic' | 'nodeset',
+  tokens: string[],
+  lineNumber: number,
+): void {
+  if (tokens.length < 6 || (tokens.length - 1) % 5 !== 0) {
+    throw new ParseError(`Invalid .${kind} node-voltage assignment`, lineNumber, tokens.join(' '));
+  }
+  for (let index = 1; index < tokens.length; index += 5) {
+    if (tokens[index].toUpperCase() !== 'V' || tokens[index + 1] !== '('
+      || tokens[index + 3] !== ')' || !tokens[index + 4].startsWith('=')) {
+      throw new ParseError(`Invalid .${kind} node-voltage assignment`, lineNumber, tokens.join(' '));
+    }
+    const node = tokens[index + 2];
+    const valueToken = tokens[index + 4].slice(1);
+    if (!node || !valueToken) {
+      throw new ParseError(`Invalid .${kind} node-voltage assignment`, lineNumber, tokens.join(' '));
+    }
+    circuit.addInitialState(kind, { node, value: parseNumber(valueToken) });
+  }
 }
 
 function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): void {
