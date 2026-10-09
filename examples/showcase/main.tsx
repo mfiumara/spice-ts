@@ -7,6 +7,7 @@ import { TransientPlot, BodePlot, DCSweepPlot, CursorTooltip, Legend, SchematicV
 import type { LegendSignal } from '@spice-ts/ui/react';
 import { DARK_THEME, formatTime, formatFrequency, formatVoltage, formatSI, DEFAULT_PALETTE } from '@spice-ts/ui';
 import type { TransientDataset, ACDataset, DCSweepDataset, CursorState } from '@spice-ts/ui';
+import { COMMON_SOURCE_AC_DEMO, RLC_RESONANCE_DEMO } from './advanced-demos.js';
 import './showcase.css';
 
 // ─── Circuit definitions ────────────────────────────────────────────
@@ -55,24 +56,7 @@ C1 out 0 100n
 .ac dec 100 1 10Meg
 .step param R1 list 1k 5k 10k`,
   },
-  {
-    id: 'rlc-bandpass', name: 'RLC Bandpass', desc: 'Impulse + Bode',
-    icon: '\u236E', group: 'Filters', tag: '.tran', signals: ['n1'],
-    tranNetlist: `
-* Series RLC bandpass — impulse in, voltage across C
-V1 in 0 PULSE(0 5 0 1n 1n 1u 100u)
-R1 in mid 100
-L1 mid n1 10m
-C1 n1 0 1u
-.tran 1u 2m`,
-    acNetlist: `
-* Series RLC bandpass — frequency response
-V1 in 0 AC 1
-R1 in mid 100
-L1 mid n1 10m
-C1 n1 0 1u
-.ac dec 100 10 100k`,
-  },
+  RLC_RESONANCE_DEMO,
   {
     id: 'sallen-key', name: 'Sallen-Key Low-Pass', desc: '2nd-order, \u201340dB/dec',
     icon: '\u2393', group: 'Filters', tag: '.ac', signals: ['out'],
@@ -114,18 +98,7 @@ Cl out 0 10u
 .model DMOD D(IS=1e-14 N=1)
 .tran 1u 4m`,
   },
-  {
-    id: 'cs-amp', name: 'Common-Source Amp', desc: 'MOSFET gain stage',
-    icon: '\u23DA', group: 'Non-Linear', tag: '.ac', signals: ['out'],
-    acNetlist: `
-* NMOS common-source amplifier — Bode plot
-VDD vdd 0 DC 5
-VGS in 0 DC 1.5 AC 1
-.model NMOD NMOS(VTO=1 KP=1e-4)
-M1 out in 0 0 NMOD W=100u L=1u
-RD vdd out 10k
-.ac dec 100 1 10Meg`,
-  },
+  COMMON_SOURCE_AC_DEMO,
   {
     id: 'inv-amp', name: 'Inverting Amplifier', desc: '.step Rf: 1k\u20131 00k',
     icon: '\u25B3', group: 'Opamp Circuits', tag: '.step', signals: ['out'],
@@ -194,7 +167,6 @@ Rload out 0 10
   },
   {
     integrationMethod: 'gear2',
-    simulationOptions: { integrationMethod: 'gear2', reltol: 1e-2 },
     id: 'boost', name: 'Boost Converter', desc: '5V \u2192 ~10V, 50% duty',
     icon: '\u26A1', group: 'Power Electronics', tag: '.tran', signals: ['out'],
     tranNetlist: `

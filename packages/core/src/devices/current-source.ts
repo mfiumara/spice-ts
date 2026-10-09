@@ -1,6 +1,6 @@
 import type { DeviceModel, StampContext } from './device.js';
 import type { SourceWaveform, PulseSource, SinSource } from '../types.js';
-import { pulseBreakpoints } from './voltage-source.js';
+import { evaluatePwl, pulseBreakpoints, pwlBreakpoints } from './voltage-source.js';
 
 export class CurrentSource implements DeviceModel {
   readonly branches: number[] = [];
@@ -44,6 +44,8 @@ export class CurrentSource implements DeviceModel {
         return s.offset + s.amplitude * Math.exp(-damping * t) *
           Math.sin(2 * Math.PI * s.frequency * t + (phase * Math.PI) / 180);
       }
+      case 'pwl':
+        return evaluatePwl(this.waveform, time);
       case 'ac':
         return this.waveform.dc ?? 0;
     }
@@ -52,6 +54,9 @@ export class CurrentSource implements DeviceModel {
   getBreakpoints(stopTime: number): number[] {
     if (this.waveform.type === 'pulse') {
       return pulseBreakpoints(this.waveform, stopTime);
+    }
+    if (this.waveform.type === 'pwl') {
+      return pwlBreakpoints(this.waveform, stopTime);
     }
     return [];
   }
