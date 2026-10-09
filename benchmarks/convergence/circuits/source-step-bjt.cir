@@ -1,0 +1,10 @@
+* CC0-1.0 fixture: high-gain BJT common-emitter DC operating point
+VCC vcc 0 DC 15
+VB base 0 DC 0.78
+RC vcc collector 1k
+RE emitter 0 1
+Q1 collector base emitter QHARD
+.model QHARD NPN(IS=1e-16 BF=300 VAF=100)
+.options reltol=1e-3 abstol=1e-12 vntol=1e-6 gmin=0 itl1=100
+.op
+.end
