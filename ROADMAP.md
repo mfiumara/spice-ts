@@ -4,8 +4,8 @@ spice-ts is pursuing correctness parity with ngspice before performance, AI-nati
 models. [CHARTER.md](CHARTER.md) is the source of truth for priorities and program rules; this document is the
 public issue map and measurable delivery sequence.
 
-Issue state below was verified against live GitHub state on 2026-10-10. The repository had 21 open issues: all
-18 issues labelled `program:agent`, plus milestone issues [#27](https://github.com/mfiumara/spice-ts/issues/27),
+Issue state below was verified against live GitHub state on 2026-10-10. The repository had 18 open issues: all
+15 issues labelled `program:agent`, plus milestone issues [#27](https://github.com/mfiumara/spice-ts/issues/27),
 [#30](https://github.com/mfiumara/spice-ts/issues/30), and [#32](https://github.com/mfiumara/spice-ts/issues/32).
 Every one is represented below. A delivery is marked merged only when its PR is on `main`; accepted but unmerged
 work remains an open gap. This reconciliation closes [#91](https://github.com/mfiumara/spice-ts/issues/91) only
@@ -27,6 +27,9 @@ published parity report; agreed error thresholds met or gaps filed
 | Netlist compatibility audit | [#55](https://github.com/mfiumara/spice-ts/issues/55) | [PR #79](https://github.com/mfiumara/spice-ts/pull/79) merged the fixture-backed support matrix and filed gaps |
 | Convergence audit | [#56](https://github.com/mfiumara/spice-ts/issues/56) | [PR #68](https://github.com/mfiumara/spice-ts/pull/68) merged hard-circuit regressions and before/after evidence |
 | Structured convergence telemetry | [#64](https://github.com/mfiumara/spice-ts/issues/64) | [PR #82](https://github.com/mfiumara/spice-ts/pull/82) merged typed phase, iteration, and retry diagnostics |
+| Chua circuit | [#48](https://github.com/mfiumara/spice-ts/issues/48) | [PR #81](https://github.com/mfiumara/spice-ts/pull/81) merged reproducible UIC seeds, mutual-inductance support, and identical-netlist ngspice waveform evidence |
+| Diode commutation transient parity | [#65](https://github.com/mfiumara/spice-ts/issues/65) | [PR #86](https://github.com/mfiumara/spice-ts/pull/86) merged the RED regression, diode series-resistance model, and matched-point ngspice comparison |
+| Initial-state semantics | [#73](https://github.com/mfiumara/spice-ts/issues/73) | [PR #85](https://github.com/mfiumara/spice-ts/pull/85) merged `.ic`, `.nodeset`, `.tran uic`, parser, and execution coverage |
 | PWL source semantics | [#74](https://github.com/mfiumara/spice-ts/issues/74) | [PR #83](https://github.com/mfiumara/spice-ts/pull/83) merged ngspice-compatible PWL parsing and execution coverage |
 | Supported directive semantics | [#77](https://github.com/mfiumara/spice-ts/issues/77) | [PR #88](https://github.com/mfiumara/spice-ts/pull/88) merged option precedence plus control/output directive classification |
 | Correctness-first issue map | [#51](https://github.com/mfiumara/spice-ts/issues/51) | [PR #58](https://github.com/mfiumara/spice-ts/pull/58) merged the charter-aligned roadmap baseline |
@@ -35,10 +38,7 @@ published parity report; agreed error thresholds met or gaps filed
 
 | Work | Issue | Current residual |
 |------|-------|------------------|
-| Chua circuit | [#48](https://github.com/mfiumara/spice-ts/issues/48) | Reproducible initial conditions and an identical-netlist waveform comparison remain open |
 | Public classic/app-note corpus B | [#54](https://github.com/mfiumara/spice-ts/issues/54) | At least 20 circuits across at least four categories, with recorded source and licence, remain open |
-| Diode commutation transient parity | [#65](https://github.com/mfiumara/spice-ts/issues/65) | The reported 26.6% RMS divergence still needs a RED regression and general fix |
-| Initial-state semantics | [#73](https://github.com/mfiumara/spice-ts/issues/73) | `.ic`, `.nodeset`, `.tran uic`, and restored ring-oscillator waveform evidence are not yet merged on `main` |
 | Advanced analysis support | [#75](https://github.com/mfiumara/spice-ts/issues/75) | Parser and execution coverage for advanced ngspice analyses remains open |
 | Advanced showcase circuits (partial) | [#30](https://github.com/mfiumara/spice-ts/issues/30) | [PR #84](https://github.com/mfiumara/spice-ts/pull/84) and [PR #90](https://github.com/mfiumara/spice-ts/pull/90) merged four parity-backed demos; BJT common-emitter and full-wave rectifier demos remain open, so the issue is not complete |
 | Reconcile this roadmap | [#91](https://github.com/mfiumara/spice-ts/issues/91) | This documentation-only PR closes the issue only after merge |
