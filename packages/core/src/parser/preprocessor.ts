@@ -67,10 +67,10 @@ async function preprocessInternal(
     // .param at top level
     if (upper.startsWith('.PARAM ')) {
       const paramContent = trimmed.slice(7).trim();
-      const eqIdx = paramContent.indexOf('=');
-      if (eqIdx > 0) {
-        const name = paramContent.slice(0, eqIdx).trim().toUpperCase();
-        let valStr = paramContent.slice(eqIdx + 1).trim();
+      const assignments = paramContent.matchAll(/([A-Za-z_]\w*)\s*=\s*(\{[^}]+\}|\S+)/g);
+      for (const assignment of assignments) {
+        const name = assignment[1].toUpperCase();
+        let valStr = assignment[2];
         if (valStr.startsWith('{') && valStr.endsWith('}')) {
           valStr = valStr.slice(1, -1);
         }

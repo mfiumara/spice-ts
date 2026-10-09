@@ -36,6 +36,8 @@ export interface TransientAnalysis {
   startTime?: number;
   /** Maximum allowed timestep in seconds */
   maxTimestep?: number;
+  /** Skip the DC operating point and use per-element initial conditions. */
+  uic?: boolean;
 }
 
 /** AC small-signal analysis (`.ac`). Frequency sweep. */
