@@ -8,7 +8,9 @@ import type { LegendSignal } from '@spice-ts/ui/react';
 import { DARK_THEME, formatTime, formatFrequency, formatVoltage, formatSI, DEFAULT_PALETTE } from '@spice-ts/ui';
 import type { TransientDataset, ACDataset, DCSweepDataset, CursorState } from '@spice-ts/ui';
 import {
+  BJT_COMMON_EMITTER_DEMO,
   COMMON_SOURCE_AC_DEMO,
+  FULL_WAVE_RECTIFIER_DEMO,
   OPAMP_DIFFERENTIATOR_DEMO,
   PASSIVE_NOTCH_DEMO,
   RLC_RESONANCE_DEMO,
@@ -104,7 +106,9 @@ Cl out 0 10u
 .model DMOD D(IS=1e-14 N=1)
 .tran 1u 4m`,
   },
+  FULL_WAVE_RECTIFIER_DEMO,
   COMMON_SOURCE_AC_DEMO,
+  BJT_COMMON_EMITTER_DEMO,
   {
     id: 'inv-amp', name: 'Inverting Amplifier', desc: '.step Rf: 1k\u20131 00k',
     icon: '\u25B3', group: 'Opamp Circuits', tag: '.step', signals: ['out'],
