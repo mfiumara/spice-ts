@@ -7,6 +7,7 @@ import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
 import { Capacitor } from './devices/capacitor.js';
 import { Inductor } from './devices/inductor.js';
+import { MutualInductor } from './devices/mutual-inductor.js';
 import { Diode } from './devices/diode.js';
 import { BJT } from './devices/bjt.js';
 import { MOSFET } from './devices/mosfet.js';
@@ -69,6 +70,10 @@ interface DeviceDescriptor {
   modelName?: string;
   params?: Record<string, number>;
   controlSource?: string;
+  /** Volts for capacitors, amps for inductors. */
+  ic?: number;
+  coupledA?: string;
+  coupledB?: string;
 }
 
 function formatNumber(value: number): string {
@@ -135,8 +140,11 @@ function formatDevice(desc: DeviceDescriptor): string {
     case 'L': {
       const value = desc.value !== undefined ? formatNumber(desc.value) : undefined;
       const valueAndModel = [value, desc.modelName].filter(Boolean).join(' ');
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${valueAndModel || '0'}${tail}`;
+      const ic = desc.ic === undefined ? '' : ` IC=${formatNumber(desc.ic)}`;
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${valueAndModel || '0'}${tail}${ic}`;
     }
+    case 'K':
+      return `${desc.name} ${desc.coupledA} ${desc.coupledB} ${formatNumber(desc.value ?? 0)}`;
     case 'V':
     case 'I':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatWaveform(desc.waveform)}`;
@@ -169,6 +177,7 @@ function formatAnalysis(analysis: AnalysisCommand): string {
       const parts = ['.tran', formatNumber(analysis.timestep), formatNumber(analysis.stopTime)];
       if (analysis.startTime !== undefined) parts.push(formatNumber(analysis.startTime));
       if (analysis.maxTimestep !== undefined) parts.push(formatNumber(analysis.maxTimestep));
+      if (analysis.uic) parts.push('uic');
       return parts.join(' ');
     }
     case 'ac':
@@ -283,6 +292,7 @@ export class Circuit {
     capacitance?: number,
     modelName?: string,
     instanceParams?: Record<string, number>,
+    ic?: number,
   ): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
@@ -293,6 +303,7 @@ export class Circuit {
       value: capacitance,
       modelName,
       params: instanceParams,
+      ic,
     });
   }
 
@@ -313,6 +324,7 @@ export class Circuit {
     inductance?: number,
     modelName?: string,
     instanceParams?: Record<string, number>,
+    ic?: number,
   ): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
@@ -323,6 +335,15 @@ export class Circuit {
       value: inductance,
       modelName,
       params: instanceParams,
+      ic,
+    });
+  }
+
+  /** Add a SPICE K-element coupling two previously declared inductors. */
+  addInductorCoupling(name: string, indA: string, indB: string, coupling: number): void {
+    this.descriptors.push({
+      type: 'K', name, nodes: [], value: coupling,
+      coupledA: indA, coupledB: indB,
     });
   }
 
@@ -537,7 +558,7 @@ export class Circuit {
    */
   addAnalysis(type: 'op'): void;
   addAnalysis(type: 'dc', params: { source: string; start: number; stop: number; step: number }): void;
-  addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number }): void;
+  addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; uic?: boolean }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
     switch (type) {
@@ -554,13 +575,14 @@ export class Circuit {
         });
         break;
       case 'tran': {
-        const tranCmd: { type: 'tran'; timestep: number; stopTime: number; startTime?: number; maxTimestep?: number } = {
+        const tranCmd: { type: 'tran'; timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; uic?: boolean } = {
           type: 'tran',
           timestep: params!.timestep as number,
           stopTime: params!.stopTime as number,
         };
         if (params?.startTime !== undefined) tranCmd.startTime = params.startTime as number;
         if (params?.maxTimestep !== undefined) tranCmd.maxTimestep = params.maxTimestep as number;
+        if (params?.uic) tranCmd.uic = true;
         this._analyses.push(tranCmd);
         break;
       }
@@ -729,7 +751,7 @@ export class Circuit {
             throw new Error(`Capacitor '${desc.name}' references unknown model '${desc.modelName}'`);
           }
           const { value } = resolveCapacitance(desc.value, model, desc.params);
-          devices.push(new Capacitor(desc.name, nodeIndices, value));
+          devices.push(new Capacitor(desc.name, nodeIndices, value, desc.ic));
           break;
         }
         case 'L': {
@@ -740,7 +762,18 @@ export class Circuit {
           const { value } = resolveInductance(desc.value, model, desc.params);
           const bi = branchIndex++;
           branchNames.push(desc.name);
-          devices.push(new Inductor(desc.name, nodeIndices, bi, value));
+          devices.push(new Inductor(desc.name, nodeIndices, bi, value, desc.ic));
+          break;
+        }
+        case 'K': {
+          const indA = deviceMap.get(desc.coupledA!);
+          const indB = deviceMap.get(desc.coupledB!);
+          if (!(indA instanceof Inductor) || !(indB instanceof Inductor)) {
+            throw new Error(
+              `K-element '${desc.name}' references unknown or non-inductor device(s): ${desc.coupledA}, ${desc.coupledB}`,
+            );
+          }
+          devices.push(new MutualInductor(desc.name, indA, indB, desc.value!));
           break;
         }
         case 'D': {
@@ -942,6 +975,7 @@ export class Circuit {
       name: desc.name,
       nodes: [left, n],
       value: model.capacitance,
+      ic: desc.ic,
     });
 
     return result;
@@ -989,6 +1023,7 @@ export class Circuit {
       name: desc.name,
       nodes: [left, n],
       value: model.inductance,
+      ic: desc.ic,
     });
 
     return result;

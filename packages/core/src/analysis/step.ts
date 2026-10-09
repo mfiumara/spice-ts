@@ -7,6 +7,7 @@ import { solveDCSweep } from './dc-sweep.js';
 import { solveTransient } from './transient.js';
 import { solveAC } from './ac.js';
 import { InvalidCircuitError } from '../errors.js';
+import { computeUICInitialSolution } from './uic.js';
 
 /**
  * Generate the array of parameter values for a .step sweep.
@@ -114,9 +115,15 @@ export function solveStep(
           }
           case 'tran': {
             const opts = resolveOptions(options, analysis.stopTime);
-            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts, prevDCSolution);
-            stepResult.transient = solveTransient(compiled, analysis, opts, dcAsm.solution);
-            prevDCSolution = new Float64Array(dcAsm.solution);
+            const seed = analysis.uic
+              ? computeUICInitialSolution(compiled)
+              : solveDCOperatingPoint(compiled, opts, prevDCSolution).assembler.solution;
+            const runnable = analysis.timestep > 0 ? analysis : {
+              ...analysis,
+              timestep: analysis.maxTimestep ?? analysis.stopTime / 50,
+            };
+            stepResult.transient = solveTransient(compiled, runnable, opts, seed);
+            if (!analysis.uic) prevDCSolution = new Float64Array(seed);
             break;
           }
           case 'ac': {

@@ -138,11 +138,13 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
       break;
     }
     case '.TRAN': {
-      const timestep = parseNumber(tokens[1]);
-      const stopTime = parseNumber(tokens[2]);
-      const startTime = tokens[3] ? parseNumber(tokens[3]) : undefined;
-      const maxTimestep = tokens[4] ? parseNumber(tokens[4]) : undefined;
-      circuit.addAnalysis('tran', { timestep, stopTime, startTime, maxTimestep });
+      const args = tokens.slice(1).filter(token => token.toUpperCase() !== 'UIC');
+      const timestep = parseNumber(args[0]);
+      const stopTime = parseNumber(args[1]);
+      const startTime = args[2] ? parseNumber(args[2]) : undefined;
+      const maxTimestep = args[3] ? parseNumber(args[3]) : undefined;
+      const uic = tokens.some(token => token.toUpperCase() === 'UIC');
+      circuit.addAnalysis('tran', { timestep, stopTime, startTime, maxTimestep, uic });
       break;
     }
     case '.AC': {
@@ -214,12 +216,18 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
     }
     case 'C': {
       const parsed = parsePassiveElement(tokens, 3, 'C');
-      circuit.addCapacitor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, parsed.params);
+      const { IC: ic, ...params } = parsed.params;
+      circuit.addCapacitor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, params, ic);
       break;
     }
     case 'L': {
       const parsed = parsePassiveElement(tokens, 3, 'L');
-      circuit.addInductor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, parsed.params);
+      const { IC: ic, ...params } = parsed.params;
+      circuit.addInductor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, params, ic);
+      break;
+    }
+    case 'K': {
+      circuit.addInductorCoupling(name, tokens[1], tokens[2], parseNumber(tokens[3]));
       break;
     }
     case 'V': {

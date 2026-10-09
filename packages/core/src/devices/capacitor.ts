@@ -8,6 +8,7 @@ export class Capacitor implements DeviceModel {
     readonly name: string,
     readonly nodes: number[],
     public capacitance: number,
+    readonly ic?: number,
   ) {}
 
   setParameter(value: number): void {
