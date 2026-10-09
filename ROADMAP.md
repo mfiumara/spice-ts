@@ -4,12 +4,17 @@ spice-ts is pursuing correctness parity with ngspice before performance, AI-nati
 models. [CHARTER.md](CHARTER.md) is the source of truth for priorities and program rules; this document is the
 public issue map and measurable delivery sequence.
 
-Issue state below was verified against live GitHub state on 2026-10-10. The repository had 18 open issues: all
-15 issues labelled `program:agent`, plus milestone issues [#27](https://github.com/mfiumara/spice-ts/issues/27),
-[#30](https://github.com/mfiumara/spice-ts/issues/30), and [#32](https://github.com/mfiumara/spice-ts/issues/32).
-Every one is represented below. A delivery is marked merged only when its PR is on `main`; accepted but unmerged
-work remains an open gap. This reconciliation closes [#91](https://github.com/mfiumara/spice-ts/issues/91) only
-when its PR merges.
+Issue state below was verified against live GitHub state on 2026-10-10. The repository had 14 open issues: M1
+[#75](https://github.com/mfiumara/spice-ts/issues/75), [#100](https://github.com/mfiumara/spice-ts/issues/100),
+and [#101](https://github.com/mfiumara/spice-ts/issues/101); M2
+[#27](https://github.com/mfiumara/spice-ts/issues/27) and [#40](https://github.com/mfiumara/spice-ts/issues/40);
+M3 [#60](https://github.com/mfiumara/spice-ts/issues/60)–[#63](https://github.com/mfiumara/spice-ts/issues/63);
+and M4 [#3](https://github.com/mfiumara/spice-ts/issues/3),
+[#4](https://github.com/mfiumara/spice-ts/issues/4), [#5](https://github.com/mfiumara/spice-ts/issues/5),
+[#7](https://github.com/mfiumara/spice-ts/issues/7), and [#76](https://github.com/mfiumara/spice-ts/issues/76).
+Every open issue is represented below. A delivery is marked merged only when its PR is on `main`; accepted but
+unmerged work remains an open gap. This reconciliation closes
+[#100](https://github.com/mfiumara/spice-ts/issues/100) only when its PR merges.
 
 ## M1 Correctness parity
 
@@ -23,7 +28,8 @@ published parity report; agreed error thresholds met or gaps filed
 | Boost converter LTE collapse | [#43](https://github.com/mfiumara/spice-ts/issues/43) | [PR #78](https://github.com/mfiumara/spice-ts/pull/78) merged the RED regression, identical-netlist ngspice comparison, and general LTE retry fix |
 | Common-source amplifier AC gain | [#44](https://github.com/mfiumara/spice-ts/issues/44) | [PR #66](https://github.com/mfiumara/spice-ts/pull/66) merged biased small-signal parity coverage |
 | Comparison harness v2 | [#52](https://github.com/mfiumara/spice-ts/issues/52) | [PR #71](https://github.com/mfiumara/spice-ts/pull/71) merged CI-runnable OP/DC, AC, and TRAN aligned-error reports |
-| Public ngspice corpus A | [#53](https://github.com/mfiumara/spice-ts/issues/53) | [PR #80](https://github.com/mfiumara/spice-ts/pull/80) merged 20 provenance-tracked fixtures; its BJT CE result remains an informational 2.70% bias warning, not a hidden pass |
+| Public ngspice corpus A | [#53](https://github.com/mfiumara/spice-ts/issues/53) | [PR #80](https://github.com/mfiumara/spice-ts/pull/80) merged 20 provenance-tracked fixtures; its validator runs all 20 with ngspice and retains every unsupported/reclassified spice-ts case |
+| Public classic SPICE3 corpus B | [#54](https://github.com/mfiumara/spice-ts/issues/54) | [PR #93](https://github.com/mfiumara/spice-ts/pull/93) merged 20 byte-identical, provenance-tracked fixtures across eight categories; ngspice produces data for 19/20, while spice-ts parses 0/20 |
 | Netlist compatibility audit | [#55](https://github.com/mfiumara/spice-ts/issues/55) | [PR #79](https://github.com/mfiumara/spice-ts/pull/79) merged the fixture-backed support matrix and filed gaps |
 | Convergence audit | [#56](https://github.com/mfiumara/spice-ts/issues/56) | [PR #68](https://github.com/mfiumara/spice-ts/pull/68) merged hard-circuit regressions and before/after evidence |
 | Structured convergence telemetry | [#64](https://github.com/mfiumara/spice-ts/issues/64) | [PR #82](https://github.com/mfiumara/spice-ts/pull/82) merged typed phase, iteration, and retry diagnostics |
@@ -32,20 +38,30 @@ published parity report; agreed error thresholds met or gaps filed
 | Initial-state semantics | [#73](https://github.com/mfiumara/spice-ts/issues/73) | [PR #85](https://github.com/mfiumara/spice-ts/pull/85) merged `.ic`, `.nodeset`, `.tran uic`, parser, and execution coverage |
 | PWL source semantics | [#74](https://github.com/mfiumara/spice-ts/issues/74) | [PR #83](https://github.com/mfiumara/spice-ts/pull/83) merged ngspice-compatible PWL parsing and execution coverage |
 | Supported directive semantics | [#77](https://github.com/mfiumara/spice-ts/issues/77) | [PR #88](https://github.com/mfiumara/spice-ts/pull/88) merged option precedence plus control/output directive classification |
+| Advanced showcase circuits | [#30](https://github.com/mfiumara/spice-ts/issues/30) | [PR #84](https://github.com/mfiumara/spice-ts/pull/84), [PR #90](https://github.com/mfiumara/spice-ts/pull/90), and [PR #95](https://github.com/mfiumara/spice-ts/pull/95) merged six parity-backed demos, including the final BJT common-emitter and full-wave rectifier residuals |
 | Correctness-first issue map | [#51](https://github.com/mfiumara/spice-ts/issues/51) | [PR #58](https://github.com/mfiumara/spice-ts/pull/58) merged the charter-aligned roadmap baseline |
+| First-wave roadmap reconciliation | [#91](https://github.com/mfiumara/spice-ts/issues/91) | [PR #92](https://github.com/mfiumara/spice-ts/pull/92) reconciled the issue map after the first accepted merge wave |
 
 ### Open residual gaps
 
 | Work | Issue | Current residual |
 |------|-------|------------------|
-| Public classic/app-note corpus B | [#54](https://github.com/mfiumara/spice-ts/issues/54) | At least 20 circuits across at least four categories, with recorded source and licence, remain open |
 | Advanced analysis support | [#75](https://github.com/mfiumara/spice-ts/issues/75) | Parser and execution coverage for advanced ngspice analyses remains open |
-| Advanced showcase circuits (partial) | [#30](https://github.com/mfiumara/spice-ts/issues/30) | [PR #84](https://github.com/mfiumara/spice-ts/pull/84) and [PR #90](https://github.com/mfiumara/spice-ts/pull/90) merged four parity-backed demos; BJT common-emitter and full-wave rectifier demos remain open, so the issue is not complete |
-| Reconcile this roadmap | [#91](https://github.com/mfiumara/spice-ts/issues/91) | This documentation-only PR closes the issue only after merge |
+| Integrate classic corpus into comparison reporting | [#101](https://github.com/mfiumara/spice-ts/issues/101) | Run the byte-identical corpus through the CI-able comparison report; preserve the current 19/20 ngspice success and 0/20 spice-ts parser loss unless implementation changes them |
+| Reconcile this roadmap | [#100](https://github.com/mfiumara/spice-ts/issues/100) | This documentation-only PR closes the issue only after merge |
 
-The showcase evidence includes losses as well as wins. The passive notch in PR #90 was near matched-point parity,
-while the differentiator output reported max/RMS relative error of 0.917/0.180 and excluded 401 zero-reference
-points from relative metrics. Demos remain supporting evidence, not substitutes for the M1 corpus and report.
+The two public corpora currently contain 40 provenance-tracked circuits, not the ≥100 required for M1. Corpus A's
+validator runs all 20 fixtures with ngspice (20/20 pass) and currently classifies 20/20 as unsupported or
+reclassified by spice-ts; it also flags `jimi-fuzz` as newly parsing, so that catalogue status needs reconciliation
+rather than being promoted to a parity result. Corpus B records 19/20 ngspice outputs and 0/20 spice-ts parses; its
+integration into the comparison report remains #101. These are catalogued validation results, not a parity report
+or milestone completion.
+
+Showcase evidence likewise includes losses as well as wins. The passive notch in PR #90 was near matched-point
+parity, while the differentiator output reported max/RMS relative error of 0.917/0.180 and excluded 401
+zero-reference points from relative metrics. PR #95 retained near-zero relative-error spikes for both new demos;
+for example, full-wave `V(out)` reported max/RMS relative error of 0.984/0.155. Demos remain supporting evidence,
+not substitutes for the M1 corpus and report.
 
 ## M2 Performance
 
@@ -60,6 +76,7 @@ Optimization follows correctness measurement and must not weaken parity threshol
 | Sparse LU | [#8](https://github.com/mfiumara/spice-ts/issues/8) | [PR #18](https://github.com/mfiumara/spice-ts/pull/18) merged the Gilbert–Peierls sparse solver, pattern reuse, solver tests, and a three-way comparison benchmark |
 | 10k-node measurement baseline (partial #40) | [#40](https://github.com/mfiumara/spice-ts/issues/40) | [PR #72](https://github.com/mfiumara/spice-ts/pull/72) merged deterministic scaling measurements through 10,000 nodes; it did not close long-running or continuous simulation scope |
 | Sparse MNA stamp lookup | [#69](https://github.com/mfiumara/spice-ts/issues/69) | [PR #89](https://github.com/mfiumara/spice-ts/pull/89) replaced dense O(n²) position storage with O(nnz) open-addressed lookup |
+| Sparse symbolic-analysis reuse | [#70](https://github.com/mfiumara/spice-ts/issues/70) | [PR #97](https://github.com/mfiumara/spice-ts/pull/97) reused unchanged topology with parity checks and paired timings; 10k DC sweep improved 47.94%, while 10k one-shot OP and LC-50 transient regressed 1.28% and 1.75% respectively |
 
 ### Open residual gaps
 
@@ -67,7 +84,6 @@ Optimization follows correctness measurement and must not weaken parity threshol
 |------|-------|------------------|
 | Parallel `.step` execution | [#27](https://github.com/mfiumara/spice-ts/issues/27) | Browser and Node worker paths with deterministic sequential fallback remain open |
 | Long-running and continuous simulation performance (partial) | [#40](https://github.com/mfiumara/spice-ts/issues/40) | Correct buck-boost long runs, bounded resources, and Falstad-style continuous/reset operation remain open after the measurement-only baseline |
-| Sparse symbolic-analysis reuse | [#70](https://github.com/mfiumara/spice-ts/issues/70) | Reuse across unchanged topology still needs parity checks and before/after timings |
 
 The performance record keeps both sides visible. PR #72 measured the 10,000-node spice-ts API 1.41× faster than
 fresh-process ngspice CLI wall time, but 8.02× slower than ngspice's internal analysis timer and at 37.39× its
@@ -87,13 +103,13 @@ explicit contracts.
 |------|-------|-----------------|
 | MCP, JSON, structured-error, and WASM API design | [#57](https://github.com/mfiumara/spice-ts/issues/57) | [PR #67](https://github.com/mfiumara/spice-ts/pull/67) merged concrete package and protocol contracts with independently testable follow-ups |
 | Protocol v1 schemas and canonical JSON | [#59](https://github.com/mfiumara/spice-ts/issues/59) | [PR #87](https://github.com/mfiumara/spice-ts/pull/87) merged versioned schemas, deterministic serialization, and golden fixtures |
+| `circuit-json` adapter | [#35](https://github.com/mfiumara/spice-ts/issues/35) | [PR #94](https://github.com/mfiumara/spice-ts/pull/94) merged deterministic bidirectional conversion with explicit ordered diagnostics and guarded lossy export |
+| Probe interactions in the schematic viewer | [#32](https://github.com/mfiumara/spice-ts/issues/32) | [PR #98](https://github.com/mfiumara/spice-ts/pull/98) merged accessible dynamic node/branch probing across transient, AC, and DC results |
 
 ### Open residual gaps
 
 | Work | Issue | Current residual |
 |------|-------|------------------|
-| Probe interactions in the schematic viewer | [#32](https://github.com/mfiumara/spice-ts/issues/32) | Node and branch probing across transient, AC, and DC views remains open |
-| `circuit-json` adapter | [#35](https://github.com/mfiumara/spice-ts/issues/35) | Bidirectional typed conversion isolated from zero-dependency core/UI remains open |
 | Core protocol adapter | [#60](https://github.com/mfiumara/spice-ts/issues/60) | Structured errors, cancellation, and resource limits over core simulation remain open |
 | Bounded MCP simulation server | [#61](https://github.com/mfiumara/spice-ts/issues/61) | Typed tools with deterministic output and enforced execution bounds remain open |
 | Worker and WASM facade | [#62](https://github.com/mfiumara/spice-ts/issues/62) | A protocol-compatible browser worker and WASM-facing API remain open |
