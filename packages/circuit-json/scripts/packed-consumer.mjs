@@ -51,7 +51,7 @@ try {
 
   run(
     'pnpm',
-    ['add', '--ignore-workspace', '--offline', '--save-exact', 'typescript@5.9.3', ...tarballs],
+    ['add', '--ignore-workspace', '--prefer-offline', '--save-exact', 'typescript@5.9.3', ...tarballs],
     consumerRoot,
   );
   run('pnpm', ['exec', 'tsc', '-p', 'tsconfig.json'], consumerRoot);
