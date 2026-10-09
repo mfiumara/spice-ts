@@ -503,6 +503,12 @@ export const INITIAL_STATE_FIXTURES: ComparisonFixture[] = [
     netlist: '* .nodeset operating point\nV1 in 0 DC 1\nR1 in out 1k\nR2 out 0 1k\n.nodeset V(out)=9\n.op\n.end',
     signals: ['v(out)'],
   },
+  {
+    name: 'ic-with-uic-mixed-case-node',
+    analysis: 'tran',
+    netlist: '* case-insensitive .ic node\nR1 OUT 0 1k\nC1 OUT 0 1u\n.ic V(out)=3\n.tran 1u 2u UIC\n.end',
+    signals: ['v(OUT)'],
+  },
 ];
 
 export const RING_OSCILLATOR_FIXTURES: ComparisonFixture[] = [3, 5, 11].map(stages => ({

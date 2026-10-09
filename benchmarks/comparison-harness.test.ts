@@ -212,7 +212,7 @@ describe('stable JSON schema', () => {
 });
 
 describe('ngspice initial-state semantics', () => {
-  it('confirms .ic UIC/non-UIC and .nodeset reference behavior', { skip: !hasNgspice }, async () => {
+  it('confirms .ic UIC/non-UIC, mixed-case, and .nodeset reference behavior', { skip: !hasNgspice }, async () => {
     const runs = await Promise.all(INITIAL_STATE_FIXTURES.map(runNgspice));
     for (const run of runs) assert.equal(run.status, 'success');
 
@@ -225,5 +225,6 @@ describe('ngspice initial-state semantics', () => {
     assert.equal(firstVoltage(0), 1);
     assert.ok(Math.abs(firstVoltage(1) - 3) < 1e-5);
     assert.equal(firstVoltage(2), 0.5);
+    assert.ok(Math.abs(firstVoltage(3) - 3) < 1e-5);
   });
 });

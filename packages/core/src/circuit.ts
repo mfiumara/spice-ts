@@ -595,7 +595,8 @@ export class Circuit {
   /** Add a node voltage from `.ic` or `.nodeset`. */
   addInitialState(kind: 'ic' | 'nodeset', state: NodeInitialState): void {
     const target = kind === 'ic' ? this._initialConditions : this._nodeSets;
-    const existing = target.findIndex(entry => entry.node === state.node);
+    const normalizedNode = state.node.toLowerCase();
+    const existing = target.findIndex(entry => entry.node.toLowerCase() === normalizedNode);
     if (existing >= 0) target[existing] = state;
     else target.push(state);
   }

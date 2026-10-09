@@ -23,7 +23,9 @@ function applyNodeState(
   solution: Float64Array,
   state: NodeInitialState,
 ): void {
-  const index = compiled.nodeIndexMap.get(state.node);
+  const normalizedNode = state.node.toLowerCase();
+  const index = compiled.nodeIndexMap.get(state.node)
+    ?? [...compiled.nodeIndexMap].find(([node]) => node.toLowerCase() === normalizedNode)?.[1];
   if (index === undefined) {
     throw new InvalidCircuitError(`Initial state references unknown node '${state.node}'`);
   }
