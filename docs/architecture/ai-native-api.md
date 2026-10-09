@@ -106,7 +106,7 @@ The common one-shot request is:
   "apiVersion": "1",
   "input": { "format": "spice", "source": "V1 in 0 5\nR1 in 0 1k\n.op" },
   "options": {
-    "backend": "spice-ts",
+    "backend": "spice-ts-js",
     "determinism": "strict",
     "limits": { "maxResultPoints": 10000 }
   }
@@ -127,15 +127,19 @@ interface SuccessEnvelope<T> {
   metadata: RunMetadataV1
 }
 
+type PartialRunMetadataV1 = Partial<Omit<RunMetadataV1, 'resultSha256'>>
+
 interface FailureEnvelope {
   apiVersion: '1'
   ok: false
   requestId: string
   error: SpiceApiErrorV1
   diagnostics: DiagnosticV1[]
-  metadata?: Partial<RunMetadataV1>
+  metadata?: PartialRunMetadataV1
 }
 ```
+
+`PartialRunMetadataV1` is a distinct schema with `additionalProperties: false`; `resultSha256` is not one of its properties. Failed and cancelled envelopes containing that property must fail schema validation even when a full result happened to be assembled internally.
 
 The following interfaces are the normative protocol-v1 wire shape. JSON Schema names and generated TypeScript names must match them; implementations may not substitute current core classes, `Map`, typed arrays, or row-oriented records.
 
@@ -201,6 +205,8 @@ interface SimulationResultV1 {
 `analysisIndex` is the zero-based declaration order after expansion and is never reused within a request. A stepped analysis repeats that index and adds `step`; steps are ordered by `step.index`. Object keys in every voltage/current record are lexicographically sorted by Unicode code point. Every series array has exactly the same length as its axis. OP has no synthetic axis or point. Empty analyses are represented by empty axes and series, not omitted fields. These invariants are schema-plus-conformance-test requirements.
 
 Metadata includes protocol version, native schema version when applicable, spice-ts version, `engineBuildId`, backend name/version, resolved options, input SHA-256, result SHA-256, runtime family/version, architecture, and deterministic profile. `resultSha256` covers only canonical `SimulationResultV1`, not its envelope or metadata. Timing and timestamps are excluded from hashed result data and omitted in strict mode.
+
+The public protocol backend for the TypeScript engine is always `spice-ts-js`. Core may retain its existing internal `spice-ts` adapter name, but protocol boundaries must translate it to `spice-ts-js`; `spice-ts` is not a valid protocol-v1 backend value and must never appear in requests, capabilities, events, or metadata.
 
 ## 5. Structured errors and diagnostics
 
