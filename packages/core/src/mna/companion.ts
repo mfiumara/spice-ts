@@ -40,7 +40,7 @@ export function buildCompanionSystem(
   assembler.clear();
   const ctx = assembler.getStampContext();
 
-  if (assembler.isFastPath && assembler.posMap.length > 0) {
+  if (assembler.isFastPath && assembler.topologyNnz > 0) {
     // Batch-stamp MOSFETs with direct array writes, fall back for others
     let hasMosfets = false;
     const mosfets: MOSFET[] = [];
@@ -51,7 +51,7 @@ export function buildCompanionSystem(
     if (hasMosfets) {
       MOSFET.batchStamp(
         mosfets, assembler.gValues, assembler.b, assembler.solution,
-        assembler.posMap, assembler.systemSize,
+        assembler.stampIndex,
       );
     }
   } else {

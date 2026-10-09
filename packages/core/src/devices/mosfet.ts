@@ -127,10 +127,8 @@ export class MOSFET implements DeviceModel {
     gValues: Float64Array,
     b: Float64Array,
     solution: Float64Array,
-    posMap: Int32Array,
-    systemSize: number,
+    stampIndex: (row: number, col: number) => number,
   ): void {
-    const n = systemSize;
     for (let m = 0; m < mosfets.length; m++) {
       const mosfet = mosfets[m];
       const { VTO, KP, LAMBDA, W, L, polarity } = mosfet.params;
@@ -191,17 +189,17 @@ export class MOSFET implements DeviceModel {
 
       // Stamp drain row — direct array writes using (possibly swapped) nD, nS
       if (nD >= 0) {
-        if (nG >= 0) gValues[posMap[nD * n + nG]] += gm;
-        if (nD >= 0) gValues[posMap[nD * n + nD]] += gds;
-        if (nS >= 0) gValues[posMap[nD * n + nS]] -= (gm + gds);
+        if (nG >= 0) gValues[stampIndex(nD, nG)] += gm;
+        if (nD >= 0) gValues[stampIndex(nD, nD)] += gds;
+        if (nS >= 0) gValues[stampIndex(nD, nS)] -= (gm + gds);
         b[nD] -= polarity * Ieq;
       }
 
       // Stamp source row
       if (nS >= 0) {
-        if (nG >= 0) gValues[posMap[nS * n + nG]] -= gm;
-        if (nD >= 0) gValues[posMap[nS * n + nD]] -= gds;
-        if (nS >= 0) gValues[posMap[nS * n + nS]] += (gm + gds);
+        if (nG >= 0) gValues[stampIndex(nS, nG)] -= gm;
+        if (nD >= 0) gValues[stampIndex(nS, nD)] -= gds;
+        if (nS >= 0) gValues[stampIndex(nS, nS)] += (gm + gds);
         b[nS] += polarity * Ieq;
       }
     }

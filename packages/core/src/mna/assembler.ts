@@ -20,7 +20,7 @@ export class MNAAssembler {
   private _colPtr: Int32Array | null = null;
   private _rowIdx: Int32Array | null = null;
   private _diagIdx: Int32Array | null = null;
-  private _posMap: Int32Array | null = null;
+  private _stampIndex: ((row: number, col: number) => number) | null = null;
   private _cachedFastCtx: StampContext | null = null;
 
   constructor(
@@ -64,9 +64,14 @@ export class MNAAssembler {
     return this._diagIdx;
   }
 
-  get posMap(): Int32Array {
-    if (!this._posMap) throw new Error('lockTopology() has not been called');
-    return this._posMap;
+  get topologyNnz(): number {
+    if (!this._rowIdx) throw new Error('lockTopology() has not been called');
+    return this._rowIdx.length;
+  }
+
+  get stampIndex(): (row: number, col: number) => number {
+    if (!this._stampIndex) throw new Error('lockTopology() has not been called');
+    return this._stampIndex;
   }
 
   /**
@@ -110,7 +115,6 @@ export class MNAAssembler {
     const rowIdx = new Int32Array(nnz);
     const gValues = new Float64Array(nnz);
     const cValues = new Float64Array(nnz);
-    const posMap = new Int32Array(n * n).fill(-1);
     const diagIdx = new Int32Array(n).fill(-1);
 
     let idx = 0;
@@ -118,8 +122,6 @@ export class MNAAssembler {
       colPtr[j] = idx;
       for (const row of colEntries[j]) {
         rowIdx[idx] = row;
-        const key = row * n + j;
-        posMap[key] = idx;
         gValues[idx] = this.G.get(row, j);
         cValues[idx] = this.C.get(row, j);
         if (row === j) {
@@ -130,11 +132,49 @@ export class MNAAssembler {
     }
     colPtr[n] = idx;
 
+    // Build a compact open-addressed lookup over structural entries. The load
+    // factor stays at or below 0.5, so stamping remains expected O(1) while
+    // lookup storage is O(nnz), rather than the old O(n²) dense position map.
+    let lookupCapacity = 4;
+    while (lookupCapacity < nnz * 2) lookupCapacity *= 2;
+    const lookupRows = new Int32Array(lookupCapacity).fill(-1);
+    const lookupCols = new Int32Array(lookupCapacity);
+    const lookupIndices = new Int32Array(lookupCapacity);
+    const lookupMask = lookupCapacity - 1;
+    const hashPosition = (row: number, col: number): number => {
+      let hash = Math.imul(row, -1640531527) ^ Math.imul(col, -2048144789);
+      hash ^= hash >>> 16;
+      return hash & lookupMask;
+    };
+    for (let col = 0; col < n; col++) {
+      for (let position = colPtr[col]; position < colPtr[col + 1]; position++) {
+        const row = rowIdx[position];
+        let slot = hashPosition(row, col);
+        while (lookupRows[slot] !== -1) slot = (slot + 1) & lookupMask;
+        lookupRows[slot] = row;
+        lookupCols[slot] = col;
+        lookupIndices[slot] = position;
+      }
+    }
+    const stampIndex = (row: number, col: number): number => {
+      if (row < 0 || row >= n || col < 0 || col >= n) {
+        throw new Error(`Cannot stamp (${row}, ${col}) outside locked topology`);
+      }
+      let slot = hashPosition(row, col);
+      while (lookupRows[slot] !== -1) {
+        if (lookupRows[slot] === row && lookupCols[slot] === col) {
+          return lookupIndices[slot];
+        }
+        slot = (slot + 1) & lookupMask;
+      }
+      throw new Error(`Cannot stamp (${row}, ${col}) outside locked topology`);
+    };
+
     this._colPtr = colPtr;
     this._rowIdx = rowIdx;
     this._gValues = gValues;
     this._cValues = cValues;
-    this._posMap = posMap;
+    this._stampIndex = stampIndex;
     this._diagIdx = diagIdx;
     this._fastPath = true;
   }
@@ -155,17 +195,16 @@ export class MNAAssembler {
   getStampContext(): StampContext {
     if (this._fastPath) {
       if (!this._cachedFastCtx) {
-        const n = this.systemSize;
-        const posMap = this._posMap!;
+        const stampIndex = this._stampIndex!;
         const gValues = this._gValues!;
         const cValues = this._cValues!;
         this._cachedFastCtx = {
           stampG: (row, col, value) => {
-            gValues[posMap[row * n + col]] += value;
+            gValues[stampIndex(row, col)] += value;
           },
           stampB: (row, value) => { this.b[row] += value; },
           stampC: (row, col, value) => {
-            cValues[posMap[row * n + col]] += value;
+            cValues[stampIndex(row, col)] += value;
           },
           getVoltage: (node) => this.solution[node],
           getCurrent: (branch) => this.solution[this.numNodes + branch],

@@ -1,0 +1,278 @@
+{
+  "schemaVersion": 1,
+  "issue": "https://github.com/mfiumara/spice-ts/issues/69",
+  "methodology": {
+    "fixture": "10,000-node linear resistor ladder, DC operating point",
+    "command": "pnpm bench:scaling -- --sizes=10000 --warmups=3 --runs=10 --output=<path>",
+    "cpuProfileCommand": "node --cpu-prof --cpu-prof-name=<name> --cpu-prof-dir=<path> benchmarks/performance/profile-spice-ts.mjs 10000 5",
+    "comparison": "Before and after captured consecutively on the same machine and toolchain; raw timing samples retained below"
+  },
+  "machine": {
+    "versions": {
+      "node": "v22.23.1",
+      "pnpm": "10.28.1",
+      "ngspice": "ngspice-47 : Circuit level simulation program"
+    },
+    "platform": "darwin arm64",
+    "osRelease": "Darwin 27.0.0 Darwin Kernel Version 27.0.0: Tue Aug 11 21:06:40 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T6050",
+    "cpu": "Apple M5 Pro",
+    "logicalCpus": 18,
+    "memoryBytes": 51539607552
+  },
+  "matrix": {
+    "equations": 10001,
+    "structuralNonzeros": 30000,
+    "formerDenseLookupEntries": 100020001,
+    "formerDenseLookupBytes": 400080004
+  },
+  "summary": {
+    "spiceTsMedianMsBefore": 30.771603999999968,
+    "spiceTsMedianMsAfter": 20.178792000000016,
+    "runtimeChangePercent": -34.423983878123366,
+    "spiceTsPeakRssMiBBefore": 936.28125,
+    "spiceTsPeakRssMiBAfter": 219.5625,
+    "peakRssChangePercent": -76.54951436867928,
+    "honestLossesAfter": {
+      "vsNgspiceAnalysisRuntimeRatio": 5.710709494835154,
+      "vsNgspicePeakRssRatio": 8.967591079888907
+    }
+  },
+  "cpuProfiles": {
+    "before": {
+      "totalSamples": 153,
+      "topSelfSamples": [
+        {
+          "frame": "lockTopology",
+          "samples": 41
+        },
+        {
+          "frame": "(garbage collector)",
+          "samples": 30
+        },
+        {
+          "frame": "newtonRaphson",
+          "samples": 12
+        },
+        {
+          "frame": "tokenizeNetlist",
+          "samples": 9
+        },
+        {
+          "frame": "factorize",
+          "samples": 9
+        },
+        {
+          "frame": "analyzePattern",
+          "samples": 8
+        },
+        {
+          "frame": "compile",
+          "samples": 5
+        },
+        {
+          "frame": "stamp",
+          "samples": 5
+        },
+        {
+          "frame": "buildSymmetricAdjacency",
+          "samples": 4
+        },
+        {
+          "frame": "parse",
+          "samples": 3
+        }
+      ]
+    },
+    "after": {
+      "totalSamples": 65,
+      "topSelfSamples": [
+        {
+          "frame": "(garbage collector)",
+          "samples": 17
+        },
+        {
+          "frame": "lockTopology",
+          "samples": 14
+        },
+        {
+          "frame": "factorize",
+          "samples": 6
+        },
+        {
+          "frame": "newtonRaphson",
+          "samples": 4
+        },
+        {
+          "frame": "analyzePattern",
+          "samples": 3
+        },
+        {
+          "frame": "stamp",
+          "samples": 3
+        },
+        {
+          "frame": "solve",
+          "samples": 3
+        },
+        {
+          "frame": "tokenizeNetlist",
+          "samples": 2
+        },
+        {
+          "frame": "parseDevice",
+          "samples": 2
+        },
+        {
+          "frame": "parse",
+          "samples": 2
+        }
+      ]
+    }
+  },
+  "measurements": {
+    "before": {
+      "nodes": 10000,
+      "netlistSha256": "f79c1097da2768fcea75811a686a80f5ef0a90c0bae25241bb4e5786a0832327",
+      "spiceTs": {
+        "engine": "spice-ts",
+        "nodes": 10000,
+        "netlistSha256": "f79c1097da2768fcea75811a686a80f5ef0a90c0bae25241bb4e5786a0832327",
+        "status": "ok",
+        "timesMs": [
+          34.66966599999995,
+          31.66779200000002,
+          32.48320899999999,
+          29.979833000000042,
+          29.9015,
+          30.755957999999964,
+          30.787249999999972,
+          30.00649999999996,
+          31.284833999999933,
+          30.043999999999983
+        ],
+        "statsMs": {
+          "min": 29.9015,
+          "median": 30.771603999999968,
+          "p95": 34.66966599999995,
+          "max": 34.66966599999995
+        },
+        "peakRssMiB": 936.28125
+      },
+      "ngspice": {
+        "engine": "ngspice",
+        "nodes": 10000,
+        "netlistSha256": "f79c1097da2768fcea75811a686a80f5ef0a90c0bae25241bb4e5786a0832327",
+        "status": "ok",
+        "timesMs": [
+          41.73216599999998,
+          41.19433300000003,
+          40.98170799999997,
+          41.238249999999994,
+          40.171625000000006,
+          39.62337500000001,
+          40.02133299999997,
+          44.00395800000001,
+          45.40908400000001,
+          41.349290999999994
+        ],
+        "statsMs": {
+          "min": 39.62337500000001,
+          "median": 41.21629150000001,
+          "p95": 45.40908400000001,
+          "max": 45.40908400000001
+        },
+        "analysisTimesMs": [
+          3.622,
+          3.634,
+          3.6809999999999996,
+          3.442,
+          3.6,
+          3.448,
+          3.489,
+          4.24,
+          3.476,
+          3.473
+        ],
+        "analysisStatsMs": {
+          "min": 3.442,
+          "median": 3.5445,
+          "p95": 4.24,
+          "max": 4.24
+        },
+        "peakRssMiB": 24.484
+      }
+    },
+    "after": {
+      "nodes": 10000,
+      "netlistSha256": "f79c1097da2768fcea75811a686a80f5ef0a90c0bae25241bb4e5786a0832327",
+      "spiceTs": {
+        "engine": "spice-ts",
+        "nodes": 10000,
+        "netlistSha256": "f79c1097da2768fcea75811a686a80f5ef0a90c0bae25241bb4e5786a0832327",
+        "status": "ok",
+        "timesMs": [
+          21.413542000000007,
+          20.110334000000023,
+          20.742458000000056,
+          20.247250000000008,
+          22.22550000000001,
+          19.367458999999997,
+          18.75958300000002,
+          21.781915999999967,
+          18.939624999999978,
+          19.018249999999966
+        ],
+        "statsMs": {
+          "min": 18.75958300000002,
+          "median": 20.178792000000016,
+          "p95": 22.22550000000001,
+          "max": 22.22550000000001
+        },
+        "peakRssMiB": 219.5625
+      },
+      "ngspice": {
+        "engine": "ngspice",
+        "nodes": 10000,
+        "netlistSha256": "f79c1097da2768fcea75811a686a80f5ef0a90c0bae25241bb4e5786a0832327",
+        "status": "ok",
+        "timesMs": [
+          40.399584000000004,
+          39.55837500000001,
+          41.89975000000004,
+          39.99483299999997,
+          42.036666999999966,
+          40.37620799999996,
+          39.38662500000004,
+          40.61712499999999,
+          39.335207999999966,
+          39.828125
+        ],
+        "statsMs": {
+          "min": 39.335207999999966,
+          "median": 40.18552049999997,
+          "p95": 42.036666999999966,
+          "max": 42.036666999999966
+        },
+        "analysisTimesMs": [
+          3.5239999999999996,
+          3.4749999999999996,
+          3.5109999999999997,
+          3.5860000000000003,
+          3.677,
+          3.543,
+          3.468,
+          3.5500000000000003,
+          3.573,
+          3.433
+        ],
+        "analysisStatsMs": {
+          "min": 3.433,
+          "median": 3.5335,
+          "p95": 3.677,
+          "max": 3.677
+        },
+        "peakRssMiB": 24.484
+      }
+    }
+  }
+}
