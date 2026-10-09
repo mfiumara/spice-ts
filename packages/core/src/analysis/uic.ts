@@ -1,6 +1,7 @@
 import type { CompiledCircuit } from '../circuit.js';
 import { Capacitor } from '../devices/capacitor.js';
 import { Inductor } from '../devices/inductor.js';
+import { createNodeStateSolution } from './initial-state.js';
 
 /**
  * Build the t=0 solution used by `.tran ... uic`.
@@ -10,9 +11,16 @@ import { Inductor } from '../devices/inductor.js';
  * nodes; disconnected floating groups use an arbitrary zero common mode.
  */
 export function computeUICInitialSolution(compiled: CompiledCircuit): Float64Array {
-  const seed = new Float64Array(compiled.nodeCount + compiled.branchCount);
+  const seed = createNodeStateSolution(compiled, 'conditions');
   const known = new Set<number>();
   const constraints: Array<{ positive: number; negative: number; voltage: number; name: string }> = [];
+
+  for (const state of compiled.initialConditions) {
+    const normalizedNode = state.node.toLowerCase();
+    const index = compiled.nodeIndexMap.get(state.node)
+      ?? [...compiled.nodeIndexMap].find(([node]) => node.toLowerCase() === normalizedNode)?.[1];
+    if (index !== undefined && index >= 0) known.add(index);
+  }
 
   for (const device of compiled.devices) {
     if (device instanceof Capacitor && device.ic !== undefined) {

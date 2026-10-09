@@ -120,7 +120,7 @@ export function solveStep(
           }
           case 'tran': {
             const opts = resolveOptions(options, analysis.stopTime);
-            const seed = analysis.uic
+            const seed = analysis.useInitialConditions
               ? computeUICInitialSolution(compiled)
               : solveDCOperatingPoint(
                 compiled, opts, prevDCSolution, convergence,
@@ -132,7 +132,7 @@ export function solveStep(
             stepResult.transient = solveTransient(
               compiled, runnable, opts, seed, convergence,
             );
-            if (!analysis.uic) prevDCSolution = new Float64Array(seed);
+            if (!analysis.useInitialConditions) prevDCSolution = new Float64Array(seed);
             break;
           }
           case 'ac': {

@@ -36,8 +36,16 @@ export interface TransientAnalysis {
   startTime?: number;
   /** Maximum allowed timestep in seconds */
   maxTimestep?: number;
-  /** Skip the DC operating point and use per-element initial conditions. */
-  uic?: boolean;
+  /** Skip the DC operating point and use `.ic` values as the transient state. */
+  useInitialConditions?: boolean;
+}
+
+/** A node voltage supplied by `.ic` or `.nodeset`. */
+export interface NodeInitialState {
+  /** Node name as declared in the netlist. */
+  node: NodeName;
+  /** Initial voltage or Newton guess in volts. */
+  value: number;
 }
 
 /** AC small-signal analysis (`.ac`). Frequency sweep. */
