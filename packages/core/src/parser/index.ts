@@ -36,6 +36,8 @@ export function parse(netlist: string): Circuit {
   const circuit = new Circuit();
 
   let subcktCollector: { name: string; ports: string[]; params: Record<string, number>; body: string[]; depth: number } | null = null;
+  let hasNoiseAnalysis = false;
+  let hasStepAnalysis = false;
 
   for (const { tokens, lineNumber, raw } of lines) {
     if (tokens.length === 0) continue;
@@ -83,6 +85,15 @@ export function parse(netlist: string): Circuit {
       }
 
       if (first.startsWith('.')) {
+        if ((first === '.NOISE' && hasStepAnalysis) || (first === '.STEP' && hasNoiseAnalysis)) {
+          throw new ParseError(
+            '.step cannot be combined with .noise',
+            lineNumber,
+            raw,
+          );
+        }
+        if (first === '.NOISE') hasNoiseAnalysis = true;
+        if (first === '.STEP') hasStepAnalysis = true;
         parseDotCommand(circuit, tokens, lineNumber);
       } else {
         parseDevice(circuit, tokens, lineNumber);

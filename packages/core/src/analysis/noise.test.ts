@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { ParseError } from '../errors.js';
 import { parse } from '../parser/index.js';
 import { simulate } from '../simulate.js';
 
@@ -48,5 +49,26 @@ describe('.noise analysis', () => {
     '.noise v(out,ref) V1 lin 5 100 500',
   ])('rejects noise forms outside the first bounded slice: %s', netlist => {
     expect(() => parse(netlist)).toThrow();
+  });
+
+  it('rejects .step combined with .noise instead of returning empty step results', () => {
+    const deck = [
+      'V1 in 0 AC 1',
+      'Rsource in out 1k',
+      '.noise v(out) V1 lin 5 100 500',
+      '.step param Rsource list 1k 2k',
+    ].join('\n');
+
+    try {
+      parse(deck);
+      expect.unreachable('expected .step + .noise to be rejected');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ParseError);
+      expect(error).toMatchObject({
+        line: 4,
+        context: '.step param Rsource list 1k 2k',
+      });
+      expect((error as Error).message).toContain('.step cannot be combined with .noise');
+    }
   });
 });
