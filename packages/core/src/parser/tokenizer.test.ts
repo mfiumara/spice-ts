@@ -15,7 +15,7 @@ describe('parseNumber', () => {
     expect(parseNumber('2.5E3')).toBe(2500);
   });
 
-  describe('SI suffixes (case-sensitive)', () => {
+  describe('ngspice scale factors', () => {
     it('parses k/K as kilo (1e3)', () => {
       expect(parseNumber('10k')).toBe(10000);
       expect(parseNumber('4.7K')).toBe(4700);
@@ -25,9 +25,9 @@ describe('parseNumber', () => {
       expect(parseNumber('2.2m')).toBeCloseTo(0.0022);
     });
 
-    it('parses M as mega (1e6)', () => {
-      expect(parseNumber('1M')).toBe(1e6);
-      expect(parseNumber('10M')).toBe(10e6);
+    it('parses m/M as milli (1e-3)', () => {
+      expect(parseNumber('1M')).toBe(1e-3);
+      expect(parseNumber('10m')).toBe(10e-3);
     });
 
     it('parses meg/MEG as mega (1e6)', () => {
@@ -58,6 +58,12 @@ describe('parseNumber', () => {
     it('parses G as giga (1e9)', () => {
       expect(parseNumber('2G')).toBe(2e9);
     });
+
+    it('ignores letters following a number or scale factor', () => {
+      expect(parseNumber('10Volts')).toBe(10);
+      expect(parseNumber('1kHz')).toBe(1e3);
+      expect(parseNumber('2.2MegOhm')).toBe(2.2e6);
+    });
   });
 
   describe('embedded suffix notation', () => {
@@ -65,8 +71,8 @@ describe('parseNumber', () => {
       expect(parseNumber('3k3')).toBe(3300);
     });
 
-    it('parses 4M7 as 4700000', () => {
-      expect(parseNumber('4M7')).toBe(4700000);
+    it('parses 4M7 as 0.0047', () => {
+      expect(parseNumber('4M7')).toBeCloseTo(0.0047);
     });
 
     it('parses 1k5 as 1500', () => {
