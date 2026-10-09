@@ -42,6 +42,47 @@ Validate provenance, hashes, ngspice execution, and spice-ts parsing with:
 
 The validator prints every currently unsupported or failing circuit; unsupported cases are not omitted from the corpus.
 
+## Berkeley SPICE3f5 classic corpus B
+
+- Repository mirror: https://github.com/obernin/spice
+- Pinned revision: `3d9360bef370b432e473edb0c4333707d545a55f`
+- Authoritative distribution: https://ptolemy.berkeley.edu/projects/embedded/pubs/downloads/spice/spice3f5.tar.gz
+- Authoritative release: Berkeley SPICE3f5; archive SHA-256 `cac11fe2a761241e6b6c9eaa31b938c7ffa76aeaecac09809609d3a4125cd269`.
+- Licence and notice: Berkeley's [`spice3f5/COPYRIGHT`](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/COPYRIGHT) grants permission to use, copy, modify, and distribute SPICE and requires its Regents copyright notice and two warranty paragraphs in all copies. The byte-identical notice is retained at `benchmarks/corpus/classic/COPYRIGHT.txt` (SHA-256 `6dbad063070d502230501ddb05aced2e896eb636939c09b626d11c3e00b9aed4`). That hash matches both `spice3f5/COPYRIGHT` in the authoritative archive and `COPYRIGHT` at the pinned mirror revision.
+- Mirror notice: the mirror maintainer's separate 2018 BSD-3-Clause notice is retained verbatim at `benchmarks/corpus/classic/LICENSE.txt`; it is not represented as the provenance or redistribution basis for the Berkeley-authored fixtures.
+- Redistribution decision: allowed by the Berkeley SPICE grant, with its required notice retained alongside the fixtures.
+- Adaptation: none. All 20 `.cir` files are committed byte-for-byte from the pinned mirror. The validator runs the identical files in both engines; `-r output.raw` only asks ngspice to export its result and does not alter a netlist.
+
+| ID | Category | Canonical source | Revision | Licence | Redistribution | Local path | Adaptation |
+|---|---|---|---|---|---|---|---|
+| `bjt-noise` | noise | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/bjtnoise.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/bjtnoise.cir` | none |
+| `bsim1-device-sweep` | device-characterization | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/bsim1tst.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/bsim1tst.cir` | none |
+| `bsim2-device-sweep` | device-characterization | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/bsim2tst.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/bsim2tst.cir` | none |
+| `bjt-differential-pair` | amplifier | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/diffpair.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/diffpair.cir` | none |
+| `diode-distortion` | distortion | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/diodisto.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/diodisto.cir` | none |
+| `lossy-line-24-inch` | transmission-line | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/ltra_1.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/ltra_1.cir` | none |
+| `lossy-line-aluminium` | transmission-line | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/ltra_2.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/ltra_2.cir` | none |
+| `coupled-lossy-lines` | transmission-line | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/ltra_3.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/ltra_3.cir` | none |
+| `bjt-mixer-distortion` | distortion | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/mixdisto.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/mixdisto.cir` | none |
+| `mos6-inverter-chain` | digital | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/mos6inv.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/mos6inv.cir` | none |
+| `mos-amplifier` | amplifier | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/mosamp2.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir` | none |
+| `mos-memory-cell` | digital | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/mosmem.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/mosmem.cir` | none |
+| `pole-zero-four-stage` | filter-network | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/pz2.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/pz2.cir` | none |
+| `pole-zero-three-stage` | filter-network | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/pzt.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/pzt.cir` | none |
+| `rc-transient` | passive | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/rc.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/rc.cir` | none |
+| `rca3040-wideband-amplifier` | amplifier | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/rca3040.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/rca3040.cir` | none |
+| `resistor-noise` | noise | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/resnoise.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/resnoise.cir` | none |
+| `rtl-inverter-chain` | digital | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/rtlinv.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/rtlinv.cir` | none |
+| `ecl-schmitt-trigger` | digital | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/schmitt.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/schmitt.cir` | none |
+| `high-pass-pole-zero` | filter-network | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/simplepz.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/simplepz.cir` | none |
+
+Validate provenance fields, pinned URLs, fixture hashes, declared analyses, ngspice execution, and spice-ts parsing with:
+
+    pnpm build
+    node benchmarks/corpus/classic/validate.mjs
+
+At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-distortion` is retained as a visible source-suite failure: both of its upstream `.disto` commands are commented out, so ngspice exits successfully without producing raw data. All 20 byte-identical fixtures currently fail spice-ts parsing. The validator prints each failure and checks it against the manifest instead of hiding or rewriting unsupported inputs.
+
 ## Project-authored parity fixtures
 
 | Circuit | Source | Licence / redistribution basis | Local use |
