@@ -34,6 +34,27 @@ describe('Diode', () => {
     expect(asm.G.get(0, 0)).toBeLessThanOrEqual(1 / diode.params.RS + 1e-12);
     expect(asm.G.get(0, 0)).toBeGreaterThan(0.05);
   });
+
+  it('includes series resistance in the diffusion-charge Jacobian', () => {
+    const asm = new MNAAssembler(1, 0);
+    asm.solution[0] = 1;
+
+    const transitTime = 1e-6;
+    const diode = new Diode('D1', [0, -1], {
+      IS: 1e-14,
+      N: 1,
+      RS: 10,
+      TT: transitTime,
+    });
+    diode.stamp(asm.getStampContext());
+    const terminalConductance = asm.G.get(0, 0) - 1e-12;
+
+    const dynamicAsm = new MNAAssembler(1, 0);
+    dynamicAsm.solution[0] = 1;
+    diode.stampDynamic(dynamicAsm.getStampContext());
+
+    expect(dynamicAsm.C.get(0, 0)).toBeCloseTo(transitTime * terminalConductance, 12);
+  });
 });
 
 describe('Diode in circuit', () => {

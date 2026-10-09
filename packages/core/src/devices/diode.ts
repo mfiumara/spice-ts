@@ -63,28 +63,41 @@ export class Diode implements DeviceModel {
   }
 
   stampDynamic(ctx: StampContext): void {
-    const { CJ0, VJ, M, TT, IS, N } = this.params;
+    const { CJ0, VJ, M, TT, IS, N, RS } = this.params;
     if (!CJ0 && !TT) return;
 
     const [nA, nK] = this.nodes;
     const vA = nA >= 0 ? ctx.getVoltage(nA) : 0;
     const vK = nK >= 0 ? ctx.getVoltage(nK) : 0;
-    const vd = vA - vK;
+    const terminalVoltage = vA - vK;
+    const vt = N * VT;
+
+    // RS separates the external terminal from the charge-storing junction. The
+    // two-terminal reduction therefore needs dVj/dVt as well as dQ/dVj.
+    const operatingPoint = RS > 0
+      ? diodeCurrent(terminalVoltage, vt, IS, RS)
+      : undefined;
+    const junctionVoltage = operatingPoint?.junctionVoltage ?? terminalVoltage;
+    const junctionVoltageGain = operatingPoint
+      ? 1 / (1 + RS * operatingPoint.junctionConductance)
+      : 1;
 
     let cj = 0;
     if (CJ0) {
-      if (vd < 0.5 * VJ!) {
-        cj = CJ0 / Math.pow(1 - vd / VJ!, M!);
+      if (junctionVoltage < 0.5 * VJ!) {
+        cj = CJ0 / Math.pow(1 - junctionVoltage / VJ!, M!);
       } else {
         cj = CJ0 / Math.pow(0.5, M!);
       }
     }
 
     if (TT) {
-      const vt = N * VT;
-      const gd = (IS / vt) * Math.exp(Math.min(vd / vt, 40));
-      cj += TT * gd;
+      const junctionConductance = operatingPoint?.junctionConductance
+        ?? (IS / vt) * Math.exp(Math.min(terminalVoltage / vt, 40));
+      cj += TT * junctionConductance;
     }
+
+    cj *= junctionVoltageGain;
 
     if (nA >= 0) ctx.stampC(nA, nA, cj);
     if (nK >= 0) ctx.stampC(nK, nK, cj);
@@ -100,13 +113,21 @@ function diodeCurrent(
   thermalVoltage: number,
   saturationCurrent: number,
   seriesResistance: number,
-): { current: number; conductance: number; linearizationVoltage: number } {
+): {
+  current: number;
+  conductance: number;
+  junctionConductance: number;
+  junctionVoltage: number;
+  linearizationVoltage: number;
+} {
   if (seriesResistance === 0) {
     const limitedVoltage = limitVoltage(terminalVoltage, thermalVoltage, saturationCurrent);
     const exponential = safeExponential(limitedVoltage / thermalVoltage);
     return {
       current: saturationCurrent * (exponential - 1),
       conductance: (saturationCurrent / thermalVoltage) * exponential,
+      junctionConductance: (saturationCurrent / thermalVoltage) * exponential,
+      junctionVoltage: limitedVoltage,
       linearizationVoltage: limitedVoltage,
     };
   }
@@ -135,6 +156,8 @@ function diodeCurrent(
   return {
     current,
     conductance: junctionConductance / (1 + seriesResistance * junctionConductance),
+    junctionConductance,
+    junctionVoltage,
     linearizationVoltage: terminalVoltage,
   };
 }
