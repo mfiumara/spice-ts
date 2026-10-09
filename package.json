@@ -6,6 +6,7 @@
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "bench": "pnpm -C packages/core bench",
+    "bench:scaling": "cd packages/core && pnpm build && cd ../.. && tsx benchmarks/performance/scaling.ts",
     "bench:accuracy": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/accuracy.ts",
     "bench:compare": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/comparison.ts",
     "changeset": "changeset",
