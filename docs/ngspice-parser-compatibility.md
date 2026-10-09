@@ -50,4 +50,4 @@ The two full-row promotions are end-of-line comments and whitespace around `=` i
 
 ## Scope decisions
 
-This PR fixes only lexical/parser gaps that are bounded and immediately useful to public benchmark netlists. It does not add solver state, device implementations, new analyses, waveform evaluators, or a control-language interpreter. Those gaps are tracked as separate issues with the corresponding fixture from the compatibility test.
+This PR extends the bounded lexical/parser audit with PWL waveform support that is immediately useful to public benchmark netlists. It adds and wires a PWL evaluator for independent voltage and current sources, including held endpoints, linear interpolation, equal-time discontinuities, and transient breakpoints. It does not add solver state, new device implementations, new analyses, evaluators for the remaining unsupported waveform families, or a control-language interpreter. Those gaps are tracked as separate issues with the corresponding fixture from the compatibility test.
