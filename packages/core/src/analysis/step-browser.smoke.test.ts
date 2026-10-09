@@ -60,11 +60,13 @@ async function pageDebuggerUrl(profileDirectory: string): Promise<string> {
 
 async function terminateProcess(child: ChildProcess): Promise<void> {
   if (child.exitCode !== null) return;
+  const exited = new Promise<void>(resolveExit => child.once('exit', () => resolveExit()));
   child.kill('SIGTERM');
-  await Promise.race([
-    new Promise<void>(resolveExit => child.once('exit', () => resolveExit())),
-    delay(2_000).then(() => { child.kill('SIGKILL'); }),
-  ]);
+  await Promise.race([exited, delay(2_000)]);
+  if (child.exitCode === null) {
+    child.kill('SIGKILL');
+    await Promise.race([exited, delay(2_000)]);
+  }
 }
 
 async function waitForBrowserResult(debuggerUrl: string, pageUrl: string): Promise<string> {
@@ -131,6 +133,8 @@ afterAll(async () => {
   await Promise.all(temporaryDirectories.map(directory => rm(directory, {
     recursive: true,
     force: true,
+    maxRetries: 5,
+    retryDelay: 100,
   })));
 });
 
