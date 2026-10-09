@@ -125,3 +125,34 @@ describe('MOSFET W/L aspect ratio', () => {
     expect(vout).toBeCloseTo(3.875, 0);
   });
 });
+
+describe('MOSFET AC small-signal linearization', () => {
+  it('matches ngspice for the issue #44 common-source amplifier', async () => {
+    const result = await simulate(`
+      VDD vdd 0 DC 5
+      VGS in 0 DC 1.5 AC 1
+      .model NMOD NMOS(VTO=1 KP=1e-4)
+      M1 out in 0 0 NMOD W=100u L=1u
+      RD vdd out 10k
+      .op
+      .ac dec 100 1 10Meg
+      .end
+    `);
+
+    // ngspice-47: V(out)=0.109875 V at the operating point, with
+    // gm=1.09875 mS and gds=3.90125 mS. The response is flat because this
+    // Level 1 model has no capacitances in the netlist.
+    expect(result.dc!.voltage('in')).toBeCloseTo(1.5, 9);
+    expect(result.dc!.voltage('out')).toBeCloseTo(0.109875, 6);
+
+    const response = result.ac!.voltage('out');
+    const ngspiceMagnitude = 0.274601749;
+    const relativeTolerance = 1e-3;
+    expect(response).toHaveLength(701);
+    for (const point of response) {
+      expect(Math.abs(point.magnitude - ngspiceMagnitude) / ngspiceMagnitude)
+        .toBeLessThanOrEqual(relativeTolerance);
+      expect(Math.abs(Math.abs(point.phase) - 180)).toBeLessThanOrEqual(1e-9);
+    }
+  });
+});
