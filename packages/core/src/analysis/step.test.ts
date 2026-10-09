@@ -518,6 +518,74 @@ describe('.step parallel execution', () => {
     expect(result.steps!.map(step => step.paramValue)).toEqual([1000, 2000, 3000, 4000]);
   });
 
+  it('falls back to sequential execution when a browser worker cannot be constructed', async () => {
+    const workerGlobal = globalThis as typeof globalThis & { Worker?: unknown };
+    const originalWorker = workerGlobal.Worker;
+    class BrokenBrowserWorker {
+      constructor() {
+        throw new Error('worker script unavailable');
+      }
+    }
+    workerGlobal.Worker = BrokenBrowserWorker;
+
+    try {
+      const result = await simulate(divider, { stepWorkers: { maxWorkers: 2 } });
+      expect(result.steps!.map(step => step.paramValue)).toEqual([1000, 2000, 3000, 4000]);
+    } finally {
+      workerGlobal.Worker = originalWorker;
+    }
+  });
+
+  it('rejects browser worker errors and removes every event listener', async () => {
+    const workerGlobal = globalThis as typeof globalThis & { Worker?: unknown };
+    const originalWorker = workerGlobal.Worker;
+    const instances: ErroringBrowserWorker[] = [];
+    class ErroringBrowserWorker {
+      readonly listeners = new Map<string, Set<(event: unknown) => void>>();
+      terminated = false;
+
+      constructor() {
+        instances.push(this);
+      }
+
+      addEventListener(type: string, listener: (event: unknown) => void): void {
+        const listeners = this.listeners.get(type) ?? new Set();
+        listeners.add(listener);
+        this.listeners.set(type, listeners);
+      }
+
+      removeEventListener(type: string, listener: (event: unknown) => void): void {
+        this.listeners.get(type)?.delete(listener);
+      }
+
+      postMessage(): void {
+        queueMicrotask(() => {
+          for (const listener of this.listeners.get('error') ?? []) {
+            listener({ message: 'browser worker failed to load' });
+          }
+        });
+      }
+
+      terminate(): void {
+        this.terminated = true;
+      }
+    }
+    workerGlobal.Worker = ErroringBrowserWorker;
+
+    try {
+      const pending = simulate(divider, { stepWorkers: { maxWorkers: 2 } });
+      const timeout = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('worker promise never settled')), 200);
+      });
+      await expect(Promise.race([pending, timeout])).rejects.toThrow('browser worker failed to load');
+      expect(instances).toHaveLength(2);
+      expect(instances.every(worker => worker.terminated)).toBe(true);
+      expect(instances.every(worker => [...worker.listeners.values()].every(set => set.size === 0))).toBe(true);
+    } finally {
+      workerGlobal.Worker = originalWorker;
+    }
+  });
+
   it('propagates cancellation to worker transports', async () => {
     const controller = new AbortController();
     let terminations = 0;

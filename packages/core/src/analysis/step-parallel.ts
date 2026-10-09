@@ -81,10 +81,16 @@ interface WorkerMessage {
 interface MessageWorker {
   postMessage(message: unknown): void;
   terminate(): unknown;
-  addEventListener?: (type: string, listener: (event: { data: WorkerMessage }) => void) => void;
-  removeEventListener?: (type: string, listener: (event: { data: WorkerMessage }) => void) => void;
+  addEventListener?: (type: string, listener: (event: unknown) => void) => void;
+  removeEventListener?: (type: string, listener: (event: unknown) => void) => void;
   on?: (type: string, listener: (value: WorkerMessage | Error) => void) => void;
   off?: (type: string, listener: (value: WorkerMessage | Error) => void) => void;
+}
+
+declare const Worker: new (url: URL, options: { type: 'module' }) => MessageWorker;
+
+function siblingModuleUrl(filename: string): URL {
+  return new URL(filename, import.meta.url);
 }
 
 function adaptMessageWorker(worker: MessageWorker): StepWorker {
@@ -93,6 +99,7 @@ function adaptMessageWorker(worker: MessageWorker): StepWorker {
       return new Promise<SimulationResult>((resolve, reject) => {
         const cleanup = () => {
           worker.removeEventListener?.('message', onBrowserMessage);
+          worker.removeEventListener?.('error', onBrowserError);
           worker.off?.('message', onNodeMessage);
           worker.off?.('error', onNodeError);
         };
@@ -101,16 +108,32 @@ function adaptMessageWorker(worker: MessageWorker): StepWorker {
           if (message.type === 'result') resolve(message.result!);
           else reject(new Error(message.message ?? 'Step worker failed'));
         };
-        const onBrowserMessage = (event: { data: WorkerMessage }) => settle(event.data);
+        const onBrowserMessage = (value: unknown) => {
+          const event = value as { data: WorkerMessage };
+          settle(event.data);
+        };
+        const onBrowserError = (value: unknown) => {
+          const event = value as { error?: unknown; message?: string };
+          cleanup();
+          reject(event.error instanceof Error
+            ? event.error
+            : new Error(event.message ?? 'Step worker failed to load'));
+        };
         const onNodeMessage = (value: WorkerMessage | Error) => settle(value as WorkerMessage);
         const onNodeError = (value: WorkerMessage | Error) => {
           cleanup();
           reject(value);
         };
         worker.addEventListener?.('message', onBrowserMessage);
+        worker.addEventListener?.('error', onBrowserError);
         worker.on?.('message', onNodeMessage);
         worker.on?.('error', onNodeError);
-        worker.postMessage({ type: 'run', task });
+        try {
+          worker.postMessage({ type: 'run', task });
+        } catch (error) {
+          cleanup();
+          reject(error);
+        }
       });
     },
     terminate: () => { worker.terminate(); },
@@ -122,9 +145,14 @@ async function createAutomaticWorker(): Promise<StepWorker | null> {
     Worker?: new (url: URL, options: { type: 'module' }) => MessageWorker;
   };
   if (globalScope.Worker) {
-    return adaptMessageWorker(new globalScope.Worker(
-      new URL('./step-worker.js', import.meta.url), { type: 'module' },
-    ));
+    try {
+      // Keep this exact static form so Vite and other bundlers compile the worker as a module.
+      return adaptMessageWorker(new Worker(
+        new URL('./step-worker-browser.js', import.meta.url), { type: 'module' },
+      ));
+    } catch {
+      return null;
+    }
   }
   try {
     const [{ Worker }, { pathToFileURL }] = await Promise.all([
@@ -133,7 +161,7 @@ async function createAutomaticWorker(): Promise<StepWorker | null> {
     ]);
     const workerUrl = typeof __filename === 'string'
       ? pathToFileURL(`${__dirname}/step-worker.cjs`)
-      : new URL('./step-worker.js', import.meta.url);
+      : siblingModuleUrl('step-worker.js');
     return adaptMessageWorker(new Worker(workerUrl) as MessageWorker);
   } catch {
     return null;
