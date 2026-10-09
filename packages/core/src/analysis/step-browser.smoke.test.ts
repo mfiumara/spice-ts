@@ -44,7 +44,7 @@ function delay(milliseconds: number): Promise<void> {
 }
 
 async function pageDebuggerUrl(profileDirectory: string): Promise<string> {
-  for (let attempt = 0; attempt < 100; attempt++) {
+  for (let attempt = 0; attempt < 400; attempt++) {
     try {
       const [port] = (await readFile(join(profileDirectory, 'DevToolsActivePort'), 'utf8')).split('\n');
       const response = await fetch(`http://127.0.0.1:${port}/json/list`);
@@ -230,5 +230,5 @@ describe('production browser step worker', () => {
       await terminateProcess(chromeProcess);
       await new Promise<void>(resolveClose => server.close(() => resolveClose()));
     }
-  }, 30_000);
+  }, 45_000);
 });
