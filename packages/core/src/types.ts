@@ -89,6 +89,37 @@ export interface SimulationOptions {
    * adapter, or pass a custom simulator adapter.
    */
   simulator?: SimulatorBackend;
+  /** Optional bounded worker execution for independent `.step` iterations. */
+  stepWorkers?: false | StepWorkerOptions;
+}
+
+/** Serializable work sent to one `.step` worker. */
+export interface StepWorkerTask {
+  index: number;
+  netlist: string;
+  options: Omit<SimulationOptions, 'resolveInclude' | 'simulator' | 'stepWorkers'>;
+}
+
+/** Minimal worker contract supported by Node worker_threads and browser Workers. */
+export interface StepWorker {
+  run(task: StepWorkerTask): Promise<import('./results.js').SimulationResult>;
+  terminate(reason?: unknown): void | Promise<void>;
+}
+
+export interface StepWorkerCompletion {
+  index: number;
+  result: import('./results.js').StepResult;
+}
+
+export interface StepWorkerOptions {
+  /** Maximum concurrent workers. Defaults to the runtime hardware-concurrency hint. */
+  maxWorkers?: number;
+  /** Abort the sweep and terminate every active worker. */
+  signal?: import('./analysis/step-scheduler.js').StepTaskAbortSignal;
+  /** Receives results immediately in completion order. */
+  onComplete?: (completion: StepWorkerCompletion) => void;
+  /** Override worker creation; returning null requests sequential fallback. */
+  workerFactory?: (workerIndex: number) => StepWorker | null | Promise<StepWorker | null>;
 }
 
 /** Built-in simulator backend names. */

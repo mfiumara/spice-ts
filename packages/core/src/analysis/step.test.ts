@@ -477,3 +477,70 @@ describe('.step error handling', () => {
     }
   });
 });
+
+describe('.step parallel execution', () => {
+  const divider = `
+    V1 1 0 DC 10
+    R1 1 2 1k
+    R2 2 0 1k
+    .op
+    .step param R2 list 1k 2k 3k 4k
+  `;
+
+  it('uses a browser-compatible worker transport and aggregates by step index', async () => {
+    const completions: number[] = [];
+    let runs = 0;
+    const result = await simulate(divider, {
+      stepWorkers: {
+        maxWorkers: 2,
+        workerFactory: async () => ({
+          run: async task => {
+            runs++;
+            await new Promise(resolve => setTimeout(resolve, (4 - task.index) * 2));
+            return simulate(task.netlist, { ...task.options, stepWorkers: false });
+          },
+          terminate: () => undefined,
+        }),
+        onComplete: completion => completions.push(completion.index),
+      },
+    });
+
+    expect(runs).toBe(4);
+    expect(completions).not.toEqual([0, 1, 2, 3]);
+    expect(result.steps!.map(step => step.paramValue)).toEqual([1000, 2000, 3000, 4000]);
+    expect(result.steps![2].dc!.voltage('2')).toBeCloseTo(7.5, 10);
+  });
+
+  it('falls back to sequential execution when workers are unavailable', async () => {
+    const result = await simulate(divider, {
+      stepWorkers: { maxWorkers: 2, workerFactory: async () => null },
+    });
+    expect(result.steps!.map(step => step.paramValue)).toEqual([1000, 2000, 3000, 4000]);
+  });
+
+  it('propagates cancellation to worker transports', async () => {
+    const controller = new AbortController();
+    let terminations = 0;
+    let created = 0;
+    let markReady!: () => void;
+    const ready = new Promise<void>(resolve => { markReady = resolve; });
+    const pending = simulate(divider, {
+      stepWorkers: {
+        maxWorkers: 2,
+        signal: controller.signal,
+        workerFactory: async () => {
+          created++;
+          if (created === 2) markReady();
+          return {
+            run: () => new Promise(() => undefined),
+            terminate: () => { terminations++; },
+          };
+        },
+      },
+    });
+    await ready;
+    controller.abort(new Error('cancel sweep'));
+    await expect(pending).rejects.toThrow('cancel sweep');
+    expect(terminations).toBe(2);
+  });
+});
