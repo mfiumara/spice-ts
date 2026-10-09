@@ -32,7 +32,7 @@ The dependency direction is fixed:
 - `@spice-ts/core` remains the source of parser and simulator behavior. A protocol adapter in core maps protocol documents to the current `CircuitIR`, analyses, models, and subcircuits and maps `Map`/typed-array results into JSON-safe values. Existing TypeScript return types remain source-compatible.
 - `@spice-ts/circuit-json` remains exactly the adapter proposed by #35 and is the only package that depends on `circuit-json` or Zod. It maps `circuit-json` to/from `CircuitIR`; it does not own analyses, simulation, MCP, or the native schema. #35 must add conversion diagnostics so unsupported elements are never silently discarded.
 - `@spice-ts/mcp` is Node-only. It depends on the official MCP TypeScript SDK, protocol, core, and circuit-json adapter. It owns tool registration, job storage, worker isolation, quotas, and stdio transport. HTTP authentication/deployment is out of scope for M3.
-- `@spice-ts/wasm` is the browser/worker distribution boundary. It exposes the protocol API rather than core classes. The first release may run the TypeScript engine in a module worker; numeric kernels may later move to Rust/C/C++ WASM without changing protocol v1. The existing optional `ngspice-wasm` backend remains a distinct backend and is not renamed or bundled into this package.
+- `@spice-ts/wasm` is the browser/worker distribution boundary. It exposes the protocol API rather than core classes. The M3 slice runs the TypeScript engine as backend `spice-ts-js` in a module worker and must not advertise `spice-ts-wasm`. A later slice may add a real Rust/C/C++ WASM numeric artifact and only then advertise `spice-ts-wasm`, without changing protocol v1. The existing optional `ngspice-wasm` backend remains a distinct backend and is not renamed or bundled into this package.
 
 Core and UI must not acquire MCP, Zod, or circuit-json runtime dependencies.
 
@@ -95,7 +95,7 @@ The native document is the lossless JSON counterpart of the current parser outpu
 
 The schemas use JSON numbers in SI base units and forbid `NaN`, infinities, and `-0` after canonicalization. Ground is always `"0"` and is omitted from `circuit.nets`, matching `CircuitIR`. Component IDs, model names, and subcircuit names must be unique under SPICE's case-insensitive comparison.
 
-A `circuit-json` input is validated and converted by #35, then paired with protocol-owned analyses. Geometry, PCB elements, and other non-simulation elements may remain available to the adapter but do not enter core. Conversion produces `UNSUPPORTED_FEATURE` diagnostics for every simulation-relevant element or parameter that cannot be represented. If any such diagnostic has severity `error`, simulation does not start. Export is allowed to be lossy only when the caller explicitly sets `allowLossy: true`; the response still lists each loss. This avoids duplicating #35 while making its contract usable by agents.
+A `circuit-json` input is validated and converted by #35, then paired with protocol-owned analyses. Geometry, PCB elements, and other non-simulation elements may remain available to the adapter but do not enter core. #35 owns the normative `ConversionResultV1<T>` shape, ordered per-element diagnostics, and `allowLossy` option. Adapter errors for every simulation-relevant element or parameter that cannot be represented map to API `UNSUPPORTED_FEATURE` diagnostics; if any has severity `error`, simulation does not start. Export returns no value when it would be lossy unless the caller explicitly sets `allowLossy: true`, and opt-in never suppresses the per-loss diagnostics. This avoids duplicating #35 while making its contract usable by agents.
 
 ## 4. Requests and serializable results
 
@@ -137,7 +137,70 @@ interface FailureEnvelope {
 }
 ```
 
-Results use sorted plain objects, not `Map`, and ordinary arrays, not typed arrays. Each analysis is tagged (`op`, `dc`, `tran`, or `ac`). Transient/DC/AC rows are columnar: an ordered independent-axis array plus lexicographically ordered voltage/current series. Units are explicit in field names or schema descriptions (seconds, hertz, volts, amperes, degrees). Metadata includes protocol version, native schema version when applicable, spice-ts version, `engineBuildId`, backend name/version, resolved options, input SHA-256, result SHA-256, runtime family/version, architecture, and deterministic profile. Timing and timestamps are excluded from hashed result data and omitted in strict mode.
+The following interfaces are the normative protocol-v1 wire shape. JSON Schema names and generated TypeScript names must match them; implementations may not substitute current core classes, `Map`, typed arrays, or row-oriented records.
+
+```ts
+interface StepCoordinateV1 {
+  index: number
+  parameter: string
+  value: number
+}
+
+interface OperatingPointResultV1 {
+  type: 'op'
+  analysisIndex: number
+  step?: StepCoordinateV1
+  voltagesV: Record<string, number>
+  currentsA: Record<string, number>
+}
+
+interface DcResultV1 {
+  type: 'dc'
+  analysisIndex: number
+  step?: StepCoordinateV1
+  axis: { name: string; unit: 'V' | 'A'; values: number[] }
+  voltagesV: Record<string, number[]>
+  currentsA: Record<string, number[]>
+}
+
+interface TransientResultV1 {
+  type: 'tran'
+  analysisIndex: number
+  step?: StepCoordinateV1
+  timeS: number[]
+  voltagesV: Record<string, number[]>
+  currentsA: Record<string, number[]>
+}
+
+interface ComplexPolarV1 {
+  magnitude: number
+  phaseDegrees: number
+}
+
+interface AcResultV1 {
+  type: 'ac'
+  analysisIndex: number
+  step?: StepCoordinateV1
+  frequencyHz: number[]
+  voltagePhasors: Record<string, ComplexPolarV1[]>
+  currentPhasors: Record<string, ComplexPolarV1[]>
+}
+
+type AnalysisResultV1 =
+  | OperatingPointResultV1
+  | DcResultV1
+  | TransientResultV1
+  | AcResultV1
+
+interface SimulationResultV1 {
+  status: 'complete'
+  analyses: AnalysisResultV1[]
+}
+```
+
+`analysisIndex` is the zero-based declaration order after expansion and is never reused within a request. A stepped analysis repeats that index and adds `step`; steps are ordered by `step.index`. Object keys in every voltage/current record are lexicographically sorted by Unicode code point. Every series array has exactly the same length as its axis. OP has no synthetic axis or point. Empty analyses are represented by empty axes and series, not omitted fields. These invariants are schema-plus-conformance-test requirements.
+
+Metadata includes protocol version, native schema version when applicable, spice-ts version, `engineBuildId`, backend name/version, resolved options, input SHA-256, result SHA-256, runtime family/version, architecture, and deterministic profile. `resultSha256` covers only canonical `SimulationResultV1`, not its envelope or metadata. Timing and timestamps are excluded from hashed result data and omitted in strict mode.
 
 ## 5. Structured errors and diagnostics
 
@@ -174,7 +237,11 @@ interface DiagnosticV1 {
 }
 ```
 
-Existing core exceptions map without parsing their message strings: `ParseError` to `PARSE_ERROR` with its line/context, `InvalidCircuitError` to `INVALID_CIRCUIT`, `SingularMatrixError` to `SINGULAR_MATRIX` with involved nodes, `ConvergenceError` to `CONVERGENCE_FAILED` with kind/time/oscillating nodes/dt/gmin, `TimestepTooSmallError` to `TIMESTEP_TOO_SMALL`, and `CycleError` to `INVALID_CIRCUIT` with the dependency chain. Raw solution vectors are not returned by default because they can be large; `details.solutionSummary` carries bounded extrema and changed-node summaries. Unknown exceptions become `INTERNAL_ERROR` with an opaque incident ID, never a stack trace in MCP output.
+Core errors map without parsing their message strings: `ParseError` to `PARSE_ERROR` with its line/context, `InvalidCircuitError` to `INVALID_CIRCUIT`, `SingularMatrixError` to `SINGULAR_MATRIX` with involved nodes, `ConvergenceError` to `CONVERGENCE_FAILED` with kind/time/oscillating nodes/dt/gmin, `TimestepTooSmallError` to `TIMESTEP_TOO_SMALL`, and `CycleError` to `INVALID_CIRCUIT` with the dependency chain. Raw solution vectors are not returned by default because they can be large; `details.solutionSummary` carries bounded extrema and changed-node summaries. Unknown exceptions become `INTERNAL_ERROR` with an opaque incident ID, never a stack trace in MCP output.
+
+This is a required core change, not a claim about the current implementation. Today the real and complex sparse solvers throw plain `Error` for singular pivots, so they cannot be mapped by type. #60 owns replacing every such solver throw site with `SingularMatrixError`, preserving source node/branch identity through matrix assembly, and adding exact mapping tests. No adapter may classify errors by matching `Error.message`.
+
+`spice_validate` performs schema validation, parse, compile, and a deterministic topology preflight; it does not numerically solve. The preflight must detect floating connected components/nets, absent DC reference paths, and ideal voltage-source/inductor loops and return `INVALID_CIRCUIT` diagnostics with source paths and involved nodes. A singularity not provable by topology preflight can still occur during `spice_simulate`; it maps to `SINGULAR_MATRIX`. Validation must not promise that all numerical singularities are found before solving.
 
 `retryable` is false for schema, parse, topology, unsupported-feature, and backend-unavailable failures; true for cancellation; and true for convergence/resource failures only when a diagnostic supplies a concrete changed option that stays inside server limits.
 
@@ -196,7 +263,7 @@ The contract deliberately does not promise bit-identical numbers across differen
 Tool names are namespaced and frozen for protocol v1:
 
 1. `spice_capabilities` — no circuit input; returns supported protocol/schema versions, backends, analyses, devices, hard limits, defaults, and optional features.
-2. `spice_validate` — validates and compiles any `SimulationInput`; returns normalized metadata, diagnostics, estimated point count, and unsupported features without solving.
+2. `spice_validate` — validates, parses, compiles, and runs the topology preflight described in section 5 for any `SimulationInput`; returns normalized metadata, diagnostics, estimated point count, and unsupported features without numerically solving.
 3. `spice_simulate` — bounded one-shot simulation. It rejects work whose estimate exceeds synchronous limits and points the caller to `spice_simulation_start`.
 4. `spice_simulation_start` — starts an isolated job and returns `jobId`, status, and the first cursor.
 5. `spice_simulation_read` — accepts `jobId`, opaque cursor, and optional `maxPoints` up to the server cap; returns ordered `events`, `nextCursor`, status, and a terminal success/error envelope when complete.
@@ -207,14 +274,77 @@ MCP `structuredContent` contains these envelopes. A short text summary is also r
 `spice_simulation_read` is pull-based because MCP does not guarantee portable arbitrary tool-result streaming. Cursors are job-scoped, opaque, single-direction, and replayable: reading the same cursor returns the same chunk until job expiry. Events are:
 
 ```ts
+type StreamPointV1 =
+  | {
+      type: 'dc'
+      axis: { name: string; unit: 'V' | 'A'; value: number }
+      voltagesV: Record<string, number>
+      currentsA: Record<string, number>
+    }
+  | {
+      type: 'tran'
+      timeS: number
+      voltagesV: Record<string, number>
+      currentsA: Record<string, number>
+    }
+  | {
+      type: 'ac'
+      frequencyHz: number
+      voltagePhasors: Record<string, ComplexPolarV1>
+      currentPhasors: Record<string, ComplexPolarV1>
+    }
+
 type SimulationEventV1 =
-  | { type: 'analysis-start'; analysis: 'op' | 'dc' | 'tran' | 'ac'; index: number }
-  | { type: 'point'; analysis: 'dc' | 'tran' | 'ac'; index: number; values: unknown }
-  | { type: 'analysis-end'; analysis: 'op' | 'dc' | 'tran' | 'ac'; pointCount: number }
+  | {
+      type: 'analysis-start'
+      analysis: 'op' | 'dc' | 'tran' | 'ac'
+      analysisIndex: number
+      step?: StepCoordinateV1
+    }
+  | {
+      type: 'point'
+      analysisIndex: number
+      step?: StepCoordinateV1
+      pointIndex: number
+      point: StreamPointV1
+    }
+  | {
+      type: 'analysis-end'
+      analysis: 'op' | 'dc' | 'tran' | 'ac'
+      analysisIndex: number
+      step?: StepCoordinateV1
+      pointCount: number
+    }
   | { type: 'diagnostic'; diagnostic: DiagnosticV1 }
+
+interface PartialAnalysisV1 {
+  analysis: 'dc' | 'tran' | 'ac'
+  analysisIndex: number
+  step?: StepCoordinateV1
+  emittedPointCount: number
+  complete: boolean
+}
+
+interface PartialSimulationResultV1 {
+  status: 'partial'
+  analyses: PartialAnalysisV1[]
+  // SHA-256 of the canonical point events emitted so far, in event order.
+  partialEventSha256: string
+}
+
+type StreamTerminalV1 =
+  | SuccessEnvelope<SimulationResultV1>
+  | (FailureEnvelope & { partial: PartialSimulationResultV1 })
+
+interface SimulationReadDataV1 {
+  status: 'running' | 'complete' | 'failed' | 'cancelled'
+  events: SimulationEventV1[]
+  nextCursor: string | null
+  terminal?: StreamTerminalV1
+}
 ```
 
-OP data is returned in the terminal result, not as a fake point stream. On failure or cancellation, already-read points remain valid and the terminal envelope states that the result is partial; partial data never carries a full-result hash.
+Within an analysis/step pair, `pointIndex` starts at zero and is contiguous. The `point.type` must equal the enclosing analysis type. OP data appears only in a successful terminal `SimulationResultV1`, not as a fake point. `terminal` is absent while running and required otherwise; `nextCursor` is null exactly when terminal. On failure or cancellation, already-read points remain valid and `partialEventSha256` authenticates only emitted canonical point events. A partial result never has `status: 'complete'` or `metadata.resultSha256`, and cannot be substituted for the one-shot result hash.
 
 ## 8. Cancellation, isolation, and resource limits
 
@@ -243,18 +373,18 @@ Callers may lower limits but not raise them above server policy. Estimates do no
 
 ## 9. WASM path
 
-`@spice-ts/wasm` exports asynchronous `createSpiceEngine(options)` and runs in browsers, Node, and Web Workers. Its methods are protocol-shaped: `validate`, `simulate`, `simulateStream`, and `cancel`. Initialization verifies the WASM module checksum and reports capabilities plus `engineBuildId` before accepting work.
+`@spice-ts/wasm` exports asynchronous `createSpiceEngine(options)` and runs in browsers, Node, and Web Workers. Its methods are protocol-shaped: `validate`, `simulate`, `simulateStream`, and `cancel`. The M3 implementation supports only `{ backend: 'spice-ts-js' }`: initialization verifies a build manifest containing the module-worker asset SHA-256 and reports capabilities plus `engineBuildId` before accepting work. A corrupt/mismatched JS worker asset maps to `BACKEND_UNAVAILABLE`.
 
-The JS package minor version pins one exact WASM artifact and protocol/schema minor versions. A different numeric kernel increments `engineBuildId`; incompatible imports/exports require a package major version. The WASM ABI is private and may change in minor releases because consumers bind to the JavaScript protocol facade, not raw exports. There is no WASI, filesystem, socket, clock, or random import. Memory begins at 64 MiB, may grow to a caller-configured ceiling no higher than 512 MiB, and a failed growth maps to `RESOURCE_LIMIT`.
+`spice-ts-wasm` is a reserved backend ID and is unavailable until the package contains a real numeric WASM artifact. Requesting it in the M3 slice deterministically returns `BACKEND_UNAVAILABLE`; capabilities must not list it. The later artifact-bearing slice must pin and verify one exact WASM SHA-256 before execution, increment `engineBuildId` for a different numeric kernel, and expose memory controls then. Its private ABI may change in minor releases because consumers bind to the JavaScript protocol facade, not raw exports. It may import no WASI, filesystem, socket, clock, or random capability. WASM memory begins at 64 MiB, may grow to a caller-configured ceiling no higher than 512 MiB, and failed growth maps to `RESOURCE_LIMIT`.
 
-Backend IDs remain explicit: `spice-ts-js`, `spice-ts-wasm`, and `ngspice-wasm`. Callers never get a silent fallback. If requested WASM cannot initialize, the response is `BACKEND_UNAVAILABLE`; fallback requires a caller-supplied ordered backend list and is recorded in metadata and diagnostics.
+Backend IDs remain explicit: `spice-ts-js`, reserved `spice-ts-wasm`, and existing `ngspice-wasm`. There is no implicit or facade-selected fallback. A caller may retry a different backend in its own code; each attempt has its actual backend in metadata and any failed attempt remains visible to that caller. The facade accepts one backend per engine creation, not an ordered fallback list.
 
 ## 10. Agent workflows
 
 ### Workflow A: repair a floating-node circuit
 
 1. The agent calls `spice_validate` with a SPICE netlist.
-2. It receives `INVALID_CIRCUIT`/`SINGULAR_MATRIX`, `details.involvedNodes: ["sense"]`, a source location, and a suggestion to add a DC path.
+2. The topology preflight returns `INVALID_CIRCUIT`, `details.involvedNodes: ["sense"]`, a source location, and a suggestion to add a DC path. If a different singularity is only discovered while solving, `spice_simulate` instead returns `SINGULAR_MATRIX`.
 3. The agent edits the netlist, validates again, then calls `spice_simulate` for OP.
 4. It asserts the returned `out` voltage and records input/result hashes in its engineering log.
 
@@ -273,10 +403,10 @@ No console-message parsing or host file access is required.
 Implementation is split into independently testable M3 issues:
 
 1. [#59 Protocol package and JSON Schema](https://github.com/mfiumara/spice-ts/issues/59): schema fixtures round-trip, invalid unions/versions/non-finite values fail, and canonical hashes are stable on Node 20 and 22.
-2. [#60 Core protocol adapter, structured errors, cancellation, and guards](https://github.com/mfiumara/spice-ts/issues/60): each existing exception maps by type, cancellation stops bounded solver fixtures, and every hard limit has a failing test.
-3. Circuit-json interop remains [#35](https://github.com/mfiumara/spice-ts/issues/35): R/C/M/Q connectivity round-trips; unsupported simulation elements emit diagnostics; no silent loss. Do not create a competing adapter issue.
+2. [#60 Core protocol adapter, structured errors, cancellation, and guards](https://github.com/mfiumara/spice-ts/issues/60): topology preflight catches independently tested floating-node/DC-path/source-loop fixtures; every singular solver throw site becomes a typed `SingularMatrixError` with involved nodes; each error maps by type; cancellation stops bounded solver fixtures; and every hard limit has a failing test.
+3. Circuit-json interop remains [#35](https://github.com/mfiumara/spice-ts/issues/35): its normative `ConversionResultV1` diagnostics and explicit `allowLossy` export gate are tested for lossless R/C/M/Q round-trips, layout-only information, unsupported simulation elements, and refused lossy export. Do not create a competing adapter issue.
 4. [#61 MCP package](https://github.com/mfiumara/spice-ts/issues/61): all six tools pass an in-process MCP client contract test; cursor replay, cancellation, TTL, worker death, and backpressure are covered.
-5. [#62 WASM/worker facade](https://github.com/mfiumara/spice-ts/issues/62): browser and Node tests run the same conformance fixtures, verify checksums/build IDs, enforce memory ceilings, and prove no silent backend fallback.
+5. [#62 WASM/worker facade](https://github.com/mfiumara/spice-ts/issues/62): browser and Node tests run the same conformance fixtures on `spice-ts-js`, verify the JS worker build manifest/build ID, prove reserved `spice-ts-wasm` is unavailable rather than falling back, and defer WASM checksum/memory tests until a real WASM artifact exists.
 6. [#63 End-to-end agent examples](https://github.com/mfiumara/spice-ts/issues/63): both workflows above run headlessly in CI and snapshot only canonical structured outputs.
 
 Each implementation issue may land independently behind protocol v1 fixtures. No implementation may publish a package or version as part of its acceptance test.
