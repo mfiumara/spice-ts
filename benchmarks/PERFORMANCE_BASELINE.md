@@ -38,19 +38,19 @@ Peak RSS includes each runtime's baseline. Node reports spice-ts peak RSS throug
 
 | Nodes | spice-ts API median | ngspice CLI median | ngspice analysis median | spice-ts peak RSS | ngspice peak RSS |
 |---:|---:|---:|---:|---:|---:|
-| 100 | 1.31 ms | 19.11 ms | 0.67 ms | 129.08 MiB | 10.38 MiB |
-| 1,000 | 4.87 ms | 29.20 ms | 1.25 ms | 140.61 MiB | 11.86 MiB |
-| 5,000 | 27.34 ms | 65.09 ms | 4.21 ms | 325.11 MiB | 17.89 MiB |
-| 10,000 | 68.45 ms | 87.74 ms | 7.66 ms | 916.55 MiB | 24.97 MiB |
+| 100 | 0.60 ms | 11.49 ms | 0.38 ms | 112.45 MiB | 10.33 MiB |
+| 1,000 | 1.95 ms | 14.37 ms | 0.63 ms | 146.69 MiB | 11.70 MiB |
+| 5,000 | 13.47 ms | 26.38 ms | 1.94 ms | 323.12 MiB | 17.50 MiB |
+| 10,000 | 28.78 ms | 40.53 ms | 3.59 ms | 914.94 MiB | 24.47 MiB |
 
 No engine failed at any tested size through 10,000 nodes. Sizes above 10,000 were not tested in this slice, so this report makes no claim about the next failure point.
 
 ## Interpretation: wins and losses
 
-- Against end-to-end native CLI wall time, the in-process spice-ts API is 14.55x faster at 100 nodes, narrowing to 1.28x at 10,000 nodes. This is an embedding/startup comparison, not a solver-superiority claim.
-- Against ngspice's internal analysis timer, spice-ts is slower at every size: 1.95x at 100 nodes, 3.90x at 1,000, 6.49x at 5,000, and 8.94x at 10,000.
-- Memory is the clearest loss. At 10,000 nodes spice-ts peaks at 916.55 MiB versus 24.97 MiB for ngspice, a 36.71x ratio.
-- The raw samples contain scheduler/GC outliers (for example spice-ts 100-node max 22.19 ms versus 1.31 ms median). Medians are therefore the primary comparison; p95/max are retained rather than hidden.
+- Against end-to-end native CLI wall time, the in-process spice-ts API is 19.22x faster at 100 nodes, narrowing to 1.41x at 10,000 nodes. This is an embedding/startup comparison, not a solver-superiority claim.
+- Against ngspice's internal analysis timer, spice-ts is slower at every size: 1.56x at 100 nodes, 3.08x at 1,000, 6.94x at 5,000, and 8.02x at 10,000.
+- Memory is the clearest loss. At 10,000 nodes spice-ts peaks at 914.94 MiB versus 24.47 MiB for ngspice, a 37.39x ratio.
+- Raw samples, including scheduler/GC variation, remain in the JSON. Medians are the primary comparison; p95/max are retained rather than hidden.
 
 ## Profile findings
 

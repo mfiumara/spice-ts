@@ -8,6 +8,6 @@ export function scalingLadder(nodes) {
   for (let node = 1; node <= nodes; node++) {
     lines.push(`R${node} ${node} ${node < nodes ? node + 1 : 0} 1k`);
   }
-  lines.push('.op', '.options acct', '.print op v(1)', '.end');
+  lines.push('.op', '.end');
   return `${lines.join('\n')}\n`;
 }

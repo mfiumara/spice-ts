@@ -1,0 +1,58 @@
+name: ngspice comparison
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/ngspice-comparison.yml'
+      - 'benchmarks/comparison-harness.ts'
+      - 'benchmarks/comparison-harness.test.ts'
+      - 'benchmarks/COMPARISON.md'
+      - 'benchmarks/circuits/generators.ts'
+      - 'packages/core/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+
+permissions:
+  contents: read
+
+env:
+  NGSPICE_APT_VERSION: 42+ds-3build1
+
+jobs:
+  comparison:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Install pinned ngspice
+        run: sudo apt-get update && sudo apt-get install -y "ngspice=${NGSPICE_APT_VERSION}"
+
+      - name: Report ngspice version
+        run: ngspice --version
+
+      - name: Run comparison harness tests
+        run: pnpm exec tsx --test benchmarks/comparison-harness.test.ts
+
+      - name: Produce OP, AC, and TRAN comparison report
+        run: pnpm bench:compare:v2 -- --output "$RUNNER_TEMP/comparison-v2-report.json"
+
+      - name: Upload comparison report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ngspice-comparison-v2
+          path: ${{ runner.temp }}/comparison-v2-report.json
+          if-no-files-found: error

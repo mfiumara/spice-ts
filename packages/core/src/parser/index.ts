@@ -162,13 +162,10 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
         lineNumber, tokens.join(' '),
       );
     case '.LIB':
-      if (tokens.length >= 3) {
-        throw new ParseError(
-          '.lib directive with file requires async parsing. Use parseAsync() with a resolveInclude option.',
-          lineNumber, tokens.join(' '),
-        );
-      }
-      break;
+      throw new ParseError(
+        '.lib directive requires async parsing. Use parseAsync() with a resolveInclude option.',
+        lineNumber, tokens.join(' '),
+      );
     case '.STEP': {
       let idx = 1;
       let sweepMode: 'lin' | 'dec' | 'oct' = 'lin';
@@ -198,7 +195,10 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
       break;
     }
     default:
-      break;
+      throw new ParseError(
+        `Unsupported dot command: '${tokens[0]}'`,
+        lineNumber, tokens.join(' '),
+      );
   }
 }
 
@@ -208,6 +208,12 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
 
   switch (type) {
     case 'R': {
+      if (tokens.length > 4) {
+        throw new ParseError(
+          `Unsupported resistor parameters: '${tokens.slice(4).join(' ')}'`,
+          lineNumber, tokens.join(' '),
+        );
+      }
       const value = parseNumber(tokens[3]);
       circuit.addResistor(name, tokens[1], tokens[2], value);
       break;
