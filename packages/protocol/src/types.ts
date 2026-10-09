@@ -1,0 +1,183 @@
+export type JsonPrimitive = string | number | boolean | null;
+export type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
+export type JsonObject = { [key: string]: JsonValue };
+
+export type ProtocolVersionV1 = '1';
+export type NativeSchemaVersionV1 = '1.0';
+export type BackendV1 = 'spice-ts-js' | 'spice-ts-wasm' | 'ngspice-wasm';
+export type DeterminismV1 = 'strict' | 'relaxed';
+export type IntegrationMethodV1 = 'euler' | 'trapezoidal' | 'gear2';
+
+export interface OperatingPointAnalysisV1 { type: 'op' }
+export interface DcAnalysisV1 { type: 'dc'; source: string; start: number; stop: number; step: number }
+export interface TransientAnalysisV1 { type: 'tran'; timestep: number; stopTime: number; startTime?: number; maxTimestep?: number }
+export interface AcAnalysisV1 { type: 'ac'; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }
+export type AnalysisV1 = OperatingPointAnalysisV1 | DcAnalysisV1 | TransientAnalysisV1 | AcAnalysisV1;
+
+export interface CircuitPortV1 { name: string; net: string }
+export interface CircuitComponentV1 {
+  type: string;
+  id: string;
+  name: string;
+  ports: CircuitPortV1[];
+  params: JsonObject;
+  model?: string;
+  subcircuit?: string;
+}
+export interface CircuitModelV1 { name: string; type: string; params: JsonObject }
+export interface SubcircuitV1 {
+  name: string;
+  ports: string[];
+  components: CircuitComponentV1[];
+  models?: CircuitModelV1[];
+}
+export interface SpiceTsCircuitDocumentV1 {
+  format: 'spice-ts';
+  schemaVersion: '1.0';
+  circuit: { components: CircuitComponentV1[]; nets: string[] };
+  analyses: AnalysisV1[];
+  models: CircuitModelV1[];
+  subcircuits: SubcircuitV1[];
+}
+
+export type SimulationInputV1 =
+  | { format: 'spice'; source: string; virtualFiles?: Record<string, string> }
+  | { format: 'spice-ts'; document: SpiceTsCircuitDocumentV1 }
+  | { format: 'circuit-json'; circuit: JsonValue[]; analyses: AnalysisV1[] };
+
+export interface ResourceLimitsV1 {
+  maxSourceBytes?: number;
+  maxVirtualFiles?: number;
+  maxIncludeDepth?: number;
+  maxComponents?: number;
+  maxSubcircuitDepth?: number;
+  maxAnalyses?: number;
+  maxResultPoints?: number;
+  maxSerializedResultBytes?: number;
+  maxWallTimeMs?: number;
+}
+export interface SimulationOptionsV1 {
+  backend?: BackendV1;
+  determinism?: DeterminismV1;
+  limits?: ResourceLimitsV1;
+  abstol?: number;
+  vntol?: number;
+  reltol?: number;
+  maxIterations?: number;
+  maxTransientIterations?: number;
+  maxTimestep?: number;
+  integrationMethod?: IntegrationMethodV1;
+  trtol?: number;
+  gmin?: number;
+}
+export interface SimulationRequestV1 { apiVersion: '1'; input: SimulationInputV1; options?: SimulationOptionsV1 }
+
+export interface StepCoordinateV1 { index: number; parameter: string; value: number }
+export interface OperatingPointResultV1 {
+  type: 'op'; analysisIndex: number; step?: StepCoordinateV1;
+  voltagesV: Record<string, number>; currentsA: Record<string, number>;
+}
+export interface DcResultV1 {
+  type: 'dc'; analysisIndex: number; step?: StepCoordinateV1;
+  axis: { name: string; unit: 'V' | 'A'; values: number[] };
+  voltagesV: Record<string, number[]>; currentsA: Record<string, number[]>;
+}
+export interface TransientResultV1 {
+  type: 'tran'; analysisIndex: number; step?: StepCoordinateV1;
+  timeS: number[]; voltagesV: Record<string, number[]>; currentsA: Record<string, number[]>;
+}
+export interface ComplexPolarV1 { magnitude: number; phaseDegrees: number }
+export interface AcResultV1 {
+  type: 'ac'; analysisIndex: number; step?: StepCoordinateV1;
+  frequencyHz: number[];
+  voltagePhasors: Record<string, ComplexPolarV1[]>;
+  currentPhasors: Record<string, ComplexPolarV1[]>;
+}
+export type AnalysisResultV1 = OperatingPointResultV1 | DcResultV1 | TransientResultV1 | AcResultV1;
+export interface SimulationResultV1 { status: 'complete'; analyses: AnalysisResultV1[] }
+
+export interface DiagnosticSourceV1 { file: string; line: number; column?: number; excerpt?: string }
+export interface RelatedDiagnosticV1 { path?: string; message: string }
+export interface DiagnosticSuggestionV1 { action: string; replacement?: JsonValue }
+export interface DiagnosticV1 {
+  severity: 'info' | 'warning' | 'error';
+  code: string;
+  message: string;
+  path?: string;
+  source?: DiagnosticSourceV1;
+  related?: RelatedDiagnosticV1[];
+  suggestions?: DiagnosticSuggestionV1[];
+}
+export type SpiceApiErrorCodeV1 =
+  | 'INVALID_REQUEST' | 'PARSE_ERROR' | 'INVALID_CIRCUIT' | 'UNSUPPORTED_FEATURE'
+  | 'SINGULAR_MATRIX' | 'CONVERGENCE_FAILED' | 'TIMESTEP_TOO_SMALL' | 'RESOURCE_LIMIT'
+  | 'CANCELLED' | 'BACKEND_UNAVAILABLE' | 'INTERNAL_ERROR';
+export interface SpiceApiErrorV1 {
+  code: SpiceApiErrorCodeV1;
+  message: string;
+  retryable: boolean;
+  phase: 'validation' | 'parse' | 'compile' | 'solve' | 'serialize' | 'transport';
+  details: JsonObject;
+}
+
+export interface ResolvedOptionsV1 {
+  backend: BackendV1;
+  abstol: number;
+  vntol: number;
+  reltol: number;
+  maxIterations: number;
+  maxTransientIterations: number;
+  maxTimestep: number;
+  integrationMethod: IntegrationMethodV1;
+  trtol: number;
+  gmin: number;
+  determinism: DeterminismV1;
+  limits?: ResourceLimitsV1;
+}
+export interface RunMetadataV1 {
+  protocolVersion: '1';
+  nativeSchemaVersion?: '1.0';
+  spiceTsVersion: string;
+  engineBuildId: string;
+  backend: BackendV1;
+  backendVersion: string;
+  resolvedOptions: ResolvedOptionsV1;
+  inputSha256: string;
+  resultSha256: string;
+  runtime: { family: string; version: string };
+  architecture: string;
+  determinism: DeterminismV1;
+}
+export type PartialRunMetadataV1 = Partial<Omit<RunMetadataV1, 'resultSha256'>>;
+export interface SuccessEnvelopeV1<T extends JsonValue | SimulationResultV1 = SimulationResultV1> {
+  apiVersion: '1'; ok: true; requestId: string; data: T;
+  diagnostics: DiagnosticV1[]; metadata: RunMetadataV1;
+}
+export interface FailureEnvelopeV1 {
+  apiVersion: '1'; ok: false; requestId: string; error: SpiceApiErrorV1;
+  diagnostics: DiagnosticV1[]; metadata?: PartialRunMetadataV1;
+}
+
+export type StreamPointV1 =
+  | { type: 'dc'; axis: { name: string; unit: 'V' | 'A'; value: number }; voltagesV: Record<string, number>; currentsA: Record<string, number> }
+  | { type: 'tran'; timeS: number; voltagesV: Record<string, number>; currentsA: Record<string, number> }
+  | { type: 'ac'; frequencyHz: number; voltagePhasors: Record<string, ComplexPolarV1>; currentPhasors: Record<string, ComplexPolarV1> };
+export type SimulationEventV1 =
+  | { type: 'analysis-start'; analysis: 'op' | 'dc' | 'tran' | 'ac'; analysisIndex: number; step?: StepCoordinateV1 }
+  | { type: 'point'; analysisIndex: number; step?: StepCoordinateV1; pointIndex: number; point: StreamPointV1 }
+  | { type: 'analysis-end'; analysis: 'op' | 'dc' | 'tran' | 'ac'; analysisIndex: number; step?: StepCoordinateV1; pointCount: number }
+  | { type: 'diagnostic'; diagnostic: DiagnosticV1 };
+export interface PartialAnalysisV1 {
+  analysis: 'dc' | 'tran' | 'ac'; analysisIndex: number; step?: StepCoordinateV1;
+  emittedPointCount: number; complete: boolean;
+}
+export interface PartialSimulationResultV1 {
+  status: 'partial'; analyses: PartialAnalysisV1[]; partialEventSha256: string;
+}
+export type StreamTerminalV1 =
+  | SuccessEnvelopeV1<SimulationResultV1>
+  | (FailureEnvelopeV1 & { partial: PartialSimulationResultV1 });
+export type SimulationReadDataV1 =
+  | { status: 'running'; events: SimulationEventV1[]; nextCursor: string }
+  | { status: 'complete'; events: SimulationEventV1[]; nextCursor: null; terminal: SuccessEnvelopeV1<SimulationResultV1> }
+  | { status: 'failed' | 'cancelled'; events: SimulationEventV1[]; nextCursor: null; terminal: FailureEnvelopeV1 & { partial: PartialSimulationResultV1 } };

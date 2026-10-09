@@ -1,0 +1,1617 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://spice-ts.dev/schemas/v1/common.schema.json",
+  "$defs": {
+    "jsonValue": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/jsonValue"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/jsonValue"
+          }
+        }
+      ]
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "step": {
+      "type": "object",
+      "required": [
+        "index",
+        "parameter",
+        "value"
+      ],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "parameter": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+    "analysis": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "op"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "source",
+            "start",
+            "stop",
+            "step"
+          ],
+          "properties": {
+            "type": {
+              "const": "dc"
+            },
+            "source": {
+              "type": "string"
+            },
+            "start": {
+              "type": "number"
+            },
+            "stop": {
+              "type": "number"
+            },
+            "step": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "timestep",
+            "stopTime"
+          ],
+          "properties": {
+            "type": {
+              "const": "tran"
+            },
+            "timestep": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "stopTime": {
+              "type": "number",
+              "minimum": 0
+            },
+            "startTime": {
+              "type": "number",
+              "minimum": 0
+            },
+            "maxTimestep": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "variation",
+            "points",
+            "startFreq",
+            "stopFreq"
+          ],
+          "properties": {
+            "type": {
+              "const": "ac"
+            },
+            "variation": {
+              "enum": [
+                "dec",
+                "oct",
+                "lin"
+              ]
+            },
+            "points": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "startFreq": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "stopFreq": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "port": {
+      "type": "object",
+      "required": [
+        "name",
+        "net"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "net": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "component": {
+      "type": "object",
+      "required": [
+        "type",
+        "id",
+        "name",
+        "ports",
+        "params"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/port"
+          }
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/jsonValue"
+          }
+        },
+        "model": {
+          "type": "string"
+        },
+        "subcircuit": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "model": {
+      "type": "object",
+      "required": [
+        "name",
+        "type",
+        "params"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/jsonValue"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "subcircuit": {
+      "type": "object",
+      "required": [
+        "name",
+        "ports",
+        "components"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/component"
+          }
+        },
+        "models": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/model"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "nativeDocument": {
+      "type": "object",
+      "required": [
+        "format",
+        "schemaVersion",
+        "circuit",
+        "analyses",
+        "models",
+        "subcircuits"
+      ],
+      "properties": {
+        "format": {
+          "const": "spice-ts"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "circuit": {
+          "type": "object",
+          "required": [
+            "components",
+            "nets"
+          ],
+          "properties": {
+            "components": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/component"
+              }
+            },
+            "nets": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "not": {
+                  "const": "0"
+                }
+              },
+              "uniqueItems": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "analyses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/analysis"
+          }
+        },
+        "models": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/model"
+          }
+        },
+        "subcircuits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/subcircuit"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "simulationInput": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "format",
+            "source"
+          ],
+          "properties": {
+            "format": {
+              "const": "spice"
+            },
+            "source": {
+              "type": "string"
+            },
+            "virtualFiles": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "format",
+            "document"
+          ],
+          "properties": {
+            "format": {
+              "const": "spice-ts"
+            },
+            "document": {
+              "$ref": "#/$defs/nativeDocument"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "format",
+            "circuit",
+            "analyses"
+          ],
+          "properties": {
+            "format": {
+              "const": "circuit-json"
+            },
+            "circuit": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/jsonValue"
+              }
+            },
+            "analyses": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/analysis"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "limits": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "maxSourceBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxVirtualFiles": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxIncludeDepth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxComponents": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxSubcircuitDepth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxAnalyses": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxResultPoints": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxSerializedResultBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxWallTimeMs": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "options": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "backend": {
+          "enum": [
+            "spice-ts-js",
+            "spice-ts-wasm",
+            "ngspice-wasm"
+          ]
+        },
+        "determinism": {
+          "enum": [
+            "strict",
+            "relaxed"
+          ]
+        },
+        "limits": {
+          "$ref": "#/$defs/limits"
+        },
+        "abstol": {
+          "type": "number",
+          "minimum": 0
+        },
+        "vntol": {
+          "type": "number",
+          "minimum": 0
+        },
+        "reltol": {
+          "type": "number",
+          "minimum": 0
+        },
+        "maxIterations": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxTransientIterations": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxTimestep": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "integrationMethod": {
+          "enum": [
+            "euler",
+            "trapezoidal",
+            "gear2"
+          ]
+        },
+        "trtol": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "gmin": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "simulationRequest": {
+      "type": "object",
+      "required": [
+        "apiVersion",
+        "input"
+      ],
+      "properties": {
+        "apiVersion": {
+          "const": "1"
+        },
+        "input": {
+          "$ref": "#/$defs/simulationInput"
+        },
+        "options": {
+          "$ref": "#/$defs/options"
+        }
+      },
+      "additionalProperties": false
+    },
+    "complex": {
+      "type": "object",
+      "required": [
+        "magnitude",
+        "phaseDegrees"
+      ],
+      "properties": {
+        "magnitude": {
+          "type": "number",
+          "minimum": 0
+        },
+        "phaseDegrees": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+    "opResult": {
+      "type": "object",
+      "required": [
+        "type",
+        "analysisIndex",
+        "voltagesV",
+        "currentsA"
+      ],
+      "properties": {
+        "type": {
+          "const": "op"
+        },
+        "analysisIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "step": {
+          "$ref": "#/$defs/step"
+        },
+        "voltagesV": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "currentsA": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "dcResult": {
+      "type": "object",
+      "required": [
+        "type",
+        "analysisIndex",
+        "axis",
+        "voltagesV",
+        "currentsA"
+      ],
+      "properties": {
+        "type": {
+          "const": "dc"
+        },
+        "analysisIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "step": {
+          "$ref": "#/$defs/step"
+        },
+        "axis": {
+          "type": "object",
+          "required": [
+            "name",
+            "unit",
+            "values"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "unit": {
+              "enum": [
+                "V",
+                "A"
+              ]
+            },
+            "values": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "voltagesV": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "currentsA": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "tranResult": {
+      "type": "object",
+      "required": [
+        "type",
+        "analysisIndex",
+        "timeS",
+        "voltagesV",
+        "currentsA"
+      ],
+      "properties": {
+        "type": {
+          "const": "tran"
+        },
+        "analysisIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "step": {
+          "$ref": "#/$defs/step"
+        },
+        "timeS": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "voltagesV": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "currentsA": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "acResult": {
+      "type": "object",
+      "required": [
+        "type",
+        "analysisIndex",
+        "frequencyHz",
+        "voltagePhasors",
+        "currentPhasors"
+      ],
+      "properties": {
+        "type": {
+          "const": "ac"
+        },
+        "analysisIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "step": {
+          "$ref": "#/$defs/step"
+        },
+        "frequencyHz": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "voltagePhasors": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/complex"
+            }
+          }
+        },
+        "currentPhasors": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/complex"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "analysisResult": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/opResult"
+        },
+        {
+          "$ref": "#/$defs/dcResult"
+        },
+        {
+          "$ref": "#/$defs/tranResult"
+        },
+        {
+          "$ref": "#/$defs/acResult"
+        }
+      ]
+    },
+    "simulationResult": {
+      "type": "object",
+      "required": [
+        "status",
+        "analyses"
+      ],
+      "properties": {
+        "status": {
+          "const": "complete"
+        },
+        "analyses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/analysisResult"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "diagnostic": {
+      "type": "object",
+      "required": [
+        "severity",
+        "code",
+        "message"
+      ],
+      "properties": {
+        "severity": {
+          "enum": [
+            "info",
+            "warning",
+            "error"
+          ]
+        },
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "source": {
+          "type": "object",
+          "required": [
+            "file",
+            "line"
+          ],
+          "properties": {
+            "file": {
+              "type": "string"
+            },
+            "line": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "column": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "excerpt": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "related": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "message"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "suggestions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "action"
+            ],
+            "properties": {
+              "action": {
+                "type": "string"
+              },
+              "replacement": {
+                "$ref": "#/$defs/jsonValue"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "apiError": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "retryable",
+        "phase",
+        "details"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "INVALID_REQUEST",
+            "PARSE_ERROR",
+            "INVALID_CIRCUIT",
+            "UNSUPPORTED_FEATURE",
+            "SINGULAR_MATRIX",
+            "CONVERGENCE_FAILED",
+            "TIMESTEP_TOO_SMALL",
+            "RESOURCE_LIMIT",
+            "CANCELLED",
+            "BACKEND_UNAVAILABLE",
+            "INTERNAL_ERROR"
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "phase": {
+          "enum": [
+            "validation",
+            "parse",
+            "compile",
+            "solve",
+            "serialize",
+            "transport"
+          ]
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/jsonValue"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "resolvedOptions": {
+      "type": "object",
+      "required": [
+        "backend",
+        "abstol",
+        "vntol",
+        "reltol",
+        "maxIterations",
+        "maxTransientIterations",
+        "maxTimestep",
+        "integrationMethod",
+        "trtol",
+        "gmin",
+        "determinism"
+      ],
+      "properties": {
+        "backend": {
+          "enum": [
+            "spice-ts-js",
+            "spice-ts-wasm",
+            "ngspice-wasm"
+          ]
+        },
+        "abstol": {
+          "type": "number"
+        },
+        "vntol": {
+          "type": "number"
+        },
+        "reltol": {
+          "type": "number"
+        },
+        "maxIterations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxTransientIterations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxTimestep": {
+          "type": "number"
+        },
+        "integrationMethod": {
+          "enum": [
+            "euler",
+            "trapezoidal",
+            "gear2"
+          ]
+        },
+        "trtol": {
+          "type": "number"
+        },
+        "gmin": {
+          "type": "number"
+        },
+        "determinism": {
+          "enum": [
+            "strict",
+            "relaxed"
+          ]
+        },
+        "limits": {
+          "$ref": "#/$defs/limits"
+        }
+      },
+      "additionalProperties": false
+    },
+    "runMetadata": {
+      "type": "object",
+      "required": [
+        "protocolVersion",
+        "spiceTsVersion",
+        "engineBuildId",
+        "backend",
+        "backendVersion",
+        "resolvedOptions",
+        "inputSha256",
+        "resultSha256",
+        "runtime",
+        "architecture",
+        "determinism"
+      ],
+      "properties": {
+        "protocolVersion": {
+          "const": "1"
+        },
+        "nativeSchemaVersion": {
+          "const": "1.0"
+        },
+        "spiceTsVersion": {
+          "type": "string"
+        },
+        "engineBuildId": {
+          "type": "string"
+        },
+        "backend": {
+          "enum": [
+            "spice-ts-js",
+            "spice-ts-wasm",
+            "ngspice-wasm"
+          ]
+        },
+        "backendVersion": {
+          "type": "string"
+        },
+        "resolvedOptions": {
+          "$ref": "#/$defs/resolvedOptions"
+        },
+        "inputSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "resultSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "runtime": {
+          "type": "object",
+          "required": [
+            "family",
+            "version"
+          ],
+          "properties": {
+            "family": {
+              "type": "string"
+            },
+            "version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "architecture": {
+          "type": "string"
+        },
+        "determinism": {
+          "enum": [
+            "strict",
+            "relaxed"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "partialRunMetadata": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "protocolVersion": {
+          "const": "1"
+        },
+        "nativeSchemaVersion": {
+          "const": "1.0"
+        },
+        "spiceTsVersion": {
+          "type": "string"
+        },
+        "engineBuildId": {
+          "type": "string"
+        },
+        "backend": {
+          "enum": [
+            "spice-ts-js",
+            "spice-ts-wasm",
+            "ngspice-wasm"
+          ]
+        },
+        "backendVersion": {
+          "type": "string"
+        },
+        "resolvedOptions": {
+          "$ref": "#/$defs/resolvedOptions"
+        },
+        "inputSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "runtime": {
+          "type": "object",
+          "required": [
+            "family",
+            "version"
+          ],
+          "properties": {
+            "family": {
+              "type": "string"
+            },
+            "version": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "architecture": {
+          "type": "string"
+        },
+        "determinism": {
+          "enum": [
+            "strict",
+            "relaxed"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "successEnvelope": {
+      "type": "object",
+      "required": [
+        "apiVersion",
+        "ok",
+        "requestId",
+        "data",
+        "diagnostics",
+        "metadata"
+      ],
+      "properties": {
+        "apiVersion": {
+          "const": "1"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/diagnostic"
+          }
+        },
+        "ok": {
+          "const": true
+        },
+        "data": {
+          "$ref": "#/$defs/simulationResult"
+        },
+        "metadata": {
+          "$ref": "#/$defs/runMetadata"
+        }
+      },
+      "additionalProperties": false
+    },
+    "failureEnvelope": {
+      "type": "object",
+      "required": [
+        "apiVersion",
+        "ok",
+        "requestId",
+        "error",
+        "diagnostics"
+      ],
+      "properties": {
+        "apiVersion": {
+          "const": "1"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/diagnostic"
+          }
+        },
+        "ok": {
+          "const": false
+        },
+        "error": {
+          "$ref": "#/$defs/apiError"
+        },
+        "metadata": {
+          "$ref": "#/$defs/partialRunMetadata"
+        }
+      },
+      "additionalProperties": false
+    },
+    "streamPoint": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "axis",
+            "voltagesV",
+            "currentsA"
+          ],
+          "properties": {
+            "type": {
+              "const": "dc"
+            },
+            "axis": {
+              "type": "object",
+              "required": [
+                "name",
+                "unit",
+                "value"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "unit": {
+                  "enum": [
+                    "V",
+                    "A"
+                  ]
+                },
+                "value": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            },
+            "voltagesV": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "currentsA": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "timeS",
+            "voltagesV",
+            "currentsA"
+          ],
+          "properties": {
+            "type": {
+              "const": "tran"
+            },
+            "timeS": {
+              "type": "number"
+            },
+            "voltagesV": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "currentsA": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "frequencyHz",
+            "voltagePhasors",
+            "currentPhasors"
+          ],
+          "properties": {
+            "type": {
+              "const": "ac"
+            },
+            "frequencyHz": {
+              "type": "number",
+              "minimum": 0
+            },
+            "voltagePhasors": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/$defs/complex"
+              }
+            },
+            "currentPhasors": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/$defs/complex"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "simulationEvent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "analysis",
+            "analysisIndex"
+          ],
+          "properties": {
+            "type": {
+              "const": "analysis-start"
+            },
+            "analysis": {
+              "enum": [
+                "op",
+                "dc",
+                "tran",
+                "ac"
+              ]
+            },
+            "analysisIndex": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "step": {
+              "$ref": "#/$defs/step"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "analysisIndex",
+            "pointIndex",
+            "point"
+          ],
+          "properties": {
+            "type": {
+              "const": "point"
+            },
+            "analysisIndex": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "step": {
+              "$ref": "#/$defs/step"
+            },
+            "pointIndex": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "point": {
+              "$ref": "#/$defs/streamPoint"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "analysis",
+            "analysisIndex",
+            "pointCount"
+          ],
+          "properties": {
+            "type": {
+              "const": "analysis-end"
+            },
+            "analysis": {
+              "enum": [
+                "op",
+                "dc",
+                "tran",
+                "ac"
+              ]
+            },
+            "analysisIndex": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "step": {
+              "$ref": "#/$defs/step"
+            },
+            "pointCount": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "diagnostic"
+          ],
+          "properties": {
+            "type": {
+              "const": "diagnostic"
+            },
+            "diagnostic": {
+              "$ref": "#/$defs/diagnostic"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "partialResult": {
+      "type": "object",
+      "required": [
+        "status",
+        "analyses",
+        "partialEventSha256"
+      ],
+      "properties": {
+        "status": {
+          "const": "partial"
+        },
+        "analyses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "analysis",
+              "analysisIndex",
+              "emittedPointCount",
+              "complete"
+            ],
+            "properties": {
+              "analysis": {
+                "enum": [
+                  "dc",
+                  "tran",
+                  "ac"
+                ]
+              },
+              "analysisIndex": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "step": {
+                "$ref": "#/$defs/step"
+              },
+              "emittedPointCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "complete": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "partialEventSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "failureTerminal": {
+      "type": "object",
+      "required": [
+        "apiVersion",
+        "ok",
+        "requestId",
+        "error",
+        "diagnostics",
+        "partial"
+      ],
+      "properties": {
+        "apiVersion": {
+          "const": "1"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/diagnostic"
+          }
+        },
+        "ok": {
+          "const": false
+        },
+        "error": {
+          "$ref": "#/$defs/apiError"
+        },
+        "metadata": {
+          "$ref": "#/$defs/partialRunMetadata"
+        },
+        "partial": {
+          "$ref": "#/$defs/partialResult"
+        }
+      },
+      "additionalProperties": false
+    },
+    "streamTerminal": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/successEnvelope"
+        },
+        {
+          "$ref": "#/$defs/failureTerminal"
+        }
+      ]
+    },
+    "simulationReadData": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "status",
+            "events",
+            "nextCursor"
+          ],
+          "properties": {
+            "status": {
+              "const": "running"
+            },
+            "events": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/simulationEvent"
+              }
+            },
+            "nextCursor": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "status",
+            "events",
+            "nextCursor",
+            "terminal"
+          ],
+          "properties": {
+            "status": {
+              "const": "complete"
+            },
+            "events": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/simulationEvent"
+              }
+            },
+            "nextCursor": {
+              "const": null
+            },
+            "terminal": {
+              "$ref": "#/$defs/successEnvelope"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "status",
+            "events",
+            "nextCursor",
+            "terminal"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "failed",
+                "cancelled"
+              ]
+            },
+            "events": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/simulationEvent"
+              }
+            },
+            "nextCursor": {
+              "const": null
+            },
+            "terminal": {
+              "$ref": "#/$defs/failureTerminal"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

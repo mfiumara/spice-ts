@@ -1,0 +1,29 @@
+{
+  "unsupportedVersion": { "apiVersion": "2", "input": { "format": "spice", "source": ".op" } },
+  "invalidUnion": { "apiVersion": "1", "input": { "format": "spice", "source": ".op", "document": {} } },
+  "internalBackend": { "apiVersion": "1", "input": { "format": "spice", "source": ".op" }, "options": { "backend": "spice-ts" } },
+  "duplicateIds": {
+    "format": "spice-ts",
+    "schemaVersion": "1.0",
+    "circuit": {
+      "components": [
+        { "type": "R", "id": "R1", "name": "R1", "ports": [], "params": {} },
+        { "type": "R", "id": "r1", "name": "other", "ports": [], "params": {} }
+      ],
+      "nets": []
+    },
+    "analyses": [{ "type": "op" }],
+    "models": [],
+    "subcircuits": []
+  },
+  "mismatchedSeries": { "status": "complete", "analyses": [{ "type": "tran", "analysisIndex": 0, "timeS": [0, 1], "voltagesV": { "out": [0] }, "currentsA": {} }] },
+  "partialWithResultHash": {
+    "apiVersion": "1",
+    "ok": false,
+    "requestId": "req-1",
+    "error": { "code": "CANCELLED", "message": "cancelled", "retryable": true, "phase": "solve", "details": {} },
+    "diagnostics": [],
+    "metadata": { "resultSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+    "partial": { "status": "partial", "analyses": [], "partialEventSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" }
+  }
+}
