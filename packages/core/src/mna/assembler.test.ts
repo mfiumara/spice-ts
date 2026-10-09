@@ -85,4 +85,37 @@ describe('MNAAssembler', () => {
     expect(asm.gValues[asm.diagIdx[0]]).toBe(0);
     expect(asm.cValues[asm.diagIdx[0]]).toBe(0);
   });
+
+  it('stores topology lookup data proportional to structural nonzeros', () => {
+    const asm = new MNAAssembler(10_000, 0);
+    const ctx = asm.getStampContext();
+    ctx.stampG(3, 9_999, 1);
+    ctx.stampG(9_999, 3, 2);
+    ctx.stampC(4_321, 123, 3);
+
+    asm.lockTopology();
+
+    expect('posMap' in asm).toBe(false);
+    expect(asm.topologyNnz).toBe(3);
+    expect(asm.stampIndex(3, 9_999)).toBeGreaterThanOrEqual(0);
+    expect(asm.stampIndex(9_999, 3)).toBeGreaterThanOrEqual(0);
+    expect(asm.stampIndex(4_321, 123)).toBeGreaterThanOrEqual(0);
+  });
+
+  it('preserves arbitrary locked topology for direct G and C stamping', () => {
+    const asm = new MNAAssembler(8, 1);
+    const initial = asm.getStampContext();
+    initial.stampG(0, 8, 0);
+    initial.stampC(7, 2, 0);
+    asm.lockTopology();
+
+    asm.clear();
+    const locked = asm.getStampContext();
+    locked.stampG(0, 8, 4.5);
+    locked.stampC(7, 2, -2.25);
+
+    expect(asm.gValues[asm.stampIndex(0, 8)]).toBe(4.5);
+    expect(asm.cValues[asm.stampIndex(7, 2)]).toBe(-2.25);
+    expect(() => locked.stampG(1, 6, 1)).toThrow(/locked topology/);
+  });
 });
