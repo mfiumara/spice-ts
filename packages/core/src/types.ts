@@ -51,8 +51,28 @@ export interface ACAnalysis {
   stopFreq: number;
 }
 
-/** Union of all analysis command types. Discriminated on the `type` field. */
+/** Bounded resistor-noise analysis (`.noise v(node) source lin ...`). */
+export interface NoiseAnalysis {
+  type: 'noise';
+  /** Output node whose voltage-noise density is reported. */
+  outputNode: string;
+  /** Independent voltage source used to refer output noise back to the input. */
+  inputSource: string;
+  /** This first slice supports only ngspice's linear sweep form. */
+  variation: 'lin';
+  /** Total number of frequency points, including both endpoints. */
+  points: number;
+  /** Start frequency in Hz. */
+  startFreq: number;
+  /** Stop frequency in Hz. */
+  stopFreq: number;
+}
+
+/** Established time/frequency analysis command types. */
 export type AnalysisCommand = DCAnalysis | DCSweepAnalysis | TransientAnalysis | ACAnalysis;
+
+/** Every analysis directive executable by the native simulator. */
+export type AnalysisDirective = AnalysisCommand | NoiseAnalysis;
 
 /** Integration methods for transient analysis */
 export type IntegrationMethod = 'euler' | 'trapezoidal' | 'gear2';

@@ -1,5 +1,5 @@
 import type { DeviceModel } from './devices/device.js';
-import type { AnalysisCommand, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis, SimulationOptions } from './types.js';
+import type { AnalysisDirective, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis, SimulationOptions } from './types.js';
 import type { CircuitIR } from './ir/types.js';
 import { buildIR } from './ir/builder.js';
 import { Resistor } from './devices/resistor.js';
@@ -51,7 +51,7 @@ export interface CompiledCircuit {
   /** Ordered list of branch names */
   branchNames: string[];
   /** Analysis commands to execute */
-  analyses: AnalysisCommand[];
+  analyses: AnalysisDirective[];
   /** Device model parameter cards */
   models: Map<string, ModelParams>;
   /** Subcircuit definitions */
@@ -166,7 +166,7 @@ function formatDevice(desc: DeviceDescriptor): string {
   }
 }
 
-function formatAnalysis(analysis: AnalysisCommand): string {
+function formatAnalysis(analysis: AnalysisDirective): string {
   switch (analysis.type) {
     case 'op':
       return '.op';
@@ -180,6 +180,8 @@ function formatAnalysis(analysis: AnalysisCommand): string {
     }
     case 'ac':
       return `.ac ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
+    case 'noise':
+      return `.noise v(${analysis.outputNode}) ${analysis.inputSource} lin ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
   }
 }
 
@@ -231,14 +233,14 @@ function internalNodeName(deviceName: string, suffix: string): string {
  */
 export class Circuit {
   private descriptors: DeviceDescriptor[] = [];
-  private _analyses: AnalysisCommand[] = [];
+  private _analyses: AnalysisDirective[] = [];
   private _steps: StepAnalysis[] = [];
   private _models = new Map<string, ModelParams>();
   private _subcircuits = new Map<string, SubcktDefinition>();
   private _simulationOptions: SimulationOptions = {};
   private nodeSet = new Set<string>();
 
-  get analyses(): AnalysisCommand[] {
+  get analyses(): AnalysisDirective[] {
     return this._analyses;
   }
 
@@ -555,6 +557,7 @@ export class Circuit {
   addAnalysis(type: 'dc', params: { source: string; start: number; stop: number; step: number }): void;
   addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
+  addAnalysis(type: 'noise', params: { outputNode: string; inputSource: string; variation: 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
     switch (type) {
       case 'op':
@@ -584,6 +587,17 @@ export class Circuit {
         this._analyses.push({
           type: 'ac',
           variation: params!.variation as 'dec' | 'oct' | 'lin',
+          points: params!.points as number,
+          startFreq: params!.startFreq as number,
+          stopFreq: params!.stopFreq as number,
+        });
+        break;
+      case 'noise':
+        this._analyses.push({
+          type: 'noise',
+          outputNode: params!.outputNode as string,
+          inputSource: params!.inputSource as string,
+          variation: 'lin',
           points: params!.points as number,
           startFreq: params!.startFreq as number,
           stopFreq: params!.stopFreq as number,
