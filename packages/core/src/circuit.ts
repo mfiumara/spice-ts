@@ -202,8 +202,8 @@ function formatStep(step: StepAnalysis): string {
   return `.step ${step.sweepMode.toUpperCase()} ${step.param} ${formatNumber(step.start ?? 0)} ${formatNumber(step.stop ?? 0)} ${step.points ?? 0}`;
 }
 
-function isPositiveFinite(value: number): boolean {
-  return Number.isFinite(value) && value > 0;
+function isPositiveFinite(value: number | undefined): value is number {
+  return value !== undefined && Number.isFinite(value) && value > 0;
 }
 
 function hasCapacitorParasitics(model: ResolvedCapacitorModel): boolean {
@@ -811,7 +811,14 @@ export class Circuit {
         case 'D': {
           const modelName = desc.modelName;
           const modelParams = modelName ? this._models.get(modelName)?.params ?? {} : {};
-          devices.push(new Diode(desc.name, nodeIndices, modelParams));
+          const hasExpandedSeriesResistance = isPositiveFinite(modelParams.RS)
+            && desc.params?.RS === 0;
+          devices.push(new Diode(
+            desc.name,
+            nodeIndices,
+            { ...modelParams, ...desc.params },
+            hasExpandedSeriesResistance,
+          ));
           break;
         }
         case 'Q': {
@@ -952,6 +959,33 @@ export class Circuit {
         const resolved = resolveInductorModel(desc.value, model, desc.params);
         if (hasInductorParasitics(resolved)) {
           result.push(...this.expandInductorDescriptor(desc, resolved));
+        } else {
+          result.push(desc);
+        }
+        continue;
+      }
+
+      if (desc.type === 'D') {
+        const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
+        const seriesResistance = desc.params?.RS ?? model?.params.RS;
+        const junctionCapacitance = desc.params?.CJ0 ?? model?.params.CJ0;
+        const transitTime = desc.params?.TT ?? model?.params.TT;
+        const hasJunctionCharge = isPositiveFinite(junctionCapacitance)
+          || isPositiveFinite(transitTime);
+        if (isPositiveFinite(seriesResistance) && hasJunctionCharge) {
+          const [anode, cathode] = desc.nodes;
+          const junction = internalNodeName(desc.name, 'rs');
+          result.push({
+            type: 'R',
+            name: `${desc.name}.RS`,
+            nodes: [anode, junction],
+            value: seriesResistance,
+          });
+          result.push({
+            ...desc,
+            nodes: [junction, cathode],
+            params: { ...desc.params, RS: 0 },
+          });
         } else {
           result.push(desc);
         }
