@@ -23,6 +23,7 @@ export class Diode implements DeviceModel {
     readonly name: string,
     readonly nodes: number[],
     params: Partial<DiodeParams>,
+    private readonly hasExternalSeriesResistance = false,
   ) {
     this.params = {
       IS: params.IS ?? 1e-14,
@@ -45,7 +46,13 @@ export class Diode implements DeviceModel {
     const { IS, N, RS } = this.params;
     const vt = N * VT;
 
-    const { current: id, conductance, linearizationVoltage } = diodeCurrent(vd, vt, IS, RS);
+    const { current: id, conductance, linearizationVoltage } = diodeCurrent(
+      vd,
+      vt,
+      IS,
+      RS,
+      !this.hasExternalSeriesResistance,
+    );
     const gd = conductance + GMIN;
 
     // Newton-Raphson companion: I = gd * Vd + Ieq
@@ -97,7 +104,10 @@ export class Diode implements DeviceModel {
       cj += TT * junctionConductance;
     }
 
-    cj *= junctionVoltageGain;
+    // A two-terminal fallback can only represent the low-frequency reduction.
+    // Compiled circuits expand RS into a physical resistor and internal junction
+    // node, preserving the complete frequency-dependent pole.
+    cj *= junctionVoltageGain * junctionVoltageGain;
 
     if (nA >= 0) ctx.stampC(nA, nA, cj);
     if (nK >= 0) ctx.stampC(nK, nK, cj);
@@ -113,6 +123,7 @@ function diodeCurrent(
   thermalVoltage: number,
   saturationCurrent: number,
   seriesResistance: number,
+  limitJunctionVoltage = true,
 ): {
   current: number;
   conductance: number;
@@ -121,7 +132,9 @@ function diodeCurrent(
   linearizationVoltage: number;
 } {
   if (seriesResistance === 0) {
-    const limitedVoltage = limitVoltage(terminalVoltage, thermalVoltage, saturationCurrent);
+    const limitedVoltage = limitJunctionVoltage
+      ? limitVoltage(terminalVoltage, thermalVoltage, saturationCurrent)
+      : terminalVoltage;
     const exponential = safeExponential(limitedVoltage / thermalVoltage);
     return {
       current: saturationCurrent * (exponential - 1),
