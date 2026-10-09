@@ -194,7 +194,6 @@ Rload out 0 10
   },
   {
     integrationMethod: 'gear2',
-    simulationOptions: { integrationMethod: 'gear2', reltol: 1e-2 },
     id: 'boost', name: 'Boost Converter', desc: '5V \u2192 ~10V, 50% duty',
     icon: '\u26A1', group: 'Power Electronics', tag: '.tran', signals: ['out'],
     tranNetlist: `
