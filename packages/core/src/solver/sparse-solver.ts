@@ -1,9 +1,10 @@
 import type { CscMatrix } from './csc-matrix.js';
 import { GilbertPeierlsSolver } from './gilbert-peierls.js';
+import type { MatrixVariableIdentity } from '../errors.js';
 
 export interface SparseSolver {
   /** Analyze sparsity pattern — call once per circuit topology */
-  analyzePattern(A: CscMatrix): void;
+  analyzePattern(A: CscMatrix, variables?: readonly MatrixVariableIdentity[]): void;
 
   /** Numeric factorization — call each Newton step (same pattern, new values) */
   factorize(A: CscMatrix): void;

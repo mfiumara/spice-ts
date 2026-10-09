@@ -32,10 +32,12 @@ describe('SpiceError hierarchy', () => {
     expect(err.message).toContain('t=');
   });
 
-  it('SingularMatrixError includes involved nodes', () => {
-    const err = new SingularMatrixError('floating node', ['5']);
+  it('SingularMatrixError includes structural matrix identity', () => {
+    const err = new SingularMatrixError('floating node', ['5'], ['V1'], 2);
     expect(err).toBeInstanceOf(SpiceError);
     expect(err.involvedNodes).toEqual(['5']);
+    expect(err.involvedBranches).toEqual(['V1']);
+    expect(err.pivotIndex).toBe(2);
     expect(err.message).toContain('floating node');
   });
 

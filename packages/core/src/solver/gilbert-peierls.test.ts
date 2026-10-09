@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { SparseMatrix } from './sparse-matrix.js';
 import { toCsc } from './csc-matrix.js';
 import { GilbertPeierlsSolver } from './gilbert-peierls.js';
+import { SingularMatrixError } from '../errors.js';
 
 describe('GilbertPeierlsSolver', () => {
   describe('analyzePattern', () => {
@@ -57,14 +58,30 @@ describe('GilbertPeierlsSolver', () => {
       expect(() => solver.factorize(csc)).not.toThrow();
     });
 
-    it('throws on singular matrix', () => {
+    it('throws a typed error with structural node identity on a singular pivot', () => {
       const m2 = new SparseMatrix(2);
       m2.add(0, 0, 1); m2.add(0, 1, 2);
       m2.add(1, 0, 1); m2.add(1, 1, 2);
       const { csc } = toCsc(m2);
       const solver = new GilbertPeierlsSolver();
-      solver.analyzePattern(csc);
-      expect(() => solver.factorize(csc)).toThrow(/[Ss]ingular/);
+      solver.analyzePattern(csc, [
+        { kind: 'node', name: 'in' },
+        { kind: 'node', name: 'floating' },
+      ]);
+
+      let thrown: unknown;
+      try {
+        solver.factorize(csc);
+      } catch (error) {
+        thrown = error;
+      }
+
+      expect(thrown).toBeInstanceOf(SingularMatrixError);
+      expect(thrown).toMatchObject({
+        involvedNodes: ['floating'],
+        involvedBranches: [],
+        pivotIndex: 1,
+      });
     });
 
     it('throws if analyzePattern was not called', () => {
