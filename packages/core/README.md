@@ -157,6 +157,7 @@ The resolver is platform-agnostic — use `fetch()` in the browser, `readFile()`
 |---|---|
 | `simulate` | `(input: string \| Circuit, options?: SimulationOptions) => Promise<SimulationResult>` |
 | `simulateStream` | `(input, options?) => AsyncIterableIterator<TransientStep \| ACPoint>` |
+| `createTransientSim` | `(input, options?) => Promise<TransientSim>` |
 | `parse` | `(netlist: string) => Circuit` |
 | `parseAsync` | `(netlist: string, resolver?: IncludeResolver) => Promise<Circuit>` |
 | `Circuit` | Programmatic circuit builder |
@@ -175,6 +176,20 @@ The resolver is platform-agnostic — use `fetch()` in the browser, `readFile()`
 | `resolveInclude` | — | Async callback for `.include`/`.lib` |
 
 All public exports have TSDoc comments for IDE hover-docs.
+
+### Convergence telemetry
+
+Native `simulate()` results expose an optional `convergence` object. External
+simulator adapters may omit it. `TransientSim.convergence` returns an immutable
+snapshot for resumable/streaming runs, and terminal `ConvergenceError` instances
+carry the last snapshot when one is available.
+
+`convergence.dc` reports total Newton iterations, accepted/rejected solves,
+source-step attempts/failures, GMIN-step attempts/failures, and a terminal
+failure classification. `convergence.transient` reports accepted/rejected
+timesteps, total Newton iterations, NR/LTE retries, the minimum accepted
+timestep, and a terminal failure classification. Counters are observational;
+enabling the API does not change tolerances or convergence decisions.
 
 ## Visualizing results
 

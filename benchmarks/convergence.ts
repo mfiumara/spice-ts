@@ -6,8 +6,8 @@
  * Requires ngspice-47 on PATH. Results are written to
  * benchmarks/convergence-results.json.
  */
-import { simulate } from '@spice-ts/core';
-import type { SimulationResult } from '@spice-ts/core';
+import { ConvergenceError, simulate } from '@spice-ts/core';
+import type { ConvergenceTelemetry, SimulationResult } from '@spice-ts/core';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { arch, cpus, platform, tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -76,8 +76,9 @@ interface EngineRun {
   runtimeMs: number | null;
   analysisRuntimeMs?: number | null;
   acceptedPoints: number | null;
-  rejectedRetries: number | 'not-exposed';
-  iterations: number | 'not-exposed';
+  rejectedRetries: number;
+  iterations: number;
+  telemetry: ConvergenceTelemetry | null;
   series: Series | null;
 }
 
@@ -117,6 +118,8 @@ async function runSpiceTs(netlist: string, fixture: Fixture): Promise<EngineRun>
       runtimes.push(performance.now() - started);
     }
     if (!result) throw new Error('simulation returned no result');
+    const telemetry = result.convergence;
+    if (!telemetry) throw new Error('spice-ts did not return convergence telemetry');
 
     if (fixture.analysis === 'op') {
       const value = result.dc?.voltage(fixture.probe);
@@ -126,8 +129,9 @@ async function runSpiceTs(netlist: string, fixture: Fixture): Promise<EngineRun>
         error: null,
         runtimeMs: median(runtimes),
         acceptedPoints: 1,
-        rejectedRetries: 'not-exposed',
-        iterations: 'not-exposed',
+        rejectedRetries: telemetry.dc.rejectedSolves,
+        iterations: telemetry.dc.newtonIterations,
+        telemetry,
         series: { x: [0], y: [value] },
       };
     }
@@ -139,19 +143,23 @@ async function runSpiceTs(netlist: string, fixture: Fixture): Promise<EngineRun>
       converged: true,
       error: null,
       runtimeMs: median(runtimes),
-      acceptedPoints: transient.time.length,
-      rejectedRetries: 'not-exposed',
-      iterations: 'not-exposed',
+      acceptedPoints: telemetry.transient.acceptedSteps + 1,
+      rejectedRetries: telemetry.transient.rejectedSteps,
+      iterations: telemetry.dc.newtonIterations + telemetry.transient.newtonIterations,
+      telemetry,
       series: { x: transient.time, y },
     };
   } catch (error) {
+    const telemetry = error instanceof ConvergenceError ? error.convergence ?? null : null;
     return {
       converged: false,
       error: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
       runtimeMs: null,
       acceptedPoints: null,
-      rejectedRetries: 'not-exposed',
-      iterations: 'not-exposed',
+      rejectedRetries: telemetry?.transient.rejectedSteps ?? telemetry?.dc.rejectedSolves ?? 0,
+      iterations: (telemetry?.dc.newtonIterations ?? 0)
+        + (telemetry?.transient.newtonIterations ?? 0),
+      telemetry,
       series: null,
     };
   }
@@ -197,6 +205,7 @@ function runNgspice(netlist: string, fixture: Fixture): EngineRun {
         acceptedPoints: null,
         rejectedRetries: numberFrom(output, 'Rejected timepoints') ?? 0,
         iterations: numberFrom(output, 'Total iterations') ?? 0,
+        telemetry: null,
         series: null,
       };
     }
@@ -220,6 +229,7 @@ function runNgspice(netlist: string, fixture: Fixture): EngineRun {
         : numberFrom(output, 'Accepted timepoints') ?? series.x.length,
       rejectedRetries: numberFrom(output, 'Rejected timepoints') ?? 0,
       iterations: numberFrom(output, 'Total iterations') ?? 0,
+      telemetry: null,
       series,
     };
   } finally {
@@ -288,7 +298,7 @@ async function main(): Promise<void> {
       note: 'The same checked-in deck and numerical settings are used by both engines. The ngspice-only .control block exports data and rusage.',
     },
     retryTelemetry: {
-      spiceTs: 'not exposed by the public API; recorded explicitly instead of inferred from accepted samples',
+      spiceTs: 'SimulationResult.convergence counters; rejectedRetries is DC rejected solves or transient rejected steps',
       ngspice: 'Rejected timepoints from rusage (0 for operating-point fixtures)',
     },
     results,

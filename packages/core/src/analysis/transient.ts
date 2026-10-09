@@ -1,4 +1,4 @@
-import type { ResolvedOptions, TransientAnalysis } from '../types.js';
+import type { ConvergenceTelemetry, ResolvedOptions, TransientAnalysis } from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
 import { TransientResult } from '../results.js';
 import { createDriverFromCompiled } from './transient-driver.js';
@@ -12,6 +12,7 @@ export function solveTransient(
   analysis: TransientAnalysis,
   options: ResolvedOptions,
   initialSolution?: Float64Array,
+  convergence?: ConvergenceTelemetry,
 ): TransientResult {
   const { nodeNames, branchNames } = compiled;
   const driver = createDriverFromCompiled(compiled, options, {
@@ -19,6 +20,7 @@ export function solveTransient(
     timestep: analysis.timestep,
     maxTimestep: analysis.maxTimestep ?? Math.min(analysis.timestep, analysis.stopTime / 50),
     initialSolution,
+    convergence,
   });
 
   const timePoints: number[] = [0];
