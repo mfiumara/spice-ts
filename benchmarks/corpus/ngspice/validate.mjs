@@ -31,7 +31,34 @@ const categories = new Map();
 const failures = [];
 const unsupported = [];
 const ngspiceFailures = [];
+const supportedAnalyses = new Set(['op', 'dc', 'ac', 'tran', 'pz']);
+const categoryOrder = ['op-dc', 'ac', 'tran', 'nonlinear', 'convergence'];
 let parse;
+
+function fixtureAnalyses(text) {
+  const analyses = new Set();
+  let inControl = false;
+
+  for (const rawLine of text.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('*')) continue;
+    if (/^\.control\b/i.test(line)) {
+      inControl = true;
+      continue;
+    }
+    if (/^\.endc\b/i.test(line)) {
+      inControl = false;
+      continue;
+    }
+
+    const match = inControl
+      ? line.match(/^(op|dc|ac|tran|pz)\b/i)
+      : line.match(/^\.(?:(?:print|plot)\s+)?(op|dc|ac|tran|pz)\b/i);
+    if (match) analyses.add(match[1].toLowerCase());
+  }
+
+  return analyses;
+}
 
 try {
   ({ parse } = await import(pathToFileURL(resolve(repoRoot, 'packages/core/dist/index.js'))));
@@ -61,6 +88,36 @@ for (const circuit of manifest.circuits) {
   const content = await readFile(local);
   const digest = createHash('sha256').update(content).digest('hex');
   if (digest !== circuit.sha256) failures.push(`${circuit.id}: sha256 mismatch`);
+
+  const analysisList = Array.isArray(circuit.analyses) ? circuit.analyses : [];
+  const declaredAnalyses = new Set(analysisList);
+  const actualAnalyses = fixtureAnalyses(content.toString('utf8'));
+  const invalidAnalyses = [...declaredAnalyses].filter((analysis) => !supportedAnalyses.has(analysis));
+  const missingAnalyses = [...actualAnalyses].filter((analysis) => !declaredAnalyses.has(analysis));
+  const extraAnalyses = [...declaredAnalyses].filter((analysis) => !actualAnalyses.has(analysis));
+  if (!analysisList.length) {
+    failures.push(`${circuit.id}: analyses must be a non-empty array`);
+  } else if (declaredAnalyses.size !== analysisList.length) {
+    failures.push(`${circuit.id}: analyses contains duplicates`);
+  }
+  if (invalidAnalyses.length) {
+    failures.push(`${circuit.id}: unsupported manifest analyses: ${invalidAnalyses.join(', ')}`);
+  }
+  if (missingAnalyses.length || extraAnalyses.length) {
+    failures.push(
+      `${circuit.id}: manifest analyses [${[...declaredAnalyses].join(', ')}] do not match fixture directives [${[...actualAnalyses].join(', ')}]`,
+    );
+  }
+  if (
+    (circuit.category === 'op-dc' &&
+      ![...declaredAnalyses].some((analysis) => analysis === 'op' || analysis === 'dc')) ||
+    (circuit.category === 'ac' && !declaredAnalyses.has('ac')) ||
+    (circuit.category === 'tran' && !declaredAnalyses.has('tran'))
+  ) {
+    failures.push(
+      `${circuit.id}: category ${circuit.category} contradicts analyses [${[...declaredAnalyses].join(', ')}]`,
+    );
+  }
 
   try {
     parse(content.toString('utf8'));
@@ -95,7 +152,7 @@ for (const circuit of manifest.circuits) {
   }
 }
 
-for (const category of ['op-dc', 'ac', 'tran', 'nonlinear', 'convergence']) {
+for (const category of categoryOrder) {
   if (!categories.has(category)) failures.push(`category has no fixtures: ${category}`);
 }
 if (manifest.circuits.length < 20) {
@@ -107,7 +164,7 @@ const provenanceFailures = failures.filter(
 );
 console.log(`Corpus: ${manifest.circuits.length} circuits`);
 console.log(
-  `Categories: ${[...categories.entries()].map(([name, count]) => `${name}=${count}`).join(', ')}`,
+  `Categories: ${categoryOrder.map((name) => `${name}=${categories.get(name) ?? 0}`).join(', ')}`,
 );
 console.log(`Provenance/hash checks: ${provenanceFailures.length ? 'FAIL' : 'PASS'}`);
 console.log(`ngspice: ${manifest.circuits.length - ngspiceFailures.length} passed, ${ngspiceFailures.length} failed`);

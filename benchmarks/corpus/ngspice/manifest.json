@@ -18,7 +18,7 @@
       "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/vbic/FO.cir",
       "localPath": "benchmarks/corpus/ngspice/fixtures/tests/vbic/FO.cir",
       "sha256": "de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92",
-      "spiceTs": { "status": "parse-eligible" }
+      "spiceTs": { "status": "unsupported", "reason": "The .OPTIONS directive is intentionally rejected by the spice-ts parser." }
     },
     {
       "id": "vbic-temperature",
@@ -28,17 +28,17 @@
       "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/vbic/temp.cir",
       "localPath": "benchmarks/corpus/ngspice/fixtures/tests/vbic/temp.cir",
       "sha256": "5dfd5fb1e620eac69af1eed64463aac62efd23dee169f2a3773d1091088f31e7",
-      "spiceTs": { "status": "parse-eligible" }
+      "spiceTs": { "status": "unsupported", "reason": "The .OPTIONS directive is intentionally rejected by the spice-ts parser." }
     },
     {
-      "id": "mos6-inverter-dc",
-      "category": "op-dc",
-      "analyses": ["dc"],
+      "id": "mos6-inverter-transient",
+      "category": "tran",
+      "analyses": ["tran"],
       "sourcePath": "tests/mos6/mos6inv.cir",
       "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/mos6/mos6inv.cir",
       "localPath": "benchmarks/corpus/ngspice/fixtures/tests/mos6/mos6inv.cir",
       "sha256": "c1ee39a6f458dc2b527ab1de29d6d6a4858e35c6acc4ff760ac45774512534dc",
-      "spiceTs": { "status": "parse-eligible" }
+      "spiceTs": { "status": "unsupported", "reason": "The .PRINT directive is intentionally rejected by the spice-ts parser." }
     },
     {
       "id": "jfet-vds-vgs",
@@ -118,7 +118,7 @@
       "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/mos6/simpleinv.cir",
       "localPath": "benchmarks/corpus/ngspice/fixtures/tests/mos6/simpleinv.cir",
       "sha256": "3ad1ef05a4197b420b0d35b3a4c4c0aa2544025e200b619743a890e305b7e1b8",
-      "spiceTs": { "status": "parse-eligible" }
+      "spiceTs": { "status": "unsupported", "reason": "The .PRINT directive is intentionally rejected by the spice-ts parser." }
     },
     {
       "id": "ltra-line-transient",
@@ -138,7 +138,7 @@
       "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/hfet/inverter.cir",
       "localPath": "benchmarks/corpus/ngspice/fixtures/tests/hfet/inverter.cir",
       "sha256": "3fa93266e9036443173bf9416eb67e8ff4c2c24aeefc6ef687f355d8548239e1",
-      "spiceTs": { "status": "parse-eligible" }
+      "spiceTs": { "status": "unsupported", "reason": "The .options directive is intentionally rejected by the spice-ts parser." }
     },
     {
       "id": "mesa-oscillator",
@@ -148,7 +148,7 @@
       "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/mesa/mesosc.cir",
       "localPath": "benchmarks/corpus/ngspice/fixtures/tests/mesa/mesosc.cir",
       "sha256": "3cd4609cca7874775b7b2cac8cd0124bd2b8c5512064a0550a29de2da4896bcf",
-      "spiceTs": { "status": "parse-eligible" }
+      "spiceTs": { "status": "unsupported", "reason": "The .options directive is intentionally rejected by the spice-ts parser." }
     },
     {
       "id": "jimi-fuzz",
@@ -158,7 +158,7 @@
       "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/wave/jimi_fuzz.cir",
       "localPath": "benchmarks/corpus/ngspice/fixtures/examples/wave/jimi_fuzz.cir",
       "sha256": "0607c7f358628d0ce60eff584b329a4d685ae215894c466622a19357c7163b0e",
-      "spiceTs": { "status": "parse-eligible" }
+      "spiceTs": { "status": "unsupported", "reason": "The .options directive is intentionally rejected by the spice-ts parser." }
     },
     {
       "id": "schmitt-trigger",
