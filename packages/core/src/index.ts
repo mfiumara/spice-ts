@@ -17,6 +17,7 @@ export type {
   NoiseAnalysis,
   AnalysisCommand,
   AnalysisDirective,
+  NodeInitialState,
   SourceWaveform,
   ModelParams,
   SubcktDefinition,

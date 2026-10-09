@@ -9,6 +9,7 @@ export class Inductor implements DeviceModel {
     readonly nodes: number[],
     readonly branchIndex: number,
     public inductance: number,
+    readonly ic?: number,
   ) {
     this.branches = [branchIndex];
   }

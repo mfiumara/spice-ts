@@ -113,13 +113,13 @@ export function cmosRingOscillator(n: number): string {
   for (let i = 1; i <= n; i++) {
     const inNode = i === 1 ? `n${n}` : `n${i - 1}`;
     const outNode = `n${i}`;
-    lines.push(`MP${i} ${outNode} ${inNode} vdd PMOD`);
-    lines.push(`MN${i} ${outNode} ${inNode} 0 NMOD`);
+    lines.push(`MP${i} ${outNode} ${inNode} vdd vdd PMOD`);
+    lines.push(`MN${i} ${outNode} ${inNode} 0 0 NMOD`);
     lines.push(`CL${i} ${outNode} 0 10f`);
   }
   // Need an initial condition to kick-start oscillation
   lines.push(`.ic V(n1)=3.3`);
-  lines.push(`.tran 0.01n 50n`);
+  lines.push(`.tran 0.01n 50n UIC`);
   lines.push(`.end`);
   return lines.join('\n');
 }
