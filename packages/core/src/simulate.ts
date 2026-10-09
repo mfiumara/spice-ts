@@ -1,7 +1,7 @@
 import { Circuit } from './circuit.js';
 import type { CompiledCircuit } from './circuit.js';
 import { parse, parseAsync } from './parser/index.js';
-import type { SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
+import type { ConvergenceTelemetry, SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
 import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, SimulatorBackend } from './types.js';
 import { resolveOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
@@ -18,6 +18,7 @@ import { ComplexSparseSolver } from './solver/complex-sparse-solver.js';
 import { createDriverFromCompiled } from './analysis/transient-driver.js';
 import { WasmNgspiceSimulator } from './simulators/ngspice-wasm.js';
 import { createConvergenceTelemetry } from './convergence-telemetry.js';
+import { createNodeStateSolution } from './analysis/initial-state.js';
 
 class SpiceTsSimulator implements SimulatorAdapter {
   readonly name = 'spice-ts';
@@ -128,10 +129,8 @@ export async function simulate(
       }
       case 'tran': {
         const opts = resolveOptions(options, analysis.stopTime);
-        const { assembler: dcAsm } = solveDCOperatingPoint(
-          compiled, opts, undefined, convergence,
-        );
-        result.transient = solveTransient(compiled, analysis, opts, dcAsm.solution, convergence);
+        const initialSolution = transientInitialSolution(compiled, analysis, opts, undefined, convergence);
+        result.transient = solveTransient(compiled, analysis, opts, initialSolution, convergence);
         break;
       }
       case 'ac': {
@@ -204,8 +203,8 @@ export async function* simulateStream(
     switch (analysis.type) {
       case 'tran': {
         const opts = resolveOptions(options, analysis.stopTime);
-        const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
-        yield* streamTransient(compiled, analysis, opts, dcAsm.solution);
+        const initialSolution = transientInitialSolution(compiled, analysis, opts);
+        yield* streamTransient(compiled, analysis, opts, initialSolution);
         break;
       }
       case 'ac': {
@@ -269,8 +268,8 @@ export async function* simulateStepStream(
       switch (analysis.type) {
         case 'tran': {
           const opts = resolveOptions(options, analysis.stopTime);
-          const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
-          for (const point of streamTransient(compiled, analysis, opts, dcAsm.solution)) {
+          const initialSolution = transientInitialSolution(compiled, analysis, opts);
+          for (const point of streamTransient(compiled, analysis, opts, initialSolution)) {
             yield { stepIndex: 0, paramName: '', paramValue: 0, point };
           }
           break;
@@ -319,9 +318,9 @@ function* streamWithSteps(
         switch (analysis.type) {
           case 'tran': {
             const opts = resolveOptions(options, analysis.stopTime);
-            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts, prevDCSolution);
-            prevDCSolution = new Float64Array(dcAsm.solution);
-            for (const point of streamTransient(compiled, analysis, opts, dcAsm.solution)) {
+            const initialSolution = transientInitialSolution(compiled, analysis, opts, prevDCSolution);
+            if (!analysis.useInitialConditions) prevDCSolution = new Float64Array(initialSolution);
+            for (const point of streamTransient(compiled, analysis, opts, initialSolution)) {
               yield { stepIndex, paramName: step.param, paramValue: value, point };
             }
             break;
@@ -350,6 +349,17 @@ function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[
   if (compiled.analyses.length === 0) {
     throw new InvalidCircuitError('No analysis command specified');
   }
+}
+
+function transientInitialSolution(
+  compiled: CompiledCircuit,
+  analysis: TransientAnalysis,
+  options: ResolvedOptions,
+  initialGuess?: Float64Array,
+  convergence?: ConvergenceTelemetry,
+): Float64Array {
+  if (analysis.useInitialConditions) return createNodeStateSolution(compiled, 'conditions');
+  return solveDCOperatingPoint(compiled, options, initialGuess, convergence).assembler.solution;
 }
 
 function* streamFromSimulationResult(result: SimulationResult): Generator<TransientStep | ACPoint> {

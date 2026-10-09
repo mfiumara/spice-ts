@@ -5,6 +5,7 @@ import { newtonRaphson } from './newton-raphson.js';
 import { DCResult } from '../results.js';
 import { createConvergenceTelemetry, snapshotConvergenceTelemetry } from '../convergence-telemetry.js';
 import { ConvergenceError } from '../errors.js';
+import { createNodeStateSolution } from './initial-state.js';
 
 /**
  * GMIN stepping schedule for DC operating point. Starts from an easy problem
@@ -29,6 +30,8 @@ export function solveDCOperatingPoint(
 
   if (initialSolution) {
     assembler.solution.set(initialSolution);
+  } else {
+    assembler.solution.set(createNodeStateSolution(compiled, 'guess'));
   }
 
   // Source ramping: gradually ramp source voltages to help NR convergence

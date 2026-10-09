@@ -140,11 +140,23 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
     case '.TRAN': {
       const timestep = parseNumber(tokens[1]);
       const stopTime = parseNumber(tokens[2]);
-      const startTime = tokens[3] ? parseNumber(tokens[3]) : undefined;
-      const maxTimestep = tokens[4] ? parseNumber(tokens[4]) : undefined;
-      circuit.addAnalysis('tran', { timestep, stopTime, startTime, maxTimestep });
+      const args = tokens.slice(3);
+      const uicIndex = args.findIndex(token => token.toUpperCase() === 'UIC');
+      const useInitialConditions = uicIndex >= 0;
+      if (uicIndex >= 0) args.splice(uicIndex, 1);
+      const startTime = args[0] ? parseNumber(args[0]) : undefined;
+      const maxTimestep = args[1] ? parseNumber(args[1]) : undefined;
+      circuit.addAnalysis('tran', {
+        timestep, stopTime, startTime, maxTimestep, useInitialConditions,
+      });
       break;
     }
+    case '.IC':
+      parseNodeInitialState(circuit, 'ic', tokens, lineNumber);
+      break;
+    case '.NODESET':
+      parseNodeInitialState(circuit, 'nodeset', tokens, lineNumber);
+      break;
     case '.AC': {
       const variation = tokens[1].toLowerCase() as 'dec' | 'oct' | 'lin';
       const points = parseInt(tokens[2], 10);
@@ -199,6 +211,29 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
         `Unsupported dot command: '${tokens[0]}'`,
         lineNumber, tokens.join(' '),
       );
+  }
+}
+
+function parseNodeInitialState(
+  circuit: Circuit,
+  kind: 'ic' | 'nodeset',
+  tokens: string[],
+  lineNumber: number,
+): void {
+  if (tokens.length < 6 || (tokens.length - 1) % 5 !== 0) {
+    throw new ParseError(`Invalid .${kind} node-voltage assignment`, lineNumber, tokens.join(' '));
+  }
+  for (let index = 1; index < tokens.length; index += 5) {
+    if (tokens[index].toUpperCase() !== 'V' || tokens[index + 1] !== '('
+      || tokens[index + 3] !== ')' || !tokens[index + 4].startsWith('=')) {
+      throw new ParseError(`Invalid .${kind} node-voltage assignment`, lineNumber, tokens.join(' '));
+    }
+    const node = tokens[index + 2];
+    const valueToken = tokens[index + 4].slice(1);
+    if (!node || !valueToken) {
+      throw new ParseError(`Invalid .${kind} node-voltage assignment`, lineNumber, tokens.join(' '));
+    }
+    circuit.addInitialState(kind, { node, value: parseNumber(valueToken) });
   }
 }
 

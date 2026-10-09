@@ -11,7 +11,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { cpus, tmpdir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
 import type { SimulationResult } from '../packages/core/dist/index.js';
-import { rcChain, rcChainAC, resistorLadder } from './circuits/generators.js';
+import { cmosRingOscillator, rcChain, rcChainAC, resistorLadder } from './circuits/generators.js';
 
 export const RELATIVE_ZERO_THRESHOLD = 1e-15;
 export const SCHEMA_VERSION = 'spice-ts-ngspice-comparison/v2' as const;
@@ -484,6 +484,34 @@ function spiceTsVersion(): string {
   return packageJson.version;
 }
 
+export const INITIAL_STATE_FIXTURES: ComparisonFixture[] = [
+  {
+    name: 'ic-without-uic',
+    analysis: 'tran',
+    netlist: '* .ic without UIC\nV1 out 0 DC 1\nR1 out 0 1k\n.ic V(out)=3\n.tran 1u 2u\n.end',
+    signals: ['v(out)'],
+  },
+  {
+    name: 'ic-with-uic',
+    analysis: 'tran',
+    netlist: '* .ic with UIC\nR1 out 0 1k\nC1 out 0 1u\n.ic V(out)=3\n.tran 1u 2u UIC\n.end',
+    signals: ['v(out)'],
+  },
+  {
+    name: 'nodeset-op',
+    analysis: 'op',
+    netlist: '* .nodeset operating point\nV1 in 0 DC 1\nR1 in out 1k\nR2 out 0 1k\n.nodeset V(out)=9\n.op\n.end',
+    signals: ['v(out)'],
+  },
+];
+
+export const RING_OSCILLATOR_FIXTURES: ComparisonFixture[] = [3, 5, 11].map(stages => ({
+  name: `ring-oscillator-${stages}-stage`,
+  analysis: 'tran',
+  netlist: cmosRingOscillator(stages),
+  signals: ['v(n1)'],
+}));
+
 export const DEFAULT_FIXTURES: ComparisonFixture[] = [
   { name: 'resistor-ladder-op', analysis: 'op', netlist: resistorLadder(3), signals: ['v(2)'] },
   { name: 'rc-chain-ac', analysis: 'ac', netlist: rcChainAC(1), signals: ['v(2)'] },
@@ -493,6 +521,8 @@ export const DEFAULT_FIXTURES: ComparisonFixture[] = [
     netlist: rcChain(1, { stopTime: 5e-3, timestep: 1e-5 }),
     signals: ['v(2)'],
   },
+  ...INITIAL_STATE_FIXTURES,
+  ...RING_OSCILLATOR_FIXTURES,
 ];
 
 export async function createReport(fixtures = DEFAULT_FIXTURES): Promise<ComparisonReport> {

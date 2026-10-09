@@ -18,12 +18,12 @@ const supportedFixtures: Fixture[] = [
   { feature: '.op', netlist: 'V1 in 0 1\nR1 in 0 1k\n.op' },
   { feature: '.dc', netlist: 'V1 in 0 0\nR1 in 0 1k\n.dc V1 0 1 0.1' },
   { feature: '.tran', netlist: 'V1 in 0 1\nR1 in 0 1k\n.tran 1n 10n' },
+  { feature: 'initial conditions', netlist: 'R1 out 0 1k\nC1 out 0 1p\n.ic V(out)=1\n.tran 1n 10n uic' },
+  { feature: 'initial guesses', netlist: 'V1 out 0 1\n.nodeset V(out)=0\n.op' },
   { feature: '.ac', netlist: 'V1 in 0 AC 1\nR1 in 0 1k\n.ac dec 10 1 1Meg' },
 ];
 
 const unsupportedFixtures: Fixture[] = [
-  { feature: 'initial conditions', netlist: '.ic V(out)=1\n.tran 1n 10n' },
-  { feature: 'initial guesses', netlist: '.nodeset V(out)=1\n.op' },
   { feature: 'PWL source waveform', netlist: 'V1 in 0 PWL(0 0 1n 1)\n.tran 0.1n 1n' },
   { feature: 'noise analysis', netlist: '.noise V(out) V1 dec 10 1 1Meg' },
   { feature: 'control blocks', netlist: '.control\nop\n.endc' },

@@ -10,6 +10,7 @@ import { solveDCOperatingPoint } from './dc.js';
 import { attemptStep } from './transient-step.js';
 import { TimestepTooSmallError, InvalidCircuitError } from '../errors.js';
 import { BreakpointQueue } from './breakpoint-queue.js';
+import { createNodeStateSolution } from './initial-state.js';
 import {
   createConvergenceTelemetry, resetConvergenceTelemetry, snapshotConvergenceTelemetry,
 } from '../convergence-telemetry.js';
@@ -102,6 +103,9 @@ export async function createTransientSim(
 
   return new TransientSimImpl(compiled, resolved, {
     stopTime, timestep, maxTimestep,
+    initialSolution: tranAnalysis?.type === 'tran' && tranAnalysis.useInitialConditions
+      ? createNodeStateSolution(compiled, 'conditions')
+      : undefined,
   });
 }
 
@@ -309,7 +313,12 @@ class TransientSimImpl implements TransientSim {
     this.lteRejectCount = 0;
     this.justCrossedBreakpoint = false;
     resetConvergenceTelemetry(this.convergenceTelemetry);
-    this.initDC();
+    if (this.config.initialSolution) {
+      this.assembler.solution.set(this.config.initialSolution);
+      this.stampPrevB();
+    } else {
+      this.initDC();
+    }
     this.breakpoints = this.collectBreakpoints();
   }
 

@@ -1,5 +1,5 @@
 import type { DeviceModel } from './devices/device.js';
-import type { AnalysisCommand, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis } from './types.js';
+import type { AnalysisCommand, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis, NodeInitialState } from './types.js';
 import type { CircuitIR } from './ir/types.js';
 import { buildIR } from './ir/builder.js';
 import { Resistor } from './devices/resistor.js';
@@ -58,6 +58,10 @@ export interface CompiledCircuit {
   subcircuits: Map<string, SubcktDefinition>;
   /** Step directives for parametric sweeps */
   steps: StepAnalysis[];
+  /** Node voltages from `.ic`; forced only for transient UIC, otherwise Newton guesses. */
+  initialConditions: NodeInitialState[];
+  /** Node-voltage Newton guesses from `.nodeset`. */
+  nodeSets: NodeInitialState[];
 }
 
 interface DeviceDescriptor {
@@ -169,6 +173,7 @@ function formatAnalysis(analysis: AnalysisCommand): string {
       const parts = ['.tran', formatNumber(analysis.timestep), formatNumber(analysis.stopTime)];
       if (analysis.startTime !== undefined) parts.push(formatNumber(analysis.startTime));
       if (analysis.maxTimestep !== undefined) parts.push(formatNumber(analysis.maxTimestep));
+      if (analysis.useInitialConditions) parts.push('UIC');
       return parts.join(' ');
     }
     case 'ac':
@@ -228,10 +233,20 @@ export class Circuit {
   private _steps: StepAnalysis[] = [];
   private _models = new Map<string, ModelParams>();
   private _subcircuits = new Map<string, SubcktDefinition>();
+  private _initialConditions: NodeInitialState[] = [];
+  private _nodeSets: NodeInitialState[] = [];
   private nodeSet = new Set<string>();
 
   get analyses(): AnalysisCommand[] {
     return this._analyses;
+  }
+
+  get initialConditions(): readonly NodeInitialState[] {
+    return this._initialConditions;
+  }
+
+  get nodeSets(): readonly NodeInitialState[] {
+    return this._nodeSets;
   }
 
   get nodeCount(): number {
@@ -537,7 +552,7 @@ export class Circuit {
    */
   addAnalysis(type: 'op'): void;
   addAnalysis(type: 'dc', params: { source: string; start: number; stop: number; step: number }): void;
-  addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number }): void;
+  addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; useInitialConditions?: boolean }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
     switch (type) {
@@ -554,13 +569,14 @@ export class Circuit {
         });
         break;
       case 'tran': {
-        const tranCmd: { type: 'tran'; timestep: number; stopTime: number; startTime?: number; maxTimestep?: number } = {
+        const tranCmd: { type: 'tran'; timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; useInitialConditions?: boolean } = {
           type: 'tran',
           timestep: params!.timestep as number,
           stopTime: params!.stopTime as number,
         };
         if (params?.startTime !== undefined) tranCmd.startTime = params.startTime as number;
         if (params?.maxTimestep !== undefined) tranCmd.maxTimestep = params.maxTimestep as number;
+        if (params?.useInitialConditions) tranCmd.useInitialConditions = true;
         this._analyses.push(tranCmd);
         break;
       }
@@ -574,6 +590,14 @@ export class Circuit {
         });
         break;
     }
+  }
+
+  /** Add a node voltage from `.ic` or `.nodeset`. */
+  addInitialState(kind: 'ic' | 'nodeset', state: NodeInitialState): void {
+    const target = kind === 'ic' ? this._initialConditions : this._nodeSets;
+    const existing = target.findIndex(entry => entry.node === state.node);
+    if (existing >= 0) target[existing] = state;
+    else target.push(state);
   }
 
   /**
@@ -639,6 +663,13 @@ export class Circuit {
 
     for (const desc of this.descriptors) {
       lines.push(formatDevice(desc));
+    }
+
+    if (this._initialConditions.length > 0) {
+      lines.push(`.ic ${this._initialConditions.map(state => `V(${state.node})=${formatNumber(state.value)}`).join(' ')}`);
+    }
+    if (this._nodeSets.length > 0) {
+      lines.push(`.nodeset ${this._nodeSets.map(state => `V(${state.node})=${formatNumber(state.value)}`).join(' ')}`);
     }
 
     for (const step of this._steps) {
@@ -834,6 +865,8 @@ export class Circuit {
       analyses: this._analyses, models: this._models,
       subcircuits: this._subcircuits,
       steps: this._steps,
+      initialConditions: this._initialConditions.map(state => ({ ...state })),
+      nodeSets: this._nodeSets.map(state => ({ ...state })),
     };
   }
 
