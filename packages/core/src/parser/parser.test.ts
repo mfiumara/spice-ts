@@ -92,6 +92,17 @@ describe('SPICE netlist parser', () => {
     expect(compiled.devices).toHaveLength(2);
   });
 
+  it('handles ngspice end-of-line comments', () => {
+    const ckt = parse(`
+      V1 1 0 DC 5 $ supply voltage
+      R1 1 0 1k ; load resistor
+      .op // run the operating point
+    `);
+    const compiled = ckt.compile();
+    expect(compiled.devices).toHaveLength(2);
+    expect(compiled.analyses).toEqual([{ type: 'op' }]);
+  });
+
   it('handles line continuations with +', () => {
     const ckt = parse(`
       V1 1 0
@@ -115,6 +126,21 @@ describe('SPICE netlist parser', () => {
     const compiled = ckt.compile();
     expect(compiled.models.has('DMOD')).toBe(true);
     expect(compiled.models.get('DMOD')!.params.IS).toBeCloseTo(1e-14);
+  });
+
+  it('parses whitespace around model parameter equals signs', () => {
+    const ckt = parse(`
+      .model DMOD D ( IS = 1e-14 N = 1.05 )
+      D1 1 0 DMOD
+      .op
+    `);
+    const model = ckt.compile().models.get('DMOD');
+    expect(model?.params).toMatchObject({ IS: 1e-14, N: 1.05 });
+  });
+
+  it('rejects unsupported semantic dot commands instead of silently accepting them', () => {
+    expect(() => parse('.ic V(out)=1\n.tran 1n 10n')).toThrow(/unsupported.*\.ic/i);
+    expect(() => parse('.noise V(out) V1 dec 10 1 1Meg')).toThrow(/unsupported.*\.noise/i);
   });
 
   it('parses capacitor .model values and instance parameters', () => {

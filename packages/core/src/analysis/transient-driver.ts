@@ -1,5 +1,7 @@
 import type { Circuit, CompiledCircuit } from '../circuit.js';
-import type { SimulationOptions, ResolvedOptions, TransientStep } from '../types.js';
+import type {
+  ConvergenceTelemetry, SimulationOptions, ResolvedOptions, TransientStep,
+} from '../types.js';
 import { resolveOptions } from '../types.js';
 import { parse, parseAsync } from '../parser/index.js';
 import { MNAAssembler } from '../mna/assembler.js';
@@ -8,6 +10,9 @@ import { solveDCOperatingPoint } from './dc.js';
 import { attemptStep } from './transient-step.js';
 import { TimestepTooSmallError, InvalidCircuitError } from '../errors.js';
 import { BreakpointQueue } from './breakpoint-queue.js';
+import {
+  createConvergenceTelemetry, resetConvergenceTelemetry, snapshotConvergenceTelemetry,
+} from '../convergence-telemetry.js';
 
 /**
  * Smallest allowed timestep (femtosecond). Must be small enough that LTE can
@@ -17,6 +22,12 @@ import { BreakpointQueue } from './breakpoint-queue.js';
  * by 10–15× — keep at 1e-15.
  */
 const MIN_TIMESTEP = 1e-15;
+/**
+ * Below this floor, voltage-predictor LTE estimates are dominated by the
+ * conditioning of reactive companion matrices rather than useful truncation
+ * error information. Let converged steps grow out of that numerical regime.
+ */
+const MIN_LTE_TIMESTEP = 100 * MIN_TIMESTEP;
 const NR_VOLTAGE_LIMIT = 3.5;
 /**
  * After this many consecutive LTE rejections, stop LTE-checking to avoid
@@ -53,6 +64,8 @@ export interface TransientSim {
   readonly simTime: number;
   readonly stopTime: number | undefined;
   readonly isDone: boolean;
+  /** Immutable snapshot of convergence counters accumulated so far. */
+  readonly convergence: ConvergenceTelemetry;
 
   /** Advance one converged timestep. Throws {@link ConvergenceError} on failure. */
   advance(): TransientStep;
@@ -104,6 +117,8 @@ interface InternalTransientConfig {
   maxTimestep: number;
   /** Optional pre-computed DC solution. When provided, skips internal DC op point. */
   initialSolution?: Float64Array;
+  /** Shared aggregate used by one-shot simulations. */
+  convergence?: ConvergenceTelemetry;
 }
 
 class TransientSimImpl implements TransientSim {
@@ -112,6 +127,7 @@ class TransientSimImpl implements TransientSim {
   private options: ResolvedOptions;
   private config: InternalTransientConfig;
   private compiled: CompiledCircuit;
+  private convergenceTelemetry: ConvergenceTelemetry;
 
   private time = 0;
   private dt: number;
@@ -127,6 +143,7 @@ class TransientSimImpl implements TransientSim {
     this.compiled = compiled;
     this.options = options;
     this.config = config;
+    this.convergenceTelemetry = config.convergence ?? createConvergenceTelemetry();
     this.dt = Math.min(config.timestep, config.maxTimestep);
     this.prevDt = this.dt;
 
@@ -148,6 +165,9 @@ class TransientSimImpl implements TransientSim {
   get stopTime(): number | undefined { return this.config.stopTime; }
   get isDone(): boolean {
     return this.config.stopTime !== undefined && this.time >= this.config.stopTime - MIN_TIMESTEP;
+  }
+  get convergence(): ConvergenceTelemetry {
+    return snapshotConvergenceTelemetry(this.convergenceTelemetry);
   }
 
   advance(): TransientStep {
@@ -203,13 +223,20 @@ class TransientSimImpl implements TransientSim {
         },
       );
 
+      this.convergenceTelemetry.transient.newtonIterations += result.iterations;
+
       if (!result.ok) {
         // ngspice dctran.c convention: aggressive dt cut, no per-step GMIN
         // stepping. Committing GMIN-distorted solutions breaks reactive
         // circuits (LC tank, boost, rectifier — see issues #42, #43, #45).
+        this.convergenceTelemetry.transient.rejectedSteps++;
+        this.convergenceTelemetry.transient.nrRetries++;
         this.dt = this.dt / DT_CUT_FACTOR;
         if (this.dt < MIN_TIMESTEP) {
-          throw new TimestepTooSmallError(this.time, this.dt);
+          this.convergenceTelemetry.transient.failure = 'dt-floor';
+          throw new TimestepTooSmallError(
+            this.time, this.dt, snapshotConvergenceTelemetry(this.convergenceTelemetry),
+          );
         }
         this.assembler.solution.set(prevSol);
         continue;
@@ -222,6 +249,8 @@ class TransientSimImpl implements TransientSim {
         this.dt = Math.max(actualDt * factor, MIN_TIMESTEP);
         this.assembler.solution.set(prevSol);
         this.lteRejectCount++;
+        this.convergenceTelemetry.transient.rejectedSteps++;
+        this.convergenceTelemetry.transient.lteRetries++;
         continue;
       }
       this.lteRejectCount = 0;
@@ -236,6 +265,11 @@ class TransientSimImpl implements TransientSim {
       this.secondPrevSol = prevSol;
       this.prevDt = actualDt;
       this.time = nextTime;
+      this.convergenceTelemetry.transient.acceptedSteps++;
+      const minimum = this.convergenceTelemetry.transient.minimumAcceptedTimestep;
+      this.convergenceTelemetry.transient.minimumAcceptedTimestep = minimum === null
+        ? actualDt
+        : Math.min(minimum, actualDt);
 
       if (this.breakpoints.isNear(this.time)) {
         this.breakpoints.pop();
@@ -280,6 +314,7 @@ class TransientSimImpl implements TransientSim {
     this.secondPrevSol = undefined;
     this.lteRejectCount = 0;
     this.justCrossedBreakpoint = false;
+    resetConvergenceTelemetry(this.convergenceTelemetry);
     this.initDC();
     this.breakpoints = this.collectBreakpoints();
   }
@@ -318,13 +353,19 @@ class TransientSimImpl implements TransientSim {
   }
 
   private initDC(): void {
-    const { assembler: dcAsm } = solveDCOperatingPoint(this.compiled, this.options);
+    const { assembler: dcAsm } = solveDCOperatingPoint(
+      this.compiled, this.options, undefined, this.convergenceTelemetry,
+    );
     this.assembler.solution.set(dcAsm.solution);
     this.stampPrevB();
   }
 
   private checkLTE(current: Float64Array, previous: Float64Array, dt: number): number {
-    if (!this.secondPrevSol || this.lteRejectCount >= MAX_LTE_REJECTS_BEFORE_BYPASS) return 0;
+    if (
+      !this.secondPrevSol
+      || dt <= MIN_LTE_TIMESTEP
+      || this.lteRejectCount >= MAX_LTE_REJECTS_BEFORE_BYPASS
+    ) return 0;
     let maxRatio = 0;
     // 2nd-order methods (trap, gear2) have O(dt³) LTE → larger divider; BE is O(dt²).
     const method = this.options.integrationMethod;
@@ -369,6 +410,7 @@ export function createDriverFromCompiled(
     timestep: number;
     maxTimestep: number;
     initialSolution?: Float64Array;
+    convergence?: ConvergenceTelemetry;
   },
 ): TransientSim & { peekInitialStep(): TransientStep } {
   const impl = new TransientSimImpl(compiled, options, {
@@ -376,6 +418,7 @@ export function createDriverFromCompiled(
     timestep: config.timestep,
     maxTimestep: config.maxTimestep,
     initialSolution: config.initialSolution,
+    convergence: config.convergence,
   });
   return impl;
 }

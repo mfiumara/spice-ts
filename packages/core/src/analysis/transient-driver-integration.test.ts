@@ -45,6 +45,15 @@ function withStop(nl: string, stop: string): string {
   return nl.replace('__STOP__', stop);
 }
 
+function sampleAt(time: number[], values: number[], target: number): number {
+  const upper = time.findIndex(t => t >= target);
+  if (upper < 0) return values[values.length - 1];
+  if (upper === 0) return values[0];
+  const lower = upper - 1;
+  const ratio = (target - time[lower]) / (time[upper] - time[lower]);
+  return values[lower] + ratio * (values[upper] - values[lower]);
+}
+
 describe('hard-switching converter integration', () => {
   it('buck runs to 2 ms without throwing', async () => {
     const result = await simulate(withStop(BUCK, '2m'));
@@ -65,14 +74,38 @@ describe('hard-switching converter integration', () => {
     expect(result.transient!.time.at(-1)).toBeCloseTo(15e-6, 8);
   }, 30_000);
 
-  // Running the full 500 µs still fails at t≈20 µs (start of period 3) with
-  // NR divergence on the `sw` node during MOSFET turn-on: cutoff gds=GMIN=1e-12
-  // makes the on/off Jacobian transition near-singular. This is a device-model
-  // smoothing issue (separate from breakpoints) and is tracked as follow-up.
-  it.skip('boost runs to 500 µs without throwing (needs device-model smoothing)', async () => {
+  it('boost converges through repeated PWM edges and raises the output', async () => {
     const result = await simulate(withStop(BOOST, '500u'), { integrationMethod: 'gear2' });
-    expect(result.transient).toBeDefined();
-    expect(result.transient!.time.at(-1)).toBeCloseTo(500e-6, 8);
+    const transient = result.transient!;
+    expect(transient.time.at(-1)).toBeCloseTo(500e-6, 8);
+    const vout = transient.voltage('out');
+    expect(Math.min(...vout)).toBeGreaterThan(0);
+    expect(vout.at(-1)).toBeGreaterThan(10);
+    expect(vout.at(-1)).toBeLessThan(13);
+
+    // ngspice-47 reference, generated from the identical BOOST netlist with:
+    //   ngspice -b boost.cir
+    // These samples cover the rising envelope rather than switching ripple.
+    const reference = [
+      [100e-6, 4.64725773],
+      [200e-6, 6.11247627],
+      [300e-6, 8.14034904],
+      [400e-6, 10.1987897],
+      [500e-6, 11.8003839],
+    ] as const;
+    const relativeErrors = reference.map(([time, expected]) =>
+      (sampleAt(transient.time, vout, time) - expected) / expected,
+    );
+    const maxRelativeError = Math.max(...relativeErrors.map(Math.abs));
+    const rmsRelativeError = Math.sqrt(
+      relativeErrors.reduce((sum, error) => sum + error * error, 0) / relativeErrors.length,
+    );
+    expect(maxRelativeError).toBeLessThan(0.04);
+    expect(rmsRelativeError).toBeLessThan(0.03);
+
+    const timesteps = transient.time.slice(1).map((time, i) => time - transient.time[i]);
+    expect(Math.min(...timesteps)).toBeGreaterThan(1e-14);
+    expect(transient.time.length).toBeLessThan(25_000);
   }, 60_000);
 
   it('buck-boost runs to 500 µs without throwing (gear2)', async () => {

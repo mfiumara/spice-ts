@@ -1,3 +1,5 @@
+import type { ConvergenceTelemetry } from './types.js';
+
 /**
  * Base class for all spice-ts errors.
  */
@@ -67,6 +69,8 @@ export type ConvergenceFailureKind = 'nr-divergence' | 'lte-cascade' | 'dt-floor
  */
 export class ConvergenceError extends SpiceError {
   public readonly kind: ConvergenceFailureKind;
+  /** Bounded counters accumulated before this terminal failure. */
+  public convergence?: ConvergenceTelemetry;
 
   constructor(
     message: string,
@@ -106,6 +110,7 @@ export class TimestepTooSmallError extends ConvergenceError {
     time: number,
     /** The timestep that was too small */
     public readonly timestep: number,
+    convergence?: ConvergenceTelemetry,
   ) {
     super(
       `Timestep too small: dt=${timestep}`,
@@ -113,6 +118,7 @@ export class TimestepTooSmallError extends ConvergenceError {
       'dt-floor', timestep, undefined,
     );
     this.name = 'TimestepTooSmallError';
+    this.convergence = convergence;
     // Override the message to preserve the old format verbatim so string
     // comparisons in consumer code keep working.
     this.message = `Timestep too small at t=${time}: dt=${timestep}`;

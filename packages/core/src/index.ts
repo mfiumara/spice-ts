@@ -25,6 +25,9 @@ export type {
   SimulatorBackend,
   SimulatorBackendName,
   SimulatorAdapter,
+  ConvergenceTelemetry,
+  DCConvergenceTelemetry,
+  TransientConvergenceTelemetry,
 } from './types.js';
 export type { DeviceModel, StampContext } from './devices/device.js';
 export type { CircuitIR, IRComponent, IRPort, ComponentType } from './ir/types.js';

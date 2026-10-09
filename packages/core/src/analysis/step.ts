@@ -1,4 +1,6 @@
-import type { StepAnalysis, SimulationWarning, SimulationOptions } from '../types.js';
+import type {
+  ConvergenceTelemetry, StepAnalysis, SimulationWarning, SimulationOptions,
+} from '../types.js';
 import { resolveOptions } from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
 import type { StepResult } from '../results.js';
@@ -77,6 +79,7 @@ export function solveStep(
   step: StepAnalysis,
   options: SimulationOptions | undefined,
   warnings: SimulationWarning[],
+  convergence?: ConvergenceTelemetry,
 ): StepResult[] {
   const values = generateStepValues(step);
 
@@ -103,32 +106,40 @@ export function solveStep(
         switch (analysis.type) {
           case 'op': {
             const opts = resolveOptions(options);
-            const { result: dcResult, assembler } = solveDCOperatingPoint(compiled, opts, prevDCSolution);
+            const { result: dcResult, assembler } = solveDCOperatingPoint(
+              compiled, opts, prevDCSolution, convergence,
+            );
             stepResult.dc = dcResult;
             prevDCSolution = new Float64Array(assembler.solution);
             break;
           }
           case 'dc': {
             const opts = resolveOptions(options);
-            stepResult.dcSweep = solveDCSweep(compiled, analysis, opts);
+            stepResult.dcSweep = solveDCSweep(compiled, analysis, opts, convergence);
             break;
           }
           case 'tran': {
             const opts = resolveOptions(options, analysis.stopTime);
             const seed = analysis.uic
               ? computeUICInitialSolution(compiled)
-              : solveDCOperatingPoint(compiled, opts, prevDCSolution).assembler.solution;
+              : solveDCOperatingPoint(
+                compiled, opts, prevDCSolution, convergence,
+              ).assembler.solution;
             const runnable = analysis.timestep > 0 ? analysis : {
               ...analysis,
               timestep: analysis.maxTimestep ?? analysis.stopTime / 50,
             };
-            stepResult.transient = solveTransient(compiled, runnable, opts, seed);
+            stepResult.transient = solveTransient(
+              compiled, runnable, opts, seed, convergence,
+            );
             if (!analysis.uic) prevDCSolution = new Float64Array(seed);
             break;
           }
           case 'ac': {
             const opts = resolveOptions(options);
-            const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts, prevDCSolution);
+            const { assembler: dcAsm } = solveDCOperatingPoint(
+              compiled, opts, prevDCSolution, convergence,
+            );
             stepResult.ac = solveAC(compiled, analysis, opts, dcAsm.solution);
             prevDCSolution = new Float64Array(dcAsm.solution);
             break;

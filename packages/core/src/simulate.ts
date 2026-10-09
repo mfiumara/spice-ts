@@ -18,6 +18,7 @@ import { ComplexSparseSolver } from './solver/complex-sparse-solver.js';
 import { createDriverFromCompiled } from './analysis/transient-driver.js';
 import { WasmNgspiceSimulator } from './simulators/ngspice-wasm.js';
 import { computeUICInitialSolution } from './analysis/uic.js';
+import { createConvergenceTelemetry } from './convergence-telemetry.js';
 
 class SpiceTsSimulator implements SimulatorAdapter {
   readonly name = 'spice-ts';
@@ -92,6 +93,7 @@ export async function simulate(
   }
   const compiled = circuit.compile();
   const warnings: SimulationWarning[] = [];
+  const convergence = createConvergenceTelemetry();
 
   validateCircuit(compiled, warnings);
 
@@ -102,36 +104,42 @@ export async function simulate(
         message: 'Multiple .step directives found; only the first is used. Nested sweeps are not yet supported.',
       });
     }
-    const stepResults = solveStep(compiled, compiled.steps[0], options, warnings);
-    return { steps: stepResults, warnings };
+    const stepResults = solveStep(compiled, compiled.steps[0], options, warnings, convergence);
+    return { steps: stepResults, warnings, convergence };
   }
 
-  const result: SimulationResult = { warnings };
+  const result: SimulationResult = { warnings, convergence };
 
   for (const analysis of compiled.analyses) {
     switch (analysis.type) {
       case 'op': {
         const opts = resolveOptions(options);
-        const { result: dcResult } = solveDCOperatingPoint(compiled, opts);
+        const { result: dcResult } = solveDCOperatingPoint(compiled, opts, undefined, convergence);
         result.dc = dcResult;
         break;
       }
       case 'dc': {
         const opts = resolveOptions(options);
-        result.dcSweep = solveDCSweep(compiled, analysis, opts);
+        result.dcSweep = solveDCSweep(compiled, analysis, opts, convergence);
         break;
       }
       case 'tran': {
         const opts = resolveOptions(options, analysis.stopTime);
         const seed = analysis.uic
           ? computeUICInitialSolution(compiled)
-          : solveDCOperatingPoint(compiled, opts).assembler.solution;
-        result.transient = solveTransient(compiled, runnableTransient(analysis), opts, seed);
+          : solveDCOperatingPoint(
+            compiled, opts, undefined, convergence,
+          ).assembler.solution;
+        result.transient = solveTransient(
+          compiled, runnableTransient(analysis), opts, seed, convergence,
+        );
         break;
       }
       case 'ac': {
         const opts = resolveOptions(options);
-        const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts);
+        const { assembler: dcAsm } = solveDCOperatingPoint(
+          compiled, opts, undefined, convergence,
+        );
         result.ac = solveAC(compiled, analysis, opts, dcAsm.solution);
         break;
       }

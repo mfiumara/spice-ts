@@ -9,10 +9,15 @@ const netlist = readFileSync(
   new URL('../../../benchmarks/circuits/chua-issue-48.cir', import.meta.url),
   'utf8',
 );
+const spiceTsNetlist = netlist.replace('\n.options reltol=1e-12', '');
+
+if (spiceTsNetlist === netlist) {
+  throw new Error('Expected Chua .options directive was not found');
+}
 
 describe('Chua & Lin issue #48 benchmark', () => {
   it('parses K coupling and reconstructs the declared UIC seed', async () => {
-    const compiled = (await parseAsync(netlist)).compile();
+    const compiled = (await parseAsync(spiceTsNetlist)).compile();
     const seed = computeUICInitialSolution(compiled);
     const x = compiled.nodeIndexMap.get('x')!;
     const y = compiled.nodeIndexMap.get('y')!;
@@ -29,8 +34,8 @@ describe('Chua & Lin issue #48 benchmark', () => {
     expect(assembler.C.get(compiled.nodeCount + l8, compiled.nodeCount + l9)).toBeCloseTo(1, 7);
   });
 
-  it('documents the remaining #43-owned transient convergence gap', async () => {
-    await expect(simulate(netlist, {
+  it('documents the remaining transient convergence gap', async () => {
+    await expect(simulate(spiceTsNetlist, {
       reltol: 1e-12,
       maxTransientIterations: 1,
     })).rejects.toThrow(/Timestep too small at t=0/);

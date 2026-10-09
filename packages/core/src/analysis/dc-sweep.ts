@@ -1,16 +1,20 @@
-import type { ResolvedOptions, DCSweepAnalysis } from '../types.js';
+import type { ConvergenceTelemetry, ResolvedOptions, DCSweepAnalysis } from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
 import { MNAAssembler } from '../mna/assembler.js';
 import { newtonRaphson } from './newton-raphson.js';
 import { DCSweepResult } from '../results.js';
 import { VoltageSource } from '../devices/voltage-source.js';
 import { CurrentSource } from '../devices/current-source.js';
-import { InvalidCircuitError } from '../errors.js';
+import { ConvergenceError, InvalidCircuitError } from '../errors.js';
+import {
+  createConvergenceTelemetry, snapshotConvergenceTelemetry,
+} from '../convergence-telemetry.js';
 
 export function solveDCSweep(
   compiled: CompiledCircuit,
   analysis: DCSweepAnalysis,
   options: ResolvedOptions,
+  convergence: ConvergenceTelemetry = createConvergenceTelemetry(),
 ): DCSweepResult {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
 
@@ -42,7 +46,9 @@ export function solveDCSweep(
 
       source.waveform = { type: 'dc', value: sweepValue };
 
-      newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames);
+      newtonRaphson(
+        assembler, devices, options, options.maxIterations, nodeNames, convergence.dc,
+      );
 
       // Record solution
       for (let n = 0; n < nodeNames.length; n++) {
@@ -52,6 +58,12 @@ export function solveDCSweep(
         currentArrays.get(branchNames[b])![i] = assembler.solution[nodeCount + b];
       }
     }
+  } catch (error) {
+    if (error instanceof ConvergenceError) {
+      convergence.dc.failure = error.kind;
+      error.convergence = snapshotConvergenceTelemetry(convergence);
+    }
+    throw error;
   } finally {
     source.waveform = originalWaveform;
   }

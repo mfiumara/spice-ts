@@ -228,6 +228,21 @@ export interface SinSource {
   phase?: number;
 }
 
+/** One time/value pair in a piecewise-linear source waveform. */
+export interface PWLPoint {
+  /** Time in seconds. Points are ordered by non-decreasing time. */
+  time: number;
+  /** Source value at this point. */
+  value: number;
+}
+
+/** Piecewise-linear source waveform (PWL). */
+export interface PWLSource {
+  type: 'pwl';
+  /** Ordered time/value pairs. Equal adjacent times describe a discontinuity. */
+  points: PWLPoint[];
+}
+
 /** AC small-signal source (AC). Used for `.ac` analysis excitation. */
 export interface ACSource {
   type: 'ac';
@@ -240,7 +255,7 @@ export interface ACSource {
 }
 
 /** Union of all source waveform types. Discriminated on the `type` field. */
-export type SourceWaveform = DCSource | PulseSource | SinSource | ACSource;
+export type SourceWaveform = DCSource | PulseSource | SinSource | PWLSource | ACSource;
 
 /** Warning collected during simulation (non-fatal). */
 export interface SimulationWarning {
@@ -250,6 +265,50 @@ export interface SimulationWarning {
   message: string;
   /** Related node name, if applicable */
   node?: string;
+}
+
+/** Aggregate Newton-Raphson and fallback work performed by DC analyses. */
+export interface DCConvergenceTelemetry {
+  /** Newton-Raphson iterations across every attempted DC solve. */
+  newtonIterations: number;
+  /** DC solves that converged, including homotopy intermediate solves. */
+  acceptedSolves: number;
+  /** DC solves that exhausted their Newton iteration budget. */
+  rejectedSolves: number;
+  /** Source-ramping homotopy levels attempted. */
+  sourceStepAttempts: number;
+  /** Source-ramping levels that did not converge. */
+  sourceStepFailures: number;
+  /** GMIN-stepping homotopy levels attempted. */
+  gminStepAttempts: number;
+  /** GMIN-stepping levels that did not converge. */
+  gminStepFailures: number;
+  /** Terminal failure classification; recoverable retries leave this null. */
+  failure: import('./errors.js').ConvergenceFailureKind | null;
+}
+
+/** Aggregate adaptive-step and Newton work performed by transient analyses. */
+export interface TransientConvergenceTelemetry {
+  /** Timesteps committed to the output waveform (the t=0 DC point is excluded). */
+  acceptedSteps: number;
+  /** Attempted timesteps rejected for either Newton or LTE reasons. */
+  rejectedSteps: number;
+  /** Newton-Raphson iterations across accepted and rejected attempts. */
+  newtonIterations: number;
+  /** Timesteps retried after Newton-Raphson failed to converge. */
+  nrRetries: number;
+  /** Timesteps retried after the local truncation error check failed. */
+  lteRetries: number;
+  /** Smallest committed timestep, or null when no transient step was accepted. */
+  minimumAcceptedTimestep: number | null;
+  /** Terminal failure classification; recoverable retries leave this null. */
+  failure: import('./errors.js').ConvergenceFailureKind | null;
+}
+
+/** Bounded, deterministic convergence counters for a simulation run. */
+export interface ConvergenceTelemetry {
+  dc: DCConvergenceTelemetry;
+  transient: TransientConvergenceTelemetry;
 }
 
 /**

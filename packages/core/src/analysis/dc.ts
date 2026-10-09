@@ -1,8 +1,10 @@
-import type { ResolvedOptions, DCSweepAnalysis } from '../types.js';
+import type { ConvergenceTelemetry, ResolvedOptions } from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
 import { MNAAssembler } from '../mna/assembler.js';
 import { newtonRaphson } from './newton-raphson.js';
 import { DCResult } from '../results.js';
+import { createConvergenceTelemetry, snapshotConvergenceTelemetry } from '../convergence-telemetry.js';
+import { ConvergenceError } from '../errors.js';
 
 /**
  * GMIN stepping schedule for DC operating point. Starts from an easy problem
@@ -20,7 +22,8 @@ export function solveDCOperatingPoint(
   compiled: CompiledCircuit,
   options: ResolvedOptions,
   initialSolution?: Float64Array,
-): { result: DCResult; assembler: MNAAssembler } {
+  convergence: ConvergenceTelemetry = createConvergenceTelemetry(),
+): { result: DCResult; assembler: MNAAssembler; convergence: ConvergenceTelemetry } {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
   const assembler = new MNAAssembler(nodeCount, branchCount);
 
@@ -34,11 +37,15 @@ export function solveDCOperatingPoint(
   if (hasNonlinear) {
     const rampSteps = [0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
     for (const scale of rampSteps) {
+      convergence.dc.sourceStepAttempts++;
       const savedSolution = new Float64Array(assembler.solution);
       assembler.sourceScale = scale;
       try {
-        newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames);
+        newtonRaphson(
+          assembler, devices, options, options.maxIterations, nodeNames, convergence.dc,
+        );
       } catch {
+        convergence.dc.sourceStepFailures++;
         // Restore last good solution so divergence doesn't cascade
         assembler.solution.set(savedSolution);
       }
@@ -47,15 +54,25 @@ export function solveDCOperatingPoint(
   }
 
   try {
-    newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames);
+    newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames, convergence.dc);
   } catch (err) {
-    if (!hasNonlinear) throw err;
+    if (!hasNonlinear) {
+      if (err instanceof ConvergenceError) {
+        convergence.dc.failure = err.kind;
+        err.convergence = snapshotConvergenceTelemetry(convergence);
+      }
+      throw err;
+    }
     // Fallback: GMIN stepping homotopy. Solve at each elevated gmin level,
     // handing each converged iterate off as the initial guess for the next
     // lower gmin. Then finish with the user-configured gmin.
     const savedSolution = new Float64Array(assembler.solution);
-    if (!gminStepping(assembler, devices, options, nodeNames)) {
+    if (!gminStepping(assembler, devices, options, nodeNames, convergence)) {
       assembler.solution.set(savedSolution);
+      if (err instanceof ConvergenceError) {
+        convergence.dc.failure = err.kind;
+        err.convergence = snapshotConvergenceTelemetry(convergence);
+      }
       throw err;
     }
   }
@@ -73,6 +90,7 @@ export function solveDCOperatingPoint(
   return {
     result: new DCResult(voltageMap, currentMap),
     assembler,
+    convergence,
   };
 }
 
@@ -81,22 +99,29 @@ function gminStepping(
   devices: CompiledCircuit['devices'],
   options: ResolvedOptions,
   nodeNames: string[],
+  convergence: ConvergenceTelemetry,
 ): boolean {
   // Ramp gmin from large (easy to solve) down to the user target, warm-
   // starting each solve from the previous converged iterate.
   for (const gmin of DC_GMIN_SCHEDULE) {
     if (gmin <= options.gmin) break;
+    convergence.dc.gminStepAttempts++;
     try {
-      newtonRaphson(assembler, devices, { ...options, gmin }, options.maxIterations, nodeNames);
+      newtonRaphson(
+        assembler, devices, { ...options, gmin }, options.maxIterations, nodeNames, convergence.dc,
+      );
     } catch {
+      convergence.dc.gminStepFailures++;
       return false;
     }
   }
   // Final solve at the user-configured gmin — this is the committed answer.
+  convergence.dc.gminStepAttempts++;
   try {
-    newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames);
+    newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames, convergence.dc);
     return true;
   } catch {
+    convergence.dc.gminStepFailures++;
     return false;
   }
 }
