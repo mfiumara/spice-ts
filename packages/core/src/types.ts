@@ -78,11 +78,20 @@ export interface NoiseAnalysis {
   stopFreq: number;
 }
 
+/** Bounded DC transfer-function analysis (`.tf v(node) source`). */
+export interface TransferFunctionAnalysis {
+  type: 'tf';
+  /** Single output node whose small-signal voltage is measured. */
+  outputNode: string;
+  /** Independent voltage or current source used as the small-signal input. */
+  inputSource: string;
+}
+
 /** Established time/frequency analysis command types. */
 export type AnalysisCommand = DCAnalysis | DCSweepAnalysis | TransientAnalysis | ACAnalysis;
 
 /** Every analysis directive executable by the native simulator. */
-export type AnalysisDirective = AnalysisCommand | NoiseAnalysis;
+export type AnalysisDirective = AnalysisCommand | NoiseAnalysis | TransferFunctionAnalysis;
 
 /** Integration methods for transient analysis */
 export type IntegrationMethod = 'euler' | 'trapezoidal' | 'gear2';

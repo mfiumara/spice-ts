@@ -37,6 +37,7 @@ export function parse(netlist: string): Circuit {
 
   let subcktCollector: { name: string; ports: string[]; params: Record<string, number>; body: string[]; depth: number } | null = null;
   let hasNoiseAnalysis = false;
+  let hasTransferFunctionAnalysis = false;
   let hasStepAnalysis = false;
 
   for (const { tokens, lineNumber, raw } of lines) {
@@ -92,7 +93,15 @@ export function parse(netlist: string): Circuit {
             raw,
           );
         }
+        if ((first === '.TF' && hasStepAnalysis) || (first === '.STEP' && hasTransferFunctionAnalysis)) {
+          throw new ParseError(
+            '.step cannot be combined with .tf',
+            lineNumber,
+            raw,
+          );
+        }
         if (first === '.NOISE') hasNoiseAnalysis = true;
+        if (first === '.TF') hasTransferFunctionAnalysis = true;
         if (first === '.STEP') hasStepAnalysis = true;
         parseDotCommand(circuit, tokens, lineNumber);
       } else {
@@ -201,6 +210,23 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
         points,
         startFreq,
         stopFreq,
+      });
+      break;
+    }
+    case '.TF': {
+      const isSingleNodeVoltageForm = tokens.length === 6
+        && tokens[1].toUpperCase() === 'V'
+        && tokens[2] === '('
+        && tokens[4] === ')';
+      if (!isSingleNodeVoltageForm) {
+        throw new ParseError(
+          "Unsupported .tf form; expected '.tf v(node) source'",
+          lineNumber, tokens.join(' '),
+        );
+      }
+      circuit.addAnalysis('tf', {
+        outputNode: tokens[3],
+        inputSource: tokens[5],
       });
       break;
     }
