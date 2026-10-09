@@ -5,4 +5,6 @@ export { CursorTooltip, type CursorTooltipProps } from './CursorTooltip.js';
 export { WaveformViewer, type WaveformViewerProps } from './WaveformViewer.js';
 export { DCSweepPlot, type DCSweepPlotProps } from './DCSweepPlot.js';
 export { SchematicView } from './SchematicView.js';
-export type { SchematicViewProps } from './SchematicView.js';
+export type { SchematicViewProps, SchematicProbe } from './SchematicView.js';
+export { ProbeViewer } from './ProbeViewer.js';
+export type { ProbeViewerProps, Probe } from './ProbeViewer.js';
