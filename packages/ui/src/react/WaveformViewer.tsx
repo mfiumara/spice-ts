@@ -1,19 +1,23 @@
 import { useState, useCallback, useEffect, useRef, type CSSProperties } from 'react';
 import { TransientPlot, type TransientPlotProps, type TransientPlotHandle } from './TransientPlot.js';
 import { BodePlot, type BodePlotProps } from './BodePlot.js';
+import { DCSweepPlot, type DCSweepPlotProps } from './DCSweepPlot.js';
 import { Legend, type LegendSignal } from './Legend.js';
 import { CursorTooltip } from './CursorTooltip.js';
 import { StreamingController } from '../core/streaming.js';
 import { resolveTheme } from '../core/theme.js';
-import { formatTime, formatFrequency } from '../core/format.js';
+import { formatTime, formatFrequency, formatVoltage } from '../core/format.js';
 import type { ThemeConfig, CursorState, TransientDataset, StreamingTransientStep, StreamingACPoint } from '../core/types.js';
 import { DEFAULT_PALETTE } from '../core/types.js';
+import { normalizeDCSweepData, type DCSweepResultLike } from '../core/data.js';
 
 export interface WaveformViewerProps {
   /** Transient result or dataset array. */
   transient?: TransientPlotProps['data'];
   /** AC result or dataset array. */
   ac?: BodePlotProps['data'];
+  /** DC sweep result or normalized datasets. */
+  dc?: DCSweepPlotProps['data'] | DCSweepResultLike;
   /** Async stream from simulateStream(). Renders progressively as data arrives. */
   stream?: AsyncIterable<StreamingTransientStep | StreamingACPoint>;
   /** Signal names to display. */
@@ -24,6 +28,8 @@ export interface WaveformViewerProps {
   theme?: 'dark' | 'light' | ThemeConfig;
   /** Fixed x-axis domain [min, max] in seconds. Useful during streaming. */
   xDomain?: [number, number];
+  /** Remove a dynamically selected signal from the viewer. */
+  onSignalRemove?: (signal: string) => void;
 }
 
 /**
@@ -34,11 +40,13 @@ export interface WaveformViewerProps {
 export function WaveformViewer({
   transient,
   ac,
+  dc,
   stream,
   signals,
   colors,
   theme,
   xDomain,
+  onSignalRemove,
 }: WaveformViewerProps) {
   const resolvedTheme = resolveTheme(theme);
   const [cursor, setCursor] = useState<CursorState | null>(null);
@@ -91,6 +99,7 @@ export function WaveformViewer({
 
   // Use streaming data if available, otherwise the transient prop
   const transientData = streamData ?? transient;
+  const dcData = dc == null ? null : normalizeDCSweepData(dc, signals);
 
   const legendSignals: LegendSignal[] = signals.map((name, i) => ({
     id: name,
@@ -157,16 +166,32 @@ export function WaveformViewer({
           />
         </div>
       )}
+      {dcData != null && !stream && (
+        <div style={{ marginTop: transientData != null || ac != null ? '16px' : 0 }}>
+          <DCSweepPlot
+            data={dcData}
+            signals={signals}
+            colors={colors}
+            theme={resolvedTheme}
+            onCursorMove={transientData == null && ac == null ? setCursor : undefined}
+            signalVisibility={visibility}
+          />
+        </div>
+      )}
       {streamError && (
         <div style={{ color: '#f87171', fontSize: `${resolvedTheme.fontSize}px`, padding: '8px 0' }}>
           Simulation error: {streamError}
         </div>
       )}
-      <Legend signals={legendSignals} onToggle={handleToggle} />
+      <Legend signals={legendSignals} onToggle={handleToggle} onRemove={onSignalRemove} />
       <CursorTooltip
         cursor={cursor}
         theme={resolvedTheme}
-        formatX={transientData ? (x) => formatTime(x) : (x) => formatFrequency(x)}
+        formatX={transientData
+          ? (x) => formatTime(x)
+          : dcData
+            ? (x) => formatVoltage(x)
+            : (x) => formatFrequency(x)}
       />
     </div>
   );

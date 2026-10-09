@@ -27,6 +27,12 @@ const SHOWCASE_TRANSIENT_PARITY = {
   rmsAbsoluteError: 5e-4,
 };
 
+const NONLINEAR_TRANSIENT_PARITY = {
+  reference: 'ngspice-47' as const,
+  maxAbsoluteError: 0.1,
+  rmsAbsoluteError: 0.06,
+};
+
 export const RLC_RESONANCE_DEMO: AdvancedShowcaseDemo = {
   id: 'rlc-resonance',
   name: 'Series RLC Resonance',
@@ -112,9 +118,56 @@ E1 out 0 0 nm 1e6
   parity: SHOWCASE_TRANSIENT_PARITY,
 };
 
+export const BJT_COMMON_EMITTER_DEMO: AdvancedShowcaseDemo = {
+  id: 'bjt-common-emitter',
+  name: 'BJT Common-Emitter',
+  desc: 'Biased NPN voltage gain and phase inversion',
+  icon: '\u23DA',
+  group: 'Non-Linear',
+  tag: '.tran',
+  signals: ['in', 'out'],
+  tranNetlist: `
+* BJT common-emitter amplifier — divider bias with emitter degeneration
+VCC vcc 0 DC 12
+V1 in 0 SIN(0 10m 1k)
+Cin in base 1u
+Rbias1 vcc base 100k
+Rbias2 base 0 18k
+Rc vcc out 3.3k
+Re emitter 0 1k
+Q1 out base emitter QMOD
+.model QMOD NPN(BF=100 IS=1e-14)
+.tran 2u 5m
+.end`,
+  parity: NONLINEAR_TRANSIENT_PARITY,
+};
+
+export const FULL_WAVE_RECTIFIER_DEMO: AdvancedShowcaseDemo = {
+  id: 'full-wave-rectifier',
+  name: 'Full-Wave Rectifier',
+  desc: 'Center-tapped diode rectification',
+  icon: '\u23DA',
+  group: 'Non-Linear',
+  tag: '.tran',
+  signals: ['in', 'out'],
+  tranNetlist: `
+* Center-tapped full-wave rectifier — both input half-cycles drive V(out)
+V1 in 0 SIN(0 5 1k)
+V2 0 in_n SIN(0 5 1k)
+D1 in out DMOD
+D2 in_n out DMOD
+Rload out 0 1k
+.model DMOD D(IS=1e-14 N=1)
+.tran 2u 3m
+.end`,
+  parity: NONLINEAR_TRANSIENT_PARITY,
+};
+
 export const ADVANCED_SHOWCASE_DEMOS: AdvancedShowcaseDemo[] = [
   RLC_RESONANCE_DEMO,
   COMMON_SOURCE_AC_DEMO,
   PASSIVE_NOTCH_DEMO,
   OPAMP_DIFFERENTIATOR_DEMO,
+  BJT_COMMON_EMITTER_DEMO,
+  FULL_WAVE_RECTIFIER_DEMO,
 ];

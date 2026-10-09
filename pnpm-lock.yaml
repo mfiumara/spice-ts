@@ -108,6 +108,34 @@ importers:
         specifier: ^4.1.4
         version: 4.1.4(@types/node@25.5.2)(@vitest/coverage-v8@4.1.4)(jsdom@25.0.1)(vite@8.0.8(@types/node@25.5.2)(esbuild@0.27.7)(tsx@4.21.0))
 
+  packages/circuit-json:
+    dependencies:
+      '@spice-ts/core':
+        specifier: workspace:*
+        version: link:../core
+      circuit-json:
+        specifier: ^0.0.525
+        version: 0.0.525(format-si-unit@0.0.14(typescript@5.9.3))
+      zod:
+        specifier: '3'
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^25.5.2
+        version: 25.5.2
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.9)(tsx@4.21.0)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
+      vite:
+        specifier: ^8.0.8
+        version: 8.0.8(@types/node@25.5.2)(esbuild@0.27.7)(tsx@4.21.0)
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.4(@types/node@25.5.2)(@vitest/coverage-v8@4.1.4)(jsdom@25.0.1)(vite@8.0.8(@types/node@25.5.2)(esbuild@0.27.7)(tsx@4.21.0))
+
   packages/core:
     dependencies:
       eecircuit-engine:
@@ -948,6 +976,11 @@ packages:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
     engines: {node: '>= 14.16.0'}
 
+  circuit-json@0.0.525:
+    resolution: {integrity: sha512-reqY2m91wE2OcdVsTpnCZusZplsJl/rtq49SnN5beIDMVy2jRIiimDNuiQkcWYek9eYKScHhrBfFsA7hDM9OIw==}
+    peerDependencies:
+      format-si-unit: '*'
+
   combined-stream@1.0.8:
     resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}
     engines: {node: '>= 0.8'}
@@ -1134,6 +1167,11 @@ packages:
   form-data@4.0.5:
     resolution: {integrity: sha512-8RipRLol37bNs2bhoV67fiTEvdTrbMUYcFTiy3+wuuOnUog2QBHCZWXDRijWQfAkhBj2Uf5UnVaiWwA5vdd82w==}
     engines: {node: '>= 6'}
+
+  format-si-unit@0.0.14:
+    resolution: {integrity: sha512-HjWPswASCwjjZtEOLugBXENtV0MeySzXVUQKJREhr5N0moWatjBYshTgfetUnPYl07nFgq3uEACsXffA9oE5Hw==}
+    peerDependencies:
+      typescript: ^5.0.0
 
   fs-extra@7.0.1:
     resolution: {integrity: sha512-YJDaCJZEnBmcbw13fvdAM9AwNOJwOzrE4pqMqBq5nFiEqXUqHwlK4B+3pUw6JNvfSPtX05xFHtYy/1ni01eGCw==}
@@ -1922,6 +1960,9 @@ packages:
   xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
 
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
 snapshots:
 
   '@asamuzakjp/css-color@3.2.0':
@@ -2591,6 +2632,10 @@ snapshots:
     dependencies:
       readdirp: 4.1.2
 
+  circuit-json@0.0.525(format-si-unit@0.0.14(typescript@5.9.3)):
+    dependencies:
+      format-si-unit: 0.0.14(typescript@5.9.3)
+
   combined-stream@1.0.8:
     dependencies:
       delayed-stream: 1.0.0
@@ -2782,6 +2827,10 @@ snapshots:
       es-set-tostringtag: 2.1.0
       hasown: 2.0.2
       mime-types: 2.1.35
+
+  format-si-unit@0.0.14(typescript@5.9.3):
+    dependencies:
+      typescript: 5.9.3
 
   fs-extra@7.0.1:
     dependencies:
@@ -3479,3 +3528,5 @@ snapshots:
   xml-name-validator@5.0.0: {}
 
   xmlchars@2.2.0: {}
+
+  zod@3.25.76: {}

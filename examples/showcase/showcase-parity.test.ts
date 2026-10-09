@@ -133,6 +133,8 @@ function toleranceFor(testCase: ShowcaseCase): Tolerance {
 
   switch (testCase.id) {
     case 'rectifier':
+    case 'bjt-common-emitter':
+    case 'full-wave-rectifier':
       return { maxAbs: 0.1, rms: 0.06 };
     case 'buck':
       return { maxAbs: 0.35, rms: 0.25 };
