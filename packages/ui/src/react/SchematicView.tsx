@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type KeyboardEvent } from 'react';
 import type { CircuitIR } from '../schematic/types.js';
 import { layoutSchematic } from '../schematic/layout.js';
 import { getSymbol, groundSymbol, GRID } from '../schematic/symbols.js';
@@ -16,14 +16,25 @@ export interface SchematicViewProps {
   width?: number | string;
   /** Height of the container */
   height?: number | string;
-  /** Called when a net node is clicked (future probe hookup) */
+  /** Called when a net node or wire is activated. */
   onNodeClick?: (node: string) => void;
+  /** Called when a component branch is activated. */
+  onBranchClick?: (component: string) => void;
+  /** Active probes, used to color-link the schematic to waveform traces. */
+  probes?: readonly SchematicProbe[];
+}
+
+export interface SchematicProbe {
+  kind: 'voltage' | 'current';
+  target: string;
+  color: string;
 }
 
 // Klein's signature stroke weight — heavier than a drafting pen, lighter than
 // a marker. Used for symbol bodies, wires, and ground stubs so the schematic
 // reads consistently bold across every primitive.
 const STROKE_W = 2.2;
+const BRANCH_CURRENT_TYPES = new Set(['V', 'L', 'E', 'H']);
 
 function renderSvgElement(el: SvgElement, i: number, stroke: string) {
   // `key` must be passed directly, not via spread — React warns otherwise.
@@ -51,11 +62,27 @@ function renderSvgElement(el: SvgElement, i: number, stroke: string) {
   }
 }
 
-export function SchematicView({ circuit, theme, width = '100%', height = 400, onNodeClick }: SchematicViewProps) {
+export function SchematicView({
+  circuit,
+  theme,
+  width = '100%',
+  height = 400,
+  onNodeClick,
+  onBranchClick,
+  probes = [],
+}: SchematicViewProps) {
   const resolvedTheme = resolveTheme(theme ?? 'dark');
   const stroke = resolvedTheme.text;
   const [hovered, setHovered] = useState<PlacedComponent | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const nodeProbe = (net: string) => probes.find((probe) => probe.kind === 'voltage' && probe.target === net);
+  const branchProbe = (component: string) => probes.find((probe) => probe.kind === 'current' && probe.target === component);
+  const activateOnKey = (event: KeyboardEvent, activate: () => void) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      activate();
+    }
+  };
 
   const { layout, error } = useMemo(() => {
     try {
@@ -100,16 +127,40 @@ export function SchematicView({ circuit, theme, width = '100%', height = 400, on
         preserveAspectRatio="xMidYMid meet"
       >
         {/* Wires */}
-        {layout.wires.map((wire, wi) => (
-          <g key={`w-${wi}`}>
+        {layout.wires.map((wire, wi) => {
+          const probe = nodeProbe(wire.net);
+          const wireStroke = probe?.color ?? stroke;
+          return (
+          <g key={`w-${wi}`}
+            role="button"
+            tabIndex={0}
+            aria-label={`Probe voltage at ${wire.net}`}
+            aria-pressed={probe != null}
+            data-probe-color={probe?.color}
+            style={{ cursor: onNodeClick ? 'pointer' : undefined }}
+            onClick={() => onNodeClick?.(wire.net)}
+            onKeyDown={(event) => activateOnKey(event, () => onNodeClick?.(wire.net))}
+          >
             {wire.segments.map((seg, si) => (
               <line key={si}
                 x1={seg.x1} y1={seg.y1} x2={seg.x2} y2={seg.y2}
-                stroke={stroke} strokeWidth={STROKE_W}
+                stroke={wireStroke} strokeWidth={probe ? STROKE_W + 1.4 : STROKE_W}
               />
             ))}
+            {probe && wire.segments[0] && (
+              <circle
+                cx={(wire.segments[0].x1 + wire.segments[0].x2) / 2}
+                cy={(wire.segments[0].y1 + wire.segments[0].y2) / 2}
+                r={5}
+                fill={probe.color}
+                stroke={resolvedTheme.surface}
+                strokeWidth={1.5}
+                pointerEvents="none"
+              />
+            )}
           </g>
-        ))}
+          );
+        })}
 
         {/* Junctions */}
         {layout.junctions.map((j, i) => (
@@ -119,9 +170,17 @@ export function SchematicView({ circuit, theme, width = '100%', height = 400, on
         {/* Components */}
         {layout.components.map((pc, ci) => {
           const sym = getSymbol(pc.component.type, pc.component.displayValue ?? '', pc.horizontal, pc.stretchH, pc.stretchW, pc.flipped);
+          const canProbeBranch = BRANCH_CURRENT_TYPES.has(pc.component.type);
+          const probe = canProbeBranch ? branchProbe(pc.component.name) : undefined;
+          const componentStroke = probe?.color ?? stroke;
           return (
             <g key={ci} transform={`translate(${pc.x},${pc.y})`}
-              style={{ cursor: 'pointer', color: stroke }}
+              role={canProbeBranch ? 'button' : undefined}
+              tabIndex={canProbeBranch ? 0 : undefined}
+              aria-label={canProbeBranch ? `Probe current through ${pc.component.name}` : undefined}
+              aria-pressed={canProbeBranch ? probe != null : undefined}
+              data-probe-color={probe?.color}
+              style={{ cursor: canProbeBranch && onBranchClick ? 'pointer' : undefined, color: componentStroke }}
               onMouseEnter={(e) => {
                 setHovered(pc);
                 const rect = (e.currentTarget.ownerSVGElement as SVGSVGElement).getBoundingClientRect();
@@ -136,18 +195,41 @@ export function SchematicView({ circuit, theme, width = '100%', height = 400, on
                 }
               }}
               onMouseLeave={() => setHovered(null)}
-              onClick={() => {
-                if (onNodeClick) {
-                  const mainPin = pc.pins.find(p => p.net !== '0');
-                  if (mainPin) onNodeClick(mainPin.net);
-                }
-              }}
+              onClick={canProbeBranch ? () => onBranchClick?.(pc.component.name) : undefined}
+              onKeyDown={canProbeBranch ? (event) => activateOnKey(event, () => onBranchClick?.(pc.component.name)) : undefined}
             >
               {/* Invisible hit area for hover/click */}
               <rect x={-4} y={-4} width={sym.width + 8} height={sym.height + 8}
                 fill="transparent" stroke="none" />
-              {sym.elements.map((el, i) => renderSvgElement(el, i, stroke))}
+              {sym.elements.map((el, i) => renderSvgElement(el, i, componentStroke))}
+              {probe && (
+                <circle cx={sym.width - 2} cy={2} r={5} fill={probe.color}
+                  stroke={resolvedTheme.surface} strokeWidth={1.5} pointerEvents="none" />
+              )}
             </g>
+          );
+        })}
+
+        {/* Node hit targets cover single-pin nets that have no routed wire. */}
+        {[...new Map(layout.components.flatMap(pc => pc.pins).map(pin => [pin.net, pin])).values()]
+          .filter((pin) => !layout.wires.some((wire) => wire.net === pin.net))
+          .map((pin) => {
+          const probe = nodeProbe(pin.net);
+          return (
+            <circle key={`node-${pin.net}`}
+              cx={pin.x} cy={pin.y} r={probe ? 5 : 7}
+              fill={probe?.color ?? 'transparent'}
+              stroke={probe?.color ?? 'transparent'}
+              strokeWidth={2}
+              role="button"
+              tabIndex={0}
+              aria-label={`Probe voltage at ${pin.net}`}
+              aria-pressed={probe != null}
+              data-probe-color={probe?.color}
+              style={{ cursor: onNodeClick ? 'pointer' : undefined }}
+              onClick={(event) => { event.stopPropagation(); onNodeClick?.(pin.net); }}
+              onKeyDown={(event) => activateOnKey(event, () => onNodeClick?.(pin.net))}
+            />
           );
         })}
 
