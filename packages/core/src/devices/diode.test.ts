@@ -22,6 +22,18 @@ describe('Diode', () => {
     const diode = new Diode('D1', [0, 1], { IS: 1e-14, N: 1, BV: 100 });
     expect(diode.isNonlinear).toBe(true);
   });
+
+  it('includes model series resistance in the terminal conductance', () => {
+    const asm = new MNAAssembler(1, 0);
+    asm.solution[0] = 1;
+
+    const diode = new Diode('D1', [0, -1], { IS: 1e-14, N: 1, RS: 10 });
+    diode.stamp(asm.getStampContext());
+
+    expect(diode.params.RS).toBe(10);
+    expect(asm.G.get(0, 0)).toBeLessThanOrEqual(1 / diode.params.RS + 1e-12);
+    expect(asm.G.get(0, 0)).toBeGreaterThan(0.05);
+  });
 });
 
 describe('Diode in circuit', () => {
