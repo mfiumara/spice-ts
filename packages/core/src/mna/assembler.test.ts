@@ -1,5 +1,28 @@
 import { describe, it, expect } from 'vitest';
 import { MNAAssembler } from './assembler.js';
+import type { CscMatrix } from '../solver/csc-matrix.js';
+import type { SparseSolver } from '../solver/sparse-solver.js';
+
+class CountingSolver implements SparseSolver {
+  analyzeCalls = 0;
+  factorizeCalls = 0;
+
+  analyzePattern(_matrix: CscMatrix): void {
+    this.analyzeCalls++;
+  }
+
+  factorize(_matrix: CscMatrix): void {
+    this.factorizeCalls++;
+  }
+
+  solve(rhs: Float64Array): Float64Array {
+    return new Float64Array(rhs);
+  }
+
+  isPatternAnalyzed(): boolean {
+    return this.analyzeCalls > 0;
+  }
+}
 
 describe('MNAAssembler', () => {
   it('creates matrices of correct size for node count + branch count', () => {
@@ -117,5 +140,58 @@ describe('MNAAssembler', () => {
     expect(asm.gValues[asm.stampIndex(0, 8)]).toBe(4.5);
     expect(asm.cValues[asm.stampIndex(7, 2)]).toBe(-2.25);
     expect(() => locked.stampG(1, 6, 1)).toThrow(/locked topology/);
+  });
+
+  it('reuses symbolic analysis while values change and factorizes every solve', () => {
+    const solvers: CountingSolver[] = [];
+    const asm = new MNAAssembler(2, 0, () => {
+      const solver = new CountingSolver();
+      solvers.push(solver);
+      return solver;
+    });
+    const initial = asm.getStampContext();
+    initial.stampG(0, 0, 2);
+    initial.stampG(1, 1, 3);
+    asm.lockTopology();
+
+    const first = asm.getSparseSolver();
+    first.factorize(asm.getCscMatrix());
+    asm.clear();
+    const restamp = asm.getStampContext();
+    restamp.stampG(0, 0, 4);
+    restamp.stampG(1, 1, 5);
+    const second = asm.getSparseSolver();
+    second.factorize(asm.getCscMatrix());
+
+    expect(second).toBe(first);
+    expect(solvers).toHaveLength(1);
+    expect(solvers[0].analyzeCalls).toBe(1);
+    expect(solvers[0].factorizeCalls).toBe(2);
+  });
+
+  it('invalidates symbolic analysis when topology changes', () => {
+    const solvers: CountingSolver[] = [];
+    const asm = new MNAAssembler(2, 0, () => {
+      const solver = new CountingSolver();
+      solvers.push(solver);
+      return solver;
+    });
+    asm.getStampContext().stampG(0, 0, 1);
+    asm.lockTopology();
+    const first = asm.getSparseSolver();
+
+    asm.invalidateTopology();
+    const changed = asm.getStampContext();
+    changed.stampG(0, 0, 1);
+    changed.stampG(0, 1, -1);
+    changed.stampG(1, 0, -1);
+    changed.stampG(1, 1, 1);
+    asm.lockTopology();
+    const second = asm.getSparseSolver();
+
+    expect(second).not.toBe(first);
+    expect(solvers).toHaveLength(2);
+    expect(solvers.map(solver => solver.analyzeCalls)).toEqual([1, 1]);
+    expect(asm.topologyNnz).toBe(4);
   });
 });
