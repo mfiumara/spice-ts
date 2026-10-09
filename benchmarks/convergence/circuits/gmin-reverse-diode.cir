@@ -1,0 +1,9 @@
+* CC0-1.0 fixture: reverse-biased diode / high-impedance DC operating point
+VBIAS bias 0 DC -100
+IIN 0 sense DC 1p
+D1 sense bias DHARD
+RLEAK sense 0 1T
+.model DHARD D(IS=1e-18 N=1 RS=10)
+.options reltol=1e-3 abstol=1e-12 vntol=1e-6 gmin=0 itl1=100
+.op
+.end
