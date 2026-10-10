@@ -1,4 +1,5 @@
 export { simulate, simulateStream, simulateStepStream, createSimulator } from './simulate.js';
+export { simulateProtocolV1, mapProtocolErrorV1 } from './protocol/adapter.js';
 export { createTransientSim } from './analysis/transient-driver.js';
 export type { TransientSim, TransientSimOptions } from './analysis/transient-driver.js';
 export { WasmNgspiceSimulator } from './simulators/ngspice-wasm.js';
