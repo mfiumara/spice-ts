@@ -313,6 +313,9 @@ export class GilbertPeierlsSolver implements SparseSolver {
       }
 
       const pivotVal = workspace[chosenOrigRow];
+      if (Math.abs(pivotVal) < 1e-18) {
+        throw SingularMatrixError.atPivot(j, this.variables);
+      }
 
       // Record pivot assignment
       pivotOrigRow[j] = chosenOrigRow;

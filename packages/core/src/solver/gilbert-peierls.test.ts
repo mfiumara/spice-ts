@@ -84,6 +84,33 @@ describe('GilbertPeierlsSolver', () => {
       });
     });
 
+    it('rejects a selected pivot below the absolute singularity threshold', () => {
+      const matrix = new SparseMatrix(2);
+      matrix.add(0, 0, 2e-19);
+      matrix.add(1, 0, 1e-18);
+      matrix.add(1, 1, 1);
+      const { csc } = toCsc(matrix);
+      const solver = new GilbertPeierlsSolver();
+      solver.analyzePattern(csc, [
+        { kind: 'node', name: 'tiny' },
+        { kind: 'node', name: 'stable' },
+      ]);
+
+      let thrown: unknown;
+      try {
+        solver.factorize(csc);
+      } catch (error) {
+        thrown = error;
+      }
+
+      expect(thrown).toBeInstanceOf(SingularMatrixError);
+      expect(thrown).toMatchObject({
+        involvedNodes: ['tiny'],
+        involvedBranches: [],
+        pivotIndex: 0,
+      });
+    });
+
     it('throws if analyzePattern was not called', () => {
       const m = new SparseMatrix(2);
       m.add(0, 0, 1); m.add(1, 1, 1);
