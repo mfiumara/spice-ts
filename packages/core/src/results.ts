@@ -148,7 +148,7 @@ export class ACResult {
   }
 }
 
-/** Spectral voltage-noise densities from a `.noise` analysis. */
+/** Spectral output-voltage and input-referred noise densities from a `.noise` analysis. */
 export class NoiseResult {
   constructor(
     /** Frequency points in Hz. */
@@ -159,11 +159,17 @@ export class NoiseResult {
     public readonly inputSource: string,
     /** Output-referred voltage-noise density in V/sqrt(Hz). */
     public readonly outputNoiseDensity: number[],
-    /** Input-referred voltage-noise density in V/sqrt(Hz). */
+    /**
+     * Input-referred noise density: V/sqrt(Hz) for a voltage input source or
+     * A/sqrt(Hz) for a current input source.
+     */
     public readonly inputNoiseDensity: number[],
     /** Integrated output-referred RMS noise in V, absent for a zero-width sweep. */
     public readonly integratedOutputNoise: number | undefined,
-    /** Integrated input-referred RMS noise in V, absent for a zero-width sweep. */
+    /**
+     * Integrated input-referred RMS noise: V for a voltage input source or A
+     * for a current input source; absent for a zero-width sweep.
+     */
     public readonly integratedInputNoise: number | undefined,
     /** Optional negative output node for a differential voltage result. */
     public readonly outputReferenceNode?: string,
