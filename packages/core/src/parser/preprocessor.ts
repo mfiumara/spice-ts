@@ -51,6 +51,12 @@ async function preprocessInternal(
     const trimmed = line.trim();
     const upper = trimmed.toUpperCase();
 
+    // Comments are metadata, not expression-bearing netlist statements.
+    if (trimmed.startsWith('*')) {
+      output.push(line);
+      continue;
+    }
+
     // Track .subckt nesting — don't evaluate params inside subcircuits
     if (upper.startsWith('.SUBCKT ')) {
       inSubckt++;

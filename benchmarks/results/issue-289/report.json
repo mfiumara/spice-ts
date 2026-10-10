@@ -1,0 +1,287 @@
+{
+  "schemaVersion": "spice-ts-issue-289/v1",
+  "issueUrl": "https://github.com/mfiumara/spice-ts/issues/289",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1"
+  },
+  "policy": {
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "engineInput": "the same immutable fixture Buffer"
+  },
+  "totals": {
+    "fixtures": 20,
+    "targetFixtures": 4,
+    "ngspice": {
+      "success": 13,
+      "failed": 0,
+      "unsupported": 7
+    },
+    "spiceTs": {
+      "success": 12,
+      "failed": 0,
+      "unsupported": 8
+    },
+    "targetSuccesses": 4
+  },
+  "targetFixtures": [
+    {
+      "id": "nmos-level1-dc",
+      "target": true,
+      "input": {
+        "bytes": 1375,
+        "sha256": "3ab24382b4fb966d2111ba8b2aa0590b989fc09b367c09eb41cc7ac475e0e255",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 361,
+            "signals": [
+              "i(vdd)",
+              "i(vgg)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(4)",
+              "v(5)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 19,
+            "signals": [
+              "i(vdd)",
+              "i(vgg)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(4)",
+              "v(5)"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "npn-dc",
+      "target": true,
+      "input": {
+        "bytes": 1275,
+        "sha256": "8775a88a3f9c032ee047d770781a5a0cbcf21a2e28b7b6352e63636a7c9f1ce0",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 13,
+            "signals": [
+              "i(vcc)",
+              "i(vmon1)",
+              "i(vmon2)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(4)",
+              "v(5)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 13,
+            "signals": [
+              "i(vcc)",
+              "i(vmon1)",
+              "i(vmon2)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(4)",
+              "v(5)"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "pmos-level1-dc",
+      "target": true,
+      "input": {
+        "bytes": 1399,
+        "sha256": "767c989ba6c4ad761d2211ae39c9c82536895e76f6288e77276ad9468b2b2093",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 6,
+            "signals": [
+              "i(vdd)",
+              "i(vmon)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(4)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 6,
+            "signals": [
+              "i(vdd)",
+              "i(vmon)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(4)"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "pnp-dc",
+      "target": true,
+      "input": {
+        "bytes": 1404,
+        "sha256": "95796ac998eb051a535fcb498c259e715c1e8edd237e1e07add401fc6a1601df",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 30,
+            "signals": [
+              "i(vbb)",
+              "i(vmon1)",
+              "i(vmon2)",
+              "i(vmon3)",
+              "i(vpos)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(4)",
+              "v(5)",
+              "v(6)",
+              "v(7)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 6,
+            "signals": [
+              "i(vbb)",
+              "i(vmon1)",
+              "i(vmon2)",
+              "i(vmon3)",
+              "i(vpos)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(4)",
+              "v(5)",
+              "v(6)",
+              "v(7)"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "remainingSpiceTsLosses": [
+    {
+      "id": "capacitor-rc-transient-newlte",
+      "status": "unsupported",
+      "convergence": "not-run",
+      "analyses": [],
+      "error": "Parse error at line 31: Unsupported .options TIMEINT field: 'newlte' .options timeint reltol=1e-6 abstol=1e-6 newlte=2"
+    },
+    {
+      "id": "capacitor-rc-oscillator",
+      "status": "unsupported",
+      "convergence": "not-run",
+      "analyses": [],
+      "error": "Unknown function 'v'"
+    },
+    {
+      "id": "diode-level2-temperature-breakdown",
+      "status": "unsupported",
+      "convergence": "not-run",
+      "analyses": [],
+      "error": "Step parameter device 'TEMP' not found"
+    },
+    {
+      "id": "diode-zener-5229",
+      "status": "unsupported",
+      "convergence": "not-run",
+      "analyses": [],
+      "error": "Parse error at line 7: Unsupported .options field: 'DEVICE' .OPTIONS DEVICE TEMP=35"
+    },
+    {
+      "id": "diode-transient",
+      "status": "unsupported",
+      "convergence": "not-run",
+      "analyses": [],
+      "error": "Unknown function 'V'"
+    },
+    {
+      "id": "inductor-transient",
+      "status": "unsupported",
+      "convergence": "not-run",
+      "analyses": [],
+      "error": "Parse error at line 21: Unsupported .options TIMEINT field: 'newbpstepping' .options timeint newbpstepping=0 reltol=1.0e-4"
+    },
+    {
+      "id": "njfet-stepped-dc",
+      "status": "unsupported",
+      "convergence": "not-run",
+      "analyses": [],
+      "error": "no spice-ts result for analyses: dc"
+    },
+    {
+      "id": "rlc-transient",
+      "status": "unsupported",
+      "convergence": "not-run",
+      "analyses": [],
+      "error": "Unknown function 'i'"
+    }
+  ]
+}
