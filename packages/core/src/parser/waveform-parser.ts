@@ -6,7 +6,11 @@ import type {
 const UNSUPPORTED_WAVEFORMS = new Set(['EXP', 'SFFM', 'AM', 'TRNOISE', 'EXTERNAL']);
 
 export function parseSourceWaveform(tokens: string[], startIdx: number): SourceWaveform {
-  const { baseTokens, distortionF1, distortionF2 } = extractDistortionTerms(tokens, startIdx);
+  const normalizedTokens = normalizeSourceAssignments(tokens, startIdx);
+  const { baseTokens, distortionF1, distortionF2 } = extractDistortionTerms(
+    normalizedTokens,
+    startIdx,
+  );
   return {
     ...parseBaseSourceWaveform(baseTokens, startIdx),
     ...(distortionF1 ? { distortionF1 } : {}),
@@ -79,14 +83,23 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
 
   if (keyword === 'PWL') {
     const parenStart = tokens.indexOf('(', waveformIdx);
-    const parenEnd = tokens.indexOf(')', waveformIdx);
-    if (parenStart !== waveformIdx + 1 || parenEnd < parenStart) {
-      throw new Error('PWL source requires a parenthesized list of time/value pairs');
+    let argumentTokens: string[];
+    if (parenStart === waveformIdx + 1) {
+      const parenEnd = tokens.indexOf(')', parenStart);
+      if (parenEnd < 0) throw new Error('PWL source requires a closing parenthesis');
+      if (parenEnd !== tokens.length - 1 && parenEnd + 1 !== startIdx + acIdx) {
+        throw new Error(`Unsupported PWL source parameters: '${tokens.slice(parenEnd + 1).join(' ')}'`);
+      }
+      argumentTokens = tokens.slice(parenStart + 1, parenEnd);
+    } else {
+      let end = waveformIdx + 1;
+      while (end < tokens.length && !SOURCE_KEYWORDS.has(tokens[end].toUpperCase())) end++;
+      if (end !== tokens.length && end !== startIdx + acIdx) {
+        throw new Error(`Unsupported PWL source parameters: '${tokens.slice(end).join(' ')}'`);
+      }
+      argumentTokens = tokens.slice(waveformIdx + 1, end);
     }
-    if (parenEnd !== tokens.length - 1) {
-      throw new Error(`Unsupported PWL source parameters: '${tokens.slice(parenEnd + 1).join(' ')}'`);
-    }
-    const args = tokens.slice(parenStart + 1, parenEnd).map(parseNumber);
+    const args = argumentTokens.map(parseNumber);
     if (args.length < 2 || args.length % 2 !== 0) {
       throw new Error('PWL source requires one or more complete time/value pairs');
     }
@@ -163,7 +176,10 @@ function parseOperatingPoint(
   acIdx: number,
   waveformOffset: number,
 ): number | undefined {
-  if (dcIdx >= 0) return parseNumber(tokens[startIdx + dcIdx + 1]);
+  if (dcIdx >= 0) {
+    if (waveformOffset === dcIdx + 1) return undefined;
+    return parseNumber(tokens[startIdx + dcIdx + 1]);
+  }
   if (acIdx > 0 || waveformOffset > 0) {
     try {
       return parseNumber(tokens[startIdx]);
@@ -178,6 +194,14 @@ const SOURCE_KEYWORDS = new Set([
   'DC', 'AC', 'PULSE', 'SIN', 'SINE', 'PWL', 'DISTOF1', 'DISTOF2',
   ...UNSUPPORTED_WAVEFORMS,
 ]);
+
+function normalizeSourceAssignments(tokens: string[], startIdx: number): string[] {
+  return tokens.flatMap((token, index) => {
+    if (index < startIdx) return token;
+    const match = token.match(/^(DC|AC)=(.*)$/i);
+    return match ? [match[1], match[2]] : token;
+  });
+}
 
 function extractDistortionTerms(
   tokens: string[],
