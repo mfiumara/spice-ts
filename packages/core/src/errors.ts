@@ -44,14 +44,43 @@ export class InvalidCircuitError extends SpiceError {
  * Typically indicates a topology error such as a voltage source loop
  * or a floating node.
  */
+export interface MatrixVariableIdentity {
+  /** Whether this MNA unknown is a node voltage or branch current. */
+  kind: 'node' | 'branch';
+  /** Circuit-level node or branch/source name. */
+  name: string;
+}
+
 export class SingularMatrixError extends SpiceError {
   constructor(
     message: string,
     /** Node names involved in the singularity */
     public readonly involvedNodes: string[],
+    /** Branch or source names involved in the singularity */
+    public readonly involvedBranches: string[] = [],
+    /** Zero-based MNA matrix index of the failed pivot */
+    public readonly pivotIndex?: number,
   ) {
-    super(`Singular matrix: ${message} (nodes: ${involvedNodes.join(', ')})`);
+    const identities = [
+      `nodes: ${involvedNodes.join(', ')}`,
+      ...(involvedBranches.length > 0 ? [`branches: ${involvedBranches.join(', ')}`] : []),
+    ];
+    super(`Singular matrix: ${message} (${identities.join('; ')})`);
     this.name = 'SingularMatrixError';
+  }
+
+  /** Build a bounded diagnostic directly from the failed matrix variable. */
+  static atPivot(
+    pivotIndex: number,
+    variables: readonly MatrixVariableIdentity[] = [],
+  ): SingularMatrixError {
+    const variable = variables[pivotIndex];
+    return new SingularMatrixError(
+      `zero pivot at matrix column ${pivotIndex}`,
+      variable?.kind === 'node' ? [variable.name] : [],
+      variable?.kind === 'branch' ? [variable.name] : [],
+      pivotIndex,
+    );
   }
 }
 

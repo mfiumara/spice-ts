@@ -2,13 +2,16 @@ import { describe, it, expect } from 'vitest';
 import { MNAAssembler } from './assembler.js';
 import type { CscMatrix } from '../solver/csc-matrix.js';
 import type { SparseSolver } from '../solver/sparse-solver.js';
+import type { MatrixVariableIdentity } from '../errors.js';
 
 class CountingSolver implements SparseSolver {
   analyzeCalls = 0;
   factorizeCalls = 0;
+  variables: readonly MatrixVariableIdentity[] = [];
 
-  analyzePattern(_matrix: CscMatrix): void {
+  analyzePattern(_matrix: CscMatrix, variables: readonly MatrixVariableIdentity[] = []): void {
     this.analyzeCalls++;
+    this.variables = variables;
   }
 
   factorize(_matrix: CscMatrix): void {
@@ -144,10 +147,16 @@ describe('MNAAssembler', () => {
 
   it('reuses symbolic analysis while values change and factorizes every solve', () => {
     const solvers: CountingSolver[] = [];
-    const asm = new MNAAssembler(2, 0, () => {
-      const solver = new CountingSolver();
-      solvers.push(solver);
-      return solver;
+    const asm = new MNAAssembler(2, 0, {
+      solverFactory: () => {
+        const solver = new CountingSolver();
+        solvers.push(solver);
+        return solver;
+      },
+      variables: [
+        { kind: 'node', name: 'in' },
+        { kind: 'node', name: 'out' },
+      ],
     });
     const initial = asm.getStampContext();
     initial.stampG(0, 0, 2);
@@ -166,15 +175,21 @@ describe('MNAAssembler', () => {
     expect(second).toBe(first);
     expect(solvers).toHaveLength(1);
     expect(solvers[0].analyzeCalls).toBe(1);
+    expect(solvers[0].variables).toEqual([
+      { kind: 'node', name: 'in' },
+      { kind: 'node', name: 'out' },
+    ]);
     expect(solvers[0].factorizeCalls).toBe(2);
   });
 
   it('invalidates symbolic analysis when topology changes', () => {
     const solvers: CountingSolver[] = [];
-    const asm = new MNAAssembler(2, 0, () => {
-      const solver = new CountingSolver();
-      solvers.push(solver);
-      return solver;
+    const asm = new MNAAssembler(2, 0, {
+      solverFactory: () => {
+        const solver = new CountingSolver();
+        solvers.push(solver);
+        return solver;
+      },
     });
     asm.getStampContext().stampG(0, 0, 1);
     asm.lockTopology();

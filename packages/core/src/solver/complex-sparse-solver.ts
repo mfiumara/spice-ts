@@ -1,4 +1,5 @@
 import type { CscMatrix } from './csc-matrix.js';
+import { SingularMatrixError, type MatrixVariableIdentity } from '../errors.js';
 
 /**
  * Complex sparse LU solver for AC analysis.
@@ -49,6 +50,7 @@ export class ComplexSparseSolver {
 
   private analyzed = false;
   private factorized = false;
+  private variables: readonly MatrixVariableIdentity[] = [];
 
   private readonly pivotThreshold = 0.1;
 
@@ -56,9 +58,14 @@ export class ComplexSparseSolver {
    * Analyze the union sparsity pattern of G and C.
    * The complex matrix (G + jwC) has non-zeros wherever G or C has non-zeros.
    */
-  analyzePattern(G: CscMatrix, C: CscMatrix): void {
+  analyzePattern(
+    G: CscMatrix,
+    C: CscMatrix,
+    variables: readonly MatrixVariableIdentity[] = [],
+  ): void {
     const n = G.size;
     this.n = n;
+    this.variables = variables;
 
     // Build symmetric adjacency for the union pattern of G and C
     const symAdj = buildUnionSymmetricAdjacency(G, C);
@@ -305,7 +312,7 @@ export class ComplexSparseSolver {
       }
 
       if (maxMag < 1e-18) {
-        throw new Error(`Singular matrix at column ${j}`);
+        throw SingularMatrixError.atPivot(j, this.variables);
       }
 
       // For complex MNA matrices, strongly prefer the natural diagonal row.
@@ -332,9 +339,6 @@ export class ComplexSparseSolver {
       const pivRe = wsRe[chosenOrigRow];
       const pivIm = wsIm[chosenOrigRow];
       const pivMag2 = pivRe * pivRe + pivIm * pivIm;
-      if (pivMag2 < 1e-36) {
-        throw new Error(`Singular matrix at column ${j}`);
-      }
 
       // Record pivot assignment
       pivotOrigRow[j] = chosenOrigRow;

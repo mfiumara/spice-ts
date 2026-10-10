@@ -1,6 +1,6 @@
 import type { ResolvedOptions, ACAnalysis } from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
-import { MNAAssembler } from '../mna/assembler.js';
+import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
 import { toCsc } from '../solver/csc-matrix.js';
 import { ComplexSparseSolver } from '../solver/complex-sparse-solver.js';
 import { ACResult } from '../results.js';
@@ -58,7 +58,11 @@ export function solveAC(
 
   // Complex sparse solver: analyze pattern once, factorize per frequency
   const solver = new ComplexSparseSolver();
-  solver.analyzePattern(gCsc, cCsc);
+  solver.analyzePattern(
+    gCsc,
+    cCsc,
+    createMatrixVariableIdentities(nodeNames, branchNames),
+  );
 
   // Pre-compute RHS (constant across frequencies)
   const bReal = new Float64Array(systemSize);

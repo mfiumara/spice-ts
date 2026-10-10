@@ -1,5 +1,6 @@
 import type { CscMatrix } from './csc-matrix.js';
 import type { SparseSolver } from './sparse-solver.js';
+import { SingularMatrixError, type MatrixVariableIdentity } from '../errors.js';
 
 /**
  * Gilbert-Peierls sparse LU solver.
@@ -46,12 +47,14 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
   private analyzed = false;
   private factorized = false;
+  private variables: readonly MatrixVariableIdentity[] = [];
 
   private readonly pivotThreshold = 0.1;
 
-  analyzePattern(A: CscMatrix): void {
+  analyzePattern(A: CscMatrix, variables: readonly MatrixVariableIdentity[] = []): void {
     const n = A.size;
     this.n = n;
+    this.variables = variables;
 
     // Compute symbolic fill-in on the symmetric structure (A + A^T).
     // This gives a superset of the actual non-zero structure regardless of pivoting.
@@ -297,7 +300,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
       }
 
       if (maxVal < 1e-18) {
-        throw new Error(`Singular matrix at column ${j}`);
+        throw SingularMatrixError.atPivot(j, this.variables);
       }
 
       // Prefer the natural diagonal candidate (perm[j]) if sufficiently large
@@ -311,7 +314,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
       const pivotVal = workspace[chosenOrigRow];
       if (Math.abs(pivotVal) < 1e-18) {
-        throw new Error(`Singular matrix at column ${j}`);
+        throw SingularMatrixError.atPivot(j, this.variables);
       }
 
       // Record pivot assignment

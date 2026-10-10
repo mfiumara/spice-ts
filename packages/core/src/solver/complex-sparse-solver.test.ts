@@ -2,8 +2,36 @@ import { describe, it, expect } from 'vitest';
 import { SparseMatrix } from './sparse-matrix.js';
 import { toCsc } from './csc-matrix.js';
 import { ComplexSparseSolver } from './complex-sparse-solver.js';
+import { SingularMatrixError } from '../errors.js';
 
 describe('ComplexSparseSolver', () => {
+  it('throws a typed error with structural branch identity on a singular pivot', () => {
+    const G = new SparseMatrix(2);
+    G.add(0, 0, 1);
+    const C = new SparseMatrix(2);
+    const gCsc = toCsc(G).csc;
+    const cCsc = toCsc(C).csc;
+    const solver = new ComplexSparseSolver();
+    solver.analyzePattern(gCsc, cCsc, [
+      { kind: 'node', name: 'out' },
+      { kind: 'branch', name: 'Vdrive' },
+    ]);
+
+    let thrown: unknown;
+    try {
+      solver.factorize(gCsc, cCsc, 1);
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(thrown).toBeInstanceOf(SingularMatrixError);
+    expect(thrown).toMatchObject({
+      involvedNodes: [],
+      involvedBranches: ['Vdrive'],
+      pivotIndex: 1,
+    });
+  });
+
   it('solves a 2x2 complex system', () => {
     // (G + jωC)x = b where G = [[2, 1], [1, 3]], C = [[1, 0], [0, 1]], ω = 1
     // So A = [[2+j, 1], [1, 3+j]]

@@ -2,6 +2,22 @@ import { SparseMatrix } from '../solver/sparse-matrix.js';
 import type { CscMatrix } from '../solver/csc-matrix.js';
 import { createSparseSolver, type SparseSolver } from '../solver/sparse-solver.js';
 import type { StampContext } from '../devices/device.js';
+import type { MatrixVariableIdentity } from '../errors.js';
+
+export function createMatrixVariableIdentities(
+  nodeNames: readonly string[],
+  branchNames: readonly string[],
+): MatrixVariableIdentity[] {
+  return [
+    ...nodeNames.map(name => ({ kind: 'node' as const, name })),
+    ...branchNames.map(name => ({ kind: 'branch' as const, name })),
+  ];
+}
+
+export interface MNAAssemblerOptions {
+  solverFactory?: () => SparseSolver;
+  variables?: readonly MatrixVariableIdentity[];
+}
 
 export class MNAAssembler {
   public readonly G: SparseMatrix;
@@ -28,7 +44,7 @@ export class MNAAssembler {
   constructor(
     public readonly numNodes: number,
     public readonly numBranches: number,
-    private readonly solverFactory: () => SparseSolver = createSparseSolver,
+    private readonly options: MNAAssemblerOptions = {},
   ) {
     this.systemSize = numNodes + numBranches;
     this.G = new SparseMatrix(this.systemSize);
@@ -193,8 +209,8 @@ export class MNAAssembler {
       throw new Error('lockTopology() must be called before requesting a sparse solver');
     }
     if (!this._solver) {
-      this._solver = this.solverFactory();
-      this._solver.analyzePattern(this.getCscMatrix());
+      this._solver = (this.options.solverFactory ?? createSparseSolver)();
+      this._solver.analyzePattern(this.getCscMatrix(), this.options.variables);
     }
     return this._solver;
   }

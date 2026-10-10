@@ -1,8 +1,23 @@
 import { describe, it, expect } from 'vitest';
 import { SparseMatrix } from './sparse-matrix.js';
 import { solveLU } from './lu-solver.js';
+import { SingularMatrixError } from '../errors.js';
 
 describe('solveLU', () => {
+  it('preserves variable identity in a solve-only singular fixture', () => {
+    const A = new SparseMatrix(2);
+    A.add(0, 0, 1);
+
+    expect(() => solveLU(A, new Float64Array(2), [
+      { kind: 'node', name: 'driven' },
+      { kind: 'node', name: 'floating' },
+    ])).toThrowError(expect.objectContaining<Partial<SingularMatrixError>>({
+      involvedNodes: ['floating'],
+      involvedBranches: [],
+      pivotIndex: 1,
+    }));
+  });
+
   it('solves a 2x2 system', () => {
     const A = new SparseMatrix(2);
     A.add(0, 0, 2); A.add(0, 1, 1);
