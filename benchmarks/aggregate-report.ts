@@ -8,9 +8,11 @@
  */
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readdir, readFile, writeFile } from 'node:fs/promises';
-import { arch, cpus, platform, release } from 'node:os';
+import { mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { arch, cpus, platform, release, tmpdir } from 'node:os';
 import { basename, relative, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { deserialize, serialize } from 'node:v8';
 import { alignAndMeasure, type ComparisonMetrics, type SampleSeries } from './comparison-harness.js';
 import {
   runNativeNgspice,
@@ -27,7 +29,7 @@ const TOTAL_FIXTURES = CORPORA.length * FIXTURES_PER_CORPUS;
 const JSON_PATH = resolve('benchmarks/aggregate-report.json');
 const MARKDOWN_PATH = resolve('benchmarks/AGGREGATE_PARITY.md');
 const FIXTURE_TREE_SHA256 = '01b19fe5baf170d91aa5bd72c3ffb3891ed2f2c45cca5adfee8288552a7e14f1';
-const SOURCES_SHA256 = 'b6540a743d176a01cc8e8aff6412655cc09f5fbf30554a53222c1d290c3029a1';
+const SOURCES_SHA256 = 'f8cc57771ac07684b1bdebb43ad2ab572f048a9e67d5df98386dc9eb706a188f';
 
 type CorpusId = typeof CORPORA[number];
 type Status = 'success' | 'failed' | 'unsupported';
@@ -136,79 +138,63 @@ export interface AggregateReport {
 }
 
 const PREVIOUS_REPORT: AggregateReport['comparisonToPrevious'] = {
-  issueUrl: 'https://github.com/mfiumara/spice-ts/issues/301',
-  pullRequestUrl: 'https://github.com/mfiumara/spice-ts/pull/312',
-  headSha: 'ac7dc9d8edf034bf35f589d078126ddb84224c82',
-  outcomeSha256: '68b0a9edd25c1fc5c89644397dedfa8ba2b6ebcbd1c247463887f6d4fec44369',
+  issueUrl: 'https://github.com/mfiumara/spice-ts/issues/321',
+  pullRequestUrl: 'https://github.com/mfiumara/spice-ts/pull/325',
+  headSha: 'e400d87c791dfa27f572a349777c8ebb9f2450d4',
+  outcomeSha256: '26be9f80744c077c0bdb98fa5c6c9cffc8615c2e2589383507abd59fd6fed41b',
   totals: {
     fixtures: 100,
     corpusFixtures: { ngspice: 20, classic: 20, xyce: 20, 'corpus-d': 20, 'corpus-e': 20 },
     ngspice: { success: 52, failed: 9, unsupported: 39 },
-    spiceTs: { success: 36, failed: 8, unsupported: 56 },
-    comparedFixtures: 27,
-    comparedAnalyses: 40,
-    runtimeMs: { ngspice: 24_558.679, spiceTs: 14_459.876 },
+    spiceTs: { success: 51, failed: 3, unsupported: 46 },
+    comparedFixtures: 39,
+    comparedAnalyses: 54,
+    runtimeMs: { ngspice: 24_921.976, spiceTs: 21_912.135 },
   },
   matchedPointEnvelope: {
-    comparedSignals: 371,
-    relativeComparedSignals: 349,
-    absoluteSamples: 7_455_070,
-    relativeSamples: 7_451_932,
-    excludedZeroReferences: 3_138,
-    maximumAbsoluteError: 1158.4523167631219,
-    maximumAbsoluteRms: 693.3260545761561,
-    maximumRelativeError: 739888253.1927755,
+    comparedSignals: 561,
+    relativeComparedSignals: 535,
+    absoluteSamples: 7_959_622,
+    relativeSamples: 7_944_908,
+    excludedZeroReferences: 14_714,
+    maximumAbsoluteError: 1169140310571.719,
+    maximumAbsoluteRms: 1169140310571.719,
+    maximumRelativeError: 2110199067.731876,
     maximumRelativeRms: 326930690.296368,
   },
   statusTransitions: [
-    ...['ngspice/mos6-inverter-transient', 'ngspice/mos-amplifier-transient', 'classic/mos6-inverter-chain', 'classic/mos-amplifier', 'classic/mos-memory-cell'].map(fixture => ({
+    ...['ngspice/ltra-line-transient', 'classic/lossy-line-24-inch', 'classic/lossy-line-aluminium', 'classic/coupled-lossy-lines'].map(fixture => ({
+      engine: 'spiceTs' as const,
+      fixture,
+      from: 'unsupported' as const,
+      to: 'success' as const,
+      explanation: 'Accepted benchmark-bounded lossy LTRA parsing and transient stamping (#308, PR #320) lets the unchanged fixture complete; every per-signal max/RMS error remains published.',
+      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/7', 'https://github.com/mfiumara/spice-ts/issues/308'],
+    })),
+    ...['ngspice/hfet-inverter', 'ngspice/mesa-oscillator'].map(fixture => ({
       engine: 'spiceTs' as const,
       fixture,
       from: 'failed' as const,
-      to: 'success' as const,
-      explanation: 'Accepted MOS model-card, capacitance, and Newton-step handling lets the declared transient analysis converge.',
-      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/302'],
+      to: 'unsupported' as const,
+      explanation: 'Accepted subcircuit device validation (#338, PR #341) now rejects the unsupported Z or B card at parse time; the earlier singular-matrix failure no longer occurs, and the fixture remains a published loss.',
+      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/76', 'https://github.com/mfiumara/spice-ts/issues/338'],
     })),
     {
       engine: 'spiceTs',
-      fixture: 'ngspice/rc-lowpass-ac',
+      fixture: 'xyce/inductor-transient',
       from: 'unsupported',
-      to: 'success',
-      explanation: 'Accepted report-only POST option handling removes the parser rejection and both declared analyses complete.',
-      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/76'],
+      to: 'failed',
+      explanation: 'Accepted disabled NEWBPSTEPPING TIMEINT compatibility (#322, PR #326) removes the parse rejection. The unchanged transient then never terminates, so the aggregate now bounds spice-ts at the same 120000 ms wall clock as ngspice and records a failed execution (#366).',
+      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/322', 'https://github.com/mfiumara/spice-ts/issues/366'],
     },
-    ...['ngspice/vbic-common-emitter-ac', 'classic/pole-zero-four-stage', 'classic/pole-zero-three-stage', 'classic/high-pass-pole-zero'].map(fixture => ({
-      engine: 'spiceTs' as const,
-      fixture,
-      from: 'unsupported' as const,
-      to: 'success' as const,
-      explanation: 'Accepted classic pole-zero result emission supplies the previously missing declared analysis.',
-      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/75'],
-    })),
-    ...['ngspice/schmitt-trigger', 'classic/ecl-schmitt-trigger'].map(fixture => ({
-      engine: 'spiceTs' as const,
-      fixture,
-      from: 'unsupported' as const,
-      to: 'success' as const,
-      explanation: 'Accepted classic BJT Q-card parsing removes the OFF-form parser rejection and transient analysis completes.',
-      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/306'],
-    })),
-    ...['xyce/capacitor-rc-oscillator', 'xyce/diode-transient', 'xyce/rlc-transient'].map(fixture => ({
-      engine: 'spiceTs' as const,
-      fixture,
-      from: 'unsupported' as const,
-      to: 'success' as const,
-      explanation: 'Accepted V() and I() output-function handling removes expression evaluation failures and transient analysis completes.',
-      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/76'],
-    })),
   ],
   metricTransitions: [
-    'Comparable coverage increased from 40 analyses across 27 fixtures to 54 analyses across 39 fixtures.',
-    'MOS convergence added five transient comparisons; classic BJT Q-card parsing added two transient comparisons; POST handling added AC and operating-point comparisons for rc-lowpass-ac.',
-    'Pole-zero result emission added four pole-zero comparisons. V() and I() output-function handling made three Xyce fixtures successful, while only rlc-transient exposed common signals for a new comparison.',
-    'Matched coverage increased from 371 to 561 absolute signals and from 349 to 535 relative signals. Absolute samples increased from 7,455,070 to 7,959,622; relative samples increased from 7,451,932 to 7,944,908; excluded zero references increased from 3,138 to 14,714.',
-    'The expanded comparison set raised the worst per-signal absolute max from 1158.4523167631219 to 1169140310571.719 and absolute RMS from 693.3260545761561 to 1169140310571.719.',
-    'The expanded comparison set raised the worst per-signal relative max from 739888253.1927755 to 2110199067.731876; relative RMS remained 326930690.296368.',
+    'Comparable coverage increased from 54 analyses across 39 fixtures to 58 analyses across 43 fixtures. The four LTRA fixtures add one transient comparison each.',
+    'Two-source nested DC sweeps (#354, PR #359) now emit every nested point. ngspice/jfet-vds-vgs, xyce/njfet-2109-dc, xyce/nmos-level1-dc, and xyce/pnp-dc compare on the full nested grid with the same signal sets. corpus-e/diode-temperature-sweep emits 2 DC points instead of 3. It has no ngspice comparison.',
+    'Matched coverage increased from 561 to 878 absolute signals and from 535 to 848 relative signals. Absolute samples increased from 7,959,622 to 9,182,709; relative samples increased from 7,944,908 to 9,147,783; excluded zero references increased from 14,714 to 34,926. The LTRA fixtures add 317 signals and 1,219,613 absolute samples; the nested DC grids add 3,474 absolute samples.',
+    'The worst per-signal absolute max and RMS remain 1169140310571.719 from ngspice/vbic-common-emitter-ac. classic/coupled-lossy-lines v(5) raises the worst relative max from 2110199067.731876 to 45497356677842.63 and relative RMS from 326930690.296368 to 872317191517.6284. These are published losses: the relative metric divides by near-zero ngspice samples on that signal, whose absolute max is 1.4200318868351707 V. No tolerance changed.',
+    'Status-preserving diagnostic changes: bounded TEMP LIST stepping (#318, PR #327) makes xyce/diode-level2-temperature-breakdown report a missing top-level transient result instead of a TEMP step error. The classic noise-interval fix (#336, PR #337) makes classic/bjt-noise and classic/resistor-noise report a missing noise result instead of a parse error. All three remain unsupported.',
+    'spice-ts now runs in a child process bounded at the 120000 ms ngspice subprocess timeout. Its runtime is the child-measured adapter time, and the engines now run sequentially so neither receipt includes the other engine. Runtime sums are not comparable with the previous in-process sample and support no speed claim.',
   ],
 };
 
@@ -220,6 +206,7 @@ const GAP_ISSUES = [
   { url: 'https://github.com/mfiumara/spice-ts/issues/3', scope: 'MOS model coverage' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/123', scope: 'jimi-fuzz transient waveform divergence' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/280', scope: 'newly exposed classic-corpus execution failures and RCA3040 regression' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/366', scope: 'non-terminating xyce/inductor-transient simulation' },
 ] as const;
 
 function sha256(input: Buffer | string): string {
@@ -368,6 +355,7 @@ function gapIssues(circuit: CorpusCircuit): string[] {
   if (/bjt|vbic|npn|pnp/.test(text)) issues.add('https://github.com/mfiumara/spice-ts/issues/5');
   if (/mos|bsim/.test(text)) issues.add('https://github.com/mfiumara/spice-ts/issues/3');
   if (circuit.id === 'jimi-fuzz') issues.add('https://github.com/mfiumara/spice-ts/issues/123');
+  if (circuit.localPath.endsWith('/INDUCTOR/inductor.cir')) issues.add('https://github.com/mfiumara/spice-ts/issues/366');
   if (['mos6-inverter-chain', 'mos-amplifier', 'mos-memory-cell', 'rca3040-wideband-amplifier'].includes(circuit.id)) {
     issues.add('https://github.com/mfiumara/spice-ts/issues/280');
   }
@@ -378,6 +366,57 @@ async function timed(run: () => Promise<EngineExecution>): Promise<{ execution: 
   const started = performance.now();
   const execution = await run();
   return { execution, runtimeMs: performance.now() - started };
+}
+
+/** Same wall-clock bound the classic runner applies to every ngspice subprocess. */
+export const SPICE_TS_TIMEOUT_MS = 120_000;
+const SPICE_TS_CHILD_FLAG = '--spice-ts-child';
+
+/**
+ * Runs the in-process spice-ts adapter inside a child process so a non-terminating
+ * simulation is recorded as a failed execution instead of stalling the aggregate.
+ * The child reports its own adapter runtime; v8 serialization preserves typed arrays
+ * and non-finite samples exactly.
+ */
+export async function runBoundedSpiceTs(
+  input: Buffer,
+  circuit: ClassicCircuit,
+  timeoutMs: number,
+): Promise<{ execution: EngineExecution; runtimeMs: number }> {
+  const directory = await mkdtemp(resolve(tmpdir(), 'spice-ts-aggregate-'));
+  const inputPath = resolve(directory, 'fixture.cir');
+  const circuitPath = resolve(directory, 'circuit.json');
+  const outputPath = resolve(directory, 'execution.v8');
+  const started = performance.now();
+  try {
+    await writeFile(inputPath, input);
+    await writeFile(circuitPath, JSON.stringify(circuit));
+    const completed = spawnSync(
+      process.execPath,
+      [...process.execArgv, fileURLToPath(import.meta.url), SPICE_TS_CHILD_FLAG, inputPath, circuitPath, outputPath],
+      { cwd: process.cwd(), encoding: 'utf8', timeout: timeoutMs, killSignal: 'SIGKILL', maxBuffer: 16 * 1024 * 1024 },
+    );
+    if (completed.error || completed.status !== 0) {
+      const timedOut = (completed.error as NodeJS.ErrnoException | undefined)?.code === 'ETIMEDOUT';
+      const detail = timedOut
+        ? `spice-ts exceeded the ${timeoutMs} ms aggregate execution bound`
+        : completed.error?.message || [completed.stderr, completed.stdout].filter(Boolean).join('\n').trim()
+          || `spice-ts child exited ${completed.status}`;
+      return {
+        execution: { status: 'failed', convergence: timedOut ? 'failed' : 'not-run', analyses: [], error: detail.slice(0, 1000) },
+        runtimeMs: performance.now() - started,
+      };
+    }
+    return deserialize(await readFile(outputPath)) as { execution: EngineExecution; runtimeMs: number };
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+}
+
+async function spiceTsChild(inputPath: string, circuitPath: string, outputPath: string): Promise<void> {
+  const input = await readFile(inputPath);
+  const circuit = JSON.parse(await readFile(circuitPath, 'utf8')) as ClassicCircuit;
+  await writeFile(outputPath, serialize(await timed(() => runNativeSpiceTs(input, circuit))));
 }
 
 function deterministicView(report: Omit<AggregateReport, 'outcomeSha256'> | AggregateReport): unknown {
@@ -514,10 +553,8 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
       const digest = sha256(input);
       if (digest !== circuit.sha256) throw new Error(`${corpus}/${circuit.id}: fixture SHA-256 mismatch`);
       const compatible = circuit as ClassicCircuit;
-      const [ngspice, spiceTs] = await Promise.all([
-        timed(() => runNativeNgspice(input, compatible)),
-        timed(() => runNativeSpiceTs(input, compatible)),
-      ]);
+      const ngspice = await timed(() => runNativeNgspice(input, compatible));
+      const spiceTs = await runBoundedSpiceTs(input, compatible, SPICE_TS_TIMEOUT_MS);
       fixtures.push({
         key: `${corpus}/${circuit.id}`,
         corpus,
@@ -661,7 +698,13 @@ export function verifyCommittedArtifacts(
   const committedProjection = JSON.stringify(deterministicView(committed));
   const generatedProjection = JSON.stringify(deterministicView(generated));
   if (committedProjection !== generatedProjection) {
-    throw new Error('committed aggregate deterministic JSON projection differs from regenerated outcomes');
+    const committedByKey = new Map((committed.fixtures ?? []).map(fixture => [fixture.key, fixture]));
+    const differing = (generated.fixtures ?? []).flatMap(fixture => {
+      const previous = committedByKey.get(fixture.key);
+      if (previous && JSON.stringify(deterministicView(previous as never)) === JSON.stringify(deterministicView(fixture as never))) return [];
+      return [`${fixture.key} (spice-ts ${previous?.spiceTs.status ?? 'missing'} -> ${fixture.spiceTs.status}; ngspice ${previous?.ngspice.status ?? 'missing'} -> ${fixture.ngspice.status})`];
+    });
+    throw new Error(`committed aggregate deterministic JSON projection differs from regenerated outcomes; differing fixtures: ${differing.join(', ') || 'none'}`);
   }
 
   const digest = deterministicDigest(committed);
@@ -693,7 +736,13 @@ async function main(): Promise<void> {
   process.stderr.write(`aggregate: ${report.totals.fixtures} fixtures; outcome ${report.outcomeSha256}; compared ${report.totals.comparedAnalyses} analyses\n`);
 }
 
-if (basename(process.argv[1] ?? '') === 'aggregate-report.ts') {
+if (process.argv[2] === SPICE_TS_CHILD_FLAG) {
+  const [inputPath, circuitPath, outputPath] = process.argv.slice(3);
+  spiceTsChild(inputPath, circuitPath, outputPath).catch(error => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+} else if (basename(process.argv[1] ?? '') === 'aggregate-report.ts') {
   main().catch(error => {
     console.error(error);
     process.exitCode = 1;
