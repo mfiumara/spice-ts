@@ -549,6 +549,9 @@ describe('bounded protocol-v1 tools', () => {
     const started = await executeTool('spice_simulation_start', { request });
     const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
     const bounded = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints: 1025 });
+    const malformedCursor = await executeTool('spice_simulation_read', {
+      jobId, cursor: 'not-a-cursor',
+    });
 
     expect(malformed).toMatchObject({
       isError: true,
@@ -562,6 +565,10 @@ describe('bounded protocol-v1 tools', () => {
           details: { limit: 'maxStreamChunkPoints', maximum: 1024, actual: 1025 },
         },
       },
+    });
+    expect(malformedCursor).toMatchObject({
+      isError: true,
+      structuredContent: { error: { code: 'INVALID_REQUEST', phase: 'validation' } },
     });
   });
 
@@ -622,7 +629,7 @@ describe('bounded protocol-v1 tools', () => {
       clock,
       streamLimits: { runningJobTtlMs: 100, terminalJobTtlMs: 50 },
       simulate: async () => result,
-    } as never);
+    });
     const started = await execute('spice_simulation_start', { request });
     const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
     await Promise.resolve();
@@ -649,7 +656,19 @@ describe('bounded protocol-v1 tools', () => {
   it('expires a running job and terminates its worker without wall-clock sleeps', async () => {
     class PendingWorker extends EventEmitter {
       readonly terminate = vi.fn(() => 0);
-      postMessage(): void {}
+      postMessage(message: unknown): void {
+        if (!isWorkerOperation(message)) return;
+        queueMicrotask(() => this.emit('message', {
+          type: 'events',
+          events: [
+            { type: 'analysis-start', analysis: 'tran', analysisIndex: 0 },
+            {
+              type: 'point', analysisIndex: 0, pointIndex: 0,
+              point: { type: 'tran', timeS: 0, voltagesV: { out: 0 }, currentsA: {} },
+            },
+          ],
+        }));
+      }
     }
     const clock = new ManualClock();
     const worker = new PendingWorker();
@@ -658,13 +677,19 @@ describe('bounded protocol-v1 tools', () => {
       clock,
       streamLimits: { runningJobTtlMs: 25, terminalJobTtlMs: 50 },
       workerFactory: () => worker as unknown as ExecutionWorker,
-    } as never);
+    });
     const started = await execute('spice_simulation_start', { request });
     const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    await flushMicrotasks();
+    const first = await execute('spice_simulation_read', { jobId, cursor });
+    const firstData = first.structuredContent as unknown as SimulationReadDataV1;
+    const points = firstData.events.filter(event => event.type === 'point');
 
     clock.advanceBy(25);
     await Promise.resolve();
-    const expired = await execute('spice_simulation_read', { jobId, cursor });
+    const expired = await execute('spice_simulation_read', {
+      jobId, cursor: firstData.nextCursor,
+    });
 
     expect(expired.structuredContent).toMatchObject({
       status: 'failed', events: [], nextCursor: null,
@@ -673,7 +698,10 @@ describe('bounded protocol-v1 tools', () => {
           code: 'RESOURCE_LIMIT', phase: 'transport',
           details: { limit: 'runningJobTtlMs', maximum: 25, actual: 25 },
         },
-        partial: { analyses: [], partialEventSha256: sha256CanonicalJson([]) },
+        partial: {
+          analyses: [{ analysis: 'tran', analysisIndex: 0, emittedPointCount: 1, complete: false }],
+          partialEventSha256: sha256CanonicalJson(points),
+        },
       },
     });
     expect(worker.terminate).toHaveBeenCalledOnce();
@@ -705,11 +733,10 @@ describe('bounded protocol-v1 tools', () => {
     const execute = createToolExecutor({
       streamLimits,
       workerFactory: () => new StreamingWorker() as unknown as ExecutionWorker,
-    } as never);
+    });
     const started = await execute('spice_simulation_start', { request });
     const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
-    await Promise.resolve();
-    await Promise.resolve();
+    await flushMicrotasks();
     const failed = await execute('spice_simulation_read', { jobId, cursor });
 
     expect(failed.structuredContent).toMatchObject({
@@ -750,7 +777,7 @@ describe('bounded protocol-v1 tools', () => {
     const execute = createToolExecutor({
       streamLimits: { maxUnreadEvents: 2, maxUnreadBytes: 1024 },
       workerFactory: () => worker as unknown as ExecutionWorker,
-    } as never);
+    });
     const started = await execute('spice_simulation_start', { request });
     const { jobId } = started.structuredContent as { jobId: string };
     await Promise.resolve();
@@ -778,7 +805,7 @@ describe('bounded protocol-v1 tools', () => {
       clock,
       streamLimits: { runningJobTtlMs: 100, terminalJobTtlMs: 10 },
       workerFactory: () => new DeadWorker() as unknown as ExecutionWorker,
-    } as never);
+    });
     const started = await execute('spice_simulation_start', { request });
     const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
     await Promise.resolve();
@@ -849,4 +876,8 @@ class ManualClock {
       }
     }
   }
+}
+
+async function flushMicrotasks(): Promise<void> {
+  for (let index = 0; index < 8; index++) await Promise.resolve();
 }
