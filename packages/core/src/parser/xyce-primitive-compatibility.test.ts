@@ -104,9 +104,8 @@ describe('Xyce primitive parser compatibility', () => {
     expect(result.steps![0]!.dcSweep!.current('Vidmon')).toHaveLength(16);
   });
 
-  it('keeps the level-2 NJF fixture explicitly unsupported', () => {
-    expect(() => parse(fixture('NJFET_DC/njfet-2109.cir')).compile())
-      .toThrow(/Unsupported NJF model level: 2/);
+  it('accepts the bounded level-2 NJF fixture', () => {
+    expect(() => parse(fixture('NJFET_DC/njfet-2109.cir')).compile()).not.toThrow();
   });
 
   it('keeps title-less API snippets behind an explicit parser', () => {
