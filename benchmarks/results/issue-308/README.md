@@ -23,7 +23,11 @@ The frozen install and current pre-change core were built with:
 
 The capture used the repository's `benchmarks/comparison-harness.ts` exports with the same four fixture definitions and probe lists as the dedicated #308 runner. The orchestration command was:
 
-    pnpm exec tsx benchmarks/capture-ltra-baseline.tmp.ts benchmarks/results/issue-308/baseline.json
+    pnpm exec tsx benchmarks/capture-ltra-baseline.ts benchmarks/results/issue-308/baseline.json
+
+Because wall-clock runtimes and capture metadata vary by host, reproduce and verify the committed fixture hashes, engine outcomes, complete ngspice grids/waveforms, and all per-signal loss records with:
+
+    pnpm exec tsx benchmarks/capture-ltra-baseline.ts --verify benchmarks/results/issue-308/baseline.json
 
 For each fixture, that harness invokes ngspice exactly as follows in an isolated temporary directory with `HOME` set to that directory and `.spiceinit` containing `set filetype=ascii`:
 

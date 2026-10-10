@@ -10,7 +10,7 @@
       "pnpm",
       "exec",
       "tsx",
-      "benchmarks/capture-ltra-baseline.tmp.ts",
+      "benchmarks/capture-ltra-baseline.ts",
       "benchmarks/results/issue-308/baseline.json"
     ],
     "buildCommand": [
