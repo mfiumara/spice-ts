@@ -196,6 +196,28 @@ describe('Circuit.addStep', () => {
       'Multiple .step directives are not supported; nested or multi-dimensional stepping is unsupported',
     );
   });
+
+  it.each(['step-first', 'noise-first'] as const)(
+    'rejects programmatic .step plus .noise in %s order',
+    order => {
+      const ckt = new Circuit();
+      const addStep = () => ckt.addStep('R1', { values: [1000, 2000] });
+      const addNoise = () => ckt.addAnalysis('noise', {
+        outputNode: 'out',
+        inputSource: 'V1',
+        variation: 'lin',
+        points: 5,
+        startFreq: 100,
+        stopFreq: 500,
+      });
+
+      const first = order === 'step-first' ? addStep : addNoise;
+      const second = order === 'step-first' ? addNoise : addStep;
+      first();
+
+      expect(second).toThrow('.step cannot be combined with .noise');
+    },
+  );
 });
 
 describe('.step netlist parsing', () => {
