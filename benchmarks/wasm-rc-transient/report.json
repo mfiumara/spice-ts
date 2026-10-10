@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-10T10:09:25.865Z",
+  "generatedAt": "2026-10-10T10:10:32.714Z",
   "fixture": {
     "path": "benchmarks/wasm-rc-transient/rc-step.cir",
     "sha256": "912300f635e8e1831475a37d5a73f1ff9d92c8c0474caebe842275936297f870",
@@ -17,7 +17,7 @@
     "integration": "default ngspice trapezoidal and bounded fixed-step WASM trapezoidal; no per-circuit tolerances"
   },
   "versions": {
-    "spiceTsRevision": "c7331a3e610fb230d599b40ff21c220b018aedd5",
+    "spiceTsRevision": "0a3c90addb15b3e8f8ed25ee12dd562158a9c135",
     "node": "v22.23.1",
     "pnpm": "10.28.1",
     "ngspice": "ngspice-47 : Circuit level simulation program"
@@ -71,45 +71,45 @@
     "wasm": {
       "wallMs": {
         "samples": [
-          426.18095900000003,
-          367.62870899999996,
-          364.60245799999996,
-          367.335959,
-          368.6036670000001
+          368.35179200000005,
+          370.602791,
+          365.85912500000006,
+          369.313083,
+          367.0894999999998
         ],
-        "median": 367.62870899999996
+        "median": 368.35179200000005
       },
       "peakRssMiB": {
         "samples": [
-          159.984375,
-          138.078125,
+          138.640625,
+          138.234375,
           138.375,
-          137.984375,
-          138.640625
+          137.078125,
+          138.328125
         ],
-        "median": 138.375
+        "median": 138.328125
       }
     },
     "ngspice": {
       "wallMs": {
         "samples": [
-          12.540124999999989,
-          13.265875000000051,
-          12.697333000000071,
-          12.060417000000143,
-          11.702999999999975
+          12.804458000000068,
+          11.85066699999993,
+          11.391000000000076,
+          11.481833000000051,
+          11.124041999999918
         ],
-        "median": 12.540124999999989
+        "median": 11.481833000000051
       },
       "peakRssMiB": {
         "samples": [
-          10.15625,
-          10.15625,
+          10.1875,
+          10.1875,
           10.1875,
           10.15625,
-          10.15625
+          10.171875
         ],
-        "median": 10.15625
+        "median": 10.1875
       }
     }
   },
@@ -120,12 +120,12 @@
       "denseSolverWasm": 2900
     },
     "after": {
-      "workerJs": 383006,
+      "workerJs": 388542,
       "indexJs": 42894,
       "denseSolverWasm": 2900
     },
     "delta": {
-      "workerJs": 5997,
+      "workerJs": 11533,
       "indexJs": 79,
       "denseSolverWasm": 0
     },
