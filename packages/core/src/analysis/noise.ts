@@ -1,6 +1,7 @@
 import type { CompiledCircuit } from '../circuit.js';
 import { BJT } from '../devices/bjt.js';
 import { BSIM3v3 } from '../devices/bsim3v3.js';
+import { CurrentSource } from '../devices/current-source.js';
 import { Diode } from '../devices/diode.js';
 import { JFET } from '../devices/jfet.js';
 import { MOSFET } from '../devices/mosfet.js';
@@ -118,12 +119,12 @@ export function solveNoise(
     );
   }
   const inputSource = devices.find(device =>
-    device instanceof VoltageSource
+    (device instanceof VoltageSource || device instanceof CurrentSource)
       && device.name.toLowerCase() === analysis.inputSource.toLowerCase(),
   );
-  if (!(inputSource instanceof VoltageSource)) {
+  if (!(inputSource instanceof VoltageSource || inputSource instanceof CurrentSource)) {
     throw new InvalidCircuitError(
-      `.noise input source '${analysis.inputSource}' is not an independent voltage source`,
+      `.noise input source '${analysis.inputSource}' is not an independent voltage or current source`,
     );
   }
 
@@ -146,7 +147,13 @@ export function solveNoise(
   const systemSize = nodeCount + branchCount;
   const zeroImaginary = new Float64Array(systemSize);
   const gainRhs = new Float64Array(systemSize);
-  gainRhs[nodeCount + inputSource.branchIndex] = 1;
+  if (inputSource instanceof VoltageSource) {
+    gainRhs[nodeCount + inputSource.branchIndex] = 1;
+  } else {
+    const [positiveNode, negativeNode] = inputSource.nodes;
+    if (positiveNode >= 0) gainRhs[positiveNode] -= 1;
+    if (negativeNode >= 0) gainRhs[negativeNode] += 1;
+  }
 
   const resistorSources = devices
     .filter((device): device is Resistor => device instanceof Resistor)

@@ -1,0 +1,7 @@
+* Project-authored bounded CCCS OP fixture: single-ended output
+VCTRL control 0 2
+RCTRL control 0 1k
+F1 out 0 vctrl 3
+RLOAD out 0 1k
+.op
+.end
