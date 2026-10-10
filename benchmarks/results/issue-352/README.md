@@ -48,6 +48,8 @@ Explicitly unsupported:
 - AC, transient, noise, distortion, sensitivity, transfer-function, and pole-zero analyses.
 - Dynamic charge, self-heating, and temperature-dependent equations.
 
+The aggregate generated files are intentionally unchanged in this implementation PR. The aggregate lane must record the `ngspice/vbic-fo` status transition after this PR merges, so the aggregate `--check` is expected to report that deferred refresh rather than being hidden here.
+
 Adjacent unsupported parameters, PNP polarity, AC, and transient forms have deterministic focused tests. Unsupported forms are not silently ignored.
 
 ## Reproduction

@@ -218,6 +218,7 @@ async function buildReport() {
     losses: [
       'This is a benchmark-bounded, nominal-temperature NPN VBIC DC subset, not broad VBIC support.',
       'Dynamic charge, self-heating, temperature dependence, PNP, and non-DC analyses remain unsupported.',
+      'The committed aggregate report is intentionally not refreshed in this implementation PR; the aggregate lane must record the status transition after merge.',
       'Runtime observations are single runs and do not support a performance claim.',
     ],
   };
