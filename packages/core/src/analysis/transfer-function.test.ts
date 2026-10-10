@@ -88,6 +88,22 @@ R2 out 0 1k
     });
   });
 
+  it('matches ngspice 47 when the input voltage source is also the current output', async () => {
+    const result = await simulate(`
+      V1 in 0 1
+      R1 in 0 1k
+      .tf I(V1) V1
+    `);
+
+    expect(result.transferFunction).toMatchObject({
+      outputSource: 'V1',
+      inputSource: 'V1',
+      transfer: -1e-3,
+      inputResistance: 1e3,
+      outputResistance: 1e3,
+    });
+  });
+
   it('matches ngspice 47 transimpedance and port resistances', async () => {
     const result = await simulate(transimpedanceFixture);
 
