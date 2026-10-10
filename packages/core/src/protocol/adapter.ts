@@ -282,6 +282,11 @@ function estimatedAnalysisPoints(analysis: AnalysisDirective): number {
     }
     case 'noise':
     case 'tf': return 0;
+    case 'sens': {
+      if (analysis.mode === 'dc') return 1;
+      const span = Math.log10(analysis.stopFreq / analysis.startFreq);
+      return Number.isFinite(span) ? Math.max(0, Math.round(span * analysis.points) + 1) : 0;
+    }
   }
 }
 
