@@ -16,6 +16,12 @@ const circuits = [
   'V1 a 0 10\nR1 a b 1k\nI1 b 0 1m\nR2 b 0 2k\n.op',
 ] as const;
 
+const acCircuits = [
+  'V1 in 0 AC 1\nR1 in out 1k\nC1 out 0 1u\n.ac dec 3 10 10k',
+  'V1 in 0 AC 2 30\nR1 in out 100\nL1 out 0 10m\n.ac lin 4 100 1k',
+  'I1 0 out AC 1m -45\nR1 out 0 1k\nC1 out 0 100n\n.ac oct 2 100 1600',
+] as const;
+
 async function engine(backend: 'spice-ts-js' | 'spice-ts-wasm'): Promise<SpiceEngine> {
   return createSpiceEngine({ backend });
 }
@@ -30,17 +36,22 @@ describe('bounded numeric WebAssembly backend', () => {
     try {
       expect(wasm.capabilities).toMatchObject({
         backends: ['spice-ts-wasm'],
-        analyses: ['op'],
+        analyses: ['op', 'ac'],
         nativeSchemaVersions: [],
         engineBuildId: expect.stringMatching(/^spice-ts-wasm-[0-9a-f]{16}$/),
         numericWasm: {
-          kernel: 'dense-gaussian-f64-v1',
+          kernel: 'dense-gaussian-complex-f64-v2',
+          abiVersion: 2,
           artifactSha256: expect.stringMatching(/^[0-9a-f]{64}$/),
-          artifactBytes: 1190,
+          artifactBytes: expect.any(Number),
           inputFormats: ['spice'],
-          devices: ['R', 'I', 'V'],
+          analyses: ['op', 'ac'],
+          devicesByAnalysis: {
+            op: ['R', 'I', 'V'],
+            ac: ['R', 'C', 'L', 'I', 'V'],
+          },
           fallback: 'reject',
-          limits: { maxSystemOrder: 64, memoryPages: 3 },
+          limits: { maxSystemOrder: 64, maxAcPoints: 1025, memoryPages: 3 },
         },
       });
     } finally {
@@ -81,6 +92,77 @@ describe('bounded numeric WebAssembly backend', () => {
       }
     } finally {
       await Promise.all([js.close(), wasm.close()]);
+    }
+  });
+
+  it('matches the TypeScript backend on fixed passive AC circuits through the complex WASM path', async () => {
+    const js = await engine('spice-ts-js');
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const [circuitIndex, source] of acCircuits.entries()) {
+        const [expected, actual] = await Promise.all([
+          js.simulate(request(source), { requestId: `js-ac-${circuitIndex}` }),
+          wasm.simulate(request(source), { requestId: `wasm-ac-${circuitIndex}` }),
+        ]);
+        expect(expected.ok).toBe(true);
+        expect(actual.ok).toBe(true);
+        if (!expected.ok || !actual.ok) continue;
+        const expectedAc = expected.data.analyses[0];
+        const actualAc = actual.data.analyses[0];
+        expect(expectedAc?.type).toBe('ac');
+        expect(actualAc?.type).toBe('ac');
+        if (expectedAc?.type !== 'ac' || actualAc?.type !== 'ac') continue;
+        expect(actualAc.frequencyHz).toEqual(expectedAc.frequencyHz);
+        expect(Object.keys(actualAc.voltagePhasors)).toEqual(Object.keys(expectedAc.voltagePhasors));
+        expect(Object.keys(actualAc.currentPhasors)).toEqual(Object.keys(expectedAc.currentPhasors));
+        for (const [name, expectedValues] of Object.entries(expectedAc.voltagePhasors) as
+          Array<[string, typeof expectedAc.voltagePhasors[string]]>) {
+          const actualValues = actualAc.voltagePhasors[name]!;
+          expect(actualValues).toHaveLength(expectedValues.length);
+          expectedValues.forEach((value, pointIndex) => {
+            expect(actualValues[pointIndex]?.magnitude).toBeCloseTo(value.magnitude, 11);
+            expect(actualValues[pointIndex]?.phaseDegrees).toBeCloseTo(value.phaseDegrees, 10);
+          });
+        }
+        for (const [name, expectedValues] of Object.entries(expectedAc.currentPhasors) as
+          Array<[string, typeof expectedAc.currentPhasors[string]]>) {
+          const actualValues = actualAc.currentPhasors[name]!;
+          expect(actualValues).toHaveLength(expectedValues.length);
+          expectedValues.forEach((value, pointIndex) => {
+            expect(actualValues[pointIndex]?.magnitude).toBeCloseTo(value.magnitude, 11);
+            expect(actualValues[pointIndex]?.phaseDegrees).toBeCloseTo(value.phaseDegrees, 10);
+          });
+        }
+      }
+    } finally {
+      await Promise.all([js.close(), wasm.close()]);
+    }
+  });
+
+  it('bounds AC result points and rejects nonlinear AC without fallback', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const limited = await wasm.simulate(request(acCircuits[1], {
+        limits: { maxResultPoints: 2 },
+      }), { requestId: 'ac-point-limit' });
+      expect(limited).toMatchObject({
+        ok: false,
+        error: {
+          code: 'RESOURCE_LIMIT',
+          details: { limit: 'maxResultPoints', configured: 2, observed: 5 },
+        },
+      });
+
+      const nonlinear = await wasm.simulate(request(
+        'V1 in 0 AC 1\nR1 in out 1k\nD1 out 0 diode\n.model diode D\n.ac dec 3 10 10k',
+      ), { requestId: 'ac-nonlinear' });
+      expect(nonlinear).toMatchObject({
+        ok: false,
+        error: { code: 'UNSUPPORTED_FEATURE', retryable: false },
+        metadata: { backend: 'spice-ts-wasm' },
+      });
+    } finally {
+      await wasm.close();
     }
   });
 
