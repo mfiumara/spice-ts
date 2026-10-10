@@ -43,6 +43,19 @@ describe('preprocessor', () => {
       expect(result).toContain('{W}');
     });
 
+    it.each([
+      '.print tran {v(2)+0.002}',
+      '.PRINT TRAN {V(3)/I(VMON)}',
+      '.print tran {i(v1)-1.0}',
+    ])('preserves case-insensitive V/I output expressions: %s', async directive => {
+      await expect(preprocess(directive)).resolves.toBe(directive);
+    });
+
+    it('does not reinterpret V/I calls in behavioral expressions', async () => {
+      await expect(preprocess('B1 out 0 V={V(in)}'))
+        .rejects.toThrow("Unknown function 'V'");
+    });
+
     it('handles .param with = sign and spaces', async () => {
       const input = `.param vdd = 1.8\nV1 1 0 DC {vdd}\n.op`;
       const result = await preprocess(input);
