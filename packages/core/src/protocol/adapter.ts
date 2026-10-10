@@ -285,7 +285,8 @@ function estimatedAnalysisPoints(analysis: AnalysisDirective): number {
       return Number.isFinite(span) ? Math.max(0, Math.round(span * analysis.points) + 1) : 0;
     }
     case 'noise':
-    case 'tf': return 0;
+    case 'tf':
+    case 'sens': return 0;
   }
 }
 
