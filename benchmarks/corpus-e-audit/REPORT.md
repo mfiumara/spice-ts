@@ -20,7 +20,7 @@ This audit runs all 20 provenance-tracked fixtures byte-for-byte through both en
 - spice-ts command: `node benchmarks/corpus/corpus-e/run-spice-ts.mjs <repo-root> <unchanged-fixture-path>`.
 - Audit command: `node benchmarks/corpus-e-audit/audit.mjs --write`.
 - Focused verification: `node --test benchmarks/corpus-e-audit/audit.test.mjs`.
-- Versions: ** ngspice-47 : Circuit level simulation program; Node v22.23.1; spice-ts head `148926839447cbabc2275abe833db717b48b45ff`.
+- Versions: ** ngspice-47 : Circuit level simulation program; Node v22.23.1; spice-ts head `d39f6e8c4df2f449d0737aa8d4ef0b9d9a594119`.
 - Machine: macOS 27.0.1, arm64, Apple M5 Pro, 51539607552 bytes RAM.
 - Each ngspice temporary copy and each spice-ts runner response was SHA-256 checked against the committed manifest before its result was accepted.
 
