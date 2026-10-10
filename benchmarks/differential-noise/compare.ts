@@ -81,7 +81,7 @@ async function main(): Promise<void> {
       },
       unsupported,
       exclusions: [
-        'Current-valued noise outputs and current-source input referral remain unsupported.',
+        'Current-valued noise outputs remain unsupported; current-source input referral is covered by benchmarks/current-source-noise (#314).',
         'Differential output with diode, BJT, JFET, MOS1, BSIM3, or broader noisy device forms remains unsupported.',
         'Stepped noise and temperature cards remain unsupported.',
       ],
@@ -112,11 +112,6 @@ async function verifyUnsupportedForms(): Promise<Array<{ form: string; status: s
       form: 'current output',
       deck: 'V1 in 0 AC 1\nR1 in 0 1k\n.noise i(V1) V1 dec 3 100 10k',
       expected: /Unsupported \.noise form/,
-    },
-    {
-      form: 'current-source referral',
-      deck: 'I1 in 0 AC 1\nR1 in out 1k\nR2 out 0 1k\n.noise v(out) I1 dec 3 100 10k',
-      expected: /not an independent voltage source/,
     },
     {
       form: 'stepped noise',
@@ -159,7 +154,8 @@ async function verifyUnsupportedForms(): Promise<Array<{ form: string; status: s
   const results = [];
   for (const testCase of cases) {
     try {
-      await simulate(testCase.deck);
+      // The first SPICE line is the title; without one the first element card is dropped.
+      await simulate(`* ${testCase.form}\n${testCase.deck}`);
       throw new Error(`${testCase.form} unexpectedly succeeded`);
     } catch (error) {
       const message = (error as Error).message;
