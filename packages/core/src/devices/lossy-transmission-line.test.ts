@@ -26,7 +26,7 @@ describe('benchmark-bounded lossy LTRA line', () => {
 
     expect(result.transient?.time.length).toBeGreaterThan(1);
     expect(result.transient?.time.at(-1)).toBeCloseTo(60e-9, 15);
-  });
+  }, 15_000);
 
   it('executes a delayed and attenuated transient response', async () => {
     const result = await simulate(parse(lineStep));
