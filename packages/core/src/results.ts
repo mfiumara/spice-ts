@@ -161,6 +161,10 @@ export class NoiseResult {
     public readonly outputNoiseDensity: number[],
     /** Input-referred voltage-noise density in V/sqrt(Hz). */
     public readonly inputNoiseDensity: number[],
+    /** Integrated output-referred RMS noise in V, absent for a zero-width sweep. */
+    public readonly integratedOutputNoise: number | undefined,
+    /** Integrated input-referred RMS noise in V, absent for a zero-width sweep. */
+    public readonly integratedInputNoise: number | undefined,
   ) {}
 }
 

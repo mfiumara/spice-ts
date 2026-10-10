@@ -197,7 +197,7 @@ function formatAnalysis(analysis: AnalysisDirective): string {
     case 'ac':
       return `.ac ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
     case 'noise':
-      return `.noise v(${analysis.outputNode}) ${analysis.inputSource} lin ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
+      return `.noise v(${analysis.outputNode}) ${analysis.inputSource} ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
     case 'tf':
       return `.tf v(${analysis.outputNode}) ${analysis.inputSource}`;
   }
@@ -597,7 +597,7 @@ export class Circuit {
   addAnalysis(type: 'dc', params: { source: string; start: number; stop: number; step: number }): void;
   addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; useInitialConditions?: boolean }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
-  addAnalysis(type: 'noise', params: { outputNode: string; inputSource: string; variation: 'lin'; points: number; startFreq: number; stopFreq: number }): void;
+  addAnalysis(type: 'noise', params: { outputNode: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'tf', params: { outputNode: string; inputSource: string }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
     switch (type) {
@@ -639,7 +639,7 @@ export class Circuit {
           type: 'noise',
           outputNode: params!.outputNode as string,
           inputSource: params!.inputSource as string,
-          variation: 'lin',
+          variation: params!.variation as 'dec' | 'oct' | 'lin',
           points: params!.points as number,
           startFreq: params!.startFreq as number,
           stopFreq: params!.stopFreq as number,
