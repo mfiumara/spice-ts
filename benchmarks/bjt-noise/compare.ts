@@ -87,7 +87,7 @@ async function main(): Promise<void> {
         'Internal RB/RC/RE thermal noise, KF/AF flicker noise, junction-capacitance noise, and temperature variation remain unsupported.',
         'Runtime values are not directly comparable because ngspice includes process startup.',
       ],
-      redReceipt: 'pnpm -C packages/core exec vitest run src/analysis/noise.test.ts => 7 failed, 30 passed; BJT noise rejected before implementation',
+      redReceipt: 'pnpm -C packages/core exec vitest run src/analysis/noise.test.ts => 7 failed, 31 passed (38 total); BJT noise rejected before implementation; the added .temp test already passed on base',
     }, null, 2);
 
     const outputIndex = process.argv.indexOf('--output');
