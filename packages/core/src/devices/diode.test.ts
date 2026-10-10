@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { Circuit } from '../circuit.js';
 import { simulate } from '../simulate.js';
+import { resolveStepTarget } from '../analysis/step.js';
 import { MNAAssembler } from '../mna/assembler.js';
+import { parse } from '../parser/index.js';
 import { Diode } from './diode.js';
 
 describe('Diode', () => {
@@ -22,6 +24,93 @@ describe('Diode', () => {
     const diode = new Diode('D1', [0, 1], { IS: 1e-14, N: 1, BV: 100 });
     expect(diode.isNonlinear).toBe(true);
   });
+
+  it('uses IBV as the reverse current at the nominal breakdown voltage', () => {
+    const diode = new Diode('D1', [0, -1], {
+      IS: 1e-14,
+      N: 1,
+      BV: 7.255,
+      IBV: 1e-3,
+    });
+    const solution = new Float64Array([-7.255]);
+
+    expect(diode.noiseOperatingPoint(solution).current).toBeCloseTo(-1e-3, 6);
+  });
+
+  it.each([
+    [-55, 7.175222569],
+    [25, 7.253112249],
+    [72, 7.29670718125],
+  ])('applies TBV1 and TBV2 to breakdown at %s C', (temperature, breakdownVoltage) => {
+    const diode = new Diode('D1', [0, -1], {
+      IS: 1e-14,
+      N: 1,
+      BV: 7.255,
+      IBV: 1e-3,
+      TBV1: 0.00013,
+      TBV2: -5e-8,
+      TNOM: 27,
+    });
+
+    diode.setTemperature(temperature);
+
+    expect(diode.noiseOperatingPoint(new Float64Array([-breakdownVoltage])).current)
+      .toBeCloseTo(-1e-3, 6);
+    expect(diode.params.BV).toBe(7.255);
+    expect(diode.getTemperature()).toBe(temperature);
+  });
+
+  it('includes series resistance in the reverse-breakdown load line', () => {
+    const diode = new Diode('D1', [0, -1], {
+      IS: 1e-14,
+      N: 1,
+      BV: 7.255,
+      IBV: 1e-3,
+      RS: 10,
+    });
+
+    expect(diode.noiseOperatingPoint(new Float64Array([-7.265])).current)
+      .toBeCloseTo(-1e-3, 6);
+  });
+
+  it('participates in shared TEMP target restoration without mutating nominal BV', () => {
+    const circuit = new Circuit();
+    circuit.addModel({
+      name: 'DZR',
+      type: 'D',
+      params: { BV: 7.255, IBV: 1e-3, TBV1: 0.00013, TBV2: -5e-8 },
+    });
+    circuit.addDiode('D1', 'out', '0', 'DZR');
+    const compiled = circuit.compile();
+    const diode = compiled.devices[0] as Diode;
+    const target = resolveStepTarget(compiled, {
+      type: 'step',
+      param: 'TEMP',
+      sweepMode: 'list',
+      values: [-55],
+    });
+
+    target.set(-55);
+    expect(diode.getTemperature()).toBe(-55);
+    expect(diode.params.BV).toBe(7.255);
+
+    target.restore();
+    expect(diode.getTemperature()).toBe(27);
+    expect(diode.params.BV).toBe(7.255);
+  });
+
+  it.each(['NBV', 'IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2'])(
+    'rejects unsupported level-2 breakdown field %s explicitly',
+    (parameter) => {
+      expect(() => parse(`unsupported diode level-2 field
+        D1 out 0 DMOD
+        .model DMOD D(BV=7.255 IBV=1m TBV1=0.00013 TBV2=-5e-8 ${parameter}=1)
+        .op
+      `).compile()).toThrow(
+        `Unsupported bounded diode breakdown-temperature model parameter: '${parameter}'`,
+      );
+    },
+  );
 
   it('scales model parameters by instance area, perimeter, and multiplier', () => {
     const diode = new Diode('D1', [0, -1], {

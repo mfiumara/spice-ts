@@ -88,7 +88,7 @@ export interface NoiseAnalysis {
   pointsPerSummary?: number;
 }
 
-/** Bounded ideal-linear distortion analysis (`.disto dec ... [f2overf1]`). */
+/** Bounded distortion analysis (`.disto dec ... [f2overf1]`). */
 export interface DistortionAnalysis {
   type: 'disto';
   variation: 'dec';

@@ -117,6 +117,22 @@ Reproduce with `pnpm --filter @spice-ts/wasm bench:cccs-op`. The JSON receipt re
 
 Reproduce with `pnpm --filter @spice-ts/wasm bench:vcvs-op`. The JSON receipt records ngspice-47, machine, fixture hashes, byte-identical inputs, convergence, scalar errors, fresh-process boundaries and runtimes, artifact-size changes, exclusions, and every retained loss.
 
+## Bounded passive RLC transient WASM fixtures
+
+- Source: project-authored reference circuits for [issue #368](https://github.com/mfiumara/spice-ts/issues/368), issue revision as of 2026-10-10.
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- Adaptation: none. The comparison runner reads each committed fixture and supplies those exact bytes to the explicit `spice-ts-wasm` backend, the `spice-ts-js` TypeScript backend, and ngspice-47. No engine-specific values, tolerances, or rewrites are used.
+
+| Fixture | SHA-256 | Coverage |
+|---|---|---|
+| `benchmarks/results/issue-368/series-rlc.cir` | `fc16cee3ada369cf068e771e31ca5e251295b1a371ba89176fc022debd45cbd8` | Underdamped series RLC voltage step: inductor branch current, source current, and capacitor voltage. |
+| `benchmarks/results/issue-368/parallel-rlc.cir` | `3bcb68c13fa56d9f36718406d3788ab25da25b3871e4ed2b7bac721d5cdf26dc` | Lightly damped parallel RLC current step: tank voltage and inductor branch current. |
+| `benchmarks/results/issue-368/unsupported/coupled-k.cir` | `57301acf6df0c233ae32a47bf18fa6023cf2a4198fa32ffc69088c1ecf0ad75d` | Coupled inductors; WASM rejects, recorded as a loss. |
+| `benchmarks/results/issue-368/unsupported/inductor-ic.cir` | `18508eb9a7982da0e451a4370cebb7187e234867a378d822a2dbc7cbcd1df31c` | Inductor `IC=`; WASM rejects, recorded as a loss. |
+| `benchmarks/results/issue-368/unsupported/inductor-multiplier.cir` | `fa91c487d342c09a5a06502a4ffb53a6043edbbbcbfd29a97c45a6726f640695` | Inductor `m=` instance parameter; WASM rejects, recorded as a loss. |
+
+Reproduce with `pnpm --filter @spice-ts/wasm bench:rlc-tran`. The JSON receipt records ngspice-47, machine, fixture hashes, byte-identical inputs, convergence, point counts, matched-timepoint max/RMS absolute and relative errors for WASM vs ngspice, TypeScript vs ngspice and WASM vs TypeScript, unsupported-form outcomes for all three engines, fresh-process runtimes, artifact-size changes, and every retained loss.
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
@@ -158,6 +174,15 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 - Adaptation: the committed `.step TEMP LIST -55 25 72` bytes are executed directly by spice-ts. ngspice-47 reports `unimplemented dot command '.step'`, so that loss is retained. For matched points, the harness evaluates the documented `R(T) = Rnom * (1 + TC1 * (T - TNOM))` relation and supplies one byte-identical expanded netlist to both engines at each temperature. Direct and expanded spice-ts results are compared with every residual retained. No engine-specific tolerance or circuit value is used.
 - Scope: a single case-insensitive LIST-only circuit-temperature target and linear resistor `TC1` behavior. `.temp`, nested steps, non-LIST TEMP sweeps, diode temperature/breakdown, and broad all-device temperature semantics remain unsupported or out of scope.
 - Reproduce with `pnpm bench:temp-step`. The JSON receipt records fixture and expanded hashes, versions, machine, step order, convergence, matched-point maximum/RMS absolute and relative error, runtimes, the direct ngspice loss, and expansion caveats.
+
+## Bounded diode breakdown-temperature DC-equivalent parity fixture
+
+- Fixture: `benchmarks/diode-breakdown-temperature/dc-equivalent.cir` (SHA-256 `02551eb619592aa1065cd549dbabd65e0916c3d223c2cbef7ecd6de72d4c8b65`).
+- Source: project-authored public reference circuit for [issue #319](https://github.com/mfiumara/spice-ts/issues/319), issue acceptance-contract revision as of 2026-10-10; the immutable fixture revision is identified by the SHA-256 above.
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- DC equivalence: the three parallel branches encode the issue's documented `BV(T) = 7.255 * (1 + 0.00013 * (T - 27) - 5e-8 * (T - 27)^2)` values at -55, 25, and 72 C. Unit tests and the unchanged Xyce fixture exercise native `TBV1`/`TBV2`; this fixture isolates reverse-breakdown parity at those same effective BV points without relying on ngspice-incompatible `.step TEMP` or Xyce's zero TSTEP.
+- Adaptation: none between engines. The verifier reads the committed fixture once and supplies those exact bytes to spice-ts and ngspice-47. No engine-specific values, tolerances, or rewrites are used.
+- Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-319/verify.ts --output benchmarks/results/issue-319/report.json`. The receipt records ngspice-47, exact commands, the 17-point `.dc VSWEEP 8 12 0.25` grid, `V(cold)`, `V(nominal)`, `V(hot)`, and `I(VSWEEP)`, convergence, runtimes, and matched-point maximum/RMS absolute and relative errors.
 
 ## Bounded Gummel-Poon forward-active parity fixtures
 

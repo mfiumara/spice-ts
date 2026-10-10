@@ -1,0 +1,294 @@
+{
+  "schemaVersion": "spice-ts-issue-319/v2",
+  "issueUrl": "https://github.com/mfiumara/spice-ts/issues/319",
+  "generatedAt": "2026-10-10T16:33:41.730Z",
+  "tools": {
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1",
+    "ngspice": "ngspice-47",
+    "xyceReference": "Xyce_Regression@7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2 committed gold output"
+  },
+  "machine": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "cpu": "Apple M5 Pro"
+  },
+  "policy": {
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "comparisonGrid": "spice-ts transient timestamps",
+    "interpolation": "linear interpolation of pinned Xyce gold output",
+    "waveformAcceptance": "max relative error <= 0.005 (fixture *COMP V(2) reltol)",
+    "speedClaim": false,
+    "unchangedXyceNgspiceParityClaim": false,
+    "dcEquivalentIdenticalNetlistParityClaim": true,
+    "dcEquivalentPerCircuitToleranceTuning": false
+  },
+  "commands": {
+    "verifier": "pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-319/verify.ts --output benchmarks/results/issue-319/report.json",
+    "ngspiceParity": "ngspice -b -r <temporary-rawfile> <byte-identical copy of benchmarks/diode-breakdown-temperature/dc-equivalent.cir>",
+    "spiceTsParity": "@spice-ts/core simulate(<the same bytes from benchmarks/diode-breakdown-temperature/dc-equivalent.cir>)"
+  },
+  "input": {
+    "path": "benchmarks/corpus/xyce/fixtures/DIODE/Level2_Temp_Dep_Breakdown.cir",
+    "bytes": 1467,
+    "sha256": "9c52a577a2f0b0a7419160b6cd340894ed41ebc403023a3b3f1d809d171bee0e",
+    "unchanged": true
+  },
+  "xyceGold": {
+    "url": "https://raw.githubusercontent.com/Xyce/Xyce_Regression/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/OutputData/DIODE/Level2_Temp_Dep_Breakdown.cir.prn",
+    "bytes": 12624,
+    "sha256": "89a12adee6f8d43c56726b37f93b8286736042fa06492c8ccc1f7e70a09675f5"
+  },
+  "before": {
+    "spiceTs": {
+      "status": "unsupported",
+      "evidence": "issue-307 report: no spice-ts transient result before TEMP stepping and diode breakdown support"
+    }
+  },
+  "after": {
+    "spiceTs": {
+      "status": "success",
+      "runtimeMs": 8.821,
+      "temperatureStepsC": [
+        -55,
+        25,
+        72
+      ]
+    },
+    "xyceComparison": [
+      {
+        "temperatureC": -55,
+        "spiceTsPoints": 21,
+        "xyceGoldPoints": 69,
+        "endpoints": {
+          "spiceTs": [
+            7.155205570355746,
+            7.194597721563107
+          ],
+          "xyceGold": [
+            7.15520836,
+            7.19459705
+          ]
+        },
+        "metrics": {
+          "points": 21,
+          "maxAbsolute": 0.0000837000181919123,
+          "rmsAbsolute": 0.000023771307636746264,
+          "maxRelative": 0.000011670772871280997,
+          "rmsRelative": 0.000003314735539317848
+        }
+      },
+      {
+        "temperatureC": 25,
+        "spiceTsPoints": 21,
+        "xyceGoldPoints": 70,
+        "endpoints": {
+          "spiceTs": [
+            7.2203722936220744,
+            7.278808936940243
+          ],
+          "xyceGold": [
+            7.2203732,
+            7.27880797
+          ]
+        },
+        "metrics": {
+          "points": 21,
+          "maxAbsolute": 0.0003717548899748735,
+          "rmsAbsolute": 0.00010117940265062088,
+          "maxRelative": 0.000051306587822488594,
+          "rmsRelative": 0.000013957782830414686
+        }
+      },
+      {
+        "temperatureC": 72,
+        "spiceTsPoints": 21,
+        "xyceGoldPoints": 70,
+        "endpoints": {
+          "spiceTs": [
+            7.254887748786038,
+            7.325934602049613
+          ],
+          "xyceGold": [
+            7.25488881,
+            7.32593348
+          ]
+        },
+        "metrics": {
+          "points": 21,
+          "maxAbsolute": 0.0004817722692473936,
+          "rmsAbsolute": 0.00012953229140181497,
+          "maxRelative": 0.00006611835413569701,
+          "rmsRelative": 0.000017768578098437274
+        }
+      }
+    ],
+    "ngspice47IdenticalNetlistParity": {
+      "fixture": {
+        "path": "benchmarks/diode-breakdown-temperature/dc-equivalent.cir",
+        "bytes": 588,
+        "sha256": "02551eb619592aa1065cd549dbabd65e0916c3d223c2cbef7ecd6de72d4c8b65",
+        "source": "project-authored DC-equivalent reference circuit for spice-ts issue #319",
+        "sourceUrl": "https://github.com/mfiumara/spice-ts/issues/319",
+        "revision": "fixture bytes pinned by sha256 in this verifier",
+        "licence": "MIT",
+        "redistribution": "allowed under the repository MIT licence",
+        "byteIdenticalBetweenEngines": true
+      },
+      "temperaturePointsC": [
+        -55,
+        25,
+        72
+      ],
+      "grid": ".dc VSWEEP 8 12 0.25 (17 matched points)",
+      "signals": [
+        "v(cold)",
+        "v(nominal)",
+        "v(hot)",
+        "i(VSWEEP)"
+      ],
+      "comparison": {
+        "name": "issue-319-diode-breakdown-temperature-dc-equivalent",
+        "analysis": "dc",
+        "netlistSha256": "02551eb619592aa1065cd549dbabd65e0916c3d223c2cbef7ecd6de72d4c8b65",
+        "status": "compared",
+        "signals": [
+          "v(cold)",
+          "v(nominal)",
+          "v(hot)",
+          "i(VSWEEP)"
+        ],
+        "engines": {
+          "spiceTs": {
+            "status": "success",
+            "convergence": "converged",
+            "runtimeMs": 99.49625000000003,
+            "command": [
+              "@spice-ts/core",
+              "simulate",
+              "<issue-319-diode-breakdown-temperature-dc-equivalent.cir>"
+            ]
+          },
+          "ngspice": {
+            "status": "success",
+            "convergence": "converged",
+            "runtimeMs": 17.810000000000002,
+            "command": [
+              "ngspice",
+              "-b",
+              "-r",
+              "<temporary-rawfile>",
+              "<issue-319-diode-breakdown-temperature-dc-equivalent.cir>"
+            ]
+          }
+        },
+        "metrics": {
+          "grid": {
+            "spiceTsPoints": 17,
+            "ngspicePoints": 17,
+            "alignedPoints": 17,
+            "excludedOutOfRange": 0
+          },
+          "signals": {
+            "v(cold)": {
+              "status": "compared",
+              "sampleCount": 17,
+              "absoluteError": {
+                "max": 0.000028848981084017566,
+                "rms": 0.000008823733284672561
+              },
+              "relativeError": {
+                "max": 0.000004016625665859145,
+                "rms": 0.0000012285099209986186,
+                "sampleCount": 17,
+                "excludedZeroReferences": 0
+              }
+            },
+            "v(nominal)": {
+              "status": "compared",
+              "sampleCount": 17,
+              "absoluteError": {
+                "max": 0.000039055879423877116,
+                "rms": 0.000011898138663686504
+              },
+              "relativeError": {
+                "max": 0.000005380523982650024,
+                "rms": 0.0000016391856212216462,
+                "sampleCount": 17,
+                "excludedZeroReferences": 0
+              }
+            },
+            "v(hot)": {
+              "status": "compared",
+              "sampleCount": 17,
+              "absoluteError": {
+                "max": 0.00004677802308883372,
+                "rms": 0.000014226327515008817
+              },
+              "relativeError": {
+                "max": 0.000006406676693456484,
+                "rms": 0.0000019485164032946205,
+                "sampleCount": 17,
+                "excludedZeroReferences": 0
+              }
+            },
+            "i(VSWEEP)": {
+              "status": "compared",
+              "sampleCount": 17,
+              "absoluteError": {
+                "max": 1.1468288359369957e-7,
+                "rms": 3.494016977902577e-8
+              },
+              "relativeError": {
+                "max": 0.00003052180284336488,
+                "rms": 0.000009546889027620006,
+                "sampleCount": 17,
+                "excludedZeroReferences": 0
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "retainedLosses": {
+    "originalDeckNgspice47": {
+      "status": "failed",
+      "runtimeMs": 16.89,
+      "exitCode": 1,
+      "error": "Error on line 9 or its substitute: .tran 0 1 0 100m TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: incomplete or empty netlist or no \".plot\", \".print\", or \".fourier\" lines in batch mode; no simulations run! Note: No compatibility mode selected! Circuit: *trivial sweep of diode to produce i/v curve"
+    },
+    "reason": "ngspice-47 rejects the unchanged Xyce zero-print-step .tran form before simulation",
+    "identicalNetlistComparison": false
+  },
+  "supportedContract": {
+    "modelParameters": [
+      "BV",
+      "IBV",
+      "TBV1",
+      "TBV2",
+      "TNOM"
+    ],
+    "behavior": "BV(T)=BV*(1+TBV1*(TEMP-TNOM)+TBV2*(TEMP-TNOM)^2); IBV calibrates the reverse current at BV(T)",
+    "temperatureStepping": ".step TEMP LIST; device temperature is restored by the shared step target finally block"
+  },
+  "unsupportedContract": {
+    "fullLevel2Model": false,
+    "parameters": [
+      "NBV",
+      "IBVL",
+      "NBVL",
+      "TLEV",
+      "TRS1",
+      "TRS2"
+    ],
+    "disposition": "each listed model parameter is rejected explicitly during circuit compilation",
+    "exclusions": [
+      "temperature-adjusted IS via EG/XTI",
+      "avalanche noise",
+      "temperature-adjusted capacitance",
+      "diode instance TEMP/DTEMP"
+    ]
+  }
+}

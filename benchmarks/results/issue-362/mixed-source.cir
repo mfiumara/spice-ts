@@ -1,0 +1,9 @@
+* Project-authored bounded CCVS OP fixture: mixed branch ordering
+VBIAS bias 0 3
+RBIAS bias sense 1k
+VSENSE sense 0 1
+VREF ref 0 -1
+H1 out ref VSENSE -2k
+RLOAD out 0 1k
+.op
+.end

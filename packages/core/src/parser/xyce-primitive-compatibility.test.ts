@@ -100,9 +100,12 @@ describe('Xyce primitive parser compatibility', () => {
   for (const [id, path, points] of [
     ['capacitor-rc-oscillator', 'CAPACITOR/rc_osc.cir', 1780],
     ['diode-transient', 'DIODE/diode.cir', 101],
-    // The zero-rise PULSE corner at t=0 now starts with ngspice's order-1
-    // first step (0.1 x first breakpoint gap / 10), adding two early points.
-    ['rlc-transient', 'RLC/rlc.cir', 1004],
+    // Zero PULSE TR/TF use TSTEP (ngspice semantics, issue #375), adding the
+    // 10 ms ramp corner at t=0.01 and its post-breakpoint steps (1018). The
+    // t=0 corner then starts with ngspice's order-1 first step (1e-4, issue
+    // #366) and regrows through the ramp: 1037 points. ngspice-47 takes 1019
+    // on the same deck; i(v1) relMax vs ngspice drops from 4.9e-3 to 1.3e-4.
+    ['rlc-transient', 'RLC/rlc.cir', 1037],
   ] as const) {
     it(`simulates unchanged ${id} with braced V/I output expressions`, async () => {
       const result = await simulate(fixture(path));
@@ -111,7 +114,7 @@ describe('Xyce primitive parser compatibility', () => {
     });
   }
 
-  it('executes TEMP stepping in the unchanged diode fixture while retaining the diode-model gap', async () => {
+  it('matches Xyce breakdown-temperature endpoints in the unchanged diode fixture', async () => {
     const result = await simulate(fixture('DIODE/Level2_Temp_Dep_Breakdown.cir'));
 
     expect(result.steps!.map(step => [step.paramName, step.paramValue])).toEqual([
@@ -119,13 +122,21 @@ describe('Xyce primitive parser compatibility', () => {
       ['TEMP', 25],
       ['TEMP', 72],
     ]);
-    // Diode temperature and reverse-breakdown semantics remain tracked by #319,
-    // so the three currents are still identical rather than a parity claim.
-    expect(result.steps!.map(step => step.transient!.current('VIN'))).toEqual([
-      result.steps![0].transient!.current('VIN'),
-      result.steps![0].transient!.current('VIN'),
-      result.steps![0].transient!.current('VIN'),
-    ]);
+    // Xyce_Regression gold output at t=0 and t=1 s for each TEMP step.
+    const xyceEndpoints = [
+      [7.15520836, 7.19459705],
+      [7.22037320, 7.27880797],
+      [7.25488881, 7.32593348],
+    ];
+    // The fixture's CJO=1P is honoured since #365. The resulting junction
+    // capacitance makes the t=1 s endpoint drift up to 8.3 uV (1.1e-6 relative)
+    // from the gold value; the same drift appears with the CJ0 spelling and is
+    // tracked in #389, so the endpoint bound is 1e-5 V rather than 5e-6 V.
+    for (const [index, step] of result.steps!.entries()) {
+      const voltage = step.transient!.voltage('2');
+      expect(voltage[0]).toBeCloseTo(xyceEndpoints[index][0], 5);
+      expect(Math.abs(voltage.at(-1)! - xyceEndpoints[index][1])).toBeLessThan(1e-5);
+    }
   });
 
   it('simulates the unchanged bounded level-1 NJF fixture', async () => {

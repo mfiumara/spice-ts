@@ -1,0 +1,8 @@
+* Project-authored bounded CCVS OP fixture: differential output and negative gain
+VCTRL control 0 2
+RCTRL control 0 2k
+VREF ref 0 1
+H1 out ref VCTRL -3k
+RLOAD out 0 2k
+.op
+.end

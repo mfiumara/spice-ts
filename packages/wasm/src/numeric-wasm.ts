@@ -1,4 +1,4 @@
-import { CCCS, parseTitleless, VCCS, VCVS, type CompiledCircuit, type StampContext } from '@spice-ts/core';
+import { CCCS, CCVS, parseTitleless, VCCS, VCVS, type CompiledCircuit, type StampContext } from '@spice-ts/core';
 import type {
   JsonObject,
   SimulationRequestV1,
@@ -156,7 +156,8 @@ function simulateOp(
     useDcSourceValue: true,
   };
   for (const device of compiled.devices) {
-    if (!(device instanceof VCCS) && !(device instanceof CCCS) && !(device instanceof VCVS)) device.stamp(context);
+    if (!(device instanceof VCCS) && !(device instanceof CCCS)
+      && !(device instanceof VCVS) && !(device instanceof CCVS)) device.stamp(context);
   }
   const gmin = request.options?.gmin ?? 0;
   for (let node = 0; node < compiled.nodeCount; node++) matrix[node * order + node] += gmin;
@@ -201,6 +202,17 @@ function simulateOp(
         outputNegative!,
         controlPositive!,
         controlNegative!,
+        compiled.nodeCount + device.branchIndex,
+        device.gain,
+      );
+    } else if (device instanceof CCVS) {
+      const [outputPositive, outputNegative] = device.nodes;
+      stampStatus = exports.stamp_ccvs_f64(
+        order,
+        matrixPointer,
+        outputPositive!,
+        outputNegative!,
+        compiled.nodeCount + device.controlBranchIndex,
         compiled.nodeCount + device.branchIndex,
         device.gain,
       );
@@ -250,6 +262,7 @@ function simulateTransient(
   );
   if (pointCount > pointLimit) throw resourceLimit('maxResultPoints', pointLimit, pointCount);
 
+  for (const device of compiled.devices) device.setTransientTimestep?.(transient.timestep);
   const gmin = request.options?.gmin ?? 0;
   const initial = stampTransientSystem(compiled, order, 0, true, new Float64Array(order));
   addGmin(initial.conductance, compiled.nodeCount, order, gmin);
@@ -519,16 +532,16 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
   if (analysis === 'dc') validateDcControls(analyses[0]!);
   if (analysis === 'tran') validateTransientControls(analyses[0]!, request);
   validateCards(cards, analysis);
-  const normalizedCards = analysis === 'op' ? normalizeAndValidateCccsControlSources(cards) : cards;
+  const normalizedCards = analysis === 'op' ? normalizeAndValidateCurrentControlledSources(cards) : cards;
   const circuit = parseTitleless(normalizedCards.join('\n'));
   const compiled = circuit.compile();
   if (compiled.steps.length > 0 || compiled.poleZeroAnalyses.length > 0
     || compiled.analyses.length !== 1 || compiled.analyses[0]?.type !== analysis) {
     unsupported('analysis', `Exactly one unstepped .${analysis} analysis is supported`);
   }
-  const devices = analysis === 'op' ? ['R', 'I', 'V', 'G', 'F', 'E']
+  const devices = analysis === 'op' ? ['R', 'I', 'V', 'G', 'F', 'E', 'H']
     : analysis === 'dc' ? ['R', 'I', 'V']
-    : analysis === 'tran' ? ['R', 'C', 'I', 'V']
+    : analysis === 'tran' ? ['R', 'C', 'L', 'I', 'V']
       : ['R', 'C', 'L', 'I', 'V'];
   if (compiled.devices.some(device => !devices.includes(device.name[0]?.toUpperCase() ?? ''))) {
     unsupported('device', `Only ${devices.join(', ')} devices are supported for .${analysis}`);
@@ -582,18 +595,28 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
 }
 
 function validateCards(cards: string[], analysis: 'op' | 'dc' | 'tran' | 'ac'): void {
-  const allowedDevices = analysis === 'op' ? ['R', 'I', 'V', 'G', 'F', 'E']
+  const allowedDevices = analysis === 'op' ? ['R', 'I', 'V', 'G', 'F', 'E', 'H']
     : analysis === 'dc' ? ['R', 'I', 'V']
-    : analysis === 'tran' ? ['R', 'C', 'I', 'V']
+    : analysis === 'tran' ? ['R', 'C', 'L', 'I', 'V']
       : ['R', 'C', 'L', 'I', 'V'];
   for (const card of cards) {
     if (new RegExp(`^\\.(?:${analysis}|end)(?:\\s|$)`, 'i').test(card)) continue;
     const tokens = card.split(/\s+/);
     const type = tokens[0]?.[0]?.toUpperCase() ?? '';
+    if (type === 'K' && allowedDevices.includes('L')) {
+      unsupported('inductor-coupling', 'Coupled inductors (K) are not supported');
+    }
     if (!allowedDevices.includes(type)) {
       unsupported('device-or-directive', `Unsupported linear .${analysis} card '${tokens[0] ?? ''}'`);
     }
-    if (type === 'R' || type === 'C' || type === 'L') {
+    if (type === 'L') {
+      if (/\bIC\s*=/i.test(card)) {
+        unsupported('inductor-initial-condition', 'Inductor initial conditions (IC=) are not supported');
+      }
+      if (tokens.length !== 4 || !SPICE_NUMBER.test(tokens[3]!)) {
+        unsupported('inductor-form', 'Inductors must use name positive negative constant-inductance');
+      }
+    } else if (type === 'R' || type === 'C') {
       if (tokens.length !== 4) {
         unsupported('passive-form', 'Passive devices must use name positive negative value');
       }
@@ -609,6 +632,10 @@ function validateCards(cards: string[], analysis: 'op' | 'dc' | 'tran' | 'ac'): 
       const behavioral = /^\S+\s+\S+\s+\S+\s+VALUE\s*=/i.test(card);
       if (tokens.length !== 6 || behavioral) {
         unsupported('vcvs-form', 'VCVS devices must use name out+ out- control+ control- voltage-gain');
+      }
+    } else if (type === 'H') {
+      if (tokens.length !== 5) {
+        unsupported('ccvs-form', 'CCVS devices must use name out+ out- controlling-voltage-source transresistance');
       }
     } else if (analysis === 'op' || analysis === 'dc') {
       const dc = tokens.length === 5 && tokens[3]?.toUpperCase() === 'DC';
@@ -627,7 +654,9 @@ function validateCards(cards: string[], analysis: 'op' | 'dc' | 'tran' | 'ac'): 
   }
 }
 
-function normalizeAndValidateCccsControlSources(cards: string[]): string[] {
+const SPICE_NUMBER = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?[a-z]*$/i;
+
+function normalizeAndValidateCurrentControlledSources(cards: string[]): string[] {
   const normalizedCards = [...cards];
   const devices = cards
     .map((card, cardIndex) => ({ card, cardIndex }))
@@ -646,7 +675,7 @@ function normalizeAndValidateCccsControlSources(cards: string[]): string[] {
     });
 
   for (const device of devices) {
-    if (device.type !== 'F') continue;
+    if (device.type !== 'F' && device.type !== 'H') continue;
     const controllingVoltageSource = devices.find(candidate =>
       candidate.normalizedName === device.normalizedControlSource && candidate.type === 'V');
     const referencedDevice = devices.find(candidate =>
@@ -661,13 +690,15 @@ function normalizeAndValidateCccsControlSources(cards: string[]): string[] {
       normalizedCards[device.cardIndex] = device.tokens.join(' ');
       continue;
     }
+    const label = device.type === 'F' ? 'CCCS' : 'CCVS';
+    const feature = device.type === 'F' ? 'cccs-control-source' : 'ccvs-control-source';
     throw numericError(
       'INVALID_CIRCUIT',
-      `CCCS device '${device.name}' must reference a preceding voltage-source branch`,
+      `${label} device '${device.name}' must reference a preceding voltage-source branch`,
       'validation',
       {
         backend: 'spice-ts-wasm',
-        feature: 'cccs-control-source',
+        feature,
         device: device.name,
         controlSource: device.controlSource!,
         reason,
@@ -737,6 +768,9 @@ function validateControlledSourceValues(compiled: CompiledCircuit): void {
     }
     if (device instanceof VCVS && !Number.isFinite(device.gain)) {
       throw numericError('INVALID_CIRCUIT', `VCVS device '${device.name}' must have a finite voltage gain`, 'compile');
+    }
+    if (device instanceof CCVS && !Number.isFinite(device.gain)) {
+      throw numericError('INVALID_CIRCUIT', `CCVS device '${device.name}' must have a finite transresistance`, 'compile');
     }
   }
 }

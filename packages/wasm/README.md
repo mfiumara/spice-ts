@@ -21,9 +21,9 @@ await engine.close();
 
 - SPICE text input only
 - exactly one unstepped analysis
-- `.op` with resistors, independent constant/DC voltage and current sources, and linear VCCS, CCCS, and VCVS controlled sources (`R`, `V`, `I`, `G`, `F`, `E`)
+- `.op` with resistors, independent constant/DC voltage and current sources, and linear VCCS, CCCS, VCVS, and CCVS controlled sources (`R`, `V`, `I`, `G`, `F`, `E`, `H`)
 - `.dc` with one linear sweep of one independent constant/DC voltage or current source and resistors (`R`, `V`, `I`)
-- `.tran` with resistors, capacitors, and independent constant/DC or `PULSE` voltage and current sources (`R`, `C`, `V`, `I`)
+- `.tran` with resistors, capacitors, four-token constant-value linear inductors, and independent constant/DC or `PULSE` voltage and current sources (`R`, `C`, `L`, `V`, `I`); each inductor adds one branch unknown and starts from its DC short-circuit operating point
 - `.ac lin|dec|oct` with positive finite resistors, capacitors and inductors plus independent voltage and current sources (`R`, `C`, `L`, `V`, `I`)
 - AC sources may use constant, `DC`, `AC magnitude [phase]`, or `DC value AC magnitude [phase]` forms
 - at most 65,536 source bytes, 256 components and 64 numeric unknowns
@@ -32,9 +32,9 @@ await engine.close();
 - at most 4,096 DC-sweep points, further reduced by the caller's `maxResultPoints`
 - fixed three-page WebAssembly memory with no imports or growth
 
-The WebAssembly backend does not support native/circuit-json input, virtual files, includes, subcircuits, models, parameters, controlled sources other than six-token linear `G`, five-token linear `F`, and six-token linear `E` forms in OP, nonlinear devices, switches, `.step`, nested/stepped DC sweeps, nonlinear DC source forms, transient UIC/initial conditions, start/max-time controls, adaptive timesteps, or non-trapezoidal integration. CCCS controlling sources must resolve to a preceding voltage-source branch; missing, branchless and forward references return a structured `INVALID_CIRCUIT` validation error. Each VCVS contributes one branch unknown to the 64-unknown ceiling. Inductors are AC-only. SIN, PWL, AC, and compound transient source forms remain unsupported. Unsupported input returns `UNSUPPORTED_FEATURE`; invalid grids return `INVALID_CIRCUIT`; exceeded bounds return `RESOURCE_LIMIT`. There is no automatic fallback. A caller that wants the TypeScript path must select `spice-ts-js` explicitly.
+The WebAssembly backend does not support native/circuit-json input, virtual files, includes, subcircuits, models, parameters, controlled sources other than six-token linear `G`, five-token linear `F`, six-token linear `E`, and five-token linear `H` forms in OP, nonlinear devices, switches, `.step`, nested/stepped DC sweeps, nonlinear DC source forms, transient UIC/initial conditions, start/max-time controls, adaptive timesteps, or non-trapezoidal integration. CCCS and CCVS controlling sources must resolve to a preceding independent voltage-source branch; missing, branchless and forward references return a structured `INVALID_CIRCUIT` validation error. Each VCVS or CCVS contributes one branch unknown to the 64-unknown ceiling. Coupled inductors (`K`) return `UNSUPPORTED_FEATURE` with feature `inductor-coupling`, inductor `IC=` returns `inductor-initial-condition`, and inductor models, instance parameters, and expression or nonlinear values return `inductor-form`. SIN, PWL, AC, and compound transient source forms remain unsupported. Unsupported input returns `UNSUPPORTED_FEATURE`; invalid grids return `INVALID_CIRCUIT`; exceeded bounds return `RESOURCE_LIMIT`. There is no automatic fallback. A caller that wants the TypeScript path must select `spice-ts-js` explicitly.
 
-The dense kernels are intentionally bounded and are not a speed claim. AC has O(points × n³) runtime and O(n²) memory, and transferring the verified 4,001-byte artifact with each one-shot worker request adds overhead. Sparse and nonlinear WASM remain unsupported.
+The dense kernels are intentionally bounded and are not a speed claim. AC has O(points × n³) runtime and O(n²) memory, and transferring the verified 4,418-byte artifact with each one-shot worker request adds overhead. Sparse and nonlinear WASM remain unsupported.
 
 ### Measured cost of this slice
 
@@ -51,7 +51,7 @@ Five samples each ran 20 one-shot worker simulations after five warmups. Median 
 
 Reproduce the receipt with `pnpm --filter @spice-ts/wasm bench:ac`. It records tool versions, hashes, full samples, commands, per-fixture metrics and ngspice runtimes in `ac-accuracy-results.json`.
 
-The passive RC transient receipt is `benchmarks/wasm-rc-transient/report.json`. It records matched-timepoint maximum/RMS absolute and relative errors, convergence, point counts, five fresh-process runtime and peak-RSS samples, and every measured size loss against native ngspice-47. The WASM process includes pnpm and Node startup, so this is a correctness and embeddability check rather than a speed claim.
+The passive RLC transient receipt is `benchmarks/results/issue-368/report.json`; it compares WASM, the TypeScript engine and ngspice-47 on byte-identical series and parallel RLC netlists and records the unsupported inductor forms ngspice completes as losses. The passive RC transient receipt is `benchmarks/wasm-rc-transient/report.json`. It records matched-timepoint maximum/RMS absolute and relative errors, convergence, point counts, five fresh-process runtime and peak-RSS samples, and every measured size loss against native ngspice-47. The WASM process includes pnpm and Node startup, so this is a correctness and embeddability check rather than a speed claim.
 
 The bounded passive DC-sweep receipt is `benchmarks/wasm-dc-sweep/report.json`. It compares identical project-owned fixture bytes against native ngspice-47, including matched point counts, maximum/RMS absolute and relative errors, fresh-process runtime medians, artifact-size delta, exclusions, and retained losses. Reproduce it with `pnpm --filter @spice-ts/wasm bench:dc`.
 
@@ -59,11 +59,13 @@ The bounded linear CCCS OP receipt is `benchmarks/wasm-cccs-op/report.json`. It 
 
 The bounded linear VCVS OP receipt is `benchmarks/results/issue-355/report.json`. It compares identical project-authored fixture bytes against native ngspice-47, including scalar errors, fresh-process runtime medians, process boundaries, artifact-size delta, exclusions, and retained losses. Reproduce it with `pnpm --filter @spice-ts/wasm bench:vcvs-op`.
 
+The bounded linear CCVS OP receipt is `benchmarks/results/issue-362/report.json`. It compares identical project-authored fixture bytes against native ngspice-47, including the OP grid and every voltage/current signal, scalar errors, fresh-process runtime medians, process boundaries, artifact-size delta, exclusions, and retained losses. Reproduce it with `pnpm --filter @spice-ts/wasm bench:ccvs-op`.
+
 ## Integrity and isolation
 
 `createSpiceEngine` verifies `dist/worker.js` and, for `spice-ts-wasm`, `dist/dense-solver.wasm` against `dist/manifest.json` before constructing a worker. Missing, malformed or mismatched assets fail with `BACKEND_UNAVAILABLE`. Build IDs use the first 16 hexadecimal characters of the selected artifact's SHA-256.
 
-The checked-in numeric artifact is copied during package builds, not rebuilt using an ambient toolchain. Its reviewable C source, pinned regeneration command, expected hash, size and ABI v2 are documented in `native/README.md`. ABI v2 exposes bounded linear VCCS, CCCS, and VCVS stamps plus the real and split-complex solver entry points.
+The checked-in numeric artifact is copied during package builds, not rebuilt using an ambient toolchain. Its reviewable C source, pinned regeneration command, expected hash, size and ABI v2 are documented in `native/README.md`. ABI v2 exposes bounded linear VCCS, CCCS, VCVS, and CCVS stamps plus the real and split-complex solver entry points.
 
 The worker receives request values and the already verified numeric bytes only. It exposes no WASI, socket, host-filesystem, clock, randomness or ambient fallback API. Package build and test scripts do not publish or deploy anything.
 
