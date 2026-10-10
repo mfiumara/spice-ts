@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-10T10:02:48.990Z",
+  "generatedAt": "2026-10-10T10:09:25.865Z",
   "fixture": {
     "path": "benchmarks/wasm-rc-transient/rc-step.cir",
     "sha256": "912300f635e8e1831475a37d5a73f1ff9d92c8c0474caebe842275936297f870",
@@ -17,7 +17,7 @@
     "integration": "default ngspice trapezoidal and bounded fixed-step WASM trapezoidal; no per-circuit tolerances"
   },
   "versions": {
-    "spiceTsRevision": "a42cdc68606c60ed07299b9014067867d2f8d897",
+    "spiceTsRevision": "c7331a3e610fb230d599b40ff21c220b018aedd5",
     "node": "v22.23.1",
     "pnpm": "10.28.1",
     "ngspice": "ngspice-47 : Circuit level simulation program"
@@ -71,65 +71,65 @@
     "wasm": {
       "wallMs": {
         "samples": [
-          387.71054200000003,
-          362.248958,
-          366.76812499999994,
-          358.9330829999999,
-          365.5084999999999
+          426.18095900000003,
+          367.62870899999996,
+          364.60245799999996,
+          367.335959,
+          368.6036670000001
         ],
-        "median": 365.5084999999999
+        "median": 367.62870899999996
       },
       "peakRssMiB": {
         "samples": [
-          147.875,
-          138.625,
-          137.796875,
-          138.203125,
-          138.734375
+          159.984375,
+          138.078125,
+          138.375,
+          137.984375,
+          138.640625
         ],
-        "median": 138.625
+        "median": 138.375
       }
     },
     "ngspice": {
       "wallMs": {
         "samples": [
-          13.077167000000145,
-          11.704375000000027,
-          11.258707999999842,
-          11.136584000000084,
-          11.079333000000133
+          12.540124999999989,
+          13.265875000000051,
+          12.697333000000071,
+          12.060417000000143,
+          11.702999999999975
         ],
-        "median": 11.258707999999842
+        "median": 12.540124999999989
       },
       "peakRssMiB": {
         "samples": [
-          10.171875,
+          10.15625,
           10.15625,
           10.1875,
-          10.1875,
-          10.1875
+          10.15625,
+          10.15625
         ],
-        "median": 10.1875
+        "median": 10.15625
       }
     }
   },
   "artifactSizesBytes": {
     "before": {
-      "workerJs": 367841,
-      "indexJs": 41878,
-      "denseSolverWasm": 1190
+      "workerJs": 377009,
+      "indexJs": 42815,
+      "denseSolverWasm": 2900
     },
     "after": {
-      "workerJs": 372276,
-      "indexJs": 41924,
-      "denseSolverWasm": 1190
+      "workerJs": 383006,
+      "indexJs": 42894,
+      "denseSolverWasm": 2900
     },
     "delta": {
-      "workerJs": 4435,
-      "indexJs": 46,
+      "workerJs": 5997,
+      "indexJs": 79,
       "denseSolverWasm": 0
     },
-    "note": "before worker.js measured from the RED build at 4598b9f parent implementation; index.js and dense-solver.wasm are unchanged task-start sizes"
+    "note": "before sizes are the merged bounded AC backend baseline from main; the transient slice reuses its ABI-v2 artifact unchanged"
   },
   "retainedLosses": [
     "WASM uses a fixed print-step solve while ngspice uses adaptive internal timesteps.",
