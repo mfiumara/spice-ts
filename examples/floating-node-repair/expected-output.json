@@ -1,1 +1,109 @@
-{}
+{
+  "transport": "stdio",
+  "callOrder": [
+    "tools/list",
+    "spice_validate:floating",
+    "spice_validate:repaired",
+    "spice_simulation_start:repaired",
+    "spice_validate:solve-only-singular",
+    "spice_simulate:solve-only-singular",
+    "spice_validate:internal-backend"
+  ],
+  "tools": [
+    "spice_capabilities",
+    "spice_validate",
+    "spice_simulate",
+    "spice_simulation_start",
+    "spice_simulation_read",
+    "spice_simulation_cancel"
+  ],
+  "floatingNode": {
+    "requestSha256": "c787be1f4bae8d8389415d72551df2082dd0f3e7582f78ab36710eafcc4d5599",
+    "diagnosis": {
+      "code": "INVALID_CIRCUIT",
+      "message": "Circuit contains nodes without a DC reference path",
+      "retryable": false,
+      "phase": "validation",
+      "details": {
+        "kind": "NO_DC_REFERENCE",
+        "involvedNodes": [
+          "sense"
+        ],
+        "sourcePaths": [
+          "/input/source/lines/1",
+          "/input/source/lines/2"
+        ]
+      }
+    },
+    "suggestion": "Add a resistor from sense to ground to provide a DC reference path.",
+    "solvedBeforeRepair": false
+  },
+  "repair": {
+    "action": "insert-resistor-to-ground-before-op",
+    "sourceLine": "Rbleed sense 0 1Meg",
+    "repairedRequestSha256": "58204907a781cf199346f716739c93caf87323a35d6b1f8e26593fd23f39593d",
+    "validation": {
+      "status": "valid",
+      "nodeCount": 2,
+      "branchCount": 1,
+      "analysisCount": 1
+    }
+  },
+  "operatingPoint": {
+    "result": {
+      "status": "complete",
+      "analyses": [
+        {
+          "type": "op",
+          "analysisIndex": 0,
+          "voltagesV": {
+            "in": 1,
+            "sense": 1
+          },
+          "currentsA": {
+            "V1": 0
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "protocolVersion": "1",
+      "spiceTsVersion": "0.3.0",
+      "engineBuildId": "mcp-node-v1",
+      "backend": "spice-ts-js",
+      "backendVersion": "0.3.0",
+      "determinism": "strict",
+      "inputSha256": "97e3661ba89397ea8710ea3b69d190533b0fb16071cb70f128a7a66b84e41173",
+      "resultSha256": "f9932686101e64b34ee0f832dddea62cc5d06ffd23ea411ea5450fedb130e963"
+    }
+  },
+  "solveOnlySingularity": {
+    "requestSha256": "6a698654775e92e33055b3b9c79faf3f98bd842743d1f4a031fe5b64d4d0c71a",
+    "validation": {
+      "status": "valid",
+      "nodeCount": 2,
+      "branchCount": 3,
+      "analysisCount": 1
+    },
+    "error": {
+      "code": "SINGULAR_MATRIX",
+      "message": "Singular matrix: zero pivot at matrix column 4 (nodes: ; branches: Rshort2)",
+      "retryable": false,
+      "phase": "solve",
+      "details": {
+        "involvedNodes": [],
+        "involvedBranches": [
+          "Rshort2"
+        ],
+        "pivotIndex": 4
+      }
+    }
+  },
+  "internalBackendRejection": {
+    "code": "BACKEND_UNAVAILABLE",
+    "message": "The requested simulation backend is unavailable",
+    "retryable": false,
+    "phase": "validation",
+    "details": {}
+  }
+}
