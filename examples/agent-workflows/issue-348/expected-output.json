@@ -1,0 +1,91 @@
+{
+  "workflow": "issue-348-multi-analysis-recovery",
+  "callOrder": [
+    "spice_capabilities",
+    "spice_validate:limited",
+    "spice_validate:corrected",
+    "spice_simulation_start/read:first",
+    "spice_simulation_start/read:second"
+  ],
+  "tools": [
+    "spice_capabilities",
+    "spice_validate",
+    "spice_simulate",
+    "spice_simulation_start",
+    "spice_simulation_read",
+    "spice_simulation_cancel"
+  ],
+  "capabilities": {
+    "protocolVersion": "1",
+    "analyses": [
+      "op",
+      "dc",
+      "tran",
+      "ac"
+    ],
+    "inputFormats": [
+      "spice",
+      "spice-ts"
+    ],
+    "limits": {
+      "maxDocumentBytes": 262144,
+      "maxAnalyses": 8,
+      "maxResultPoints": 100000,
+      "maxSerializedResultBytes": 4194304,
+      "maxWallTimeMs": 10000
+    },
+    "streaming": {
+      "defaultChunkPoints": 256,
+      "maxChunkPoints": 1024,
+      "maxRetainedJobs": 16,
+      "runningJobTtlMs": 30000,
+      "terminalJobTtlMs": 60000,
+      "maxUnreadEvents": 256,
+      "maxUnreadBytes": 1048576
+    }
+  },
+  "failure": {
+    "code": "RESOURCE_LIMIT",
+    "message": "A configured resource limit was exceeded",
+    "retryable": false,
+    "phase": "validation",
+    "details": {
+      "limit": "maxAnalyses",
+      "maximum": 1,
+      "actual": 2
+    }
+  },
+  "repair": {
+    "changedPaths": [
+      "/options/limits/maxAnalyses"
+    ],
+    "previousMaxAnalyses": 1,
+    "correctedMaxAnalyses": 2
+  },
+  "validation": {
+    "status": "valid",
+    "nodeCount": 2,
+    "branchCount": 1,
+    "analysisCount": 2
+  },
+  "resume": {
+    "firstChunkPointCount": 1,
+    "sameCursorReplay": true,
+    "resumedFromNextCursor": true,
+    "analysisOrder": [
+      "tran",
+      "ac"
+    ],
+    "pointCountsByAnalysis": [
+      51,
+      3
+    ],
+    "pointEventSha256": "aab7462822d910918933edebd5d5e8f22a8bb8825deb5659854d3d0dd674f23c"
+  },
+  "terminal": {
+    "inputSha256": "0150d4c561a7b227422bf4ed39a0ce676a2aa79ec2ffe02f11bd940773615f85",
+    "resultSha256": "64a9af824110b485e51dc44cbdc199d30e2685e633a9f2c5a5e9ca509f0e2888",
+    "stableTerminalSha256": "a6522a3f1e97b4e98cc9459241ef37f8c7092f3eb5fb1dea419c487693b7ab92",
+    "deterministicSecondRun": true
+  }
+}

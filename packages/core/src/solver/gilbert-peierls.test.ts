@@ -338,6 +338,31 @@ describe('GilbertPeierlsSolver', () => {
       expect(x2[1]).toBeCloseTo(17 / 11, 10);
     });
 
+    it('skips a redundant full workspace clear after successful factorization', () => {
+      const matrix = new SparseMatrix(2);
+      matrix.add(0, 0, 2); matrix.add(0, 1, 1);
+      matrix.add(1, 0, 1); matrix.add(1, 1, 3);
+      const { csc } = toCsc(matrix);
+      const solver = new GilbertPeierlsSolver();
+      solver.analyzePattern(csc);
+      solver.factorize(csc);
+
+      const storage = solver as unknown as { workspace: Float64Array };
+      const originalFill = storage.workspace.fill;
+      let fillCalls = 0;
+      Object.defineProperty(storage.workspace, 'fill', {
+        value(value: number): Float64Array {
+          fillCalls++;
+          return originalFill.call(this, value);
+        },
+      });
+
+      solver.factorize(csc);
+
+      expect(fillCalls).toBe(0);
+      expect(Array.from(solver.solve(new Float64Array([5, 7])))).toEqual([1.6, 1.8]);
+    });
+
     it('reuses the caller-owned RHS as the solve output workspace', () => {
       const matrix = new SparseMatrix(2);
       matrix.add(0, 0, 2); matrix.add(0, 1, 1);

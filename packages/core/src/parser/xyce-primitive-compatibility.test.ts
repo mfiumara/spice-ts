@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -69,9 +70,12 @@ describe('Xyce primitive parser compatibility', () => {
       .toThrow(/Unsupported diode parameter: 'TEMP=50'/);
   });
 
-  it('advances inductor-transient to its unsupported TIMEINT field', () => {
-    expect(() => parse(fixture('INDUCTOR/inductor.cir')))
-      .toThrow(/Unsupported \.options TIMEINT field: 'newbpstepping'/);
+  it('accepts disabled NEWBPSTEPPING in the unchanged inductor fixture', () => {
+    const input = readFileSync(resolve(xyceFixtureRoot, 'INDUCTOR/inductor.cir'));
+
+    expect(createHash('sha256').update(input).digest('hex'))
+      .toBe('a0a869d9fe3b04d3bbdc8abf9e8a89a9302a54ac5be9c97f446f06834a248b35');
+    expect(() => parse(input.toString('utf8'))).not.toThrow();
   });
 
   it('keeps capacitor3 NEWLTE explicitly unsupported', () => {
@@ -105,9 +109,21 @@ describe('Xyce primitive parser compatibility', () => {
     });
   }
 
-  it('advances the unchanged diode temperature fixture to its TEMP step gap', async () => {
-    await expect(simulate(fixture('DIODE/Level2_Temp_Dep_Breakdown.cir')))
-      .rejects.toThrow("Step parameter device 'TEMP' not found");
+  it('executes TEMP stepping in the unchanged diode fixture while retaining the diode-model gap', async () => {
+    const result = await simulate(fixture('DIODE/Level2_Temp_Dep_Breakdown.cir'));
+
+    expect(result.steps!.map(step => [step.paramName, step.paramValue])).toEqual([
+      ['TEMP', -55],
+      ['TEMP', 25],
+      ['TEMP', 72],
+    ]);
+    // Diode temperature and reverse-breakdown semantics remain tracked by #319,
+    // so the three currents are still identical rather than a parity claim.
+    expect(result.steps!.map(step => step.transient!.current('VIN'))).toEqual([
+      result.steps![0].transient!.current('VIN'),
+      result.steps![0].transient!.current('VIN'),
+      result.steps![0].transient!.current('VIN'),
+    ]);
   });
 
   it('simulates the unchanged bounded level-1 NJF fixture', async () => {
@@ -121,10 +137,10 @@ describe('Xyce primitive parser compatibility', () => {
   });
 
   for (const [id, path, points, output] of [
-    ['nmos-level1-dc', 'NMOS1_DC/nmos1.cir', 19, { kind: 'voltage', name: '3' }],
+    ['nmos-level1-dc', 'NMOS1_DC/nmos1.cir', 361, { kind: 'voltage', name: '3' }],
     ['pmos-level1-dc', 'PMOS1_DC/pmos1.cir', 6, { kind: 'current', name: 'VMON' }],
     ['npn-dc', 'NPN_DC/npn1.cir', 13, { kind: 'current', name: 'VMON1' }],
-    ['pnp-dc', 'PNP_DC/pnp1.cir', 6, { kind: 'current', name: 'VMON3' }],
+    ['pnp-dc', 'PNP_DC/pnp1.cir', 30, { kind: 'current', name: 'VMON3' }],
   ] as const) {
     it(`simulates unchanged ${id} output vectors despite brace notation in comments`, async () => {
       const result = await simulate(fixture(path));

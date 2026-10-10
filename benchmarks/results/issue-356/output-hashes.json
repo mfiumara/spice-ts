@@ -1,0 +1,27 @@
+{
+  "baseCommit": "1c2c8985e47f3030396a1fc3da5fd47db50dc330",
+  "command": "node --input-type=module -e <simulate scalingLadder(1000,5000,10000) and 1001-point DC deck; SHA-256 of JSON.stringify(result)>",
+  "methodology": "One public simulate() call per fixture after pnpm build; hashes cover the complete JSON result.",
+  "results": [
+    {
+      "fixture": "1000-node-op",
+      "sha256": "528b99b1c33d15ddaf2cc6e85540be9c0e3c5624e07f0bf71878741588c22094",
+      "bytes": 385
+    },
+    {
+      "fixture": "5000-node-op",
+      "sha256": "528b99b1c33d15ddaf2cc6e85540be9c0e3c5624e07f0bf71878741588c22094",
+      "bytes": 385
+    },
+    {
+      "fixture": "10000-node-op",
+      "sha256": "528b99b1c33d15ddaf2cc6e85540be9c0e3c5624e07f0bf71878741588c22094",
+      "bytes": 385
+    },
+    {
+      "fixture": "1001-point-dc-sweep",
+      "sha256": "7bea0bb1327f368daaea21cb426ac8045210a266ee31ea76d88ccfcc6ec399d1",
+      "bytes": 12993
+    }
+  ]
+}

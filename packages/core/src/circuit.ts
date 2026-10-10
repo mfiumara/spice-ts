@@ -1,6 +1,6 @@
 import type { DeviceModel } from './devices/device.js';
 import type {
-  AnalysisDirective, PoleZeroAnalysis, SensitivityAnalysis, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis,
+  AnalysisDirective, DCSweepDimension, PoleZeroAnalysis, SensitivityAnalysis, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis,
   SimulationOptions, NodeInitialState,
 } from './types.js';
 import type { CircuitIR } from './ir/types.js';
@@ -21,12 +21,14 @@ import { VCVS } from './devices/vcvs.js';
 import { CCCS } from './devices/cccs.js';
 import { CCVS } from './devices/ccvs.js';
 import { TransmissionLine } from './devices/transmission-line.js';
+import { expandLtraLadder, resolveLtraModel } from './devices/ltra-model.js';
 import { GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
+import { parseLtraModelCard } from './parser/transmission-line-parser.js';
 import {
   parseDiodeInstanceParams,
   type DiodeInstanceParams,
@@ -41,7 +43,7 @@ import {
   type ResolvedCapacitorModel,
   type ResolvedInductorModel,
 } from './devices/passive-model.js';
-import { CycleError, InvalidCircuitError } from './errors.js';
+import { CycleError, InvalidCircuitError, ParseError } from './errors.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
 /**
@@ -184,7 +186,7 @@ function formatDevice(desc: DeviceDescriptor): string {
 
   switch (desc.type) {
     case 'R':
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatNumber(desc.value ?? 0)}`;
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatNumber(desc.value ?? 0)}${tail}`;
     case 'C':
     case 'L': {
       const value = desc.value !== undefined ? formatNumber(desc.value) : undefined;
@@ -196,6 +198,8 @@ function formatDevice(desc: DeviceDescriptor): string {
       return `${desc.name} ${desc.coupledA} ${desc.coupledB} ${formatNumber(desc.value ?? 0)}`;
     case 'T':
       return `${desc.name} ${desc.nodes.join(' ')} Z0=${formatNumber(desc.value ?? 0)} TD=${formatNumber(desc.params?.TD ?? 0)}`;
+    case 'O':
+      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}`.trim();
     case 'V':
     case 'I':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatWaveform(desc.waveform)}`;
@@ -225,7 +229,7 @@ function formatAnalysis(analysis: AnalysisDirective | PoleZeroAnalysis): string 
     case 'op':
       return '.op';
     case 'dc':
-      return `.dc ${analysis.source} ${formatNumber(analysis.start)} ${formatNumber(analysis.stop)} ${formatNumber(analysis.step)}`;
+      return `.dc ${analysis.source} ${formatNumber(analysis.start)} ${formatNumber(analysis.stop)} ${formatNumber(analysis.step)}${analysis.secondary === undefined ? '' : ` ${analysis.secondary.source} ${formatNumber(analysis.secondary.start)} ${formatNumber(analysis.secondary.stop)} ${formatNumber(analysis.secondary.step)}`}`;
     case 'tran': {
       const parts = ['.tran', formatNumber(analysis.timestep), formatNumber(analysis.stopTime)];
       if (analysis.startTime !== undefined) parts.push(formatNumber(analysis.startTime));
@@ -236,7 +240,7 @@ function formatAnalysis(analysis: AnalysisDirective | PoleZeroAnalysis): string 
     case 'ac':
       return `.ac ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
     case 'noise':
-      return `.noise v(${analysis.outputNode}${analysis.outputReferenceNode === undefined ? '' : `,${analysis.outputReferenceNode}`}) ${analysis.inputSource} ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
+      return `.noise v(${analysis.outputNode}${analysis.outputReferenceNode === undefined ? '' : `,${analysis.outputReferenceNode}`}) ${analysis.inputSource} ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}${analysis.pointsPerSummary === undefined ? '' : ` ${analysis.pointsPerSummary}`}`;
     case 'disto':
       return `.disto dec ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}${analysis.f2OverF1 === undefined ? '' : ` ${formatNumber(analysis.f2OverF1)}`}`;
     case 'tf':
@@ -362,10 +366,19 @@ export class Circuit {
    * @param nodeNeg - Negative terminal node
    * @param resistance - Resistance value in ohms
    */
-  addResistor(name: string, nodePos: string, nodeNeg: string, resistance: number): void {
+  addResistor(
+    name: string,
+    nodePos: string,
+    nodeNeg: string,
+    resistance: number,
+    temperatureCoefficients?: Record<string, number>,
+  ): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
-    this.descriptors.push({ type: 'R', name, nodes: [nodePos, nodeNeg], value: resistance });
+    this.descriptors.push({
+      type: 'R', name, nodes: [nodePos, nodeNeg], value: resistance,
+      params: temperatureCoefficients,
+    });
   }
 
   /**
@@ -459,6 +472,26 @@ export class Circuit {
       nodes: [port1Positive, port1Negative, port2Positive, port2Negative],
       value: impedance,
       params: { TD: delay },
+    });
+  }
+
+  /** Add a benchmark-bounded common-reference O-element backed by an LTRA model. */
+  addLossyTransmissionLine(
+    name: string,
+    port1Positive: string,
+    port1Negative: string,
+    port2Positive: string,
+    port2Negative: string,
+    modelName: string,
+  ): void {
+    for (const node of [port1Positive, port1Negative, port2Positive, port2Negative]) {
+      this.nodeSet.add(node);
+    }
+    this.descriptors.push({
+      type: 'O',
+      name,
+      nodes: [port1Positive, port1Negative, port2Positive, port2Negative],
+      modelName,
     });
   }
 
@@ -695,10 +728,10 @@ export class Circuit {
    * @param params - Analysis-specific parameters (not required for `'op'`)
    */
   addAnalysis(type: 'op'): void;
-  addAnalysis(type: 'dc', params: { source: string; start: number; stop: number; step: number }): void;
+  addAnalysis(type: 'dc', params: { source: string; start: number; stop: number; step: number; secondary?: DCSweepDimension }): void;
   addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; useInitialConditions?: boolean }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
-  addAnalysis(type: 'noise', params: { outputNode: string; outputReferenceNode?: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
+  addAnalysis(type: 'noise', params: { outputNode: string; outputReferenceNode?: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number; pointsPerSummary?: number }): void;
   addAnalysis(type: 'disto', params: { variation: 'dec'; points: number; startFreq: number; stopFreq: number; f2OverF1?: number }): void;
   addAnalysis(type: 'tf', params:
     | { outputNode: string; inputSource: string }
@@ -712,12 +745,21 @@ export class Circuit {
         this._analyses.push({ type: 'op' });
         break;
       case 'dc':
+        if (params!.secondary !== undefined) {
+          const secondary = params!.secondary as DCSweepDimension;
+          if ((params!.source as string).toUpperCase() === secondary.source.toUpperCase()) {
+            throw new InvalidCircuitError(`DC sweep source '${secondary.source}' is repeated`);
+          }
+        }
         this._analyses.push({
           type: 'dc',
           source: params!.source as string,
           start: params!.start as number,
           stop: params!.stop as number,
           step: params!.step as number,
+          ...(params!.secondary === undefined
+            ? {}
+            : { secondary: { ...(params!.secondary as DCSweepDimension) } }),
         });
         break;
       case 'tran': {
@@ -745,6 +787,13 @@ export class Circuit {
         if (this._steps.length > 0) {
           throw new InvalidCircuitError('.step cannot be combined with .noise');
         }
+        if (params!.pointsPerSummary !== undefined
+            && (!Number.isInteger(params!.pointsPerSummary)
+              || (params!.pointsPerSummary as number) < 1)) {
+          throw new InvalidCircuitError(
+            'Invalid .noise points_per_summary; expected a positive integer',
+          );
+        }
         this._analyses.push({
           type: 'noise',
           outputNode: params!.outputNode as string,
@@ -756,6 +805,9 @@ export class Circuit {
           points: params!.points as number,
           startFreq: params!.startFreq as number,
           stopFreq: params!.stopFreq as number,
+          ...(params!.pointsPerSummary === undefined
+            ? {}
+            : { pointsPerSummary: params!.pointsPerSummary as number }),
         });
         break;
       case 'disto':
@@ -972,7 +1024,9 @@ export class Circuit {
    */
   compile(guard?: ProtocolExecutionGuard): CompiledCircuit {
     // Pre-expand subcircuit instances into flat device descriptors
-    const expandedDescriptors = this.expandPassiveParasitics(this.expandAllSubcircuits(guard));
+    const expandedDescriptors = this.expandPassiveParasitics(
+      this.expandLossyTransmissionLines(this.expandAllSubcircuits(guard)),
+    );
     guard?.maximum('maxComponents', expandedDescriptors.length, 'compile');
 
     // Collect all nodes from expanded descriptors
@@ -1031,10 +1085,15 @@ export class Circuit {
           // conductance. Give it an MNA branch so its equation and current are
           // represented exactly. Stepped resistors also use branch form because
           // their value may cross zero without changing matrix topology.
-          const usesBranch = desc.value === 0 || this._steps.some(step => step.param === desc.name);
+          const usesBranch = desc.value === 0 || this._steps.some(step =>
+            step.param === desc.name || step.param.toUpperCase() === 'TEMP');
           const bi = usesBranch ? branchIndex++ : undefined;
           if (bi !== undefined) branchNames.push(desc.name);
-          devices.push(new Resistor(desc.name, nodeIndices, desc.value!, bi));
+          devices.push(new Resistor(desc.name, nodeIndices, desc.value!, bi, {
+            tc1: desc.params?.TC1,
+            tc2: desc.params?.TC2,
+            tnom: desc.params?.TNOM,
+          }));
           break;
         }
         case 'V': {
@@ -1250,6 +1309,30 @@ export class Circuit {
         result.push(desc);
       }
       guard?.maximum('maxComponents', result.length, 'compile');
+    }
+    return result;
+  }
+
+  private expandLossyTransmissionLines(descriptors: DeviceDescriptor[]): DeviceDescriptor[] {
+    const result: DeviceDescriptor[] = [];
+    for (const desc of descriptors) {
+      if (desc.type !== 'O') {
+        result.push(desc);
+        continue;
+      }
+      const [input, inputReference, output, outputReference] = desc.nodes;
+      if (inputReference.toUpperCase() !== outputReference.toUpperCase()) {
+        throw new Error(`Unsupported LTRA '${desc.name}': both ports must use a common reference node`);
+      }
+      const model = this._models.get(desc.modelName!);
+      if (!model) throw new Error(`LTRA '${desc.name}' references unknown model '${desc.modelName}'`);
+      result.push(...expandLtraLadder(
+        desc.name,
+        input,
+        output,
+        inputReference,
+        resolveLtraModel(model),
+      ));
     }
     return result;
   }
@@ -1557,14 +1640,16 @@ export class Circuit {
     // Tokenize body lines
     const parsedLines = tokenizeNetlist(def.body.join('\n'));
 
-    for (const { tokens } of parsedLines) {
+    for (const { tokens, lineNumber, raw } of parsedLines) {
       guard?.checkpoint('compile:device');
       if (tokens.length === 0) continue;
       const first = tokens[0].toUpperCase();
 
       // Handle .model inside subcircuit — register locally AND globally
       if (first === '.MODEL') {
-        const modelParams = parseModelCard(tokens, 0);
+        const modelParams = tokens[2]?.toUpperCase() === 'LTRA'
+          ? parseLtraModelCard(tokens, 0)
+          : parseModelCard(tokens, 0);
         // Register in the circuit's global model map so compile() can find it
         this._models.set(modelParams.name, modelParams);
         continue;
@@ -1653,6 +1738,21 @@ export class Circuit {
             type: 'I', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             waveform,
+          });
+          break;
+        }
+        case 'O': {
+          if (tokens.length !== 6) {
+            throw new Error(`Unsupported LTRA O-card '${tokens.join(' ')}'`);
+          }
+          if (tokens[2].toUpperCase() !== tokens[4].toUpperCase()) {
+            throw new Error(`Unsupported LTRA '${devName}': both ports must use a common reference node`);
+          }
+          result.push({
+            type: 'O',
+            name: devName,
+            nodes: [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3]), mapNode(tokens[4])],
+            modelName: tokens[5],
           });
           break;
         }
@@ -1762,7 +1862,8 @@ export class Circuit {
           result.push(...nested);
           break;
         }
-        // Skip unknown device types inside subcircuits silently
+        default:
+          throw new ParseError(`Unsupported device card: '${devType}'`, lineNumber, raw);
       }
       guard?.maximum('maxComponents', result.length, 'compile');
     }

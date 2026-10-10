@@ -66,6 +66,33 @@ int stamp_vccs_f64(
   return 0;
 }
 
+__attribute__((export_name("stamp_cccs_f64")))
+int stamp_cccs_f64(
+  int order,
+  double *matrix,
+  int output_positive,
+  int output_negative,
+  int control_branch_column,
+  double current_gain
+) {
+  if (order < 1 || order > MAX_ORDER || matrix == 0 || ((unsigned long)matrix & 7)
+      || !valid_node(output_positive, order) || !valid_node(output_negative, order)
+      || control_branch_column < 0 || control_branch_column >= order) return 3;
+  if (!finite(current_gain)) return 2;
+
+  if (output_positive >= 0) {
+    int index = output_positive * order + control_branch_column;
+    matrix[index] += current_gain;
+    if (!finite(matrix[index])) return 2;
+  }
+  if (output_negative >= 0) {
+    int index = output_negative * order + control_branch_column;
+    matrix[index] -= current_gain;
+    if (!finite(matrix[index])) return 2;
+  }
+  return 0;
+}
+
 __attribute__((export_name("solve_f64")))
 int solve_f64(int order, double *matrix, double *rhs) {
   if (order < 1 || order > MAX_ORDER || matrix == 0 || rhs == 0) return 3;

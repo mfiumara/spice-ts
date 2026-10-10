@@ -43,8 +43,17 @@ import {
   ProtocolExecutionGuard,
   type ProtocolExecutionOptionsV1,
 } from './execution-guard.js';
+import { directedLinearPointCount } from '../analysis/directed-linear-grid.js';
 
 const MAX_DETAIL_NAMES = 32;
+const API_ERROR_CODES = new Set<SpiceApiErrorV1['code']>([
+  'INVALID_REQUEST', 'PARSE_ERROR', 'INVALID_CIRCUIT', 'UNSUPPORTED_FEATURE',
+  'SINGULAR_MATRIX', 'CONVERGENCE_FAILED', 'TIMESTEP_TOO_SMALL', 'RESOURCE_LIMIT',
+  'CANCELLED', 'BACKEND_UNAVAILABLE', 'INTERNAL_ERROR',
+]);
+const API_ERROR_PHASES = new Set<SpiceApiErrorV1['phase']>([
+  'validation', 'parse', 'compile', 'solve', 'serialize', 'transport',
+]);
 
 export interface ProtocolValidationResultV1 {
   status: 'valid';
@@ -137,6 +146,7 @@ class UnsupportedProtocolAnalysisError extends Error {
 
 /** Convert an existing typed core error to its stable protocol-v1 representation. */
 export function mapProtocolErrorV1(error: unknown): SpiceApiErrorV1 {
+  if (isWireApiError(error)) return wireApiError(error);
   if (error instanceof ProtocolExecutionError) return wireApiError(error.apiError);
   if (error instanceof UnsupportedProtocolAnalysisError) {
     return apiError('UNSUPPORTED_FEATURE', error, 'validation', { analysis: error.analysis });
@@ -289,7 +299,15 @@ function estimatedStepCount(step?: StepAnalysis): number {
 function estimatedAnalysisPoints(analysis: AnalysisDirective): number {
   switch (analysis.type) {
     case 'op': return 1;
-    case 'dc': return finiteLinearPoints(analysis.start, analysis.stop, analysis.step);
+    case 'dc': {
+      const primaryPoints = finiteLinearPoints(analysis.start, analysis.stop, analysis.step);
+      const secondaryPoints = analysis.secondary === undefined
+        ? 1
+        : finiteLinearPoints(
+          analysis.secondary.start, analysis.secondary.stop, analysis.secondary.step,
+        );
+      return primaryPoints * secondaryPoints;
+    }
     case 'tran': return finiteLinearPoints(analysis.startTime ?? 0, analysis.stopTime, analysis.timestep);
     case 'ac': {
       if (analysis.variation === 'lin') return analysis.points + 1;
@@ -310,8 +328,7 @@ function estimatedAnalysisPoints(analysis: AnalysisDirective): number {
 }
 
 function finiteLinearPoints(start: number, stop: number, step: number): number {
-  if (![start, stop, step].every(Number.isFinite) || step === 0) return 0;
-  return Math.max(0, Math.floor(Math.abs((stop - start) / step) + 1 + 1e-12));
+  return directedLinearPointCount(start, stop, step);
 }
 
 function resultPointCount(analyses: readonly AnalysisResultV1[]): number {
@@ -530,7 +547,49 @@ function apiError(code: SpiceApiErrorV1['code'], error: Error, phase: SpiceApiEr
 }
 
 function wireApiError(error: SpiceApiErrorV1): SpiceApiErrorV1 {
-  return { ...error, message: wireMessage(error.message), details: wireObject(error.details) };
+  return {
+    code: error.code,
+    message: wireMessage(error.message),
+    retryable: error.retryable,
+    phase: error.phase,
+    details: wireObject(error.details),
+  };
+}
+
+function isWireApiError(value: unknown): value is SpiceApiErrorV1 {
+  if (!isRecord(value)) return false;
+  return typeof value.code === 'string'
+    && API_ERROR_CODES.has(value.code as SpiceApiErrorV1['code'])
+    && typeof value.message === 'string'
+    && typeof value.retryable === 'boolean'
+    && typeof value.phase === 'string'
+    && API_ERROR_PHASES.has(value.phase as SpiceApiErrorV1['phase'])
+    && isJsonObject(value.details);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function isJsonObject(value: unknown): value is JsonObject {
+  return isRecord(value) && isJsonValue(value, new WeakSet<object>());
+}
+
+function isJsonValue(value: unknown, seen: WeakSet<object>): value is JsonValue {
+  if (value === null || typeof value === 'string' || typeof value === 'boolean') return true;
+  if (typeof value === 'number') return Number.isFinite(value);
+  if (typeof value !== 'object') return false;
+  if (seen.has(value)) return false;
+  seen.add(value);
+  if (Array.isArray(value)) {
+    const valid = Object.keys(value).length === value.length
+      && value.every(entry => isJsonValue(entry, seen));
+    seen.delete(value);
+    return valid;
+  }
+  const valid = Object.values(value).every(entry => isJsonValue(entry, seen));
+  seen.delete(value);
+  return valid;
 }
 
 function wireMessage(message: string): string {
@@ -538,7 +597,9 @@ function wireMessage(message: string): string {
 }
 
 function wireObject(value: JsonObject): JsonObject {
-  return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, wireValue(entry)]));
+  return Object.fromEntries(Object.entries(value)
+    .filter(([key]) => key.toLowerCase() !== 'stack')
+    .map(([key, entry]) => [key, wireValue(entry)]));
 }
 
 function wireValue(value: JsonValue): JsonValue {

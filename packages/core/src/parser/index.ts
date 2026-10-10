@@ -8,7 +8,11 @@ import { parseDiodeInstanceParams } from './diode-parser.js';
 import { parseBJTInstance } from './bjt-parser.js';
 import { parsePoleZero } from './pole-zero-parser.js';
 import { parseSensitivity } from './sensitivity-parser.js';
-import { parseTransmissionLine } from './transmission-line-parser.js';
+import {
+  parseLossyTransmissionLine,
+  parseLtraModelCard,
+  parseTransmissionLine,
+} from './transmission-line-parser.js';
 import { preprocess } from './preprocessor.js';
 import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -238,11 +242,24 @@ function parseDotCommand(
       break;
     }
     case '.DC': {
+      if (tokens.length !== 5 && tokens.length !== 9) {
+        throw new ParseError(
+          "Invalid .dc sweep; expected '.dc source start stop step [source2 start2 stop2 step2]'",
+          lineNumber,
+          context,
+        );
+      }
       const source = tokens[1];
       const start = parseNumber(tokens[2]);
       const stop = parseNumber(tokens[3]);
       const step = parseNumber(tokens[4]);
-      circuit.addAnalysis('dc', { source, start, stop, step });
+      const secondary = tokens.length === 9 ? {
+        source: tokens[5],
+        start: parseNumber(tokens[6]),
+        stop: parseNumber(tokens[7]),
+        step: parseNumber(tokens[8]),
+      } : undefined;
+      circuit.addAnalysis('dc', { source, start, stop, step, secondary });
       break;
     }
     case '.TRAN': {
@@ -279,27 +296,38 @@ function parseDotCommand(
       break;
     }
     case '.NOISE': {
-      const isDifferential = tokens.length === 11;
+      const isDifferential = tokens[5] === ')';
       const sourceIndex = isDifferential ? 6 : 5;
       const variationIndex = sourceIndex + 1;
       const variation = tokens[variationIndex]?.toLowerCase();
-      const isSupportedVoltageForm = (tokens.length === 10 || isDifferential)
+      const baseTokenCount = variationIndex + 4;
+      const isSupportedVoltageForm = (tokens.length === baseTokenCount || tokens.length === baseTokenCount + 1)
         && tokens[1].toUpperCase() === 'V'
         && tokens[2] === '('
         && tokens[isDifferential ? 5 : 4] === ')'
         && (variation === 'lin' || variation === 'dec' || variation === 'oct');
       if (!isSupportedVoltageForm) {
         throw new ParseError(
-          "Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop'",
+          "Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop [points_per_summary]'",
           lineNumber, tokens.join(' '),
         );
       }
       const points = parseInt(tokens[variationIndex + 1], 10);
       const startFreq = parseNumber(tokens[variationIndex + 2]);
       const stopFreq = parseNumber(tokens[variationIndex + 3]);
+      const pointsPerSummary = tokens[variationIndex + 4] === undefined
+        ? undefined
+        : parseNumber(tokens[variationIndex + 4]);
       const minimumPoints = variation === 'lin' ? 2 : 1;
       if (!Number.isInteger(points) || points < minimumPoints || startFreq <= 0 || stopFreq < startFreq) {
         throw new ParseError(`Invalid .noise ${variation} sweep`, lineNumber, tokens.join(' '));
+      }
+      if (pointsPerSummary !== undefined
+          && (!Number.isInteger(pointsPerSummary) || pointsPerSummary < 1)) {
+        throw new ParseError(
+          'Invalid .noise points_per_summary; expected a positive integer',
+          lineNumber, tokens.join(' '),
+        );
       }
       circuit.addAnalysis('noise', {
         outputNode: tokens[3],
@@ -309,6 +337,7 @@ function parseDotCommand(
         points,
         startFreq,
         stopFreq,
+        ...(pointsPerSummary === undefined ? {} : { pointsPerSummary }),
       });
       break;
     }
@@ -407,14 +436,9 @@ function parseDotCommand(
       break;
     }
     case '.MODEL': {
-      const model = parseModelCard(tokens, lineNumber);
-      if (model.type === 'LTRA') {
-        throw new ParseError(
-          'Lossy transmission line model LTRA is unsupported; use the bounded lossless T-card Z0/TD form',
-          lineNumber,
-          tokens.join(' '),
-        );
-      }
+      const model = tokens[2]?.toUpperCase() === 'LTRA'
+        ? parseLtraModelCard(tokens, lineNumber)
+        : parseModelCard(tokens, lineNumber);
       circuit.addModel(model);
       break;
     }
@@ -485,6 +509,13 @@ function parseDotCommand(
         const values: number[] = [];
         for (; idx < tokens.length; idx++) {
           values.push(parseNumber(tokens[idx]));
+        }
+        if (paramName.toUpperCase() === 'TEMP' && values.length === 0) {
+          throw new ParseError(
+            '.step TEMP LIST requires at least one value',
+            lineNumber,
+            context,
+          );
         }
         circuit.addStep(paramName, { values });
       } else {
@@ -652,15 +683,39 @@ function parseNodeInitialState(
 
 function parseXyceTimeintOptions(tokens: string[]): SimulationOptions {
   const options: SimulationOptions = {};
+  let newbpstepping: string | undefined;
 
   for (const token of tokens) {
     const separator = token.indexOf('=');
-    const name = token.slice(0, Math.max(separator, 0)).toLowerCase();
+    const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
     if (separator <= 0 || separator === token.length - 1) {
+      if (name === 'newbpstepping') {
+        const rawValue = separator < 0 ? undefined : token.slice(separator + 1);
+        throw new Error(rawValue === undefined
+          ? "Invalid .options TIMEINT NEWBPSTEPPING field: 'newbpstepping'"
+          : `Invalid .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
+      }
       throw new Error(`Unsupported .options TIMEINT field: '${name || token.toLowerCase()}'`);
     }
 
     const rawValue = token.slice(separator + 1);
+    if (name === 'newbpstepping') {
+      if (newbpstepping !== undefined && newbpstepping !== rawValue) {
+        throw new Error(`Conflicting .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
+      }
+      newbpstepping = rawValue;
+      if (rawValue === '0') continue;
+      let numericValue: number;
+      try {
+        numericValue = parseNumber(rawValue);
+      } catch {
+        throw new Error(`Invalid .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
+      }
+      if (!Number.isFinite(numericValue)) {
+        throw new Error(`Invalid .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
+      }
+      throw new Error(`Unsupported .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
+    }
     if (name === 'method') {
       const methods: Record<string, IntegrationMethod> = {
         trap: 'trapezoidal',
@@ -701,14 +756,18 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
 
   switch (type) {
     case 'R': {
-      if (tokens.length > 4) {
+      const params = parseInstanceParams(tokens, 4);
+      const unsupported = Object.keys(params).filter(
+        parameter => !['TC1', 'TC2', 'TNOM'].includes(parameter),
+      );
+      if (unsupported.length > 0) {
         throw new ParseError(
-          `Unsupported resistor parameters: '${tokens.slice(4).join(' ')}'`,
+          `Unsupported resistor parameters: '${unsupported.join(' ')}'`,
           lineNumber, tokens.join(' '),
         );
       }
       const value = parseNumber(tokens[3]);
-      circuit.addResistor(name, tokens[1], tokens[2], value);
+      circuit.addResistor(name, tokens[1], tokens[2], value, params);
       break;
     }
     case 'C': {
@@ -736,12 +795,15 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
       );
       break;
     }
-    case 'O':
-      throw new ParseError(
-        'Lossy transmission line (LTRA) cards are unsupported; use the bounded lossless T-card Z0/TD form',
-        lineNumber,
-        tokens.join(' '),
+    case 'O': {
+      const { modelName } = parseLossyTransmissionLine(tokens, lineNumber);
+      circuit.addLossyTransmissionLine(
+        name,
+        tokens[1], tokens[2], tokens[3], tokens[4],
+        modelName,
       );
+      break;
+    }
     case 'V': {
       const waveform = parseSourceWaveform(tokens, 3);
       circuit.addVoltageSource(name, tokens[1], tokens[2], waveform);

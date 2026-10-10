@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { describe, it, expect } from 'vitest';
 import {
   parseTitleless as parse,
@@ -5,6 +7,13 @@ import {
 } from './index.js';
 import { Capacitor } from '../devices/capacitor.js';
 import { Inductor } from '../devices/inductor.js';
+import { Circuit } from '../circuit.js';
+import { simulate } from '../simulate.js';
+
+const vbicFoFixture = readFileSync(new URL(
+  '../../../../benchmarks/corpus/ngspice/fixtures/tests/vbic/FO.cir',
+  import.meta.url,
+));
 
 describe('SPICE netlist parser', () => {
   it('parses a simple voltage divider', () => {
@@ -265,6 +274,42 @@ describe('SPICE netlist parser', () => {
     expect(compiled.analyses[0]).toEqual({
       type: 'dc', source: 'V1', start: 0, stop: 5, step: 0.1,
     });
+  });
+
+  it('preserves both DC sweep dimensions from the unchanged vbic-fo fixture', () => {
+    expect(createHash('sha256').update(vbicFoFixture).digest('hex')).toBe(
+      'de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92',
+    );
+
+    const analysis = parse(vbicFoFixture.toString('utf8')).analyses[0];
+    expect(analysis).toEqual({
+      type: 'dc',
+      source: 'VC',
+      start: 0,
+      stop: 5,
+      step: 0.05,
+      secondary: { source: 'VB', start: 0.7, stop: 1, step: 0.05 },
+    });
+  });
+
+  it.each([
+    ['.dc V1 0 1 1 V2 0 1', 'expected'],
+    ['.dc V1 0 1 1 V2 0 1 1 V3 0 1 1', 'expected'],
+  ])('rejects malformed or unsupported DC sweep %s', (directive, message) => {
+    expect(() => parse(`V1 1 0 0\nV2 2 0 0\n${directive}`)).toThrow(message);
+  });
+
+  it('applies the same DC grid validation to text and programmatic simulations', async () => {
+    await expect(simulate('DC grid\nV1 1 0 0\n.dc V1 0 1 0'))
+      .rejects.toThrow('nonzero step toward stop');
+    const circuit = new Circuit();
+    circuit.addVoltageSource('V1', '1', '0', { dc: 0 });
+    circuit.addVoltageSource('V2', '2', '0', { dc: 0 });
+    circuit.addAnalysis('dc', {
+      source: 'V1', start: 0, stop: 1, step: 1,
+      secondary: { source: 'V2', start: 0, stop: 1, step: 0 },
+    });
+    await expect(simulate(circuit)).rejects.toThrow('nonzero step toward stop');
   });
 
   it('is case-insensitive for keywords', () => {

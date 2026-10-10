@@ -7,6 +7,8 @@ import {
 } from '../errors.js';
 import { Circuit } from '../circuit.js';
 import { mapProtocolErrorV1, simulateProtocolV1 } from './adapter.js';
+import { ProtocolExecutionError } from './execution-guard.js';
+import { TopologyPreflightError } from '../validation/topology-preflight.js';
 import type { SimulationRequestV1, SimulationResultV1, SpiceTsCircuitDocumentV1 } from './types.js';
 
 function fixture<T>(name: string): T {
@@ -173,6 +175,58 @@ describe('protocol v1 core adapter', () => {
 
     expect(errors).toEqual(fixture('errors-v1.json'));
     expect(sha256CanonicalJson(errors)).toBe('cf23f06d0e7427b537d5d848626fe06dfa736f87ddb5ef794ccc9b73bb750217');
+  });
+
+  it('preserves typed public errors after a worker structured-clone boundary', () => {
+    const typed = [
+      new ParseError('bad token', 2, '???'),
+      new TopologyPreflightError('FLOATING_COMPONENT', ['out'], ['/input/source/lines/1']),
+      new ConvergenceError('stalled', undefined, ['out'], Float64Array.of(1), Float64Array.of(0)),
+      new ProtocolExecutionError({
+        code: 'RESOURCE_LIMIT', message: 'point ceiling', retryable: false, phase: 'solve',
+        details: { limit: 'maxResultPoints', configured: 1, observed: 2, backend: 'spice-ts' },
+      }),
+      new ProtocolExecutionError({
+        code: 'CANCELLED', message: 'cancelled', retryable: true, phase: 'transport', details: {},
+      }),
+    ].map(mapProtocolErrorV1);
+
+    const crossed = structuredClone(typed).map(mapProtocolErrorV1);
+
+    expect(crossed).toEqual(typed.map(error => ({
+      ...error,
+      details: error.code === 'RESOURCE_LIMIT'
+        ? { ...error.details, backend: 'spice-ts-js' }
+        : error.details,
+    })));
+    expect(crossed.map(error => error.code)).toEqual([
+      'PARSE_ERROR', 'INVALID_CIRCUIT', 'CONVERGENCE_FAILED', 'RESOURCE_LIMIT', 'CANCELLED',
+    ]);
+    expect(sha256CanonicalJson(crossed)).toBe('b75b3b998b6d8552ea9c1aa526b27e07b96b24bac961e6efef611cf90c3be47d');
+  });
+
+  it('sanitizes structured worker errors and makes unexpected failures opaque', () => {
+    const publicFailure = mapProtocolErrorV1({
+      code: 'RESOURCE_LIMIT', message: 'spice-ts worker ceiling', retryable: false, phase: 'transport',
+      stack: '/private/backend/top-level-worker.ts:1',
+      details: {
+        backend: 'spice-ts', maximum: 1, actual: 2,
+        stack: '/private/backend/worker.ts:1', nested: { stack: 'secret', safe: true },
+      },
+    });
+    const unexpected = mapProtocolErrorV1(Object.assign(new Error('secret backend failure'), {
+      stack: '/private/backend/worker.ts:1', backend: 'spice-ts',
+    }));
+
+    expect(publicFailure).toEqual({
+      code: 'RESOURCE_LIMIT', message: 'spice-ts-js worker ceiling', retryable: false, phase: 'transport',
+      details: { backend: 'spice-ts-js', maximum: 1, actual: 2, nested: { safe: true } },
+    });
+    expect(unexpected).toEqual({
+      code: 'INTERNAL_ERROR', message: 'Internal simulation error', retryable: false,
+      phase: 'solve', details: {},
+    });
+    expect(JSON.stringify([publicFailure, unexpected])).not.toContain('/private/');
   });
 
   it('never exposes the internal backend name on protocol values', async () => {

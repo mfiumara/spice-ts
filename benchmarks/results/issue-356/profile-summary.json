@@ -1,0 +1,30 @@
+{
+  "baseCommit": "1c2c8985e47f3030396a1fc3da5fd47db50dc330",
+  "cpu": {
+    "command": "node --cpu-prof --cpu-prof-name=numeric-before.cpuprofile --cpu-prof-dir=benchmarks/results/issue-356/profiles benchmarks/performance/profile-spice-ts.mjs 10000 20",
+    "durationMicroseconds": 563958,
+    "totalSamples": 134,
+    "selectedSelfSamples": {
+      "garbageCollector": 23,
+      "newtonRaphson": 8,
+      "tokenizeNetlist": 7,
+      "parseNumber": 6,
+      "factorize": 5,
+      "lockTopology": 4,
+      "solveDCOperatingPoint": 3,
+      "solve": 0
+    }
+  },
+  "heap": {
+    "command": "node --heap-prof --heap-prof-interval=1024 --heap-prof-name=numeric-before.heapprofile --heap-prof-dir=benchmarks/results/issue-356/profiles benchmarks/performance/profile-spice-ts.mjs 10000 20",
+    "sampledBytes": 3226088,
+    "selectedSelfBytes": {
+      "solveDCOperatingPoint": 203568,
+      "float64Array": 35808,
+      "newtonRaphson": 23080,
+      "lockTopology": 20696,
+      "factorize": 13472
+    }
+  },
+  "interpretation": "Sampling covers the whole public parse/compile/solve workload. It is directional, not deterministic allocation accounting. No sparse numeric runtime or allocation change was justified by this profile."
+}

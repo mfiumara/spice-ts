@@ -89,6 +89,20 @@ At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-di
 |---|---|---|---|---|
 | Passive RC pulse-step transient | ngspice public corpus A [`tests/general/rc.cir`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/general/rc.cir), pinned revision `3ef069fb1f04177a153f342a32d941fc20ff047e` | BSD-3-Clause under the pinned ngspice [`COPYING`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/COPYING); retained at `benchmarks/corpus/ngspice/LICENSE.txt` | Redistribution is allowed. `rc-step.cir` keeps the public one-source, one-resistor, one-capacitor step-response topology. It scales R/C and stop time, names the output node, makes pulse rise/fall/width/period explicit, and removes output-only `.plot` and `.options` cards. The committed bytes are supplied unchanged to both engines. No tolerance differs by engine. SHA-256 is recorded by the focused report. | `benchmarks/wasm-rc-transient/rc-step.cir`; compare with `pnpm exec tsx benchmarks/wasm-rc-transient/compare.ts` using native ngspice and the explicit `spice-ts-wasm` backend. |
 
+## Bounded linear CCCS OP WASM fixtures
+
+- Source: project-authored reference circuits for [issue #309](https://github.com/mfiumara/spice-ts/issues/309), issue revision as of 2026-10-10.
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- Adaptation: none. The comparison runner reads each committed fixture once and supplies those exact bytes to the explicit `spice-ts-wasm` backend and ngspice-47. No engine-specific values, tolerances, or rewrites are used. `single-ended.cir` deliberately references the declared `VCTRL` branch as `vctrl` to verify SPICE-case-insensitive controller resolution in both engines.
+
+| Fixture | SHA-256 | Coverage |
+|---|---|---|
+| `benchmarks/wasm-cccs-op/differential.cir` | `5462c18de8ebc84a8566638bfd6c004523f7ab8a8c301f7de219687ce55592d8` | Differential CCCS output with negative source bias and gain. |
+| `benchmarks/wasm-cccs-op/mixed-source.cir` | `16c5dfc66b2d9a637104898a6228ac1def0120baed62df17d20c5a599aaad5b0` | Controller branch between an independent bias source and sense node. |
+| `benchmarks/wasm-cccs-op/single-ended.cir` | `66defab84846b8d5664fa5fc471e6d56c2060f3c647a824c8f3da141eab2e923` | Mixed-case controller lookup and single-ended output. |
+
+Reproduce with `pnpm --filter @spice-ts/wasm bench:cccs-op`. The JSON receipt records ngspice version, machine, fixture hashes, byte-identical inputs, convergence, scalar errors, runtimes, fixed-memory and artifact-size evidence, exclusions, and every retained loss.
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
@@ -121,6 +135,15 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 - Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
 - Adaptation: the committed four-point `R2` LIST grid is executed directly by spice-ts. ngspice-47 reports `unimplemented dot command '.step'`, so the comparison harness records that loss and expands the grid deterministically. At each matched value, the same expanded netlist bytes are supplied to both engines. The direct spice-ts result is also checked against its expanded single-point runs. No circuit value, tolerance, or engine-specific deck is used to hide an error.
 - Reproduce with `pnpm bench:stepped-tf`. The JSON receipt reports convergence at every step, deterministic order, max/RMS absolute and relative errors for transfer, input resistance, and output resistance, runtimes with process-boundary caveats, unsupported forms, and all retained losses.
+
+## Bounded TEMP LIST resistor-coefficient parity fixture
+
+- Fixture: `benchmarks/temp-step-resistor/temp-divider.cir`.
+- Source: project-authored public reference circuit for [issue #318](https://github.com/mfiumara/spice-ts/issues/318).
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- Adaptation: the committed `.step TEMP LIST -55 25 72` bytes are executed directly by spice-ts. ngspice-47 reports `unimplemented dot command '.step'`, so that loss is retained. For matched points, the harness evaluates the documented `R(T) = Rnom * (1 + TC1 * (T - TNOM))` relation and supplies one byte-identical expanded netlist to both engines at each temperature. Direct and expanded spice-ts results are compared with every residual retained. No engine-specific tolerance or circuit value is used.
+- Scope: a single case-insensitive LIST-only circuit-temperature target and linear resistor `TC1` behavior. `.temp`, nested steps, non-LIST TEMP sweeps, diode temperature/breakdown, and broad all-device temperature semantics remain unsupported or out of scope.
+- Reproduce with `pnpm bench:temp-step`. The JSON receipt records fixture and expanded hashes, versions, machine, step order, convergence, matched-point maximum/RMS absolute and relative error, runtimes, the direct ngspice loss, and expansion caveats.
 
 ## Bounded Gummel-Poon forward-active parity fixtures
 

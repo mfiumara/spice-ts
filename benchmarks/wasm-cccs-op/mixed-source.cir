@@ -1,0 +1,8 @@
+* Project-authored bounded CCCS OP fixture: sensed branch current
+VBIAS bias 0 3
+RCTRL bias sense 1k
+VSENSE sense 0 1
+F1 out 0 VSENSE 4
+RLOAD out 0 2k
+.op
+.end
