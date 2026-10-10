@@ -7,6 +7,10 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createSpiceEngine } from '../../../packages/wasm/dist/index.js';
 import { parseNgspiceRaw } from '../../comparison-harness.js';
+import {
+  readRevisionContext,
+  resolveMeasuredRevision,
+} from './receipt-revision.js';
 
 const directory = dirname(fileURLToPath(import.meta.url));
 const reportPath = resolve(directory, 'report.json');
@@ -121,6 +125,7 @@ function metric(reference: number, actual: number) {
 }
 
 async function main(): Promise<void> {
+  const revisionContext = readRevisionContext();
   const ngspiceVersion = version('ngspice', ['--version']);
   if (!/^ngspice-47\b/i.test(ngspiceVersion)) {
     throw new Error(`issue #355 requires ngspice-47, observed '${ngspiceVersion}'`);
@@ -172,7 +177,7 @@ async function main(): Promise<void> {
     },
     versions: {
       spiceTsBaseRevision: baselineRevision,
-      measuredRevision: version('git', ['rev-parse', 'HEAD']),
+      measuredRevision: resolveMeasuredRevision(revisionContext),
       node: process.version,
       pnpm: version('pnpm', ['--version']),
       ngspice: ngspiceVersion,
@@ -187,6 +192,7 @@ async function main(): Promise<void> {
       wasm: 'pnpm exec tsx benchmarks/results/issue-355/compare.ts --child=wasm',
       ngspice: 'ngspice -b -r <raw> <identical-netlist>',
       reproduce: 'pnpm --filter @spice-ts/wasm bench:vcvs-op',
+      verify: 'pnpm --filter @spice-ts/wasm bench:vcvs-op:check',
     },
     convergence: Object.fromEntries(wasm.map(fixture => [fixture.name, { wasm: 'complete', ngspice: 'complete' }])),
     counts: {
