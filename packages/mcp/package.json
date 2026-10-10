@@ -35,9 +35,10 @@
     "prebuild": "pnpm -C ../core build && pnpm -C ../protocol build",
     "build": "tsup",
     "pretest": "pnpm -C ../core build && pnpm -C ../protocol build",
-    "test": "vitest run",
+    "test": "vitest run && pnpm test:packed-consumer",
     "pretest:coverage": "pnpm -C ../core build && pnpm -C ../protocol build",
-    "test:coverage": "vitest run",
+    "test:coverage": "vitest run && pnpm test:packed-consumer",
+    "test:packed-consumer": "pnpm build && node scripts/packed-consumer.mjs",
     "prelint": "pnpm -C ../core build && pnpm -C ../protocol build",
     "lint": "tsc --noEmit",
     "example": "tsx examples/agent.ts"
