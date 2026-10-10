@@ -24,6 +24,48 @@ int max_order(void) {
   return MAX_ORDER;
 }
 
+static int valid_node(int node, int order) {
+  return node >= -1 && node < order;
+}
+
+__attribute__((export_name("stamp_vccs_f64")))
+int stamp_vccs_f64(
+  int order,
+  double *matrix,
+  int output_positive,
+  int output_negative,
+  int control_positive,
+  int control_negative,
+  double transconductance
+) {
+  if (order < 1 || order > MAX_ORDER || matrix == 0 || ((unsigned long)matrix & 7)
+      || !valid_node(output_positive, order) || !valid_node(output_negative, order)
+      || !valid_node(control_positive, order) || !valid_node(control_negative, order)) return 3;
+  if (!finite(transconductance)) return 2;
+
+  if (output_positive >= 0 && control_positive >= 0) {
+    int index = output_positive * order + control_positive;
+    matrix[index] += transconductance;
+    if (!finite(matrix[index])) return 2;
+  }
+  if (output_positive >= 0 && control_negative >= 0) {
+    int index = output_positive * order + control_negative;
+    matrix[index] -= transconductance;
+    if (!finite(matrix[index])) return 2;
+  }
+  if (output_negative >= 0 && control_positive >= 0) {
+    int index = output_negative * order + control_positive;
+    matrix[index] -= transconductance;
+    if (!finite(matrix[index])) return 2;
+  }
+  if (output_negative >= 0 && control_negative >= 0) {
+    int index = output_negative * order + control_negative;
+    matrix[index] += transconductance;
+    if (!finite(matrix[index])) return 2;
+  }
+  return 0;
+}
+
 __attribute__((export_name("solve_f64")))
 int solve_f64(int order, double *matrix, double *rhs) {
   if (order < 1 || order > MAX_ORDER || matrix == 0 || rhs == 0) return 3;
