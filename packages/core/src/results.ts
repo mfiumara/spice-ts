@@ -363,7 +363,7 @@ export interface SimulationResult {
   ac?: ACResult;
   /** Resistor-noise spectral result (from `.noise`) */
   noise?: NoiseResult;
-  /** Bounded ideal-linear harmonic or intermodulation result (from `.disto`). */
+  /** Bounded harmonic or intermodulation result (from `.disto`). */
   distortion?: DistortionResult;
   /** DC small-signal transfer function (from `.tf`) */
   transferFunction?: TransferFunctionResult;

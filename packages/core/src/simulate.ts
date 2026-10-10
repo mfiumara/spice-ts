@@ -12,8 +12,9 @@ import { solveTransferFunction } from './analysis/transfer-function.js';
 import { solvePoleZero } from './analysis/pole-zero.js';
 import { solveSensitivity } from './analysis/sensitivity.js';
 import {
-  assertLinearDistortionSupported, solveLinearDistortion,
+  assertDistortionSupported, solveDistortion,
 } from './analysis/distortion.js';
+import { Diode } from './devices/diode.js';
 import { solveDCSweep } from './analysis/dc-sweep.js';
 import { solveStep, generateStepValues, resolveStepTarget } from './analysis/step.js';
 import type { StepStreamEvent, StepAnalysis } from './types.js';
@@ -181,10 +182,20 @@ export async function simulate(
         break;
       }
       case 'disto': {
-        assertLinearDistortionSupported(compiled, analysis);
+        assertDistortionSupported(compiled, analysis);
         const opts = resolveOptions(options);
-        solveDCOperatingPoint(compiled, opts, undefined, convergence, 'operating-point', guard);
-        result.distortion = solveLinearDistortion(compiled, analysis, guard);
+        const diodes = compiled.devices.filter((device): device is Diode => device instanceof Diode);
+        for (const diode of diodes) diode.setDistortionMode(true);
+        try {
+          const { assembler: dcAsm } = solveDCOperatingPoint(
+            compiled, opts, undefined, convergence, 'operating-point', guard,
+          );
+          result.distortion = solveDistortion(
+            compiled, analysis, opts, dcAsm.solution, guard,
+          );
+        } finally {
+          for (const diode of diodes) diode.setDistortionMode(false);
+        }
         break;
       }
       case 'tf': {
