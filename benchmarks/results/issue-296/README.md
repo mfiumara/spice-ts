@@ -59,7 +59,7 @@ git diff --check
 PASS.
 ```
 
-Exact-head CI and independent review are recorded on PR #296's delivery.
+Exact-head CI and independent review are recorded on delivery PR [#297](https://github.com/mfiumara/spice-ts/pull/297).
 
 ## `/poteto-mode` receipt
 
