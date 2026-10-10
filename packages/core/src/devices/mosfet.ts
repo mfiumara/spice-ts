@@ -24,12 +24,92 @@ export interface MOSFETOperatingPoint {
 const GMIN = 1e-12;
 // Keep source-ramp Newton iterates finite without clipping ordinary supply steps.
 const MAX_NEWTON_TERMINAL_STEP = 10;
+// ngspice CONSTKoverQ (const.h) at the default 27 C circuit temperature.
+const JUNCTION_VT = (1.38064852e-23 / 1.6021766208e-19) * 300.15;
+const MAX_EXP_ARG = 709;
+
+/**
+ * ngspice mos1load.c bulk junction (bulk-source or bulk-drain), in the
+ * polarity-adjusted domain. Writes [conductance, current] into `out`.
+ */
+function bulkJunction(voltage: number, saturationCurrent: number, out: Float64Array, offset: number): void {
+  if (voltage <= -3 * JUNCTION_VT) {
+    out[offset] = GMIN;
+    out[offset + 1] = GMIN * voltage - saturationCurrent;
+    return;
+  }
+  const expTerm = Math.exp(Math.min(MAX_EXP_ARG, voltage / JUNCTION_VT));
+  out[offset] = saturationCurrent * expTerm / JUNCTION_VT + GMIN;
+  out[offset + 1] = saturationCurrent * (expTerm - 1) + GMIN * voltage;
+}
+
+/** ngspice devsup.c DEVpnjlim: limit a junction voltage step from `previous`. */
+function pnjlim(proposed: number, previous: number, criticalVoltage: number): number {
+  const vt = JUNCTION_VT;
+  if (proposed > criticalVoltage && Math.abs(proposed - previous) > 2 * vt) {
+    if (previous > 0) {
+      const argument = (proposed - previous) / vt;
+      return argument > 0
+        ? previous + vt * (2 + Math.log(argument - 2))
+        : previous - vt * (2 + Math.log(2 - argument));
+    }
+    return vt * Math.log(proposed / vt);
+  }
+  if (proposed < 0) {
+    const floor = previous > 0 ? -previous - 1 : 2 * previous - 1;
+    return Math.max(proposed, floor);
+  }
+  return proposed;
+}
+
+function criticalVoltage(saturationCurrent: number): number {
+  return saturationCurrent > 0
+    ? JUNCTION_VT * Math.log(JUNCTION_VT / (Math.SQRT2 * saturationCurrent))
+    : Infinity;
+}
+
+/** Reused [gbs, ceqbs, gbd, ceqbd] buffer; consumed immediately by each stamp. */
+const junctionScratch = new Float64Array(4);
+
+/** ngspice devsup.c DEVfetlim: limit a gate voltage step around threshold `vto`. */
+function fetlim(vnew: number, vold: number, vto: number): number {
+  const vtsthi = Math.abs(2 * (vold - vto)) + 2;
+  const vtstlo = Math.abs(vold - vto) + 1;
+  const vtox = vto + 3.5;
+  const delv = vnew - vold;
+  if (vold >= vto) {
+    if (vold >= vtox) {
+      if (delv <= 0) {
+        // going off
+        if (vnew >= vtox) return -delv > vtstlo ? vold - vtstlo : vnew;
+        return Math.max(vnew, vto + 2);
+      }
+      // staying on
+      return delv >= vtsthi ? vold + vtsthi : vnew;
+    }
+    // middle region
+    return delv <= 0 ? Math.max(vnew, vto - 0.5) : Math.min(vnew, vto + 4);
+  }
+  // off
+  if (delv <= 0) return -delv > vtsthi ? vold - vtsthi : vnew;
+  const vtemp = vto + 0.5;
+  if (vnew <= vtemp) return delv > vtstlo ? vold + vtstlo : vnew;
+  return vtemp;
+}
 
 export class MOSFET implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
   readonly params: MOSFETParams;
   readonly suppliedParams: Readonly<Record<string, number>>;
+  /** Bulk-drain / bulk-source junction saturation currents (mos1temp.c at TNOM). */
+  readonly drainSatCur: number;
+  readonly sourceSatCur: number;
+  private readonly drainVcrit: number;
+  private readonly sourceVcrit: number;
+  /** Junction voltages used by the previous stamp (ngspice CKTstate0 vbs/vbd). */
+  private lastVbs = 0;
+  private lastVbd = 0;
 
   constructor(
     readonly name: string,
@@ -50,6 +130,49 @@ export class MOSFET implements DeviceModel {
       TOX: params.TOX,
       polarity: params.polarity ?? 1,
     };
+    // mos1load.c: JS*AD / JS*AS only when JS and both areas are non-zero.
+    const saturationCurrent = params.IS ?? 1e-14;
+    const saturationDensity = params.JS ?? 0;
+    const drainArea = params.AD ?? 0;
+    const sourceArea = params.AS ?? 0;
+    const useDensity = saturationDensity !== 0 && drainArea !== 0 && sourceArea !== 0;
+    this.drainSatCur = useDensity ? saturationDensity * drainArea : saturationCurrent;
+    this.sourceSatCur = useDensity ? saturationDensity * sourceArea : saturationCurrent;
+    this.drainVcrit = criticalVoltage(this.drainSatCur);
+    this.sourceVcrit = criticalVoltage(this.sourceSatCur);
+  }
+
+  private get bulkNode(): number {
+    return this.nodes[3] ?? this.nodes[2];
+  }
+
+  /**
+   * Evaluate both bulk junctions at the given terminal voltages. Writes
+   * [gbs, ceqbs, gbd, ceqbd] (ngspice mos1load.c companion terms, polarity
+   * domain) into junctionScratch. As in mos1load.c, vbs is limited with
+   * DEVpnjlim when vds >= 0 (vbd otherwise) against the previous stamp, so a
+   * converged Newton point is evaluated without limiting.
+   */
+  private evaluateBulkJunctions(vD: number, vS: number, vB: number): Float64Array {
+    const polarity = this.params.polarity;
+    const vds = polarity * (vD - vS);
+    let vbs = polarity * (vB - vS);
+    let vbd = vbs - vds;
+    if (vds >= 0) {
+      vbs = pnjlim(vbs, this.lastVbs, this.sourceVcrit);
+      vbd = vbs - vds;
+    } else {
+      vbd = pnjlim(vbd, this.lastVbd, this.drainVcrit);
+      vbs = vbd + vds;
+    }
+    this.lastVbs = vbs;
+    this.lastVbd = vbd;
+    const out = junctionScratch;
+    bulkJunction(vbs, this.sourceSatCur, out, 0);
+    bulkJunction(vbd, this.drainSatCur, out, 2);
+    out[1] -= out[0] * vbs;
+    out[3] -= out[2] * vbd;
+    return out;
   }
 
   limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {
@@ -61,9 +184,29 @@ export class MOSFET implements DeviceModel {
     const vgsStep = Math.abs(terminal(candidate, nG, nS) - terminal(previous, nG, nS));
     const vdsStep = Math.abs(terminal(candidate, nD, nS) - terminal(previous, nD, nS));
     const largestStep = Math.max(vgsStep, vdsStep);
-    return largestStep > MAX_NEWTON_TERMINAL_STEP
+    const terminalScale = largestStep > MAX_NEWTON_TERMINAL_STEP
       ? MAX_NEWTON_TERMINAL_STEP / largestStep
       : 1;
+    return Math.min(terminalScale, this.gateStepScale(previous, candidate));
+  }
+
+  /**
+   * mos1load.c applies DEVfetlim to vgs (vds >= 0) or vgd (vds < 0). spice-ts
+   * turns the limited gate voltage into a scale on the whole Newton step.
+   */
+  private gateStepScale(previous: Float64Array, candidate: Float64Array): number {
+    const { polarity, VTO } = this.params;
+    const [nD, nG, nS] = this.nodes;
+    const voltage = (solution: Float64Array, node: number): number =>
+      node >= 0 ? solution[node] : 0;
+    const previousVds = polarity * (voltage(previous, nD) - voltage(previous, nS));
+    const reference = previousVds >= 0 ? nS : nD;
+    const previousGate = polarity * (voltage(previous, nG) - voltage(previous, reference));
+    const proposedGate = polarity * (voltage(candidate, nG) - voltage(candidate, reference));
+    const delta = proposedGate - previousGate;
+    if (delta === 0) return 1;
+    const limited = fetlim(proposedGate, previousGate, Math.abs(VTO));
+    return Math.min(1, Math.max(0, (limited - previousGate) / delta));
   }
 
   /** Level-1 DC quantities used by the small-signal noise generators. */
@@ -188,6 +331,33 @@ export class MOSFET implements DeviceModel {
       if (nS >= 0) ctx.stampG(nS, nS, gm + gds);
       ctx.stampB(nS, polarity * Ieq);
     }
+
+    // Bulk-source / bulk-drain junctions use the unswapped terminals.
+    const [jD, , jS] = this.nodes;
+    const jB = this.bulkNode;
+    const junction = this.evaluateBulkJunctions(
+      vD, vS, jB >= 0 ? ctx.getVoltage(jB) : 0,
+    );
+    const gbs = junction[0];
+    const gbd = junction[2];
+    const ceqbs = polarity * junction[1];
+    const ceqbd = polarity * junction[3];
+    if (jB >= 0) {
+      ctx.stampG(jB, jB, gbs + gbd);
+      if (jS >= 0) ctx.stampG(jB, jS, -gbs);
+      if (jD >= 0) ctx.stampG(jB, jD, -gbd);
+      ctx.stampB(jB, -(ceqbs + ceqbd));
+    }
+    if (jS >= 0) {
+      ctx.stampG(jS, jS, gbs);
+      if (jB >= 0) ctx.stampG(jS, jB, -gbs);
+      ctx.stampB(jS, ceqbs);
+    }
+    if (jD >= 0) {
+      ctx.stampG(jD, jD, gbd);
+      if (jB >= 0) ctx.stampG(jD, jB, -gbd);
+      ctx.stampB(jD, ceqbd);
+    }
   }
 
   stampDynamic(ctx: StampContext): void {
@@ -298,6 +468,31 @@ export class MOSFET implements DeviceModel {
         if (nD >= 0) gValues[stampIndex(nS, nD)] -= gds;
         if (nS >= 0) gValues[stampIndex(nS, nS)] += (gm + gds);
         b[nS] += polarity * Ieq;
+      }
+
+      // Bulk-source / bulk-drain junctions use the unswapped terminals.
+      const [jD, , jS] = mosfet.nodes;
+      const jB = mosfet.bulkNode;
+      const junction = mosfet.evaluateBulkJunctions(vD, vS, jB >= 0 ? solution[jB] : 0);
+      const gbs = junction[0];
+      const gbd = junction[2];
+      const ceqbs = polarity * junction[1];
+      const ceqbd = polarity * junction[3];
+      if (jB >= 0) {
+        gValues[stampIndex(jB, jB)] += gbs + gbd;
+        if (jS >= 0) gValues[stampIndex(jB, jS)] -= gbs;
+        if (jD >= 0) gValues[stampIndex(jB, jD)] -= gbd;
+        b[jB] -= ceqbs + ceqbd;
+      }
+      if (jS >= 0) {
+        gValues[stampIndex(jS, jS)] += gbs;
+        if (jB >= 0) gValues[stampIndex(jS, jB)] -= gbs;
+        b[jS] += ceqbs;
+      }
+      if (jD >= 0) {
+        gValues[stampIndex(jD, jD)] += gbd;
+        if (jB >= 0) gValues[stampIndex(jD, jB)] -= gbd;
+        b[jD] += ceqbd;
       }
     }
   }
