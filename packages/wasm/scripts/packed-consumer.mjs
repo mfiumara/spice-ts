@@ -52,14 +52,19 @@ try {
   writeFileSync(join(consumerRoot, 'consume.mjs'), `
     import { createSpiceEngine } from '@spice-ts/wasm';
     const engine = await createSpiceEngine({ backend: 'spice-ts-wasm' });
+    if (engine.capabilities.numericWasm?.kernel !== 'dense-gaussian-complex-f64-v2'
+      || !engine.capabilities.analyses.includes('ac')) throw new Error('missing packed AC capability');
     const result = await engine.simulate({
       apiVersion: '1',
-      input: { format: 'spice', source: 'V1 in 0 12\\nR1 in out 2k\\nR2 out 0 1k\\n.op' },
+      input: { format: 'spice', source: 'V1 in 0 AC 1\\nR1 in out 1k\\nC1 out 0 1u\\n.ac lin 1 100 100' },
     }, { requestId: 'packed-wasm' });
     await engine.close();
     const analysis = result.ok ? result.data.analyses[0] : undefined;
+    const output = analysis?.type === 'ac' ? analysis.voltagePhasors.out?.[0] : undefined;
     if (!result.ok || result.metadata.backend !== 'spice-ts-wasm'
-      || analysis?.type !== 'op' || analysis.voltagesV.out !== 4) {
+      || analysis?.type !== 'ac' || !output
+      || Math.abs(output.magnitude - 0.8467330159648304) > 1e-12
+      || Math.abs(output.phaseDegrees - -32.141907635342065) > 1e-10) {
       throw new Error(JSON.stringify(result));
     }
   `);

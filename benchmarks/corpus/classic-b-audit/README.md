@@ -1,15 +1,15 @@
 # Classic SPICE3 corpus-B failure audit
 
-Evidence suite SHA-256: `6ef2432336c10a24d11235fb88eff7c0d7d64bdad92c055f879a95e5bec63d9a`.
+Evidence suite SHA-256: `f1971684e48abfcce486b5ac2e6d8cb6047057d79ddbee115680eaefccb6c815`.
 
 ## Scope and totals
 
 All 20 provenance-tracked fixtures ran unchanged through the existing ngspice and spice-ts paths. Fixture adaptation: none.
 
 - ngspice: 19 success, 1 failed, 0 unsupported.
-- spice-ts: 2 success, 0 failed, 18 unsupported.
-- spice-ts losses: 18. Parser feature 13; unsupported analysis/device 5; convergence 0; execution 0.
-- spice-ts parity candidates: 2. These are not parity claims because this audit does not compare numeric tolerances.
+- spice-ts: 6 success, 3 failed, 11 unsupported.
+- spice-ts losses: 14. Parser feature 5; unsupported analysis/device 6; convergence 3; execution 0.
+- spice-ts parity candidates: 6. These are not parity claims because this audit does not compare numeric tolerances.
 
 ## Environment
 
@@ -35,24 +35,24 @@ All 20 provenance-tracked fixtures ran unchanged through the existing ngspice an
 | Fixture | ngspice | spice-ts | Classification | Cause | Evidence SHA-256 |
 |---|---|---|---|---|---|
 | bjt-noise | success | unsupported | parser-feature | other-parser-feature | `cf571d7bd460644e582e7f44e233806e96e535c8aa41d941da906bd22f125fb2` |
-| bsim1-device-sweep | success | unsupported | parser-feature | legacy-output-limit-option | `d00672c621fbdc5d58df099bb979904a4d231f53e273ca77d7074355276a8963` |
-| bsim2-device-sweep | success | unsupported | parser-feature | legacy-output-limit-option | `95da94dc7eabfeb0a5ecf9a99bf26b3ccbcd0febf884d55cec8ac916941f4b5d` |
-| bjt-differential-pair | success | unsupported | parser-feature | legacy-options-directive | `ee2d3b6cac7908539a644f0d18d056476b628073826b33377e93b581dd7d9ed0` |
+| bsim1-device-sweep | success | success | none | parity candidate | `4505ba9bfaad21c128d786aad5dde02dc0c5499434db09114b3300b470294d7e` |
+| bsim2-device-sweep | success | success | none | parity candidate | `af6ff620fdcde68f58aa63d6098055149c46267715819da3ee3d13e27628ca2a` |
+| bjt-differential-pair | success | success | none | parity candidate | `19382fed68a1a77e2682eac95f5cae0f2716428a031dbe4cc840c2f2442a07a0` |
 | diode-distortion | success | unsupported | parser-feature | other-parser-feature | `731b7993db5ad051cba5cdf9fd0f385826a5f9b58ff2e062245ae05bff8fb1d4` |
 | lossy-line-24-inch | success | unsupported | unsupported-analysis/device | ltra-device | `5820ba7ce4a1b1c30e58998c6dd95a07458e11f31bd6ae4e4aea74c1c8900b63` |
 | lossy-line-aluminium | success | unsupported | unsupported-analysis/device | ltra-device | `c6d6fad16a349ec19d1fb33ac37013777b5dfa3a8a2856eb4902a4d457f1941d` |
-| coupled-lossy-lines | success | unsupported | parser-feature | legacy-iteration-option | `687d8ac74e477901ab0ef536ecd4c9a2ef5eb6379a39f22a27e30dbbc0dc8d92` |
+| coupled-lossy-lines | success | unsupported | unsupported-analysis/device | ltra-device | `a1820c7931664ceae464f4d5508c447aeaeb6ade6f35af092be5373d67cb7e47` |
 | bjt-mixer-distortion | failed | unsupported | parser-feature | other-parser-feature | `394f50c47632e5b712f65cea585512685cd468da96d944aba39e8b0162f7f1b0` |
-| mos6-inverter-chain | success | unsupported | parser-feature | legacy-accounting-option | `8c8f8e14e83976ed19bebd61331e059aed24578b092c52e78e65262a8dd82b50` |
-| mos-amplifier | success | unsupported | parser-feature | legacy-accounting-option | `07badbb23041a003d49cd05684a36b94931740fcb5a6fc990f487340ec6e1af4` |
-| mos-memory-cell | success | unsupported | parser-feature | legacy-output-directive | `04d01cbb452ad5eb1885dd2121b080a4e6e0a3a5ef5d9b90726887682f09eed6` |
+| mos6-inverter-chain | success | failed | convergence | solver-convergence | `0ab45bd42ddedecb58a0ea6d8f9275aca1c1110afc9080f78ca7565462d6256e` |
+| mos-amplifier | success | failed | convergence | solver-convergence | `97b49a4a0f955508c4847aa652d0e407f0ed5ee72554fb2838d2c1a6dcd54b4c` |
+| mos-memory-cell | success | failed | convergence | solver-convergence | `762affdfe6b5af3c4b1857e4e4b9d52730fd782b408cab354d0764ddd6898e66` |
 | pole-zero-four-stage | success | unsupported | unsupported-analysis/device | pole-zero-analysis | `730ac7421ecf45ebeed0f7843e3e40bc5b9af4b689485defb6e9eeefcd690721` |
 | pole-zero-three-stage | success | unsupported | unsupported-analysis/device | pole-zero-analysis | `a049312596b097c4708d732dd2094e427694357e01297a9f7b332e9ea8400286` |
 | rc-transient | success | success | none | parity candidate | `92ef236e38d8426dd70b12ad1de0f8fee23a91b3719d736bacbfb2715914bb16` |
 | rca3040-wideband-amplifier | success | success | none | parity candidate | `5a1122a5ed8c2f62e890b611a98e65c7826ddb222ba3b913e991c241c1075b1a` |
 | resistor-noise | success | unsupported | parser-feature | other-parser-feature | `b099f2fa10c9fb13576a189fd216476be1cbf7e67157c8d242f0522b84e5f266` |
-| rtl-inverter-chain | success | unsupported | parser-feature | legacy-output-directive | `36af5f576352a85d1a131099cb1e602f0945dee96653df800cdd3f41099df2bd` |
-| ecl-schmitt-trigger | success | unsupported | parser-feature | legacy-output-directive | `a36aa1983ed4ebb1f16ab0d54ec921123fe24e8ae0a14c229ec86b4c435decb6` |
+| rtl-inverter-chain | success | success | none | parity candidate | `7c898c8358c833a029da9817d0e10aa79e9b0f9c19981384e4b5fd76ca5b49de` |
+| ecl-schmitt-trigger | success | unsupported | parser-feature | other-parser-feature | `4a9d82abd3c375c3e3bbf7f91c8ff3e7e1c4a1b7dc92059ffc1ee85f861d0b7c` |
 | high-pass-pole-zero | success | unsupported | unsupported-analysis/device | pole-zero-analysis | `e84e9ed8d324193a8da0840680f9b5cc0d15c7ed8c51ddfa4dfcd1736c36cda1` |
 
 ## Failure evidence
@@ -64,30 +64,6 @@ All 20 provenance-tracked fixtures ran unchanged through the existing ngspice an
 - spice-ts: unsupported, not-run, parser-feature/other-parser-feature, signature `other-parser-error`
 - Error: `Parse error at line 15: Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop' .noise v ( 3 ) vin dec 10 10 100k 1`
 - Evidence SHA-256: `cf571d7bd460644e582e7f44e233806e96e535c8aa41d941da906bd22f125fb2`
-
-### bsim1-device-sweep
-
-- Input SHA-256: `dffabf12d196b6b3d5ac058f7a402ee0dbb51c597c23599379f0502e84088062`
-- ngspice: success, converged
-- spice-ts: unsupported, not-run, parser-feature/legacy-output-limit-option, signature `unsupported-option-limpts`
-- Error: `Parse error at line 21: Unsupported .options field: 'limpts' .OPTIONS LIMPTS=5000 ACCT`
-- Evidence SHA-256: `d00672c621fbdc5d58df099bb979904a4d231f53e273ca77d7074355276a8963`
-
-### bsim2-device-sweep
-
-- Input SHA-256: `ff2da08b0c8db25fe617c9f1ba2f99d5169c26b8167b30258a1631d93b79beee`
-- ngspice: success, converged
-- spice-ts: unsupported, not-run, parser-feature/legacy-output-limit-option, signature `unsupported-option-limpts`
-- Error: `Parse error at line 21: Unsupported .options field: 'limpts' .OPTIONS LIMPTS=5000 ACCT`
-- Evidence SHA-256: `95da94dc7eabfeb0a5ecf9a99bf26b3ccbcd0febf884d55cec8ac916941f4b5d`
-
-### bjt-differential-pair
-
-- Input SHA-256: `d67594a868128d758cfa593047884990abff05d7ee4cc050afca8a152ace3add`
-- ngspice: success, converged
-- spice-ts: unsupported, not-run, parser-feature/legacy-options-directive, signature `unsupported-dot-opt`
-- Error: `Parse error at line 3: Unsupported dot command: '.opt' .opt acct list node lvlcod=2`
-- Evidence SHA-256: `ee2d3b6cac7908539a644f0d18d056476b628073826b33377e93b581dd7d9ed0`
 
 ### diode-distortion
 
@@ -117,9 +93,9 @@ All 20 provenance-tracked fixtures ran unchanged through the existing ngspice an
 
 - Input SHA-256: `1927a2a547342e6c60ab1e0489c26d5ca7e92f36d5b08f6a03690b95aa7448b3`
 - ngspice: success, converged
-- spice-ts: unsupported, not-run, parser-feature/legacy-iteration-option, signature `unsupported-option-itl5`
-- Error: `Parse error at line 81: Unsupported .options field: 'itl5' .options itl5=0 acct reltol=1e-3 abstol=1e-12`
-- Evidence SHA-256: `687d8ac74e477901ab0ef536ecd4c9a2ef5eb6379a39f22a27e30dbbc0dc8d92`
+- spice-ts: unsupported, not-run, unsupported-analysis/device/ltra-device, signature `unsupported-ltra-card`
+- Error: `Parse error at line 249: Lossy transmission line model LTRA is unsupported; use the bounded lossless T-card Z0/TD form .model llfifth ltra nocontrol rel=10 r=0 g=0 l=9.13e-9 c=3.65e-12 len=0.2 steplimit quadinterp`
+- Evidence SHA-256: `a1820c7931664ceae464f4d5508c447aeaeb6ade6f35af092be5373d67cb7e47`
 
 ### bjt-mixer-distortion
 
@@ -133,25 +109,25 @@ All 20 provenance-tracked fixtures ran unchanged through the existing ngspice an
 
 - Input SHA-256: `60f1f49e2f9ac1eccf6bbf717b3c177de885e1e2438b175db4a4360bfe080434`
 - ngspice: success, converged
-- spice-ts: unsupported, not-run, parser-feature/legacy-accounting-option, signature `unsupported-option-acct`
-- Error: `Parse error at line 44: Unsupported .options field: 'ACCT' .OPTIONS ACCT`
-- Evidence SHA-256: `8c8f8e14e83976ed19bebd61331e059aed24578b092c52e78e65262a8dd82b50`
+- spice-ts: failed, failed, convergence/solver-convergence, signature `convergence-error`
+- Error: `Timestep too small at t=3.071226114412814e-8: dt=6.362405548354911e-16`
+- Evidence SHA-256: `0ab45bd42ddedecb58a0ea6d8f9275aca1c1110afc9080f78ca7565462d6256e`
 
 ### mos-amplifier
 
 - Input SHA-256: `d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469`
 - ngspice: success, converged
-- spice-ts: unsupported, not-run, parser-feature/legacy-accounting-option, signature `unsupported-option-acct`
-- Error: `Parse error at line 2: Unsupported .options field: 'acct' .options acct abstol=10n vntol=10n`
-- Evidence SHA-256: `07badbb23041a003d49cd05684a36b94931740fcb5a6fc990f487340ec6e1af4`
+- spice-ts: failed, failed, convergence/solver-convergence, signature `convergence-error`
+- Error: `Singular matrix: zero pivot at matrix column 22 (nodes: ; branches: vddn)`
+- Evidence SHA-256: `97b49a4a0f955508c4847aa652d0e407f0ed5ee72554fb2838d2c1a6dcd54b4c`
 
 ### mos-memory-cell
 
 - Input SHA-256: `f63d832e7e63dd866e528d6e41eb653859243fdbfed48a83e55d9274e111859d`
 - ngspice: success, converged
-- spice-ts: unsupported, not-run, parser-feature/legacy-output-directive, signature `unsupported-dot-width`
-- Error: `Parse error at line 2: Unsupported dot command: '.width' .width in=72`
-- Evidence SHA-256: `04d01cbb452ad5eb1885dd2121b080a4e6e0a3a5ef5d9b90726887682f09eed6`
+- spice-ts: failed, failed, convergence/solver-convergence, signature `convergence-error`
+- Error: `Timestep too small at t=2.9772551177916905e-8: dt=7.331183713840461e-16`
+- Evidence SHA-256: `762affdfe6b5af3c4b1857e4e4b9d52730fd782b408cab354d0764ddd6898e66`
 
 ### pole-zero-four-stage
 
@@ -177,21 +153,13 @@ All 20 provenance-tracked fixtures ran unchanged through the existing ngspice an
 - Error: `Parse error at line 14: Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop' .noise v ( 1 ) iin dec 10 10 100k 1`
 - Evidence SHA-256: `b099f2fa10c9fb13576a189fd216476be1cbf7e67157c8d242f0522b84e5f266`
 
-### rtl-inverter-chain
-
-- Input SHA-256: `29aa3c8914aa7908881b4ab2657c23b5c4877811f09d1526ea6d5c833fce95c0`
-- ngspice: success, converged
-- spice-ts: unsupported, not-run, parser-feature/legacy-output-directive, signature `unsupported-dot-width`
-- Error: `Parse error at line 2: Unsupported dot command: '.width' .width in=72`
-- Evidence SHA-256: `36af5f576352a85d1a131099cb1e602f0945dee96653df800cdd3f41099df2bd`
-
 ### ecl-schmitt-trigger
 
 - Input SHA-256: `ad673d52014030a49980fcbafeda898d547ab701fb5cf8eeaf374c9338324a31`
 - ngspice: success, converged
-- spice-ts: unsupported, not-run, parser-feature/legacy-output-directive, signature `unsupported-dot-width`
-- Error: `Parse error at line 2: Unsupported dot command: '.width' .width in=72`
-- Evidence SHA-256: `a36aa1983ed4ebb1f16ab0d54ec921123fe24e8ae0a14c229ec86b4c435decb6`
+- spice-ts: unsupported, not-run, parser-feature/other-parser-feature, signature `other-parser-error`
+- Error: `Parse error at line 16: Unsupported BJT Q-card form: 'q1 3 2 4 qstd off' q1 3 2 4 qstd off`
+- Evidence SHA-256: `4a9d82abd3c375c3e3bbf7f91c8ff3e7e1c4a1b7dc92059ffc1ee85f861d0b7c`
 
 ### high-pass-pole-zero
 

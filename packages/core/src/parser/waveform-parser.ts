@@ -1,12 +1,16 @@
 import { parseNumber } from './tokenizer.js';
 import type {
-  DistortionExcitation, SourceWaveform, PulseSource, SinSource, PWLSource,
+  ACExcitation, DistortionExcitation, SourceWaveform, PulseSource, SinSource, PWLSource,
 } from '../types.js';
 
 const UNSUPPORTED_WAVEFORMS = new Set(['EXP', 'SFFM', 'AM', 'TRNOISE', 'EXTERNAL']);
 
 export function parseSourceWaveform(tokens: string[], startIdx: number): SourceWaveform {
-  const { baseTokens, distortionF1, distortionF2 } = extractDistortionTerms(tokens, startIdx);
+  const normalizedTokens = normalizeSourceAssignments(tokens, startIdx);
+  const { baseTokens, distortionF1, distortionF2 } = extractDistortionTerms(
+    normalizedTokens,
+    startIdx,
+  );
   return {
     ...parseBaseSourceWaveform(baseTokens, startIdx),
     ...(distortionF1 ? { distortionF1 } : {}),
@@ -24,35 +28,21 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
   const upper = tokens.slice(startIdx).map(t => t.toUpperCase());
   const dcIdx = upper.indexOf('DC');
   const acIdx = upper.indexOf('AC');
-  if (acIdx >= 0) {
-    const absIdx = startIdx + acIdx;
-    const magnitude = tokens[absIdx + 1] === undefined ? 1 : parseNumber(tokens[absIdx + 1]);
-    const maybePhase = tokens[absIdx + 2]?.toUpperCase();
-    const phase = (maybePhase && !SOURCE_KEYWORDS.has(maybePhase) && !maybePhase.startsWith('.'))
-      ? parseNumber(tokens[absIdx + 2])
-      : 0;
-    let dc = 0;
-    if (dcIdx >= 0) {
-      dc = parseNumber(tokens[startIdx + dcIdx + 1]);
-    } else if (acIdx > 0) {
-      try {
-        dc = parseNumber(tokens[startIdx]);
-      } catch {
-        dc = 0;
-      }
-    }
-    return { type: 'ac', dc, magnitude, phase };
-  }
-
-  // A transient waveform may follow an explicit operating-point value, as in
-  // `DC 0 SIN(...)`. Prefer that waveform for transient evaluation while
-  // retaining the existing standalone DC and waveform forms.
   const waveformOffset = upper.findIndex(token =>
     token === 'PULSE'
     || token === 'SIN'
     || token === 'SINE'
     || token === 'PWL'
     || UNSUPPORTED_WAVEFORMS.has(token));
+  const ac = acIdx >= 0 ? parseACExcitation(tokens, startIdx + acIdx) : undefined;
+  const dc = parseOperatingPoint(tokens, startIdx, dcIdx, acIdx, waveformOffset);
+
+  if (ac && waveformOffset < 0) {
+    return { type: 'ac', dc: dc ?? 0, ...ac };
+  }
+
+  // A transient waveform may follow operating-point and AC terms. Prefer that
+  // waveform for transient evaluation while retaining every coexisting term.
   const waveformIdx = waveformOffset >= 0 ? startIdx + waveformOffset : startIdx;
   const keyword = tokens[waveformIdx].toUpperCase();
 
@@ -67,10 +57,12 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
   }
 
   if (keyword === 'PULSE') {
-    const parenStart = tokens.indexOf('(', waveformIdx);
-    const parenEnd = tokens.indexOf(')', waveformIdx);
-    const args = tokens.slice(parenStart + 1, parenEnd).map(parseNumber);
+    const args = parseWaveformArguments(
+      tokens, waveformIdx, acIdx >= 0 ? startIdx + acIdx : -1, 7, 'PULSE',
+    );
     return {
+      ...(dc !== undefined ? { dc } : {}),
+      ...(ac ? { ac } : {}),
       type: 'pulse', v1: args[0] ?? 0, v2: args[1] ?? 0,
       delay: args[2] ?? 0, rise: args[3] ?? 1e-12, fall: args[4] ?? 1e-12,
       width: args[5] ?? Infinity, period: args[6] ?? Infinity,
@@ -78,11 +70,12 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
   }
 
   if (keyword === 'SIN' || keyword === 'SINE') {
-    const parenStart = tokens.indexOf('(', waveformIdx);
-    const parenEnd = tokens.indexOf(')', waveformIdx);
-    const args = tokens.slice(parenStart + 1, parenEnd).map(parseNumber);
+    const args = parseWaveformArguments(
+      tokens, waveformIdx, acIdx >= 0 ? startIdx + acIdx : -1, 6, keyword,
+    );
     return {
-      ...(dcIdx >= 0 ? { dc: parseNumber(tokens[startIdx + dcIdx + 1]) } : {}),
+      ...(dc !== undefined ? { dc } : {}),
+      ...(ac ? { ac } : {}),
       type: 'sin', offset: args[0] ?? 0, amplitude: args[1] ?? 0,
       frequency: args[2] ?? 0, delay: args[3], damping: args[4], phase: args[5],
     } satisfies SinSource;
@@ -90,14 +83,23 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
 
   if (keyword === 'PWL') {
     const parenStart = tokens.indexOf('(', waveformIdx);
-    const parenEnd = tokens.indexOf(')', waveformIdx);
-    if (parenStart !== waveformIdx + 1 || parenEnd < parenStart) {
-      throw new Error('PWL source requires a parenthesized list of time/value pairs');
+    let argumentTokens: string[];
+    if (parenStart === waveformIdx + 1) {
+      const parenEnd = tokens.indexOf(')', parenStart);
+      if (parenEnd < 0) throw new Error('PWL source requires a closing parenthesis');
+      if (parenEnd !== tokens.length - 1 && parenEnd + 1 !== startIdx + acIdx) {
+        throw new Error(`Unsupported PWL source parameters: '${tokens.slice(parenEnd + 1).join(' ')}'`);
+      }
+      argumentTokens = tokens.slice(parenStart + 1, parenEnd);
+    } else {
+      let end = waveformIdx + 1;
+      while (end < tokens.length && !SOURCE_KEYWORDS.has(tokens[end].toUpperCase())) end++;
+      if (end !== tokens.length && end !== startIdx + acIdx) {
+        throw new Error(`Unsupported PWL source parameters: '${tokens.slice(end).join(' ')}'`);
+      }
+      argumentTokens = tokens.slice(waveformIdx + 1, end);
     }
-    if (parenEnd !== tokens.length - 1) {
-      throw new Error(`Unsupported PWL source parameters: '${tokens.slice(parenEnd + 1).join(' ')}'`);
-    }
-    const args = tokens.slice(parenStart + 1, parenEnd).map(parseNumber);
+    const args = argumentTokens.map(parseNumber);
     if (args.length < 2 || args.length % 2 !== 0) {
       throw new Error('PWL source requires one or more complete time/value pairs');
     }
@@ -109,7 +111,12 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
       }
       points.push(point);
     }
-    return { type: 'pwl', points } satisfies PWLSource;
+    return {
+      ...(dc !== undefined ? { dc } : {}),
+      ...(ac ? { ac } : {}),
+      type: 'pwl',
+      points,
+    } satisfies PWLSource;
   }
 
   if (UNSUPPORTED_WAVEFORMS.has(keyword)) {
@@ -119,10 +126,82 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
   return { type: 'dc', value: parseNumber(tokens[startIdx]) };
 }
 
+function parseWaveformArguments(
+  tokens: string[],
+  waveformIdx: number,
+  acIdx: number,
+  maximum: number,
+  keyword: string,
+): number[] {
+  const parenStart = tokens.indexOf('(', waveformIdx);
+  if (parenStart === waveformIdx + 1) {
+    const parenEnd = tokens.indexOf(')', parenStart);
+    if (parenEnd < 0) throw new Error(`${keyword} source requires a closing parenthesis`);
+    if (parenEnd !== tokens.length - 1 && parenEnd + 1 !== acIdx) {
+      throw new Error(`Unsupported ${keyword} source parameters: '${tokens.slice(parenEnd + 1).join(' ')}'`);
+    }
+    const args = tokens.slice(parenStart + 1, parenEnd);
+    if (args.length > maximum) {
+      throw new Error(`Unsupported ${keyword} source parameters: '${args.slice(maximum).join(' ')}'`);
+    }
+    return args.map(parseNumber);
+  }
+
+  let end = waveformIdx + 1;
+  while (end < tokens.length && !SOURCE_KEYWORDS.has(tokens[end].toUpperCase())) end++;
+  const args = tokens.slice(waveformIdx + 1, end);
+  if (args.length > maximum || (end !== tokens.length && end !== acIdx)) {
+    const trailing = args.length > maximum ? args.slice(maximum) : tokens.slice(end);
+    throw new Error(`Unsupported ${keyword} source parameters: '${trailing.join(' ')}'`);
+  }
+  return args.map(parseNumber);
+}
+
+function parseACExcitation(tokens: string[], acIdx: number): ACExcitation {
+  let end = acIdx + 1;
+  while (end < tokens.length && !SOURCE_KEYWORDS.has(tokens[end].toUpperCase())) end++;
+  const values = tokens.slice(acIdx + 1, end);
+  if (values.length > 2) {
+    throw new Error(`Unsupported AC source parameters: '${values.slice(2).join(' ')}'`);
+  }
+  const magnitude = values[0] === undefined ? 1 : parseNumber(values[0]);
+  const phase = values[1] === undefined ? 0 : parseNumber(values[1]);
+  return { magnitude, phase };
+}
+
+function parseOperatingPoint(
+  tokens: string[],
+  startIdx: number,
+  dcIdx: number,
+  acIdx: number,
+  waveformOffset: number,
+): number | undefined {
+  if (dcIdx >= 0) {
+    if (waveformOffset === dcIdx + 1) return undefined;
+    return parseNumber(tokens[startIdx + dcIdx + 1]);
+  }
+  if (acIdx > 0 || waveformOffset > 0) {
+    try {
+      return parseNumber(tokens[startIdx]);
+    } catch {
+      return undefined;
+    }
+  }
+  return undefined;
+}
+
 const SOURCE_KEYWORDS = new Set([
   'DC', 'AC', 'PULSE', 'SIN', 'SINE', 'PWL', 'DISTOF1', 'DISTOF2',
   ...UNSUPPORTED_WAVEFORMS,
 ]);
+
+function normalizeSourceAssignments(tokens: string[], startIdx: number): string[] {
+  return tokens.flatMap((token, index) => {
+    if (index < startIdx) return token;
+    const match = token.match(/^(DC|AC)=(.*)$/i);
+    return match ? [match[1], match[2]] : token;
+  });
+}
 
 function extractDistortionTerms(
   tokens: string[],

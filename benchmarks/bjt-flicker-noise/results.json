@@ -1,0 +1,85 @@
+{
+  "fixture": "benchmarks/bjt-flicker-noise/bjt-flicker-noise.cir",
+  "sha256": "d9001973f05126c8590e28818d83655eb0ff315b3a3eecc69ee76c28296daa4a",
+  "source": {
+    "url": "https://github.com/mfiumara/spice-ts/issues/248",
+    "revision": "issue-248 fixture committed at the reported spice-ts head SHA",
+    "licence": "MIT",
+    "referenceEquation": {
+      "url": "https://github.com/ngspice/ngspice/blob/032b1c32/src/spicelib/devices/bjt/bjtnoise.c#L126-L149",
+      "revision": "032b1c32",
+      "licence": "BSD-3-Clause"
+    }
+  },
+  "identicalNetlistForBothEngines": true,
+  "commands": {
+    "ngspice": "ngspice -b -r <temporary-raw-path> benchmarks/bjt-flicker-noise/bjt-flicker-noise.cir",
+    "spiceTs": "pnpm exec tsx benchmarks/bjt-flicker-noise/compare.ts"
+  },
+  "versions": {
+    "reference": "ngspice-47",
+    "spiceTsBaseRevision": "4c47f902ef14ea7dafaf2206b0f975b0feb2a861",
+    "spiceTsWorkingTreeDirty": false,
+    "node": "v22.23.1"
+  },
+  "machine": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "convergence": {
+    "ngspice": "success",
+    "spiceTs": "success"
+  },
+  "runtimeMilliseconds": {
+    "ngspiceProcess": 11.855250000000012,
+    "spiceTsInProcess": 5.505625000000009,
+    "caveat": "Different process boundaries; reported honestly, not a speed claim."
+  },
+  "matchedPointCount": 10,
+  "errors": {
+    "outputDensity": {
+      "maximumAbsoluteError": 6.534360908034241e-7,
+      "rmsAbsoluteError": 2.822179007290086e-7,
+      "maximumRelativeError": 0.0006443857703722335,
+      "rmsRelativeError": 0.0006443842970102064
+    },
+    "inputDensity": {
+      "maximumAbsoluteError": 3.001784845801502e-7,
+      "rmsAbsoluteError": 1.2964657269485147e-7,
+      "maximumRelativeError": 0.0005473641447075279,
+      "rmsRelativeError": 0.0005473626714889517
+    },
+    "integratedOutput": {
+      "maximumAbsoluteError": 0.000005430988520615035,
+      "rmsAbsoluteError": 0.000005430988520615035,
+      "maximumRelativeError": 0.0006443934890797646,
+      "rmsRelativeError": 0.0006443934890797646
+    },
+    "integratedInput": {
+      "maximumAbsoluteError": 0.0000024948828354336844,
+      "rmsAbsoluteError": 0.0000024948828354336844,
+      "maximumRelativeError": 0.0005473640290607604,
+      "rmsRelativeError": 0.0005473640290607604
+    }
+  },
+  "unsupported": [
+    "temperature variation",
+    "stepped noise",
+    "junction-capacitance noise",
+    "differential voltage output",
+    "current output",
+    "non-level-1 BJT models",
+    "instance multiplicity",
+    "broader Gummel-Poon forms including CJE, CJC, RBM, IRB, and TF"
+  ],
+  "losses": [
+    "The bounded implementation covers only level-1 KF/AF base-current flicker noise at fixed 27 C.",
+    "Non-zero numerical residuals are retained in the error metrics.",
+    "Runtime values are not directly comparable because ngspice includes process startup."
+  ],
+  "redReceipt": "commit b06c79c: pnpm -C packages/core exec vitest run src/analysis/noise.test.ts => 3 failed, 40 passed; KF/AF remained explicitly unsupported",
+  "greenReceipt": "pnpm -C packages/core exec vitest run src/analysis/noise.test.ts src/devices/bjt.test.ts => 49 passed",
+  "potetoReceipt": "benchmarks/bjt-flicker-noise/POTETO.md"
+}

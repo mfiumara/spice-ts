@@ -177,25 +177,39 @@ export interface ComplexDistortionValue {
 /** Harmonic products included in the bounded single-tone result. */
 export type DistortionOrder = 2 | 3;
 
-/** Deterministic second- and third-harmonic results from a bounded `.disto`. */
-export class DistortionResult {
-  constructor(
-    /** Fundamental F1 frequencies in ascending order. */
-    public readonly frequencies: number[],
-    private readonly secondVoltageArrays: Map<string, ComplexDistortionValue[]>,
-    private readonly thirdVoltageArrays: Map<string, ComplexDistortionValue[]>,
-    private readonly secondCurrentArrays: Map<string, ComplexDistortionValue[]>,
-    private readonly thirdCurrentArrays: Map<string, ComplexDistortionValue[]>,
-  ) {}
+/** Intermodulation products included in the bounded two-tone result. */
+export type DistortionIntermodulationProduct = 'f1+f2' | 'f1-f2' | '2f1-f2';
 
-  voltage(node: string, order: DistortionOrder): ComplexDistortionValue[] {
-    const values = (order === 2 ? this.secondVoltageArrays : this.thirdVoltageArrays).get(node);
+/** Product selector for a bounded single- or two-tone distortion result. */
+export type DistortionProduct = DistortionOrder | DistortionIntermodulationProduct;
+
+/** Deterministic harmonic or intermodulation results from a bounded `.disto`. */
+export class DistortionResult {
+  public readonly products: readonly DistortionProduct[];
+
+  constructor(
+    /** Swept F1 frequencies in ascending order. */
+    public readonly frequencies: number[],
+    private readonly voltageArrays: Map<DistortionProduct, Map<string, ComplexDistortionValue[]>>,
+    private readonly currentArrays: Map<DistortionProduct, Map<string, ComplexDistortionValue[]>>,
+    /** Fixed F2/start-F1 ratio for two-tone results. */
+    public readonly f2OverF1?: number,
+  ) {
+    this.products = [...voltageArrays.keys()];
+  }
+
+  voltage(node: string, product: DistortionProduct): ComplexDistortionValue[] {
+    const arrays = this.voltageArrays.get(product);
+    if (!arrays) throw new Error(`Distortion product ${product} is unavailable for this analysis`);
+    const values = arrays.get(node);
     if (!values) throw new Error(`Unknown node: ${node}`);
     return values.map(value => ({ ...value }));
   }
 
-  current(branch: string, order: DistortionOrder): ComplexDistortionValue[] {
-    const values = (order === 2 ? this.secondCurrentArrays : this.thirdCurrentArrays).get(branch);
+  current(branch: string, product: DistortionProduct): ComplexDistortionValue[] {
+    const arrays = this.currentArrays.get(product);
+    if (!arrays) throw new Error(`Distortion product ${product} is unavailable for this analysis`);
+    const values = arrays.get(branch);
     if (!values) throw new Error(`Unknown branch: ${branch}`);
     return values.map(value => ({ ...value }));
   }
@@ -339,7 +353,7 @@ export interface SimulationResult {
   ac?: ACResult;
   /** Resistor-noise spectral result (from `.noise`) */
   noise?: NoiseResult;
-  /** Single-tone second- and third-harmonic distortion result (from `.disto`). */
+  /** Bounded ideal-linear harmonic or intermodulation result (from `.disto`). */
   distortion?: DistortionResult;
   /** DC small-signal transfer function (from `.tf`) */
   transferFunction?: TransferFunctionResult;

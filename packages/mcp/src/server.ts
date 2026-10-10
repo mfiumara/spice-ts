@@ -28,12 +28,30 @@ export interface McpLimits {
   maxWallTimeMs: number;
 }
 
+export interface McpStreamLimits {
+  runningJobTtlMs: number;
+  terminalJobTtlMs: number;
+  maxUnreadEvents: number;
+  maxUnreadBytes: number;
+}
+
+export interface StreamClock {
+  now(): number;
+  setTimeout(callback: () => void, delayMs: number): unknown;
+  clearTimeout(handle: unknown): void;
+}
+
 export interface ToolExecutionOptions {
   limits?: McpLimits;
   signal?: AbortSignal;
   validate?: typeof validateProtocolV1;
   simulate?: typeof simulateProtocolV1;
   workerFactory?: () => ExecutionWorker;
+}
+
+export interface ToolExecutorOptions extends ToolExecutionOptions {
+  clock?: StreamClock;
+  streamLimits?: Partial<McpStreamLimits>;
 }
 
 export type ToolExecutor = (
@@ -77,6 +95,12 @@ export const DEFAULT_MCP_LIMITS: Readonly<McpLimits> = Object.freeze({
 export const DEFAULT_STREAM_CHUNK_POINTS = 256;
 export const MAX_STREAM_CHUNK_POINTS = 1024;
 export const MAX_RETAINED_STREAM_JOBS = 16;
+export const DEFAULT_MCP_STREAM_LIMITS: Readonly<McpStreamLimits> = Object.freeze({
+  runningJobTtlMs: 30_000,
+  terminalJobTtlMs: 60_000,
+  maxUnreadEvents: 256,
+  maxUnreadBytes: 1024 * 1024,
+});
 const PACKAGE_VERSION = '0.3.0';
 const ENGINE_BUILD_ID = 'mcp-node-v1';
 
@@ -103,11 +127,18 @@ const capabilitiesOutputSchema = {
     },
     streaming: {
       type: 'object',
-      required: ['defaultChunkPoints', 'maxChunkPoints', 'maxRetainedJobs'],
+      required: [
+        'defaultChunkPoints', 'maxChunkPoints', 'maxRetainedJobs',
+        'runningJobTtlMs', 'terminalJobTtlMs', 'maxUnreadEvents', 'maxUnreadBytes',
+      ],
       properties: {
         defaultChunkPoints: { const: DEFAULT_STREAM_CHUNK_POINTS },
         maxChunkPoints: { const: MAX_STREAM_CHUNK_POINTS },
         maxRetainedJobs: { const: MAX_RETAINED_STREAM_JOBS },
+        runningJobTtlMs: { type: 'integer', minimum: 0 },
+        terminalJobTtlMs: { type: 'integer', minimum: 0 },
+        maxUnreadEvents: { type: 'integer', minimum: 0 },
+        maxUnreadBytes: { type: 'integer', minimum: 0 },
       },
       additionalProperties: false,
     },
@@ -226,6 +257,7 @@ const capabilities = Object.freeze({
     defaultChunkPoints: DEFAULT_STREAM_CHUNK_POINTS,
     maxChunkPoints: MAX_STREAM_CHUNK_POINTS,
     maxRetainedJobs: MAX_RETAINED_STREAM_JOBS,
+    ...DEFAULT_MCP_STREAM_LIMITS,
   }),
 });
 
@@ -237,12 +269,13 @@ export async function executeTool(
   return executeToolWithStore(name, args, options, defaultStreamStore);
 }
 
-export function createToolExecutor(baseOptions: ToolExecutionOptions = {}): ToolExecutor {
-  const store = new StreamStore();
+export function createToolExecutor(baseOptions: ToolExecutorOptions = {}): ToolExecutor {
+  const { clock, streamLimits, ...executionOptions } = baseOptions;
+  const store = new StreamStore(streamLimits, clock);
   return (name, args, options = {}) => executeToolWithStore(
     name,
     args,
-    { ...baseOptions, ...options },
+    { ...executionOptions, ...options },
     store,
   );
 }
@@ -255,7 +288,7 @@ async function executeToolWithStore(
 ): Promise<CallToolResult> {
   const limits = options.limits ?? DEFAULT_MCP_LIMITS;
   try {
-    if (name === 'spice_capabilities') return success(capabilities);
+    if (name === 'spice_capabilities') return success(streamStore.capabilities());
     if (name === 'spice_simulation_read') return success(streamStore.read(streamReadArgs(args)));
     if (name === 'spice_simulation_cancel') return success(streamStore.cancel(streamCancelArgs(args)));
     if (name !== 'spice_validate' && name !== 'spice_simulate' && name !== 'spice_simulation_start') {
@@ -307,21 +340,44 @@ interface StreamJob {
   cursorOffsets: Map<string, number>;
   replay: Map<string, SimulationReadDataV1>;
   events: SimulationEventV1[];
+  eventBaseOffset: number;
+  unreadBytes: number;
   emitted: SimulationEventV1[];
   producedPointCount: number;
+  liveEventsProduced: boolean;
   releaseBatch?: () => void;
   batchEndOffset?: number;
   terminal?: SimulationReadDataV1;
+  startedAt: number;
+  terminalAt?: number;
+  runningTimer?: unknown;
+  terminalTimer?: unknown;
 }
 
 class StreamStore {
   private readonly jobs = new Map<string, StreamJob>();
   private nextJobId = 1;
 
+  private readonly limits: McpStreamLimits;
+
+  constructor(
+    limits: Partial<McpStreamLimits> = {},
+    private readonly clock: StreamClock = systemClock,
+  ) {
+    this.limits = { ...DEFAULT_MCP_STREAM_LIMITS, ...limits };
+  }
+
+  capabilities(): typeof capabilities {
+    return {
+      ...capabilities,
+      streaming: { ...capabilities.streaming, ...this.limits },
+    } as typeof capabilities;
+  }
+
   start(request: SimulationRequestV1, limits: McpLimits, options: ToolExecutionOptions): JsonObject {
     if (this.jobs.size >= MAX_RETAINED_STREAM_JOBS) {
       const completed = [...this.jobs].find(([, job]) => job.terminal !== undefined);
-      if (completed) this.jobs.delete(completed[0]);
+      if (completed) this.delete(completed[0], completed[1]);
     }
     if (this.jobs.size >= MAX_RETAINED_STREAM_JOBS) {
       throw apiError('RESOURCE_LIMIT', 'The retained stream-job limit was exceeded', 'transport', {
@@ -338,10 +394,18 @@ class StreamStore {
       cursorOffsets: new Map([[cursor, 0]]),
       replay: new Map(),
       events: [],
+      eventBaseOffset: 0,
+      unreadBytes: 0,
       emitted: [],
       producedPointCount: 0,
+      liveEventsProduced: false,
+      startedAt: this.clock.now(),
     };
     this.jobs.set(jobId, job);
+    job.runningTimer = this.clock.setTimeout(
+      () => this.expireRunning(jobId, job),
+      this.limits.runningJobTtlMs,
+    );
     void this.solve(jobId, job, limits, options);
     return { jobId, status: 'running', cursor };
   }
@@ -355,20 +419,16 @@ class StreamStore {
     const replay = job.replay.get(args.cursor);
     if (replay) return replay;
     if (job.terminal) return job.terminal;
-    if (job.state.status === 'pending' && offset >= job.events.length) {
+    const eventEndOffset = job.eventBaseOffset + job.events.length;
+    if (job.state.status === 'pending' && offset >= eventEndOffset) {
       return { status: 'running', events: [], nextCursor: args.cursor };
-    }
-    if (job.state.status === 'failed') {
-      const data = failureRead(args.jobId, job.emitted, job.state.error);
-      job.terminal = data;
-      return data;
     }
 
     const events: SimulationEventV1[] = [];
     let pointCount = 0;
     let nextOffset = offset;
-    while (nextOffset < job.events.length) {
-      const event = job.events[nextOffset]!;
+    while (nextOffset < eventEndOffset) {
+      const event = job.events[nextOffset - job.eventBaseOffset]!;
       if (event.type === 'point' && pointCount >= args.maxPoints) break;
       events.push(event);
       nextOffset++;
@@ -378,6 +438,12 @@ class StreamStore {
       }
     }
     job.emitted.push(...events);
+    const consumedCount = nextOffset - job.eventBaseOffset;
+    if (consumedCount > 0) {
+      const consumed = job.events.splice(0, consumedCount);
+      job.unreadBytes -= serializedEventBytes(consumed);
+      job.eventBaseOffset = nextOffset;
+    }
     if (events.length > 0 && job.batchEndOffset !== undefined && nextOffset >= job.batchEndOffset) {
       job.releaseBatch?.();
       job.releaseBatch = undefined;
@@ -385,10 +451,13 @@ class StreamStore {
     }
 
     let data: SimulationReadDataV1;
-    if (nextOffset < job.events.length || job.state.status === 'pending') {
+    if (nextOffset < eventEndOffset || job.state.status === 'pending') {
       const nextCursor = streamCursor(args.jobId, nextOffset);
       job.cursorOffsets.set(nextCursor, nextOffset);
       data = { status: 'running', events, nextCursor };
+    } else if (job.state.status === 'failed') {
+      data = failureRead(args.jobId, job.emitted, job.state.error, events);
+      job.terminal = data;
     } else {
       data = {
         status: 'complete', events, nextCursor: null,
@@ -406,11 +475,14 @@ class StreamStore {
     job.controller.abort();
     job.releaseBatch?.();
     job.releaseBatch = undefined;
+    job.events = [];
+    job.unreadBytes = 0;
     const data = failureRead(jobId, job.emitted, {
       code: 'CANCELLED', message: 'The simulation job was cancelled',
       retryable: true, phase: 'solve', details: {},
     });
     job.terminal = data;
+    this.enterTerminal(jobId, job);
     return data;
   }
 
@@ -430,23 +502,74 @@ class StreamStore {
           enforceMaximum(
             'maxResultPoints', limits.maxResultPoints, producedPointCount, 'solve',
           );
+          this.retainEvents(events, job);
+          job.liveEventsProduced = true;
           job.producedPointCount = producedPointCount;
-          job.events.push(...events);
-          job.batchEndOffset = job.events.length;
+          job.batchEndOffset = job.eventBaseOffset + job.events.length;
           return new Promise<void>(resolve => { job.releaseBatch = resolve; });
         });
       enforceResultBounds(result, limits);
       if (!job.terminal) {
-        if (job.events.length === 0) job.events.push(...resultEvents(result));
+        if (!job.liveEventsProduced) this.retainEvents(resultEvents(result), job);
         job.state = { status: 'ready', result };
+        this.enterTerminal(jobId, job);
       }
     } catch (error) {
       if (!job.terminal) {
         const publicFailure = publicError(error);
         job.state = { status: 'failed', error: publicFailure };
-        job.terminal = failureRead(jobId, job.emitted, publicFailure);
+        if (job.events.length === 0) job.terminal = failureRead(jobId, job.emitted, publicFailure);
+        this.enterTerminal(jobId, job);
       }
     }
+  }
+
+  private retainEvents(events: SimulationEventV1[], job: StreamJob): void {
+    const unreadEvents = job.events.length + events.length;
+    enforceStreamMaximum('maxUnreadEvents', this.limits.maxUnreadEvents, unreadEvents);
+    const unreadBytes = job.unreadBytes + serializedEventBytes(events);
+    enforceStreamMaximum('maxUnreadBytes', this.limits.maxUnreadBytes, unreadBytes);
+    job.events.push(...events);
+    job.unreadBytes = unreadBytes;
+  }
+
+  private expireRunning(jobId: string, job: StreamJob): void {
+    if (this.jobs.get(jobId) !== job || job.terminalAt !== undefined) return;
+    job.controller.abort();
+    job.releaseBatch?.();
+    job.releaseBatch = undefined;
+    job.events = [];
+    job.unreadBytes = 0;
+    const error = apiError(
+      'RESOURCE_LIMIT', 'The simulation job TTL was exceeded', 'transport',
+      {
+        limit: 'runningJobTtlMs', maximum: this.limits.runningJobTtlMs,
+        actual: this.clock.now() - job.startedAt,
+      },
+    );
+    job.state = { status: 'failed', error };
+    job.terminal = failureRead(jobId, job.emitted, error);
+    this.enterTerminal(jobId, job);
+  }
+
+  private enterTerminal(jobId: string, job: StreamJob): void {
+    if (job.terminalAt !== undefined) return;
+    job.terminalAt = this.clock.now();
+    if (job.runningTimer !== undefined) this.clock.clearTimeout(job.runningTimer);
+    job.runningTimer = undefined;
+    job.terminalTimer = this.clock.setTimeout(
+      () => this.delete(jobId, job),
+      this.limits.terminalJobTtlMs,
+    );
+  }
+
+  private delete(jobId: string, job: StreamJob): void {
+    if (this.jobs.get(jobId) !== job) return;
+    if (job.runningTimer !== undefined) this.clock.clearTimeout(job.runningTimer);
+    if (job.terminalTimer !== undefined) this.clock.clearTimeout(job.terminalTimer);
+    job.controller.abort();
+    job.releaseBatch?.();
+    this.jobs.delete(jobId);
   }
 
   private job(jobId: string): StreamJob {
@@ -460,6 +583,7 @@ function failureRead(
   jobId: string,
   emitted: SimulationEventV1[],
   error: SpiceApiErrorV1,
+  events: SimulationEventV1[] = [],
 ): SimulationReadDataV1 {
   const terminal: StreamTerminalV1 = {
     apiVersion: '1', ok: false, requestId: jobId,
@@ -473,8 +597,34 @@ function failureRead(
   };
   return {
     status: error.code === 'CANCELLED' ? 'cancelled' : 'failed',
-    events: [], nextCursor: null, terminal,
+    events, nextCursor: null, terminal,
   };
+}
+
+const systemClock: StreamClock = {
+  now: () => Date.now(),
+  setTimeout: (callback, delayMs) => {
+    const timer = setTimeout(callback, delayMs);
+    timer.unref();
+    return timer;
+  },
+  clearTimeout: handle => clearTimeout(handle as ReturnType<typeof setTimeout>),
+};
+
+function serializedEventBytes(events: SimulationEventV1[]): number {
+  return events.reduce((total, event) => total + Buffer.byteLength(JSON.stringify(event)), 0);
+}
+
+function enforceStreamMaximum(
+  limit: 'maxUnreadEvents' | 'maxUnreadBytes',
+  maximum: number,
+  actual: number,
+): void {
+  if (actual > maximum) {
+    throw apiError('RESOURCE_LIMIT', 'A configured stream retention limit was exceeded', 'transport', {
+      limit, maximum, actual,
+    });
+  }
 }
 
 const defaultStreamStore = new StreamStore();

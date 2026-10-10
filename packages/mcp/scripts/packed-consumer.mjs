@@ -49,7 +49,40 @@ try {
     },
   }, null, 2)}\n`);
   writeFileSync(join(consumerRoot, 'consumer.cjs'), String.raw`
-const { executeTool } = require('@spice-ts/mcp');
+const { EventEmitter } = require('node:events');
+const { createToolExecutor, executeTool } = require('@spice-ts/mcp');
+
+class ManualClock {
+  constructor() {
+    this.time = 0;
+    this.nextTimerId = 1;
+    this.timers = new Map();
+  }
+
+  now() { return this.time; }
+
+  setTimeout(callback, delayMs) {
+    const id = this.nextTimerId++;
+    this.timers.set(id, { deadline: this.time + delayMs, callback });
+    return id;
+  }
+
+  clearTimeout(id) { this.timers.delete(id); }
+
+  advanceBy(milliseconds) {
+    this.time += milliseconds;
+    for (const [id, timer] of [...this.timers]) {
+      if (timer.deadline <= this.time) {
+        this.timers.delete(id);
+        timer.callback();
+      }
+    }
+  }
+}
+
+async function flushMicrotasks() {
+  for (let index = 0; index < 8; index++) await Promise.resolve();
+}
 
 function containsExactString(value, target) {
   if (value === target) return true;
@@ -80,6 +113,140 @@ async function readWhenReady(jobId, cursor, maxPoints) {
   if (result.isError) throw new Error(JSON.stringify(result.structuredContent));
   if (result.structuredContent.analyses[0].voltagesV.in !== 1) {
     throw new Error('Unexpected operating-point result: ' + JSON.stringify(result.structuredContent));
+  }
+
+  const retentionClock = new ManualClock();
+  const retentionExecute = createToolExecutor({
+    clock: retentionClock,
+    streamLimits: { runningJobTtlMs: 100, terminalJobTtlMs: 10 },
+    simulate: async () => ({
+      status: 'complete',
+      analyses: [{
+        type: 'op', analysisIndex: 0,
+        voltagesV: { in: 1 }, currentsA: { V1: -0.001 },
+      }],
+    }),
+  });
+  const retentionStart = await retentionExecute('spice_simulation_start', {
+    request: {
+      apiVersion: '1',
+      input: { format: 'spice', source: 'V1 in 0 1\nR1 in 0 1k\n.op' },
+    },
+  });
+  await flushMicrotasks();
+  const retentionJob = retentionStart.structuredContent;
+  const retained = await retentionExecute('spice_simulation_read', retentionJob);
+  retentionClock.advanceBy(9);
+  const retainedReplay = await retentionExecute('spice_simulation_read', {
+    ...retentionJob, maxPoints: 1,
+  });
+  const malformedCursor = await retentionExecute('spice_simulation_read', {
+    jobId: retentionJob.jobId, cursor: 'not-a-cursor',
+  });
+  if (JSON.stringify(retained) !== JSON.stringify(retainedReplay)
+    || malformedCursor.structuredContent.error.code !== 'INVALID_REQUEST') {
+    throw new Error('Packed cursor replay or validation changed');
+  }
+  retentionClock.advanceBy(1);
+  const expired = await retentionExecute('spice_simulation_cancel', { jobId: retentionJob.jobId });
+  if (expired.structuredContent.error.code !== 'INVALID_REQUEST') {
+    throw new Error('Packed terminal retention did not expire');
+  }
+
+  class StreamingWorker extends EventEmitter {
+    constructor() {
+      super();
+      this.terminateCount = 0;
+      this.acknowledgements = 0;
+    }
+
+    postMessage(message) {
+      if (!message || message.operation !== 'stream') {
+        this.acknowledgements++;
+        return;
+      }
+      queueMicrotask(() => this.emit('message', {
+        type: 'events',
+        events: [
+          { type: 'analysis-start', analysis: 'tran', analysisIndex: 0 },
+          {
+            type: 'point', analysisIndex: 0, pointIndex: 0,
+            point: { type: 'tran', timeS: 0, voltagesV: { out: 0 }, currentsA: {} },
+          },
+        ],
+      }));
+    }
+
+    terminate() { this.terminateCount++; return 0; }
+  }
+
+  const unreadWorker = new StreamingWorker();
+  const unreadExecute = createToolExecutor({
+    streamLimits: { maxUnreadEvents: 1, maxUnreadBytes: 1024 },
+    workerFactory: () => unreadWorker,
+  });
+  const unreadStart = await unreadExecute('spice_simulation_start', {
+    request: {
+      apiVersion: '1',
+      input: { format: 'spice', source: 'V1 in 0 1\nR1 in out 1k\nC1 out 0 1u\n.tran 1u 3u' },
+    },
+  });
+  await flushMicrotasks();
+  const unreadFailure = await unreadExecute('spice_simulation_read', unreadStart.structuredContent);
+  if (unreadFailure.structuredContent.status !== 'failed'
+    || unreadFailure.structuredContent.terminal.error.details.limit !== 'maxUnreadEvents'
+    || unreadFailure.structuredContent.events.length !== 0) {
+    throw new Error('Packed unread-event ceiling was not atomic');
+  }
+
+  const blockedWorker = new StreamingWorker();
+  const blockedExecute = createToolExecutor({
+    streamLimits: { maxUnreadEvents: 2, maxUnreadBytes: 1024 },
+    workerFactory: () => blockedWorker,
+  });
+  const blockedStart = await blockedExecute('spice_simulation_start', {
+    request: {
+      apiVersion: '1',
+      input: { format: 'spice', source: 'V1 in 0 1\nR1 in out 1k\nC1 out 0 1u\n.tran 1u 3u' },
+    },
+  });
+  await flushMicrotasks();
+  const blockedCancellation = await blockedExecute('spice_simulation_cancel', {
+    jobId: blockedStart.structuredContent.jobId,
+  });
+  await flushMicrotasks();
+  if (blockedCancellation.structuredContent.status !== 'cancelled'
+    || blockedCancellation.structuredContent.terminal.partial.analyses.length !== 0
+    || blockedWorker.acknowledgements !== 0
+    || blockedWorker.terminateCount !== 1) {
+    throw new Error('Packed cancellation under backpressure changed');
+  }
+
+  class DeadWorker extends EventEmitter {
+    postMessage() { queueMicrotask(() => this.emit('exit', 1)); }
+    terminate() { return 1; }
+  }
+  const deathClock = new ManualClock();
+  const deathExecute = createToolExecutor({
+    clock: deathClock,
+    streamLimits: { runningJobTtlMs: 100, terminalJobTtlMs: 10 },
+    workerFactory: () => new DeadWorker(),
+  });
+  const deathStart = await deathExecute('spice_simulation_start', {
+    request: {
+      apiVersion: '1',
+      input: { format: 'spice', source: 'V1 in 0 1\nR1 in 0 1k\n.op' },
+    },
+  });
+  await flushMicrotasks();
+  const deathFailure = await deathExecute('spice_simulation_read', deathStart.structuredContent);
+  deathClock.advanceBy(10);
+  const deathCleanup = await deathExecute('spice_simulation_cancel', {
+    jobId: deathStart.structuredContent.jobId,
+  });
+  if (deathFailure.structuredContent.terminal.error.code !== 'INTERNAL_ERROR'
+    || deathCleanup.structuredContent.error.code !== 'INVALID_REQUEST') {
+    throw new Error('Packed worker-death cleanup changed');
   }
 
   const completedStart = await executeTool('spice_simulation_start', {

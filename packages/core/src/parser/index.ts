@@ -286,13 +286,13 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
       break;
     }
     case '.DISTO': {
-      if (tokens.length > 5) {
+      if (tokens.length < 5 || tokens.length > 6) {
         throw new ParseError(
-          'Two-tone .disto is not supported; omit f2overf1',
+          "Unsupported .disto sweep; expected '.disto dec points start stop [f2overf1]'",
           lineNumber, tokens.join(' '),
         );
       }
-      if (tokens.length !== 5 || tokens[1]?.toLowerCase() !== 'dec') {
+      if (tokens[1]?.toLowerCase() !== 'dec') {
         throw new ParseError(
           "Unsupported .disto sweep; expected '.disto dec points start stop'",
           lineNumber, tokens.join(' '),
@@ -304,8 +304,17 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
       if (!Number.isInteger(points) || points < 1 || startFreq <= 0 || stopFreq < startFreq) {
         throw new ParseError('Invalid .disto dec sweep', lineNumber, tokens.join(' '));
       }
+      const f2OverF1 = tokens[5] === undefined ? undefined : parseNumber(tokens[5]);
+      if (f2OverF1 !== undefined && (!Number.isFinite(f2OverF1)
+          || f2OverF1 <= 0 || f2OverF1 >= 1)) {
+        throw new ParseError(
+          'Invalid .disto f2overf1; expected a value greater than 0 and less than 1',
+          lineNumber, tokens.join(' '),
+        );
+      }
       circuit.addAnalysis('disto', {
         variation: 'dec', points, startFreq, stopFreq,
+        ...(f2OverF1 === undefined ? {} : { f2OverF1 }),
       });
       break;
     }
@@ -382,14 +391,16 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
       circuit.addModel(model);
       break;
     }
+    case '.OPT':
     case '.OPTIONS':
       circuit.setSimulationOptions(parseSimulationOptions(tokens.slice(1)));
       break;
+    case '.WIDTH':
     case '.SAVE':
     case '.PRINT':
     case '.PLOT':
       // spice-ts returns all computed vectors through its result API, so these
-      // ngspice output-selection directives are intentionally metadata-only.
+      // ngspice output-selection and formatting directives are metadata-only.
       break;
     case '.INCLUDE':
       throw new ParseError(
@@ -444,15 +455,31 @@ function parseSimulationOptions(tokens: string[]): SimulationOptions {
   }
 
   const options: SimulationOptions = {};
+  const reportingFlags = new Set(['acct', 'list', 'node']);
+  const obsoleteNumericFields = new Set(['limpts', 'itl5', 'lvlcod']);
 
   for (const token of optionTokens) {
     const separator = token.indexOf('=');
+    const name = token.slice(0, separator < 0 ? undefined : separator).toLowerCase();
+    if (separator < 0 && reportingFlags.has(name)) {
+      // These only select legacy textual reports. spice-ts exposes structured
+      // results and does not produce the corresponding batch-mode listings.
+      continue;
+    }
     if (separator <= 0 || separator === token.length - 1) {
       throw new Error(`Unsupported .options field: '${token}'`);
     }
 
-    const name = token.slice(0, separator).toLowerCase();
     const rawValue = token.slice(separator + 1);
+    if (obsoleteNumericFields.has(name)) {
+      const value = parseNumber(rawValue);
+      if (!Number.isInteger(value) || value < 0) {
+        throw new Error(`Invalid .options ${name} value: '${rawValue}'`);
+      }
+      // LIMPTS limits legacy printed/plotted points, ITL5 is documented as
+      // unimplemented in SPICE3, and LVLCOD selected CDC matrix codegen.
+      continue;
+    }
     if (name === 'method') {
       const methods: Record<string, IntegrationMethod> = {
         trap: 'trapezoidal',

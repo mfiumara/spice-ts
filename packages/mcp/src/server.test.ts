@@ -29,7 +29,15 @@ describe('bounded protocol-v1 tools', () => {
       analyses: ['op', 'dc', 'tran', 'ac'],
       inputFormats: ['spice', 'spice-ts'],
       limits: DEFAULT_MCP_LIMITS,
-      streaming: { defaultChunkPoints: 256, maxChunkPoints: 1024, maxRetainedJobs: 16 },
+      streaming: {
+        defaultChunkPoints: 256,
+        maxChunkPoints: 1024,
+        maxRetainedJobs: 16,
+        runningJobTtlMs: 30_000,
+        terminalJobTtlMs: 60_000,
+        maxUnreadEvents: 256,
+        maxUnreadBytes: 1024 * 1024,
+      },
     });
   });
 
@@ -541,6 +549,9 @@ describe('bounded protocol-v1 tools', () => {
     const started = await executeTool('spice_simulation_start', { request });
     const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
     const bounded = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints: 1025 });
+    const malformedCursor = await executeTool('spice_simulation_read', {
+      jobId, cursor: 'not-a-cursor',
+    });
 
     expect(malformed).toMatchObject({
       isError: true,
@@ -554,6 +565,10 @@ describe('bounded protocol-v1 tools', () => {
           details: { limit: 'maxStreamChunkPoints', maximum: 1024, actual: 1025 },
         },
       },
+    });
+    expect(malformedCursor).toMatchObject({
+      isError: true,
+      structuredContent: { error: { code: 'INVALID_REQUEST', phase: 'validation' } },
     });
   });
 
@@ -605,6 +620,208 @@ describe('bounded protocol-v1 tools', () => {
       structuredContent: { error: { code: 'INVALID_REQUEST' } },
     });
   });
+
+  it('replays terminal cursors until deterministic terminal expiry', async () => {
+    const clock = new ManualClock();
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const result = await fixture<SimulationResultV1>('simulate-response.json');
+    const execute = createToolExecutor({
+      clock,
+      streamLimits: { runningJobTtlMs: 100, terminalJobTtlMs: 50 },
+      simulate: async () => result,
+    });
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const complete = await execute('spice_simulation_read', { jobId, cursor });
+    clock.advanceBy(49);
+    const replay = await execute('spice_simulation_read', { jobId, cursor, maxPoints: 1 });
+    expect(replay).toEqual(complete);
+
+    clock.advanceBy(1);
+    const expired = await execute('spice_simulation_read', { jobId, cursor });
+    expect(expired).toMatchObject({
+      isError: true,
+      structuredContent: {
+        error: {
+          code: 'INVALID_REQUEST', phase: 'validation',
+          message: 'The simulation job was not found', details: {},
+        },
+      },
+    });
+  });
+
+  it('expires a running job and terminates its worker without wall-clock sleeps', async () => {
+    class PendingWorker extends EventEmitter {
+      readonly terminate = vi.fn(() => 0);
+      postMessage(message: unknown): void {
+        if (!isWorkerOperation(message)) return;
+        queueMicrotask(() => this.emit('message', {
+          type: 'events',
+          events: [
+            { type: 'analysis-start', analysis: 'tran', analysisIndex: 0 },
+            {
+              type: 'point', analysisIndex: 0, pointIndex: 0,
+              point: { type: 'tran', timeS: 0, voltagesV: { out: 0 }, currentsA: {} },
+            },
+          ],
+        }));
+      }
+    }
+    const clock = new ManualClock();
+    const worker = new PendingWorker();
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const execute = createToolExecutor({
+      clock,
+      streamLimits: { runningJobTtlMs: 25, terminalJobTtlMs: 50 },
+      workerFactory: () => worker as unknown as ExecutionWorker,
+    });
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    await flushMicrotasks();
+    const first = await execute('spice_simulation_read', { jobId, cursor });
+    const firstData = first.structuredContent as unknown as SimulationReadDataV1;
+    const points = firstData.events.filter(event => event.type === 'point');
+
+    clock.advanceBy(25);
+    await Promise.resolve();
+    const expired = await execute('spice_simulation_read', {
+      jobId, cursor: firstData.nextCursor,
+    });
+
+    expect(expired.structuredContent).toMatchObject({
+      status: 'failed', events: [], nextCursor: null,
+      terminal: {
+        error: {
+          code: 'RESOURCE_LIMIT', phase: 'transport',
+          details: { limit: 'runningJobTtlMs', maximum: 25, actual: 25 },
+        },
+        partial: {
+          analyses: [{ analysis: 'tran', analysisIndex: 0, emittedPointCount: 1, complete: false }],
+          partialEventSha256: sha256CanonicalJson(points),
+        },
+      },
+    });
+    expect(worker.terminate).toHaveBeenCalledOnce();
+  });
+
+  it.each([
+    ['events', { maxUnreadEvents: 1, maxUnreadBytes: 1024 * 1024 }, 'maxUnreadEvents', 2],
+    ['bytes', { maxUnreadEvents: 256, maxUnreadBytes: 1 }, 'maxUnreadBytes', expect.any(Number)],
+  ])('fails before retaining an over-limit unread batch by %s', async (
+    _name, streamLimits, limit, actual,
+  ) => {
+    class StreamingWorker extends EventEmitter {
+      readonly terminate = vi.fn(() => 0);
+      postMessage(message: unknown): void {
+        if (!isWorkerOperation(message)) return;
+        queueMicrotask(() => this.emit('message', {
+          type: 'events',
+          events: [
+            { type: 'analysis-start', analysis: 'tran', analysisIndex: 0 },
+            {
+              type: 'point', analysisIndex: 0, pointIndex: 0,
+              point: { type: 'tran', timeS: 0, voltagesV: { out: 0 }, currentsA: {} },
+            },
+          ],
+        }));
+      }
+    }
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const execute = createToolExecutor({
+      streamLimits,
+      workerFactory: () => new StreamingWorker() as unknown as ExecutionWorker,
+    });
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    await flushMicrotasks();
+    const failed = await execute('spice_simulation_read', { jobId, cursor });
+
+    expect(failed.structuredContent).toMatchObject({
+      status: 'failed', events: [], nextCursor: null,
+      terminal: {
+        error: {
+          code: 'RESOURCE_LIMIT', phase: 'transport',
+          details: { limit, maximum: streamLimits[limit === 'maxUnreadEvents' ? 'maxUnreadEvents' : 'maxUnreadBytes'], actual },
+        },
+        partial: { analyses: [], partialEventSha256: sha256CanonicalJson([]) },
+      },
+    });
+  });
+
+  it('cancels a worker blocked on an unread batch without delivering it', async () => {
+    class BackpressuredWorker extends EventEmitter {
+      readonly terminate = vi.fn(() => 0);
+      readonly acknowledgements: unknown[] = [];
+      postMessage(message: unknown): void {
+        if (!isWorkerOperation(message)) {
+          this.acknowledgements.push(message);
+          return;
+        }
+        queueMicrotask(() => this.emit('message', {
+          type: 'events',
+          events: [
+            { type: 'analysis-start', analysis: 'tran', analysisIndex: 0 },
+            {
+              type: 'point', analysisIndex: 0, pointIndex: 0,
+              point: { type: 'tran', timeS: 0, voltagesV: { out: 0 }, currentsA: {} },
+            },
+          ],
+        }));
+      }
+    }
+    const worker = new BackpressuredWorker();
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const execute = createToolExecutor({
+      streamLimits: { maxUnreadEvents: 2, maxUnreadBytes: 1024 },
+      workerFactory: () => worker as unknown as ExecutionWorker,
+    });
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId } = started.structuredContent as { jobId: string };
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const cancelled = await execute('spice_simulation_cancel', { jobId });
+    await Promise.resolve();
+
+    expect(cancelled.structuredContent).toMatchObject({
+      status: 'cancelled', events: [],
+      terminal: { partial: { analyses: [], partialEventSha256: sha256CanonicalJson([]) } },
+    });
+    expect(worker.acknowledgements).toEqual([]);
+    expect(worker.terminate).toHaveBeenCalledOnce();
+  });
+
+  it('cleans up a worker-death terminal when its retention expires', async () => {
+    class DeadWorker extends EventEmitter {
+      readonly terminate = vi.fn(() => 1);
+      postMessage(): void { queueMicrotask(() => this.emit('exit', 1)); }
+    }
+    const clock = new ManualClock();
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const execute = createToolExecutor({
+      clock,
+      streamLimits: { runningJobTtlMs: 100, terminalJobTtlMs: 10 },
+      workerFactory: () => new DeadWorker() as unknown as ExecutionWorker,
+    });
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    await Promise.resolve();
+    await Promise.resolve();
+    const failed = await execute('spice_simulation_read', { jobId, cursor });
+    expect(failed.structuredContent).toMatchObject({
+      status: 'failed', terminal: { error: { code: 'INTERNAL_ERROR' } },
+    });
+
+    clock.advanceBy(10);
+    const cleaned = await execute('spice_simulation_cancel', { jobId });
+    expect(cleaned).toMatchObject({
+      isError: true,
+      structuredContent: { error: { code: 'INVALID_REQUEST' } },
+    });
+  });
 });
 
 async function readWhenReady(
@@ -631,4 +848,36 @@ function containsExactString(value: unknown, target: string): boolean {
 
 function isWorkerOperation(value: unknown): boolean {
   return value !== null && typeof value === 'object' && 'operation' in value;
+}
+
+class ManualClock {
+  private time = 0;
+  private nextTimerId = 1;
+  private readonly timers = new Map<number, { deadline: number; callback: () => void }>();
+
+  now(): number { return this.time; }
+
+  setTimeout(callback: () => void, delayMs: number): number {
+    const id = this.nextTimerId++;
+    this.timers.set(id, { deadline: this.time + delayMs, callback });
+    return id;
+  }
+
+  clearTimeout(id: unknown): void {
+    if (typeof id === 'number') this.timers.delete(id);
+  }
+
+  advanceBy(milliseconds: number): void {
+    this.time += milliseconds;
+    for (const [id, timer] of [...this.timers]) {
+      if (timer.deadline <= this.time) {
+        this.timers.delete(id);
+        timer.callback();
+      }
+    }
+  }
+}
+
+async function flushMicrotasks(): Promise<void> {
+  for (let index = 0; index < 8; index++) await Promise.resolve();
 }

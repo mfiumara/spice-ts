@@ -3,6 +3,20 @@ import { simulate } from '../simulate.js';
 import { parseTitleless as parse } from './index.js';
 
 describe('ngspice option directives', () => {
+  it('parses legacy .opt cards while ignoring reporting-only fields', () => {
+    const circuit = parse('.opt abstol=1u acct list node lvlcod=2\n.op');
+
+    expect(circuit.simulationOptions).toEqual({ abstol: 1e-6 });
+  });
+
+  it.each([
+    ['ACCT', '.options ACCT'],
+    ['LIMPTS', '.options LIMPTS=5000'],
+    ['ITL5', '.options ITL5=0'],
+  ])('accepts classic compatibility no-op %s', (_field, card) => {
+    expect(parse(`${card}\n.op`).simulationOptions).toEqual({});
+  });
+
   it('maps only solver-backed ngspice options to SimulationOptions', () => {
     const circuit = parse(`
 .options abstol=2p vntol=3u reltol=4m gmin=5p
@@ -53,10 +67,13 @@ R1 in 0 1k
 
   it.each([
     '.options unsupported_option=1\n.op',
+    '.options unsupported_flag\n.op',
     '.options method=euler\n.op',
     '.options reltol=not-a-number\n.op',
     '.options reltol=-1m\n.op',
     '.options itl1=1.5\n.op',
+    '.options limpts=1.5\n.op',
+    '.options itl5=-1\n.op',
   ])('rejects unsupported or invalid option semantics: %s', netlist => {
     expect(() => parse(netlist)).toThrow();
   });
@@ -106,6 +123,10 @@ describe('Xyce TIMEINT option directives', () => {
 });
 
 describe('ngspice control and output directives', () => {
+  it('accepts legacy .width input/output formatting metadata', () => {
+    expect(() => parse('.width in=72 out=133\n.op')).not.toThrow();
+  });
+
   it.each([
     '.save v(out)\n.op',
     '.print tran v(out)\n.op',
