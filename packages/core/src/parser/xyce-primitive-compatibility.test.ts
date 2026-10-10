@@ -58,9 +58,29 @@ describe('Xyce primitive parser compatibility', () => {
       .toThrow(/Unsupported diode parameters: 'PJ=0.5'/);
   });
 
-  it('advances inductor-transient from its title to an explicit unsupported option', () => {
+  it('advances inductor-transient to its unsupported TIMEINT field', () => {
     expect(() => parse(fixture('INDUCTOR/inductor.cir')))
-      .toThrow(/Unsupported \.options field: 'timeint'/);
+      .toThrow(/Unsupported \.options TIMEINT field: 'newbpstepping'/);
+  });
+
+  it('keeps capacitor3 NEWLTE explicitly unsupported', () => {
+    expect(() => parse(fixture('CAPACITOR/capacitor3.cir')))
+      .toThrow(/Unsupported \.options TIMEINT field: 'newlte'/);
+  });
+
+  for (const [id, path] of [
+    ['capacitor-rc-transient', 'CAPACITOR/capacitor.cir'],
+    ['diode-transient', 'DIODE/diode.cir'],
+    ['rlc-transient', 'RLC/rlc.cir'],
+  ] as const) {
+    it(`parses the supported TIMEINT fields in ${id}`, () => {
+      expect(() => parse(fixture(path))).not.toThrow();
+    });
+  }
+
+  it('advances capacitor-rc-oscillator past TIMEINT to its source syntax gap', () => {
+    expect(() => parse(fixture('CAPACITOR/rc_osc.cir')))
+      .toThrow(/Cannot parse number: 'v1'/);
   });
 
   for (const [id, path] of [
