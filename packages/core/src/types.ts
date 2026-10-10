@@ -78,6 +78,8 @@ export interface NoiseAnalysis {
   startFreq: number;
   /** Stop frequency in Hz. */
   stopFreq: number;
+  /** Optional interval between per-generator summary points in classic SPICE output. */
+  pointsPerSummary?: number;
 }
 
 /** Bounded ideal-linear distortion analysis (`.disto dec ... [f2overf1]`). */
