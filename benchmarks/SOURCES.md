@@ -158,3 +158,42 @@ Strategy references used by the audit, not copied into the fixtures:
 - ngspice manual, convergence options and transient analysis: https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml
 - ngspice `CKTop` operating-point fallback implementation (`src/spicelib/analysis/cktop.c`), GPL-2.0-or-later: https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/src/spicelib/analysis/cktop.c
 - ngspice transient retry/timestep implementation (`src/spicelib/analysis/dctran.c`), GPL-2.0-or-later: https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/src/spicelib/analysis/dctran.c
+
+## ahkab test-suite corpus D
+
+- Repository: https://github.com/ahkab/ahkab
+- Pinned revision: `1e8939194b689909b8184ce7eba478b485ff9e3a`
+- Licence: GPL-2.0-only. The pinned repository README identifies the project as GPLv2, and the pinned [`COPYING`](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/COPYING) contains the complete GNU GPL version 2 terms.
+- Licence retention: the byte-identical upstream README is retained as `benchmarks/corpus/corpus-d/LICENSE-NOTICE.md` (SHA-256 `064b6a2dd3536d1699e32ffec05e3f960bd8eccda8e300109878bf2569915b2f`), and the byte-identical GPLv2 text is retained as `benchmarks/corpus/corpus-d/COPYING.txt` (SHA-256 `ee8a06e8bf69c8b547477f2a6652d330f4a4bc7d8a29d0b8b573b19abfc06e71`).
+- Redistribution decision: allowed under GPL-2.0-only. These source-form test circuits are redistributed verbatim with the upstream project notice and full licence text.
+- Adaptation: none. All 20 `.ckt` files are committed byte-for-byte from the pinned revision. The validator fetches each pinned source, checks exact bytes and hashes, and supplies the same local bytes to native ngspice and spice-ts without tolerance or circuit changes.
+
+| ID | Category | Canonical source | SHA-256 | Local path |
+|---|---|---|---|---|
+| `ohms-law-op` | op-dc | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/ohms_law/ohms_law.ckt) | `be2e9901695aab2a53c140f845bb0fe41d3c43eecd41cddca3ce6c4946b5bbd2` | `benchmarks/corpus/corpus-d/fixtures/tests/ohms_law/ohms_law.ckt` |
+| `diode-operating-point` | op-dc | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/diode_op/diode_op.ckt) | `1c7dbbf5941ce07f6806803f1c22df8165acde82d5dd66f9a9076da009e19b8e` | `benchmarks/corpus/corpus-d/fixtures/tests/diode_op/diode_op.ckt` |
+| `ekv-bias-sweep` | op-dc | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/ekv1/ekv1.ckt) | `2d680251e499b4b857ea78280d8e8c0e2114eb0977d2b1b4f69ba234a08f0271` | `benchmarks/corpus/corpus-d/fixtures/tests/ekv1/ekv1.ckt` |
+| `downscaling-current-mirror` | op-dc | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/downscaling_cm/downscaling_cm.ckt) | `09fa542dd664647c2deaef15f2d8bf07f7f3e30b40e7e6a9242673b62d28da1f` | `benchmarks/corpus/corpus-d/fixtures/tests/downscaling_cm/downscaling_cm.ckt` |
+| `transresistance-ac` | ac | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/hvsource/hvsource.ckt) | `e9c675ae1029b278422be65104ef1c10925d3506b7432274c9dce4c8c49d0765` | `benchmarks/corpus/corpus-d/fixtures/tests/hvsource/hvsource.ckt` |
+| `passive-pole-zero-ac` | ac | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/pz1/pz1.ckt) | `3a597bfe073b0d0219444b15559e6390a2aabe9ca8f1b9246db626efd8dda94c` | `benchmarks/corpus/corpus-d/fixtures/tests/pz1/pz1.ckt` |
+| `resistor-voltage-ac` | ac | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/rvtest2/rvtest2.ckt) | `a632b37a296d71114ea1bb8185029e041c28f86defdc4e6e671dfbe55de3a6ed` | `benchmarks/corpus/corpus-d/fixtures/tests/rvtest2/rvtest2.ckt` |
+| `series-resonance-ac` | ac | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/series_resonance/series_resonance.ckt) | `6b687bc2f3cd7415af561f26e80669ce8df3e08be977958dbc6db1446f5f22d0` | `benchmarks/corpus/corpus-d/fixtures/tests/series_resonance/series_resonance.ckt` |
+| `am-source-transient` | tran | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/amckt/amckt.ckt) | `e5027b8f925e83ac09ef477b77b7219b215dcb74e0e172c8369c3c777a7e5632` | `benchmarks/corpus/corpus-d/fixtures/tests/amckt/amckt.ckt` |
+| `fft-source-transient` | tran | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/fft_ckt/fft_ckt.ckt) | `04d2554f966d5ffd8cfd00f665575e02d11045790cf201bb596b610c0e2ff59b` | `benchmarks/corpus/corpus-d/fixtures/tests/fft_ckt/fft_ckt.ckt` |
+| `coupled-transformer-transient` | tran | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/transformer/transformer.ckt) | `df9bf42844508fc38edffdc685e935ac90e10bde5fab0ee957ce68f5da6ba4a5` | `benchmarks/corpus/corpus-d/fixtures/tests/transformer/transformer.ckt` |
+| `rlc-trapezoidal-transient` | tran | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_trap/tran_trap.ckt) | `8932d8cc9e536d8ad910c67d199536f39750dea7a0ff282d9ee81bc861145cc8` | `benchmarks/corpus/corpus-d/fixtures/tests/tran_trap/tran_trap.ckt` |
+| `diode-voltage-doubler` | nonlinear | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/diode_mult/diode_mult.ckt) | `de110e81dd425b8117efd6acd32d7d4311b854bf1236715f3233b1e12419da50` | `benchmarks/corpus/corpus-d/fixtures/tests/diode_mult/diode_mult.ckt` |
+| `ekv-ring-oscillator` | nonlinear | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/ring3/ring3.ckt) | `300a3d7c7441224ce67bbed31f9ecd334e8dd79cf4bfbeca9e49dc673a09f9ef` | `benchmarks/corpus/corpus-d/fixtures/tests/ring3/ring3.ckt` |
+| `cockcroft-walton-x8` | nonlinear | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/diodecw8/diodecw8.ckt) | `050a38d7396b25410446e79dd8106578825bcce223f4c2cb0bb6889fdb18727b` | `benchmarks/corpus/corpus-d/fixtures/tests/diodecw8/diodecw8.ckt` |
+| `pwm-switch` | nonlinear | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/switch1/switch1.ckt) | `e3d1544f41fef2361132c89b6a85776f3e2f32c7ec95b1321144c82cd6799ff5` | `benchmarks/corpus/corpus-d/fixtures/tests/switch1/switch1.ckt` |
+| `rlc-gear3` | convergence | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear3/tran_gear3.ckt) | `98fd4fd298a27da8d9286ec29a1af412b7fa7d9098809b8f0635dc42e9062219` | `benchmarks/corpus/corpus-d/fixtures/tests/tran_gear3/tran_gear3.ckt` |
+| `rlc-gear5` | convergence | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear5/tran_gear5.ckt) | `ac0ae49a5c9868c6d783449b84514d69e9dc171354782d53785b1b2300a064a4` | `benchmarks/corpus/corpus-d/fixtures/tests/tran_gear5/tran_gear5.ckt` |
+| `rlc-gear6` | convergence | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear6/tran_gear6.ckt) | `1974b92f58344b953e481e579f63a374d722ca3a90bff1d3b305d2c35fb3d5d6` | `benchmarks/corpus/corpus-d/fixtures/tests/tran_gear6/tran_gear6.ckt` |
+| `colpitts-oscillator` | convergence | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/colpitts/colpitts.ckt) | `02bc0b17610975b80bb01bf5b73e5a334ef39412d3c14cc39ba6f8e236f67d8c` | `benchmarks/corpus/corpus-d/fixtures/tests/colpitts/colpitts.ckt` |
+
+Validate all pinned fetches, fixture hashes, byte-identical engine inputs, declared analyses, expected outcomes, and the deterministic receipt with:
+
+    pnpm build
+    node benchmarks/corpus/corpus-d/validate.mjs
+
+At ingestion on ngspice-47, all 20 fixtures fail on ahkab-specific source, analysis, model, or named-subcircuit syntax. All 20 also fail in spice-ts: 19 parse failures (including one existing malformed-device error path) and one explicitly unsupported parse. No circuit is adapted or omitted to improve either total; the validator prints and checks every loss.
