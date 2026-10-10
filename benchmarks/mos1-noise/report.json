@@ -1,0 +1,68 @@
+{
+  "fixture": "benchmarks/mos1-noise/mos1-noise.cir",
+  "sha256": "cd8f360eb0db90b1f4796df474bc6b2b435ad77a39d16ee8cbd4bc79197acb5b",
+  "source": {
+    "url": "https://github.com/mfiumara/spice-ts/issues/189",
+    "revision": "issue-189 project-authored reference fixture",
+    "licence": "MIT"
+  },
+  "identicalNetlistForBothEngines": true,
+  "commands": {
+    "ngspice": "ngspice -b -r <temporary-raw-path> benchmarks/mos1-noise/mos1-noise.cir",
+    "spiceTs": "pnpm exec tsx benchmarks/mos1-noise/compare.ts"
+  },
+  "versions": {
+    "reference": "ngspice-47",
+    "spiceTsBaseRevision": "840cd8e70f55599b34ce09b129f8d276fddf8cf7",
+    "spiceTsWorkingTreeDirty": true,
+    "node": "v22.23.1"
+  },
+  "machine": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "convergence": {
+    "ngspice": "success",
+    "spiceTs": "success"
+  },
+  "runtimeMilliseconds": {
+    "ngspiceProcess": 10.112499999999983,
+    "spiceTsInProcess": 3.1959579999999903,
+    "caveat": "Different process boundaries; reported honestly, not a speed claim."
+  },
+  "matchedPointCount": 10,
+  "errors": {
+    "outputDensity": {
+      "maximumAbsoluteError": 4.770574262230945e-16,
+      "rmsAbsoluteError": 2.1425032934625114e-16,
+      "maximumRelativeError": 3.718423083681525e-10,
+      "rmsRelativeError": 1.4966812084344007e-10
+    },
+    "inputDensity": {
+      "maximumAbsoluteError": 1.7036744245040166e-17,
+      "rmsAbsoluteError": 7.360113739192524e-18,
+      "maximumRelativeError": 3.162994110912621e-10,
+      "rmsRelativeError": 1.1294992094199615e-10
+    },
+    "integratedOutput": {
+      "maximumAbsoluteError": 7.19517219242849e-15,
+      "rmsAbsoluteError": 7.19517219242849e-15,
+      "maximumRelativeError": 1.013547029093546e-10,
+      "rmsRelativeError": 1.013547029093546e-10
+    },
+    "integratedInput": {
+      "maximumAbsoluteError": 6.48034414758164e-16,
+      "rmsAbsoluteError": 6.48034414758164e-16,
+      "maximumRelativeError": 4.5812045270383983e-11,
+      "rmsRelativeError": 4.5812045270383983e-11
+    }
+  },
+  "losses": [
+    "Only MOSFET LEVEL=1 with NLEV=2 is supported.",
+    "Drain/source series resistance noise (RD/RS), body-junction noise, and BSIM noise remain unsupported.",
+    "Runtime values are not directly comparable because ngspice includes process startup."
+  ],
+  "redReceipt": "pnpm -C packages/core exec vitest run src/analysis/noise.test.ts => 5 failed, 17 passed; MOSFET noise explicitly rejected before implementation"
+}

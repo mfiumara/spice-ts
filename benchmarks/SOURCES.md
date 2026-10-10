@@ -120,6 +120,14 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 | `benchmarks/lossless-tline/matched.cir` | `84333a39888bc3dc72b8c492c749d493230fb705f39ce02fb689d76ad9fd9fbb` | 0.5 V launch and 5 ns one-way propagation; no round-trip reflection | `pnpm exec tsx benchmarks/lossless-tline/compare.ts` (internally runs ngspice-47 in batch mode) |
 | `benchmarks/lossless-tline/mismatched.cir` | `5da221908fe4c0a2f522026d3c1a25746b345adedf870442e14af67308ab22c1` | 2/3 V launch, 8/9 V first load step, 22/27 V source return, 64/81 V second load step | same |
 
+## Bounded MOSFET level-1 noise parity fixture
+
+- Fixture: `benchmarks/mos1-noise/mos1-noise.cir` (SHA-256 `cd8f360eb0db90b1f4796df474bc6b2b435ad77a39d16ee8cbd4bc79197acb5b`).
+- Source: project-authored public reference circuit for [issue #189](https://github.com/mfiumara/spice-ts/issues/189), pinned by the fixture SHA-256 above.
+- Licence: MIT, under the repository [licence](../LICENSE); redistribution is allowed. No third-party netlist was copied.
+- Adaptation: none. The committed bytes are supplied identically to spice-ts and ngspice-47. The fixture exercises MOS1 channel thermal noise and default `NLEV=2` KF/AF flicker noise over a DEC sweep.
+- Reproduce with `pnpm exec tsx benchmarks/mos1-noise/compare.ts`; the command records source/hash, versions, machine, convergence, runtimes, matched-point max/RMS absolute and relative errors, integrated totals, and remaining unsupported losses.
+
 ## Xyce Regression Suite corpus C
 
 - Repository: https://github.com/Xyce/Xyce_Regression
