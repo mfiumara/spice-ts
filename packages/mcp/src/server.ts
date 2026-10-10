@@ -308,6 +308,7 @@ interface StreamJob {
   replay: Map<string, SimulationReadDataV1>;
   events: SimulationEventV1[];
   emitted: SimulationEventV1[];
+  producedPointCount: number;
   releaseBatch?: () => void;
   batchEndOffset?: number;
   terminal?: SimulationReadDataV1;
@@ -338,6 +339,7 @@ class StreamStore {
       replay: new Map(),
       events: [],
       emitted: [],
+      producedPointCount: 0,
     };
     this.jobs.set(jobId, job);
     void this.solve(jobId, job, limits, options);
@@ -423,6 +425,12 @@ class StreamStore {
       const result = options.simulate
         ? await boundedCall(() => options.simulate!(job.request), limits.maxWallTimeMs, job.controller.signal)
         : await runStreamingWorker(job.request, limits.maxWallTimeMs, solveOptions, events => {
+          const producedPointCount = job.producedPointCount
+            + events.filter(event => event.type === 'point').length;
+          enforceMaximum(
+            'maxResultPoints', limits.maxResultPoints, producedPointCount, 'solve',
+          );
+          job.producedPointCount = producedPointCount;
           job.events.push(...events);
           job.batchEndOffset = job.events.length;
           return new Promise<void>(resolve => { job.releaseBatch = resolve; });
@@ -907,9 +915,10 @@ async function runStreamingWorker(
     const onMessage = (message: WorkerReply) => {
       if (message.type === 'events') {
         if (!message.events) return finish(() => reject(workerFailure()));
-        void onEvents(message.events)
+        void Promise.resolve()
+          .then(() => onEvents(message.events!))
           .then(() => { if (!settled) worker.postMessage({ type: 'ack' }); })
-          .catch(() => finish(() => reject(workerFailure())));
+          .catch(error => finish(() => reject(publicError(error))));
         return;
       }
       finish(() => {
