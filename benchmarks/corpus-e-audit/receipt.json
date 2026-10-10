@@ -14,7 +14,7 @@
   "versions": {
     "ngspice": "** ngspice-47 : Circuit level simulation program",
     "node": "v22.23.1",
-    "spiceTsHead": "a5153d1593619d151cb6a7d82eda5118cf9e5710"
+    "spiceTsHead": "726c8781609e35404b1195378b29f3a737546601"
   },
   "machine": {
     "os": "macOS 27.0.1",
@@ -32,8 +32,8 @@
       "execution": 0
     },
     "spiceTs": {
-      "pass": 12,
-      "parser": 7,
+      "pass": 14,
+      "parser": 5,
       "device/model": 1,
       "analysis": 0,
       "convergence": 0,
@@ -151,10 +151,9 @@
         "cause": "parser"
       },
       "after": {
-        "status": "fail",
-        "cause": "parser"
+        "status": "pass"
       },
-      "changed": false
+      "changed": true
     },
     {
       "id": "capacitor-initial-condition",
@@ -174,10 +173,9 @@
         "cause": "parser"
       },
       "after": {
-        "status": "fail",
-        "cause": "parser"
+        "status": "pass"
       },
-      "changed": false
+      "changed": true
     },
     {
       "id": "bjt-diffpair-transient",
@@ -279,7 +277,7 @@
     }
   ],
   "fixtureSetSha256": "e6346a45392800a58c186eb691d242f4b88611f1609b29db4b0f1c1110a08897",
-  "outcomeSha256": "f227882a3b23ab543b8a89f27a265a80174ab07abae172f99c721cc9621b809f",
+  "outcomeSha256": "163acb09d3c7225916ea9dca4336ebbe97b7fd0e4c706a46538f3b1934d8727d",
   "fixtures": [
     {
       "id": "cccs-mixed-analysis",
@@ -402,7 +400,7 @@
       "spiceTs": {
         "status": "fail",
         "cause": "parser",
-        "evidence": "Parse error at line 17: Cannot parse number: 'dc=0'"
+        "evidence": "Parse error at line 49: Cannot read properties of undefined (reading 'toLowerCase')"
       }
     },
     {
@@ -417,9 +415,7 @@
         "evidence": "unimplemented dot command '.list'"
       },
       "spiceTs": {
-        "status": "fail",
-        "cause": "parser",
-        "evidence": "Parse error at line 2: Cannot parse number: 'pulse'"
+        "status": "pass"
       }
     },
     {
@@ -449,9 +445,7 @@
         "evidence": "unimplemented dot command '.status'"
       },
       "spiceTs": {
-        "status": "fail",
-        "cause": "parser",
-        "evidence": "Parse error at line 4: PWL source requires a parenthesized list of time/value pairs"
+        "status": "pass"
       }
     },
     {

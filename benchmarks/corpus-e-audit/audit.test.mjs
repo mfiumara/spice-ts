@@ -9,7 +9,7 @@ import {
 } from './audit.mjs';
 
 const EXPECTED_FIXTURE_SET_HASH = 'e6346a45392800a58c186eb691d242f4b88611f1609b29db4b0f1c1110a08897';
-const EXPECTED_OUTCOME_HASH = 'f227882a3b23ab543b8a89f27a265a80174ab07abae172f99c721cc9621b809f';
+const EXPECTED_OUTCOME_HASH = '163acb09d3c7225916ea9dca4336ebbe97b7fd0e4c706a46538f3b1934d8727d';
 
 test('failure classifiers cover every audit cause', () => {
   assert.equal(classifyNgspiceFailure("unimplemented dot command '.list'"), 'analysis');
@@ -40,8 +40,8 @@ test('all unchanged corpus-E fixtures produce the audited engine outcomes', asyn
     execution: 0,
   });
   assert.deepEqual(receipt.totals.spiceTs, {
-    pass: 12,
-    parser: 7,
+    pass: 14,
+    parser: 5,
     'device/model': 1,
     analysis: 0,
     convergence: 0,
@@ -50,7 +50,7 @@ test('all unchanged corpus-E fixtures produce the audited engine outcomes', asyn
   assert.equal(receipt.outcomeSha256, EXPECTED_OUTCOME_HASH);
   assert.ok(receipt.fixtures.every(({ inputIdentity }) => inputIdentity === 'byte-identical'));
   assert.equal(receipt.issue228Transitions.length, 20);
-  assert.equal(receipt.issue228Transitions.filter(({ changed }) => changed).length, 13);
-  assert.equal(receipt.issue228Transitions.filter(({ before, after }) => before.status === 'fail' && after.status === 'pass').length, 8);
+  assert.equal(receipt.issue228Transitions.filter(({ changed }) => changed).length, 15);
+  assert.equal(receipt.issue228Transitions.filter(({ before, after }) => before.status === 'fail' && after.status === 'pass').length, 10);
   assert.equal(receipt.issue228Transitions.filter(({ before, after }) => before.status === 'pass' && after.status === 'fail').length, 0);
 });

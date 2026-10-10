@@ -5,13 +5,13 @@ This audit runs all 20 provenance-tracked fixtures byte-for-byte through both en
 ## Result
 
 - ngspice: 5/20 pass; parser=2, device/model=2, analysis=11, convergence=0, execution=0.
-- spice-ts: 12/20 pass; parser=7, device/model=1, analysis=0, convergence=0, execution=0.
+- spice-ts: 14/20 pass; parser=5, device/model=1, analysis=0, convergence=0, execution=0.
 - Issue #228 baseline at `f737698e90b4e025de65c9f621fcf75f6c27b15d`: spice-ts 4/20 pass; parser=3, device/model=0, analysis=13, convergence=0, execution=0; outcome SHA-256 `dd99c57c31e72613e2e532ab0708d9810b0e6d5d09950ba74c03539b66314290`.
-- All 20 baseline/current status and first-cause pairs are below: 13 changed and 7 unchanged; 8 fail-to-pass transitions and 0 pass-to-fail regressions.
-- Losses remain explicit. ngspice-pass/spice-ts-fail fixtures: none. Remaining spice-ts failures: vcvs-operating-point (parser), transmission-line-ac (parser), mutual-inductance-ac (device/model), opamp-open-loop-ac (parser), capacitor-step-transient (parser), lc-oscillator-transient (parser), opamp-voltage-follower (parser), mos7-nand-no-bypass (parser).
+- All 20 baseline/current status and first-cause pairs are below: 15 changed and 5 unchanged; 10 fail-to-pass transitions and 0 pass-to-fail regressions.
+- Losses remain explicit. ngspice-pass/spice-ts-fail fixtures: none. Remaining spice-ts failures: vcvs-operating-point (parser), transmission-line-ac (parser), mutual-inductance-ac (device/model), opamp-open-loop-ac (parser), opamp-voltage-follower (parser), mos7-nand-no-bypass (parser).
 - The pass counts are execution statuses, not waveform parity. Different accepted syntax and device coverage make them unsuitable for a simulator-superiority claim.
 - Fixture-set SHA-256: `e6346a45392800a58c186eb691d242f4b88611f1609b29db4b0f1c1110a08897`.
-- Deterministic outcome SHA-256: `f227882a3b23ab543b8a89f27a265a80174ab07abae172f99c721cc9621b809f`.
+- Deterministic outcome SHA-256: `163acb09d3c7225916ea9dca4336ebbe97b7fd0e4c706a46538f3b1934d8727d`.
 
 ## Reproduction receipt
 
@@ -20,7 +20,7 @@ This audit runs all 20 provenance-tracked fixtures byte-for-byte through both en
 - spice-ts command: `node benchmarks/corpus/corpus-e/run-spice-ts.mjs <repo-root> <unchanged-fixture-path>`.
 - Audit command: `node benchmarks/corpus-e-audit/audit.mjs --write`.
 - Focused verification: `node --test benchmarks/corpus-e-audit/audit.test.mjs`.
-- Versions: ** ngspice-47 : Circuit level simulation program; Node v22.23.1; spice-ts head `a5153d1593619d151cb6a7d82eda5118cf9e5710`.
+- Versions: ** ngspice-47 : Circuit level simulation program; Node v22.23.1; spice-ts head `726c8781609e35404b1195378b29f3a737546601`.
 - Machine: macOS 27.0.1, arm64, Apple M5 Pro, 51539607552 bytes RAM.
 - Each ngspice temporary copy and each spice-ts runner response was SHA-256 checked against the committed manifest before its result was accepted.
 
@@ -39,10 +39,10 @@ The first hard engine diagnostic is mapped, in order, to parser, device/model, a
 | transmission-line-ac | `99cc373d602fad9ecd4ea0e8f14d9eba9322b0083ae02c7631091dcbece7828b` | fail — parser: unknown parameter (gen) | fail/analysis | fail — parser: Parse error at line 5: Cannot parse number: 'gen' | fail/analysis → fail/parser |
 | mutual-inductance-ac | `45bf5fdc96b7985a744455ff7c3222478665e3db487bbcfedc5c7efa8297fc3c` | fail — analysis: unimplemented dot command '.list' | fail/analysis | fail — device/model: K-element 'k1' references unknown or non-inductor device(s): l1a, l1b | fail/analysis → fail/device/model |
 | bjt-diffpair-ac | `f8cde99b71d9978c5216dffbc9dfc036c8bdf7b37f1c9949fa9835e6eb741213` | fail — analysis: unimplemented dot command '.status' | fail/analysis | pass | fail/analysis → pass |
-| opamp-open-loop-ac | `92e47652dbecdbd2c971cce3c047fc0b8e4a0406a7d2c953dffce299c60b183c` | fail — analysis: Missing DEC, OCT, or LIN. | fail/parser | fail — parser: Parse error at line 17: Cannot parse number: 'dc=0' | fail/parser → fail/parser |
-| capacitor-step-transient | `2c0864497272439baa44213381271915107ccd9f8c47354df2e4b9c3028a1608` | fail — analysis: unimplemented dot command '.list' | fail/parser | fail — parser: Parse error at line 2: Cannot parse number: 'pulse' | fail/parser → fail/parser |
+| opamp-open-loop-ac | `92e47652dbecdbd2c971cce3c047fc0b8e4a0406a7d2c953dffce299c60b183c` | fail — analysis: Missing DEC, OCT, or LIN. | fail/parser | fail — parser: Parse error at line 49: Cannot read properties of undefined (reading 'toLowerCase') | fail/parser → fail/parser |
+| capacitor-step-transient | `2c0864497272439baa44213381271915107ccd9f8c47354df2e4b9c3028a1608` | fail — analysis: unimplemented dot command '.list' | fail/parser | pass | fail/parser → pass |
 | capacitor-initial-condition | `65199506e3a8b9bd05b3842cc9ef180308d0d02ba2e9857e89f7f1f8c32c3c84` | fail — analysis: unimplemented dot command '.list' | fail/analysis | pass | fail/analysis → pass |
-| lc-oscillator-transient | `020684099d172ec7cc2a6fe3d57792ef51b3d9162f41f83ed486704062d6d702` | fail — analysis: unimplemented dot command '.status' | fail/parser | fail — parser: Parse error at line 4: PWL source requires a parenthesized list of time/value pairs | fail/parser → fail/parser |
+| lc-oscillator-transient | `020684099d172ec7cc2a6fe3d57792ef51b3d9162f41f83ed486704062d6d702` | fail — analysis: unimplemented dot command '.status' | fail/parser | pass | fail/parser → pass |
 | bjt-diffpair-transient | `f142fa0c6378f80666343a83c8582cca065ed7ad5d49dd3d9e5cd88e7474301e` | pass | pass | pass | pass → pass |
 | bjt-schmitt-trigger | `ec6efed82593b525b1661173b3a11dbec4880449968389ff86424051d42274b5` | fail — device/model: unknown parameter (1) | pass | pass | pass → pass |
 | diode-temperature-sweep | `d2d7df0b8050008df98e6a8410433c6ef346d9851371c2032edaeb0c9c43dd48` | fail — analysis: unimplemented dot command '.list' | fail/analysis | pass | fail/analysis → pass |
@@ -62,4 +62,4 @@ The first hard engine diagnostic is mapped, in order, to parser, device/model, a
 
 ## /poteto-mode receipt
 
-Loaded `pstack:poteto-mode`, `pstack:how`, the feature playbook, and `pstack:architect`; compared a policy-table design with the chosen lower-surface inline parser-helper design. Parser RED commit `b29794f509bfd6fa2c764b903e4af6d3236c87c1` failed 19 of 67 focused cases. GREEN passed all 67. Audit RED commit `10a2ebf44283207088656084a82e00e2807e33a4` failed the K-element classification and post-change totals. GREEN runs both engines over all 20 unchanged fixtures, locks totals and stable hashes, and records every #228 transition. REFACTOR keeps output-only classification internal and leaves every corpus fixture, manifest, source revision, and tolerance unchanged.
+Loaded `pstack:poteto-mode`, `pstack:how`, the feature playbook, and `pstack:architect`; compared a policy-table design with the chosen lower-surface inline parser-helper design. Parser RED commit `c4cfe9bee38f9d90d4f2e0b4ece9ee83563fcb78` failed 19 of 67 focused cases. GREEN passed all 67. Audit RED commit `40e830182bc1d52c14b21db15b0bd8855d9eaafd` failed the K-element classification and post-change totals. GREEN runs both engines over all 20 unchanged fixtures, locks totals and stable hashes, and records every #228 transition. REFACTOR keeps output-only classification internal and leaves every corpus fixture, manifest, source revision, and tolerance unchanged.
