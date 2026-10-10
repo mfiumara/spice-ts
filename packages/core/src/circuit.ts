@@ -184,7 +184,7 @@ function formatDevice(desc: DeviceDescriptor): string {
 
   switch (desc.type) {
     case 'R':
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatNumber(desc.value ?? 0)}`;
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatNumber(desc.value ?? 0)}${tail}`;
     case 'C':
     case 'L': {
       const value = desc.value !== undefined ? formatNumber(desc.value) : undefined;
@@ -362,10 +362,19 @@ export class Circuit {
    * @param nodeNeg - Negative terminal node
    * @param resistance - Resistance value in ohms
    */
-  addResistor(name: string, nodePos: string, nodeNeg: string, resistance: number): void {
+  addResistor(
+    name: string,
+    nodePos: string,
+    nodeNeg: string,
+    resistance: number,
+    temperatureCoefficients?: Record<string, number>,
+  ): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
-    this.descriptors.push({ type: 'R', name, nodes: [nodePos, nodeNeg], value: resistance });
+    this.descriptors.push({
+      type: 'R', name, nodes: [nodePos, nodeNeg], value: resistance,
+      params: temperatureCoefficients,
+    });
   }
 
   /**
@@ -1031,10 +1040,15 @@ export class Circuit {
           // conductance. Give it an MNA branch so its equation and current are
           // represented exactly. Stepped resistors also use branch form because
           // their value may cross zero without changing matrix topology.
-          const usesBranch = desc.value === 0 || this._steps.some(step => step.param === desc.name);
+          const usesBranch = desc.value === 0 || this._steps.some(step =>
+            step.param === desc.name || step.param.toUpperCase() === 'TEMP');
           const bi = usesBranch ? branchIndex++ : undefined;
           if (bi !== undefined) branchNames.push(desc.name);
-          devices.push(new Resistor(desc.name, nodeIndices, desc.value!, bi));
+          devices.push(new Resistor(desc.name, nodeIndices, desc.value!, bi, {
+            tc1: desc.params?.TC1,
+            tc2: desc.params?.TC2,
+            tnom: desc.params?.TNOM,
+          }));
           break;
         }
         case 'V': {

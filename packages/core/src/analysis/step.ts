@@ -13,6 +13,49 @@ import { InvalidCircuitError } from '../errors.js';
 import { computeUICInitialSolution } from './uic.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
+export interface StepTarget {
+  readonly paramName: string;
+  readonly resetsContinuation: boolean;
+  set(value: number): void;
+  restore(): void;
+}
+
+/** Resolve a device or bounded circuit-temperature step target. */
+export function resolveStepTarget(compiled: CompiledCircuit, step: StepAnalysis): StepTarget {
+  if (step.param.toUpperCase() === 'TEMP') {
+    if (step.sweepMode !== 'list') {
+      throw new InvalidCircuitError('.step TEMP supports LIST mode only');
+    }
+    const devices = compiled.devices.filter(device => device.setTemperature && device.getTemperature);
+    const originalTemperatures = devices.map(device => device.getTemperature!());
+    return {
+      paramName: 'TEMP',
+      resetsContinuation: true,
+      set: value => devices.forEach(device => device.setTemperature!(value)),
+      restore: () => devices.forEach((device, index) => {
+        device.setTemperature!(originalTemperatures[index]);
+      }),
+    };
+  }
+
+  const device = compiled.devices.find(candidate => candidate.name === step.param);
+  if (!device) {
+    throw new InvalidCircuitError(`Step parameter device '${step.param}' not found`);
+  }
+  if (!device.setParameter || !device.getParameter) {
+    throw new InvalidCircuitError(
+      `Device '${step.param}' does not support parametric sweep`,
+    );
+  }
+  const originalValue = device.getParameter();
+  return {
+    paramName: step.param,
+    resetsContinuation: false,
+    set: value => device.setParameter!(value),
+    restore: () => device.setParameter!(originalValue),
+  };
+}
+
 /**
  * Generate the array of parameter values for a .step sweep.
  */
@@ -98,24 +141,15 @@ export function solveStep(
 ): StepResult[] {
   const values = generateStepValues(step);
 
-  const device = compiled.devices.find(d => d.name === step.param);
-  if (!device) {
-    throw new InvalidCircuitError(`Step parameter device '${step.param}' not found`);
-  }
-  if (!device.setParameter || !device.getParameter) {
-    throw new InvalidCircuitError(
-      `Device '${step.param}' does not support parametric sweep`,
-    );
-  }
-
-  const originalValue = device.getParameter();
+  const target = resolveStepTarget(compiled, step);
   const results: StepResult[] = [];
   let prevDCSolution: Float64Array | undefined;
 
   try {
     for (const value of values) {
-      device.setParameter(value);
-      const stepResult: StepResult = { paramName: step.param, paramValue: value };
+      target.set(value);
+      if (target.resetsContinuation) prevDCSolution = undefined;
+      const stepResult: StepResult = { paramName: target.paramName, paramValue: value };
 
       for (const analysis of compiled.analyses) {
         switch (analysis.type) {
@@ -173,7 +207,7 @@ export function solveStep(
       results.push(stepResult);
     }
   } finally {
-    device.setParameter(originalValue);
+    target.restore();
   }
 
   return results;

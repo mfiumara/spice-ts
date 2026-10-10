@@ -76,6 +76,10 @@ export interface DeviceModel {
   setParameter?(value: number): void;
   /** Get the device's primary parameter value. */
   getParameter?(): number;
+  /** Apply a circuit temperature in degrees Celsius to temperature-sensitive behavior. */
+  setTemperature?(value: number): void;
+  /** Return the currently applied circuit temperature in degrees Celsius. */
+  getTemperature?(): number;
   /**
    * Return times in [currentTime, stopTime] at which this device has a
    * discontinuity in its waveform or its derivatives. The transient driver

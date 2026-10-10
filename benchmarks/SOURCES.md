@@ -122,6 +122,15 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 - Adaptation: the committed four-point `R2` LIST grid is executed directly by spice-ts. ngspice-47 reports `unimplemented dot command '.step'`, so the comparison harness records that loss and expands the grid deterministically. At each matched value, the same expanded netlist bytes are supplied to both engines. The direct spice-ts result is also checked against its expanded single-point runs. No circuit value, tolerance, or engine-specific deck is used to hide an error.
 - Reproduce with `pnpm bench:stepped-tf`. The JSON receipt reports convergence at every step, deterministic order, max/RMS absolute and relative errors for transfer, input resistance, and output resistance, runtimes with process-boundary caveats, unsupported forms, and all retained losses.
 
+## Bounded TEMP LIST resistor-coefficient parity fixture
+
+- Fixture: `benchmarks/temp-step-resistor/temp-divider.cir`.
+- Source: project-authored public reference circuit for [issue #318](https://github.com/mfiumara/spice-ts/issues/318).
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- Adaptation: the committed `.step TEMP LIST -55 25 72` bytes are executed directly by spice-ts. ngspice-47 reports `unimplemented dot command '.step'`, so that loss is retained. For matched points, the harness evaluates the documented `R(T) = Rnom * (1 + TC1 * (T - TNOM))` relation and supplies one byte-identical expanded netlist to both engines at each temperature. Direct and expanded spice-ts results are compared with every residual retained. No engine-specific tolerance or circuit value is used.
+- Scope: a single case-insensitive LIST-only circuit-temperature target and linear resistor `TC1` behavior. `.temp`, nested steps, non-LIST TEMP sweeps, diode temperature/breakdown, and broad all-device temperature semantics remain unsupported or out of scope.
+- Reproduce with `pnpm bench:temp-step`. The JSON receipt records fixture and expanded hashes, versions, machine, step order, convergence, matched-point maximum/RMS absolute and relative error, runtimes, the direct ngspice loss, and expansion caveats.
+
 ## Bounded Gummel-Poon forward-active parity fixtures
 
 - Public source: John P. Doty's CA3080 ngspice model, [`ca3080.mod`](https://github.com/xxv/gedasymbols/blob/49eda5e627e167fcb6346ef9805535ca92e43b0c/www/user/john_doty/models/opamp/ca3080.mod), pinned `gedasymbols` revision `49eda5e627e167fcb6346ef9805535ca92e43b0c`.

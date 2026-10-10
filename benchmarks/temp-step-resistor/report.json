@@ -1,0 +1,122 @@
+{
+  "schemaVersion": "spice-ts-temp-step-resistor/v1",
+  "issueUrl": "https://github.com/mfiumara/spice-ts/issues/318",
+  "fixture": {
+    "path": "benchmarks/temp-step-resistor/temp-divider.cir",
+    "sha256": "12eebbeec60ce987ff9d3fcfbc975bb7da9fa45ed1b07a1f1703e25351b64c43",
+    "source": "project-authored reference circuit for issue #318",
+    "licence": "MIT"
+  },
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "workspace",
+    "node": "v22.23.1"
+  },
+  "machine": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "policy": {
+    "directSpiceTsInput": "the committed fixture bytes",
+    "directNgspiceInput": "the committed fixture bytes; ngspice-47 rejects .step explicitly",
+    "matchedPointInput": "one byte-identical deterministic expansion supplied to both engines per TEMP value",
+    "perCircuitToleranceTuning": false
+  },
+  "commands": {
+    "comparison": "pnpm bench:temp-step",
+    "ngspiceDirect": "ngspice -b benchmarks/temp-step-resistor/temp-divider.cir",
+    "matchedPoints": "ngspice -b -r <raw> <byte-identical-expanded-netlist>; @spice-ts/core simulate(<same bytes>)"
+  },
+  "convergence": {
+    "spiceTsDirectStep": "success",
+    "spiceTsExpandedPoints": [
+      {
+        "temperatureC": -55,
+        "status": "success"
+      },
+      {
+        "temperatureC": 25,
+        "status": "success"
+      },
+      {
+        "temperatureC": 72,
+        "status": "success"
+      }
+    ],
+    "ngspiceExpandedPoints": [
+      {
+        "temperatureC": -55,
+        "status": "success"
+      },
+      {
+        "temperatureC": 25,
+        "status": "success"
+      },
+      {
+        "temperatureC": 72,
+        "status": "success"
+      }
+    ],
+    "ngspiceDirectStep": "unsupported: unimplemented dot command '.step'"
+  },
+  "stepOrderCelsius": [
+    -55,
+    25,
+    72
+  ],
+  "matchedPointCount": 3,
+  "errors": {
+    "voltageOut": {
+      "maximumAbsoluteError": 1.7763568394002505e-15,
+      "rmsAbsoluteError": 1.0255800994045674e-15,
+      "maximumRelativeError": 3.549160965121701e-16,
+      "rmsRelativeError": 2.0491090386103259e-16
+    },
+    "directVersusExpandedSpiceTs": {
+      "maximumAbsoluteError": 1.7763568394002505e-15,
+      "rmsAbsoluteError": 1.0255800994045674e-15,
+      "maximumRelativeError": 3.549160965121701e-16,
+      "rmsRelativeError": 2.0491090386103259e-16
+    }
+  },
+  "runtimeMilliseconds": {
+    "spiceTsDirectStep": 4.286124999999998,
+    "spiceTsExpandedPoints": 70.60620800000004,
+    "ngspiceExpandedProcesses": 58.05108299999995,
+    "caveat": "ngspice includes one process startup per matched point; this is not a speed claim."
+  },
+  "samples": [
+    {
+      "temperatureC": -55,
+      "effectiveResistanceOhms": 918,
+      "spiceTsDirectVoltage": 5.21376433785193,
+      "spiceTsExpandedVoltage": 5.21376433785193,
+      "ngspiceExpandedVoltage": 5.21376433785193,
+      "inputSha256": "7589335e26f6443840a37cc17e6e2a45ed8fb13df874370ccd03e885fce2640e"
+    },
+    {
+      "temperatureC": 25,
+      "effectiveResistanceOhms": 998,
+      "spiceTsDirectVoltage": 5.005005005005006,
+      "spiceTsExpandedVoltage": 5.005005005005004,
+      "ngspiceExpandedVoltage": 5.005005005005004,
+      "inputSha256": "764a2e62506c543a7c57b4d23edc2f854e2998f3a9c648fc81bb01681f501b7d"
+    },
+    {
+      "temperatureC": 72,
+      "effectiveResistanceOhms": 1045,
+      "spiceTsDirectVoltage": 4.889975550122249,
+      "spiceTsExpandedVoltage": 4.889975550122249,
+      "ngspiceExpandedVoltage": 4.889975550122249,
+      "inputSha256": "88383b3dee8ed899549bd18f64993edeb55b1ce0341879e0cb24135eeb469a12"
+    }
+  ],
+  "losses": [
+    "ngspice-47 cannot execute the committed .step directive directly; matched points use deterministic expansions.",
+    "The harness evaluates the documented linear resistor coefficient into each expanded resistance; direct spice-ts output is checked against those same expanded bytes.",
+    "Diode and broad all-device temperature semantics remain out of scope.",
+    "Every non-zero max/RMS residual is retained."
+  ]
+}

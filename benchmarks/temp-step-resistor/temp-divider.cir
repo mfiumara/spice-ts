@@ -1,0 +1,7 @@
+Stepped resistor temperature-coefficient divider
+V1 in 0 DC 10
+R1 in out 1k TC1=0.001
+R2 out 0 1k
+.op
+.step TEMP LIST -55 25 72
+.end
