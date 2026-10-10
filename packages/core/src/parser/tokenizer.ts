@@ -7,35 +7,37 @@ const SI_SUFFIX_MAP: Record<string, string> = {
   u: 'e-6', n: 'e-9', p: 'e-12', f: 'e-15', a: 'e-18',
 };
 
+// Plain or suffixed number: 1e-14, 10k, 100n, 2.2meg. Ngspice ignores
+// alphabetic unit text after a number or scale factor.
+const SUFFIXED_NUMBER = /^([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)(meg|mil|[tgkmunpfa])?[a-z]*$/i;
+// Embedded RKM notation (accepted as an extension): 3k3 = 3300.
+const EMBEDDED_NUMBER = /^([+-]?\d+)(meg|[tgkmunpfa])(\d+)[a-z]*$/i;
+
 export function parseNumber(token: string): number {
   const trimmed = token.trim();
 
-  // Plain number (integer, float, scientific notation)
-  const plain = Number(trimmed);
-  if (!isNaN(plain) && /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(trimmed)) {
-    return plain;
-  }
-
-  // Embedded RKM notation (accepted as an extension): 3k3 = 3300.
-  const embeddedMatch = trimmed.match(/^([+-]?\d+)(meg|[tgkmunpfa])(\d+)[a-z]*$/i);
-  if (embeddedMatch) {
-    const numStr = embeddedMatch[1] + '.' + embeddedMatch[3];
-    const suffix = embeddedMatch[2].toLowerCase();
-    const exp = suffix === 'meg' ? 'e6' : SI_SUFFIX_MAP[suffix];
-    const val = Number(numStr + exp);
-    if (!isNaN(val)) return val;
-  }
-
-  // Standard suffix: 10k, 100n, 2.2meg, etc.
-  // Ngspice ignores alphabetic unit text after a number or scale factor.
-  const suffixMatch = trimmed.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)(meg|mil|[tgkmunpfa])?([a-z]*)$/i);
+  // The suffixed and embedded forms are disjoint (embedded needs a digit
+  // after the scale letter, suffixed allows only letters there), so the
+  // common plain/suffixed form is decided by a single regex execution.
+  const suffixMatch = SUFFIXED_NUMBER.exec(trimmed);
   if (suffixMatch) {
-    const suffix = suffixMatch[2]?.toLowerCase();
-    const exp = suffix === 'meg' ? 'e6' : suffix && suffix !== 'mil' ? SI_SUFFIX_MAP[suffix] : '';
-    const val = suffix === 'mil'
-      ? Number(suffixMatch[1]) * 25.4e-6
-      : Number(suffixMatch[1] + exp);
+    const mantissa = suffixMatch[1];
+    const suffix = suffixMatch[2];
+    if (suffix === undefined) return Number(mantissa);
+    const lower = suffix.toLowerCase();
+    const val = lower === 'mil'
+      ? Number(mantissa) * 25.4e-6
+      : Number(mantissa + (lower === 'meg' ? 'e6' : SI_SUFFIX_MAP[lower]));
+    // An exponent plus a scale factor (e.g. '1e3k' -> '1e3e3') is NaN and
+    // has always been rejected.
     if (!isNaN(val)) return val;
+  } else {
+    const embeddedMatch = EMBEDDED_NUMBER.exec(trimmed);
+    if (embeddedMatch) {
+      const suffix = embeddedMatch[2].toLowerCase();
+      const exp = suffix === 'meg' ? 'e6' : SI_SUFFIX_MAP[suffix];
+      return Number(embeddedMatch[1] + '.' + embeddedMatch[3] + exp);
+    }
   }
 
   throw new Error(`Cannot parse number: '${token}'`);
@@ -51,48 +53,70 @@ export interface TokenizeNetlistOptions {
   firstLineIsTitle?: boolean;
 }
 
+// After '=' normalization a token is a single parenthesis or a maximal run of
+// characters other than whitespace, parentheses and commas.
+const LINE_TOKEN = /[()]|[^\s(),]+/g;
+const SPACES_AROUND_EQUALS = /\s*=\s*/g;
+
 export function tokenizeNetlist(
   netlist: string,
   options: TokenizeNetlistOptions = {},
 ): ParsedLine[] {
-  const rawLines = netlist.split('\n');
   const result: ParsedLine[] = [];
-  const mergedLines: { text: string; lineNumber: number }[] = [];
+  const length = netlist.length;
 
-  for (let i = 0; i < rawLines.length; i++) {
-    if (i === 0 && options.firstLineIsTitle) continue;
+  // The logical line being accumulated; continuation lines append to it and
+  // it is tokenized once the next logical line starts or the input ends.
+  let pendingText: string | undefined;
+  let pendingLineNumber = 0;
 
-    const trimmed = stripEndOfLineComment(rawLines[i]).trim();
+  let lineStart = 0;
+  for (let lineIndex = 0; lineStart <= length; lineIndex++) {
+    let lineEnd = netlist.indexOf('\n', lineStart);
+    if (lineEnd < 0) lineEnd = length;
+    const line = netlist.slice(lineStart, lineEnd);
+    lineStart = lineEnd + 1;
+    if (lineIndex === 0 && options.firstLineIsTitle) continue;
+
+    const trimmed = stripEndOfLineComment(line).trim();
     if (trimmed === '' || trimmed.startsWith('*') || trimmed.startsWith(';')) continue;
-    if (trimmed.toUpperCase() === '.END') continue;
+    // toUpperCase never shortens a string, so only <= 4 chars can be '.END'.
+    if (trimmed.length <= 4 && trimmed.toUpperCase() === '.END') continue;
 
-    if (trimmed.startsWith('+') && mergedLines.length > 0) {
-      mergedLines[mergedLines.length - 1].text += ' ' + trimmed.substring(1).trim();
+    if (trimmed.startsWith('+') && pendingText !== undefined) {
+      pendingText += ' ' + trimmed.substring(1).trim();
       continue;
     }
 
-    mergedLines.push({ text: trimmed, lineNumber: i + 1 });
+    if (pendingText !== undefined) {
+      result.push({ raw: pendingText, lineNumber: pendingLineNumber, tokens: tokenizeLine(pendingText) });
+    }
+    pendingText = trimmed;
+    pendingLineNumber = lineIndex + 1;
   }
 
-  for (const { text, lineNumber } of mergedLines) {
-    const normalized = text
-      .replace(/\s*=\s*/g, '=')
-      .replace(/\(/g, ' ( ')
-      .replace(/\)/g, ' ) ')
-      .replace(/,/g, ' ');
-    const tokens = normalized.split(/\s+/).filter(t => t.length > 0);
-    result.push({ raw: text, lineNumber, tokens });
+  if (pendingText !== undefined) {
+    result.push({ raw: pendingText, lineNumber: pendingLineNumber, tokens: tokenizeLine(pendingText) });
   }
-
   return result;
 }
 
+/**
+ * Equivalent of the former replace(/\s*=\s*\/g, '=') -> pad '(' and ')' with
+ * spaces -> ',' to ' ' -> split(/\s+/) -> drop empty tokens, without building
+ * the intermediate strings.
+ */
+function tokenizeLine(text: string): string[] {
+  const normalized = text.includes('=') ? text.replace(SPACES_AROUND_EQUALS, '=') : text;
+  return normalized.match(LINE_TOKEN) ?? [];
+}
+
 function stripEndOfLineComment(line: string): string {
-  const delimiters = ['$', ';', '//'];
-  let commentStart = line.length;
-  for (const delimiter of delimiters) {
-    const index = line.indexOf(delimiter);
-    if (index >= 0 && index < commentStart) commentStart = index;
-  }
-  return line.slice(0, commentStart);
+  let commentStart = line.indexOf('$');
+  if (commentStart < 0) commentStart = line.length;
+  const semicolon = line.indexOf(';');
+  if (semicolon >= 0 && semicolon < commentStart) commentStart = semicolon;
+  const slashes = line.indexOf('//');
+  if (slashes >= 0 && slashes < commentStart) commentStart = slashes;
+  return commentStart === line.length ? line : line.slice(0, commentStart);
 }
