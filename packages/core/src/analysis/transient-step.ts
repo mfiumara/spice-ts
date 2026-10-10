@@ -1,5 +1,5 @@
 import type { CompiledCircuit } from '../circuit.js';
-import type { ResolvedOptions } from '../types.js';
+import type { IntegrationMethod, ResolvedOptions } from '../types.js';
 import type { MNAAssembler } from '../mna/assembler.js';
 import { buildCompanionSystem } from '../mna/companion.js';
 
@@ -45,6 +45,8 @@ export interface StepAttempt {
   readonly prevPrevSolution?: Float64Array;
   /** Previous timestep dt(n-1). Gear-2 only. */
   readonly prevDt?: number;
+  /** Per-run integration override used by convergence recovery. */
+  readonly integrationMethod?: IntegrationMethod;
 }
 
 export type StepResult =
@@ -90,7 +92,7 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
 
   for (let iter = 0; iter < options.maxTransientIterations; iter++) {
     buildCompanionSystem(
-      assembler, devices, dt, options.integrationMethod,
+      assembler, devices, dt, attempt.integrationMethod ?? options.integrationMethod,
       prevSolution, prevB, gmin, prevPrevSolution, prevDt,
     );
 

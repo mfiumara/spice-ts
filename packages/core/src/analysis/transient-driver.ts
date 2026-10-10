@@ -1,6 +1,6 @@
 import type { Circuit, CompiledCircuit } from '../circuit.js';
 import type {
-  ConvergenceTelemetry, SimulationOptions, ResolvedOptions, TransientStep,
+  ConvergenceTelemetry, IntegrationMethod, SimulationOptions, ResolvedOptions, TransientStep,
 } from '../types.js';
 import { resolveOptions } from '../types.js';
 import { parse, parseAsync } from '../parser/index.js';
@@ -55,6 +55,9 @@ const POST_BREAK_DT_CUT = 10;
 
 /** Keep implicit-breakpoint recovery local while still crossing a vanished branch. */
 const IMPLICIT_BREAK_DT_CUT = 5;
+
+/** Switch away from trapezoidal integration after a sustained NR retry cycle. */
+const MAX_TRAP_NR_RETRIES = 1_024;
 
 /**
  * Resumable transient simulation driver.
@@ -143,6 +146,7 @@ class TransientSimImpl implements TransientSim {
   private prevB: Float64Array | undefined;
   private secondPrevSol: Float64Array | undefined;
   private prevDt: number;
+  private integrationMethod: IntegrationMethod;
   private lteRejectCount = 0;
   private disposed = false;
   private breakpoints: BreakpointQueue;
@@ -155,6 +159,7 @@ class TransientSimImpl implements TransientSim {
     this.convergenceTelemetry = config.convergence ?? createConvergenceTelemetry();
     this.dt = Math.min(config.timestep, config.maxTimestep);
     this.prevDt = this.dt;
+    this.integrationMethod = options.integrationMethod;
 
     this.assembler = this.createAssembler();
 
@@ -229,6 +234,7 @@ class TransientSimImpl implements TransientSim {
           voltageLimit: NR_VOLTAGE_LIMIT,
           prevPrevSolution: this.secondPrevSol,
           prevDt: this.secondPrevSol ? this.prevDt : undefined,
+          integrationMethod: this.integrationMethod,
         },
       );
 
@@ -240,6 +246,22 @@ class TransientSimImpl implements TransientSim {
         // circuits (LC tank, boost, rectifier — see issues #42, #43, #45).
         this.convergenceTelemetry.transient.rejectedSteps++;
         this.convergenceTelemetry.transient.nrRetries++;
+        if (
+          this.integrationMethod === 'trapezoidal'
+          && this.convergenceTelemetry.transient.nrRetries === MAX_TRAP_NR_RETRIES
+        ) {
+          // A persistent trap/Newton grow-fail-cut cycle can hold dt near the
+          // numerical floor indefinitely while one-shot result arrays keep
+          // growing. SPICE-family solvers commonly move stiff regions to a
+          // more damped integration method. Switch the remaining run to
+          // Gear-2, drop trap history, and retry this timepoint without a cut.
+          // This is a global convergence safeguard, not output decimation.
+          this.integrationMethod = 'gear2';
+          this.prevB = undefined;
+          this.secondPrevSol = undefined;
+          this.assembler.solution.set(prevSol);
+          continue;
+        }
         this.dt = this.dt / DT_CUT_FACTOR;
         if (this.dt < MIN_TIMESTEP) {
           if (result.oscillated && !discontinuityRecoveryAttempted) {
@@ -279,11 +301,8 @@ class TransientSimImpl implements TransientSim {
       this.lteRejectCount = 0;
 
       // Update trapezoidal history.
-      if (this.options.integrationMethod === 'trapezoidal') {
-        this.assembler.clear();
-        const ctx = this.assembler.getStampContext();
-        for (const d of this.compiled.devices) d.stamp(ctx);
-        this.prevB = new Float64Array(this.assembler.b);
+      if (this.integrationMethod === 'trapezoidal') {
+        this.stampPrevB();
       }
       this.secondPrevSol = prevSol;
       this.prevDt = actualDt;
@@ -332,6 +351,7 @@ class TransientSimImpl implements TransientSim {
     this.time = 0;
     this.dt = Math.min(this.config.timestep, this.config.maxTimestep);
     this.prevDt = this.dt;
+    this.integrationMethod = this.options.integrationMethod;
     this.prevB = undefined;
     this.secondPrevSol = undefined;
     this.lteRejectCount = 0;
@@ -380,9 +400,8 @@ class TransientSimImpl implements TransientSim {
   }
 
   private stampPrevB(): void {
-    if (this.options.integrationMethod !== 'trapezoidal') return;
+    if (this.integrationMethod !== 'trapezoidal') return;
     this.assembler.clear();
-    this.assembler.setTime(0, 0);
     const ctx = this.assembler.getStampContext();
     for (const d of this.compiled.devices) d.stamp(ctx);
     this.prevB = new Float64Array(this.assembler.b);
@@ -404,7 +423,7 @@ class TransientSimImpl implements TransientSim {
     ) return 0;
     let maxRatio = 0;
     // 2nd-order methods (trap, gear2) have O(dt³) LTE → larger divider; BE is O(dt²).
-    const method = this.options.integrationMethod;
+    const method = this.integrationMethod;
     const divider = method === 'trapezoidal' || method === 'gear2' ? 3 : 2;
     const { nodeCount } = this.compiled;
     for (let i = 0; i < nodeCount; i++) {

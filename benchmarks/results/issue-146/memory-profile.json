@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "spice-ts-issue-146-memory/v1",
+  "input": {
+    "path": "benchmarks/corpus/ngspice/fixtures/examples/wave/jimi_fuzz.cir",
+    "bytes": 1009,
+    "sha256": "0607c7f358628d0ce60eff584b329a4d685ae215894c466622a19357c7163b0e"
+  },
+  "environment": {
+    "node": "v22.23.1",
+    "ngspice": "ngspice-47"
+  },
+  "before": {
+    "streamedDriverAt300000Points": {
+      "completed": false,
+      "simTimeSeconds": 0.009477276639012745,
+      "wallTimeMs": 12315.484625,
+      "rssMiB": 116.1875,
+      "heapUsedMiB": 14.599006652832031,
+      "acceptedSteps": 299999,
+      "rejectedSteps": 100027,
+      "nrRetries": 99951,
+      "minimumAcceptedTimestepSeconds": 1.6221153326806403e-11
+    },
+    "boundedHeapOneShot": {
+      "maxOldSpaceMiB": 256,
+      "outcome": "heap exhaustion while growing retained result arrays",
+      "wallTimeSecondsApproximate": 102,
+      "source": "independently reproduced prerequisite review handoff for PR #145"
+    }
+  },
+  "after": {
+    "streamedDriverCompleted": {
+      "completed": true,
+      "points": 569788,
+      "stopTimeSeconds": 5,
+      "wallTimeMs": 5149.264166,
+      "rssMiB": 159.90625,
+      "heapUsedMiB": 33.2779541015625,
+      "acceptedSteps": 569787,
+      "rejectedSteps": 111794,
+      "nrRetries": 1024,
+      "lteRetries": 110770,
+      "minimumAcceptedTimestepSeconds": 3.9736429849885463e-11
+    },
+    "oneShotResultCompleted": {
+      "completed": true,
+      "points": 569788,
+      "stopTimeSeconds": 5,
+      "wallTimeMs": 5284.338500000001,
+      "maxRssMiB": 236.125,
+      "heapUsedAfterMiB": 120.89971923828125,
+      "acceptedSteps": 569787,
+      "nrRetries": 1024
+    }
+  },
+  "diagnosis": {
+    "primaryCause": "trapezoidal nonlinear history recomputed G(current iteration) * x(previous), creating a repeating grow/fail/cut cycle and picosecond accepted timesteps",
+    "retention": "one-shot result arrays retained every accepted point and amplified the unbounded point-growth failure; after bounding point growth, the complete retained result remains below 274 MiB RSS without decimation",
+    "fix": "after 1024 accumulated trapezoidal Newton retries, switch the remaining run to Gear-2, clear trapezoidal history, and retry without dropping output points"
+  },
+  "commands": {
+    "streamProfile": "pnpm -C packages/core build && MAX_POINTS=1000000 pnpm exec tsx benchmarks/issue-146-memory.ts --stream",
+    "oneShotProfile": "pnpm -C packages/core build && /usr/bin/time -l pnpm exec tsx benchmarks/issue-146-memory.ts --one-shot",
+    "parity": "pnpm -C packages/core build && pnpm exec tsx benchmarks/issue-146-jimi-fuzz.ts --output benchmarks/results/issue-146/jimi-fuzz-after.json"
+  }
+}
