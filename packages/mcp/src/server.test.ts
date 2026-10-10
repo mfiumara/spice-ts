@@ -240,6 +240,119 @@ describe('bounded protocol-v1 tools', () => {
     });
   });
 
+  it.each([
+    ['abnormal exit', (worker: UnexpectedExitWorker) => worker.exit(9), 0],
+    ['termination', (worker: UnexpectedExitWorker) => worker.terminateUnexpectedly(), 1],
+    ['error followed by duplicate exits', (worker: UnexpectedExitWorker) => worker.failRepeatedly(), 1],
+  ])('keeps a stable terminal when an isolated worker has %s before points', async (
+    _name,
+    stopWorker,
+    expectedTerminationCount,
+  ) => {
+    const worker = new UnexpectedExitWorker();
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const execute = createToolExecutor({
+      workerFactory: () => worker as unknown as ExecutionWorker,
+    });
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+
+    stopWorker(worker);
+    await flushMicrotasks();
+    const failed = await execute('spice_simulation_read', { jobId, cursor });
+    const readAfterTerminal = await execute('spice_simulation_read', { jobId, cursor });
+
+    expect(readAfterTerminal).toEqual(failed);
+    expect(failed.structuredContent).toEqual({
+      status: 'failed', events: [], nextCursor: null,
+      terminal: {
+        apiVersion: '1', ok: false, requestId: jobId,
+        error: {
+          code: 'INTERNAL_ERROR', message: 'The isolated simulation worker failed',
+          retryable: false, phase: 'transport', details: {},
+        },
+        diagnostics: [],
+        partial: {
+          status: 'partial', analyses: [], partialEventSha256: sha256CanonicalJson([]),
+        },
+      },
+    });
+    expect(worker.terminate).toHaveBeenCalledTimes(expectedTerminationCount);
+    expect(JSON.stringify(failed)).not.toContain('private worker failure');
+  });
+
+  it('retains a final worker batch before processing an immediate unexpected exit', async () => {
+    class FinalBatchWorker extends EventEmitter {
+      readonly terminate = vi.fn(() => 1);
+
+      postMessage(message: unknown): void {
+        if (!isWorkerOperation(message)) return;
+        this.emit('message', {
+          type: 'events',
+          events: [
+            { type: 'analysis-start', analysis: 'tran', analysisIndex: 0 },
+            {
+              type: 'point', analysisIndex: 0, pointIndex: 0,
+              point: { type: 'tran', timeS: 0, voltagesV: { out: 0 }, currentsA: {} },
+            },
+            {
+              type: 'point', analysisIndex: 0, pointIndex: 1,
+              point: { type: 'tran', timeS: 1e-6, voltagesV: { out: 0.5 }, currentsA: {} },
+            },
+          ],
+        });
+        this.emit('exit', 7);
+        this.emit('exit', 7);
+      }
+    }
+    const worker = new FinalBatchWorker();
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const execute = createToolExecutor({
+      workerFactory: () => worker as unknown as ExecutionWorker,
+    });
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    await flushMicrotasks();
+
+    const first = await execute('spice_simulation_read', { jobId, cursor, maxPoints: 1 });
+    const firstData = first.structuredContent as unknown as SimulationReadDataV1;
+    expect(firstData).toMatchObject({
+      status: 'running',
+      events: [
+        { type: 'analysis-start', analysis: 'tran', analysisIndex: 0 },
+        { type: 'point', analysisIndex: 0, pointIndex: 0 },
+      ],
+    });
+
+    const failed = await execute('spice_simulation_read', {
+      jobId, cursor: firstData.nextCursor, maxPoints: 1,
+    });
+    const replay = await execute('spice_simulation_read', {
+      jobId, cursor: firstData.nextCursor, maxPoints: 99,
+    });
+    expect(replay).toEqual(failed);
+    expect(failed.structuredContent).toMatchObject({
+      status: 'failed',
+      events: [{ type: 'point', analysisIndex: 0, pointIndex: 1 }],
+      nextCursor: null,
+      terminal: {
+        error: { code: 'INTERNAL_ERROR', phase: 'transport', details: {} },
+        partial: {
+          analyses: [{ analysis: 'tran', analysisIndex: 0, emittedPointCount: 2, complete: false }],
+        },
+      },
+    });
+    const terminal = failed.structuredContent as unknown as {
+      events: SimulationEventV1[];
+      terminal: { partial?: { partialEventSha256: string } };
+    };
+    const deliveredPoints = [...firstData.events, ...terminal.events]
+      .filter(event => event.type === 'point');
+    expect(terminal.terminal.partial?.partialEventSha256)
+      .toBe(sha256CanonicalJson(deliveredPoints));
+    expect(worker.terminate).not.toHaveBeenCalled();
+  });
+
   it('returns and cancels a live stream job before an injected simulation completes', async () => {
     const request = await fixture<SimulationRequestV1>('simulate-request.json');
     const result = await fixture<SimulationResultV1>('simulate-response.json');
@@ -828,7 +941,7 @@ async function readWhenReady(
   execute: ReturnType<typeof createToolExecutor> | typeof executeTool,
   args: { jobId: string; cursor: string; maxPoints?: number },
 ): Promise<Awaited<ReturnType<typeof executeTool>>> {
-  for (let attempt = 0; attempt < 100; attempt++) {
+  for (let attempt = 0; attempt < 2_000; attempt++) {
     const response = await execute('spice_simulation_read', args);
     const data = response.structuredContent as unknown as SimulationReadDataV1;
     if (data.status !== 'running' || data.events.length > 0) return response;
@@ -875,6 +988,27 @@ class ManualClock {
         timer.callback();
       }
     }
+  }
+}
+
+class UnexpectedExitWorker extends EventEmitter {
+  readonly terminate = vi.fn(() => 1);
+
+  postMessage(): void {}
+
+  exit(code: number): void {
+    this.emit('exit', code);
+  }
+
+  terminateUnexpectedly(): void {
+    this.terminate();
+    this.emit('exit', 1);
+  }
+
+  failRepeatedly(): void {
+    this.emit('error', new Error('private worker failure'));
+    this.emit('exit', 1);
+    this.emit('exit', 1);
   }
 }
 

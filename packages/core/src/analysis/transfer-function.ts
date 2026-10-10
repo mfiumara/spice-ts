@@ -8,14 +8,16 @@ import { solveLU } from '../solver/lu-solver.js';
 import type { ConvergenceTelemetry, ResolvedOptions, TransferFunctionAnalysis } from '../types.js';
 import { solveDCOperatingPoint } from './dc.js';
 
-/** Solve the bounded single-node voltage-output form of ngspice `.tf`. */
+/** Solve the bounded single-node voltage- or voltage-source current-output form of `.tf`. */
 export function solveTransferFunction(
   compiled: CompiledCircuit,
   analysis: TransferFunctionAnalysis,
   options: ResolvedOptions,
   convergence?: ConvergenceTelemetry,
 ): TransferFunctionResult {
-  const outputIndex = findNodeIndex(compiled, analysis.outputNode);
+  const output = 'outputNode' in analysis
+    ? { kind: 'voltage' as const, index: findNodeIndex(compiled, analysis.outputNode) }
+    : { kind: 'current' as const, source: findOutputSource(compiled, analysis.outputSource) };
   const inputSource = compiled.devices.find(device =>
     (device instanceof VoltageSource || device instanceof CurrentSource)
       && device.name.toLowerCase() === analysis.inputSource.toLowerCase(),
@@ -38,7 +40,7 @@ export function solveTransferFunction(
     const resistance = -1 / inputCurrent;
     inputResistance = Number.isFinite(resistance) ? resistance : 1e20;
     return resultWithOutputResistance(
-      analysis, assembler, outputIndex, response[outputIndex], inputResistance,
+      analysis, assembler, output, outputValue(compiled, output, response), inputResistance,
     );
   }
 
@@ -49,7 +51,7 @@ export function solveTransferFunction(
   const response = solveLU(assembler.G, inputRhs);
   inputResistance = nodeVoltage(response, negative) - nodeVoltage(response, positive);
   return resultWithOutputResistance(
-    analysis, assembler, outputIndex, response[outputIndex], inputResistance,
+    analysis, assembler, output, outputValue(compiled, output, response), inputResistance,
   );
 }
 
@@ -80,21 +82,56 @@ function buildLinearizedSystem(
 function resultWithOutputResistance(
   analysis: TransferFunctionAnalysis,
   assembler: MNAAssembler,
-  outputIndex: number,
+  output: { kind: 'voltage'; index: number } | { kind: 'current'; source: VoltageSource },
   transfer: number,
   inputResistance: number,
 ): TransferFunctionResult {
+  if (output.kind === 'current') {
+    const outputResistance = output.source.name.toLowerCase() === analysis.inputSource.toLowerCase()
+      ? inputResistance
+      : 1e20;
+    return new TransferFunctionResult(
+      undefined,
+      analysis.inputSource,
+      transfer,
+      inputResistance,
+      outputResistance,
+      output.source.name,
+    );
+  }
   const outputRhs = new Float64Array(assembler.systemSize);
-  outputRhs[outputIndex] = 1;
+  outputRhs[output.index] = 1;
   const outputResponse = solveLU(assembler.G, outputRhs);
 
   return new TransferFunctionResult(
-    analysis.outputNode,
+    'outputNode' in analysis ? analysis.outputNode : undefined,
     analysis.inputSource,
     transfer,
     inputResistance,
-    outputResponse[outputIndex],
+    outputResponse[output.index],
   );
+}
+
+function findOutputSource(compiled: CompiledCircuit, name: string): VoltageSource {
+  const source = compiled.devices.find(device =>
+    device instanceof VoltageSource && device.name.toLowerCase() === name.toLowerCase(),
+  );
+  if (!(source instanceof VoltageSource)) {
+    throw new InvalidCircuitError(
+      `.tf current output '${name}' is not an independent voltage source`,
+    );
+  }
+  return source;
+}
+
+function outputValue(
+  compiled: CompiledCircuit,
+  output: { kind: 'voltage'; index: number } | { kind: 'current'; source: VoltageSource },
+  response: Float64Array,
+): number {
+  return output.kind === 'voltage'
+    ? response[output.index]
+    : response[compiled.nodeCount + output.source.branchIndex];
 }
 
 function findNodeIndex(compiled: CompiledCircuit, name: string): number {

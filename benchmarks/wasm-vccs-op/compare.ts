@@ -136,7 +136,7 @@ async function main(): Promise<void> {
   const ngspiceTimes = ngspiceRuns.map(run => run.wallMs);
   const wasmMedian = median(wasmTimes);
   const ngspiceMedian = median(ngspiceTimes);
-  const baseline = { workerJs: 396492, indexJs: 42894, denseSolverWasm: 2900 };
+  const baseline = { workerJs: 402948, indexJs: 42937, denseSolverWasm: 2900 };
   const current = {
     workerJs: readFileSync(resolve(directory, '../../packages/wasm/dist/worker.js')).byteLength,
     indexJs: readFileSync(resolve(directory, '../../packages/wasm/dist/index.js')).byteLength,
@@ -203,7 +203,7 @@ async function main(): Promise<void> {
       wasmLoss: { ratio: wasmMedian / ngspiceMedian, percent: (wasmMedian / ngspiceMedian - 1) * 100 },
     },
     artifactSizesBytes: {
-      baselineRevision: '931c94721ed15e0eb04b8c8a00d2bcfa01e4b888',
+      baselineRevision: 'fe3913014703a3c5771415a7b402e22c7a6ecc57',
       baseline,
       current,
       delta: Object.fromEntries(Object.keys(baseline).map(name => [

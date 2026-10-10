@@ -1,0 +1,85 @@
+{
+  "fixture": "benchmarks/transfer-function/current-output.cir",
+  "sha256": "8aa66169856833a62d87b4a54b723969f086943b36c8c828fa8d895271c2435d",
+  "source": {
+    "url": "https://github.com/mfiumara/spice-ts/issues/263",
+    "revision": "issue-263 project-authored bounded current-output reference fixture",
+    "licence": "MIT"
+  },
+  "referenceSimulator": "ngspice-47",
+  "machine": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro",
+    "node": "v22.23.1"
+  },
+  "commands": {
+    "comparison": "pnpm tsx benchmarks/transfer-function/compare.ts",
+    "ngspice": "ngspice -b -r <temporary-raw-path> <byte-identical-benchmarks/transfer-function/current-output.cir>"
+  },
+  "identicalNetlistBytesForBothEngines": true,
+  "netlistByteCount": 81,
+  "resultCounts": {
+    "spiceTs": 1,
+    "ngspice": 1,
+    "matched": 1
+  },
+  "convergence": {
+    "spiceTs": "success",
+    "ngspice": "success"
+  },
+  "runtimeMilliseconds": {
+    "spiceTs": 5.522416000000021,
+    "ngspiceProcess": 30.073833999999977,
+    "caveat": "ngspice includes process startup; runtimes are reported honestly and are not a speed claim."
+  },
+  "errors": {
+    "transfer": {
+      "maximumAbsoluteError": 0,
+      "rmsAbsoluteError": 0,
+      "maximumRelativeError": 0,
+      "rmsRelativeError": 0
+    },
+    "inputResistance": {
+      "maximumAbsoluteError": 0,
+      "rmsAbsoluteError": 0,
+      "maximumRelativeError": 0,
+      "rmsRelativeError": 0
+    },
+    "outputResistance": {
+      "maximumAbsoluteError": 0,
+      "rmsAbsoluteError": 0,
+      "maximumRelativeError": 0,
+      "rmsRelativeError": 0
+    }
+  },
+  "samples": [
+    {
+      "output": "I(Vsense)",
+      "input": "V1",
+      "spiceTs": {
+        "transfer": 0.001,
+        "inputResistance": 1000,
+        "outputResistance": 100000000000000000000
+      },
+      "ngspice": {
+        "transfer": 0.001,
+        "inputResistance": 1000,
+        "outputResistance": 100000000000000000000
+      }
+    }
+  ],
+  "exclusions": [
+    ".tf current outputs other than an independent voltage-source branch",
+    ".tf differential or nested outputs",
+    "multiple output dimensions and unsupported stepped combinations"
+  ],
+  "losses": [
+    "The bounded current-output corpus contains one matched scalar result.",
+    "Current output is limited to independent voltage-source branches; resistor, inductor, and dependent-source branch currents remain unsupported.",
+    "Any non-zero max/RMS residual in errors is retained.",
+    "Runtime process boundaries differ and do not support a speed or superiority claim."
+  ],
+  "redReceipt": "pnpm -C packages/core exec vitest run src/analysis/transfer-function.test.ts => 4 failed, 14 passed before implementation"
+}

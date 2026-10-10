@@ -1,0 +1,6 @@
+Current output probe
+V1 in 0 1
+R1 in out 1k
+Vsense out 0 0
+.tf I(Vsense) V1
+.end

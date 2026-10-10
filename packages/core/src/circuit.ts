@@ -240,7 +240,9 @@ function formatAnalysis(analysis: AnalysisDirective | PoleZeroAnalysis): string 
     case 'disto':
       return `.disto dec ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}${analysis.f2OverF1 === undefined ? '' : ` ${formatNumber(analysis.f2OverF1)}`}`;
     case 'tf':
-      return `.tf v(${analysis.outputNode}) ${analysis.inputSource}`;
+      return 'outputNode' in analysis
+        ? `.tf v(${analysis.outputNode}) ${analysis.inputSource}`
+        : `.tf i(${analysis.outputSource}) ${analysis.inputSource}`;
     case 'pz':
       return `.pz ${analysis.inputPositive} ${analysis.inputNegative} ${analysis.outputPositive} ${analysis.outputNegative} ${analysis.inputType} ${analysis.mode}`;
     case 'sens':
@@ -698,7 +700,9 @@ export class Circuit {
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'noise', params: { outputNode: string; outputReferenceNode?: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'disto', params: { variation: 'dec'; points: number; startFreq: number; stopFreq: number; f2OverF1?: number }): void;
-  addAnalysis(type: 'tf', params: { outputNode: string; inputSource: string }): void;
+  addAnalysis(type: 'tf', params:
+    | { outputNode: string; inputSource: string }
+    | { outputSource: string; inputSource: string }): void;
   addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur'; mode: 'pol' | 'pz' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'dc' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'ac'; variation: 'dec'; points: number; startFreq: number; stopFreq: number }): void;
@@ -784,11 +788,17 @@ export class Circuit {
         });
         break;
       case 'tf':
-        this._analyses.push({
-          type: 'tf',
-          outputNode: params!.outputNode as string,
-          inputSource: params!.inputSource as string,
-        });
+        this._analyses.push('outputSource' in params!
+          ? {
+            type: 'tf',
+            outputSource: params.outputSource as string,
+            inputSource: params.inputSource as string,
+          }
+          : {
+            type: 'tf',
+            outputNode: params!.outputNode as string,
+            inputSource: params!.inputSource as string,
+          });
         break;
       case 'pz':
         if (this._steps.length > 0) {

@@ -34,6 +34,18 @@ interface PreparedLinearOp extends PreparedNumericBase {
   analysis: 'op';
 }
 
+interface SweepableSource {
+  name: string;
+  waveform: { type: string; [key: string]: unknown };
+}
+
+interface PreparedLinearDc extends PreparedNumericBase {
+  analysis: 'dc';
+  sweep: Extract<CompiledCircuit['analyses'][number], { type: 'dc' }>;
+  source: SweepableSource;
+  pointCount: number;
+}
+
 interface PreparedPassiveAc extends PreparedNumericBase {
   analysis: 'ac';
   frequenciesHz: number[];
@@ -44,7 +56,7 @@ interface PreparedPassiveTran extends PreparedNumericBase {
   transient: Extract<CompiledCircuit['analyses'][number], { type: 'tran' }>;
 }
 
-type PreparedNumeric = PreparedLinearOp | PreparedPassiveAc | PreparedPassiveTran;
+type PreparedNumeric = PreparedLinearOp | PreparedLinearDc | PreparedPassiveAc | PreparedPassiveTran;
 
 export function validateLinearOpWasmV1(request: SimulationRequestV1): NumericValidationResultV1 {
   const { compiled } = prepare(request);
@@ -66,8 +78,60 @@ export async function simulateLinearOpWasmV1(
   assertNumericWasmAbi(exports);
 
   if (prepared.analysis === 'op') return simulateOp(prepared, request, exports);
+  if (prepared.analysis === 'dc') return simulateDc(prepared, request, exports);
   if (prepared.analysis === 'tran') return simulateTransient(prepared, request, exports);
   return simulateAc(prepared, request, exports);
+}
+
+function simulateDc(
+  { compiled, order, sweep, source, pointCount }: PreparedLinearDc,
+  request: SimulationRequestV1,
+  exports: NumericWasmExports,
+): SimulationResultV1 {
+  const values: number[] = [];
+  const voltagesV = Object.fromEntries(compiled.nodeNames.map(name => [name, [] as number[]]));
+  const currentsA = Object.fromEntries(compiled.branchNames.map(name => [name, [] as number[]]));
+  const originalWaveform = source.waveform;
+  try {
+    for (let point = 0; point < pointCount; point++) {
+      const value = sweep.start + point * sweep.step;
+      values.push(value);
+      source.waveform = { type: 'dc', value };
+      const matrix = new Float64Array(order * order);
+      const rhs = new Float64Array(order);
+      const zero = new Float64Array(order);
+      const context: StampContext = {
+        stampG(row, column, stamped) { matrix[row * order + column] += stamped; },
+        stampB(row, stamped) { rhs[row] += stamped; },
+        stampC() {},
+        getVoltage(node) { return node < 0 ? 0 : zero[node]!; },
+        getCurrent(branch) { return zero[compiled.nodeCount + branch]!; },
+        time: 0,
+        dt: 0,
+        numNodes: compiled.nodeCount,
+        sourceScale: 1,
+        useDcSourceValue: true,
+      };
+      for (const device of compiled.devices) device.stamp(context);
+      addGmin(matrix, compiled.nodeCount, order, request.options?.gmin ?? 0);
+      const solution = solveReal(exports, order, matrix, rhs);
+      compiled.nodeNames.forEach((name, index) => voltagesV[name]!.push(solution[index]!));
+      compiled.branchNames.forEach((name, index) => currentsA[name]!.push(solution[compiled.nodeCount + index]!));
+    }
+  } finally {
+    source.waveform = originalWaveform;
+  }
+
+  const result: SimulationResultV1 = {
+    status: 'complete',
+    analyses: [{
+      type: 'dc', analysisIndex: 0,
+      axis: { name: source.name, unit: source.name[0]?.toUpperCase() === 'I' ? 'A' : 'V', values },
+      voltagesV, currentsA,
+    }],
+  };
+  enforceSerializedResultLimit(result, request);
+  return result;
 }
 
 function simulateOp(
@@ -413,15 +477,18 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
   const analyses = cards.filter(line => /^\.(op|dc|tran|ac)\b/i.test(line));
   const analysisLimit = Math.min(1, request.options?.limits?.maxAnalyses ?? Infinity);
   if (analyses.length > analysisLimit) throw resourceLimit('maxAnalyses', analysisLimit, analyses.length);
-  if (analyses.length !== 1) unsupported('analysis', 'Exactly one .op, .tran, or .ac analysis is supported');
+  if (analyses.length !== 1) unsupported('analysis', 'Exactly one .op, .dc, .tran, or .ac analysis is supported');
   const analysis = /^\.op(?:\s|$)/i.test(analyses[0]!)
     ? 'op'
+    : /^\.dc(?:\s|$)/i.test(analyses[0]!)
+      ? 'dc'
     : /^\.tran(?:\s|$)/i.test(analyses[0]!)
       ? 'tran'
     : /^\.ac(?:\s|$)/i.test(analyses[0]!)
       ? 'ac'
-      : unsupported('analysis', 'Exactly one .op, .tran, or .ac analysis is supported');
+      : unsupported('analysis', 'Exactly one .op, .dc, .tran, or .ac analysis is supported');
 
+  if (analysis === 'dc') validateDcControls(analyses[0]!);
   if (analysis === 'tran') validateTransientControls(analyses[0]!, request);
   validateCards(cards, analysis);
   const circuit = parseTitleless(source);
@@ -431,6 +498,7 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
     unsupported('analysis', `Exactly one unstepped .${analysis} analysis is supported`);
   }
   const devices = analysis === 'op' ? ['R', 'I', 'V', 'G']
+    : analysis === 'dc' ? ['R', 'I', 'V']
     : analysis === 'tran' ? ['R', 'C', 'I', 'V']
       : ['R', 'C', 'L', 'I', 'V'];
   if (compiled.devices.some(device => !devices.includes(device.name[0]?.toUpperCase() ?? ''))) {
@@ -446,6 +514,30 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
   if (analysis === 'op') return { analysis, compiled, order };
 
   const compiledAnalysis = compiled.analyses[0];
+  if (analysis === 'dc') {
+    if (compiledAnalysis?.type !== 'dc') unsupported('analysis', 'Exactly one .dc analysis is supported');
+    const pointCount = dcPointCount(compiledAnalysis.start, compiledAnalysis.stop, compiledAnalysis.step);
+    const pointLimit = Math.min(
+      NUMERIC_WASM_LIMITS.maxResultPoints,
+      request.options?.limits?.maxResultPoints ?? Infinity,
+    );
+    if (pointCount > pointLimit) throw resourceLimit('maxResultPoints', pointLimit, pointCount);
+    const normalized = compiledAnalysis.source.toUpperCase();
+    const sources = compiled.devices.filter(device => {
+      const candidate = device as unknown as Partial<SweepableSource>;
+      return candidate.name?.toUpperCase() === normalized && candidate.waveform !== undefined
+        && ['V', 'I'].includes(candidate.name[0]?.toUpperCase() ?? '');
+    }) as unknown as SweepableSource[];
+    if (sources.length !== 1) {
+      throw numericError('INVALID_CIRCUIT', `DC sweep source '${compiledAnalysis.source}' must identify one independent source`, 'validation', {
+        feature: 'dc-source', source: compiledAnalysis.source, matches: sources.length,
+      });
+    }
+    if (!['dc', 'ac'].includes(sources[0]!.waveform.type)) {
+      unsupported('source-waveform', 'DC sweep sources must use a constant or DC value');
+    }
+    return { analysis, compiled, order, sweep: compiledAnalysis, source: sources[0]!, pointCount };
+  }
   if (analysis === 'tran') {
     if (compiledAnalysis?.type !== 'tran') unsupported('analysis', 'Exactly one .tran analysis is supported');
     return { analysis, compiled, order, transient: compiledAnalysis };
@@ -460,8 +552,9 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
   return { analysis, compiled, order, frequenciesHz: acFrequencies(compiledAnalysis, pointCount) };
 }
 
-function validateCards(cards: string[], analysis: 'op' | 'tran' | 'ac'): void {
+function validateCards(cards: string[], analysis: 'op' | 'dc' | 'tran' | 'ac'): void {
   const allowedDevices = analysis === 'op' ? ['R', 'I', 'V', 'G']
+    : analysis === 'dc' ? ['R', 'I', 'V']
     : analysis === 'tran' ? ['R', 'C', 'I', 'V']
       : ['R', 'C', 'L', 'I', 'V'];
   for (const card of cards) {
@@ -479,10 +572,10 @@ function validateCards(cards: string[], analysis: 'op' | 'tran' | 'ac'): void {
       if (tokens.length !== 6) {
         unsupported('vccs-form', 'VCCS devices must use name out+ out- control+ control- transconductance');
       }
-    } else if (analysis === 'op') {
+    } else if (analysis === 'op' || analysis === 'dc') {
       const dc = tokens.length === 5 && tokens[3]?.toUpperCase() === 'DC';
       if (tokens.length !== 4 && !dc) {
-        unsupported('source-waveform', 'OP sources must use a constant or DC value');
+        unsupported('source-waveform', `${analysis.toUpperCase()} sources must use a constant or DC value`);
       }
     } else if (analysis === 'tran') {
       const dc = tokens.length === 5 && tokens[3]?.toUpperCase() === 'DC';
@@ -494,6 +587,28 @@ function validateCards(cards: string[], analysis: 'op' | 'tran' | 'ac'): void {
       unsupported('source-waveform', 'AC sources must use constant, DC, AC, or DC plus AC values');
     }
   }
+}
+
+function validateDcControls(card: string): void {
+  const tokens = card.trim().split(/\s+/);
+  if (tokens.length > 5) unsupported('dc-nested-sweep', 'Nested or stepped DC sweeps are not supported');
+  if (tokens.length !== 5) {
+    throw numericError('INVALID_CIRCUIT', 'DC sweep must use .dc source start stop step', 'validation', {
+      feature: 'dc-grid',
+    });
+  }
+}
+
+function dcPointCount(start: number, stop: number, step: number): number {
+  if (![start, stop, step].every(Number.isFinite) || step === 0
+    || (stop > start && step < 0) || (stop < start && step > 0)) {
+    throw numericError('INVALID_CIRCUIT', 'DC sweep grid must be finite with a nonzero step toward stop', 'validation', {
+      feature: 'dc-grid', start, stop, step,
+    });
+  }
+  const intervals = Math.abs((stop - start) / step);
+  const tolerance = Number.EPSILON * Math.max(1, intervals) * 4;
+  return Math.floor(intervals + tolerance) + 1;
 }
 
 function validateTransientControls(card: string, request: SimulationRequestV1): void {

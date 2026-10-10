@@ -10,6 +10,10 @@ describe('.tf analysis', () => {
     '../../../../benchmarks/stepped-transfer-function/stepped-divider.cir',
     import.meta.url,
   ), 'utf8');
+  const currentOutputFixture = readFileSync(new URL(
+    '../../../../benchmarks/transfer-function/current-output.cir',
+    import.meta.url,
+  ), 'utf8');
   const voltageGainFixture = `
     V1 in 0 DC 1
     R1 in out 1k
@@ -62,6 +66,44 @@ R2 out 0 1k
     expect(result.transferFunction!.outputResistance).toBeCloseTo(500, 6);
   });
 
+  it('parses the bounded independent-voltage-source current-output form', () => {
+    expect(parse(currentOutputFixture).analyses).toEqual([{
+      type: 'tf',
+      outputSource: 'Vsense',
+      inputSource: 'V1',
+    }]);
+  });
+
+  it('matches ngspice 47 current gain and port resistances', async () => {
+    const result = await simulate(currentOutputFixture);
+
+    expect(result.transferFunction).toBeInstanceOf(TransferFunctionResult);
+    expect(result.transferFunction).toMatchObject({
+      outputNode: undefined,
+      outputSource: 'Vsense',
+      inputSource: 'V1',
+      transfer: 1e-3,
+      inputResistance: 1e3,
+      outputResistance: 1e20,
+    });
+  });
+
+  it('matches ngspice 47 when the input voltage source is also the current output', async () => {
+    const result = await simulate(`
+      V1 in 0 1
+      R1 in 0 1k
+      .tf I(V1) V1
+    `);
+
+    expect(result.transferFunction).toMatchObject({
+      outputSource: 'V1',
+      inputSource: 'V1',
+      transfer: -1e-3,
+      inputResistance: 1e3,
+      outputResistance: 1e3,
+    });
+  });
+
   it('matches ngspice 47 transimpedance and port resistances', async () => {
     const result = await simulate(transimpedanceFixture);
 
@@ -91,7 +133,7 @@ R2 out 0 1k
 
   it.each([
     '.tf V(out,ref) V1',
-    '.tf I(Vsense) V1',
+    '.tf I(V(out)) V1',
     '.tf V(out)',
   ])('rejects .tf forms outside the bounded slice: %s', netlist => {
     expect(() => parse(netlist)).toThrow(ParseError);
@@ -100,6 +142,11 @@ R2 out 0 1k
   it('rejects an unknown input source with a typed circuit error', async () => {
     await expect(simulate('Unknown input source test\nR1 out 0 1k\n.tf V(out) Vmissing'))
       .rejects.toBeInstanceOf(InvalidCircuitError);
+  });
+
+  it('rejects ambiguous currents without an independent voltage-source branch', async () => {
+    await expect(simulate('Ambiguous current output\nV1 in 0 1\nR1 in 0 1k\n.tf I(R1) V1'))
+      .rejects.toThrow(".tf current output 'R1' is not an independent voltage source");
   });
 
   it('returns typed transfer functions in deterministic step order for the exact parity fixture', async () => {
@@ -149,7 +196,7 @@ R2 out 0 1k
 
   it.each([
     ['.tf V(out,ref) V1', ".tf differential voltage output is not supported; expected '.tf v(node) source'"],
-    ['.tf I(Vsense) V1', ".tf current output is not supported; expected '.tf v(node) source'"],
+    ['.tf I(V(out)) V1', ".tf nested current output is not supported; expected '.tf i(source) input'"],
   ])('reports stable bounded-form errors: %s', (directive, message) => {
     expect(() => parse(directive)).toThrow(message);
   });
