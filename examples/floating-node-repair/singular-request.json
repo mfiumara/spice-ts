@@ -1,0 +1,11 @@
+{
+  "apiVersion": "1",
+  "input": {
+    "format": "spice",
+    "source": "V1 a 0 5\nRshort1 a b 0\nRshort2 a b 0\nRload b 0 1k\n.op"
+  },
+  "options": {
+    "backend": "spice-ts-js",
+    "determinism": "strict"
+  }
+}
