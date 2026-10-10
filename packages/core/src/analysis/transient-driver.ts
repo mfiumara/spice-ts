@@ -140,6 +140,7 @@ class TransientSimImpl implements TransientSim {
   private config: InternalTransientConfig;
   private compiled: CompiledCircuit;
   private convergenceTelemetry: ConvergenceTelemetry;
+  private readonly useStaticCurrentHistory: boolean;
 
   private time = 0;
   private dt: number;
@@ -158,6 +159,13 @@ class TransientSimImpl implements TransientSim {
     this.options = options;
     this.config = config;
     this.convergenceTelemetry = config.convergence ?? createConvergenceTelemetry();
+    // Voltage-dependent capacitances need charge state, which the current
+    // device contract does not expose. Preserve their established companion
+    // history while using the exact static residual for constant-C circuits.
+    this.useStaticCurrentHistory = !compiled.devices.some(device => (
+      (device.isNonlinear && device.stampDynamic !== undefined)
+      || (config.stopTime !== undefined && (device.getBreakpoints?.(config.stopTime).length ?? 0) > 0)
+    ));
     this.dt = Math.min(config.timestep, config.maxTimestep);
     this.prevDt = this.dt;
     this.integrationMethod = options.integrationMethod;
@@ -236,6 +244,7 @@ class TransientSimImpl implements TransientSim {
           prevPrevSolution: this.secondPrevSol,
           prevDt: this.secondPrevSol ? this.prevDt : undefined,
           integrationMethod: this.integrationMethod,
+          staticCurrentHistory: this.useStaticCurrentHistory,
         },
       );
 
@@ -406,7 +415,32 @@ class TransientSimImpl implements TransientSim {
     this.assembler.clear();
     const ctx = this.assembler.getStampContext();
     for (const d of this.compiled.devices) d.stamp(ctx);
-    this.prevB = new Float64Array(this.assembler.b);
+    if (!this.useStaticCurrentHistory) {
+      this.prevB = new Float64Array(this.assembler.b);
+      return;
+    }
+    const current = new Float64Array(this.assembler.systemSize);
+    if (this.assembler.isFastPath) {
+      const { colPtr, rowIdx, gValues } = this.assembler;
+      for (let column = 0; column < this.assembler.systemSize; column++) {
+        const voltage = this.assembler.solution[column];
+        if (voltage === 0) continue;
+        for (let position = colPtr[column]; position < colPtr[column + 1]; position++) {
+          current[rowIdx[position]] += gValues[position] * voltage;
+        }
+      }
+    } else {
+      for (let row = 0; row < this.assembler.systemSize; row++) {
+        for (const [column, value] of this.assembler.G.getRow(row)) {
+          current[row] += value * this.assembler.solution[column];
+        }
+      }
+    }
+    for (let row = 0; row < current.length; row++) current[row] -= this.assembler.b[row];
+    for (let node = 0; node < this.compiled.nodeCount; node++) {
+      current[node] += this.options.gmin * this.assembler.solution[node];
+    }
+    this.prevB = current;
   }
 
   private initDC(): void {

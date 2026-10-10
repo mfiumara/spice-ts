@@ -35,7 +35,7 @@ export interface StepAttempt {
   readonly time: number;
   /** Solution vector from the previous converged step. */
   readonly prevSolution: Float64Array;
-  /** `b(n)` from the previous converged step (trapezoidal only; undefined on step 1). */
+  /** Trapezoidal history vector; interpretation is selected by `staticCurrentHistory`. */
   readonly prevB: Float64Array | undefined;
   /** GMIN to use for this attempt. */
   readonly gmin: number;
@@ -47,6 +47,8 @@ export interface StepAttempt {
   readonly prevDt?: number;
   /** Per-run integration override used by convergence recovery. */
   readonly integrationMethod?: IntegrationMethod;
+  /** `prevB` carries an accepted static-current residual instead of a raw RHS. */
+  readonly staticCurrentHistory?: boolean;
 }
 
 export type StepResult =
@@ -81,7 +83,9 @@ export type StepResult =
 export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult {
   const { compiled, assembler, options } = ctx;
   const { devices, nodeCount } = compiled;
-  const { dt, time, prevSolution, prevB, gmin, prevPrevSolution, prevDt } = attempt;
+  const {
+    dt, time, prevSolution, prevB, gmin, prevPrevSolution, prevDt, staticCurrentHistory,
+  } = attempt;
   let voltageLimit = attempt.voltageLimit;
 
   assembler.setTime(time, dt);
@@ -93,7 +97,7 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
   for (let iter = 0; iter < options.maxTransientIterations; iter++) {
     buildCompanionSystem(
       assembler, devices, dt, attempt.integrationMethod ?? options.integrationMethod,
-      prevSolution, prevB, gmin, prevPrevSolution, prevDt,
+      prevSolution, prevB, gmin, prevPrevSolution, prevDt, staticCurrentHistory,
     );
 
     if (!assembler.isFastPath) assembler.lockTopology();
