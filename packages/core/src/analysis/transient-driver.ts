@@ -179,6 +179,7 @@ class TransientSimImpl implements TransientSim {
     if (this.disposed) throw new InvalidCircuitError('TransientSim has been disposed');
 
     const prevSol = new Float64Array(this.assembler.solution);
+    let discontinuityRecoveryAttempted = false;
 
     while (true) {
       if (this.justCrossedBreakpoint) {
@@ -238,6 +239,18 @@ class TransientSimImpl implements TransientSim {
         this.convergenceTelemetry.transient.nrRetries++;
         this.dt = this.dt / DT_CUT_FACTOR;
         if (this.dt < MIN_TIMESTEP) {
+          if (result.oscillated && !discontinuityRecoveryAttempted) {
+            // A regenerative transition can create an implicit breakpoint
+            // that no independent source reports. Shrinking dt follows the
+            // disappearing branch into the femtosecond floor. Drop higher-
+            // order history and take one nominal Backward-Euler step across
+            // the edge, then resume LTE control from the converged state.
+            this.prevB = undefined;
+            this.secondPrevSol = undefined;
+            this.dt = Math.min(this.config.timestep, this.config.maxTimestep);
+            discontinuityRecoveryAttempted = true;
+            continue;
+          }
           this.convergenceTelemetry.transient.failure = 'dt-floor';
           throw new TimestepTooSmallError(
             this.time, this.dt, snapshotConvergenceTelemetry(this.convergenceTelemetry),
