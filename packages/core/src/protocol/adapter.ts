@@ -45,6 +45,14 @@ import {
 } from './execution-guard.js';
 
 const MAX_DETAIL_NAMES = 32;
+const API_ERROR_CODES = new Set<SpiceApiErrorV1['code']>([
+  'INVALID_REQUEST', 'PARSE_ERROR', 'INVALID_CIRCUIT', 'UNSUPPORTED_FEATURE',
+  'SINGULAR_MATRIX', 'CONVERGENCE_FAILED', 'TIMESTEP_TOO_SMALL', 'RESOURCE_LIMIT',
+  'CANCELLED', 'BACKEND_UNAVAILABLE', 'INTERNAL_ERROR',
+]);
+const API_ERROR_PHASES = new Set<SpiceApiErrorV1['phase']>([
+  'validation', 'parse', 'compile', 'solve', 'serialize', 'transport',
+]);
 
 export interface ProtocolValidationResultV1 {
   status: 'valid';
@@ -137,6 +145,7 @@ class UnsupportedProtocolAnalysisError extends Error {
 
 /** Convert an existing typed core error to its stable protocol-v1 representation. */
 export function mapProtocolErrorV1(error: unknown): SpiceApiErrorV1 {
+  if (isWireApiError(error)) return wireApiError(error);
   if (error instanceof ProtocolExecutionError) return wireApiError(error.apiError);
   if (error instanceof UnsupportedProtocolAnalysisError) {
     return apiError('UNSUPPORTED_FEATURE', error, 'validation', { analysis: error.analysis });
@@ -530,7 +539,49 @@ function apiError(code: SpiceApiErrorV1['code'], error: Error, phase: SpiceApiEr
 }
 
 function wireApiError(error: SpiceApiErrorV1): SpiceApiErrorV1 {
-  return { ...error, message: wireMessage(error.message), details: wireObject(error.details) };
+  return {
+    code: error.code,
+    message: wireMessage(error.message),
+    retryable: error.retryable,
+    phase: error.phase,
+    details: wireObject(error.details),
+  };
+}
+
+function isWireApiError(value: unknown): value is SpiceApiErrorV1 {
+  if (!isRecord(value)) return false;
+  return typeof value.code === 'string'
+    && API_ERROR_CODES.has(value.code as SpiceApiErrorV1['code'])
+    && typeof value.message === 'string'
+    && typeof value.retryable === 'boolean'
+    && typeof value.phase === 'string'
+    && API_ERROR_PHASES.has(value.phase as SpiceApiErrorV1['phase'])
+    && isJsonObject(value.details);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function isJsonObject(value: unknown): value is JsonObject {
+  return isRecord(value) && isJsonValue(value, new WeakSet<object>());
+}
+
+function isJsonValue(value: unknown, seen: WeakSet<object>): value is JsonValue {
+  if (value === null || typeof value === 'string' || typeof value === 'boolean') return true;
+  if (typeof value === 'number') return Number.isFinite(value);
+  if (typeof value !== 'object') return false;
+  if (seen.has(value)) return false;
+  seen.add(value);
+  if (Array.isArray(value)) {
+    const valid = Object.keys(value).length === value.length
+      && value.every(entry => isJsonValue(entry, seen));
+    seen.delete(value);
+    return valid;
+  }
+  const valid = Object.values(value).every(entry => isJsonValue(entry, seen));
+  seen.delete(value);
+  return valid;
 }
 
 function wireMessage(message: string): string {
@@ -538,7 +589,9 @@ function wireMessage(message: string): string {
 }
 
 function wireObject(value: JsonObject): JsonObject {
-  return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, wireValue(entry)]));
+  return Object.fromEntries(Object.entries(value)
+    .filter(([key]) => key.toLowerCase() !== 'stack')
+    .map(([key, entry]) => [key, wireValue(entry)]));
 }
 
 function wireValue(value: JsonValue): JsonValue {
