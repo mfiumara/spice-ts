@@ -6,8 +6,20 @@ import {
 } from './transient-progress.js';
 
 describe('TransientProgressMonitor', () => {
+  it('never requests order-1 for unverified steps that no LTE rejection forced', () => {
+    // A user TSTEP at or below the LTE floor accepts every step unchecked.
+    // Injecting Backward Euler there damps lossless LC tanks (PR #377 review).
+    const monitor = new TransientProgressMonitor(5e-14);
+    let time = 0;
+    for (let step = 0; step < 10 * ORDER_ONE_RECOVERY_RUN; step++) {
+      time += 5e-14;
+      expect(monitor.accept(time, 5e-14, false)).toBe('continue');
+    }
+  });
+
   it('requests one order-1 step after a sustained run of LTE-unverified acceptances', () => {
     const monitor = new TransientProgressMonitor(1e-4);
+    monitor.lteRejected();
     let time = 0;
     for (let step = 1; step < ORDER_ONE_RECOVERY_RUN; step++) {
       time += 5e-14;
@@ -21,6 +33,7 @@ describe('TransientProgressMonitor', () => {
 
   it('restarts the unverified run after an LTE-verified acceptance', () => {
     const monitor = new TransientProgressMonitor(1e-4);
+    monitor.lteRejected();
     let time = 0;
     for (let step = 1; step < ORDER_ONE_RECOVERY_RUN; step++) {
       time += 5e-14;
@@ -28,7 +41,19 @@ describe('TransientProgressMonitor', () => {
     }
     time += 1e-12;
     expect(monitor.accept(time, 1e-12, true)).toBe('continue');
+    monitor.lteRejected();
     for (let step = 1; step < ORDER_ONE_RECOVERY_RUN; step++) {
+      time += 5e-14;
+      expect(monitor.accept(time, 5e-14, false)).toBe('continue');
+    }
+  });
+
+  it('stops counting unverified steps once an LTE check passes again', () => {
+    const monitor = new TransientProgressMonitor(1e-4);
+    monitor.lteRejected();
+    let time = 1e-12;
+    expect(monitor.accept(time, 1e-12, true)).toBe('continue');
+    for (let step = 0; step < 10 * ORDER_ONE_RECOVERY_RUN; step++) {
       time += 5e-14;
       expect(monitor.accept(time, 5e-14, false)).toBe('continue');
     }
@@ -62,12 +87,14 @@ describe('TransientProgressMonitor', () => {
 
   it('forgets earlier progress after reset()', () => {
     const monitor = new TransientProgressMonitor(1e-4);
+    monitor.lteRejected();
     let time = 0;
     for (let step = 1; step < ORDER_ONE_RECOVERY_RUN; step++) {
       time += 5e-14;
       monitor.accept(time, 5e-14, false);
     }
     monitor.reset();
+    monitor.lteRejected();
     time = 5e-14;
     expect(monitor.accept(time, 5e-14, false)).toBe('continue');
   });

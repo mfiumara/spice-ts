@@ -13,8 +13,11 @@
 export type ProgressVerdict = 'continue' | 'reduce-order' | 'stalled';
 
 /**
- * Consecutive accepted steps without a passing LTE check before the driver
- * drops higher-order history for one step. Legitimate recovery from an NR
+ * Consecutive accepted steps without a passing LTE check, after an LTE
+ * rejection, before the driver drops higher-order history for one step. Steps
+ * that are unchecked only because the user's timestep is at or below the LTE
+ * floor never count: no rejection forced them there, and a Backward-Euler
+ * restart would damp lossless LC tanks. Legitimate recovery from an NR
  * timestep cut doubles dt from the 1e-15 s floor past the 1e-13 s LTE floor in
  * at most seven accepted steps, so a longer run means the LTE estimate is
  * stuck rather than resolving a fast edge.
@@ -32,12 +35,19 @@ const STALL_FRACTION_OF_MAX_TIMESTEP = 1e-3;
 export class TransientProgressMonitor {
   private readonly stallSpan: number;
   private unverifiedRun = 0;
+  /** An LTE rejection happened since the last LTE-verified acceptance. */
+  private rejectedSinceVerified = false;
   private windowSteps = 0;
   private windowStart: number | undefined;
 
   constructor(maxTimestep: number) {
     const stallTimestep = Math.min(STALL_TIMESTEP, maxTimestep * STALL_FRACTION_OF_MAX_TIMESTEP);
     this.stallSpan = PROGRESS_WINDOW_STEPS * stallTimestep;
+  }
+
+  /** Record that a step was rejected by the truncation-error check. */
+  lteRejected(): void {
+    this.rejectedSinceVerified = true;
   }
 
   /**
@@ -58,8 +68,10 @@ export class TransientProgressMonitor {
 
     if (lteVerified) {
       this.unverifiedRun = 0;
+      this.rejectedSinceVerified = false;
       return 'continue';
     }
+    if (!this.rejectedSinceVerified) return 'continue';
     if (++this.unverifiedRun >= ORDER_ONE_RECOVERY_RUN) {
       this.unverifiedRun = 0;
       return 'reduce-order';
@@ -69,6 +81,7 @@ export class TransientProgressMonitor {
 
   reset(): void {
     this.unverifiedRun = 0;
+    this.rejectedSinceVerified = false;
     this.windowSteps = 0;
     this.windowStart = undefined;
   }

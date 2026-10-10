@@ -335,6 +335,7 @@ class TransientSimImpl implements TransientSim {
         this.dt = Math.max(actualDt * factor, MIN_TIMESTEP);
         this.assembler.solution.set(prevSol);
         this.lteRejectCount++;
+        this.progress.lteRejected();
         this.convergenceTelemetry.transient.rejectedSteps++;
         this.convergenceTelemetry.transient.lteRetries++;
         continue;

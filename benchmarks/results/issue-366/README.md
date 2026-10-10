@@ -24,10 +24,15 @@ Runtimes below are single wall-clock runs on a heavily loaded host
   at t=0 the driver takes the first step at order 1 with
   dt = min(dt, 0.1 x first breakpoint gap) / 10 — the ngspice `dctran.c`
   first-breakpoint rule. Circuits without a t=0 kink keep the trapezoidal start.
-- `TransientProgressMonitor` (new): after 16 consecutive accepted steps without
-  a passing LTE check it restarts integration at order 1 from the accepted
-  point (recovers ringing behind slope kinks no source reports, e.g. a SIN
-  with TD); if a 10 000-step window advances less than 10 000 x min(1e-12 s,
+- `TransientProgressMonitor` (new): after an LTE rejection, 16 consecutive
+  accepted steps without a passing LTE check restart integration at order 1
+  from the accepted point (recovers ringing behind slope kinks no source
+  reports, e.g. a SIN with TD). Steps that are unchecked only because the
+  user TSTEP is at or below the 1e-13 s LTE floor never count, so lossless LC
+  tanks with a sub-0.1 ps TSTEP stay trapezoidal (review fix: L=1n/C=0.25p
+  `.tran 5e-14 2n UIC` had decayed to a 0.9886 peak, L=1p/C=1f
+  `.tran 1e-14 4e-11 UIC` to 2.2e-5; both now match `origin/main` and
+  ngspice-47, see `transient-lc-tank-floor.test.ts`). If a 10 000-step window advances less than 10 000 x min(1e-12 s,
   1e-3 x maxStep), it throws `ConvergenceError` with `kind: 'lte-cascade'`
   and telemetry `failure: 'lte-cascade'` instead of looping.
 
