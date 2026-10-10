@@ -148,6 +148,7 @@ class TransientSimImpl implements TransientSim {
   private time = 0;
   private dt: number;
   private prevB: Float64Array | undefined;
+  private historyWorkspace: Float64Array | undefined;
   private secondPrevSol: Float64Array | undefined;
   private prevDt: number;
   private integrationMethod: IntegrationMethod;
@@ -428,11 +429,13 @@ class TransientSimImpl implements TransientSim {
     this.assembler.clear();
     const ctx = this.assembler.getStampContext();
     for (const d of this.compiled.devices) d.stamp(ctx);
+    const current = this.historyWorkspace ??= new Float64Array(this.assembler.systemSize);
     if (!this.useStaticCurrentHistory) {
-      this.prevB = new Float64Array(this.assembler.b);
+      current.set(this.assembler.b);
+      this.prevB = current;
       return;
     }
-    const current = new Float64Array(this.assembler.systemSize);
+    current.fill(0);
     if (this.assembler.isFastPath) {
       const { colPtr, rowIdx, gValues } = this.assembler;
       for (let column = 0; column < this.assembler.systemSize; column++) {
