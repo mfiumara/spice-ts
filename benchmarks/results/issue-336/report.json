@@ -1,0 +1,251 @@
+{
+  "schema": "spice-ts-issue-336/v1",
+  "source": {
+    "name": "Berkeley SPICE3f5 examples",
+    "revision": "3d9360bef370b432e473edb0c4333707d545a55f",
+    "licence": "LicenseRef-Berkeley-SPICE",
+    "notice": "benchmarks/corpus/classic/COPYRIGHT.txt",
+    "provenance": "benchmarks/SOURCES.md"
+  },
+  "policy": {
+    "fixtureAdaptation": "none",
+    "identicalFixtureBytesForBothEngines": true,
+    "perCircuitToleranceTuning": false,
+    "superiorityClaim": false
+  },
+  "commands": {
+    "reproduce": "pnpm exec tsx benchmarks/results/issue-336/compare.ts --output benchmarks/results/issue-336/report.json",
+    "ngspice": "ngspice -b -r <temporary-raw-path> <unchanged-fixture>",
+    "spiceTs": "@spice-ts/core simulate(<unchanged-fixture>)"
+  },
+  "versions": {
+    "ngspice": "ngspice-47",
+    "node": "v22.23.1",
+    "spiceTsRevision": "af339c06f546246ef3d839911bf64db96bda359b",
+    "spiceTsWorkingTreeDirty": true
+  },
+  "machine": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "fixtures": [
+    {
+      "id": "bjt-noise",
+      "fixture": "benchmarks/corpus/classic/fixtures/spice3f5/bjtnoise.cir",
+      "input": {
+        "bytes": 183,
+        "sha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc",
+        "expectedSha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc",
+        "unchanged": true,
+        "identicalForBothEngines": true
+      },
+      "parsedPointsPerSummary": 1,
+      "status": {
+        "ngspice": "success",
+        "spiceTs": "success"
+      },
+      "points": {
+        "ngspiceSpectral": 41,
+        "ngspiceIntegrated": 1,
+        "spiceTsSpectral": 41,
+        "spiceTsIntegrated": 1
+      },
+      "signals": {
+        "ngspiceSpectral": [
+          "inoise_spectrum",
+          "onoise_q1",
+          "onoise_q1_1overf",
+          "onoise_q1_ib",
+          "onoise_q1_ic",
+          "onoise_q1_rb",
+          "onoise_q1_rc",
+          "onoise_q1_re",
+          "onoise_rload",
+          "onoise_rload_1overf",
+          "onoise_rload_thermal",
+          "onoise_spectrum"
+        ],
+        "ngspiceIntegrated": [
+          "v(inoise_total)",
+          "v(inoise_total_q1)",
+          "v(inoise_total_q1_1overf)",
+          "v(inoise_total_q1_ib)",
+          "v(inoise_total_q1_ic)",
+          "v(inoise_total_q1_rb)",
+          "v(inoise_total_q1_rc)",
+          "v(inoise_total_q1_re)",
+          "v(inoise_total_rload)",
+          "v(inoise_total_rload_1overf)",
+          "v(inoise_total_rload_thermal)",
+          "v(onoise_total)",
+          "v(onoise_total_q1)",
+          "v(onoise_total_q1_1overf)",
+          "v(onoise_total_q1_ib)",
+          "v(onoise_total_q1_ic)",
+          "v(onoise_total_q1_rb)",
+          "v(onoise_total_q1_rc)",
+          "v(onoise_total_q1_re)",
+          "v(onoise_total_rload)",
+          "v(onoise_total_rload_1overf)",
+          "v(onoise_total_rload_thermal)"
+        ],
+        "spiceTs": [
+          "inoise_spectrum",
+          "onoise_spectrum",
+          "inoise_total",
+          "onoise_total"
+        ],
+        "compared": [
+          "frequency",
+          "inoise_spectrum",
+          "onoise_spectrum",
+          "inoise_total",
+          "onoise_total"
+        ]
+      },
+      "errors": {
+        "frequency": {
+          "maximumAbsoluteError": 2.0372681319713593e-10,
+          "rmsAbsoluteError": 5.262832445731089e-11,
+          "maximumRelativeError": 2.4216392951845278e-15,
+          "rmsRelativeError": 1.1429643149766185e-15
+        },
+        "onoise_spectrum": {
+          "maximumAbsoluteError": 1.0644493237827966e-7,
+          "rmsAbsoluteError": 1.0644119765527101e-7,
+          "maximumRelativeError": 0.6522433558221978,
+          "rmsRelativeError": 0.6522354373164336
+        },
+        "inoise_spectrum": {
+          "maximumAbsoluteError": 2.917233082544125e-10,
+          "rmsAbsoluteError": 2.917132735875478e-10,
+          "maximumRelativeError": 0.6653810952372762,
+          "rmsRelativeError": 0.6653734761659779
+        },
+        "onoise_total": {
+          "maximumAbsoluteError": 0.000033657821335710916,
+          "rmsAbsoluteError": 0.000033657821335710916,
+          "maximumRelativeError": 0.6522343768018072,
+          "rmsRelativeError": 0.6522343768018072
+        },
+        "inoise_total": {
+          "maximumAbsoluteError": 9.224280038955371e-8,
+          "rmsAbsoluteError": 9.224280038955371e-8,
+          "maximumRelativeError": 0.6653724556862614,
+          "rmsRelativeError": 0.6653724556862614
+        }
+      },
+      "runtimeMilliseconds": {
+        "ngspiceProcessAndRawIo": 16.946458000000007,
+        "spiceTsInProcess": 5.124584000000027,
+        "directlyComparable": false
+      },
+      "losses": [
+        "ngspice exposes 10 per-generator spectral signals and 20 per-generator integrated signals that spice-ts does not expose."
+      ]
+    },
+    {
+      "id": "resistor-noise",
+      "fixture": "benchmarks/corpus/classic/fixtures/spice3f5/resnoise.cir",
+      "input": {
+        "bytes": 329,
+        "sha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661",
+        "expectedSha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661",
+        "unchanged": true,
+        "identicalForBothEngines": true
+      },
+      "parsedPointsPerSummary": 1,
+      "status": {
+        "ngspice": "success",
+        "spiceTs": "success"
+      },
+      "points": {
+        "ngspiceSpectral": 41,
+        "ngspiceIntegrated": 1,
+        "spiceTsSpectral": 41,
+        "spiceTsIntegrated": 1
+      },
+      "signals": {
+        "ngspiceSpectral": [
+          "inoise_spectrum",
+          "onoise_rl",
+          "onoise_rl_1overf",
+          "onoise_rl_thermal",
+          "onoise_spectrum"
+        ],
+        "ngspiceIntegrated": [
+          "i(inoise_total)",
+          "i(inoise_total_rl)",
+          "i(inoise_total_rl_1overf)",
+          "i(inoise_total_rl_thermal)",
+          "v(onoise_total)",
+          "v(onoise_total_rl)",
+          "v(onoise_total_rl_1overf)",
+          "v(onoise_total_rl_thermal)"
+        ],
+        "spiceTs": [
+          "inoise_spectrum",
+          "onoise_spectrum",
+          "inoise_total",
+          "onoise_total"
+        ],
+        "compared": [
+          "frequency",
+          "inoise_spectrum",
+          "onoise_spectrum",
+          "inoise_total",
+          "onoise_total"
+        ]
+      },
+      "errors": {
+        "frequency": {
+          "maximumAbsoluteError": 2.0372681319713593e-10,
+          "rmsAbsoluteError": 5.262832445731089e-11,
+          "maximumRelativeError": 2.4216392951845278e-15,
+          "rmsRelativeError": 1.1429643149766185e-15
+        },
+        "onoise_spectrum": {
+          "maximumAbsoluteError": 7.0773196098395785e-16,
+          "rmsAbsoluteError": 7.077319609839581e-16,
+          "maximumRelativeError": 1.738313381272468e-7,
+          "rmsRelativeError": 1.738313381272468e-7
+        },
+        "inoise_spectrum": {
+          "maximumAbsoluteError": 7.077319597044128e-19,
+          "rmsAbsoluteError": 7.0773195970441255e-19,
+          "maximumRelativeError": 1.7383133781296814e-7,
+          "rmsRelativeError": 1.7383133781296814e-7
+        },
+        "onoise_total": {
+          "maximumAbsoluteError": 2.2379330507991252e-13,
+          "rmsAbsoluteError": 2.2379330507991252e-13,
+          "maximumRelativeError": 1.7383133705832843e-7,
+          "rmsRelativeError": 1.7383133705832843e-7
+        },
+        "inoise_total": {
+          "maximumAbsoluteError": 2.237933048582281e-16,
+          "rmsAbsoluteError": 2.237933048582281e-16,
+          "maximumRelativeError": 1.7383133688613518e-7,
+          "rmsRelativeError": 1.7383133688613518e-7
+        }
+      },
+      "runtimeMilliseconds": {
+        "ngspiceProcessAndRawIo": 13.08220799999998,
+        "spiceTsInProcess": 0.6827910000000088,
+        "directlyComparable": false
+      },
+      "losses": [
+        "ngspice exposes 3 per-generator spectral signals and 6 per-generator integrated signals that spice-ts does not expose."
+      ]
+    }
+  ],
+  "losses": [
+    "ngspice emits per-generator contribution summaries because points_per_summary=1; the spice-ts NoiseResult exposes only total output/input spectra and integrated totals, so only those four shared signals are compared.",
+    "Every non-zero residual is retained. No tolerance, circuit value, or fixture byte is changed per engine.",
+    "Runtime values are descriptive only. ngspice includes process startup and raw-file I/O; spice-ts runs in-process.",
+    "Current-valued noise outputs, dependent-source input referral, differential semiconductor noise, stepped noise, and temperature cards remain outside this issue."
+  ],
+  "redReceipt": "Before implementation, the focused unchanged-fixture test failed twice with Unsupported .noise form at bjtnoise.cir:15 and resnoise.cir:14."
+}

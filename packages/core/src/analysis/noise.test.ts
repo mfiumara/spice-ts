@@ -451,7 +451,7 @@ describe('.noise analysis', () => {
     '.noise v(out) V1 log 10 1 1Meg',
   ])('rejects noise forms outside the first bounded slice: %s', netlist => {
     expect(() => parse(netlist)).toThrow(
-      "Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop'",
+      "Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop [points_per_summary]'",
     );
   });
 
