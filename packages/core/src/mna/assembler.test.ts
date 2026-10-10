@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { MNAAssembler } from './assembler.js';
 import type { CscMatrix } from '../solver/csc-matrix.js';
 import type { SparseSolver } from '../solver/sparse-solver.js';
@@ -98,6 +98,32 @@ describe('MNAAssembler', () => {
     const vals = Array.from(csc.values);
     expect(vals).toContain(3);
     expect(vals).toContain(1);
+  });
+
+  it('builds a sorted CSC structural union without boxed column sorting', () => {
+    const asm = new MNAAssembler(6, 0);
+    const ctx = asm.getStampContext();
+    ctx.stampG(5, 2, 52);
+    ctx.stampG(1, 2, 12);
+    ctx.stampG(4, 0, 40);
+    ctx.stampG(3, 4, 34);
+    ctx.stampC(3, 2, 0.32);
+    ctx.stampC(1, 2, 0.12);
+    ctx.stampC(0, 5, 0.05);
+
+    const arraySort = vi.spyOn(Array.prototype, 'sort');
+    try {
+      asm.lockTopology();
+      expect(arraySort).not.toHaveBeenCalled();
+    } finally {
+      arraySort.mockRestore();
+    }
+
+    expect(Array.from(asm.colPtr)).toEqual([0, 1, 1, 4, 4, 5, 6]);
+    expect(Array.from(asm.rowIdx)).toEqual([4, 1, 3, 5, 3, 0]);
+    expect(Array.from(asm.gValues)).toEqual([40, 12, 0, 52, 34, 0]);
+    expect(Array.from(asm.cValues)).toEqual([0, 0.12, 0.32, 0, 0, 0.05]);
+    expect(asm.topologyNnz).toBe(6);
   });
 
   it('clear resets gValues and cValues when fast-path active', () => {
