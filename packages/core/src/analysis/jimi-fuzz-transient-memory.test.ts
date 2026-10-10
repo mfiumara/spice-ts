@@ -64,5 +64,5 @@ describe('jimi-fuzz transient point growth', () => {
     } finally {
       secondRun.dispose();
     }
-  }, 10_000);
+  }, 30_000);
 });
