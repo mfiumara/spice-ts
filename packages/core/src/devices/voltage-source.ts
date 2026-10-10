@@ -96,10 +96,12 @@ export class VoltageSource implements DeviceModel {
 }
 
 /**
- * Return all times in (0, stopTime] at which a PULSE waveform has a
+ * Return all times in [0, stopTime] at which a PULSE waveform has a
  * derivative discontinuity: rising-edge start, rising-edge end, falling-edge
- * start, falling-edge end, repeated each period. Times at or below zero are
- * filtered (the simulation starts at t=0 anyway).
+ * start, falling-edge end, repeated each period. A corner at t=0 is kept: the
+ * DC operating point carries no slope, so the transient driver integrates the
+ * first step at order 1 when a waveform kinks at the start. Negative times
+ * are filtered.
  *
  * Period offsets are computed as `delay + n * period` rather than an additive
  * accumulator so that breakpoints at high `n` land exactly on their analytic
@@ -118,17 +120,17 @@ export function pulseBreakpoints(p: PulseSource, stopTime: number): number[] {
       periodStart + rise + width + fall, // falling-edge end
     ];
     for (const t of corners) {
-      if (t > 0 && t <= stopTime) result.push(t);
+      if (t >= 0 && t <= stopTime) result.push(t);
     }
   }
   return result;
 }
 
-/** Return PWL corners in (0, stopTime], preserving their declared times. */
+/** Return PWL corners in [0, stopTime], preserving their declared times. */
 export function pwlBreakpoints(pwl: PWLSource, stopTime: number): number[] {
   return pwl.points
     .map(point => point.time)
-    .filter(time => time > 0 && time <= stopTime);
+    .filter(time => time >= 0 && time <= stopTime);
 }
 
 /**

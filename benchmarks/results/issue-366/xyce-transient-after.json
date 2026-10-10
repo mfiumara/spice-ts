@@ -1,0 +1,103 @@
+{
+  "comparisonGrid": "spice-ts",
+  "interpolation": "linear",
+  "fixtures": {
+    "capacitor-rc-transient": {
+      "spiceTs": "success",
+      "ngspice": "failed",
+      "error": "Error on line 29 or its substitute: .tran 0 5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: regression test to show proper transient rc circuit Total elapsed time (seconds) = 0.056 Total DRAM available = 49152.000 MB. DRAM currently available = 16956.750 MB. Maximum ngspice program size = 9.875 MB. Current ngspice program size = 9.875 MB."
+    },
+    "capacitor-rc-transient-newlte": {
+      "spiceTs": "unsupported",
+      "ngspice": "failed",
+      "error": "Parse error at line 31: Unsupported .options TIMEINT field: 'newlte' .options timeint reltol=1e-6 abstol=1e-6 newlte=2"
+    },
+    "capacitor-rc-oscillator": {
+      "spiceTs": "success",
+      "ngspice": "failed",
+      "error": "Error on line 2 or its substitute: .tran 0 2.0e-4 TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: rc_osc test Total elapsed time (seconds) = 0.012 Total DRAM available = 49152.000 MB. DRAM currently available = 16956.750 MB. Maximum ngspice program size = 9.906 MB. Current ngspice program size = 9.906 MB."
+    },
+    "diode-level2-temperature-breakdown": {
+      "spiceTs": "unsupported",
+      "ngspice": "failed",
+      "error": "no spice-ts result for analyses: tran"
+    },
+    "diode-transient": {
+      "spiceTs": "success",
+      "ngspice": "failed",
+      "error": "Error on line 45 or its substitute: .tran 0 0.5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: diode circuit netlist Total elapsed time (seconds) = 0.007 Total DRAM available = 49152.000 MB. DRAM currently available = 16956.750 MB. Maximum ngspice program size = 9.906 MB. Current ngspice program size = 9.906 MB."
+    },
+    "inductor-transient": {
+      "spiceTs": "success",
+      "ngspice": "success",
+      "spiceTsPoints": 276,
+      "ngspicePoints": 233,
+      "runtimeMs": {
+        "spiceTs": 5.7,
+        "ngspice": 92.1
+      },
+      "signals": {
+        "i(l1)": {
+          "absMax": 2.4424906541753444e-14,
+          "absRms": 3.4220623331901995e-15,
+          "relMax": 2.403281399382935e-14,
+          "relRms": 3.0007407085157205e-15
+        },
+        "v(1)": {
+          "absMax": 31.65338535154384,
+          "absRms": 8.272157977725891,
+          "relMax": 0.9998420639604807,
+          "relRms": 0.3447303572672676
+        },
+        "v(2)": {
+          "absMax": 31.65338535154383,
+          "absRms": 8.272157977725888,
+          "relMax": 6,
+          "relRms": 0.9628180035444573
+        }
+      }
+    },
+    "rlc-transient": {
+      "spiceTs": "success",
+      "ngspice": "success",
+      "spiceTsPoints": 1004,
+      "ngspicePoints": 1019,
+      "runtimeMs": {
+        "spiceTs": 22.4,
+        "ngspice": 163.1
+      },
+      "signals": {
+        "i(l1)": {
+          "absMax": 2.499986704403434,
+          "absRms": 0.9110465961818267,
+          "relMax": 1.0000000000000386,
+          "relRms": 1.0000000000000016
+        },
+        "i(v1)": {
+          "absMax": 2.499986704403433,
+          "absRms": 0.9110465961818265,
+          "relMax": 1.0000000000000386,
+          "relRms": 1.0000000000000016
+        },
+        "v(1)": {
+          "absMax": 10,
+          "absRms": 0.48790143345243436,
+          "relMax": 9,
+          "relRms": 0.2938860508448617
+        },
+        "v(2)": {
+          "absMax": 10,
+          "absRms": 2.776466798480198,
+          "relMax": 9.015217218693303,
+          "relRms": 0.864588665463952
+        },
+        "v(3)": {
+          "absMax": 10,
+          "absRms": 3.078754981463723,
+          "relMax": 28016182.187203556,
+          "relRms": 885174.3842493416
+        }
+      }
+    }
+  }
+}

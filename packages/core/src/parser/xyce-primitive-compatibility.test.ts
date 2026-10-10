@@ -100,7 +100,9 @@ describe('Xyce primitive parser compatibility', () => {
   for (const [id, path, points] of [
     ['capacitor-rc-oscillator', 'CAPACITOR/rc_osc.cir', 1780],
     ['diode-transient', 'DIODE/diode.cir', 101],
-    ['rlc-transient', 'RLC/rlc.cir', 1002],
+    // The zero-rise PULSE corner at t=0 now starts with ngspice's order-1
+    // first step (0.1 x first breakpoint gap / 10), adding two early points.
+    ['rlc-transient', 'RLC/rlc.cir', 1004],
   ] as const) {
     it(`simulates unchanged ${id} with braced V/I output expressions`, async () => {
       const result = await simulate(fixture(path));

@@ -1,0 +1,782 @@
+{
+  "command": {
+    "before": "git stash push packages/core/src/analysis/transient-driver.ts packages/core/src/devices/voltage-source.ts && pnpm -C packages/core build && pnpm exec tsx benchmarks/comparison-harness.ts --output cmp-before.json && pnpm exec tsx benchmarks/corpus/classic/report.ts --output classic-before.json && git stash pop",
+    "after": "pnpm -C packages/core build && pnpm exec tsx benchmarks/comparison-harness.ts --output cmp-after.json && pnpm exec tsx benchmarks/corpus/classic/report.ts --output classic-after.json"
+  },
+  "baseCommit": "7bc2d64",
+  "ngspice": "ngspice-47",
+  "corpora": {
+    "benchmarks/comparison-harness.ts (10 fixtures)": {
+      "fixtures": 10,
+      "statusChanges": {},
+      "comparedSignals": 10,
+      "changedSignals": 1,
+      "signalsWithHigherAbsMaxOrRms": [],
+      "changed": {
+        "rc-chain-tran|tran|v(2)": {
+          "before": {
+            "points": 518,
+            "absMax": 6.050038101333699e-05,
+            "absRms": 1.9014227706793093e-05,
+            "relMax": 0.0007343978392256995,
+            "relRms": 5.421486658772363e-05
+          },
+          "after": {
+            "points": 526,
+            "absMax": 3.5875233787535654e-05,
+            "absRms": 1.1143498882407158e-05,
+            "relMax": 0.0863107434129908,
+            "relRms": 0.0064416540736671885
+          }
+        }
+      }
+    },
+    "benchmarks/corpus/classic/report.ts": {
+      "fixtures": 20,
+      "statusChanges": {},
+      "comparedSignals": 553,
+      "changedSignals": 44,
+      "signalsWithHigherAbsMaxOrRms": [
+        "mos6-inverter-chain|tran|v(1)",
+        "mos6-inverter-chain|tran|v(100)",
+        "mos6-inverter-chain|tran|v(11)",
+        "mos6-inverter-chain|tran|v(12)",
+        "mos6-inverter-chain|tran|v(13)",
+        "mos6-inverter-chain|tran|v(2)",
+        "mos6-inverter-chain|tran|v(21)",
+        "mos6-inverter-chain|tran|v(22)",
+        "mos6-inverter-chain|tran|v(23)",
+        "mos6-inverter-chain|tran|v(31)",
+        "mos6-inverter-chain|tran|v(32)",
+        "mos6-inverter-chain|tran|v(33)",
+        "mos6-inverter-chain|tran|v(4)",
+        "mos6-inverter-chain|tran|v(41)",
+        "mos6-inverter-chain|tran|v(43)",
+        "mos6-inverter-chain|tran|v(5)",
+        "mos6-inverter-chain|tran|v(xndinv1.12)",
+        "mos6-inverter-chain|tran|v(xndinv1.13)",
+        "mos6-inverter-chain|tran|v(xndinv1.14)",
+        "mos6-inverter-chain|tran|v(xndinv1.22)",
+        "mos6-inverter-chain|tran|v(xndinv1.23)",
+        "mos6-inverter-chain|tran|v(xndinv1.32)",
+        "mos6-inverter-chain|tran|v(xndinv2.12)",
+        "mos6-inverter-chain|tran|v(xndinv2.13)",
+        "mos6-inverter-chain|tran|v(xndinv2.14)",
+        "mos6-inverter-chain|tran|v(xndinv2.23)",
+        "mos6-inverter-chain|tran|v(xndinv2.32)",
+        "mos6-inverter-chain|tran|v(xndinv3.12)",
+        "mos6-inverter-chain|tran|v(xndinv3.32)",
+        "mos6-inverter-chain|tran|v(xndinv4.13)",
+        "mos6-inverter-chain|tran|v(xndinv4.14)",
+        "mos6-inverter-chain|tran|v(xndinv4.22)",
+        "mos6-inverter-chain|tran|v(xndinv4.23)"
+      ],
+      "changed": {
+        "mos6-inverter-chain|tran|i(vdd)": {
+          "before": {
+            "points": 3760,
+            "absMax": 0.0007948289692974123,
+            "absRms": 0.0003308232701940679,
+            "relMax": 127172.76723329103,
+            "relRms": 2207.802066764815
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 0.0007847457853872081,
+            "absRms": 0.0003266894063007692,
+            "relMax": 270572.13153262506,
+            "relRms": 4634.003702594007
+          }
+        },
+        "mos6-inverter-chain|tran|i(vin)": {
+          "before": {
+            "points": 3760,
+            "absMax": 5.3600299776033805e-05,
+            "absRms": 8.130232723960884e-06,
+            "relMax": 463.1251695482779,
+            "relRms": 52.32748777922963
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.920515518406298e-05,
+            "absRms": 7.129465167372006e-06,
+            "relMax": 199.91034471951914,
+            "relRms": 21.896284360443374
+          }
+        },
+        "mos6-inverter-chain|tran|v(1)": {
+          "before": {
+            "points": 3760,
+            "absMax": 2.6645352591003757e-15,
+            "absRms": 2.110717108219178e-16,
+            "relMax": 6.599493744416052e-16,
+            "relRms": 5.85845543551087e-17
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 2.6645352591003757e-15,
+            "absRms": 2.2152227029166733e-16,
+            "relMax": 6.561299143074284e-16,
+            "relRms": 6.048724098865009e-17
+          }
+        },
+        "mos6-inverter-chain|tran|v(100)": {
+          "before": {
+            "points": 3760,
+            "absMax": 3.552713678800501e-15,
+            "absRms": 5.53455518600963e-16,
+            "relMax": 7.105427357601002e-16,
+            "relRms": 1.1069110372019213e-16
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 3.552713678800501e-15,
+            "absRms": 5.554141911691081e-16,
+            "relMax": 7.105427357601002e-16,
+            "relRms": 1.1108283823382115e-16
+          }
+        },
+        "mos6-inverter-chain|tran|v(11)": {
+          "before": {
+            "points": 3760,
+            "absMax": 0.14857604936113766,
+            "absRms": 0.05812713857368466,
+            "relMax": 5.61832768009977,
+            "relRms": 1.0987984969117028
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 0.14883214924585975,
+            "absRms": 0.05771411449346866,
+            "relMax": 5.618177045243112,
+            "relRms": 1.0972574560407051
+          }
+        },
+        "mos6-inverter-chain|tran|v(12)": {
+          "before": {
+            "points": 3760,
+            "absMax": 2.1468890071177253,
+            "absRms": 1.0382038390575583,
+            "relMax": 22622.476868928305,
+            "relRms": 368.9323723367896
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 2.147031905472302,
+            "absRms": 1.0345229060144874,
+            "relMax": 20.267738664533773,
+            "relRms": 0.7080651594795233
+          }
+        },
+        "mos6-inverter-chain|tran|v(13)": {
+          "before": {
+            "points": 3760,
+            "absMax": 3.0469483227315797,
+            "absRms": 1.0481318168757954,
+            "relMax": 309.12688735598994,
+            "relRms": 50.49279913801923
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 3.047148173745372,
+            "absRms": 1.0459174409999477,
+            "relMax": 309.08896916280526,
+            "relRms": 50.35009394100144
+          }
+        },
+        "mos6-inverter-chain|tran|v(2)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.42302463087463,
+            "absRms": 1.8846322793296482,
+            "relMax": 62.36179082196532,
+            "relRms": 1.502111147685501
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.423185816346158,
+            "absRms": 1.8874328451916509,
+            "relMax": 31.898520216702906,
+            "relRms": 0.9643294919347305
+          }
+        },
+        "mos6-inverter-chain|tran|v(21)": {
+          "before": {
+            "points": 3760,
+            "absMax": 3.5385640161805405,
+            "absRms": 1.6662782116288226,
+            "relMax": 33.5006972383795,
+            "relRms": 7.158564445592702
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 3.538745260618447,
+            "absRms": 1.6653545013225004,
+            "relMax": 33.499849215842175,
+            "relRms": 7.154561916959179
+          }
+        },
+        "mos6-inverter-chain|tran|v(22)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.503190561004113,
+            "absRms": 1.751261636953037,
+            "relMax": 33.62112348936857,
+            "relRms": 1.1252675641801568
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.503280894018775,
+            "absRms": 1.7395042523947652,
+            "relMax": 18.78900562503983,
+            "relRms": 1.0235689683427178
+          }
+        },
+        "mos6-inverter-chain|tran|v(23)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.804208884242343,
+            "absRms": 1.2425088283029757,
+            "relMax": 2846.9645920671956,
+            "relRms": 477.44325040115905
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.804559036458884,
+            "absRms": 1.21634060911263,
+            "relMax": 2843.481274825982,
+            "relRms": 476.765834849544
+          }
+        },
+        "mos6-inverter-chain|tran|v(3)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.9923879197524705,
+            "absRms": 0.8791939765344943,
+            "relMax": 11.36926851253173,
+            "relRms": 1.8179867868421018
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.992386056624892,
+            "absRms": 0.8585166004853322,
+            "relMax": 9.083328364577145,
+            "relRms": 1.2848837121463665
+          }
+        },
+        "mos6-inverter-chain|tran|v(31)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.7288013202763635,
+            "absRms": 0.7630523470668973,
+            "relMax": 184.17009105258887,
+            "relRms": 32.18574983202521
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.728893011295402,
+            "absRms": 0.7601740485404197,
+            "relMax": 183.96239493685084,
+            "relRms": 32.16039093069295
+          }
+        },
+        "mos6-inverter-chain|tran|v(32)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.981078168104724,
+            "absRms": 0.9341829030768488,
+            "relMax": 2.7246040534701064,
+            "relRms": 0.957257818995257
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.981083068295982,
+            "absRms": 0.9320671641413579,
+            "relMax": 1.2389070568456488,
+            "relRms": 0.9562668121932427
+          }
+        },
+        "mos6-inverter-chain|tran|v(33)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.9987187768873,
+            "absRms": 0.9710002361541051,
+            "relMax": 72452.86189330235,
+            "relRms": 11570.817172572408
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.998720787514792,
+            "absRms": 0.9690188571708357,
+            "relMax": 72293.7015007942,
+            "relRms": 11573.660715240281
+          }
+        },
+        "mos6-inverter-chain|tran|v(4)": {
+          "before": {
+            "points": 3760,
+            "absMax": 5.001892547484541,
+            "absRms": 1.0649304909346335,
+            "relMax": 11.368321744861971,
+            "relRms": 1.8265666073290827
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 5.001895754712884,
+            "absRms": 1.0631414008735598,
+            "relMax": 7.106450205284021,
+            "relRms": 1.2973452764040823
+          }
+        },
+        "mos6-inverter-chain|tran|v(41)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.964362360043559,
+            "absRms": 0.9945561683565903,
+            "relMax": 1004.9136773117253,
+            "relRms": 140.61143098358957
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.964451439628578,
+            "absRms": 0.993295089355599,
+            "relMax": 1002.6526506192581,
+            "relRms": 140.29852967998917
+          }
+        },
+        "mos6-inverter-chain|tran|v(42)": {
+          "before": {
+            "points": 3760,
+            "absMax": 5.000393817852293,
+            "absRms": 1.1213287694034886,
+            "relMax": 1.0695180971700566,
+            "relRms": 0.9802803968934513
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 5.000391440772638,
+            "absRms": 1.120986991127837,
+            "relMax": 1.081465708872218,
+            "relRms": 0.980334420369111
+          }
+        },
+        "mos6-inverter-chain|tran|v(43)": {
+          "before": {
+            "points": 3760,
+            "absMax": 5.004404045999241,
+            "absRms": 1.1513547617064332,
+            "relMax": 4098349.4889567983,
+            "relRms": 377737.8285986923
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 5.00440520186274,
+            "absRms": 1.1517384203360441,
+            "relMax": 4121096.9673911994,
+            "relRms": 377265.9163015866
+          }
+        },
+        "mos6-inverter-chain|tran|v(5)": {
+          "before": {
+            "points": 3760,
+            "absMax": 5.002272356641889,
+            "absRms": 1.2107634311052187,
+            "relMax": 1.0004544903457437,
+            "relRms": 0.9911677311193731
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 5.002283106694273,
+            "absRms": 1.2110441273266528,
+            "relMax": 1.0004566405752042,
+            "relRms": 0.9912358055740285
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv1.12)": {
+          "before": {
+            "points": 3760,
+            "absMax": 0.9033071494209062,
+            "absRms": 0.10542968025912178,
+            "relMax": 8.184710033579806,
+            "relRms": 1.1303691556325015
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 0.9041454838568992,
+            "absRms": 0.10653257913123274,
+            "relMax": 8.070147955912587,
+            "relRms": 1.1322707048094447
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv1.13)": {
+          "before": {
+            "points": 3760,
+            "absMax": 0.9681123548257378,
+            "absRms": 0.11170804479070359,
+            "relMax": 27.35270580941884,
+            "relRms": 1.6878017427159477
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 0.9707094948088035,
+            "absRms": 0.11310495981979704,
+            "relMax": 35.584020601250266,
+            "relRms": 1.8403073542264843
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv1.14)": {
+          "before": {
+            "points": 3760,
+            "absMax": 0.9634164405074235,
+            "absRms": 0.11811504468134304,
+            "relMax": 100.17440354158431,
+            "relRms": 3.5916905079590546
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 0.9676904456073099,
+            "absRms": 0.12008053152152717,
+            "relMax": 2317.23028842114,
+            "relRms": 39.093601905133696
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv1.22)": {
+          "before": {
+            "points": 3760,
+            "absMax": 1.6519542543218404,
+            "absRms": 0.7260429492780544,
+            "relMax": 0.8816115786200931,
+            "relRms": 0.2890775990399597
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 1.6556344862019265,
+            "absRms": 0.7353644246119319,
+            "relMax": 0.883130088960481,
+            "relRms": 0.30028694672892614
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv1.23)": {
+          "before": {
+            "points": 3760,
+            "absMax": 0.4851017020492341,
+            "absRms": 0.21605900200036665,
+            "relMax": 0.09937501174004364,
+            "relRms": 0.04455094925470705
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 0.4851267678397555,
+            "absRms": 0.21553489269884343,
+            "relMax": 0.09938420793529863,
+            "relRms": 0.04443854962213456
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv1.32)": {
+          "before": {
+            "points": 3760,
+            "absMax": 0.7753505359272455,
+            "absRms": 0.33481852614240976,
+            "relMax": 22307.45715533612,
+            "relRms": 374.4309866137888
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 0.7753661771450173,
+            "absRms": 0.33408461956496344,
+            "relMax": 150816.0747270398,
+            "relRms": 2499.3657148456427
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv2.12)": {
+          "before": {
+            "points": 3760,
+            "absMax": 2.838116524090479,
+            "absRms": 1.3513403032294875,
+            "relMax": 41.427952657472254,
+            "relRms": 7.109583853680207
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 2.8371289464192957,
+            "absRms": 1.3538515530039508,
+            "relMax": 40.85595095114878,
+            "relRms": 7.112270432388866
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv2.13)": {
+          "before": {
+            "points": 3760,
+            "absMax": 3.346061348206807,
+            "absRms": 1.4459986162906842,
+            "relMax": 99.39802389790894,
+            "relRms": 8.182009851206788
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 3.3464328823220733,
+            "absRms": 1.450095299451193,
+            "relMax": 89.2314798236985,
+            "relRms": 8.009554983205357
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv2.14)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.151373205606697,
+            "absRms": 1.6394005634832258,
+            "relMax": 1413.3919904541697,
+            "relRms": 29.479719755946697
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.151171600496613,
+            "absRms": 1.6441010414127684,
+            "relMax": 62993.15361564487,
+            "relRms": 1027.014900877849
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv2.22)": {
+          "before": {
+            "points": 3760,
+            "absMax": 3.719860997189785,
+            "absRms": 1.766106649932007,
+            "relMax": 0.9455784057519498,
+            "relRms": 0.6336393969025043
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 3.7196188362802958,
+            "absRms": 1.7629150534112916,
+            "relMax": 0.9454598755658786,
+            "relRms": 0.6338944033195085
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv2.23)": {
+          "before": {
+            "points": 3760,
+            "absMax": 0.6838482906447405,
+            "absRms": 0.25033118153020917,
+            "relMax": 0.13701832458192015,
+            "relRms": 0.054096001924887616
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 0.6839183120050327,
+            "absRms": 0.24727616549246076,
+            "relMax": 0.13703953541614267,
+            "relRms": 0.05350364926864168
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv2.32)": {
+          "before": {
+            "points": 3760,
+            "absMax": 0.9766686315694074,
+            "absRms": 0.3064971110230594,
+            "relMax": 24811.98411150775,
+            "relRms": 771.9299197976436
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 0.9767388396259283,
+            "absRms": 0.3083058907096282,
+            "relMax": 173301.45230085374,
+            "relRms": 2914.625980641652
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv3.12)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.066978707931157,
+            "absRms": 0.9323605603865673,
+            "relMax": 19172.337753595337,
+            "relRms": 317.33853935279615
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.067019252918395,
+            "absRms": 0.9230553814910439,
+            "relMax": 9396.683772686167,
+            "relRms": 165.90351764858858
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv3.13)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.144453843163757,
+            "absRms": 0.978604579474687,
+            "relMax": 10414.702936226728,
+            "relRms": 182.657584738784
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.14428479428355,
+            "absRms": 0.9618287337043433,
+            "relMax": 32699.598963780092,
+            "relRms": 535.8341019165083
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv3.14)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.571478409198852,
+            "absRms": 1.0423947340771278,
+            "relMax": 5710.808971719324,
+            "relRms": 179.31103675359108
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.568106121970537,
+            "absRms": 1.0181233599506847,
+            "relMax": 10869.914887629293,
+            "relRms": 186.85021027918268
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv3.22)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.768113400046128,
+            "absRms": 1.1890620566151846,
+            "relMax": 0.9583298695516901,
+            "relRms": 0.599274363008466
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.768091927003745,
+            "absRms": 1.1884445921821631,
+            "relMax": 0.9583313371805913,
+            "relRms": 0.5994443858461792
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv3.23)": {
+          "before": {
+            "points": 3760,
+            "absMax": 0.6934002599760891,
+            "absRms": 0.11042691718359836,
+            "relMax": 0.13868792727675708,
+            "relRms": 0.02282527384642572
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 0.6933669350110128,
+            "absRms": 0.11017340929685941,
+            "relMax": 0.13868131277823822,
+            "relRms": 0.02277011940752288
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv3.32)": {
+          "before": {
+            "points": 3760,
+            "absMax": 0.9731385735971793,
+            "absRms": 0.1045673023875549,
+            "relMax": 931023.6923765423,
+            "relRms": 40608.60907917991
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 0.9731652510466805,
+            "absRms": 0.10431234533079355,
+            "relMax": 1431830.540806941,
+            "relRms": 48579.710493127124
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv4.12)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.273833888173793,
+            "absRms": 1.0544510131676899,
+            "relMax": 43055.00959857894,
+            "relRms": 743.7889548714817
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.2737316896630535,
+            "absRms": 1.0536267894826241,
+            "relMax": 3769.872694856282,
+            "relRms": 168.44502330126411
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv4.13)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.283769369042571,
+            "absRms": 1.0695210457972877,
+            "relMax": 10515.502586418232,
+            "relRms": 262.6962102355556
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.28418287377696,
+            "absRms": 1.0685313329059623,
+            "relMax": 1272755.254527086,
+            "relRms": 20785.599351282817
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv4.14)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.642897326627859,
+            "absRms": 1.103325400970545,
+            "relMax": 6362.436802191801,
+            "relRms": 211.14828435744872
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.648278662779664,
+            "absRms": 1.1022537019111247,
+            "relMax": 62927.5775271598,
+            "relRms": 1112.2402717481837
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv4.22)": {
+          "before": {
+            "points": 3760,
+            "absMax": 4.792582755900963,
+            "absRms": 1.33062695343035,
+            "relMax": 0.9586274154384238,
+            "relRms": 0.6209900082499852
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 4.792889519648918,
+            "absRms": 1.329933372736318,
+            "relMax": 0.958689899880883,
+            "relRms": 0.6209636006902945
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv4.23)": {
+          "before": {
+            "points": 3760,
+            "absMax": 0.6937134724176053,
+            "absRms": 0.10846007141767072,
+            "relMax": 0.1387432394896424,
+            "relRms": 0.022281512135346324
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 0.6937113770711321,
+            "absRms": 0.10866898254796661,
+            "relMax": 0.13874281737368527,
+            "relRms": 0.022320511122029377
+          }
+        },
+        "mos6-inverter-chain|tran|v(xndinv4.32)": {
+          "before": {
+            "points": 3760,
+            "absMax": 0.9732600030209767,
+            "absRms": 0.1044203469422973,
+            "relMax": 78280821.72195952,
+            "relRms": 2910442.623182954
+          },
+          "after": {
+            "points": 3777,
+            "absMax": 0.9725957793690683,
+            "absRms": 0.10427905893773869,
+            "relMax": 55497044.91705849,
+            "relRms": 2652656.4097506674
+          }
+        }
+      }
+    }
+  }
+}
