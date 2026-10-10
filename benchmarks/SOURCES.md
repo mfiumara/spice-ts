@@ -89,6 +89,14 @@ At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-di
 |---|---|---|---|---|
 | Passive RLC and active four-stage `.pz` | Berkeley SPICE3f5 [`simplepz.cir`](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/simplepz.cir) and [`pz2.cir`](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/pz2.cir), pinned mirror revision `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant retained at `benchmarks/corpus/classic/COPYRIGHT.txt`; redistribution is allowed with that notice | `passive-rlc.cir` preserves `simplepz.cir` and adds one 1 uH shunt inductor so the bounded fixture exercises R, L, and C dynamics. `active-four-stage.cir` changes only the source card from ngspice's implicit `iin 1 0 ac` zero bias to explicit `iin 1 0 dc 0`; its topology, values, and `.pz` command are unchanged. The committed local bytes are supplied identically to both engines. | `benchmarks/pole-zero/{passive-rlc,active-four-stage}.cir`; compare with `pnpm exec tsx benchmarks/pole-zero/compare.ts` using ngspice-47. |
 
+## Bounded Gummel-Poon forward-active parity fixtures
+
+- Public source: John P. Doty's CA3080 ngspice model, [`ca3080.mod`](https://github.com/xxv/gedasymbols/blob/49eda5e627e167fcb6346ef9805535ca92e43b0c/www/user/john_doty/models/opamp/ca3080.mod), pinned `gedasymbols` revision `49eda5e627e167fcb6346ef9805535ca92e43b0c`.
+- Licence: GPL-2.0-or-later, stated in the source file by its copyright holder; the complete GPLv2 text is already retained at `benchmarks/corpus/corpus-d/COPYING.txt`.
+- Redistribution decision: allowed under GPL-2.0-or-later. The upstream file is not copied. The checked-in test decks identify the source and use only the bounded numeric subset of its `VERTNPN` model card: `LEVEL`, `IS`, `VAF`, `BF`, `ISE`, `NE`, `IKF`, and `BR`.
+- Adaptation: the original CA3080 subcircuit is replaced by a project-authored, deterministic common-emitter characterization grid. Unsupported temperature, resistance, capacitance, transit-time, reverse high-current, and substrate parameters are omitted rather than silently accepted. The resulting local deck bytes are supplied identically to spice-ts and ngspice-47 at VBE 0.55–0.70 V and VCE 1, 5, and 9 V.
+- Local paths: `benchmarks/gummel-poon/{vce-1,vce-5,vce-9}.cir`; compare with `pnpm exec tsx benchmarks/gummel-poon/compare.ts`.
+
 ## Xyce Regression Suite corpus C
 
 - Repository: https://github.com/Xyce/Xyce_Regression
