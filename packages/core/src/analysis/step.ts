@@ -23,7 +23,7 @@ export function generateStepValues(step: StepAnalysis): number[] {
           '.step linear sweep: increment must not be zero',
         );
       }
-      if ((stop! - start!) * increment! < 0) {
+      if ((stop! > start! && increment! < 0) || (stop! < start! && increment! > 0)) {
         throw new InvalidCircuitError(
           `.step linear sweep: increment (${increment}) has the wrong direction for start (${start}) and stop (${stop})`,
         );
@@ -35,7 +35,15 @@ export function generateStepValues(step: StepAnalysis): number[] {
       const roundingTolerance = Number.EPSILON * Math.max(1, intervalRatio) * 8;
       const n = Math.floor(intervalRatio + roundingTolerance) + 1;
       for (let i = 0; i < n; i++) {
-        values.push(start! + i * increment!);
+        const value = start! + i * increment!;
+        const crossedStop = increment! > 0 ? value > stop! : value < stop!;
+        if (crossedStop) {
+          const endpointTolerance = Number.EPSILON
+            * Math.max(1, Math.abs(start!), Math.abs(stop!), Math.abs(value)) * 2;
+          if (Math.abs(value - stop!) <= endpointTolerance) values.push(stop!);
+          break;
+        }
+        values.push(value);
       }
       return values;
     }

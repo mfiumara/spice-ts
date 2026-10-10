@@ -63,8 +63,24 @@ describe('generateStepValues', () => {
     });
 
   it.each([
+    [0, 1000000.999999999, 1, 1000000],
+    [0, -1000000.999999999, -1, -1000000],
+  ] as const)('never crosses a large non-aligned endpoint (%s, %s, %s)',
+    (start, stop, increment, expectedLast) => {
+      const step: StepAnalysis = {
+        type: 'step', param: 'R1', sweepMode: 'lin', start, stop, increment,
+      };
+
+      const values = generateStepValues(step);
+      expect(values.at(-1)).toBe(expectedLast);
+      expect(increment > 0 ? values.at(-1)! <= stop : values.at(-1)! >= stop).toBe(true);
+    });
+
+  it.each([
     [0, 1, -0.1],
     [1, 0, 0.1],
+    [0, 5e-324, -5e-324],
+    [5e-324, 0, 5e-324],
   ] as const)('rejects a linear increment directed away from the stop (%s, %s, %s)',
     (start, stop, increment) => {
       const step: StepAnalysis = {
