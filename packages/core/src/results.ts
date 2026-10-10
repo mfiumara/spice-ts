@@ -217,19 +217,21 @@ export class DistortionResult {
   }
 }
 
-/** Scalar small-signal quantities from a bounded `.tf v(node) source` analysis. */
+/** Scalar small-signal quantities from a bounded `.tf` analysis. */
 export class TransferFunctionResult {
   constructor(
-    /** Output node named by the `.tf` command. */
-    public readonly outputNode: string,
+    /** Output node for voltage-output analysis; undefined for current output. */
+    public readonly outputNode: string | undefined,
     /** Independent input source named by the `.tf` command. */
     public readonly inputSource: string,
-    /** Voltage gain (V/V) or transimpedance (V/A). */
+    /** Voltage/current gain or transimpedance/transconductance. */
     public readonly transfer: number,
     /** Small-signal resistance seen by the input source, in ohms. */
     public readonly inputResistance: number,
-    /** Small-signal resistance looking into the output node, in ohms. */
+    /** Ngspice-compatible small-signal output resistance, in ohms. */
     public readonly outputResistance: number,
+    /** Output voltage source for current-output analysis; undefined for voltage output. */
+    public readonly outputSource?: string,
   ) {}
 }
 

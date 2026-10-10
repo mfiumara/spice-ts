@@ -94,11 +94,24 @@ export interface DistortionAnalysis {
   f2OverF1?: number;
 }
 
-/** Bounded DC transfer-function analysis (`.tf v(node) source`). */
-export interface TransferFunctionAnalysis {
+/** Bounded DC transfer-function analysis. */
+export type TransferFunctionAnalysis = VoltageTransferFunctionAnalysis
+  | CurrentTransferFunctionAnalysis;
+
+/** Single-node voltage-output transfer function (`.tf v(node) source`). */
+export interface VoltageTransferFunctionAnalysis {
   type: 'tf';
   /** Single output node whose small-signal voltage is measured. */
   outputNode: string;
+  /** Independent voltage or current source used as the small-signal input. */
+  inputSource: string;
+}
+
+/** Independent-voltage-source current-output transfer function (`.tf i(source) input`). */
+export interface CurrentTransferFunctionAnalysis {
+  type: 'tf';
+  /** Independent voltage source whose small-signal branch current is measured. */
+  outputSource: string;
   /** Independent voltage or current source used as the small-signal input. */
   inputSource: string;
 }
