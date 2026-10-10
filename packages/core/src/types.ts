@@ -116,19 +116,19 @@ export interface CurrentTransferFunctionAnalysis {
   inputSource: string;
 }
 
-/** Bounded pole-zero analysis (`.pz input 0 output 0 cur {pol|pz}`). */
+/** Bounded pole-zero analysis (`.pz input 0 output 0 {cur|vol} {pol|pz}`). */
 export interface PoleZeroAnalysis {
   type: 'pz';
-  /** Positive current-injection terminal. */
+  /** Positive input terminal. */
   inputPositive: string;
-  /** Negative current-injection terminal; bounded to ground in this slice. */
+  /** Negative input terminal; bounded to ground in this slice. */
   inputNegative: string;
   /** Positive voltage-output terminal. */
   outputPositive: string;
   /** Negative voltage-output terminal; bounded to ground in this slice. */
   outputNegative: string;
-  /** Only ngspice's current-input form is supported. */
-  inputType: 'cur';
+  /** Current or voltage input; voltage input is bounded to passive RLC circuits. */
+  inputType: 'cur' | 'vol';
   /** Compute poles only, or both poles and zeros. */
   mode: 'pol' | 'pz';
 }

@@ -12,6 +12,7 @@ const fixture = (name: string): string => readFileSync(
 );
 
 const passiveFixture = fixture('passive-rlc.cir');
+const voltageFixture = fixture('passive-rlc-voltage.cir');
 const activeFixture = fixture('active-four-stage.cir');
 
 describe('.pz analysis', () => {
@@ -23,6 +24,18 @@ describe('.pz analysis', () => {
       outputPositive: '2',
       outputNegative: '0',
       inputType: 'cur',
+      mode: 'pz',
+    }]);
+  });
+
+  it('parses the bounded grounded voltage-input form', () => {
+    expect(parse(voltageFixture).poleZeroAnalyses).toEqual([{
+      type: 'pz',
+      inputPositive: '1',
+      inputNegative: '0',
+      outputPositive: '2',
+      outputNegative: '0',
+      inputType: 'vol',
       mode: 'pz',
     }]);
   });
@@ -49,6 +62,38 @@ describe('.pz analysis', () => {
     ]);
   });
 
+  it('matches ngspice 47 for the passive grounded voltage-input fixture', async () => {
+    const result = await simulate(voltageFixture);
+
+    expect(result.poleZero).toBeDefined();
+    expect(result.poleZero!.poles).toHaveLength(2);
+    expect(result.poleZero!.zeros).toHaveLength(2);
+    expect(relativeError(result.poleZero!.poles[0].real, -1e9)).toBeLessThan(1e-12);
+    expect(result.poleZero!.poles[0].imaginary).toBe(0);
+    expect(result.poleZero!.poles[1]).toEqual({ real: 0, imaginary: 0 });
+    expect(result.poleZero!.zeros).toEqual([
+      { real: 0, imaginary: 0 },
+      { real: 0, imaginary: 0 },
+    ]);
+  });
+
+  it('executes voltage-input poles-only mode without returning zeros', async () => {
+    const result = await simulate(voltageFixture.replace('vol pz', 'vol pol'));
+
+    expect(result.poleZero!.poles).toHaveLength(2);
+    expect(result.poleZero!.zeros).toEqual([]);
+  });
+
+  it('rejects non-passive devices in the voltage-input slice', async () => {
+    await expect(simulate(`unsupported voltage-input device
+V1 in 0 0
+R1 in out 1k
+C1 out 0 1n
+.pz in 0 out 0 vol pz`)).rejects.toThrow(
+      '.pz vol supports only ideal R, L, C devices; found V1 (VoltageSource)',
+    );
+  });
+
   it('matches ngspice 47 for the active four-stage small-signal fixture', async () => {
     const result = await simulate(activeFixture);
     const expected = [-1.019524e9, -8.296965e8, -8.652054e7, -1.060594e7];
@@ -73,10 +118,12 @@ describe('.pz analysis', () => {
   });
 
   it.each([
-    '.pz in 0 out 0 vol pz',
     '.pz in ref out 0 cur pz',
     '.pz in 0 out ref cur pz',
+    '.pz in ref out 0 vol pz',
+    '.pz in 0 out ref vol pz',
     '.pz in 0 out 0 cur zer',
+    '.pz in 0 out 0 vol zer',
     '.pz in 0 out 0 cur',
   ])('rejects .pz forms outside the bounded slice: %s', directive => {
     expect(() => parse(`unsupported pz form\n${directive}`)).toThrow(ParseError);
@@ -88,8 +135,21 @@ describe('.pz analysis', () => {
   });
 
   it('rejects .step combined with .pz instead of returning empty step results', () => {
-    expect(() => parse(`${passiveFixture}\n.step param R1 list 1k 2k`))
+    expect(() => parse(`${voltageFixture}\n.step param R1 list 1k 2k`))
       .toThrow(ParseError);
+  });
+
+  it('preserves the dynamic-order ceiling for voltage input', async () => {
+    const devices = Array.from(
+      { length: 13 },
+      (_, index) => `R${index + 1} n${index + 1} 0 1k\nC${index + 1} n${index + 1} 0 1n`,
+    ).join('\n');
+
+    await expect(simulate(`voltage-input order ceiling
+${devices}
+.pz n1 0 n13 0 vol pol`)).rejects.toThrow(
+      '.pz dynamic order 13 exceeds bounded limit 12',
+    );
   });
 
   it('rejects a programmatic .pz with a non-ground input reference', () => {
@@ -118,8 +178,21 @@ describe('.pz analysis', () => {
     })).toThrow(InvalidCircuitError);
   });
 
+  it('accepts the bounded voltage-input form programmatically', () => {
+    const circuit = new Circuit();
+
+    expect(() => circuit.addAnalysis('pz', {
+      inputPositive: 'in',
+      inputNegative: '0',
+      outputPositive: 'out',
+      outputNegative: '0',
+      inputType: 'vol',
+      mode: 'pol',
+    })).not.toThrow();
+  });
+
   it.each([
-    { inputType: 'vol' },
+    { inputType: 'wat' },
     {},
   ])('rejects a programmatic .pz with invalid or missing inputType: $inputType', params => {
     const circuit = new Circuit();

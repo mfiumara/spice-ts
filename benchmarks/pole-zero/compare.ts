@@ -1,5 +1,6 @@
 #!/usr/bin/env tsx
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -8,11 +9,33 @@ import { simulate, type PoleZeroValue } from '../../packages/core/src/index.js';
 interface FixtureCase {
   id: string;
   path: string;
+  source: string;
+  license: string;
+  revision: string;
 }
 
 const fixtures: FixtureCase[] = [
-  { id: 'passive-rlc', path: 'benchmarks/pole-zero/passive-rlc.cir' },
-  { id: 'active-four-stage', path: 'benchmarks/pole-zero/active-four-stage.cir' },
+  {
+    id: 'passive-rlc',
+    path: 'benchmarks/pole-zero/passive-rlc.cir',
+    source: 'spice-ts benchmark corpus',
+    license: 'MIT',
+    revision: 'issue-75-current-input-baseline',
+  },
+  {
+    id: 'active-four-stage',
+    path: 'benchmarks/pole-zero/active-four-stage.cir',
+    source: 'spice-ts benchmark corpus',
+    license: 'MIT',
+    revision: 'issue-75-current-input-baseline',
+  },
+  {
+    id: 'passive-rlc-voltage',
+    path: 'benchmarks/pole-zero/passive-rlc-voltage.cir',
+    source: 'spice-ts benchmark corpus; derived from passive-rlc.cir',
+    license: 'MIT',
+    revision: 'issue-265-voltage-input',
+  },
 ];
 
 void main();
@@ -26,13 +49,17 @@ async function main(): Promise<void> {
   const failures: Array<{ fixture: string; simulator: string; error: string }> = [];
 
   for (const fixture of fixtures) {
+    const netlist = readFileSync(resolve(fixture.path));
     const rawPath = join(workspace, `${fixture.id}.raw`);
     let ngspice: { poles: PoleZeroValue[]; zeros: PoleZeroValue[] };
+    let ngspiceRuntimeMs = 0;
     try {
+      const started = performance.now();
       execFileSync('ngspice', ['-b', '-r', rawPath, resolve(fixture.path)], {
         encoding: 'utf8',
         timeout: 30_000,
       });
+      ngspiceRuntimeMs = performance.now() - started;
       ngspice = readPoleZeroRaw(rawPath);
     } catch (error) {
       failures.push({ fixture: fixture.id, simulator: version, error: message(error) });
@@ -40,13 +67,22 @@ async function main(): Promise<void> {
     }
 
     try {
-      const result = await simulate(readFileSync(resolve(fixture.path), 'utf8'));
+      const started = performance.now();
+      const result = await simulate(netlist.toString('utf8'));
+      const spiceTsRuntimeMs = performance.now() - started;
       if (!result.poleZero) throw new Error('spice-ts returned no poleZero result');
       comparisons.push({
         fixture: fixture.id,
         identicalNetlist: fixture.path,
+        provenance: {
+          source: fixture.source,
+          license: fixture.license,
+          revision: fixture.revision,
+          sha256: createHash('sha256').update(netlist).digest('hex'),
+        },
         command: `ngspice -b -r <temporary-raw-path> ${fixture.path}`,
         convergence: { ngspice: 'success', spiceTs: 'success' },
+        runtimeMs: { ngspice: ngspiceRuntimeMs, spiceTs: spiceTsRuntimeMs },
         poles: metrics(result.poleZero.poles, ngspice.poles),
         zeros: metrics(result.poleZero.zeros, ngspice.zeros),
       });
@@ -57,12 +93,19 @@ async function main(): Promise<void> {
 
   console.log(JSON.stringify({
     referenceSimulator: version,
+    spiceTsRuntime: {
+      node: process.version,
+      platform: process.platform,
+      architecture: process.arch,
+      command: 'pnpm exec tsx benchmarks/pole-zero/compare.ts',
+    },
     comparisons,
     failures,
+    losses: failures,
     unsupported: [
-      '.pz input 0 output 0 vol pz',
       '.pz input reference output 0 cur pz',
       '.pz input 0 output reference cur pz',
+      '.pz voltage input with non-RLC devices',
       '.pz input 0 output 0 cur zer',
       '.step combined with .pz',
       'dynamic order greater than 12',
@@ -117,10 +160,17 @@ function metrics(actualInput: PoleZeroValue[], expectedInput: PoleZeroValue[]): 
     status: 'matched',
     count: actual.length,
     maximumAbsoluteError: Math.max(...absoluteErrors, 0),
+    rmsAbsoluteError: rootMeanSquare(absoluteErrors),
     maximumRelativeError: Math.max(...relativeErrors, 0),
+    rmsRelativeError: rootMeanSquare(relativeErrors),
     spiceTs: actual,
     ngspice: expected,
   };
+}
+
+function rootMeanSquare(values: number[]): number {
+  if (values.length === 0) return 0;
+  return Math.sqrt(values.reduce((sum, value) => sum + value * value, 0) / values.length);
 }
 
 function order(values: PoleZeroValue[]): PoleZeroValue[] {
