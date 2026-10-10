@@ -47,18 +47,19 @@ export class VoltageSource implements DeviceModel {
   }
 
   private getValue(ctx: StampContext): number {
-    if (ctx.useDcSourceValue && this.waveform.type === 'sin' && this.waveform.dc !== undefined) {
+    if (ctx.useDcSourceValue && this.waveform.type !== 'dc' && this.waveform.dc !== undefined) {
       return this.waveform.dc;
     }
     return this.getVoltageAtTime(ctx.time);
   }
 
   getACExcitation(): ACRHSContribution | null {
-    if (this.waveform.type === 'ac') {
+    const excitation = this.waveform.type === 'ac' ? this.waveform : this.waveform.ac;
+    if (excitation) {
       return {
         kind: 'branch',
-        magnitude: this.waveform.magnitude,
-        phase: this.waveform.phase,
+        magnitude: excitation.magnitude,
+        phase: excitation.phase,
         branch: this.branchIndex,
       };
     }
