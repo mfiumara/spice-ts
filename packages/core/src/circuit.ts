@@ -1,6 +1,6 @@
 import type { DeviceModel } from './devices/device.js';
 import type {
-  AnalysisDirective, PoleZeroAnalysis, SensitivityAnalysis, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis,
+  AnalysisDirective, DCSweepDimension, PoleZeroAnalysis, SensitivityAnalysis, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis,
   SimulationOptions, NodeInitialState,
 } from './types.js';
 import type { CircuitIR } from './ir/types.js';
@@ -229,7 +229,7 @@ function formatAnalysis(analysis: AnalysisDirective | PoleZeroAnalysis): string 
     case 'op':
       return '.op';
     case 'dc':
-      return `.dc ${analysis.source} ${formatNumber(analysis.start)} ${formatNumber(analysis.stop)} ${formatNumber(analysis.step)}`;
+      return `.dc ${analysis.source} ${formatNumber(analysis.start)} ${formatNumber(analysis.stop)} ${formatNumber(analysis.step)}${analysis.secondary === undefined ? '' : ` ${analysis.secondary.source} ${formatNumber(analysis.secondary.start)} ${formatNumber(analysis.secondary.stop)} ${formatNumber(analysis.secondary.step)}`}`;
     case 'tran': {
       const parts = ['.tran', formatNumber(analysis.timestep), formatNumber(analysis.stopTime)];
       if (analysis.startTime !== undefined) parts.push(formatNumber(analysis.startTime));
@@ -728,7 +728,7 @@ export class Circuit {
    * @param params - Analysis-specific parameters (not required for `'op'`)
    */
   addAnalysis(type: 'op'): void;
-  addAnalysis(type: 'dc', params: { source: string; start: number; stop: number; step: number }): void;
+  addAnalysis(type: 'dc', params: { source: string; start: number; stop: number; step: number; secondary?: DCSweepDimension }): void;
   addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; useInitialConditions?: boolean }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'noise', params: { outputNode: string; outputReferenceNode?: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number; pointsPerSummary?: number }): void;
@@ -745,12 +745,21 @@ export class Circuit {
         this._analyses.push({ type: 'op' });
         break;
       case 'dc':
+        if (params!.secondary !== undefined) {
+          const secondary = params!.secondary as DCSweepDimension;
+          if ((params!.source as string).toUpperCase() === secondary.source.toUpperCase()) {
+            throw new InvalidCircuitError(`DC sweep source '${secondary.source}' is repeated`);
+          }
+        }
         this._analyses.push({
           type: 'dc',
           source: params!.source as string,
           start: params!.start as number,
           stop: params!.stop as number,
           step: params!.step as number,
+          ...(params!.secondary === undefined
+            ? {}
+            : { secondary: { ...(params!.secondary as DCSweepDimension) } }),
         });
         break;
       case 'tran': {

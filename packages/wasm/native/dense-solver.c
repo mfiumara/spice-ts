@@ -93,6 +93,52 @@ int stamp_cccs_f64(
   return 0;
 }
 
+__attribute__((export_name("stamp_vcvs_f64")))
+int stamp_vcvs_f64(
+  int order,
+  double *matrix,
+  int output_positive,
+  int output_negative,
+  int control_positive,
+  int control_negative,
+  int branch_column,
+  double voltage_gain
+) {
+  if (order < 1 || order > MAX_ORDER || matrix == 0 || ((unsigned long)matrix & 7)
+      || !valid_node(output_positive, order) || !valid_node(output_negative, order)
+      || !valid_node(control_positive, order) || !valid_node(control_negative, order)
+      || branch_column < 0 || branch_column >= order) return 3;
+  if (!finite(voltage_gain)) return 2;
+
+  if (output_positive >= 0) {
+    int index = output_positive * order + branch_column;
+    matrix[index] += 1;
+    if (!finite(matrix[index])) return 2;
+    index = branch_column * order + output_positive;
+    matrix[index] += 1;
+    if (!finite(matrix[index])) return 2;
+  }
+  if (output_negative >= 0) {
+    int index = output_negative * order + branch_column;
+    matrix[index] -= 1;
+    if (!finite(matrix[index])) return 2;
+    index = branch_column * order + output_negative;
+    matrix[index] -= 1;
+    if (!finite(matrix[index])) return 2;
+  }
+  if (control_positive >= 0) {
+    int index = branch_column * order + control_positive;
+    matrix[index] -= voltage_gain;
+    if (!finite(matrix[index])) return 2;
+  }
+  if (control_negative >= 0) {
+    int index = branch_column * order + control_negative;
+    matrix[index] += voltage_gain;
+    if (!finite(matrix[index])) return 2;
+  }
+  return 0;
+}
+
 __attribute__((export_name("solve_f64")))
 int solve_f64(int order, double *matrix, double *rhs) {
   if (order < 1 || order > MAX_ORDER || matrix == 0 || rhs == 0) return 3;

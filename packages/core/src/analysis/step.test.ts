@@ -724,6 +724,27 @@ describe('.step parallel execution', () => {
     expect(result.steps![2].dc!.voltage('2')).toBeCloseTo(7.5, 10);
   });
 
+  it('revives both DC sweep coordinates from step workers', async () => {
+    const result = await simulate([
+      'nested step sweep', 'V1 a 0 0', 'V2 b 0 0', 'R1 a b 1k',
+      '.dc V1 0 1 1 V2 10 20 10',
+      '.step param R1 list 1k 2k',
+    ].join('\n'), {
+      stepWorkers: {
+        maxWorkers: 2,
+        workerFactory: async () => ({
+          run: async task => structuredClone(
+            await simulate(task.netlist, { ...task.options, stepWorkers: false }),
+          ),
+          terminate: () => undefined,
+        }),
+      },
+    });
+
+    expect([...result.steps![0].dcSweep!.sweepValues]).toEqual([0, 1, 0, 1]);
+    expect([...result.steps![0].dcSweep!.secondarySweepValues!]).toEqual([10, 10, 20, 20]);
+  });
+
   it('falls back to sequential execution when workers are unavailable', async () => {
     const result = await simulate(divider, {
       stepWorkers: { maxWorkers: 2, workerFactory: async () => null },

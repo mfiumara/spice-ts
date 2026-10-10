@@ -103,6 +103,20 @@ At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-di
 
 Reproduce with `pnpm --filter @spice-ts/wasm bench:cccs-op`. The JSON receipt records ngspice version, machine, fixture hashes, byte-identical inputs, convergence, scalar errors, runtimes, fixed-memory and artifact-size evidence, exclusions, and every retained loss.
 
+## Bounded linear VCVS OP WASM fixtures
+
+- Source: project-authored reference circuits for [issue #355](https://github.com/mfiumara/spice-ts/issues/355), issue revision as of 2026-10-10.
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- Adaptation: none. The comparison runner reads each committed fixture once and supplies those exact bytes to the explicit `spice-ts-wasm` backend and ngspice-47. No engine-specific values, tolerances, or rewrites are used.
+
+| Fixture | SHA-256 | Coverage |
+|---|---|---|
+| `benchmarks/results/issue-355/differential.cir` | `4fb27d12127586283fe8a2ea67ce3d95fdfd1b2bfa0878ea2d6bacec3d055356` | Differential VCVS control and output polarity with negative gain. |
+| `benchmarks/results/issue-355/mixed-source.cir` | `c6b56aa6e0233cd19ef5ae9394ae334919979f7c0bab310ce38ac0b51e37a863` | Control ordering, non-ground output reference, and VCVS branch ordering after independent source branches. |
+| `benchmarks/results/issue-355/single-ended.cir` | `ce33f5e116c8a171b2cade5ec3d449028026cc05e7728255d10d1118dfa4dfe4` | Positive single-ended gain and VCVS output current. |
+
+Reproduce with `pnpm --filter @spice-ts/wasm bench:vcvs-op`. The JSON receipt records ngspice-47, machine, fixture hashes, byte-identical inputs, convergence, scalar errors, fresh-process boundaries and runtimes, artifact-size changes, exclusions, and every retained loss.
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
@@ -144,6 +158,15 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 - Adaptation: the committed `.step TEMP LIST -55 25 72` bytes are executed directly by spice-ts. ngspice-47 reports `unimplemented dot command '.step'`, so that loss is retained. For matched points, the harness evaluates the documented `R(T) = Rnom * (1 + TC1 * (T - TNOM))` relation and supplies one byte-identical expanded netlist to both engines at each temperature. Direct and expanded spice-ts results are compared with every residual retained. No engine-specific tolerance or circuit value is used.
 - Scope: a single case-insensitive LIST-only circuit-temperature target and linear resistor `TC1` behavior. `.temp`, nested steps, non-LIST TEMP sweeps, diode temperature/breakdown, and broad all-device temperature semantics remain unsupported or out of scope.
 - Reproduce with `pnpm bench:temp-step`. The JSON receipt records fixture and expanded hashes, versions, machine, step order, convergence, matched-point maximum/RMS absolute and relative error, runtimes, the direct ngspice loss, and expansion caveats.
+
+## Bounded diode breakdown-temperature DC-equivalent parity fixture
+
+- Fixture: `benchmarks/diode-breakdown-temperature/dc-equivalent.cir` (SHA-256 `02551eb619592aa1065cd549dbabd65e0916c3d223c2cbef7ecd6de72d4c8b65`).
+- Source: project-authored public reference circuit for [issue #319](https://github.com/mfiumara/spice-ts/issues/319), issue acceptance-contract revision as of 2026-10-10; the immutable fixture revision is identified by the SHA-256 above.
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- DC equivalence: the three parallel branches encode the issue's documented `BV(T) = 7.255 * (1 + 0.00013 * (T - 27) - 5e-8 * (T - 27)^2)` values at -55, 25, and 72 C. Unit tests and the unchanged Xyce fixture exercise native `TBV1`/`TBV2`; this fixture isolates reverse-breakdown parity at those same effective BV points without relying on ngspice-incompatible `.step TEMP` or Xyce's zero TSTEP.
+- Adaptation: none between engines. The verifier reads the committed fixture once and supplies those exact bytes to spice-ts and ngspice-47. No engine-specific values, tolerances, or rewrites are used.
+- Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-319/verify.ts --output benchmarks/results/issue-319/report.json`. The receipt records ngspice-47, exact commands, the 17-point `.dc VSWEEP 8 12 0.25` grid, `V(cold)`, `V(nominal)`, `V(hot)`, and `I(VSWEEP)`, convergence, runtimes, and matched-point maximum/RMS absolute and relative errors.
 
 ## Bounded Gummel-Poon forward-active parity fixtures
 

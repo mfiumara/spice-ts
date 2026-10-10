@@ -83,6 +83,16 @@ try {
     if (!cccs.ok || cccsOp?.type !== 'op' || cccsOp.voltagesV.out !== 6) {
       throw new Error(JSON.stringify(cccs));
     }
+    const vcvs = await engine.simulate({
+      apiVersion: '1',
+      input: { format: 'spice', source: 'VBIAS bias 0 1\\nVCTRL control 0 3\\nVREF ref 0 -1\\nE1 out ref control bias 2\\nRLOAD out 0 1k\\n.op' },
+    }, { requestId: 'packed-wasm-vcvs-op' });
+    const vcvsOp = vcvs.ok ? vcvs.data.analyses[0] : undefined;
+    if (!vcvs.ok || vcvs.metadata.backend !== 'spice-ts-wasm'
+      || vcvsOp?.type !== 'op' || vcvsOp.voltagesV.out !== 3
+      || Math.abs(vcvsOp.currentsA.E1 - -0.003) > 1e-15) {
+      throw new Error(JSON.stringify(vcvs));
+    }
     const dcResult = await engine.simulate({
       apiVersion: '1',
       input: { format: 'spice', source: 'V1 in 0 0\\nR1 in out 1k\\nR2 out 0 1k\\n.dc V1 0 1 0.5' },
