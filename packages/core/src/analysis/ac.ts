@@ -5,6 +5,44 @@ import { toCsc } from '../solver/csc-matrix.js';
 import { ComplexSparseSolver } from '../solver/complex-sparse-solver.js';
 import { ACResult } from '../results.js';
 
+export interface ComplexACRHS {
+  real: Float64Array;
+  imaginary: Float64Array;
+}
+
+/** Assemble every declared AC source in deterministic compiled-device order. */
+export function buildACRHS(compiled: CompiledCircuit): ComplexACRHS {
+  const { devices, nodeCount, branchCount } = compiled;
+  const real = new Float64Array(nodeCount + branchCount);
+  const imaginary = new Float64Array(nodeCount + branchCount);
+
+  for (const device of devices) {
+    const contribution = device.getACExcitation?.();
+    if (!contribution) continue;
+
+    const phase = (contribution.phase * Math.PI) / 180;
+    const re = contribution.magnitude * Math.cos(phase);
+    const im = contribution.magnitude * Math.sin(phase);
+    if (contribution.kind === 'branch') {
+      const row = nodeCount + contribution.branch;
+      real[row] += re;
+      imaginary[row] += im;
+      continue;
+    }
+
+    if (contribution.positiveNode >= 0) {
+      real[contribution.positiveNode] -= re;
+      imaginary[contribution.positiveNode] -= im;
+    }
+    if (contribution.negativeNode >= 0) {
+      real[contribution.negativeNode] += re;
+      imaginary[contribution.negativeNode] += im;
+    }
+  }
+
+  return { real, imaginary };
+}
+
 export function solveAC(
   compiled: CompiledCircuit,
   analysis: ACAnalysis,
@@ -29,19 +67,6 @@ export function solveAC(
   const G = assembler.G;
   const C = assembler.C;
 
-  // Find AC excitation source
-  let excitationRow = -1;
-  let excitationMag = 1;
-  let excitationPhase = 0;
-  for (const device of devices) {
-    const exc = device.getACExcitation?.();
-    if (exc) {
-      excitationRow = nodeCount + exc.branch;
-      excitationMag = exc.magnitude;
-      excitationPhase = exc.phase;
-      break;
-    }
-  }
 
   // Generate frequency points
   const frequencies = generateFrequencies(analysis);
@@ -65,13 +90,7 @@ export function solveAC(
   );
 
   // Pre-compute RHS (constant across frequencies)
-  const bReal = new Float64Array(systemSize);
-  const bImag = new Float64Array(systemSize);
-  if (excitationRow >= 0) {
-    const phaseRad = (excitationPhase * Math.PI) / 180;
-    bReal[excitationRow] = excitationMag * Math.cos(phaseRad);
-    bImag[excitationRow] = excitationMag * Math.sin(phaseRad);
-  }
+  const { real: bReal, imaginary: bImag } = buildACRHS(compiled);
 
   for (const freq of frequencies) {
     const omega = 2 * Math.PI * freq;

@@ -1,4 +1,4 @@
-import type { DeviceModel, StampContext } from './device.js';
+import type { ACRHSContribution, DeviceModel, StampContext } from './device.js';
 import type { SourceWaveform, PulseSource, SinSource } from '../types.js';
 import { evaluatePwl, pulseBreakpoints, pwlBreakpoints } from './voltage-source.js';
 
@@ -57,6 +57,18 @@ export class CurrentSource implements DeviceModel {
       return this.waveform.dc;
     }
     return this.getCurrentAtTime(ctx.time);
+  }
+
+  getACExcitation(): ACRHSContribution | null {
+    if (this.waveform.type !== 'ac') return null;
+    const [positiveNode, negativeNode] = this.nodes;
+    return {
+      kind: 'node-pair',
+      positiveNode,
+      negativeNode,
+      magnitude: this.waveform.magnitude,
+      phase: this.waveform.phase,
+    };
   }
 
   getBreakpoints(stopTime: number): number[] {
