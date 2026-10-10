@@ -1051,7 +1051,7 @@ async function runStreamingWorker(
   return new Promise<SimulationResultV1>((resolve, reject) => {
     let settled = false;
     let timeout: ReturnType<typeof setTimeout>;
-    const finish = (outcome: () => void) => {
+    const finish = (outcome: () => void, terminateWorker = true) => {
       if (settled) return;
       settled = true;
       clearTimeout(timeout);
@@ -1059,14 +1059,20 @@ async function runStreamingWorker(
       worker.off('message', onMessage);
       worker.off('error', onError);
       worker.off('exit', onExit);
-      void Promise.resolve(worker.terminate()).catch(() => undefined);
+      if (terminateWorker) void Promise.resolve(worker.terminate()).catch(() => undefined);
       outcome();
     };
     const onMessage = (message: WorkerReply) => {
       if (message.type === 'events') {
         if (!message.events) return finish(() => reject(workerFailure()));
-        void Promise.resolve()
-          .then(() => onEvents(message.events!))
+        let retained: Promise<void>;
+        try {
+          retained = onEvents(message.events);
+        } catch (error) {
+          finish(() => reject(publicError(error)));
+          return;
+        }
+        void retained
           .then(() => { if (!settled) worker.postMessage({ type: 'ack' }); })
           .catch(error => finish(() => reject(publicError(error))));
         return;
@@ -1077,7 +1083,7 @@ async function runStreamingWorker(
       });
     };
     const onError = () => finish(() => reject(workerFailure()));
-    const onExit = () => finish(() => reject(workerFailure()));
+    const onExit = () => finish(() => reject(workerFailure()), false);
     const onAbort = () => finish(() => reject(cancelledError()));
 
     worker.on('message', onMessage);
@@ -1110,7 +1116,7 @@ async function runInWorker<T>(
   return new Promise<T>((resolve, reject) => {
     let settled = false;
     let timeout: ReturnType<typeof setTimeout>;
-    const finish = (outcome: () => void) => {
+    const finish = (outcome: () => void, terminateWorker = true) => {
       if (settled) return;
       settled = true;
       clearTimeout(timeout);
@@ -1118,7 +1124,7 @@ async function runInWorker<T>(
       worker.off('message', onMessage);
       worker.off('error', onError);
       worker.off('exit', onExit);
-      void Promise.resolve(worker.terminate()).catch(() => undefined);
+      if (terminateWorker) void Promise.resolve(worker.terminate()).catch(() => undefined);
       outcome();
     };
     const onMessage = (message: WorkerReply) => finish(() => {
@@ -1126,7 +1132,7 @@ async function runInWorker<T>(
       else reject(message.error ?? workerFailure());
     });
     const onError = () => finish(() => reject(workerFailure()));
-    const onExit = () => finish(() => reject(workerFailure()));
+    const onExit = () => finish(() => reject(workerFailure()), false);
     const onAbort = () => finish(() => reject(cancelledError()));
 
     worker.on('message', onMessage);
