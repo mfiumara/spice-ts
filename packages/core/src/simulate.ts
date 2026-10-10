@@ -20,6 +20,7 @@ import { createDriverFromCompiled } from './analysis/transient-driver.js';
 import { WasmNgspiceSimulator } from './simulators/ngspice-wasm.js';
 import { computeUICInitialSolution } from './analysis/uic.js';
 import { createConvergenceTelemetry } from './convergence-telemetry.js';
+import { solveStepInWorkers } from './analysis/step-parallel.js';
 
 class SpiceTsSimulator implements SimulatorAdapter {
   readonly name = 'spice-ts';
@@ -110,7 +111,11 @@ export async function simulate(
         message: 'Multiple .step directives found; only the first is used. Nested sweeps are not yet supported.',
       });
     }
-    const stepResults = solveStep(compiled, compiled.steps[0], options, warnings, convergence);
+    const parallelResults = typeof input === 'string'
+      ? await solveStepInWorkers(input, compiled.steps[0], options, warnings, convergence)
+      : null;
+    const stepResults = parallelResults
+      ?? solveStep(compiled, compiled.steps[0], options, warnings, convergence);
     return { steps: stepResults, warnings, convergence };
   }
 

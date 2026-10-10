@@ -477,3 +477,138 @@ describe('.step error handling', () => {
     }
   });
 });
+
+describe('.step parallel execution', () => {
+  const divider = `
+    V1 1 0 DC 10
+    R1 1 2 1k
+    R2 2 0 1k
+    .op
+    .step param R2 list 1k 2k 3k 4k
+  `;
+
+  it('uses a browser-compatible worker transport and aggregates by step index', async () => {
+    const completions: number[] = [];
+    let runs = 0;
+    const result = await simulate(divider, {
+      stepWorkers: {
+        maxWorkers: 2,
+        workerFactory: async () => ({
+          run: async task => {
+            runs++;
+            await new Promise(resolve => setTimeout(resolve, (4 - task.index) * 2));
+            return simulate(task.netlist, { ...task.options, stepWorkers: false });
+          },
+          terminate: () => undefined,
+        }),
+        onComplete: completion => completions.push(completion.index),
+      },
+    });
+
+    expect(runs).toBe(4);
+    expect(completions).not.toEqual([0, 1, 2, 3]);
+    expect(result.steps!.map(step => step.paramValue)).toEqual([1000, 2000, 3000, 4000]);
+    expect(result.steps![2].dc!.voltage('2')).toBeCloseTo(7.5, 10);
+  });
+
+  it('falls back to sequential execution when workers are unavailable', async () => {
+    const result = await simulate(divider, {
+      stepWorkers: { maxWorkers: 2, workerFactory: async () => null },
+    });
+    expect(result.steps!.map(step => step.paramValue)).toEqual([1000, 2000, 3000, 4000]);
+  });
+
+  it('falls back to sequential execution when a browser worker cannot be constructed', async () => {
+    const workerGlobal = globalThis as typeof globalThis & { Worker?: unknown };
+    const originalWorker = workerGlobal.Worker;
+    class BrokenBrowserWorker {
+      constructor() {
+        throw new Error('worker script unavailable');
+      }
+    }
+    workerGlobal.Worker = BrokenBrowserWorker;
+
+    try {
+      const result = await simulate(divider, { stepWorkers: { maxWorkers: 2 } });
+      expect(result.steps!.map(step => step.paramValue)).toEqual([1000, 2000, 3000, 4000]);
+    } finally {
+      workerGlobal.Worker = originalWorker;
+    }
+  });
+
+  it('rejects browser worker errors and removes every event listener', async () => {
+    const workerGlobal = globalThis as typeof globalThis & { Worker?: unknown };
+    const originalWorker = workerGlobal.Worker;
+    const instances: ErroringBrowserWorker[] = [];
+    class ErroringBrowserWorker {
+      readonly listeners = new Map<string, Set<(event: unknown) => void>>();
+      terminated = false;
+
+      constructor() {
+        instances.push(this);
+      }
+
+      addEventListener(type: string, listener: (event: unknown) => void): void {
+        const listeners = this.listeners.get(type) ?? new Set();
+        listeners.add(listener);
+        this.listeners.set(type, listeners);
+      }
+
+      removeEventListener(type: string, listener: (event: unknown) => void): void {
+        this.listeners.get(type)?.delete(listener);
+      }
+
+      postMessage(): void {
+        queueMicrotask(() => {
+          for (const listener of this.listeners.get('error') ?? []) {
+            listener({ message: 'browser worker failed to load' });
+          }
+        });
+      }
+
+      terminate(): void {
+        this.terminated = true;
+      }
+    }
+    workerGlobal.Worker = ErroringBrowserWorker;
+
+    try {
+      const pending = simulate(divider, { stepWorkers: { maxWorkers: 2 } });
+      const timeout = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('worker promise never settled')), 200);
+      });
+      await expect(Promise.race([pending, timeout])).rejects.toThrow('browser worker failed to load');
+      expect(instances).toHaveLength(2);
+      expect(instances.every(worker => worker.terminated)).toBe(true);
+      expect(instances.every(worker => [...worker.listeners.values()].every(set => set.size === 0))).toBe(true);
+    } finally {
+      workerGlobal.Worker = originalWorker;
+    }
+  });
+
+  it('propagates cancellation to worker transports', async () => {
+    const controller = new AbortController();
+    let terminations = 0;
+    let created = 0;
+    let markReady!: () => void;
+    const ready = new Promise<void>(resolve => { markReady = resolve; });
+    const pending = simulate(divider, {
+      stepWorkers: {
+        maxWorkers: 2,
+        signal: controller.signal,
+        workerFactory: async () => {
+          created++;
+          if (created === 2) markReady();
+          return {
+            run: () => new Promise(() => undefined),
+            terminate: () => { terminations++; },
+          };
+        },
+      },
+    });
+    await ready;
+    controller.abort(new Error('cancel sweep'));
+    await expect(pending).rejects.toThrow('cancel sweep');
+    expect(terminations).toBe(2);
+  });
+});
