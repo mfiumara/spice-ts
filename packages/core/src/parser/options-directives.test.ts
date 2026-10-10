@@ -154,11 +154,33 @@ describe('Xyce TIMEINT option directives', () => {
 
   it.each([
     ['.options timeint reltol=1e-6 abstol=1e-6 newlte=2', 'newlte'],
-    ['.options timeint newbpstepping=0 reltol=1.0e-4', 'newbpstepping'],
     ['.options timeint delmax=1u', 'delmax'],
   ])('keeps unsupported primitive-corpus TIMEINT fields explicit: %s', (card, field) => {
     expect(() => parse(`${card}\n.op`))
       .toThrow(`Unsupported .options TIMEINT field: '${field}'`);
+  });
+
+  it.each([
+    '.options timeint newbpstepping=0',
+    '.options timeint NEWBPSTEPPING=0 newbpstepping=0 reltol=1.0e-4',
+  ])('accepts disabled NEWBPSTEPPING as a compatibility no-op: %s', card => {
+    expect(parse(`${card}\n.op`).simulationOptions).toEqual(
+      card.includes('reltol') ? { reltol: 1e-4 } : {},
+    );
+  });
+
+  it.each([
+    ['.options timeint newbpstepping=1', "Unsupported .options TIMEINT NEWBPSTEPPING value: '1'"],
+    ['.options timeint newbpstepping=-1', "Unsupported .options TIMEINT NEWBPSTEPPING value: '-1'"],
+    ['.options timeint newbpstepping=false', "Invalid .options TIMEINT NEWBPSTEPPING value: 'false'"],
+    ['.options timeint newbpstepping=', "Invalid .options TIMEINT NEWBPSTEPPING value: ''"],
+    ['.options timeint newbpstepping', "Invalid .options TIMEINT NEWBPSTEPPING field: 'newbpstepping'"],
+    [
+      '.options timeint newbpstepping=0 newbpstepping=1',
+      "Conflicting .options TIMEINT NEWBPSTEPPING value: '1'",
+    ],
+  ])('rejects enabled, malformed, or conflicting NEWBPSTEPPING: %s', (card, message) => {
+    expect(() => parse(`${card}\n.op`)).toThrow(message);
   });
 
   it.each([
