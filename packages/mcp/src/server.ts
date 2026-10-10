@@ -277,11 +277,13 @@ async function executeToolWithStore(
     }
 
     const bounded = boundedRequest(request, effective);
+    if (name === 'spice_simulation_start') {
+      return success(streamStore.start(bounded, effective, options));
+    }
     const result = options.simulate
       ? await boundedCall(() => options.simulate!(bounded), effective.maxWallTimeMs, options.signal)
       : await runInWorker<SimulationResultV1>('simulate', bounded, effective.maxWallTimeMs, options);
     enforceResultBounds(result, effective);
-    if (name === 'spice_simulation_start') return success(streamStore.start(bounded, result));
     return success(result);
   } catch (error) {
     return failure(publicError(error));
@@ -296,8 +298,11 @@ interface StreamReadArgs {
 
 interface StreamJob {
   request: SimulationRequestV1;
-  result: SimulationResultV1;
-  events: SimulationEventV1[];
+  state:
+    | { status: 'pending' }
+    | { status: 'ready'; result: SimulationResultV1; events: SimulationEventV1[] }
+    | { status: 'failed'; error: SpiceApiErrorV1 };
+  controller: AbortController;
   cursorOffsets: Map<string, number>;
   replay: Map<string, SimulationReadDataV1>;
   emitted: SimulationEventV1[];
@@ -308,7 +313,7 @@ class StreamStore {
   private readonly jobs = new Map<string, StreamJob>();
   private nextJobId = 1;
 
-  start(request: SimulationRequestV1, result: SimulationResultV1): JsonObject {
+  start(request: SimulationRequestV1, limits: McpLimits, options: ToolExecutionOptions): JsonObject {
     if (this.jobs.size >= MAX_RETAINED_STREAM_JOBS) {
       const completed = [...this.jobs].find(([, job]) => job.terminal !== undefined);
       if (completed) this.jobs.delete(completed[0]);
@@ -321,14 +326,16 @@ class StreamStore {
     }
     const jobId = `job-${this.nextJobId++}`;
     const cursor = streamCursor(jobId, 0);
-    this.jobs.set(jobId, {
+    const job: StreamJob = {
       request,
-      result,
-      events: resultEvents(result),
+      state: { status: 'pending' },
+      controller: new AbortController(),
       cursorOffsets: new Map([[cursor, 0]]),
       replay: new Map(),
       emitted: [],
-    });
+    };
+    this.jobs.set(jobId, job);
+    void this.solve(jobId, job, limits, options);
     return { jobId, status: 'running', cursor };
   }
 
@@ -341,12 +348,20 @@ class StreamStore {
     const replay = job.replay.get(args.cursor);
     if (replay) return replay;
     if (job.terminal) return job.terminal;
+    if (job.state.status === 'pending') {
+      return { status: 'running', events: [], nextCursor: args.cursor };
+    }
+    if (job.state.status === 'failed') {
+      const data = failureRead(args.jobId, job.emitted, job.state.error);
+      job.terminal = data;
+      return data;
+    }
 
     const events: SimulationEventV1[] = [];
     let pointCount = 0;
     let nextOffset = offset;
-    while (nextOffset < job.events.length) {
-      const event = job.events[nextOffset]!;
+    while (nextOffset < job.state.events.length) {
+      const event = job.state.events[nextOffset]!;
       if (event.type === 'point' && pointCount >= args.maxPoints) break;
       events.push(event);
       nextOffset++;
@@ -358,14 +373,14 @@ class StreamStore {
     job.emitted.push(...events);
 
     let data: SimulationReadDataV1;
-    if (nextOffset < job.events.length) {
+    if (nextOffset < job.state.events.length) {
       const nextCursor = streamCursor(args.jobId, nextOffset);
       job.cursorOffsets.set(nextCursor, nextOffset);
       data = { status: 'running', events, nextCursor };
     } else {
       data = {
         status: 'complete', events, nextCursor: null,
-        terminal: successTerminal(args.jobId, job.request, job.result),
+        terminal: successTerminal(args.jobId, job.request, job.state.result),
       };
       job.terminal = data;
     }
@@ -376,24 +391,35 @@ class StreamStore {
   cancel(jobId: string): SimulationReadDataV1 {
     const job = this.job(jobId);
     if (job.terminal) return job.terminal;
-    const terminal: StreamTerminalV1 = {
-      apiVersion: '1', ok: false, requestId: jobId,
-      error: {
-        code: 'CANCELLED', message: 'The simulation job was cancelled',
-        retryable: true, phase: 'solve', details: {},
-      },
-      diagnostics: [],
-      partial: {
-        status: 'partial',
-        analyses: partialAnalyses(job.emitted),
-        partialEventSha256: sha256CanonicalJson(job.emitted.filter(event => event.type === 'point')),
-      },
-    };
-    const data: SimulationReadDataV1 = {
-      status: 'cancelled', events: [], nextCursor: null, terminal,
-    };
+    job.controller.abort();
+    const data = failureRead(jobId, job.emitted, {
+      code: 'CANCELLED', message: 'The simulation job was cancelled',
+      retryable: true, phase: 'solve', details: {},
+    });
     job.terminal = data;
     return data;
+  }
+
+  private async solve(
+    jobId: string,
+    job: StreamJob,
+    limits: McpLimits,
+    options: ToolExecutionOptions,
+  ): Promise<void> {
+    const solveOptions = { ...options, signal: job.controller.signal };
+    try {
+      const result = options.simulate
+        ? await boundedCall(() => options.simulate!(job.request), limits.maxWallTimeMs, job.controller.signal)
+        : await runInWorker<SimulationResultV1>('simulate', job.request, limits.maxWallTimeMs, solveOptions);
+      enforceResultBounds(result, limits);
+      if (!job.terminal) job.state = { status: 'ready', result, events: resultEvents(result) };
+    } catch (error) {
+      if (!job.terminal) {
+        const publicFailure = publicError(error);
+        job.state = { status: 'failed', error: publicFailure };
+        job.terminal = failureRead(jobId, job.emitted, publicFailure);
+      }
+    }
   }
 
   private job(jobId: string): StreamJob {
@@ -401,6 +427,27 @@ class StreamStore {
     if (!job) throw apiError('INVALID_REQUEST', 'The simulation job was not found', 'validation', {});
     return job;
   }
+}
+
+function failureRead(
+  jobId: string,
+  emitted: SimulationEventV1[],
+  error: SpiceApiErrorV1,
+): SimulationReadDataV1 {
+  const terminal: StreamTerminalV1 = {
+    apiVersion: '1', ok: false, requestId: jobId,
+    error,
+    diagnostics: [],
+    partial: {
+      status: 'partial',
+      analyses: partialAnalyses(emitted),
+      partialEventSha256: sha256CanonicalJson(emitted.filter(event => event.type === 'point')),
+    },
+  };
+  return {
+    status: error.code === 'CANCELLED' ? 'cancelled' : 'failed',
+    events: [], nextCursor: null, terminal,
+  };
 }
 
 const defaultStreamStore = new StreamStore();

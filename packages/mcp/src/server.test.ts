@@ -231,7 +231,7 @@ describe('bounded protocol-v1 tools', () => {
     });
   });
 
-  it('returns a live stream job before an injected simulation completes', async () => {
+  it('returns and cancels a live stream job before an injected simulation completes', async () => {
     const request = await fixture<SimulationRequestV1>('simulate-request.json');
     const result = await fixture<SimulationResultV1>('simulate-response.json');
     let completeSimulation!: (result: SimulationResultV1) => void;
@@ -248,10 +248,44 @@ describe('bounded protocol-v1 tools', () => {
     await Promise.resolve();
     await Promise.resolve();
     const settledBeforeSimulationCompletion = startSettled;
-    completeSimulation(result);
-    await startedPromise;
-
     expect(settledBeforeSimulationCompletion).toBe(true);
+    const started = await startedPromise;
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    const pendingRead = await execute('spice_simulation_read', { jobId, cursor });
+    const cancelled = await execute('spice_simulation_cancel', { jobId });
+    completeSimulation(result);
+    await Promise.resolve();
+
+    expect(pendingRead.structuredContent).toEqual({
+      status: 'running', events: [], nextCursor: cursor,
+    });
+    expect(cancelled.structuredContent).toMatchObject({
+      status: 'cancelled',
+      terminal: {
+        error: { code: 'CANCELLED', phase: 'solve' },
+        partial: { analyses: [], partialEventSha256: sha256CanonicalJson([]) },
+      },
+    });
+    await expect(execute('spice_simulation_cancel', { jobId })).resolves.toEqual(cancelled);
+  });
+
+  it('terminates the isolated worker when a live stream job is cancelled', async () => {
+    class PendingWorker extends EventEmitter {
+      readonly terminate = vi.fn(() => 0);
+      postMessage(): void {}
+    }
+    const worker = new PendingWorker();
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const execute = createToolExecutor({
+      workerFactory: () => worker as unknown as ExecutionWorker,
+    });
+
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId } = started.structuredContent as { jobId: string };
+    await execute('spice_simulation_cancel', { jobId });
+    await Promise.resolve();
+
+    expect(worker.terminate).toHaveBeenCalledOnce();
   });
 
   it('streams canonical analysis events in bounded replayable chunks', async () => {
@@ -276,7 +310,7 @@ describe('bounded protocol-v1 tools', () => {
     expect(started.structuredContent).toMatchObject({ status: 'running' });
     const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
 
-    const first = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints: 2 });
+    const first = await readWhenReady(executeTool, { jobId, cursor, maxPoints: 2 });
     const replay = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints: 4 });
     expect(replay).toEqual(first);
     const firstData = first.structuredContent as unknown as SimulationReadDataV1;
@@ -325,7 +359,7 @@ describe('bounded protocol-v1 tools', () => {
     };
     const started = await executeTool('spice_simulation_start', { request });
     const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
-    const first = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints: 2 });
+    const first = await readWhenReady(executeTool, { jobId, cursor, maxPoints: 2 });
     const emitted = (first.structuredContent as unknown as SimulationReadDataV1).events;
 
     const cancelled = await executeTool('spice_simulation_cancel', { jobId });
@@ -369,9 +403,9 @@ describe('bounded protocol-v1 tools', () => {
     });
   });
 
-  it('removes the internal backend name from stream-start failures', async () => {
+  it('returns public structured stream failures without internal backend names', async () => {
     const request = await fixture<SimulationRequestV1>('simulate-request.json');
-    const response = await executeTool('spice_simulation_start', { request }, {
+    const execute = createToolExecutor({
       simulate: async () => {
         throw {
           code: 'INTERNAL_ERROR', message: 'spice-ts failed', retryable: false,
@@ -379,8 +413,14 @@ describe('bounded protocol-v1 tools', () => {
         };
       },
     });
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    const response = await readWhenReady(execute, { jobId, cursor });
 
-    expect(response.isError).toBe(true);
+    expect(response.structuredContent).toMatchObject({
+      status: 'failed',
+      terminal: { error: { code: 'INTERNAL_ERROR', phase: 'solve' } },
+    });
     expect(containsExactString(response.structuredContent, 'spice-ts')).toBe(false);
     expect(JSON.stringify(response.structuredContent)).not.toContain('spice-ts failed');
   });
@@ -412,6 +452,19 @@ describe('bounded protocol-v1 tools', () => {
     });
   });
 });
+
+async function readWhenReady(
+  execute: ReturnType<typeof createToolExecutor> | typeof executeTool,
+  args: { jobId: string; cursor: string; maxPoints?: number },
+): Promise<Awaited<ReturnType<typeof executeTool>>> {
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const response = await execute('spice_simulation_read', args);
+    const data = response.structuredContent as unknown as SimulationReadDataV1;
+    if (data.status !== 'running' || data.events.length > 0) return response;
+    await new Promise<void>(resolve => setTimeout(resolve, 1));
+  }
+  throw new Error('Simulation job did not produce events');
+}
 
 function containsExactString(value: unknown, target: string): boolean {
   if (value === target) return true;

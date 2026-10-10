@@ -60,6 +60,16 @@ function containsExactString(value, target) {
   return false;
 }
 
+async function readWhenReady(jobId, cursor, maxPoints) {
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const response = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints });
+    if (response.structuredContent.status !== 'running'
+      || response.structuredContent.events.length > 0) return response;
+    await new Promise((resolve) => setTimeout(resolve, 1));
+  }
+  throw new Error('Packed simulation job did not produce events');
+}
+
 (async () => {
   const result = await executeTool('spice_simulate', {
     request: {
@@ -78,11 +88,11 @@ function containsExactString(value, target) {
       input: { format: 'spice', source: 'V1 in 0 1\nR1 in 0 1k\n.op' },
     },
   });
-  const completed = await executeTool('spice_simulation_read', {
-    jobId: completedStart.structuredContent.jobId,
-    cursor: completedStart.structuredContent.cursor,
-    maxPoints: 1,
-  });
+  const completed = await readWhenReady(
+    completedStart.structuredContent.jobId,
+    completedStart.structuredContent.cursor,
+    1,
+  );
   if (completed.structuredContent.status !== 'complete'
     || completed.structuredContent.events[0].type !== 'analysis-start'
     || completed.structuredContent.events[1].type !== 'analysis-end') {
@@ -93,12 +103,30 @@ function containsExactString(value, target) {
     apiVersion: '1',
     input: { format: 'spice', source: 'V1 in 0 1\nR1 in out 1k\nC1 out 0 1u\n.tran 1u 3u' },
   };
-  const cancelledStart = await executeTool('spice_simulation_start', { request: transientRequest });
-  const first = await executeTool('spice_simulation_read', {
-    jobId: cancelledStart.structuredContent.jobId,
-    cursor: cancelledStart.structuredContent.cursor,
-    maxPoints: 2,
+
+  const liveStart = await executeTool('spice_simulation_start', {
+    request: {
+      apiVersion: '1',
+      input: {
+        format: 'spice',
+        source: 'V1 in 0 1\nR1 in out 1k\nC1 out 0 1u\n.tran 1u 20m',
+      },
+    },
   });
+  const liveCancelled = await executeTool('spice_simulation_cancel', {
+    jobId: liveStart.structuredContent.jobId,
+  });
+  if (liveCancelled.structuredContent.status !== 'cancelled'
+    || liveCancelled.structuredContent.terminal.partial.analyses.length !== 0) {
+    throw new Error('Live packed worker was not cancelled: ' + JSON.stringify(liveCancelled.structuredContent));
+  }
+
+  const cancelledStart = await executeTool('spice_simulation_start', { request: transientRequest });
+  const first = await readWhenReady(
+    cancelledStart.structuredContent.jobId,
+    cancelledStart.structuredContent.cursor,
+    2,
+  );
   const replay = await executeTool('spice_simulation_read', {
     jobId: cancelledStart.structuredContent.jobId,
     cursor: cancelledStart.structuredContent.cursor,
@@ -125,7 +153,7 @@ function containsExactString(value, target) {
     || malformed.structuredContent.error.code !== 'INVALID_REQUEST') {
     throw new Error('Stream bounds or malformed request were not structured');
   }
-  if (containsExactString([completed, first, cancelled, bounded, malformed], 'spice-ts')) {
+  if (containsExactString([completed, liveCancelled, first, cancelled, bounded, malformed], 'spice-ts')) {
     throw new Error('Internal backend name leaked from the packed stream tools');
   }
 })().catch((error) => {

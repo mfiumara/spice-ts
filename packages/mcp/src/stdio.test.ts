@@ -54,10 +54,18 @@ describe('stdio transport', () => {
       arguments: { request },
     });
     const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
-    const streamed = await client.callTool({
+    let streamed = await client.callTool({
       name: 'spice_simulation_read',
       arguments: { jobId, cursor, maxPoints: 1 },
     });
+    while ((streamed.structuredContent as { status?: string }).status === 'running'
+      && (streamed.structuredContent as { events: unknown[] }).events.length === 0) {
+      await new Promise<void>(resolve => setTimeout(resolve, 1));
+      streamed = await client.callTool({
+        name: 'spice_simulation_read',
+        arguments: { jobId, cursor, maxPoints: 1 },
+      });
+    }
     expect(streamed.structuredContent).toMatchObject({
       status: 'complete',
       events: [
@@ -79,10 +87,18 @@ describe('stdio transport', () => {
       name: 'spice_simulation_start', arguments: { request: transientRequest },
     });
     const transientJob = transientStart.structuredContent as { jobId: string; cursor: string };
-    const first = await client.callTool({
+    let first = await client.callTool({
       name: 'spice_simulation_read',
       arguments: { ...transientJob, maxPoints: 2 },
     });
+    while ((first.structuredContent as { status?: string }).status === 'running'
+      && (first.structuredContent as { events: unknown[] }).events.length === 0) {
+      await new Promise<void>(resolve => setTimeout(resolve, 1));
+      first = await client.callTool({
+        name: 'spice_simulation_read',
+        arguments: { ...transientJob, maxPoints: 2 },
+      });
+    }
     const cancelled = await client.callTool({
       name: 'spice_simulation_cancel', arguments: { jobId: transientJob.jobId },
     });
