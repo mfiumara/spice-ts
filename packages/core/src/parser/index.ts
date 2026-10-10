@@ -298,7 +298,7 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
           lineNumber, tokens.join(' '),
         );
       }
-      const points = parseInt(tokens[2], 10);
+      const points = Math.round(parseNumber(tokens[2]));
       const startFreq = parseNumber(tokens[3]);
       const stopFreq = parseNumber(tokens[4]);
       if (!Number.isInteger(points) || points < 1 || startFreq <= 0 || stopFreq < startFreq) {

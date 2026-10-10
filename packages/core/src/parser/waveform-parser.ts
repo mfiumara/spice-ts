@@ -140,13 +140,15 @@ function extractDistortionTerms(
     if (keyword !== 'DISTOF1' && keyword !== 'DISTOF2') continue;
     const target = keyword === 'DISTOF1' ? distortionF1 : distortionF2;
     if (target) throw new Error(`Duplicate ${keyword} specification`);
-    const values: number[] = [];
     let end = index + 1;
-    while (end < tokens.length && values.length < 2 && !SOURCE_KEYWORDS.has(tokens[end].toUpperCase())) {
-      values.push(parseNumber(tokens[end]));
-      end++;
+    while (end < tokens.length && !SOURCE_KEYWORDS.has(tokens[end].toUpperCase())) end++;
+    const valueTokens = tokens.slice(index + 1, end);
+    if (valueTokens.length === 0) throw new Error(`${keyword} requires a magnitude`);
+    if (valueTokens.length > 2) {
+      throw new Error(`Unsupported ${keyword} parameters: '${valueTokens.slice(2).join(' ')}'`);
     }
-    const excitation = { magnitude: values[0] ?? 1, phase: values[1] ?? 0 };
+    const values = valueTokens.map(parseNumber);
+    const excitation = { magnitude: values[0], phase: values[1] ?? 0 };
     if (keyword === 'DISTOF1') distortionF1 = excitation;
     else distortionF2 = excitation;
     baseTokens.splice(index, end - index);

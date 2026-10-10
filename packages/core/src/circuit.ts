@@ -982,8 +982,12 @@ export class Circuit {
         };
       }
       if (wf.type) return wf as SourceWaveform;
-      if (wf.dc !== undefined) return { type: 'dc', value: wf.dc };
-      return { type: 'dc', value: 0 };
+      const distortion = {
+        ...(wf.distortionF1 ? { distortionF1: { ...wf.distortionF1 } } : {}),
+        ...(wf.distortionF2 ? { distortionF2: { ...wf.distortionF2 } } : {}),
+      };
+      if (wf.dc !== undefined) return { type: 'dc', value: wf.dc, ...distortion };
+      return { type: 'dc', value: 0, ...distortion };
     };
 
     const devices: DeviceModel[] = [];

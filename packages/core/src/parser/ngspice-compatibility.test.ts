@@ -69,10 +69,10 @@ describe('ngspice parser compatibility fixtures', () => {
   it.each([
     ['bare DISTOF1', 'DISTOF1', "DISTOF1 requires a magnitude"],
     ['bare DISTOF2', 'DISTOF2', "DISTOF2 requires a magnitude"],
-    ['DISTOF1 magnitude', 'DISTOF1 nope'],
-    ['DISTOF1 phase', 'DISTOF1 1 nope'],
-    ['DISTOF2 magnitude', 'DISTOF2 nope'],
-    ['DISTOF2 phase', 'DISTOF2 1 nope'],
+    ['DISTOF1 magnitude', 'DISTOF1 nope', "Cannot parse number: 'nope'"],
+    ['DISTOF1 phase', 'DISTOF1 1 nope', "Cannot parse number: 'nope'"],
+    ['DISTOF2 magnitude', 'DISTOF2 nope', "Cannot parse number: 'nope'"],
+    ['DISTOF2 phase', 'DISTOF2 1 nope', "Cannot parse number: 'nope'"],
     ['DISTOF1 trailing token', 'DISTOF1 1 0 nope', "Unsupported DISTOF1 parameters: 'nope'"],
     ['DISTOF2 trailing token', 'DISTOF2 0 0 nope', "Unsupported DISTOF2 parameters: 'nope'"],
   ])('reports an explicitly malformed %s as a structured parser error', (_label, term, message) => {
@@ -90,7 +90,7 @@ describe('ngspice parser compatibility fixtures', () => {
         line: 1,
         context: card,
       });
-      expect((error as Error).message).toContain(message ?? `Cannot parse number: 'nope'`);
+      expect((error as Error).message).toContain(message);
   });
 
   it('rejects unsupported resistor parameters continued onto the card', () => {
