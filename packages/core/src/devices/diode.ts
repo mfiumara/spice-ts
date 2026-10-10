@@ -21,6 +21,8 @@ export interface DiodeParams {
   VJSW?: number;
   M?: number;
   MJSW?: number;
+  FC?: number;
+  FCS?: number;
   TT?: number;
   KF?: number;
   AF?: number;
@@ -79,7 +81,6 @@ export class Diode implements DeviceModel {
     }
     const effectiveArea = (instanceParams.AREA ?? 1) * (instanceParams.M ?? 1);
     const effectivePerimeter = (instanceParams.PJ ?? 0) * (instanceParams.M ?? 1);
-    const junctionPotential = params.VJ ?? 0.7;
     this.params = {
       IS: (params.IS ?? 1e-14) * effectiveArea
         + (params.JSW ?? 0) * effectivePerimeter,
@@ -93,10 +94,13 @@ export class Diode implements DeviceModel {
       JSW: params.JSW ?? 0,
       CJ0: (diodeZeroBiasCapacitance(name, params) ?? 0) * effectiveArea,
       CJSW: (params.CJSW ?? params.CJP ?? 0) * effectivePerimeter,
-      VJ: junctionPotential,
-      VJSW: params.VJSW ?? params.PHP ?? junctionPotential,
+      // ngspice diosetup.c defaults: VJ = VJSW = 1 V, FC = FCS = 0.5.
+      VJ: params.VJ ?? 1,
+      VJSW: params.VJSW ?? params.PHP ?? 1,
       M: params.M ?? 0.5,
       MJSW: params.MJSW ?? 0.33,
+      FC: params.FC ?? 0.5,
+      FCS: params.FCS ?? 0.5,
       TT: params.TT ?? 0,
       KF: params.KF ?? 0,
       AF: params.AF ?? 1,
@@ -147,7 +151,8 @@ export class Diode implements DeviceModel {
     const conductance = (IS / thermalVoltage) * safeExponential(voltage / thermalVoltage);
     const current2 = conductance / (2 * thermalVoltage);
     const current3 = conductance / (6 * thermalVoltage * thermalVoltage);
-    const depletion = depletionChargeTaylor(voltage, distortionCapacitance!, 1, 0.5);
+    const { VJ, M, FC } = this.params;
+    const depletion = depletionChargeTaylor(voltage, distortionCapacitance!, VJ!, M!, FC!);
     return {
       current2,
       current3,
@@ -163,8 +168,9 @@ export class Diode implements DeviceModel {
     const voltage = (nA >= 0 ? ctx.getVoltage(nA) : 0) - (nK >= 0 ? ctx.getVoltage(nK) : 0);
     const thermalVoltage = N * DISTORTION_VT;
     const conductance = (IS / thermalVoltage) * safeExponential(voltage / thermalVoltage);
-    const capacitance = depletionChargeTaylor(voltage, distortionCapacitance!, 1, 0.5).capacitance
-      + TT! * conductance;
+    const { VJ, M, FC } = this.params;
+    const capacitance = depletionChargeTaylor(voltage, distortionCapacitance!, VJ!, M!, FC!)
+      .capacitance + TT! * conductance;
     if (nA >= 0) ctx.stampC(nA, nA, capacitance);
     if (nK >= 0) ctx.stampC(nK, nK, capacitance);
     if (nA >= 0 && nK >= 0) {
@@ -246,7 +252,7 @@ export class Diode implements DeviceModel {
   }
 
   stampDynamic(ctx: StampContext): void {
-    const { CJ0, CJSW, VJ, VJSW, M, MJSW, TT, IS, N, RS } = this.params;
+    const { CJ0, CJSW, VJ, VJSW, M, MJSW, FC, FCS, TT, IS, N, RS } = this.params;
     if (!CJ0 && !CJSW && !TT) return;
 
     const [nA, nK] = this.nodes;
@@ -265,8 +271,8 @@ export class Diode implements DeviceModel {
       ? 1 / (1 + RS * operatingPoint.junctionConductance)
       : 1;
 
-    let cj = depletionCapacitance(junctionVoltage, CJ0!, VJ!, M!);
-    cj += depletionCapacitance(junctionVoltage, CJSW!, VJSW!, MJSW!);
+    let cj = depletionChargeTaylor(junctionVoltage, CJ0!, VJ!, M!, FC!).capacitance;
+    cj += depletionChargeTaylor(junctionVoltage, CJSW!, VJSW!, MJSW!, FCS!).capacitance;
 
     if (TT) {
       const junctionConductance = operatingPoint?.junctionConductance
@@ -307,28 +313,20 @@ export function diodeZeroBiasCapacitance(
   return CJ0 ?? CJO;
 }
 
-function depletionCapacitance(
-  junctionVoltage: number,
-  zeroBiasCapacitance: number,
-  junctionPotential: number,
-  gradingCoefficient: number,
-): number {
-  if (!zeroBiasCapacitance) return 0;
-  if (junctionVoltage < 0.5 * junctionPotential) {
-    return zeroBiasCapacitance
-      / Math.pow(1 - junctionVoltage / junctionPotential, gradingCoefficient);
-  }
-  return zeroBiasCapacitance / Math.pow(0.5, gradingCoefficient);
-}
-
+/**
+ * Depletion capacitance dQ/dV and its Taylor terms, as in ngspice dioload.c:
+ * the abrupt-junction law below FC*VJ, and above it the linear extension
+ * C = CJ0/F2 * (F3 + M*V/VJ) with F2 = (1-FC)^(1+M), F3 = 1 - FC*(1+M),
+ * which keeps the capacitance continuous at V = FC*VJ.
+ */
 function depletionChargeTaylor(
   junctionVoltage: number,
   zeroBiasCapacitance: number,
   junctionPotential: number,
   gradingCoefficient: number,
+  forwardCoefficient: number,
 ): ChargeTaylorCoefficients {
   if (!zeroBiasCapacitance) return { capacitance: 0, second: 0, third: 0 };
-  const forwardCoefficient = 0.5;
   if (junctionVoltage < forwardCoefficient * junctionPotential) {
     const depletion = 1 - junctionVoltage / junctionPotential;
     const capacitance = zeroBiasCapacitance / Math.pow(depletion, gradingCoefficient);
