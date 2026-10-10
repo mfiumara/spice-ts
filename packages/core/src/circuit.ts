@@ -160,6 +160,13 @@ function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string 
         base = 'DC 0';
     }
   }
+  if (wf.type !== 'dc' && wf.type !== 'ac') {
+    const prefix = [
+      wf.dc !== undefined ? `DC ${formatNumber(wf.dc)}` : '',
+      wf.ac ? `AC ${formatNumber(wf.ac.magnitude)} ${formatNumber(wf.ac.phase)}` : '',
+    ].filter(Boolean).join(' ');
+    if (prefix) base = `${prefix} ${base}`;
+  }
   const distortion = [
     wf.distortionF1
       ? `DISTOF1 ${formatNumber(wf.distortionF1.magnitude)} ${formatNumber(wf.distortionF1.phase)}`
