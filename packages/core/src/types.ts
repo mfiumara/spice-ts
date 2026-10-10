@@ -61,11 +61,13 @@ export interface ACAnalysis {
   stopFreq: number;
 }
 
-/** Bounded resistor-noise analysis (`.noise v(node) source {lin|dec|oct} ...`). */
+/** Bounded resistor-noise analysis (`.noise v(node[,reference]) source ...`). */
 export interface NoiseAnalysis {
   type: 'noise';
-  /** Output node whose voltage-noise density is reported. */
+  /** Positive output node whose voltage-noise density is reported. */
   outputNode: string;
+  /** Optional negative output node for a differential voltage result. */
+  outputReferenceNode?: string;
   /** Independent voltage source used to refer output noise back to the input. */
   inputSource: string;
   /** Frequency sweep spacing. */
@@ -78,7 +80,7 @@ export interface NoiseAnalysis {
   stopFreq: number;
 }
 
-/** Bounded single-tone linear distortion analysis (`.disto dec ...`). */
+/** Bounded ideal-linear distortion analysis (`.disto dec ... [f2overf1]`). */
 export interface DistortionAnalysis {
   type: 'disto';
   variation: 'dec';
@@ -88,6 +90,8 @@ export interface DistortionAnalysis {
   startFreq: number;
   /** Fundamental-frequency sweep stop in Hz. */
   stopFreq: number;
+  /** Fixed F2/start-F1 ratio. Its presence selects the bounded two-tone mode. */
+  f2OverF1?: number;
 }
 
 /** Bounded DC transfer-function analysis (`.tf v(node) source`). */
@@ -318,6 +322,8 @@ export interface DCSource {
 /** Pulse source waveform (PULSE). */
 export interface PulseSource {
   type: 'pulse';
+  /** Explicit DC operating-point value declared before the waveform. */
+  dc?: number;
   /** Initial value */
   v1: number;
   /** Pulsed value */
@@ -364,6 +370,8 @@ export interface PWLPoint {
 /** Piecewise-linear source waveform (PWL). */
 export interface PWLSource {
   type: 'pwl';
+  /** Explicit DC operating-point value declared before the waveform. */
+  dc?: number;
   /** Ordered time/value pairs. Equal adjacent times describe a discontinuity. */
   points: PWLPoint[];
 }
@@ -377,6 +385,17 @@ export interface ACSource {
   magnitude: number;
   /** AC phase in degrees */
   phase: number;
+}
+
+/** AC small-signal excitation that coexists with a transient waveform. */
+export interface ACExcitation {
+  magnitude: number;
+  phase: number;
+}
+
+/** Optional AC term carried alongside a transient source waveform. */
+export interface SourceACTerm {
+  ac?: ACExcitation;
 }
 
 /** One source's small-signal distortion excitation at F1 or F2. */
@@ -393,7 +412,7 @@ export interface SourceDistortionTerms {
 
 /** Union of all source waveform types. Discriminated on the `type` field. */
 export type SourceWaveform =
-  (DCSource | PulseSource | SinSource | PWLSource | ACSource) & SourceDistortionTerms;
+  (DCSource | PulseSource | SinSource | PWLSource | ACSource) & SourceACTerm & SourceDistortionTerms;
 
 /** Warning collected during simulation (non-fatal). */
 export interface SimulationWarning {

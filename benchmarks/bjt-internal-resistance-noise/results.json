@@ -1,0 +1,105 @@
+{
+  "fixture": "benchmarks/bjt-internal-resistance-noise/bjt-internal-resistance-noise.cir",
+  "sha256": "f3166a899574399ae7351f48569c898a7c4353ed8d11951148eede4f6c8eeff4",
+  "source": {
+    "url": "https://github.com/mfiumara/spice-ts/issues/243",
+    "revision": "issue-243 project-authored reference fixture",
+    "licence": "MIT"
+  },
+  "identicalNetlistForBothEngines": true,
+  "commands": {
+    "ngspice": "ngspice -b -r <temporary-raw-path> benchmarks/bjt-internal-resistance-noise/bjt-internal-resistance-noise.cir",
+    "spiceTs": "pnpm exec tsx benchmarks/bjt-internal-resistance-noise/compare.ts"
+  },
+  "versions": {
+    "reference": "ngspice-47",
+    "spiceTsBaseRevision": "18689fe1a54ded5e6b28ce86a56df5d436fb9733",
+    "spiceTsWorkingTreeDirty": false,
+    "node": "v22.23.1"
+  },
+  "machine": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "convergence": {
+    "ngspice": "success",
+    "spiceTs": "success"
+  },
+  "runtimeMilliseconds": {
+    "ngspiceProcess": 16.237750000000005,
+    "spiceTsInProcess": 7.609499999999997,
+    "caveat": "Different process boundaries; reported honestly, not a speed claim."
+  },
+  "matchedPointCount": 10,
+  "errors": {
+    "outputDensity": {
+      "maximumAbsoluteError": 1.0689874744830552e-10,
+      "rmsAbsoluteError": 1.0689874744830553e-10,
+      "maximumRelativeError": 0.0004960608635885672,
+      "rmsRelativeError": 0.0004960608635885671
+    },
+    "inputDensity": {
+      "maximumAbsoluteError": 4.6506650944748873e-11,
+      "rmsAbsoluteError": 4.650665094474888e-11,
+      "maximumRelativeError": 0.00039905361938037567,
+      "rmsRelativeError": 0.00039905361938037567
+    },
+    "integratedOutput": {
+      "maximumAbsoluteError": 1.0684528470550044e-8,
+      "rmsAbsoluteError": 1.0684528470550044e-8,
+      "maximumRelativeError": 0.000496060863588325,
+      "rmsRelativeError": 0.000496060863588325
+    },
+    "integratedInput": {
+      "maximumAbsoluteError": 4.648339180299475e-9,
+      "rmsAbsoluteError": 4.648339180299475e-9,
+      "maximumRelativeError": 0.0003990536193800158,
+      "rmsRelativeError": 0.0003990536193800158
+    }
+  },
+  "unsupported": {
+    "flickerNoise": [
+      "KF",
+      "AF"
+    ],
+    "junctionCapacitance": [
+      "CJE",
+      "CJC"
+    ],
+    "temperature": [
+      ".temp",
+      "temperature sweeps"
+    ],
+    "steppedNoise": [
+      ".step with .noise"
+    ],
+    "outputForms": [
+      "differential voltage",
+      "current output"
+    ],
+    "modelLevels": [
+      "non-level-1 BJT"
+    ],
+    "broaderGummelPoon": [
+      "RBM",
+      "IRB",
+      "junction capacitances",
+      "transit-time forms"
+    ]
+  },
+  "losses": [
+    "Matched-point residuals are retained in errors; no non-zero residual is omitted.",
+    "KF/AF, junction-capacitance, temperature, stepped, differential/current-output, non-level-1, and broader Gummel-Poon forms remain unsupported.",
+    "Runtime values are not directly comparable because ngspice includes process startup."
+  ],
+  "tdd": {
+    "redCommit": "a4cd77f",
+    "redCommand": "pnpm -C packages/core exec vitest run src/analysis/noise.test.ts",
+    "redResult": "3 failed, 35 passed; RB, RC, and RE were explicitly rejected",
+    "greenCommand": "pnpm -C packages/core exec vitest run src/analysis/noise.test.ts src/devices/bjt.test.ts",
+    "greenResult": "44 passed"
+  },
+  "potetoReceipt": "benchmarks/bjt-internal-resistance-noise/POTETO.md"
+}

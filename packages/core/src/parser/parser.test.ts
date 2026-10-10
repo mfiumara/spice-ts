@@ -141,8 +141,12 @@ describe('SPICE netlist parser', () => {
     expect(model?.params).toMatchObject({ IS: 1e-14, N: 1.05 });
   });
 
-  it('rejects unsupported semantic dot commands instead of silently accepting them', () => {
-    expect(() => parse('.noise V(out,ref) V1 dec 10 1 1Meg')).toThrow(/unsupported.*\.noise/i);
+  it('represents differential noise output nodes explicitly', () => {
+    expect(parse('.noise V(out,ref) V1 dec 10 1 1Meg').analyses[0]).toMatchObject({
+      type: 'noise',
+      outputNode: 'out',
+      outputReferenceNode: 'ref',
+    });
   });
 
   it('parses capacitor .model values and instance parameters', () => {

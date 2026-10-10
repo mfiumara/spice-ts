@@ -83,6 +83,12 @@ Validate provenance fields, pinned URLs, fixture hashes, declared analyses, ngsp
 
 At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-distortion` is retained as a visible source-suite failure: both of its upstream `.disto` commands are commented out, so ngspice exits successfully without producing raw data. All 20 byte-identical fixtures currently fail spice-ts parsing. The validator prints each failure and checks it against the manifest instead of hiding or rewriting unsupported inputs.
 
+## Bounded passive RC transient WASM fixture
+
+| Circuit | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
+|---|---|---|---|---|
+| Passive RC pulse-step transient | ngspice public corpus A [`tests/general/rc.cir`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/general/rc.cir), pinned revision `3ef069fb1f04177a153f342a32d941fc20ff047e` | BSD-3-Clause under the pinned ngspice [`COPYING`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/COPYING); retained at `benchmarks/corpus/ngspice/LICENSE.txt` | Redistribution is allowed. `rc-step.cir` keeps the public one-source, one-resistor, one-capacitor step-response topology. It scales R/C and stop time, names the output node, makes pulse rise/fall/width/period explicit, and removes output-only `.plot` and `.options` cards. The committed bytes are supplied unchanged to both engines. No tolerance differs by engine. SHA-256 is recorded by the focused report. | `benchmarks/wasm-rc-transient/rc-step.cir`; compare with `pnpm exec tsx benchmarks/wasm-rc-transient/compare.ts` using native ngspice and the explicit `spice-ts-wasm` backend. |
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
@@ -99,14 +105,14 @@ At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-di
 
 Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON receipt reports the engine version, machine, identical paths, deterministic native order, matched-point maximum/RMS absolute and relative errors, every non-zero residual as a retained loss, convergence failures, and the explicit unsupported matrix.
 
-## Bounded single-tone linear distortion parity fixture
+## Bounded ideal-linear distortion parity fixtures
 
 - Canonical public source: ngspice public corpus A [`tests/filters/lowpass.cir`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/filters/lowpass.cir), pinned revision `3ef069fb1f04177a153f342a32d941fc20ff047e`.
 - Licence: BSD-3-Clause under the pinned ngspice [`COPYING`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/COPYING); the retained notice is `benchmarks/corpus/ngspice/LICENSE.txt`.
 - Redistribution decision: allowed. The adapted source-form fixture remains under BSD-3-Clause.
-- Adaptation: `benchmarks/distortion/linear-lowpass.cir` comments the unsupported `.OPTIONS` card, replaces `.AC DEC 10 1k 1Meg` with `.DISTO DEC 10 1k 1Meg`, and changes only `DISTOF1 0` to `DISTOF1 1`. The title describes the bounded run; topology, component values, source clauses, sweep bounds, and explicit zero `DISTOF2` remain unchanged. The committed bytes are supplied identically to spice-ts and ngspice-47.
-- Scope: one DEC single-tone ideal linear RC case. Only second- and third-harmonic complex outputs are covered; both are mathematically zero. Two-tone, semiconductor nonlinear, stepped, controlled-source, coupled, transmission-line, streaming, and external-backend distortion remain explicitly unsupported.
-- Reproduce with `pnpm exec tsx benchmarks/distortion/compare.ts`. The JSON receipt reports versions, machine, fixture hash, identical input, convergence, runtimes, stable frequency/vector order, matched-frequency maximum/RMS absolute and relative errors, every loss, and all unsupported forms.
+- Adaptation: `benchmarks/distortion/linear-lowpass.cir` comments the unsupported `.OPTIONS` card, replaces `.AC DEC 10 1k 1Meg` with `.DISTO DEC 10 1k 1Meg`, and changes only `DISTOF1 0` to `DISTOF1 1`. `benchmarks/distortion/two-tone-linear-lowpass.cir` makes the same changes, adds `f2overf1=0.9`, and changes `DISTOF2 0` to `DISTOF2 0.25 30`. Each title describes its bounded run. Topology, component values, remaining source clauses, and sweep bounds are unchanged. Each committed file is supplied byte-identically to spice-ts and ngspice-47.
+- Scope: one DEC single-tone and one DEC two-tone ideal-linear RC case. The single-tone result covers second- and third-harmonic complex outputs. The two-tone result covers ngspice's separate `f1+f2`, `f1-f2`, and `2f1-f2` plots. All represented values are mathematically zero. Semiconductor nonlinear, stepped, LIN/OCT, controlled-source, coupled, transmission-line, arbitrary multi-excitation, protocol-v1, streaming, and external-backend distortion remain explicitly unsupported.
+- Reproduce with `pnpm bench:disto`. The JSON receipt reports ngspice-47 and runtime versions, machine, fixture hashes, byte-identical inputs, convergence, runtimes, stable frequency/vector/product order, matched-point maximum/RMS absolute and relative errors, every loss, and all unsupported forms.
 
 ## Bounded stepped transfer-function parity fixture
 
@@ -152,6 +158,32 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 - Licence: MIT, under the repository [licence](../LICENSE); redistribution is allowed. No third-party netlist was copied.
 - Adaptation: none. The committed bytes are supplied identically to spice-ts and ngspice-47. The forward-active fixture exercises BJT level-1 collector and base shot noise together with external base/load resistance thermal noise over a DEC sweep.
 - Reproduce with `pnpm exec tsx benchmarks/bjt-noise/compare.ts`; the command records source/hash, versions, machine, convergence, runtimes, matched-point max/RMS absolute and relative errors, integrated totals, and all remaining unsupported losses.
+
+## Bounded differential resistor-noise parity fixture
+
+- Fixture: `benchmarks/differential-noise/differential-divider.cir` (SHA-256 `4a00d295e139c32f175870a5227df610ff4f23ff797616bdab5c675fc3b10040`).
+- Source: project-authored public reference circuit for [issue #255](https://github.com/mfiumara/spice-ts/issues/255), pinned by the fixture hash above.
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- Adaptation: none. The committed bytes are supplied identically to spice-ts and ngspice-47. The fixture measures `V(outp,outn)` across two unequal resistor-divider outputs over a DEC sweep.
+- Scope: differential voltage output for resistor thermal noise only. Current output, current-source referral, stepped noise, temperature cards, and differential semiconductor or broader noisy-device forms remain explicitly unsupported.
+- Reproduce with `pnpm bench:differential-noise -- --output benchmarks/differential-noise/results.json`. The JSON receipt records source, revision, licence, hash, versions, machine, convergence, runtimes, matched-point and integrated max/RMS absolute and relative errors, explicit exclusions, and every retained loss.
+
+## Bounded BJT level-1 internal-resistance noise parity fixture
+
+- Fixture: `benchmarks/bjt-internal-resistance-noise/bjt-internal-resistance-noise.cir` (SHA-256 `f3166a899574399ae7351f48569c898a7c4353ed8d11951148eede4f6c8eeff4`).
+- Source: project-authored public reference circuit for [issue #243](https://github.com/mfiumara/spice-ts/issues/243), pinned by the fixture SHA-256 above.
+- Licence: MIT, under the repository [licence](../LICENSE); redistribution is allowed. No third-party netlist was copied.
+- Adaptation: none. The committed bytes are supplied identically to spice-ts and ngspice-47. The fixture adds fixed level-1 `RB=100`, `RC=10`, and `RE=10` to the existing forward-active topology and exercises their thermal noise together with collector/base shot noise and external resistance noise over a DEC sweep.
+- Reproduce with `pnpm exec tsx benchmarks/bjt-internal-resistance-noise/compare.ts`; the command records source/hash, versions, machine, convergence, runtimes, matched-point max/RMS absolute and relative errors, integrated totals, explicit exclusions, and every retained loss. The `/poteto-mode` design receipt is `benchmarks/bjt-internal-resistance-noise/POTETO.md`.
+
+## Bounded BJT level-1 flicker-noise parity fixture
+
+- Fixture: `benchmarks/bjt-flicker-noise/bjt-flicker-noise.cir` (SHA-256 `d9001973f05126c8590e28818d83655eb0ff315b3a3eecc69ee76c28296daa4a`).
+- Source: project-authored public reference circuit for [issue #248](https://github.com/mfiumara/spice-ts/issues/248), pinned by the immutable fixture hash above.
+- Licence: MIT, under the repository [licence](../LICENSE); redistribution is allowed. No third-party netlist was copied.
+- Reference equation: ngspice [`bjtnoise.c`](https://github.com/ngspice/ngspice/blob/032b1c32/src/spicelib/devices/bjt/bjtnoise.c#L126-L149), pinned revision `032b1c32`, BSD-3-Clause under ngspice's [`COPYING`](https://github.com/ngspice/ngspice/blob/032b1c32/COPYING).
+- Adaptation: none. The committed bytes are supplied identically to spice-ts and ngspice-47. The fixture exercises level-1 `KF=1e-9`, `AF=1.2` base-current flicker noise while retaining collector/base shot noise and `RB`/`RC`/`RE` plus external-resistance thermal noise over a DEC sweep. No per-engine tolerance or value changes are made.
+- Reproduce with `pnpm exec tsx benchmarks/bjt-flicker-noise/compare.ts -- --output benchmarks/bjt-flicker-noise/results.json`; the receipt reports source revision/licence/hash, versions, machine, identical inputs, matched-point max/RMS absolute and relative errors, integrated errors, runtimes, unsupported forms, and every retained loss. The `/poteto-mode` design receipt is `benchmarks/bjt-flicker-noise/POTETO.md`.
 
 ## Xyce Regression Suite corpus C
 

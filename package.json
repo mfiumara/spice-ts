@@ -12,6 +12,7 @@
     "bench:current-source-polarity": "pnpm -C packages/core build && tsx benchmarks/current-source-polarity/compare.ts",
     "bench:stepped-tf": "pnpm -C packages/core build && tsx benchmarks/stepped-transfer-function/compare.ts",
     "bench:disto": "pnpm -C packages/core build && tsx benchmarks/distortion/compare.ts",
+    "bench:differential-noise": "pnpm -C packages/core build && tsx benchmarks/differential-noise/compare.ts",
     "bench:compare": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/comparison.ts",
     "bench:compare:v2": "pnpm -C packages/core build && tsx benchmarks/comparison-harness.ts",
     "bench:convergence": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/convergence.ts",

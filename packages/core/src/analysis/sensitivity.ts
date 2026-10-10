@@ -81,8 +81,8 @@ export function solveSensitivity(
 
 function assertSingleACExcitation(compiled: CompiledCircuit): void {
   const acSources = compiled.devices
-    .filter((device): device is VoltageSource =>
-      device instanceof VoltageSource
+    .filter((device): device is VoltageSource | CurrentSource =>
+      (device instanceof VoltageSource || device instanceof CurrentSource)
       && device.waveform.type === 'ac');
   const excitations = acSources
     .filter(device => device.waveform.type === 'ac' && device.waveform.magnitude !== 0)
@@ -97,8 +97,11 @@ function assertSingleACExcitation(compiled: CompiledCircuit): void {
     const names = acSources
       .map(device => device.name)
       .sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'base' }));
+    const sourceKind = acSources.every(device => device instanceof VoltageSource)
+      ? 'voltage source'
+      : 'independent source';
     throw new InvalidCircuitError(
-      `.sens AC supports only one AC-form voltage source; found ${names.join(', ')}`,
+      `.sens AC supports only one AC-form ${sourceKind}; found ${names.join(', ')}`,
     );
   }
 }
@@ -145,8 +148,19 @@ function parameterTarget(device: DeviceModel, mode: 'dc' | 'ac'): ParameterTarge
     return mutable(device, 'dc', device.getParameter(), value => device.setParameter(value));
   }
   if (device instanceof CurrentSource) {
-    if (mode === 'ac' || device.waveform.type !== 'dc') {
-      throw unsupported(device, `${mode.toUpperCase()} current-source sensitivity is not implemented`);
+    if (mode === 'ac') {
+      if (device.waveform.type !== 'ac') {
+        throw unsupported(device, 'AC sensitivity requires an AC current-source waveform');
+      }
+      return mutable(
+        device, 'acMagnitude', device.waveform.magnitude,
+        value => {
+          if (device.waveform.type === 'ac') device.waveform.magnitude = value;
+        },
+      );
+    }
+    if (device.waveform.type !== 'dc') {
+      throw unsupported(device, 'DC current-source sensitivity requires a DC waveform');
     }
     return mutable(
       device, 'dc', device.waveform.value,

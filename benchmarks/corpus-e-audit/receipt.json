@@ -14,7 +14,7 @@
   "versions": {
     "ngspice": "** ngspice-47 : Circuit level simulation program",
     "node": "v22.23.1",
-    "spiceTsHead": "80a6f3f586410bb30c63e5a790ee253ba0d5c445"
+    "spiceTsHead": "80cd13123ef9943b27bf2dca5134c0b0016b55e0"
   },
   "machine": {
     "os": "macOS 27.0.1",
@@ -32,6 +32,18 @@
       "execution": 0
     },
     "spiceTs": {
+      "pass": 14,
+      "parser": 5,
+      "device/model": 1,
+      "analysis": 0,
+      "convergence": 0,
+      "execution": 0
+    }
+  },
+  "issue228Baseline": {
+    "spiceTsHead": "f737698e90b4e025de65c9f621fcf75f6c27b15d",
+    "outcomeSha256": "dd99c57c31e72613e2e532ab0708d9810b0e6d5d09950ba74c03539b66314290",
+    "totals": {
       "pass": 4,
       "parser": 3,
       "device/model": 0,
@@ -40,8 +52,232 @@
       "execution": 0
     }
   },
+  "issue228Transitions": [
+    {
+      "id": "cccs-mixed-analysis",
+      "before": {
+        "status": "fail",
+        "cause": "analysis"
+      },
+      "after": {
+        "status": "pass"
+      },
+      "changed": true
+    },
+    {
+      "id": "vcvs-operating-point",
+      "before": {
+        "status": "fail",
+        "cause": "analysis"
+      },
+      "after": {
+        "status": "fail",
+        "cause": "parser"
+      },
+      "changed": true
+    },
+    {
+      "id": "diode-bias-sweep",
+      "before": {
+        "status": "pass"
+      },
+      "after": {
+        "status": "pass"
+      },
+      "changed": false
+    },
+    {
+      "id": "mos1-inverter-sweep",
+      "before": {
+        "status": "fail",
+        "cause": "analysis"
+      },
+      "after": {
+        "status": "pass"
+      },
+      "changed": true
+    },
+    {
+      "id": "transmission-line-ac",
+      "before": {
+        "status": "fail",
+        "cause": "analysis"
+      },
+      "after": {
+        "status": "fail",
+        "cause": "parser"
+      },
+      "changed": true
+    },
+    {
+      "id": "mutual-inductance-ac",
+      "before": {
+        "status": "fail",
+        "cause": "analysis"
+      },
+      "after": {
+        "status": "fail",
+        "cause": "device/model"
+      },
+      "changed": true
+    },
+    {
+      "id": "bjt-diffpair-ac",
+      "before": {
+        "status": "fail",
+        "cause": "analysis"
+      },
+      "after": {
+        "status": "pass"
+      },
+      "changed": true
+    },
+    {
+      "id": "opamp-open-loop-ac",
+      "before": {
+        "status": "fail",
+        "cause": "parser"
+      },
+      "after": {
+        "status": "fail",
+        "cause": "parser"
+      },
+      "changed": false
+    },
+    {
+      "id": "capacitor-step-transient",
+      "before": {
+        "status": "fail",
+        "cause": "parser"
+      },
+      "after": {
+        "status": "pass"
+      },
+      "changed": true
+    },
+    {
+      "id": "capacitor-initial-condition",
+      "before": {
+        "status": "fail",
+        "cause": "analysis"
+      },
+      "after": {
+        "status": "pass"
+      },
+      "changed": true
+    },
+    {
+      "id": "lc-oscillator-transient",
+      "before": {
+        "status": "fail",
+        "cause": "parser"
+      },
+      "after": {
+        "status": "pass"
+      },
+      "changed": true
+    },
+    {
+      "id": "bjt-diffpair-transient",
+      "before": {
+        "status": "pass"
+      },
+      "after": {
+        "status": "pass"
+      },
+      "changed": false
+    },
+    {
+      "id": "bjt-schmitt-trigger",
+      "before": {
+        "status": "pass"
+      },
+      "after": {
+        "status": "pass"
+      },
+      "changed": false
+    },
+    {
+      "id": "diode-temperature-sweep",
+      "before": {
+        "status": "fail",
+        "cause": "analysis"
+      },
+      "after": {
+        "status": "pass"
+      },
+      "changed": true
+    },
+    {
+      "id": "mos1-nand-transient",
+      "before": {
+        "status": "fail",
+        "cause": "analysis"
+      },
+      "after": {
+        "status": "pass"
+      },
+      "changed": true
+    },
+    {
+      "id": "bjt-rtl-inverter-chain",
+      "before": {
+        "status": "fail",
+        "cause": "analysis"
+      },
+      "after": {
+        "status": "pass"
+      },
+      "changed": true
+    },
+    {
+      "id": "dual-lc-uic-rejection",
+      "before": {
+        "status": "fail",
+        "cause": "analysis"
+      },
+      "after": {
+        "status": "pass"
+      },
+      "changed": true
+    },
+    {
+      "id": "opamp-voltage-follower",
+      "before": {
+        "status": "fail",
+        "cause": "analysis"
+      },
+      "after": {
+        "status": "fail",
+        "cause": "parser"
+      },
+      "changed": true
+    },
+    {
+      "id": "mos7-nand-no-bypass",
+      "before": {
+        "status": "fail",
+        "cause": "analysis"
+      },
+      "after": {
+        "status": "fail",
+        "cause": "parser"
+      },
+      "changed": true
+    },
+    {
+      "id": "bjt-diffpair-current-source",
+      "before": {
+        "status": "pass"
+      },
+      "after": {
+        "status": "pass"
+      },
+      "changed": false
+    }
+  ],
   "fixtureSetSha256": "e6346a45392800a58c186eb691d242f4b88611f1609b29db4b0f1c1110a08897",
-  "outcomeSha256": "dd99c57c31e72613e2e532ab0708d9810b0e6d5d09950ba74c03539b66314290",
+  "outcomeSha256": "163acb09d3c7225916ea9dca4336ebbe97b7fd0e4c706a46538f3b1934d8727d",
   "fixtures": [
     {
       "id": "cccs-mixed-analysis",
@@ -55,9 +291,7 @@
         "evidence": "unimplemented dot command '.list'"
       },
       "spiceTs": {
-        "status": "fail",
-        "cause": "analysis",
-        "evidence": "Parse error at line 17: Unsupported dot command: '.list'"
+        "status": "pass"
       }
     },
     {
@@ -73,8 +307,8 @@
       },
       "spiceTs": {
         "status": "fail",
-        "cause": "analysis",
-        "evidence": "Parse error at line 9: Unsupported dot command: '.list'"
+        "cause": "parser",
+        "evidence": "Parse error at line 17: Cannot read properties of undefined (reading 'trim')"
       }
     },
     {
@@ -100,9 +334,7 @@
         "status": "pass"
       },
       "spiceTs": {
-        "status": "fail",
-        "cause": "analysis",
-        "evidence": "Parse error at line 3: Unsupported dot command: '.width'"
+        "status": "pass"
       }
     },
     {
@@ -118,8 +350,8 @@
       },
       "spiceTs": {
         "status": "fail",
-        "cause": "analysis",
-        "evidence": "Parse error at line 3: Unsupported dot command: '.width'"
+        "cause": "parser",
+        "evidence": "Parse error at line 5: Cannot parse number: 'gen'"
       }
     },
     {
@@ -135,8 +367,8 @@
       },
       "spiceTs": {
         "status": "fail",
-        "cause": "analysis",
-        "evidence": "Parse error at line 24: Unsupported .options field: 'nopage'"
+        "cause": "device/model",
+        "evidence": "K-element 'k1' references unknown or non-inductor device(s): l1a, l1b"
       }
     },
     {
@@ -151,9 +383,7 @@
         "evidence": "unimplemented dot command '.status'"
       },
       "spiceTs": {
-        "status": "fail",
-        "cause": "analysis",
-        "evidence": "Parse error at line 6: Unsupported dot command: '.option'"
+        "status": "pass"
       }
     },
     {
@@ -170,7 +400,7 @@
       "spiceTs": {
         "status": "fail",
         "cause": "parser",
-        "evidence": "Parse error at line 17: Cannot parse number: 'dc=0'"
+        "evidence": "Parse error at line 49: Cannot read properties of undefined (reading 'toLowerCase')"
       }
     },
     {
@@ -185,9 +415,7 @@
         "evidence": "unimplemented dot command '.list'"
       },
       "spiceTs": {
-        "status": "fail",
-        "cause": "parser",
-        "evidence": "Parse error at line 2: Cannot parse number: 'pulse'"
+        "status": "pass"
       }
     },
     {
@@ -202,9 +430,7 @@
         "evidence": "unimplemented dot command '.list'"
       },
       "spiceTs": {
-        "status": "fail",
-        "cause": "analysis",
-        "evidence": "Parse error at line 4: Unsupported dot command: '.list'"
+        "status": "pass"
       }
     },
     {
@@ -219,9 +445,7 @@
         "evidence": "unimplemented dot command '.status'"
       },
       "spiceTs": {
-        "status": "fail",
-        "cause": "parser",
-        "evidence": "Parse error at line 4: PWL source requires a parenthesized list of time/value pairs"
+        "status": "pass"
       }
     },
     {
@@ -264,9 +488,7 @@
         "evidence": "unimplemented dot command '.list'"
       },
       "spiceTs": {
-        "status": "fail",
-        "cause": "analysis",
-        "evidence": "Parse error at line 7: Unsupported dot command: '.list'"
+        "status": "pass"
       }
     },
     {
@@ -281,9 +503,7 @@
         "evidence": "Error: unknown parameter on .tran - ignored"
       },
       "spiceTs": {
-        "status": "fail",
-        "cause": "analysis",
-        "evidence": "Parse error at line 32: Cannot parse number: 'trace'"
+        "status": "pass"
       }
     },
     {
@@ -296,9 +516,7 @@
         "status": "pass"
       },
       "spiceTs": {
-        "status": "fail",
-        "cause": "analysis",
-        "evidence": "Parse error at line 4: Unsupported dot command: '.width'"
+        "status": "pass"
       }
     },
     {
@@ -313,9 +531,7 @@
         "evidence": "unimplemented dot command '.status'"
       },
       "spiceTs": {
-        "status": "fail",
-        "cause": "analysis",
-        "evidence": "Parse error at line 8: Unsupported dot command: '.width'"
+        "status": "pass"
       }
     },
     {
@@ -331,8 +547,8 @@
       },
       "spiceTs": {
         "status": "fail",
-        "cause": "analysis",
-        "evidence": "Parse error at line 34: Unsupported dot command: '.width'"
+        "cause": "parser",
+        "evidence": "Parse error at line 35: Unsupported behavior-changing .options field: 'dampstrategy'"
       }
     },
     {
@@ -348,8 +564,8 @@
       },
       "spiceTs": {
         "status": "fail",
-        "cause": "analysis",
-        "evidence": "Parse error at line 3: Unsupported dot command: '.option'"
+        "cause": "parser",
+        "evidence": "Parse error at line 3: Unsupported behavior-changing .options field: 'noincmode'"
       }
     },
     {

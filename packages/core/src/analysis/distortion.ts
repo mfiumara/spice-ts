@@ -6,7 +6,7 @@ import { Resistor } from '../devices/resistor.js';
 import { VoltageSource } from '../devices/voltage-source.js';
 import { InvalidCircuitError } from '../errors.js';
 import {
-  DistortionResult, type ComplexDistortionValue,
+  DistortionResult, type ComplexDistortionValue, type DistortionProduct,
 } from '../results.js';
 import type { DistortionAnalysis } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -16,8 +16,8 @@ type IndependentSource = VoltageSource | CurrentSource;
 
 /**
  * Return the mathematically exact low-order distortion of an ideal linear RLC
- * circuit. Linear devices have no second- or third-order forcing terms, so all
- * complex harmonic components are zero.
+ * circuit. Linear devices have no harmonic or intermodulation forcing terms,
+ * so every represented complex product is zero.
  */
 export function solveLinearDistortion(
   compiled: CompiledCircuit,
@@ -30,19 +30,25 @@ export function solveLinearDistortion(
     guard?.recordResultPoint();
   }
 
+  const products: DistortionProduct[] = analysis.f2OverF1 === undefined
+    ? [2, 3]
+    : ['f1+f2', 'f1-f2', '2f1-f2'];
+
   return new DistortionResult(
     frequencies,
-    zeroArrays(compiled.nodeNames, frequencies.length),
-    zeroArrays(compiled.nodeNames, frequencies.length),
-    zeroArrays(compiled.branchNames, frequencies.length),
-    zeroArrays(compiled.branchNames, frequencies.length),
+    zeroProductArrays(products, compiled.nodeNames, frequencies.length),
+    zeroProductArrays(products, compiled.branchNames, frequencies.length),
+    analysis.f2OverF1,
   );
 }
 
 /** Validate the complete semantic boundary before attempting a DC solve. */
-export function assertLinearDistortionSupported(compiled: CompiledCircuit): void {
+export function assertLinearDistortionSupported(
+  compiled: CompiledCircuit,
+  analysis: DistortionAnalysis,
+): void {
   assertSupportedDevices(compiled);
-  assertSingleTone(compiled);
+  assertExcitations(compiled, analysis);
 }
 
 function assertSupportedDevices(compiled: CompiledCircuit): asserts compiled is CompiledCircuit & {
@@ -62,29 +68,46 @@ function assertSupportedDevices(compiled: CompiledCircuit): asserts compiled is 
   }
 }
 
-function assertSingleTone(compiled: CompiledCircuit): void {
+function assertExcitations(compiled: CompiledCircuit, analysis: DistortionAnalysis): void {
   const sources = compiled.devices.filter((device): device is IndependentSource =>
     device instanceof VoltageSource || device instanceof CurrentSource);
-  for (const source of sources) {
-    const secondTone = source.waveform.distortionF2;
-    if (secondTone && secondTone.magnitude !== 0) {
-      throw new InvalidCircuitError(
-        `Two-tone .disto is not supported; source '${source.name}' has non-zero DISTOF2`,
-      );
-    }
-  }
-  const active = sources.filter(source => source.waveform.distortionF1?.magnitude !== undefined
+  const activeF1 = sources.filter(source => source.waveform.distortionF1?.magnitude !== undefined
     && source.waveform.distortionF1.magnitude !== 0);
-  if (active.length !== 1) {
-    const found = active.length === 0 ? '0' : active.map(source => source.name).join(', ');
+  if (activeF1.length !== 1) {
+    const found = activeF1.length === 0 ? '0' : activeF1.map(source => source.name).join(', ');
     throw new InvalidCircuitError(
       `.disto requires exactly one non-zero DISTOF1 excitation; found ${found}`,
     );
   }
-  const excitation = active[0].waveform.distortionF1!;
+  assertValidExcitation(activeF1[0], 'DISTOF1');
+
+  const activeF2 = sources.filter(source => source.waveform.distortionF2?.magnitude !== undefined
+    && source.waveform.distortionF2.magnitude !== 0);
+  if (analysis.f2OverF1 === undefined) {
+    if (activeF2.length > 0) {
+      throw new InvalidCircuitError(
+        `Non-zero DISTOF2 on source '${activeF2[0].name}' requires .disto f2overf1`,
+      );
+    }
+    return;
+  }
+
+  if (activeF2.length !== 1) {
+    const found = activeF2.length === 0 ? '0' : activeF2.map(source => source.name).join(', ');
+    throw new InvalidCircuitError(
+      `.disto two-tone requires exactly one non-zero DISTOF2 excitation; found ${found}`,
+    );
+  }
+  assertValidExcitation(activeF2[0], 'DISTOF2');
+}
+
+function assertValidExcitation(source: IndependentSource, field: 'DISTOF1' | 'DISTOF2'): void {
+  const excitation = field === 'DISTOF1'
+    ? source.waveform.distortionF1!
+    : source.waveform.distortionF2!;
   if (!Number.isFinite(excitation.magnitude) || excitation.magnitude <= 0
       || !Number.isFinite(excitation.phase)) {
-    throw new InvalidCircuitError(`Invalid DISTOF1 excitation on source '${active[0].name}'`);
+    throw new InvalidCircuitError(`Invalid ${field} excitation on source '${source.name}'`);
   }
 }
 
@@ -103,4 +126,12 @@ function zeroArrays(names: string[], count: number): Map<string, ComplexDistorti
     name,
     Array.from({ length: count }, () => ({ real: 0, imaginary: 0 })),
   ]));
+}
+
+function zeroProductArrays(
+  products: DistortionProduct[],
+  names: string[],
+  count: number,
+): Map<DistortionProduct, Map<string, ComplexDistortionValue[]>> {
+  return new Map(products.map(product => [product, zeroArrays(names, count)]));
 }

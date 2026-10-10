@@ -78,16 +78,16 @@ describe('classic corpus-B failure audit', () => {
     assert.deepEqual(report.totals, {
       fixtures: 20,
       ngspice: { success: 19, failed: 1, unsupported: 0 },
-      spiceTs: { success: 2, failed: 0, unsupported: 18 },
+      spiceTs: { success: 6, failed: 3, unsupported: 11 },
       classifications: {
-        'parser-feature': 13,
-        'unsupported-analysis/device': 5,
-        convergence: 0,
+        'parser-feature': 5,
+        'unsupported-analysis/device': 6,
+        convergence: 3,
         execution: 0,
-        none: 2,
+        none: 6,
       },
-      parityCandidates: 2,
-      losses: 18,
+      parityCandidates: 6,
+      losses: 14,
     });
     assert.equal(
       report.fixtures.every(fixture => fixture.evidenceSha256 === evidenceHash(fixture)),

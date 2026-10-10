@@ -31,6 +31,21 @@ describe('.noise analysis', () => {
     .noise v(out) Vinput dec 3 10 10k
   `;
 
+  const bjtInternalResistanceFixture = (parameter: string) => `
+    VDD vdd 0 DC 5
+    Vinput in 0 DC 1 AC 1
+    Rbase in base 100k
+    Rload vdd out 2k
+    Q1 out base 0 QMOD
+    .model QMOD NPN (LEVEL=1 IS=1e-14 BF=100 BR=1 NF=1 NR=1 ${parameter})
+    .noise v(out) Vinput dec 3 10 10k
+  `;
+
+  const bjtFlickerFixture = bjtFixture.replace(
+    'NR=1)',
+    'NR=1 KF=1e-9 AF=1.2)',
+  );
+
   const diodeFixture = (sweep: string, flicker = false) => `
     V1 in 0 DC 1 AC 1
     R1 in out 1k
@@ -49,6 +64,84 @@ describe('.noise analysis', () => {
       startFreq: 100,
       stopFreq: 500,
     }]);
+  });
+
+  it('parses and returns deterministic differential resistor-noise output', async () => {
+    const deck = `
+      V1 in 0 AC 1
+      R1 in outp 1k
+      R2 outp 0 1k
+      R3 in outn 2k
+      R4 outn 0 1k
+      .noise v(outp,outn) V1 dec 3 100 10k
+    `;
+
+    expect(parse(deck).analyses).toEqual([{
+      type: 'noise',
+      outputNode: 'outp',
+      outputReferenceNode: 'outn',
+      inputSource: 'V1',
+      variation: 'dec',
+      points: 3,
+      startFreq: 100,
+      stopFreq: 10_000,
+    }]);
+
+    const first = (await simulate(deck)).noise!;
+    const repeated = (await simulate(deck)).noise!;
+    expect(first).toEqual(repeated);
+    expect(first.outputNode).toBe('outp');
+    expect(first.outputReferenceNode).toBe('outn');
+    expect(first.outputNoiseDensity).toHaveLength(7);
+    expect(first.integratedOutputNoise).toBeGreaterThan(0);
+  });
+
+  it.each([
+    ['diode', `
+      V1 in 0 DC 1 AC 1
+      R1 in outp 1k
+      R2 outn 0 1k
+      D1 outp outn DMOD
+      .model DMOD D(IS=1e-14)
+      .noise v(outp,outn) V1 dec 3 100 10k
+    `],
+    ['BJT', `
+      V1 in 0 DC 1 AC 1
+      R1 in outp 1k
+      R2 outn 0 1k
+      Q1 outp in outn QMOD
+      .model QMOD NPN (LEVEL=1 IS=1e-14 BF=100)
+      .noise v(outp,outn) V1 dec 3 100 10k
+    `],
+    ['MOS1', `
+      V1 in 0 DC 1 AC 1
+      R1 in outp 1k
+      R2 outn 0 1k
+      M1 outp in outn outn MMOD
+      .model MMOD NMOS (LEVEL=1 VTO=0.7 KP=200u)
+      .noise v(outp,outn) V1 dec 3 100 10k
+    `],
+    ['JFET', `
+      VDD vdd 0 DC 5 AC 1
+      Vg g 0 DC -1
+      R1 vdd outp 1k
+      R2 outn 0 1k
+      J1 outp g outn MOD
+      .model MOD NJF LEVEL=1 BETA=2.69e-5 VTO=-3.795 LAMBDA=0.0181 AF=1 KF=0.05
+      .noise v(outp,outn) VDD dec 3 100 10k
+    `],
+    ['BSIM3', `
+      V1 in 0 DC 1 AC 1
+      R1 in outp 1k
+      R2 outn 0 1k
+      M1 outp in outn outn MMOD
+      .model MMOD NMOS (LEVEL=49 VTH0=1 U0=400 TOX=4n)
+      .noise v(outp,outn) V1 dec 3 100 10k
+    `],
+  ])('rejects differential %s noise outside the resistor-only slice', async (_kind, deck) => {
+    await expect(simulate(deck)).rejects.toEqual(
+      new InvalidCircuitError('.noise differential voltage output only supports resistor noise'),
+    );
   });
 
   it('returns structured output- and input-referred resistor noise spectra', async () => {
@@ -206,7 +299,63 @@ describe('.noise analysis', () => {
       / 1.168904235104625e-5).toBeLessThan(2e-3);
   });
 
-  it.each(['RB', 'RC', 'RE', 'KF', 'AF', 'CJE'])(
+  it.each([
+    ['RB=100', 2.185350567617382e-7, 1.1701075911061536e-7, 2.184257619028083e-5, 1.1695223909739744e-5],
+    ['RC=10', 2.186370379188875e-7, 1.1694891259559532e-7, 2.18527692056625e-5, 1.168904235133696e-5],
+    ['RE=10', 2.1559279357029466e-7, 1.1648030211946764e-7, 2.154849702109274e-5, 1.1642204740108559e-5],
+  ] as const)(
+    'matches ngspice-47 BJT level-1 %s thermal noise',
+    async (parameter, outputDensity, inputDensity, integratedOutput, integratedInput) => {
+      const result = (await simulate(bjtInternalResistanceFixture(parameter))).noise!;
+
+      for (const density of result.outputNoiseDensity) {
+        expect(Math.abs(density - outputDensity) / outputDensity).toBeLessThan(2e-3);
+      }
+      for (const density of result.inputNoiseDensity) {
+        expect(Math.abs(density - inputDensity) / inputDensity).toBeLessThan(2e-3);
+      }
+      expect(Math.abs(result.integratedOutputNoise! - integratedOutput) / integratedOutput)
+        .toBeLessThan(2e-3);
+      expect(Math.abs(result.integratedInputNoise! - integratedInput) / integratedInput)
+        .toBeLessThan(2e-3);
+    },
+  );
+
+  it('matches ngspice-47 BJT level-1 KF/AF base-current flicker noise', async () => {
+    const result = (await simulate(bjtFlickerFixture)).noise!;
+    const ngspice47Output = [
+      1.030487879071692e-3,
+      7.020632375141064e-4,
+      4.783101424714076e-4,
+      3.258689459173833e-4,
+      2.220119860926834e-4,
+      1.512550900334955e-4,
+      1.030490175269500e-4,
+      7.020666078671442e-5,
+      4.783150894591431e-5,
+      3.258762070581348e-5,
+    ];
+
+    expect(result.outputNoiseDensity).toHaveLength(ngspice47Output.length);
+    result.outputNoiseDensity.forEach((density, index) => {
+      expect(Math.abs(density - ngspice47Output[index]) / ngspice47Output[index])
+        .toBeLessThan(2e-3);
+    });
+    expect(Math.abs(result.integratedOutputNoise! - 8.564711992393035e-3)
+      / 8.564711992393035e-3).toBeLessThan(2e-3);
+    expect(Math.abs(result.integratedInputNoise! - 4.581262912869509e-3)
+      / 4.581262912869509e-3).toBeLessThan(2e-3);
+  });
+
+  it.each([
+    ['KF=-1', /finite BJT KF >= 0/i],
+    ['AF=0', /finite BJT AF > 0/i],
+  ])('rejects invalid BJT flicker parameter %s explicitly', async (parameter, expected) => {
+    const deck = bjtFixture.replace('NR=1)', `NR=1 ${parameter})`);
+    await expect(simulate(deck)).rejects.toThrow(expected);
+  });
+
+  it.each(['CJE', 'CJC', 'RBM', 'IRB', 'TF'])(
     'rejects unsupported BJT noise model parameter %s explicitly',
     async parameter => {
       const deck = bjtFixture.replace('NR=1)', `NR=1 ${parameter}=1)`);
@@ -298,12 +447,22 @@ describe('.noise analysis', () => {
   });
 
   it.each([
-    '.noise v(out,ref) V1 lin 5 100 500',
     '.noise i(V1) V1 dec 10 1 1Meg',
     '.noise v(out) V1 log 10 1 1Meg',
   ])('rejects noise forms outside the first bounded slice: %s', netlist => {
     expect(() => parse(netlist)).toThrow(
       "Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop'",
+    );
+  });
+
+  it('keeps current-source input referral explicitly unsupported', async () => {
+    await expect(simulate(`
+      I1 in 0 AC 1
+      R1 in out 1k
+      R2 out 0 1k
+      .noise v(out) I1 dec 3 100 10k
+    `)).rejects.toThrow(
+      ".noise input source 'I1' is not an independent voltage source",
     );
   });
 

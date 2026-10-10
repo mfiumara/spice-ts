@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-10T10:22:52.347Z",
+  "fixture": {
+    "path": "benchmarks/wasm-rc-transient/rc-step.cir",
+    "sha256": "912300f635e8e1831475a37d5a73f1ff9d92c8c0474caebe842275936297f870",
+    "identicalInputBytes": true,
+    "source": "ngspice tests/general/rc.cir at 3ef069fb1f04177a153f342a32d941fc20ff047e",
+    "licence": "BSD-3-Clause"
+  },
+  "methodology": {
+    "repetitions": 5,
+    "timing": "fresh process wall time including runtime startup, package runner, parse, setup, solve, and serialization",
+    "memory": "peak process RSS from /usr/bin/time; includes each runtime baseline",
+    "matching": "linear interpolation between bracketing native ngspice points at each exact WASM output time; interpolation span is reported per vector",
+    "relativeErrorFloor": 1e-12,
+    "integration": "default ngspice trapezoidal and bounded fixed-step WASM trapezoidal; no per-circuit tolerances"
+  },
+  "versions": {
+    "spiceTsRevision": "4569274abd1b7e0df0d44bbf122ac4118f521959",
+    "node": "v22.23.1",
+    "pnpm": "10.28.1",
+    "ngspice": "ngspice-47 : Circuit level simulation program"
+  },
+  "machine": {
+    "platform": "darwin arm64",
+    "os": "Darwin 27.0.0 Darwin Kernel Version 27.0.0: Tue Aug 11 21:06:40 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T6050",
+    "cpu": "Apple M5 Pro"
+  },
+  "commands": {
+    "build": "pnpm -C packages/wasm build",
+    "wasm": "/usr/bin/time -l pnpm exec tsx benchmarks/wasm-rc-transient/compare.ts --child=wasm",
+    "ngspice": "/usr/bin/time -l ngspice -b -r <raw> <identical-netlist>",
+    "reproduce": "pnpm exec tsx benchmarks/wasm-rc-transient/compare.ts"
+  },
+  "convergence": {
+    "wasm": "complete",
+    "ngspice": "complete"
+  },
+  "pointCounts": {
+    "wasm": 11,
+    "ngspice": 66
+  },
+  "errors": {
+    "v(in)": {
+      "matchedPointCount": 11,
+      "maximumNgspiceInterpolationSpanS": 0.000020000000000000052,
+      "maximumAbsoluteError": 0,
+      "rmsAbsoluteError": 0,
+      "maximumRelativeError": 0,
+      "rmsRelativeError": 0
+    },
+    "v(out)": {
+      "matchedPointCount": 11,
+      "maximumNgspiceInterpolationSpanS": 0.000020000000000000052,
+      "maximumAbsoluteError": 0.0007355989390052942,
+      "rmsAbsoluteError": 0.00033999673635324174,
+      "maximumRelativeError": 0.015212580204100129,
+      "rmsRelativeError": 0.0047975139306553685
+    },
+    "i(v1)": {
+      "matchedPointCount": 11,
+      "maximumNgspiceInterpolationSpanS": 0.000020000000000000052,
+      "maximumAbsoluteError": 7.35598939005243e-7,
+      "rmsAbsoluteError": 3.3999673635324815e-7,
+      "maximumRelativeError": 0.0007729759162325553,
+      "rmsRelativeError": 0.00041605225602509065
+    }
+  },
+  "performance": {
+    "wasm": {
+      "wallMs": {
+        "samples": [
+          474.195833,
+          413.54608400000006,
+          415.514042,
+          439.39324999999985,
+          451.6218329999999
+        ],
+        "median": 439.39324999999985
+      },
+      "peakRssMiB": {
+        "samples": [
+          164.46875,
+          140.140625,
+          138.78125,
+          140.40625,
+          141.984375
+        ],
+        "median": 140.40625
+      }
+    },
+    "ngspice": {
+      "wallMs": {
+        "samples": [
+          15.306958000000122,
+          14.557999999999993,
+          14.782708000000184,
+          14.501333000000159,
+          14.205249999999978
+        ],
+        "median": 14.557999999999993
+      },
+      "peakRssMiB": {
+        "samples": [
+          10.203125,
+          10.203125,
+          10.171875,
+          10.1875,
+          10.171875
+        ],
+        "median": 10.1875
+      }
+    }
+  },
+  "artifactSizesBytes": {
+    "before": {
+      "workerJs": 377009,
+      "indexJs": 42815,
+      "denseSolverWasm": 2900
+    },
+    "after": {
+      "workerJs": 389054,
+      "indexJs": 42894,
+      "denseSolverWasm": 2900
+    },
+    "delta": {
+      "workerJs": 12045,
+      "indexJs": 79,
+      "denseSolverWasm": 0
+    },
+    "note": "before sizes are the merged bounded AC backend baseline from main; the transient slice reuses its ABI-v2 artifact unchanged"
+  },
+  "retainedLosses": [
+    "WASM uses a fixed print-step solve while ngspice uses adaptive internal timesteps.",
+    "Fresh-process WASM timing includes pnpm and Node startup and is expected to lose to native ngspice.",
+    "Relative errors near zero use the declared 1e-12 denominator floor."
+  ]
+}

@@ -28,6 +28,7 @@ const supportedFixtures: Fixture[] = [
   { feature: 'initial guesses', netlist: 'V1 out 0 1\n.nodeset V(out)=0\n.op' },
   { feature: '.ac', netlist: 'V1 in 0 AC 1\nR1 in 0 1k\n.ac dec 10 1 1Meg' },
   { feature: 'LIN/DEC/OCT .noise slice', netlist: 'V1 in 0 AC 1\nR1 in out 1k\nR2 out 0 1k\n.noise V(out) V1 dec 10 1 1Meg' },
+  { feature: 'bounded differential resistor-noise output', netlist: 'V1 in 0 AC 1\nR1 in out 1k\nR2 ref 0 1k\n.noise V(out,ref) V1 dec 10 1 1Meg' },
   { feature: 'bounded transfer-function analysis', netlist: 'V1 in 0 1\nR1 in out 1k\nR2 out 0 1k\n.tf V(out) V1' },
   { feature: 'bounded sensitivity analysis', netlist: 'V1 in 0 1\nR1 in out 1k\nR2 out 0 1k\n.sens V(out)' },
   { feature: 'bounded single-tone linear distortion analysis', netlist: 'V1 in 0 DC 0 DISTOF1 1 DISTOF2 0\nR1 in out 1k\nC1 out 0 1n\n.disto dec 10 1k 1Meg' },
@@ -42,10 +43,7 @@ const unsupportedFixtures: Fixture[] = [
   { feature: 'AM source waveform', netlist: 'V1 in 0 AM(1 1 1k 10k)\n.tran 1u 1m' },
   { feature: 'trnoise source waveform', netlist: 'V1 in 0 TRNOISE(1 1n)\n.tran 1n 10n' },
   { feature: 'external source waveform', netlist: 'V1 in 0 EXTERNAL\n.tran 1n 10n' },
-  { feature: 'differential noise output', netlist: '.noise V(out,ref) V1 dec 10 1 1Meg' },
   { feature: 'differential pole-zero analysis', netlist: '.pz in ref out 0 vol pz' },
-
-
   { feature: 'control blocks', netlist: '.control\nop\n.endc' },
   { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
   { feature: 'measurements', netlist: '.measure tran peak MAX v(out)\n.op' },

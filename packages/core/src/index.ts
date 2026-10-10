@@ -26,7 +26,7 @@ export {
 } from './results.js';
 export type {
   SimulationResult, StepResult, PoleZeroValue, SensitivityEntry, ComplexSensitivityValue,
-  ComplexDistortionValue, DistortionOrder,
+  ComplexDistortionValue, DistortionOrder, DistortionIntermodulationProduct, DistortionProduct,
 } from './results.js';
 export type {
   SimulationOptions,

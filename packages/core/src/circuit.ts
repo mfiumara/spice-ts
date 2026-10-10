@@ -160,6 +160,13 @@ function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string 
         base = 'DC 0';
     }
   }
+  if (wf.type !== 'dc' && wf.type !== 'ac') {
+    const prefix = [
+      wf.dc !== undefined ? `DC ${formatNumber(wf.dc)}` : '',
+      wf.ac ? `AC ${formatNumber(wf.ac.magnitude)} ${formatNumber(wf.ac.phase)}` : '',
+    ].filter(Boolean).join(' ');
+    if (prefix) base = `${prefix} ${base}`;
+  }
   const distortion = [
     wf.distortionF1
       ? `DISTOF1 ${formatNumber(wf.distortionF1.magnitude)} ${formatNumber(wf.distortionF1.phase)}`
@@ -229,9 +236,9 @@ function formatAnalysis(analysis: AnalysisDirective | PoleZeroAnalysis): string 
     case 'ac':
       return `.ac ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
     case 'noise':
-      return `.noise v(${analysis.outputNode}) ${analysis.inputSource} ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
+      return `.noise v(${analysis.outputNode}${analysis.outputReferenceNode === undefined ? '' : `,${analysis.outputReferenceNode}`}) ${analysis.inputSource} ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
     case 'disto':
-      return `.disto dec ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
+      return `.disto dec ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}${analysis.f2OverF1 === undefined ? '' : ` ${formatNumber(analysis.f2OverF1)}`}`;
     case 'tf':
       return `.tf v(${analysis.outputNode}) ${analysis.inputSource}`;
     case 'pz':
@@ -689,8 +696,8 @@ export class Circuit {
   addAnalysis(type: 'dc', params: { source: string; start: number; stop: number; step: number }): void;
   addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; useInitialConditions?: boolean }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
-  addAnalysis(type: 'noise', params: { outputNode: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
-  addAnalysis(type: 'disto', params: { variation: 'dec'; points: number; startFreq: number; stopFreq: number }): void;
+  addAnalysis(type: 'noise', params: { outputNode: string; outputReferenceNode?: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
+  addAnalysis(type: 'disto', params: { variation: 'dec'; points: number; startFreq: number; stopFreq: number; f2OverF1?: number }): void;
   addAnalysis(type: 'tf', params: { outputNode: string; inputSource: string }): void;
   addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur' | 'vol'; mode: 'pol' | 'pz' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'dc' }): void;
@@ -737,6 +744,9 @@ export class Circuit {
         this._analyses.push({
           type: 'noise',
           outputNode: params!.outputNode as string,
+          ...(params!.outputReferenceNode === undefined
+            ? {}
+            : { outputReferenceNode: params!.outputReferenceNode as string }),
           inputSource: params!.inputSource as string,
           variation: params!.variation as 'dec' | 'oct' | 'lin',
           points: params!.points as number,
@@ -755,7 +765,11 @@ export class Circuit {
             || !Number.isInteger(params!.points) || (params!.points as number) < 1
             || !Number.isFinite(params!.startFreq) || (params!.startFreq as number) <= 0
             || !Number.isFinite(params!.stopFreq)
-            || (params!.stopFreq as number) < (params!.startFreq as number)) {
+            || (params!.stopFreq as number) < (params!.startFreq as number)
+            || (params!.f2OverF1 !== undefined
+              && (!Number.isFinite(params!.f2OverF1)
+                || (params!.f2OverF1 as number) <= 0
+                || (params!.f2OverF1 as number) >= 1))) {
           throw new InvalidCircuitError('Invalid .disto dec sweep');
         }
         this._analyses.push({
@@ -764,6 +778,9 @@ export class Circuit {
           points: params!.points as number,
           startFreq: params!.startFreq as number,
           stopFreq: params!.stopFreq as number,
+          ...(params!.f2OverF1 === undefined
+            ? {}
+            : { f2OverF1: params!.f2OverF1 as number }),
         });
         break;
       case 'tf':
@@ -1284,6 +1301,31 @@ export class Circuit {
             nodes: [junction, cathode],
             params: { ...desc.params, RS: 0 },
           });
+        } else {
+          result.push(desc);
+        }
+        continue;
+      }
+
+      if (desc.type === 'Q') {
+        const model = this._models.get(desc.modelName!);
+        if (model?.type === 'NPN' || model?.type === 'PNP') {
+          let [collector, base, emitter] = desc.nodes;
+          for (const [parameter, terminal] of [
+            ['RC', collector], ['RB', base], ['RE', emitter],
+          ] as const) {
+            const resistance = model.params[parameter];
+            if (!isPositiveFinite(resistance)) continue;
+            const internal = internalNodeName(desc.name, parameter.toLowerCase());
+            result.push({
+              type: 'R', name: `${desc.name}.${parameter}`, nodes: [terminal, internal],
+              value: resistance,
+            });
+            if (parameter === 'RC') collector = internal;
+            else if (parameter === 'RB') base = internal;
+            else emitter = internal;
+          }
+          result.push({ ...desc, nodes: [collector, base, emitter] });
         } else {
           result.push(desc);
         }
