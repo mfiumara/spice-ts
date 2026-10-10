@@ -1,10 +1,10 @@
 # Issue 321 aggregate parity refresh receipt
 
-This receipt covers the 100-fixture aggregate run from current `main` after squash-merged PRs #310, #311, #313, #316, and #317. It makes no M1 completion, parity, speed, or superiority claim.
+This receipt covers the 100-fixture aggregate run at `main` commit `4f1d71971f1b4c77a1de0f31c81f30bf924f6b1e`, after squash-merged PRs #310, #311, #313, #316, #317, #330, #331, #314, and #329. It makes no M1 completion, parity, speed, or superiority claim.
 
 ## Inputs and tools
 
-- Base commit: `cefd1bfdff1fd4b72649dd63fd3696260b65d7b2`.
+- Base commit: `4f1d71971f1b4c77a1de0f31c81f30bf924f6b1e`.
 - Previous accepted aggregate: issue #301, PR #312, head `ac7dc9d8edf034bf35f589d078126ddb84224c82`, deterministic outcome `68b0a9edd25c1fc5c89644397dedfa8ba2b6ebcbd1c247463887f6d4fec44369`.
 - Aggregate corpus-tree SHA-256: `01b19fe5baf170d91aa5bd72c3ffb3891ed2f2c45cca5adfee8288552a7e14f1`.
 - `benchmarks/SOURCES.md` SHA-256: `b6540a743d176a01cc8e8aff6412655cc09f5fbf30554a53222c1d290c3029a1`.
@@ -13,6 +13,7 @@ This receipt covers the 100-fixture aggregate run from current `main` after squa
 - The aggregate corpus-tree hash changed because PR #311 changed `benchmarks/corpus/classic/report.ts` and its test. The manifests and all 100 fixture files are byte-identical to PR #312.
 - Apple M5 Pro, macOS 27.0.1 (Darwin 27.0.0) arm64, Node v22.23.1, pnpm 10.28.1, spice-ts 0.3.0, ngspice-47.
 - Both engines received the same recorded fixture bytes. No fixture, source record, manifest, or per-circuit tolerance changed.
+- The final current-main sync added the scoped MOS test timeout from #330, the LTRA scope document from #331, current-source noise support from #314, and the LTRA baseline capture from #329. None changes an aggregate fixture or an analysis exercised by this report. `pnpm exec tsx benchmarks/aggregate-report.ts --check` reproduced the same deterministic outcome, so the generated JSON and Markdown were not regenerated.
 
 ## Aggregate result
 
