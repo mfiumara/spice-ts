@@ -280,6 +280,21 @@ import { simulate, simulateStepStream } from '../simulate.js';
 import type { StepStreamEvent } from '../types.js';
 
 describe('.step + .op integration', () => {
+  it('executes a case-insensitive TEMP LIST sweep', async () => {
+    const result = await simulate(`
+      V1 in 0 DC 1
+      R1 in 0 1k
+      .op
+      .step temp LIST -55 25 72
+    `, { stepWorkers: false });
+
+    expect(result.steps!.map(step => [step.paramName, step.paramValue])).toEqual([
+      ['TEMP', -55],
+      ['TEMP', 25],
+      ['TEMP', 72],
+    ]);
+  });
+
   it('sweeps resistor in voltage divider', async () => {
     const result = await simulate(`
       V1 1 0 DC 10
