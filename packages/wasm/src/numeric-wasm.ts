@@ -131,7 +131,7 @@ function simulateTransient(
   request: SimulationRequestV1,
   exports: NumericWasmExports,
 ): SimulationResultV1 {
-  const pointCount = Math.ceil(transient.stopTime / transient.timestep) + 1;
+  const pointCount = transientPointCount(transient.stopTime, transient.timestep);
   const pointLimit = Math.min(
     NUMERIC_WASM_LIMITS.maxResultPoints,
     request.options?.limits?.maxResultPoints ?? Infinity,
@@ -176,10 +176,21 @@ function simulateTransient(
     compiled.branchNames.forEach((name, index) => currentsA[name]!.push(solution[compiled.nodeCount + index]!));
   }
 
-  return {
+  const result: SimulationResultV1 = {
     status: 'complete',
     analyses: [{ type: 'tran', analysisIndex: 0, timeS, voltagesV, currentsA }],
   };
+  enforceSerializedResultLimit(result, request);
+  return result;
+}
+
+function transientPointCount(stopTime: number, timestep: number): number {
+  const intervalCount = stopTime / timestep;
+  const nearestInteger = Math.round(intervalCount);
+  const tolerance = Number.EPSILON * Math.max(1, Math.abs(intervalCount)) * 2;
+  return (Math.abs(intervalCount - nearestInteger) <= tolerance
+    ? nearestInteger
+    : Math.ceil(intervalCount)) + 1;
 }
 
 function stampTransientSystem(
@@ -343,16 +354,19 @@ function simulateAc(
       voltagePhasors, currentPhasors,
     }],
   };
-  const serializedLimit = request.options?.limits?.maxSerializedResultBytes;
-  if (serializedLimit !== undefined) {
-    const observed = new TextEncoder().encode(JSON.stringify(result)).byteLength;
-    if (observed > serializedLimit) {
-      throw numericError('RESOURCE_LIMIT', "Resource limit 'maxSerializedResultBytes' exceeded", 'serialize', {
-        limit: 'maxSerializedResultBytes', configured: serializedLimit, observed,
-      });
-    }
-  }
+  enforceSerializedResultLimit(result, request);
   return result;
+}
+
+function enforceSerializedResultLimit(result: SimulationResultV1, request: SimulationRequestV1): void {
+  const configured = request.options?.limits?.maxSerializedResultBytes;
+  if (configured === undefined) return;
+  const observed = new TextEncoder().encode(JSON.stringify(result)).byteLength;
+  if (observed > configured) {
+    throw numericError('RESOURCE_LIMIT', "Resource limit 'maxSerializedResultBytes' exceeded", 'serialize', {
+      limit: 'maxSerializedResultBytes', configured, observed,
+    });
+  }
 }
 
 function polar(real: number, imaginary: number): { magnitude: number; phaseDegrees: number } {
@@ -447,7 +461,7 @@ function validateCards(cards: string[], analysis: 'op' | 'tran' | 'ac'): void {
       }
     } else if (analysis === 'tran') {
       const dc = tokens.length === 5 && tokens[3]?.toUpperCase() === 'DC';
-      const pulse = /\bPULSE\s*\(/i.test(card);
+      const pulse = /^\S+\s+\S+\s+\S+\s+PULSE\s*\([^)]*\)\s*$/i.test(card);
       if (tokens.length !== 4 && !dc && !pulse) {
         unsupported('source-waveform', 'Transient sources must use a constant, DC, or PULSE value');
       }
