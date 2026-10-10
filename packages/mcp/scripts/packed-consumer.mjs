@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -8,6 +8,7 @@ const packageRoot = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const workspaceRoot = resolve(packageRoot, '../..');
 const consumerRoot = mkdtempSync(join(tmpdir(), 'spice-ts-mcp-consumer-'));
 const packsRoot = join(consumerRoot, 'packs');
+const expectedWorkflow = fileURLToPath(new URL('../examples/agent-output.json', import.meta.url));
 
 function run(command, args, cwd) {
   const result = spawnSync(command, args, { cwd, encoding: 'utf8' });
@@ -72,7 +73,15 @@ const { executeTool } = require('@spice-ts/mcp');
     throw new Error('Packed consumer unexpectedly hoisted @spice-ts/core to its root node_modules');
   }
   run('node', ['consumer.cjs'], consumerRoot);
-  console.log('Packed MCP consumer simulated successfully without a hoisted core dependency.');
+
+  const packagedExample = join(consumerRoot, 'node_modules', '@spice-ts', 'mcp', 'examples', 'agent.mjs');
+  if (!existsSync(packagedExample)) throw new Error('Packed MCP workflow example is missing');
+  const actual = run('node', [packagedExample], consumerRoot);
+  const expected = readFileSync(expectedWorkflow, 'utf8');
+  if (actual !== expected) {
+    throw new Error(`Packed stdio workflow output drifted.\nExpected:\n${expected}\nActual:\n${actual}`);
+  }
+  console.log('Packed MCP consumer and bounded stdio workflow passed.');
 } finally {
   rmSync(consumerRoot, { recursive: true, force: true });
 }
