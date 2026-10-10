@@ -193,6 +193,11 @@ export class GilbertPeierlsSolver implements SparseSolver {
     const nonzeroList = this.nonzeroList;
     const activeK = this.activeK;
 
+    // A failed numeric pass invalidates the previous factors. Clear the dense
+    // workspace up front as a singular pass exits before per-column cleanup.
+    this.factorized = false;
+    workspace.fill(0);
+
     // Initialize permutation and work arrays
     for (let i = 0; i < n; i++) perm[i] = i;
     pivotOrigRow.fill(-1);
@@ -404,7 +409,9 @@ export class GilbertPeierlsSolver implements SparseSolver {
     }
 
     // Backward substitution: Ux = y (using cached diagonal positions)
-    const x = new Float64Array(n);
+    // The RHS is caller-owned scratch at every internal call site. Reusing it
+    // as x avoids allocating another n-element vector for every Newton solve.
+    const x = b;
     for (let j = n - 1; j >= 0; j--) {
       x[j] = y[j] / uValues[uDiagIdx[j]];
       for (let p = uColPtr[j]; p < uColPtr[j + 1]; p++) {

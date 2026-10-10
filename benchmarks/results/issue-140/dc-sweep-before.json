@@ -1,0 +1,42 @@
+{
+  "command": "node benchmarks/results/issue-140/profiles/profile-dc-sweep.mjs benchmarks/results/issue-140/dc-sweep-before.json",
+  "netlistSha256": "01f006d766bcdf66c8b592348bf4d789dbe5756846b0cacea5eb9646b76754c0",
+  "methodology": {
+    "warmups": 3,
+    "runs": 10,
+    "statistic": "median wall time",
+    "circuit": "1,001-point linear resistor-divider DC sweep; byte-identical netlist"
+  },
+  "spiceTs": {
+    "timesMs": [
+      1.1417089999999988,
+      1.1297499999999978,
+      0.7815000000000012,
+      0.666875000000001,
+      0.721584,
+      0.8108339999999998,
+      0.843833,
+      0.6707499999999982,
+      0.7138750000000016,
+      0.6935830000000038
+    ],
+    "medianMs": 0.7815000000000012,
+    "peakRssMiB": 57.328125
+  },
+  "ngspice": {
+    "timesMs": [
+      13.562082999999987,
+      13.320290999999997,
+      13.209000000000003,
+      13.095209000000011,
+      13.179124999999999,
+      12.969625000000008,
+      13.137125000000026,
+      13.011415999999997,
+      13.184542000000022,
+      13.149499999999989
+    ],
+    "medianMs": 13.179124999999999,
+    "peakRssMiB": 10.265625
+  }
+}
