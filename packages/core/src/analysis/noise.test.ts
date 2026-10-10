@@ -152,6 +152,24 @@ describe('.noise analysis', () => {
     await expect(simulate(deck)).rejects.toThrow(expected);
   });
 
+  it.each([
+    ['non-source bulk', 'bulk', ''],
+    ['GAMMA body effect', '0', ' GAMMA=0.5'],
+    ['PHI body effect', '0', ' PHI=0.6'],
+    ['reviewer non-ground bulk plus GAMMA/PHI repro', 'bulk', ' GAMMA=0.5 PHI=0.6'],
+  ])('rejects a MOS1 %s form instead of silently returning non-parity noise', async (
+    _name, bulkNode, modelSuffix,
+  ) => {
+    const deck = mosfetFixture
+      .replace('Vgate gate 0 DC 2 AC 1', 'Vgate gate 0 DC 2 AC 1\n    Vbody bulk 0 DC -1')
+      .replace('M1 out gate 0 0 NMOD', `M1 out gate 0 ${bulkNode} NMOD`)
+      .replace('KF=1e-25 AF=1', `KF=1e-25 AF=1${modelSuffix}`);
+
+    await expect(simulate(deck)).rejects.toThrow(
+      new InvalidCircuitError(".noise does not support MOSFET bulk/body-effect form for 'M1'"),
+    );
+  });
+
   it('omits integrated totals when ngspice does not create an integrated-noise plot', async () => {
     const result = await simulate(fixture.replace('lin 5 100 500', 'dec 3 100 100'));
 
