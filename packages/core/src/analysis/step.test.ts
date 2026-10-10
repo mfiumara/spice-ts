@@ -187,6 +187,37 @@ describe('Circuit.addStep', () => {
     expect(compiled.steps[0].sweepMode).toBe('list');
     expect(compiled.steps[0].values).toEqual([1000, 10000, 100000]);
   });
+
+  it('rejects nested or multi-dimensional builder sweeps explicitly', () => {
+    const ckt = new Circuit();
+    ckt.addStep('R1', { values: [1000, 2000] });
+
+    expect(() => ckt.addStep('R2', { values: [1000, 2000] })).toThrow(
+      'Multiple .step directives are not supported; nested or multi-dimensional stepping is unsupported',
+    );
+  });
+
+  it.each(['step-first', 'noise-first'] as const)(
+    'rejects programmatic .step plus .noise in %s order',
+    order => {
+      const ckt = new Circuit();
+      const addStep = () => ckt.addStep('R1', { values: [1000, 2000] });
+      const addNoise = () => ckt.addAnalysis('noise', {
+        outputNode: 'out',
+        inputSource: 'V1',
+        variation: 'lin',
+        points: 5,
+        startFreq: 100,
+        stopFreq: 500,
+      });
+
+      const first = order === 'step-first' ? addStep : addNoise;
+      const second = order === 'step-first' ? addNoise : addStep;
+      first();
+
+      expect(second).toThrow('.step cannot be combined with .noise');
+    },
+  );
 });
 
 describe('.step netlist parsing', () => {

@@ -65,7 +65,6 @@ function parseNetlist(
 
   let subcktCollector: { name: string; ports: string[]; params: Record<string, number>; body: string[]; depth: number } | null = null;
   let hasNoiseAnalysis = false;
-  let hasTransferFunctionAnalysis = false;
   let hasPoleZeroAnalysis = false;
   let hasSensitivityAnalysis = false;
   let hasStepAnalysis = false;
@@ -124,13 +123,6 @@ function parseNetlist(
             raw,
           );
         }
-        if ((first === '.TF' && hasStepAnalysis) || (first === '.STEP' && hasTransferFunctionAnalysis)) {
-          throw new ParseError(
-            '.step cannot be combined with .tf',
-            lineNumber,
-            raw,
-          );
-        }
         if ((first === '.PZ' && hasStepAnalysis) || (first === '.STEP' && hasPoleZeroAnalysis)) {
           throw new ParseError(
             '.step cannot be combined with .pz',
@@ -146,9 +138,15 @@ function parseNetlist(
           );
         }
         if (first === '.NOISE') hasNoiseAnalysis = true;
-        if (first === '.TF') hasTransferFunctionAnalysis = true;
         if (first === '.PZ') hasPoleZeroAnalysis = true;
         if (first === '.SENS') hasSensitivityAnalysis = true;
+        if (first === '.STEP' && hasStepAnalysis) {
+          throw new ParseError(
+            'Multiple .step directives are not supported; nested or multi-dimensional stepping is unsupported',
+            lineNumber,
+            raw,
+          );
+        }
         if (first === '.STEP') hasStepAnalysis = true;
         parseDotCommand(circuit, tokens, lineNumber);
       } else {
@@ -276,6 +274,18 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
       break;
     }
     case '.TF': {
+      if (tokens[1]?.toUpperCase() === 'I') {
+        throw new ParseError(
+          ".tf current output is not supported; expected '.tf v(node) source'",
+          lineNumber, tokens.join(' '),
+        );
+      }
+      if (tokens[1]?.toUpperCase() === 'V' && tokens.length > 6) {
+        throw new ParseError(
+          ".tf differential voltage output is not supported; expected '.tf v(node) source'",
+          lineNumber, tokens.join(' '),
+        );
+      }
       const isSingleNodeVoltageForm = tokens.length === 6
         && tokens[1].toUpperCase() === 'V'
         && tokens[2] === '('

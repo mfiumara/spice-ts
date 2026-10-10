@@ -111,10 +111,9 @@ export async function simulate(
 
   if (compiled.steps.length > 0) {
     if (compiled.steps.length > 1) {
-      warnings.push({
-        type: 'unsupported',
-        message: 'Multiple .step directives found; only the first is used. Nested sweeps are not yet supported.',
-      });
+      throw new InvalidCircuitError(
+        'Multiple .step directives are not supported; nested or multi-dimensional stepping is unsupported',
+      );
     }
     const parallelResults = typeof input === 'string'
       ? await solveStepInWorkers(input, compiled.steps[0], options, warnings, convergence)

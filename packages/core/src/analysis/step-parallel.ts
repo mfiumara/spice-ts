@@ -1,5 +1,7 @@
 import type { SimulationResult, StepResult } from '../results.js';
-import { ACResult, DCResult, DCSweepResult, TransientResult } from '../results.js';
+import {
+  ACResult, DCResult, DCSweepResult, TransferFunctionResult, TransientResult,
+} from '../results.js';
 import type {
   ConvergenceTelemetry, SimulationOptions, SimulationWarning, StepAnalysis,
   StepWorker, StepWorkerTask,
@@ -15,11 +17,17 @@ interface PlainResult {
   time?: number[];
   frequencies?: number[];
   sweepValues?: Float64Array;
+  outputNode?: string;
+  inputSource?: string;
+  transfer?: number;
+  inputResistance?: number;
+  outputResistance?: number;
 }
 
 function reviveStepResult(step: StepResult): StepResult {
   const plain = step as unknown as {
     dc?: PlainResult; transient?: PlainResult; ac?: PlainResult; dcSweep?: PlainResult;
+    transferFunction?: PlainResult;
   };
   return {
     paramName: step.paramName,
@@ -44,6 +52,15 @@ function reviveStepResult(step: StepResult): StepResult {
         plain.dcSweep.voltageArrays as Map<string, Float64Array>,
         plain.dcSweep.currentArrays as Map<string, Float64Array>,
       ) : step.dcSweep,
+    transferFunction: plain.transferFunction
+      && !(plain.transferFunction instanceof TransferFunctionResult)
+      ? new TransferFunctionResult(
+        plain.transferFunction.outputNode!,
+        plain.transferFunction.inputSource!,
+        plain.transferFunction.transfer!,
+        plain.transferFunction.inputResistance!,
+        plain.transferFunction.outputResistance!,
+      ) : step.transferFunction,
   };
 }
 

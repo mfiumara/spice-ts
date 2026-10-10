@@ -711,6 +711,9 @@ export class Circuit {
         });
         break;
       case 'noise':
+        if (this._steps.length > 0) {
+          throw new InvalidCircuitError('.step cannot be combined with .noise');
+        }
         this._analyses.push({
           type: 'noise',
           outputNode: params!.outputNode as string,
@@ -782,11 +785,19 @@ export class Circuit {
     points?: number;
     values?: number[];
   }): void {
+    if (this._steps.length > 0) {
+      throw new InvalidCircuitError(
+        'Multiple .step directives are not supported; nested or multi-dimensional stepping is unsupported',
+      );
+    }
     if (this._poleZeroAnalyses.length > 0) {
       throw new InvalidCircuitError('.step cannot be combined with .pz');
     }
     if (this._analyses.some(analysis => analysis.type === 'sens')) {
       throw new InvalidCircuitError('.step cannot be combined with .sens');
+    }
+    if (this._analyses.some(analysis => analysis.type === 'noise')) {
+      throw new InvalidCircuitError('.step cannot be combined with .noise');
     }
     if (opts.values) {
       this._steps.push({ type: 'step', param, sweepMode: 'list', values: opts.values });
