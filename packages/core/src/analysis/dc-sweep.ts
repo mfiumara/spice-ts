@@ -12,6 +12,7 @@ import {
   createConvergenceTelemetry, snapshotConvergenceTelemetry,
 } from '../convergence-telemetry.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
+import { directedLinearPointCount, directedLinearPointValue } from './directed-linear-grid.js';
 
 export function solveDCSweep(
   compiled: CompiledCircuit,
@@ -58,14 +59,18 @@ export function solveDCSweep(
     for (let outer = 0; outer < secondaryPoints; outer++) {
       const secondarySweepValue = analysis.secondary === undefined
         ? undefined
-        : analysis.secondary.start + outer * analysis.secondary.step;
+        : directedLinearPointValue(
+          analysis.secondary.start, analysis.secondary.stop, analysis.secondary.step, outer,
+        );
       if (secondarySource !== undefined && secondarySweepValue !== undefined) {
         secondarySource.waveform = { type: 'dc', value: secondarySweepValue };
       }
       for (let inner = 0; inner < primaryPoints; inner++) {
         guard?.recordResultPoint();
         const i = outer * primaryPoints + inner;
-        const sweepValue = analysis.start + inner * analysis.step;
+        const sweepValue = directedLinearPointValue(
+          analysis.start, analysis.stop, analysis.step, inner,
+        );
         sweepValues[i] = sweepValue;
         if (secondarySweepValues !== undefined) {
           secondarySweepValues[i] = secondarySweepValue!;
@@ -127,7 +132,7 @@ function resolveSweepSource(
 }
 
 function sweepPointCount(sweep: DCSweepDimension): number {
-  return Math.round((sweep.stop - sweep.start) / sweep.step) + 1;
+  return directedLinearPointCount(sweep.start, sweep.stop, sweep.step);
 }
 
 function assertDCSweepDimension(sweep: DCSweepDimension): void {

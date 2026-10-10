@@ -209,4 +209,31 @@ describe('DC Sweep via simulate()', () => {
     expect([...text.voltage('inner')]).toEqual([...text.sweepValues]);
     expect([...text.voltage('outer')]).toEqual([...text.secondarySweepValues!]);
   });
+
+  it('stops non-divisible nested sweeps before either source overshoots', async () => {
+    const result = await simulate(`
+      V1 inner 0 DC 0
+      V2 outer 0 DC 0
+      R1 inner outer 1k
+      .dc V1 0 1 0.6 V2 0 1 0.6
+      .end
+    `);
+
+    const sweep = result.dcSweep!;
+    expect([...sweep.sweepValues]).toEqual([0, 0.6, 0, 0.6]);
+    expect([...sweep.secondarySweepValues!]).toEqual([0, 0, 0.6, 0.6]);
+    expect([...sweep.sweepValues]).not.toContain(1.2);
+    expect([...sweep.secondarySweepValues!]).not.toContain(1.2);
+  });
+
+  it('does not expose a rounded endpoint beyond the directed stop', async () => {
+    const result = await simulate(`
+      V1 out 0 DC 0
+      R1 out 0 1k
+      .dc V1 0 0.3 0.1
+      .end
+    `);
+
+    expect([...result.dcSweep!.sweepValues]).toEqual([0, 0.1, 0.2, 0.3]);
+  });
 });

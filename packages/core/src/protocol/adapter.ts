@@ -43,6 +43,7 @@ import {
   ProtocolExecutionGuard,
   type ProtocolExecutionOptionsV1,
 } from './execution-guard.js';
+import { directedLinearPointCount } from '../analysis/directed-linear-grid.js';
 
 const MAX_DETAIL_NAMES = 32;
 
@@ -318,8 +319,7 @@ function estimatedAnalysisPoints(analysis: AnalysisDirective): number {
 }
 
 function finiteLinearPoints(start: number, stop: number, step: number): number {
-  if (![start, stop, step].every(Number.isFinite) || step === 0) return 0;
-  return Math.max(0, Math.floor(Math.abs((stop - start) / step) + 1 + 1e-12));
+  return directedLinearPointCount(start, stop, step);
 }
 
 function resultPointCount(analyses: readonly AnalysisResultV1[]): number {
