@@ -1290,6 +1290,31 @@ export class Circuit {
         continue;
       }
 
+      if (desc.type === 'Q') {
+        const model = this._models.get(desc.modelName!);
+        if (model?.type === 'NPN' || model?.type === 'PNP') {
+          let [collector, base, emitter] = desc.nodes;
+          for (const [parameter, terminal] of [
+            ['RC', collector], ['RB', base], ['RE', emitter],
+          ] as const) {
+            const resistance = model.params[parameter];
+            if (!isPositiveFinite(resistance)) continue;
+            const internal = internalNodeName(desc.name, parameter.toLowerCase());
+            result.push({
+              type: 'R', name: `${desc.name}.${parameter}`, nodes: [terminal, internal],
+              value: resistance,
+            });
+            if (parameter === 'RC') collector = internal;
+            else if (parameter === 'RB') base = internal;
+            else emitter = internal;
+          }
+          result.push({ ...desc, nodes: [collector, base, emitter] });
+        } else {
+          result.push(desc);
+        }
+        continue;
+      }
+
       if (desc.type === 'J') {
         const modelName = desc.modelName!;
         const model = this._models.get(modelName);

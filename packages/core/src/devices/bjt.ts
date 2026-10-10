@@ -11,11 +11,14 @@ export interface BJTParams {
   IKF: number;
   ISE: number;
   NE: number;
+  RB: number;
+  RC: number;
+  RE: number;
   polarity: number; // 1 for NPN, -1 for PNP
 }
 
 const SUPPORTED_MODEL_PARAMETERS = new Set([
-  'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'IKF', 'ISE', 'NE',
+  'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'IKF', 'ISE', 'NE', 'RB', 'RC', 'RE',
 ]);
 
 const VT = 0.02585; // Thermal voltage at 300K
@@ -53,6 +56,9 @@ export function resolveBJTParams(
     IKF: params.IKF ?? Infinity,
     ISE: params.ISE ?? 0,
     NE: params.NE ?? 1.5,
+    RB: params.RB ?? 0,
+    RC: params.RC ?? 0,
+    RE: params.RE ?? 0,
     polarity: params.polarity ?? 1,
   };
   if (resolved.LEVEL !== 1) {
@@ -60,7 +66,10 @@ export function resolveBJTParams(
   }
   if (resolved.BF <= 0 || resolved.BR <= 0 || resolved.IS <= 0
     || resolved.NF <= 0 || resolved.NR <= 0 || resolved.VAF <= 0
-    || resolved.IKF <= 0 || resolved.ISE < 0 || resolved.NE <= 0) {
+    || resolved.IKF <= 0 || resolved.ISE < 0 || resolved.NE <= 0
+    || resolved.RB < 0 || !Number.isFinite(resolved.RB)
+    || resolved.RC < 0 || !Number.isFinite(resolved.RC)
+    || resolved.RE < 0 || !Number.isFinite(resolved.RE)) {
     throw new Error('Invalid bounded BJT model parameter value');
   }
   return resolved;
