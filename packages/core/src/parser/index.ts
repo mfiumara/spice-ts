@@ -8,7 +8,11 @@ import { parseDiodeInstanceParams } from './diode-parser.js';
 import { parseBJTInstance } from './bjt-parser.js';
 import { parsePoleZero } from './pole-zero-parser.js';
 import { parseSensitivity } from './sensitivity-parser.js';
-import { parseTransmissionLine } from './transmission-line-parser.js';
+import {
+  parseLossyTransmissionLine,
+  parseLtraModelCard,
+  parseTransmissionLine,
+} from './transmission-line-parser.js';
 import { preprocess } from './preprocessor.js';
 import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -407,14 +411,9 @@ function parseDotCommand(
       break;
     }
     case '.MODEL': {
-      const model = parseModelCard(tokens, lineNumber);
-      if (model.type === 'LTRA') {
-        throw new ParseError(
-          'Lossy transmission line model LTRA is unsupported; use the bounded lossless T-card Z0/TD form',
-          lineNumber,
-          tokens.join(' '),
-        );
-      }
+      const model = tokens[2]?.toUpperCase() === 'LTRA'
+        ? parseLtraModelCard(tokens, lineNumber)
+        : parseModelCard(tokens, lineNumber);
       circuit.addModel(model);
       break;
     }
@@ -485,6 +484,13 @@ function parseDotCommand(
         const values: number[] = [];
         for (; idx < tokens.length; idx++) {
           values.push(parseNumber(tokens[idx]));
+        }
+        if (paramName.toUpperCase() === 'TEMP' && values.length === 0) {
+          throw new ParseError(
+            '.step TEMP LIST requires at least one value',
+            lineNumber,
+            context,
+          );
         }
         circuit.addStep(paramName, { values });
       } else {
@@ -725,14 +731,18 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
 
   switch (type) {
     case 'R': {
-      if (tokens.length > 4) {
+      const params = parseInstanceParams(tokens, 4);
+      const unsupported = Object.keys(params).filter(
+        parameter => !['TC1', 'TC2', 'TNOM'].includes(parameter),
+      );
+      if (unsupported.length > 0) {
         throw new ParseError(
-          `Unsupported resistor parameters: '${tokens.slice(4).join(' ')}'`,
+          `Unsupported resistor parameters: '${unsupported.join(' ')}'`,
           lineNumber, tokens.join(' '),
         );
       }
       const value = parseNumber(tokens[3]);
-      circuit.addResistor(name, tokens[1], tokens[2], value);
+      circuit.addResistor(name, tokens[1], tokens[2], value, params);
       break;
     }
     case 'C': {
@@ -760,12 +770,15 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
       );
       break;
     }
-    case 'O':
-      throw new ParseError(
-        'Lossy transmission line (LTRA) cards are unsupported; use the bounded lossless T-card Z0/TD form',
-        lineNumber,
-        tokens.join(' '),
+    case 'O': {
+      const { modelName } = parseLossyTransmissionLine(tokens, lineNumber);
+      circuit.addLossyTransmissionLine(
+        name,
+        tokens[1], tokens[2], tokens[3], tokens[4],
+        modelName,
       );
+      break;
+    }
     case 'V': {
       const waveform = parseSourceWaveform(tokens, 3);
       circuit.addVoltageSource(name, tokens[1], tokens[2], waveform);

@@ -71,10 +71,10 @@
           "error": "Error on line 9 or its substitute: .tran 0 1 0 100m TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: *trivial sweep of diode to produce i/v curve"
         },
         "spiceTs": {
-          "status": "failed",
+          "status": "unsupported",
           "convergence": "not-run",
           "analyses": [],
-          "error": "Step parameter device 'TEMP' not found"
+          "error": "no spice-ts result for analyses: tran"
         }
       }
     },
@@ -171,10 +171,10 @@
   "newlyExposedLosses": [
     {
       "id": "diode-level2-temperature-breakdown",
-      "status": "failed",
+      "status": "unsupported",
       "convergence": "not-run",
       "analyses": [],
-      "error": "Step parameter device 'TEMP' not found"
+      "error": "no spice-ts result for analyses: tran"
     }
   ]
 }

@@ -3,22 +3,49 @@ import type { DeviceModel, StampContext } from './device.js';
 export class Resistor implements DeviceModel {
   readonly branches: number[];
   readonly isNonlinear = false;
+  private nominalResistance: number;
+  private temperature = 27;
 
   constructor(
     readonly name: string,
     readonly nodes: number[],
     public resistance: number,
     readonly branchIndex?: number,
+    private readonly temperatureCoefficients: {
+      tc1?: number;
+      tc2?: number;
+      tnom?: number;
+    } = {},
   ) {
     this.branches = branchIndex === undefined ? [] : [branchIndex];
+    this.nominalResistance = resistance;
+    this.applyTemperature();
   }
 
   setParameter(value: number): void {
-    this.resistance = value;
+    this.nominalResistance = value;
+    this.applyTemperature();
   }
 
   getParameter(): number {
-    return this.resistance;
+    return this.nominalResistance;
+  }
+
+  setTemperature(value: number): void {
+    this.temperature = value;
+    this.applyTemperature();
+  }
+
+  getTemperature(): number {
+    return this.temperature;
+  }
+
+  private applyTemperature(): void {
+    const delta = this.temperature - (this.temperatureCoefficients.tnom ?? 27);
+    const factor = 1
+      + (this.temperatureCoefficients.tc1 ?? 0) * delta
+      + (this.temperatureCoefficients.tc2 ?? 0) * delta * delta;
+    this.resistance = this.nominalResistance * factor;
   }
 
   stamp(ctx: StampContext): void {
