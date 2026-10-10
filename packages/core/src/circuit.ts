@@ -26,6 +26,10 @@ import { parseModelCard } from './parser/model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
 import {
+  parseDiodeInstanceParams,
+  type DiodeInstanceParams,
+} from './parser/diode-parser.js';
+import {
   resolveCapacitance,
   resolveCapacitorModel,
   resolveInductance,
@@ -163,7 +167,7 @@ function formatDevice(desc: DeviceDescriptor): string {
     case 'I':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatWaveform(desc.waveform)}`;
     case 'D':
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.modelName ?? ''}`.trim();
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.modelName ?? ''}${tail}`.trim();
     case 'Q':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.nodes[2]} ${desc.modelName ?? ''}`.trim();
     case 'M':
@@ -491,11 +495,24 @@ export class Circuit {
    * @param nodeAnode - Anode node
    * @param nodeCathode - Cathode node
    * @param modelName - Name of a `.model D` card (optional; uses default diode model if omitted)
+   * @param instanceParams - Per-instance geometry (`AREA`, `PJ`, and multiplier `M`)
    */
-  addDiode(name: string, nodeAnode: string, nodeCathode: string, modelName?: string): void {
+  addDiode(
+    name: string,
+    nodeAnode: string,
+    nodeCathode: string,
+    modelName?: string,
+    instanceParams?: DiodeInstanceParams,
+  ): void {
     this.nodeSet.add(nodeAnode);
     this.nodeSet.add(nodeCathode);
-    this.descriptors.push({ type: 'D', name, nodes: [nodeAnode, nodeCathode], modelName });
+    this.descriptors.push({
+      type: 'D',
+      name,
+      nodes: [nodeAnode, nodeCathode],
+      modelName,
+      params: instanceParams ? { ...instanceParams } : undefined,
+    });
   }
 
   /**
@@ -876,13 +893,17 @@ export class Circuit {
         case 'D': {
           const modelName = desc.modelName;
           const modelParams = modelName ? this._models.get(modelName)?.params ?? {} : {};
+          const { RS: seriesResistanceOverride, ...instanceParams } = desc.params ?? {};
           const hasExpandedSeriesResistance = isPositiveFinite(modelParams.RS)
-            && desc.params?.RS === 0;
+            && seriesResistanceOverride === 0;
           devices.push(new Diode(
             desc.name,
             nodeIndices,
-            { ...modelParams, ...desc.params },
+            seriesResistanceOverride === undefined
+              ? modelParams
+              : { ...modelParams, RS: seriesResistanceOverride },
             hasExpandedSeriesResistance,
+            instanceParams,
           ));
           break;
         }
@@ -1036,8 +1057,12 @@ export class Circuit {
         const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
         const seriesResistance = desc.params?.RS ?? model?.params.RS;
         const junctionCapacitance = desc.params?.CJ0 ?? model?.params.CJ0;
+        const sidewallCapacitance = model?.params.CJSW ?? model?.params.CJP;
+        const effectiveArea = (desc.params?.AREA ?? 1) * (desc.params?.M ?? 1);
+        const effectivePerimeter = (desc.params?.PJ ?? 0) * (desc.params?.M ?? 1);
         const transitTime = desc.params?.TT ?? model?.params.TT;
         const hasJunctionCharge = isPositiveFinite(junctionCapacitance)
+          || (isPositiveFinite(sidewallCapacitance) && effectivePerimeter > 0)
           || isPositiveFinite(transitTime);
         if (isPositiveFinite(seriesResistance) && hasJunctionCharge) {
           const [anode, cathode] = desc.nodes;
@@ -1046,7 +1071,7 @@ export class Circuit {
             type: 'R',
             name: `${desc.name}.RS`,
             nodes: [anode, junction],
-            value: seriesResistance,
+            value: seriesResistance / effectiveArea,
           });
           result.push({
             ...desc,
@@ -1344,10 +1369,12 @@ export class Circuit {
         }
         case 'D': {
           const modelName = tokens[3];
+          const evaluatedTokens = tokens.map(t => evalToken(t));
           result.push({
             type: 'D', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             modelName,
+            params: { ...parseDiodeInstanceParams(evaluatedTokens, 4) },
           });
           break;
         }

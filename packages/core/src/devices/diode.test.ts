@@ -23,6 +23,49 @@ describe('Diode', () => {
     expect(diode.isNonlinear).toBe(true);
   });
 
+  it('scales model parameters by instance area, perimeter, and multiplier', () => {
+    const diode = new Diode('D1', [0, -1], {
+      IS: 2,
+      JSW: 3,
+      RS: 12,
+      CJ0: 5,
+      CJSW: 7,
+      M: 0.4,
+    }, false, { AREA: 4, PJ: 6, M: 2 });
+
+    // AREAeff=AREA*M=8; PJeff=PJ*M=12.
+    expect(diode.params.IS).toBe(2 * 8 + 3 * 12);
+    expect(diode.params.RS).toBe(12 / 8);
+    expect(diode.params.CJ0).toBe(5 * 8);
+    expect(diode.params.CJSW).toBe(7 * 12);
+    expect(diode.params.M).toBe(0.4);
+  });
+
+  it('preserves default geometry behavior', () => {
+    const diode = new Diode('D1', [0, -1], {
+      IS: 2e-14,
+      RS: 12,
+      CJ0: 5e-12,
+    });
+
+    expect(diode.params.IS).toBe(2e-14);
+    expect(diode.params.RS).toBe(12);
+    expect(diode.params.CJ0).toBe(5e-12);
+    expect(diode.params.CJSW).toBe(0);
+  });
+
+  it('adds area and sidewall zero-bias capacitance', () => {
+    const diode = new Diode('D1', [0, -1], {
+      CJ0: 5e-12,
+      CJSW: 7e-12,
+    }, false, { AREA: 4, PJ: 6 });
+    const asm = new MNAAssembler(1, 0);
+
+    diode.stampDynamic(asm.getStampContext());
+
+    expect(asm.C.get(0, 0)).toBeCloseTo(62e-12, 12);
+  });
+
   it('includes model series resistance in the terminal conductance', () => {
     const asm = new MNAAssembler(1, 0);
     asm.solution[0] = 1;

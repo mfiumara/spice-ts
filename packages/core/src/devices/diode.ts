@@ -1,3 +1,4 @@
+import type { DiodeInstanceParams } from '../parser/diode-parser.js';
 import type { DeviceModel, StampContext } from './device.js';
 
 export interface DiodeParams {
@@ -5,9 +6,15 @@ export interface DiodeParams {
   N: number;
   BV: number;
   RS: number;
+  JSW?: number;
   CJ0?: number;
+  CJP?: number;
+  CJSW?: number;
   VJ?: number;
+  PHP?: number;
+  VJSW?: number;
   M?: number;
+  MJSW?: number;
   TT?: number;
 }
 
@@ -24,15 +31,24 @@ export class Diode implements DeviceModel {
     readonly nodes: number[],
     params: Partial<DiodeParams>,
     private readonly hasExternalSeriesResistance = false,
+    readonly instanceParams: DiodeInstanceParams = {},
   ) {
+    const effectiveArea = (instanceParams.AREA ?? 1) * (instanceParams.M ?? 1);
+    const effectivePerimeter = (instanceParams.PJ ?? 0) * (instanceParams.M ?? 1);
+    const junctionPotential = params.VJ ?? 0.7;
     this.params = {
-      IS: params.IS ?? 1e-14,
+      IS: (params.IS ?? 1e-14) * effectiveArea
+        + (params.JSW ?? 0) * effectivePerimeter,
       N: params.N ?? 1,
       BV: params.BV ?? Infinity,
-      RS: params.RS ?? 0,
-      CJ0: params.CJ0 ?? 0,
-      VJ: params.VJ ?? 0.7,
+      RS: (params.RS ?? 0) / effectiveArea,
+      JSW: params.JSW ?? 0,
+      CJ0: (params.CJ0 ?? 0) * effectiveArea,
+      CJSW: (params.CJSW ?? params.CJP ?? 0) * effectivePerimeter,
+      VJ: junctionPotential,
+      VJSW: params.VJSW ?? params.PHP ?? junctionPotential,
       M: params.M ?? 0.5,
+      MJSW: params.MJSW ?? 0.33,
       TT: params.TT ?? 0,
     };
   }
@@ -70,8 +86,8 @@ export class Diode implements DeviceModel {
   }
 
   stampDynamic(ctx: StampContext): void {
-    const { CJ0, VJ, M, TT, IS, N, RS } = this.params;
-    if (!CJ0 && !TT) return;
+    const { CJ0, CJSW, VJ, VJSW, M, MJSW, TT, IS, N, RS } = this.params;
+    if (!CJ0 && !CJSW && !TT) return;
 
     const [nA, nK] = this.nodes;
     const vA = nA >= 0 ? ctx.getVoltage(nA) : 0;
@@ -89,14 +105,8 @@ export class Diode implements DeviceModel {
       ? 1 / (1 + RS * operatingPoint.junctionConductance)
       : 1;
 
-    let cj = 0;
-    if (CJ0) {
-      if (junctionVoltage < 0.5 * VJ!) {
-        cj = CJ0 / Math.pow(1 - junctionVoltage / VJ!, M!);
-      } else {
-        cj = CJ0 / Math.pow(0.5, M!);
-      }
-    }
+    let cj = depletionCapacitance(junctionVoltage, CJ0!, VJ!, M!);
+    cj += depletionCapacitance(junctionVoltage, CJSW!, VJSW!, MJSW!);
 
     if (TT) {
       const junctionConductance = operatingPoint?.junctionConductance
@@ -116,6 +126,20 @@ export class Diode implements DeviceModel {
       ctx.stampC(nK, nA, -cj);
     }
   }
+}
+
+function depletionCapacitance(
+  junctionVoltage: number,
+  zeroBiasCapacitance: number,
+  junctionPotential: number,
+  gradingCoefficient: number,
+): number {
+  if (!zeroBiasCapacitance) return 0;
+  if (junctionVoltage < 0.5 * junctionPotential) {
+    return zeroBiasCapacitance
+      / Math.pow(1 - junctionVoltage / junctionPotential, gradingCoefficient);
+  }
+  return zeroBiasCapacitance / Math.pow(0.5, gradingCoefficient);
 }
 
 function diodeCurrent(
