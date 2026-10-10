@@ -145,20 +145,54 @@ describe('protocol-v1 capability and terminal envelopes', () => {
     assertWireSafe(terminal);
   });
 
-  it('recursively sanitizes caller identifiers, result keys, and nested failures', async () => {
+  it.each([
+    ['spice-ts first', 'V1 spice-ts 0 1\nR1 spice-ts 0 1k\nV2 spice-ts-js 0 2\nR2 spice-ts-js 0 1k\n.op'],
+    ['spice-ts-js first', 'V2 spice-ts-js 0 2\nR2 spice-ts-js 0 1k\nV1 spice-ts 0 1\nR1 spice-ts 0 1k\n.op'],
+  ])('preserves colliding caller identifiers with %s', async (_ordering, source) => {
     const success = await executeProtocolV1({
-      apiVersion: '1',
-      input: { format: 'spice', source: 'V1 spice-ts 0 1\nR1 spice-ts 0 1k\n.op' },
+      apiVersion: '1', input: { format: 'spice', source },
     }, { requestId: 'spice-ts', now: scriptedClock(0, 0, 1) });
+
+    expect(success.requestId).toBe('spice-ts');
+    expect(success.ok).toBe(true);
+    if (!success.ok || success.data.analyses[0]?.type !== 'op') return;
+    expect(success.data.analyses[0].voltagesV).toMatchObject({
+      'spice-ts': 1,
+      'spice-ts-js': 2,
+    });
+  });
+
+  it('recursively sanitizes backend-origin failure details', async () => {
     const failure = await executeProtocolV1(divider(), {
-      requestId: 'spice-ts', now: scriptedClock(0, 0, 1),
+      requestId: 'caller-id', now: scriptedClock(0, 0, 1),
       signal: { aborted: true, reason: { backend: 'spice-ts' } },
     });
 
-    assertWireSafe(success);
     assertWireSafe(failure);
-    expect(success.requestId).toBe('spice-ts-js');
-    expect(success.ok && Object.keys(success.data.analyses[0]!.type === 'op'
-      ? success.data.analyses[0]!.voltagesV : {})).toContain('spice-ts-js');
+  });
+
+  it('returns a terminal INVALID_REQUEST envelope for non-canonical input', async () => {
+    const request = divider();
+    request.options = { reltol: Number.NaN };
+
+    const terminal = await executeProtocolV1(request, {
+      requestId: 'req-non-canonical', now: scriptedClock(50, 50, 51),
+    });
+
+    expect(terminal).toMatchObject({
+      ok: false,
+      requestId: 'req-non-canonical',
+      error: {
+        code: 'INVALID_REQUEST',
+        phase: 'validation',
+        details: { reason: 'NON_FINITE_NUMBER', path: '/options/reltol' },
+      },
+      metadata: {
+        completion: 'failed', partial: false,
+        timing: { startedAtMs: 50, finishedAtMs: 51, durationMs: 1 },
+        counts: { requestedAnalyses: 1, completedAnalyses: 0, resultPoints: 0 },
+      },
+    });
+    assertWireSafe(terminal);
   });
 });
