@@ -31,7 +31,8 @@
   "scripts": {
     "build": "tsx scripts/build.ts",
     "pretest": "pnpm build",
-    "test": "vitest run && pnpm test:packed-consumer",
+    "test": "vitest run && pnpm test:readme-losses && pnpm test:packed-consumer",
+    "test:readme-losses": "tsx --test ../../benchmarks/results/issue-355/readme-losses.test.ts ../../benchmarks/results/issue-362/readme-losses.test.ts",
     "test:packed-consumer": "pnpm build && node scripts/packed-consumer.mjs",
     "bench:ac": "pnpm build && tsx scripts/ac-accuracy.ts",
     "bench:vccs-op": "pnpm build && tsx ../../benchmarks/wasm-vccs-op/compare.ts",
