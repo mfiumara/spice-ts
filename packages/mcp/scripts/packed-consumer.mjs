@@ -58,7 +58,7 @@ const { executeTool } = require('@spice-ts/mcp');
     },
   });
   if (result.isError) throw new Error(JSON.stringify(result.structuredContent));
-  if (result.structuredContent.analyses[0].nodeVoltages.in !== 1) {
+  if (result.structuredContent.analyses[0].voltagesV.in !== 1) {
     throw new Error('Unexpected operating-point result: ' + JSON.stringify(result.structuredContent));
   }
 })().catch((error) => {

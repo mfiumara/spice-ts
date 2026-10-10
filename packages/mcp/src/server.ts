@@ -9,6 +9,7 @@ import type {
   SpiceApiErrorV1,
 } from '@spice-ts/protocol';
 import type { CallToolResult, Tool } from '@modelcontextprotocol/sdk/types.js';
+import { createRequire } from 'node:module';
 import { Worker } from 'node:worker_threads';
 
 export interface McpLimits {
@@ -42,6 +43,12 @@ interface WorkerReply {
   type: 'result' | 'error';
   result?: unknown;
   error?: SpiceApiErrorV1;
+}
+
+interface WorkerRequest {
+  operation: 'validate' | 'simulate';
+  request: SimulationRequestV1;
+  coreModulePath: string;
 }
 
 export const DEFAULT_MCP_LIMITS: Readonly<McpLimits> = Object.freeze({
@@ -314,8 +321,8 @@ async function boundedCall<T>(operation: () => Promise<T>, wallTimeMs: number, s
 
 const workerSource = String.raw`
 const { parentPort } = require('node:worker_threads');
-parentPort.once('message', async ({ operation, request }) => {
-  const core = await import('@spice-ts/core');
+parentPort.once('message', async ({ operation, request, coreModulePath }) => {
+  const core = require(coreModulePath);
   try {
     const result = operation === 'validate'
       ? await core.validateProtocolV1(request)
@@ -326,6 +333,9 @@ parentPort.once('message', async ({ operation, request }) => {
   }
 });
 `;
+
+const packageRequire = createRequire(typeof __filename === 'string' ? __filename : import.meta.url);
+const coreModulePath = packageRequire.resolve('@spice-ts/core');
 
 function createExecutionWorker(): ExecutionWorker {
   return new Worker(workerSource, { eval: true }) as unknown as ExecutionWorker;
@@ -372,7 +382,8 @@ async function runInWorker<T>(
       { limit: 'maxWallTimeMs', maximum: wallTimeMs },
     ))), wallTimeMs);
     try {
-      worker.postMessage({ operation, request });
+      const message: WorkerRequest = { operation, request, coreModulePath };
+      worker.postMessage(message);
     } catch {
       finish(() => reject(workerFailure()));
     }
