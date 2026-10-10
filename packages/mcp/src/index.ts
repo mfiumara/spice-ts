@@ -1,9 +1,9 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { createToolExecutor, MCP_TOOLS } from './server.js';
-import type { ToolExecutionOptions } from './server.js';
+import type { ToolExecutorOptions } from './server.js';
 
-export function createMcpServer(options: Omit<ToolExecutionOptions, 'signal'> = {}): Server {
+export function createMcpServer(options: Omit<ToolExecutorOptions, 'signal'> = {}): Server {
   const executeTool = createToolExecutor(options);
   const server = new Server(
     { name: '@spice-ts/mcp', version: '0.3.0' },
@@ -21,6 +21,7 @@ export function createMcpServer(options: Omit<ToolExecutionOptions, 'signal'> = 
 
 export {
   createToolExecutor,
+  DEFAULT_MCP_STREAM_LIMITS,
   DEFAULT_MCP_LIMITS,
   DEFAULT_STREAM_CHUNK_POINTS,
   executeTool,
@@ -28,4 +29,12 @@ export {
   MAX_STREAM_CHUNK_POINTS,
   MCP_TOOLS,
 } from './server.js';
-export type { ExecutionWorker, McpLimits, ToolExecutionOptions, ToolExecutor } from './server.js';
+export type {
+  ExecutionWorker,
+  McpLimits,
+  McpStreamLimits,
+  StreamClock,
+  ToolExecutionOptions,
+  ToolExecutor,
+  ToolExecutorOptions,
+} from './server.js';
