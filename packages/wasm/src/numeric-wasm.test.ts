@@ -225,6 +225,76 @@ describe('bounded numeric WebAssembly backend', () => {
     }
   });
 
+  it('schedules an exact 1 us grid through 1 ms without a duplicate terminal point', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const result = await wasm.simulate(request([
+        'V1 in 0 1',
+        'R1 in out 1k',
+        'C1 out 0 1u',
+        '.tran 1u 1m',
+      ].join('\n')), { requestId: 'tran-exact-grid' });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      const transient = result.data.analyses[0];
+      expect(transient?.type).toBe('tran');
+      if (transient?.type !== 'tran') return;
+      expect(transient.timeS).toHaveLength(1_001);
+      expect(transient.timeS.at(-1)).toBe(1e-3);
+      expect(transient.timeS.at(-2)).toBeCloseTo(999e-6, 15);
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('enforces the serialized-result byte limit for transient results', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const result = await wasm.simulate(request(transientCircuit, {
+        limits: { maxSerializedResultBytes: 1 },
+      }), { requestId: 'tran-serialized-limit' });
+      expect(result).toMatchObject({
+        ok: false,
+        error: {
+          code: 'RESOURCE_LIMIT',
+          phase: 'serialize',
+          retryable: false,
+          details: {
+            limit: 'maxSerializedResultBytes',
+            configured: 1,
+            observed: expect.any(Number),
+          },
+        },
+        metadata: { backend: 'spice-ts-wasm' },
+      });
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('rejects compound clauses after a transient PULSE source', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const result = await wasm.simulate(request([
+        'V1 in 0 PULSE(0 1 0 100u 100u 10m 20m) AC 2',
+        'R1 in out 1k',
+        'C1 out 0 1u',
+        '.tran 100u 1m',
+      ].join('\n')), { requestId: 'tran-compound-pulse' });
+      expect(result).toMatchObject({
+        ok: false,
+        error: {
+          code: 'UNSUPPORTED_FEATURE',
+          phase: 'validation',
+          details: { backend: 'spice-ts-wasm', feature: 'source-waveform' },
+        },
+        metadata: { backend: 'spice-ts-wasm' },
+      });
+    } finally {
+      await wasm.close();
+    }
+  });
+
   it('returns exact diagnostics for unsupported transient controls', async () => {
     const wasm = await engine('spice-ts-wasm');
     try {
