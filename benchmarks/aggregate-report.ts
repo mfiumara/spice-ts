@@ -8,9 +8,9 @@
  */
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { arch, cpus, platform, release } from 'node:os';
-import { basename, resolve } from 'node:path';
+import { basename, relative, resolve } from 'node:path';
 import { alignAndMeasure, type ComparisonMetrics, type SampleSeries } from './comparison-harness.js';
 import {
   runNativeNgspice,
@@ -26,6 +26,8 @@ const FIXTURES_PER_CORPUS = 20;
 const TOTAL_FIXTURES = CORPORA.length * FIXTURES_PER_CORPUS;
 const JSON_PATH = resolve('benchmarks/aggregate-report.json');
 const MARKDOWN_PATH = resolve('benchmarks/AGGREGATE_PARITY.md');
+const FIXTURE_TREE_SHA256 = '9bea16d967510fe868e68bfad672b02b477802d63bfe191660d4a0a737602cba';
+const SOURCES_SHA256 = 'b6540a743d176a01cc8e8aff6412655cc09f5fbf30554a53222c1d290c3029a1';
 
 type CorpusId = typeof CORPORA[number];
 type Status = 'success' | 'failed' | 'unsupported';
@@ -95,6 +97,7 @@ interface StatusTransition {
 export interface AggregateReport {
   schemaVersion: typeof SCHEMA;
   outcomeSha256: string;
+  provenance: { fixtureTreeSha256: string; sourcesSha256: string };
   corpusSources: Array<{ id: CorpusId; name: string; revision: string; license: string; fixtureCount: number }>;
   environment: { platform: string; release: string; arch: string; cpu: string; node: string };
   tools: { spiceTs: string; ngspice: string; pnpm: string };
@@ -126,16 +129,17 @@ export interface AggregateReport {
     totals: AggregateReport['totals'];
     matchedPointEnvelope: MatchedPointEnvelope;
     statusTransitions: StatusTransition[];
+    metricTransitions: string[];
   };
   gapIssues: Array<{ url: string; scope: string }>;
   fixtures: FixtureReceipt[];
 }
 
 const PREVIOUS_REPORT: AggregateReport['comparisonToPrevious'] = {
-  issueUrl: 'https://github.com/mfiumara/spice-ts/issues/200',
-  pullRequestUrl: 'https://github.com/mfiumara/spice-ts/pull/201',
-  headSha: 'c41391cb9b4dc537863f430a80288d1f28024f6c',
-  outcomeSha256: '1623472590a082b6af2a82d9fd09b0756ef0458a50f2fd4b1d095b90bf6b6e7f',
+  issueUrl: 'https://github.com/mfiumara/spice-ts/issues/209',
+  pullRequestUrl: 'https://github.com/mfiumara/spice-ts/pull/213',
+  headSha: 'f98cb95bbbdd93393e1f555dfe86e45ab6bcd00c',
+  outcomeSha256: '45aee36e07a056380b1b0057b9397cc323f594fdb381f254b023e11fdfe2b009',
   totals: {
     fixtures: 100,
     corpusFixtures: { ngspice: 20, classic: 20, xyce: 20, 'corpus-d': 20, 'corpus-e': 20 },
@@ -143,7 +147,7 @@ const PREVIOUS_REPORT: AggregateReport['comparisonToPrevious'] = {
     spiceTs: { success: 15, failed: 4, unsupported: 81 },
     comparedFixtures: 13,
     comparedAnalyses: 20,
-    runtimeMs: { ngspice: 12_575.456, spiceTs: 9_198.512 },
+    runtimeMs: { ngspice: 9_326.901, spiceTs: 5_566.460 },
   },
   matchedPointEnvelope: {
     comparedSignals: 189,
@@ -156,7 +160,34 @@ const PREVIOUS_REPORT: AggregateReport['comparisonToPrevious'] = {
     maximumRelativeError: 9829734.595793912,
     maximumRelativeRms: 1160907.113030371,
   },
-  statusTransitions: [],
+  statusTransitions: [
+    { engine: 'spiceTs', fixture: 'classic/bsim1-device-sweep', from: 'unsupported', to: 'success', explanation: 'Merged parser and MOS coverage now runs the unchanged DC sweep.', gapIssues: [] },
+    { engine: 'spiceTs', fixture: 'classic/bsim2-device-sweep', from: 'unsupported', to: 'success', explanation: 'Merged parser and MOS coverage now runs the unchanged DC sweep.', gapIssues: [] },
+    { engine: 'spiceTs', fixture: 'classic/bjt-differential-pair', from: 'unsupported', to: 'success', explanation: 'Merged source-card and BJT coverage now runs the unchanged transient analysis.', gapIssues: [] },
+    { engine: 'spiceTs', fixture: 'classic/diode-distortion', from: 'unsupported', to: 'failed', explanation: 'The parser now reaches execution, where the bounded distortion implementation rejects the diode device.', gapIssues: ['https://github.com/mfiumara/spice-ts/issues/75'] },
+    { engine: 'spiceTs', fixture: 'classic/mos6-inverter-chain', from: 'unsupported', to: 'failed', explanation: 'The parser now reaches transient execution, which stops with a timestep-too-small failure.', gapIssues: ['https://github.com/mfiumara/spice-ts/issues/280'] },
+    { engine: 'spiceTs', fixture: 'classic/mos-amplifier', from: 'unsupported', to: 'failed', explanation: 'The parser now reaches execution, which stops on a singular matrix at the vddn branch.', gapIssues: ['https://github.com/mfiumara/spice-ts/issues/280'] },
+    { engine: 'spiceTs', fixture: 'classic/mos-memory-cell', from: 'unsupported', to: 'failed', explanation: 'The parser now reaches transient execution, which stops with a timestep-too-small failure.', gapIssues: ['https://github.com/mfiumara/spice-ts/issues/280'] },
+    { engine: 'spiceTs', fixture: 'classic/rca3040-wideband-amplifier', from: 'success', to: 'failed', explanation: 'Operating-point convergence now oscillates, removing the prior OP, AC, and transient comparisons.', gapIssues: ['https://github.com/mfiumara/spice-ts/issues/280'] },
+    { engine: 'spiceTs', fixture: 'classic/rtl-inverter-chain', from: 'unsupported', to: 'success', explanation: 'Merged parser and BJT coverage now runs the unchanged DC and transient analyses.', gapIssues: [] },
+    { engine: 'spiceTs', fixture: 'corpus-e/cccs-mixed-analysis', from: 'unsupported', to: 'success', explanation: 'Merged Gnucap control/output handling and device coverage now run the unchanged fixture.', gapIssues: [] },
+    { engine: 'spiceTs', fixture: 'corpus-e/mos1-inverter-sweep', from: 'unsupported', to: 'success', explanation: 'Merged source-card and MOS coverage now runs OP, DC, and transient analyses.', gapIssues: [] },
+    { engine: 'spiceTs', fixture: 'corpus-e/bjt-diffpair-ac', from: 'unsupported', to: 'success', explanation: 'Merged source-card and BJT coverage now runs the unchanged fixture.', gapIssues: [] },
+    { engine: 'spiceTs', fixture: 'corpus-e/capacitor-step-transient', from: 'unsupported', to: 'success', explanation: 'Merged source-card and transient coverage now runs the unchanged fixture.', gapIssues: [] },
+    { engine: 'spiceTs', fixture: 'corpus-e/capacitor-initial-condition', from: 'unsupported', to: 'success', explanation: 'Merged initial-condition and transient coverage now runs the unchanged fixture.', gapIssues: [] },
+    { engine: 'spiceTs', fixture: 'corpus-e/lc-oscillator-transient', from: 'unsupported', to: 'success', explanation: 'Merged source-card and transient coverage now runs the unchanged fixture.', gapIssues: [] },
+    { engine: 'spiceTs', fixture: 'corpus-e/diode-temperature-sweep', from: 'unsupported', to: 'success', explanation: 'Merged temperature-sweep and diode coverage now runs the unchanged fixture.', gapIssues: [] },
+    { engine: 'spiceTs', fixture: 'corpus-e/mos1-nand-transient', from: 'unsupported', to: 'success', explanation: 'Merged source-card and MOS coverage now runs the unchanged fixture.', gapIssues: [] },
+    { engine: 'spiceTs', fixture: 'corpus-e/bjt-rtl-inverter-chain', from: 'unsupported', to: 'success', explanation: 'Merged source-card and BJT coverage now runs OP, DC, and transient analyses.', gapIssues: [] },
+    { engine: 'spiceTs', fixture: 'corpus-e/dual-lc-uic-rejection', from: 'unsupported', to: 'success', explanation: 'Merged transient and initial-condition validation now runs the unchanged fixture.', gapIssues: [] },
+  ],
+  metricTransitions: [
+    'Comparable coverage rose from 20 to 28 analyses and from 13 to 18 fixtures. Eleven newly comparable analyses were added, while the RCA3040 regression removed three prior comparisons.',
+    'Matched absolute signals rose from 189 to 253 and samples from 7,384,608 to 7,413,027. Relative signals rose from 178 to 235 and samples from 7,384,277 to 7,410,627.',
+    'Excluded zero-reference samples rose from 331 to 2,400 because the newly compared analyses include more exact-zero ngspice reference points.',
+    'Absolute max fell from 183.91564521207212 to 90.09458674829554 and absolute RMS fell from 87.25304257950958 to 59.660512653520904 because the failed RCA3040 AC result no longer contributes its v(15) loss. This is not an accuracy improvement.',
+    'Relative max rose from 9829734.595793912 to 273625086.91875815 and relative RMS rose from 1160907.113030371 to 131055144.90676585. The new worst signal is v(4) in the corpus-e MOS1 inverter transient.',
+  ],
 };
 
 const GAP_ISSUES = [
@@ -166,10 +197,37 @@ const GAP_ISSUES = [
   { url: 'https://github.com/mfiumara/spice-ts/issues/5', scope: 'BJT model coverage' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/3', scope: 'MOS model coverage' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/123', scope: 'jimi-fuzz transient waveform divergence' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/280', scope: 'newly exposed classic-corpus execution failures and RCA3040 regression' },
 ] as const;
 
 function sha256(input: Buffer | string): string {
   return createHash('sha256').update(input).digest('hex');
+}
+
+async function filesBelow(directory: string): Promise<string[]> {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const paths = await Promise.all(entries.map(entry => {
+    const path = resolve(directory, entry.name);
+    return entry.isDirectory() ? filesBelow(path) : [path];
+  }));
+  return paths.flat().sort();
+}
+
+async function provenance(): Promise<AggregateReport['provenance']> {
+  const fixtureFiles = (await Promise.all(
+    CORPORA.map(corpus => filesBelow(resolve(`benchmarks/corpus/${corpus}`))),
+  )).flat().sort();
+  const fixtureTree = createHash('sha256');
+  for (const path of fixtureFiles) {
+    fixtureTree.update(relative(resolve('.'), path));
+    fixtureTree.update('\0');
+    fixtureTree.update(await readFile(path));
+    fixtureTree.update('\0');
+  }
+  return {
+    fixtureTreeSha256: fixtureTree.digest('hex'),
+    sourcesSha256: sha256(await readFile(resolve('benchmarks/SOURCES.md'))),
+  };
 }
 
 function commandVersion(command: string, args: string[], pattern?: RegExp): string {
@@ -288,6 +346,9 @@ function gapIssues(circuit: CorpusCircuit): string[] {
   if (/bjt|vbic|npn|pnp/.test(text)) issues.add('https://github.com/mfiumara/spice-ts/issues/5');
   if (/mos|bsim/.test(text)) issues.add('https://github.com/mfiumara/spice-ts/issues/3');
   if (circuit.id === 'jimi-fuzz') issues.add('https://github.com/mfiumara/spice-ts/issues/123');
+  if (['mos6-inverter-chain', 'mos-amplifier', 'mos-memory-cell', 'rca3040-wideband-amplifier'].includes(circuit.id)) {
+    issues.add('https://github.com/mfiumara/spice-ts/issues/280');
+  }
   return [...issues];
 }
 
@@ -342,6 +403,14 @@ export function matchedPointEnvelope(fixtures: FixtureReceipt[]): MatchedPointEn
 }
 
 export function validateAggregateAccounting(report: AggregateReport): void {
+  if (
+    report.provenance.fixtureTreeSha256 !== FIXTURE_TREE_SHA256
+    || report.provenance.sourcesSha256 !== SOURCES_SHA256
+  ) {
+    throw new Error(
+      `aggregate provenance changed: fixture tree ${report.provenance.fixtureTreeSha256}; sources ${report.provenance.sourcesSha256}`,
+    );
+  }
   if (report.fixtures.length !== TOTAL_FIXTURES || report.totals.fixtures !== TOTAL_FIXTURES) {
     throw new Error(`aggregate accounting must contain ${TOTAL_FIXTURES} fixtures`);
   }
@@ -446,6 +515,7 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
   const corpusFixtures = Object.fromEntries(CORPORA.map(corpus => [corpus, fixtures.filter(fixture => fixture.corpus === corpus).length])) as Record<CorpusId, number>;
   const base: Omit<AggregateReport, 'outcomeSha256'> = {
     schemaVersion: SCHEMA,
+    provenance: await provenance(),
     corpusSources,
     environment: { platform: platform(), release: release(), arch: arch(), cpu: cpus()[0]?.model ?? 'unknown', node: process.version },
     tools: {
@@ -507,6 +577,8 @@ function markdown(report: AggregateReport): string {
     `- Machine: ${report.environment.cpu}; ${report.environment.platform} ${report.environment.release} ${report.environment.arch}; Node ${report.environment.node}`,
     `- Tools: spice-ts ${report.tools.spiceTs}; ${report.tools.ngspice}; pnpm ${report.tools.pnpm}`,
     `- Deterministic outcome SHA-256 (host, timings, and error text excluded): \`${report.outcomeSha256}\``,
+    `- Aggregate fixture-tree SHA-256: \`${report.provenance.fixtureTreeSha256}\`.`,
+    `- Source catalogue SHA-256: \`${report.provenance.sourcesSha256}\`.`,
     '- Runtime is one wall-clock sample per engine/fixture. Treat it as diagnostic data, not a performance comparison.',
     '',
     '## Policy and totals',
@@ -527,6 +599,7 @@ function markdown(report: AggregateReport): string {
     `- Previous totals: ngspice ${previous.totals.ngspice.success}/${previous.totals.ngspice.failed}/${previous.totals.ngspice.unsupported} success/failed/unsupported; spice-ts ${previous.totals.spiceTs.success}/${previous.totals.spiceTs.failed}/${previous.totals.spiceTs.unsupported}; ${previous.totals.comparedAnalyses} analyses across ${previous.totals.comparedFixtures} fixtures.`,
     `- Previous matched-point envelope: absolute max ${previous.matchedPointEnvelope.maximumAbsoluteError}, absolute RMS ${previous.matchedPointEnvelope.maximumAbsoluteRms}, relative max ${previous.matchedPointEnvelope.maximumRelativeError}, relative RMS ${previous.matchedPointEnvelope.maximumRelativeRms}.`,
     ...transitionLines,
+    ...previous.metricTransitions.map(transition => `- ${transition}`),
     '',
     '## Gap tracking',
     '',
