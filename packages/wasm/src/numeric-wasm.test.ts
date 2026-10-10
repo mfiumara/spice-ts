@@ -17,7 +17,6 @@ const circuits = [
 ] as const;
 
 const transientCircuit = [
-  'Bounded passive RC transient',
   'V1 in 0 PULSE(0 1 0 100u 100u 10m 20m)',
   'R1 in out 1k',
   'C1 out 0 1u',
@@ -39,7 +38,7 @@ describe('bounded numeric WebAssembly backend', () => {
     try {
       expect(wasm.capabilities).toMatchObject({
         backends: ['spice-ts-wasm'],
-        analyses: ['op'],
+        analyses: ['op', 'tran'],
         nativeSchemaVersions: [],
         engineBuildId: expect.stringMatching(/^spice-ts-wasm-[0-9a-f]{16}$/),
         numericWasm: {
@@ -109,6 +108,17 @@ describe('bounded numeric WebAssembly backend', () => {
       expect(transient.voltagesV.out[0]).toBe(0);
       expect(transient.voltagesV.out.at(-1)).toBeGreaterThan(0.5);
 
+      const currentDriven = await wasm.simulate(request([
+        'I1 0 out PULSE(0 1m 0 100u 100u 10m 20m)',
+        'R1 out 0 1k',
+        'C1 out 0 1u',
+        '.tran 100u 1m',
+      ].join('\n')), { requestId: 'tran-current-source' });
+      expect(currentDriven.ok).toBe(true);
+      if (currentDriven.ok && currentDriven.data.analyses[0]?.type === 'tran') {
+        expect(currentDriven.data.analyses[0].voltagesV.out.at(-1)).toBeGreaterThan(0.5);
+      }
+
       const reads = [];
       for await (const read of wasm.simulateStream(request(transientCircuit), {
         requestId: 'tran-stream', chunkPoints: 4,
@@ -147,6 +157,7 @@ describe('bounded numeric WebAssembly backend', () => {
         nonlinear: 'V1 in 0 1\nD1 in 0 D\n.model D D\n.tran 1u 1m',
         inductor: 'V1 in 0 1\nL1 in 0 1m\n.tran 1u 1m',
         controlled: 'V1 in 0 1\nE1 out 0 in 0 2\n.tran 1u 1m',
+        switch: 'V1 in 0 1\nS1 in out in 0 SW\n.model SW SW\n.tran 1u 1m',
         stepped: 'V1 in 0 1\nR1 in 0 1k\n.tran 1u 1m\n.step param R1 list 1k 2k',
       })) {
         const result = await wasm.simulate(request(source), { requestId: `unsupported-${name}` });

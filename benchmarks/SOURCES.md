@@ -83,6 +83,12 @@ Validate provenance fields, pinned URLs, fixture hashes, declared analyses, ngsp
 
 At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-distortion` is retained as a visible source-suite failure: both of its upstream `.disto` commands are commented out, so ngspice exits successfully without producing raw data. All 20 byte-identical fixtures currently fail spice-ts parsing. The validator prints each failure and checks it against the manifest instead of hiding or rewriting unsupported inputs.
 
+## Bounded passive RC transient WASM fixture
+
+| Circuit | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
+|---|---|---|---|---|
+| Passive RC pulse-step transient | ngspice public corpus A [`tests/general/rc.cir`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/general/rc.cir), pinned revision `3ef069fb1f04177a153f342a32d941fc20ff047e` | BSD-3-Clause under the pinned ngspice [`COPYING`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/COPYING); retained at `benchmarks/corpus/ngspice/LICENSE.txt` | Redistribution is allowed. `rc-step.cir` keeps the public one-source, one-resistor, one-capacitor step-response topology. It scales R/C and stop time, names the output node, makes pulse rise/fall/width/period explicit, and removes output-only `.plot` and `.options` cards. The committed bytes are supplied unchanged to both engines. No tolerance differs by engine. SHA-256 is recorded by the focused report. | `benchmarks/wasm-rc-transient/rc-step.cir`; compare with `pnpm exec tsx benchmarks/wasm-rc-transient/compare.ts` using native ngspice and the explicit `spice-ts-wasm` backend. |
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
