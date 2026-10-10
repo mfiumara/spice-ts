@@ -4,6 +4,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { arch, platform, tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import {
+  InvalidCircuitError,
   simulate,
   type ComplexSensitivityValue,
   type SensitivityEntry,
@@ -12,6 +13,8 @@ import {
 interface FixtureCase {
   id: string;
   path: string;
+  expectedSpiceTsError?: string;
+  referenceVectors?: string[];
 }
 
 interface RawData {
@@ -24,6 +27,12 @@ const fixtures: FixtureCase[] = [
   { id: 'passive-rlc-dc', path: 'benchmarks/sensitivity/passive-rlc-dc.cir' },
   { id: 'passive-rlc-ac', path: 'benchmarks/sensitivity/passive-rlc-ac.cir' },
   { id: 'active-vcvs-ac', path: 'benchmarks/sensitivity/active-vcvs-ac.cir' },
+  {
+    id: 'multi-source-ac',
+    path: 'benchmarks/sensitivity/multi-source-ac.cir',
+    expectedSpiceTsError: '.sens AC supports at most one non-zero AC excitation; found V1, V2',
+    referenceVectors: ['v(v1_acmag)', 'v(v2_acmag)'],
+  },
 ];
 
 void main();
@@ -47,6 +56,42 @@ async function main(): Promise<void> {
           stdio: ['ignore', 'pipe', 'pipe'],
         });
         const ngspice = readAsciiRaw(rawPath);
+        if (fixture.expectedSpiceTsError) {
+          let actualError = 'no error';
+          try {
+            await simulate(readFileSync(resolve(fixture.path), 'utf8'));
+          } catch (error) {
+            if (!(error instanceof InvalidCircuitError)) {
+              throw new Error(
+                `spice-ts returned ${error instanceof Error ? error.name : typeof error}, `
+                + 'expected InvalidCircuitError',
+              );
+            }
+            actualError = message(error);
+          }
+          if (actualError !== fixture.expectedSpiceTsError) {
+            throw new Error(
+              `spice-ts rejection mismatch: ${JSON.stringify(actualError)} != `
+              + JSON.stringify(fixture.expectedSpiceTsError),
+            );
+          }
+          const ngspiceReference = Object.fromEntries((fixture.referenceVectors ?? []).map(name => {
+            const index = ngspice.names.indexOf(name);
+            if (index < 0) throw new Error(`ngspice raw output omitted ${name}`);
+            return [name, ngspice.points.map(point => point[index])];
+          }));
+          comparisons.push({
+            fixture: fixture.id,
+            identicalNetlist: fixture.path,
+            command: `ngspice -b -r <temporary-raw-path> ${fixture.path}`,
+            convergence: { ngspice: 'success', spiceTs: 'expected rejection' },
+            mode: 'ac',
+            pointCount: ngspice.points.length,
+            spiceTsError: actualError,
+            ngspiceReference,
+          });
+          continue;
+        }
         const result = await simulate(readFileSync(resolve(fixture.path), 'utf8'));
         if (!result.sensitivity) throw new Error('spice-ts returned no sensitivity result');
 
@@ -101,7 +146,7 @@ async function main(): Promise<void> {
       relativeErrorDenominator: 'max(abs(ngspice), 1e-12)',
       comparisons,
       failures,
-      losses: fixtures.map(fixture => ({
+      losses: fixtures.filter(fixture => !fixture.expectedSpiceTsError).map(fixture => ({
         fixture: fixture.id,
         retained: 'non-zero max/RMS residuals are published in comparisons.metrics',
       })),
@@ -114,6 +159,7 @@ async function main(): Promise<void> {
         { form: '.step combined with .sens', reason: 'stepped sensitivity' },
         { form: 'nonlinear or unrecognized devices', reason: 'device outside RLC/source/linear-controlled-source slice' },
         { form: 'multiple .sens directives', reason: 'single-result bounded API' },
+        { form: 'multiple non-zero AC excitations', reason: 'native AC solver superposition is not implemented' },
         { form: 'ngspice-wasm backend', reason: 'sensitivity raw-result mapping is not implemented' },
       ],
     }, null, 2));

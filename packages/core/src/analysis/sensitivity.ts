@@ -41,6 +41,8 @@ export function solveSensitivity(
   const outputIndex = findOutputIndex(compiled, analysis.outputNode);
   const targets = collectTargets(compiled, analysis.mode);
 
+  if (analysis.mode === 'ac') assertSingleACExcitation(compiled);
+
   if (analysis.mode === 'dc') {
     const entries = targets.map(target => ({
       device: target.device,
@@ -75,6 +77,21 @@ export function solveSensitivity(
   return new SensitivityResult(
     analysis.outputNode, 'ac', baseline.frequencies, entries,
   );
+}
+
+function assertSingleACExcitation(compiled: CompiledCircuit): void {
+  const excitations = compiled.devices
+    .filter((device): device is VoltageSource =>
+      device instanceof VoltageSource
+      && device.waveform.type === 'ac'
+      && device.waveform.magnitude !== 0)
+    .map(device => device.name)
+    .sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'base' }));
+  if (excitations.length > 1) {
+    throw new InvalidCircuitError(
+      `.sens AC supports at most one non-zero AC excitation; found ${excitations.join(', ')}`,
+    );
+  }
 }
 
 function collectTargets(compiled: CompiledCircuit, mode: 'dc' | 'ac'): ParameterTarget[] {

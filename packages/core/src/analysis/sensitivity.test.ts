@@ -89,6 +89,20 @@ R1 out 0 1k
     }
   });
 
+  it('rejects multiple non-zero AC excitations instead of differentiating only the first', async () => {
+    const failure = simulate(`multiple AC sensitivity excitations
+V1 in 0 DC 0 AC 1
+V2 out 0 DC 0 AC 2
+R1 in out 1k
+R2 out 0 1k
+.sens V(out) AC DEC 1 1 10
+.end`);
+    await expect(failure).rejects.toBeInstanceOf(InvalidCircuitError);
+    await expect(failure).rejects.toThrow(
+      new InvalidCircuitError('.sens AC supports at most one non-zero AC excitation; found V1, V2'),
+    );
+  });
+
   it('has parser/programmatic API parity', async () => {
     const circuit = new Circuit();
     circuit.addVoltageSource('V1', 'in', '0', { dc: 1 });
