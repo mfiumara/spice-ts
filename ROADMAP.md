@@ -4,8 +4,8 @@ spice-ts is pursuing correctness parity with ngspice before performance, AI-nati
 models. [CHARTER.md](CHARTER.md) is the source of truth for priorities and program rules; this document is the
 public issue map and measurable delivery sequence.
 
-Issue state below was verified against live GitHub state on 2026-10-10. The repository had 14 open issues: three in
-M1, none in M2, six in M3, and five in M4.
+Issue state below was verified against live GitHub state on 2026-10-10. The repository had 15 open issues: four in
+M1, one in M2, five in M3, and five in M4.
 Every open issue is represented below. A delivery is marked merged only when its PR is on `main`; accepted but
 unmerged work remains an open gap. This reconciliation closes
 [#192](https://github.com/mfiumara/spice-ts/issues/192) only when its PR merges.
@@ -82,7 +82,8 @@ published parity report; agreed error thresholds met or gaps filed
 |------|-------|------------------|
 | Advanced analysis support | [#75](https://github.com/mfiumara/spice-ts/issues/75) | Parent gap after the bounded resistor, diode, BJT, and MOS1-noise, `.tf`, `.pz`, and `.sens` slices: differential/current noise outputs, temperature cards, broader BJT and MOSFET noise, stepped noise, unsupported `.sens` forms, differential/current-output and stepped `.tf`, and `.disto` remain unsupported on `main` |
 | Reconcile this roadmap | [#192](https://github.com/mfiumara/spice-ts/issues/192) | [PR #193](https://github.com/mfiumara/spice-ts/pull/193) remains open. Its prior rejected heads are retained below; this documentation-only remediation closes the issue only after exact-head review and merge |
-| Parity-backed MOSFET level-1 noise slice | [#205](https://github.com/mfiumara/spice-ts/issues/205) | Add the separately specified public, redistributable identical-netlist LIN/DEC/OCT level-1 channel thermal and flicker-noise slice with matched-frequency ngspice-47 errors and integrated totals; retain stable errors for higher-level models, temperature cards, stepped noise, differential/current outputs, and other out-of-scope forms |
+| Bounded stepped transfer-function parity | [#208](https://github.com/mfiumara/spice-ts/issues/208) | Add one public, identical-netlist stepped voltage-gain or transimpedance `.tf` slice with deterministic typed per-step results and explicit rejection of nested, multidimensional, differential, current-output, and other out-of-scope forms |
+| Refresh the unchanged 100-circuit parity report | [#209](https://github.com/mfiumara/spice-ts/issues/209) | Rerun all 100 unchanged public fixtures after the latest correctness merges, publish every status transition and error/runtime loss, and file newly exposed general gaps without adapting fixtures or tolerances |
 
 PR #193's rejected heads remain historical evidence. Head `bdb05c04e72fb9bca7dc12a73fa829ffab234abf`
 recorded stale concurrent-PR states and lacked durable `/poteto-mode` evidence. Head
@@ -90,8 +91,10 @@ recorded stale concurrent-PR states and lacked durable `/poteto-mode` evidence. 
 `5e0cae0b3f60f9af3cac72bb283cc37bb092456c` recorded PR #186 at an older rejected head even though that PR had
 already advanced. Head `9024e489ab1273ebc75000139110e97d3a255d21` became stale when PR #186 merged at
 `68cde750294d73e42e0fe8a20ef412cdf2344eba` and PR #203 merged at
-`f60004b159b41b518dafa5d0cc30776b40f9db3c`. These rejections are not acceptance of the current documentation
-head.
+`f60004b159b41b518dafa5d0cc30776b40f9db3c`. Head
+`908a18518d15818f0beb2bd3c3518c61a1da5f6b` recorded PR #204 at superseded accepted head
+`070b0a79ff3c3a34d28f9a22d71244c9d6251dad` after that PR had advanced. These rejections are not acceptance of
+the current documentation head.
 
 PR #178's rejected heads remain part of the evidence. Head `0039de812f5a369da732aa47685f1dcc624570a0`
 allowed a zero-magnitude AC-form source before the active source to trigger first-source-only corruption. The accepted
@@ -99,6 +102,10 @@ head rejects multiple AC-form voltage sources deterministically; it does not bro
 PR #194's rejected head `a052a1514242238bbe8bb5f04c8e75c28b3dc2d0` ran unsupported bulk/body-biased
 MOS1 noise and produced `0.17967315053520422` output-density and `0.17963300311675148` integrated-output relative
 error in the review reproduction. The accepted head fails that form explicitly; it does not claim body-noise parity.
+
+Issue #205 was closed as a duplicate of #189, which was delivered by reviewed and squash-merged PR #194. The
+closure adds no benchmark delta or broader MOSFET-noise claim beyond PR #194's recorded 10-point comparison and
+explicit unsupported forms above.
 
 Issue #121 is closed only because its two named Xyce fixtures are covered by the independently reviewed bounded
 slices: PR #152 supplies LEVEL=1 J-card/model support, PR #165 executes the unchanged LEVEL=1 fixture through
@@ -159,8 +166,12 @@ Optimization follows correctness measurement and must not weaken parity threshol
 
 ### Open residual gaps
 
-There were no open M2 issues in this snapshot. The milestone exit still requires the charter evidence below and is not
-implied by the existing bounded allocation work.
+| Work | Issue | Current residual |
+|------|-------|------------------|
+| Further sparse numeric solve allocation reduction | [#210](https://github.com/mfiumara/spice-ts/issues/210) | Profile deterministic 1k/5k/10k OP, 1,001-point DC sweep, and transient smoke workloads, then make one general allocation improvement while preserving pivoting, dynamic fill, numerical parity, and every runtime or peak-RSS loss |
+
+The milestone exit still requires the charter evidence below and is not implied by the existing bounded allocation
+work or this focused follow-up.
 
 The performance record keeps both sides visible. The refreshed PR #119 measurement reports the 10,000-node spice-ts
 API at 20.88 ms and 208.94 MiB peak RSS versus ngspice-47 at 40.24 ms fresh-process CLI wall time, 3.55 ms internal
@@ -211,6 +222,8 @@ explicit contracts.
 | Deterministic topology preflight (partial #60) | [#60](https://github.com/mfiumara/spice-ts/issues/60) | [PR #150](https://github.com/mfiumara/spice-ts/pull/150), reviewed head `dbe7e5c65e103f5f44faedd226dc502eda5966dd`, squash merge `37f1e1289c517b8b7fe158311e7e6402ff67044d`, merged typed floating-component, missing-DC-reference, and voltage-defined-loop validation before numerical solve while preserving valid VCCS partial self-control topologies |
 | Cooperative cancellation and protocol limits (partial #60) | [#190](https://github.com/mfiumara/spice-ts/issues/190) | [PR #195](https://github.com/mfiumara/spice-ts/pull/195), accepted head `83bc8af2668b5c0518ee79ac8939a27de3df0f66`, squash merge `32a04a9b124819a7e60e42b49fa9a5a3a47fbb70`, merged cooperative parse/compile, Newton, transient, AC, count, point, wall-time, cancellation, and serialized-result guards; rejected head `eeb4e9644a30c39afb4fb9966b1d0ac3908c457b` measured serialized size only after every analysis, while the accepted head stops before later analysis execution once the running ceiling is exceeded |
 | Bounded protocol-v1 MCP server slice (partial #61) | [#181](https://github.com/mfiumara/spice-ts/issues/181) | [PR #186](https://github.com/mfiumara/spice-ts/pull/186), accepted head `08a2892ad322f934ea61ebf0b8de7513ad5d60c6`, squash merge `68cde750294d73e42e0fe8a20ef412cdf2344eba`, merged deterministic capability, validation, and bounded simulation tools over stdio with a terminable worker boundary, package-anchored core loading, request/result ceilings, cancellation, and JSON-safe public errors; rejected head `5496e05f38bee1f9a21c775cb51ec82a50f3fccd` could not interrupt synchronous solving, and rejected head `6ab054ec476a6ea0056b59caddbed5ec95fbf521` failed in a packed pnpm consumer because its eval worker resolved `@spice-ts/core` from the consumer working directory |
+| Protocol-v1 TypeScript worker facade (partial #62) | [#191](https://github.com/mfiumara/spice-ts/issues/191) | [PR #204](https://github.com/mfiumara/spice-ts/pull/204), reviewed head `569b88c7779c30ff8ecf6b2dc319d050c1dd864b`, squash merge `23a785854805417a6824323e0ebe6bd1977750b5`, merged the bounded deterministic `spice-ts-js` worker facade with integrity verification and browser-worker coverage; `spice-ts-wasm` remains reserved and unavailable, so this is not a numeric WASM backend or completion of parent #62 |
+| Executable bounded MCP agent workflow (partial #63) | [#206](https://github.com/mfiumara/spice-ts/issues/206) | [PR #207](https://github.com/mfiumara/spice-ts/pull/207), reviewed head `c93e5fa0a0833cb41eb34941c60f92af34579cb5`, squash merge `5bc0dd504a5d216bb38896f8ddfff8c003d1c1f7`, merged a deterministic built/package-consumer stdio workflow for capability discovery, validation, simulation, resource-limit recovery, and public structured errors; its authored divider adds no imported benchmark or parity delta, and the bounded example does not complete parent #63 |
 
 ### Open residual gaps
 
@@ -218,10 +231,9 @@ explicit contracts.
 |------|-------|------------------|
 | Core protocol adapter | [#60](https://github.com/mfiumara/spice-ts/issues/60) | Parent gap after the merged protocol, topology-preflight, and cooperative guard slices: remaining solver typed-error work and complete streaming events, capabilities, and metadata envelopes stay open; merged child #190 does not complete the parent API |
 | Bounded MCP simulation server | [#61](https://github.com/mfiumara/spice-ts/issues/61) | Parent gap after the merged bounded stdio slice in #181: broader server scope and any remaining deterministic typed MCP tools and execution-bound coverage stay open; the child delivery does not complete the parent API |
-| Worker and WASM facade | [#62](https://github.com/mfiumara/spice-ts/issues/62) | Parent gap for a protocol-compatible browser worker and WASM-facing API; bounded child #191 and its accepted but unmerged PR #204 cover only the TypeScript worker facade and explicitly do not deliver a numeric WASM backend |
-| Executable agent workflows | [#63](https://github.com/mfiumara/spice-ts/issues/63) | Tested examples for tool-driven simulation and error recovery remain open |
-| Protocol-v1 TypeScript worker facade | [#191](https://github.com/mfiumara/spice-ts/issues/191) | [PR #204](https://github.com/mfiumara/spice-ts/pull/204) remains open at accepted head `070b0a79ff3c3a34d28f9a22d71244c9d6251dad`; exact-head required CI is green, but the bounded deterministic `spice-ts-js` worker facade is not delivered before merge and `spice-ts-wasm` remains reserved and unavailable |
-| Executable bounded MCP agent workflow | [#206](https://github.com/mfiumara/spice-ts/issues/206) | Add deterministic built/package-consumer stdio workflows for capability, validation, simulation, one structured-error recovery, and explicit resource-bound handling without backend-name leakage or claims beyond the merged MCP slice |
+| Worker and WASM facade | [#62](https://github.com/mfiumara/spice-ts/issues/62) | Parent gap after the merged bounded TypeScript worker facade in #191: a numeric WASM backend and any broader protocol-compatible browser-worker or WASM-facing scope remain open; the child delivery does not complete the parent API |
+| Executable agent workflows | [#63](https://github.com/mfiumara/spice-ts/issues/63) | Parent gap after the merged bounded stdio workflow in #206: broader tested agent examples and recovery documentation remain open; the child example does not complete the parent API |
+| Deterministic MCP streaming and cancellation tools | [#211](https://github.com/mfiumara/spice-ts/issues/211) | Add bounded canonical start/point/end stdio streaming and deterministic cancellation over the existing core limits, with packed-consumer coverage for bounds, malformed requests, partial termination, and backend-name non-leakage |
 
 ## M4 Device models
 
