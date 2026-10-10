@@ -30,6 +30,7 @@ import {
   parseDiodeInstanceParams,
   type DiodeInstanceParams,
 } from './parser/diode-parser.js';
+import { assertSupportedPoleZero } from './validation/pole-zero.js';
 import {
   resolveCapacitance,
   resolveCapacitorModel,
@@ -38,7 +39,7 @@ import {
   type ResolvedCapacitorModel,
   type ResolvedInductorModel,
 } from './devices/passive-model.js';
-import { CycleError } from './errors.js';
+import { CycleError, InvalidCircuitError } from './errors.js';
 
 /**
  * The compiled representation of a circuit, ready for numerical simulation.
@@ -693,7 +694,10 @@ export class Circuit {
         });
         break;
       case 'pz':
-        this._poleZeroAnalyses.push({
+        if (this._steps.length > 0) {
+          throw new InvalidCircuitError('.step cannot be combined with .pz');
+        }
+        const analysis: PoleZeroAnalysis = {
           type: 'pz',
           inputPositive: params!.inputPositive as string,
           inputNegative: params!.inputNegative as string,
@@ -701,7 +705,9 @@ export class Circuit {
           outputNegative: params!.outputNegative as string,
           inputType: 'cur',
           mode: params!.mode as 'pol' | 'pz',
-        });
+        };
+        assertSupportedPoleZero(analysis);
+        this._poleZeroAnalyses.push(analysis);
         break;
     }
   }
@@ -729,6 +735,9 @@ export class Circuit {
     points?: number;
     values?: number[];
   }): void {
+    if (this._poleZeroAnalyses.length > 0) {
+      throw new InvalidCircuitError('.step cannot be combined with .pz');
+    }
     if (opts.values) {
       this._steps.push({ type: 'step', param, sweepMode: 'list', values: opts.values });
     } else {

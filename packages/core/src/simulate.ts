@@ -383,6 +383,9 @@ function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[
   if (compiled.analyses.length === 0 && compiled.poleZeroAnalyses.length === 0) {
     throw new InvalidCircuitError('No analysis command specified');
   }
+  if (compiled.steps.length > 0 && compiled.poleZeroAnalyses.length > 0) {
+    throw new InvalidCircuitError('.step cannot be combined with .pz');
+  }
 }
 
 function transientInitialSolution(

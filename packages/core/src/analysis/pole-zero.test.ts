@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { Circuit } from '../circuit.js';
 import { InvalidCircuitError, ParseError } from '../errors.js';
 import { parse } from '../parser/index.js';
 import { PoleZeroResult } from '../results.js';
@@ -89,6 +90,39 @@ describe('.pz analysis', () => {
   it('rejects .step combined with .pz instead of returning empty step results', () => {
     expect(() => parse(`${passiveFixture}\n.step param R1 list 1k 2k`))
       .toThrow(ParseError);
+  });
+
+  it('rejects a programmatic .pz with a non-ground input reference', () => {
+    const circuit = new Circuit();
+
+    expect(() => circuit.addAnalysis('pz', {
+      inputPositive: 'in',
+      inputNegative: 'ref',
+      outputPositive: 'out',
+      outputNegative: '0',
+      inputType: 'cur',
+      mode: 'pz',
+    })).toThrow(InvalidCircuitError);
+  });
+
+  it('rejects a programmatic .pz with a non-ground output reference', () => {
+    const circuit = new Circuit();
+
+    expect(() => circuit.addAnalysis('pz', {
+      inputPositive: 'in',
+      inputNegative: '0',
+      outputPositive: 'out',
+      outputNegative: 'ref',
+      inputType: 'cur',
+      mode: 'pz',
+    })).toThrow(InvalidCircuitError);
+  });
+
+  it('rejects a programmatic .step combined with .pz', () => {
+    const circuit = parse(passiveFixture);
+
+    expect(() => circuit.addStep('R1', { values: [1000, 2000] }))
+      .toThrow(InvalidCircuitError);
   });
 });
 
