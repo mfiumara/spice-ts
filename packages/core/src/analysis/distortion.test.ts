@@ -10,6 +10,10 @@ const fixture = readFileSync(new URL(
   '../../../../benchmarks/distortion/linear-lowpass.cir',
   import.meta.url,
 ), 'utf8');
+const twoToneFixture = readFileSync(new URL(
+  '../../../../benchmarks/distortion/two-tone-linear-lowpass.cir',
+  import.meta.url,
+), 'utf8');
 
 describe('bounded .disto analysis', () => {
   it('parses the exact public single-tone DEC fixture', () => {
@@ -36,6 +40,30 @@ describe('bounded .disto analysis', () => {
       Array.from({ length: 31 }, () => ({ real: 0, imaginary: 0 })),
     );
     expect(result.distortion?.current('V1', 2)).toHaveLength(31);
+    expect(result.distortion?.products).toEqual([2, 3]);
+  });
+
+  it('returns all three ngspice two-tone products for the exact public DEC fixture', async () => {
+    expect(parse(twoToneFixture.split('\n').slice(1).join('\n')).analyses).toContainEqual({
+      type: 'disto',
+      variation: 'dec',
+      points: 10,
+      startFreq: 1e3,
+      stopFreq: 1e6,
+      f2OverF1: 0.9,
+    });
+
+    const result = await simulate(twoToneFixture);
+    expect(result.distortion?.f2OverF1).toBe(0.9);
+    expect(result.distortion?.products).toEqual(['f1+f2', 'f1-f2', '2f1-f2']);
+    for (const product of ['f1+f2', 'f1-f2', '2f1-f2'] as const) {
+      expect(result.distortion?.voltage('2', product)).toEqual(
+        Array.from({ length: 31 }, () => ({ real: 0, imaginary: 0 })),
+      );
+      expect(result.distortion?.current('V1', product)).toHaveLength(31);
+    }
+    expect(() => result.distortion?.voltage('2', 2))
+      .toThrow('Distortion product 2 is unavailable for this analysis');
   });
 
   it('stops a DEC sweep at a non-integral-decade upper bound', async () => {
@@ -89,9 +117,11 @@ R1 1 0 1k
   );
 
   it.each([
-    ['.disto dec 10 1k 1Meg 0.9', 'Two-tone .disto is not supported; omit f2overf1'],
     ['.disto lin 10 1k 1Meg', "Unsupported .disto sweep; expected '.disto dec points start stop'"],
     ['.disto oct 10 1k 1Meg', "Unsupported .disto sweep; expected '.disto dec points start stop'"],
+    ['.disto dec 10 1k 1Meg 0', 'Invalid .disto f2overf1; expected a value greater than 0 and less than 1'],
+    ['.disto dec 10 1k 1Meg 1', 'Invalid .disto f2overf1; expected a value greater than 0 and less than 1'],
+    ['.disto dec 10 1k 1Meg 0.9 extra', "Unsupported .disto sweep; expected '.disto dec points start stop [f2overf1]'"],
     ['.disto dec 0 1k 1Meg', 'Invalid .disto dec sweep'],
     ['.disto dec 10 0 1Meg', 'Invalid .disto dec sweep'],
     ['.disto dec 10 1Meg 1k', 'Invalid .disto dec sweep'],
@@ -127,9 +157,16 @@ R1 1 0 1k
       .toThrow('Multiple .disto analyses are not supported');
   });
 
-  it('rejects a non-zero second tone explicitly', async () => {
+  it('rejects a non-zero second tone without a two-tone command explicitly', async () => {
     await expect(simulate(`Two-tone source\nV1 1 0 DC 0 DISTOF1 1 DISTOF2 0.1\nR1 1 0 1k\n.disto dec 10 1k 1Meg`))
-      .rejects.toThrow("Two-tone .disto is not supported; source 'V1' has non-zero DISTOF2");
+      .rejects.toThrow("Non-zero DISTOF2 on source 'V1' requires .disto f2overf1");
+  });
+
+  it('requires exactly one valid F2 excitation for a two-tone command', async () => {
+    await expect(simulate('Missing F2\nV1 1 0 DISTOF1 1\nR1 1 0 1k\n.disto dec 10 1k 1Meg 0.9'))
+      .rejects.toThrow('.disto two-tone requires exactly one non-zero DISTOF2 excitation; found 0');
+    await expect(simulate('Invalid F2\nV1 1 0 DISTOF1 1 DISTOF2 -1\nR1 1 0 1k\n.disto dec 10 1k 1Meg 0.9'))
+      .rejects.toThrow("Invalid DISTOF2 excitation on source 'V1'");
   });
 
   it('rejects semiconductor nonlinear distortion explicitly', async () => {
