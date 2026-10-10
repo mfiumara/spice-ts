@@ -212,7 +212,7 @@ export async function parseTitlelessAsync(
   return parseNetlist(preprocessed, false, guard);
 }
 
-const OUTPUT_ONLY_GNUCAP_OPTION_FLAGS = new Set(['nopage', 'acct', 'list', 'node']);
+const OUTPUT_ONLY_GNUCAP_OPTION_FLAGS = new Set(['nopage', 'acct', 'noacct', 'list', 'node']);
 const BEHAVIOR_CHANGING_GNUCAP_OPTIONS = new Set([
   'cstray', 'dampstrategy', 'itermin', 'nobypass', 'noincmode', 'rstray', 'trsteporder',
 ]);
