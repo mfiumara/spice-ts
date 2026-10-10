@@ -178,7 +178,7 @@ describe('browser protocol-v1 worker facade', () => {
           || Math.abs(outputPhasor.phaseDegrees - -32.141907635342065) > 1e-10) throw new Error('wrong WASM AC result');
         const unsupported = await wasm.simulate({
           apiVersion: '1',
-          input: { format: 'spice', source: 'V1 in 0 1\\nC1 in 0 1u\\n.op' },
+          input: { format: 'spice', source: 'V1 in 0 1\\nL1 in 0 1u\\n.op' },
         }, { requestId: 'browser-wasm-unsupported' });
         if (unsupported.ok || unsupported.error.code !== 'UNSUPPORTED_FEATURE') throw new Error('WASM fallback was not rejected');
         await wasm.close();

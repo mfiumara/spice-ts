@@ -28,6 +28,14 @@ const linCircuits = [
   { points: 4, source: 'V1 in 0 AC 1\nR1 in 0 1k\n.ac lin 4 100 1k', expectedGrid: [100, 400, 700, 1000] },
 ] as const;
 
+const transientCircuit = [
+  'V1 in 0 PULSE(0 1 0 100u 100u 10m 20m)',
+  'R1 in out 1k',
+  'C1 out 0 1u',
+  '.tran 100u 1m',
+  '.end',
+].join('\n');
+
 async function engine(backend: 'spice-ts-js' | 'spice-ts-wasm'): Promise<SpiceEngine> {
   return createSpiceEngine({ backend });
 }
@@ -42,7 +50,7 @@ describe('bounded numeric WebAssembly backend', () => {
     try {
       expect(wasm.capabilities).toMatchObject({
         backends: ['spice-ts-wasm'],
-        analyses: ['op', 'ac'],
+        analyses: ['op', 'tran', 'ac'],
         nativeSchemaVersions: [],
         engineBuildId: expect.stringMatching(/^spice-ts-wasm-[0-9a-f]{16}$/),
         numericWasm: {
@@ -51,13 +59,14 @@ describe('bounded numeric WebAssembly backend', () => {
           artifactSha256: expect.stringMatching(/^[0-9a-f]{64}$/),
           artifactBytes: expect.any(Number),
           inputFormats: ['spice'],
-          analyses: ['op', 'ac'],
+          analyses: ['op', 'tran', 'ac'],
           devicesByAnalysis: {
             op: ['R', 'I', 'V'],
+            tran: ['R', 'C', 'I', 'V'],
             ac: ['R', 'C', 'L', 'I', 'V'],
           },
           fallback: 'reject',
-          limits: { maxSystemOrder: 64, maxAcPoints: 1025, memoryPages: 3 },
+          limits: { maxSystemOrder: 64, maxAcPoints: 1025, maxResultPoints: 4096, memoryPages: 3 },
         },
       });
     } finally {
@@ -176,6 +185,145 @@ describe('bounded numeric WebAssembly backend', () => {
     }
   });
 
+  it('runs bounded passive RC transient analysis with canonical stream ordering and reset', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const first = await wasm.simulate(request(transientCircuit), { requestId: 'tran-result' });
+      const second = await wasm.simulate(request(transientCircuit), { requestId: 'tran-reuse' });
+      expect(first.ok).toBe(true);
+      expect(second.ok).toBe(true);
+      if (!first.ok || !second.ok) return;
+      expect(second.data).toEqual(first.data);
+      const transient = first.data.analyses[0];
+      expect(transient?.type).toBe('tran');
+      if (transient?.type !== 'tran') return;
+      expect(transient.timeS).toHaveLength(11);
+      expect(transient.timeS[0]).toBe(0);
+      expect(transient.timeS.at(-1)).toBeCloseTo(1e-3, 15);
+      expect(transient.voltagesV.out[0]).toBe(0);
+      expect(transient.voltagesV.out.at(-1)).toBeGreaterThan(0.5);
+
+      const currentDriven = await wasm.simulate(request([
+        'I1 0 out PULSE(0 1m 0 100u 100u 10m 20m)',
+        'R1 out 0 1k',
+        'C1 out 0 1u',
+        '.tran 100u 1m',
+      ].join('\n')), { requestId: 'tran-current-source' });
+      expect(currentDriven.ok).toBe(true);
+
+      const reads = [];
+      for await (const read of wasm.simulateStream(request(transientCircuit), {
+        requestId: 'tran-stream', chunkPoints: 4,
+      })) reads.push(read);
+      expect(reads.map(read => read.status)).toEqual(['running', 'running', 'complete']);
+      const events = reads.flatMap(read => read.events);
+      expect(events.map(event => event.type)).toEqual([
+        'analysis-start', ...Array.from({ length: 11 }, () => 'point'), 'analysis-end',
+      ]);
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('schedules an exact 1 us grid through 1 ms without a duplicate terminal point', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const result = await wasm.simulate(request([
+        'V1 in 0 1',
+        'R1 in out 1k',
+        'C1 out 0 1u',
+        '.tran 1u 1m',
+      ].join('\n')), { requestId: 'tran-exact-grid' });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      const transient = result.data.analyses[0];
+      expect(transient?.type).toBe('tran');
+      if (transient?.type !== 'tran') return;
+      expect(transient.timeS).toHaveLength(1_001);
+      expect(transient.timeS.at(-1)).toBe(1e-3);
+      expect(transient.timeS.at(-2)).toBeCloseTo(999e-6, 15);
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('enforces the serialized-result byte limit for transient results', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const result = await wasm.simulate(request(transientCircuit, {
+        limits: { maxSerializedResultBytes: 1 },
+      }), { requestId: 'tran-serialized-limit' });
+      expect(result).toMatchObject({
+        ok: false,
+        error: {
+          code: 'RESOURCE_LIMIT',
+          phase: 'serialize',
+          retryable: false,
+          details: {
+            limit: 'maxSerializedResultBytes',
+            configured: 1,
+            observed: expect.any(Number),
+          },
+        },
+        metadata: { backend: 'spice-ts-wasm' },
+      });
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('rejects compound clauses after a transient PULSE source', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const result = await wasm.simulate(request([
+        'V1 in 0 PULSE(0 1 0 100u 100u 10m 20m) AC 2',
+        'R1 in out 1k',
+        'C1 out 0 1u',
+        '.tran 100u 1m',
+      ].join('\n')), { requestId: 'tran-compound-pulse' });
+      expect(result).toMatchObject({
+        ok: false,
+        error: {
+          code: 'UNSUPPORTED_FEATURE',
+          phase: 'validation',
+          details: { backend: 'spice-ts-wasm', feature: 'source-waveform' },
+        },
+        metadata: { backend: 'spice-ts-wasm' },
+      });
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('returns exact diagnostics for unsupported transient controls', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const [source, feature, message] of [
+        ['V1 in 0 1\nR1 in 0 1k\n.tran 1u 1m 1u', 'tran-start-time', 'Transient start time is not supported'],
+        ['V1 in 0 1\nR1 in 0 1k\n.tran 1u 1m 0 100n', 'tran-max-timestep', 'Transient maximum timestep is not supported'],
+        ['V1 in 0 1\nR1 in 0 1k\n.tran 1u 1m uic', 'tran-uic', 'Transient UIC is not supported'],
+      ] as const) {
+        const result = await wasm.simulate(request(source), { requestId: feature });
+        expect(result).toMatchObject({
+          ok: false,
+          error: { code: 'UNSUPPORTED_FEATURE', message, details: { backend: 'spice-ts-wasm', feature } },
+        });
+      }
+      const option = await wasm.simulate(request(transientCircuit, { integrationMethod: 'euler' }), {
+        requestId: 'integration-method',
+      });
+      expect(option).toMatchObject({
+        ok: false,
+        error: {
+          code: 'UNSUPPORTED_FEATURE', message: 'Only trapezoidal transient integration is supported',
+          details: { backend: 'spice-ts-wasm', feature: 'integration-method' },
+        },
+      });
+    } finally {
+      await wasm.close();
+    }
+  });
+
   it('bounds AC result points and rejects nonlinear AC without fallback', async () => {
     const wasm = await engine('spice-ts-wasm');
     try {
@@ -207,9 +355,10 @@ describe('bounded numeric WebAssembly backend', () => {
     const wasm = await engine('spice-ts-wasm');
     try {
       for (const [name, source] of Object.entries({
-        transient: 'V1 in 0 1\nR1 in 0 1k\n.tran 1u 1m',
         capacitor: 'V1 in 0 1\nC1 in 0 1u\n.op',
         waveform: 'V1 in 0 PULSE(0 1 0 1n 1n 1m 2m)\nR1 in 0 1k\n.op',
+        inductorTransient: 'V1 in 0 1\nL1 in 0 1m\n.tran 1u 1m',
+        nonlinearTransient: 'V1 in 0 1\nD1 in 0 D\n.model D D\n.tran 1u 1m',
       })) {
         const result = await wasm.simulate(request(source), { requestId: `unsupported-${name}` });
         expect(result).toMatchObject({
@@ -239,6 +388,14 @@ describe('bounded numeric WebAssembly backend', () => {
       expect(bounded).toMatchObject({
         ok: false,
         error: { code: 'RESOURCE_LIMIT', details: { limit: 'maxSystemOrder', configured: 64 } },
+      });
+
+      const tooManyPoints = await wasm.simulate(request(transientCircuit, {
+        limits: { maxResultPoints: 10 },
+      }), { requestId: 'tran-point-limit' });
+      expect(tooManyPoints).toMatchObject({
+        ok: false,
+        error: { code: 'RESOURCE_LIMIT', details: { limit: 'maxResultPoints', configured: 10, observed: 11 } },
       });
     } finally {
       await wasm.close();

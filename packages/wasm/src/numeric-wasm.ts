@@ -39,7 +39,12 @@ interface PreparedPassiveAc extends PreparedNumericBase {
   frequenciesHz: number[];
 }
 
-type PreparedNumeric = PreparedLinearOp | PreparedPassiveAc;
+interface PreparedPassiveTran extends PreparedNumericBase {
+  analysis: 'tran';
+  transient: Extract<CompiledCircuit['analyses'][number], { type: 'tran' }>;
+}
+
+type PreparedNumeric = PreparedLinearOp | PreparedPassiveAc | PreparedPassiveTran;
 
 export function validateLinearOpWasmV1(request: SimulationRequestV1): NumericValidationResultV1 {
   const { compiled } = prepare(request);
@@ -60,9 +65,9 @@ export async function simulateLinearOpWasmV1(
   const exports = instantiated.instance.exports as NumericWasmExports;
   assertNumericWasmAbi(exports);
 
-  return prepared.analysis === 'op'
-    ? simulateOp(prepared, request, exports)
-    : simulateAc(prepared, request, exports);
+  if (prepared.analysis === 'op') return simulateOp(prepared, request, exports);
+  if (prepared.analysis === 'tran') return simulateTransient(prepared, request, exports);
+  return simulateAc(prepared, request, exports);
 }
 
 function simulateOp(
@@ -119,6 +124,129 @@ function simulateOp(
       ])),
     }],
   };
+}
+
+function simulateTransient(
+  { compiled, order, transient }: PreparedPassiveTran,
+  request: SimulationRequestV1,
+  exports: NumericWasmExports,
+): SimulationResultV1 {
+  const pointCount = transientPointCount(transient.stopTime, transient.timestep);
+  const pointLimit = Math.min(
+    NUMERIC_WASM_LIMITS.maxResultPoints,
+    request.options?.limits?.maxResultPoints ?? Infinity,
+  );
+  if (pointCount > pointLimit) throw resourceLimit('maxResultPoints', pointLimit, pointCount);
+
+  const gmin = request.options?.gmin ?? 0;
+  const initial = stampTransientSystem(compiled, order, 0, true, new Float64Array(order));
+  addGmin(initial.conductance, compiled.nodeCount, order, gmin);
+  let solution = solveReal(exports, order, initial.conductance, initial.rhs);
+  let previousRhs = initial.rhs;
+  let previousTime = 0;
+  const timeS = [0];
+  const voltagesV = Object.fromEntries(compiled.nodeNames.map((name, index) => [name, [solution[index]!]]));
+  const currentsA = Object.fromEntries(compiled.branchNames.map((name, index) => [
+    name,
+    [solution[compiled.nodeCount + index]!],
+  ]));
+
+  for (let point = 1; point < pointCount; point++) {
+    const time = Math.min(point * transient.timestep, transient.stopTime);
+    const dt = time - previousTime;
+    const stamped = stampTransientSystem(compiled, order, time, false, solution);
+    addGmin(stamped.conductance, compiled.nodeCount, order, gmin);
+    const matrix = new Float64Array(stamped.conductance.length);
+    const rhs = new Float64Array(order);
+    const dynamicScale = 2 / dt;
+    for (let row = 0; row < order; row++) {
+      let history = 0;
+      for (let column = 0; column < order; column++) {
+        const index = row * order + column;
+        matrix[index] = stamped.conductance[index]! + dynamicScale * stamped.dynamic[index]!;
+        history += (dynamicScale * stamped.dynamic[index]! - stamped.conductance[index]!) * solution[column]!;
+      }
+      rhs[row] = stamped.rhs[row]! + previousRhs[row]! + history;
+    }
+    solution = solveReal(exports, order, matrix, rhs);
+    previousRhs = stamped.rhs;
+    previousTime = time;
+    timeS.push(time);
+    compiled.nodeNames.forEach((name, index) => voltagesV[name]!.push(solution[index]!));
+    compiled.branchNames.forEach((name, index) => currentsA[name]!.push(solution[compiled.nodeCount + index]!));
+  }
+
+  const result: SimulationResultV1 = {
+    status: 'complete',
+    analyses: [{ type: 'tran', analysisIndex: 0, timeS, voltagesV, currentsA }],
+  };
+  enforceSerializedResultLimit(result, request);
+  return result;
+}
+
+function transientPointCount(stopTime: number, timestep: number): number {
+  const intervalCount = stopTime / timestep;
+  const nearestInteger = Math.round(intervalCount);
+  const tolerance = Number.EPSILON * Math.max(1, Math.abs(intervalCount)) * 2;
+  return (Math.abs(intervalCount - nearestInteger) <= tolerance
+    ? nearestInteger
+    : Math.ceil(intervalCount)) + 1;
+}
+
+function stampTransientSystem(
+  compiled: CompiledCircuit,
+  order: number,
+  time: number,
+  useDcSourceValue: boolean,
+  solution: Float64Array,
+): { conductance: Float64Array; dynamic: Float64Array; rhs: Float64Array } {
+  const conductance = new Float64Array(order * order);
+  const dynamic = new Float64Array(order * order);
+  const rhs = new Float64Array(order);
+  const context: StampContext = {
+    stampG(row, column, value) { conductance[row * order + column] += value; },
+    stampB(row, value) { rhs[row] += value; },
+    stampC(row, column, value) { dynamic[row * order + column] += value; },
+    getVoltage(node) { return node < 0 ? 0 : solution[node]!; },
+    getCurrent(branch) { return solution[compiled.nodeCount + branch]!; },
+    time,
+    dt: 0,
+    numNodes: compiled.nodeCount,
+    sourceScale: 1,
+    useDcSourceValue,
+  };
+  for (const device of compiled.devices) {
+    device.stamp(context);
+    device.stampDynamic?.(context);
+  }
+  return { conductance, dynamic, rhs };
+}
+
+function solveReal(
+  exports: NumericWasmExports,
+  order: number,
+  matrix: Float64Array,
+  rhs: Float64Array,
+): Float64Array {
+  const matrixPointer = align8(Number(exports.__heap_base.value));
+  const rhsPointer = matrixPointer + matrix.byteLength;
+  if (rhsPointer + rhs.byteLength > exports.memory.buffer.byteLength) {
+    throw resourceLimit('numericWasmMemoryBytes', exports.memory.buffer.byteLength, rhsPointer + rhs.byteLength);
+  }
+  new Float64Array(exports.memory.buffer, matrixPointer, matrix.length).set(matrix);
+  new Float64Array(exports.memory.buffer, rhsPointer, rhs.length).set(rhs);
+  const status = exports.solve_f64(order, matrixPointer, rhsPointer);
+  if (status === 1) {
+    throw numericError('SINGULAR_MATRIX', 'The bounded WebAssembly matrix is singular', 'solve', { order });
+  }
+  if (status !== 0) {
+    throw numericError('INVALID_CIRCUIT', 'The bounded WebAssembly solver rejected non-finite numeric data', 'solve', { order, status });
+  }
+  return new Float64Array(exports.memory.buffer, rhsPointer, order).slice();
+}
+
+function addGmin(matrix: Float64Array, nodeCount: number, order: number, gmin: number): void {
+  for (let node = 0; node < nodeCount; node++) matrix[node * order + node] += gmin;
 }
 
 function simulateAc(
@@ -226,16 +354,19 @@ function simulateAc(
       voltagePhasors, currentPhasors,
     }],
   };
-  const serializedLimit = request.options?.limits?.maxSerializedResultBytes;
-  if (serializedLimit !== undefined) {
-    const observed = new TextEncoder().encode(JSON.stringify(result)).byteLength;
-    if (observed > serializedLimit) {
-      throw numericError('RESOURCE_LIMIT', "Resource limit 'maxSerializedResultBytes' exceeded", 'serialize', {
-        limit: 'maxSerializedResultBytes', configured: serializedLimit, observed,
-      });
-    }
-  }
+  enforceSerializedResultLimit(result, request);
   return result;
+}
+
+function enforceSerializedResultLimit(result: SimulationResultV1, request: SimulationRequestV1): void {
+  const configured = request.options?.limits?.maxSerializedResultBytes;
+  if (configured === undefined) return;
+  const observed = new TextEncoder().encode(JSON.stringify(result)).byteLength;
+  if (observed > configured) {
+    throw numericError('RESOURCE_LIMIT', "Resource limit 'maxSerializedResultBytes' exceeded", 'serialize', {
+      limit: 'maxSerializedResultBytes', configured, observed,
+    });
+  }
 }
 
 function polar(real: number, imaginary: number): { magnitude: number; phaseDegrees: number } {
@@ -262,13 +393,16 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
   const analyses = cards.filter(line => /^\.(op|dc|tran|ac)\b/i.test(line));
   const analysisLimit = Math.min(1, request.options?.limits?.maxAnalyses ?? Infinity);
   if (analyses.length > analysisLimit) throw resourceLimit('maxAnalyses', analysisLimit, analyses.length);
-  if (analyses.length !== 1) unsupported('analysis', 'Exactly one .op or .ac analysis is supported');
+  if (analyses.length !== 1) unsupported('analysis', 'Exactly one .op, .tran, or .ac analysis is supported');
   const analysis = /^\.op(?:\s|$)/i.test(analyses[0]!)
     ? 'op'
+    : /^\.tran(?:\s|$)/i.test(analyses[0]!)
+      ? 'tran'
     : /^\.ac(?:\s|$)/i.test(analyses[0]!)
       ? 'ac'
-      : unsupported('analysis', 'Exactly one .op or .ac analysis is supported');
+      : unsupported('analysis', 'Exactly one .op, .tran, or .ac analysis is supported');
 
+  if (analysis === 'tran') validateTransientControls(analyses[0]!, request);
   validateCards(cards, analysis);
   const circuit = parseTitleless(source);
   const compiled = circuit.compile();
@@ -276,11 +410,13 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
     || compiled.analyses.length !== 1 || compiled.analyses[0]?.type !== analysis) {
     unsupported('analysis', `Exactly one unstepped .${analysis} analysis is supported`);
   }
-  const devices = analysis === 'op' ? ['R', 'I', 'V'] : ['R', 'C', 'L', 'I', 'V'];
+  const devices = analysis === 'op' ? ['R', 'I', 'V']
+    : analysis === 'tran' ? ['R', 'C', 'I', 'V']
+      : ['R', 'C', 'L', 'I', 'V'];
   if (compiled.devices.some(device => !devices.includes(device.name[0]?.toUpperCase() ?? ''))) {
     unsupported('device', `Only ${devices.join(', ')} devices are supported for .${analysis}`);
   }
-  if (analysis === 'ac') validatePassiveValues(compiled);
+  if (analysis !== 'op') validatePassiveValues(compiled);
   const order = compiled.nodeCount + compiled.branchCount;
   if (order < 1) throw numericError('INVALID_CIRCUIT', 'The circuit has no numeric unknowns', 'compile');
   if (order > NUMERIC_WASM_LIMITS.maxSystemOrder) {
@@ -289,6 +425,10 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
   if (analysis === 'op') return { analysis, compiled, order };
 
   const compiledAnalysis = compiled.analyses[0];
+  if (analysis === 'tran') {
+    if (compiledAnalysis?.type !== 'tran') unsupported('analysis', 'Exactly one .tran analysis is supported');
+    return { analysis, compiled, order, transient: compiledAnalysis };
+  }
   if (compiledAnalysis?.type !== 'ac') unsupported('analysis', 'Exactly one .ac analysis is supported');
   const pointCount = acPointCount(compiledAnalysis);
   const pointLimit = Math.min(
@@ -299,8 +439,10 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
   return { analysis, compiled, order, frequenciesHz: acFrequencies(compiledAnalysis, pointCount) };
 }
 
-function validateCards(cards: string[], analysis: 'op' | 'ac'): void {
-  const allowedDevices = analysis === 'op' ? ['R', 'I', 'V'] : ['R', 'C', 'L', 'I', 'V'];
+function validateCards(cards: string[], analysis: 'op' | 'tran' | 'ac'): void {
+  const allowedDevices = analysis === 'op' ? ['R', 'I', 'V']
+    : analysis === 'tran' ? ['R', 'C', 'I', 'V']
+      : ['R', 'C', 'L', 'I', 'V'];
   for (const card of cards) {
     if (new RegExp(`^\\.(?:${analysis}|end)(?:\\s|$)`, 'i').test(card)) continue;
     const tokens = card.split(/\s+/);
@@ -317,9 +459,33 @@ function validateCards(cards: string[], analysis: 'op' | 'ac'): void {
       if (tokens.length !== 4 && !dc) {
         unsupported('source-waveform', 'OP sources must use a constant or DC value');
       }
+    } else if (analysis === 'tran') {
+      const dc = tokens.length === 5 && tokens[3]?.toUpperCase() === 'DC';
+      const pulse = /^\S+\s+\S+\s+\S+\s+PULSE\s*\([^)]*\)\s*$/i.test(card);
+      if (tokens.length !== 4 && !dc && !pulse) {
+        unsupported('source-waveform', 'Transient sources must use a constant, DC, or PULSE value');
+      }
     } else if (!validAcSourceTokens(tokens)) {
       unsupported('source-waveform', 'AC sources must use constant, DC, AC, or DC plus AC values');
     }
+  }
+}
+
+function validateTransientControls(card: string, request: SimulationRequestV1): void {
+  const tokens = card.trim().split(/\s+/).slice(1);
+  if (tokens.some(token => token.toUpperCase() === 'UIC')) {
+    unsupported('tran-uic', 'Transient UIC is not supported');
+  }
+  if (tokens.length >= 4) unsupported('tran-max-timestep', 'Transient maximum timestep is not supported');
+  if (tokens.length >= 3) unsupported('tran-start-time', 'Transient start time is not supported');
+  if (request.options?.integrationMethod && request.options.integrationMethod !== 'trapezoidal') {
+    unsupported('integration-method', 'Only trapezoidal transient integration is supported');
+  }
+  if (request.options?.maxTimestep !== undefined) {
+    unsupported('max-timestep', 'Transient maximum timestep is not supported');
+  }
+  if (request.options?.trtol !== undefined) {
+    unsupported('trtol', 'Transient LTE controls are not supported');
   }
 }
 

@@ -3,6 +3,7 @@ export const NUMERIC_WASM_LIMITS = Object.freeze({
   maxComponents: 256,
   maxSystemOrder: 64,
   maxAcPoints: 1_025,
+  maxResultPoints: 4_096,
   memoryPages: 3,
 } as const);
 

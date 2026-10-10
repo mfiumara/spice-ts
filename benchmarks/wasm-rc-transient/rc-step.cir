@@ -1,0 +1,6 @@
+* Bounded passive RC step transient adapted from ngspice tests/general/rc.cir
+V1 in 0 PULSE(0 1 0 100u 100u 10m 20m)
+R1 in out 1k
+C1 out 0 1u
+.tran 100u 1m
+.end

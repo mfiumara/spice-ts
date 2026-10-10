@@ -90,9 +90,10 @@ export interface SpiceEngineCapabilitiesV1 {
     artifactSha256: string;
     artifactBytes: number;
     inputFormats: readonly ['spice'];
-    analyses: readonly ['op', 'ac'];
+    analyses: readonly ['op', 'tran', 'ac'];
     devicesByAnalysis: {
       op: readonly ['R', 'I', 'V'];
+      tran: readonly ['R', 'C', 'I', 'V'];
       ac: readonly ['R', 'C', 'L', 'I', 'V'];
     };
     fallback: 'reject';
@@ -188,7 +189,7 @@ export async function createSpiceEngine(options: CreateSpiceEngineOptions): Prom
     backends: [backend] as readonly BackendV1[],
     analyses: backend === 'spice-ts-js'
       ? ['op', 'dc', 'tran', 'ac'] as const
-      : ['op', 'ac'] as const,
+      : ['op', 'tran', 'ac'] as const,
     determinism: ['strict', 'relaxed'],
     streamChunkPoints: DEFAULT_CHUNK_POINTS,
     engineBuildId: backend === 'spice-ts-js' ? manifest.engineBuildId : manifest.numericWasm!.engineBuildId,
@@ -199,9 +200,10 @@ export async function createSpiceEngine(options: CreateSpiceEngineOptions): Prom
         artifactSha256: manifest.numericWasm!.sha256,
         artifactBytes: manifest.numericWasm!.byteLength,
         inputFormats: ['spice'] as const,
-        analyses: ['op', 'ac'] as const,
+        analyses: ['op', 'tran', 'ac'] as const,
         devicesByAnalysis: {
           op: ['R', 'I', 'V'] as const,
+          tran: ['R', 'C', 'I', 'V'] as const,
           ac: ['R', 'C', 'L', 'I', 'V'] as const,
         },
         fallback: 'reject' as const,
