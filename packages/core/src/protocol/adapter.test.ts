@@ -105,6 +105,22 @@ describe('protocol v1 core adapter', () => {
     expect(ac.voltagePhasors.z![0]).toHaveProperty('phaseDegrees');
   });
 
+  it('uses the resolved source original name for a mixed-case DC axis', async () => {
+    const result = await simulateProtocolV1({
+      apiVersion: '1',
+      input: {
+        format: 'spice',
+        source: 'Vinput out 0 0\nR1 out 0 1k\n.dc vINPUT 0 1 1',
+      },
+    });
+
+    const dc = result.analyses[0];
+    expect(dc?.type).toBe('dc');
+    if (dc?.type !== 'dc') throw new Error('expected DC result');
+    expect(dc.axis).toEqual({ name: 'Vinput', unit: 'V', values: [0, 1] });
+    expect(Object.keys(dc.currentsA)).toEqual(['Vinput']);
+  });
+
   it.each([
     ['noise', 'V1 in 0 DC 0 AC 1\nR1 in out 1k\nR2 out 0 1k\n.noise v(out) V1 lin 2 1 2'],
     ['tf', 'V1 in 0 1\nR1 in out 1k\nR2 out 0 1k\n.tf v(out) V1'],

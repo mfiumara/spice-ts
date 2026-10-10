@@ -97,6 +97,31 @@ describe('DC Sweep', () => {
     }
   });
 
+  it('resolves the sweep source case-insensitively and preserves its name', () => {
+    const ckt = new Circuit();
+    ckt.addVoltageSource('Vinput', '1', '0', { dc: 0 });
+    ckt.addResistor('R1', '1', '0', 1000);
+
+    const result = solveDCSweep(ckt.compile(), {
+      type: 'dc', source: 'vINPUT', start: 0, stop: 1, step: 1,
+    }, resolveOptions());
+
+    expect([...result.current('Vinput')]).toEqual([0, -0.001]);
+    expect(() => result.current('vINPUT')).toThrow('Unknown branch: vINPUT');
+  });
+
+  it('resolves a mixed-case current-source sweep', () => {
+    const ckt = new Circuit();
+    ckt.addCurrentSource('Ibias', '1', '0', { dc: 0 });
+    ckt.addResistor('R1', '1', '0', 1000);
+
+    const result = solveDCSweep(ckt.compile(), {
+      type: 'dc', source: 'iBIAS', start: 0, stop: 0.001, step: 0.001,
+    }, resolveOptions());
+
+    expect([...result.voltage('1')]).toEqual([0, 1]);
+  });
+
   it('throws on unknown sweep source', () => {
     const ckt = new Circuit();
     ckt.addVoltageSource('V1', '1', '0', { dc: 5 });
@@ -110,6 +135,20 @@ describe('DC Sweep', () => {
 
     expect(() => solveDCSweep(compiled, analysis, options)).toThrow(
       "DC sweep source 'V99' not found",
+    );
+  });
+
+  it('rejects case-insensitively ambiguous sweep sources deterministically', () => {
+    const ckt = new Circuit();
+    ckt.addVoltageSource('Vinput', '1', '0', { dc: 0 });
+    ckt.addVoltageSource('vINPUT', '2', '0', { dc: 0 });
+    ckt.addResistor('R1', '1', '0', 1000);
+    ckt.addResistor('R2', '2', '0', 1000);
+
+    expect(() => solveDCSweep(ckt.compile(), {
+      type: 'dc', source: 'VINPUT', start: 0, stop: 1, step: 1,
+    }, resolveOptions())).toThrow(
+      "DC sweep source 'VINPUT' is ambiguous; matches: 'Vinput', 'vINPUT'",
     );
   });
 });

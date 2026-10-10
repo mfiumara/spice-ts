@@ -94,8 +94,14 @@ describe('Xyce primitive parser compatibility', () => {
       .toThrow(/Cannot parse number: 'v1'/);
   });
 
-  it('accepts the bounded level-1 NJF fixture', () => {
-    expect(() => parse(fixture('NJFET_DC/njfet.cir')).compile()).not.toThrow();
+  it('simulates the unchanged bounded level-1 NJF fixture', async () => {
+    const result = await simulate(fixture('NJFET_DC/njfet.cir'));
+
+    expect(result.steps).toHaveLength(4);
+    expect([...result.steps![0]!.dcSweep!.sweepValues]).toEqual([
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+    ]);
+    expect(result.steps![0]!.dcSweep!.current('Vidmon')).toHaveLength(16);
   });
 
   it('keeps the level-2 NJF fixture explicitly unsupported', () => {
