@@ -2,7 +2,9 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { InvalidCircuitError } from '../errors.js';
 import { parseTitleless as parse } from '../parser/index.js';
+import { DistortionResult } from '../results.js';
 import { simulate } from '../simulate.js';
+import { Circuit } from '../circuit.js';
 
 const fixture = readFileSync(new URL(
   '../../../../benchmarks/distortion/linear-lowpass.cir',
@@ -23,6 +25,7 @@ describe('bounded .disto analysis', () => {
   it('returns deterministic typed second- and third-harmonic zero results', async () => {
     const result = await simulate(fixture);
 
+    expect(result.distortion).toBeInstanceOf(DistortionResult);
     expect(result.distortion?.frequencies).toHaveLength(31);
     expect(result.distortion?.frequencies[0]).toBe(1e3);
     expect(result.distortion?.frequencies.at(-1)).toBe(1e6);
@@ -54,6 +57,21 @@ describe('bounded .disto analysis', () => {
       .toThrow('.step cannot be combined with .disto');
   });
 
+  it('rejects stepped distortion in either programmatic builder order', () => {
+    const distoFirst = new Circuit();
+    distoFirst.addAnalysis('disto', {
+      variation: 'dec', points: 10, startFreq: 1e3, stopFreq: 1e6,
+    });
+    expect(() => distoFirst.addStep('R1', { values: [1e3, 2e3] }))
+      .toThrow('.step cannot be combined with .disto');
+
+    const stepFirst = new Circuit();
+    stepFirst.addStep('R1', { values: [1e3, 2e3] });
+    expect(() => stepFirst.addAnalysis('disto', {
+      variation: 'dec', points: 10, startFreq: 1e3, stopFreq: 1e6,
+    })).toThrow('.step cannot be combined with .disto');
+  });
+
   it('rejects multiple distortion analyses', () => {
     expect(() => parse('.disto dec 10 1k 1Meg\n.disto dec 10 1k 1Meg'))
       .toThrow('Multiple .disto analyses are not supported');
@@ -69,6 +87,16 @@ describe('bounded .disto analysis', () => {
       .rejects.toThrow(InvalidCircuitError);
     await expect(simulate(`Diode distortion\nV1 1 0 DC 0 DISTOF1 1\nD1 1 0 DM\n.model DM D\n.disto dec 10 1k 1Meg`))
       .rejects.toThrow(".disto supports only independent sources and ideal R, L, C devices; found D1 (Diode)");
+  });
+
+  it('rejects linear devices outside the ideal RLC/source slice', async () => {
+    await expect(simulate(`Controlled-source distortion
+V1 in 0 DC 0 DISTOF1 1
+E1 out 0 in 0 2
+R1 out 0 1k
+.disto dec 10 1k 1Meg`)).rejects.toThrow(
+      '.disto supports only independent sources and ideal R, L, C devices; found E1 (VCVS)',
+    );
   });
 
   it('rejects missing or multiple active single-tone excitations', async () => {

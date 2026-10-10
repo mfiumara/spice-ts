@@ -5,7 +5,7 @@ export type NodeName = string;
 export const GROUND_NODE = '0';
 
 /** Supported analysis command types. */
-export type AnalysisType = 'op' | 'dc' | 'tran' | 'ac' | 'noise' | 'tf' | 'pz' | 'sens';
+export type AnalysisType = 'op' | 'dc' | 'tran' | 'ac' | 'noise' | 'tf' | 'pz' | 'sens' | 'disto';
 
 /** DC operating point analysis (`.op`). */
 export interface DCAnalysis {
@@ -78,6 +78,18 @@ export interface NoiseAnalysis {
   stopFreq: number;
 }
 
+/** Bounded single-tone linear distortion analysis (`.disto dec ...`). */
+export interface DistortionAnalysis {
+  type: 'disto';
+  variation: 'dec';
+  /** Points per decade. */
+  points: number;
+  /** Fundamental-frequency sweep start in Hz. */
+  startFreq: number;
+  /** Fundamental-frequency sweep stop in Hz. */
+  stopFreq: number;
+}
+
 /** Bounded DC transfer-function analysis (`.tf v(node) source`). */
 export interface TransferFunctionAnalysis {
   type: 'tf';
@@ -129,7 +141,12 @@ export interface ACSensitivityAnalysis {
 export type AnalysisCommand = DCAnalysis | DCSweepAnalysis | TransientAnalysis | ACAnalysis;
 
 /** Every analysis directive executable by the native simulator. */
-export type AnalysisDirective = AnalysisCommand | NoiseAnalysis | TransferFunctionAnalysis | SensitivityAnalysis;
+export type AnalysisDirective =
+  | AnalysisCommand
+  | NoiseAnalysis
+  | DistortionAnalysis
+  | TransferFunctionAnalysis
+  | SensitivityAnalysis;
 
 /** Integration methods for transient analysis */
 export type IntegrationMethod = 'euler' | 'trapezoidal' | 'gear2';
@@ -362,8 +379,21 @@ export interface ACSource {
   phase: number;
 }
 
+/** One source's small-signal distortion excitation at F1 or F2. */
+export interface DistortionExcitation {
+  magnitude: number;
+  phase: number;
+}
+
+/** Distortion annotations coexist with the source's DC/AC/transient waveform. */
+export interface SourceDistortionTerms {
+  distortionF1?: DistortionExcitation;
+  distortionF2?: DistortionExcitation;
+}
+
 /** Union of all source waveform types. Discriminated on the `type` field. */
-export type SourceWaveform = DCSource | PulseSource | SinSource | PWLSource | ACSource;
+export type SourceWaveform =
+  (DCSource | PulseSource | SinSource | PWLSource | ACSource) & SourceDistortionTerms;
 
 /** Warning collected during simulation (non-fatal). */
 export interface SimulationWarning {

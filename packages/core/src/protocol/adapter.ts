@@ -118,6 +118,7 @@ function protocolAnalysis(analysis: AnalysisDirective): AnalysisCommand {
     case 'ac':
       return analysis;
     case 'noise':
+    case 'disto':
     case 'tf':
     case 'sens':
       throw new InvalidCircuitError(`Protocol v1 does not support '${analysis.type}' analysis results`);
@@ -285,6 +286,7 @@ function estimatedAnalysisPoints(analysis: AnalysisDirective): number {
       return Number.isFinite(span) ? Math.max(0, Math.round(span * analysis.points) + 1) : 0;
     }
     case 'noise':
+    case 'disto':
     case 'tf': return 0;
     case 'sens': {
       if (analysis.mode === 'dc') return 1;

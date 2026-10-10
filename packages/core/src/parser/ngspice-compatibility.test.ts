@@ -29,6 +29,7 @@ const supportedFixtures: Fixture[] = [
   { feature: 'LIN/DEC/OCT .noise slice', netlist: 'V1 in 0 AC 1\nR1 in out 1k\nR2 out 0 1k\n.noise V(out) V1 dec 10 1 1Meg' },
   { feature: 'bounded transfer-function analysis', netlist: 'V1 in 0 1\nR1 in out 1k\nR2 out 0 1k\n.tf V(out) V1' },
   { feature: 'bounded sensitivity analysis', netlist: 'V1 in 0 1\nR1 in out 1k\nR2 out 0 1k\n.sens V(out)' },
+  { feature: 'bounded single-tone linear distortion analysis', netlist: 'V1 in 0 DC 0 DISTOF1 1 DISTOF2 0\nR1 in out 1k\nC1 out 0 1n\n.disto dec 10 1k 1Meg' },
   { feature: 'solver-backed .options', netlist: '.options reltol=1e-4 itl1=50 method=trap\n.op' },
   { feature: 'output-only directives', netlist: '.save v(out)\n.print tran v(out)\n.plot v(out)\n.op' },
   { feature: 'bounded lossless transmission line', netlist: 'T1 in 0 out 0 Z0=50 TD=1n\n.tran 1n 10n' },
@@ -43,7 +44,7 @@ const unsupportedFixtures: Fixture[] = [
   { feature: 'differential noise output', netlist: '.noise V(out,ref) V1 dec 10 1 1Meg' },
   { feature: 'pole-zero analysis', netlist: '.pz in 0 out 0 vol pz' },
 
-  { feature: 'distortion analysis', netlist: '.disto dec 10 1 1Meg' },
+
   { feature: 'control blocks', netlist: '.control\nop\n.endc' },
   { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
   { feature: 'measurements', netlist: '.measure tran peak MAX v(out)\n.op' },
