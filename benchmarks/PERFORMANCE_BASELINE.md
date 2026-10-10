@@ -26,7 +26,7 @@ Peak RSS includes each runtime's baseline. Node reports spice-ts peak RSS throug
 
 ## Environment
 
-- Date: 2026-10-09
+- Date: 2026-10-10
 - Machine: Apple M5 Pro, 18 logical CPUs, 48 GiB RAM
 - OS: Darwin 27.0.0, arm64
 - spice-ts: 0.3.0 at the PR head
@@ -38,29 +38,31 @@ Peak RSS includes each runtime's baseline. Node reports spice-ts peak RSS throug
 
 | Nodes | spice-ts API median | ngspice CLI median | ngspice analysis median | spice-ts peak RSS | ngspice peak RSS |
 |---:|---:|---:|---:|---:|---:|
-| 100 | 0.60 ms | 11.49 ms | 0.38 ms | 112.45 MiB | 10.33 MiB |
-| 1,000 | 1.95 ms | 14.37 ms | 0.63 ms | 146.69 MiB | 11.70 MiB |
-| 5,000 | 13.47 ms | 26.38 ms | 1.94 ms | 323.12 MiB | 17.50 MiB |
-| 10,000 | 28.78 ms | 40.53 ms | 3.59 ms | 914.94 MiB | 24.47 MiB |
+| 100 | 0.61 ms | 10.35 ms | 0.36 ms | 135.05 MiB | 10.31 MiB |
+| 1,000 | 1.85 ms | 13.02 ms | 0.65 ms | 131.38 MiB | 11.69 MiB |
+| 5,000 | 9.68 ms | 24.58 ms | 1.89 ms | 183.66 MiB | 17.48 MiB |
+| 10,000 | 20.88 ms | 40.24 ms | 3.55 ms | 208.94 MiB | 24.47 MiB |
 
 No engine failed at any tested size through 10,000 nodes. Sizes above 10,000 were not tested in this slice, so this report makes no claim about the next failure point.
 
 ## Interpretation: wins and losses
 
-- Against end-to-end native CLI wall time, the in-process spice-ts API is 19.22x faster at 100 nodes, narrowing to 1.41x at 10,000 nodes. This is an embedding/startup comparison, not a solver-superiority claim.
-- Against ngspice's internal analysis timer, spice-ts is slower at every size: 1.56x at 100 nodes, 3.08x at 1,000, 6.94x at 5,000, and 8.02x at 10,000.
-- Memory is the clearest loss. At 10,000 nodes spice-ts peaks at 914.94 MiB versus 24.47 MiB for ngspice, a 37.39x ratio.
+- Against end-to-end native CLI wall time, the in-process spice-ts API is 17.10x faster at 100 nodes, narrowing to 1.93x at 10,000 nodes. This is an embedding/startup comparison, not a solver-superiority claim.
+- Against ngspice's internal analysis timer, spice-ts is slower at every size: 1.68x at 100 nodes, 2.87x at 1,000, 5.11x at 5,000, and 5.87x at 10,000.
+- Memory remains a clear loss. At 10,000 nodes spice-ts peaks at 208.94 MiB versus 24.47 MiB for ngspice, an 8.54x ratio.
+- Relative to the prior committed baseline, merged performance work reduced the 10,000-node spice-ts median from 28.78 ms to 20.88 ms (27.46%) and peak RSS from 914.94 MiB to 208.94 MiB (77.16%). The full raw before/after samples remain visible in Git history; this refresh does not conflate that improvement with ngspice parity.
 - Raw samples, including scheduler/GC variation, remain in the JSON. Medians are the primary comparison; p95/max are retained rather than hidden.
 
 ## Profile findings
 
 The committed 10,000-node V8 CPU profile is `benchmarks/results/profiles/spice-ts-10000.cpuprofile`. It profiles one warmup plus five measured runs without the TypeScript loader in the measured process.
 
-The dominant spice-ts frame is `MNAAssembler.lockTopology`; garbage collection is the next major sampled bucket. Source inspection explains the memory curve: topology locking creates an `Int32Array(n * n)` position map even though this ladder has O(n) structural nonzeros. Sparse pattern analysis and numeric factorization are secondary sampled costs.
+The refreshed profile contains 62 self samples. `MNAAssembler.lockTopology` remains the dominant named frame (12 samples), followed by garbage collection (10), numeric factorization (5), and sparse pattern analysis (4). The dense `Int32Array(n * n)` position map identified by the original profile has been removed, explaining the large RSS reduction. Source inspection now points to topology construction's boxed `Set<number>`, per-column `number[][]`, and copy into typed CSC arrays as the next focused allocation target.
 
 Focused follow-ups:
 
-- [#69 — replace dense O(n²) MNA stamp position map](https://github.com/mfiumara/spice-ts/issues/69)
-- [#70 — reuse sparse symbolic analysis across unchanged topology](https://github.com/mfiumara/spice-ts/issues/70)
+- [#69 — replace dense O(n²) MNA stamp position map](https://github.com/mfiumara/spice-ts/issues/69) (completed)
+- [#70 — reuse sparse symbolic analysis across unchanged topology](https://github.com/mfiumara/spice-ts/issues/70) (completed)
+- [#118 — reduce MNA topology-lock construction allocations](https://github.com/mfiumara/spice-ts/issues/118)
 
 The raw JSON and CPU profile are the evidence of record; rounded values in this report are summaries only.

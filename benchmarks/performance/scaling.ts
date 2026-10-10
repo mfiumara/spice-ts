@@ -207,7 +207,8 @@ function parentMain(): void {
     .split(',').map(value => positiveInteger(value, 0, 'size'));
   const warmups = positiveInteger(valueArg('--warmups'), 3, 'warmups');
   const runs = positiveInteger(valueArg('--runs'), 10, 'runs');
-  const outputPath = resolve(valueArg('--output') ?? 'benchmarks/results/scaling-baseline.json');
+  const outputArgument = valueArg('--output') ?? 'benchmarks/results/scaling-baseline.json';
+  const outputPath = resolve(outputArgument);
   const rows = sizes.map(nodes => {
     process.stderr.write(`Measuring ${nodes} nodes...\n`);
     const spiceTs = runIsolated('spice-ts', nodes, warmups, runs);
@@ -220,7 +221,7 @@ function parentMain(): void {
   const report = {
     schemaVersion: 1,
     generatedAt: new Date().toISOString(),
-    command: `pnpm bench:scaling -- --sizes=${sizes.join(',')} --warmups=${warmups} --runs=${runs} --output=${outputPath}`,
+    command: `pnpm bench:scaling -- --sizes=${sizes.join(',')} --warmups=${warmups} --runs=${runs} --output=${outputArgument}`,
     methodology: {
       circuit: 'Generated linear resistor ladder, DC operating point; byte-identical netlist per size',
       warmups,
