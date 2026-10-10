@@ -1,0 +1,11 @@
+{
+  "apiVersion": "1",
+  "input": {
+    "format": "spice",
+    "source": "V1 in 0 1\nC1 in sense 1u\nI1 0 sense 1u\n.op"
+  },
+  "options": {
+    "backend": "spice-ts-js",
+    "determinism": "strict"
+  }
+}
