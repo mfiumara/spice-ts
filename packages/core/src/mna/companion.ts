@@ -7,7 +7,7 @@ import { MOSFET } from '../devices/mosfet.js';
  * Build the effective conductance matrix for transient analysis.
  *
  * Backward Euler: (G + C/dt) * x(n+1) = b(n+1) + (C/dt) * x(n)
- * Trapezoidal:    (G + 2C/dt) * x(n+1) = b(n+1) + b(n) + (2C/dt - G) * x(n)
+ * Trapezoidal:    (G + 2C/dt) * x(n+1) = b(n+1) + (2C/dt)*x(n) - i_static(n)
  * Gear-2 (BDF2):  (G + a1*C) * x(n+1) = b(n+1) + a2*C*x(n) - a3*C*x(n-1)  (dynamic rows)
  *
  * For BDF2 with variable timestep, let α = dt(n-1) / dt(n). Then dx/dt at t(n+1)
@@ -35,6 +35,7 @@ export function buildCompanionSystem(
   gmin = 1e-12,
   prevPrevSolution?: Float64Array,
   prevDt?: number,
+  staticCurrentHistory = false,
 ): void {
   // Clear and re-stamp at current time
   assembler.clear();
@@ -148,7 +149,7 @@ export function buildCompanionSystem(
     } else {
       // Trapezoidal: G_eff = G + 2C/dt
       // b_eff depends on whether a row is dynamic (C≠0) or algebraic (C=0):
-      //   Dynamic: b(n+1) + (2C/dt)*x(n) - G*x(n) + b(n)
+      //   Dynamic: b(n+1) + (2C/dt)*x(n) - i_static(n)
       //   Algebraic: b(n+1) only
       const factor = 2 / dt;
       const nnz = colPtr[n];
@@ -161,15 +162,12 @@ export function buildCompanionSystem(
 
       // Save b(n+1) before modification
       const bCurrent = new Float64Array(b);
-
-      // Compute G*x(n) before modifying G — CSC SpMV
-      // Only needed for dynamic rows, but computing for all is simpler
       const Gx = new Float64Array(n);
-      for (let j = 0; j < n; j++) {
-        const xj = prevSolution[j];
-        if (xj === 0) continue;
-        for (let p = colPtr[j]; p < colPtr[j + 1]; p++) {
-          Gx[rowIdx[p]] += gv[p] * xj;
+      if (!staticCurrentHistory) {
+        for (let j = 0; j < n; j++) {
+          const xj = prevSolution[j];
+          if (xj === 0) continue;
+          for (let p = colPtr[j]; p < colPtr[j + 1]; p++) Gx[rowIdx[p]] += gv[p] * xj;
         }
       }
 
@@ -191,11 +189,14 @@ export function buildCompanionSystem(
         }
       }
 
-      // Subtract G*x(n) and add b(n) ONLY for dynamic rows
+      // Subtract the accepted static-device current from the history point.
       for (let i = 0; i < n; i++) {
         if (isDynamic[i]) {
-          b[i] -= Gx[i];
-          if (prevB) b[i] += prevB[i];
+          if (staticCurrentHistory) b[i] -= prevB![i];
+          else {
+            b[i] -= Gx[i];
+            b[i] += prevB![i];
+          }
         }
       }
     }
@@ -243,15 +244,12 @@ export function buildCompanionSystem(
       // History terms only for dynamic rows (C≠0)
       const factor = 2 / dt;
 
-      // Save b(n+1) and G before modification
+      // Save b(n+1) before modification
       const bCurrent = new Float64Array(assembler.b);
-
-      // Compute G*x(n) before modifying G
       const Gx = new Float64Array(assembler.systemSize);
-      for (let i = 0; i < assembler.systemSize; i++) {
-        const row = assembler.G.getRow(i);
-        for (const [j, gval] of row) {
-          Gx[i] += gval * prevSolution[j];
+      if (!staticCurrentHistory) {
+        for (let i = 0; i < assembler.systemSize; i++) {
+          for (const [j, gval] of assembler.G.getRow(i)) Gx[i] += gval * prevSolution[j];
         }
       }
 
@@ -271,11 +269,12 @@ export function buildCompanionSystem(
           assembler.b[i] += factor * cval * prevSolution[j];
         }
 
-        // Subtract G*x(n) and add b(n) ONLY for dynamic rows
+        // Subtract the accepted static-device current from the history point.
         if (hasDynamic) {
-          assembler.b[i] -= Gx[i];
-          if (prevB) {
-            assembler.b[i] += prevB[i];
+          if (staticCurrentHistory) assembler.b[i] -= prevB![i];
+          else {
+            assembler.b[i] -= Gx[i];
+            assembler.b[i] += prevB![i];
           }
         }
       }

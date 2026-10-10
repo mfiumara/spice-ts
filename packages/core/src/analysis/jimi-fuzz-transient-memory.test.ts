@@ -49,7 +49,7 @@ describe('jimi-fuzz transient point growth', () => {
     try {
       for (let point = 1; point < 20_000; point++) firstRun.advance();
       expect(firstRun.simTime).toBeGreaterThan(0.1);
-      expect(firstRun.convergence.transient.nrRetries).toBe(1_024);
+      expect(firstRun.convergence.transient.nrRetries).toBe(0);
     } finally {
       firstRun.dispose();
     }
@@ -57,10 +57,10 @@ describe('jimi-fuzz transient point growth', () => {
     const secondRunStartRetries = convergence.transient.nrRetries;
     const secondRun = createRun();
     try {
-      expect(secondRun.convergence.transient.nrRetries).toBe(1_024);
+      expect(secondRun.convergence.transient.nrRetries).toBe(0);
       for (let point = 1; point < 20_000; point++) secondRun.advance();
       expect(secondRun.simTime).toBeGreaterThan(0.1);
-      expect(secondRun.convergence.transient.nrRetries - secondRunStartRetries).toBe(1_024);
+      expect(secondRun.convergence.transient.nrRetries - secondRunStartRetries).toBe(0);
     } finally {
       secondRun.dispose();
     }
