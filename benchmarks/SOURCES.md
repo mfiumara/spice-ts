@@ -67,3 +67,43 @@ Strategy references used by the audit, not copied into the fixtures:
 - ngspice manual, convergence options and transient analysis: https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml
 - ngspice `CKTop` operating-point fallback implementation (`src/spicelib/analysis/cktop.c`), GPL-2.0-or-later: https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/src/spicelib/analysis/cktop.c
 - ngspice transient retry/timestep implementation (`src/spicelib/analysis/dctran.c`), GPL-2.0-or-later: https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/src/spicelib/analysis/dctran.c
+
+## Gnucap public corpus E
+
+- Repository: https://github.com/gnucap/gnucap
+- Pinned revision: `5acb027125d6ea7c546badd03e026d8781c6a400`
+- Licence: GNU General Public License v3.0 or later (`GPL-3.0-or-later`).
+- Licence sources: pinned [`tests/MakeList`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/MakeList) notice and pinned complete [`COPYING`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/COPYING) text.
+- Redistribution decision: allowed under GPL-3.0-or-later; the selected source-form tests are committed verbatim with the upstream test-suite notice and complete GPLv3 text.
+- Adaptation: none. Fixture bytes and analysis/tolerance directives are unchanged from the pinned source.
+- Category accounting: OP/DC 4, AC 4, TRAN 4, nonlinear 4, convergence-hard 4.
+
+| ID | Category | Canonical source | Licence | Redistribution | Local path |
+|---|---|---|---|---|---|
+| `cccs-mixed-analysis` | op-dc | [`tests/d_cccs.1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_cccs.1.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_cccs.1.ckt` |
+| `vcvs-operating-point` | op-dc | [`tests/d_vcvs.1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_vcvs.1.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_vcvs.1.ckt` |
+| `diode-bias-sweep` | op-dc | [`tests/d_diode.1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_diode.1.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_diode.1.ckt` |
+| `mos1-inverter-sweep` | op-dc | [`tests/d_mos1.inv1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_mos1.inv1.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_mos1.inv1.ckt` |
+| `transmission-line-ac` | ac | [`tests/d_trln.ac.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_trln.ac.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_trln.ac.ckt` |
+| `mutual-inductance-ac` | ac | [`tests/d_coil.1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_coil.1.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_coil.1.ckt` |
+| `bjt-diffpair-ac` | ac | [`tests/d_bjt-diffpair-tf.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_bjt-diffpair-tf.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-diffpair-tf.ckt` |
+| `opamp-open-loop-ac` | ac | [`tests/opamp-ol.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/opamp-ol.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/opamp-ol.ckt` |
+| `capacitor-step-transient` | tran | [`tests/d_cap.1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_cap.1.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_cap.1.ckt` |
+| `capacitor-initial-condition` | tran | [`tests/d_cap.ic1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_cap.ic1.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_cap.ic1.ckt` |
+| `lc-oscillator-transient` | tran | [`tests/oscillator.1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/oscillator.1.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/oscillator.1.ckt` |
+| `bjt-diffpair-transient` | tran | [`tests/d_bjt-diffpair-tran.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_bjt-diffpair-tran.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-diffpair-tran.ckt` |
+| `bjt-schmitt-trigger` | nonlinear | [`tests/d_bjt-schmitt-nobypass.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_bjt-schmitt-nobypass.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-schmitt-nobypass.ckt` |
+| `diode-temperature-sweep` | nonlinear | [`tests/d_diode.6.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_diode.6.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_diode.6.ckt` |
+| `mos1-nand-transient` | nonlinear | [`tests/d_mos1.nand1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_mos1.nand1.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_mos1.nand1.ckt` |
+| `bjt-rtl-inverter-chain` | nonlinear | [`tests/d_bjt-rtlinv.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_bjt-rtlinv.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-rtlinv.ckt` |
+| `dual-lc-uic-rejection` | convergence | [`tests/oscillator.7.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/oscillator.7.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/oscillator.7.ckt` |
+| `opamp-voltage-follower` | convergence | [`tests/opamp-vf.1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/opamp-vf.1.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/opamp-vf.1.ckt` |
+| `mos7-nand-no-bypass` | convergence | [`tests/d_mos7.nand1.nobypass.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_mos7.nand1.nobypass.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_mos7.nand1.nobypass.ckt` |
+| `bjt-diffpair-current-source` | convergence | [`tests/d_bjt-diffpair-ccs.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_bjt-diffpair-ccs.ckt) | GPL-3.0-or-later | committed verbatim | `benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-diffpair-ccs.ckt` |
+
+Validate pinned provenance, unique hashes, byte-identical engine inputs, category accounting, and every visible engine result with:
+
+    pnpm build
+    node benchmarks/corpus/corpus-e/validate.mjs
+
+The pinned validation receipt is `6129f3b6cb61d788f30752d3b72276073a3f564ea8d906b2c7b8a9fb79d6c1e2`: ngspice-47 passes 5/20 and reports 15 unchanged-dialect failures; spice-ts passes 0/20 and reports 20 parse, unsupported, or convergence failures. These losses are retained rather than adapted or omitted.
