@@ -1,0 +1,80 @@
+import { readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+import { InvalidCircuitError } from '../errors.js';
+import { parseTitleless as parse } from '../parser/index.js';
+import { simulate } from '../simulate.js';
+
+const fixture = readFileSync(new URL(
+  '../../../../benchmarks/distortion/linear-lowpass.cir',
+  import.meta.url,
+), 'utf8');
+
+describe('bounded .disto analysis', () => {
+  it('parses the exact public single-tone DEC fixture', () => {
+    expect(parse(fixture.split('\n').slice(1).join('\n')).analyses).toContainEqual({
+      type: 'disto',
+      variation: 'dec',
+      points: 10,
+      startFreq: 1e3,
+      stopFreq: 1e6,
+    });
+  });
+
+  it('returns deterministic typed second- and third-harmonic zero results', async () => {
+    const result = await simulate(fixture);
+
+    expect(result.distortion?.frequencies).toHaveLength(31);
+    expect(result.distortion?.frequencies[0]).toBe(1e3);
+    expect(result.distortion?.frequencies.at(-1)).toBe(1e6);
+    expect(result.distortion?.voltage('2', 2)).toEqual(
+      Array.from({ length: 31 }, () => ({ real: 0, imaginary: 0 })),
+    );
+    expect(result.distortion?.voltage('2', 3)).toEqual(
+      Array.from({ length: 31 }, () => ({ real: 0, imaginary: 0 })),
+    );
+    expect(result.distortion?.current('V1', 2)).toHaveLength(31);
+  });
+
+  it.each([
+    ['.disto dec 10 1k 1Meg 0.9', 'Two-tone .disto is not supported; omit f2overf1'],
+    ['.disto lin 10 1k 1Meg', "Unsupported .disto sweep; expected '.disto dec points start stop'"],
+    ['.disto oct 10 1k 1Meg', "Unsupported .disto sweep; expected '.disto dec points start stop'"],
+    ['.disto dec 0 1k 1Meg', 'Invalid .disto dec sweep'],
+    ['.disto dec 10 0 1Meg', 'Invalid .disto dec sweep'],
+    ['.disto dec 10 1Meg 1k', 'Invalid .disto dec sweep'],
+  ])('rejects unsupported or invalid command form: %s', (directive, message) => {
+    expect(() => parse(directive)).toThrow(message);
+  });
+
+  it('rejects stepped distortion in either directive order', () => {
+    const device = 'V1 1 0 DC 0 DISTOF1 1\nR1 1 0 1k';
+    expect(() => parse(`${device}\n.step param R1 list 1k 2k\n.disto dec 10 1k 1Meg`))
+      .toThrow('.step cannot be combined with .disto');
+    expect(() => parse(`${device}\n.disto dec 10 1k 1Meg\n.step param R1 list 1k 2k`))
+      .toThrow('.step cannot be combined with .disto');
+  });
+
+  it('rejects multiple distortion analyses', () => {
+    expect(() => parse('.disto dec 10 1k 1Meg\n.disto dec 10 1k 1Meg'))
+      .toThrow('Multiple .disto analyses are not supported');
+  });
+
+  it('rejects a non-zero second tone explicitly', async () => {
+    await expect(simulate(`Two-tone source\nV1 1 0 DC 0 DISTOF1 1 DISTOF2 0.1\nR1 1 0 1k\n.disto dec 10 1k 1Meg`))
+      .rejects.toThrow("Two-tone .disto is not supported; source 'V1' has non-zero DISTOF2");
+  });
+
+  it('rejects semiconductor nonlinear distortion explicitly', async () => {
+    await expect(simulate(`Diode distortion\nV1 1 0 DC 0 DISTOF1 1\nD1 1 0 DM\n.model DM D\n.disto dec 10 1k 1Meg`))
+      .rejects.toThrow(InvalidCircuitError);
+    await expect(simulate(`Diode distortion\nV1 1 0 DC 0 DISTOF1 1\nD1 1 0 DM\n.model DM D\n.disto dec 10 1k 1Meg`))
+      .rejects.toThrow(".disto supports only independent sources and ideal R, L, C devices; found D1 (Diode)");
+  });
+
+  it('rejects missing or multiple active single-tone excitations', async () => {
+    await expect(simulate('No tone\nV1 1 0 DC 0\nR1 1 0 1k\n.disto dec 10 1k 1Meg'))
+      .rejects.toThrow('.disto requires exactly one non-zero DISTOF1 excitation; found 0');
+    await expect(simulate('Two tones\nV1 1 0 DC 0 DISTOF1 1\nV2 2 0 DC 0 DISTOF1 1\nR1 1 0 1k\nR2 2 0 1k\n.disto dec 10 1k 1Meg'))
+      .rejects.toThrow('.disto requires exactly one non-zero DISTOF1 excitation; found V1, V2');
+  });
+});
