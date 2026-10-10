@@ -235,11 +235,15 @@ async function timed(run: () => Promise<EngineExecution>): Promise<{ execution: 
   return { execution, runtimeMs: performance.now() - started };
 }
 
-function deterministicView(report: Omit<AggregateReport, 'outcomeSha256'>): unknown {
+function deterministicView(report: Omit<AggregateReport, 'outcomeSha256'> | AggregateReport): unknown {
   return JSON.parse(JSON.stringify(
     report,
-    (key, value) => key === 'runtimeMs' || key === 'error' ? undefined : value,
+    (key, value) => key === 'outcomeSha256' || key === 'runtimeMs' || key === 'error' ? undefined : value,
   ));
+}
+
+function deterministicDigest(report: Omit<AggregateReport, 'outcomeSha256'> | AggregateReport): string {
+  return sha256(`${JSON.stringify(deterministicView(report))}\n`);
 }
 
 function countStatuses(fixtures: FixtureReceipt[], engine: 'ngspice' | 'spiceTs'): Record<Status, number> {
@@ -322,7 +326,7 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
     gapIssues: [...GAP_ISSUES],
     fixtures,
   };
-  return { ...base, outcomeSha256: sha256(`${JSON.stringify(deterministicView(base))}\n`) };
+  return { ...base, outcomeSha256: deterministicDigest(base) };
 }
 
 function markdown(report: AggregateReport): string {
@@ -373,18 +377,48 @@ function stableReport(report: AggregateReport): string {
   return `${JSON.stringify(report, null, 2)}\n`;
 }
 
+export function verifyCommittedArtifacts(
+  generated: AggregateReport,
+  committedJson: string,
+  committedMarkdown: string,
+): void {
+  let committed: AggregateReport;
+  try {
+    committed = JSON.parse(committedJson) as AggregateReport;
+  } catch (error) {
+    throw new Error(`committed aggregate JSON is invalid: ${error instanceof Error ? error.message : String(error)}`);
+  }
+
+  const committedProjection = JSON.stringify(deterministicView(committed));
+  const generatedProjection = JSON.stringify(deterministicView(generated));
+  if (committedProjection !== generatedProjection) {
+    throw new Error('committed aggregate deterministic JSON projection differs from regenerated outcomes');
+  }
+
+  const digest = deterministicDigest(committed);
+  if (committed.outcomeSha256 !== digest || generated.outcomeSha256 !== digest) {
+    throw new Error(`aggregate deterministic JSON projection hash mismatch: committed=${committed.outcomeSha256}; regenerated=${generated.outcomeSha256}; calculated=${digest}`);
+  }
+
+  if (committed.fixtures.length !== 60 || new Set(committed.fixtures.map(fixture => fixture.key)).size !== 60) {
+    throw new Error('committed aggregate does not account for 60 unique fixtures');
+  }
+
+  if (committedMarkdown !== markdown(committed)) {
+    throw new Error('committed aggregate Markdown differs from the committed JSON projection');
+  }
+}
+
 async function main(): Promise<void> {
   const report = await buildAggregateReport();
   const json = stableReport(report);
   const md = markdown(report);
   if (process.argv.includes('--check')) {
-    const committed = JSON.parse(await readFile(JSON_PATH, 'utf8')) as AggregateReport;
-    if (committed.outcomeSha256 !== report.outcomeSha256) {
-      throw new Error(`aggregate deterministic outcome changed: ${committed.outcomeSha256} != ${report.outcomeSha256}`);
-    }
-    if (committed.fixtures.length !== 60 || new Set(committed.fixtures.map(fixture => fixture.key)).size !== 60) {
-      throw new Error('committed aggregate does not account for 60 unique fixtures');
-    }
+    const [committedJson, committedMarkdown] = await Promise.all([
+      readFile(JSON_PATH, 'utf8'),
+      readFile(MARKDOWN_PATH, 'utf8'),
+    ]);
+    verifyCommittedArtifacts(report, committedJson, committedMarkdown);
   } else {
     await writeFile(JSON_PATH, json);
     await writeFile(MARKDOWN_PATH, md);
