@@ -37,7 +37,6 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
   // Pre-allocated work arrays (reused across factorize/solve calls)
   private workspace!: Float64Array;     // factor column / solve y, used in non-overlapping phases
-  private uDiagIdx!: Int32Array;        // cached diagonal positions in U
   private pinv!: Int32Array;            // pinv[origRow] = column that used origRow as pivot
   private nonzeroFlag!: Int32Array;     // marker for workspace non-zero tracking
   private nonzeroList!: Int32Array;     // list of non-zero workspace positions
@@ -81,7 +80,6 @@ export class GilbertPeierlsSolver implements SparseSolver {
     this.uValues = new Float64Array(uNnz);
     this.perm = new Int32Array(n);
     this.workspace = new Float64Array(n);
-    this.uDiagIdx = new Int32Array(n);
     this.pinv = new Int32Array(n);
     this.nonzeroFlag = new Int32Array(n);
     this.nonzeroList = new Int32Array(n);
@@ -121,7 +119,6 @@ export class GilbertPeierlsSolver implements SparseSolver {
     const uColPtr = this.uColPtr;
     let uRows = this.uRows;
     let uValues = this.uValues;
-    const uDiagIdx = this.uDiagIdx;
     const pinv = this.pinv;
     const nonzeroFlag = this.nonzeroFlag;
     const nonzeroList = this.nonzeroList;
@@ -285,7 +282,6 @@ export class GilbertPeierlsSolver implements SparseSolver {
         uRows = this.uRows;
         uValues = this.uValues;
       }
-      uDiagIdx[j] = up;
       uRows[up] = j;
       uValues[up] = pivotVal;
       up++;
@@ -364,7 +360,6 @@ export class GilbertPeierlsSolver implements SparseSolver {
     const uColPtr = this.uColPtr;
     const uRows = this.uRows;
     const uValues = this.uValues;
-    const uDiagIdx = this.uDiagIdx;
     // Factorization leaves the dense column workspace unused. Reuse it for y
     // rather than retaining a second n-element vector for the solve phase.
     // Every entry is initialized below, and factorize() clears it before reuse.
@@ -388,7 +383,9 @@ export class GilbertPeierlsSolver implements SparseSolver {
     // as x avoids allocating another n-element vector for every Newton solve.
     const x = b;
     for (let j = n - 1; j >= 0; j--) {
-      x[j] = y[j] / uValues[uDiagIdx[j]];
+      // Numeric factorization appends each U diagonal after every off-diagonal
+      // entry in its column, so the column end already identifies the pivot.
+      x[j] = y[j] / uValues[uColPtr[j + 1] - 1];
       for (let p = uColPtr[j]; p < uColPtr[j + 1]; p++) {
         const i = uRows[p];
         if (i < j) {
