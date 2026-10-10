@@ -1,8 +1,10 @@
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { EventEmitter } from 'node:events';
 import type { SimulationRequestV1, SimulationResultV1 } from '@spice-ts/protocol';
 import { describe, expect, it, vi } from 'vitest';
 import { DEFAULT_MCP_LIMITS, executeTool } from './server.js';
+import type { ExecutionWorker } from './server.js';
 
 const fixture = async <T>(name: string): Promise<T> => JSON.parse(await readFile(
   fileURLToPath(new URL(`../fixtures/${name}`, import.meta.url)),
@@ -156,6 +158,68 @@ describe('bounded protocol-v1 tools', () => {
           code: 'RESOURCE_LIMIT',
           phase: 'solve',
           details: { limit: 'maxWallTimeMs', maximum: 1 },
+        },
+      },
+    });
+  });
+
+  it('enforces a zero wall-time limit on real adapter operating-point work', async () => {
+    const request: SimulationRequestV1 = {
+      apiVersion: '1',
+      input: { format: 'spice', source: 'V1 in 0 1\nR1 in 0 1k\n.op' },
+    };
+
+    const response = await executeTool('spice_simulate', { request }, {
+      limits: { ...DEFAULT_MCP_LIMITS, maxWallTimeMs: 0 },
+    });
+
+    expect(response).toMatchObject({
+      isError: true,
+      structuredContent: {
+        error: {
+          code: 'RESOURCE_LIMIT', phase: 'solve',
+          details: { limit: 'maxWallTimeMs', maximum: 0 },
+        },
+      },
+    });
+  });
+
+  it('aborts real adapter work running in an isolated worker', async () => {
+    const request: SimulationRequestV1 = {
+      apiVersion: '1',
+      input: {
+        format: 'spice',
+        source: 'V1 in 0 1\nR1 in out 1k\nC1 out 0 1u\n.tran 1u 20m',
+      },
+    };
+    const controller = new AbortController();
+
+    const pending = executeTool('spice_simulate', { request }, { signal: controller.signal });
+    setTimeout(() => controller.abort(), 5);
+
+    await expect(pending).resolves.toMatchObject({
+      isError: true,
+      structuredContent: { error: { code: 'CANCELLED', phase: 'transport' } },
+    });
+  });
+
+  it('maps isolated worker death to a deterministic public error', async () => {
+    class DeadWorker extends EventEmitter {
+      postMessage(): void { queueMicrotask(() => this.emit('exit', 1)); }
+      terminate(): number { return 1; }
+    }
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+
+    const response = await executeTool('spice_simulate', { request }, {
+      workerFactory: () => new DeadWorker() as unknown as ExecutionWorker,
+    });
+
+    expect(response).toMatchObject({
+      isError: true,
+      structuredContent: {
+        error: {
+          code: 'INTERNAL_ERROR', phase: 'transport', retryable: false,
+          message: 'The isolated simulation worker failed', details: {},
         },
       },
     });

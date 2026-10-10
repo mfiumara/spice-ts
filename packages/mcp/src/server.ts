@@ -9,6 +9,7 @@ import type {
   SpiceApiErrorV1,
 } from '@spice-ts/protocol';
 import type { CallToolResult, Tool } from '@modelcontextprotocol/sdk/types.js';
+import { Worker } from 'node:worker_threads';
 
 export interface McpLimits {
   maxDocumentBytes: number;
@@ -23,6 +24,24 @@ export interface ToolExecutionOptions {
   signal?: AbortSignal;
   validate?: typeof validateProtocolV1;
   simulate?: typeof simulateProtocolV1;
+  workerFactory?: () => ExecutionWorker;
+}
+
+export interface ExecutionWorker {
+  postMessage(message: unknown): void;
+  terminate(): Promise<number> | number;
+  on(event: 'message', listener: (message: WorkerReply) => void): this;
+  on(event: 'error', listener: (error: Error) => void): this;
+  on(event: 'exit', listener: (code: number) => void): this;
+  off(event: 'message', listener: (message: WorkerReply) => void): this;
+  off(event: 'error', listener: (error: Error) => void): this;
+  off(event: 'exit', listener: (code: number) => void): this;
+}
+
+interface WorkerReply {
+  type: 'result' | 'error';
+  result?: unknown;
+  error?: SpiceApiErrorV1;
 }
 
 export const DEFAULT_MCP_LIMITS: Readonly<McpLimits> = Object.freeze({
@@ -116,19 +135,19 @@ export async function executeTool(
     throwIfCancelled(options.signal);
 
     if (name === 'spice_validate') {
-      const result = await boundedCall(
-        () => (options.validate ?? validateProtocolV1)(boundedRequest(request, effective)),
-        effective.maxWallTimeMs,
-        options.signal,
-      );
+      const bounded = boundedRequest(request, effective);
+      const result = options.validate
+        ? await boundedCall(() => options.validate!(bounded), effective.maxWallTimeMs, options.signal)
+        : await runInWorker<Record<string, unknown>>(
+          'validate', bounded, effective.maxWallTimeMs, options,
+        );
       return success(result);
     }
 
-    const result = await boundedCall(
-      () => (options.simulate ?? simulateProtocolV1)(boundedRequest(request, effective)),
-      effective.maxWallTimeMs,
-      options.signal,
-    );
+    const bounded = boundedRequest(request, effective);
+    const result = options.simulate
+      ? await boundedCall(() => options.simulate!(bounded), effective.maxWallTimeMs, options.signal)
+      : await runInWorker<SimulationResultV1>('simulate', bounded, effective.maxWallTimeMs, options);
     enforceResultBounds(result, effective);
     return success(result);
   } catch (error) {
@@ -291,6 +310,77 @@ async function boundedCall<T>(operation: () => Promise<T>, wallTimeMs: number, s
     if (timeout !== undefined) clearTimeout(timeout);
     if (abortHandler) signal?.removeEventListener('abort', abortHandler);
   }
+}
+
+const workerSource = String.raw`
+const { parentPort } = require('node:worker_threads');
+parentPort.once('message', async ({ operation, request }) => {
+  const core = await import('@spice-ts/core');
+  try {
+    const result = operation === 'validate'
+      ? await core.validateProtocolV1(request)
+      : await core.simulateProtocolV1(request);
+    parentPort.postMessage({ type: 'result', result });
+  } catch (error) {
+    parentPort.postMessage({ type: 'error', error: core.mapProtocolErrorV1(error) });
+  }
+});
+`;
+
+function createExecutionWorker(): ExecutionWorker {
+  return new Worker(workerSource, { eval: true }) as unknown as ExecutionWorker;
+}
+
+async function runInWorker<T>(
+  operation: 'validate' | 'simulate',
+  request: SimulationRequestV1,
+  wallTimeMs: number,
+  options: ToolExecutionOptions,
+): Promise<T> {
+  throwIfCancelled(options.signal);
+  const worker = (options.workerFactory ?? createExecutionWorker)();
+  return new Promise<T>((resolve, reject) => {
+    let settled = false;
+    let timeout: ReturnType<typeof setTimeout>;
+    const finish = (outcome: () => void) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      options.signal?.removeEventListener('abort', onAbort);
+      worker.off('message', onMessage);
+      worker.off('error', onError);
+      worker.off('exit', onExit);
+      void Promise.resolve(worker.terminate()).catch(() => undefined);
+      outcome();
+    };
+    const onMessage = (message: WorkerReply) => finish(() => {
+      if (message.type === 'result') resolve(message.result as T);
+      else reject(message.error ?? workerFailure());
+    });
+    const onError = () => finish(() => reject(workerFailure()));
+    const onExit = () => finish(() => reject(workerFailure()));
+    const onAbort = () => finish(() => reject(cancelledError()));
+
+    worker.on('message', onMessage);
+    worker.on('error', onError);
+    worker.on('exit', onExit);
+    options.signal?.addEventListener('abort', onAbort, { once: true });
+    timeout = setTimeout(() => finish(() => reject(apiError(
+      'RESOURCE_LIMIT',
+      'The simulation wall-time limit was exceeded',
+      'solve',
+      { limit: 'maxWallTimeMs', maximum: wallTimeMs },
+    ))), wallTimeMs);
+    try {
+      worker.postMessage({ operation, request });
+    } catch {
+      finish(() => reject(workerFailure()));
+    }
+  });
+}
+
+function workerFailure(): SpiceApiErrorV1 {
+  return apiError('INTERNAL_ERROR', 'The isolated simulation worker failed', 'transport', {});
 }
 
 function throwIfCancelled(signal?: AbortSignal): void {

@@ -19,4 +19,4 @@ export function createMcpServer(options: Omit<ToolExecutionOptions, 'signal'> = 
 }
 
 export { DEFAULT_MCP_LIMITS, executeTool, MCP_TOOLS } from './server.js';
-export type { McpLimits, ToolExecutionOptions } from './server.js';
+export type { ExecutionWorker, McpLimits, ToolExecutionOptions } from './server.js';
