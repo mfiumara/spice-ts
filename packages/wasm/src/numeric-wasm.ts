@@ -196,7 +196,7 @@ function simulateOp(
   }
   const solution = new Float64Array(exports.memory.buffer, rhsPointer, order).slice();
 
-  return {
+  const result: SimulationResultV1 = {
     status: 'complete',
     analyses: [{
       type: 'op',
@@ -208,6 +208,8 @@ function simulateOp(
       ])),
     }],
   };
+  enforceSerializedResultLimit(result, request);
+  return result;
 }
 
 function simulateTransient(

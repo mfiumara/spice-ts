@@ -243,6 +243,36 @@ describe('bounded numeric WebAssembly backend', () => {
     }
   });
 
+  it('enforces the serialized-result ceiling for bounded VCCS OP', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const result = await wasm.simulate(request([
+        'VCTRL control 0 2',
+        'G1 out 0 control 0 2m',
+        'R1 out 0 1k',
+        '.op',
+      ].join('\n'), {
+        limits: { maxSerializedResultBytes: 1 },
+      }), { requestId: 'wasm-vccs-op-serialized-limit' });
+      expect(result).toMatchObject({
+        ok: false,
+        error: {
+          code: 'RESOURCE_LIMIT',
+          phase: 'serialize',
+          retryable: false,
+          details: {
+            limit: 'maxSerializedResultBytes',
+            configured: 1,
+            observed: expect.any(Number),
+          },
+        },
+        metadata: { backend: 'spice-ts-wasm' },
+      });
+    } finally {
+      await wasm.close();
+    }
+  });
+
   it('rejects VCCS forms outside the bounded linear OP slice without fallback', async () => {
     const wasm = await engine('spice-ts-wasm');
     try {
