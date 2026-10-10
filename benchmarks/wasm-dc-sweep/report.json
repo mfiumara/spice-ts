@@ -1,0 +1,176 @@
+{
+  "schemaVersion": "spice-ts-wasm-dc-sweep/v1",
+  "generatedAt": "2026-10-10T10:48:21.025Z",
+  "methodology": {
+    "repetitions": 5,
+    "input": "the exact committed UTF-8 bytes are passed to both engines without rewriting",
+    "timing": "fresh process wall time; WASM includes pnpm, Node, worker startup, integrity verification, parse, solve, and serialization; ngspice includes native process startup, parse, solve, and raw-file output",
+    "relativeZeroThreshold": 1e-15,
+    "tuning": "no per-circuit options or tolerance changes"
+  },
+  "environment": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro",
+    "node": "v22.23.1",
+    "pnpm": "10.28.1",
+    "ngspice": "ngspice-47"
+  },
+  "artifact": {
+    "path": "packages/wasm/native/dense-solver.wasm",
+    "sha256": "5d574b2b44f02e1e9b4f79351eaf2eaad75d2fd4c56ad7fd4a08ec515de4d76a",
+    "beforeBytes": 2900,
+    "afterBytes": 2900,
+    "deltaBytes": 0,
+    "abiVersion": 2,
+    "memoryPages": 3
+  },
+  "fixtures": [
+    {
+      "name": "voltage-divider",
+      "path": "benchmarks/wasm-dc-sweep/voltage-divider.cir",
+      "sha256": "bc2be8df7e03522a33d1d5cfad7bc40bd665bd3ed783589f9ac7055db9cbd973",
+      "identicalInputBytes": true,
+      "convergence": {
+        "wasm": "complete",
+        "ngspice": "complete"
+      },
+      "pointCounts": {
+        "wasm": 5,
+        "ngspice": 5,
+        "matched": 5
+      },
+      "errors": {
+        "v(in)": {
+          "sampleCount": 5,
+          "absoluteError": {
+            "max": 0,
+            "rms": 0
+          },
+          "relativeError": {
+            "max": 0,
+            "rms": 0,
+            "sampleCount": 4,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(out)": {
+          "sampleCount": 5,
+          "absoluteError": {
+            "max": 0,
+            "rms": 0
+          },
+          "relativeError": {
+            "max": 0,
+            "rms": 0,
+            "sampleCount": 4,
+            "excludedZeroReferences": 1
+          }
+        },
+        "i(vdrive)": {
+          "sampleCount": 5,
+          "absoluteError": {
+            "max": 0,
+            "rms": 0
+          },
+          "relativeError": {
+            "max": 0,
+            "rms": 0,
+            "sampleCount": 4,
+            "excludedZeroReferences": 1
+          }
+        }
+      },
+      "runtimeMs": {
+        "wasm": {
+          "samples": [
+            821.397459,
+            633.07825,
+            751.7824579999999,
+            682.964958,
+            639.1771669999998
+          ],
+          "median": 682.964958
+        },
+        "ngspice": {
+          "samples": [
+            15.175666999999976,
+            14.880333999999948,
+            18.362625000000207,
+            15.261042000000089,
+            16.793624999999793
+          ],
+          "median": 15.261042000000089
+        }
+      }
+    },
+    {
+      "name": "current-source",
+      "path": "benchmarks/wasm-dc-sweep/current-source.cir",
+      "sha256": "95769dc3ef4bd89b02aca95d92258716c8828fc0a08a6efd5717e4db6902ad9a",
+      "identicalInputBytes": true,
+      "convergence": {
+        "wasm": "complete",
+        "ngspice": "complete"
+      },
+      "pointCounts": {
+        "wasm": 3,
+        "ngspice": 3,
+        "matched": 3
+      },
+      "errors": {
+        "v(out)": {
+          "sampleCount": 3,
+          "absoluteError": {
+            "max": 0,
+            "rms": 0
+          },
+          "relativeError": {
+            "max": 0,
+            "rms": 0,
+            "sampleCount": 2,
+            "excludedZeroReferences": 1
+          }
+        }
+      },
+      "runtimeMs": {
+        "wasm": {
+          "samples": [
+            654.3211660000002,
+            793.3576670000002,
+            634.3069580000001,
+            1076.8781669999998,
+            1011.5485840000001
+          ],
+          "median": 793.3576670000002
+        },
+        "ngspice": {
+          "samples": [
+            16.914334000000053,
+            16.404749999999694,
+            15.98004200000014,
+            16.47124999999869,
+            15.060708000000886
+          ],
+          "median": 16.404749999999694
+        }
+      }
+    }
+  ],
+  "exclusions": [
+    "Only one unstepped linear R/I/V source sweep is in scope.",
+    "Relative-error samples whose ngspice magnitude is at or below 1e-15 are excluded and counted per signal.",
+    "Native ngspice branch-current output does not include independent current-source current, so the current-source fixture compares v(out)."
+  ],
+  "retainedLosses": [
+    "Fresh-process WASM timing includes pnpm and Node startup and is expected to lose to native ngspice.",
+    "The dense WASM solver remains bounded to 64 unknowns and is not a speed claim.",
+    "The JavaScript worker asset grows even though the native WASM artifact and ABI are unchanged."
+  ],
+  "commands": {
+    "reproduce": "pnpm --filter @spice-ts/wasm bench:dc",
+    "wasm": "pnpm exec tsx benchmarks/wasm-dc-sweep/compare.ts --child=wasm <identical-fixture>",
+    "ngspice": "ngspice -b -r <raw> <identical-fixture>"
+  }
+}

@@ -75,6 +75,15 @@ describe('bounded numeric WebAssembly backend', () => {
         type: 'dc', axis: { name: 'Isweep', unit: 'A', values: [0.002, 0.001, 0] },
         voltagesV: { out: [2, 1, 0] },
       });
+
+      const reads = [];
+      for await (const read of wasm.simulateStream(request(dcSweepCircuit), {
+        requestId: 'dc-stream', chunkPoints: 2,
+      })) reads.push(read);
+      expect(reads.map(read => read.status)).toEqual(['running', 'running', 'complete']);
+      expect(reads.flatMap(read => read.events).map(event => event.type)).toEqual([
+        'analysis-start', 'point', 'point', 'point', 'point', 'point', 'analysis-end',
+      ]);
     } finally {
       await wasm.close();
     }
@@ -106,6 +115,16 @@ describe('bounded numeric WebAssembly backend', () => {
           limit: 'maxResultPoints', configured: 4, observed: 5,
         } },
       });
+
+      const serialized = await wasm.simulate(request(dcSweepCircuit, {
+        limits: { maxSerializedResultBytes: 1 },
+      }), { requestId: 'dc-serialized-limit' });
+      expect(serialized).toMatchObject({
+        ok: false,
+        error: { code: 'RESOURCE_LIMIT', phase: 'serialize', details: {
+          limit: 'maxSerializedResultBytes', configured: 1, observed: expect.any(Number),
+        } },
+      });
     } finally {
       await wasm.close();
     }
@@ -116,7 +135,7 @@ describe('bounded numeric WebAssembly backend', () => {
     try {
       expect(wasm.capabilities).toMatchObject({
         backends: ['spice-ts-wasm'],
-        analyses: ['op', 'tran', 'ac'],
+        analyses: ['op', 'dc', 'tran', 'ac'],
         nativeSchemaVersions: [],
         engineBuildId: expect.stringMatching(/^spice-ts-wasm-[0-9a-f]{16}$/),
         numericWasm: {
@@ -125,9 +144,10 @@ describe('bounded numeric WebAssembly backend', () => {
           artifactSha256: expect.stringMatching(/^[0-9a-f]{64}$/),
           artifactBytes: expect.any(Number),
           inputFormats: ['spice'],
-          analyses: ['op', 'tran', 'ac'],
+          analyses: ['op', 'dc', 'tran', 'ac'],
           devicesByAnalysis: {
             op: ['R', 'I', 'V'],
+            dc: ['R', 'I', 'V'],
             tran: ['R', 'C', 'I', 'V'],
             ac: ['R', 'C', 'L', 'I', 'V'],
           },
