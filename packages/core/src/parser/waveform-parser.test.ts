@@ -1,12 +1,42 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { CurrentSource } from '../devices/current-source.js';
 import { VoltageSource } from '../devices/voltage-source.js';
+import { ParseError } from '../errors.js';
 import { simulate } from '../simulate.js';
 import { parse } from './index.js';
 import { parseSourceWaveform } from './waveform-parser.js';
 
 describe('independent-source waveform grammar', () => {
+  it.each([
+    ['voltage', 'V1', VoltageSource],
+    ['current', 'I1', CurrentSource],
+  ] as const)('defaults an AC-only %s source magnitude and phase', (_kind, name, Source) => {
+    const source = parse(`AC-only source\n${name} in 0 AC\n.ac lin 1 1k 1k`).compile()
+      .devices.find(device => device.name === name);
+
+    expect(source).toBeInstanceOf(Source);
+    expect((source as VoltageSource | CurrentSource).waveform).toEqual({
+      type: 'ac', dc: 0, magnitude: 1, phase: 0,
+    });
+  });
+
+  it.each([
+    ['V1 in 0 AC nope', 'V1 in 0 AC nope'],
+    ['I1 in 0 AC 1 nope', 'I1 in 0 AC 1 nope'],
+  ])('reports malformed AC source values as structured parse errors', (card, context) => {
+    try {
+      parse(`Malformed AC source\n${card}`);
+      expect.fail('expected malformed AC source to be rejected');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ParseError);
+      expect(error).toMatchObject({ line: 2, context });
+      expect((error as Error).message).toMatch(/Cannot parse number/);
+      expect((error as Error).message).not.toMatch(/TypeError|reading 'trim'/);
+    }
+  });
+
   it('parses a transient SIN waveform after an explicit DC value', () => {
     expect(parseSourceWaveform(
       ['V1', 'in', '0', 'DC', '1.5', 'SIN', '(', '2', '3', '4k', '5u', '6', '7', ')'],

@@ -70,8 +70,8 @@
       "unsupported": 18
     },
     "classifications": {
-      "parser-feature": 15,
-      "unsupported-analysis/device": 3,
+      "parser-feature": 13,
+      "unsupported-analysis/device": 5,
       "convergence": 0,
       "execution": 0,
       "none": 2
@@ -79,7 +79,7 @@
     "parityCandidates": 2,
     "losses": 18
   },
-  "suiteEvidenceSha256": "69da171c70b6dafc55679888990f8d5f2c1d2714c61916f7274fcdc1824a8532",
+  "suiteEvidenceSha256": "6ef2432336c10a24d11235fb88eff7c0d7d64bdad92c055f879a95e5bec63d9a",
   "fixtures": [
     {
       "id": "bjt-noise",
@@ -91,14 +91,14 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "error": "Parse error at line 4: Cannot read properties of undefined (reading 'trim') vin 1 0 ac"
+        "error": "Parse error at line 15: Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop' .noise v ( 3 ) vin dec 10 10 100k 1"
       },
       "classification": {
         "kind": "parser-feature",
-        "cause": "ac-only-independent-source",
-        "signature": "ac-source-missing-dc-value"
+        "cause": "other-parser-feature",
+        "signature": "other-parser-error"
       },
-      "evidenceSha256": "dc1da23e7ffef83d3379cbe2bb27dae26cb9a78516c7b7676bc32543aa8d3995"
+      "evidenceSha256": "cf571d7bd460644e582e7f44e233806e96e535c8aa41d941da906bd22f125fb2"
     },
     {
       "id": "bsim1-device-sweep",
@@ -167,14 +167,14 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "error": "Parse error at line 5: Cannot parse number: 'sin' vcc 1 3 5v ac 0.001 sin(5 0.01 1000) distof1 0.01 distof2 0.01"
+        "error": "Parse error at line 11: Two-tone .disto is not supported; omit f2overf1 .disto dec 20 1.0e3 1.0e8 0.9"
       },
       "classification": {
         "kind": "parser-feature",
-        "cause": "compound-independent-source",
-        "signature": "compound-source-distof"
+        "cause": "other-parser-feature",
+        "signature": "other-parser-error"
       },
-      "evidenceSha256": "aea01dfd9acd1c4e136e42f9017a7fef942a20ac9d9c5d486ea4be8a424adb17"
+      "evidenceSha256": "731b7993db5ad051cba5cdf9fd0f385826a5f9b58ff2e062245ae05bff8fb1d4"
     },
     {
       "id": "lossy-line-24-inch",
@@ -244,14 +244,14 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "error": "Parse error at line 6: Cannot parse number: 'distof1' v1 1 0 0v ac 1.0 distof1 0.001"
+        "error": "Parse error at line 16: Unsupported BJT Q-card form: 'q1 3 1 4 2 mod1' q1 3 1 4 2 mod1"
       },
       "classification": {
         "kind": "parser-feature",
-        "cause": "compound-independent-source",
-        "signature": "compound-source-distof"
+        "cause": "other-parser-feature",
+        "signature": "other-parser-error"
       },
-      "evidenceSha256": "800e666928630c5581c22fb5136f8ab2741be076dc7dd6f61d95d072f374a119"
+      "evidenceSha256": "394f50c47632e5b712f65cea585512685cd468da96d944aba39e8b0162f7f1b0"
     },
     {
       "id": "mos6-inverter-chain",
@@ -320,14 +320,14 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "error": "Parse error at line 2: Cannot read properties of undefined (reading 'trim') iin 1 0 ac"
+        "error": "no spice-ts result for analyses: pz"
       },
       "classification": {
-        "kind": "parser-feature",
-        "cause": "ac-only-independent-source",
-        "signature": "ac-source-missing-dc-value"
+        "kind": "unsupported-analysis/device",
+        "cause": "pole-zero-analysis",
+        "signature": "missing-result-pz"
       },
-      "evidenceSha256": "8b265b837c444d55bbf2d06e5ed7662fffb50a22c81ba0ab2574b03868f70831"
+      "evidenceSha256": "730ac7421ecf45ebeed0f7843e3e40bc5b9af4b689485defb6e9eeefcd690721"
     },
     {
       "id": "pole-zero-three-stage",
@@ -339,14 +339,14 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "error": "Parse error at line 2: Cannot read properties of undefined (reading 'trim') iin 1 0 ac"
+        "error": "no spice-ts result for analyses: pz"
       },
       "classification": {
-        "kind": "parser-feature",
-        "cause": "ac-only-independent-source",
-        "signature": "ac-source-missing-dc-value"
+        "kind": "unsupported-analysis/device",
+        "cause": "pole-zero-analysis",
+        "signature": "missing-result-pz"
       },
-      "evidenceSha256": "7c02b01e44b18927e0952162df83a01a9ddaef55b8895387b99bb58b746ba52a"
+      "evidenceSha256": "a049312596b097c4708d732dd2094e427694357e01297a9f7b332e9ea8400286"
     },
     {
       "id": "rc-transient",
@@ -386,14 +386,14 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "error": "Parse error at line 5: Cannot read properties of undefined (reading 'trim') iin 1 0 1m AC"
+        "error": "Parse error at line 14: Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop' .noise v ( 1 ) iin dec 10 10 100k 1"
       },
       "classification": {
         "kind": "parser-feature",
-        "cause": "ac-only-independent-source",
-        "signature": "ac-source-missing-dc-value"
+        "cause": "other-parser-feature",
+        "signature": "other-parser-error"
       },
-      "evidenceSha256": "af386b0b9ab86baa4980f757b31944edfadee411f5c70d5f2d210acf2300ff6b"
+      "evidenceSha256": "b099f2fa10c9fb13576a189fd216476be1cbf7e67157c8d242f0522b84e5f266"
     },
     {
       "id": "rtl-inverter-chain",

@@ -26,7 +26,7 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
   const acIdx = upper.indexOf('AC');
   if (acIdx >= 0) {
     const absIdx = startIdx + acIdx;
-    const magnitude = parseNumber(tokens[absIdx + 1]);
+    const magnitude = tokens[absIdx + 1] === undefined ? 1 : parseNumber(tokens[absIdx + 1]);
     const maybePhase = tokens[absIdx + 2]?.toUpperCase();
     const phase = (maybePhase && !SOURCE_KEYWORDS.has(maybePhase) && !maybePhase.startsWith('.'))
       ? parseNumber(tokens[absIdx + 2])
