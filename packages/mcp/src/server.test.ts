@@ -389,6 +389,59 @@ describe('bounded protocol-v1 tools', () => {
     });
   });
 
+  it('stops live stepped-transient delivery at maxResultPoints', async () => {
+    const request: SimulationRequestV1 = {
+      apiVersion: '1',
+      input: {
+        format: 'spice',
+        source: [
+          'V1 in 0 1',
+          'R1 in out 1k',
+          'C1 out 0 1u',
+          '.tran 1u 3u',
+          '.step param R1 list 1k 2k',
+        ].join('\n'),
+      },
+      options: { limits: { maxResultPoints: 4 } },
+    };
+    const execute = createToolExecutor();
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId } = started.structuredContent as { jobId: string };
+    let cursor = (started.structuredContent as { cursor: string }).cursor;
+    const points: SimulationEventV1[] = [];
+    let terminal: SimulationReadDataV1 | undefined;
+
+    for (let read = 0; read < 100; read++) {
+      const response = await readWhenReady(execute, { jobId, cursor, maxPoints: 2 });
+      const data = response.structuredContent as unknown as SimulationReadDataV1;
+      points.push(...data.events.filter((event: SimulationEventV1) => event.type === 'point'));
+      if (data.status !== 'running') {
+        terminal = data;
+        break;
+      }
+      cursor = data.nextCursor;
+    }
+
+    expect(points).toHaveLength(4);
+    expect(terminal).toMatchObject({
+      status: 'failed',
+      events: [],
+      nextCursor: null,
+      terminal: {
+        apiVersion: '1', ok: false, requestId: jobId,
+        error: {
+          code: 'RESOURCE_LIMIT', phase: 'solve', retryable: false,
+          details: { limit: 'maxResultPoints', maximum: 4, actual: 6 },
+        },
+        partial: {
+          analyses: expect.any(Array),
+          partialEventSha256: sha256CanonicalJson(points),
+        },
+      },
+    });
+    expect(JSON.stringify(terminal)).not.toContain('spice-ts');
+  });
+
   it('streams canonical analysis events in bounded replayable chunks', async () => {
     const request: SimulationRequestV1 = {
       apiVersion: '1',
