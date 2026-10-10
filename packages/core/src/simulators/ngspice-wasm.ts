@@ -345,7 +345,9 @@ function formatAnalysis(analysis: AnalysisDirective): string {
     case 'disto':
       throw new InvalidCircuitError('ngspice-wasm does not support .disto result mapping');
     case 'tf':
-      return `.tf v(${analysis.outputNode}) ${analysis.inputSource}`;
+      return 'outputNode' in analysis
+        ? `.tf v(${analysis.outputNode}) ${analysis.inputSource}`
+        : `.tf i(${analysis.outputSource}) ${analysis.inputSource}`;
     case 'sens':
       throw new InvalidCircuitError('ngspice-wasm does not support .sens result mapping');
   }

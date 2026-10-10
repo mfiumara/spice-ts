@@ -1,0 +1,5 @@
+* Project-owned bounded passive current-source DC sweep
+Isweep 0 out 0
+R1 out 0 1k
+.dc Isweep 2m 0 -1m
+.end

@@ -50,7 +50,10 @@ try {
   }, null, 2)}\n`);
   writeFileSync(join(consumerRoot, 'consumer.cjs'), String.raw`
 const { EventEmitter } = require('node:events');
-const { createToolExecutor, executeTool } = require('@spice-ts/mcp');
+const { Client } = require('@modelcontextprotocol/sdk/client/index.js');
+const { InMemoryTransport } = require('@modelcontextprotocol/sdk/inMemory.js');
+const { sha256CanonicalJson } = require('@spice-ts/protocol');
+const { createMcpServer, createToolExecutor, executeTool } = require('@spice-ts/mcp');
 
 class ManualClock {
   constructor() {
@@ -249,6 +252,82 @@ async function readWhenReady(jobId, cursor, maxPoints) {
     throw new Error('Packed worker-death cleanup changed');
   }
 
+  class FinalBatchWorker extends EventEmitter {
+    constructor() {
+      super();
+      this.terminateCount = 0;
+    }
+
+    postMessage(message) {
+      if (!message || message.operation !== 'stream') return;
+      this.emit('message', {
+        type: 'events',
+        events: [
+          { type: 'analysis-start', analysis: 'tran', analysisIndex: 0 },
+          {
+            type: 'point', analysisIndex: 0, pointIndex: 0,
+            point: { type: 'tran', timeS: 0, voltagesV: { out: 0 }, currentsA: {} },
+          },
+          {
+            type: 'point', analysisIndex: 0, pointIndex: 1,
+            point: { type: 'tran', timeS: 1e-6, voltagesV: { out: 0.5 }, currentsA: {} },
+          },
+        ],
+      });
+      this.emit('exit', 7);
+      this.emit('exit', 7);
+    }
+
+    terminate() { this.terminateCount++; return 1; }
+  }
+
+  const officialWorker = new FinalBatchWorker();
+  const officialServer = createMcpServer({ workerFactory: () => officialWorker });
+  const officialClient = new Client({ name: 'packed-worker-death-consumer', version: '1.0.0' });
+  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+  await officialServer.connect(serverTransport);
+  await officialClient.connect(clientTransport);
+  const officialStart = await officialClient.callTool({
+    name: 'spice_simulation_start',
+    arguments: {
+      request: {
+        apiVersion: '1',
+        input: { format: 'spice', source: 'V1 in 0 1\nR1 in out 1k\nC1 out 0 1u\n.tran 1u 1u' },
+      },
+    },
+  });
+  await flushMicrotasks();
+  const officialJob = officialStart.structuredContent;
+  const officialFirst = await officialClient.callTool({
+    name: 'spice_simulation_read',
+    arguments: { ...officialJob, maxPoints: 1 },
+  });
+  const officialTerminal = await officialClient.callTool({
+    name: 'spice_simulation_read',
+    arguments: { jobId: officialJob.jobId, cursor: officialFirst.structuredContent.nextCursor, maxPoints: 1 },
+  });
+  const officialReplay = await officialClient.callTool({
+    name: 'spice_simulation_read',
+    arguments: { jobId: officialJob.jobId, cursor: officialFirst.structuredContent.nextCursor, maxPoints: 99 },
+  });
+  const officialPoints = [
+    ...officialFirst.structuredContent.events,
+    ...officialTerminal.structuredContent.events,
+  ].filter((event) => event.type === 'point');
+  if (officialFirst.structuredContent.status !== 'running'
+    || officialTerminal.structuredContent.status !== 'failed'
+    || officialTerminal.structuredContent.terminal.error.code !== 'INTERNAL_ERROR'
+    || officialTerminal.structuredContent.terminal.partial.analyses[0].emittedPointCount !== 2
+    || officialTerminal.structuredContent.terminal.partial.partialEventSha256
+      !== sha256CanonicalJson(officialPoints)
+    || JSON.stringify(officialTerminal) !== JSON.stringify(officialReplay)
+    || officialWorker.terminateCount !== 0
+    || containsExactString(officialTerminal, 'spice-ts')) {
+    throw new Error('Official packed client worker-death recovery changed');
+  }
+  await officialClient.close();
+  await officialServer.close();
+
   const completedStart = await executeTool('spice_simulation_start', {
     request: {
       apiVersion: '1',
@@ -329,7 +408,10 @@ async function readWhenReady(jobId, cursor, maxPoints) {
 });
 `);
 
-  run('pnpm', ['add', '--ignore-workspace', '--prefer-offline', '--save-exact', mcpTarball], consumerRoot);
+  run('pnpm', [
+    'add', '--ignore-workspace', '--prefer-offline', '--save-exact',
+    mcpTarball, protocolTarball, '@modelcontextprotocol/sdk@1.32.1',
+  ], consumerRoot);
   if (existsSync(join(consumerRoot, 'node_modules', '@spice-ts', 'core'))) {
     throw new Error('Packed consumer unexpectedly hoisted @spice-ts/core to its root node_modules');
   }

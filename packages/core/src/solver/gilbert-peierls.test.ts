@@ -387,6 +387,22 @@ describe('GilbertPeierlsSolver', () => {
       expect(Array.from(solver.solve(new Float64Array([14, 32, 23])))).toEqual([1, 2, 3]);
     });
 
+    it('uses pivot state to track active factor columns', () => {
+      const matrix = new SparseMatrix(3);
+      matrix.add(0, 0, 1); matrix.add(0, 1, -1); matrix.add(0, 2, -1);
+      matrix.add(1, 0, -1); matrix.add(1, 1, -1);
+      matrix.add(2, 0, -1); matrix.add(2, 1, -1); matrix.add(2, 2, -1);
+      const { csc } = toCsc(matrix);
+      const solver = new GilbertPeierlsSolver();
+      solver.analyzePattern(csc);
+
+      const storage = solver as unknown as { activeFlag?: Int32Array };
+      expect(storage.activeFlag).toBeUndefined();
+
+      solver.factorize(csc);
+      expect(Array.from(solver.solve(new Float64Array([-4, -3, -6])))).toEqual([1, 2, 3]);
+    });
+
     it('recovers its numeric workspace after a singular value change', () => {
       const singular = new SparseMatrix(2);
       singular.touch(0, 0); singular.touch(0, 1);

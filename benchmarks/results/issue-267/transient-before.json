@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-10T10:21:04.782Z",
+  "mode": "smoke",
+  "command": "pnpm exec tsx benchmarks/performance/buck-boost.ts --mode=smoke --runs=5",
+  "methodology": {
+    "circuit": "Project-authored issue #40 inverting buck-boost; byte-identical netlist for both engines",
+    "repetitions": 5,
+    "timing": "fresh isolated process per engine and run; wall clock includes parse, setup, and solve",
+    "memory": "peak process RSS including runtime baseline; Node resourceUsage for spice-ts, /usr/bin/time for native ngspice",
+    "output": "V(neg) final, extrema, and arithmetic mean over the final 10 us switching cycle",
+    "correctness": "expected -12 V rail is reached only when final-cycle mean is negative and within 10% of -12 V"
+  },
+  "circuit": {
+    "netlistSha256": "6d83ff4648cbedd66a6053458c45eafa7907d27514790ce17b8ec8e0db925b0b",
+    "stopTimeSeconds": 0.00005,
+    "expectedNegativeRailVolts": -12
+  },
+  "versions": {
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1",
+    "pnpm": "10.28.1",
+    "ngspice": "ngspice-47 : Circuit level simulation program"
+  },
+  "machine": {
+    "platform": "darwin arm64",
+    "osRelease": "Darwin 27.0.0 Darwin Kernel Version 27.0.0: Tue Aug 11 21:06:40 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T6050",
+    "cpu": "Apple M5 Pro",
+    "logicalCpus": "18",
+    "memoryBytes": "51539607552"
+  },
+  "engines": {
+    "spiceTs": {
+      "command": [
+        "node",
+        "<tsx-loader>",
+        "benchmarks/performance/buck-boost.ts",
+        "--child=spice-ts",
+        "--mode=smoke"
+      ],
+      "runs": [
+        {
+          "run": 1,
+          "netlistSha256": "6d83ff4648cbedd66a6053458c45eafa7907d27514790ce17b8ec8e0db925b0b",
+          "wallMs": 25.660958000000022,
+          "peakRssMiB": 171.171875,
+          "steps": {
+            "accepted": 1158,
+            "outputPoints": 1159
+          },
+          "output": {
+            "finalVolts": 0.9546278475244506,
+            "lastCycleMeanVolts": 0.9567625885364976,
+            "minimumVolts": 0,
+            "maximumVolts": 0.9702384694814855,
+            "expectedVolts": -12,
+            "relativeErrorToExpected": 1.0797302157113748,
+            "reachesExpectedNegativeRail": false
+          }
+        },
+        {
+          "run": 2,
+          "netlistSha256": "6d83ff4648cbedd66a6053458c45eafa7907d27514790ce17b8ec8e0db925b0b",
+          "wallMs": 25.918000000000006,
+          "peakRssMiB": 151.484375,
+          "steps": {
+            "accepted": 1158,
+            "outputPoints": 1159
+          },
+          "output": {
+            "finalVolts": 0.9546278475244506,
+            "lastCycleMeanVolts": 0.9567625885364976,
+            "minimumVolts": 0,
+            "maximumVolts": 0.9702384694814855,
+            "expectedVolts": -12,
+            "relativeErrorToExpected": 1.0797302157113748,
+            "reachesExpectedNegativeRail": false
+          }
+        },
+        {
+          "run": 3,
+          "netlistSha256": "6d83ff4648cbedd66a6053458c45eafa7907d27514790ce17b8ec8e0db925b0b",
+          "wallMs": 24.934167000000002,
+          "peakRssMiB": 150.390625,
+          "steps": {
+            "accepted": 1158,
+            "outputPoints": 1159
+          },
+          "output": {
+            "finalVolts": 0.9546278475244506,
+            "lastCycleMeanVolts": 0.9567625885364976,
+            "minimumVolts": 0,
+            "maximumVolts": 0.9702384694814855,
+            "expectedVolts": -12,
+            "relativeErrorToExpected": 1.0797302157113748,
+            "reachesExpectedNegativeRail": false
+          }
+        },
+        {
+          "run": 4,
+          "netlistSha256": "6d83ff4648cbedd66a6053458c45eafa7907d27514790ce17b8ec8e0db925b0b",
+          "wallMs": 24.389250000000004,
+          "peakRssMiB": 151.40625,
+          "steps": {
+            "accepted": 1158,
+            "outputPoints": 1159
+          },
+          "output": {
+            "finalVolts": 0.9546278475244506,
+            "lastCycleMeanVolts": 0.9567625885364976,
+            "minimumVolts": 0,
+            "maximumVolts": 0.9702384694814855,
+            "expectedVolts": -12,
+            "relativeErrorToExpected": 1.0797302157113748,
+            "reachesExpectedNegativeRail": false
+          }
+        },
+        {
+          "run": 5,
+          "netlistSha256": "6d83ff4648cbedd66a6053458c45eafa7907d27514790ce17b8ec8e0db925b0b",
+          "wallMs": 24.43866700000001,
+          "peakRssMiB": 150.40625,
+          "steps": {
+            "accepted": 1158,
+            "outputPoints": 1159
+          },
+          "output": {
+            "finalVolts": 0.9546278475244506,
+            "lastCycleMeanVolts": 0.9567625885364976,
+            "minimumVolts": 0,
+            "maximumVolts": 0.9702384694814855,
+            "expectedVolts": -12,
+            "relativeErrorToExpected": 1.0797302157113748,
+            "reachesExpectedNegativeRail": false
+          }
+        }
+      ],
+      "deterministic": {
+        "output": true,
+        "steps": true
+      }
+    },
+    "ngspice": {
+      "command": [
+        "/usr/bin/time",
+        "-l",
+        "ngspice",
+        "-b",
+        "-r",
+        "<raw>",
+        "<identical-netlist>"
+      ],
+      "runs": [
+        {
+          "run": 1,
+          "netlistSha256": "6d83ff4648cbedd66a6053458c45eafa7907d27514790ce17b8ec8e0db925b0b",
+          "wallMs": 34.64516599999999,
+          "peakRssMiB": 10.359375,
+          "steps": {
+            "accepted": 1081,
+            "outputPoints": 1082
+          },
+          "output": {
+            "finalVolts": 0.814169309308566,
+            "lastCycleMeanVolts": 0.8173360569307412,
+            "minimumVolts": -6.682381521907087e-29,
+            "maximumVolts": 0.8225229162338911,
+            "expectedVolts": -12,
+            "relativeErrorToExpected": 1.0681113380775618,
+            "reachesExpectedNegativeRail": false
+          }
+        },
+        {
+          "run": 2,
+          "netlistSha256": "6d83ff4648cbedd66a6053458c45eafa7907d27514790ce17b8ec8e0db925b0b",
+          "wallMs": 29.010875,
+          "peakRssMiB": 10.375,
+          "steps": {
+            "accepted": 1081,
+            "outputPoints": 1082
+          },
+          "output": {
+            "finalVolts": 0.814169309308566,
+            "lastCycleMeanVolts": 0.8173360569307412,
+            "minimumVolts": -6.682381521907087e-29,
+            "maximumVolts": 0.8225229162338911,
+            "expectedVolts": -12,
+            "relativeErrorToExpected": 1.0681113380775618,
+            "reachesExpectedNegativeRail": false
+          }
+        },
+        {
+          "run": 3,
+          "netlistSha256": "6d83ff4648cbedd66a6053458c45eafa7907d27514790ce17b8ec8e0db925b0b",
+          "wallMs": 22.581833000000017,
+          "peakRssMiB": 10.359375,
+          "steps": {
+            "accepted": 1081,
+            "outputPoints": 1082
+          },
+          "output": {
+            "finalVolts": 0.814169309308566,
+            "lastCycleMeanVolts": 0.8173360569307412,
+            "minimumVolts": -6.682381521907087e-29,
+            "maximumVolts": 0.8225229162338911,
+            "expectedVolts": -12,
+            "relativeErrorToExpected": 1.0681113380775618,
+            "reachesExpectedNegativeRail": false
+          }
+        },
+        {
+          "run": 4,
+          "netlistSha256": "6d83ff4648cbedd66a6053458c45eafa7907d27514790ce17b8ec8e0db925b0b",
+          "wallMs": 22.245292000000006,
+          "peakRssMiB": 10.359375,
+          "steps": {
+            "accepted": 1081,
+            "outputPoints": 1082
+          },
+          "output": {
+            "finalVolts": 0.814169309308566,
+            "lastCycleMeanVolts": 0.8173360569307412,
+            "minimumVolts": -6.682381521907087e-29,
+            "maximumVolts": 0.8225229162338911,
+            "expectedVolts": -12,
+            "relativeErrorToExpected": 1.0681113380775618,
+            "reachesExpectedNegativeRail": false
+          }
+        },
+        {
+          "run": 5,
+          "netlistSha256": "6d83ff4648cbedd66a6053458c45eafa7907d27514790ce17b8ec8e0db925b0b",
+          "wallMs": 19.442667,
+          "peakRssMiB": 10.296875,
+          "steps": {
+            "accepted": 1081,
+            "outputPoints": 1082
+          },
+          "output": {
+            "finalVolts": 0.814169309308566,
+            "lastCycleMeanVolts": 0.8173360569307412,
+            "minimumVolts": -6.682381521907087e-29,
+            "maximumVolts": 0.8225229162338911,
+            "expectedVolts": -12,
+            "relativeErrorToExpected": 1.0681113380775618,
+            "reachesExpectedNegativeRail": false
+          }
+        }
+      ],
+      "deterministic": {
+        "output": true,
+        "steps": true
+      }
+    }
+  }
+}
