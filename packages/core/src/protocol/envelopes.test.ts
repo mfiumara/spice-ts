@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
+import { mapProtocolErrorV1 } from './adapter.js';
 import { executeProtocolV1, protocolCapabilitiesV1 } from './envelopes.js';
 import type { ProtocolTerminalEnvelopeV1, SimulationRequestV1 } from './types.js';
 
@@ -31,6 +32,11 @@ function assertWireSafe(value: unknown, permitNativeFormat = false): void {
     ? JSON.stringify(value).replaceAll('input:spice-ts', 'input:native').replaceAll('"spice-ts"', '"native"')
     : JSON.stringify(value);
   expect(serialized).not.toMatch(/\bspice-ts\b(?!-(?:js|wasm))/);
+}
+
+function crossWorkerBoundary(terminal: ProtocolTerminalEnvelopeV1): ProtocolTerminalEnvelopeV1 {
+  const crossed = structuredClone(terminal);
+  return crossed.ok ? crossed : { ...crossed, error: mapProtocolErrorV1(crossed.error) };
 }
 
 async function cancelledSecondAnalysis(): Promise<ProtocolTerminalEnvelopeV1> {
@@ -110,6 +116,7 @@ describe('protocol-v1 capability and terminal envelopes', () => {
       metadata: { completion: 'failed', partial: false },
     });
     expect(canonicalHash(terminal)).toBe('491caa4d099d742bb773f5c74e4a06aaa74f17f5071c3c4c18d607e6c4e7aedb');
+    expect(crossWorkerBoundary(terminal)).toEqual(terminal);
     assertWireSafe(terminal);
   });
 
@@ -142,6 +149,7 @@ describe('protocol-v1 capability and terminal envelopes', () => {
       },
     });
     expect(canonicalHash(terminal)).toBe('9e5f72957de9f6b838bc91c6cbcc86c6e891e35610105702fc7360e63f065f31');
+    expect(crossWorkerBoundary(terminal)).toEqual(terminal);
     assertWireSafe(terminal);
   });
 
