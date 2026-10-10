@@ -5,7 +5,7 @@ export type NodeName = string;
 export const GROUND_NODE = '0';
 
 /** Supported analysis command types. */
-export type AnalysisType = 'op' | 'dc' | 'tran' | 'ac' | 'noise' | 'tf' | 'pz';
+export type AnalysisType = 'op' | 'dc' | 'tran' | 'ac' | 'noise' | 'tf' | 'pz' | 'sens';
 
 /** DC operating point analysis (`.op`). */
 export interface DCAnalysis {
@@ -104,11 +104,32 @@ export interface PoleZeroAnalysis {
   mode: 'pol' | 'pz';
 }
 
+/** Bounded single-node voltage sensitivity analysis. */
+export type SensitivityAnalysis = DCSensitivityAnalysis | ACSensitivityAnalysis;
+
+/** DC operating-point sensitivity (`.sens v(node)`). */
+export interface DCSensitivityAnalysis {
+  type: 'sens';
+  outputNode: string;
+  mode: 'dc';
+}
+
+/** DEC small-signal AC sensitivity (`.sens v(node) ac dec ...`). */
+export interface ACSensitivityAnalysis {
+  type: 'sens';
+  outputNode: string;
+  mode: 'ac';
+  variation: 'dec';
+  points: number;
+  startFreq: number;
+  stopFreq: number;
+}
+
 /** Established time/frequency analysis command types. */
 export type AnalysisCommand = DCAnalysis | DCSweepAnalysis | TransientAnalysis | ACAnalysis;
 
 /** Every analysis directive executable by the native simulator. */
-export type AnalysisDirective = AnalysisCommand | NoiseAnalysis | TransferFunctionAnalysis;
+export type AnalysisDirective = AnalysisCommand | NoiseAnalysis | TransferFunctionAnalysis | SensitivityAnalysis;
 
 /** Integration methods for transient analysis */
 export type IntegrationMethod = 'euler' | 'trapezoidal' | 'gear2';
