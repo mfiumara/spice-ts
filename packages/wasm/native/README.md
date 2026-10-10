@@ -12,6 +12,7 @@ checked artifact bytes:
       -Wl,--export=stamp_vccs_f64 \
       -Wl,--export=stamp_cccs_f64 \
       -Wl,--export=stamp_vcvs_f64 \
+      -Wl,--export=stamp_ccvs_f64 \
       -Wl,--export=solve_f64 \
       -Wl,--export=solve_complex_f64 \
       -Wl,--export=abi_version \
@@ -27,15 +28,15 @@ checked artifact bytes:
       native/dense-solver.unstripped.wasm native/dense-solver.wasm
     rm native/dense-solver.unstripped.wasm
     chmod 0644 native/dense-solver.wasm
-    test "$(wc -c < native/dense-solver.wasm | tr -d ' ')" = 4001
+    test "$(wc -c < native/dense-solver.wasm | tr -d ' ')" = 4418
     printf '%s  %s\n' \
-      c1aaff49961470dc177d420268be172a7a55ba710de6158dc41cb79a118828fe \
+      1caf95e0d05779f626523363bd90287d128670fa79cc0dc9068a22c0fbc61537 \
       native/dense-solver.wasm | shasum -a 256 -c -
 
 Expected artifact:
 
-- byte length: 4001
-- SHA-256: `c1aaff49961470dc177d420268be172a7a55ba710de6158dc41cb79a118828fe`
+- byte length: 4418
+- SHA-256: `1caf95e0d05779f626523363bd90287d128670fa79cc0dc9068a22c0fbc61537`
 - imports: none
 - memory: fixed at 3 WebAssembly pages (196608 bytes)
 - ABI version: 2
@@ -44,6 +45,7 @@ Expected artifact:
 ABI v2 exposes `stamp_vccs_f64(order, matrix, outP, outN, ctrlP, ctrlN, gm)` for bounded linear VCCS stamps,
 `stamp_cccs_f64(order, matrix, outP, outN, controlBranchColumn, gain)` for bounded linear CCCS stamps,
 `stamp_vcvs_f64(order, matrix, outP, outN, ctrlP, ctrlN, branchColumn, gain)` for bounded linear VCVS stamps,
+`stamp_ccvs_f64(order, matrix, outP, outN, controlBranchColumn, branchColumn, transresistance)` for bounded linear CCVS stamps,
 `solve_f64(order, matrix, rhs)` for real systems, and
 `solve_complex_f64(order, matrixReal, matrixImaginary, rhsReal, rhsImaginary)` for split-complex systems.
 The entry points mutate their row-major matrices and right-hand sides in place. Status 0 means success, 1 means
