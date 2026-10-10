@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-10T01:07:32.791Z",
+  "command": "pnpm bench:scaling -- --sizes=1000,5000,10000 --warmups=3 --runs=10 --output=benchmarks/results/issue-118/before.json",
+  "methodology": {
+    "circuit": "Generated linear resistor ladder, DC operating point; byte-identical netlist per size",
+    "warmups": 3,
+    "repetitions": 10,
+    "statistic": "median primary; min, p95, max and every raw sample retained",
+    "spiceTsTiming": "public simulate() API in one isolated process per size; includes parse, compile, and solve",
+    "ngspiceTiming": "fresh native CLI process per sample; wall time plus ngspice internal analysis time",
+    "memory": "peak process RSS including runtime baseline; spice-ts from Node resourceUsage, ngspice from rusage acct"
+  },
+  "versions": {
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1",
+    "pnpm": "10.28.1",
+    "ngspice": "ngspice-47 : Circuit level simulation program"
+  },
+  "machine": {
+    "platform": "darwin arm64",
+    "osRelease": "Darwin 27.0.0 Darwin Kernel Version 27.0.0: Tue Aug 11 21:06:40 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T6050",
+    "cpu": "Apple M5 Pro",
+    "logicalCpus": "18",
+    "memoryBytes": "51539607552"
+  },
+  "rows": [
+    {
+      "nodes": 1000,
+      "netlistSha256": "24c4257981f2b583f8b4183ea602cfa43608ec07344d057c9b9d166e5eb1fb4d",
+      "spiceTs": {
+        "engine": "spice-ts",
+        "nodes": 1000,
+        "netlistSha256": "24c4257981f2b583f8b4183ea602cfa43608ec07344d057c9b9d166e5eb1fb4d",
+        "status": "ok",
+        "timesMs": [
+          3.240250000000003,
+          2.369084000000015,
+          2.693916999999999,
+          1.9424999999999955,
+          2.0245419999999967,
+          2.068040999999994,
+          1.6524579999999958,
+          1.7351249999999823,
+          1.5688330000000121,
+          1.8096669999999904
+        ],
+        "statsMs": {
+          "min": 1.5688330000000121,
+          "median": 1.983520999999996,
+          "p95": 3.240250000000003,
+          "max": 3.240250000000003
+        },
+        "peakRssMiB": 155.40625
+      },
+      "ngspice": {
+        "engine": "ngspice",
+        "nodes": 1000,
+        "netlistSha256": "24c4257981f2b583f8b4183ea602cfa43608ec07344d057c9b9d166e5eb1fb4d",
+        "status": "ok",
+        "timesMs": [
+          12.430125000000004,
+          12.341375,
+          12.317625000000021,
+          12.299833000000007,
+          11.981792000000013,
+          12.088208000000009,
+          12.639708000000013,
+          12.425667000000033,
+          18.091291999999953,
+          12.476791999999989
+        ],
+        "statsMs": {
+          "min": 11.981792000000013,
+          "median": 12.383521000000016,
+          "p95": 18.091291999999953,
+          "max": 18.091291999999953
+        },
+        "analysisTimesMs": [
+          0.6040000000000001,
+          0.5569999999999999,
+          0.5820000000000001,
+          0.5730000000000001,
+          0.553,
+          0.555,
+          0.6040000000000001,
+          0.578,
+          0.619,
+          0.5900000000000001
+        ],
+        "analysisStatsMs": {
+          "min": 0.553,
+          "median": 0.5800000000000001,
+          "p95": 0.619,
+          "max": 0.619
+        },
+        "peakRssMiB": 11.703
+      }
+    },
+    {
+      "nodes": 5000,
+      "netlistSha256": "40feb8c55bc3461e796f04bc4a3951af1f71ee70eebcfdf0d59397fed7bb6d33",
+      "spiceTs": {
+        "engine": "spice-ts",
+        "nodes": 5000,
+        "netlistSha256": "40feb8c55bc3461e796f04bc4a3951af1f71ee70eebcfdf0d59397fed7bb6d33",
+        "status": "ok",
+        "timesMs": [
+          10.461041999999992,
+          10.01641600000002,
+          9.935709000000003,
+          13.403542000000016,
+          11.039667000000009,
+          9.605457999999999,
+          9.010708999999991,
+          9.150542000000002,
+          8.843458000000027,
+          8.984584000000012
+        ],
+        "statsMs": {
+          "min": 8.843458000000027,
+          "median": 9.7705835,
+          "p95": 13.403542000000016,
+          "max": 13.403542000000016
+        },
+        "peakRssMiB": 182.96875
+      },
+      "ngspice": {
+        "engine": "ngspice",
+        "nodes": 5000,
+        "netlistSha256": "40feb8c55bc3461e796f04bc4a3951af1f71ee70eebcfdf0d59397fed7bb6d33",
+        "status": "ok",
+        "timesMs": [
+          26.39108299999998,
+          25.515457999999995,
+          26.192667,
+          30.760458,
+          34.862832999999966,
+          28.529457999999977,
+          29.078583999999978,
+          27.350833000000023,
+          28.39708300000001,
+          31.737707999999998
+        ],
+        "statsMs": {
+          "min": 25.515457999999995,
+          "median": 28.463270499999993,
+          "p95": 34.862832999999966,
+          "max": 34.862832999999966
+        },
+        "analysisTimesMs": [
+          1.898,
+          1.939,
+          2.174,
+          3.867,
+          3.091,
+          2.0669999999999997,
+          2.079,
+          2.055,
+          2.064,
+          1.9949999999999999
+        ],
+        "analysisStatsMs": {
+          "min": 1.898,
+          "median": 2.0655,
+          "p95": 3.867,
+          "max": 3.867
+        },
+        "peakRssMiB": 17.594
+      }
+    },
+    {
+      "nodes": 10000,
+      "netlistSha256": "f79c1097da2768fcea75811a686a80f5ef0a90c0bae25241bb4e5786a0832327",
+      "spiceTs": {
+        "engine": "spice-ts",
+        "nodes": 10000,
+        "netlistSha256": "f79c1097da2768fcea75811a686a80f5ef0a90c0bae25241bb4e5786a0832327",
+        "status": "ok",
+        "timesMs": [
+          24.67783300000002,
+          22.423500000000047,
+          22.488332999999955,
+          28.71283299999999,
+          20.771791000000007,
+          20.940957999999966,
+          19.98341700000003,
+          23.745458000000042,
+          18.610208,
+          18.32370800000001
+        ],
+        "statsMs": {
+          "min": 18.32370800000001,
+          "median": 21.682229000000007,
+          "p95": 28.71283299999999,
+          "max": 28.71283299999999
+        },
+        "peakRssMiB": 224.046875
+      },
+      "ngspice": {
+        "engine": "ngspice",
+        "nodes": 10000,
+        "netlistSha256": "f79c1097da2768fcea75811a686a80f5ef0a90c0bae25241bb4e5786a0832327",
+        "status": "ok",
+        "timesMs": [
+          38.66387500000002,
+          38.86262499999998,
+          38.26475000000005,
+          37.709457999999984,
+          38.64645899999999,
+          37.55658299999999,
+          39.45858399999997,
+          39.991083,
+          40.16366700000003,
+          39.8671250000001
+        ],
+        "statsMs": {
+          "min": 37.55658299999999,
+          "median": 38.76325,
+          "p95": 40.16366700000003,
+          "max": 40.16366700000003
+        },
+        "analysisTimesMs": [
+          3.2950000000000004,
+          3.424,
+          3.424,
+          3.247,
+          3.316,
+          3.219,
+          3.32,
+          3.313,
+          3.359,
+          3.5660000000000003
+        ],
+        "analysisStatsMs": {
+          "min": 3.219,
+          "median": 3.3179999999999996,
+          "p95": 3.5660000000000003,
+          "max": 3.5660000000000003
+        },
+        "peakRssMiB": 24.484
+      }
+    }
+  ]
+}

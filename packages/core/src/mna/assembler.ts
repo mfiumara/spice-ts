@@ -102,78 +102,105 @@ export class MNAAssembler {
     if (this._fastPath) return;
     const n = this.systemSize;
 
-    // Collect union of all non-zero positions from G and C
-    // Use a Set of (row * n + col) keys
-    const positionSet = new Set<number>();
-    for (let i = 0; i < n; i++) {
-      const gRow = this.G.getRow(i);
-      for (const [j] of gRow) {
-        positionSet.add(i * n + j);
+    // Collect the G/C structural union in a typed open-addressed table. Start
+    // proportional to the mandatory CSC column pointer and grow only when the
+    // actual sparsity requires it; this avoids a boxed Set and one Array per
+    // column while remaining general for arbitrary sparsity.
+    let lookupCapacity = 4;
+    while (lookupCapacity < n * 4) lookupCapacity *= 2;
+    let lookupRows = new Int32Array(lookupCapacity).fill(-1);
+    let lookupCols = new Int32Array(lookupCapacity);
+    let lookupIndices = new Int32Array(lookupCapacity);
+    let initialGValues = new Float64Array(lookupCapacity);
+    let initialCValues = new Float64Array(lookupCapacity);
+    let lookupMask = lookupCapacity - 1;
+    let nnz = 0;
+    const columnCounts = new Int32Array(n);
+
+    const hashPosition = (row: number, col: number): number => {
+      let hash = Math.imul(row, -1640531527) ^ Math.imul(col, -2048144789);
+      hash ^= hash >>> 16;
+      return hash & lookupMask;
+    };
+    const growLookup = (): void => {
+      const previousRows = lookupRows;
+      const previousCols = lookupCols;
+      const previousGValues = initialGValues;
+      const previousCValues = initialCValues;
+      lookupCapacity *= 2;
+      lookupRows = new Int32Array(lookupCapacity).fill(-1);
+      lookupCols = new Int32Array(lookupCapacity);
+      lookupIndices = new Int32Array(lookupCapacity);
+      initialGValues = new Float64Array(lookupCapacity);
+      initialCValues = new Float64Array(lookupCapacity);
+      lookupMask = lookupCapacity - 1;
+      for (let previousSlot = 0; previousSlot < previousRows.length; previousSlot++) {
+        const row = previousRows[previousSlot];
+        if (row === -1) continue;
+        const col = previousCols[previousSlot];
+        let slot = hashPosition(row, col);
+        while (lookupRows[slot] !== -1) slot = (slot + 1) & lookupMask;
+        lookupRows[slot] = row;
+        lookupCols[slot] = col;
+        initialGValues[slot] = previousGValues[previousSlot];
+        initialCValues[slot] = previousCValues[previousSlot];
       }
-      const cRow = this.C.getRow(i);
-      for (const [j] of cRow) {
-        positionSet.add(i * n + j);
+    };
+    const addPosition = (row: number, col: number, value: number, isG: boolean): void => {
+      let slot = hashPosition(row, col);
+      while (lookupRows[slot] !== -1) {
+        if (lookupRows[slot] === row && lookupCols[slot] === col) {
+          if (isG) initialGValues[slot] = value;
+          else initialCValues[slot] = value;
+          return;
+        }
+        slot = (slot + 1) & lookupMask;
       }
+      if ((nnz + 1) * 2 > lookupCapacity) {
+        growLookup();
+        slot = hashPosition(row, col);
+        while (lookupRows[slot] !== -1) slot = (slot + 1) & lookupMask;
+      }
+      lookupRows[slot] = row;
+      lookupCols[slot] = col;
+      if (isG) initialGValues[slot] = value;
+      else initialCValues[slot] = value;
+      columnCounts[col]++;
+      nnz++;
+    };
+    for (let row = 0; row < n; row++) {
+      for (const [col, value] of this.G.getRow(row)) addPosition(row, col, value, true);
+      for (const [col, value] of this.C.getRow(row)) addPosition(row, col, value, false);
     }
 
-    // Build CSC structure: group entries by column, sorted by row within each column
-    const colEntries: number[][] = [];
-    for (let j = 0; j < n; j++) colEntries.push([]);
-
-    for (const key of positionSet) {
-      const row = Math.floor(key / n);
-      const col = key % n;
-      colEntries[col].push(row);
-    }
-
-    for (let j = 0; j < n; j++) {
-      colEntries[j].sort((a, b) => a - b);
-    }
-
-    const nnz = positionSet.size;
     const colPtr = new Int32Array(n + 1);
     const rowIdx = new Int32Array(nnz);
     const gValues = new Float64Array(nnz);
     const cValues = new Float64Array(nnz);
     const diagIdx = new Int32Array(n).fill(-1);
 
-    let idx = 0;
-    for (let j = 0; j < n; j++) {
-      colPtr[j] = idx;
-      for (const row of colEntries[j]) {
-        rowIdx[idx] = row;
-        gValues[idx] = this.G.get(row, j);
-        cValues[idx] = this.C.get(row, j);
-        if (row === j) {
-          diagIdx[row] = idx;
-        }
-        idx++;
-      }
+    for (let col = 0; col < n; col++) colPtr[col + 1] = colPtr[col] + columnCounts[col];
+    const columnOffsets = colPtr.slice(0, n);
+    for (let slot = 0; slot < lookupCapacity; slot++) {
+      const row = lookupRows[slot];
+      if (row === -1) continue;
+      const col = lookupCols[slot];
+      rowIdx[columnOffsets[col]++] = row;
     }
-    colPtr[n] = idx;
-
-    // Build a compact open-addressed lookup over structural entries. The load
-    // factor stays at or below 0.5, so stamping remains expected O(1) while
-    // lookup storage is O(nnz), rather than the old O(n²) dense position map.
-    let lookupCapacity = 4;
-    while (lookupCapacity < nnz * 2) lookupCapacity *= 2;
-    const lookupRows = new Int32Array(lookupCapacity).fill(-1);
-    const lookupCols = new Int32Array(lookupCapacity);
-    const lookupIndices = new Int32Array(lookupCapacity);
-    const lookupMask = lookupCapacity - 1;
-    const hashPosition = (row: number, col: number): number => {
-      let hash = Math.imul(row, -1640531527) ^ Math.imul(col, -2048144789);
-      hash ^= hash >>> 16;
-      return hash & lookupMask;
-    };
+    for (let col = 0; col < n; col++) {
+      rowIdx.subarray(colPtr[col], colPtr[col + 1]).sort();
+    }
     for (let col = 0; col < n; col++) {
       for (let position = colPtr[col]; position < colPtr[col + 1]; position++) {
         const row = rowIdx[position];
         let slot = hashPosition(row, col);
-        while (lookupRows[slot] !== -1) slot = (slot + 1) & lookupMask;
-        lookupRows[slot] = row;
-        lookupCols[slot] = col;
+        while (lookupRows[slot] !== row || lookupCols[slot] !== col) {
+          slot = (slot + 1) & lookupMask;
+        }
+        gValues[position] = initialGValues[slot];
+        cValues[position] = initialCValues[slot];
         lookupIndices[slot] = position;
+        if (row === col) diagIdx[row] = position;
       }
     }
     const stampIndex = (row: number, col: number): number => {
