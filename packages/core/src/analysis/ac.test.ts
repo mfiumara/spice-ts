@@ -2,6 +2,17 @@ import { describe, it, expect } from 'vitest';
 import { simulate } from '../simulate.js';
 
 describe('AC Small-Signal Analysis', () => {
+  it('applies an independent current-source AC excitation', async () => {
+    const result = await simulate(`
+      I1 out 0 AC 1 0
+      R1 out 0 1
+      .ac lin 1 1 1
+      .end
+    `);
+
+    expect(result.ac!.voltage('out')[0].magnitude).toBeCloseTo(1, 9);
+  });
+
   it('RC lowpass filter has correct -3dB frequency', async () => {
     const result = await simulate(`
       V1 1 0 AC 1 0
