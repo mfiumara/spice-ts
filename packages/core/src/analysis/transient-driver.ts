@@ -147,6 +147,7 @@ class TransientSimImpl implements TransientSim {
   private secondPrevSol: Float64Array | undefined;
   private prevDt: number;
   private integrationMethod: IntegrationMethod;
+  private trapNrRetries = 0;
   private lteRejectCount = 0;
   private disposed = false;
   private breakpoints: BreakpointQueue;
@@ -248,7 +249,7 @@ class TransientSimImpl implements TransientSim {
         this.convergenceTelemetry.transient.nrRetries++;
         if (
           this.integrationMethod === 'trapezoidal'
-          && this.convergenceTelemetry.transient.nrRetries === MAX_TRAP_NR_RETRIES
+          && ++this.trapNrRetries === MAX_TRAP_NR_RETRIES
         ) {
           // A persistent trap/Newton grow-fail-cut cycle can hold dt near the
           // numerical floor indefinitely while one-shot result arrays keep
@@ -352,6 +353,7 @@ class TransientSimImpl implements TransientSim {
     this.dt = Math.min(this.config.timestep, this.config.maxTimestep);
     this.prevDt = this.dt;
     this.integrationMethod = this.options.integrationMethod;
+    this.trapNrRetries = 0;
     this.prevB = undefined;
     this.secondPrevSol = undefined;
     this.lteRejectCount = 0;
