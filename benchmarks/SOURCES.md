@@ -117,6 +117,22 @@ Reproduce with `pnpm --filter @spice-ts/wasm bench:cccs-op`. The JSON receipt re
 
 Reproduce with `pnpm --filter @spice-ts/wasm bench:vcvs-op`. The JSON receipt records ngspice-47, machine, fixture hashes, byte-identical inputs, convergence, scalar errors, fresh-process boundaries and runtimes, artifact-size changes, exclusions, and every retained loss.
 
+## Bounded passive RLC transient WASM fixtures
+
+- Source: project-authored reference circuits for [issue #368](https://github.com/mfiumara/spice-ts/issues/368), issue revision as of 2026-10-10.
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- Adaptation: none. The comparison runner reads each committed fixture and supplies those exact bytes to the explicit `spice-ts-wasm` backend, the `spice-ts-js` TypeScript backend, and ngspice-47. No engine-specific values, tolerances, or rewrites are used.
+
+| Fixture | SHA-256 | Coverage |
+|---|---|---|
+| `benchmarks/results/issue-368/series-rlc.cir` | `fc16cee3ada369cf068e771e31ca5e251295b1a371ba89176fc022debd45cbd8` | Underdamped series RLC voltage step: inductor branch current, source current, and capacitor voltage. |
+| `benchmarks/results/issue-368/parallel-rlc.cir` | `3bcb68c13fa56d9f36718406d3788ab25da25b3871e4ed2b7bac721d5cdf26dc` | Lightly damped parallel RLC current step: tank voltage and inductor branch current. |
+| `benchmarks/results/issue-368/unsupported/coupled-k.cir` | `57301acf6df0c233ae32a47bf18fa6023cf2a4198fa32ffc69088c1ecf0ad75d` | Coupled inductors; WASM rejects, recorded as a loss. |
+| `benchmarks/results/issue-368/unsupported/inductor-ic.cir` | `18508eb9a7982da0e451a4370cebb7187e234867a378d822a2dbc7cbcd1df31c` | Inductor `IC=`; WASM rejects, recorded as a loss. |
+| `benchmarks/results/issue-368/unsupported/inductor-multiplier.cir` | `fa91c487d342c09a5a06502a4ffb53a6043edbbbcbfd29a97c45a6726f640695` | Inductor `m=` instance parameter; WASM rejects, recorded as a loss. |
+
+Reproduce with `pnpm --filter @spice-ts/wasm bench:rlc-tran`. The JSON receipt records ngspice-47, machine, fixture hashes, byte-identical inputs, convergence, point counts, matched-timepoint max/RMS absolute and relative errors for WASM vs ngspice, TypeScript vs ngspice and WASM vs TypeScript, unsupported-form outcomes for all three engines, fresh-process runtimes, artifact-size changes, and every retained loss.
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
