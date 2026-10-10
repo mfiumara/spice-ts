@@ -4,7 +4,7 @@ spice-ts is pursuing correctness parity with ngspice before performance, AI-nati
 models. [CHARTER.md](CHARTER.md) is the source of truth for priorities and program rules; this document is the
 public issue map and measurable delivery sequence.
 
-Issue state below was verified against live GitHub state on 2026-10-10. The repository had 18 open issues: five in
+Issue state below was verified against live GitHub state on 2026-10-10. The repository had 19 open issues: six in
 M1, none in M2, six in M3, and seven in M4. Every open issue is represented below exactly once. Closed duplicate
 [#278](https://github.com/mfiumara/spice-ts/issues/278) is not part of the active inventory.
 
@@ -12,11 +12,10 @@ GitHub had two open PRs at verification time. [PR #274](https://github.com/mfium
 from unreviewed conflict-remediation head `d654463c92c61a57dbb4a4e23659671174663a46` to unreviewed current head
 `984e8ec14364ee37a02313253bb6620c28f0e349`, and [PR
 #284](https://github.com/mfiumara/spice-ts/pull/284) had advanced from rejected provenance head
-`db27de3e988c6d3f977a1d48056ede71febaaa4d` to unreviewed remediation head
-`47da214e26d348f41baea47b80acff8afe6f2881`. PR #284's required build, accuracy, test (20), and test (22) checks
-were green; PR #274's build and accuracy checks were green while test (20) and test (22) were still running. Neither
-current head is a delivery without green required exact-head checks, independent exact-head acceptance, and a squash
-commit on `main`. Since the prior snapshot, accepted PR heads `f877b2e8d51faffa74b084740726a33fd6f7b76e`,
+`db27de3e988c6d3f977a1d48056ede71febaaa4d` to accepted remediation head
+`47da214e26d348f41baea47b80acff8afe6f2881`. Required build, accuracy, test (20), and test (22) checks were green on
+both current heads, but PR #274 remained unreviewed and PR #284 had no squash commit on `main`; neither was a
+delivery. Since the prior snapshot, accepted PR heads `f877b2e8d51faffa74b084740726a33fd6f7b76e`,
 `c96892611da8c85c5687d05e34c4b52172f3c19e`, `f28de73e7abe259b633fd3404e909d4b4608306a`, and
 `3c0b25700f147081d3eebee3ee18b6b1e5733917` squash-merged through PRs #269, #282, #283, and #281 respectively.
 This reconciliation closes [#285](https://github.com/mfiumara/spice-ts/issues/285) only when its exact reviewed PR
@@ -115,9 +114,10 @@ published parity report; agreed error thresholds met or gaps filed
 |------|-------|------------------|
 | Advanced analysis support | [#75](https://github.com/mfiumara/spice-ts/issues/75) | Parent gap after the bounded resistor, diode, BJT, and MOS1-noise, `.tf`, stepped `.tf`, `.pz`, `.sens`, and single- and two-tone ideal-linear `.disto` slices: differential/current noise outputs, temperature cards, broader BJT and MOSFET noise, stepped noise, unsupported `.sens` forms, nested/multidimensional/differential/current-output stepped `.tf`, and nonlinear or stepped distortion remain unsupported |
 | Voltage-input pole-zero parity | [#265](https://github.com/mfiumara/spice-ts/issues/265) | [PR #274](https://github.com/mfiumara/spice-ts/pull/274) advanced from rejected head `75b69511dacce8f4b867b1a79cadd0c12d585ac5`, which conflicted with then-current `main`, through unreviewed conflict-remediation head `d654463c92c61a57dbb4a4e23659671174663a46` to unreviewed current head `984e8ec14364ee37a02313253bb6620c28f0e349`. The bounded proposal covers only grounded-reference passive linear voltage input in POLES or PZ mode; non-ground references, zero-only mode, stepping, nonlinear devices, and dynamic order above 12 remain unsupported. The current head is not a delivery |
-| Refresh the unchanged 100-circuit parity report | [#275](https://github.com/mfiumara/spice-ts/issues/275) | [PR #284](https://github.com/mfiumara/spice-ts/pull/284) advanced from rejected head `db27de3e988c6d3f977a1d48056ede71febaaa4d`, which conflated macOS 27.0.1 with Darwin 27.0.0, to unreviewed remediation head `47da214e26d348f41baea47b80acff8afe6f2881`. Its unchanged-fixture proposal retains ngspice at 52/9/39 and reports spice-ts at 28/9/63 with 28 comparable analyses across 18 fixtures, four newly exposed classic execution losses, and a lower absolute envelope caused by the RCA3040 regression removing prior comparisons rather than improving accuracy. The proposed 10,199.135 ms versus 7,428.371 ms single-run sums are descriptive only; the current head is not a delivery or speed/parity claim |
+| Refresh the unchanged 100-circuit parity report | [#275](https://github.com/mfiumara/spice-ts/issues/275) | [PR #284](https://github.com/mfiumara/spice-ts/pull/284) advanced from rejected head `db27de3e988c6d3f977a1d48056ede71febaaa4d`, which conflated macOS 27.0.1 with Darwin 27.0.0, to accepted remediation head `47da214e26d348f41baea47b80acff8afe6f2881`. Its unchanged-fixture proposal retains ngspice at 52/9/39 and reports spice-ts at 28/9/63 with 28 comparable analyses across 18 fixtures, four newly exposed classic execution losses, and a lower absolute envelope caused by the RCA3040 regression removing prior comparisons rather than improving accuracy. The proposed 10,199.135 ms versus 7,428.371 ms single-run sums are descriptive only; without a squash commit on `main`, the current head is not a delivery or speed/parity claim |
 | Reconcile this roadmap | [#285](https://github.com/mfiumara/spice-ts/issues/285) | This documentation-only reconciliation remains open until its exact reviewed PR head merges; it supplies no simulator, benchmark, parity, performance, or milestone delta |
 | Newly exposed classic-corpus execution failures | [#280](https://github.com/mfiumara/spice-ts/issues/280) | The unchanged #275 aggregate run exposes two timestep failures, one singular-matrix failure, and an RCA3040 operating-point regression that removes three prior comparisons. Reproduce all four from unchanged fixtures, restore the prior RCA3040 success without fixture or tolerance tuning, and resolve or explicitly classify the other losses; no implementation or delivery exists yet |
+| Xyce primitive DC output-symbol failures | [#289](https://github.com/mfiumara/spice-ts/issues/289) | Four unchanged Xyce NMOS, PMOS, NPN, and PNP DC fixtures reach spice-ts execution but fail on undefined requested output symbols (`R2` or `VCC`) while ngspice-47 succeeds on identical bytes. Reproduce and resolve output-symbol handling without fixture adaptation or per-circuit tolerance tuning, and publish all four outcomes plus every remaining loss |
 
 PR #193's rejected heads remain historical evidence. Head `bdb05c04e72fb9bca7dc12a73fa829ffab234abf`
 recorded stale concurrent-PR states and lacked durable `/poteto-mode` evidence. Head
@@ -180,9 +180,10 @@ current head do not accept it.
 
 PR #284's head `db27de3e988c6d3f977a1d48056ede71febaaa4d` was rejected because its receipt labeled the macOS 27.0.1 product
 version as Darwin 27.0.1 while the report and host identify Darwin 27.0.0. Required CI and the aggregate checks were
-green, but they did not override contradictory provenance. Unreviewed remediation head
-`47da214e26d348f41baea47b80acff8afe6f2881` corrects the label; the rejection does not accept the current head or
-turn its proposed aggregate results into a delivery.
+green, but they did not override contradictory provenance. Accepted remediation head
+`47da214e26d348f41baea47b80acff8afe6f2881` corrects the label and passed independent exact-head review; the earlier
+rejection remains evidence, and acceptance without a squash commit on `main` does not turn the proposed aggregate
+results into a delivery.
 
 PR #178's rejected heads remain part of the evidence. Head `0039de812f5a369da732aa47685f1dcc624570a0`
 allowed a zero-magnitude AC-form source before the active source to trigger first-source-only corruption. The accepted
