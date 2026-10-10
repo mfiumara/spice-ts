@@ -18,8 +18,8 @@
   },
   "versions": {
     "reference": "ngspice-47",
-    "spiceTsRevision": "b06c79c4f3b48e5347c1e1b4353246878711d94d",
-    "spiceTsWorkingTreeDirty": true,
+    "spiceTsBaseRevision": "4c47f902ef14ea7dafaf2206b0f975b0feb2a861",
+    "spiceTsWorkingTreeDirty": false,
     "node": "v22.23.1"
   },
   "machine": {
@@ -33,8 +33,8 @@
     "spiceTs": "success"
   },
   "runtimeMilliseconds": {
-    "ngspiceProcess": 16.511792000000014,
-    "spiceTsInProcess": 4.833875000000035,
+    "ngspiceProcess": 11.855250000000012,
+    "spiceTsInProcess": 5.505625000000009,
     "caveat": "Different process boundaries; reported honestly, not a speed claim."
   },
   "matchedPointCount": 10,

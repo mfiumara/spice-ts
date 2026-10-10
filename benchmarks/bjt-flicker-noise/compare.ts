@@ -73,7 +73,7 @@ async function main(): Promise<void> {
       },
       versions: {
         reference: ngspiceVersion,
-        spiceTsRevision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+        spiceTsBaseRevision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
         spiceTsWorkingTreeDirty: execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim().length > 0,
         node: process.version,
       },
