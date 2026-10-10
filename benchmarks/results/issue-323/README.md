@@ -22,10 +22,10 @@ The timing boundaries are intentionally different and must not be conflated:
 
 ## Environment
 
-- Captured: 2026-10-10T12:08:50.380Z
+- Captured: 2026-10-10T12:19:28.945Z
 - Machine: Apple M5 Pro, 18 logical CPUs, 48 GiB RAM
 - OS: Darwin 27.0.0, arm64
-- spice-ts: 0.3.0 at source head `7846a9cad753578e26a6e8de47bdadaafe760d3c`
+- spice-ts: 0.3.0 at source head `6b2f7b280658abeae71e874372db20b9f190b4f1`
 - Node.js: v22.23.1
 - pnpm: 10.28.1
 - ngspice: ngspice-47, KLU direct linear solver build
@@ -34,9 +34,9 @@ The timing boundaries are intentionally different and must not be conflated:
 
 | Nodes | spice-ts API median | ngspice fresh-process median | ngspice internal-analysis median | spice-ts peak RSS | ngspice peak RSS |
 |---:|---:|---:|---:|---:|---:|
-| 1,000 | 2.552 ms | 18.770 ms | 0.951 ms | 181.250 MiB | 11.703 MiB |
-| 5,000 | 10.284 ms | 35.226 ms | 2.792 ms | 186.891 MiB | 17.516 MiB |
-| 10,000 | 21.843 ms | 58.157 ms | 5.317 ms | 218.422 MiB | 24.500 MiB |
+| 1,000 | 2.010 ms | 16.510 ms | 0.865 ms | 160.328 MiB | 11.688 MiB |
+| 5,000 | 8.518 ms | 30.338 ms | 2.317 ms | 186.234 MiB | 17.469 MiB |
+| 10,000 | 18.623 ms | 46.352 ms | 4.061 ms | 294.531 MiB | 24.531 MiB |
 
 Both engines completed every sample. The identical-netlist hashes matched at every size.
 
@@ -46,17 +46,17 @@ The nearest prior same-size receipt is `benchmarks/results/issue-267/scaling-aft
 
 | Nodes | spice-ts median change | spice-ts RSS change | ngspice fresh-process change | ngspice analysis change | ngspice RSS change |
 |---:|---:|---:|---:|---:|---:|
-| 1,000 | +8.03% regression | +16.03% regression | -9.00% win | -10.50% win | -0.54% win |
-| 5,000 | -8.72% win | -6.87% win | -16.01% win | -15.91% win | -0.44% win |
-| 10,000 | -12.17% win | -4.31% win | -12.39% win | -11.26% win | -0.13% win |
+| 1,000 | -14.92% win | +2.64% regression | -19.96% win | -18.50% win | -0.66% win |
+| 5,000 | -24.40% win | -7.19% win | -27.66% win | -30.20% win | -0.71% win |
+| 10,000 | -25.12% win | +29.03% regression | -30.17% win | -32.21% win | 0.00% unchanged |
 
-For continuity, relative to the older canonical `benchmarks/results/scaling-baseline.json`, every measured median is higher: spice-ts runtime by 37.68%, 6.27%, and 4.62% at 1k, 5k, and 10k; ngspice fresh-process runtime by 44.21%, 43.29%, and 44.53%; and ngspice internal-analysis time by 47.02%, 47.35%, and 49.59%. spice-ts peak RSS is also higher by 37.96%, 1.76%, and 4.54%. ngspice peak RSS is effectively flat but higher by 0.13%, 0.18%, and 0.13%. Raw samples are retained so this scheduler/runtime variation remains visible rather than hidden.
+For continuity, relative to the older canonical `benchmarks/results/scaling-baseline.json`, spice-ts runtime is 8.44% higher at 1k but 11.98% and 10.80% lower at 5k and 10k. spice-ts peak RSS is higher by 22.04%, 1.40%, and 40.97%. ngspice fresh-process runtime is higher by 26.85%, 23.41%, and 15.20%; internal-analysis time is higher by 33.87%, 22.30%, and 14.27%. ngspice peak RSS is unchanged at 1k, 0.09% lower at 5k, and 0.25% higher at 10k. Raw samples are retained so this scheduler/runtime variation remains visible rather than hidden.
 
 At 10,000 nodes:
 
-- spice-ts API median is 2.663x lower than fresh-process ngspice wall time. This is an embedding/startup comparison, not a solver-superiority claim.
-- spice-ts API median is 4.108x higher than ngspice's internal analysis time.
-- spice-ts peak RSS is 8.915x ngspice peak RSS.
+- spice-ts API median is 2.489x lower than fresh-process ngspice wall time. This is an embedding/startup comparison, not a solver-superiority claim.
+- spice-ts API median is 4.586x higher than ngspice's internal analysis time.
+- spice-ts peak RSS is 12.006x ngspice peak RSS.
 
 ## Correctness boundary
 
