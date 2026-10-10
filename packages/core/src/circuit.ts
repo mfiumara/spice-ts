@@ -11,7 +11,7 @@ import { CurrentSource } from './devices/current-source.js';
 import { Capacitor } from './devices/capacitor.js';
 import { Inductor } from './devices/inductor.js';
 import { MutualInductor } from './devices/mutual-inductor.js';
-import { Diode } from './devices/diode.js';
+import { Diode, diodeZeroBiasCapacitance } from './devices/diode.js';
 import { BJT } from './devices/bjt.js';
 import { VBIC, resolveVBICParams } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
@@ -1394,7 +1394,7 @@ export class Circuit {
       if (desc.type === 'D') {
         const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
         const seriesResistance = desc.params?.RS ?? model?.params.RS;
-        const junctionCapacitance = desc.params?.CJ0 ?? model?.params.CJ0;
+        const junctionCapacitance = model ? diodeZeroBiasCapacitance(desc.name, model.params) : undefined;
         const sidewallCapacitance = model?.params.CJSW ?? model?.params.CJP;
         const effectiveArea = (desc.params?.AREA ?? 1) * (desc.params?.M ?? 1);
         const effectivePerimeter = (desc.params?.PJ ?? 0) * (desc.params?.M ?? 1);
