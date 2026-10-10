@@ -9,7 +9,7 @@ export interface SparseSolver {
   /** Numeric factorization — call each Newton step (same pattern, new values) */
   factorize(A: CscMatrix): void;
 
-  /** Solve Ax = b, returns solution vector */
+  /** Solve Ax = b in place, returning the caller-owned b vector as the solution. */
   solve(b: Float64Array): Float64Array;
 
   /** Returns true if {@link analyzePattern} has been called. */

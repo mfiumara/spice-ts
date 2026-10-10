@@ -223,5 +223,72 @@ describe('GilbertPeierlsSolver', () => {
       expect(x2[0]).toBeCloseTo(20 / 11, 10);
       expect(x2[1]).toBeCloseTo(17 / 11, 10);
     });
+
+    it('reuses the caller-owned RHS as the solve output workspace', () => {
+      const matrix = new SparseMatrix(2);
+      matrix.add(0, 0, 2); matrix.add(0, 1, 1);
+      matrix.add(1, 0, 1); matrix.add(1, 1, 3);
+      const { csc } = toCsc(matrix);
+      const solver = new GilbertPeierlsSolver();
+      solver.analyzePattern(csc);
+      solver.factorize(csc);
+      const rhs = new Float64Array([5, 7]);
+
+      const solution = solver.solve(rhs);
+
+      expect(solution).toBe(rhs);
+      expect(solution[0]).toBeCloseTo(1.6, 10);
+      expect(solution[1]).toBeCloseTo(1.8, 10);
+    });
+
+    it('recovers its numeric workspace after a singular value change', () => {
+      const singular = new SparseMatrix(2);
+      singular.touch(0, 0); singular.touch(0, 1);
+      singular.touch(1, 0); singular.touch(1, 1);
+      singular.add(0, 0, 1); singular.add(0, 1, 2);
+      singular.add(1, 0, 1); singular.add(1, 1, 2);
+      const { csc: singularCsc } = toCsc(singular);
+      const solver = new GilbertPeierlsSolver();
+      solver.analyzePattern(singularCsc);
+
+      const initial = new SparseMatrix(2);
+      initial.add(0, 0, 2); initial.add(0, 1, 1);
+      initial.add(1, 0, 1); initial.add(1, 1, 3);
+      const { csc: initialCsc } = toCsc(initial);
+      solver.factorize(initialCsc);
+      expect(() => solver.factorize(singularCsc)).toThrow(SingularMatrixError);
+      expect(() => solver.solve(new Float64Array([5, 7]))).toThrow(/factorize/);
+
+      const recovered = new SparseMatrix(2);
+      recovered.add(0, 0, 2); recovered.add(0, 1, 1);
+      recovered.add(1, 0, 1); recovered.add(1, 1, 3);
+      const { csc: recoveredCsc } = toCsc(recovered);
+      solver.factorize(recoveredCsc);
+
+      const solution = solver.solve(new Float64Array([5, 7]));
+      expect(solution[0]).toBeCloseTo(1.6, 10);
+      expect(solution[1]).toBeCloseTo(1.8, 10);
+    });
+
+    it('replaces reusable workspaces when the analyzed topology changes', () => {
+      const solver = new GilbertPeierlsSolver();
+      const one = new SparseMatrix(1);
+      one.add(0, 0, 2);
+      const { csc: oneCsc } = toCsc(one);
+      solver.analyzePattern(oneCsc);
+      solver.factorize(oneCsc);
+      expect(Array.from(solver.solve(new Float64Array([6])))).toEqual([3]);
+
+      const two = new SparseMatrix(2);
+      two.add(0, 0, 3); two.add(0, 1, -1);
+      two.add(1, 0, -1); two.add(1, 1, 3);
+      const { csc: twoCsc } = toCsc(two);
+      solver.analyzePattern(twoCsc);
+      solver.factorize(twoCsc);
+
+      const solution = solver.solve(new Float64Array([2, 6]));
+      expect(solution[0]).toBeCloseTo(1.5, 10);
+      expect(solution[1]).toBeCloseTo(2.5, 10);
+    });
   });
 });
