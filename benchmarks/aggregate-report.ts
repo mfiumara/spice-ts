@@ -29,7 +29,7 @@ const TOTAL_FIXTURES = CORPORA.length * FIXTURES_PER_CORPUS;
 const JSON_PATH = resolve('benchmarks/aggregate-report.json');
 const MARKDOWN_PATH = resolve('benchmarks/AGGREGATE_PARITY.md');
 const FIXTURE_TREE_SHA256 = '01b19fe5baf170d91aa5bd72c3ffb3891ed2f2c45cca5adfee8288552a7e14f1';
-const SOURCES_SHA256 = 'f8cc57771ac07684b1bdebb43ad2ab572f048a9e67d5df98386dc9eb706a188f';
+const SOURCES_SHA256 = '49379991e8f1f84c1289f78d50608fc7b6d1b3d3a8bcaed67320e5202213f2e5';
 
 type CorpusId = typeof CORPORA[number];
 type Status = 'success' | 'failed' | 'unsupported';
@@ -140,61 +140,45 @@ export interface AggregateReport {
 const PREVIOUS_REPORT: AggregateReport['comparisonToPrevious'] = {
   issueUrl: 'https://github.com/mfiumara/spice-ts/issues/321',
   pullRequestUrl: 'https://github.com/mfiumara/spice-ts/pull/325',
-  headSha: 'e400d87c791dfa27f572a349777c8ebb9f2450d4',
-  outcomeSha256: '26be9f80744c077c0bdb98fa5c6c9cffc8615c2e2589383507abd59fd6fed41b',
+  headSha: 'ad7ba71b65848053afa7bc64ba22fd989ef89ca4',
+  outcomeSha256: '68aa8e2e7b78b82f801da84cf5c88c489634d203f44bca5df9345a1946deddb9',
   totals: {
     fixtures: 100,
     corpusFixtures: { ngspice: 20, classic: 20, xyce: 20, 'corpus-d': 20, 'corpus-e': 20 },
     ngspice: { success: 52, failed: 9, unsupported: 39 },
-    spiceTs: { success: 51, failed: 3, unsupported: 46 },
-    comparedFixtures: 39,
-    comparedAnalyses: 54,
-    runtimeMs: { ngspice: 24_921.976, spiceTs: 21_912.135 },
+    spiceTs: { success: 55, failed: 2, unsupported: 43 },
+    comparedFixtures: 43,
+    comparedAnalyses: 58,
+    runtimeMs: { ngspice: 77_150.906, spiceTs: 270_491.926 },
   },
   matchedPointEnvelope: {
-    comparedSignals: 561,
-    relativeComparedSignals: 535,
-    absoluteSamples: 7_959_622,
-    relativeSamples: 7_944_908,
-    excludedZeroReferences: 14_714,
+    comparedSignals: 878,
+    relativeComparedSignals: 848,
+    absoluteSamples: 9_182_709,
+    relativeSamples: 9_147_783,
+    excludedZeroReferences: 34_926,
     maximumAbsoluteError: 1169140310571.719,
     maximumAbsoluteRms: 1169140310571.719,
-    maximumRelativeError: 2110199067.731876,
-    maximumRelativeRms: 326930690.296368,
+    maximumRelativeError: 45497356677842.63,
+    maximumRelativeRms: 872317191517.6284,
   },
   statusTransitions: [
-    ...['ngspice/ltra-line-transient', 'classic/lossy-line-24-inch', 'classic/lossy-line-aluminium', 'classic/coupled-lossy-lines'].map(fixture => ({
-      engine: 'spiceTs' as const,
-      fixture,
-      from: 'unsupported' as const,
-      to: 'success' as const,
-      explanation: 'Accepted benchmark-bounded lossy LTRA parsing and transient stamping (#308, PR #320) lets the unchanged fixture complete; every per-signal max/RMS error remains published.',
-      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/7', 'https://github.com/mfiumara/spice-ts/issues/308'],
-    })),
-    ...['ngspice/hfet-inverter', 'ngspice/mesa-oscillator'].map(fixture => ({
-      engine: 'spiceTs' as const,
-      fixture,
-      from: 'failed' as const,
-      to: 'unsupported' as const,
-      explanation: 'Accepted subcircuit device validation (#338, PR #341) now rejects the unsupported Z or B card at parse time; the earlier singular-matrix failure no longer occurs, and the fixture remains a published loss.',
-      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/76', 'https://github.com/mfiumara/spice-ts/issues/338'],
-    })),
     {
       engine: 'spiceTs',
-      fixture: 'xyce/inductor-transient',
-      from: 'unsupported',
-      to: 'failed',
-      explanation: 'Accepted disabled NEWBPSTEPPING TIMEINT compatibility (#322, PR #326) removes the parse rejection. The unchanged transient then never terminates, so the aggregate now bounds spice-ts at the same 120000 ms wall clock as ngspice and records a failed execution (#366).',
-      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/322', 'https://github.com/mfiumara/spice-ts/issues/366'],
+      fixture: 'classic/diode-distortion',
+      from: 'failed',
+      to: 'unsupported',
+      explanation: 'Accepted bounded nonlinear diode distortion (#363, PR #367) removes the ideal-RLC-only .disto rejection, and simulate() now returns a 101-frequency distortion result for the unchanged fixture. The corpus harness does not map .disto results yet, so the row records no comparable disto analysis (#391). This is not a parity gain: no distortion error is measured or published until the harness maps the result.',
+      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/75', 'https://github.com/mfiumara/spice-ts/issues/391'],
     },
   ],
   metricTransitions: [
-    'Comparable coverage increased from 54 analyses across 39 fixtures to 58 analyses across 43 fixtures. The four LTRA fixtures add one transient comparison each.',
-    'Two-source nested DC sweeps (#354, PR #359) now emit every nested point. ngspice/jfet-vds-vgs, xyce/njfet-2109-dc, xyce/nmos-level1-dc, and xyce/pnp-dc compare on the full nested grid with the same signal sets. corpus-e/diode-temperature-sweep emits 2 DC points instead of 3. It has no ngspice comparison.',
-    'Matched coverage increased from 561 to 878 absolute signals and from 535 to 848 relative signals. Absolute samples increased from 7,959,622 to 9,182,709; relative samples increased from 7,944,908 to 9,147,783; excluded zero references increased from 14,714 to 34,926. The LTRA fixtures add 317 signals and 1,219,613 absolute samples; the nested DC grids add 3,474 absolute samples.',
-    'The worst per-signal absolute max and RMS remain 1169140310571.719 from ngspice/vbic-common-emitter-ac. classic/coupled-lossy-lines v(5) raises the worst relative max from 2110199067.731876 to 45497356677842.63 and relative RMS from 326930690.296368 to 872317191517.6284. These are published losses: the relative metric divides by near-zero ngspice samples on that signal, whose absolute max is 1.4200318868351707 V. No tolerance changed.',
-    'Status-preserving diagnostic changes: bounded TEMP LIST stepping (#318, PR #327) makes xyce/diode-level2-temperature-breakdown report a missing top-level transient result instead of a TEMP step error. The classic noise-interval fix (#336, PR #337) makes classic/bjt-noise and classic/resistor-noise report a missing noise result instead of a parse error. All three remain unsupported.',
-    'spice-ts now runs in a child process bounded at the 120000 ms ngspice subprocess timeout. Its runtime is the child-measured adapter time, and the engines now run sequentially so neither receipt includes the other engine. Runtime sums are not comparable with the previous in-process sample and support no speed claim.',
+    'Comparable coverage is unchanged at 58 analyses across 43 fixtures and 878 absolute / 848 relative signals. ngspice totals are unchanged at 52/9/39; spice-ts moves from 55/2/43 to 55/1/44 success/failed/unsupported through the single classic/diode-distortion transition.',
+    'PULSE zero TR/TF now defaults to TSTEP like ngspice (#375, PR #379). All six fixtures whose comparison metrics changed use PULSE sources, and no other merged change since the baseline touches their device paths. xyce/rlc-transient worst per-signal absolute max falls from 10 V (v(1)) to 0.000752 V (v(2)) on 1018 instead of 1002 spice-ts points. classic/mos-memory-cell falls from 22496.7 A (i(vwb)) to 9.91 V (v(8)) on 144 instead of 158 points; v(8) remains a 9.9 V published loss. ngspice/ltra-line-transient falls from 2.499 V (v(168)) to 0.416 V (v(3)) on 665 instead of 685 points.',
+    'Per-signal losses in the same PULSE fixtures stay published. ngspice/ltra-line-transient v(3) absolute RMS rises 5.2% (0.04522 to 0.04755 V). classic/mos-memory-cell i(vw) absolute RMS rises 4.7% (0.000823 to 0.000862 A). classic/lossy-line-aluminium (3968 to 3969 points) raises absolute RMS on 89 of 261 signals by at most 0.1% for non-negligible signals (e.g. v(x1.x1.x1.x1.3) 0.09085 to 0.09094 V), and v(x1.x1.x1.x1.x1.x1.x1.x1.4) relative max rises from 2314.5 to 7220.6 while its absolute max stays 0.2614 V. classic/lossy-line-24-inch and classic/coupled-lossy-lines change only at rounding level on unchanged grids.',
+    'Matched samples change from 9,182,709 to 9,182,748 absolute and from 9,147,783 to 9,147,852 relative; excluded zero references change from 34,926 to 34,896. The worst per-signal envelope is unchanged: absolute max/RMS 1169140310571.719 from ngspice/vbic-common-emitter-ac and relative max 45497356677842.63 / RMS 872317191517.6284 from classic/coupled-lossy-lines v(5). No tolerance changed.',
+    'No status-preserving spice-ts diagnostic changed; only classic/diode-distortion changes spice-ts error text, together with its status. ngspice classifications are unchanged; some ngspice error strings differ only in volatile text, which the deterministic hash excludes.',
+    'The runtime sums in the totals above are single samples on a shared, heavily loaded host; the spice-ts sum includes the 120000 ms xyce/inductor-transient bound. They are not comparable with the previous 77150.906 / 270491.926 ms sample and support no speed claim.',
   ],
 };
 
@@ -207,6 +191,7 @@ const GAP_ISSUES = [
   { url: 'https://github.com/mfiumara/spice-ts/issues/123', scope: 'jimi-fuzz transient waveform divergence' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/280', scope: 'newly exposed classic-corpus execution failures and RCA3040 regression' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/366', scope: 'non-terminating xyce/inductor-transient simulation' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/391', scope: 'unmapped .disto results in the corpus harness' },
 ] as const;
 
 function sha256(input: Buffer | string): string {

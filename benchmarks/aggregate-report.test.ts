@@ -43,8 +43,8 @@ describe('aggregate report artifact verification', () => {
 
     assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/321');
     assert.equal(report.comparisonToPrevious.pullRequestUrl, 'https://github.com/mfiumara/spice-ts/pull/325');
-    assert.equal(report.comparisonToPrevious.headSha, 'e400d87c791dfa27f572a349777c8ebb9f2450d4');
-    assert.equal(report.comparisonToPrevious.outcomeSha256, '26be9f80744c077c0bdb98fa5c6c9cffc8615c2e2589383507abd59fd6fed41b');
+    assert.equal(report.comparisonToPrevious.headSha, 'ad7ba71b65848053afa7bc64ba22fd989ef89ca4');
+    assert.equal(report.comparisonToPrevious.outcomeSha256, '68aa8e2e7b78b82f801da84cf5c88c489634d203f44bca5df9345a1946deddb9');
     assert.deepEqual(
       report.comparisonToPrevious.statusTransitions.map((transition: Record<string, string>) => [
         transition.engine,
@@ -53,26 +53,23 @@ describe('aggregate report artifact verification', () => {
         transition.to,
       ]),
       [
-        ['spiceTs', 'ngspice/ltra-line-transient', 'unsupported', 'success'],
-        ['spiceTs', 'classic/lossy-line-24-inch', 'unsupported', 'success'],
-        ['spiceTs', 'classic/lossy-line-aluminium', 'unsupported', 'success'],
-        ['spiceTs', 'classic/coupled-lossy-lines', 'unsupported', 'success'],
-        ['spiceTs', 'ngspice/hfet-inverter', 'failed', 'unsupported'],
-        ['spiceTs', 'ngspice/mesa-oscillator', 'failed', 'unsupported'],
-        ['spiceTs', 'xyce/inductor-transient', 'unsupported', 'failed'],
+        ['spiceTs', 'classic/diode-distortion', 'failed', 'unsupported'],
       ],
     );
     assert.deepEqual(report.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
-    assert.deepEqual(report.totals.spiceTs, { success: 55, failed: 2, unsupported: 43 });
+    assert.deepEqual(report.totals.spiceTs, { success: 55, failed: 1, unsupported: 44 });
     assert.equal(report.totals.comparedAnalyses, 58);
     assert.equal(report.totals.comparedFixtures, 43);
     const inductor = report.fixtures.find((fixture: { key: string }) => fixture.key === 'xyce/inductor-transient');
     assert.match(inductor.spiceTs.error, /exceeded the 120000 ms aggregate execution bound/);
     assert.ok(inductor.gapIssues.includes('https://github.com/mfiumara/spice-ts/issues/366'));
+    const distortion = report.fixtures.find((fixture: { key: string }) => fixture.key === 'classic/diode-distortion');
+    assert.equal(distortion.spiceTs.error, 'no spice-ts result for analyses: disto');
+    assert.ok(report.gapIssues.some((issue: { url: string }) => issue.url === 'https://github.com/mfiumara/spice-ts/issues/391'));
     assert.deepEqual(report.comparisonToPrevious.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
-    assert.deepEqual(report.comparisonToPrevious.totals.spiceTs, { success: 51, failed: 3, unsupported: 46 });
-    assert.equal(report.comparisonToPrevious.totals.comparedAnalyses, 54);
-    assert.equal(report.comparisonToPrevious.totals.comparedFixtures, 39);
+    assert.deepEqual(report.comparisonToPrevious.totals.spiceTs, { success: 55, failed: 2, unsupported: 43 });
+    assert.equal(report.comparisonToPrevious.totals.comparedAnalyses, 58);
+    assert.equal(report.comparisonToPrevious.totals.comparedFixtures, 43);
   });
 
   it('locks the current aggregate corpus tree and unchanged source catalogue', async () => {
@@ -81,7 +78,7 @@ describe('aggregate report artifact verification', () => {
 
     assert.deepEqual(report.provenance, {
       fixtureTreeSha256: '01b19fe5baf170d91aa5bd72c3ffb3891ed2f2c45cca5adfee8288552a7e14f1',
-      sourcesSha256: 'f8cc57771ac07684b1bdebb43ad2ab572f048a9e67d5df98386dc9eb706a188f',
+      sourcesSha256: '49379991e8f1f84c1289f78d50608fc7b6d1b3d3a8bcaed67320e5202213f2e5',
     });
   });
 
