@@ -1,6 +1,6 @@
 {
   "schemaVersion": "spice-ts-ngspice-comparison/v2",
-  "generatedAt": "2026-10-10T05:25:57.050Z",
+  "generatedAt": "2026-10-10T05:27:06.565Z",
   "environment": {
     "platform": "darwin",
     "arch": "arm64",
@@ -43,7 +43,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 72.37862499999997,
+        "runtimeMs": 58.619208,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -166,7 +166,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 16.865584000000013,
+        "runtimeMs": 14.183667,
         "command": [
           "ngspice",
           "-b",
@@ -325,7 +325,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 19.47395800000004,
+        "runtimeMs": 16.769042000000013,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -534,7 +534,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 17.590708000000006,
+        "runtimeMs": 15.04816599999998,
         "command": [
           "ngspice",
           "-b",
@@ -793,7 +793,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 19.58162500000003,
+        "runtimeMs": 15.410250000000019,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -1002,7 +1002,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 16.92616700000002,
+        "runtimeMs": 12.891791000000012,
         "command": [
           "ngspice",
           "-b",
