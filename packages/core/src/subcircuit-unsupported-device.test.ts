@@ -8,11 +8,6 @@ const ngspiceFixtureRoot = new URL('../../../benchmarks/corpus/ngspice/fixtures/
 
 const fixtures = [
   {
-    path: 'tests/hfet/inverter.cir',
-    sha256: '3fa93266e9036443173bf9416eb67e8ff4c2c24aeefc6ef687f355d8548239e1',
-    card: 'Z',
-  },
-  {
     path: 'tests/mesa/mesosc.cir',
     sha256: '3cd4609cca7874775b7b2cac8cd0124bd2b8c5512064a0550a29de2da4896bcf',
     card: 'B',

@@ -15,6 +15,8 @@ import { Diode } from './devices/diode.js';
 import { BJT } from './devices/bjt.js';
 import { MOSFET } from './devices/mosfet.js';
 import { JFET, resolveNJFETParams } from './devices/jfet.js';
+import { HFET1 } from './devices/hfet1.js';
+import { resolveHFET1Instance, resolveHFET1Model } from './devices/hfet1-model.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
 import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
@@ -28,6 +30,7 @@ import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
+import { parseHFET1Instance } from './parser/hfet1-parser.js';
 import { parseLtraModelCard } from './parser/transmission-line-parser.js';
 import {
   parseDiodeInstanceParams,
@@ -208,6 +211,7 @@ function formatDevice(desc: DeviceDescriptor): string {
     case 'Q':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.nodes[2]} ${desc.modelName ?? ''}`.trim();
     case 'J':
+    case 'Z':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.nodes[2]} ${desc.modelName ?? ''}`.trim();
     case 'M':
       return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail}`.trim();
@@ -1186,6 +1190,18 @@ export class Circuit {
           devices.push(new JFET(desc.name, nodeIndices, model.params));
           break;
         }
+        case 'Z': {
+          const modelName = desc.modelName!;
+          const model = this._models.get(modelName);
+          if (!model) throw new Error(`HFET '${desc.name}' references unknown model '${modelName}'`);
+          devices.push(new HFET1(
+            desc.name,
+            nodeIndices,
+            resolveHFET1Model(model),
+            resolveHFET1Instance(desc.params),
+          ));
+          break;
+        }
         case 'M': {
           const modelName = desc.modelName;
           const model = modelName ? this._models.get(modelName) : undefined;
@@ -1424,6 +1440,31 @@ export class Circuit {
           throw new Error(`Unsupported JFET model type: '${model.type}'`);
         }
         const params = resolveNJFETParams(model.params);
+        let [drain, gate, source] = desc.nodes;
+        if (params.RD > 0) {
+          const drainPrime = internalNodeName(desc.name, 'rd');
+          result.push({
+            type: 'R', name: `${desc.name}.RD`, nodes: [drain, drainPrime], value: params.RD,
+          });
+          drain = drainPrime;
+        }
+        if (params.RS > 0) {
+          const sourcePrime = internalNodeName(desc.name, 'rs');
+          result.push({
+            type: 'R', name: `${desc.name}.RS`, nodes: [source, sourcePrime], value: params.RS,
+          });
+          source = sourcePrime;
+        }
+        result.push({ ...desc, nodes: [drain, gate, source] });
+        continue;
+      }
+
+      if (desc.type === 'Z') {
+        const modelName = desc.modelName!;
+        const model = this._models.get(modelName);
+        if (!model) throw new Error(`HFET '${desc.name}' references unknown model '${modelName}'`);
+        const params = resolveHFET1Model(model);
+        resolveHFET1Instance(desc.params);
         let [drain, gate, source] = desc.nodes;
         if (params.RD > 0) {
           const drainPrime = internalNodeName(desc.name, 'rd');
@@ -1763,6 +1804,18 @@ export class Circuit {
             type: 'Q', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3])],
             modelName: tokens[4],
+          });
+          break;
+        }
+        case 'Z': {
+          const evaluatedTokens = tokens.map(t => evalToken(t));
+          const parsed = parseHFET1Instance(evaluatedTokens, lineNumber, raw);
+          result.push({
+            type: 'Z',
+            name: devName,
+            nodes: parsed.nodes.map(mapNode),
+            modelName: parsed.modelName,
+            params: parsed.params,
           });
           break;
         }
