@@ -34,15 +34,64 @@ describe('aggregate report artifact verification', () => {
     });
   });
 
-  it('commits the unchanged transition ledger against the prior accepted report', async () => {
+  it('commits the transition ledger against the latest accepted report', async () => {
     const { json } = await committedArtifacts();
     const report = JSON.parse(json);
 
-    assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/200');
-    assert.equal(report.comparisonToPrevious.pullRequestUrl, 'https://github.com/mfiumara/spice-ts/pull/201');
-    assert.equal(report.comparisonToPrevious.headSha, 'c41391cb9b4dc537863f430a80288d1f28024f6c');
-    assert.equal(report.comparisonToPrevious.outcomeSha256, '1623472590a082b6af2a82d9fd09b0756ef0458a50f2fd4b1d095b90bf6b6e7f');
-    assert.deepEqual(report.comparisonToPrevious.statusTransitions, []);
+    assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/209');
+    assert.equal(report.comparisonToPrevious.pullRequestUrl, 'https://github.com/mfiumara/spice-ts/pull/213');
+    assert.equal(report.comparisonToPrevious.headSha, 'f98cb95bbbdd93393e1f555dfe86e45ab6bcd00c');
+    assert.equal(report.comparisonToPrevious.outcomeSha256, '45aee36e07a056380b1b0057b9397cc323f594fdb381f254b023e11fdfe2b009');
+    assert.equal(report.comparisonToPrevious.statusTransitions.length, 19);
+    assert.deepEqual(
+      report.comparisonToPrevious.statusTransitions.map(
+        (transition: { fixture: string; from: string; to: string }) => [transition.fixture, transition.from, transition.to],
+      ),
+      [
+        ['classic/bsim1-device-sweep', 'unsupported', 'success'],
+        ['classic/bsim2-device-sweep', 'unsupported', 'success'],
+        ['classic/bjt-differential-pair', 'unsupported', 'success'],
+        ['classic/diode-distortion', 'unsupported', 'failed'],
+        ['classic/mos6-inverter-chain', 'unsupported', 'failed'],
+        ['classic/mos-amplifier', 'unsupported', 'failed'],
+        ['classic/mos-memory-cell', 'unsupported', 'failed'],
+        ['classic/rca3040-wideband-amplifier', 'success', 'failed'],
+        ['classic/rtl-inverter-chain', 'unsupported', 'success'],
+        ['corpus-e/cccs-mixed-analysis', 'unsupported', 'success'],
+        ['corpus-e/mos1-inverter-sweep', 'unsupported', 'success'],
+        ['corpus-e/bjt-diffpair-ac', 'unsupported', 'success'],
+        ['corpus-e/capacitor-step-transient', 'unsupported', 'success'],
+        ['corpus-e/capacitor-initial-condition', 'unsupported', 'success'],
+        ['corpus-e/lc-oscillator-transient', 'unsupported', 'success'],
+        ['corpus-e/diode-temperature-sweep', 'unsupported', 'success'],
+        ['corpus-e/mos1-nand-transient', 'unsupported', 'success'],
+        ['corpus-e/bjt-rtl-inverter-chain', 'unsupported', 'success'],
+        ['corpus-e/dual-lc-uic-rejection', 'unsupported', 'success'],
+      ],
+    );
+    assert.deepEqual(
+      report.comparisonToPrevious.statusTransitions.find(
+        (transition: { fixture: string }) => transition.fixture === 'classic/rca3040-wideband-amplifier',
+      ),
+      {
+        engine: 'spiceTs',
+        fixture: 'classic/rca3040-wideband-amplifier',
+        from: 'success',
+        to: 'failed',
+        explanation: 'Operating-point convergence now oscillates, removing the prior OP, AC, and transient comparisons.',
+        gapIssues: ['https://github.com/mfiumara/spice-ts/issues/280'],
+      },
+    );
+  });
+
+  it('locks the unchanged aggregate fixture tree and records the current source catalogue', async () => {
+    const { json } = await committedArtifacts();
+    const report = JSON.parse(json);
+
+    assert.deepEqual(report.provenance, {
+      fixtureTreeSha256: '9bea16d967510fe868e68bfad672b02b477802d63bfe191660d4a0a737602cba',
+      sourcesSha256: 'b6540a743d176a01cc8e8aff6412655cc09f5fbf30554a53222c1d290c3029a1',
+    });
   });
 
   it('commits matched-point envelopes derived from every compared signal', async () => {
@@ -50,12 +99,12 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
-    assert.equal(report.matchedPointEnvelope.comparedSignals, 189);
-    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 178);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 183.91564521207212);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 87.25304257950958);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 9829734.595793912);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 1160907.113030371);
+    assert.equal(report.matchedPointEnvelope.comparedSignals, 253);
+    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 235);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 90.09458674829554);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 59.660512653520904);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 273625086.91875815);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 131055144.90676585);
   });
 
   it('commits runtime sums derived from all 100 engine receipts', async () => {
