@@ -26,6 +26,7 @@ const supportedFixtures: Fixture[] = [
   { feature: 'initial guesses', netlist: 'V1 out 0 1\n.nodeset V(out)=0\n.op' },
   { feature: '.ac', netlist: 'V1 in 0 AC 1\nR1 in 0 1k\n.ac dec 10 1 1Meg' },
   { feature: 'linear .noise slice', netlist: 'V1 in 0 AC 1\nR1 in out 1k\nR2 out 0 1k\n.noise V(out) V1 lin 5 100 500' },
+  { feature: 'bounded transfer-function analysis', netlist: 'V1 in 0 1\nR1 in out 1k\nR2 out 0 1k\n.tf V(out) V1' },
   { feature: 'solver-backed .options', netlist: '.options reltol=1e-4 itl1=50 method=trap\n.op' },
   { feature: 'output-only directives', netlist: '.save v(out)\n.print tran v(out)\n.plot v(out)\n.op' },
 ];
@@ -37,7 +38,6 @@ const unsupportedFixtures: Fixture[] = [
   { feature: 'trnoise source waveform', netlist: 'V1 in 0 TRNOISE(1 1n)\n.tran 1n 10n' },
   { feature: 'external source waveform', netlist: 'V1 in 0 EXTERNAL\n.tran 1n 10n' },
   { feature: 'non-linear noise sweep', netlist: '.noise V(out) V1 dec 10 1 1Meg' },
-  { feature: 'transfer-function analysis', netlist: '.tf V(out) V1' },
   { feature: 'pole-zero analysis', netlist: '.pz in 0 out 0 vol pz' },
   { feature: 'sensitivity analysis', netlist: '.sens V(out)' },
   { feature: 'distortion analysis', netlist: '.disto dec 10 1 1Meg' },

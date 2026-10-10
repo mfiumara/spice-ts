@@ -7,7 +7,9 @@ export { parse, parseAsync, parseTitleless, parseTitlelessAsync } from './parser
 export { preprocess } from './parser/preprocessor.js';
 export { Circuit } from './circuit.js';
 export type { CompiledCircuit } from './circuit.js';
-export { DCResult, TransientResult, ACResult, DCSweepResult, NoiseResult } from './results.js';
+export {
+  DCResult, TransientResult, ACResult, DCSweepResult, NoiseResult, TransferFunctionResult,
+} from './results.js';
 export type { SimulationResult, StepResult } from './results.js';
 export type {
   SimulationOptions,
@@ -15,6 +17,7 @@ export type {
   TransientStep,
   ACPoint,
   NoiseAnalysis,
+  TransferFunctionAnalysis,
   AnalysisCommand,
   AnalysisDirective,
   NodeInitialState,

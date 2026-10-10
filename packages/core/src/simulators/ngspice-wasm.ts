@@ -121,8 +121,10 @@ export class WasmNgspiceSimulator implements SimulatorAdapter {
     const result: Omit<SimulationResult, 'warnings' | 'steps'> = {};
 
     for (const analysis of compiled.analyses) {
-      if (analysis.type === 'noise') {
-        throw new InvalidCircuitError('ngspice-wasm .noise result mapping is not supported');
+      if (analysis.type === 'noise' || analysis.type === 'tf') {
+        throw new InvalidCircuitError(
+          `ngspice-wasm .${analysis.type} result mapping is not supported`,
+        );
       }
       const raw = await this.runRaw(`${baseNetlist}\n${formatAnalysis(analysis)}\n.end`, warnings);
       switch (analysis.type) {
@@ -208,6 +210,8 @@ function stripAnalysisCommands(netlist: string): string {
       || lower.startsWith('.dc ')
       || lower.startsWith('.tran ')
       || lower.startsWith('.ac ')
+      || lower.startsWith('.noise ')
+      || lower.startsWith('.tf ')
       || lower.startsWith('.step ')
     ) {
       continue;
@@ -339,6 +343,8 @@ function formatAnalysis(analysis: AnalysisDirective): string {
       return `.ac ${analysis.variation} ${analysis.points} ${analysis.startFreq} ${analysis.stopFreq}`;
     case 'noise':
       return `.noise v(${analysis.outputNode}) ${analysis.inputSource} lin ${analysis.points} ${analysis.startFreq} ${analysis.stopFreq}`;
+    case 'tf':
+      return `.tf v(${analysis.outputNode}) ${analysis.inputSource}`;
   }
 }
 

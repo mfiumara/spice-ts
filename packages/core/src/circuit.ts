@@ -198,6 +198,8 @@ function formatAnalysis(analysis: AnalysisDirective): string {
       return `.ac ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
     case 'noise':
       return `.noise v(${analysis.outputNode}) ${analysis.inputSource} lin ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
+    case 'tf':
+      return `.tf v(${analysis.outputNode}) ${analysis.inputSource}`;
   }
 }
 
@@ -596,6 +598,7 @@ export class Circuit {
   addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; useInitialConditions?: boolean }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'noise', params: { outputNode: string; inputSource: string; variation: 'lin'; points: number; startFreq: number; stopFreq: number }): void;
+  addAnalysis(type: 'tf', params: { outputNode: string; inputSource: string }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
     switch (type) {
       case 'op':
@@ -640,6 +643,13 @@ export class Circuit {
           points: params!.points as number,
           startFreq: params!.startFreq as number,
           stopFreq: params!.stopFreq as number,
+        });
+        break;
+      case 'tf':
+        this._analyses.push({
+          type: 'tf',
+          outputNode: params!.outputNode as string,
+          inputSource: params!.inputSource as string,
         });
         break;
     }

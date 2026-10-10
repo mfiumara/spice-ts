@@ -164,6 +164,22 @@ export class NoiseResult {
   ) {}
 }
 
+/** Scalar small-signal quantities from a bounded `.tf v(node) source` analysis. */
+export class TransferFunctionResult {
+  constructor(
+    /** Output node named by the `.tf` command. */
+    public readonly outputNode: string,
+    /** Independent input source named by the `.tf` command. */
+    public readonly inputSource: string,
+    /** Voltage gain (V/V) or transimpedance (V/A). */
+    public readonly transfer: number,
+    /** Small-signal resistance seen by the input source, in ohms. */
+    public readonly inputResistance: number,
+    /** Small-signal resistance looking into the output node, in ohms. */
+    public readonly outputResistance: number,
+  ) {}
+}
+
 /**
  * Result of a DC sweep (`.dc`) analysis.
  *
@@ -240,6 +256,8 @@ export interface SimulationResult {
   ac?: ACResult;
   /** Resistor-noise spectral result (from `.noise`) */
   noise?: NoiseResult;
+  /** DC small-signal transfer function (from `.tf`) */
+  transferFunction?: TransferFunctionResult;
   /** Parametric sweep results (from .step). When present, top-level result fields are empty. */
   steps?: StepResult[];
   /** Warnings collected during simulation */
