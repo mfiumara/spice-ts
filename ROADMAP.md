@@ -49,23 +49,24 @@ Accepted heads `f16d97ead2b1d3df38165221eb91cf23f4e489f2`,
 respectively. PR #326 merged despite its red exact-head comparison check. That merge does not satisfy the charter's
 exact-head green-CI boundary, even though PR #334 subsequently fixed the comparison workflow on `main`.
 
-PRs [#324](https://github.com/mfiumara/spice-ts/pull/324) and
-[#325](https://github.com/mfiumara/spice-ts/pull/325) were open without a substantive exact-head review at
-`7f9a587967fd83931fa734fca5f6324e4f457fba` and `e400d87c791dfa27f572a349777c8ebb9f2450d4`
-respectively. The review comment attached to PR #325's current head rejected only a stale review binding and explicitly
+PR [#324](https://github.com/mfiumara/spice-ts/pull/324) was accepted at exact head
+`7f9a587967fd83931fa734fca5f6324e4f457fba` but remained open and therefore was not merged evidence. PR
+[#325](https://github.com/mfiumara/spice-ts/pull/325) remained open without a substantive exact-head review at
+`e400d87c791dfa27f572a349777c8ebb9f2450d4`. Its review comment rejected only a stale review binding and explicitly
 required replacement review of that current head. PR #325 proposes moving the unchanged aggregate from spice-ts
 36/8/56 to 51/3/46 and increasing comparable coverage from 40 analyses across 27 fixtures to 54 analyses across 39
 fixtures, but its current head is not merged evidence and does not replace the committed totals below.
 PR [#320](https://github.com/mfiumara/spice-ts/pull/320) advanced from rejected head
-`eb34fb821a5dc9602fba5f1937a808f9619ad7ef`, which still failed one required unchanged LTRA fixture, to current head
-`4c60b75bd9728935c01fe111f3cebc969fc4428d`. That current head was also rejected because its exact-head comparison
-job failed at `benchmarks/corpus/classic/report.test.ts:141`; its local 4/4 LTRA execution result does not override red
-required CI. The two unreviewed current heads and rejected PR #320 head are not merged evidence in this snapshot.
-PR [#327](https://github.com/mfiumara/spice-ts/pull/327) was rejected at exact head
+`eb34fb821a5dc9602fba5f1937a808f9619ad7ef`, which still failed one required unchanged LTRA fixture, to rejected head
+`4c60b75bd9728935c01fe111f3cebc969fc4428d`, whose exact-head comparison job failed at
+`benchmarks/corpus/classic/report.test.ts:141`. It is now at unreviewed head
+`44c994c81208386435617305ad81db11607ebbf4`; the proposed 4/4 LTRA execution result does not override either rejection
+or become merged evidence before exact-head review and squash merge.
+PR [#327](https://github.com/mfiumara/spice-ts/pull/327) advanced from rejected head
 `d94ade82fe414d5ba524cf29ba254f44eeca8aac` because a TEMP sweep failed to restore effective resistor state when
 `TNOM` differed from the circuit default and an empty `.step TEMP LIST` silently produced no steps. Its 3/3 expanded
 resistor comparison points and tiny reported voltage errors do not override those state-restoration and validation
-defects.
+defects. Current head `fcf6090bc55279f07d3ffee52e23aa70e2ccabe3` is unreviewed and is not merged evidence.
 This reconciliation closes [#285](https://github.com/mfiumara/spice-ts/issues/285) only when its exact reviewed PR
 head merges.
 
@@ -195,7 +196,9 @@ Node 22 `test (22)` failed when the unchanged `mos6inv.cir` coverage case exceed
 PR #330 fixed that shared CI budget without retroactively accepting any rejected documentation head. Head
 `1e3b4ca12fce3fc8c8e417a2f4cac22172c8fc53` then mislabeled PR #320 head
 `4c60b75bd9728935c01fe111f3cebc969fc4428d` as unreviewed even though it had already been rejected for a red
-exact-head comparison job at `benchmarks/corpus/classic/report.test.ts:141`.
+exact-head comparison job at `benchmarks/corpus/classic/report.test.ts:141`. Head
+`3ec72c96a430b1fba4de9e18e5e36eb02a1b264a` corrected the top-level snapshot but repeated the same false
+"unreviewed" verdict in the M4 residual row below.
 
 PR #193's rejected heads remain historical evidence. Head `bdb05c04e72fb9bca7dc12a73fa829ffab234abf`
 recorded stale concurrent-PR states and lacked durable `/poteto-mode` evidence. Head
@@ -505,7 +508,7 @@ not complete merely because a bounded child slice merges.
 | Lossless transmission line | [#7](https://github.com/mfiumara/spice-ts/issues/7) | The bounded positive-`Z0`/`TD` T-card slice merged through #174, but frequency-length, initial-condition, lossy, frequency-dependent, O-card/LTRA, and broader model coverage remain open under this parent |
 | Unsupported device-card coverage | [#76](https://github.com/mfiumara/spice-ts/issues/76) | The merged #288 audit publishes the current benchmark-driven parser/device matrix, but its recorded parser, device/model, analysis, convergence, and execution gaps remain open; the measurement does not complete model support |
 | Lossy LTRA transmission-line cards | [#226](https://github.com/mfiumara/spice-ts/issues/226) | Three unchanged classic fixtures remain unsupported while ngspice-47 runs them; implement a benchmark-bounded LTRA subset or preserve explicit unsupported parameters and publish matched transient losses without adapting fixtures |
-| Benchmark-bounded lossy LTRA subset | [#308](https://github.com/mfiumara/spice-ts/issues/308) | Merged PRs #331 and #329 supply the bounded scope and complete ngspice-47 baseline, but no simulator implementation. PR #320 advanced from rejected head `eb34fb821a5dc9602fba5f1937a808f9619ad7ef` to unreviewed head `4c60b75bd9728935c01fe111f3cebc969fc4428d`; its proposed four-fixture result and large waveform/runtime losses are not a delivery until exact-head review and squash merge |
+| Benchmark-bounded lossy LTRA subset | [#308](https://github.com/mfiumara/spice-ts/issues/308) | Merged PRs #331 and #329 supply the bounded scope and complete ngspice-47 baseline, but no simulator implementation. PR #320 advanced from rejected head `eb34fb821a5dc9602fba5f1937a808f9619ad7ef` to rejected head `4c60b75bd9728935c01fe111f3cebc969fc4428d`, whose exact-head comparison job failed at `benchmarks/corpus/classic/report.test.ts:141`, and then to unreviewed head `44c994c81208386435617305ad81db11607ebbf4`; its proposed four-fixture result and large waveform/runtime losses are not a delivery until exact-head review and squash merge |
 
 
 
