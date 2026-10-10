@@ -1,0 +1,41 @@
+Netlist to Test the Xyce Voltage Controlled Current Source Model
+******************************************************************************
+* Tier No.:	1                                                             
+* Description:	Test of Xyce voltage controlled current source
+*		model using a simple resistor circuit.  A DC operating point
+*		analysis is performed to obtain the transfer function
+*		characteristics of the circuit (i.e., Rin, Rout, 
+*		and voltage gain, Vout/Vin).
+* Input:	1-12V DC Source, V
+* Output:	V(2), V(3), Rin, Rout, V(3)/V
+* Circuit Elements: resistors (4), VCCS
+* Analysis:
+*		The VCCS, G,  is a function of the voltage, V(2), across R2.
+*		The CCCS has a factor k*V=0.02*V(2).  The k must have the unit of 
+*		conductance (1/ohms) to make k and V equal amps.  The voltage V(2)
+*		found by voltage division is		 
+*			V(2) = VIN * R2/(R1 + R2) = VIN * 0.75
+*		The current through the dependent source, G, is 
+*			k*V(2) = 0.02 * VIN * 0.75 = VIN * 0.015
+*		The current through the dependent source is divided evenly
+*		through resistors R3 and R4 (which are in parallel) giving
+*		VIN*0.0075 through each resistor.  The currents go from
+*		node 0 to node 3 (tail to tip), making the voltage at node 3
+*			V(3) = -(R3*VIN*0.0075) = -(VIN*1.5)
+*		Additionally, Rin, Rout and the voltage gain are:
+*			Rin  = R1 + R2 = 300 + 900 =		1200 Ohms
+*			Rout = R3||R4 = 200||200 =		100 Ohms
+*			V(3)/VIN =                              -1.5 
+****************************************************************************** 
+VIN 1 0 DC 12V
+G 3 0 2 0 0.02
+R1 1 2 300
+R2 2 0 900
+R3 3 0 200
+R4 3 0 200
+.DC VIN 1 12 1
+.PRINT DC V(1) V(2) V(3) 
+* NOTE: XYCE DOES NOT CURRENTLY SUPPORT TRANSFER FUNCTION ANALYSIS 
+* THIS PORTION HAS BEEN COMMENTED OUT UNTIL TF IS SUPPORTED
+*.TF V(3) V
+.END

@@ -83,6 +83,45 @@ Validate provenance fields, pinned URLs, fixture hashes, declared analyses, ngsp
 
 At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-distortion` is retained as a visible source-suite failure: both of its upstream `.disto` commands are commented out, so ngspice exits successfully without producing raw data. All 20 byte-identical fixtures currently fail spice-ts parsing. The validator prints each failure and checks it against the manifest instead of hiding or rewriting unsupported inputs.
 
+## Xyce Regression Suite corpus C
+
+- Repository: https://github.com/Xyce/Xyce_Regression
+- Pinned revision: `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`
+- Licence: GPL-3.0-or-later. The pinned repository [copyright and licence notice](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/README.md#copyright-and-license) grants redistribution and modification under GPL version 3 or later.
+- Licence retention: the byte-identical upstream README is retained as `benchmarks/corpus/xyce/LICENSE-NOTICE.md` (SHA-256 `82ff6df7bddcdf639483d261949a02a5f43da85d579f1242b05c3aa0c430f7cb`), and the complete GPLv3 text from https://www.gnu.org/licenses/gpl-3.0.txt is retained as `benchmarks/corpus/xyce/COPYING.txt` (SHA-256 `3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986`).
+- Redistribution decision: allowed under GPL-3.0-or-later with the copyright/licence notice and complete licence text retained alongside the fixtures.
+- Adaptation: none. All 20 `.cir` files are committed byte-for-byte from the pinned revision. The validator fetches every pinned source, checks its hash and bytes, and supplies the same local bytes to native ngspice and spice-ts without tolerance changes.
+
+| ID | Category | Canonical source | SHA-256 | Local path |
+|---|---|---|---|---|
+| `capacitor-rc-transient` | capacitor | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CAPACITOR/capacitor.cir) | `38b0d8271d4cef0f783be9a5ba0bc391c6d164fbe0dba9027e93927f0656e90b` | `benchmarks/corpus/xyce/fixtures/CAPACITOR/capacitor.cir` |
+| `capacitor-rc-transient-newlte` | capacitor | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CAPACITOR/capacitor3.cir) | `628f4953ca83a0e8840e100ea4671c778afe47bdcad0f52c09f5053c023c5194` | `benchmarks/corpus/xyce/fixtures/CAPACITOR/capacitor3.cir` |
+| `capacitor-rc-oscillator` | capacitor | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CAPACITOR/rc_osc.cir) | `add8ca9d2654398a4c394bc9232809677b479fe35172c66bbb8e2ad9bf9410a4` | `benchmarks/corpus/xyce/fixtures/CAPACITOR/rc_osc.cir` |
+| `diode-level2-temperature-breakdown` | diode | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE/Level2_Temp_Dep_Breakdown.cir) | `9c52a577a2f0b0a7419160b6cd340894ed41ebc403023a3b3f1d809d171bee0e` | `benchmarks/corpus/xyce/fixtures/DIODE/Level2_Temp_Dep_Breakdown.cir` |
+| `diode-zener-5229` | diode | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE/Zener_5229.cir) | `aefc2180e4bb6a5b39e3f4105546f3c5ba22af3b74f003d2d4d3c55f45938e9e` | `benchmarks/corpus/xyce/fixtures/DIODE/Zener_5229.cir` |
+| `diode-transient` | diode | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE/diode.cir) | `334e2dde43335851dc96f76ba5e78ef3e0b1de142cca073b3c70f83937637d8c` | `benchmarks/corpus/xyce/fixtures/DIODE/diode.cir` |
+| `diode-sidewall-dc` | diode | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE/diode_with_sidewall.cir) | `fb7d40fe14305d830afa0c4477e68b2da541f428883cec677f4c8cb13906d658` | `benchmarks/corpus/xyce/fixtures/DIODE/diode_with_sidewall.cir` |
+| `inductor-transient` | inductor | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/INDUCTOR/inductor.cir) | `a0a869d9fe3b04d3bbdc8abf9e8a89a9302a54ac5be9c97f446f06834a248b35` | `benchmarks/corpus/xyce/fixtures/INDUCTOR/inductor.cir` |
+| `njfet-2109-dc` | jfet | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NJFET_DC/njfet-2109.cir) | `d25578ed59ddc0f94e3a2f9281f1200982f82c682ec63d5256bf0399f34ecd46` | `benchmarks/corpus/xyce/fixtures/NJFET_DC/njfet-2109.cir` |
+| `njfet-stepped-dc` | jfet | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NJFET_DC/njfet.cir) | `295e3d4208ea2d839acf4724473b921ef1706976b254912b6e8455508c65b412` | `benchmarks/corpus/xyce/fixtures/NJFET_DC/njfet.cir` |
+| `nmos-level1-dc` | mosfet | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NMOS1_DC/nmos1.cir) | `3ab24382b4fb966d2111ba8b2aa0590b989fc09b367c09eb41cc7ac475e0e255` | `benchmarks/corpus/xyce/fixtures/NMOS1_DC/nmos1.cir` |
+| `npn-dc` | bjt | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NPN_DC/npn1.cir) | `8775a88a3f9c032ee047d770781a5a0cbcf21a2e28b7b6352e63636a7c9f1ce0` | `benchmarks/corpus/xyce/fixtures/NPN_DC/npn1.cir` |
+| `pmos-level1-dc` | mosfet | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/PMOS1_DC/pmos1.cir) | `767c989ba6c4ad761d2211ae39c9c82536895e76f6288e77276ad9468b2b2093` | `benchmarks/corpus/xyce/fixtures/PMOS1_DC/pmos1.cir` |
+| `pnp-dc` | bjt | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/PNP_DC/pnp1.cir) | `95796ac998eb051a535fcb498c259e715c1e8edd237e1e07add401fc6a1601df` | `benchmarks/corpus/xyce/fixtures/PNP_DC/pnp1.cir` |
+| `resistor-dc` | resistor | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/RESISTOR/resistor.cir) | `c0def3533cd6c07bf3cc6ee06f806c50d0b491d4d70d8296cc286ad8fc6066ba` | `benchmarks/corpus/xyce/fixtures/RESISTOR/resistor.cir` |
+| `resistor-level3-zero` | resistor | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/RESISTOR/resistor_lv3.cir) | `ab40c80d1175ad3079155b07bfed914b7085a6d9396f16a577446deb7693eb81` | `benchmarks/corpus/xyce/fixtures/RESISTOR/resistor_lv3.cir` |
+| `resistor-negative` | resistor | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/RESISTOR/resistor_neg.cir) | `7576379306251dd8c2baf89b4dbbe25527c399edb1fd701e7e5d38e83851614b` | `benchmarks/corpus/xyce/fixtures/RESISTOR/resistor_neg.cir` |
+| `rlc-transient` | rlc | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/RLC/rlc.cir) | `4d52f9df5eb4fe814fdd137e3f66cd4b4ec6c988174e0fe1c7a19e6eddf21763` | `benchmarks/corpus/xyce/fixtures/RLC/rlc.cir` |
+| `vccs-dc` | controlled-source | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/VCCS/vccs.cir) | `963d8d506600a2ac7f43812156739c8f49d332c50701f64268041ecd51b0306d` | `benchmarks/corpus/xyce/fixtures/VCCS/vccs.cir` |
+| `vcvs-dc` | controlled-source | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/VCVS/vcvs.cir) | `62541466b4010245a24d2c37b35c3debfc675b86f1bd3b2523fb91a01b4bbd5c` | `benchmarks/corpus/xyce/fixtures/VCVS/vcvs.cir` |
+
+Validate all pinned fetches, fixture hashes, byte-identical engine inputs, declared analyses, and expected outcomes with:
+
+    pnpm build
+    node benchmarks/corpus/xyce/validate.mjs
+
+At ingestion on ngspice-47, 13 circuits produce raw analysis data and 7 fail on explicitly reported Xyce/PSpice syntax or features. All 20 currently fail in spice-ts: 9 parse failures, 7 unsupported-feature failures, and 4 execution failures; no convergence failure is hidden or omitted. The validator emits every circuit and checks these outcomes rather than adapting inputs or changing tolerances.
+
 ## Project-authored parity fixtures
 
 | Circuit | Source | Licence / redistribution basis | Local use |

@@ -1,0 +1,39 @@
+PNP Bipolar Transistor Circuit Netlist
+**************************************************************
+* Tier No.:  2
+* Description:  Circuit netlist simulated in Xyce to 
+*               determine the validity of the current-voltage
+*               characteristics of the pnp bipolar transistor
+*               model.  A common collector configuration is biased
+*               in the forward active mode.     
+* Input:  0-5V DC Source VPOS 
+*         -2-0V DC Source VBB
+* Output: Measure Ie, Ic, Ib
+* Circuit Elements: Resistor (2), PNP Transistor
+* Analysis:
+* FOR THE PNP CIRCUIT DETERMINE:
+* IE = {VCC - VEC}/RE = {5 - 2.5}/2E+3 = 1.25mA
+* IC = {BETA/(1 + BETA)} * IE = 60/61 * 1.25E-3 = 1.23mA
+* IB = IC/BETA = 1.23E-3/60 = 20.5uA
+* RB = {VCC-VBB-VEB-IE*RE}/IB = {5-(-2)-0.6-(1.25E-3*2E3)}/20.5E-6 
+*       = 190.2K
+*	The circuit simulation should yield the following outputs:
+*		Base Current 	     Ib	= 20.5uA
+*		Collector Current    Ic	= 1.23mA
+*               Emitter Current      Ie = 1.25mA
+************************************************************** 
+VPOS  1 0 DC 5V
+VBB   6 0 DC -2V
+RE    1 2 2K
+RB    3 4 190K
+Q 5 3 7 PBJT
+*
+* Zero volt sources acting as an ammeter to measure the
+* base, collector, and emmitter currents, respectively
+VMON1 4 6 0
+VMON2 5 0 0
+VMON3 2 7 0 
+.MODEL PBJT PNP (IS=100FA BF=60)
+.DC VPOS 0 5 1 VBB 0 -2 -0.5
+.PRINT DC V(1) V(6) I(VMON1) I(VMON2) I(VMON3)
+.END
