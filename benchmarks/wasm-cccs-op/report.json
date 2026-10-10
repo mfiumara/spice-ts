@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-10T12:10:33.087Z",
+  "generatedAt": "2026-10-10T13:01:35.764Z",
   "fixtures": [
     {
       "path": "benchmarks/wasm-cccs-op/differential.cir",
@@ -35,7 +35,7 @@
     "tolerances": "no per-circuit tuning; simulator defaults"
   },
   "versions": {
-    "spiceTsBaseRevision": "050a1328c438ab0bc65ac7b09a5809a50ddbb0d8",
+    "spiceTsBaseRevision": "0e8473d7b4d09f4db7afcab4aa24731809146c7a",
     "node": "v22.23.1",
     "pnpm": "10.28.1",
     "ngspice": "ngspice-47 : Circuit level simulation program"
@@ -181,27 +181,27 @@
   "performance": {
     "wasmSuiteWallMs": {
       "samples": [
-        550.001625,
-        513.208625,
-        521.9417919999999,
-        525.6690410000001,
-        524.9582500000001
+        1106.558125,
+        1336.7795419999998,
+        969.8725839999997,
+        948.7222499999998,
+        943.8777909999999
       ],
-      "median": 524.9582500000001
+      "median": 969.8725839999997
     },
     "ngspiceSuiteWallMs": {
       "samples": [
-        37.010457999999744,
-        32.48645800000031,
-        30.724083999999948,
-        29.999374999999873,
-        31.005417000000307
+        59.968166999999994,
+        64.62812500000018,
+        56.512957999999344,
+        61.79316699999981,
+        57.02891700000055
       ],
-      "median": 31.005417000000307
+      "median": 59.968166999999994
     },
     "wasmLoss": {
-      "ratio": 16.93117850987119,
-      "percent": 1593.1178509871193
+      "ratio": 16.17312371745496,
+      "percent": 1517.312371745496
     }
   },
   "artifactSizesBytes": {
@@ -212,12 +212,12 @@
       "denseSolverWasm": 3275
     },
     "current": {
-      "workerJs": 409570,
+      "workerJs": 412495,
       "indexJs": 43043,
       "denseSolverWasm": 3506
     },
     "delta": {
-      "workerJs": 2151,
+      "workerJs": 5076,
       "indexJs": 53,
       "denseSolverWasm": 231
     },
