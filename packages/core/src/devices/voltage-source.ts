@@ -5,6 +5,7 @@ import { InvalidCircuitError } from '../errors.js';
 export class VoltageSource implements DeviceModel {
   readonly branches: number[];
   readonly isNonlinear = false;
+  private transientTimestep = 0;
 
   constructor(
     readonly name: string,
@@ -36,7 +37,7 @@ export class VoltageSource implements DeviceModel {
       case 'dc':
         return this.waveform.value;
       case 'pulse':
-        return evaluatePulse(this.waveform, time);
+        return evaluatePulse(this.waveform, time, this.transientTimestep);
       case 'sin':
         return evaluateSin(this.waveform, time);
       case 'pwl':
@@ -84,9 +85,13 @@ export class VoltageSource implements DeviceModel {
     throw new InvalidCircuitError(`Voltage source '${this.name}' has no sweepable DC value`);
   }
 
+  setTransientTimestep(timestep: number): void {
+    this.transientTimestep = timestep;
+  }
+
   getBreakpoints(stopTime: number): number[] {
     if (this.waveform.type === 'pulse') {
-      return pulseBreakpoints(this.waveform, stopTime);
+      return pulseBreakpoints(effectivePulse(this.waveform, this.transientTimestep), stopTime);
     }
     if (this.waveform.type === 'pwl') {
       return pwlBreakpoints(this.waveform, stopTime);
@@ -152,14 +157,32 @@ export function evaluatePwl(pwl: PWLSource, time: number): number {
   return left.value;
 }
 
-function evaluatePulse(p: PulseSource, time: number): number {
-  const t = time % p.period;
-  if (t < p.delay) return p.v1;
-  if (t < p.delay + p.rise) return p.v1 + (p.v2 - p.v1) * (t - p.delay) / p.rise;
-  if (t < p.delay + p.rise + p.width) return p.v2;
-  if (t < p.delay + p.rise + p.width + p.fall)
-    return p.v2 + (p.v1 - p.v2) * (t - p.delay - p.rise - p.width) / p.fall;
-  return p.v1;
+/**
+ * Resolve ngspice's zero-edge rule: a PULSE TR or TF of zero uses the
+ * transient TSTEP. Without a transient timestep (`0`) the edge stays ideal.
+ */
+export function effectivePulse(p: PulseSource, transientTimestep: number): PulseSource {
+  if (transientTimestep <= 0 || (p.rise !== 0 && p.fall !== 0)) return p;
+  return {
+    ...p,
+    rise: p.rise === 0 ? transientTimestep : p.rise,
+    fall: p.fall === 0 ? transientTimestep : p.fall,
+  };
+}
+
+/**
+ * Evaluate a PULSE waveform with ngspice semantics: V1 at and before the
+ * delay, periods repeat from the delay, and a zero TR/TF uses the transient
+ * TSTEP (`transientTimestep`, `0` outside transient analysis).
+ */
+export function evaluatePulse(pulse: PulseSource, time: number, transientTimestep = 0): number {
+  const { v1, v2, rise, width, fall, period } = effectivePulse(pulse, transientTimestep);
+  let t = time - pulse.delay;
+  if (period > 0 && t > period) t -= period * Math.floor(t / period);
+  if (t <= 0 || t >= rise + width + fall) return v1;
+  if (t < rise) return v1 + (v2 - v1) * t / rise;
+  if (t <= rise + width) return v2;
+  return v2 + (v1 - v2) * (t - rise - width) / fall;
 }
 
 function evaluateSin(s: SinSource, time: number): number {

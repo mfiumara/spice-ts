@@ -932,6 +932,29 @@ describe('bounded numeric WebAssembly backend', () => {
     }
   });
 
+  it('ramps a zero PULSE TR/TF over TSTEP like ngspice (issue #375)', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const result = await wasm.simulate(request([
+        'V1 in 0 PULSE(0 1 0 0 0 150u 1)',
+        'R1 in 0 1k',
+        '.tran 100u 300u',
+      ].join('\n')), { requestId: 'tran-zero-edge-pulse' });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      const transient = result.data.analyses[0];
+      if (transient?.type !== 'tran') throw new Error('expected a transient analysis');
+      // TR = TF = TSTEP = 100u: rise [0, 100u], high until 250u, fall
+      // [250u, 350u]. ngspice-47 (linearized) prints 0, 1, 1, 0.5.
+      expect(transient.voltagesV.in[0]).toBe(0);
+      expect(transient.voltagesV.in[1]).toBe(1);
+      expect(transient.voltagesV.in[2]).toBe(1);
+      expect(transient.voltagesV.in[3]).toBeCloseTo(0.5, 9);
+    } finally {
+      await wasm.close();
+    }
+  });
+
   it('schedules an exact 1 us grid through 1 ms without a duplicate terminal point', async () => {
     const wasm = await engine('spice-ts-wasm');
     try {

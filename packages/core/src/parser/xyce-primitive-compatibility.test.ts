@@ -100,7 +100,9 @@ describe('Xyce primitive parser compatibility', () => {
   for (const [id, path, points] of [
     ['capacitor-rc-oscillator', 'CAPACITOR/rc_osc.cir', 1780],
     ['diode-transient', 'DIODE/diode.cir', 101],
-    ['rlc-transient', 'RLC/rlc.cir', 1002],
+    // Zero PULSE TR/TF use TSTEP (ngspice semantics, issue #375), adding the
+    // 10 ms ramp corner at t=0.01 and its post-breakpoint steps.
+    ['rlc-transient', 'RLC/rlc.cir', 1018],
   ] as const) {
     it(`simulates unchanged ${id} with braced V/I output expressions`, async () => {
       const result = await simulate(fixture(path));

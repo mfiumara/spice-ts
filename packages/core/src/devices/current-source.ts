@@ -1,10 +1,13 @@
 import type { ACRHSContribution, DeviceModel, StampContext } from './device.js';
-import type { SourceWaveform, PulseSource, SinSource } from '../types.js';
-import { evaluatePwl, pulseBreakpoints, pwlBreakpoints } from './voltage-source.js';
+import type { SourceWaveform } from '../types.js';
+import {
+  effectivePulse, evaluatePulse, evaluatePwl, pulseBreakpoints, pwlBreakpoints,
+} from './voltage-source.js';
 
 export class CurrentSource implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = false;
+  private transientTimestep = 0;
 
   constructor(
     readonly name: string,
@@ -25,16 +28,8 @@ export class CurrentSource implements DeviceModel {
     switch (this.waveform.type) {
       case 'dc':
         return this.waveform.value;
-      case 'pulse': {
-        const p = this.waveform;
-        const t = time % p.period;
-        if (t < p.delay) return p.v1;
-        if (t < p.delay + p.rise) return p.v1 + (p.v2 - p.v1) * (t - p.delay) / p.rise;
-        if (t < p.delay + p.rise + p.width) return p.v2;
-        if (t < p.delay + p.rise + p.width + p.fall)
-          return p.v2 + (p.v1 - p.v2) * (t - p.delay - p.rise - p.width) / p.fall;
-        return p.v1;
-      }
+      case 'pulse':
+        return evaluatePulse(this.waveform, time, this.transientTimestep);
       case 'sin': {
         const s = this.waveform;
         const delay = s.delay ?? 0;
@@ -72,9 +67,13 @@ export class CurrentSource implements DeviceModel {
     };
   }
 
+  setTransientTimestep(timestep: number): void {
+    this.transientTimestep = timestep;
+  }
+
   getBreakpoints(stopTime: number): number[] {
     if (this.waveform.type === 'pulse') {
-      return pulseBreakpoints(this.waveform, stopTime);
+      return pulseBreakpoints(effectivePulse(this.waveform, this.transientTimestep), stopTime);
     }
     if (this.waveform.type === 'pwl') {
       return pwlBreakpoints(this.waveform, stopTime);

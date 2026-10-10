@@ -66,6 +66,8 @@ export interface DeviceModel {
   stampAC?(ctx: StampContext, omega: number): void;
   /** Commit state from a transient timepoint after NR and LTE acceptance. */
   acceptTransientStep?(ctx: StampContext): void;
+  /** Receive the transient TSTEP used by SPICE waveform defaults (e.g. zero PULSE TR/TF). */
+  setTransientTimestep?(timestep: number): void;
   /** Clear device-owned transient history before restarting at t=0. */
   resetTransient?(): void;
   /** Whether this device requires Newton-Raphson iteration (nonlinear). */
