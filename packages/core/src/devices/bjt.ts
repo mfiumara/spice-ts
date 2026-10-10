@@ -14,11 +14,14 @@ export interface BJTParams {
   RB: number;
   RC: number;
   RE: number;
+  KF: number;
+  AF: number;
   polarity: number; // 1 for NPN, -1 for PNP
 }
 
 const SUPPORTED_MODEL_PARAMETERS = new Set([
   'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'IKF', 'ISE', 'NE', 'RB', 'RC', 'RE',
+  'KF', 'AF',
 ]);
 
 const VT = 0.02585; // Thermal voltage at 300K
@@ -59,6 +62,8 @@ export function resolveBJTParams(
     RB: params.RB ?? 0,
     RC: params.RC ?? 0,
     RE: params.RE ?? 0,
+    KF: params.KF ?? 0,
+    AF: params.AF ?? 1,
     polarity: params.polarity ?? 1,
   };
   if (resolved.LEVEL !== 1) {
@@ -71,6 +76,12 @@ export function resolveBJTParams(
     || resolved.RC < 0 || !Number.isFinite(resolved.RC)
     || resolved.RE < 0 || !Number.isFinite(resolved.RE)) {
     throw new Error('Invalid bounded BJT model parameter value');
+  }
+  if (resolved.KF < 0 || !Number.isFinite(resolved.KF)) {
+    throw new Error('Invalid bounded BJT noise parameter: expected finite BJT KF >= 0');
+  }
+  if (resolved.AF <= 0 || !Number.isFinite(resolved.AF)) {
+    throw new Error('Invalid bounded BJT noise parameter: expected finite BJT AF > 0');
   }
   return resolved;
 }
