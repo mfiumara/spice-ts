@@ -33,6 +33,12 @@ const fixtures: FixtureCase[] = [
     expectedSpiceTsError: '.sens AC supports at most one non-zero AC excitation; found V1, V2',
     referenceVectors: ['v(v1_acmag)', 'v(v2_acmag)'],
   },
+  {
+    id: 'zero-first-multi-source-ac',
+    path: 'benchmarks/sensitivity/zero-first-multi-source-ac.cir',
+    expectedSpiceTsError: '.sens AC supports only one AC-form voltage source; found V1, V2',
+    referenceVectors: ['v(v1_acmag)', 'v(v2_acmag)'],
+  },
 ];
 
 void main();
@@ -159,7 +165,7 @@ async function main(): Promise<void> {
         { form: '.step combined with .sens', reason: 'stepped sensitivity' },
         { form: 'nonlinear or unrecognized devices', reason: 'device outside RLC/source/linear-controlled-source slice' },
         { form: 'multiple .sens directives', reason: 'single-result bounded API' },
-        { form: 'multiple non-zero AC excitations', reason: 'native AC solver superposition is not implemented' },
+        { form: 'multiple AC-form voltage sources', reason: 'native AC solver superposition is not implemented' },
         { form: 'ngspice-wasm backend', reason: 'sensitivity raw-result mapping is not implemented' },
       ],
     }, null, 2));

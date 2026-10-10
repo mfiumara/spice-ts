@@ -16,7 +16,7 @@ The reported derivative is absolute change in output per unit change in a primar
 
 All three ngspice and spice-ts runs converged. The non-zero residuals above are retained losses, not rounded away: the largest absolute loss is the passive capacitor derivative (4.475909205007808e-5), while the largest aggregate relative loss is the passive AC fixture (1.0000394308909735e-6). The comparison command prints per-parameter metrics and exits non-zero on any missing vector, point-count mismatch, or engine failure.
 
-The project-authored `multi-source-ac` regression is also supplied byte-for-byte to both engines. ngspice-47 succeeds at 1 Hz and 10 Hz, reporting `v(v1_acmag) = 0` and `v(v2_acmag) = 0.9999999999177334` at both points. spice-ts rejects the circuit with the stable `InvalidCircuitError` message `.sens AC supports at most one non-zero AC excitation; found V1, V2` rather than silently differentiating only the first source. The comparison command verifies both reference vectors and the exact rejection message.
+The project-authored `multi-source-ac` and `zero-first-multi-source-ac` regressions are also supplied byte-for-byte to both engines. For both, ngspice-47 succeeds at 1 Hz and 10 Hz, reporting `v(v2_acmag) = 0.9999999999177334` at both points. It reports `v(v1_acmag) = 0` for the two-active-source fixture and numerical zero (`-1.058791184067875e-16`) for the zero-first fixture. spice-ts rejects the two-active-source circuit with `.sens AC supports at most one non-zero AC excitation; found V1, V2`, preserving its existing typed rejection. It rejects the zero-first ordering with `.sens AC supports only one AC-form voltage source; found V1, V2`, rather than silently selecting the first, zero-magnitude source. The comparison command verifies both reference vectors and both exact `InvalidCircuitError` messages.
 
 Deterministic spice-ts order:
 
@@ -30,6 +30,6 @@ Explicitly unsupported forms:
 - AC LIN and OCT sweeps, and transient sensitivity;
 - `.step` combined with `.sens`;
 - multiple `.sens` directives;
-- multiple non-zero AC excitations;
+- multiple AC-form voltage sources;
 - nonlinear and unrecognized devices outside the bounded RLC/source/linear-controlled-source slice;
 - ngspice-WASM sensitivity result mapping.

@@ -80,16 +80,25 @@ export function solveSensitivity(
 }
 
 function assertSingleACExcitation(compiled: CompiledCircuit): void {
-  const excitations = compiled.devices
+  const acSources = compiled.devices
     .filter((device): device is VoltageSource =>
       device instanceof VoltageSource
-      && device.waveform.type === 'ac'
-      && device.waveform.magnitude !== 0)
+      && device.waveform.type === 'ac');
+  const excitations = acSources
+    .filter(device => device.waveform.type === 'ac' && device.waveform.magnitude !== 0)
     .map(device => device.name)
     .sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'base' }));
   if (excitations.length > 1) {
     throw new InvalidCircuitError(
       `.sens AC supports at most one non-zero AC excitation; found ${excitations.join(', ')}`,
+    );
+  }
+  if (acSources.length > 1) {
+    const names = acSources
+      .map(device => device.name)
+      .sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'base' }));
+    throw new InvalidCircuitError(
+      `.sens AC supports only one AC-form voltage source; found ${names.join(', ')}`,
     );
   }
 }
