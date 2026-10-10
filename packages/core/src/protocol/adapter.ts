@@ -87,6 +87,7 @@ export async function simulateProtocolV1(
   guard.maximum('maxAnalyses', analyses.length, 'validation');
   const preflight = circuit.compile(guard);
   enforcePointLimit(analyses, guard, preflight.steps[0]);
+  preflightTopology(preflight, protocolSourcePath(request));
   const options = coreOptions(request.options);
   const serialized: AnalysisResultV1[] = [];
 
@@ -95,7 +96,9 @@ export async function simulateProtocolV1(
     circuit.analyses.splice(0, circuit.analyses.length, analysis);
     const compiled = circuit.compile(guard);
     const result = await simulate(circuit, options, guard);
+    const completedBefore = serialized.length;
     appendAnalysisResult(serialized, result, analysis, analysisIndex, compiled.nodeNames, compiled.branchNames, circuit);
+    for (const completed of serialized.slice(completedBefore)) execution?.onAnalysisComplete?.(completed);
     guard.checkpoint('serialize:analysis');
     guard.maximum('maxResultPoints', resultPointCount(serialized), 'serialize');
     guard.maximum(
@@ -120,13 +123,23 @@ function protocolAnalysis(analysis: AnalysisDirective): AnalysisCommand {
     case 'noise':
     case 'tf':
     case 'sens':
-      throw new InvalidCircuitError(`Protocol v1 does not support '${analysis.type}' analysis results`);
+      throw new UnsupportedProtocolAnalysisError(analysis.type);
+  }
+}
+
+class UnsupportedProtocolAnalysisError extends Error {
+  constructor(readonly analysis: string) {
+    super(`Protocol v1 does not support '${analysis}' analysis results`);
+    this.name = 'UnsupportedProtocolAnalysisError';
   }
 }
 
 /** Convert an existing typed core error to its stable protocol-v1 representation. */
 export function mapProtocolErrorV1(error: unknown): SpiceApiErrorV1 {
   if (error instanceof ProtocolExecutionError) return wireApiError(error.apiError);
+  if (error instanceof UnsupportedProtocolAnalysisError) {
+    return apiError('UNSUPPORTED_FEATURE', error, 'validation', { analysis: error.analysis });
+  }
   if (error instanceof ParseError) {
     return apiError('PARSE_ERROR', error, 'parse', { line: error.line, context: error.context });
   }
