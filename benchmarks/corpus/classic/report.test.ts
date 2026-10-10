@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 import { describe, it } from 'node:test';
 import {
   buildClassicReport,
+  runNativeSpiceTs,
   summarizeClassicReport,
   type ClassicCircuit,
   type ClassicFixtureReport,
@@ -116,6 +117,38 @@ describe('classic corpus comparison report', () => {
       }),
       /fixture: SHA-256 mismatch/,
     );
+  });
+
+  it('emits native spice-ts pole-zero series for the unchanged classic fixtures', async () => {
+    const classicManifest = JSON.parse(
+      readFileSync(resolve('benchmarks/corpus/classic/manifest.json'), 'utf8'),
+    ) as ClassicManifest;
+    const expectedSignals = new Map([
+      ['pole-zero-four-stage', ['v(pole(1))', 'v(pole(2))', 'v(pole(3))', 'v(pole(4))']],
+      ['pole-zero-three-stage', ['v(pole(1))', 'v(pole(2))', 'v(pole(3))']],
+      ['high-pass-pole-zero', ['v(pole(1))', 'v(zero(1))']],
+    ]);
+
+    for (const [id, signals] of expectedSignals) {
+      const fixture = classicManifest.circuits.find(candidate => candidate.id === id);
+      if (!fixture) throw new Error(`missing classic fixture ${id}`);
+
+      const execution = await runNativeSpiceTs(
+        readFileSync(resolve(fixture.localPath)),
+        fixture,
+      );
+
+      assert.equal(execution.status, 'success');
+      assert.equal(execution.convergence, 'converged');
+      assert.deepEqual(execution.analyses.map(analysis => analysis.type), ['pz']);
+      assert.deepEqual(execution.analyses[0]?.series.grid, [0]);
+      assert.deepEqual(Object.keys(execution.analyses[0]?.series.signals ?? {}), signals);
+      assert.equal(
+        Object.values(execution.analyses[0]?.series.signals ?? {})
+          .every(values => values.length === 1),
+        true,
+      );
+    }
   });
 
   it('programmatically verifies the committed 20-fixture loss totals and input hashes', () => {
