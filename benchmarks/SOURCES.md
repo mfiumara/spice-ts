@@ -159,6 +159,15 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 - Scope: a single case-insensitive LIST-only circuit-temperature target and linear resistor `TC1` behavior. `.temp`, nested steps, non-LIST TEMP sweeps, diode temperature/breakdown, and broad all-device temperature semantics remain unsupported or out of scope.
 - Reproduce with `pnpm bench:temp-step`. The JSON receipt records fixture and expanded hashes, versions, machine, step order, convergence, matched-point maximum/RMS absolute and relative error, runtimes, the direct ngspice loss, and expansion caveats.
 
+## Bounded diode breakdown-temperature DC-equivalent parity fixture
+
+- Fixture: `benchmarks/diode-breakdown-temperature/dc-equivalent.cir` (SHA-256 `02551eb619592aa1065cd549dbabd65e0916c3d223c2cbef7ecd6de72d4c8b65`).
+- Source: project-authored public reference circuit for [issue #319](https://github.com/mfiumara/spice-ts/issues/319), issue acceptance-contract revision as of 2026-10-10; the immutable fixture revision is identified by the SHA-256 above.
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- DC equivalence: the three parallel branches encode the issue's documented `BV(T) = 7.255 * (1 + 0.00013 * (T - 27) - 5e-8 * (T - 27)^2)` values at -55, 25, and 72 C. Unit tests and the unchanged Xyce fixture exercise native `TBV1`/`TBV2`; this fixture isolates reverse-breakdown parity at those same effective BV points without relying on ngspice-incompatible `.step TEMP` or Xyce's zero TSTEP.
+- Adaptation: none between engines. The verifier reads the committed fixture once and supplies those exact bytes to spice-ts and ngspice-47. No engine-specific values, tolerances, or rewrites are used.
+- Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-319/verify.ts --output benchmarks/results/issue-319/report.json`. The receipt records ngspice-47, exact commands, the 17-point `.dc VSWEEP 8 12 0.25` grid, `V(cold)`, `V(nominal)`, `V(hot)`, and `I(VSWEEP)`, convergence, runtimes, and matched-point maximum/RMS absolute and relative errors.
+
 ## Bounded Gummel-Poon forward-active parity fixtures
 
 - Public source: John P. Doty's CA3080 ngspice model, [`ca3080.mod`](https://github.com/xxv/gedasymbols/blob/49eda5e627e167fcb6346ef9805535ca92e43b0c/www/user/john_doty/models/opamp/ca3080.mod), pinned `gedasymbols` revision `49eda5e627e167fcb6346ef9805535ca92e43b0c`.

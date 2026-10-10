@@ -109,7 +109,7 @@ describe('Xyce primitive parser compatibility', () => {
     });
   }
 
-  it('executes TEMP stepping in the unchanged diode fixture while retaining the diode-model gap', async () => {
+  it('matches Xyce breakdown-temperature endpoints in the unchanged diode fixture', async () => {
     const result = await simulate(fixture('DIODE/Level2_Temp_Dep_Breakdown.cir'));
 
     expect(result.steps!.map(step => [step.paramName, step.paramValue])).toEqual([
@@ -117,13 +117,17 @@ describe('Xyce primitive parser compatibility', () => {
       ['TEMP', 25],
       ['TEMP', 72],
     ]);
-    // Diode temperature and reverse-breakdown semantics remain tracked by #319,
-    // so the three currents are still identical rather than a parity claim.
-    expect(result.steps!.map(step => step.transient!.current('VIN'))).toEqual([
-      result.steps![0].transient!.current('VIN'),
-      result.steps![0].transient!.current('VIN'),
-      result.steps![0].transient!.current('VIN'),
-    ]);
+    // Xyce_Regression gold output at t=0 and t=1 s for each TEMP step.
+    const xyceEndpoints = [
+      [7.15520836, 7.19459705],
+      [7.22037320, 7.27880797],
+      [7.25488881, 7.32593348],
+    ];
+    for (const [index, step] of result.steps!.entries()) {
+      const voltage = step.transient!.voltage('2');
+      expect(voltage[0]).toBeCloseTo(xyceEndpoints[index][0], 5);
+      expect(voltage.at(-1)).toBeCloseTo(xyceEndpoints[index][1], 5);
+    }
   });
 
   it('simulates the unchanged bounded level-1 NJF fixture', async () => {
