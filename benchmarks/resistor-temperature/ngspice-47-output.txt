@@ -1,0 +1,160 @@
+COMMAND: ngspice --version
+******
+** ngspice-47 : Circuit level simulation program
+** Compiled with KLU Direct Linear Solver
+** The U. C. Berkeley CAD Group
+** Copyright 1985-1994, Regents of the University of California.
+** Copyright 2001-2026, The ngspice team.
+** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html
+** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html
+******
+
+DIRECT_STEP_COMMAND: ngspice -b /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c62726a1/benchmarks/resistor-temperature/tc-list.cir
+DIRECT_STEP_EXIT_STATUS: 1
+DIRECT_STEP_OUTPUT:
+
+Note: No compatibility mode selected!
+
+
+Circuit: resistor tc1/tc2 temperature-list reference for issue 318
+
+Error on line 5 or its substitute:
+  .step temp list -55 25 72
+ unimplemented dot command '.step'
+    Simulation interrupted due to error!
+
+Error: incomplete or empty netlist
+       or no ".plot", ".print", or ".fourier" lines in batch mode;
+no simulations run!
+
+TEMPERATURE_C: -55
+DRIVER_ADAPTATION: .step TEMP LIST -55 25 72 -> .temp -55
+COMMAND: ngspice -b -r /var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spicets-resistor-temperature-5LKQtD/temp--55.raw /var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spicets-resistor-temperature-5LKQtD/temp--55.cir
+WALL_CLOCK_MILLISECONDS: 10.091208000000002
+PROCESS_OUTPUT:
+
+Note: No compatibility mode selected!
+
+
+Circuit: resistor tc1/tc2 temperature-list reference for issue 318
+
+ASCII raw file "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spicets-resistor-temperature-5LKQtD/temp--55.raw"
+Doing analysis at TEMP = -55.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 3  
+
+No. of Data Rows : 1
+
+Total analysis time (seconds) = 0.000433
+
+Total elapsed time (seconds) = 0.003 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 22828.625 MB.
+Maximum ngspice program size =   10.094 MB.
+Current ngspice program size =   10.094 MB.
+RAW_OUTPUT:
+Title: resistor tc1/tc2 temperature-list reference for issue 318
+Date: Sat Oct 10 15:11:55  2026
+Command: ngspice-47, Build 
+Plotname: Operating Point
+Flags: real
+No. Variables: 3
+No. Points: 1       
+Variables:
+	0	v(in)	voltage
+	1	v(out)	voltage
+	2	i(v1)	current
+Values:
+0		1.000000000000000e+00
+	6.822566867977873e-01
+	-3.411283433988937e-04
+
+TEMPERATURE_C: 25
+DRIVER_ADAPTATION: .step TEMP LIST -55 25 72 -> .temp 25
+COMMAND: ngspice -b -r /var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spicets-resistor-temperature-5LKQtD/temp-25.raw /var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spicets-resistor-temperature-5LKQtD/temp-25.cir
+WALL_CLOCK_MILLISECONDS: 9.717750000000002
+PROCESS_OUTPUT:
+
+Note: No compatibility mode selected!
+
+
+Circuit: resistor tc1/tc2 temperature-list reference for issue 318
+
+ASCII raw file "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spicets-resistor-temperature-5LKQtD/temp-25.raw"
+Doing analysis at TEMP = 25.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 3  
+
+No. of Data Rows : 1
+
+Total analysis time (seconds) = 0.000383
+
+Total elapsed time (seconds) = 0.003 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 22828.625 MB.
+Maximum ngspice program size =   10.078 MB.
+Current ngspice program size =   10.078 MB.
+RAW_OUTPUT:
+Title: resistor tc1/tc2 temperature-list reference for issue 318
+Date: Sat Oct 10 15:11:55  2026
+Command: ngspice-47, Build 
+Plotname: Operating Point
+Flags: real
+No. Variables: 3
+No. Points: 1       
+Variables:
+	0	v(in)	voltage
+	1	v(out)	voltage
+	2	i(v1)	current
+Values:
+0		1.000000000000000e+00
+	6.671096274592996e-01
+	-3.335548137296499e-04
+
+TEMPERATURE_C: 72
+DRIVER_ADAPTATION: .step TEMP LIST -55 25 72 -> .temp 72
+COMMAND: ngspice -b -r /var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spicets-resistor-temperature-5LKQtD/temp-72.raw /var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spicets-resistor-temperature-5LKQtD/temp-72.cir
+WALL_CLOCK_MILLISECONDS: 9.597375
+PROCESS_OUTPUT:
+
+Note: No compatibility mode selected!
+
+
+Circuit: resistor tc1/tc2 temperature-list reference for issue 318
+
+ASCII raw file "/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/spicets-resistor-temperature-5LKQtD/temp-72.raw"
+Doing analysis at TEMP = 72.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+No. of Data Columns : 3  
+
+No. of Data Rows : 1
+
+Total analysis time (seconds) = 0.000364
+
+Total elapsed time (seconds) = 0.003 
+
+Total DRAM available = 49152.000 MB.
+DRAM currently available = 22828.625 MB.
+Maximum ngspice program size =   10.094 MB.
+Current ngspice program size =   10.094 MB.
+RAW_OUTPUT:
+Title: resistor tc1/tc2 temperature-list reference for issue 318
+Date: Sat Oct 10 15:11:55  2026
+Command: ngspice-47, Build 
+Plotname: Operating Point
+Flags: real
+No. Variables: 3
+No. Points: 1       
+Variables:
+	0	v(in)	voltage
+	1	v(out)	voltage
+	2	i(v1)	current
+Values:
+0		1.000000000000000e+00
+	6.559420147258983e-01
+	-3.279710073629490e-04

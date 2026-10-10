@@ -185,6 +185,15 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 - Adaptation: none. The committed bytes are supplied identically to spice-ts and ngspice-47. The fixture exercises level-1 `KF=1e-9`, `AF=1.2` base-current flicker noise while retaining collector/base shot noise and `RB`/`RC`/`RE` plus external-resistance thermal noise over a DEC sweep. No per-engine tolerance or value changes are made.
 - Reproduce with `pnpm exec tsx benchmarks/bjt-flicker-noise/compare.ts -- --output benchmarks/bjt-flicker-noise/results.json`; the receipt reports source revision/licence/hash, versions, machine, identical inputs, matched-point max/RMS absolute and relative errors, integrated errors, runtimes, unsupported forms, and every retained loss. The `/poteto-mode` design receipt is `benchmarks/bjt-flicker-noise/POTETO.md`.
 
+## Bounded resistor temperature-list reference fixture
+
+- Fixture: `benchmarks/resistor-temperature/tc-list.cir` (SHA-256 `5b35fde7ed875c6abe7eb33999d18b64519eba73b4ef6351a766349227531915`).
+- Source: project-authored public reference circuit for [issue #318](https://github.com/mfiumara/spice-ts/issues/318).
+- Fixture licence: MIT, under the repository [licence](../LICENSE); redistribution is allowed. No third-party circuit material was copied.
+- Reference simulator: [ngspice release 47](https://sourceforge.net/projects/ngspice/files/ng-spice-rework/47/), licensed under the Modified BSD (`BSD-3-Clause`) terms in upstream [`COPYING`](https://sourceforge.net/p/ngspice/ngspice/ci/ngspice-47/tree/COPYING). The committed CSV/JSON/raw-text reference data is derived from local execution of that simulator; no ngspice binary or source code is redistributed.
+- Driver adaptation: the canonical fixture uses `.step TEMP LIST -55 25 72`. ngspice-47 reports `.step` as an unimplemented dot command, so the capture script replaces only that line with `.temp <value>` for three separate runs. Topology, values, device parameters, `.op`, and tolerances are unchanged.
+- Reproduce with `node benchmarks/resistor-temperature/capture-ngspice.mjs`. The receipt records the exact version output, direct `.step` failure, commands, machine, complete process and ASCII raw output, per-process wall time, and `V(out)`, `I(V1)`, and effective `R1` at every temperature. Separate process startup is included, so the timings are not a speed claim.
+
 ## Xyce Regression Suite corpus C
 
 - Repository: https://github.com/Xyce/Xyce_Regression

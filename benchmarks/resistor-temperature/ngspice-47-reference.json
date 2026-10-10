@@ -1,0 +1,54 @@
+{
+  "fixture": "benchmarks/resistor-temperature/tc-list.cir",
+  "fixtureSha256": "5b35fde7ed875c6abe7eb33999d18b64519eba73b4ef6351a766349227531915",
+  "source": {
+    "url": "https://github.com/mfiumara/spice-ts/issues/318",
+    "revision": "issue-318 project-authored reference fixture",
+    "licence": "MIT"
+  },
+  "referenceSimulator": "ngspice-47",
+  "exactVersionOutput": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******",
+  "machine": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro",
+    "node": "v22.23.1"
+  },
+  "canonicalDriver": ".step TEMP LIST -55 25 72",
+  "directStepSupport": {
+    "ngspice": "unsupported: unimplemented dot command '.step'",
+    "command": "ngspice -b /Users/mattiafiumara/repos/spicets/spice-ts/.worktrees/t_c62726a1/benchmarks/resistor-temperature/tc-list.cir",
+    "exitStatus": 1
+  },
+  "ngspiceDriverAdaptation": "ngspice-47 does not implement .step. For each LIST value, replace only the canonical .step TEMP LIST line with .temp <value>; topology, component values, model parameters, analysis, and tolerances remain unchanged.",
+  "commands": {
+    "reproduce": "node benchmarks/resistor-temperature/capture-ngspice.mjs",
+    "version": "ngspice --version",
+    "eachPoint": "ngspice -b -r <temporary-raw-path> <temporary-deck-with-only-driver-line-adapted>"
+  },
+  "runtimeCaveat": "Each wall-clock measurement includes a separate ngspice process startup and raw-file write; no speed claim is made.",
+  "samples": [
+    {
+      "temperatureC": -55,
+      "outputVoltageV": 0.6822566867977873,
+      "sourceCurrentA": -0.0003411283433988937,
+      "effectiveResistanceOhm": 931.4479999999999,
+      "wallClockMilliseconds": 10.091208000000002
+    },
+    {
+      "temperatureC": 25,
+      "outputVoltageV": 0.6671096274592996,
+      "sourceCurrentA": -0.0003335548137296499,
+      "effectiveResistanceOhm": 998.0079999999994,
+      "wallClockMilliseconds": 9.717750000000002
+    },
+    {
+      "temperatureC": 72,
+      "outputVoltageV": 0.6559420147258983,
+      "sourceCurrentA": -0.000327971007362949,
+      "effectiveResistanceOhm": 1049.050000000001,
+      "wallClockMilliseconds": 9.597375
+    }
+  ]
+}

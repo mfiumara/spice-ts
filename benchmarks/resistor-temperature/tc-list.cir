@@ -1,0 +1,7 @@
+Resistor TC1/TC2 temperature-list reference for issue 318
+V1 in 0 DC 1
+R1 in out 1k tc1=1e-3 tc2=2e-6
+R2 out 0 2k
+.step TEMP LIST -55 25 72
+.op
+.end
