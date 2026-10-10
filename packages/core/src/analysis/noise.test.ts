@@ -455,15 +455,27 @@ describe('.noise analysis', () => {
     );
   });
 
-  it('keeps current-source input referral explicitly unsupported', async () => {
-    await expect(simulate(`
+  it('refers resistor noise to an independent current-source input', async () => {
+    const result = (await simulate(`
       I1 in 0 AC 1
       R1 in out 1k
       R2 out 0 1k
       .noise v(out) I1 dec 3 100 10k
-    `)).rejects.toThrow(
-      ".noise input source 'I1' is not an independent voltage source",
-    );
+    `)).noise!;
+
+    expect(result.frequencies).toHaveLength(7);
+    expect(result.outputNoiseDensity).toHaveLength(7);
+    expect(result.inputNoiseDensity).toHaveLength(7);
+    const ngspice47Output = 4.071371529487329e-9;
+    const ngspice47Input = 4.071371529487330e-12;
+    expect(Math.abs(result.outputNoiseDensity[0] - ngspice47Output) / ngspice47Output)
+      .toBeLessThan(2e-6);
+    expect(Math.abs(result.inputNoiseDensity[0] - ngspice47Input) / ngspice47Input)
+      .toBeLessThan(2e-6);
+    expect(Math.abs(result.integratedOutputNoise! - 4.050963523633458e-7)
+      / 4.050963523633458e-7).toBeLessThan(2e-6);
+    expect(Math.abs(result.integratedInputNoise! - 4.050963523633458e-10)
+      / 4.050963523633458e-10).toBeLessThan(2e-6);
   });
 
   it('rejects a BJT noise temperature card with a stable parse error', () => {

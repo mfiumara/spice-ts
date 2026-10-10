@@ -652,15 +652,39 @@ function parseNodeInitialState(
 
 function parseXyceTimeintOptions(tokens: string[]): SimulationOptions {
   const options: SimulationOptions = {};
+  let newbpstepping: string | undefined;
 
   for (const token of tokens) {
     const separator = token.indexOf('=');
-    const name = token.slice(0, Math.max(separator, 0)).toLowerCase();
+    const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
     if (separator <= 0 || separator === token.length - 1) {
+      if (name === 'newbpstepping') {
+        const rawValue = separator < 0 ? undefined : token.slice(separator + 1);
+        throw new Error(rawValue === undefined
+          ? "Invalid .options TIMEINT NEWBPSTEPPING field: 'newbpstepping'"
+          : `Invalid .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
+      }
       throw new Error(`Unsupported .options TIMEINT field: '${name || token.toLowerCase()}'`);
     }
 
     const rawValue = token.slice(separator + 1);
+    if (name === 'newbpstepping') {
+      if (newbpstepping !== undefined && newbpstepping !== rawValue) {
+        throw new Error(`Conflicting .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
+      }
+      newbpstepping = rawValue;
+      if (rawValue === '0') continue;
+      let numericValue: number;
+      try {
+        numericValue = parseNumber(rawValue);
+      } catch {
+        throw new Error(`Invalid .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
+      }
+      if (!Number.isFinite(numericValue)) {
+        throw new Error(`Invalid .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
+      }
+      throw new Error(`Unsupported .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
+    }
     if (name === 'method') {
       const methods: Record<string, IntegrationMethod> = {
         trap: 'trapezoidal',

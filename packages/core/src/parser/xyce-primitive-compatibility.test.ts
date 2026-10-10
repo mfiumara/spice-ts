@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -69,9 +70,12 @@ describe('Xyce primitive parser compatibility', () => {
       .toThrow(/Unsupported diode parameter: 'TEMP=50'/);
   });
 
-  it('advances inductor-transient to its unsupported TIMEINT field', () => {
-    expect(() => parse(fixture('INDUCTOR/inductor.cir')))
-      .toThrow(/Unsupported \.options TIMEINT field: 'newbpstepping'/);
+  it('accepts disabled NEWBPSTEPPING in the unchanged inductor fixture', () => {
+    const input = readFileSync(resolve(xyceFixtureRoot, 'INDUCTOR/inductor.cir'));
+
+    expect(createHash('sha256').update(input).digest('hex'))
+      .toBe('a0a869d9fe3b04d3bbdc8abf9e8a89a9302a54ac5be9c97f446f06834a248b35');
+    expect(() => parse(input.toString('utf8'))).not.toThrow();
   });
 
   it('keeps capacitor3 NEWLTE explicitly unsupported', () => {
