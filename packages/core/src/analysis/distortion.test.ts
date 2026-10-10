@@ -116,6 +116,19 @@ R1 1 0 1k
     },
   );
 
+  it('preserves a bounded two-tone ratio through the programmatic builder', () => {
+    const circuit = new Circuit();
+    circuit.addAnalysis('disto', {
+      variation: 'dec', points: 10, startFreq: 1e3, stopFreq: 1e6, f2OverF1: 0.9,
+    });
+
+    expect(circuit.analyses).toContainEqual({
+      type: 'disto', variation: 'dec', points: 10,
+      startFreq: 1e3, stopFreq: 1e6, f2OverF1: 0.9,
+    });
+    expect(circuit.toNetlist()).toContain('.disto dec 10 1000 1000000 0.9');
+  });
+
   it.each([
     ['.disto lin 10 1k 1Meg', "Unsupported .disto sweep; expected '.disto dec points start stop'"],
     ['.disto oct 10 1k 1Meg', "Unsupported .disto sweep; expected '.disto dec points start stop'"],
@@ -167,6 +180,8 @@ R1 1 0 1k
       .rejects.toThrow('.disto two-tone requires exactly one non-zero DISTOF2 excitation; found 0');
     await expect(simulate('Invalid F2\nV1 1 0 DISTOF1 1 DISTOF2 -1\nR1 1 0 1k\n.disto dec 10 1k 1Meg 0.9'))
       .rejects.toThrow("Invalid DISTOF2 excitation on source 'V1'");
+    await expect(simulate('Multiple F2\nV1 1 0 DISTOF1 1 DISTOF2 1\nI1 1 0 DISTOF2 1\nR1 1 0 1k\n.disto dec 10 1k 1Meg 0.9'))
+      .rejects.toThrow('.disto two-tone requires exactly one non-zero DISTOF2 excitation; found V1, I1');
   });
 
   it('rejects semiconductor nonlinear distortion explicitly', async () => {

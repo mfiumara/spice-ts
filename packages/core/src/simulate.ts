@@ -170,7 +170,7 @@ export async function simulate(
         break;
       }
       case 'disto': {
-        assertLinearDistortionSupported(compiled);
+        assertLinearDistortionSupported(compiled, analysis);
         const opts = resolveOptions(options);
         solveDCOperatingPoint(compiled, opts, undefined, convergence, 'operating-point', guard);
         result.distortion = solveLinearDistortion(compiled, analysis, guard);
