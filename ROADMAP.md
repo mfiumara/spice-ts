@@ -8,8 +8,8 @@ Issue state below was verified against live GitHub state on 2026-10-10. The repo
 M1, one in M2, five in M3, and seven in M4. Every open issue is represented below exactly once. Closed duplicate
 [#278](https://github.com/mfiumara/spice-ts/issues/278) is not part of the active inventory.
 
-GitHub had seven open PRs at verification time: this reconciliation in [PR
-#290](https://github.com/mfiumara/spice-ts/pull/290) and concurrent PRs #315, #320, #324, #325, #326, and #327 recorded
+GitHub had nine open PRs at verification time: this reconciliation in [PR
+#290](https://github.com/mfiumara/spice-ts/pull/290) and concurrent PRs #315, #320, #324–#327, #334, and #335 recorded
 below. Since the prior snapshot, accepted PR heads
 `f877b2e8d51faffa74b084740726a33fd6f7b76e`, `c96892611da8c85c5687d05e34c4b52172f3c19e`,
 `f28de73e7abe259b633fd3404e909d4b4608306a`, `3c0b25700f147081d3eebee3ee18b6b1e5733917`,
@@ -43,21 +43,30 @@ Accepted heads `bf1594065c79cfa24ceb5b29ec3e7c008b6a5e55`,
 respectively.
 
 PRs [#324](https://github.com/mfiumara/spice-ts/pull/324),
-[#325](https://github.com/mfiumara/spice-ts/pull/325), [#326](https://github.com/mfiumara/spice-ts/pull/326), and
-[#327](https://github.com/mfiumara/spice-ts/pull/327) were open and unreviewed at exact heads
-`7f9a587967fd83931fa734fca5f6324e4f457fba`, `889b8e3f64cf522a28258121299f4e28c66029b0`,
-`299a02308a713cf0c9782d156c481ed6ebe5cf22`, and `d94ade82fe414d5ba524cf29ba254f44eeca8aac`
+[#325](https://github.com/mfiumara/spice-ts/pull/325), [#326](https://github.com/mfiumara/spice-ts/pull/326),
+[#334](https://github.com/mfiumara/spice-ts/pull/334), and [#335](https://github.com/mfiumara/spice-ts/pull/335) were
+open and unreviewed at exact heads
+`7f9a587967fd83931fa734fca5f6324e4f457fba`, `e400d87c791dfa27f572a349777c8ebb9f2450d4`,
+`903f44b99ca4131bd56256e597bab3f759e19c7f`, `991a4a2f093d3ab2a40b2ada8f4f9f59502d37c3`, and
+`f16d97ead2b1d3df38165221eb91cf23f4e489f2`
 respectively. PR #325 proposes moving the unchanged aggregate from spice-ts 36/8/56 to 51/3/46 and increasing
 comparable coverage from 40 analyses across 27 fixtures to 54 analyses across 39 fixtures, but its unreviewed head is
 not merged evidence and does not replace the committed totals below. PR [#320](https://github.com/mfiumara/spice-ts/pull/320)
 advanced from rejected head `eb34fb821a5dc9602fba5f1937a808f9619ad7ef`, which still failed one required unchanged
 LTRA fixture, to unreviewed current head `4c60b75bd9728935c01fe111f3cebc969fc4428d`. PR
-[#315](https://github.com/mfiumara/spice-ts/pull/315) remained rejected at current head
-`a0bb83f7323eb1a7309307aef4fed2e708c624d2` because CCCS controller lookup was case-sensitive. Earlier heads
+[#315](https://github.com/mfiumara/spice-ts/pull/315) advanced to unreviewed remediation head
+`5b1acd1f92d077a3008dbb6adb3ecd90134c4206` after head `a0bb83f7323eb1a7309307aef4fed2e708c624d2`
+was rejected for case-sensitive CCCS controller lookup, missing benchmark provenance, and an incomplete reproducible
+WASM build command. Earlier heads
 `050a1328c438ab0bc65ac7b09a5809a50ddbb0d8` and `1230e05bb70c914691303ad04cf6caebf6a48d2f`
 were also rejected for leaked generic validation failures and red exact-head Node 22 CI respectively. None of these
 open PRs is merged evidence in this snapshot; green or in-progress CI does not substitute for independent exact-head
 review.
+PR [#327](https://github.com/mfiumara/spice-ts/pull/327) was rejected at exact head
+`d94ade82fe414d5ba524cf29ba254f44eeca8aac` because a TEMP sweep failed to restore effective resistor state when
+`TNOM` differed from the circuit default and an empty `.step TEMP LIST` silently produced no steps. Its 3/3 expanded
+resistor comparison points and tiny reported voltage errors do not override those state-restoration and validation
+defects.
 This reconciliation closes [#285](https://github.com/mfiumara/spice-ts/issues/285) only when its exact reviewed PR
 head merges.
 
@@ -173,8 +182,8 @@ published parity report; agreed error thresholds met or gaps filed
 | Diode reverse breakdown with TBV1/TBV2 | [#319](https://github.com/mfiumara/spice-ts/issues/319) | After reviewed `.step TEMP LIST` support, implement the benchmark-bounded BV/IBV/TBV1/TBV2 reverse-breakdown subset with an explicit nominal-temperature reference and a separate ngspice-compatible parity fixture. The immutable Xyce fixture and ngspice's zero-print-step rejection remain unchanged; no implementation or delivery exists yet |
 | Post-output/PZ unchanged aggregate refresh | [#321](https://github.com/mfiumara/spice-ts/issues/321) | Rerun the unchanged provenance-tracked 100-fixture tree after merged PRs #310–#313, retaining every status/comparison transition, error envelope, runtime diagnostic, exclusion, and loss without fixture adaptation, tolerance tuning, parity, or speed claims; no implementation or delivery exists yet |
 | Disabled NEWBPSTEPPING compatibility | [#322](https://github.com/mfiumara/spice-ts/issues/322) | Accept only the benchmark-backed disabled `NEWBPSTEPPING=0` TIMEINT form if it is a no-op, reject enabled or malformed forms explicitly, and publish the unchanged Xyce inductor fixture's next outcome and every later loss; no implementation or delivery exists yet |
-| Classic MOS amplifier and memory transient convergence | [#332](https://github.com/mfiumara/spice-ts/issues/332) | Reproduce the still-filed unchanged-fixture MOS failures under parent #280, preserve one RED per failure class, and resolve only general MOS/transient/convergence defects. PR #317's execution result and losses remain recorded above, while unreviewed aggregate PR #325 cannot close this follow-up or establish waveform parity |
-| Build core before ngspice comparison tests | [#333](https://github.com/mfiumara/spice-ts/issues/333) | The comparison workflow can run classic pole-zero report tests against stale or absent core build output, producing `actual: failed` against `expected: success` even when a local built-tree comparison passes. Fix only workflow ordering or caching without changing fixtures, report baselines, simulator semantics, or tolerances; no implementation or delivery exists yet |
+| Classic MOS amplifier and memory transient convergence | [#332](https://github.com/mfiumara/spice-ts/issues/332) | Reproduce the still-filed unchanged-fixture MOS failures under parent #280, preserve one RED per failure class, and resolve only general MOS/transient/convergence defects. Unreviewed [PR #335](https://github.com/mfiumara/spice-ts/pull/335) at exact head `f16d97ead2b1d3df38165221eb91cf23f4e489f2` proposes a documentation-only receipt that classifies #332 as a duplicate of the already merged #317 fix; it is not a delivery or waveform-parity claim |
+| Build core before ngspice comparison tests | [#333](https://github.com/mfiumara/spice-ts/issues/333) | The comparison workflow can run classic pole-zero report tests against stale or absent core build output, producing `actual: failed` against `expected: success` even when a local built-tree comparison passes. Unreviewed [PR #334](https://github.com/mfiumara/spice-ts/pull/334) at exact head `991a4a2f093d3ab2a40b2ada8f4f9f59502d37c3` proposes building exact checked-out core source before comparison tests without changing fixtures, report baselines, simulator semantics, or tolerances; it is not a delivery until reviewed and merged |
 
 PR #290's rejected heads remain historical evidence. Head `ef9e795ccc7b7fe16c13229453199d98b3a0146c`
 became stale when PR #274 was accepted eight seconds after the documentation commit. Head
