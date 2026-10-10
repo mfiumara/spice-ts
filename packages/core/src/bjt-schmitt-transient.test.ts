@@ -59,10 +59,12 @@ describe('corpus-E BJT Schmitt transient convergence (#139)', () => {
       || (sample.v6 > regenerativeSamples[index - 1]!.v6
         && sample.v7 > regenerativeSamples[index - 1]!.v7)
     ))).toBe(true);
-    expect(v6[edgeStart - 1]).toBeCloseTo(-1.0896, 3);
-    expect(v7[edgeStart - 1]).toBeCloseTo(-1.7692, 3);
-    expect(v6[edgeStart]).toBeCloseTo(-0.0262, 3);
-    expect(v7[edgeStart]).toBeCloseTo(-0.7475, 3);
+    // Edge snapshot with the ngspice-47 default BJT IS=1e-16: every Q card here
+    // resolves the grounded-substrate default model (see #382).
+    expect(v6[edgeStart - 1]).toBeCloseTo(-1.0434, 3);
+    expect(v7[edgeStart - 1]).toBeCloseTo(-1.8346, 3);
+    expect(v6[edgeStart]).toBeCloseTo(-0.0240, 3);
+    expect(v7[edgeStart]).toBeCloseTo(-0.8619, 3);
 
     const telemetry = first.convergence!.transient;
     expect(telemetry.acceptedSteps).toBe(transient.time.length - 1);
