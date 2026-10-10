@@ -57,6 +57,12 @@ export function tokenizeNetlist(netlist: string): ParsedLine[] {
     if (trimmed === '' || trimmed.startsWith('*') || trimmed.startsWith(';')) continue;
     if (trimmed.toUpperCase() === '.END') continue;
 
+    // Traditional SPICE decks reserve the first physical line for a title.
+    // Keep accepting title-less API snippets when that line has the shape of a
+    // supported device card, but discard prose instead of interpreting its
+    // first letter as a device type.
+    if (i === 0 && !looksLikeDeviceOrDirective(trimmed)) continue;
+
     if (trimmed.startsWith('+') && mergedLines.length > 0) {
       mergedLines[mergedLines.length - 1].text += ' ' + trimmed.substring(1).trim();
       continue;
@@ -76,6 +82,36 @@ export function tokenizeNetlist(netlist: string): ParsedLine[] {
   }
 
   return result;
+}
+
+function looksLikeDeviceOrDirective(line: string): boolean {
+  if (line.startsWith('.')) return true;
+
+  const tokens = line.split(/\s+/);
+  const type = tokens[0]?.[0]?.toUpperCase();
+  const minimumTokens: Partial<Record<string, number>> = {
+    C: 4,
+    D: 4,
+    E: 6,
+    F: 5,
+    G: 6,
+    H: 5,
+    I: 3,
+    J: 5,
+    K: 4,
+    L: 4,
+    M: 5,
+    Q: 5,
+    V: 3,
+    X: 3,
+  };
+
+  if (type === 'R') return tokens.length === 4;
+  if (type === 'B') return tokens.length >= 4 && tokens.slice(3).some(token => token.includes('='));
+  if (type === 'S') return tokens.length >= 6;
+  if (type === 'T') return tokens.length >= 7 && tokens.slice(5).some(token => token.includes('='));
+  const minimum = type ? minimumTokens[type] : undefined;
+  return minimum !== undefined && tokens.length >= minimum;
 }
 
 function stripEndOfLineComment(line: string): string {

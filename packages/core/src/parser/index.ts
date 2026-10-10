@@ -375,6 +375,12 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
       break;
     }
     case 'D':
+      if (tokens.length > 4) {
+        throw new ParseError(
+          `Unsupported diode parameters: '${tokens.slice(4).join(' ')}'`,
+          lineNumber, tokens.join(' '),
+        );
+      }
       circuit.addDiode(name, tokens[1], tokens[2], tokens[3]);
       break;
     case 'Q':
@@ -433,6 +439,6 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
       break;
     }
     default:
-      throw new ParseError(`Unknown device type: '${type}'`, lineNumber, tokens.join(' '));
+      throw new ParseError(`Unsupported device card: '${type}'`, lineNumber, tokens.join(' '));
   }
 }
