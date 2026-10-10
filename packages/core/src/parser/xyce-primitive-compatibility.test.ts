@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { simulate } from '../simulate.js';
 import { parse, parseTitleless } from './index.js';
 
 const xyceFixtureRoot = resolve(
@@ -53,9 +54,19 @@ describe('Xyce primitive parser compatibility', () => {
     });
   }
 
-  it('advances diode-sidewall-dc to explicit unsupported instance geometry', () => {
-    expect(() => parse(fixture('DIODE/diode_with_sidewall.cir')))
-      .toThrow(/Unsupported diode parameters: 'PJ=0.5'/);
+  it('matches ngspice-47 for diode-sidewall-dc instance geometry', async () => {
+    const result = await simulate(fixture('DIODE/diode_with_sidewall.cir'));
+    const current = result.dcSweep!.current('VMON');
+
+    // ngspice-47, `ngspice -b diode_with_sidewall.cir`, after omitting the
+    // Xyce-only N(D1:Cd) print expression: I(VMON)=1.638152e-1 A at VIN=1 V.
+    expect(Math.abs(current.at(-1)! - 1.638152e-1) / 1.638152e-1)
+      .toBeLessThan(0.004);
+  });
+
+  it('keeps unsupported diode instance fields explicit', () => {
+    expect(() => parse('title\nD1 1 0 DMOD TEMP=50\n.model DMOD D'))
+      .toThrow(/Unsupported diode parameter: 'TEMP=50'/);
   });
 
   it('advances inductor-transient to its unsupported TIMEINT field', () => {

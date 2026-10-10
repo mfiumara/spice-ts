@@ -4,6 +4,7 @@ import { tokenizeNetlist, parseNumber } from './tokenizer.js';
 import { parseModelCard } from './model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
+import { parseDiodeInstanceParams } from './diode-parser.js';
 import { preprocess } from './preprocessor.js';
 import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 
@@ -482,13 +483,13 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
       break;
     }
     case 'D':
-      if (tokens.length > 4) {
-        throw new ParseError(
-          `Unsupported diode parameters: '${tokens.slice(4).join(' ')}'`,
-          lineNumber, tokens.join(' '),
-        );
-      }
-      circuit.addDiode(name, tokens[1], tokens[2], tokens[3]);
+      circuit.addDiode(
+        name,
+        tokens[1],
+        tokens[2],
+        tokens[3],
+        parseDiodeInstanceParams(tokens, 4),
+      );
       break;
     case 'Q':
       circuit.addBJT(name, tokens[1], tokens[2], tokens[3], tokens[4]);
