@@ -30,8 +30,8 @@
     "ngspice": "success"
   },
   "runtimeMilliseconds": {
-    "spiceTs": 3.2975419999999644,
-    "ngspiceProcess": 17.143374999999992,
+    "spiceTs": 5.522416000000021,
+    "ngspiceProcess": 30.073833999999977,
     "caveat": "ngspice includes process startup; runtimes are reported honestly and are not a speed claim."
   },
   "errors": {
