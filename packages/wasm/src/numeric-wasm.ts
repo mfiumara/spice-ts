@@ -507,6 +507,7 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
   if (analysis === 'dc') validateDcControls(analyses[0]!);
   if (analysis === 'tran') validateTransientControls(analyses[0]!, request);
   validateCards(cards, analysis);
+  if (analysis === 'op') validateCccsControlSources(cards);
   const circuit = parseTitleless(source);
   const compiled = circuit.compile();
   if (compiled.steps.length > 0 || compiled.poleZeroAnalyses.length > 0
@@ -606,6 +607,45 @@ function validateCards(cards: string[], analysis: 'op' | 'dc' | 'tran' | 'ac'): 
     } else if (!validAcSourceTokens(tokens)) {
       unsupported('source-waveform', 'AC sources must use constant, DC, AC, or DC plus AC values');
     }
+  }
+}
+
+function validateCccsControlSources(cards: string[]): void {
+  const devices = cards
+    .filter(card => !card.startsWith('.'))
+    .map((card, index) => {
+      const tokens = card.split(/\s+/);
+      return {
+        index,
+        name: tokens[0]!,
+        type: tokens[0]![0]!.toUpperCase(),
+        controlSource: tokens[3],
+      };
+    });
+
+  for (const device of devices) {
+    if (device.type !== 'F') continue;
+    const controllingVoltageSource = devices.find(candidate =>
+      candidate.name === device.controlSource && candidate.type === 'V');
+    const referencedDevice = devices.find(candidate => candidate.name === device.controlSource);
+    const reason = controllingVoltageSource && controllingVoltageSource.index > device.index
+      ? 'forward-reference'
+      : referencedDevice
+        ? 'branchless'
+        : 'missing';
+    if (controllingVoltageSource && controllingVoltageSource.index < device.index) continue;
+    throw numericError(
+      'INVALID_CIRCUIT',
+      `CCCS device '${device.name}' must reference a preceding voltage-source branch`,
+      'validation',
+      {
+        backend: 'spice-ts-wasm',
+        feature: 'cccs-control-source',
+        device: device.name,
+        controlSource: device.controlSource!,
+        reason,
+      },
+    );
   }
 }
 

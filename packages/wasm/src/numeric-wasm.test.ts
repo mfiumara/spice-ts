@@ -423,6 +423,37 @@ describe('bounded numeric WebAssembly backend', () => {
     }
   });
 
+  it('rejects unresolved CCCS controlling sources with structured validation errors', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const [name, source, controlSource, reason] of [
+        ['missing', 'F1 out 0 VNOPE 2\nRLOAD out 0 1k\n.op', 'VNOPE', 'missing'],
+        ['branchless', 'RCTRL control 0 1k\nF1 out 0 RCTRL 2\nRLOAD out 0 1k\n.op', 'RCTRL', 'branchless'],
+        ['forward', 'F1 out 0 VCTRL 2\nVCTRL control 0 1\nRLOAD out 0 1k\n.op', 'VCTRL', 'forward-reference'],
+      ] as const) {
+        const result = await wasm.simulate(request(source), { requestId: `wasm-cccs-control-${name}` });
+        expect(result).toMatchObject({
+          ok: false,
+          error: {
+            code: 'INVALID_CIRCUIT',
+            phase: 'validation',
+            retryable: false,
+            details: {
+              backend: 'spice-ts-wasm',
+              feature: 'cccs-control-source',
+              device: 'F1',
+              controlSource,
+              reason,
+            },
+          },
+          metadata: { backend: 'spice-ts-wasm' },
+        });
+      }
+    } finally {
+      await wasm.close();
+    }
+  });
+
   it('rejects non-finite CCCS gain before stamping', async () => {
     const wasm = await engine('spice-ts-wasm');
     try {
