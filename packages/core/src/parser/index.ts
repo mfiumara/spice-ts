@@ -214,7 +214,7 @@ export async function parseTitlelessAsync(
 
 const OUTPUT_ONLY_GNUCAP_OPTION_FLAGS = new Set(['nopage', 'acct', 'list', 'node']);
 const BEHAVIOR_CHANGING_GNUCAP_OPTIONS = new Set([
-  'cstray', 'dampstrategy', 'nobypass', 'noincmode', 'rstray', 'trsteporder',
+  'cstray', 'dampstrategy', 'itermin', 'nobypass', 'noincmode', 'rstray', 'trsteporder',
 ]);
 
 function parseDotCommand(
@@ -591,7 +591,6 @@ function isOutputOnlyGnucapOption(name: string, value: string | undefined): bool
   if (value === undefined) return false;
   if (name === 'phase') return value.toLowerCase() === 'radians';
   if (name === 'outwidth') return /^\d+$/.test(value) && Number(value) > 0;
-  if (name === 'itermin') return /^\d+$/.test(value);
   return false;
 }
 

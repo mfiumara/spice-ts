@@ -173,7 +173,7 @@ describe('Gnucap control and output directives', () => {
 
   it('supports the singular .option spelling and output-only Gnucap fields', () => {
     const circuit = parse(`
-.option method=gear nopage acct list node outwidth=80 phase=radians lvlcod=2 itermin=0
+.option method=gear nopage acct list node outwidth=80 phase=radians lvlcod=2
 .op
 `);
 
