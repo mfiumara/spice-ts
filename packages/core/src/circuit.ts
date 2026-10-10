@@ -822,9 +822,17 @@ export class Circuit {
       const prevLength = devices.length;
 
       switch (desc.type) {
-        case 'R':
-          devices.push(new Resistor(desc.name, nodeIndices, desc.value!));
+        case 'R': {
+          // A zero-ohm resistor is an ideal voltage constraint, not infinite
+          // conductance. Give it an MNA branch so its equation and current are
+          // represented exactly. Stepped resistors also use branch form because
+          // their value may cross zero without changing matrix topology.
+          const usesBranch = desc.value === 0 || this._steps.some(step => step.param === desc.name);
+          const bi = usesBranch ? branchIndex++ : undefined;
+          if (bi !== undefined) branchNames.push(desc.name);
+          devices.push(new Resistor(desc.name, nodeIndices, desc.value!, bi));
           break;
+        }
         case 'V': {
           const bi = branchIndex++;
           branchNames.push(desc.name);
