@@ -703,7 +703,7 @@ export class Circuit {
           inputNegative: params!.inputNegative as string,
           outputPositive: params!.outputPositive as string,
           outputNegative: params!.outputNegative as string,
-          inputType: 'cur',
+          inputType: params!.inputType as 'cur',
           mode: params!.mode as 'pol' | 'pz',
         };
         assertSupportedPoleZero(analysis);

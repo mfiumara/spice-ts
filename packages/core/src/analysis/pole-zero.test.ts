@@ -118,6 +118,22 @@ describe('.pz analysis', () => {
     })).toThrow(InvalidCircuitError);
   });
 
+  it.each([
+    { inputType: 'vol' },
+    {},
+  ])('rejects a programmatic .pz with invalid or missing inputType: $inputType', params => {
+    const circuit = new Circuit();
+
+    expect(() => circuit.addAnalysis('pz', {
+      inputPositive: 'in',
+      inputNegative: '0',
+      outputPositive: 'out',
+      outputNegative: '0',
+      mode: 'pz',
+      ...params,
+    } as never)).toThrow(InvalidCircuitError);
+  });
+
   it('rejects a programmatic .step combined with .pz', () => {
     const circuit = parse(passiveFixture);
 
