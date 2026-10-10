@@ -58,6 +58,8 @@ export interface DeviceModel {
   readonly branches: number[];
   /** Stamp the device's DC/resistive contributions into the MNA system. */
   stamp(ctx: StampContext): void;
+  /** Restrict a Newton candidate while preserving its global step direction. */
+  limitNewtonStep?(previous: Float64Array, candidate: Float64Array): number;
   /** Stamp dynamic (reactive) contributions for AC and transient analysis. */
   stampDynamic?(ctx: StampContext): void;
   /** Stamp AC small-signal contributions at angular frequency omega. */
