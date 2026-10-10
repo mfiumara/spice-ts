@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ParseError } from '../errors.js';
+import { InvalidCircuitError, ParseError } from '../errors.js';
 import { parseTitleless as parse } from '../parser/index.js';
 import { simulate } from '../simulate.js';
 
@@ -116,6 +116,41 @@ describe('.noise analysis', () => {
     expect(result.noise!.frequencies).toEqual([100]);
     expect(result.noise!.integratedOutputNoise).toBeUndefined();
     expect(result.noise!.integratedInputNoise).toBeUndefined();
+  });
+
+  it.each([
+    ['diode', 'D1', `
+      Vbias in 0 DC 1 AC 1
+      R1 in out 1k
+      D1 out 0 Dmod
+      .model Dmod D
+      .noise v(out) Vbias dec 3 100 10k
+    `],
+    ['BJT', 'Q1', `
+      Vbias vcc 0 DC 5 AC 1
+      Rbase vcc base 100k
+      Rload vcc out 1k
+      Q1 out base 0 Qmod
+      .model Qmod NPN
+      .noise v(out) Vbias dec 3 100 10k
+    `],
+    ['MOSFET', 'M1', `
+      Vbias drain 0 DC 1 AC 1
+      Vgate gate 0 DC 2
+      M1 drain gate 0 0 Mmod
+      .model Mmod NMOS (LEVEL=1 VTO=1 KP=1m)
+      .noise v(drain) Vbias dec 3 100 10k
+    `],
+  ])('explicitly rejects unsupported %s noise for %s', async (kind, name, deck) => {
+    try {
+      await simulate(deck);
+      expect.unreachable(`expected ${kind} noise to be rejected`);
+    } catch (error) {
+      expect(error).toBeInstanceOf(InvalidCircuitError);
+      expect((error as Error).message).toContain(
+        `.noise does not support ${kind} noise for '${name}'`,
+      );
+    }
   });
 
   it.each([

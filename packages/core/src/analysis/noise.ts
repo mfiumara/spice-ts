@@ -1,4 +1,8 @@
 import type { CompiledCircuit } from '../circuit.js';
+import { BJT } from '../devices/bjt.js';
+import { BSIM3v3 } from '../devices/bsim3v3.js';
+import { Diode } from '../devices/diode.js';
+import { MOSFET } from '../devices/mosfet.js';
 import { Resistor } from '../devices/resistor.js';
 import { VoltageSource } from '../devices/voltage-source.js';
 import { InvalidCircuitError } from '../errors.js';
@@ -10,6 +14,22 @@ import type { NoiseAnalysis, ResolvedOptions } from '../types.js';
 
 const BOLTZMANN_CONSTANT = 1.380649e-23;
 const DEFAULT_TEMPERATURE_KELVIN = 273.15 + 27;
+
+/** Reject devices whose noise sources are not part of the resistor-only slice. */
+export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
+  for (const device of compiled.devices) {
+    let kind: string | undefined;
+    if (device instanceof Diode) kind = 'diode';
+    else if (device instanceof BJT) kind = 'BJT';
+    else if (device instanceof MOSFET || device instanceof BSIM3v3) kind = 'MOSFET';
+
+    if (kind) {
+      throw new InvalidCircuitError(
+        `.noise does not support ${kind} noise for '${device.name}'`,
+      );
+    }
+  }
+}
 
 /**
  * Solve the first bounded noise slice: thermal noise from ideal resistors at
