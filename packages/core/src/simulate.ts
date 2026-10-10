@@ -23,6 +23,7 @@ import { WasmNgspiceSimulator } from './simulators/ngspice-wasm.js';
 import { computeUICInitialSolution } from './analysis/uic.js';
 import { createConvergenceTelemetry } from './convergence-telemetry.js';
 import { solveStepInWorkers } from './analysis/step-parallel.js';
+import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
 class SpiceTsSimulator implements SimulatorAdapter {
   readonly name = 'spice-ts';
@@ -87,6 +88,7 @@ function withNetlistOptions(compiled: CompiledCircuit, options?: SimulationOptio
 export async function simulate(
   input: string | Circuit,
   options?: SimulationOptions,
+  guard?: ProtocolExecutionGuard,
 ): Promise<SimulationResult> {
   const simulator = selectedExternalSimulator(options);
   if (simulator) {
@@ -99,7 +101,7 @@ export async function simulate(
   } else {
     circuit = input;
   }
-  const compiled = circuit.compile();
+  const compiled = circuit.compile(guard);
   options = withNetlistOptions(compiled, options);
   const warnings: SimulationWarning[] = [];
   const convergence = createConvergenceTelemetry();
@@ -117,7 +119,7 @@ export async function simulate(
       ? await solveStepInWorkers(input, compiled.steps[0], options, warnings, convergence)
       : null;
     const stepResults = parallelResults
-      ?? solveStep(compiled, compiled.steps[0], options, warnings, convergence);
+      ?? solveStep(compiled, compiled.steps[0], options, warnings, convergence, guard);
     return { steps: stepResults, warnings, convergence };
   }
 
@@ -127,29 +129,32 @@ export async function simulate(
     switch (analysis.type) {
       case 'op': {
         const opts = resolveOptions(options);
-        const { result: dcResult } = solveDCOperatingPoint(compiled, opts, undefined, convergence);
+        const { result: dcResult } = solveDCOperatingPoint(
+          compiled, opts, undefined, convergence, 'operating-point', guard,
+        );
+        guard?.recordResultPoint();
         result.dc = dcResult;
         break;
       }
       case 'dc': {
         const opts = resolveOptions(options);
-        result.dcSweep = solveDCSweep(compiled, analysis, opts, convergence);
+        result.dcSweep = solveDCSweep(compiled, analysis, opts, convergence, guard);
         break;
       }
       case 'tran': {
         const opts = resolveOptions(options, analysis.stopTime);
-        const seed = transientInitialSolution(compiled, analysis, opts, undefined, convergence);
+        const seed = transientInitialSolution(compiled, analysis, opts, undefined, convergence, guard);
         result.transient = solveTransient(
-          compiled, runnableTransient(analysis), opts, seed, convergence,
+          compiled, runnableTransient(analysis), opts, seed, convergence, guard,
         );
         break;
       }
       case 'ac': {
         const opts = resolveOptions(options);
         const { assembler: dcAsm } = solveDCOperatingPoint(
-          compiled, opts, undefined, convergence,
+          compiled, opts, undefined, convergence, 'operating-point', guard,
         );
-        result.ac = solveAC(compiled, analysis, opts, dcAsm.solution);
+        result.ac = solveAC(compiled, analysis, opts, dcAsm.solution, guard);
         break;
       }
       case 'noise': {
@@ -394,10 +399,11 @@ function transientInitialSolution(
   options: ResolvedOptions,
   initialGuess?: Float64Array,
   convergence?: ConvergenceTelemetry,
+  guard?: ProtocolExecutionGuard,
 ): Float64Array {
   if (analysis.useInitialConditions) return computeUICInitialSolution(compiled);
   return solveDCOperatingPoint(
-    compiled, options, initialGuess, convergence, 'transient',
+    compiled, options, initialGuess, convergence, 'transient', guard,
   ).assembler.solution;
 }
 

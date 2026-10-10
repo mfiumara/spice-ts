@@ -2,6 +2,7 @@ import type { ConvergenceTelemetry, ResolvedOptions, TransientAnalysis } from '.
 import type { CompiledCircuit } from '../circuit.js';
 import { TransientResult } from '../results.js';
 import { createDriverFromCompiled } from './transient-driver.js';
+import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 /**
  * One-shot transient analysis. Consumes a {@link TransientSim} internally
@@ -13,6 +14,7 @@ export function solveTransient(
   options: ResolvedOptions,
   initialSolution?: Float64Array,
   convergence?: ConvergenceTelemetry,
+  guard?: ProtocolExecutionGuard,
 ): TransientResult {
   const { nodeNames, branchNames } = compiled;
   const driver = createDriverFromCompiled(compiled, options, {
@@ -21,6 +23,7 @@ export function solveTransient(
     maxTimestep: analysis.maxTimestep ?? Math.min(analysis.timestep, analysis.stopTime / 50),
     initialSolution,
     convergence,
+    guard,
   });
 
   const timePoints: number[] = [0];
@@ -30,12 +33,15 @@ export function solveTransient(
   for (const name of branchNames) currentArrays.set(name, []);
 
   // Seed with the DC operating point at t=0
+  guard?.recordResultPoint();
   const initialStep = driver.peekInitialStep();
   for (const [name, v] of initialStep.voltages) voltageArrays.get(name)!.push(v);
   for (const [name, i] of initialStep.currents) currentArrays.get(name)!.push(i);
 
   try {
     while (!driver.isDone) {
+      guard?.checkpoint('solve:transient-step');
+      guard?.recordResultPoint();
       const step = driver.advance();
       timePoints.push(step.time);
       for (const [name, v] of step.voltages) voltageArrays.get(name)!.push(v);

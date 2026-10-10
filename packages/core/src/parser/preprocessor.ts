@@ -2,6 +2,7 @@ import { evaluateExpression } from './expression.js';
 import { parseNumber } from './tokenizer.js';
 import { CycleError, ParseError } from '../errors.js';
 import type { IncludeResolver } from '../types.js';
+import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 const MAX_DEPTH = 64;
 
@@ -22,8 +23,9 @@ const MAX_DEPTH = 64;
 export async function preprocess(
   netlist: string,
   resolver?: IncludeResolver,
+  guard?: ProtocolExecutionGuard,
 ): Promise<string> {
-  return preprocessInternal(netlist, resolver, new Set(), [], 0, {});
+  return preprocessInternal(netlist, resolver, new Set(), [], 0, {}, guard);
 }
 
 async function preprocessInternal(
@@ -33,7 +35,9 @@ async function preprocessInternal(
   chain: string[],
   depth: number,
   params: Record<string, number>,
+  guard?: ProtocolExecutionGuard,
 ): Promise<string> {
+  guard?.maximum('maxIncludeDepth', depth, 'parse');
   if (depth > MAX_DEPTH) {
     throw new ParseError(`Include depth limit exceeded (${MAX_DEPTH})`, 0, '');
   }
@@ -43,6 +47,7 @@ async function preprocessInternal(
   let inSubckt = 0;
 
   for (const line of lines) {
+    guard?.checkpoint('parse:line');
     const trimmed = line.trim();
     const upper = trimmed.toUpperCase();
 
@@ -102,7 +107,7 @@ async function preprocessInternal(
       visited.add(path);
       const content = await resolver(path);
       const processed = await preprocessInternal(
-        content, resolver, visited, [...chain, path], depth + 1, params,
+        content, resolver, visited, [...chain, path], depth + 1, params, guard,
       );
       visited.delete(path);
       output.push(processed);
@@ -133,7 +138,7 @@ async function preprocessInternal(
         const content = await resolver(filePath);
         const extracted = extractLibSection(content, section);
         const processed = await preprocessInternal(
-          extracted, resolver, visited, [...chain, visitKey], depth + 1, params,
+          extracted, resolver, visited, [...chain, visitKey], depth + 1, params, guard,
         );
         visited.delete(visitKey);
         output.push(processed);

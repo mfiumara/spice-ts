@@ -13,6 +13,7 @@ import { computeUICInitialSolution } from './uic.js';
 import {
   createConvergenceTelemetry, resetConvergenceTelemetry, snapshotConvergenceTelemetry,
 } from '../convergence-telemetry.js';
+import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 /**
  * Smallest allowed timestep (femtosecond). Must be small enough that LTE can
@@ -132,6 +133,8 @@ interface InternalTransientConfig {
   initialSolution?: Float64Array;
   /** Shared aggregate used by one-shot simulations. */
   convergence?: ConvergenceTelemetry;
+  /** Cooperative guard used by bounded protocol executions. */
+  guard?: ProtocolExecutionGuard;
 }
 
 class TransientSimImpl implements TransientSim {
@@ -234,7 +237,10 @@ class TransientSimImpl implements TransientSim {
 
       this.assembler.solution.set(prevSol);
       const result = attemptStep(
-        { compiled: this.compiled, assembler: this.assembler, options: this.options },
+        {
+          compiled: this.compiled, assembler: this.assembler, options: this.options,
+          guard: this.config.guard,
+        },
         {
           dt: actualDt,
           time: nextTime,
@@ -458,6 +464,7 @@ class TransientSimImpl implements TransientSim {
   private initDC(): void {
     const { assembler: dcAsm } = solveDCOperatingPoint(
       this.compiled, this.options, undefined, this.convergenceTelemetry, 'transient',
+      this.config.guard,
     );
     this.assembler.solution.set(dcAsm.solution);
   }
@@ -513,6 +520,7 @@ export function createDriverFromCompiled(
     maxTimestep: number;
     initialSolution?: Float64Array;
     convergence?: ConvergenceTelemetry;
+    guard?: ProtocolExecutionGuard;
   },
 ): TransientSim & { peekInitialStep(): TransientStep } {
   const impl = new TransientSimImpl(compiled, options, {
@@ -521,6 +529,7 @@ export function createDriverFromCompiled(
     maxTimestep: config.maxTimestep,
     initialSolution: config.initialSolution,
     convergence: config.convergence,
+    guard: config.guard,
   });
   return impl;
 }
