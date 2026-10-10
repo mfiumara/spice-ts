@@ -38,50 +38,15 @@ describe('aggregate report artifact verification', () => {
     const { json } = await committedArtifacts();
     const report = JSON.parse(json);
 
-    assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/209');
-    assert.equal(report.comparisonToPrevious.pullRequestUrl, 'https://github.com/mfiumara/spice-ts/pull/213');
-    assert.equal(report.comparisonToPrevious.headSha, 'f98cb95bbbdd93393e1f555dfe86e45ab6bcd00c');
-    assert.equal(report.comparisonToPrevious.outcomeSha256, '45aee36e07a056380b1b0057b9397cc323f594fdb381f254b023e11fdfe2b009');
-    assert.equal(report.comparisonToPrevious.statusTransitions.length, 19);
-    assert.deepEqual(
-      report.comparisonToPrevious.statusTransitions.map(
-        (transition: { fixture: string; from: string; to: string }) => [transition.fixture, transition.from, transition.to],
-      ),
-      [
-        ['classic/bsim1-device-sweep', 'unsupported', 'success'],
-        ['classic/bsim2-device-sweep', 'unsupported', 'success'],
-        ['classic/bjt-differential-pair', 'unsupported', 'success'],
-        ['classic/diode-distortion', 'unsupported', 'failed'],
-        ['classic/mos6-inverter-chain', 'unsupported', 'failed'],
-        ['classic/mos-amplifier', 'unsupported', 'failed'],
-        ['classic/mos-memory-cell', 'unsupported', 'failed'],
-        ['classic/rca3040-wideband-amplifier', 'success', 'failed'],
-        ['classic/rtl-inverter-chain', 'unsupported', 'success'],
-        ['corpus-e/cccs-mixed-analysis', 'unsupported', 'success'],
-        ['corpus-e/mos1-inverter-sweep', 'unsupported', 'success'],
-        ['corpus-e/bjt-diffpair-ac', 'unsupported', 'success'],
-        ['corpus-e/capacitor-step-transient', 'unsupported', 'success'],
-        ['corpus-e/capacitor-initial-condition', 'unsupported', 'success'],
-        ['corpus-e/lc-oscillator-transient', 'unsupported', 'success'],
-        ['corpus-e/diode-temperature-sweep', 'unsupported', 'success'],
-        ['corpus-e/mos1-nand-transient', 'unsupported', 'success'],
-        ['corpus-e/bjt-rtl-inverter-chain', 'unsupported', 'success'],
-        ['corpus-e/dual-lc-uic-rejection', 'unsupported', 'success'],
-      ],
-    );
-    assert.deepEqual(
-      report.comparisonToPrevious.statusTransitions.find(
-        (transition: { fixture: string }) => transition.fixture === 'classic/rca3040-wideband-amplifier',
-      ),
-      {
-        engine: 'spiceTs',
-        fixture: 'classic/rca3040-wideband-amplifier',
-        from: 'success',
-        to: 'failed',
-        explanation: 'Operating-point convergence now oscillates, removing the prior OP, AC, and transient comparisons.',
-        gapIssues: ['https://github.com/mfiumara/spice-ts/issues/280'],
-      },
-    );
+    assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/275');
+    assert.equal(report.comparisonToPrevious.pullRequestUrl, 'https://github.com/mfiumara/spice-ts/pull/284');
+    assert.equal(report.comparisonToPrevious.headSha, '47da214e26d348f41baea47b80acff8afe6f2881');
+    assert.equal(report.comparisonToPrevious.outcomeSha256, '2c5abd0d6ffb637d98ef8a9248ce2007932b0b211064a6445175fc3bb9056ba8');
+    assert.deepEqual(report.comparisonToPrevious.statusTransitions, []);
+    assert.deepEqual(report.comparisonToPrevious.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
+    assert.deepEqual(report.comparisonToPrevious.totals.spiceTs, { success: 28, failed: 9, unsupported: 63 });
+    assert.equal(report.comparisonToPrevious.totals.comparedAnalyses, 28);
+    assert.equal(report.comparisonToPrevious.totals.comparedFixtures, 18);
   });
 
   it('locks the unchanged aggregate fixture tree and records the current source catalogue', async () => {
