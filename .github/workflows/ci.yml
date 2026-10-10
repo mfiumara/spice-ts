@@ -26,7 +26,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm -C packages/core build
+      - run: pnpm -C packages/protocol build && pnpm -C packages/core build
 
       - run: pnpm lint
 
