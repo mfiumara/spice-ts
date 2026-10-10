@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "name": "Gnucap regression test circuits",
+    "repository": "https://github.com/gnucap/gnucap",
+    "revision": "5acb027125d6ea7c546badd03e026d8781c6a400",
+    "license": "GPL-3.0-or-later",
+    "licenseUrl": "https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/COPYING",
+    "licenseNoticeSourceUrl": "https://raw.githubusercontent.com/gnucap/gnucap/5acb027125d6ea7c546badd03e026d8781c6a400/tests/MakeList",
+    "licenseNoticeLocalPath": "benchmarks/corpus/corpus-e/LICENSE-NOTICE.MakeList",
+    "licenseNoticeSha256": "c601be3b6a490b37c25e23e6a3b5ac5b34eedf07555a5b0ae01349b6cea474eb",
+    "licenseTextSourceUrl": "https://raw.githubusercontent.com/gnucap/gnucap/5acb027125d6ea7c546badd03e026d8781c6a400/COPYING",
+    "licenseTextLocalPath": "benchmarks/corpus/corpus-e/COPYING.txt",
+    "licenseTextSha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+    "redistributionDecision": "Allowed under GPL-3.0-or-later. Selected source-form tests are redistributed verbatim with the tests/MakeList GPL notice and complete GPLv3 text.",
+    "mechanicalAdaptation": "None. Every .ckt fixture is byte-identical to the pinned Gnucap revision."
+  },
+  "circuits": [
+    {
+      "id": "cccs-mixed-analysis",
+      "category": "op-dc",
+      "analyses": ["op", "tran", "ac"],
+      "stressRationale": "Operating-point controlled-source evaluation with live and zero-volt sensing sources.",
+      "sourcePath": "tests/d_cccs.1.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_cccs.1.ckt",
+      "sha256": "87e7a7e164e9cdac5891b12fd038c06945043f5455a79fb31d26c97bc0463e05",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "Gnucap .width/.status and probe forms are outside ngspice's accepted deck syntax." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The Gnucap # title/comment form is not accepted." }
+    },
+    {
+      "id": "vcvs-operating-point",
+      "category": "op-dc",
+      "analyses": ["op", "ac"],
+      "stressRationale": "Operating-point VCVS/VCCS loading and source current evaluation.",
+      "sourcePath": "tests/d_vcvs.1.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_vcvs.1.ckt",
+      "sha256": "cd4c6c8b18a27254b06859424268763a7f5b4a39a648981fc27d6a18b91e2cd1",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "execution", "reason": "The unchanged deck contains Gnucap-only output expressions rejected during execution." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The Gnucap # title/comment form is not accepted." }
+    },
+    {
+      "id": "diode-bias-sweep",
+      "category": "op-dc",
+      "analyses": ["op", "dc"],
+      "stressRationale": "Diode operating point followed by a bipolar source sweep.",
+      "sourcePath": "tests/d_diode.1.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_diode.1.ckt",
+      "sha256": "f84c531a2e0b4ef201f1cef5d85279b360d5fd20d17d3deb91563581a9371055",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The device-shaped first-line title is interpreted as an S device." }
+    },
+    {
+      "id": "mos1-inverter-sweep",
+      "category": "op-dc",
+      "analyses": ["op", "dc", "tran"],
+      "stressRationale": "Level-1 complementary MOS inverter operating point and transfer sweep.",
+      "sourcePath": "tests/d_mos1.inv1.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_mos1.inv1.ckt",
+      "sha256": "e832b2a4c0099a68c035342e81e780256fa8369239fcd61c0fd1ad5a5a249de5",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The .title directive is currently unsupported." }
+    },
+    {
+      "id": "transmission-line-ac",
+      "category": "ac",
+      "analyses": ["ac"],
+      "stressRationale": "Matched, open, shorted, low-Z and high-Z transmission-line loads over AC sweeps.",
+      "sourcePath": "tests/d_trln.ac.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_trln.ac.ckt",
+      "sha256": "99cc373d602fad9ecd4ea0e8f14d9eba9322b0083ae02c7631091dcbece7828b",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "Gnucap generator, parameter reassignment, and shorthand AC forms are not portable to ngspice." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The Gnucap # title/comment form is not accepted." }
+    },
+    {
+      "id": "mutual-inductance-ac",
+      "category": "ac",
+      "analyses": ["ac", "tran"],
+      "stressRationale": "Coupled-inductor and equivalent dependent-source AC responses.",
+      "sourcePath": "tests/d_coil.1.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_coil.1.ckt",
+      "sha256": "45bf5fdc96b7985a744455ff7c3222478665e3db487bbcfedc5c7efa8297fc3c",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "Gnucap output/status directives in the unchanged deck are rejected by ngspice." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "Mutual-inductor K elements are explicitly unsupported." }
+    },
+    {
+      "id": "bjt-diffpair-ac",
+      "category": "ac",
+      "analyses": ["dc", "tran", "op", "ac"],
+      "stressRationale": "BJT differential-pair gain and phase across a wide AC sweep.",
+      "sourcePath": "tests/d_bjt-diffpair-tf.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-diffpair-tf.ckt",
+      "sha256": "f8cde99b71d9978c5216dffbc9dfc036c8bdf7b37f1c9949fa9835e6eb741213",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "Gnucap-specific plotting/output commands prevent an unchanged ngspice run." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The .option directive is unsupported." }
+    },
+    {
+      "id": "opamp-open-loop-ac",
+      "category": "ac",
+      "analyses": ["op", "ac", "dc"],
+      "stressRationale": "Two-stage MOS op-amp open-loop magnitude and phase response.",
+      "sourcePath": "tests/opamp-ol.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/opamp-ol.ckt",
+      "sha256": "92e47652dbecdbd2c971cce3c047fc0b8e4a0406a7d2c953dffce299c60b183c",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "execution", "reason": "Gnucap-specific output expressions abort the unchanged deck." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The numeric first-line title is interpreted as an unknown device." }
+    },
+    {
+      "id": "capacitor-step-transient",
+      "category": "tran",
+      "analyses": ["tran"],
+      "stressRationale": "RC transient response to a pulsed source.",
+      "sourcePath": "tests/d_cap.1.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_cap.1.ckt",
+      "sha256": "2c0864497272439baa44213381271915107ccd9f8c47354df2e4b9c3028a1608",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The unchanged deck uses Gnucap .status syntax." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The apostrophe-prefixed title is not accepted." }
+    },
+    {
+      "id": "capacitor-initial-condition",
+      "category": "tran",
+      "analyses": ["tran"],
+      "stressRationale": "RC decay verifies initial-condition behavior without UIC.",
+      "sourcePath": "tests/d_cap.ic1.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_cap.ic1.ckt",
+      "sha256": "65199506e3a8b9bd05b3842cc9ef180308d0d02ba2e9857e89f7f1f8c32c3c84",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The apostrophe title is parsed as circuit text rather than a portable title." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The apostrophe-prefixed title is not accepted." }
+    },
+    {
+      "id": "lc-oscillator-transient",
+      "category": "tran",
+      "analyses": ["tran"],
+      "stressRationale": "Undamped parallel LC transient excited by a PWL current impulse.",
+      "sourcePath": "tests/oscillator.1.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/oscillator.1.ckt",
+      "sha256": "020684099d172ec7cc2a6fe3d57792ef51b3d9162f41f83ed486704062d6d702",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The Gnucap unparenthesized PWL and status syntax are rejected." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "PWL requires a parenthesized time/value list." }
+    },
+    {
+      "id": "bjt-diffpair-transient",
+      "category": "tran",
+      "analyses": ["op", "tran"],
+      "stressRationale": "High-frequency BJT differential-pair transient response.",
+      "sourcePath": "tests/d_bjt-diffpair-tran.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-diffpair-tran.ckt",
+      "sha256": "f142fa0c6378f80666343a83c8582cca065ed7ad5d49dd3d9e5cd88e7474301e",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "convergence", "reason": "The compiled operating-point matrix is singular at column 10." }
+    },
+    {
+      "id": "bjt-schmitt-trigger",
+      "category": "nonlinear",
+      "analyses": ["op", "tran"],
+      "stressRationale": "Four-BJT regenerative Schmitt trigger with capacitive loading.",
+      "sourcePath": "tests/d_bjt-schmitt-nobypass.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-schmitt-nobypass.ckt",
+      "sha256": "ec6efed82593b525b1661173b3a11dbec4880449968389ff86424051d42274b5",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "A Gnucap transistor parameter form is rejected by ngspice." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The device-shaped title is interpreted as an S device." }
+    },
+    {
+      "id": "diode-temperature-sweep",
+      "category": "nonlinear",
+      "analyses": ["op", "dc"],
+      "stressRationale": "Nonlinear diode DC behavior across source and temperature sweeps.",
+      "sourcePath": "tests/d_diode.6.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_diode.6.ckt",
+      "sha256": "d2d7df0b8050008df98e6a8410433c6ef346d9851371c2032edaeb0c9c43dd48",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "Gnucap sweep/output syntax in the unchanged deck is rejected." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The device-shaped first-line title is interpreted as an S device." }
+    },
+    {
+      "id": "mos1-nand-transient",
+      "category": "nonlinear",
+      "analyses": ["op", "tran"],
+      "stressRationale": "Complementary MOS NAND switching with an internal leakage node.",
+      "sourcePath": "tests/d_mos1.nand1.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_mos1.nand1.ckt",
+      "sha256": "183f57f24707d2597f83396a777896e336a17a4ec8a13027f89c5029440d8300",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "Gnucap trace arguments on analyses are not valid ngspice syntax." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The .title directive is unsupported." }
+    },
+    {
+      "id": "bjt-rtl-inverter-chain",
+      "category": "nonlinear",
+      "analyses": ["op", "dc", "tran"],
+      "stressRationale": "Cascaded nonlinear BJT resistor-transistor logic inverters.",
+      "sourcePath": "tests/d_bjt-rtlinv.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-rtlinv.ckt",
+      "sha256": "48b7f67014d43f0c9987ebbc9b349cf53908cc51426d784c4be6db3397fd6e2d",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The device-shaped title is parsed as a resistor with unsupported trailing parameters." }
+    },
+    {
+      "id": "dual-lc-uic-rejection",
+      "category": "convergence",
+      "analyses": ["tran"],
+      "stressRationale": "Two undamped LC tanks with capacitor and inductor initial conditions exercise UIC and rejected-step control.",
+      "sourcePath": "tests/oscillator.7.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/oscillator.7.ckt",
+      "sha256": "f1f6a53ef0bb2d41988b1ec4fb022abea8830cd8a847aa3b693d96fe7e66e36d",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "Gnucap trace/rejected transient arguments are outside ngspice syntax." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The .width directive is unsupported." }
+    },
+    {
+      "id": "opamp-voltage-follower",
+      "category": "convergence",
+      "analyses": ["op", "ac", "dc", "tran"],
+      "stressRationale": "Closed-loop two-stage MOS amplifier stresses nonlinear feedback operating-point and transient convergence.",
+      "sourcePath": "tests/opamp-vf.1.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/opamp-vf.1.ckt",
+      "sha256": "923e0da63d9fbeca5cb94d049af3f85036f5b1a1af38a0701dbed8c258ff1ebd",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "Gnucap-specific options/output forms prevent an unchanged ngspice run." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The numeric first-line title is interpreted as an unknown device." }
+    },
+    {
+      "id": "mos7-nand-no-bypass",
+      "category": "convergence",
+      "analyses": ["op", "tran"],
+      "stressRationale": "No-bypass level-7 MOS NAND repeatedly solves internal junction quantities before a traced transient.",
+      "sourcePath": "tests/d_mos7.nand1.nobypass.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_mos7.nand1.nobypass.ckt",
+      "sha256": "81a387433d50c7d280d2b80d2463f3a9d42fc6ea969ef783333b16eaca046868",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "execution", "reason": "The unchanged Gnucap trace and internal-junction expressions abort in ngspice." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The .title directive is unsupported." }
+    },
+    {
+      "id": "bjt-diffpair-current-source",
+      "category": "convergence",
+      "analyses": ["op", "tran", "ac"],
+      "stressRationale": "Four-BJT current-source differential pair stresses nonlinear bias, transient, and repeated AC solves.",
+      "sourcePath": "tests/d_bjt-diffpair-ccs.ckt",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-diffpair-ccs.ckt",
+      "sha256": "7060377579bdb6bfef87225ee4710b81744462af1548ccff755adf061f14f37c",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "convergence", "reason": "The compiled operating-point matrix is singular at column 10." }
+    }
+  ]
+}
