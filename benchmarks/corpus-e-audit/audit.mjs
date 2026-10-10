@@ -12,6 +12,33 @@ const corpusRoot = resolve(repoRoot, 'benchmarks/corpus/corpus-e');
 const manifestPath = resolve(corpusRoot, 'manifest.json');
 const spiceTsRunner = resolve(corpusRoot, 'run-spice-ts.mjs');
 const causes = ['parser', 'device/model', 'analysis', 'convergence', 'execution'];
+const issue228Baseline = {
+  spiceTsHead: 'f737698e90b4e025de65c9f621fcf75f6c27b15d',
+  outcomeSha256: 'dd99c57c31e72613e2e532ab0708d9810b0e6d5d09950ba74c03539b66314290',
+  totals: { pass: 4, parser: 3, 'device/model': 0, analysis: 13, convergence: 0, execution: 0 },
+  outcomes: {
+    'cccs-mixed-analysis': { status: 'fail', cause: 'analysis' },
+    'vcvs-operating-point': { status: 'fail', cause: 'analysis' },
+    'diode-bias-sweep': { status: 'pass' },
+    'mos1-inverter-sweep': { status: 'fail', cause: 'analysis' },
+    'transmission-line-ac': { status: 'fail', cause: 'analysis' },
+    'mutual-inductance-ac': { status: 'fail', cause: 'analysis' },
+    'bjt-diffpair-ac': { status: 'fail', cause: 'analysis' },
+    'opamp-open-loop-ac': { status: 'fail', cause: 'parser' },
+    'capacitor-step-transient': { status: 'fail', cause: 'parser' },
+    'capacitor-initial-condition': { status: 'fail', cause: 'analysis' },
+    'lc-oscillator-transient': { status: 'fail', cause: 'parser' },
+    'bjt-diffpair-transient': { status: 'pass' },
+    'bjt-schmitt-trigger': { status: 'pass' },
+    'diode-temperature-sweep': { status: 'fail', cause: 'analysis' },
+    'mos1-nand-transient': { status: 'fail', cause: 'analysis' },
+    'bjt-rtl-inverter-chain': { status: 'fail', cause: 'analysis' },
+    'dual-lc-uic-rejection': { status: 'fail', cause: 'analysis' },
+    'opamp-voltage-follower': { status: 'fail', cause: 'analysis' },
+    'mos7-nand-no-bypass': { status: 'fail', cause: 'analysis' },
+    'bjt-diffpair-current-source': { status: 'pass' },
+  },
+};
 
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
@@ -44,7 +71,7 @@ export function classifySpiceTsFailure(result) {
   if (/timestep|converg|singular matrix/i.test(message) || /Convergence/i.test(result?.errorName ?? '')) {
     return 'convergence';
   }
-  if (/unsupported (?:device|model)|device card|model level|mutual-inductor|\bK element/i.test(message)) {
+  if (/unsupported (?:device|model)|device card|model level|mutual-inductor|\bK[- ]element/i.test(message)) {
     return 'device/model';
   }
   if (
@@ -72,7 +99,7 @@ function failureEvidence(engine, output, cause) {
       }
     : {
         parser: [/Cannot parse number/i, /PWL source requires/i, /Parse error/i],
-        'device/model': [/unsupported (?:device|model)/i, /device card/i, /model level/i],
+        'device/model': [/unsupported (?:device|model)/i, /device card/i, /model level/i, /K[- ]element/i],
         analysis: [/Unsupported dot command/i, /Unsupported \.options field/i, /Cannot parse number: 'trace'/i],
         convergence: [/timestep/i, /converg/i, /singular matrix/i],
         execution: [/error/i],
@@ -191,6 +218,20 @@ export async function auditCorpusE() {
     }
   }
 
+  const issue228Transitions = fixtures.map((fixture) => {
+    const before = issue228Baseline.outcomes[fixture.id];
+    if (!before) throw new Error(`${fixture.id}: missing issue #228 baseline outcome`);
+    const after = fixture.spiceTs.status === 'pass'
+      ? { status: 'pass' }
+      : { status: 'fail', cause: fixture.spiceTs.cause };
+    return {
+      id: fixture.id,
+      before,
+      after,
+      changed: before.status !== after.status || before.cause !== after.cause,
+    };
+  });
+
   return {
     schemaVersion: 1,
     source: {
@@ -218,6 +259,12 @@ export async function auditCorpusE() {
       memoryBytes: totalmem(),
     },
     totals,
+    issue228Baseline: {
+      spiceTsHead: issue228Baseline.spiceTsHead,
+      outcomeSha256: issue228Baseline.outcomeSha256,
+      totals: issue228Baseline.totals,
+    },
+    issue228Transitions,
     fixtureSetSha256: fixtureSetHash(fixtures),
     outcomeSha256: outcomeHash(fixtures),
     fixtures,
@@ -225,12 +272,28 @@ export async function auditCorpusE() {
 }
 
 function renderReport(receipt) {
+  const state = outcome => outcome.status === 'pass' ? 'pass' : `fail/${outcome.cause}`;
+  const transitions = new Map(receipt.issue228Transitions.map(transition => [transition.id, transition]));
   const rows = receipt.fixtures.map((fixture) => {
     const result = (engine) => fixture[engine].status === 'pass'
       ? 'pass'
       : `fail — ${fixture[engine].cause}: ${fixture[engine].evidence.replaceAll('|', '\\|')}`;
-    return `| ${fixture.id} | \`${fixture.sha256}\` | ${result('ngspice')} | ${result('spiceTs')} |`;
+    const transition = transitions.get(fixture.id);
+    return `| ${fixture.id} | \`${fixture.sha256}\` | ${result('ngspice')} | ${state(transition.before)} | ${result('spiceTs')} | ${state(transition.before)} → ${state(transition.after)} |`;
   });
+  const changed = receipt.issue228Transitions.filter(transition => transition.changed).length;
+  const gains = receipt.issue228Transitions.filter(transition => (
+    transition.before.status === 'fail' && transition.after.status === 'pass'
+  )).length;
+  const regressions = receipt.issue228Transitions.filter(transition => (
+    transition.before.status === 'pass' && transition.after.status === 'fail'
+  )).length;
+  const ngspiceOnlyPasses = receipt.fixtures
+    .filter(fixture => fixture.ngspice.status === 'pass' && fixture.spiceTs.status === 'fail')
+    .map(fixture => fixture.id);
+  const remainingSpiceTsFailures = receipt.fixtures
+    .filter(fixture => fixture.spiceTs.status === 'fail')
+    .map(fixture => `${fixture.id} (${fixture.spiceTs.cause})`);
   return `# Unchanged Gnucap corpus-E gap audit
 
 This audit runs all 20 provenance-tracked fixtures byte-for-byte through both engines. It does not adapt fixtures, alter tolerances, or claim simulator superiority.
@@ -239,7 +302,10 @@ This audit runs all 20 provenance-tracked fixtures byte-for-byte through both en
 
 - ngspice: ${receipt.totals.ngspice.pass}/20 pass; parser=${receipt.totals.ngspice.parser}, device/model=${receipt.totals.ngspice['device/model']}, analysis=${receipt.totals.ngspice.analysis}, convergence=${receipt.totals.ngspice.convergence}, execution=${receipt.totals.ngspice.execution}.
 - spice-ts: ${receipt.totals.spiceTs.pass}/20 pass; parser=${receipt.totals.spiceTs.parser}, device/model=${receipt.totals.spiceTs['device/model']}, analysis=${receipt.totals.spiceTs.analysis}, convergence=${receipt.totals.spiceTs.convergence}, execution=${receipt.totals.spiceTs.execution}.
-- The issue's 0/20 spice-ts baseline is not preserved: the unchanged-input rerun produces 4/20 passes after intervening simulator changes. The loss remains explicit: ngspice passes 5/20 while spice-ts passes 4/20.
+- Issue #228 baseline at \`${receipt.issue228Baseline.spiceTsHead}\`: spice-ts ${receipt.issue228Baseline.totals.pass}/20 pass; parser=${receipt.issue228Baseline.totals.parser}, device/model=${receipt.issue228Baseline.totals['device/model']}, analysis=${receipt.issue228Baseline.totals.analysis}, convergence=${receipt.issue228Baseline.totals.convergence}, execution=${receipt.issue228Baseline.totals.execution}; outcome SHA-256 \`${receipt.issue228Baseline.outcomeSha256}\`.
+- All 20 baseline/current status and first-cause pairs are below: ${changed} changed and ${20 - changed} unchanged; ${gains} fail-to-pass transitions and ${regressions} pass-to-fail regressions.
+- Losses remain explicit. ngspice-pass/spice-ts-fail fixtures: ${ngspiceOnlyPasses.length === 0 ? 'none' : ngspiceOnlyPasses.join(', ')}. Remaining spice-ts failures: ${remainingSpiceTsFailures.join(', ')}.
+- The pass counts are execution statuses, not waveform parity. Different accepted syntax and device coverage make them unsuitable for a simulator-superiority claim.
 - Fixture-set SHA-256: \`${receipt.fixtureSetSha256}\`.
 - Deterministic outcome SHA-256: \`${receipt.outcomeSha256}\`.
 
@@ -260,8 +326,8 @@ The first hard engine diagnostic is mapped, in order, to parser, device/model, a
 
 ## Per-fixture evidence
 
-| Fixture | Input SHA-256 | ngspice | spice-ts |
-|---|---|---|---|
+| Fixture | Input SHA-256 | ngspice current | spice-ts #228 baseline | spice-ts current | spice-ts transition |
+|---|---|---|---|---|---|
 ${rows.join('\n')}
 
 ## Gap tracking
@@ -273,7 +339,7 @@ ${rows.join('\n')}
 
 ## /poteto-mode receipt
 
-RED: \`node --test benchmarks/corpus-e-audit/audit.test.mjs\` failed because \`audit.mjs\` did not exist. GREEN: the same focused test executes both engines over all 20 unchanged fixtures and locks totals plus stable hashes. REFACTOR: engine execution, classification, hashing, and report rendering are separated; no simulator, fixture, manifest, aggregate report, tolerance, or other corpus file is changed.
+Loaded \`pstack:poteto-mode\`, \`pstack:how\`, the feature playbook, and \`pstack:architect\`; compared a policy-table design with the chosen lower-surface inline parser-helper design. Parser RED commit \`202e0e4577a06b6d8f1fc8fb6e2bf3de7de7dd66\` failed 19 of 59 focused cases. GREEN passed all 59. Audit RED commit \`148926839447cbabc2275abe833db717b48b45ff\` failed the K-element classification and post-change totals. GREEN runs both engines over all 20 unchanged fixtures, locks totals and stable hashes, and records every #228 transition. REFACTOR keeps output-only classification internal and leaves every corpus fixture, manifest, source revision, and tolerance unchanged.
 `;
 }
 

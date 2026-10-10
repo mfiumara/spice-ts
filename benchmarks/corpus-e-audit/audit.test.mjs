@@ -9,7 +9,7 @@ import {
 } from './audit.mjs';
 
 const EXPECTED_FIXTURE_SET_HASH = 'e6346a45392800a58c186eb691d242f4b88611f1609b29db4b0f1c1110a08897';
-const EXPECTED_OUTCOME_HASH = 'issue-228-green-hash';
+const EXPECTED_OUTCOME_HASH = 'f227882a3b23ab543b8a89f27a265a80174ab07abae172f99c721cc9621b809f';
 
 test('failure classifiers cover every audit cause', () => {
   assert.equal(classifyNgspiceFailure("unimplemented dot command '.list'"), 'analysis');
