@@ -1,0 +1,4 @@
+V1 out 0 1
+G1 out 0 c d 1m
+R1 c d 1k
+.op
