@@ -1,0 +1,9 @@
+* Issue 368 unsupported form: coupled inductors (project-authored, MIT)
+V1 in 0 PULSE(0 1 0 1u 1u 10m 20m)
+R1 in a 10
+L1 a 0 1m
+L2 b 0 1m
+R2 b 0 10
+K1 L1 L2 0.5
+.tran 1u 100u
+.end

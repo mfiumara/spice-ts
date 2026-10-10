@@ -41,6 +41,7 @@
     "bench:vcvs-op:check": "tsx ../../benchmarks/results/issue-355/receipt-revision.ts --check",
     "bench:ccvs-op": "pnpm build && tsx ../../benchmarks/results/issue-362/compare.ts",
     "bench:ccvs-op:check": "tsx ../../benchmarks/results/issue-362/receipt-revision.ts --check",
+    "bench:rlc-tran": "pnpm build && tsx ../../benchmarks/results/issue-368/compare.ts",
     "bench:dc": "pnpm build && tsx ../../benchmarks/wasm-dc-sweep/compare.ts",
     "pretest:coverage": "pnpm -C ../core build && pnpm -C ../protocol build",
     "test:coverage": "pnpm build && vitest run --coverage",

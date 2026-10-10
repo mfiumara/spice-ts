@@ -540,7 +540,7 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
   }
   const devices = analysis === 'op' ? ['R', 'I', 'V', 'G', 'F', 'E', 'H']
     : analysis === 'dc' ? ['R', 'I', 'V']
-    : analysis === 'tran' ? ['R', 'C', 'I', 'V']
+    : analysis === 'tran' ? ['R', 'C', 'L', 'I', 'V']
       : ['R', 'C', 'L', 'I', 'V'];
   if (compiled.devices.some(device => !devices.includes(device.name[0]?.toUpperCase() ?? ''))) {
     unsupported('device', `Only ${devices.join(', ')} devices are supported for .${analysis}`);
@@ -596,16 +596,26 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
 function validateCards(cards: string[], analysis: 'op' | 'dc' | 'tran' | 'ac'): void {
   const allowedDevices = analysis === 'op' ? ['R', 'I', 'V', 'G', 'F', 'E', 'H']
     : analysis === 'dc' ? ['R', 'I', 'V']
-    : analysis === 'tran' ? ['R', 'C', 'I', 'V']
+    : analysis === 'tran' ? ['R', 'C', 'L', 'I', 'V']
       : ['R', 'C', 'L', 'I', 'V'];
   for (const card of cards) {
     if (new RegExp(`^\\.(?:${analysis}|end)(?:\\s|$)`, 'i').test(card)) continue;
     const tokens = card.split(/\s+/);
     const type = tokens[0]?.[0]?.toUpperCase() ?? '';
+    if (type === 'K' && allowedDevices.includes('L')) {
+      unsupported('inductor-coupling', 'Coupled inductors (K) are not supported');
+    }
     if (!allowedDevices.includes(type)) {
       unsupported('device-or-directive', `Unsupported linear .${analysis} card '${tokens[0] ?? ''}'`);
     }
-    if (type === 'R' || type === 'C' || type === 'L') {
+    if (type === 'L') {
+      if (/\bIC\s*=/i.test(card)) {
+        unsupported('inductor-initial-condition', 'Inductor initial conditions (IC=) are not supported');
+      }
+      if (tokens.length !== 4 || !SPICE_NUMBER.test(tokens[3]!)) {
+        unsupported('inductor-form', 'Inductors must use name positive negative constant-inductance');
+      }
+    } else if (type === 'R' || type === 'C') {
       if (tokens.length !== 4) {
         unsupported('passive-form', 'Passive devices must use name positive negative value');
       }
@@ -642,6 +652,8 @@ function validateCards(cards: string[], analysis: 'op' | 'dc' | 'tran' | 'ac'): 
     }
   }
 }
+
+const SPICE_NUMBER = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?[a-z]*$/i;
 
 function normalizeAndValidateCurrentControlledSources(cards: string[]): string[] {
   const normalizedCards = [...cards];
