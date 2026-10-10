@@ -4,12 +4,14 @@ import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.j
 import { toCsc } from '../solver/csc-matrix.js';
 import { ComplexSparseSolver } from '../solver/complex-sparse-solver.js';
 import { ACResult } from '../results.js';
+import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 export function solveAC(
   compiled: CompiledCircuit,
   analysis: ACAnalysis,
   options: ResolvedOptions,
   dcSolution: Float64Array,
+  guard?: ProtocolExecutionGuard,
 ): ACResult {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
   const systemSize = nodeCount + branchCount;
@@ -74,6 +76,8 @@ export function solveAC(
   }
 
   for (const freq of frequencies) {
+    guard?.checkpoint('solve:ac-point');
+    guard?.recordResultPoint();
     const omega = 2 * Math.PI * freq;
 
     solver.factorize(gCsc, cCsc, omega);

@@ -20,6 +20,7 @@ import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
 import { CCCS } from './devices/cccs.js';
 import { CCVS } from './devices/ccvs.js';
+import { TransmissionLine } from './devices/transmission-line.js';
 import { GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
@@ -40,6 +41,7 @@ import {
   type ResolvedInductorModel,
 } from './devices/passive-model.js';
 import { CycleError, InvalidCircuitError } from './errors.js';
+import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
 /**
  * The compiled representation of a circuit, ready for numerical simulation.
@@ -167,6 +169,8 @@ function formatDevice(desc: DeviceDescriptor): string {
     }
     case 'K':
       return `${desc.name} ${desc.coupledA} ${desc.coupledB} ${formatNumber(desc.value ?? 0)}`;
+    case 'T':
+      return `${desc.name} ${desc.nodes.join(' ')} Z0=${formatNumber(desc.value ?? 0)} TD=${formatNumber(desc.params?.TD ?? 0)}`;
     case 'V':
     case 'I':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatWaveform(desc.waveform)}`;
@@ -304,9 +308,11 @@ export class Circuit {
   }
 
   get branchCount(): number {
-    return this.descriptors.filter(d =>
-      d.type === 'V' || d.type === 'L' || d.type === 'E' || d.type === 'H',
-    ).length;
+    return this.descriptors.reduce((count, descriptor) =>
+      count + (descriptor.type === 'T'
+        ? 2
+        : descriptor.type === 'V' || descriptor.type === 'L'
+          || descriptor.type === 'E' || descriptor.type === 'H' ? 1 : 0), 0);
   }
 
   getNodeIndex(name: string): number {
@@ -398,6 +404,28 @@ export class Circuit {
     this.descriptors.push({
       type: 'K', name, nodes: [], value: coupling,
       coupledA: indA, coupledB: indB,
+    });
+  }
+
+  /** Add a bounded ideal lossless T-element using characteristic impedance and delay. */
+  addTransmissionLine(
+    name: string,
+    port1Positive: string,
+    port1Negative: string,
+    port2Positive: string,
+    port2Negative: string,
+    impedance: number,
+    delay: number,
+  ): void {
+    for (const node of [port1Positive, port1Negative, port2Positive, port2Negative]) {
+      this.nodeSet.add(node);
+    }
+    this.descriptors.push({
+      type: 'T',
+      name,
+      nodes: [port1Positive, port1Negative, port2Positive, port2Negative],
+      value: impedance,
+      params: { TD: delay },
     });
   }
 
@@ -837,9 +865,10 @@ export class Circuit {
    * @throws Error if a referenced subcircuit or control source is undefined
    * @throws {@link CycleError} if subcircuit instances form a circular dependency
    */
-  compile(): CompiledCircuit {
+  compile(guard?: ProtocolExecutionGuard): CompiledCircuit {
     // Pre-expand subcircuit instances into flat device descriptors
-    const expandedDescriptors = this.expandPassiveParasitics(this.expandAllSubcircuits());
+    const expandedDescriptors = this.expandPassiveParasitics(this.expandAllSubcircuits(guard));
+    guard?.maximum('maxComponents', expandedDescriptors.length, 'compile');
 
     // Collect all nodes from expanded descriptors
     for (const desc of expandedDescriptors) {
@@ -881,6 +910,7 @@ export class Circuit {
     const deviceMap = new Map<string, DeviceModel>();
 
     for (const desc of expandedDescriptors) {
+      guard?.checkpoint('compile:device');
       const nodeIndices = desc.nodes.map(resolveNode);
       const prevLength = devices.length;
 
@@ -934,6 +964,20 @@ export class Circuit {
             );
           }
           devices.push(new MutualInductor(desc.name, indA, indB, desc.value!));
+          break;
+        }
+        case 'T': {
+          const firstBranch = branchIndex++;
+          const secondBranch = branchIndex++;
+          branchNames.push(`${desc.name}:1`, `${desc.name}:2`);
+          devices.push(new TransmissionLine(
+            desc.name,
+            nodeIndices,
+            firstBranch,
+            secondBranch,
+            desc.value!,
+            desc.params!.TD,
+          ));
           break;
         }
         case 'D': {
@@ -1058,9 +1102,10 @@ export class Circuit {
    * Expand all subcircuit instances (type 'X') in the descriptor list
    * into flat device descriptors. Non-X descriptors pass through unchanged.
    */
-  private expandAllSubcircuits(): DeviceDescriptor[] {
+  private expandAllSubcircuits(guard?: ProtocolExecutionGuard): DeviceDescriptor[] {
     const result: DeviceDescriptor[] = [];
     for (const desc of this.descriptors) {
+      guard?.checkpoint('compile:device');
       if (desc.type === 'X') {
         const expanded = this.expandSubcircuit(
           desc.name,
@@ -1068,11 +1113,14 @@ export class Circuit {
           desc.modelName!,
           desc.params ?? {},
           new Set<string>(),
+          guard,
+          1,
         );
         result.push(...expanded);
       } else {
         result.push(desc);
       }
+      guard?.maximum('maxComponents', result.length, 'compile');
     }
     return result;
   }
@@ -1286,7 +1334,10 @@ export class Circuit {
     subcktName: string,
     instanceParams: Record<string, number>,
     visited: Set<string>,
+    guard?: ProtocolExecutionGuard,
+    depth = 1,
   ): DeviceDescriptor[] {
+    guard?.maximum('maxSubcircuitDepth', depth, 'compile');
     const key = subcktName.toUpperCase();
 
     if (visited.has(key)) {
@@ -1353,6 +1404,7 @@ export class Circuit {
     const parsedLines = tokenizeNetlist(def.body.join('\n'));
 
     for (const { tokens } of parsedLines) {
+      guard?.checkpoint('compile:device');
       if (tokens.length === 0) continue;
       const first = tokens[0].toUpperCase();
 
@@ -1550,12 +1602,15 @@ export class Circuit {
             nestedSubcktName,
             nestedParams,
             newVisited,
+            guard,
+            depth + 1,
           );
           result.push(...nested);
           break;
         }
         // Skip unknown device types inside subcircuits silently
       }
+      guard?.maximum('maxComponents', result.length, 'compile');
     }
 
     return result;

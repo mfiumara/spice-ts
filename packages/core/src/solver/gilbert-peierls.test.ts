@@ -121,6 +121,40 @@ describe('GilbertPeierlsSolver', () => {
   });
 
   describe('solve (end-to-end)', () => {
+    it('matches exact 2x2 solutions and singular classification exhaustively', () => {
+      const coefficients = [-1, 0, 1];
+      const expected = [2, -3] as const;
+
+      for (const a of coefficients) {
+        for (const b of coefficients) {
+          for (const c of coefficients) {
+            for (const d of coefficients) {
+              const matrix = new SparseMatrix(2);
+              matrix.touch(0, 0); matrix.touch(0, 1);
+              matrix.touch(1, 0); matrix.touch(1, 1);
+              matrix.add(0, 0, a); matrix.add(0, 1, b);
+              matrix.add(1, 0, c); matrix.add(1, 1, d);
+              const { csc } = toCsc(matrix);
+              const solver = new GilbertPeierlsSolver();
+              solver.analyzePattern(csc);
+
+              if (a * d - b * c === 0) {
+                expect(() => solver.factorize(csc)).toThrow(SingularMatrixError);
+                continue;
+              }
+
+              solver.factorize(csc);
+              const solution = solver.solve(new Float64Array([
+                a * expected[0] + b * expected[1],
+                c * expected[0] + d * expected[1],
+              ]));
+              expect(Array.from(solution)).toEqual(expected);
+            }
+          }
+        }
+      }
+    });
+
     it('solves a 2x2 system', () => {
       const m = new SparseMatrix(2);
       m.add(0, 0, 2); m.add(0, 1, 1);

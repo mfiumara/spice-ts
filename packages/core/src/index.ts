@@ -1,6 +1,9 @@
 export { simulate, simulateStream, simulateStepStream, createSimulator } from './simulate.js';
 export { simulateProtocolV1, validateProtocolV1, mapProtocolErrorV1 } from './protocol/adapter.js';
 export type { ProtocolValidationResultV1 } from './protocol/adapter.js';
+export type {
+  ProtocolAbortSignalV1, ProtocolExecutionOptionsV1, ProtocolSafePointV1,
+} from './protocol/execution-guard.js';
 export { preflightTopology, TopologyPreflightError } from './validation/topology-preflight.js';
 export type { TopologyFailureKind, TopologySourcePath } from './validation/topology-preflight.js';
 export { createTransientSim } from './analysis/transient-driver.js';

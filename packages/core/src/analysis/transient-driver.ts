@@ -13,6 +13,7 @@ import { computeUICInitialSolution } from './uic.js';
 import {
   createConvergenceTelemetry, resetConvergenceTelemetry, snapshotConvergenceTelemetry,
 } from '../convergence-telemetry.js';
+import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 /**
  * Smallest allowed timestep (femtosecond). Must be small enough that LTE can
@@ -132,6 +133,8 @@ interface InternalTransientConfig {
   initialSolution?: Float64Array;
   /** Shared aggregate used by one-shot simulations. */
   convergence?: ConvergenceTelemetry;
+  /** Cooperative guard used by bounded protocol executions. */
+  guard?: ProtocolExecutionGuard;
 }
 
 class TransientSimImpl implements TransientSim {
@@ -175,10 +178,11 @@ class TransientSimImpl implements TransientSim {
     if (config.initialSolution) {
       // Caller already computed DC — skip internal DC and seed directly.
       this.assembler.solution.set(config.initialSolution);
-      this.stampPrevB();
     } else {
       this.initDC();
     }
+    this.acceptTransientStep();
+    this.stampPrevB();
 
     this.breakpoints = this.collectBreakpoints();
   }
@@ -233,7 +237,10 @@ class TransientSimImpl implements TransientSim {
 
       this.assembler.solution.set(prevSol);
       const result = attemptStep(
-        { compiled: this.compiled, assembler: this.assembler, options: this.options },
+        {
+          compiled: this.compiled, assembler: this.assembler, options: this.options,
+          guard: this.config.guard,
+        },
         {
           dt: actualDt,
           time: nextTime,
@@ -310,6 +317,10 @@ class TransientSimImpl implements TransientSim {
       }
       this.lteRejectCount = 0;
 
+      // Device-owned histories must observe only committed solutions. In
+      // particular, NR/LTE retries and the stampPrevB restamp below are not
+      // accepted timepoints and must remain side-effect free.
+      this.acceptTransientStep();
       // Update trapezoidal history.
       if (this.integrationMethod === 'trapezoidal') {
         this.stampPrevB();
@@ -357,6 +368,7 @@ class TransientSimImpl implements TransientSim {
 
   reset(): void {
     if (this.disposed) throw new InvalidCircuitError('TransientSim has been disposed');
+    for (const device of this.compiled.devices) device.resetTransient?.();
     this.assembler = this.createAssembler();
     this.time = 0;
     this.dt = Math.min(this.config.timestep, this.config.maxTimestep);
@@ -370,10 +382,11 @@ class TransientSimImpl implements TransientSim {
     resetConvergenceTelemetry(this.convergenceTelemetry);
     if (this.config.initialSolution) {
       this.assembler.solution.set(this.config.initialSolution);
-      this.stampPrevB();
     } else {
       this.initDC();
     }
+    this.acceptTransientStep();
+    this.stampPrevB();
     this.breakpoints = this.collectBreakpoints();
   }
 
@@ -443,12 +456,17 @@ class TransientSimImpl implements TransientSim {
     this.prevB = current;
   }
 
+  private acceptTransientStep(): void {
+    const ctx = this.assembler.getStampContext();
+    for (const device of this.compiled.devices) device.acceptTransientStep?.(ctx);
+  }
+
   private initDC(): void {
     const { assembler: dcAsm } = solveDCOperatingPoint(
       this.compiled, this.options, undefined, this.convergenceTelemetry, 'transient',
+      this.config.guard,
     );
     this.assembler.solution.set(dcAsm.solution);
-    this.stampPrevB();
   }
 
   private checkLTE(current: Float64Array, previous: Float64Array, dt: number): number {
@@ -502,6 +520,7 @@ export function createDriverFromCompiled(
     maxTimestep: number;
     initialSolution?: Float64Array;
     convergence?: ConvergenceTelemetry;
+    guard?: ProtocolExecutionGuard;
   },
 ): TransientSim & { peekInitialStep(): TransientStep } {
   const impl = new TransientSimImpl(compiled, options, {
@@ -510,6 +529,7 @@ export function createDriverFromCompiled(
     maxTimestep: config.maxTimestep,
     initialSolution: config.initialSolution,
     convergence: config.convergence,
+    guard: config.guard,
   });
   return impl;
 }

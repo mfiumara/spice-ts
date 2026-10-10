@@ -9,12 +9,14 @@ import { ConvergenceError, InvalidCircuitError } from '../errors.js';
 import {
   createConvergenceTelemetry, snapshotConvergenceTelemetry,
 } from '../convergence-telemetry.js';
+import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 export function solveDCSweep(
   compiled: CompiledCircuit,
   analysis: DCSweepAnalysis,
   options: ResolvedOptions,
   convergence: ConvergenceTelemetry = createConvergenceTelemetry(),
+  guard?: ProtocolExecutionGuard,
 ): DCSweepResult {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
 
@@ -53,13 +55,14 @@ export function solveDCSweep(
 
   try {
     for (let i = 0; i < numPoints; i++) {
+      guard?.recordResultPoint();
       const sweepValue = analysis.start + i * analysis.step;
       sweepValues[i] = sweepValue;
 
       source.waveform = { type: 'dc', value: sweepValue };
 
       newtonRaphson(
-        assembler, devices, options, options.maxIterations, nodeNames, convergence.dc,
+        assembler, devices, options, options.maxIterations, nodeNames, convergence.dc, guard,
       );
 
       // Record solution
