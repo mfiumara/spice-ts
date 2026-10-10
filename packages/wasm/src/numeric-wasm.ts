@@ -25,11 +25,26 @@ export class NumericBackendError extends Error {
   }
 }
 
-interface PreparedLinearOp {
+interface PreparedNumericBase {
   compiled: CompiledCircuit;
   order: number;
-  analysis: Extract<CompiledCircuit['analyses'][number], { type: 'op' | 'tran' }>;
 }
+
+interface PreparedLinearOp extends PreparedNumericBase {
+  analysis: 'op';
+}
+
+interface PreparedPassiveAc extends PreparedNumericBase {
+  analysis: 'ac';
+  frequenciesHz: number[];
+}
+
+interface PreparedPassiveTran extends PreparedNumericBase {
+  analysis: 'tran';
+  transient: Extract<CompiledCircuit['analyses'][number], { type: 'tran' }>;
+}
+
+type PreparedNumeric = PreparedLinearOp | PreparedPassiveAc | PreparedPassiveTran;
 
 export function validateLinearOpWasmV1(request: SimulationRequestV1): NumericValidationResultV1 {
   const { compiled } = prepare(request);
@@ -45,68 +60,41 @@ export async function simulateLinearOpWasmV1(
   request: SimulationRequestV1,
   wasmBytes: Uint8Array,
 ): Promise<SimulationResultV1> {
-  const { compiled, order, analysis } = prepare(request);
+  const prepared = prepare(request);
   const instantiated = await WebAssembly.instantiate(wasmBytes.slice().buffer as ArrayBuffer);
   const exports = instantiated.instance.exports as NumericWasmExports;
   assertNumericWasmAbi(exports);
 
-  if (analysis.type === 'tran') {
-    return simulateTransient(request, compiled, order, analysis, exports);
-  }
-
-  const { matrix, rhs } = stampSystem(compiled, order, 0, true, new Float64Array(order));
-  addGmin(matrix, compiled.nodeCount, order, request.options?.gmin ?? 0);
-  const solution = solve(exports, order, matrix, rhs);
-
-  return {
-    status: 'complete',
-    analyses: [{
-      type: 'op',
-      analysisIndex: 0,
-      voltagesV: Object.fromEntries(compiled.nodeNames.map((name, index) => [name, solution[index]! ])),
-      currentsA: Object.fromEntries(compiled.branchNames.map((name, index) => [
-        name,
-        solution[compiled.nodeCount + index]!,
-      ])),
-    }],
-  };
+  if (prepared.analysis === 'op') return simulateOp(prepared, request, exports);
+  if (prepared.analysis === 'tran') return simulateTransient(prepared, request, exports);
+  return simulateAc(prepared, request, exports);
 }
 
-function stampSystem(
-  compiled: CompiledCircuit,
-  order: number,
-  time: number,
-  useDcSourceValue: boolean,
-  solution: Float64Array,
-): { matrix: Float64Array; capacitance: Float64Array; rhs: Float64Array } {
+function simulateOp(
+  { compiled, order }: PreparedLinearOp,
+  request: SimulationRequestV1,
+  exports: NumericWasmExports,
+): SimulationResultV1 {
+
   const matrix = new Float64Array(order * order);
-  const capacitance = new Float64Array(order * order);
   const rhs = new Float64Array(order);
+  const zero = new Float64Array(order);
   const context: StampContext = {
     stampG(row, column, value) { matrix[row * order + column] += value; },
     stampB(row, value) { rhs[row] += value; },
-    stampC(row, column, value) { capacitance[row * order + column] += value; },
-    getVoltage(node) { return node < 0 ? 0 : solution[node]!; },
-    getCurrent(branch) { return solution[compiled.nodeCount + branch]!; },
-    time,
+    stampC() {},
+    getVoltage(node) { return node < 0 ? 0 : zero[node]!; },
+    getCurrent(branch) { return zero[compiled.nodeCount + branch]!; },
+    time: 0,
     dt: 0,
     numNodes: compiled.nodeCount,
     sourceScale: 1,
-    useDcSourceValue,
+    useDcSourceValue: true,
   };
-  for (const device of compiled.devices) {
-    device.stamp(context);
-    device.stampDynamic?.(context);
-  }
-  return { matrix, capacitance, rhs };
-}
+  for (const device of compiled.devices) device.stamp(context);
+  const gmin = request.options?.gmin ?? 0;
+  for (let node = 0; node < compiled.nodeCount; node++) matrix[node * order + node] += gmin;
 
-function solve(
-  exports: NumericWasmExports,
-  order: number,
-  matrix: Float64Array,
-  rhs: Float64Array,
-): Float64Array {
   const heapBase = Number(exports.__heap_base.value);
   const matrixPointer = align8(heapBase);
   const rhsPointer = matrixPointer + matrix.byteLength;
@@ -123,29 +111,37 @@ function solve(
     throw numericError('INVALID_CIRCUIT', 'The bounded WebAssembly solver rejected non-finite numeric data', 'solve', { order, status });
   }
   const solution = new Float64Array(exports.memory.buffer, rhsPointer, order).slice();
-  return solution;
+
+  return {
+    status: 'complete',
+    analyses: [{
+      type: 'op',
+      analysisIndex: 0,
+      voltagesV: Object.fromEntries(compiled.nodeNames.map((name, index) => [name, solution[index]! ])),
+      currentsA: Object.fromEntries(compiled.branchNames.map((name, index) => [
+        name,
+        solution[compiled.nodeCount + index]!,
+      ])),
+    }],
+  };
 }
 
 function simulateTransient(
+  { compiled, order, transient }: PreparedPassiveTran,
   request: SimulationRequestV1,
-  compiled: CompiledCircuit,
-  order: number,
-  analysis: Extract<CompiledCircuit['analyses'][number], { type: 'tran' }>,
   exports: NumericWasmExports,
 ): SimulationResultV1 {
-  const pointCount = Math.ceil(analysis.stopTime / analysis.timestep) + 1;
-  const configuredPointLimit = Math.min(
+  const pointCount = Math.ceil(transient.stopTime / transient.timestep) + 1;
+  const pointLimit = Math.min(
     NUMERIC_WASM_LIMITS.maxResultPoints,
     request.options?.limits?.maxResultPoints ?? Infinity,
   );
-  if (pointCount > configuredPointLimit) {
-    throw resourceLimit('maxResultPoints', configuredPointLimit, pointCount);
-  }
+  if (pointCount > pointLimit) throw resourceLimit('maxResultPoints', pointLimit, pointCount);
 
   const gmin = request.options?.gmin ?? 0;
-  const initial = stampSystem(compiled, order, 0, true, new Float64Array(order));
-  addGmin(initial.matrix, compiled.nodeCount, order, gmin);
-  let solution = solve(exports, order, initial.matrix, initial.rhs);
+  const initial = stampTransientSystem(compiled, order, 0, true, new Float64Array(order));
+  addGmin(initial.conductance, compiled.nodeCount, order, gmin);
+  let solution = solveReal(exports, order, initial.conductance, initial.rhs);
   let previousRhs = initial.rhs;
   let previousTime = 0;
   const timeS = [0];
@@ -156,23 +152,23 @@ function simulateTransient(
   ]));
 
   for (let point = 1; point < pointCount; point++) {
-    const time = Math.min(point * analysis.timestep, analysis.stopTime);
+    const time = Math.min(point * transient.timestep, transient.stopTime);
     const dt = time - previousTime;
-    const stamped = stampSystem(compiled, order, time, false, solution);
-    addGmin(stamped.matrix, compiled.nodeCount, order, gmin);
-    const system = new Float64Array(stamped.matrix.length);
+    const stamped = stampTransientSystem(compiled, order, time, false, solution);
+    addGmin(stamped.conductance, compiled.nodeCount, order, gmin);
+    const matrix = new Float64Array(stamped.conductance.length);
     const rhs = new Float64Array(order);
     const dynamicScale = 2 / dt;
     for (let row = 0; row < order; row++) {
       let history = 0;
       for (let column = 0; column < order; column++) {
         const index = row * order + column;
-        system[index] = stamped.matrix[index]! + dynamicScale * stamped.capacitance[index]!;
-        history += (dynamicScale * stamped.capacitance[index]! - stamped.matrix[index]!) * solution[column]!;
+        matrix[index] = stamped.conductance[index]! + dynamicScale * stamped.dynamic[index]!;
+        history += (dynamicScale * stamped.dynamic[index]! - stamped.conductance[index]!) * solution[column]!;
       }
       rhs[row] = stamped.rhs[row]! + previousRhs[row]! + history;
     }
-    solution = solve(exports, order, system, rhs);
+    solution = solveReal(exports, order, matrix, rhs);
     previousRhs = stamped.rhs;
     previousTime = time;
     timeS.push(time);
@@ -186,11 +182,187 @@ function simulateTransient(
   };
 }
 
+function stampTransientSystem(
+  compiled: CompiledCircuit,
+  order: number,
+  time: number,
+  useDcSourceValue: boolean,
+  solution: Float64Array,
+): { conductance: Float64Array; dynamic: Float64Array; rhs: Float64Array } {
+  const conductance = new Float64Array(order * order);
+  const dynamic = new Float64Array(order * order);
+  const rhs = new Float64Array(order);
+  const context: StampContext = {
+    stampG(row, column, value) { conductance[row * order + column] += value; },
+    stampB(row, value) { rhs[row] += value; },
+    stampC(row, column, value) { dynamic[row * order + column] += value; },
+    getVoltage(node) { return node < 0 ? 0 : solution[node]!; },
+    getCurrent(branch) { return solution[compiled.nodeCount + branch]!; },
+    time,
+    dt: 0,
+    numNodes: compiled.nodeCount,
+    sourceScale: 1,
+    useDcSourceValue,
+  };
+  for (const device of compiled.devices) {
+    device.stamp(context);
+    device.stampDynamic?.(context);
+  }
+  return { conductance, dynamic, rhs };
+}
+
+function solveReal(
+  exports: NumericWasmExports,
+  order: number,
+  matrix: Float64Array,
+  rhs: Float64Array,
+): Float64Array {
+  const matrixPointer = align8(Number(exports.__heap_base.value));
+  const rhsPointer = matrixPointer + matrix.byteLength;
+  if (rhsPointer + rhs.byteLength > exports.memory.buffer.byteLength) {
+    throw resourceLimit('numericWasmMemoryBytes', exports.memory.buffer.byteLength, rhsPointer + rhs.byteLength);
+  }
+  new Float64Array(exports.memory.buffer, matrixPointer, matrix.length).set(matrix);
+  new Float64Array(exports.memory.buffer, rhsPointer, rhs.length).set(rhs);
+  const status = exports.solve_f64(order, matrixPointer, rhsPointer);
+  if (status === 1) {
+    throw numericError('SINGULAR_MATRIX', 'The bounded WebAssembly matrix is singular', 'solve', { order });
+  }
+  if (status !== 0) {
+    throw numericError('INVALID_CIRCUIT', 'The bounded WebAssembly solver rejected non-finite numeric data', 'solve', { order, status });
+  }
+  return new Float64Array(exports.memory.buffer, rhsPointer, order).slice();
+}
+
 function addGmin(matrix: Float64Array, nodeCount: number, order: number, gmin: number): void {
   for (let node = 0; node < nodeCount; node++) matrix[node * order + node] += gmin;
 }
 
-function prepare(request: SimulationRequestV1): PreparedLinearOp {
+function simulateAc(
+  { compiled, order, frequenciesHz }: PreparedPassiveAc,
+  request: SimulationRequestV1,
+  exports: NumericWasmExports,
+): SimulationResultV1 {
+  const conductance = new Float64Array(order * order);
+  const dynamic = new Float64Array(order * order);
+  const rhsReal = new Float64Array(order);
+  const rhsImaginary = new Float64Array(order);
+  const zero = new Float64Array(order);
+  const context: StampContext = {
+    stampG(row, column, value) { conductance[row * order + column] += value; },
+    stampB() {},
+    stampC(row, column, value) { dynamic[row * order + column] += value; },
+    getVoltage(node) { return node < 0 ? 0 : zero[node]!; },
+    getCurrent(branch) { return zero[compiled.nodeCount + branch]!; },
+    time: 0,
+    dt: 0,
+    numNodes: compiled.nodeCount,
+    sourceScale: 1,
+    useDcSourceValue: true,
+  };
+  for (const device of compiled.devices) device.stamp(context);
+  for (const device of compiled.devices) device.stampDynamic?.(context);
+  const gmin = request.options?.gmin ?? 0;
+  for (let node = 0; node < compiled.nodeCount; node++) {
+    conductance[node * order + node] += gmin;
+  }
+  for (const device of compiled.devices) {
+    const contribution = device.getACExcitation?.();
+    if (!contribution) continue;
+    const phase = contribution.phase * Math.PI / 180;
+    const real = contribution.magnitude * Math.cos(phase);
+    const imaginary = contribution.magnitude * Math.sin(phase);
+    if (contribution.kind === 'branch') {
+      const row = compiled.nodeCount + contribution.branch;
+      rhsReal[row] += real;
+      rhsImaginary[row] += imaginary;
+    } else {
+      if (contribution.positiveNode >= 0) {
+        rhsReal[contribution.positiveNode] -= real;
+        rhsImaginary[contribution.positiveNode] -= imaginary;
+      }
+      if (contribution.negativeNode >= 0) {
+        rhsReal[contribution.negativeNode] += real;
+        rhsImaginary[contribution.negativeNode] += imaginary;
+      }
+    }
+  }
+
+  const heapBase = align8(Number(exports.__heap_base.value));
+  const matrixRealPointer = heapBase;
+  const matrixImaginaryPointer = matrixRealPointer + conductance.byteLength;
+  const rhsRealPointer = matrixImaginaryPointer + dynamic.byteLength;
+  const rhsImaginaryPointer = rhsRealPointer + rhsReal.byteLength;
+  const requiredBytes = rhsImaginaryPointer + rhsImaginary.byteLength;
+  if (requiredBytes > exports.memory.buffer.byteLength) {
+    throw resourceLimit('numericWasmMemoryBytes', exports.memory.buffer.byteLength, requiredBytes);
+  }
+
+  const voltagePhasors = Object.fromEntries([...compiled.nodeNames].sort().map(name => [name, []])) as
+    Record<string, Array<{ magnitude: number; phaseDegrees: number }>>;
+  const currentPhasors = Object.fromEntries([...compiled.branchNames].sort().map(name => [name, []])) as
+    Record<string, Array<{ magnitude: number; phaseDegrees: number }>>;
+  for (const [pointIndex, frequencyHz] of frequenciesHz.entries()) {
+    const matrixImaginary = new Float64Array(dynamic.length);
+    const omega = 2 * Math.PI * frequencyHz;
+    for (let index = 0; index < dynamic.length; index++) {
+      matrixImaginary[index] = dynamic[index]! * omega;
+    }
+    new Float64Array(exports.memory.buffer, matrixRealPointer, conductance.length).set(conductance);
+    new Float64Array(exports.memory.buffer, matrixImaginaryPointer, matrixImaginary.length).set(matrixImaginary);
+    new Float64Array(exports.memory.buffer, rhsRealPointer, rhsReal.length).set(rhsReal);
+    new Float64Array(exports.memory.buffer, rhsImaginaryPointer, rhsImaginary.length).set(rhsImaginary);
+    const status = exports.solve_complex_f64(
+      order, matrixRealPointer, matrixImaginaryPointer, rhsRealPointer, rhsImaginaryPointer,
+    );
+    if (status === 1) {
+      throw numericError('SINGULAR_MATRIX', 'The bounded WebAssembly complex matrix is singular', 'solve', {
+        order, analysis: 'ac', pointIndex, frequencyHz,
+      });
+    }
+    if (status !== 0) {
+      throw numericError('INVALID_CIRCUIT', 'The bounded WebAssembly complex solver rejected numeric data', 'solve', {
+        order, analysis: 'ac', pointIndex, frequencyHz, status,
+      });
+    }
+    const solutionReal = new Float64Array(exports.memory.buffer, rhsRealPointer, order);
+    const solutionImaginary = new Float64Array(exports.memory.buffer, rhsImaginaryPointer, order);
+    compiled.nodeNames.forEach((name, index) => {
+      voltagePhasors[name]!.push(polar(solutionReal[index]!, solutionImaginary[index]!));
+    });
+    compiled.branchNames.forEach((name, index) => {
+      const solutionIndex = compiled.nodeCount + index;
+      currentPhasors[name]!.push(polar(solutionReal[solutionIndex]!, solutionImaginary[solutionIndex]!));
+    });
+  }
+
+  const result: SimulationResultV1 = {
+    status: 'complete',
+    analyses: [{
+      type: 'ac', analysisIndex: 0, frequencyHz: frequenciesHz,
+      voltagePhasors, currentPhasors,
+    }],
+  };
+  const serializedLimit = request.options?.limits?.maxSerializedResultBytes;
+  if (serializedLimit !== undefined) {
+    const observed = new TextEncoder().encode(JSON.stringify(result)).byteLength;
+    if (observed > serializedLimit) {
+      throw numericError('RESOURCE_LIMIT', "Resource limit 'maxSerializedResultBytes' exceeded", 'serialize', {
+        limit: 'maxSerializedResultBytes', configured: serializedLimit, observed,
+      });
+    }
+  }
+  return result;
+}
+
+function polar(real: number, imaginary: number): { magnitude: number; phaseDegrees: number } {
+  return {
+    magnitude: Math.hypot(real, imaginary),
+    phaseDegrees: Math.atan2(imaginary, real) * 180 / Math.PI,
+  };
+}
+
+function prepare(request: SimulationRequestV1): PreparedNumeric {
   if (request.input.format !== 'spice') unsupported('input-format', 'Only SPICE text input is supported');
   if (request.input.virtualFiles && Object.keys(request.input.virtualFiles).length > 0) {
     unsupported('virtual-files', 'Virtual files are not supported');
@@ -207,58 +379,86 @@ function prepare(request: SimulationRequestV1): PreparedLinearOp {
   const analyses = cards.filter(line => /^\.(op|dc|tran|ac)\b/i.test(line));
   const analysisLimit = Math.min(1, request.options?.limits?.maxAnalyses ?? Infinity);
   if (analyses.length > analysisLimit) throw resourceLimit('maxAnalyses', analysisLimit, analyses.length);
-  if (analyses.length !== 1 || !/^\.(?:op|tran)(?:\s|$)/i.test(analyses[0])) {
-    unsupported('analysis', 'Exactly one .op or .tran analysis is supported');
-  }
+  if (analyses.length !== 1) unsupported('analysis', 'Exactly one .op, .tran, or .ac analysis is supported');
+  const analysis = /^\.op(?:\s|$)/i.test(analyses[0]!)
+    ? 'op'
+    : /^\.tran(?:\s|$)/i.test(analyses[0]!)
+      ? 'tran'
+    : /^\.ac(?:\s|$)/i.test(analyses[0]!)
+      ? 'ac'
+      : unsupported('analysis', 'Exactly one .op, .tran, or .ac analysis is supported');
 
-  const transientCard = analyses[0]!.match(/^\.tran\s+(.+)$/i);
-  if (transientCard) validateTransientControls(transientCard[1]!, request);
-
-  for (const card of cards) {
-    if (/^\.(?:op|tran|end)(?:\s|$)/i.test(card)) continue;
-    const type = card[0]?.toUpperCase();
-    if (type !== 'R' && type !== 'C' && type !== 'I' && type !== 'V') {
-      unsupported('device-or-directive', `Unsupported bounded numeric card '${card.split(/\s+/)[0] ?? ''}'`);
-    }
-    const tokens = card.split(/\s+/);
-    if (type === 'R' || type === 'C') {
-      if (tokens.length !== 4) {
-        unsupported(type === 'R' ? 'resistor-form' : 'capacitor-form',
-          `${type === 'R' ? 'Resistors' : 'Capacitors'} must use name positive negative value`);
-      }
-    } else {
-      const dc = tokens.length === 5 && tokens[3]?.toUpperCase() === 'DC';
-      const pulse = /\bPULSE\s*\(/i.test(card);
-      if (tokens.length !== 4 && !dc && !(transientCard && pulse)) {
-        unsupported('source-waveform', 'Sources must use a constant or DC value');
-      }
-    }
-  }
-
+  if (analysis === 'tran') validateTransientControls(analyses[0]!, request);
+  validateCards(cards, analysis);
   const circuit = parseTitleless(source);
   const compiled = circuit.compile();
-  if (compiled.steps.length > 0) unsupported('step', 'Stepped analysis is not supported');
-  if (compiled.poleZeroAnalyses.length > 0 || compiled.analyses.length !== 1
-    || !['op', 'tran'].includes(compiled.analyses[0]?.type ?? '')) {
-    unsupported('analysis', 'Exactly one unstepped .op or .tran analysis is supported');
+  if (compiled.steps.length > 0 || compiled.poleZeroAnalyses.length > 0
+    || compiled.analyses.length !== 1 || compiled.analyses[0]?.type !== analysis) {
+    unsupported('analysis', `Exactly one unstepped .${analysis} analysis is supported`);
   }
-  if (compiled.devices.some(device => !['R', 'C', 'I', 'V'].includes(device.name[0]?.toUpperCase() ?? ''))) {
-    unsupported('device', 'Only R, C, I, and V devices are supported');
+  const devices = analysis === 'op' ? ['R', 'I', 'V']
+    : analysis === 'tran' ? ['R', 'C', 'I', 'V']
+      : ['R', 'C', 'L', 'I', 'V'];
+  if (compiled.devices.some(device => !devices.includes(device.name[0]?.toUpperCase() ?? ''))) {
+    unsupported('device', `Only ${devices.join(', ')} devices are supported for .${analysis}`);
   }
+  if (analysis !== 'op') validatePassiveValues(compiled);
   const order = compiled.nodeCount + compiled.branchCount;
   if (order < 1) throw numericError('INVALID_CIRCUIT', 'The circuit has no numeric unknowns', 'compile');
   if (order > NUMERIC_WASM_LIMITS.maxSystemOrder) {
     throw resourceLimit('maxSystemOrder', NUMERIC_WASM_LIMITS.maxSystemOrder, order);
   }
-  return {
-    compiled,
-    order,
-    analysis: compiled.analyses[0] as PreparedLinearOp['analysis'],
-  };
+  if (analysis === 'op') return { analysis, compiled, order };
+
+  const compiledAnalysis = compiled.analyses[0];
+  if (analysis === 'tran') {
+    if (compiledAnalysis?.type !== 'tran') unsupported('analysis', 'Exactly one .tran analysis is supported');
+    return { analysis, compiled, order, transient: compiledAnalysis };
+  }
+  if (compiledAnalysis?.type !== 'ac') unsupported('analysis', 'Exactly one .ac analysis is supported');
+  const pointCount = acPointCount(compiledAnalysis);
+  const pointLimit = Math.min(
+    NUMERIC_WASM_LIMITS.maxAcPoints,
+    request.options?.limits?.maxResultPoints ?? Infinity,
+  );
+  if (pointCount > pointLimit) throw resourceLimit('maxResultPoints', pointLimit, pointCount);
+  return { analysis, compiled, order, frequenciesHz: acFrequencies(compiledAnalysis, pointCount) };
+}
+
+function validateCards(cards: string[], analysis: 'op' | 'tran' | 'ac'): void {
+  const allowedDevices = analysis === 'op' ? ['R', 'I', 'V']
+    : analysis === 'tran' ? ['R', 'C', 'I', 'V']
+      : ['R', 'C', 'L', 'I', 'V'];
+  for (const card of cards) {
+    if (new RegExp(`^\\.(?:${analysis}|end)(?:\\s|$)`, 'i').test(card)) continue;
+    const tokens = card.split(/\s+/);
+    const type = tokens[0]?.[0]?.toUpperCase() ?? '';
+    if (!allowedDevices.includes(type)) {
+      unsupported('device-or-directive', `Unsupported linear .${analysis} card '${tokens[0] ?? ''}'`);
+    }
+    if (type === 'R' || type === 'C' || type === 'L') {
+      if (tokens.length !== 4) {
+        unsupported('passive-form', 'Passive devices must use name positive negative value');
+      }
+    } else if (analysis === 'op') {
+      const dc = tokens.length === 5 && tokens[3]?.toUpperCase() === 'DC';
+      if (tokens.length !== 4 && !dc) {
+        unsupported('source-waveform', 'OP sources must use a constant or DC value');
+      }
+    } else if (analysis === 'tran') {
+      const dc = tokens.length === 5 && tokens[3]?.toUpperCase() === 'DC';
+      const pulse = /\bPULSE\s*\(/i.test(card);
+      if (tokens.length !== 4 && !dc && !pulse) {
+        unsupported('source-waveform', 'Transient sources must use a constant, DC, or PULSE value');
+      }
+    } else if (!validAcSourceTokens(tokens)) {
+      unsupported('source-waveform', 'AC sources must use constant, DC, AC, or DC plus AC values');
+    }
+  }
 }
 
 function validateTransientControls(card: string, request: SimulationRequestV1): void {
-  const tokens = card.trim().split(/\s+/);
+  const tokens = card.trim().split(/\s+/).slice(1);
   if (tokens.some(token => token.toUpperCase() === 'UIC')) {
     unsupported('tran-uic', 'Transient UIC is not supported');
   }
@@ -273,6 +473,63 @@ function validateTransientControls(card: string, request: SimulationRequestV1): 
   if (request.options?.trtol !== undefined) {
     unsupported('trtol', 'Transient LTE controls are not supported');
   }
+}
+
+function validAcSourceTokens(tokens: string[]): boolean {
+  const first = tokens[3]?.toUpperCase();
+  if (tokens.length === 4) return true;
+  if (first === 'DC') {
+    return tokens.length === 5
+      || ((tokens.length === 7 || tokens.length === 8) && tokens[5]?.toUpperCase() === 'AC');
+  }
+  return first === 'AC' && (tokens.length === 5 || tokens.length === 6);
+}
+
+function validatePassiveValues(compiled: CompiledCircuit): void {
+  for (const device of compiled.devices) {
+    const type = device.name[0]?.toUpperCase();
+    const passive = device as unknown as {
+      resistance?: number;
+      capacitance?: number;
+      inductance?: number;
+    };
+    const value = type === 'R' ? passive.resistance
+      : type === 'C' ? passive.capacitance
+        : type === 'L' ? passive.inductance
+          : undefined;
+    if (value !== undefined && (!Number.isFinite(value) || value <= 0)) {
+      throw numericError('INVALID_CIRCUIT', `Passive device '${device.name}' must have a positive finite value`, 'compile');
+    }
+  }
+}
+
+function acPointCount(analysis: {
+  variation: 'dec' | 'oct' | 'lin';
+  points: number;
+  startFreq: number;
+  stopFreq: number;
+}): number {
+  if (analysis.variation === 'lin') return analysis.points;
+  const span = analysis.variation === 'dec'
+    ? Math.log10(analysis.stopFreq / analysis.startFreq)
+    : Math.log2(analysis.stopFreq / analysis.startFreq);
+  return Math.round(span * analysis.points) + 1;
+}
+
+function acFrequencies(
+  analysis: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number },
+  pointCount: number,
+): number[] {
+  if (analysis.variation === 'lin') {
+    if (pointCount === 1) return [analysis.startFreq];
+    const step = (analysis.stopFreq - analysis.startFreq) / (pointCount - 1);
+    return Array.from({ length: pointCount }, (_, index) => analysis.startFreq + index * step);
+  }
+  const base = analysis.variation === 'dec' ? 10 : 2;
+  return Array.from(
+    { length: pointCount },
+    (_, index) => analysis.startFreq * Math.pow(base, index / analysis.points),
+  );
 }
 
 function align8(value: number): number {

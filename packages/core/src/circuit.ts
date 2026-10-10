@@ -160,6 +160,13 @@ function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string 
         base = 'DC 0';
     }
   }
+  if (wf.type !== 'dc' && wf.type !== 'ac') {
+    const prefix = [
+      wf.dc !== undefined ? `DC ${formatNumber(wf.dc)}` : '',
+      wf.ac ? `AC ${formatNumber(wf.ac.magnitude)} ${formatNumber(wf.ac.phase)}` : '',
+    ].filter(Boolean).join(' ');
+    if (prefix) base = `${prefix} ${base}`;
+  }
   const distortion = [
     wf.distortionF1
       ? `DISTOF1 ${formatNumber(wf.distortionF1.magnitude)} ${formatNumber(wf.distortionF1.phase)}`
@@ -1284,6 +1291,31 @@ export class Circuit {
             nodes: [junction, cathode],
             params: { ...desc.params, RS: 0 },
           });
+        } else {
+          result.push(desc);
+        }
+        continue;
+      }
+
+      if (desc.type === 'Q') {
+        const model = this._models.get(desc.modelName!);
+        if (model?.type === 'NPN' || model?.type === 'PNP') {
+          let [collector, base, emitter] = desc.nodes;
+          for (const [parameter, terminal] of [
+            ['RC', collector], ['RB', base], ['RE', emitter],
+          ] as const) {
+            const resistance = model.params[parameter];
+            if (!isPositiveFinite(resistance)) continue;
+            const internal = internalNodeName(desc.name, parameter.toLowerCase());
+            result.push({
+              type: 'R', name: `${desc.name}.${parameter}`, nodes: [terminal, internal],
+              value: resistance,
+            });
+            if (parameter === 'RC') collector = internal;
+            else if (parameter === 'RB') base = internal;
+            else emitter = internal;
+          }
+          result.push({ ...desc, nodes: [collector, base, emitter] });
         } else {
           result.push(desc);
         }

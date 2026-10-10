@@ -16,7 +16,7 @@ static int finite(double value) {
 
 __attribute__((export_name("abi_version")))
 int abi_version(void) {
-  return 1;
+  return 2;
 }
 
 __attribute__((export_name("max_order")))
@@ -78,6 +78,143 @@ int solve_f64(int order, double *matrix, double *rhs) {
     }
     rhs[row] = value / matrix[row * order + row];
     if (!finite(rhs[row])) return 2;
+  }
+  return 0;
+}
+
+static int complex_divide(
+  double numerator_real,
+  double numerator_imaginary,
+  double denominator_real,
+  double denominator_imaginary,
+  double *result_real,
+  double *result_imaginary
+) {
+  double ratio;
+  double denominator;
+  if (magnitude(denominator_real) >= magnitude(denominator_imaginary)) {
+    if (denominator_real == 0) return 1;
+    ratio = denominator_imaginary / denominator_real;
+    denominator = denominator_real + denominator_imaginary * ratio;
+    *result_real = (numerator_real + numerator_imaginary * ratio) / denominator;
+    *result_imaginary = (numerator_imaginary - numerator_real * ratio) / denominator;
+  } else {
+    ratio = denominator_real / denominator_imaginary;
+    denominator = denominator_imaginary + denominator_real * ratio;
+    *result_real = (numerator_real * ratio + numerator_imaginary) / denominator;
+    *result_imaginary = (numerator_imaginary * ratio - numerator_real) / denominator;
+  }
+  return finite(*result_real) && finite(*result_imaginary) ? 0 : 2;
+}
+
+__attribute__((export_name("solve_complex_f64")))
+int solve_complex_f64(
+  int order,
+  double *matrix_real,
+  double *matrix_imaginary,
+  double *rhs_real,
+  double *rhs_imaginary
+) {
+  if (order < 1 || order > MAX_ORDER || matrix_real == 0 || matrix_imaginary == 0
+      || rhs_real == 0 || rhs_imaginary == 0) return 3;
+  if (((unsigned long)matrix_real | (unsigned long)matrix_imaginary
+      | (unsigned long)rhs_real | (unsigned long)rhs_imaginary) & 7) return 3;
+
+  for (int index = 0; index < order * order; index++) {
+    if (!finite(matrix_real[index]) || !finite(matrix_imaginary[index])) return 2;
+  }
+  for (int index = 0; index < order; index++) {
+    if (!finite(rhs_real[index]) || !finite(rhs_imaginary[index])) return 2;
+  }
+
+  for (int column = 0; column < order; column++) {
+    int pivot = column;
+    int pivot_index = column * order + column;
+    double largest = magnitude(matrix_real[pivot_index]);
+    double imaginary_magnitude = magnitude(matrix_imaginary[pivot_index]);
+    if (imaginary_magnitude > largest) largest = imaginary_magnitude;
+    for (int row = column + 1; row < order; row++) {
+      int index = row * order + column;
+      double candidate = magnitude(matrix_real[index]);
+      imaginary_magnitude = magnitude(matrix_imaginary[index]);
+      if (imaginary_magnitude > candidate) candidate = imaginary_magnitude;
+      if (candidate > largest) {
+        largest = candidate;
+        pivot = row;
+      }
+    }
+    if (!(largest > 0)) return 1;
+
+    if (pivot != column) {
+      for (int entry = column; entry < order; entry++) {
+        int upper = column * order + entry;
+        int lower = pivot * order + entry;
+        double temporary = matrix_real[upper];
+        matrix_real[upper] = matrix_real[lower];
+        matrix_real[lower] = temporary;
+        temporary = matrix_imaginary[upper];
+        matrix_imaginary[upper] = matrix_imaginary[lower];
+        matrix_imaginary[lower] = temporary;
+      }
+      double temporary = rhs_real[column];
+      rhs_real[column] = rhs_real[pivot];
+      rhs_real[pivot] = temporary;
+      temporary = rhs_imaginary[column];
+      rhs_imaginary[column] = rhs_imaginary[pivot];
+      rhs_imaginary[pivot] = temporary;
+    }
+
+    pivot_index = column * order + column;
+    for (int row = column + 1; row < order; row++) {
+      int row_index = row * order + column;
+      double factor_real;
+      double factor_imaginary;
+      int division = complex_divide(
+        matrix_real[row_index], matrix_imaginary[row_index],
+        matrix_real[pivot_index], matrix_imaginary[pivot_index],
+        &factor_real, &factor_imaginary
+      );
+      if (division != 0) return division;
+      matrix_real[row_index] = 0;
+      matrix_imaginary[row_index] = 0;
+      for (int entry = column + 1; entry < order; entry++) {
+        int target = row * order + entry;
+        int source = column * order + entry;
+        double product_real = factor_real * matrix_real[source]
+          - factor_imaginary * matrix_imaginary[source];
+        double product_imaginary = factor_real * matrix_imaginary[source]
+          + factor_imaginary * matrix_real[source];
+        matrix_real[target] -= product_real;
+        matrix_imaginary[target] -= product_imaginary;
+        if (!finite(matrix_real[target]) || !finite(matrix_imaginary[target])) return 2;
+      }
+      double rhs_product_real = factor_real * rhs_real[column]
+        - factor_imaginary * rhs_imaginary[column];
+      double rhs_product_imaginary = factor_real * rhs_imaginary[column]
+        + factor_imaginary * rhs_real[column];
+      rhs_real[row] -= rhs_product_real;
+      rhs_imaginary[row] -= rhs_product_imaginary;
+      if (!finite(rhs_real[row]) || !finite(rhs_imaginary[row])) return 2;
+    }
+  }
+
+  for (int row = order - 1; row >= 0; row--) {
+    double value_real = rhs_real[row];
+    double value_imaginary = rhs_imaginary[row];
+    for (int column = row + 1; column < order; column++) {
+      int index = row * order + column;
+      value_real -= matrix_real[index] * rhs_real[column]
+        - matrix_imaginary[index] * rhs_imaginary[column];
+      value_imaginary -= matrix_real[index] * rhs_imaginary[column]
+        + matrix_imaginary[index] * rhs_real[column];
+    }
+    int diagonal = row * order + row;
+    int division = complex_divide(
+      value_real, value_imaginary,
+      matrix_real[diagonal], matrix_imaginary[diagonal],
+      &rhs_real[row], &rhs_imaginary[row]
+    );
+    if (division != 0) return division;
   }
   return 0;
 }

@@ -9,7 +9,7 @@ import {
 } from './audit.mjs';
 
 const EXPECTED_FIXTURE_SET_HASH = 'e6346a45392800a58c186eb691d242f4b88611f1609b29db4b0f1c1110a08897';
-const EXPECTED_OUTCOME_HASH = 'dd99c57c31e72613e2e532ab0708d9810b0e6d5d09950ba74c03539b66314290';
+const EXPECTED_OUTCOME_HASH = 'dc0d014d42b6ae2250f6b096c2e1419e9bc3d70fddf1c68e237ebd8010b9cd96';
 
 test('failure classifiers cover every audit cause', () => {
   assert.equal(classifyNgspiceFailure("unimplemented dot command '.list'"), 'analysis');
@@ -39,10 +39,10 @@ test('all unchanged corpus-E fixtures produce the audited engine outcomes', asyn
     execution: 0,
   });
   assert.deepEqual(receipt.totals.spiceTs, {
-    pass: 4,
-    parser: 3,
+    pass: 6,
+    parser: 2,
     'device/model': 0,
-    analysis: 13,
+    analysis: 12,
     convergence: 0,
     execution: 0,
   });

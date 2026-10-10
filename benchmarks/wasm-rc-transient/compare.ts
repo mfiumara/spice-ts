@@ -148,7 +148,7 @@ async function main(): Promise<void> {
     peakRssMiB: { samples: runs.map(run => run.peakRssMiB), median: median(runs.map(run => run.peakRssMiB)) },
   });
   const artifactSizes = {
-    before: { workerJs: 367841, indexJs: 41878, denseSolverWasm: 1190 },
+    before: { workerJs: 377009, indexJs: 42815, denseSolverWasm: 2900 },
     after: {
       workerJs: readFileSync(resolve(dirname(scriptPath), '../../packages/wasm/dist/worker.js')).byteLength,
       indexJs: readFileSync(resolve(dirname(scriptPath), '../../packages/wasm/dist/index.js')).byteLength,
@@ -201,7 +201,7 @@ async function main(): Promise<void> {
         artifactSizes.after[name as keyof typeof artifactSizes.after]
           - artifactSizes.before[name as keyof typeof artifactSizes.before],
       ])),
-      note: 'before worker.js measured from the RED build at 4598b9f parent implementation; index.js and dense-solver.wasm are unchanged task-start sizes',
+      note: 'before sizes are the merged bounded AC backend baseline from main; the transient slice reuses its ABI-v2 artifact unchanged',
     },
     retainedLosses: [
       'WASM uses a fixed print-step solve while ngspice uses adaptive internal timesteps.',

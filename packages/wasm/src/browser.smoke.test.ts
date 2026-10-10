@@ -164,16 +164,18 @@ describe('browser protocol-v1 worker facade', () => {
 
         const wasm = await createSpiceEngine({ backend: 'spice-ts-wasm', manifestUrl: new URL('/manifest.json', location.href) });
         if (wasm.capabilities.backends.join(',') !== 'spice-ts-wasm') throw new Error('wrong WASM capabilities');
-        if (wasm.capabilities.numericWasm?.kernel !== 'dense-gaussian-f64-v1') throw new Error('missing WASM kernel metadata');
+        if (wasm.capabilities.numericWasm?.kernel !== 'dense-gaussian-complex-f64-v2') throw new Error('missing WASM kernel metadata');
         const wasmRequest = {
           apiVersion: '1',
-          input: { format: 'spice', source: 'V1 in 0 12\\nR1 in out 2k\\nR2 out 0 1k\\n.op' },
+          input: { format: 'spice', source: 'V1 in 0 AC 1\\nR1 in out 1k\\nC1 out 0 1u\\n.ac lin 1 100 100' },
         };
-        const wasmResult = await wasm.simulate(wasmRequest, { requestId: 'browser-wasm-op' });
+        const wasmResult = await wasm.simulate(wasmRequest, { requestId: 'browser-wasm-ac' });
         if (!wasmResult.ok) throw new Error(JSON.stringify(wasmResult));
         if (wasmResult.metadata.backend !== 'spice-ts-wasm') throw new Error('wrong WASM metadata');
-        const wasmOp = wasmResult.data.analyses[0];
-        if (wasmOp?.type !== 'op' || Math.abs(wasmOp.voltagesV.out - 4) > 1e-12) throw new Error('wrong WASM OP result');
+        const wasmAc = wasmResult.data.analyses[0];
+        const outputPhasor = wasmAc?.type === 'ac' ? wasmAc.voltagePhasors.out?.[0] : undefined;
+        if (wasmAc?.type !== 'ac' || !outputPhasor || Math.abs(outputPhasor.magnitude - 0.8467330159648304) > 1e-12
+          || Math.abs(outputPhasor.phaseDegrees - -32.141907635342065) > 1e-10) throw new Error('wrong WASM AC result');
         const unsupported = await wasm.simulate({
           apiVersion: '1',
           input: { format: 'spice', source: 'V1 in 0 1\\nL1 in 0 1u\\n.op' },

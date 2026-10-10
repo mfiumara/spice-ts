@@ -32,7 +32,15 @@ describe('stdio transport', () => {
 
     const response = await client.callTool({ name: 'spice_capabilities', arguments: {} });
     expect(response).toMatchObject({
-      structuredContent: { protocolVersion: '1' },
+      structuredContent: {
+        protocolVersion: '1',
+        streaming: {
+          runningJobTtlMs: 30_000,
+          terminalJobTtlMs: 60_000,
+          maxUnreadEvents: 256,
+          maxUnreadBytes: 1024 * 1024,
+        },
+      },
     });
 
     const request = JSON.parse(await readFile(

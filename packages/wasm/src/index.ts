@@ -85,12 +85,17 @@ export interface SpiceEngineCapabilitiesV1 {
   streamChunkPoints: 256;
   engineBuildId: string;
   numericWasm?: {
-    kernel: 'dense-gaussian-f64-v1';
+    kernel: 'dense-gaussian-complex-f64-v2';
+    abiVersion: 2;
     artifactSha256: string;
     artifactBytes: number;
     inputFormats: readonly ['spice'];
-    devices: readonly ['R', 'C', 'I', 'V'];
-    analyses: readonly ['op', 'tran'];
+    analyses: readonly ['op', 'tran', 'ac'];
+    devicesByAnalysis: {
+      op: readonly ['R', 'I', 'V'];
+      tran: readonly ['R', 'C', 'I', 'V'];
+      ac: readonly ['R', 'C', 'L', 'I', 'V'];
+    };
     fallback: 'reject';
     limits: typeof NUMERIC_WASM_LIMITS;
   };
@@ -184,18 +189,23 @@ export async function createSpiceEngine(options: CreateSpiceEngineOptions): Prom
     backends: [backend] as readonly BackendV1[],
     analyses: backend === 'spice-ts-js'
       ? ['op', 'dc', 'tran', 'ac'] as const
-      : ['op', 'tran'] as const,
+      : ['op', 'tran', 'ac'] as const,
     determinism: ['strict', 'relaxed'],
     streamChunkPoints: DEFAULT_CHUNK_POINTS,
     engineBuildId: backend === 'spice-ts-js' ? manifest.engineBuildId : manifest.numericWasm!.engineBuildId,
     ...(backend === 'spice-ts-wasm' ? {
       numericWasm: {
-        kernel: 'dense-gaussian-f64-v1' as const,
+        kernel: 'dense-gaussian-complex-f64-v2' as const,
+        abiVersion: 2 as const,
         artifactSha256: manifest.numericWasm!.sha256,
         artifactBytes: manifest.numericWasm!.byteLength,
         inputFormats: ['spice'] as const,
-        devices: ['R', 'C', 'I', 'V'] as const,
-        analyses: ['op', 'tran'] as const,
+        analyses: ['op', 'tran', 'ac'] as const,
+        devicesByAnalysis: {
+          op: ['R', 'I', 'V'] as const,
+          tran: ['R', 'C', 'I', 'V'] as const,
+          ac: ['R', 'C', 'L', 'I', 'V'] as const,
+        },
         fallback: 'reject' as const,
         limits: NUMERIC_WASM_LIMITS,
       },
