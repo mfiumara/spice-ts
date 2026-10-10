@@ -36,6 +36,14 @@ const transientCircuit = [
   '.end',
 ].join('\n');
 
+const dcSweepCircuit = [
+  'Vdrive in 0 0',
+  'R1 in out 1k',
+  'R2 out 0 1k',
+  '.dc Vdrive -1 1 0.5',
+  '.end',
+].join('\n');
+
 async function engine(backend: 'spice-ts-js' | 'spice-ts-wasm'): Promise<SpiceEngine> {
   return createSpiceEngine({ backend });
 }
@@ -45,6 +53,64 @@ function request(source: string, options?: SimulationRequestV1['options']): Simu
 }
 
 describe('bounded numeric WebAssembly backend', () => {
+  it('runs one bounded passive voltage or current source DC sweep without fallback', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const voltage = await wasm.simulate(request(dcSweepCircuit), { requestId: 'dc-voltage' });
+      expect(voltage.ok).toBe(true);
+      if (!voltage.ok) return;
+      expect(voltage.metadata).toMatchObject({ backend: 'spice-ts-wasm' });
+      expect(voltage.data.analyses[0]).toMatchObject({
+        type: 'dc', analysisIndex: 0,
+        axis: { name: 'Vdrive', unit: 'V', values: [-1, -0.5, 0, 0.5, 1] },
+        voltagesV: { in: [-1, -0.5, 0, 0.5, 1], out: [-0.5, -0.25, 0, 0.25, 0.5] },
+      });
+
+      const current = await wasm.simulate(request([
+        'Isweep 0 out 0', 'R1 out 0 1k', '.dc Isweep 2m 0 -1m',
+      ].join('\n')), { requestId: 'dc-current-descending' });
+      expect(current.ok).toBe(true);
+      if (!current.ok) return;
+      expect(current.data.analyses[0]).toMatchObject({
+        type: 'dc', axis: { name: 'Isweep', unit: 'A', values: [0.002, 0.001, 0] },
+        voltagesV: { out: [2, 1, 0] },
+      });
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('rejects invalid, nested, nonlinear, and over-limit DC sweeps before fallback', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const [name, source, code, details] of [
+        ['zero-step', 'V1 in 0 0\nR1 in 0 1k\n.dc V1 0 1 0', 'INVALID_CIRCUIT', { feature: 'dc-grid' }],
+        ['wrong-direction', 'V1 in 0 0\nR1 in 0 1k\n.dc V1 0 1 -1', 'INVALID_CIRCUIT', { feature: 'dc-grid' }],
+        ['nested', 'V1 in 0 0\nR1 in 0 1k\n.dc V1 0 1 1 V2 0 1 1', 'UNSUPPORTED_FEATURE', { feature: 'dc-nested-sweep' }],
+        ['nonlinear-source', 'V1 in 0 PULSE(0 1 0 1n 1n 1m 2m)\nR1 in 0 1k\n.dc V1 0 1 1', 'UNSUPPORTED_FEATURE', { feature: 'source-waveform' }],
+        ['nonlinear-device', 'V1 in 0 0\nD1 in 0 D\n.model D D\n.dc V1 0 1 1', 'UNSUPPORTED_FEATURE', {}],
+      ] as const) {
+        const result = await wasm.simulate(request(source), { requestId: `dc-${name}` });
+        expect(result).toMatchObject({
+          ok: false, error: { code, phase: 'validation', retryable: false, details },
+          metadata: { backend: 'spice-ts-wasm' },
+        });
+      }
+
+      const limited = await wasm.simulate(request(dcSweepCircuit, {
+        limits: { maxResultPoints: 4 },
+      }), { requestId: 'dc-point-limit' });
+      expect(limited).toMatchObject({
+        ok: false,
+        error: { code: 'RESOURCE_LIMIT', phase: 'validation', details: {
+          limit: 'maxResultPoints', configured: 4, observed: 5,
+        } },
+      });
+    } finally {
+      await wasm.close();
+    }
+  });
+
   it('advertises the exact bounded slice and artifact identity', async () => {
     const wasm = await engine('spice-ts-wasm');
     try {
