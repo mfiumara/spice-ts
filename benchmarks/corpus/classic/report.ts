@@ -175,10 +175,24 @@ function reportEngine(execution: EngineExecution, inputSha256: string): EngineRe
   return report;
 }
 
+/**
+ * Find the reference plot for a spice-ts analysis. Some analyses (ngspice
+ * `.noise`) emit several plots of one type, so an exact plot-name match wins;
+ * otherwise the first plot of the same type is used.
+ */
+export function findMatchingAnalysis(
+  candidates: readonly EngineAnalysis[],
+  analysis: Pick<EngineAnalysis, 'type' | 'plotName'>,
+): EngineAnalysis | undefined {
+  const sameType = candidates.filter(candidate => candidate.type === analysis.type);
+  const plotName = analysis.plotName.toLowerCase();
+  return sameType.find(candidate => candidate.plotName.toLowerCase() === plotName) ?? sameType[0];
+}
+
 function compareExecutions(spiceTs: EngineExecution, ngspice: EngineExecution): AnalysisComparison[] {
   const comparisons: AnalysisComparison[] = [];
   for (const spiceAnalysis of spiceTs.analyses) {
-    const ngspiceAnalysis = ngspice.analyses.find(analysis => analysis.type === spiceAnalysis.type);
+    const ngspiceAnalysis = findMatchingAnalysis(ngspice.analyses, spiceAnalysis);
     if (!ngspiceAnalysis) continue;
     const signals = sortedSignals(spiceAnalysis.series)
       .filter(signal => ngspiceAnalysis.series.signals[signal] !== undefined);
@@ -383,6 +397,48 @@ function mapSignals<T>(
   return signals;
 }
 
+/**
+ * Map a spice-ts `.noise` result onto ngspice-47's two noise plots: the
+ * "Noise Spectral Density Curves" spectra (V/sqrt(Hz) output, input-referred
+ * density in the input source's unit) and the one-point "Integrated Noise"
+ * totals, where ngspice names the input total `i(...)` for a current source.
+ */
+function noiseAnalyses(noise: {
+  frequencies: number[];
+  inputSource: string;
+  outputNoiseDensity: number[];
+  inputNoiseDensity: number[];
+  integratedOutputNoise: number | undefined;
+  integratedInputNoise: number | undefined;
+}): EngineAnalysis[] {
+  const analyses: EngineAnalysis[] = [{
+    type: 'noise',
+    plotName: 'Noise Spectral Density Curves',
+    series: {
+      grid: noise.frequencies,
+      signals: {
+        inoise_spectrum: real(noise.inputNoiseDensity),
+        onoise_spectrum: real(noise.outputNoiseDensity),
+      },
+    },
+  }];
+  if (noise.integratedOutputNoise !== undefined && noise.integratedInputNoise !== undefined) {
+    const inputPrefix = noise.inputSource.toLowerCase().startsWith('i') ? 'i' : 'v';
+    analyses.push({
+      type: 'noise',
+      plotName: 'Integrated Noise',
+      series: {
+        grid: [0],
+        signals: {
+          [`${inputPrefix}(inoise_total)`]: real([noise.integratedInputNoise]),
+          'v(onoise_total)': real([noise.integratedOutputNoise]),
+        },
+      },
+    });
+  }
+  return analyses;
+}
+
 export async function runNativeSpiceTs(input: Buffer, circuit: ClassicCircuit): Promise<EngineExecution> {
   const text = input.toString('utf8');
   if (!Buffer.from(text, 'utf8').equals(input)) {
@@ -442,10 +498,12 @@ export async function runNativeSpiceTs(input: Buffer, circuit: ClassicCircuit): 
           plotName: 'Pole-Zero Analysis',
           series: { grid: [0], signals: poleZeroSignals(result.poleZero) },
         });
+      } else if (type === 'noise' && result.noise) {
+        analyses.push(...noiseAnalyses(result.noise));
       }
     }
-    if (analyses.length !== circuit.analyses.length || analyses.length === 0) {
-      const missing = circuit.analyses.filter(type => !analyses.some(analysis => analysis.type === type));
+    const missing = circuit.analyses.filter(type => !analyses.some(analysis => analysis.type === type));
+    if (missing.length > 0 || analyses.length === 0) {
       return {
         status: 'unsupported',
         convergence: analyses.length > 0 ? 'converged' : 'not-run',

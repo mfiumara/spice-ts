@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 import { deserialize, serialize } from 'node:v8';
 import { alignAndMeasure, type ComparisonMetrics, type SampleSeries } from './comparison-harness.js';
 import {
+  findMatchingAnalysis,
   runNativeNgspice,
   runNativeSpiceTs,
   type ClassicAnalysisType,
@@ -334,7 +335,7 @@ function measureInChunks(spiceTs: SampleSeries, ngspice: SampleSeries, signals: 
 function compare(left: EngineExecution, right: EngineExecution): FixtureReceipt['comparisons'] {
   const comparisons: FixtureReceipt['comparisons'] = [];
   for (const spiceAnalysis of left.analyses) {
-    const ngspiceAnalysis = right.analyses.find(candidate => candidate.type === spiceAnalysis.type);
+    const ngspiceAnalysis = findMatchingAnalysis(right.analyses, spiceAnalysis);
     if (!ngspiceAnalysis) continue;
     const signals = commonSignals(spiceAnalysis.series, ngspiceAnalysis.series);
     if (signals.length === 0) continue;
