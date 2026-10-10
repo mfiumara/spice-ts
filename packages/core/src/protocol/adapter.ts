@@ -31,8 +31,35 @@ import { parseTitlelessAsync } from '../parser/index.js';
 import type { ACResult, DCSweepResult, DCResult, SimulationResult, StepResult, TransientResult } from '../results.js';
 import { simulate } from '../simulate.js';
 import type { AnalysisCommand, AnalysisDirective, SimulationOptions, SourceWaveform } from '../types.js';
+import {
+  preflightTopology,
+  TopologyPreflightError,
+  type TopologySourcePath,
+} from '../validation/topology-preflight.js';
 
 const MAX_DETAIL_NAMES = 32;
+
+export interface ProtocolValidationResultV1 {
+  status: 'valid';
+  nodeCount: number;
+  branchCount: number;
+  analysisCount: number;
+}
+
+/** Parse, compile, and validate topology without assembling or solving a matrix. */
+export async function validateProtocolV1(request: SimulationRequestV1): Promise<ProtocolValidationResultV1> {
+  const circuit = await requestCircuit(request);
+  const compiled = circuit.compile();
+  if (compiled.nodeCount === 0) throw new InvalidCircuitError('Circuit has no nodes');
+  if (compiled.analyses.length === 0) throw new InvalidCircuitError('No analysis command specified');
+  preflightTopology(compiled, protocolSourcePath(request));
+  return {
+    status: 'valid',
+    nodeCount: compiled.nodeCount,
+    branchCount: compiled.branchCount,
+    analysisCount: compiled.analyses.length,
+  };
+}
 
 /** Execute a protocol-v1 request through the existing core simulator. */
 export async function simulateProtocolV1(request: SimulationRequestV1): Promise<SimulationResultV1> {
@@ -91,6 +118,13 @@ export function mapProtocolErrorV1(error: unknown): SpiceApiErrorV1 {
   if (error instanceof CycleError) {
     return apiError('INVALID_CIRCUIT', error, 'compile', { chain: error.chain.slice(0, MAX_DETAIL_NAMES) });
   }
+  if (error instanceof TopologyPreflightError) {
+    return apiError('INVALID_CIRCUIT', error, 'validation', {
+      kind: error.kind,
+      involvedNodes: error.involvedNodes.slice(0, MAX_DETAIL_NAMES),
+      sourcePaths: error.sourcePaths.slice(0, MAX_DETAIL_NAMES),
+    });
+  }
   if (error instanceof InvalidCircuitError) {
     return apiError('INVALID_CIRCUIT', error, 'compile', {});
   }
@@ -104,6 +138,33 @@ export function mapProtocolErrorV1(error: unknown): SpiceApiErrorV1 {
     code: 'INTERNAL_ERROR', message: 'Internal simulation error', retryable: false,
     phase: 'solve', details: {},
   };
+}
+
+function protocolSourcePath(request: SimulationRequestV1): TopologySourcePath {
+  const paths = new Map<string, string>();
+  if (request.input.format === 'spice') {
+    request.input.source.split(/\r?\n/).forEach((line, index) => {
+      const trimmed = line.trim();
+      if (trimmed === '' || trimmed.startsWith('*') || trimmed.startsWith('.')) return;
+      const name = trimmed.split(/\s+/, 1)[0];
+      if (name) paths.set(name.toUpperCase(), `/input/source/lines/${index}`);
+    });
+  } else if (request.input.format === 'spice-ts') {
+    request.input.document.circuit.components.forEach((component, index) => {
+      paths.set(component.name.toUpperCase(), `/input/document/circuit/components/${index}`);
+    });
+  }
+
+  return deviceName => {
+    const rootName = deviceName.split('.', 1)[0]!.toUpperCase();
+    return paths.get(deviceName.toUpperCase())
+      ?? paths.get(rootName)
+      ?? `/compiled/devices/${jsonPointerSegment(deviceName)}`;
+  };
+}
+
+function jsonPointerSegment(value: string): string {
+  return value.replaceAll('~', '~0').replaceAll('/', '~1');
 }
 
 async function requestCircuit(request: SimulationRequestV1): Promise<Circuit> {
