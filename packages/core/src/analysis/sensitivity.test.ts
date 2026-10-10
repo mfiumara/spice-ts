@@ -23,6 +23,14 @@ R2 out 0 1k
 .end
 `;
 
+const acCurrentRc = `AC current-source sensitivity RC
+I1 0 out DC 0 AC 1m
+R1 out 0 2k
+C1 out 0 1u
+.sens V(out) AC DEC 2 10 1k
+.end
+`;
+
 describe('.sens analysis', () => {
   it('parses the bounded single-node DC and AC forms', () => {
     expect(parse(dcDivider).analyses.at(-1)).toEqual({
@@ -74,6 +82,21 @@ describe('.sens analysis', () => {
     }
   });
 
+  it('includes one AC-form current source magnitude in deterministic AC results', async () => {
+    const first = await simulate(acCurrentRc);
+    const second = await simulate(acCurrentRc);
+
+    expect(first.sensitivity).toEqual(second.sensitivity);
+    expect(first.sensitivity!.entries.map(entry => `${entry.device}.${entry.parameter}`)).toEqual([
+      'C1.capacitance', 'I1.acMagnitude', 'R1.resistance',
+    ]);
+    const sourceSensitivity = first.sensitivity!.entries[1].ac!;
+    expect(sourceSensitivity[0].real).toBeGreaterThan(1900);
+    expect(sourceSensitivity.at(-1)!.imaginary).toBeLessThan(-100);
+    expect(sourceSensitivity.every(value =>
+      Number.isFinite(value.real) && Number.isFinite(value.imaginary))).toBe(true);
+  });
+
   it('includes an active controlled-source gain in AC ordering', async () => {
     const result = await simulate(`active small-signal sensitivity
 V1 in 0 DC 0 AC 1
@@ -117,6 +140,34 @@ R2 out 0 1k
     );
   });
 
+  it('rejects mixed voltage/current AC-form sources in deterministic name order', async () => {
+    const failure = simulate(`mixed AC sensitivity excitations
+V2 in 0 DC 0 AC 1
+I1 0 out DC 0 AC 1m
+R1 in out 1k
+R2 out 0 1k
+.sens V(out) AC DEC 1 1 10
+.end`);
+    await expect(failure).rejects.toBeInstanceOf(InvalidCircuitError);
+    await expect(failure).rejects.toThrow(
+      new InvalidCircuitError('.sens AC supports at most one non-zero AC excitation; found I1, V2'),
+    );
+  });
+
+  it('rejects zero-plus-active AC-form current sources as ambiguous', async () => {
+    const failure = simulate(`ambiguous current-source sensitivity excitation
+I2 0 in DC 0 AC 1m
+I1 0 out DC 0 AC 0
+R1 in out 1k
+R2 out 0 1k
+.sens V(out) AC DEC 1 1 10
+.end`);
+    await expect(failure).rejects.toBeInstanceOf(InvalidCircuitError);
+    await expect(failure).rejects.toThrow(
+      new InvalidCircuitError('.sens AC supports only one AC-form independent source; found I1, I2'),
+    );
+  });
+
   it('has parser/programmatic API parity', async () => {
     const circuit = new Circuit();
     circuit.addVoltageSource('V1', 'in', '0', { dc: 1 });
@@ -139,6 +190,19 @@ R2 out 0 1k
       startFreq: 10, stopFreq: 1000,
     });
     expect((await simulate(programmatic)).sensitivity).toEqual((await simulate(acCircuit)).sensitivity);
+
+    const acCurrentCircuit = new Circuit();
+    acCurrentCircuit.addCurrentSource(
+      'I1', '0', 'out', { type: 'ac', dc: 0, magnitude: 1e-3, phase: 0 },
+    );
+    acCurrentCircuit.addResistor('R1', 'out', '0', 2000);
+    acCurrentCircuit.addCapacitor('C1', 'out', '0', 1e-6);
+    acCurrentCircuit.addAnalysis('sens', {
+      outputNode: 'out', mode: 'ac', variation: 'dec', points: 2,
+      startFreq: 10, stopFreq: 1000,
+    });
+    expect((await simulate(acCurrentCircuit)).sensitivity)
+      .toEqual((await simulate(acCurrentRc)).sensitivity);
   });
 
   it.each([
