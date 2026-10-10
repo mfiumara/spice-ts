@@ -130,4 +130,34 @@ describe('bounded protocol-v1 tools', () => {
     });
     expect(JSON.stringify(response)).not.toContain('spice-ts-js');
   });
+
+  it('enforces wall time while the real adapter is synchronously solving', async () => {
+    const request: SimulationRequestV1 = {
+      apiVersion: '1',
+      input: {
+        format: 'spice',
+        source: [
+          'V1 in 0 1',
+          'R1 in out 1k',
+          'C1 out 0 1u',
+          '.tran 1u 20m',
+        ].join('\n'),
+      },
+    };
+
+    const response = await executeTool('spice_simulate', { request }, {
+      limits: { ...DEFAULT_MCP_LIMITS, maxWallTimeMs: 1 },
+    });
+
+    expect(response).toMatchObject({
+      isError: true,
+      structuredContent: {
+        error: {
+          code: 'RESOURCE_LIMIT',
+          phase: 'solve',
+          details: { limit: 'maxWallTimeMs', maximum: 1 },
+        },
+      },
+    });
+  });
 });
