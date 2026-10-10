@@ -1,4 +1,4 @@
-import { parseTitleless, VCCS, type CompiledCircuit, type StampContext } from '@spice-ts/core';
+import { CCCS, parseTitleless, VCCS, type CompiledCircuit, type StampContext } from '@spice-ts/core';
 import type {
   JsonObject,
   SimulationRequestV1,
@@ -156,7 +156,7 @@ function simulateOp(
     useDcSourceValue: true,
   };
   for (const device of compiled.devices) {
-    if (!(device instanceof VCCS)) device.stamp(context);
+    if (!(device instanceof VCCS) && !(device instanceof CCCS)) device.stamp(context);
   }
   const gmin = request.options?.gmin ?? 0;
   for (let node = 0; node < compiled.nodeCount; node++) matrix[node * order + node] += gmin;
@@ -170,19 +170,33 @@ function simulateOp(
   new Float64Array(exports.memory.buffer, matrixPointer, matrix.length).set(matrix);
   new Float64Array(exports.memory.buffer, rhsPointer, rhs.length).set(rhs);
   for (const device of compiled.devices) {
-    if (!(device instanceof VCCS)) continue;
-    const [outputPositive, outputNegative, controlPositive, controlNegative] = device.nodes;
-    const stampStatus = exports.stamp_vccs_f64(
-      order,
-      matrixPointer,
-      outputPositive!,
-      outputNegative!,
-      controlPositive!,
-      controlNegative!,
-      device.gm,
-    );
+    let stampStatus: number;
+    if (device instanceof VCCS) {
+      const [outputPositive, outputNegative, controlPositive, controlNegative] = device.nodes;
+      stampStatus = exports.stamp_vccs_f64(
+        order,
+        matrixPointer,
+        outputPositive!,
+        outputNegative!,
+        controlPositive!,
+        controlNegative!,
+        device.gm,
+      );
+    } else if (device instanceof CCCS) {
+      const [outputPositive, outputNegative] = device.nodes;
+      stampStatus = exports.stamp_cccs_f64(
+        order,
+        matrixPointer,
+        outputPositive!,
+        outputNegative!,
+        compiled.nodeCount + device.controlBranchIndex,
+        device.gain,
+      );
+    } else {
+      continue;
+    }
     if (stampStatus !== 0) {
-      throw numericError('INVALID_CIRCUIT', 'The bounded WebAssembly VCCS stamp rejected numeric data', 'solve', {
+      throw numericError('INVALID_CIRCUIT', 'The bounded WebAssembly controlled-source stamp rejected numeric data', 'solve', {
         device: device.name, order, status: stampStatus,
       });
     }
@@ -499,14 +513,14 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
     || compiled.analyses.length !== 1 || compiled.analyses[0]?.type !== analysis) {
     unsupported('analysis', `Exactly one unstepped .${analysis} analysis is supported`);
   }
-  const devices = analysis === 'op' ? ['R', 'I', 'V', 'G']
+  const devices = analysis === 'op' ? ['R', 'I', 'V', 'G', 'F']
     : analysis === 'dc' ? ['R', 'I', 'V']
     : analysis === 'tran' ? ['R', 'C', 'I', 'V']
       : ['R', 'C', 'L', 'I', 'V'];
   if (compiled.devices.some(device => !devices.includes(device.name[0]?.toUpperCase() ?? ''))) {
     unsupported('device', `Only ${devices.join(', ')} devices are supported for .${analysis}`);
   }
-  if (analysis === 'op') validateVccsValues(compiled);
+  if (analysis === 'op') validateControlledSourceValues(compiled);
   else validatePassiveValues(compiled);
   const order = compiled.nodeCount + compiled.branchCount;
   if (order < 1) throw numericError('INVALID_CIRCUIT', 'The circuit has no numeric unknowns', 'compile');
@@ -555,7 +569,7 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
 }
 
 function validateCards(cards: string[], analysis: 'op' | 'dc' | 'tran' | 'ac'): void {
-  const allowedDevices = analysis === 'op' ? ['R', 'I', 'V', 'G']
+  const allowedDevices = analysis === 'op' ? ['R', 'I', 'V', 'G', 'F']
     : analysis === 'dc' ? ['R', 'I', 'V']
     : analysis === 'tran' ? ['R', 'C', 'I', 'V']
       : ['R', 'C', 'L', 'I', 'V'];
@@ -573,6 +587,10 @@ function validateCards(cards: string[], analysis: 'op' | 'dc' | 'tran' | 'ac'): 
     } else if (type === 'G') {
       if (tokens.length !== 6) {
         unsupported('vccs-form', 'VCCS devices must use name out+ out- control+ control- transconductance');
+      }
+    } else if (type === 'F') {
+      if (tokens.length !== 5) {
+        unsupported('cccs-form', 'CCCS devices must use name out+ out- controlling-voltage-source current-gain');
       }
     } else if (analysis === 'op' || analysis === 'dc') {
       const dc = tokens.length === 5 && tokens[3]?.toUpperCase() === 'DC';
@@ -641,10 +659,13 @@ function validAcSourceTokens(tokens: string[]): boolean {
   return first === 'AC' && (tokens.length === 5 || tokens.length === 6);
 }
 
-function validateVccsValues(compiled: CompiledCircuit): void {
+function validateControlledSourceValues(compiled: CompiledCircuit): void {
   for (const device of compiled.devices) {
     if (device instanceof VCCS && !Number.isFinite(device.gm)) {
       throw numericError('INVALID_CIRCUIT', `VCCS device '${device.name}' must have a finite transconductance`, 'compile');
+    }
+    if (device instanceof CCCS && !Number.isFinite(device.gain)) {
+      throw numericError('INVALID_CIRCUIT', `CCCS device '${device.name}' must have a finite current gain`, 'compile');
     }
   }
 }
