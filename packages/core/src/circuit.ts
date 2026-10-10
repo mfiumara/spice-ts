@@ -238,7 +238,7 @@ function formatAnalysis(analysis: AnalysisDirective | PoleZeroAnalysis): string 
     case 'noise':
       return `.noise v(${analysis.outputNode}) ${analysis.inputSource} ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
     case 'disto':
-      return `.disto dec ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
+      return `.disto dec ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}${analysis.f2OverF1 === undefined ? '' : ` ${formatNumber(analysis.f2OverF1)}`}`;
     case 'tf':
       return `.tf v(${analysis.outputNode}) ${analysis.inputSource}`;
     case 'pz':
@@ -697,7 +697,7 @@ export class Circuit {
   addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; useInitialConditions?: boolean }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'noise', params: { outputNode: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
-  addAnalysis(type: 'disto', params: { variation: 'dec'; points: number; startFreq: number; stopFreq: number }): void;
+  addAnalysis(type: 'disto', params: { variation: 'dec'; points: number; startFreq: number; stopFreq: number; f2OverF1?: number }): void;
   addAnalysis(type: 'tf', params: { outputNode: string; inputSource: string }): void;
   addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur'; mode: 'pol' | 'pz' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'dc' }): void;
@@ -762,7 +762,11 @@ export class Circuit {
             || !Number.isInteger(params!.points) || (params!.points as number) < 1
             || !Number.isFinite(params!.startFreq) || (params!.startFreq as number) <= 0
             || !Number.isFinite(params!.stopFreq)
-            || (params!.stopFreq as number) < (params!.startFreq as number)) {
+            || (params!.stopFreq as number) < (params!.startFreq as number)
+            || (params!.f2OverF1 !== undefined
+              && (!Number.isFinite(params!.f2OverF1)
+                || (params!.f2OverF1 as number) <= 0
+                || (params!.f2OverF1 as number) >= 1))) {
           throw new InvalidCircuitError('Invalid .disto dec sweep');
         }
         this._analyses.push({
@@ -771,6 +775,9 @@ export class Circuit {
           points: params!.points as number,
           startFreq: params!.startFreq as number,
           stopFreq: params!.stopFreq as number,
+          ...(params!.f2OverF1 === undefined
+            ? {}
+            : { f2OverF1: params!.f2OverF1 as number }),
         });
         break;
       case 'tf':

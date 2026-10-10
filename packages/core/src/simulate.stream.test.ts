@@ -72,4 +72,25 @@ describe('simulateStream', () => {
     expect(streamed.map(point => point.frequency)).toEqual(batch.frequencies);
     expect(streamed.map(point => point.voltages.get('out'))).toEqual(batch.voltage('out'));
   });
+
+  it('rejects unsupported two-tone distortion streams with a structured error', async () => {
+    const collect = async () => {
+      const points = [];
+      for await (const point of simulateStream(`two-tone distortion stream
+        V1 1 0 DC 0 AC 1 SIN 0 1 1K 0 0 DISTOF1 1 DISTOF2 0.25 30
+        R1 1 2 10k
+        R2 2 0 10k
+        C1 2 0 1n
+        .disto dec 10 1k 1Meg 0.9
+        .end
+      `)) points.push(point);
+      return points;
+    };
+
+    await expect(collect()).rejects.toMatchObject({
+      name: 'UnsupportedStreamAnalysisError',
+      code: 'UNSUPPORTED_FEATURE',
+      details: { api: 'simulateStream', analysis: 'disto' },
+    });
+  });
 });
