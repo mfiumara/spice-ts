@@ -19,8 +19,13 @@ const circuits = [
 
 const acCircuits = [
   'V1 in 0 AC 1\nR1 in out 1k\nC1 out 0 1u\n.ac dec 3 10 10k',
-  'V1 in 0 AC 2 30\nR1 in out 100\nL1 out 0 10m\n.ac lin 4 100 1k',
+  'V1 in 0 AC 2 30\nR1 in out 100\nL1 out 0 10m\n.ac dec 4 100 1k',
   'I1 0 out AC 1m -45\nR1 out 0 1k\nC1 out 0 100n\n.ac oct 2 100 1600',
+] as const;
+
+const linCircuits = [
+  { points: 1, source: 'V1 in 0 AC 1\nR1 in 0 1k\n.ac lin 1 100 1k', expectedGrid: [100] },
+  { points: 4, source: 'V1 in 0 AC 1\nR1 in 0 1k\n.ac lin 4 100 1k', expectedGrid: [100, 400, 700, 1000] },
 ] as const;
 
 async function engine(backend: 'spice-ts-js' | 'spice-ts-wasm'): Promise<SpiceEngine> {
@@ -154,6 +159,23 @@ describe('bounded numeric WebAssembly backend', () => {
     }
   });
 
+  it('uses ngspice total-point semantics for LIN N=1 and N=4', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const { points, source, expectedGrid } of linCircuits) {
+        const result = await wasm.simulate(request(source), { requestId: `wasm-ac-lin-${points}` });
+        expect(result.ok).toBe(true);
+        if (!result.ok) continue;
+        const analysis = result.data.analyses[0];
+        expect(analysis?.type).toBe('ac');
+        if (analysis?.type !== 'ac') continue;
+        expect(analysis.frequencyHz).toEqual(expectedGrid);
+      }
+    } finally {
+      await wasm.close();
+    }
+  });
+
   it('bounds AC result points and rejects nonlinear AC without fallback', async () => {
     const wasm = await engine('spice-ts-wasm');
     try {
@@ -164,7 +186,7 @@ describe('bounded numeric WebAssembly backend', () => {
         ok: false,
         error: {
           code: 'RESOURCE_LIMIT',
-          details: { limit: 'maxResultPoints', configured: 2, observed: 5 },
+          details: { limit: 'maxResultPoints', configured: 2, observed: 4 },
         },
       });
 

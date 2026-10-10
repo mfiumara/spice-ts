@@ -7,7 +7,13 @@ import { createSpiceEngine, type SpiceEngine } from '../src/index.js';
 
 interface ComplexValue { re: number; im: number }
 interface SampleSeries { grid: number[]; signals: Record<string, ComplexValue[]> }
-interface ComparisonFixture { name: string; analysis: 'ac'; netlist: string; signals: string[] }
+interface ComparisonFixture {
+  name: string;
+  analysis: 'ac';
+  netlist: string;
+  signals: string[];
+  expectedGrid?: number[];
+}
 interface ComparedSignal {
   status: 'compared';
   sampleCount: number;
@@ -46,6 +52,14 @@ const fixtures: ComparisonFixture[] = [
   {
     name: 'wasm-current-rc', analysis: 'ac', signals: ['v(out)'],
     netlist: '* bounded wasm current rc\nI1 0 out AC 1m -45\nR1 out 0 1k\nC1 out 0 100n\n.ac oct 2 100 1600\n.end',
+  },
+  {
+    name: 'wasm-lin-single-point', analysis: 'ac', signals: ['v(in)'], expectedGrid: [100],
+    netlist: '* ngspice LIN total-point regression N=1\nV1 in 0 AC 1\nR1 in 0 1k\n.ac lin 1 100 1k\n.end',
+  },
+  {
+    name: 'wasm-lin-four-points', analysis: 'ac', signals: ['v(in)'], expectedGrid: [100, 400, 700, 1000],
+    netlist: '* ngspice LIN total-point regression N=4\nV1 in 0 AC 1\nR1 in 0 1k\n.ac lin 4 100 1k\n.end',
   },
 ];
 
@@ -140,6 +154,7 @@ const wasm = await createSpiceEngine({ backend: 'spice-ts-wasm' });
 const wasmVsJs: ComparisonMetrics[] = [];
 const wasmVsNgspice: ComparisonMetrics[] = [];
 const ngspiceRuntimeMs: number[] = [];
+const linGridParity: Record<string, { expected: number[]; wasm: number[]; ngspice: number[] }> = {};
 try {
   for (const [index, fixture] of fixtures.entries()) {
     const [jsSeries, wasmSeries, ngspice] = await Promise.all([
@@ -148,6 +163,17 @@ try {
       runNgspice(fixture),
     ]);
     if (ngspice.status !== 'success') throw new Error(`${fixture.name}: ${ngspice.error}`);
+    if (fixture.expectedGrid) {
+      linGridParity[fixture.name] = {
+        expected: fixture.expectedGrid,
+        wasm: wasmSeries.grid,
+        ngspice: ngspice.series.grid,
+      };
+      if (JSON.stringify(wasmSeries.grid) !== JSON.stringify(fixture.expectedGrid)
+        || JSON.stringify(ngspice.series.grid) !== JSON.stringify(fixture.expectedGrid)) {
+        throw new Error(`${fixture.name}: LIN grid mismatch ${JSON.stringify(linGridParity[fixture.name])}`);
+      }
+    }
     wasmVsJs.push(alignAndMeasure(wasmSeries, jsSeries, fixture.signals));
     wasmVsNgspice.push(alignAndMeasure(wasmSeries, ngspice.series, fixture.signals));
     ngspiceRuntimeMs.push(ngspice.runtimeMs);
@@ -172,6 +198,7 @@ const report = {
       createHash('sha256').update(fixture.netlist).digest('hex'),
     ])),
     identicalNetlistForWasmJsNgspice: true,
+    linGridParity,
   },
   environment: {
     platform: platform(), release: release(), arch: arch(), cpu: cpus()[0]?.model ?? 'unknown',
