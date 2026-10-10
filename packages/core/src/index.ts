@@ -7,14 +7,20 @@ export { parse, parseAsync } from './parser/index.js';
 export { preprocess } from './parser/preprocessor.js';
 export { Circuit } from './circuit.js';
 export type { CompiledCircuit } from './circuit.js';
-export { DCResult, TransientResult, ACResult, DCSweepResult } from './results.js';
+export {
+  DCResult, TransientResult, ACResult, DCSweepResult, NoiseResult, TransferFunctionResult,
+} from './results.js';
 export type { SimulationResult, StepResult } from './results.js';
 export type {
   SimulationOptions,
   IntegrationMethod,
   TransientStep,
   ACPoint,
+  NoiseAnalysis,
+  TransferFunctionAnalysis,
   AnalysisCommand,
+  AnalysisDirective,
+  NodeInitialState,
   SourceWaveform,
   ModelParams,
   SubcktDefinition,
@@ -22,6 +28,10 @@ export type {
   StepAnalysis,
   StepSweepMode,
   StepStreamEvent,
+  StepWorker,
+  StepWorkerTask,
+  StepWorkerOptions,
+  StepWorkerCompletion,
   SimulatorBackend,
   SimulatorBackendName,
   SimulatorAdapter,

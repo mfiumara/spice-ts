@@ -5,7 +5,7 @@ import { parse } from '../parser/index.js';
 import { preprocess } from '../parser/preprocessor.js';
 import { ACResult, DCResult, DCSweepResult, TransientResult, type SimulationResult, type StepResult } from '../results.js';
 import type {
-  AnalysisCommand,
+  AnalysisDirective,
   DCSweepAnalysis,
   SimulationOptions,
   SimulationWarning,
@@ -121,6 +121,11 @@ export class WasmNgspiceSimulator implements SimulatorAdapter {
     const result: Omit<SimulationResult, 'warnings' | 'steps'> = {};
 
     for (const analysis of compiled.analyses) {
+      if (analysis.type === 'noise' || analysis.type === 'tf') {
+        throw new InvalidCircuitError(
+          `ngspice-wasm .${analysis.type} result mapping is not supported`,
+        );
+      }
       const raw = await this.runRaw(`${baseNetlist}\n${formatAnalysis(analysis)}\n.end`, warnings);
       switch (analysis.type) {
         case 'op':
@@ -205,6 +210,8 @@ function stripAnalysisCommands(netlist: string): string {
       || lower.startsWith('.dc ')
       || lower.startsWith('.tran ')
       || lower.startsWith('.ac ')
+      || lower.startsWith('.noise ')
+      || lower.startsWith('.tf ')
       || lower.startsWith('.step ')
     ) {
       continue;
@@ -320,7 +327,7 @@ function adaptNetlistForNgspice(netlist: string): string {
   return adapted.join('\n');
 }
 
-function formatAnalysis(analysis: AnalysisCommand): string {
+function formatAnalysis(analysis: AnalysisDirective): string {
   switch (analysis.type) {
     case 'op':
       return '.op';
@@ -334,6 +341,10 @@ function formatAnalysis(analysis: AnalysisCommand): string {
     }
     case 'ac':
       return `.ac ${analysis.variation} ${analysis.points} ${analysis.startFreq} ${analysis.stopFreq}`;
+    case 'noise':
+      return `.noise v(${analysis.outputNode}) ${analysis.inputSource} lin ${analysis.points} ${analysis.startFreq} ${analysis.stopFreq}`;
+    case 'tf':
+      return `.tf v(${analysis.outputNode}) ${analysis.inputSource}`;
   }
 }
 

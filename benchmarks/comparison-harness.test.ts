@@ -1,15 +1,20 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { describe, it } from 'node:test';
 import {
+  INITIAL_STATE_FIXTURES,
   alignAndMeasure,
   compareFixture,
   parseNgspiceRaw,
+  runNgspice,
   serializeReport,
   type ComparisonFixture,
   type EngineRun,
 } from './comparison-harness.js';
+import './corpus/classic/report.test.js';
 
 const real = (values: number[]) => values.map(re => ({ re, im: 0 }));
+const hasNgspice = spawnSync('ngspice', ['--version'], { encoding: 'utf8' }).status === 0;
 
 function successfulRun(grid: number[], signals: Record<string, number[]>): EngineRun {
   return {
@@ -204,5 +209,23 @@ describe('stable JSON schema', () => {
       json,
       '{\n  "schemaVersion": "spice-ts-ngspice-comparison/v2",\n  "generatedAt": "2026-10-09T00:00:00.000Z",\n  "environment": {\n    "platform": "linux",\n    "arch": "x64",\n    "node": "v22",\n    "cpu": "test"\n  },\n  "tools": {\n    "spiceTs": {\n      "version": "0.3.0",\n      "command": [\n        "pnpm",\n        "bench:compare:v2"\n      ]\n    },\n    "ngspice": {\n      "version": "ngspice-47",\n      "command": [\n        "ngspice",\n        "-b",\n        "-r",\n        "<raw>",\n        "<netlist>"\n      ]\n    }\n  },\n  "alignment": {\n    "targetGrid": "spice-ts",\n    "interpolation": "linear",\n    "relativeZeroThreshold": 1e-15\n  },\n  "fixtures": []\n}\n',
     );
+  });
+});
+
+describe('ngspice initial-state semantics', () => {
+  it('confirms .ic UIC/non-UIC, mixed-case, and .nodeset reference behavior', { skip: !hasNgspice }, async () => {
+    const runs = await Promise.all(INITIAL_STATE_FIXTURES.map(runNgspice));
+    for (const run of runs) assert.equal(run.status, 'success');
+
+    const firstVoltage = (runIndex: number): number => {
+      const run = runs[runIndex];
+      if (run.status !== 'success') throw new Error(run.error);
+      return run.series.signals['v(out)'][0].re;
+    };
+
+    assert.equal(firstVoltage(0), 1);
+    assert.ok(Math.abs(firstVoltage(1) - 3) < 1e-5);
+    assert.equal(firstVoltage(2), 0.5);
+    assert.ok(Math.abs(firstVoltage(3) - 3) < 1e-5);
   });
 });

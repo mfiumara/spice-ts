@@ -62,7 +62,20 @@ describe('correctness-backed advanced showcase demos', () => {
       { id: 'common-source-ac', signals: ['out'] },
       { id: 'passive-notch', signals: ['out'] },
       { id: 'opamp-differentiator', signals: ['in', 'out'] },
+      { id: 'bjt-common-emitter', signals: ['in', 'out'] },
+      { id: 'full-wave-rectifier', signals: ['in', 'out'] },
     ]);
+  });
+
+  it('uses the supported BJT model and a center-tapped full-wave diode topology', () => {
+    const bjt = ADVANCED_SHOWCASE_DEMOS.find(demo => demo.id === 'bjt-common-emitter');
+    const rectifier = ADVANCED_SHOWCASE_DEMOS.find(demo => demo.id === 'full-wave-rectifier');
+
+    expect(bjt?.tranNetlist).toMatch(/Q1 out base emitter QMOD/);
+    expect(bjt?.tranNetlist).toMatch(/\.model QMOD NPN\(/);
+    expect(rectifier?.tranNetlist).toMatch(/D1 in out DMOD/);
+    expect(rectifier?.tranNetlist).toMatch(/D2 in_n out DMOD/);
+    expect(rectifier?.tranNetlist).toMatch(/V2 0 in_n SIN\(0 5 1k\)/);
   });
 
   it('uses a passive resonant branch for the notch and the supported VCVS convention for the differentiator', () => {
@@ -89,6 +102,30 @@ describe('correctness-backed advanced showcase demos', () => {
     const differentiatorOutput = differentiatorResult.transient!.voltage('out');
     expect(Math.min(...differentiatorOutput)).toBeLessThan(-0.5);
     expect(Math.max(...differentiatorOutput)).toBeGreaterThan(0.5);
+  });
+
+  it('shows inverted BJT gain and both rectified input half-cycles', async () => {
+    const bjt = ADVANCED_SHOWCASE_DEMOS.find(demo => demo.id === 'bjt-common-emitter')!;
+    const rectifier = ADVANCED_SHOWCASE_DEMOS.find(demo => demo.id === 'full-wave-rectifier')!;
+    const bjtResult = await simulate(bjt.tranNetlist!);
+    const rectifierResult = await simulate(rectifier.tranNetlist!);
+
+    const bjtInput = bjtResult.transient!.voltage('in');
+    const bjtOutput = bjtResult.transient!.voltage('out');
+    const inputMean = bjtInput.reduce((sum, value) => sum + value, 0) / bjtInput.length;
+    const outputMean = bjtOutput.reduce((sum, value) => sum + value, 0) / bjtOutput.length;
+    const covariance = bjtInput.reduce(
+      (sum, value, index) => sum + (value - inputMean) * (bjtOutput[index] - outputMean),
+      0,
+    );
+    expect(covariance).toBeLessThan(0);
+    expect(Math.max(...bjtOutput) - Math.min(...bjtOutput)).toBeGreaterThan(
+      Math.max(...bjtInput) - Math.min(...bjtInput),
+    );
+
+    const rectifiedOutput = rectifierResult.transient!.voltage('out');
+    expect(Math.min(...rectifiedOutput)).toBeGreaterThan(-1e-6);
+    expect(rectifiedOutput.filter(value => value > 3).length).toBeGreaterThan(100);
   });
 
   for (const demo of ADVANCED_SHOWCASE_DEMOS) {

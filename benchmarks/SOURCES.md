@@ -42,11 +42,102 @@ Validate provenance, hashes, ngspice execution, and spice-ts parsing with:
 
 The validator prints every currently unsupported or failing circuit; unsupported cases are not omitted from the corpus.
 
+## Berkeley SPICE3f5 classic corpus B
+
+- Repository mirror: https://github.com/obernin/spice
+- Pinned revision: `3d9360bef370b432e473edb0c4333707d545a55f`
+- Authoritative distribution: https://ptolemy.berkeley.edu/projects/embedded/pubs/downloads/spice/spice3f5.tar.gz
+- Authoritative release: Berkeley SPICE3f5; archive SHA-256 `cac11fe2a761241e6b6c9eaa31b938c7ffa76aeaecac09809609d3a4125cd269`.
+- Licence and notice: Berkeley's [`spice3f5/COPYRIGHT`](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/COPYRIGHT) grants permission to use, copy, modify, and distribute SPICE and requires its Regents copyright notice and two warranty paragraphs in all copies. The byte-identical notice is retained at `benchmarks/corpus/classic/COPYRIGHT.txt` (SHA-256 `6dbad063070d502230501ddb05aced2e896eb636939c09b626d11c3e00b9aed4`). That hash matches both `spice3f5/COPYRIGHT` in the authoritative archive and `COPYRIGHT` at the pinned mirror revision.
+- Mirror notice: the mirror maintainer's separate 2018 BSD-3-Clause notice is retained verbatim at `benchmarks/corpus/classic/LICENSE.txt`; it is not represented as the provenance or redistribution basis for the Berkeley-authored fixtures.
+- Redistribution decision: allowed by the Berkeley SPICE grant, with its required notice retained alongside the fixtures.
+- Adaptation: none. All 20 `.cir` files are committed byte-for-byte from the pinned mirror. The validator runs the identical files in both engines; `-r output.raw` only asks ngspice to export its result and does not alter a netlist.
+
+| ID | Category | Canonical source | Revision | Licence | Redistribution | Local path | Adaptation |
+|---|---|---|---|---|---|---|---|
+| `bjt-noise` | noise | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/bjtnoise.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/bjtnoise.cir` | none |
+| `bsim1-device-sweep` | device-characterization | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/bsim1tst.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/bsim1tst.cir` | none |
+| `bsim2-device-sweep` | device-characterization | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/bsim2tst.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/bsim2tst.cir` | none |
+| `bjt-differential-pair` | amplifier | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/diffpair.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/diffpair.cir` | none |
+| `diode-distortion` | distortion | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/diodisto.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/diodisto.cir` | none |
+| `lossy-line-24-inch` | transmission-line | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/ltra_1.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/ltra_1.cir` | none |
+| `lossy-line-aluminium` | transmission-line | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/ltra_2.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/ltra_2.cir` | none |
+| `coupled-lossy-lines` | transmission-line | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/ltra_3.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/ltra_3.cir` | none |
+| `bjt-mixer-distortion` | distortion | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/mixdisto.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/mixdisto.cir` | none |
+| `mos6-inverter-chain` | digital | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/mos6inv.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/mos6inv.cir` | none |
+| `mos-amplifier` | amplifier | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/mosamp2.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir` | none |
+| `mos-memory-cell` | digital | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/mosmem.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/mosmem.cir` | none |
+| `pole-zero-four-stage` | filter-network | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/pz2.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/pz2.cir` | none |
+| `pole-zero-three-stage` | filter-network | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/pzt.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/pzt.cir` | none |
+| `rc-transient` | passive | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/rc.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/rc.cir` | none |
+| `rca3040-wideband-amplifier` | amplifier | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/rca3040.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/rca3040.cir` | none |
+| `resistor-noise` | noise | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/resnoise.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/resnoise.cir` | none |
+| `rtl-inverter-chain` | digital | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/rtlinv.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/rtlinv.cir` | none |
+| `ecl-schmitt-trigger` | digital | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/schmitt.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/schmitt.cir` | none |
+| `high-pass-pole-zero` | filter-network | [upstream](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/simplepz.cir) | `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant | committed | `benchmarks/corpus/classic/fixtures/spice3f5/simplepz.cir` | none |
+
+Validate provenance fields, pinned URLs, fixture hashes, declared analyses, ngspice execution, and spice-ts parsing with:
+
+    pnpm build
+    node benchmarks/corpus/classic/validate.mjs
+
+At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-distortion` is retained as a visible source-suite failure: both of its upstream `.disto` commands are commented out, so ngspice exits successfully without producing raw data. All 20 byte-identical fixtures currently fail spice-ts parsing. The validator prints each failure and checks it against the manifest instead of hiding or rewriting unsupported inputs.
+
+## Xyce Regression Suite corpus C
+
+- Repository: https://github.com/Xyce/Xyce_Regression
+- Pinned revision: `7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2`
+- Licence: GPL-3.0-or-later. The pinned repository [copyright and licence notice](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/README.md#copyright-and-license) grants redistribution and modification under GPL version 3 or later.
+- Licence retention: the byte-identical upstream README is retained as `benchmarks/corpus/xyce/LICENSE-NOTICE.md` (SHA-256 `82ff6df7bddcdf639483d261949a02a5f43da85d579f1242b05c3aa0c430f7cb`), and the complete GPLv3 text from https://www.gnu.org/licenses/gpl-3.0.txt is retained as `benchmarks/corpus/xyce/COPYING.txt` (SHA-256 `3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986`).
+- Redistribution decision: allowed under GPL-3.0-or-later with the copyright/licence notice and complete licence text retained alongside the fixtures.
+- Adaptation: none. All 20 `.cir` files are committed byte-for-byte from the pinned revision. The validator fetches every pinned source, checks its hash and bytes, and supplies the same local bytes to native ngspice and spice-ts without tolerance changes.
+
+| ID | Category | Canonical source | SHA-256 | Local path |
+|---|---|---|---|---|
+| `capacitor-rc-transient` | capacitor | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CAPACITOR/capacitor.cir) | `38b0d8271d4cef0f783be9a5ba0bc391c6d164fbe0dba9027e93927f0656e90b` | `benchmarks/corpus/xyce/fixtures/CAPACITOR/capacitor.cir` |
+| `capacitor-rc-transient-newlte` | capacitor | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CAPACITOR/capacitor3.cir) | `628f4953ca83a0e8840e100ea4671c778afe47bdcad0f52c09f5053c023c5194` | `benchmarks/corpus/xyce/fixtures/CAPACITOR/capacitor3.cir` |
+| `capacitor-rc-oscillator` | capacitor | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CAPACITOR/rc_osc.cir) | `add8ca9d2654398a4c394bc9232809677b479fe35172c66bbb8e2ad9bf9410a4` | `benchmarks/corpus/xyce/fixtures/CAPACITOR/rc_osc.cir` |
+| `diode-level2-temperature-breakdown` | diode | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE/Level2_Temp_Dep_Breakdown.cir) | `9c52a577a2f0b0a7419160b6cd340894ed41ebc403023a3b3f1d809d171bee0e` | `benchmarks/corpus/xyce/fixtures/DIODE/Level2_Temp_Dep_Breakdown.cir` |
+| `diode-zener-5229` | diode | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE/Zener_5229.cir) | `aefc2180e4bb6a5b39e3f4105546f3c5ba22af3b74f003d2d4d3c55f45938e9e` | `benchmarks/corpus/xyce/fixtures/DIODE/Zener_5229.cir` |
+| `diode-transient` | diode | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE/diode.cir) | `334e2dde43335851dc96f76ba5e78ef3e0b1de142cca073b3c70f83937637d8c` | `benchmarks/corpus/xyce/fixtures/DIODE/diode.cir` |
+| `diode-sidewall-dc` | diode | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE/diode_with_sidewall.cir) | `fb7d40fe14305d830afa0c4477e68b2da541f428883cec677f4c8cb13906d658` | `benchmarks/corpus/xyce/fixtures/DIODE/diode_with_sidewall.cir` |
+| `inductor-transient` | inductor | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/INDUCTOR/inductor.cir) | `a0a869d9fe3b04d3bbdc8abf9e8a89a9302a54ac5be9c97f446f06834a248b35` | `benchmarks/corpus/xyce/fixtures/INDUCTOR/inductor.cir` |
+| `njfet-2109-dc` | jfet | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NJFET_DC/njfet-2109.cir) | `d25578ed59ddc0f94e3a2f9281f1200982f82c682ec63d5256bf0399f34ecd46` | `benchmarks/corpus/xyce/fixtures/NJFET_DC/njfet-2109.cir` |
+| `njfet-stepped-dc` | jfet | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NJFET_DC/njfet.cir) | `295e3d4208ea2d839acf4724473b921ef1706976b254912b6e8455508c65b412` | `benchmarks/corpus/xyce/fixtures/NJFET_DC/njfet.cir` |
+| `nmos-level1-dc` | mosfet | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NMOS1_DC/nmos1.cir) | `3ab24382b4fb966d2111ba8b2aa0590b989fc09b367c09eb41cc7ac475e0e255` | `benchmarks/corpus/xyce/fixtures/NMOS1_DC/nmos1.cir` |
+| `npn-dc` | bjt | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NPN_DC/npn1.cir) | `8775a88a3f9c032ee047d770781a5a0cbcf21a2e28b7b6352e63636a7c9f1ce0` | `benchmarks/corpus/xyce/fixtures/NPN_DC/npn1.cir` |
+| `pmos-level1-dc` | mosfet | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/PMOS1_DC/pmos1.cir) | `767c989ba6c4ad761d2211ae39c9c82536895e76f6288e77276ad9468b2b2093` | `benchmarks/corpus/xyce/fixtures/PMOS1_DC/pmos1.cir` |
+| `pnp-dc` | bjt | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/PNP_DC/pnp1.cir) | `95796ac998eb051a535fcb498c259e715c1e8edd237e1e07add401fc6a1601df` | `benchmarks/corpus/xyce/fixtures/PNP_DC/pnp1.cir` |
+| `resistor-dc` | resistor | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/RESISTOR/resistor.cir) | `c0def3533cd6c07bf3cc6ee06f806c50d0b491d4d70d8296cc286ad8fc6066ba` | `benchmarks/corpus/xyce/fixtures/RESISTOR/resistor.cir` |
+| `resistor-level3-zero` | resistor | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/RESISTOR/resistor_lv3.cir) | `ab40c80d1175ad3079155b07bfed914b7085a6d9396f16a577446deb7693eb81` | `benchmarks/corpus/xyce/fixtures/RESISTOR/resistor_lv3.cir` |
+| `resistor-negative` | resistor | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/RESISTOR/resistor_neg.cir) | `7576379306251dd8c2baf89b4dbbe25527c399edb1fd701e7e5d38e83851614b` | `benchmarks/corpus/xyce/fixtures/RESISTOR/resistor_neg.cir` |
+| `rlc-transient` | rlc | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/RLC/rlc.cir) | `4d52f9df5eb4fe814fdd137e3f66cd4b4ec6c988174e0fe1c7a19e6eddf21763` | `benchmarks/corpus/xyce/fixtures/RLC/rlc.cir` |
+| `vccs-dc` | controlled-source | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/VCCS/vccs.cir) | `963d8d506600a2ac7f43812156739c8f49d332c50701f64268041ecd51b0306d` | `benchmarks/corpus/xyce/fixtures/VCCS/vccs.cir` |
+| `vcvs-dc` | controlled-source | [upstream](https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/VCVS/vcvs.cir) | `62541466b4010245a24d2c37b35c3debfc675b86f1bd3b2523fb91a01b4bbd5c` | `benchmarks/corpus/xyce/fixtures/VCVS/vcvs.cir` |
+
+Validate all pinned fetches, fixture hashes, byte-identical engine inputs, declared analyses, and expected outcomes with:
+
+    pnpm build
+    node benchmarks/corpus/xyce/validate.mjs
+
+At ingestion on ngspice-47, 13 circuits produce raw analysis data and 7 fail on explicitly reported Xyce/PSpice syntax or features. All 20 currently fail in spice-ts: 9 parse failures, 7 unsupported-feature failures, and 4 execution failures; no convergence failure is hidden or omitted. The validator emits every circuit and checks these outcomes rather than adapting inputs or changing tolerances.
+
 ## Project-authored parity fixtures
 
 | Circuit | Source | Licence / redistribution basis | Local use |
 | --- | --- | --- | --- |
 | Showcase boost converter (5 V input, 100 kHz, 50% duty) | [spice-ts issue #43](https://github.com/mfiumara/spice-ts/issues/43) and `examples/showcase/main.tsx` | Authored in the spice-ts project by Mattia Fiumara; distributed under the repository [MIT licence](../LICENSE) | Identical netlist is exercised by `packages/core/src/analysis/transient-driver-integration.test.ts` and compared with ngspice-47 reference samples. |
+
+## Chua & Lin circuit, issue #48
+
+- Fixture: `benchmarks/circuits/chua-issue-48.cir`
+- Source: [spice-ts issue #48](https://github.com/mfiumara/spice-ts/issues/48), opened by Mattia Fiumara on 2026-05-05, including an LTspice schematic labelled “Chua & Lin, 8-7 page 343”.
+- Reconstruction: transcribed from that issue screenshot. The issue text explicitly confirms `C12 ic=2 V` and `C3 ic=5 V`; the screenshot additionally shows `L8 ic=2 A`, the three coupling coefficients, component values, source parameters, and `.tran 0 200 0 0.2 uic`.
+- Licence: the fixture is an original plain-text reconstruction contributed to this MIT-licensed repository. The source screenshot is linked for provenance but is not redistributed.
+- Reference simulator: ngspice-47. Because ngspice rejects LTspice’s zero print-step extension, the reference run changes only the first `.tran` operand from `0` to `0.2`; `tstop`, `tstart`, `tmax`, topology, values, and initial conditions remain identical.
+- Reference command: `pnpm exec tsx benchmarks/chua-ngspice.ts`. The script applies the documented `.tran` adaptation, runs ngspice in batch mode, and prints the waveform metrics as JSON.
+- ngspice-47 reference (56,663 accepted points): after 20 s, `V(y)` spans 0.454439238–1.03693966 V and crosses its post-20 s mean five times. These envelope/crossing metrics are used instead of pointwise chaotic-waveform equality.
+- spice-ts diagnosis after adding bounded K-element/UIC support: because semantic `.options` directives remain explicitly unsupported, the native run removes only `.options reltol=1e-12` and supplies the identical `reltol` through `SimulationOptions`. After reconciling the issue #43 boost-convergence fix, it still ends with `TimestepTooSmallError`, now at `t=0.2000001935667476 s` (`dt=1.7759231585312563e-16 s`) with the normal transient iteration budget. Two reconciliation runs reproduced the same failure coordinates and took 3.28 s and 2.77 s on the development machine, versus 45.664 s at the pre-reconciliation head. This is reported as a remaining transient-convergence gap, not parity.
 
 ## Convergence audit fixtures
 
@@ -107,3 +198,42 @@ Validate pinned provenance, unique hashes, byte-identical engine inputs, categor
     node benchmarks/corpus/corpus-e/validate.mjs
 
 The pinned validation receipt is `6129f3b6cb61d788f30752d3b72276073a3f564ea8d906b2c7b8a9fb79d6c1e2`: ngspice-47 passes 5/20 and reports 15 unchanged-dialect failures; spice-ts passes 0/20 and reports 20 parse, unsupported, or convergence failures. These losses are retained rather than adapted or omitted.
+
+## ahkab test-suite corpus D
+
+- Repository: https://github.com/ahkab/ahkab
+- Pinned revision: `1e8939194b689909b8184ce7eba478b485ff9e3a`
+- Licence: GPL-2.0-only. The pinned repository README identifies the project as GPLv2, and the pinned [`COPYING`](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/COPYING) contains the complete GNU GPL version 2 terms.
+- Licence retention: the byte-identical upstream README is retained as `benchmarks/corpus/corpus-d/LICENSE-NOTICE.md` (SHA-256 `064b6a2dd3536d1699e32ffec05e3f960bd8eccda8e300109878bf2569915b2f`), and the byte-identical GPLv2 text is retained as `benchmarks/corpus/corpus-d/COPYING.txt` (SHA-256 `ee8a06e8bf69c8b547477f2a6652d330f4a4bc7d8a29d0b8b573b19abfc06e71`).
+- Redistribution decision: allowed under GPL-2.0-only. These source-form test circuits are redistributed verbatim with the upstream project notice and full licence text.
+- Adaptation: none. All 20 `.ckt` files are committed byte-for-byte from the pinned revision. The validator fetches each pinned source, checks exact bytes and hashes, and supplies the same local bytes to native ngspice and spice-ts without tolerance or circuit changes.
+
+| ID | Category | Canonical source | SHA-256 | Local path |
+|---|---|---|---|---|
+| `ohms-law-op` | op-dc | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/ohms_law/ohms_law.ckt) | `be2e9901695aab2a53c140f845bb0fe41d3c43eecd41cddca3ce6c4946b5bbd2` | `benchmarks/corpus/corpus-d/fixtures/tests/ohms_law/ohms_law.ckt` |
+| `diode-operating-point` | op-dc | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/diode_op/diode_op.ckt) | `1c7dbbf5941ce07f6806803f1c22df8165acde82d5dd66f9a9076da009e19b8e` | `benchmarks/corpus/corpus-d/fixtures/tests/diode_op/diode_op.ckt` |
+| `ekv-bias-sweep` | op-dc | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/ekv1/ekv1.ckt) | `2d680251e499b4b857ea78280d8e8c0e2114eb0977d2b1b4f69ba234a08f0271` | `benchmarks/corpus/corpus-d/fixtures/tests/ekv1/ekv1.ckt` |
+| `downscaling-current-mirror` | op-dc | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/downscaling_cm/downscaling_cm.ckt) | `09fa542dd664647c2deaef15f2d8bf07f7f3e30b40e7e6a9242673b62d28da1f` | `benchmarks/corpus/corpus-d/fixtures/tests/downscaling_cm/downscaling_cm.ckt` |
+| `transresistance-ac` | ac | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/hvsource/hvsource.ckt) | `e9c675ae1029b278422be65104ef1c10925d3506b7432274c9dce4c8c49d0765` | `benchmarks/corpus/corpus-d/fixtures/tests/hvsource/hvsource.ckt` |
+| `passive-pole-zero-ac` | ac | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/pz1/pz1.ckt) | `3a597bfe073b0d0219444b15559e6390a2aabe9ca8f1b9246db626efd8dda94c` | `benchmarks/corpus/corpus-d/fixtures/tests/pz1/pz1.ckt` |
+| `resistor-voltage-ac` | ac | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/rvtest2/rvtest2.ckt) | `a632b37a296d71114ea1bb8185029e041c28f86defdc4e6e671dfbe55de3a6ed` | `benchmarks/corpus/corpus-d/fixtures/tests/rvtest2/rvtest2.ckt` |
+| `series-resonance-ac` | ac | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/series_resonance/series_resonance.ckt) | `6b687bc2f3cd7415af561f26e80669ce8df3e08be977958dbc6db1446f5f22d0` | `benchmarks/corpus/corpus-d/fixtures/tests/series_resonance/series_resonance.ckt` |
+| `am-source-transient` | tran | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/amckt/amckt.ckt) | `e5027b8f925e83ac09ef477b77b7219b215dcb74e0e172c8369c3c777a7e5632` | `benchmarks/corpus/corpus-d/fixtures/tests/amckt/amckt.ckt` |
+| `fft-source-transient` | tran | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/fft_ckt/fft_ckt.ckt) | `04d2554f966d5ffd8cfd00f665575e02d11045790cf201bb596b610c0e2ff59b` | `benchmarks/corpus/corpus-d/fixtures/tests/fft_ckt/fft_ckt.ckt` |
+| `coupled-transformer-transient` | tran | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/transformer/transformer.ckt) | `df9bf42844508fc38edffdc685e935ac90e10bde5fab0ee957ce68f5da6ba4a5` | `benchmarks/corpus/corpus-d/fixtures/tests/transformer/transformer.ckt` |
+| `rlc-trapezoidal-transient` | tran | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_trap/tran_trap.ckt) | `8932d8cc9e536d8ad910c67d199536f39750dea7a0ff282d9ee81bc861145cc8` | `benchmarks/corpus/corpus-d/fixtures/tests/tran_trap/tran_trap.ckt` |
+| `diode-voltage-doubler` | nonlinear | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/diode_mult/diode_mult.ckt) | `de110e81dd425b8117efd6acd32d7d4311b854bf1236715f3233b1e12419da50` | `benchmarks/corpus/corpus-d/fixtures/tests/diode_mult/diode_mult.ckt` |
+| `ekv-ring-oscillator` | nonlinear | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/ring3/ring3.ckt) | `300a3d7c7441224ce67bbed31f9ecd334e8dd79cf4bfbeca9e49dc673a09f9ef` | `benchmarks/corpus/corpus-d/fixtures/tests/ring3/ring3.ckt` |
+| `cockcroft-walton-x8` | nonlinear | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/diodecw8/diodecw8.ckt) | `050a38d7396b25410446e79dd8106578825bcce223f4c2cb0bb6889fdb18727b` | `benchmarks/corpus/corpus-d/fixtures/tests/diodecw8/diodecw8.ckt` |
+| `pwm-switch` | nonlinear | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/switch1/switch1.ckt) | `e3d1544f41fef2361132c89b6a85776f3e2f32c7ec95b1321144c82cd6799ff5` | `benchmarks/corpus/corpus-d/fixtures/tests/switch1/switch1.ckt` |
+| `rlc-gear3` | convergence | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear3/tran_gear3.ckt) | `98fd4fd298a27da8d9286ec29a1af412b7fa7d9098809b8f0635dc42e9062219` | `benchmarks/corpus/corpus-d/fixtures/tests/tran_gear3/tran_gear3.ckt` |
+| `rlc-gear5` | convergence | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear5/tran_gear5.ckt) | `ac0ae49a5c9868c6d783449b84514d69e9dc171354782d53785b1b2300a064a4` | `benchmarks/corpus/corpus-d/fixtures/tests/tran_gear5/tran_gear5.ckt` |
+| `rlc-gear6` | convergence | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear6/tran_gear6.ckt) | `1974b92f58344b953e481e579f63a374d722ca3a90bff1d3b305d2c35fb3d5d6` | `benchmarks/corpus/corpus-d/fixtures/tests/tran_gear6/tran_gear6.ckt` |
+| `colpitts-oscillator` | convergence | [upstream](https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/colpitts/colpitts.ckt) | `02bc0b17610975b80bb01bf5b73e5a334ef39412d3c14cc39ba6f8e236f67d8c` | `benchmarks/corpus/corpus-d/fixtures/tests/colpitts/colpitts.ckt` |
+
+Validate all pinned fetches, fixture hashes, byte-identical engine inputs, declared analyses, expected outcomes, and the deterministic receipt with:
+
+    pnpm build
+    node benchmarks/corpus/corpus-d/validate.mjs
+
+At ingestion on ngspice-47, all 20 fixtures fail on ahkab-specific source, analysis, model, or named-subcircuit syntax. All 20 also fail in spice-ts: 19 parse failures (including one existing malformed-device error path) and one explicitly unsupported parse. No circuit is adapted or omitted to improve either total; the validator prints and checks every loss.

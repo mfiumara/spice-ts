@@ -10,10 +10,11 @@ export interface LegendSignal {
 export interface LegendProps {
   signals: LegendSignal[];
   onToggle: (signalId: string) => void;
+  onRemove?: (signalId: string) => void;
   style?: CSSProperties;
 }
 
-export function Legend({ signals, onToggle, style }: LegendProps) {
+export function Legend({ signals, onToggle, onRemove, style }: LegendProps) {
   return (
     <div
       style={{
@@ -34,21 +35,32 @@ export function Legend({ signals, onToggle, style }: LegendProps) {
             alignItems: 'center',
             gap: '6px',
             fontSize: '12px',
-            cursor: 'pointer',
             opacity: signal.visible ? 1 : 0.35,
             transition: 'opacity 0.15s',
             userSelect: 'none',
           }}
         >
-          <div
+          <button
+            type="button"
+            aria-label={`Toggle ${signal.label}`}
+            aria-pressed={signal.visible}
+            data-probe-color={signal.color}
             style={{
-              width: '12px',
-              height: '3px',
-              borderRadius: '1px',
-              background: signal.color,
+              display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
+              color: 'inherit', font: 'inherit', background: 'transparent', border: 0, padding: 0,
             }}
-          />
-          <span>{signal.label}</span>
+          >
+            <span aria-hidden="true" style={{
+              width: '12px', height: '3px', borderRadius: '1px', background: signal.color,
+            }} />
+            <span>{signal.label}</span>
+          </button>
+          {onRemove && (
+            <button type="button" aria-label={`Remove ${signal.label}`}
+              onClick={(event) => { event.stopPropagation(); onRemove(signal.id); }}
+              style={{ color: 'inherit', font: 'inherit', background: 'transparent', border: 0, padding: '0 2px', cursor: 'pointer' }}
+            >×</button>
+          )}
         </div>
       ))}
     </div>

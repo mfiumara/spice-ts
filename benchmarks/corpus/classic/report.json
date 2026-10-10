@@ -1,0 +1,1581 @@
+{
+  "schemaVersion": "spice-ts-classic-comparison/v1",
+  "corpus": {
+    "name": "Berkeley SPICE3f5 examples",
+    "revision": "3d9360bef370b432e473edb0c4333707d545a55f",
+    "license": "LicenseRef-Berkeley-SPICE",
+    "fixtureCount": 20
+  },
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0"
+  },
+  "policy": {
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "comparisonGrid": "spice-ts",
+    "interpolation": "linear"
+  },
+  "gapIssues": [
+    {
+      "url": "https://github.com/mfiumara/spice-ts/issues/76",
+      "scope": "benchmark-driven parser and unsupported device-card coverage"
+    },
+    {
+      "url": "https://github.com/mfiumara/spice-ts/issues/75",
+      "scope": "noise, pole-zero, and distortion analysis coverage"
+    },
+    {
+      "url": "https://github.com/mfiumara/spice-ts/issues/7",
+      "scope": "transmission-line device coverage"
+    }
+  ],
+  "totals": {
+    "fixtures": 20,
+    "ngspice": {
+      "success": 19,
+      "failed": 1,
+      "unsupported": 0
+    },
+    "spiceTs": {
+      "success": 0,
+      "failed": 0,
+      "unsupported": 20
+    },
+    "comparedAnalyses": 0
+  },
+  "fixtures": [
+    {
+      "id": "bjt-noise",
+      "category": "noise",
+      "declaredAnalyses": [
+        "noise"
+      ],
+      "sourcePath": "examples/bjtnoise.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/bjtnoise.cir",
+      "input": {
+        "bytes": 183,
+        "sha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc",
+        "analyses": [
+          {
+            "type": "noise",
+            "plotName": "Integrated Noise",
+            "points": 1,
+            "signals": [
+              "v(inoise_total_q1_1overf)",
+              "v(inoise_total_q1_ib)",
+              "v(inoise_total_q1_ic)",
+              "v(inoise_total_q1_rb)",
+              "v(inoise_total_q1_rc)",
+              "v(inoise_total_q1_re)",
+              "v(inoise_total_q1)",
+              "v(inoise_total_rload_1overf)",
+              "v(inoise_total_rload_thermal)",
+              "v(inoise_total_rload)",
+              "v(inoise_total)",
+              "v(onoise_total_q1_1overf)",
+              "v(onoise_total_q1_ib)",
+              "v(onoise_total_q1_ic)",
+              "v(onoise_total_q1_rb)",
+              "v(onoise_total_q1_rc)",
+              "v(onoise_total_q1_re)",
+              "v(onoise_total_q1)",
+              "v(onoise_total_rload_1overf)",
+              "v(onoise_total_rload_thermal)",
+              "v(onoise_total_rload)",
+              "v(onoise_total)"
+            ]
+          },
+          {
+            "type": "noise",
+            "plotName": "Noise Spectral Density Curves",
+            "points": 41,
+            "signals": [
+              "inoise_spectrum",
+              "onoise_q1",
+              "onoise_q1_1overf",
+              "onoise_q1_ib",
+              "onoise_q1_ic",
+              "onoise_q1_rb",
+              "onoise_q1_rc",
+              "onoise_q1_re",
+              "onoise_rload",
+              "onoise_rload_1overf",
+              "onoise_rload_thermal",
+              "onoise_spectrum"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc",
+        "analyses": [],
+        "error": "Parse error at line 1: Unknown device type: 'B' BJT Noise Test"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76",
+        "https://github.com/mfiumara/spice-ts/issues/75"
+      ]
+    },
+    {
+      "id": "bsim1-device-sweep",
+      "category": "device-characterization",
+      "declaredAnalyses": [
+        "dc"
+      ],
+      "sourcePath": "examples/bsim1tst.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/bsim1tst.cir",
+      "input": {
+        "bytes": 3445,
+        "sha256": "dffabf12d196b6b3d5ac058f7a402ee0dbb51c597c23599379f0502e84088062",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "dffabf12d196b6b3d5ac058f7a402ee0dbb51c597c23599379f0502e84088062",
+        "analyses": [
+          {
+            "type": "dc",
+            "plotName": "DC transfer characteristic",
+            "points": 501,
+            "signals": [
+              "i(v1)",
+              "i(v2)",
+              "i(v3)",
+              "i(v4)",
+              "i(v5)",
+              "i(vbs1)",
+              "i(vbs2)",
+              "i(vbs3)",
+              "i(vbs4)",
+              "i(vbs5)",
+              "i(vds)",
+              "i(vgs)",
+              "v(13)",
+              "v(2)",
+              "v(23)",
+              "v(3)",
+              "v(33)",
+              "v(4)",
+              "v(43)",
+              "v(5)",
+              "v(53)",
+              "v(6)",
+              "v(7)",
+              "v(8)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "dffabf12d196b6b3d5ac058f7a402ee0dbb51c597c23599379f0502e84088062",
+        "analyses": [],
+        "error": "Parse error at line 1: Unknown device type: 'T' Test of MOS BSIM1 implementation"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76"
+      ]
+    },
+    {
+      "id": "bsim2-device-sweep",
+      "category": "device-characterization",
+      "declaredAnalyses": [
+        "dc"
+      ],
+      "sourcePath": "examples/bsim2tst.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/bsim2tst.cir",
+      "input": {
+        "bytes": 3471,
+        "sha256": "ff2da08b0c8db25fe617c9f1ba2f99d5169c26b8167b30258a1631d93b79beee",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "ff2da08b0c8db25fe617c9f1ba2f99d5169c26b8167b30258a1631d93b79beee",
+        "analyses": [
+          {
+            "type": "dc",
+            "plotName": "DC transfer characteristic",
+            "points": 501,
+            "signals": [
+              "i(v1)",
+              "i(v2)",
+              "i(v3)",
+              "i(v4)",
+              "i(v5)",
+              "i(vbs1)",
+              "i(vbs2)",
+              "i(vbs3)",
+              "i(vbs4)",
+              "i(vbs5)",
+              "i(vds)",
+              "i(vgs)",
+              "v(13)",
+              "v(2)",
+              "v(23)",
+              "v(3)",
+              "v(33)",
+              "v(4)",
+              "v(43)",
+              "v(5)",
+              "v(53)",
+              "v(6)",
+              "v(7)",
+              "v(8)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "ff2da08b0c8db25fe617c9f1ba2f99d5169c26b8167b30258a1631d93b79beee",
+        "analyses": [],
+        "error": "Parse error at line 1: Unknown device type: 'T' Test of MOS BSIM2 implementation"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76"
+      ]
+    },
+    {
+      "id": "bjt-differential-pair",
+      "category": "amplifier",
+      "declaredAnalyses": [
+        "tran"
+      ],
+      "sourcePath": "examples/diffpair.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/diffpair.cir",
+      "input": {
+        "bytes": 521,
+        "sha256": "d67594a868128d758cfa593047884990abff05d7ee4cc050afca8a152ace3add",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "d67594a868128d758cfa593047884990abff05d7ee4cc050afca8a152ace3add",
+        "analyses": [
+          {
+            "type": "tran",
+            "plotName": "Transient Analysis",
+            "points": 108,
+            "signals": [
+              "i(vcc)",
+              "i(vee)",
+              "i(vin)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(4)",
+              "v(5)",
+              "v(6)",
+              "v(7)",
+              "v(8)",
+              "v(9)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "d67594a868128d758cfa593047884990abff05d7ee4cc050afca8a152ace3add",
+        "analyses": [],
+        "error": "Parse error at line 3: Unsupported dot command: '.opt' .opt acct list node lvlcod=2"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76"
+      ]
+    },
+    {
+      "id": "diode-distortion",
+      "category": "distortion",
+      "declaredAnalyses": [
+        "disto"
+      ],
+      "sourcePath": "examples/diodisto.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/diodisto.cir",
+      "input": {
+        "bytes": 292,
+        "sha256": "912c8cedf66aadbe78f17ceb28644cb8c39a2cb3442559be3219fbaac6d11de8",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "912c8cedf66aadbe78f17ceb28644cb8c39a2cb3442559be3219fbaac6d11de8",
+        "analyses": [
+          {
+            "type": "disto",
+            "plotName": "DISTORTION - IM: 2f1-f2",
+            "points": 101,
+            "signals": [
+              "i(vcc)",
+              "i(vcc2)",
+              "v(1)",
+              "v(2)",
+              "v(3)"
+            ]
+          },
+          {
+            "type": "disto",
+            "plotName": "DISTORTION - IM: f1-f2",
+            "points": 101,
+            "signals": [
+              "i(vcc)",
+              "i(vcc2)",
+              "v(1)",
+              "v(2)",
+              "v(3)"
+            ]
+          },
+          {
+            "type": "disto",
+            "plotName": "DISTORTION - IM: f1+f2",
+            "points": 101,
+            "signals": [
+              "i(vcc)",
+              "i(vcc2)",
+              "v(1)",
+              "v(2)",
+              "v(3)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "912c8cedf66aadbe78f17ceb28644cb8c39a2cb3442559be3219fbaac6d11de8",
+        "analyses": [],
+        "error": "Parse error at line 5: Cannot parse number: 'sin' vcc 1 3 5v ac 0.001 sin(5 0.01 1000) distof1 0.01 distof2 0.01"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76",
+        "https://github.com/mfiumara/spice-ts/issues/75"
+      ]
+    },
+    {
+      "id": "lossy-line-24-inch",
+      "category": "transmission-line",
+      "declaredAnalyses": [
+        "tran"
+      ],
+      "sourcePath": "examples/ltra_1.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/ltra_1.cir",
+      "input": {
+        "bytes": 4458,
+        "sha256": "53e333e9629c3e3c4e839c4b72c9a512a220dec4baf0536e36626f290d240cd6",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "53e333e9629c3e3c4e839c4b72c9a512a220dec4baf0536e36626f290d240cd6",
+        "analyses": [
+          {
+            "type": "tran",
+            "plotName": "Transient Analysis",
+            "points": 728,
+            "signals": [
+              "v(1)",
+              "v(2)",
+              "v(3)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "53e333e9629c3e3c4e839c4b72c9a512a220dec4baf0536e36626f290d240cd6",
+        "analyses": [],
+        "error": "Parse error at line 1: Unknown device type: 'B' BJTdriver -- 24inch lossy line -- DiodeCircuit"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76",
+        "https://github.com/mfiumara/spice-ts/issues/7"
+      ]
+    },
+    {
+      "id": "lossy-line-aluminium",
+      "category": "transmission-line",
+      "declaredAnalyses": [
+        "tran"
+      ],
+      "sourcePath": "examples/ltra_2.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/ltra_2.cir",
+      "input": {
+        "bytes": 8824,
+        "sha256": "4b5bacda04d9c528d4c88d58d211114cb53edbc213c34a62a8c6b2379958db97",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "4b5bacda04d9c528d4c88d58d211114cb53edbc213c34a62a8c6b2379958db97",
+        "analyses": [
+          {
+            "type": "tran",
+            "plotName": "Transient Analysis",
+            "points": 940,
+            "signals": [
+              "i(l.x1.x1.x1.x1.x1.x1.x1.x1.l1)",
+              "i(l.x1.x1.x1.x1.x1.x1.x1.x2.l1)",
+              "i(l.x1.x1.x1.x1.x1.x1.x1.x3.l1)",
+              "i(l.x1.x1.x1.x1.x1.x1.x1.x4.l1)",
+              "i(l.x1.x1.x1.x1.x1.x2.x1.x1.l1)",
+              "i(l.x1.x1.x1.x1.x1.x2.x1.x2.l1)",
+              "i(l.x1.x1.x1.x1.x1.x2.x1.x3.l1)",
+              "i(l.x1.x1.x1.x1.x1.x2.x1.x4.l1)",
+              "i(l.x1.x1.x1.x1.x1.x3.x1.x1.l1)",
+              "i(l.x1.x1.x1.x1.x1.x3.x1.x2.l1)",
+              "i(l.x1.x1.x1.x1.x1.x3.x1.x3.l1)",
+              "i(l.x1.x1.x1.x1.x1.x3.x1.x4.l1)",
+              "i(l.x1.x1.x1.x1.x1.x4.x1.x1.l1)",
+              "i(l.x1.x1.x1.x1.x1.x4.x1.x2.l1)",
+              "i(l.x1.x1.x1.x1.x1.x4.x1.x3.l1)",
+              "i(l.x1.x1.x1.x1.x1.x4.x1.x4.l1)",
+              "i(l.x1.x1.x1.x1.x1.x5.x1.x1.l1)",
+              "i(l.x1.x1.x1.x1.x1.x5.x1.x2.l1)",
+              "i(l.x1.x1.x1.x1.x1.x5.x1.x3.l1)",
+              "i(l.x1.x1.x1.x1.x1.x5.x1.x4.l1)",
+              "i(l.x1.x1.x1.x1.x2.x1.x1.l1)",
+              "i(l.x1.x1.x1.x1.x2.x1.x2.l1)",
+              "i(l.x1.x1.x1.x1.x2.x1.x3.l1)",
+              "i(l.x1.x1.x1.x1.x2.x1.x4.l1)",
+              "i(l.x1.x1.x1.x2.x1.x1.l1)",
+              "i(l.x1.x1.x1.x2.x1.x2.l1)",
+              "i(l.x1.x1.x1.x2.x1.x3.l1)",
+              "i(l.x1.x1.x1.x2.x1.x4.l1)",
+              "i(l.x1.x1.x2.x1.x1.l1)",
+              "i(l.x1.x1.x2.x1.x2.l1)",
+              "i(l.x1.x1.x2.x1.x3.l1)",
+              "i(l.x1.x1.x2.x1.x4.l1)",
+              "i(l.x1.x2.x1.x1.x1.x1.x1.x1.l1)",
+              "i(l.x1.x2.x1.x1.x1.x1.x1.x2.l1)",
+              "i(l.x1.x2.x1.x1.x1.x1.x1.x3.l1)",
+              "i(l.x1.x2.x1.x1.x1.x1.x1.x4.l1)",
+              "i(l.x1.x2.x1.x1.x1.x2.x1.x1.l1)",
+              "i(l.x1.x2.x1.x1.x1.x2.x1.x2.l1)",
+              "i(l.x1.x2.x1.x1.x1.x2.x1.x3.l1)",
+              "i(l.x1.x2.x1.x1.x1.x2.x1.x4.l1)",
+              "i(l.x1.x2.x1.x1.x1.x3.x1.x1.l1)",
+              "i(l.x1.x2.x1.x1.x1.x3.x1.x2.l1)",
+              "i(l.x1.x2.x1.x1.x1.x3.x1.x3.l1)",
+              "i(l.x1.x2.x1.x1.x1.x3.x1.x4.l1)",
+              "i(l.x1.x2.x1.x1.x1.x4.x1.x1.l1)",
+              "i(l.x1.x2.x1.x1.x1.x4.x1.x2.l1)",
+              "i(l.x1.x2.x1.x1.x1.x4.x1.x3.l1)",
+              "i(l.x1.x2.x1.x1.x1.x4.x1.x4.l1)",
+              "i(l.x1.x2.x1.x1.x1.x5.x1.x1.l1)",
+              "i(l.x1.x2.x1.x1.x1.x5.x1.x2.l1)",
+              "i(l.x1.x2.x1.x1.x1.x5.x1.x3.l1)",
+              "i(l.x1.x2.x1.x1.x1.x5.x1.x4.l1)",
+              "i(l.x1.x2.x1.x1.x2.x1.x1.l1)",
+              "i(l.x1.x2.x1.x1.x2.x1.x2.l1)",
+              "i(l.x1.x2.x1.x1.x2.x1.x3.l1)",
+              "i(l.x1.x2.x1.x1.x2.x1.x4.l1)",
+              "i(l.x1.x2.x1.x2.x1.x1.l1)",
+              "i(l.x1.x2.x1.x2.x1.x2.l1)",
+              "i(l.x1.x2.x1.x2.x1.x3.l1)",
+              "i(l.x1.x2.x1.x2.x1.x4.l1)",
+              "i(l.x1.x2.x2.x1.x1.l1)",
+              "i(l.x1.x2.x2.x1.x2.l1)",
+              "i(l.x1.x2.x2.x1.x3.l1)",
+              "i(l.x1.x2.x2.x1.x4.l1)",
+              "i(v1)",
+              "i(vcc)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(vcc)",
+              "v(x1.3)",
+              "v(x1.x1.3)",
+              "v(x1.x1.x1.3)",
+              "v(x1.x1.x1.x1.3)",
+              "v(x1.x1.x1.x1.x1.3)",
+              "v(x1.x1.x1.x1.x1.4)",
+              "v(x1.x1.x1.x1.x1.5)",
+              "v(x1.x1.x1.x1.x1.6)",
+              "v(x1.x1.x1.x1.x1.x1.x1.3)",
+              "v(x1.x1.x1.x1.x1.x1.x1.4)",
+              "v(x1.x1.x1.x1.x1.x1.x1.5)",
+              "v(x1.x1.x1.x1.x1.x1.x1.x1.3)",
+              "v(x1.x1.x1.x1.x1.x1.x1.x1.4)",
+              "v(x1.x1.x1.x1.x1.x1.x1.x1.5)",
+              "v(x1.x1.x1.x1.x1.x1.x1.x2.3)",
+              "v(x1.x1.x1.x1.x1.x1.x1.x2.4)",
+              "v(x1.x1.x1.x1.x1.x1.x1.x2.5)",
+              "v(x1.x1.x1.x1.x1.x1.x1.x3.3)",
+              "v(x1.x1.x1.x1.x1.x1.x1.x3.4)",
+              "v(x1.x1.x1.x1.x1.x1.x1.x3.5)",
+              "v(x1.x1.x1.x1.x1.x1.x1.x4.3)",
+              "v(x1.x1.x1.x1.x1.x1.x1.x4.4)",
+              "v(x1.x1.x1.x1.x1.x1.x1.x4.5)",
+              "v(x1.x1.x1.x1.x1.x2.x1.3)",
+              "v(x1.x1.x1.x1.x1.x2.x1.4)",
+              "v(x1.x1.x1.x1.x1.x2.x1.5)",
+              "v(x1.x1.x1.x1.x1.x2.x1.x1.3)",
+              "v(x1.x1.x1.x1.x1.x2.x1.x1.4)",
+              "v(x1.x1.x1.x1.x1.x2.x1.x1.5)",
+              "v(x1.x1.x1.x1.x1.x2.x1.x2.3)",
+              "v(x1.x1.x1.x1.x1.x2.x1.x2.4)",
+              "v(x1.x1.x1.x1.x1.x2.x1.x2.5)",
+              "v(x1.x1.x1.x1.x1.x2.x1.x3.3)",
+              "v(x1.x1.x1.x1.x1.x2.x1.x3.4)",
+              "v(x1.x1.x1.x1.x1.x2.x1.x3.5)",
+              "v(x1.x1.x1.x1.x1.x2.x1.x4.3)",
+              "v(x1.x1.x1.x1.x1.x2.x1.x4.4)",
+              "v(x1.x1.x1.x1.x1.x2.x1.x4.5)",
+              "v(x1.x1.x1.x1.x1.x3.x1.3)",
+              "v(x1.x1.x1.x1.x1.x3.x1.4)",
+              "v(x1.x1.x1.x1.x1.x3.x1.5)",
+              "v(x1.x1.x1.x1.x1.x3.x1.x1.3)",
+              "v(x1.x1.x1.x1.x1.x3.x1.x1.4)",
+              "v(x1.x1.x1.x1.x1.x3.x1.x1.5)",
+              "v(x1.x1.x1.x1.x1.x3.x1.x2.3)",
+              "v(x1.x1.x1.x1.x1.x3.x1.x2.4)",
+              "v(x1.x1.x1.x1.x1.x3.x1.x2.5)",
+              "v(x1.x1.x1.x1.x1.x3.x1.x3.3)",
+              "v(x1.x1.x1.x1.x1.x3.x1.x3.4)",
+              "v(x1.x1.x1.x1.x1.x3.x1.x3.5)",
+              "v(x1.x1.x1.x1.x1.x3.x1.x4.3)",
+              "v(x1.x1.x1.x1.x1.x3.x1.x4.4)",
+              "v(x1.x1.x1.x1.x1.x3.x1.x4.5)",
+              "v(x1.x1.x1.x1.x1.x4.x1.3)",
+              "v(x1.x1.x1.x1.x1.x4.x1.4)",
+              "v(x1.x1.x1.x1.x1.x4.x1.5)",
+              "v(x1.x1.x1.x1.x1.x4.x1.x1.3)",
+              "v(x1.x1.x1.x1.x1.x4.x1.x1.4)",
+              "v(x1.x1.x1.x1.x1.x4.x1.x1.5)",
+              "v(x1.x1.x1.x1.x1.x4.x1.x2.3)",
+              "v(x1.x1.x1.x1.x1.x4.x1.x2.4)",
+              "v(x1.x1.x1.x1.x1.x4.x1.x2.5)",
+              "v(x1.x1.x1.x1.x1.x4.x1.x3.3)",
+              "v(x1.x1.x1.x1.x1.x4.x1.x3.4)",
+              "v(x1.x1.x1.x1.x1.x4.x1.x3.5)",
+              "v(x1.x1.x1.x1.x1.x4.x1.x4.3)",
+              "v(x1.x1.x1.x1.x1.x4.x1.x4.4)",
+              "v(x1.x1.x1.x1.x1.x4.x1.x4.5)",
+              "v(x1.x1.x1.x1.x1.x5.x1.3)",
+              "v(x1.x1.x1.x1.x1.x5.x1.4)",
+              "v(x1.x1.x1.x1.x1.x5.x1.5)",
+              "v(x1.x1.x1.x1.x1.x5.x1.x1.3)",
+              "v(x1.x1.x1.x1.x1.x5.x1.x1.4)",
+              "v(x1.x1.x1.x1.x1.x5.x1.x1.5)",
+              "v(x1.x1.x1.x1.x1.x5.x1.x2.3)",
+              "v(x1.x1.x1.x1.x1.x5.x1.x2.4)",
+              "v(x1.x1.x1.x1.x1.x5.x1.x2.5)",
+              "v(x1.x1.x1.x1.x1.x5.x1.x3.3)",
+              "v(x1.x1.x1.x1.x1.x5.x1.x3.4)",
+              "v(x1.x1.x1.x1.x1.x5.x1.x3.5)",
+              "v(x1.x1.x1.x1.x1.x5.x1.x4.3)",
+              "v(x1.x1.x1.x1.x1.x5.x1.x4.4)",
+              "v(x1.x1.x1.x1.x1.x5.x1.x4.5)",
+              "v(x1.x1.x1.x1.x2.x1.3)",
+              "v(x1.x1.x1.x1.x2.x1.4)",
+              "v(x1.x1.x1.x1.x2.x1.5)",
+              "v(x1.x1.x1.x1.x2.x1.x1.3)",
+              "v(x1.x1.x1.x1.x2.x1.x1.4)",
+              "v(x1.x1.x1.x1.x2.x1.x1.5)",
+              "v(x1.x1.x1.x1.x2.x1.x2.3)",
+              "v(x1.x1.x1.x1.x2.x1.x2.4)",
+              "v(x1.x1.x1.x1.x2.x1.x2.5)",
+              "v(x1.x1.x1.x1.x2.x1.x3.3)",
+              "v(x1.x1.x1.x1.x2.x1.x3.4)",
+              "v(x1.x1.x1.x1.x2.x1.x3.5)",
+              "v(x1.x1.x1.x1.x2.x1.x4.3)",
+              "v(x1.x1.x1.x1.x2.x1.x4.4)",
+              "v(x1.x1.x1.x1.x2.x1.x4.5)",
+              "v(x1.x1.x1.x2.x1.3)",
+              "v(x1.x1.x1.x2.x1.4)",
+              "v(x1.x1.x1.x2.x1.5)",
+              "v(x1.x1.x1.x2.x1.x1.3)",
+              "v(x1.x1.x1.x2.x1.x1.4)",
+              "v(x1.x1.x1.x2.x1.x1.5)",
+              "v(x1.x1.x1.x2.x1.x2.3)",
+              "v(x1.x1.x1.x2.x1.x2.4)",
+              "v(x1.x1.x1.x2.x1.x2.5)",
+              "v(x1.x1.x1.x2.x1.x3.3)",
+              "v(x1.x1.x1.x2.x1.x3.4)",
+              "v(x1.x1.x1.x2.x1.x3.5)",
+              "v(x1.x1.x1.x2.x1.x4.3)",
+              "v(x1.x1.x1.x2.x1.x4.4)",
+              "v(x1.x1.x1.x2.x1.x4.5)",
+              "v(x1.x1.x2.x1.3)",
+              "v(x1.x1.x2.x1.4)",
+              "v(x1.x1.x2.x1.5)",
+              "v(x1.x1.x2.x1.x1.3)",
+              "v(x1.x1.x2.x1.x1.4)",
+              "v(x1.x1.x2.x1.x1.5)",
+              "v(x1.x1.x2.x1.x2.3)",
+              "v(x1.x1.x2.x1.x2.4)",
+              "v(x1.x1.x2.x1.x2.5)",
+              "v(x1.x1.x2.x1.x3.3)",
+              "v(x1.x1.x2.x1.x3.4)",
+              "v(x1.x1.x2.x1.x3.5)",
+              "v(x1.x1.x2.x1.x4.3)",
+              "v(x1.x1.x2.x1.x4.4)",
+              "v(x1.x1.x2.x1.x4.5)",
+              "v(x1.x2.3)",
+              "v(x1.x2.x1.3)",
+              "v(x1.x2.x1.x1.3)",
+              "v(x1.x2.x1.x1.x1.3)",
+              "v(x1.x2.x1.x1.x1.4)",
+              "v(x1.x2.x1.x1.x1.5)",
+              "v(x1.x2.x1.x1.x1.6)",
+              "v(x1.x2.x1.x1.x1.x1.x1.3)",
+              "v(x1.x2.x1.x1.x1.x1.x1.4)",
+              "v(x1.x2.x1.x1.x1.x1.x1.5)",
+              "v(x1.x2.x1.x1.x1.x1.x1.x1.3)",
+              "v(x1.x2.x1.x1.x1.x1.x1.x1.4)",
+              "v(x1.x2.x1.x1.x1.x1.x1.x1.5)",
+              "v(x1.x2.x1.x1.x1.x1.x1.x2.3)",
+              "v(x1.x2.x1.x1.x1.x1.x1.x2.4)",
+              "v(x1.x2.x1.x1.x1.x1.x1.x2.5)",
+              "v(x1.x2.x1.x1.x1.x1.x1.x3.3)",
+              "v(x1.x2.x1.x1.x1.x1.x1.x3.4)",
+              "v(x1.x2.x1.x1.x1.x1.x1.x3.5)",
+              "v(x1.x2.x1.x1.x1.x1.x1.x4.3)",
+              "v(x1.x2.x1.x1.x1.x1.x1.x4.4)",
+              "v(x1.x2.x1.x1.x1.x1.x1.x4.5)",
+              "v(x1.x2.x1.x1.x1.x2.x1.3)",
+              "v(x1.x2.x1.x1.x1.x2.x1.4)",
+              "v(x1.x2.x1.x1.x1.x2.x1.5)",
+              "v(x1.x2.x1.x1.x1.x2.x1.x1.3)",
+              "v(x1.x2.x1.x1.x1.x2.x1.x1.4)",
+              "v(x1.x2.x1.x1.x1.x2.x1.x1.5)",
+              "v(x1.x2.x1.x1.x1.x2.x1.x2.3)",
+              "v(x1.x2.x1.x1.x1.x2.x1.x2.4)",
+              "v(x1.x2.x1.x1.x1.x2.x1.x2.5)",
+              "v(x1.x2.x1.x1.x1.x2.x1.x3.3)",
+              "v(x1.x2.x1.x1.x1.x2.x1.x3.4)",
+              "v(x1.x2.x1.x1.x1.x2.x1.x3.5)",
+              "v(x1.x2.x1.x1.x1.x2.x1.x4.3)",
+              "v(x1.x2.x1.x1.x1.x2.x1.x4.4)",
+              "v(x1.x2.x1.x1.x1.x2.x1.x4.5)",
+              "v(x1.x2.x1.x1.x1.x3.x1.3)",
+              "v(x1.x2.x1.x1.x1.x3.x1.4)",
+              "v(x1.x2.x1.x1.x1.x3.x1.5)",
+              "v(x1.x2.x1.x1.x1.x3.x1.x1.3)",
+              "v(x1.x2.x1.x1.x1.x3.x1.x1.4)",
+              "v(x1.x2.x1.x1.x1.x3.x1.x1.5)",
+              "v(x1.x2.x1.x1.x1.x3.x1.x2.3)",
+              "v(x1.x2.x1.x1.x1.x3.x1.x2.4)",
+              "v(x1.x2.x1.x1.x1.x3.x1.x2.5)",
+              "v(x1.x2.x1.x1.x1.x3.x1.x3.3)",
+              "v(x1.x2.x1.x1.x1.x3.x1.x3.4)",
+              "v(x1.x2.x1.x1.x1.x3.x1.x3.5)",
+              "v(x1.x2.x1.x1.x1.x3.x1.x4.3)",
+              "v(x1.x2.x1.x1.x1.x3.x1.x4.4)",
+              "v(x1.x2.x1.x1.x1.x3.x1.x4.5)",
+              "v(x1.x2.x1.x1.x1.x4.x1.3)",
+              "v(x1.x2.x1.x1.x1.x4.x1.4)",
+              "v(x1.x2.x1.x1.x1.x4.x1.5)",
+              "v(x1.x2.x1.x1.x1.x4.x1.x1.3)",
+              "v(x1.x2.x1.x1.x1.x4.x1.x1.4)",
+              "v(x1.x2.x1.x1.x1.x4.x1.x1.5)",
+              "v(x1.x2.x1.x1.x1.x4.x1.x2.3)",
+              "v(x1.x2.x1.x1.x1.x4.x1.x2.4)",
+              "v(x1.x2.x1.x1.x1.x4.x1.x2.5)",
+              "v(x1.x2.x1.x1.x1.x4.x1.x3.3)",
+              "v(x1.x2.x1.x1.x1.x4.x1.x3.4)",
+              "v(x1.x2.x1.x1.x1.x4.x1.x3.5)",
+              "v(x1.x2.x1.x1.x1.x4.x1.x4.3)",
+              "v(x1.x2.x1.x1.x1.x4.x1.x4.4)",
+              "v(x1.x2.x1.x1.x1.x4.x1.x4.5)",
+              "v(x1.x2.x1.x1.x1.x5.x1.3)",
+              "v(x1.x2.x1.x1.x1.x5.x1.4)",
+              "v(x1.x2.x1.x1.x1.x5.x1.5)",
+              "v(x1.x2.x1.x1.x1.x5.x1.x1.3)",
+              "v(x1.x2.x1.x1.x1.x5.x1.x1.4)",
+              "v(x1.x2.x1.x1.x1.x5.x1.x1.5)",
+              "v(x1.x2.x1.x1.x1.x5.x1.x2.3)",
+              "v(x1.x2.x1.x1.x1.x5.x1.x2.4)",
+              "v(x1.x2.x1.x1.x1.x5.x1.x2.5)",
+              "v(x1.x2.x1.x1.x1.x5.x1.x3.3)",
+              "v(x1.x2.x1.x1.x1.x5.x1.x3.4)",
+              "v(x1.x2.x1.x1.x1.x5.x1.x3.5)",
+              "v(x1.x2.x1.x1.x1.x5.x1.x4.3)",
+              "v(x1.x2.x1.x1.x1.x5.x1.x4.4)",
+              "v(x1.x2.x1.x1.x1.x5.x1.x4.5)",
+              "v(x1.x2.x1.x1.x2.x1.3)",
+              "v(x1.x2.x1.x1.x2.x1.4)",
+              "v(x1.x2.x1.x1.x2.x1.5)",
+              "v(x1.x2.x1.x1.x2.x1.x1.3)",
+              "v(x1.x2.x1.x1.x2.x1.x1.4)",
+              "v(x1.x2.x1.x1.x2.x1.x1.5)",
+              "v(x1.x2.x1.x1.x2.x1.x2.3)",
+              "v(x1.x2.x1.x1.x2.x1.x2.4)",
+              "v(x1.x2.x1.x1.x2.x1.x2.5)",
+              "v(x1.x2.x1.x1.x2.x1.x3.3)",
+              "v(x1.x2.x1.x1.x2.x1.x3.4)",
+              "v(x1.x2.x1.x1.x2.x1.x3.5)",
+              "v(x1.x2.x1.x1.x2.x1.x4.3)",
+              "v(x1.x2.x1.x1.x2.x1.x4.4)",
+              "v(x1.x2.x1.x1.x2.x1.x4.5)",
+              "v(x1.x2.x1.x2.x1.3)",
+              "v(x1.x2.x1.x2.x1.4)",
+              "v(x1.x2.x1.x2.x1.5)",
+              "v(x1.x2.x1.x2.x1.x1.3)",
+              "v(x1.x2.x1.x2.x1.x1.4)",
+              "v(x1.x2.x1.x2.x1.x1.5)",
+              "v(x1.x2.x1.x2.x1.x2.3)",
+              "v(x1.x2.x1.x2.x1.x2.4)",
+              "v(x1.x2.x1.x2.x1.x2.5)",
+              "v(x1.x2.x1.x2.x1.x3.3)",
+              "v(x1.x2.x1.x2.x1.x3.4)",
+              "v(x1.x2.x1.x2.x1.x3.5)",
+              "v(x1.x2.x1.x2.x1.x4.3)",
+              "v(x1.x2.x1.x2.x1.x4.4)",
+              "v(x1.x2.x1.x2.x1.x4.5)",
+              "v(x1.x2.x2.x1.3)",
+              "v(x1.x2.x2.x1.4)",
+              "v(x1.x2.x2.x1.5)",
+              "v(x1.x2.x2.x1.x1.3)",
+              "v(x1.x2.x2.x1.x1.4)",
+              "v(x1.x2.x2.x1.x1.5)",
+              "v(x1.x2.x2.x1.x2.3)",
+              "v(x1.x2.x2.x1.x2.4)",
+              "v(x1.x2.x2.x1.x2.5)",
+              "v(x1.x2.x2.x1.x3.3)",
+              "v(x1.x2.x2.x1.x3.4)",
+              "v(x1.x2.x2.x1.x3.5)",
+              "v(x1.x2.x2.x1.x4.3)",
+              "v(x1.x2.x2.x1.x4.4)",
+              "v(x1.x2.x2.x1.x4.5)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "4b5bacda04d9c528d4c88d58d211114cb53edbc213c34a62a8c6b2379958db97",
+        "analyses": [],
+        "error": "Parse error at line 1: Cannot read properties of undefined (reading 'trim') Example 3 for interconnect simulation"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76",
+        "https://github.com/mfiumara/spice-ts/issues/7"
+      ]
+    },
+    {
+      "id": "coupled-lossy-lines",
+      "category": "transmission-line",
+      "declaredAnalyses": [
+        "tran"
+      ],
+      "sourcePath": "examples/ltra_3.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/ltra_3.cir",
+      "input": {
+        "bytes": 8663,
+        "sha256": "1927a2a547342e6c60ab1e0489c26d5ca7e92f36d5b08f6a03690b95aa7448b3",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "1927a2a547342e6c60ab1e0489c26d5ca7e92f36d5b08f6a03690b95aa7448b3",
+        "analyses": [
+          {
+            "type": "tran",
+            "plotName": "Transient Analysis",
+            "points": 739,
+            "signals": [
+              "i(e.x2.x1.x1.e1)",
+              "i(e.x2.x1.x1.e2)",
+              "i(e.x2.x1.x1.e3)",
+              "i(e.x2.x1.x1.e4)",
+              "i(e.x2.x1.x2.e1)",
+              "i(e.x2.x1.x2.e2)",
+              "i(e.x2.x1.x2.e3)",
+              "i(e.x2.x1.x2.e4)",
+              "i(v.x2.x1.x1.v1)",
+              "i(v.x2.x1.x1.v2)",
+              "i(v.x2.x1.x2.v1)",
+              "i(v.x2.x1.x2.v2)",
+              "i(v.x3.vccint)",
+              "i(v1)",
+              "i(vcc)",
+              "v(1)",
+              "v(10)",
+              "v(2)",
+              "v(3)",
+              "v(4)",
+              "v(5)",
+              "v(o.x2.o1#i1)",
+              "v(o.x2.o1#i2)",
+              "v(o.x2.o2#i1)",
+              "v(o.x2.o2#i2)",
+              "v(o.x2.x1.o1#i1)",
+              "v(o.x2.x1.o1#i2)",
+              "v(o.x2.x1.o2#i1)",
+              "v(o.x2.x1.o2#i2)",
+              "v(x1.10)",
+              "v(x1.11)",
+              "v(x1.12)",
+              "v(x1.13)",
+              "v(x1.14)",
+              "v(x1.15)",
+              "v(x1.16)",
+              "v(x1.17)",
+              "v(x1.18)",
+              "v(x1.21)",
+              "v(x1.22)",
+              "v(x1.23)",
+              "v(x1.24)",
+              "v(x1.25)",
+              "v(x1.26)",
+              "v(x1.27)",
+              "v(x1.6)",
+              "v(x1.7)",
+              "v(x1.8)",
+              "v(x1.9)",
+              "v(x2.5)",
+              "v(x2.6)",
+              "v(x2.x1.5)",
+              "v(x2.x1.6)",
+              "v(x2.x1.7)",
+              "v(x2.x1.8)",
+              "v(x2.x1.x1.5)",
+              "v(x2.x1.x1.6)",
+              "v(x2.x1.x1.7)",
+              "v(x2.x1.x1.8)",
+              "v(x2.x1.x2.5)",
+              "v(x2.x1.x2.6)",
+              "v(x2.x1.x2.7)",
+              "v(x2.x1.x2.8)",
+              "v(x3.1)",
+              "v(x3.2)",
+              "v(x3.3)",
+              "v(x3.4)",
+              "v(x3.5)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "1927a2a547342e6c60ab1e0489c26d5ca7e92f36d5b08f6a03690b95aa7448b3",
+        "analyses": [],
+        "error": "Parse error at line 1: Unknown device type: 'B' BJTdriver -- 2in st. lin -- 20in coupled line -- 2in st line -- DiodeCircuit"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76",
+        "https://github.com/mfiumara/spice-ts/issues/7"
+      ]
+    },
+    {
+      "id": "bjt-mixer-distortion",
+      "category": "distortion",
+      "declaredAnalyses": [],
+      "sourcePath": "examples/mixdisto.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/mixdisto.cir",
+      "input": {
+        "bytes": 969,
+        "sha256": "9f172a78faabd09f0b4e61d733b542e48380a452a4767b83e05617ab4642894e",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "failed",
+        "convergence": "not-run",
+        "inputSha256": "9f172a78faabd09f0b4e61d733b542e48380a452a4767b83e05617ab4642894e",
+        "analyses": [],
+        "error": "no raw analysis data produced"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "9f172a78faabd09f0b4e61d733b542e48380a452a4767b83e05617ab4642894e",
+        "analyses": [],
+        "error": "Parse error at line 1: Unknown device type: 'S' Simple mixer circuit - diffpair fed by modulated Iee"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76"
+      ]
+    },
+    {
+      "id": "mos6-inverter-chain",
+      "category": "digital",
+      "declaredAnalyses": [
+        "tran"
+      ],
+      "sourcePath": "examples/mos6inv.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/mos6inv.cir",
+      "input": {
+        "bytes": 3616,
+        "sha256": "60f1f49e2f9ac1eccf6bbf717b3c177de885e1e2438b175db4a4360bfe080434",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "60f1f49e2f9ac1eccf6bbf717b3c177de885e1e2438b175db4a4360bfe080434",
+        "analyses": [
+          {
+            "type": "tran",
+            "plotName": "Transient Analysis",
+            "points": 315,
+            "signals": [
+              "i(vdd)",
+              "i(vin)",
+              "v(1)",
+              "v(100)",
+              "v(11)",
+              "v(12)",
+              "v(13)",
+              "v(2)",
+              "v(21)",
+              "v(22)",
+              "v(23)",
+              "v(3)",
+              "v(31)",
+              "v(32)",
+              "v(33)",
+              "v(4)",
+              "v(41)",
+              "v(42)",
+              "v(43)",
+              "v(5)",
+              "v(xndinv1.12)",
+              "v(xndinv1.13)",
+              "v(xndinv1.14)",
+              "v(xndinv1.22)",
+              "v(xndinv1.23)",
+              "v(xndinv1.32)",
+              "v(xndinv2.12)",
+              "v(xndinv2.13)",
+              "v(xndinv2.14)",
+              "v(xndinv2.22)",
+              "v(xndinv2.23)",
+              "v(xndinv2.32)",
+              "v(xndinv3.12)",
+              "v(xndinv3.13)",
+              "v(xndinv3.14)",
+              "v(xndinv3.22)",
+              "v(xndinv3.23)",
+              "v(xndinv3.32)",
+              "v(xndinv4.12)",
+              "v(xndinv4.13)",
+              "v(xndinv4.14)",
+              "v(xndinv4.22)",
+              "v(xndinv4.23)",
+              "v(xndinv4.32)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "60f1f49e2f9ac1eccf6bbf717b3c177de885e1e2438b175db4a4360bfe080434",
+        "analyses": [],
+        "error": "Parse error at line 44: Unsupported .options field: 'ACCT' .OPTIONS ACCT"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76"
+      ]
+    },
+    {
+      "id": "mos-amplifier",
+      "category": "amplifier",
+      "declaredAnalyses": [
+        "tran"
+      ],
+      "sourcePath": "examples/mosamp2.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir",
+      "input": {
+        "bytes": 1371,
+        "sha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+        "analyses": [
+          {
+            "type": "tran",
+            "plotName": "Transient Analysis",
+            "points": 2429,
+            "signals": [
+              "i(vb)",
+              "i(vccp)",
+              "i(vddn)",
+              "i(vin)",
+              "v(1)",
+              "v(10)",
+              "v(11)",
+              "v(12)",
+              "v(13)",
+              "v(14)",
+              "v(15)",
+              "v(16)",
+              "v(2)",
+              "v(20)",
+              "v(21)",
+              "v(30)",
+              "v(32)",
+              "v(4)",
+              "v(5)",
+              "v(6)",
+              "v(66)",
+              "v(7)",
+              "v(8)",
+              "v(9)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+        "analyses": [],
+        "error": "Parse error at line 2: Unsupported .options field: 'acct' .options acct abstol=10n vntol=10n"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76"
+      ]
+    },
+    {
+      "id": "mos-memory-cell",
+      "category": "digital",
+      "declaredAnalyses": [
+        "tran"
+      ],
+      "sourcePath": "examples/mosmem.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/mosmem.cir",
+      "input": {
+        "bytes": 750,
+        "sha256": "f63d832e7e63dd866e528d6e41eb653859243fdbfed48a83e55d9274e111859d",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "f63d832e7e63dd866e528d6e41eb653859243fdbfed48a83e55d9274e111859d",
+        "analyses": [
+          {
+            "type": "tran",
+            "plotName": "Transient Analysis",
+            "points": 150,
+            "signals": [
+              "i(vdd)",
+              "i(vs)",
+              "i(vw)",
+              "i(vwb)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(4)",
+              "v(5)",
+              "v(6)",
+              "v(7)",
+              "v(8)",
+              "v(9)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "f63d832e7e63dd866e528d6e41eb653859243fdbfed48a83e55d9274e111859d",
+        "analyses": [],
+        "error": "Parse error at line 2: Unsupported dot command: '.width' .width in=72"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76"
+      ]
+    },
+    {
+      "id": "pole-zero-four-stage",
+      "category": "filter-network",
+      "declaredAnalyses": [
+        "pz"
+      ],
+      "sourcePath": "examples/pz2.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/pz2.cir",
+      "input": {
+        "bytes": 285,
+        "sha256": "c21a9628a46581ad9e163632d992422afafeaa15443787e00153dbd7331d3b73",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "c21a9628a46581ad9e163632d992422afafeaa15443787e00153dbd7331d3b73",
+        "analyses": [
+          {
+            "type": "pz",
+            "plotName": "Pole-Zero Analysis",
+            "points": 1,
+            "signals": [
+              "v(pole(1))",
+              "v(pole(2))",
+              "v(pole(3))",
+              "v(pole(4))"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "c21a9628a46581ad9e163632d992422afafeaa15443787e00153dbd7331d3b73",
+        "analyses": [],
+        "error": "Parse error at line 1: Unknown device type: 'T' test pz"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76",
+        "https://github.com/mfiumara/spice-ts/issues/75"
+      ]
+    },
+    {
+      "id": "pole-zero-three-stage",
+      "category": "filter-network",
+      "declaredAnalyses": [
+        "pz"
+      ],
+      "sourcePath": "examples/pzt.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/pzt.cir",
+      "input": {
+        "bytes": 257,
+        "sha256": "1c50c0623b02d991eb04a1523d1aa50914e88c0ea53a64438daeec97ec359a18",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "1c50c0623b02d991eb04a1523d1aa50914e88c0ea53a64438daeec97ec359a18",
+        "analyses": [
+          {
+            "type": "pz",
+            "plotName": "Pole-Zero Analysis",
+            "points": 1,
+            "signals": [
+              "v(pole(1))",
+              "v(pole(2))",
+              "v(pole(3))"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "1c50c0623b02d991eb04a1523d1aa50914e88c0ea53a64438daeec97ec359a18",
+        "analyses": [],
+        "error": "Parse error at line 1: Unknown device type: 'T' test pz"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76",
+        "https://github.com/mfiumara/spice-ts/issues/75"
+      ]
+    },
+    {
+      "id": "rc-transient",
+      "category": "passive",
+      "declaredAnalyses": [
+        "tran"
+      ],
+      "sourcePath": "examples/rc.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/rc.cir",
+      "input": {
+        "bytes": 160,
+        "sha256": "0abbffc7b66510fc170e9e57a9d2b94b13213e888be9060022bc00e06a30f1be",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "0abbffc7b66510fc170e9e57a9d2b94b13213e888be9060022bc00e06a30f1be",
+        "analyses": [
+          {
+            "type": "tran",
+            "plotName": "Transient Analysis",
+            "points": 86,
+            "signals": [
+              "i(vin)",
+              "v(1)",
+              "v(2)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "0abbffc7b66510fc170e9e57a9d2b94b13213e888be9060022bc00e06a30f1be",
+        "analyses": [],
+        "error": "Parse error at line 1: Unknown device type: 'B' Basic RC circuit"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76"
+      ]
+    },
+    {
+      "id": "rca3040-wideband-amplifier",
+      "category": "amplifier",
+      "declaredAnalyses": [
+        "ac",
+        "dc",
+        "tran"
+      ],
+      "sourcePath": "examples/rca3040.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/rca3040.cir",
+      "input": {
+        "bytes": 1023,
+        "sha256": "5024b28b797b53f35d838e1fefeecae059302c4b0106485ff711c9306eedfad1",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "5024b28b797b53f35d838e1fefeecae059302c4b0106485ff711c9306eedfad1",
+        "analyses": [
+          {
+            "type": "ac",
+            "plotName": "AC Analysis",
+            "points": 101,
+            "signals": [
+              "i(vcc)",
+              "i(vee)",
+              "i(vin)",
+              "v(1)",
+              "v(10)",
+              "v(11)",
+              "v(12)",
+              "v(13)",
+              "v(14)",
+              "v(15)",
+              "v(16)",
+              "v(17)",
+              "v(2)",
+              "v(3)",
+              "v(30)",
+              "v(31)",
+              "v(5)",
+              "v(6)",
+              "v(7)",
+              "v(8)",
+              "v(9)"
+            ]
+          },
+          {
+            "type": "dc",
+            "plotName": "DC transfer characteristic",
+            "points": 101,
+            "signals": [
+              "i(vcc)",
+              "i(vee)",
+              "i(vin)",
+              "v(1)",
+              "v(10)",
+              "v(11)",
+              "v(12)",
+              "v(13)",
+              "v(14)",
+              "v(15)",
+              "v(16)",
+              "v(17)",
+              "v(2)",
+              "v(3)",
+              "v(30)",
+              "v(31)",
+              "v(5)",
+              "v(6)",
+              "v(7)",
+              "v(8)",
+              "v(9)"
+            ]
+          },
+          {
+            "type": "tran",
+            "plotName": "Transient Analysis",
+            "points": 108,
+            "signals": [
+              "i(vcc)",
+              "i(vee)",
+              "i(vin)",
+              "v(1)",
+              "v(10)",
+              "v(11)",
+              "v(12)",
+              "v(13)",
+              "v(14)",
+              "v(15)",
+              "v(16)",
+              "v(17)",
+              "v(2)",
+              "v(3)",
+              "v(30)",
+              "v(31)",
+              "v(5)",
+              "v(6)",
+              "v(7)",
+              "v(8)",
+              "v(9)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "5024b28b797b53f35d838e1fefeecae059302c4b0106485ff711c9306eedfad1",
+        "analyses": [],
+        "error": "Parse error at line 1: Unsupported resistor parameters: '3040 wideband amplifier' rca3040 ckt - rca 3040 wideband amplifier"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76"
+      ]
+    },
+    {
+      "id": "resistor-noise",
+      "category": "noise",
+      "declaredAnalyses": [
+        "noise"
+      ],
+      "sourcePath": "examples/resnoise.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/resnoise.cir",
+      "input": {
+        "bytes": 329,
+        "sha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661",
+        "analyses": [
+          {
+            "type": "noise",
+            "plotName": "Integrated Noise",
+            "points": 1,
+            "signals": [
+              "i(inoise_total_rl_1overf)",
+              "i(inoise_total_rl_thermal)",
+              "i(inoise_total_rl)",
+              "i(inoise_total)",
+              "v(onoise_total_rl_1overf)",
+              "v(onoise_total_rl_thermal)",
+              "v(onoise_total_rl)",
+              "v(onoise_total)"
+            ]
+          },
+          {
+            "type": "noise",
+            "plotName": "Noise Spectral Density Curves",
+            "points": 41,
+            "signals": [
+              "inoise_spectrum",
+              "onoise_rl",
+              "onoise_rl_1overf",
+              "onoise_rl_thermal",
+              "onoise_spectrum"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661",
+        "analyses": [],
+        "error": "Parse error at line 1: Unknown device type: 'S' simple resistor circuit"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76",
+        "https://github.com/mfiumara/spice-ts/issues/75"
+      ]
+    },
+    {
+      "id": "rtl-inverter-chain",
+      "category": "digital",
+      "declaredAnalyses": [
+        "dc",
+        "tran"
+      ],
+      "sourcePath": "examples/rtlinv.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/rtlinv.cir",
+      "input": {
+        "bytes": 418,
+        "sha256": "29aa3c8914aa7908881b4ab2657c23b5c4877811f09d1526ea6d5c833fce95c0",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "29aa3c8914aa7908881b4ab2657c23b5c4877811f09d1526ea6d5c833fce95c0",
+        "analyses": [
+          {
+            "type": "dc",
+            "plotName": "DC transfer characteristic",
+            "points": 101,
+            "signals": [
+              "i(vcc)",
+              "i(vin)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(4)",
+              "v(5)",
+              "v(6)"
+            ]
+          },
+          {
+            "type": "tran",
+            "plotName": "Transient Analysis",
+            "points": 125,
+            "signals": [
+              "i(vcc)",
+              "i(vin)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(4)",
+              "v(5)",
+              "v(6)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "29aa3c8914aa7908881b4ab2657c23b5c4877811f09d1526ea6d5c833fce95c0",
+        "analyses": [],
+        "error": "Parse error at line 1: Unsupported resistor parameters: 'rtl inverters' rtlinv ckt - cascaded rtl inverters"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76"
+      ]
+    },
+    {
+      "id": "ecl-schmitt-trigger",
+      "category": "digital",
+      "declaredAnalyses": [
+        "tran"
+      ],
+      "sourcePath": "examples/schmitt.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/schmitt.cir",
+      "input": {
+        "bytes": 544,
+        "sha256": "ad673d52014030a49980fcbafeda898d547ab701fb5cf8eeaf374c9338324a31",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "ad673d52014030a49980fcbafeda898d547ab701fb5cf8eeaf374c9338324a31",
+        "analyses": [
+          {
+            "type": "tran",
+            "plotName": "Transient Analysis",
+            "points": 135,
+            "signals": [
+              "i(vee)",
+              "i(vin)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(4)",
+              "v(5)",
+              "v(6)",
+              "v(7)",
+              "v(8)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "ad673d52014030a49980fcbafeda898d547ab701fb5cf8eeaf374c9338324a31",
+        "analyses": [],
+        "error": "Parse error at line 1: Unknown device type: 'S' schmitt ckt - ecl compatible schmitt trigger"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76"
+      ]
+    },
+    {
+      "id": "high-pass-pole-zero",
+      "category": "filter-network",
+      "declaredAnalyses": [
+        "pz"
+      ],
+      "sourcePath": "examples/simplepz.cir",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/simplepz.cir",
+      "input": {
+        "bytes": 122,
+        "sha256": "750846efbf93b9ae9f93e477922589439b859648de15b7508d2ea8e39da23720",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "750846efbf93b9ae9f93e477922589439b859648de15b7508d2ea8e39da23720",
+        "analyses": [
+          {
+            "type": "pz",
+            "plotName": "Pole-Zero Analysis",
+            "points": 1,
+            "signals": [
+              "v(pole(1))",
+              "v(zero(1))"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "inputSha256": "750846efbf93b9ae9f93e477922589439b859648de15b7508d2ea8e39da23720",
+        "analyses": [],
+        "error": "Parse error at line 1: Unknown device type: 'T' test circuit #1 for pz analysis:high pass filter"
+      },
+      "comparisons": [],
+      "gapIssues": [
+        "https://github.com/mfiumara/spice-ts/issues/76",
+        "https://github.com/mfiumara/spice-ts/issues/75"
+      ]
+    }
+  ]
+}

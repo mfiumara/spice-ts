@@ -1,0 +1,37 @@
+Test circuit for N-Channel JFET
+***********************************
+*
+*Drain curves
+Vds 1 0 0
+*.DC VDS 0 15 1
+Vgs 2 0 0
+*.Step Vgs 0 -1.875 -0.625
+.DC Vds 0 15 1 Vgs 0 -1.875 -0.625
+*
+Vidmon 1 1a 0
+Vigmon 2 2a 0
+Vismon 0 3 0
+*
+.PRINT DC V(1) V(2) I(Vidmon)
+*
+Jtest 1a 2a 3 SA2109 
+*
+.MODEL SA2109 NJF
++ LEVEL=2
++ BETA= 0.0003790
++ VTO = -3.760
++ PB = 0.650
++ LAMBDA = 0.01240
++ DELTA = 0.370;
++ THETA = 0.01120;
++ RD = 0.0
++ RS = 104.5
++ FC = 0.5
++ IS = 1.393E-10
++ AF = 1.0
++ KF = 0.05
++ CGS= 0
++ CGD= 0
+*
+.END
+

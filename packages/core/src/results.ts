@@ -148,6 +148,38 @@ export class ACResult {
   }
 }
 
+/** Spectral voltage-noise densities from a `.noise` analysis. */
+export class NoiseResult {
+  constructor(
+    /** Frequency points in Hz. */
+    public readonly frequencies: number[],
+    /** Output node named by the `.noise` command. */
+    public readonly outputNode: string,
+    /** Input source named by the `.noise` command. */
+    public readonly inputSource: string,
+    /** Output-referred voltage-noise density in V/sqrt(Hz). */
+    public readonly outputNoiseDensity: number[],
+    /** Input-referred voltage-noise density in V/sqrt(Hz). */
+    public readonly inputNoiseDensity: number[],
+  ) {}
+}
+
+/** Scalar small-signal quantities from a bounded `.tf v(node) source` analysis. */
+export class TransferFunctionResult {
+  constructor(
+    /** Output node named by the `.tf` command. */
+    public readonly outputNode: string,
+    /** Independent input source named by the `.tf` command. */
+    public readonly inputSource: string,
+    /** Voltage gain (V/V) or transimpedance (V/A). */
+    public readonly transfer: number,
+    /** Small-signal resistance seen by the input source, in ohms. */
+    public readonly inputResistance: number,
+    /** Small-signal resistance looking into the output node, in ohms. */
+    public readonly outputResistance: number,
+  ) {}
+}
+
 /**
  * Result of a DC sweep (`.dc`) analysis.
  *
@@ -222,6 +254,10 @@ export interface SimulationResult {
   transient?: TransientResult;
   /** AC small-signal analysis result (from `.ac`) */
   ac?: ACResult;
+  /** Resistor-noise spectral result (from `.noise`) */
+  noise?: NoiseResult;
+  /** DC small-signal transfer function (from `.tf`) */
+  transferFunction?: TransferFunctionResult;
   /** Parametric sweep results (from .step). When present, top-level result fields are empty. */
   steps?: StepResult[];
   /** Warnings collected during simulation */

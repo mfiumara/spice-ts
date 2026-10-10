@@ -36,6 +36,9 @@ export function parse(netlist: string): Circuit {
   const circuit = new Circuit();
 
   let subcktCollector: { name: string; ports: string[]; params: Record<string, number>; body: string[]; depth: number } | null = null;
+  let hasNoiseAnalysis = false;
+  let hasTransferFunctionAnalysis = false;
+  let hasStepAnalysis = false;
 
   for (const { tokens, lineNumber, raw } of lines) {
     if (tokens.length === 0) continue;
@@ -83,6 +86,23 @@ export function parse(netlist: string): Circuit {
       }
 
       if (first.startsWith('.')) {
+        if ((first === '.NOISE' && hasStepAnalysis) || (first === '.STEP' && hasNoiseAnalysis)) {
+          throw new ParseError(
+            '.step cannot be combined with .noise',
+            lineNumber,
+            raw,
+          );
+        }
+        if ((first === '.TF' && hasStepAnalysis) || (first === '.STEP' && hasTransferFunctionAnalysis)) {
+          throw new ParseError(
+            '.step cannot be combined with .tf',
+            lineNumber,
+            raw,
+          );
+        }
+        if (first === '.NOISE') hasNoiseAnalysis = true;
+        if (first === '.TF') hasTransferFunctionAnalysis = true;
+        if (first === '.STEP') hasStepAnalysis = true;
         parseDotCommand(circuit, tokens, lineNumber);
       } else {
         parseDevice(circuit, tokens, lineNumber);
@@ -140,17 +160,74 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
     case '.TRAN': {
       const timestep = parseNumber(tokens[1]);
       const stopTime = parseNumber(tokens[2]);
-      const startTime = tokens[3] ? parseNumber(tokens[3]) : undefined;
-      const maxTimestep = tokens[4] ? parseNumber(tokens[4]) : undefined;
-      circuit.addAnalysis('tran', { timestep, stopTime, startTime, maxTimestep });
+      const args = tokens.slice(3);
+      const uicIndex = args.findIndex(token => token.toUpperCase() === 'UIC');
+      const useInitialConditions = uicIndex >= 0;
+      if (uicIndex >= 0) args.splice(uicIndex, 1);
+      const startTime = args[0] ? parseNumber(args[0]) : undefined;
+      const maxTimestep = args[1] ? parseNumber(args[1]) : undefined;
+      circuit.addAnalysis('tran', {
+        timestep, stopTime, startTime, maxTimestep, useInitialConditions,
+      });
       break;
     }
+    case '.IC':
+      parseNodeInitialState(circuit, 'ic', tokens, lineNumber);
+      break;
+    case '.NODESET':
+      parseNodeInitialState(circuit, 'nodeset', tokens, lineNumber);
+      break;
     case '.AC': {
       const variation = tokens[1].toLowerCase() as 'dec' | 'oct' | 'lin';
       const points = parseInt(tokens[2], 10);
       const startFreq = parseNumber(tokens[3]);
       const stopFreq = parseNumber(tokens[4]);
       circuit.addAnalysis('ac', { variation, points, startFreq, stopFreq });
+      break;
+    }
+    case '.NOISE': {
+      const isLinearVoltageForm = tokens.length === 10
+        && tokens[1].toUpperCase() === 'V'
+        && tokens[2] === '('
+        && tokens[4] === ')'
+        && tokens[6].toUpperCase() === 'LIN';
+      if (!isLinearVoltageForm) {
+        throw new ParseError(
+          "Unsupported .noise form; expected '.noise v(node) source lin points start stop'",
+          lineNumber, tokens.join(' '),
+        );
+      }
+      const points = parseInt(tokens[7], 10);
+      const startFreq = parseNumber(tokens[8]);
+      const stopFreq = parseNumber(tokens[9]);
+      if (!Number.isInteger(points) || points < 2 || startFreq <= 0 || stopFreq < startFreq) {
+        throw new ParseError('Invalid .noise linear sweep', lineNumber, tokens.join(' '));
+      }
+      circuit.addAnalysis('noise', {
+        outputNode: tokens[3],
+        inputSource: tokens[5],
+        variation: 'lin',
+        points,
+        startFreq,
+        stopFreq,
+      });
+      break;
+    }
+    case '.TF': {
+      const isSingleNodeVoltageForm = tokens.length === 6
+        && tokens[1].toUpperCase() === 'V'
+        && tokens[2] === '('
+        && tokens[4] === ')';
+      if (!isSingleNodeVoltageForm) {
+        throw new ParseError(
+          "Unsupported .tf form; expected '.tf v(node) source'",
+          lineNumber, tokens.join(' '),
+        );
+      }
+      circuit.addAnalysis('tf', {
+        outputNode: tokens[3],
+        inputSource: tokens[5],
+      });
       break;
     }
     case '.MODEL':
@@ -258,6 +335,29 @@ function parseSimulationOptions(tokens: string[]): SimulationOptions {
   return options;
 }
 
+function parseNodeInitialState(
+  circuit: Circuit,
+  kind: 'ic' | 'nodeset',
+  tokens: string[],
+  lineNumber: number,
+): void {
+  if (tokens.length < 6 || (tokens.length - 1) % 5 !== 0) {
+    throw new ParseError(`Invalid .${kind} node-voltage assignment`, lineNumber, tokens.join(' '));
+  }
+  for (let index = 1; index < tokens.length; index += 5) {
+    if (tokens[index].toUpperCase() !== 'V' || tokens[index + 1] !== '('
+      || tokens[index + 3] !== ')' || !tokens[index + 4].startsWith('=')) {
+      throw new ParseError(`Invalid .${kind} node-voltage assignment`, lineNumber, tokens.join(' '));
+    }
+    const node = tokens[index + 2];
+    const valueToken = tokens[index + 4].slice(1);
+    if (!node || !valueToken) {
+      throw new ParseError(`Invalid .${kind} node-voltage assignment`, lineNumber, tokens.join(' '));
+    }
+    circuit.addInitialState(kind, { node, value: parseNumber(valueToken) });
+  }
+}
+
 function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): void {
   const name = tokens[0];
   const type = name[0].toUpperCase();
@@ -276,12 +376,18 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
     }
     case 'C': {
       const parsed = parsePassiveElement(tokens, 3, 'C');
-      circuit.addCapacitor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, parsed.params);
+      const { IC: ic, ...params } = parsed.params;
+      circuit.addCapacitor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, params, ic);
       break;
     }
     case 'L': {
       const parsed = parsePassiveElement(tokens, 3, 'L');
-      circuit.addInductor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, parsed.params);
+      const { IC: ic, ...params } = parsed.params;
+      circuit.addInductor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, params, ic);
+      break;
+    }
+    case 'K': {
+      circuit.addInductorCoupling(name, tokens[1], tokens[2], parseNumber(tokens[3]));
       break;
     }
     case 'V': {

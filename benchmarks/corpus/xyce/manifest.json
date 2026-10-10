@@ -1,0 +1,220 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "name": "Xyce Regression Suite primitive-device tests",
+    "repository": "https://github.com/Xyce/Xyce_Regression",
+    "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+    "license": "GPL-3.0-or-later",
+    "licenseUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/README.md#copyright-and-license",
+    "licenseNoticeSourceUrl": "https://raw.githubusercontent.com/Xyce/Xyce_Regression/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/README.md",
+    "licenseNoticeLocalPath": "benchmarks/corpus/xyce/LICENSE-NOTICE.md",
+    "licenseNoticeSha256": "82ff6df7bddcdf639483d261949a02a5f43da85d579f1242b05c3aa0c430f7cb",
+    "licenseTextUrl": "https://www.gnu.org/licenses/gpl-3.0.txt",
+    "licenseTextLocalPath": "benchmarks/corpus/xyce/COPYING.txt",
+    "licenseTextSha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+    "redistributionDecision": "Allowed under GPL-3.0-or-later. The upstream copyright and licence notice is retained byte-for-byte and the complete GPLv3 text is distributed alongside the fixtures.",
+    "mechanicalAdaptation": "None. Every .cir fixture is copied byte-for-byte from the pinned Xyce_Regression revision."
+  },
+  "circuits": [
+    {
+      "id": "capacitor-rc-transient",
+      "category": "capacitor",
+      "analyses": ["tran"],
+      "sourcePath": "Netlists/CAPACITOR/capacitor.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/CAPACITOR/capacitor.cir",
+      "sha256": "38b0d8271d4cef0f783be9a5ba0bc391c6d164fbe0dba9027e93927f0656e90b",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "ngspice rejects Xyce's zero-print-step .tran form." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The upstream title line is interpreted as a resistor statement with unsupported trailing parameters." }
+    },
+    {
+      "id": "capacitor-rc-transient-newlte",
+      "category": "capacitor",
+      "analyses": ["tran"],
+      "sourcePath": "Netlists/CAPACITOR/capacitor3.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/CAPACITOR/capacitor3.cir",
+      "sha256": "628f4953ca83a0e8840e100ea4671c778afe47bdcad0f52c09f5053c023c5194",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "ngspice rejects Xyce's zero-print-step .tran form." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The upstream title line is interpreted as a resistor statement with unsupported trailing parameters." }
+    },
+    {
+      "id": "capacitor-rc-oscillator",
+      "category": "capacitor",
+      "analyses": ["tran"],
+      "sourcePath": "Netlists/CAPACITOR/rc_osc.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/CAPACITOR/rc_osc.cir",
+      "sha256": "add8ca9d2654398a4c394bc9232809677b479fe35172c66bbb8e2ad9bf9410a4",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "ngspice rejects Xyce's zero-print-step .tran form." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The Xyce brace expression in .print is unsupported." }
+    },
+    {
+      "id": "diode-level2-temperature-breakdown",
+      "category": "diode",
+      "analyses": ["tran"],
+      "sourcePath": "Netlists/DIODE/Level2_Temp_Dep_Breakdown.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/DIODE/Level2_Temp_Dep_Breakdown.cir",
+      "sha256": "9c52a577a2f0b0a7419160b6cd340894ed41ebc403023a3b3f1d809d171bee0e",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "ngspice rejects Xyce's zero-print-step .tran form." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The Xyce current expression in .print is unsupported." }
+    },
+    {
+      "id": "diode-zener-5229",
+      "category": "diode",
+      "analyses": ["dc"],
+      "sourcePath": "Netlists/DIODE/Zener_5229.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/DIODE/Zener_5229.cir",
+      "sha256": "aefc2180e4bb6a5b39e3f4105546f3c5ba22af3b74f003d2d4d3c55f45938e9e",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "ngspice reports the fixture's PSpice level-2 diode model unsupported." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The Xyce .OPTIONS DEVICE form is unsupported." }
+    },
+    {
+      "id": "diode-transient",
+      "category": "diode",
+      "analyses": ["tran"],
+      "sourcePath": "Netlists/DIODE/diode.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/DIODE/diode.cir",
+      "sha256": "334e2dde43335851dc96f76ba5e78ef3e0b1de142cca073b3c70f83937637d8c",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "ngspice rejects Xyce's zero-print-step .tran form." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The Xyce voltage/current expression in .print is unsupported." }
+    },
+    {
+      "id": "diode-sidewall-dc",
+      "category": "diode",
+      "analyses": ["dc"],
+      "sourcePath": "Netlists/DIODE/diode_with_sidewall.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/DIODE/diode_with_sidewall.cir",
+      "sha256": "fb7d40fe14305d830afa0c4477e68b2da541f428883cec677f4c8cb13906d658",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The upstream title line is interpreted as an unknown T device." }
+    },
+    {
+      "id": "inductor-transient",
+      "category": "inductor",
+      "analyses": ["tran"],
+      "sourcePath": "Netlists/INDUCTOR/inductor.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/INDUCTOR/inductor.cir",
+      "sha256": "a0a869d9fe3b04d3bbdc8abf9e8a89a9302a54ac5be9c97f446f06834a248b35",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The upstream title line is interpreted as an unknown N device." }
+    },
+    {
+      "id": "njfet-2109-dc",
+      "category": "jfet",
+      "analyses": ["dc"],
+      "sourcePath": "Netlists/NJFET_DC/njfet-2109.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/NJFET_DC/njfet-2109.cir",
+      "sha256": "d25578ed59ddc0f94e3a2f9281f1200982f82c682ec63d5256bf0399f34ecd46",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The upstream title line is interpreted as an unknown T device." }
+    },
+    {
+      "id": "njfet-stepped-dc",
+      "category": "jfet",
+      "analyses": ["dc"],
+      "sourcePath": "Netlists/NJFET_DC/njfet.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/NJFET_DC/njfet.cir",
+      "sha256": "295e3d4208ea2d839acf4724473b921ef1706976b254912b6e8455508c65b412",
+      "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "Batch ngspice rejects the fixture's Xyce .STEP command." },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The upstream title line is interpreted as an unknown T device." }
+    },
+    {
+      "id": "nmos-level1-dc",
+      "category": "mosfet",
+      "analyses": ["dc"],
+      "sourcePath": "Netlists/NMOS1_DC/nmos1.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/NMOS1_DC/nmos1.cir",
+      "sha256": "3ab24382b4fb966d2111ba8b2aa0590b989fc09b367c09eb41cc7ac475e0e255",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "execution", "reason": "Simulation reaches an unresolved R2 expression variable." }
+    },
+    {
+      "id": "npn-dc",
+      "category": "bjt",
+      "analyses": ["dc"],
+      "sourcePath": "Netlists/NPN_DC/npn1.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/NPN_DC/npn1.cir",
+      "sha256": "8775a88a3f9c032ee047d770781a5a0cbcf21a2e28b7b6352e63636a7c9f1ce0",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "execution", "reason": "Simulation reaches an unresolved VCC expression variable." }
+    },
+    {
+      "id": "pmos-level1-dc",
+      "category": "mosfet",
+      "analyses": ["dc"],
+      "sourcePath": "Netlists/PMOS1_DC/pmos1.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/PMOS1_DC/pmos1.cir",
+      "sha256": "767c989ba6c4ad761d2211ae39c9c82536895e76f6288e77276ad9468b2b2093",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "execution", "reason": "Simulation reaches an unresolved R2 expression variable." }
+    },
+    {
+      "id": "pnp-dc",
+      "category": "bjt",
+      "analyses": ["dc"],
+      "sourcePath": "Netlists/PNP_DC/pnp1.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/PNP_DC/pnp1.cir",
+      "sha256": "95796ac998eb051a535fcb498c259e715c1e8edd237e1e07add401fc6a1601df",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "execution", "reason": "Simulation reaches an unresolved VCC expression variable." }
+    },
+    {
+      "id": "resistor-dc",
+      "category": "resistor",
+      "analyses": ["dc"],
+      "sourcePath": "Netlists/RESISTOR/resistor.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/RESISTOR/resistor.cir",
+      "sha256": "c0def3533cd6c07bf3cc6ee06f806c50d0b491d4d70d8296cc286ad8fc6066ba",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The upstream title line is interpreted as an unknown N device." }
+    },
+    {
+      "id": "resistor-level3-zero",
+      "category": "resistor",
+      "analyses": ["dc"],
+      "sourcePath": "Netlists/RESISTOR/resistor_lv3.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/RESISTOR/resistor_lv3.cir",
+      "sha256": "ab40c80d1175ad3079155b07bfed914b7085a6d9396f16a577446deb7693eb81",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The upstream title line is interpreted as an unknown A device." }
+    },
+    {
+      "id": "resistor-negative",
+      "category": "resistor",
+      "analyses": ["dc"],
+      "sourcePath": "Netlists/RESISTOR/resistor_neg.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/RESISTOR/resistor_neg.cir",
+      "sha256": "7576379306251dd8c2baf89b4dbbe25527c399edb1fd701e7e5d38e83851614b",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The upstream title line is interpreted as an unknown A device." }
+    },
+    {
+      "id": "rlc-transient",
+      "category": "rlc",
+      "analyses": ["tran"],
+      "sourcePath": "Netlists/RLC/rlc.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/RLC/rlc.cir",
+      "sha256": "4d52f9df5eb4fe814fdd137e3f66cd4b4ec6c988174e0fe1c7a19e6eddf21763",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "The Xyce current expression in .print is unsupported." }
+    },
+    {
+      "id": "vccs-dc",
+      "category": "controlled-source",
+      "analyses": ["dc"],
+      "sourcePath": "Netlists/VCCS/vccs.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/VCCS/vccs.cir",
+      "sha256": "963d8d506600a2ac7f43812156739c8f49d332c50701f64268041ecd51b0306d",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The upstream title line is interpreted as an unknown N device." }
+    },
+    {
+      "id": "vcvs-dc",
+      "category": "controlled-source",
+      "analyses": ["dc"],
+      "sourcePath": "Netlists/VCVS/vcvs.cir",
+      "localPath": "benchmarks/corpus/xyce/fixtures/VCVS/vcvs.cir",
+      "sha256": "62541466b4010245a24d2c37b35c3debfc675b86f1bd3b2523fb91a01b4bbd5c",
+      "ngspice": { "expectedStatus": "pass" },
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "The upstream title line is interpreted as an unknown N device." }
+    }
+  ]
+}

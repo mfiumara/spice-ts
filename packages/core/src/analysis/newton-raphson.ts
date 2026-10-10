@@ -1,7 +1,6 @@
 import type { DeviceModel } from '../devices/device.js';
 import type { MNAAssembler } from '../mna/assembler.js';
 import type { DCConvergenceTelemetry, ResolvedOptions } from '../types.js';
-import { createSparseSolver } from '../solver/sparse-solver.js';
 import { ConvergenceError } from '../errors.js';
 import { MOSFET } from '../devices/mosfet.js';
 
@@ -13,9 +12,6 @@ export function newtonRaphson(
   nodeNames: string[],
   telemetry?: DCConvergenceTelemetry,
 ): number {
-  const solver = createSparseSolver();
-  let patternAnalyzed = false;
-
   // Pre-classify devices for batch stamping (built lazily after first iteration)
   let mosfets: MOSFET[] | null = null;
   let otherDevices: DeviceModel[] | null = null;
@@ -59,10 +55,7 @@ export function newtonRaphson(
       }
     }
 
-    if (!patternAnalyzed) {
-      solver.analyzePattern(assembler.getCscMatrix());
-      patternAnalyzed = true;
-    }
+    const solver = assembler.getSparseSolver();
     solver.factorize(assembler.getCscMatrix());
     const x = solver.solve(new Float64Array(assembler.b));
     assembler.solution.set(x);

@@ -1,0 +1,34 @@
+NPN Bipolar Transistor Circuit Netlist
+**************************************************************
+* Tier No.: 1                                               
+* Description:   Circuit netlist to determine the current-volt-
+*                age characteristics of the Xyce npn bipolar 
+*                transistor model. The circuit is configured 
+*                as a common-emitter with a time-varying signal 
+*                source in series with a base dc source
+* Input:  12V DC Source
+* Output: Ic, Ib, Vbe, Vce
+* Circuit Elements: resistor (2), npn transistor
+* Analysis:	
+* FOR THE NPN CIRCUIT, DETERMINE:
+* IB = {VCC - VBE} / RB = {12 - 0.7} / 377E+3 = 29.9uA
+* IC = BETA * IB = 100 * 29.9E-6 = 2.99mA
+* VCE = VCC - IC*RC = 12 - (2.99E-3)*(2E+3) = 6.01V 
+*         The circuit simulation should yield the following outputs:
+*		Base Current 		Ib= 29.7uA
+*		Collector Current 	Ic= 2.97mA
+*           Emitter Collector Voltage Vce = 6.06V
+************************************************************** 
+VCC  4 0 DC 12V
+RC 3 4 2K
+RB 4 5 377K
+* Zero volt sources used as ammeters to measure the
+* base and collector currents, respectively
+VMON1 5 1 0
+VMON2 3 2 0
+Q 2 1 0 NBJT
+.MODEL NBJT NPN (BF=100)
+.DC VCC 0 12 1
+.PRINT DC V(4) I(VMON1) I(VMON2) V(1) V(2) 
+
+.END

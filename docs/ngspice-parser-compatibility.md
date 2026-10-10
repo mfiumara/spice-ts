@@ -9,12 +9,12 @@ Executable fixtures live in [`packages/core/src/parser/ngspice-compatibility.tes
 | State | Before this audit | After this audit |
 | --- | ---: | ---: |
 | supported | 13 | 16 |
-| partial | 7 | 5 |
+| partial | 7 | 6 |
 | ignored output metadata | 0 | 1 |
 | unsupported | 8 | 9 |
-| total | 28 | 31 |
+| total | 28 | 32 |
 
-The full-row promotions are end-of-line comments, whitespace around `=` in model/instance parameters, and the solver-backed `.options` subset. Independent-source PWL time/value lists are now supported within the still-partial source row. Numeric scale/unit compatibility remains partial: this audit corrects `mil` to ngspice's `25.4e-6` factor, but does not claim the complete documented numeric grammar. Unsupported semantic directives, unsupported option fields, unsupported resistor parameters, and the unimplemented EXP/SFFM/AM/trnoise/external waveform families fail explicitly instead of being silently ignored.
+The full-row promotions are end-of-line comments, whitespace around `=` in model/instance parameters, and the solver-backed `.options` subset. Independent-source PWL time/value lists are now supported within the still-partial source row. Noise analysis is partial: only `v(node) source lin points start stop`, ideal-resistor thermal noise at the default 27 C, and input/output-referred voltage-noise spectra are implemented. Numeric scale/unit compatibility remains partial: this audit corrects `mil` to ngspice's `25.4e-6` factor, but does not claim the complete documented numeric grammar. Unsupported semantic directives, unsupported option fields, unsupported resistor parameters, and the unimplemented EXP/SFFM/AM/trnoise/external waveform families fail explicitly instead of being silently ignored.
 
 ## Matrix
 
@@ -45,7 +45,8 @@ The full-row promotions are end-of-line comments, whitespace around `=` in model
 | Analysis | `.tran` | supported | supported | `tstep tstop [tstart [tmax]]` parses; `uic` is not supported. | [11.3.10](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-23570) |
 | Analysis | `.ac` | supported | supported | DEC/OCT/LIN forms parse. | [11.3.1](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-23283) |
 | Initial state | `.ic` / `.nodeset` | unsupported | unsupported | Explicit parser error; this exposes the currently ineffective ring-oscillator benchmark `.ic`. | [11.2](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-23240) |
-| Analysis | `.noise`, `.tf`, `.pz`, `.sens`, `.disto` | unsupported | unsupported | Explicit parser error. | [11.3](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-23282) |
+| Analysis | `.noise v(node) source lin points start stop` | unsupported | partial | Computes uncorrelated ideal-resistor thermal noise at ngspice's default 27 C and returns output/input-referred voltage-noise density spectra. Differential outputs, DEC/OCT sweeps, integrated totals, temperature cards, and semiconductor/flicker noise are explicitly outside this first slice. | [11.3.4](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-23380) |
+| Analysis | `.tf`, `.pz`, `.sens`, `.disto` | unsupported | unsupported | Explicit parser error. | [11.3](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-23282) |
 | Control | `.control` / `.endc` scripts | unsupported | unsupported | Explicit parser error; the interactive command language is not interpreted. | [12.4.3](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-24862) |
 | Control | Solver-backed `.options` subset | unsupported | supported | See the exact field mapping below. Unknown fields and values reject explicitly; explicit `simulate()` API options override deck values. | [11.1 Variables (`.options`)](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-23069) |
 | Circuit state | `.temp` | unsupported | unsupported | Temperature changes device behavior, which spice-ts does not model yet, so the directive rejects explicitly. | [2.14 `.TEMP`](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-1536) |

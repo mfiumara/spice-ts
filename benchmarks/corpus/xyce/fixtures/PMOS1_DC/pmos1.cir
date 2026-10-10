@@ -1,0 +1,36 @@
+P-Channel Mosfet Circuit 
+**************************************************************
+* Tier No.:  2
+* Description:   Circuit netlist to test current-voltage 
+*                characteristics of the Xyce p-channel
+*                level 1 mosfet model.  The transistor is biased in
+*                nonsaturation region using resistors R1 and R2
+*                to fix the gate voltage at half supply.
+* Input:   0-5V DC Source
+* Output:  Measure Id, Vgs, Vds
+* Circuit Elements: resistors (3), pmos transistor
+* Analysis:
+* FOR THE PMOS CIRCUIT BIASED IN THE NON-SATURATION REGION:
+* VSG = VDD - VG = VDD - {R2/(R1+R2)}*VDD = 5 - {50/100}*5 = 2.5V
+* ID  = Kp*[2*(VSG + VT)*VSD  -  VSD**2)]
+*     = (KP/2)*(W/L)[2*(VSG + VT)*VSD  -  VSD**2)]
+*     = (25E-6/2)*(160E-6/10E-6)*[2*(VSG + VT)*VSD  -  VSD**2)]
+*       = 0.2E-3 * {2*(2.5-0.8)*(5  -  7.5E+3 * ID) - (5 - 7.5E+3 * ID)**2}
+*       = 0.515mA
+* VSD = VDD - ID*RD = 5 - (0.515E-3)*(7.5E+3) = 1.14 V
+*           The circuit simulation should yield the following outputs:
+*		Drain Current        Id = 0.515mA
+*		Drain-Source Voltage Vds= 1.14V
+*           	Drain-Gate Voltage   Vgs= 2.5V
+*
+************************************************************** 
+VDD 2 0 DC 5V
+R1 2 1 50K
+R2 1 0 50K
+RD 4 0 7.5K
+VMON 3 4 0
+M1 3 1 2 2 PFET L=10U W=160U
+.MODEL PFET PMOS(LEVEL=1 KP=25U VTO=-0.8V)
+.DC VDD 0 5 1
+.PRINT DC V(2) I(VMON) V(2,3) V(2,1)
+.END

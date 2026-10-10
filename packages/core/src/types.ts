@@ -36,6 +36,16 @@ export interface TransientAnalysis {
   startTime?: number;
   /** Maximum allowed timestep in seconds */
   maxTimestep?: number;
+  /** Skip the DC operating point and use `.ic` values as the transient state. */
+  useInitialConditions?: boolean;
+}
+
+/** A node voltage supplied by `.ic` or `.nodeset`. */
+export interface NodeInitialState {
+  /** Node name as declared in the netlist. */
+  node: NodeName;
+  /** Initial voltage or Newton guess in volts. */
+  value: number;
 }
 
 /** AC small-signal analysis (`.ac`). Frequency sweep. */
@@ -51,8 +61,37 @@ export interface ACAnalysis {
   stopFreq: number;
 }
 
-/** Union of all analysis command types. Discriminated on the `type` field. */
+/** Bounded resistor-noise analysis (`.noise v(node) source lin ...`). */
+export interface NoiseAnalysis {
+  type: 'noise';
+  /** Output node whose voltage-noise density is reported. */
+  outputNode: string;
+  /** Independent voltage source used to refer output noise back to the input. */
+  inputSource: string;
+  /** This first slice supports only ngspice's linear sweep form. */
+  variation: 'lin';
+  /** Total number of frequency points, including both endpoints. */
+  points: number;
+  /** Start frequency in Hz. */
+  startFreq: number;
+  /** Stop frequency in Hz. */
+  stopFreq: number;
+}
+
+/** Bounded DC transfer-function analysis (`.tf v(node) source`). */
+export interface TransferFunctionAnalysis {
+  type: 'tf';
+  /** Single output node whose small-signal voltage is measured. */
+  outputNode: string;
+  /** Independent voltage or current source used as the small-signal input. */
+  inputSource: string;
+}
+
+/** Established time/frequency analysis command types. */
 export type AnalysisCommand = DCAnalysis | DCSweepAnalysis | TransientAnalysis | ACAnalysis;
+
+/** Every analysis directive executable by the native simulator. */
+export type AnalysisDirective = AnalysisCommand | NoiseAnalysis | TransferFunctionAnalysis;
 
 /** Integration methods for transient analysis */
 export type IntegrationMethod = 'euler' | 'trapezoidal' | 'gear2';
@@ -89,6 +128,37 @@ export interface SimulationOptions {
    * adapter, or pass a custom simulator adapter.
    */
   simulator?: SimulatorBackend;
+  /** Optional bounded worker execution for independent `.step` iterations. */
+  stepWorkers?: false | StepWorkerOptions;
+}
+
+/** Serializable work sent to one `.step` worker. */
+export interface StepWorkerTask {
+  index: number;
+  netlist: string;
+  options: Omit<SimulationOptions, 'resolveInclude' | 'simulator' | 'stepWorkers'>;
+}
+
+/** Minimal worker contract supported by Node worker_threads and browser Workers. */
+export interface StepWorker {
+  run(task: StepWorkerTask): Promise<import('./results.js').SimulationResult>;
+  terminate(reason?: unknown): void | Promise<void>;
+}
+
+export interface StepWorkerCompletion {
+  index: number;
+  result: import('./results.js').StepResult;
+}
+
+export interface StepWorkerOptions {
+  /** Maximum concurrent workers. Defaults to the runtime hardware-concurrency hint. */
+  maxWorkers?: number;
+  /** Abort the sweep and terminate every active worker. */
+  signal?: import('./analysis/step-scheduler.js').StepTaskAbortSignal;
+  /** Receives results immediately in completion order. */
+  onComplete?: (completion: StepWorkerCompletion) => void;
+  /** Override worker creation; returning null requests sequential fallback. */
+  workerFactory?: (workerIndex: number) => StepWorker | null | Promise<StepWorker | null>;
 }
 
 /** Built-in simulator backend names. */

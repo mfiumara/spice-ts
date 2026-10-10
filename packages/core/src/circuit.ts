@@ -1,5 +1,8 @@
 import type { DeviceModel } from './devices/device.js';
-import type { AnalysisCommand, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis, SimulationOptions } from './types.js';
+import type {
+  AnalysisDirective, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis,
+  SimulationOptions, NodeInitialState,
+} from './types.js';
 import type { CircuitIR } from './ir/types.js';
 import { buildIR } from './ir/builder.js';
 import { Resistor } from './devices/resistor.js';
@@ -7,6 +10,7 @@ import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
 import { Capacitor } from './devices/capacitor.js';
 import { Inductor } from './devices/inductor.js';
+import { MutualInductor } from './devices/mutual-inductor.js';
 import { Diode } from './devices/diode.js';
 import { BJT } from './devices/bjt.js';
 import { MOSFET } from './devices/mosfet.js';
@@ -51,7 +55,7 @@ export interface CompiledCircuit {
   /** Ordered list of branch names */
   branchNames: string[];
   /** Analysis commands to execute */
-  analyses: AnalysisCommand[];
+  analyses: AnalysisDirective[];
   /** Device model parameter cards */
   models: Map<string, ModelParams>;
   /** Subcircuit definitions */
@@ -60,6 +64,10 @@ export interface CompiledCircuit {
   steps: StepAnalysis[];
   /** Solver options declared by `.options` cards in the netlist */
   simulationOptions: SimulationOptions;
+  /** Node voltages from `.ic`; forced only for transient UIC, otherwise Newton guesses. */
+  initialConditions: NodeInitialState[];
+  /** Node-voltage Newton guesses from `.nodeset`. */
+  nodeSets: NodeInitialState[];
 }
 
 interface DeviceDescriptor {
@@ -71,6 +79,10 @@ interface DeviceDescriptor {
   modelName?: string;
   params?: Record<string, number>;
   controlSource?: string;
+  /** Volts for capacitors, amps for inductors. */
+  ic?: number;
+  coupledA?: string;
+  coupledB?: string;
 }
 
 function formatNumber(value: number): string {
@@ -142,8 +154,11 @@ function formatDevice(desc: DeviceDescriptor): string {
     case 'L': {
       const value = desc.value !== undefined ? formatNumber(desc.value) : undefined;
       const valueAndModel = [value, desc.modelName].filter(Boolean).join(' ');
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${valueAndModel || '0'}${tail}`;
+      const ic = desc.ic === undefined ? '' : ` IC=${formatNumber(desc.ic)}`;
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${valueAndModel || '0'}${tail}${ic}`;
     }
+    case 'K':
+      return `${desc.name} ${desc.coupledA} ${desc.coupledB} ${formatNumber(desc.value ?? 0)}`;
     case 'V':
     case 'I':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatWaveform(desc.waveform)}`;
@@ -166,7 +181,7 @@ function formatDevice(desc: DeviceDescriptor): string {
   }
 }
 
-function formatAnalysis(analysis: AnalysisCommand): string {
+function formatAnalysis(analysis: AnalysisDirective): string {
   switch (analysis.type) {
     case 'op':
       return '.op';
@@ -176,10 +191,15 @@ function formatAnalysis(analysis: AnalysisCommand): string {
       const parts = ['.tran', formatNumber(analysis.timestep), formatNumber(analysis.stopTime)];
       if (analysis.startTime !== undefined) parts.push(formatNumber(analysis.startTime));
       if (analysis.maxTimestep !== undefined) parts.push(formatNumber(analysis.maxTimestep));
+      if (analysis.useInitialConditions) parts.push('UIC');
       return parts.join(' ');
     }
     case 'ac':
       return `.ac ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
+    case 'noise':
+      return `.noise v(${analysis.outputNode}) ${analysis.inputSource} lin ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
+    case 'tf':
+      return `.tf v(${analysis.outputNode}) ${analysis.inputSource}`;
   }
 }
 
@@ -193,8 +213,8 @@ function formatStep(step: StepAnalysis): string {
   return `.step ${step.sweepMode.toUpperCase()} ${step.param} ${formatNumber(step.start ?? 0)} ${formatNumber(step.stop ?? 0)} ${step.points ?? 0}`;
 }
 
-function isPositiveFinite(value: number): boolean {
-  return Number.isFinite(value) && value > 0;
+function isPositiveFinite(value: number | undefined): value is number {
+  return value !== undefined && Number.isFinite(value) && value > 0;
 }
 
 function hasCapacitorParasitics(model: ResolvedCapacitorModel): boolean {
@@ -231,14 +251,16 @@ function internalNodeName(deviceName: string, suffix: string): string {
  */
 export class Circuit {
   private descriptors: DeviceDescriptor[] = [];
-  private _analyses: AnalysisCommand[] = [];
+  private _analyses: AnalysisDirective[] = [];
   private _steps: StepAnalysis[] = [];
   private _models = new Map<string, ModelParams>();
   private _subcircuits = new Map<string, SubcktDefinition>();
   private _simulationOptions: SimulationOptions = {};
+  private _initialConditions: NodeInitialState[] = [];
+  private _nodeSets: NodeInitialState[] = [];
   private nodeSet = new Set<string>();
 
-  get analyses(): AnalysisCommand[] {
+  get analyses(): AnalysisDirective[] {
     return this._analyses;
   }
 
@@ -248,6 +270,14 @@ export class Circuit {
 
   setSimulationOptions(options: SimulationOptions): void {
     this._simulationOptions = { ...this._simulationOptions, ...options };
+  }
+
+  get initialConditions(): readonly NodeInitialState[] {
+    return this._initialConditions;
+  }
+
+  get nodeSets(): readonly NodeInitialState[] {
+    return this._nodeSets;
   }
 
   get nodeCount(): number {
@@ -299,6 +329,7 @@ export class Circuit {
     capacitance?: number,
     modelName?: string,
     instanceParams?: Record<string, number>,
+    ic?: number,
   ): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
@@ -309,6 +340,7 @@ export class Circuit {
       value: capacitance,
       modelName,
       params: instanceParams,
+      ic,
     });
   }
 
@@ -329,6 +361,7 @@ export class Circuit {
     inductance?: number,
     modelName?: string,
     instanceParams?: Record<string, number>,
+    ic?: number,
   ): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
@@ -339,6 +372,15 @@ export class Circuit {
       value: inductance,
       modelName,
       params: instanceParams,
+      ic,
+    });
+  }
+
+  /** Add a SPICE K-element coupling two previously declared inductors. */
+  addInductorCoupling(name: string, indA: string, indB: string, coupling: number): void {
+    this.descriptors.push({
+      type: 'K', name, nodes: [], value: coupling,
+      coupledA: indA, coupledB: indB,
     });
   }
 
@@ -553,8 +595,10 @@ export class Circuit {
    */
   addAnalysis(type: 'op'): void;
   addAnalysis(type: 'dc', params: { source: string; start: number; stop: number; step: number }): void;
-  addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number }): void;
+  addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; useInitialConditions?: boolean }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
+  addAnalysis(type: 'noise', params: { outputNode: string; inputSource: string; variation: 'lin'; points: number; startFreq: number; stopFreq: number }): void;
+  addAnalysis(type: 'tf', params: { outputNode: string; inputSource: string }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
     switch (type) {
       case 'op':
@@ -570,13 +614,14 @@ export class Circuit {
         });
         break;
       case 'tran': {
-        const tranCmd: { type: 'tran'; timestep: number; stopTime: number; startTime?: number; maxTimestep?: number } = {
+        const tranCmd: { type: 'tran'; timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; useInitialConditions?: boolean } = {
           type: 'tran',
           timestep: params!.timestep as number,
           stopTime: params!.stopTime as number,
         };
         if (params?.startTime !== undefined) tranCmd.startTime = params.startTime as number;
         if (params?.maxTimestep !== undefined) tranCmd.maxTimestep = params.maxTimestep as number;
+        if (params?.useInitialConditions) tranCmd.useInitialConditions = true;
         this._analyses.push(tranCmd);
         break;
       }
@@ -589,7 +634,34 @@ export class Circuit {
           stopFreq: params!.stopFreq as number,
         });
         break;
+      case 'noise':
+        this._analyses.push({
+          type: 'noise',
+          outputNode: params!.outputNode as string,
+          inputSource: params!.inputSource as string,
+          variation: 'lin',
+          points: params!.points as number,
+          startFreq: params!.startFreq as number,
+          stopFreq: params!.stopFreq as number,
+        });
+        break;
+      case 'tf':
+        this._analyses.push({
+          type: 'tf',
+          outputNode: params!.outputNode as string,
+          inputSource: params!.inputSource as string,
+        });
+        break;
     }
+  }
+
+  /** Add a node voltage from `.ic` or `.nodeset`. */
+  addInitialState(kind: 'ic' | 'nodeset', state: NodeInitialState): void {
+    const target = kind === 'ic' ? this._initialConditions : this._nodeSets;
+    const normalizedNode = state.node.toLowerCase();
+    const existing = target.findIndex(entry => entry.node.toLowerCase() === normalizedNode);
+    if (existing >= 0) target[existing] = state;
+    else target.push(state);
   }
 
   /**
@@ -671,6 +743,13 @@ export class Circuit {
 
     for (const desc of this.descriptors) {
       lines.push(formatDevice(desc));
+    }
+
+    if (this._initialConditions.length > 0) {
+      lines.push(`.ic ${this._initialConditions.map(state => `V(${state.node})=${formatNumber(state.value)}`).join(' ')}`);
+    }
+    if (this._nodeSets.length > 0) {
+      lines.push(`.nodeset ${this._nodeSets.map(state => `V(${state.node})=${formatNumber(state.value)}`).join(' ')}`);
     }
 
     for (const step of this._steps) {
@@ -761,7 +840,7 @@ export class Circuit {
             throw new Error(`Capacitor '${desc.name}' references unknown model '${desc.modelName}'`);
           }
           const { value } = resolveCapacitance(desc.value, model, desc.params);
-          devices.push(new Capacitor(desc.name, nodeIndices, value));
+          devices.push(new Capacitor(desc.name, nodeIndices, value, desc.ic));
           break;
         }
         case 'L': {
@@ -772,13 +851,31 @@ export class Circuit {
           const { value } = resolveInductance(desc.value, model, desc.params);
           const bi = branchIndex++;
           branchNames.push(desc.name);
-          devices.push(new Inductor(desc.name, nodeIndices, bi, value));
+          devices.push(new Inductor(desc.name, nodeIndices, bi, value, desc.ic));
+          break;
+        }
+        case 'K': {
+          const indA = deviceMap.get(desc.coupledA!);
+          const indB = deviceMap.get(desc.coupledB!);
+          if (!(indA instanceof Inductor) || !(indB instanceof Inductor)) {
+            throw new Error(
+              `K-element '${desc.name}' references unknown or non-inductor device(s): ${desc.coupledA}, ${desc.coupledB}`,
+            );
+          }
+          devices.push(new MutualInductor(desc.name, indA, indB, desc.value!));
           break;
         }
         case 'D': {
           const modelName = desc.modelName;
           const modelParams = modelName ? this._models.get(modelName)?.params ?? {} : {};
-          devices.push(new Diode(desc.name, nodeIndices, modelParams));
+          const hasExpandedSeriesResistance = isPositiveFinite(modelParams.RS)
+            && desc.params?.RS === 0;
+          devices.push(new Diode(
+            desc.name,
+            nodeIndices,
+            { ...modelParams, ...desc.params },
+            hasExpandedSeriesResistance,
+          ));
           break;
         }
         case 'Q': {
@@ -867,6 +964,8 @@ export class Circuit {
       subcircuits: this._subcircuits,
       steps: this._steps,
       simulationOptions: { ...this._simulationOptions },
+      initialConditions: this._initialConditions.map(state => ({ ...state })),
+      nodeSets: this._nodeSets.map(state => ({ ...state })),
     };
   }
 
@@ -925,6 +1024,33 @@ export class Circuit {
         continue;
       }
 
+      if (desc.type === 'D') {
+        const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
+        const seriesResistance = desc.params?.RS ?? model?.params.RS;
+        const junctionCapacitance = desc.params?.CJ0 ?? model?.params.CJ0;
+        const transitTime = desc.params?.TT ?? model?.params.TT;
+        const hasJunctionCharge = isPositiveFinite(junctionCapacitance)
+          || isPositiveFinite(transitTime);
+        if (isPositiveFinite(seriesResistance) && hasJunctionCharge) {
+          const [anode, cathode] = desc.nodes;
+          const junction = internalNodeName(desc.name, 'rs');
+          result.push({
+            type: 'R',
+            name: `${desc.name}.RS`,
+            nodes: [anode, junction],
+            value: seriesResistance,
+          });
+          result.push({
+            ...desc,
+            nodes: [junction, cathode],
+            params: { ...desc.params, RS: 0 },
+          });
+        } else {
+          result.push(desc);
+        }
+        continue;
+      }
+
       result.push(desc);
     }
 
@@ -975,6 +1101,7 @@ export class Circuit {
       name: desc.name,
       nodes: [left, n],
       value: model.capacitance,
+      ic: desc.ic,
     });
 
     return result;
@@ -1022,6 +1149,7 @@ export class Circuit {
       name: desc.name,
       nodes: [left, n],
       value: model.inductance,
+      ic: desc.ic,
     });
 
     return result;
