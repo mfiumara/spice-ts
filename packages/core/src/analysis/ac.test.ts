@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { simulate } from '../simulate.js';
+import { simulate, simulateStream } from '../simulate.js';
+import { simulateProtocolV1 } from '../protocol/adapter.js';
 
 describe('AC Small-Signal Analysis', () => {
   it('applies an independent current-source AC excitation', async () => {
@@ -137,5 +138,43 @@ describe('AC Small-Signal Analysis', () => {
 
     expect(result.dc!.voltage('in')).toBeCloseTo(1.5, 6);
     expect(result.ac!.voltage('in')[0].magnitude).toBeCloseTo(1, 6);
+  });
+});
+
+describe('AC frequency grid (ngspice-47 parity)', () => {
+  const deck = (sweep: string) => `title\nV1 a 0 AC 1\nR1 a b 1k\nC1 b 0 1u\n.ac ${sweep}\n.end`;
+
+  // Expected grids were printed by ngspice-47 (`print frequency`) for the same decks.
+  it.each([
+    ['lin 10 1 1k', 10, 1, 1000],
+    ['lin 1 100 1k', 1, 100, 100],
+    ['dec 10 1 5', 7, 1, 3.981072],
+    ['dec 1 1 1k', 4, 1, 1000],
+    ['oct 4 1 5', 10, 1, 4.756828],
+    ['oct 3 1 10', 10, 1, 8],
+  ])('.ac %s gives %i points from %d to %d', async (sweep, count, first, last) => {
+    const frequencies = (await simulate(deck(sweep))).ac!.frequencies;
+    expect(frequencies).toHaveLength(count);
+    expect(frequencies[0]).toBeCloseTo(first, 6);
+    expect(frequencies[count - 1]).toBeCloseTo(last, 5);
+  });
+
+  it('streams the same grid as the batch solver', async () => {
+    const streamed: number[] = [];
+    for await (const point of simulateStream(deck('lin 10 1 1k'))) {
+      if ('frequency' in point) streamed.push(point.frequency);
+    }
+    expect(streamed).toEqual((await simulate(deck('lin 10 1 1k'))).ac!.frequencies);
+  });
+
+  it('accepts .ac lin N under a maxResultPoints limit of N', async () => {
+    const result = await simulateProtocolV1({
+      apiVersion: '1',
+      input: { format: 'spice', source: 'V1 a 0 AC 1\nR1 a 0 1k\n.ac lin 10 1 1k' },
+      options: { limits: { maxResultPoints: 10 } },
+    });
+    const ac = result.analyses[0];
+    if (ac?.type !== 'ac') throw new Error('expected AC result');
+    expect(ac.frequencyHz).toHaveLength(10);
   });
 });
