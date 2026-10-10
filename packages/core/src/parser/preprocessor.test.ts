@@ -56,6 +56,14 @@ describe('preprocessor', () => {
         .rejects.toThrow("Unknown function 'V'");
     });
 
+    it.each([
+      '.print tran {abs(V(out))}',
+      '.print tran {V(out)+gain}',
+    ])('keeps ambiguous output expressions explicit: %s', async directive => {
+      await expect(preprocess(directive))
+        .rejects.toThrow("Unknown function 'V'");
+    });
+
     it('handles .param with = sign and spaces', async () => {
       const input = `.param vdd = 1.8\nV1 1 0 DC {vdd}\n.op`;
       const result = await preprocess(input);

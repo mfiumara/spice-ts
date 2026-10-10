@@ -158,19 +158,33 @@ async function preprocessInternal(
       continue;
     }
 
-    // Substitute {expr} in all other lines
-    const substituted = substituteExpressions(line, params);
+    // Output vectors are evaluated after simulation, not as scalar parameters.
+    const preserveOutputFunctions = /^\.PRINT(?:\s|$)/i.test(trimmed);
+    const substituted = substituteExpressions(line, params, preserveOutputFunctions);
     output.push(substituted);
   }
 
   return output.join('\n');
 }
 
-function substituteExpressions(line: string, params: Record<string, number>): string {
-  return line.replace(/\{([^}]+)\}/g, (_match, expr: string) => {
+function substituteExpressions(
+  line: string,
+  params: Record<string, number>,
+  preserveOutputFunctions = false,
+): string {
+  return line.replace(/\{([^}]+)\}/g, (match, expr: string) => {
+    if (preserveOutputFunctions && isVoltageOrCurrentOutputExpression(expr)) return match;
     const value = evaluateExpression(expr, params);
     return formatNumber(value);
   });
+}
+
+function isVoltageOrCurrentOutputExpression(expression: string): boolean {
+  const functions = [...expression.matchAll(/([A-Za-z_]\w*)\s*\(/g)]
+    .map(match => match[1].toUpperCase());
+  if (functions.length === 0 || functions.some(name => name !== 'V' && name !== 'I')) return false;
+  const arithmetic = expression.replace(/\b[vi]\s*\([^()]*\)/gi, '0');
+  return /^[\d.eE+\-*/()\s]+$/.test(arithmetic);
 }
 
 function formatNumber(value: number): string {
