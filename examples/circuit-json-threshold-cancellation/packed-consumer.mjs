@@ -53,7 +53,7 @@ try {
     },
   }, null, 2)}\n`);
   run('pnpm', [
-    'add', '--ignore-workspace', '--offline', '--save-exact',
+    'add', '--ignore-workspace', '--prefer-offline', '--save-exact',
     coreTarball, protocolTarball, circuitJsonTarball, mcpTarball,
   ], consumerRoot);
 
