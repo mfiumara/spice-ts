@@ -35,6 +35,47 @@ function limitJunctionVoltage(vd: number, vt: number, IS: number): number {
   return Math.max(vd, -40 * vt);
 }
 
+function limitJunctionStep(
+  proposedVoltage: number,
+  previousVoltage: number,
+  thermalVoltage: number,
+  saturationCurrent: number,
+): number {
+  const criticalVoltage = thermalVoltage
+    * Math.log(thermalVoltage / (Math.sqrt(2) * saturationCurrent));
+  if (proposedVoltage > criticalVoltage
+    && Math.abs(proposedVoltage - previousVoltage) > 2 * thermalVoltage) {
+    if (previousVoltage > 0) {
+      const argument = 1 + (proposedVoltage - previousVoltage) / thermalVoltage;
+      return argument > 0
+        ? previousVoltage + thermalVoltage * Math.log(argument)
+        : criticalVoltage;
+    }
+    return thermalVoltage * Math.log(proposedVoltage / thermalVoltage);
+  }
+  if (proposedVoltage < 0) {
+    const minimum = previousVoltage > 0
+      ? -previousVoltage - 1
+      : 2 * previousVoltage - 1;
+    return Math.max(proposedVoltage, minimum);
+  }
+  return proposedVoltage;
+}
+
+function junctionStepScale(
+  proposedVoltage: number,
+  previousVoltage: number,
+  thermalVoltage: number,
+  saturationCurrent: number,
+): number {
+  const delta = proposedVoltage - previousVoltage;
+  if (delta === 0) return 1;
+  const limited = limitJunctionStep(
+    proposedVoltage, previousVoltage, thermalVoltage, saturationCurrent,
+  );
+  return Math.min(1, Math.max(0, (limited - previousVoltage) / delta));
+}
+
 export function resolveBJTParams(
   params: Partial<BJTParams> & Record<string, number>,
 ): BJTParams {
@@ -99,6 +140,24 @@ export class BJT implements DeviceModel {
   ) {
     this.suppliedParams = { ...params };
     this.params = resolveBJTParams(params);
+  }
+
+  limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {
+    const { NF, NR, IS, polarity } = this.params;
+    const [nC, nB, nE] = this.nodes;
+    const voltage = (solution: Float64Array, node: number): number =>
+      node >= 0 ? solution[node] : 0;
+    const junction = (solution: Float64Array, positive: number, negative: number): number =>
+      polarity * (voltage(solution, positive) - voltage(solution, negative));
+
+    return Math.min(
+      junctionStepScale(
+        junction(candidate, nB, nE), junction(previous, nB, nE), NF * VT, IS,
+      ),
+      junctionStepScale(
+        junction(candidate, nB, nC), junction(previous, nB, nC), NR * VT, IS,
+      ),
+    );
   }
 
   noiseOperatingPoint(solution: Float64Array): {

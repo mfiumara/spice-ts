@@ -5,6 +5,23 @@ import { ConvergenceError } from '../errors.js';
 import { MOSFET } from '../devices/mosfet.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
+function applyDeviceStepLimits(
+  devices: readonly DeviceModel[],
+  previous: Float64Array,
+  candidate: Float64Array,
+): void {
+  let scale = 1;
+  for (const device of devices) {
+    if (device.limitNewtonStep) {
+      scale = Math.min(scale, device.limitNewtonStep(previous, candidate));
+    }
+  }
+  if (scale >= 1) return;
+  for (let i = 0; i < candidate.length; i++) {
+    candidate[i] = previous[i] + scale * (candidate[i] - previous[i]);
+  }
+}
+
 export function newtonRaphson(
   assembler: MNAAssembler,
   devices: DeviceModel[],
@@ -61,6 +78,7 @@ export function newtonRaphson(
     const solver = assembler.getSparseSolver();
     solver.factorize(assembler.getCscMatrix());
     const x = solver.solve(new Float64Array(assembler.b));
+    applyDeviceStepLimits(devices, assembler.prevSolution, x);
     assembler.solution.set(x);
 
     if (isConverged(assembler.solution, assembler.prevSolution, assembler.numNodes, options)) {
