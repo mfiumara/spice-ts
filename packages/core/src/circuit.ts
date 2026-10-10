@@ -1033,6 +1033,10 @@ export class Circuit {
     const hasBoundedVBIC = expandedDescriptors.some(desc =>
       desc.type === 'Q' && this._models.get(desc.modelName!)?.params.LEVEL === 4);
     if (hasBoundedVBIC) {
+      const unsupportedStep = this._steps.find(step => step.param.toUpperCase() === 'TEMP');
+      if (unsupportedStep) {
+        throw new Error("Unsupported bounded VBIC step: 'TEMP'");
+      }
       const unsupported = this._analyses.find(analysis =>
         analysis.type !== 'op' && analysis.type !== 'dc');
       if (unsupported) {
