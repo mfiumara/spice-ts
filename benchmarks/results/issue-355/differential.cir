@@ -1,0 +1,8 @@
+* Project-authored bounded VCVS OP fixture: differential control and output
+VP plus 0 4
+VN minus 0 1
+E1 outp outn plus minus -2
+RPOS outp 0 1k
+RNEG outn 0 1k
+.op
+.end
