@@ -13,6 +13,7 @@ import { Inductor } from './devices/inductor.js';
 import { MutualInductor } from './devices/mutual-inductor.js';
 import { Diode } from './devices/diode.js';
 import { BJT } from './devices/bjt.js';
+import { VBIC, resolveVBICParams } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
 import { JFET, resolveNJFETParams } from './devices/jfet.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
@@ -1029,6 +1030,23 @@ export class Circuit {
     );
     guard?.maximum('maxComponents', expandedDescriptors.length, 'compile');
 
+    const hasBoundedVBIC = expandedDescriptors.some(desc =>
+      desc.type === 'Q' && this._models.get(desc.modelName!)?.params.LEVEL === 4);
+    if (hasBoundedVBIC) {
+      const unsupportedStep = this._steps.find(step => step.param.toUpperCase() === 'TEMP');
+      if (unsupportedStep) {
+        throw new Error("Unsupported bounded VBIC step: 'TEMP'");
+      }
+      const unsupported = this._analyses.find(analysis =>
+        analysis.type !== 'op' && analysis.type !== 'dc');
+      if (unsupported) {
+        throw new Error(`Unsupported bounded VBIC analysis: '${unsupported.type}'`);
+      }
+      if (this._poleZeroAnalyses.length > 0) {
+        throw new Error("Unsupported bounded VBIC analysis: 'pz'");
+      }
+    }
+
     // Collect all nodes from expanded descriptors
     for (const desc of expandedDescriptors) {
       for (const n of desc.nodes) {
@@ -1182,7 +1200,11 @@ export class Circuit {
           }
           const modelParams = model.params;
           const polarity = model.type === 'PNP' ? -1 : 1;
-          devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }));
+          if (modelParams.LEVEL === 4) {
+            devices.push(new VBIC(desc.name, nodeIndices, modelParams, polarity));
+          } else {
+            devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }));
+          }
           break;
         }
         case 'J': {
@@ -1403,6 +1425,56 @@ export class Circuit {
       if (desc.type === 'Q') {
         const model = this._models.get(desc.modelName!);
         if (model?.type === 'NPN' || model?.type === 'PNP') {
+          if (model.params.LEVEL === 4) {
+            const polarity = model.type === 'PNP' ? -1 : 1;
+            const params = resolveVBICParams(model.params, polarity);
+            let [collector, base, emitter] = desc.nodes;
+            let collectorExternal = collector;
+            let baseExternal = base;
+            let emitterInternal = emitter;
+            let substrateInternal = GROUND_NODE;
+            if (params.RCX > 0) {
+              collectorExternal = internalNodeName(desc.name, 'cx');
+              result.push({
+                type: 'R', name: `${desc.name}.RCX`, nodes: [collector, collectorExternal],
+                value: params.RCX,
+              });
+            }
+            if (params.RBX > 0) {
+              baseExternal = internalNodeName(desc.name, 'bx');
+              result.push({
+                type: 'R', name: `${desc.name}.RBX`, nodes: [base, baseExternal],
+                value: params.RBX,
+              });
+            }
+            if (params.RE > 0) {
+              emitterInternal = internalNodeName(desc.name, 'ei');
+              result.push({
+                type: 'R', name: `${desc.name}.RE`, nodes: [emitter, emitterInternal],
+                value: params.RE,
+              });
+            }
+            if (params.RS > 0) {
+              substrateInternal = internalNodeName(desc.name, 'si');
+              result.push({
+                type: 'R', name: `${desc.name}.RS`, nodes: [GROUND_NODE, substrateInternal],
+                value: params.RS,
+              });
+            }
+            result.push({
+              ...desc,
+              nodes: [
+                collectorExternal,
+                internalNodeName(desc.name, 'ci'),
+                baseExternal,
+                internalNodeName(desc.name, 'bi'),
+                emitterInternal,
+                internalNodeName(desc.name, 'bp'),
+                substrateInternal,
+              ],
+            });
+            continue;
+          }
           let [collector, base, emitter] = desc.nodes;
           for (const [parameter, terminal] of [
             ['RC', collector], ['RB', base], ['RE', emitter],
