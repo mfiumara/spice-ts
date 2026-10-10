@@ -2,7 +2,7 @@ import type { Circuit, CompiledCircuit } from '../circuit.js';
 import type {
   ConvergenceTelemetry, IntegrationMethod, SimulationOptions, ResolvedOptions, TransientStep,
 } from '../types.js';
-import { resolveOptions } from '../types.js';
+import { resolveOptions, withNetlistOptions } from '../types.js';
 import { parse, parseAsync } from '../parser/index.js';
 import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
 import { solveDCOperatingPoint } from './dc.js';
@@ -104,10 +104,7 @@ export async function createTransientSim(
     circuit = input;
   }
   const compiled = circuit.compile();
-  const effectiveOptions: TransientSimOptions = {
-    ...compiled.simulationOptions,
-    ...options,
-  };
+  const effectiveOptions = withNetlistOptions<TransientSimOptions>(compiled.simulationOptions, options);
   validateCircuit(compiled);
 
   const tranAnalysis = compiled.analyses.find(a => a.type === 'tran');
