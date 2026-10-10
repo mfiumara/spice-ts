@@ -89,12 +89,13 @@ function assertSingleTone(compiled: CompiledCircuit): void {
 }
 
 function generateFrequencies(analysis: DistortionAnalysis): number[] {
-  const decades = Math.log10(analysis.stopFreq / analysis.startFreq);
-  const totalPoints = Math.round(decades * analysis.points);
-  return Array.from(
-    { length: totalPoints + 1 },
-    (_, index) => analysis.startFreq * Math.pow(10, index / analysis.points),
-  );
+  const frequencies: number[] = [];
+  for (let index = 0; ; index++) {
+    const frequency = analysis.startFreq * Math.pow(10, index / analysis.points);
+    if (frequency > analysis.stopFreq) break;
+    frequencies.push(frequency);
+  }
+  return frequencies;
 }
 
 function zeroArrays(names: string[], count: number): Map<string, ComplexDistortionValue[]> {

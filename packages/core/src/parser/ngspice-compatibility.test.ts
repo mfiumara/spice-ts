@@ -66,10 +66,13 @@ describe('ngspice parser compatibility fixtures', () => {
     expect(circuit.analyses).toEqual([{ type: 'tran', timestep: 1e-9, stopTime: 10e-9 }]);
   });
 
-  it.each(['DISTOF1', 'DISTOF2'])(
-    'reports an explicitly malformed %s value as a structured parser error',
-    keyword => {
-      const card = `V1 in 0 DC 0 ${keyword} nope`;
+  it.each([
+    ['DISTOF1 magnitude', 'DISTOF1 nope'],
+    ['DISTOF1 phase', 'DISTOF1 1 nope'],
+    ['DISTOF2 magnitude', 'DISTOF2 nope'],
+    ['DISTOF2 phase', 'DISTOF2 1 nope'],
+  ])('reports an explicitly malformed %s as a structured parser error', (_label, term) => {
+      const card = `V1 in 0 DC 0 ${term}`;
       let error: unknown;
 
       try {
@@ -84,8 +87,7 @@ describe('ngspice parser compatibility fixtures', () => {
         context: card,
       });
       expect((error as Error).message).toContain(`Cannot parse number: 'nope'`);
-    },
-  );
+  });
 
   it('rejects unsupported resistor parameters continued onto the card', () => {
     expect(() => parse('R1 in out 1k\n+ TC=0')).toThrow('Unsupported resistor parameters');

@@ -143,12 +143,8 @@ function extractDistortionTerms(
     const values: number[] = [];
     let end = index + 1;
     while (end < tokens.length && values.length < 2 && !SOURCE_KEYWORDS.has(tokens[end].toUpperCase())) {
-      try {
-        values.push(parseNumber(tokens[end]));
-        end++;
-      } catch {
-        break;
-      }
+      values.push(parseNumber(tokens[end]));
+      end++;
     }
     const excitation = { magnitude: values[0] ?? 1, phase: values[1] ?? 0 };
     if (keyword === 'DISTOF1') distortionF1 = excitation;
