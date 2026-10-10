@@ -51,6 +51,47 @@ describe('.noise analysis', () => {
     }]);
   });
 
+  it('parses and returns deterministic differential resistor-noise output', async () => {
+    const deck = `
+      V1 in 0 AC 1
+      R1 in outp 1k
+      R2 outp 0 1k
+      R3 in outn 2k
+      R4 outn 0 1k
+      .noise v(outp,outn) V1 dec 3 100 10k
+    `;
+
+    expect(parse(deck).analyses).toEqual([{
+      type: 'noise',
+      outputNode: 'outp',
+      outputReferenceNode: 'outn',
+      inputSource: 'V1',
+      variation: 'dec',
+      points: 3,
+      startFreq: 100,
+      stopFreq: 10_000,
+    }]);
+
+    const first = (await simulate(deck)).noise!;
+    const repeated = (await simulate(deck)).noise!;
+    expect(first).toEqual(repeated);
+    expect(first.outputNode).toBe('outp');
+    expect(first.outputReferenceNode).toBe('outn');
+    expect(first.outputNoiseDensity).toHaveLength(7);
+    expect(first.integratedOutputNoise).toBeGreaterThan(0);
+  });
+
+  it('rejects differential noise output outside the resistor-only slice', async () => {
+    await expect(simulate(`
+      V1 in 0 DC 1 AC 1
+      R1 in outp 1k
+      R2 outn 0 1k
+      D1 outp outn DMOD
+      .model DMOD D(IS=1e-14)
+      .noise v(outp,outn) V1 dec 3 100 10k
+    `)).rejects.toThrow(/differential.*resistor/i);
+  });
+
   it('returns structured output- and input-referred resistor noise spectra', async () => {
     const result = await simulate(fixture);
 
@@ -298,12 +339,22 @@ describe('.noise analysis', () => {
   });
 
   it.each([
-    '.noise v(out,ref) V1 lin 5 100 500',
     '.noise i(V1) V1 dec 10 1 1Meg',
     '.noise v(out) V1 log 10 1 1Meg',
   ])('rejects noise forms outside the first bounded slice: %s', netlist => {
     expect(() => parse(netlist)).toThrow(
       "Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop'",
+    );
+  });
+
+  it('keeps current-source input referral explicitly unsupported', async () => {
+    await expect(simulate(`
+      I1 in 0 AC 1
+      R1 in out 1k
+      R2 out 0 1k
+      .noise v(out) I1 dec 3 100 10k
+    `)).rejects.toThrow(
+      ".noise input source 'I1' is not an independent voltage source",
     );
   });
 
