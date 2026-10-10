@@ -33,7 +33,17 @@ export function parseSourceWaveform(tokens: string[], startIdx: number): SourceW
     return { type: 'ac', dc, magnitude, phase };
   }
 
-  const keyword = tokens[startIdx].toUpperCase();
+  // A transient waveform may follow an explicit operating-point value, as in
+  // `DC 0 SIN(...)`. Prefer that waveform for transient evaluation while
+  // retaining the existing standalone DC and waveform forms.
+  const waveformOffset = upper.findIndex(token =>
+    token === 'PULSE'
+    || token === 'SIN'
+    || token === 'SINE'
+    || token === 'PWL'
+    || UNSUPPORTED_WAVEFORMS.has(token));
+  const waveformIdx = waveformOffset >= 0 ? startIdx + waveformOffset : startIdx;
+  const keyword = tokens[waveformIdx].toUpperCase();
 
   if (keyword === 'DC') {
     return { type: 'dc', value: parseNumber(tokens[startIdx + 1]) };
@@ -46,8 +56,8 @@ export function parseSourceWaveform(tokens: string[], startIdx: number): SourceW
   }
 
   if (keyword === 'PULSE') {
-    const parenStart = tokens.indexOf('(', startIdx);
-    const parenEnd = tokens.indexOf(')', startIdx);
+    const parenStart = tokens.indexOf('(', waveformIdx);
+    const parenEnd = tokens.indexOf(')', waveformIdx);
     const args = tokens.slice(parenStart + 1, parenEnd).map(parseNumber);
     return {
       type: 'pulse', v1: args[0] ?? 0, v2: args[1] ?? 0,
@@ -56,9 +66,9 @@ export function parseSourceWaveform(tokens: string[], startIdx: number): SourceW
     } satisfies PulseSource;
   }
 
-  if (keyword === 'SIN') {
-    const parenStart = tokens.indexOf('(', startIdx);
-    const parenEnd = tokens.indexOf(')', startIdx);
+  if (keyword === 'SIN' || keyword === 'SINE') {
+    const parenStart = tokens.indexOf('(', waveformIdx);
+    const parenEnd = tokens.indexOf(')', waveformIdx);
     const args = tokens.slice(parenStart + 1, parenEnd).map(parseNumber);
     return {
       type: 'sin', offset: args[0] ?? 0, amplitude: args[1] ?? 0,
@@ -67,9 +77,9 @@ export function parseSourceWaveform(tokens: string[], startIdx: number): SourceW
   }
 
   if (keyword === 'PWL') {
-    const parenStart = tokens.indexOf('(', startIdx);
-    const parenEnd = tokens.indexOf(')', startIdx);
-    if (parenStart !== startIdx + 1 || parenEnd < parenStart) {
+    const parenStart = tokens.indexOf('(', waveformIdx);
+    const parenEnd = tokens.indexOf(')', waveformIdx);
+    if (parenStart !== waveformIdx + 1 || parenEnd < parenStart) {
       throw new Error('PWL source requires a parenthesized list of time/value pairs');
     }
     if (parenEnd !== tokens.length - 1) {
