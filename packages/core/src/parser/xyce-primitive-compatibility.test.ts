@@ -89,9 +89,8 @@ describe('Xyce primitive parser compatibility', () => {
     });
   }
 
-  it('advances capacitor-rc-oscillator past TIMEINT to its source syntax gap', () => {
-    expect(() => parse(fixture('CAPACITOR/rc_osc.cir')))
-      .toThrow(/Cannot parse number: 'v1'/);
+  it('parses the capacitor-rc-oscillator unparenthesized SIN source', () => {
+    expect(() => parse(fixture('CAPACITOR/rc_osc.cir'))).not.toThrow();
   });
 
   it('simulates the unchanged bounded level-1 NJF fixture', async () => {

@@ -41,6 +41,11 @@ describe('.noise analysis', () => {
     .noise v(out) Vinput dec 3 10 10k
   `;
 
+  const bjtFlickerFixture = bjtFixture.replace(
+    'NR=1)',
+    'NR=1 KF=1e-9 AF=1.2)',
+  );
+
   const diodeFixture = (sweep: string, flicker = false) => `
     V1 in 0 DC 1 AC 1
     R1 in out 1k
@@ -238,7 +243,41 @@ describe('.noise analysis', () => {
     },
   );
 
-  it.each(['KF', 'AF', 'CJE'])(
+  it('matches ngspice-47 BJT level-1 KF/AF base-current flicker noise', async () => {
+    const result = (await simulate(bjtFlickerFixture)).noise!;
+    const ngspice47Output = [
+      1.030487879071692e-3,
+      7.020632375141064e-4,
+      4.783101424714076e-4,
+      3.258689459173833e-4,
+      2.220119860926834e-4,
+      1.512550900334955e-4,
+      1.030490175269500e-4,
+      7.020666078671442e-5,
+      4.783150894591431e-5,
+      3.258762070581348e-5,
+    ];
+
+    expect(result.outputNoiseDensity).toHaveLength(ngspice47Output.length);
+    result.outputNoiseDensity.forEach((density, index) => {
+      expect(Math.abs(density - ngspice47Output[index]) / ngspice47Output[index])
+        .toBeLessThan(2e-3);
+    });
+    expect(Math.abs(result.integratedOutputNoise! - 8.564711992393035e-3)
+      / 8.564711992393035e-3).toBeLessThan(2e-3);
+    expect(Math.abs(result.integratedInputNoise! - 4.581262912869509e-3)
+      / 4.581262912869509e-3).toBeLessThan(2e-3);
+  });
+
+  it.each([
+    ['KF=-1', /finite BJT KF >= 0/i],
+    ['AF=0', /finite BJT AF > 0/i],
+  ])('rejects invalid BJT flicker parameter %s explicitly', async (parameter, expected) => {
+    const deck = bjtFixture.replace('NR=1)', `NR=1 ${parameter})`);
+    await expect(simulate(deck)).rejects.toThrow(expected);
+  });
+
+  it.each(['CJE', 'CJC', 'RBM', 'IRB', 'TF'])(
     'rejects unsupported BJT noise model parameter %s explicitly',
     async parameter => {
       const deck = bjtFixture.replace('NR=1)', `NR=1 ${parameter}=1)`);
