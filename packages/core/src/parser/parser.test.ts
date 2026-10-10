@@ -142,7 +142,7 @@ describe('SPICE netlist parser', () => {
   });
 
   it('rejects unsupported semantic dot commands instead of silently accepting them', () => {
-    expect(() => parse('.noise V(out) V1 dec 10 1 1Meg')).toThrow(/unsupported.*\.noise/i);
+    expect(() => parse('.noise V(out,ref) V1 dec 10 1 1Meg')).toThrow(/unsupported.*\.noise/i);
   });
 
   it('parses capacitor .model values and instance parameters', () => {

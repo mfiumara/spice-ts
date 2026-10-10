@@ -1,0 +1,7 @@
+* issue 75 DEC resistor-noise parity
+V1 in 0 AC 1
+Rsource in n1 1k
+Eamp out 0 n1 0 10
+Rload out 0 10k
+.noise v(out) V1 dec 3 100 10k
+.end

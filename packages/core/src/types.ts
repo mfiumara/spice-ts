@@ -61,16 +61,16 @@ export interface ACAnalysis {
   stopFreq: number;
 }
 
-/** Bounded resistor-noise analysis (`.noise v(node) source lin ...`). */
+/** Bounded resistor-noise analysis (`.noise v(node) source {lin|dec|oct} ...`). */
 export interface NoiseAnalysis {
   type: 'noise';
   /** Output node whose voltage-noise density is reported. */
   outputNode: string;
   /** Independent voltage source used to refer output noise back to the input. */
   inputSource: string;
-  /** This first slice supports only ngspice's linear sweep form. */
-  variation: 'lin';
-  /** Total number of frequency points, including both endpoints. */
+  /** Frequency sweep spacing. */
+  variation: 'dec' | 'oct' | 'lin';
+  /** Number of points per decade/octave, or total points for a linear sweep. */
   points: number;
   /** Start frequency in Hz. */
   startFreq: number;
