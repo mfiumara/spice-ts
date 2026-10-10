@@ -133,6 +133,16 @@ describe('protocol-v1 deterministic resource limits', () => {
     });
   });
 
+  it('preflights the Cartesian point count for two-source DC sweeps', async () => {
+    const error = await publicFailure(simulateProtocolV1(spice([
+      'V1 a 0 0', 'V2 b 0 0', 'R1 a b 1k', '.dc V1 0 2 1 V2 10 20 10',
+    ].join('\n'), { maxResultPoints: 5 })));
+    expect(error).toMatchObject({
+      code: 'RESOURCE_LIMIT', phase: 'validation',
+      details: { limit: 'maxResultPoints', configured: 5, observed: 6 },
+    });
+  });
+
   it('stops adaptive transient work at the observed point ceiling', async () => {
     const error = await publicFailure(simulateProtocolV1(spice(
       'V1 a 0 1\nR1 a 0 1k\n.tran 0 1',

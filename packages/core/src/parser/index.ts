@@ -238,11 +238,24 @@ function parseDotCommand(
       break;
     }
     case '.DC': {
+      if (tokens.length !== 5 && tokens.length !== 9) {
+        throw new ParseError(
+          "Invalid .dc sweep; expected '.dc source start stop step [source2 start2 stop2 step2]'",
+          lineNumber,
+          context,
+        );
+      }
       const source = tokens[1];
       const start = parseNumber(tokens[2]);
       const stop = parseNumber(tokens[3]);
       const step = parseNumber(tokens[4]);
-      circuit.addAnalysis('dc', { source, start, stop, step });
+      const secondary = tokens.length === 9 ? {
+        source: tokens[5],
+        start: parseNumber(tokens[6]),
+        stop: parseNumber(tokens[7]),
+        step: parseNumber(tokens[8]),
+      } : undefined;
+      circuit.addAnalysis('dc', { source, start, stop, step, secondary });
       break;
     }
     case '.TRAN': {

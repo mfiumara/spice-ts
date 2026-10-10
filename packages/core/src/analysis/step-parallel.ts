@@ -17,6 +17,7 @@ interface PlainResult {
   time?: number[];
   frequencies?: number[];
   sweepValues?: Float64Array;
+  secondarySweepValues?: Float64Array;
   outputNode?: string;
   outputSource?: string;
   inputSource?: string;
@@ -52,6 +53,7 @@ function reviveStepResult(step: StepResult): StepResult {
         plain.dcSweep.sweepValues!,
         plain.dcSweep.voltageArrays as Map<string, Float64Array>,
         plain.dcSweep.currentArrays as Map<string, Float64Array>,
+        plain.dcSweep.secondarySweepValues,
       ) : step.dcSweep,
     transferFunction: plain.transferFunction
       && !(plain.transferFunction instanceof TransferFunctionResult)

@@ -294,6 +294,8 @@ export class DCSweepResult {
     public readonly sweepValues: Float64Array,
     private readonly voltageArrays: Map<string, Float64Array>,
     private readonly currentArrays: Map<string, Float64Array>,
+    /** Point-aligned outer sweep coordinates, when a second source is swept. */
+    public readonly secondarySweepValues?: Float64Array,
   ) {}
 
   /**

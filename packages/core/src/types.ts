@@ -12,9 +12,8 @@ export interface DCAnalysis {
   type: 'op';
 }
 
-/** DC sweep analysis (`.dc`). Sweeps a source over a range. */
-export interface DCSweepAnalysis {
-  type: 'dc';
+/** One source range in a DC sweep (`.dc`). */
+export interface DCSweepDimension {
   /** Name of the source to sweep (e.g., `'V1'`) */
   source: string;
   /** Start value of the sweep (volts or amps) */
@@ -23,6 +22,13 @@ export interface DCSweepAnalysis {
   stop: number;
   /** Step size between sweep points */
   step: number;
+}
+
+/** DC sweep analysis (`.dc`). The primary source varies fastest. */
+export interface DCSweepAnalysis extends DCSweepDimension {
+  type: 'dc';
+  /** Optional outer source range. Exactly two dimensions are supported. */
+  secondary?: DCSweepDimension;
 }
 
 /** Transient analysis (`.tran`). Time-domain simulation. */

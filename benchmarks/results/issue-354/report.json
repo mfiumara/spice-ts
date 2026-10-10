@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "spice-ts-issue-354/v1",
+  "issueUrl": "https://github.com/mfiumara/spice-ts/issues/354",
+  "fixture": {
+    "path": "benchmarks/corpus/ngspice/fixtures/tests/vbic/FO.cir",
+    "bytes": 492,
+    "sha256": "de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92",
+    "adaptation": "none"
+  },
+  "commands": {
+    "verify": "pnpm exec tsx benchmarks/results/issue-354/verify.ts --output benchmarks/results/issue-354/report.json",
+    "ngspice": "ngspice -b -r <temporary-ascii-raw> benchmarks/corpus/ngspice/fixtures/tests/vbic/FO.cir",
+    "spiceTs": "@spice-ts/core simulate(<synthetic deck with the unchanged fixture .dc grid>)"
+  },
+  "before": {
+    "parsedPrimaryPoints": 101,
+    "parsedSecondarySweep": false,
+    "returnedPoints": 101,
+    "evidence": "Focused RED retained only VC 0..5 by 0.05 and omitted VB 0.7..1 by 0.05."
+  },
+  "reference": {
+    "engine": "ngspice-47",
+    "unchangedFixturePoints": 707
+  },
+  "after": {
+    "parsedAnalysis": {
+      "type": "dc",
+      "source": "VC",
+      "start": 0,
+      "stop": 5,
+      "step": 0.05,
+      "secondary": {
+        "source": "VB",
+        "start": 0.7,
+        "stop": 1,
+        "step": 0.05
+      }
+    },
+    "primaryPoints": 101,
+    "secondaryPoints": 7,
+    "cartesianPoints": 707,
+    "ordering": "secondary outer/slow, primary inner/fast; flatIndex = secondaryIndex * primaryPoints + primaryIndex",
+    "orderingSamples": [
+      {
+        "index": 0,
+        "primary": 0,
+        "secondary": 0.7
+      },
+      {
+        "index": 100,
+        "primary": 5,
+        "secondary": 0.7
+      },
+      {
+        "index": 101,
+        "primary": 0,
+        "secondary": 0.75
+      },
+      {
+        "index": 706,
+        "primary": 5,
+        "secondary": 1
+      }
+    ],
+    "textProgrammaticAgreement": true
+  },
+  "contract": {
+    "supported": "exactly one or two independent voltage/current source ranges; finite nonzero steps directed toward stop",
+    "unsupported": "partial secondary ranges, trailing arguments, and three or more dimensions are rejected explicitly",
+    "resultCoordinates": "sweepValues is the point-aligned primary coordinate; secondarySweepValues is the point-aligned outer coordinate when present"
+  },
+  "losses": [
+    "The unchanged vbic-fo fixture still cannot execute in spice-ts because VBIC LEVEL=4 model parameters are outside issue #354.",
+    "No waveform-error or runtime superiority claim is made; this receipt verifies grid parsing, ordering, and point count only."
+  ]
+}

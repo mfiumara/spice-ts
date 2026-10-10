@@ -289,7 +289,15 @@ function estimatedStepCount(step?: StepAnalysis): number {
 function estimatedAnalysisPoints(analysis: AnalysisDirective): number {
   switch (analysis.type) {
     case 'op': return 1;
-    case 'dc': return finiteLinearPoints(analysis.start, analysis.stop, analysis.step);
+    case 'dc': {
+      const primaryPoints = finiteLinearPoints(analysis.start, analysis.stop, analysis.step);
+      const secondaryPoints = analysis.secondary === undefined
+        ? 1
+        : finiteLinearPoints(
+          analysis.secondary.start, analysis.secondary.stop, analysis.secondary.step,
+        );
+      return primaryPoints * secondaryPoints;
+    }
     case 'tran': return finiteLinearPoints(analysis.startTime ?? 0, analysis.stopTime, analysis.timestep);
     case 'ac': {
       if (analysis.variation === 'lin') return analysis.points + 1;
