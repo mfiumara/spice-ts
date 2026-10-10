@@ -1,9 +1,15 @@
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { EventEmitter } from 'node:events';
-import type { SimulationRequestV1, SimulationResultV1 } from '@spice-ts/protocol';
+import { sha256CanonicalJson } from '@spice-ts/protocol';
+import type {
+  SimulationEventV1,
+  SimulationReadDataV1,
+  SimulationRequestV1,
+  SimulationResultV1,
+} from '@spice-ts/protocol';
 import { describe, expect, it, vi } from 'vitest';
-import { DEFAULT_MCP_LIMITS, executeTool } from './server.js';
+import { createToolExecutor, DEFAULT_MCP_LIMITS, executeTool } from './server.js';
 import type { ExecutionWorker } from './server.js';
 
 const fixture = async <T>(name: string): Promise<T> => JSON.parse(await readFile(
@@ -23,6 +29,7 @@ describe('bounded protocol-v1 tools', () => {
       analyses: ['op', 'dc', 'tran', 'ac'],
       inputFormats: ['spice', 'spice-ts'],
       limits: DEFAULT_MCP_LIMITS,
+      streaming: { defaultChunkPoints: 256, maxChunkPoints: 1024, maxRetainedJobs: 16 },
     });
   });
 
@@ -224,4 +231,404 @@ describe('bounded protocol-v1 tools', () => {
       },
     });
   });
+
+  it('returns and cancels a live stream job before an injected simulation completes', async () => {
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const result = await fixture<SimulationResultV1>('simulate-response.json');
+    let completeSimulation!: (result: SimulationResultV1) => void;
+    const simulation = new Promise<SimulationResultV1>((resolve) => {
+      completeSimulation = resolve;
+    });
+    const execute = createToolExecutor({ simulate: () => simulation });
+    let startSettled = false;
+
+    const startedPromise = execute('spice_simulation_start', { request }).then((started) => {
+      startSettled = true;
+      return started;
+    });
+    await Promise.resolve();
+    await Promise.resolve();
+    const settledBeforeSimulationCompletion = startSettled;
+    expect(settledBeforeSimulationCompletion).toBe(true);
+    const started = await startedPromise;
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    const pendingRead = await execute('spice_simulation_read', { jobId, cursor });
+    const cancelled = await execute('spice_simulation_cancel', { jobId });
+    completeSimulation(result);
+    await Promise.resolve();
+
+    expect(pendingRead.structuredContent).toEqual({
+      status: 'running', events: [], nextCursor: cursor,
+    });
+    expect(cancelled.structuredContent).toMatchObject({
+      status: 'cancelled',
+      terminal: {
+        error: { code: 'CANCELLED', phase: 'solve' },
+        partial: { analyses: [], partialEventSha256: sha256CanonicalJson([]) },
+      },
+    });
+    await expect(execute('spice_simulation_cancel', { jobId })).resolves.toEqual(cancelled);
+  });
+
+  it('terminates the isolated worker when a live stream job is cancelled', async () => {
+    class PendingWorker extends EventEmitter {
+      readonly terminate = vi.fn(() => 0);
+      postMessage(): void {}
+    }
+    const worker = new PendingWorker();
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const execute = createToolExecutor({
+      workerFactory: () => worker as unknown as ExecutionWorker,
+    });
+
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId } = started.structuredContent as { jobId: string };
+    await execute('spice_simulation_cancel', { jobId });
+    await Promise.resolve();
+
+    expect(worker.terminate).toHaveBeenCalledOnce();
+  });
+
+  it('exposes a canonical point while worker simulation is still live and cancels that work', async () => {
+    class StreamingWorker extends EventEmitter {
+      readonly terminate = vi.fn(() => 0);
+      resultSent = false;
+
+      postMessage(message: unknown): void {
+        if (!isWorkerOperation(message)) return;
+        queueMicrotask(() => this.emit('message', {
+          type: 'events',
+          events: [
+            { type: 'analysis-start', analysis: 'tran', analysisIndex: 0 },
+            {
+              type: 'point', analysisIndex: 0, pointIndex: 0,
+              point: {
+                type: 'tran', timeS: 0,
+                voltagesV: { in: 1, out: 0 }, currentsA: { V1: 0 },
+              },
+            },
+          ],
+        }));
+      }
+    }
+    const worker = new StreamingWorker();
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const execute = createToolExecutor({
+      workerFactory: () => worker as unknown as ExecutionWorker,
+    });
+
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    const first = await readWhenReady(execute, { jobId, cursor, maxPoints: 1 });
+    const firstData = first.structuredContent as unknown as SimulationReadDataV1;
+
+    expect(firstData).toMatchObject({
+      status: 'running',
+      events: [
+        { type: 'analysis-start', analysis: 'tran', analysisIndex: 0 },
+        { type: 'point', analysisIndex: 0, pointIndex: 0, point: { type: 'tran', timeS: 0 } },
+      ],
+    });
+    expect(worker.resultSent).toBe(false);
+
+    const cancelled = await execute('spice_simulation_cancel', { jobId });
+    expect(cancelled.structuredContent).toMatchObject({
+      status: 'cancelled',
+      terminal: {
+        partial: {
+          analyses: [{ analysis: 'tran', analysisIndex: 0, emittedPointCount: 1, complete: false }],
+        },
+      },
+    });
+    expect(worker.terminate).toHaveBeenCalledOnce();
+    expect(worker.resultSent).toBe(false);
+  });
+
+  it('keeps real transient point events canonical while the terminal result is pending', async () => {
+    const request: SimulationRequestV1 = {
+      apiVersion: '1',
+      input: {
+        format: 'spice',
+        source: 'V1 in 0 1\nR1 in out 1k\nC1 out 0 1u\n.tran 1u 3u',
+      },
+    };
+    const execute = createToolExecutor();
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    const first = await readWhenReady(execute, { jobId, cursor, maxPoints: 2 });
+    const firstData = first.structuredContent as unknown as SimulationReadDataV1;
+
+    expect(firstData.status).toBe('running');
+    expect(firstData.events.filter(event => event.type === 'point')).toHaveLength(2);
+    expect('terminal' in firstData).toBe(false);
+
+    const events = [...firstData.events];
+    let nextCursor = firstData.nextCursor;
+    let complete: Extract<SimulationReadDataV1, { status: 'complete' }> | undefined;
+    while (nextCursor !== null) {
+      const response = await readWhenReady(execute, { jobId, cursor: nextCursor, maxPoints: 2 });
+      const data = response.structuredContent as unknown as SimulationReadDataV1;
+      events.push(...data.events);
+      nextCursor = data.nextCursor;
+      if (data.status === 'complete') complete = data;
+    }
+
+    expect(complete).toBeDefined();
+    const result = complete!.terminal.data.analyses[0];
+    expect(result?.type).toBe('tran');
+    if (result?.type !== 'tran') throw new Error('Expected transient result');
+    const points = events.filter((event): event is Extract<SimulationEventV1, { type: 'point' }> =>
+      event.type === 'point');
+    expect(points).toHaveLength(result.timeS.length);
+    points.forEach((event, index) => {
+      expect(event.point).toEqual({
+        type: 'tran', timeS: result.timeS[index],
+        voltagesV: Object.fromEntries(Object.entries(result.voltagesV).map(([name, values]) => [name, values[index]])),
+        currentsA: Object.fromEntries(Object.entries(result.currentsA).map(([name, values]) => [name, values[index]])),
+      });
+    });
+  });
+
+  it('stops live stepped-transient delivery at maxResultPoints', async () => {
+    const request: SimulationRequestV1 = {
+      apiVersion: '1',
+      input: {
+        format: 'spice',
+        source: [
+          'V1 in 0 1',
+          'R1 in out 1k',
+          'C1 out 0 1u',
+          '.tran 1u 3u',
+          '.step param R1 list 1k 2k',
+        ].join('\n'),
+      },
+      options: { limits: { maxResultPoints: 4 } },
+    };
+    const execute = createToolExecutor();
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId } = started.structuredContent as { jobId: string };
+    let cursor = (started.structuredContent as { cursor: string }).cursor;
+    const points: SimulationEventV1[] = [];
+    let terminal: SimulationReadDataV1 | undefined;
+
+    for (let read = 0; read < 100; read++) {
+      const response = await readWhenReady(execute, { jobId, cursor, maxPoints: 2 });
+      const data = response.structuredContent as unknown as SimulationReadDataV1;
+      points.push(...data.events.filter((event: SimulationEventV1) => event.type === 'point'));
+      if (data.status !== 'running') {
+        terminal = data;
+        break;
+      }
+      cursor = data.nextCursor;
+    }
+
+    expect(points).toHaveLength(4);
+    expect(terminal).toMatchObject({
+      status: 'failed',
+      events: [],
+      nextCursor: null,
+      terminal: {
+        apiVersion: '1', ok: false, requestId: jobId,
+        error: {
+          code: 'RESOURCE_LIMIT', phase: 'solve', retryable: false,
+          details: { limit: 'maxResultPoints', maximum: 4, actual: 6 },
+        },
+        partial: {
+          analyses: expect.any(Array),
+          partialEventSha256: sha256CanonicalJson(points),
+        },
+      },
+    });
+    expect(JSON.stringify(terminal)).not.toContain('spice-ts');
+  });
+
+  it('streams canonical analysis events in bounded replayable chunks', async () => {
+    const request: SimulationRequestV1 = {
+      apiVersion: '1',
+      input: {
+        format: 'spice',
+        source: 'V1 in 0 1\nR1 in out 1k\nC1 out 0 1u\n.tran 1u 3u',
+      },
+    };
+    const result: SimulationResultV1 = {
+      status: 'complete',
+      analyses: [{
+        type: 'tran', analysisIndex: 0, timeS: [0, 1e-6, 2e-6, 3e-6],
+        voltagesV: { in: [1, 1, 1, 1], out: [0, 0.5, 0.75, 0.875] },
+        currentsA: { V1: [0, 0, 0, 0] },
+      }],
+    };
+    const started = await executeTool('spice_simulation_start', { request }, {
+      simulate: async () => result,
+    });
+    expect(started.structuredContent).toMatchObject({ status: 'running' });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+
+    const first = await readWhenReady(executeTool, { jobId, cursor, maxPoints: 2 });
+    const replay = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints: 4 });
+    expect(replay).toEqual(first);
+    const firstData = first.structuredContent as unknown as SimulationReadDataV1;
+    expect(firstData).toMatchObject({
+      status: 'running',
+      events: [
+        { type: 'analysis-start', analysis: 'tran', analysisIndex: 0 },
+        { type: 'point', analysisIndex: 0, pointIndex: 0, point: { type: 'tran' } },
+        { type: 'point', analysisIndex: 0, pointIndex: 1, point: { type: 'tran' } },
+      ],
+    });
+
+    const second = await executeTool('spice_simulation_read', {
+      jobId,
+      cursor: firstData.nextCursor,
+      maxPoints: 2,
+    });
+    const secondData = second.structuredContent as unknown as SimulationReadDataV1;
+    expect(secondData.status).toBe('running');
+    const final = await executeTool('spice_simulation_read', {
+      jobId,
+      cursor: secondData.nextCursor,
+      maxPoints: 2,
+    });
+    const finalData = final.structuredContent as unknown as SimulationReadDataV1;
+    expect(finalData).toMatchObject({
+      status: 'complete',
+      events: [{ type: 'analysis-end', analysis: 'tran', analysisIndex: 0, pointCount: 4 }],
+      nextCursor: null,
+      terminal: { apiVersion: '1', ok: true, requestId: jobId, data: { status: 'complete' } },
+    });
+    expect(finalData.status === 'complete' && finalData.terminal.metadata.resultSha256)
+      .toBe(sha256CanonicalJson(finalData.status === 'complete' ? finalData.terminal.data : null));
+
+    const values = JSON.parse(JSON.stringify([firstData, secondData, finalData])) as unknown;
+    expect(containsExactString(values, 'spice-ts')).toBe(false);
+  });
+
+  it('cancels deterministically at an emitted cursor and returns the protocol partial terminal', async () => {
+    const request: SimulationRequestV1 = {
+      apiVersion: '1',
+      input: {
+        format: 'spice',
+        source: 'V1 in 0 1\nR1 in out 1k\nC1 out 0 1u\n.tran 1u 3u',
+      },
+    };
+    const started = await executeTool('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    const first = await readWhenReady(executeTool, { jobId, cursor, maxPoints: 2 });
+    const emitted = (first.structuredContent as unknown as SimulationReadDataV1).events;
+
+    const cancelled = await executeTool('spice_simulation_cancel', { jobId });
+    const replay = await executeTool('spice_simulation_cancel', { jobId });
+    expect(replay).toEqual(cancelled);
+    expect(cancelled.structuredContent).toMatchObject({
+      status: 'cancelled', events: [], nextCursor: null,
+      terminal: {
+        apiVersion: '1', ok: false, requestId: jobId,
+        error: { code: 'CANCELLED', phase: 'solve', retryable: true },
+        partial: {
+          status: 'partial',
+          analyses: [{ analysis: 'tran', analysisIndex: 0, emittedPointCount: 2, complete: false }],
+          partialEventSha256: sha256CanonicalJson(emitted.filter(event => event.type === 'point')),
+        },
+      },
+    });
+    expect(JSON.stringify(cancelled.structuredContent)).not.toContain('resultSha256');
+    expect(containsExactString(cancelled.structuredContent, 'spice-ts')).toBe(false);
+  });
+
+  it('rejects malformed stream requests and hard chunk bounds without creating jobs', async () => {
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const malformed = await executeTool('spice_simulation_read', { jobId: 'missing' });
+    const started = await executeTool('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    const bounded = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints: 1025 });
+
+    expect(malformed).toMatchObject({
+      isError: true,
+      structuredContent: { error: { code: 'INVALID_REQUEST', phase: 'validation' } },
+    });
+    expect(bounded).toMatchObject({
+      isError: true,
+      structuredContent: {
+        error: {
+          code: 'RESOURCE_LIMIT', phase: 'transport',
+          details: { limit: 'maxStreamChunkPoints', maximum: 1024, actual: 1025 },
+        },
+      },
+    });
+  });
+
+  it('returns public structured stream failures without internal backend names', async () => {
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const execute = createToolExecutor({
+      simulate: async () => {
+        throw {
+          code: 'INTERNAL_ERROR', message: 'spice-ts failed', retryable: false,
+          phase: 'solve', details: { backend: 'spice-ts' },
+        };
+      },
+    });
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    const response = await readWhenReady(execute, { jobId, cursor });
+
+    expect(response.structuredContent).toMatchObject({
+      status: 'failed',
+      terminal: { error: { code: 'INTERNAL_ERROR', phase: 'solve' } },
+    });
+    expect(containsExactString(response.structuredContent, 'spice-ts')).toBe(false);
+    expect(JSON.stringify(response.structuredContent)).not.toContain('spice-ts failed');
+  });
+
+  it('bounds retained unfinished jobs and evicts the oldest terminal job', async () => {
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const result = await fixture<SimulationResultV1>('simulate-response.json');
+    const execute = createToolExecutor({ simulate: async () => result });
+    const starts = [];
+    for (let index = 0; index < 16; index++) {
+      starts.push(await execute('spice_simulation_start', { request }));
+    }
+    const rejected = await execute('spice_simulation_start', { request });
+    expect(rejected).toMatchObject({
+      isError: true,
+      structuredContent: {
+        error: { code: 'RESOURCE_LIMIT', details: { limit: 'maxRetainedStreamJobs', maximum: 16, actual: 17 } },
+      },
+    });
+
+    const first = starts[0]!.structuredContent as { jobId: string };
+    await execute('spice_simulation_cancel', { jobId: first.jobId });
+    const replacement = await execute('spice_simulation_start', { request });
+    expect(replacement.isError).not.toBe(true);
+    const evicted = await execute('spice_simulation_cancel', { jobId: first.jobId });
+    expect(evicted).toMatchObject({
+      isError: true,
+      structuredContent: { error: { code: 'INVALID_REQUEST' } },
+    });
+  });
 });
+
+async function readWhenReady(
+  execute: ReturnType<typeof createToolExecutor> | typeof executeTool,
+  args: { jobId: string; cursor: string; maxPoints?: number },
+): Promise<Awaited<ReturnType<typeof executeTool>>> {
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const response = await execute('spice_simulation_read', args);
+    const data = response.structuredContent as unknown as SimulationReadDataV1;
+    if (data.status !== 'running' || data.events.length > 0) return response;
+    await new Promise<void>(resolve => setTimeout(resolve, 1));
+  }
+  throw new Error('Simulation job did not produce events');
+}
+
+function containsExactString(value: unknown, target: string): boolean {
+  if (value === target) return true;
+  if (Array.isArray(value)) return value.some(entry => containsExactString(entry, target));
+  if (value !== null && typeof value === 'object') {
+    return Object.values(value).some(entry => containsExactString(entry, target));
+  }
+  return false;
+}
+
+function isWorkerOperation(value: unknown): boolean {
+  return value !== null && typeof value === 'object' && 'operation' in value;
+}

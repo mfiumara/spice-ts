@@ -51,6 +51,25 @@ try {
   writeFileSync(join(consumerRoot, 'consumer.cjs'), String.raw`
 const { executeTool } = require('@spice-ts/mcp');
 
+function containsExactString(value, target) {
+  if (value === target) return true;
+  if (Array.isArray(value)) return value.some((entry) => containsExactString(entry, target));
+  if (value && typeof value === 'object') {
+    return Object.values(value).some((entry) => containsExactString(entry, target));
+  }
+  return false;
+}
+
+async function readWhenReady(jobId, cursor, maxPoints) {
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const response = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints });
+    if (response.structuredContent.status !== 'running'
+      || response.structuredContent.events.length > 0) return response;
+    await new Promise((resolve) => setTimeout(resolve, 1));
+  }
+  throw new Error('Packed simulation job did not produce events');
+}
+
 (async () => {
   const result = await executeTool('spice_simulate', {
     request: {
@@ -61,6 +80,81 @@ const { executeTool } = require('@spice-ts/mcp');
   if (result.isError) throw new Error(JSON.stringify(result.structuredContent));
   if (result.structuredContent.analyses[0].voltagesV.in !== 1) {
     throw new Error('Unexpected operating-point result: ' + JSON.stringify(result.structuredContent));
+  }
+
+  const completedStart = await executeTool('spice_simulation_start', {
+    request: {
+      apiVersion: '1',
+      input: { format: 'spice', source: 'V1 in 0 1\nR1 in 0 1k\n.op' },
+    },
+  });
+  const completed = await readWhenReady(
+    completedStart.structuredContent.jobId,
+    completedStart.structuredContent.cursor,
+    1,
+  );
+  if (completed.structuredContent.status !== 'complete'
+    || completed.structuredContent.events[0].type !== 'analysis-start'
+    || completed.structuredContent.events[1].type !== 'analysis-end') {
+    throw new Error('Unexpected completed stream: ' + JSON.stringify(completed.structuredContent));
+  }
+
+  const transientRequest = {
+    apiVersion: '1',
+    input: { format: 'spice', source: 'V1 in 0 1\nR1 in out 1k\nC1 out 0 1u\n.tran 1u 3u' },
+  };
+
+  const liveStart = await executeTool('spice_simulation_start', {
+    request: {
+      apiVersion: '1',
+      input: {
+        format: 'spice',
+        source: 'V1 in 0 1\nR1 in out 1k\nC1 out 0 1u\n.tran 1u 20m',
+      },
+    },
+  });
+  const liveCancelled = await executeTool('spice_simulation_cancel', {
+    jobId: liveStart.structuredContent.jobId,
+  });
+  if (liveCancelled.structuredContent.status !== 'cancelled'
+    || liveCancelled.structuredContent.terminal.partial.analyses.length !== 0) {
+    throw new Error('Live packed worker was not cancelled: ' + JSON.stringify(liveCancelled.structuredContent));
+  }
+
+  const cancelledStart = await executeTool('spice_simulation_start', { request: transientRequest });
+  const first = await readWhenReady(
+    cancelledStart.structuredContent.jobId,
+    cancelledStart.structuredContent.cursor,
+    2,
+  );
+  const replay = await executeTool('spice_simulation_read', {
+    jobId: cancelledStart.structuredContent.jobId,
+    cursor: cancelledStart.structuredContent.cursor,
+    maxPoints: 8,
+  });
+  if (JSON.stringify(first) !== JSON.stringify(replay)) throw new Error('Cursor replay changed its chunk');
+  const cancelled = await executeTool('spice_simulation_cancel', {
+    jobId: cancelledStart.structuredContent.jobId,
+  });
+  if (cancelled.structuredContent.status !== 'cancelled'
+    || cancelled.structuredContent.terminal.partial.analyses[0].emittedPointCount !== 2
+    || 'resultSha256' in (cancelled.structuredContent.terminal.metadata || {})) {
+    throw new Error('Unexpected cancellation terminal: ' + JSON.stringify(cancelled.structuredContent));
+  }
+
+  const bounded = await executeTool('spice_simulation_read', {
+    jobId: cancelledStart.structuredContent.jobId,
+    cursor: first.structuredContent.nextCursor,
+    maxPoints: 1025,
+  });
+  const malformed = await executeTool('spice_simulation_read', { jobId: 'missing' });
+  if (bounded.structuredContent.error.code !== 'RESOURCE_LIMIT'
+    || bounded.structuredContent.error.details.limit !== 'maxStreamChunkPoints'
+    || malformed.structuredContent.error.code !== 'INVALID_REQUEST') {
+    throw new Error('Stream bounds or malformed request were not structured');
+  }
+  if (containsExactString([completed, liveCancelled, first, cancelled, bounded, malformed], 'spice-ts')) {
+    throw new Error('Internal backend name leaked from the packed stream tools');
   }
 })().catch((error) => {
   console.error(error);
