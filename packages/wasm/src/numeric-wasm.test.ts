@@ -179,7 +179,7 @@ describe('bounded numeric WebAssembly backend', () => {
   it('bounds AC result points and rejects nonlinear AC without fallback', async () => {
     const wasm = await engine('spice-ts-wasm');
     try {
-      const limited = await wasm.simulate(request(acCircuits[1], {
+      const limited = await wasm.simulate(request(linCircuits[1].source, {
         limits: { maxResultPoints: 2 },
       }), { requestId: 'ac-point-limit' });
       expect(limited).toMatchObject({

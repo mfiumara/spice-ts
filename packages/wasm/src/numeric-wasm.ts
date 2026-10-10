@@ -357,7 +357,7 @@ function acPointCount(analysis: {
   startFreq: number;
   stopFreq: number;
 }): number {
-  if (analysis.variation === 'lin') return analysis.points + 1;
+  if (analysis.variation === 'lin') return analysis.points;
   const span = analysis.variation === 'dec'
     ? Math.log10(analysis.stopFreq / analysis.startFreq)
     : Math.log2(analysis.stopFreq / analysis.startFreq);
@@ -369,7 +369,8 @@ function acFrequencies(
   pointCount: number,
 ): number[] {
   if (analysis.variation === 'lin') {
-    const step = (analysis.stopFreq - analysis.startFreq) / analysis.points;
+    if (pointCount === 1) return [analysis.startFreq];
+    const step = (analysis.stopFreq - analysis.startFreq) / (pointCount - 1);
     return Array.from({ length: pointCount }, (_, index) => analysis.startFreq + index * step);
   }
   const base = analysis.variation === 'dec' ? 10 : 2;

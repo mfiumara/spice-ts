@@ -1,14 +1,49 @@
 {
   "schemaVersion": "spice-ts-wasm-ac-receipt/v1",
   "suite": {
-    "fixtureCount": 3,
-    "pointCount": 24,
+    "fixtureCount": 5,
+    "pointCount": 29,
     "netlistSha256": {
       "wasm-rc-lowpass": "546b14726e658a702fdd0c3f3ba613d1d56c97b1c7817b80ce8253b813bf23fa",
       "wasm-rl-phased": "bb1f10179c33e577351bd5f04c71de3a5af85f286ab28d70e2669f0c7d85d172",
-      "wasm-current-rc": "46417d217652e0fc22ca30b402e901163f81a822821a633895151b13e4c4bbd9"
+      "wasm-current-rc": "46417d217652e0fc22ca30b402e901163f81a822821a633895151b13e4c4bbd9",
+      "wasm-lin-single-point": "9b58d88e8766e1905e06652314af31fafee10ad41eb3884bc0ddce38c1fe93e1",
+      "wasm-lin-four-points": "81a8dcafde8229fc99e3acd6d8d00fe285ea1b06337905db125cd6b724df2590"
     },
-    "identicalNetlistForWasmJsNgspice": true
+    "identicalNetlistForWasmJsNgspice": true,
+    "linGridParity": {
+      "wasm-lin-single-point": {
+        "expected": [
+          100
+        ],
+        "wasm": [
+          100
+        ],
+        "ngspice": [
+          100
+        ]
+      },
+      "wasm-lin-four-points": {
+        "expected": [
+          100,
+          400,
+          700,
+          1000
+        ],
+        "wasm": [
+          100,
+          400,
+          700,
+          1000
+        ],
+        "ngspice": [
+          100,
+          400,
+          700,
+          1000
+        ]
+      }
+    }
   },
   "environment": {
     "platform": "darwin",
@@ -31,26 +66,26 @@
     "sizeGrowthPercent": 143.69747899159663
   },
   "builtAssets": {
-    "workerBytes": 376957,
-    "workerGrowthBytes": 21440,
+    "workerBytes": 377009,
+    "workerGrowthBytes": 21492,
     "indexBytes": 42815,
     "indexGrowthBytes": 937
   },
   "accuracy": {
     "wasmVsTypeScript": {
-      "sampleCount": 59,
+      "sampleCount": 64,
       "maxAbsoluteError": 4.449156215222352e-16,
-      "rmsAbsoluteError": 1.4709163555666102e-16,
+      "rmsAbsoluteError": 1.5426438540471514e-16,
       "maxRelativeError": 1.7826360555315945e-15,
-      "rmsRelativeError": 2.9967793226912526e-16,
+      "rmsRelativeError": 2.9435108594845895e-16,
       "excludedZeroReferences": 0
     },
     "wasmVsNgspice": {
-      "sampleCount": 58,
+      "sampleCount": 63,
       "maxAbsoluteError": 1.157132077848772e-15,
-      "rmsAbsoluteError": 2.2527149380436005e-16,
+      "rmsAbsoluteError": 2.1614737268997869e-16,
       "maxRelativeError": 1.3278785320492185e-15,
-      "rmsRelativeError": 3.8684658111612093e-16,
+      "rmsRelativeError": 3.7117822024551203e-16,
       "excludedZeroReferences": 0
     },
     "perFixture": {
@@ -343,6 +378,106 @@
             }
           }
         }
+      },
+      "wasm-lin-single-point": {
+        "wasmVsTypeScript": {
+          "grid": {
+            "spiceTsPoints": 1,
+            "ngspicePoints": 2,
+            "alignedPoints": 1,
+            "excludedOutOfRange": 0
+          },
+          "signals": {
+            "v(in)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 2.220446049250313e-16,
+                "rms": 2.220446049250313e-16
+              },
+              "relativeError": {
+                "max": 2.2204460492503136e-16,
+                "rms": 2.2204460492503136e-16,
+                "sampleCount": 1,
+                "excludedZeroReferences": 0
+              }
+            }
+          }
+        },
+        "wasmVsNgspice": {
+          "grid": {
+            "spiceTsPoints": 1,
+            "ngspicePoints": 1,
+            "alignedPoints": 1,
+            "excludedOutOfRange": 0
+          },
+          "signals": {
+            "v(in)": {
+              "status": "compared",
+              "sampleCount": 1,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": 0,
+                "rms": 0,
+                "sampleCount": 1,
+                "excludedZeroReferences": 0
+              }
+            }
+          }
+        }
+      },
+      "wasm-lin-four-points": {
+        "wasmVsTypeScript": {
+          "grid": {
+            "spiceTsPoints": 4,
+            "ngspicePoints": 5,
+            "alignedPoints": 4,
+            "excludedOutOfRange": 0
+          },
+          "signals": {
+            "v(in)": {
+              "status": "compared",
+              "sampleCount": 4,
+              "absoluteError": {
+                "max": 2.220446049250313e-16,
+                "rms": 2.220446049250313e-16
+              },
+              "relativeError": {
+                "max": 2.2204460492503136e-16,
+                "rms": 2.2204460492503136e-16,
+                "sampleCount": 4,
+                "excludedZeroReferences": 0
+              }
+            }
+          }
+        },
+        "wasmVsNgspice": {
+          "grid": {
+            "spiceTsPoints": 4,
+            "ngspicePoints": 4,
+            "alignedPoints": 4,
+            "excludedOutOfRange": 0
+          },
+          "signals": {
+            "v(in)": {
+              "status": "compared",
+              "sampleCount": 4,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": 0,
+                "rms": 0,
+                "sampleCount": 4,
+                "excludedZeroReferences": 0
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -352,31 +487,33 @@
     "runsPerSample": 20,
     "typeScript": {
       "samplesMs": [
-        1735.942875,
-        1553.3241669999998,
-        1521.8121659999997,
-        1559.9394169999996,
-        1670.0642079999989
+        1403.717,
+        1470.5043330000003,
+        1490.6780000000003,
+        1695.480708,
+        2069.761708000001
       ],
-      "medianMs": 1559.9394169999996,
-      "perRunMs": 77.99697084999998
+      "medianMs": 1490.6780000000003,
+      "perRunMs": 74.53390000000002
     },
     "wasm": {
       "samplesMs": [
-        1732.759958,
-        1551.346833,
-        1526.9787079999996,
-        1559.9856250000003,
-        1668.8026250000003
+        1405.2693750000003,
+        1468.283708,
+        1492.458333,
+        1694.5832500000006,
+        2071.5555839999997
       ],
-      "medianMs": 1559.9856250000003,
-      "perRunMs": 77.99928125000001
+      "medianMs": 1492.458333,
+      "perRunMs": 74.62291665000001
     },
-    "wasmLossPercent": 0.002962166318587478,
+    "wasmLossPercent": 0.11943109108738525,
     "ngspiceOneProcessPerFixtureMs": [
-      12.464416,
-      11.998458,
-      11.911584000000005
+      16.08004199999999,
+      11.512625000000014,
+      11.847750000000019,
+      11.500042000000008,
+      11.382166999999981
     ]
   },
   "commands": {
