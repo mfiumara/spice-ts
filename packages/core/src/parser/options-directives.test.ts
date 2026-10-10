@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { ParseError } from '../errors.js';
 import { simulate } from '../simulate.js';
 import { parseTitleless as parse } from './index.js';
 
@@ -141,5 +142,91 @@ describe('ngspice control and output directives', () => {
     '.control\nop\n.endc',
   ])('rejects unsupported semantic/control directives: %s', netlist => {
     expect(() => parse(netlist)).toThrow();
+  });
+});
+
+describe('Gnucap control and output directives', () => {
+  it.each([
+    '.list',
+    '.width out=132',
+    '.stat',
+    '.stat notime',
+    '.status',
+    '.status notime',
+  ])('accepts the bounded output-only directive as a no-op: %s', directive => {
+    const circuit = parse(`${directive}\nV1 in 0 1\nR1 in 0 1k\n.op`);
+
+    expect(circuit.compile().analyses).toEqual([{ type: 'op' }]);
+    expect(circuit.simulationOptions).toEqual({});
+  });
+
+  it.each([
+    '.list devices',
+    '.width',
+    '.width out=-1',
+    '.width columns=80',
+    '.stat timing',
+    '.status verbose',
+  ])('rejects unclassified output-directive forms: %s', directive => {
+    expect(() => parse(`${directive}\n.op`)).toThrow(ParseError);
+  });
+
+  it('supports the singular .option spelling and output-only Gnucap fields', () => {
+    const circuit = parse(`
+.option method=gear nopage acct list node outwidth=80 phase=radians lvlcod=2
+.op
+`);
+
+    expect(circuit.simulationOptions).toEqual({ integrationMethod: 'gear2' });
+  });
+
+  it('accepts a bare .option or .options display request as output-only', () => {
+    expect(parse('.option\n.op').simulationOptions).toEqual({});
+    expect(parse('.options\n.op').simulationOptions).toEqual({});
+  });
+
+  it.each([
+    ['rstray', 'rstray'],
+    ['cstray', 'cstray'],
+    ['noincmode', 'noincmode'],
+    ['nobypass', 'nobypass'],
+    ['dampstrategy=11', 'dampstrategy'],
+    ['trsteporder=1', 'trsteporder'],
+    ['itermin=99', 'itermin'],
+  ])('rejects behavior-changing Gnucap option field %s explicitly', (field, name) => {
+    try {
+      parse(`V1 in 0 1\n.option ${field}\n.op`);
+      throw new Error('expected parsing to fail');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ParseError);
+      expect(error).toMatchObject({ line: 2, context: `.option ${field}` });
+      expect((error as Error).message).toContain(`Unsupported behavior-changing .options field: '${name}'`);
+    }
+  });
+
+  it.each([
+    ['.op trace iter', { type: 'op' }],
+    ['.tran 1n 10n trace all', { type: 'tran', timestep: 1e-9, stopTime: 1e-8 }],
+    [
+      '.tran 1n 10n 0 0.5n uic trace rejected',
+      {
+        type: 'tran', timestep: 1e-9, stopTime: 1e-8, startTime: 0,
+        maxTimestep: 0.5e-9, useInitialConditions: true,
+      },
+    ],
+  ])('accepts bounded output-only analysis tracing: %s', (directive, expected) => {
+    expect(parse(directive).compile().analyses).toEqual([expected]);
+  });
+
+  it.each([
+    '.op rejected',
+    '.op trace all',
+    '.op trace',
+    '.tran 1n 10n rejected',
+    '.tran 1n 10n trace iter',
+    '.tran 1n 10n trace rejected extra',
+    '.tran 1n 10n 0 0.5n extra',
+  ])('rejects unsupported analysis control arguments: %s', directive => {
+    expect(() => parse(directive)).toThrow(ParseError);
   });
 });

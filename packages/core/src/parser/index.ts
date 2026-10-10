@@ -160,7 +160,7 @@ function parseNetlist(
           );
         }
         if (first === '.STEP') hasStepAnalysis = true;
-        parseDotCommand(circuit, tokens, lineNumber);
+        parseDotCommand(circuit, tokens, lineNumber, raw);
       } else {
         parseDevice(circuit, tokens, lineNumber);
       }
@@ -212,13 +212,28 @@ export async function parseTitlelessAsync(
   return parseNetlist(preprocessed, false, guard);
 }
 
-function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number): void {
+const OUTPUT_ONLY_GNUCAP_OPTION_FLAGS = new Set(['nopage', 'acct', 'list', 'node']);
+const BEHAVIOR_CHANGING_GNUCAP_OPTIONS = new Set([
+  'cstray', 'dampstrategy', 'itermin', 'nobypass', 'noincmode', 'rstray', 'trsteporder',
+]);
+
+function parseDotCommand(
+  circuit: Circuit,
+  tokens: string[],
+  lineNumber: number,
+  context: string,
+): void {
   const cmd = tokens[0].toUpperCase();
 
   switch (cmd) {
-    case '.OP':
+    case '.OP': {
+      const args = stripGnucapTraceSuffix(tokens.slice(1), '.op', ['ITER'], lineNumber, context);
+      if (args.length > 0) {
+        throw new ParseError(`Unsupported .op arguments: '${args.join(' ')}'`, lineNumber, context);
+      }
       circuit.addAnalysis('op');
       break;
+    }
     case '.DC': {
       const source = tokens[1];
       const start = parseNumber(tokens[2]);
@@ -230,10 +245,15 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
     case '.TRAN': {
       const timestep = parseNumber(tokens[1]);
       const stopTime = parseNumber(tokens[2]);
-      const args = tokens.slice(3);
+      const args = stripGnucapTraceSuffix(
+        tokens.slice(3), '.tran', ['ALL', 'REJECTED'], lineNumber, context,
+      );
       const uicIndex = args.findIndex(token => token.toUpperCase() === 'UIC');
       const useInitialConditions = uicIndex >= 0;
       if (uicIndex >= 0) args.splice(uicIndex, 1);
+      if (args.length > 2) {
+        throw new ParseError(`Unsupported .tran arguments: '${args.slice(2).join(' ')}'`, lineNumber, context);
+      }
       const startTime = args[0] ? parseNumber(args[0]) : undefined;
       const maxTimestep = args[1] ? parseNumber(args[1]) : undefined;
       circuit.addAnalysis('tran', {
@@ -386,10 +406,34 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
       break;
     }
     case '.OPT':
+    case '.OPTION':
     case '.OPTIONS':
-      circuit.setSimulationOptions(parseSimulationOptions(tokens.slice(1)));
+      circuit.setSimulationOptions(parseSimulationOptions(tokens.slice(1), lineNumber, context));
       break;
-    case '.WIDTH':
+    case '.LIST':
+      requireGnucapOutputDirective(tokens.length === 1, '.list', lineNumber, context);
+      break;
+    case '.WIDTH': {
+      requireGnucapOutputDirective(
+        tokens.length > 1 && tokens.slice(1).every(token => {
+          const match = token.match(/^(?:in|out)=(\d+)$/i);
+          return match !== null && Number(match[1]) > 0;
+        }),
+        '.width {in|out}=<positive integer>',
+        lineNumber,
+        context,
+      );
+      break;
+    }
+    case '.STAT':
+    case '.STATUS':
+      requireGnucapOutputDirective(
+        tokens.length === 1 || (tokens.length === 2 && tokens[1].toUpperCase() === 'NOTIME'),
+        `${tokens[0]} [notime]`,
+        lineNumber,
+        context,
+      );
+      break;
     case '.SAVE':
     case '.PRINT':
     case '.PLOT':
@@ -442,26 +486,72 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
   }
 }
 
-function parseSimulationOptions(tokens: string[]): SimulationOptions {
+function requireGnucapOutputDirective(
+  valid: boolean,
+  expected: string,
+  lineNumber: number,
+  context: string,
+): void {
+  if (!valid) {
+    throw new ParseError(
+      `Unsupported Gnucap output directive; expected '${expected}'`,
+      lineNumber,
+      context,
+    );
+  }
+}
+
+function stripGnucapTraceSuffix(
+  args: string[],
+  analysis: '.op' | '.tran',
+  allowedModes: string[],
+  lineNumber: number,
+  context: string,
+): string[] {
+  const traceIndex = args.findIndex(token => token.toUpperCase() === 'TRACE');
+  const hasRejectedWithoutTrace = traceIndex < 0
+    && args.some(token => token.toUpperCase() === 'REJECTED');
+  if (hasRejectedWithoutTrace) {
+    throw new ParseError(`Unsupported ${analysis} trace arguments`, lineNumber, context);
+  }
+  if (traceIndex < 0) return args;
+
+  const mode = args[traceIndex + 1]?.toUpperCase();
+  if (traceIndex !== args.length - 2 || !mode || !allowedModes.includes(mode)) {
+    throw new ParseError(`Unsupported ${analysis} trace arguments`, lineNumber, context);
+  }
+  return args.slice(0, traceIndex);
+}
+
+function parseSimulationOptions(
+  tokens: string[],
+  lineNumber: number,
+  context: string,
+): SimulationOptions {
   const optionTokens = tokens.filter(value => value !== '(' && value !== ')');
   if (optionTokens[0]?.toLowerCase() === 'timeint') {
     return parseXyceTimeintOptions(optionTokens.slice(1));
   }
 
   const options: SimulationOptions = {};
-  const reportingFlags = new Set(['acct', 'list', 'node']);
   const obsoleteNumericFields = new Set(['limpts', 'itl5', 'lvlcod']);
 
   for (const token of optionTokens) {
     const separator = token.indexOf('=');
-    const name = token.slice(0, separator < 0 ? undefined : separator).toLowerCase();
-    if (separator < 0 && reportingFlags.has(name)) {
-      // These only select legacy textual reports. spice-ts exposes structured
-      // results and does not produce the corresponding batch-mode listings.
+    const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
+    if (OUTPUT_ONLY_GNUCAP_OPTION_FLAGS.has(name) && separator < 0) continue;
+    if (isOutputOnlyGnucapOption(name, separator < 0 ? undefined : token.slice(separator + 1))) {
       continue;
     }
+    if (BEHAVIOR_CHANGING_GNUCAP_OPTIONS.has(name)) {
+      throw new ParseError(
+        `Unsupported behavior-changing .options field: '${name}'`,
+        lineNumber,
+        context,
+      );
+    }
     if (separator <= 0 || separator === token.length - 1) {
-      throw new Error(`Unsupported .options field: '${token}'`);
+      throw new ParseError(`Unsupported .options field: '${token}'`, lineNumber, context);
     }
 
     const rawValue = token.slice(separator + 1);
@@ -495,7 +585,7 @@ function parseSimulationOptions(tokens: string[]): SimulationOptions {
       trtol: 'trtol',
     };
     const target = mappings[name];
-    if (!target) throw new Error(`Unsupported .options field: '${name}'`);
+    if (!target) throw new ParseError(`Unsupported .options field: '${name}'`, lineNumber, context);
 
     const value = parseNumber(rawValue);
     if (!Number.isFinite(value) || value < 0) {
@@ -508,6 +598,13 @@ function parseSimulationOptions(tokens: string[]): SimulationOptions {
   }
 
   return options;
+}
+
+function isOutputOnlyGnucapOption(name: string, value: string | undefined): boolean {
+  if (value === undefined) return false;
+  if (name === 'phase') return value.toLowerCase() === 'radians';
+  if (name === 'outwidth') return /^\d+$/.test(value) && Number(value) > 0;
+  return false;
 }
 
 function parseNodeInitialState(
