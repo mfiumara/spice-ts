@@ -1,0 +1,10 @@
+MOS1 NMOS forward bulk junctions DC and AC - issue 393
+VB b 0 DC 0.75 AC 1
+RB b bi 100
+VD d 0 DC 0.2
+VG g 0 DC 0
+M1 d g 0 bi NFET
+.MODEL NFET NMOS(LEVEL=1 KP=0.5M VTO=2 IS=1e-14)
+.DC VB -2 1.2 0.05
+.AC DEC 5 1 1MEG
+.END

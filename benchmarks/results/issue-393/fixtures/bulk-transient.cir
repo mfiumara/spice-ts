@@ -1,0 +1,9 @@
+MOS1 bulk junction transient ramp - issue 393
+VB b 0 PWL(0 0 1u 0.75 2u -1)
+RB b bi 100
+VD d 0 DC 0.2
+VG g 0 DC 1.5
+M1 d g 0 bi NFET
+.MODEL NFET NMOS(LEVEL=1 KP=0.5M VTO=0.5 IS=1e-14)
+.TRAN 10n 3u
+.END

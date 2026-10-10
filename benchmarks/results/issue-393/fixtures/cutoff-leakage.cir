@@ -1,0 +1,8 @@
+MOS1 cutoff bulk-drain leakage (issue 393)
+VDD 5 0 DC 18
+VGG 1 0 DC 1
+RS 2 0 500
+M1 5 1 2 2 NFET
+.MODEL NFET NMOS(LEVEL=1 KP=0.5M VTO=2)
+.OP
+.END
