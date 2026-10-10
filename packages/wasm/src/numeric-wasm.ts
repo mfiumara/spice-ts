@@ -606,7 +606,8 @@ function validateCards(cards: string[], analysis: 'op' | 'dc' | 'tran' | 'ac'): 
         unsupported('cccs-form', 'CCCS devices must use name out+ out- controlling-voltage-source current-gain');
       }
     } else if (type === 'E') {
-      if (tokens.length !== 6) {
+      const behavioral = /^\S+\s+\S+\s+\S+\s+VALUE\s*=/i.test(card);
+      if (tokens.length !== 6 || behavioral) {
         unsupported('vcvs-form', 'VCVS devices must use name out+ out- control+ control- voltage-gain');
       }
     } else if (analysis === 'op' || analysis === 'dc') {
