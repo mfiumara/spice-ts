@@ -1,0 +1,7 @@
+* Project-authored bounded CCVS OP fixture: single-ended output
+VCTRL control 0 1
+RCTRL control 0 1k
+H1 out 0 VCTRL 2k
+RLOAD out 0 1k
+.op
+.end

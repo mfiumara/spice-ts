@@ -39,6 +39,15 @@ export interface NumericWasmExports extends WebAssembly.Exports {
     branchColumn: number,
     voltageGain: number,
   ): number;
+  stamp_ccvs_f64(
+    order: number,
+    matrixPointer: number,
+    outputPositive: number,
+    outputNegative: number,
+    controlBranchColumn: number,
+    branchColumn: number,
+    transresistance: number,
+  ): number;
   solve_f64(order: number, matrixPointer: number, rhsPointer: number): number;
   solve_complex_f64(
     order: number,
@@ -74,6 +83,7 @@ export function assertNumericWasmAbi(exports: NumericWasmExports): void {
     || typeof exports.stamp_vccs_f64 !== 'function'
     || typeof exports.stamp_cccs_f64 !== 'function'
     || typeof exports.stamp_vcvs_f64 !== 'function'
+    || typeof exports.stamp_ccvs_f64 !== 'function'
     || typeof exports.solve_f64 !== 'function'
     || typeof exports.solve_complex_f64 !== 'function'
     || exports.memory.buffer.byteLength !== NUMERIC_WASM_LIMITS.memoryPages * 65_536) {

@@ -146,7 +146,7 @@ describe('bounded numeric WebAssembly backend', () => {
           inputFormats: ['spice'],
           analyses: ['op', 'dc', 'tran', 'ac'],
           devicesByAnalysis: {
-            op: ['R', 'I', 'V', 'G', 'F', 'E'],
+            op: ['R', 'I', 'V', 'G', 'F', 'E', 'H'],
             dc: ['R', 'I', 'V'],
             tran: ['R', 'C', 'I', 'V'],
             ac: ['R', 'C', 'L', 'I', 'V'],
@@ -166,7 +166,7 @@ describe('bounded numeric WebAssembly backend', () => {
     expect(WebAssembly.Module.imports(module)).toEqual([]);
     expect(WebAssembly.Module.exports(module).map(entry => entry.name)).toEqual(expect.arrayContaining([
       'memory', '__heap_base', 'abi_version', 'max_order', 'stamp_vccs_f64', 'stamp_cccs_f64', 'stamp_vcvs_f64',
-      'solve_f64', 'solve_complex_f64',
+      'stamp_ccvs_f64', 'solve_f64', 'solve_complex_f64',
     ]));
     await expect(validateNumericWasmModule(module)).resolves.toBeUndefined();
     const instance = await WebAssembly.instantiate(module);
@@ -200,6 +200,16 @@ describe('bounded numeric WebAssembly backend', () => {
     ]);
     expect(exports.stamp_vcvs_f64(4, matrixPointer, 0, -1, 2, 3, 4, 5)).toBe(3);
     expect(exports.stamp_vcvs_f64(4, matrixPointer, 0, -1, 2, 3, 1, Number.POSITIVE_INFINITY)).toBe(2);
+    matrix.fill(0);
+    expect(exports.stamp_ccvs_f64(4, matrixPointer, 0, -1, 2, 3, 5)).toBe(0);
+    expect(Array.from(matrix)).toEqual([
+      0, 0, 0, 1,
+      0, 0, 0, 0,
+      0, 0, 0, 0,
+      1, 0, -5, 0,
+    ]);
+    expect(exports.stamp_ccvs_f64(4, matrixPointer, 0, -1, 2, 4, 5)).toBe(3);
+    expect(exports.stamp_ccvs_f64(4, matrixPointer, 0, -1, 2, 3, Number.POSITIVE_INFINITY)).toBe(2);
     expect(() => memory.grow(1)).toThrow();
   });
 
@@ -509,6 +519,166 @@ describe('bounded numeric WebAssembly backend', () => {
     }
   });
 
+  it('solves bounded CCVS OP with control-branch polarity and deterministic result ordering', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const result = await wasm.simulate(request([
+        'VCTRL control 0 2',
+        'RCTRL control 0 1k',
+        'VREF ref 0 1',
+        'H1 out ref VCTRL -2k',
+        'RLOAD out 0 1k',
+        '.op',
+      ].join('\n')), { requestId: 'wasm-ccvs-op' });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      const op = result.data.analyses[0];
+      expect(op?.type).toBe('op');
+      if (op?.type !== 'op') return;
+      expect(Object.keys(op.voltagesV)).toEqual(['control', 'out', 'ref']);
+      expect(op.voltagesV).toMatchObject({ control: 2, ref: 1, out: 5 });
+      expect(Object.keys(op.currentsA)).toEqual(['VCTRL', 'VREF', 'H1']);
+      expect(op.currentsA.VCTRL).toBeCloseTo(-0.002, 15);
+      expect(op.currentsA.H1).toBeCloseTo(-0.005, 15);
+      expect(result.metadata).toMatchObject({ backend: 'spice-ts-wasm' });
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('resolves a mixed-case CCVS controlling voltage source like SPICE', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const result = await wasm.simulate(request([
+        'VCTRL control 0 1',
+        'RCTRL control 0 1k',
+        'H1 out 0 vctrl 2k',
+        'RLOAD out 0 1k',
+        '.op',
+      ].join('\n')), { requestId: 'wasm-ccvs-mixed-case-control' });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      const op = result.data.analyses[0];
+      expect(op?.type).toBe('op');
+      if (op?.type !== 'op') return;
+      expect(op.voltagesV.out).toBeCloseTo(-2, 15);
+      expect(op.currentsA.VCTRL).toBeCloseTo(-0.001, 15);
+      expect(op.currentsA.H1).toBeCloseTo(0.002, 15);
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('rejects CCVS forms outside bounded linear OP without fallback', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const [name, source, feature] of [
+        ['transient', 'V1 control 0 1\nH1 out 0 V1 2k\nR1 out 0 1k\n.tran 1u 1m', 'device-or-directive'],
+        ['ac', 'V1 control 0 AC 1\nH1 out 0 V1 2k\nR1 out 0 1k\n.ac lin 1 1k 1k', 'device-or-directive'],
+        ['dc', 'V1 control 0 1\nH1 out 0 V1 2k\nR1 out 0 1k\n.dc V1 0 1 1', 'device-or-directive'],
+        ['polynomial', 'V1 control 0 1\nH1 out 0 POLY(1) V1 2k\nR1 out 0 1k\n.op', 'ccvs-form'],
+      ] as const) {
+        const result = await wasm.simulate(request(source), { requestId: `wasm-ccvs-reject-${name}` });
+        expect(result).toMatchObject({
+          ok: false,
+          error: {
+            code: 'UNSUPPORTED_FEATURE', phase: 'validation', retryable: false,
+            details: { backend: 'spice-ts-wasm', feature },
+          },
+          metadata: { backend: 'spice-ts-wasm' },
+        });
+      }
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('rejects unresolved CCVS controlling sources with deterministic validation errors', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const [name, source, controlSource, reason] of [
+        ['missing', 'H1 out 0 VNOPE 2k\nRLOAD out 0 1k\n.op', 'VNOPE', 'missing'],
+        ['branchless', 'RCTRL control 0 1k\nH1 out 0 RCTRL 2k\nRLOAD out 0 1k\n.op', 'RCTRL', 'branchless'],
+        ['forward', 'H1 out 0 VCTRL 2k\nVCTRL control 0 1\nRLOAD out 0 1k\n.op', 'VCTRL', 'forward-reference'],
+      ] as const) {
+        const result = await wasm.simulate(request(source), { requestId: `wasm-ccvs-control-${name}` });
+        expect(result).toMatchObject({
+          ok: false,
+          error: {
+            code: 'INVALID_CIRCUIT', phase: 'validation', retryable: false,
+            details: {
+              backend: 'spice-ts-wasm', feature: 'ccvs-control-source',
+              device: 'H1', controlSource, reason,
+            },
+          },
+          metadata: { backend: 'spice-ts-wasm' },
+        });
+      }
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('returns structured CCVS singular, finite-gain, and resource errors', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const singular = await wasm.simulate(request([
+        'VCTRL control 0 1',
+        'H1 out floating VCTRL 2k',
+        '.op',
+      ].join('\n')), { requestId: 'wasm-ccvs-singular' });
+      expect(singular).toMatchObject({
+        ok: false,
+        error: { code: 'SINGULAR_MATRIX', phase: 'solve', retryable: false },
+        metadata: { backend: 'spice-ts-wasm' },
+      });
+
+      const nonFinite = await wasm.simulate(request([
+        'VCTRL control 0 1',
+        'H1 out 0 VCTRL 1e999',
+        'RLOAD out 0 1k',
+        '.op',
+      ].join('\n')), { requestId: 'wasm-ccvs-non-finite' });
+      expect(nonFinite).toMatchObject({
+        ok: false,
+        error: { code: 'INVALID_CIRCUIT', phase: 'compile', retryable: false },
+        metadata: { backend: 'spice-ts-wasm' },
+      });
+
+      const serialized = await wasm.simulate(request([
+        'VCTRL control 0 1',
+        'H1 out 0 VCTRL 2k',
+        'RLOAD out 0 1k',
+        '.op',
+      ].join('\n'), { limits: { maxSerializedResultBytes: 1 } }), { requestId: 'wasm-ccvs-serialized-limit' });
+      expect(serialized).toMatchObject({
+        ok: false,
+        error: {
+          code: 'RESOURCE_LIMIT', phase: 'serialize', retryable: false,
+          details: { limit: 'maxSerializedResultBytes', configured: 1, observed: expect.any(Number) },
+        },
+        metadata: { backend: 'spice-ts-wasm' },
+      });
+
+      const oversized = [
+        ...Array.from({ length: 31 }, (_, index) => `V${index + 1} n${index + 1} 0 ${index + 1}`),
+        'H1 hplus hminus V1 1k',
+        '.op',
+      ].join('\n');
+      const bounded = await wasm.simulate(request(oversized), { requestId: 'wasm-ccvs-order-limit' });
+      expect(bounded).toMatchObject({
+        ok: false,
+        error: {
+          code: 'RESOURCE_LIMIT', phase: 'validation', retryable: false,
+          details: { limit: 'maxSystemOrder', configured: 64, observed: 65 },
+        },
+        metadata: { backend: 'spice-ts-wasm' },
+      });
+    } finally {
+      await wasm.close();
+    }
+  });
+
   it('solves the bounded linear CCCS OP slice through the WASM backend', async () => {
     const wasm = await engine('spice-ts-wasm');
     try {
@@ -592,7 +762,6 @@ describe('bounded numeric WebAssembly backend', () => {
       for (const [name, source, feature] of [
         ['transient', 'V1 control 0 1\nF1 out 0 V1 2\nR1 out 0 1k\n.tran 1u 1m', 'device-or-directive'],
         ['polynomial', 'V1 control 0 1\nF1 out 0 POLY(1) V1 2\nR1 out 0 1k\n.op', 'cccs-form'],
-        ['ccvs', 'V1 control 0 1\nH1 out 0 V1 2\nR1 out 0 1k\n.op', 'device-or-directive'],
       ] as const) {
         const result = await wasm.simulate(request(source), { requestId: `wasm-cccs-reject-${name}` });
         expect(result).toMatchObject({

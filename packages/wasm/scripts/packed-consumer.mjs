@@ -93,6 +93,16 @@ try {
       || Math.abs(vcvsOp.currentsA.E1 - -0.003) > 1e-15) {
       throw new Error(JSON.stringify(vcvs));
     }
+    const ccvs = await engine.simulate({
+      apiVersion: '1',
+      input: { format: 'spice', source: 'VCTRL control 0 1\\nRCTRL control 0 1k\\nH1 out 0 VCTRL 2k\\nRLOAD out 0 1k\\n.op' },
+    }, { requestId: 'packed-wasm-ccvs-op' });
+    const ccvsOp = ccvs.ok ? ccvs.data.analyses[0] : undefined;
+    if (!ccvs.ok || ccvs.metadata.backend !== 'spice-ts-wasm'
+      || ccvsOp?.type !== 'op' || ccvsOp.voltagesV.out !== -2
+      || Math.abs(ccvsOp.currentsA.H1 - 0.002) > 1e-15) {
+      throw new Error(JSON.stringify(ccvs));
+    }
     const dcResult = await engine.simulate({
       apiVersion: '1',
       input: { format: 'spice', source: 'V1 in 0 0\\nR1 in out 1k\\nR2 out 0 1k\\n.dc V1 0 1 0.5' },
