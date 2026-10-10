@@ -19,6 +19,7 @@ const supportedFixtures: Fixture[] = [
   { feature: 'independent PWL sources', netlist: 'V1 in 0 PWL(0 0 1n 1 2n 0)\nI1 out 0 PWL(0 0 1n 1m)\n.tran 0.1n 2n' },
   { feature: 'linear dependent sources', netlist: 'V1 in 0 1\nE1 e 0 in 0 2\nG1 g 0 in 0 1m\nF1 f 0 V1 2\nH1 h 0 V1 1k\n.op' },
   { feature: 'D/Q/M cards', netlist: '.model D1 D(IS=1e-14)\n.model N1 NPN(BF=100)\n.model M1 NMOS(VTO=1)\nD1a d 0 D1\nQ1 q b 0 N1\nM1a m g 0 0 M1\n.op' },
+  { feature: 'bounded NJF level-1 J card', netlist: '.model JMOD NJF LEVEL=1\nJ1 d g s JMOD\n.op' },
   { feature: '.op', netlist: 'V1 in 0 1\nR1 in 0 1k\n.op' },
   { feature: '.dc', netlist: 'V1 in 0 0\nR1 in 0 1k\n.dc V1 0 1 0.1' },
   { feature: '.tran', netlist: 'V1 in 0 1\nR1 in 0 1k\n.tran 1n 10n' },
@@ -45,7 +46,6 @@ const unsupportedFixtures: Fixture[] = [
   { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
   { feature: 'measurements', netlist: '.measure tran peak MAX v(out)\n.op' },
   { feature: 'behavioral source', netlist: 'B1 out 0 V=V(in)*2\n.op' },
-  { feature: 'JFET', netlist: 'J1 d g s JMOD\n.op' },
   { feature: 'switch', netlist: 'S1 out 0 ctrl 0 SMOD\n.op' },
   { feature: 'transmission line', netlist: 'T1 in 0 out 0 Z0=50 TD=1n\n.tran 1n 10n' },
 ];

@@ -94,14 +94,14 @@ describe('Xyce primitive parser compatibility', () => {
       .toThrow(/Cannot parse number: 'v1'/);
   });
 
-  for (const [id, path] of [
-    ['njfet-2109-dc', 'NJFET_DC/njfet-2109.cir'],
-    ['njfet-stepped-dc', 'NJFET_DC/njfet.cir'],
-  ] as const) {
-    it(`advances ${id} from its title to an explicit unsupported JFET card`, () => {
-      expect(() => parse(fixture(path))).toThrow(/Unsupported device card: 'J'/);
-    });
-  }
+  it('accepts the bounded level-1 NJF fixture', () => {
+    expect(() => parse(fixture('NJFET_DC/njfet.cir')).compile()).not.toThrow();
+  });
+
+  it('keeps the level-2 NJF fixture explicitly unsupported', () => {
+    expect(() => parse(fixture('NJFET_DC/njfet-2109.cir')).compile())
+      .toThrow(/Unsupported NJF model level: 2/);
+  });
 
   it('keeps title-less API snippets behind an explicit parser', () => {
     expect(parseTitleless('R1 in 0 1k\n.op').compile().devices).toHaveLength(1);
