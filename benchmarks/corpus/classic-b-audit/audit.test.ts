@@ -80,8 +80,8 @@ describe('classic corpus-B failure audit', () => {
       ngspice: { success: 19, failed: 1, unsupported: 0 },
       spiceTs: { success: 2, failed: 0, unsupported: 18 },
       classifications: {
-        'parser-feature': 15,
-        'unsupported-analysis/device': 3,
+        'parser-feature': 13,
+        'unsupported-analysis/device': 5,
         convergence: 0,
         execution: 0,
         none: 2,
@@ -97,5 +97,42 @@ describe('classic corpus-B failure audit', () => {
       report.suiteEvidenceSha256,
       createHash('sha256').update(report.fixtures.map(fixture => fixture.evidenceSha256).join('\n')).digest('hex'),
     );
+
+    const advancedFixtures = Object.fromEntries(
+      report.fixtures
+        .filter(fixture => [
+          'bjt-noise',
+          'pole-zero-four-stage',
+          'pole-zero-three-stage',
+          'resistor-noise',
+        ].includes(fixture.id))
+        .map(fixture => [fixture.id, {
+          inputSha256: fixture.inputSha256,
+          status: fixture.spiceTs.status,
+          cause: fixture.classification?.cause,
+        }]),
+    );
+    assert.deepEqual(advancedFixtures, {
+      'bjt-noise': {
+        inputSha256: '183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc',
+        status: 'unsupported',
+        cause: 'other-parser-feature',
+      },
+      'pole-zero-four-stage': {
+        inputSha256: 'c21a9628a46581ad9e163632d992422afafeaa15443787e00153dbd7331d3b73',
+        status: 'unsupported',
+        cause: 'pole-zero-analysis',
+      },
+      'pole-zero-three-stage': {
+        inputSha256: '1c50c0623b02d991eb04a1523d1aa50914e88c0ea53a64438daeec97ec359a18',
+        status: 'unsupported',
+        cause: 'pole-zero-analysis',
+      },
+      'resistor-noise': {
+        inputSha256: '241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661',
+        status: 'unsupported',
+        cause: 'other-parser-feature',
+      },
+    });
   });
 });

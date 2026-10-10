@@ -1,6 +1,6 @@
 # Classic SPICE3 corpus-B failure audit
 
-Evidence suite SHA-256: `69da171c70b6dafc55679888990f8d5f2c1d2714c61916f7274fcdc1824a8532`.
+Evidence suite SHA-256: `6ef2432336c10a24d11235fb88eff7c0d7d64bdad92c055f879a95e5bec63d9a`.
 
 ## Scope and totals
 
@@ -8,7 +8,7 @@ All 20 provenance-tracked fixtures ran unchanged through the existing ngspice an
 
 - ngspice: 19 success, 1 failed, 0 unsupported.
 - spice-ts: 2 success, 0 failed, 18 unsupported.
-- spice-ts losses: 18. Parser feature 15; unsupported analysis/device 3; convergence 0; execution 0.
+- spice-ts losses: 18. Parser feature 13; unsupported analysis/device 5; convergence 0; execution 0.
 - spice-ts parity candidates: 2. These are not parity claims because this audit does not compare numeric tolerances.
 
 ## Environment
@@ -34,23 +34,23 @@ All 20 provenance-tracked fixtures ran unchanged through the existing ngspice an
 
 | Fixture | ngspice | spice-ts | Classification | Cause | Evidence SHA-256 |
 |---|---|---|---|---|---|
-| bjt-noise | success | unsupported | parser-feature | ac-only-independent-source | `dc1da23e7ffef83d3379cbe2bb27dae26cb9a78516c7b7676bc32543aa8d3995` |
+| bjt-noise | success | unsupported | parser-feature | other-parser-feature | `cf571d7bd460644e582e7f44e233806e96e535c8aa41d941da906bd22f125fb2` |
 | bsim1-device-sweep | success | unsupported | parser-feature | legacy-output-limit-option | `d00672c621fbdc5d58df099bb979904a4d231f53e273ca77d7074355276a8963` |
 | bsim2-device-sweep | success | unsupported | parser-feature | legacy-output-limit-option | `95da94dc7eabfeb0a5ecf9a99bf26b3ccbcd0febf884d55cec8ac916941f4b5d` |
 | bjt-differential-pair | success | unsupported | parser-feature | legacy-options-directive | `ee2d3b6cac7908539a644f0d18d056476b628073826b33377e93b581dd7d9ed0` |
-| diode-distortion | success | unsupported | parser-feature | compound-independent-source | `aea01dfd9acd1c4e136e42f9017a7fef942a20ac9d9c5d486ea4be8a424adb17` |
+| diode-distortion | success | unsupported | parser-feature | other-parser-feature | `731b7993db5ad051cba5cdf9fd0f385826a5f9b58ff2e062245ae05bff8fb1d4` |
 | lossy-line-24-inch | success | unsupported | unsupported-analysis/device | ltra-device | `5820ba7ce4a1b1c30e58998c6dd95a07458e11f31bd6ae4e4aea74c1c8900b63` |
 | lossy-line-aluminium | success | unsupported | unsupported-analysis/device | ltra-device | `c6d6fad16a349ec19d1fb33ac37013777b5dfa3a8a2856eb4902a4d457f1941d` |
 | coupled-lossy-lines | success | unsupported | parser-feature | legacy-iteration-option | `687d8ac74e477901ab0ef536ecd4c9a2ef5eb6379a39f22a27e30dbbc0dc8d92` |
-| bjt-mixer-distortion | failed | unsupported | parser-feature | compound-independent-source | `800e666928630c5581c22fb5136f8ab2741be076dc7dd6f61d95d072f374a119` |
+| bjt-mixer-distortion | failed | unsupported | parser-feature | other-parser-feature | `394f50c47632e5b712f65cea585512685cd468da96d944aba39e8b0162f7f1b0` |
 | mos6-inverter-chain | success | unsupported | parser-feature | legacy-accounting-option | `8c8f8e14e83976ed19bebd61331e059aed24578b092c52e78e65262a8dd82b50` |
 | mos-amplifier | success | unsupported | parser-feature | legacy-accounting-option | `07badbb23041a003d49cd05684a36b94931740fcb5a6fc990f487340ec6e1af4` |
 | mos-memory-cell | success | unsupported | parser-feature | legacy-output-directive | `04d01cbb452ad5eb1885dd2121b080a4e6e0a3a5ef5d9b90726887682f09eed6` |
-| pole-zero-four-stage | success | unsupported | parser-feature | ac-only-independent-source | `8b265b837c444d55bbf2d06e5ed7662fffb50a22c81ba0ab2574b03868f70831` |
-| pole-zero-three-stage | success | unsupported | parser-feature | ac-only-independent-source | `7c02b01e44b18927e0952162df83a01a9ddaef55b8895387b99bb58b746ba52a` |
+| pole-zero-four-stage | success | unsupported | unsupported-analysis/device | pole-zero-analysis | `730ac7421ecf45ebeed0f7843e3e40bc5b9af4b689485defb6e9eeefcd690721` |
+| pole-zero-three-stage | success | unsupported | unsupported-analysis/device | pole-zero-analysis | `a049312596b097c4708d732dd2094e427694357e01297a9f7b332e9ea8400286` |
 | rc-transient | success | success | none | parity candidate | `92ef236e38d8426dd70b12ad1de0f8fee23a91b3719d736bacbfb2715914bb16` |
 | rca3040-wideband-amplifier | success | success | none | parity candidate | `5a1122a5ed8c2f62e890b611a98e65c7826ddb222ba3b913e991c241c1075b1a` |
-| resistor-noise | success | unsupported | parser-feature | ac-only-independent-source | `af386b0b9ab86baa4980f757b31944edfadee411f5c70d5f2d210acf2300ff6b` |
+| resistor-noise | success | unsupported | parser-feature | other-parser-feature | `b099f2fa10c9fb13576a189fd216476be1cbf7e67157c8d242f0522b84e5f266` |
 | rtl-inverter-chain | success | unsupported | parser-feature | legacy-output-directive | `36af5f576352a85d1a131099cb1e602f0945dee96653df800cdd3f41099df2bd` |
 | ecl-schmitt-trigger | success | unsupported | parser-feature | legacy-output-directive | `a36aa1983ed4ebb1f16ab0d54ec921123fe24e8ae0a14c229ec86b4c435decb6` |
 | high-pass-pole-zero | success | unsupported | unsupported-analysis/device | pole-zero-analysis | `e84e9ed8d324193a8da0840680f9b5cc0d15c7ed8c51ddfa4dfcd1736c36cda1` |
@@ -61,9 +61,9 @@ All 20 provenance-tracked fixtures ran unchanged through the existing ngspice an
 
 - Input SHA-256: `183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc`
 - ngspice: success, converged
-- spice-ts: unsupported, not-run, parser-feature/ac-only-independent-source, signature `ac-source-missing-dc-value`
-- Error: `Parse error at line 4: Cannot read properties of undefined (reading 'trim') vin 1 0 ac`
-- Evidence SHA-256: `dc1da23e7ffef83d3379cbe2bb27dae26cb9a78516c7b7676bc32543aa8d3995`
+- spice-ts: unsupported, not-run, parser-feature/other-parser-feature, signature `other-parser-error`
+- Error: `Parse error at line 15: Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop' .noise v ( 3 ) vin dec 10 10 100k 1`
+- Evidence SHA-256: `cf571d7bd460644e582e7f44e233806e96e535c8aa41d941da906bd22f125fb2`
 
 ### bsim1-device-sweep
 
@@ -93,9 +93,9 @@ All 20 provenance-tracked fixtures ran unchanged through the existing ngspice an
 
 - Input SHA-256: `912c8cedf66aadbe78f17ceb28644cb8c39a2cb3442559be3219fbaac6d11de8`
 - ngspice: success, converged
-- spice-ts: unsupported, not-run, parser-feature/compound-independent-source, signature `compound-source-distof`
-- Error: `Parse error at line 5: Cannot parse number: 'sin' vcc 1 3 5v ac 0.001 sin(5 0.01 1000) distof1 0.01 distof2 0.01`
-- Evidence SHA-256: `aea01dfd9acd1c4e136e42f9017a7fef942a20ac9d9c5d486ea4be8a424adb17`
+- spice-ts: unsupported, not-run, parser-feature/other-parser-feature, signature `other-parser-error`
+- Error: `Parse error at line 11: Two-tone .disto is not supported; omit f2overf1 .disto dec 20 1.0e3 1.0e8 0.9`
+- Evidence SHA-256: `731b7993db5ad051cba5cdf9fd0f385826a5f9b58ff2e062245ae05bff8fb1d4`
 
 ### lossy-line-24-inch
 
@@ -125,9 +125,9 @@ All 20 provenance-tracked fixtures ran unchanged through the existing ngspice an
 
 - Input SHA-256: `9f172a78faabd09f0b4e61d733b542e48380a452a4767b83e05617ab4642894e`
 - ngspice: failed, not-run, `no raw analysis data produced`
-- spice-ts: unsupported, not-run, parser-feature/compound-independent-source, signature `compound-source-distof`
-- Error: `Parse error at line 6: Cannot parse number: 'distof1' v1 1 0 0v ac 1.0 distof1 0.001`
-- Evidence SHA-256: `800e666928630c5581c22fb5136f8ab2741be076dc7dd6f61d95d072f374a119`
+- spice-ts: unsupported, not-run, parser-feature/other-parser-feature, signature `other-parser-error`
+- Error: `Parse error at line 16: Unsupported BJT Q-card form: 'q1 3 1 4 2 mod1' q1 3 1 4 2 mod1`
+- Evidence SHA-256: `394f50c47632e5b712f65cea585512685cd468da96d944aba39e8b0162f7f1b0`
 
 ### mos6-inverter-chain
 
@@ -157,25 +157,25 @@ All 20 provenance-tracked fixtures ran unchanged through the existing ngspice an
 
 - Input SHA-256: `c21a9628a46581ad9e163632d992422afafeaa15443787e00153dbd7331d3b73`
 - ngspice: success, converged
-- spice-ts: unsupported, not-run, parser-feature/ac-only-independent-source, signature `ac-source-missing-dc-value`
-- Error: `Parse error at line 2: Cannot read properties of undefined (reading 'trim') iin 1 0 ac`
-- Evidence SHA-256: `8b265b837c444d55bbf2d06e5ed7662fffb50a22c81ba0ab2574b03868f70831`
+- spice-ts: unsupported, not-run, unsupported-analysis/device/pole-zero-analysis, signature `missing-result-pz`
+- Error: `no spice-ts result for analyses: pz`
+- Evidence SHA-256: `730ac7421ecf45ebeed0f7843e3e40bc5b9af4b689485defb6e9eeefcd690721`
 
 ### pole-zero-three-stage
 
 - Input SHA-256: `1c50c0623b02d991eb04a1523d1aa50914e88c0ea53a64438daeec97ec359a18`
 - ngspice: success, converged
-- spice-ts: unsupported, not-run, parser-feature/ac-only-independent-source, signature `ac-source-missing-dc-value`
-- Error: `Parse error at line 2: Cannot read properties of undefined (reading 'trim') iin 1 0 ac`
-- Evidence SHA-256: `7c02b01e44b18927e0952162df83a01a9ddaef55b8895387b99bb58b746ba52a`
+- spice-ts: unsupported, not-run, unsupported-analysis/device/pole-zero-analysis, signature `missing-result-pz`
+- Error: `no spice-ts result for analyses: pz`
+- Evidence SHA-256: `a049312596b097c4708d732dd2094e427694357e01297a9f7b332e9ea8400286`
 
 ### resistor-noise
 
 - Input SHA-256: `241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661`
 - ngspice: success, converged
-- spice-ts: unsupported, not-run, parser-feature/ac-only-independent-source, signature `ac-source-missing-dc-value`
-- Error: `Parse error at line 5: Cannot read properties of undefined (reading 'trim') iin 1 0 1m AC`
-- Evidence SHA-256: `af386b0b9ab86baa4980f757b31944edfadee411f5c70d5f2d210acf2300ff6b`
+- spice-ts: unsupported, not-run, parser-feature/other-parser-feature, signature `other-parser-error`
+- Error: `Parse error at line 14: Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop' .noise v ( 1 ) iin dec 10 10 100k 1`
+- Evidence SHA-256: `b099f2fa10c9fb13576a189fd216476be1cbf7e67157c8d242f0522b84e5f266`
 
 ### rtl-inverter-chain
 
