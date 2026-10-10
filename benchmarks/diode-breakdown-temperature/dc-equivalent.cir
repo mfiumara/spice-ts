@@ -1,0 +1,16 @@
+Issue 319 byte-identical diode breakdown temperature-law DC equivalent
+* Project-authored MIT fixture: https://github.com/mfiumara/spice-ts/issues/319
+* BV(T)=7.255*(1+0.00013*(T-27)-5e-8*(T-27)^2)
+* Effective BV values below correspond to TEMP=-55, 25, and 72 C.
+VSWEEP in 0 DC 8
+RCOLD in cold 1k
+RNOMINAL in nominal 1k
+RHOT in hot 1k
+DCOLD 0 cold DZCOLD
+DNOMINAL 0 nominal DZNOMINAL
+DHOT 0 hot DZHOT
+.model DZCOLD D(IS=1e-14 N=1 BV=7.175222569 IBV=1m)
+.model DZNOMINAL D(IS=1e-14 N=1 BV=7.253112249 IBV=1m)
+.model DZHOT D(IS=1e-14 N=1 BV=7.29670718125 IBV=1m)
+.dc VSWEEP 8 12 0.25
+.end

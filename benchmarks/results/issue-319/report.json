@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "spice-ts-issue-319/v1",
+  "schemaVersion": "spice-ts-issue-319/v2",
   "issueUrl": "https://github.com/mfiumara/spice-ts/issues/319",
-  "generatedAt": "2026-10-10T15:38:06.504Z",
+  "generatedAt": "2026-10-10T16:33:41.730Z",
   "tools": {
     "spiceTs": "0.3.0",
     "node": "v22.23.1",
@@ -20,9 +20,15 @@
     "interpolation": "linear interpolation of pinned Xyce gold output",
     "waveformAcceptance": "max relative error <= 0.005 (fixture *COMP V(2) reltol)",
     "speedClaim": false,
-    "ngspiceParityClaim": false
+    "unchangedXyceNgspiceParityClaim": false,
+    "dcEquivalentIdenticalNetlistParityClaim": true,
+    "dcEquivalentPerCircuitToleranceTuning": false
   },
-  "command": "pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-319/verify.ts --output benchmarks/results/issue-319/report.json",
+  "commands": {
+    "verifier": "pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-319/verify.ts --output benchmarks/results/issue-319/report.json",
+    "ngspiceParity": "ngspice -b -r <temporary-rawfile> <byte-identical copy of benchmarks/diode-breakdown-temperature/dc-equivalent.cir>",
+    "spiceTsParity": "@spice-ts/core simulate(<the same bytes from benchmarks/diode-breakdown-temperature/dc-equivalent.cir>)"
+  },
   "input": {
     "path": "benchmarks/corpus/xyce/fixtures/DIODE/Level2_Temp_Dep_Breakdown.cir",
     "bytes": 1467,
@@ -43,7 +49,7 @@
   "after": {
     "spiceTs": {
       "status": "success",
-      "runtimeMs": 11.695,
+      "runtimeMs": 8.821,
       "temperatureStepsC": [
         -55,
         25,
@@ -117,12 +123,139 @@
           "rmsRelative": 0.000017768578098437274
         }
       }
-    ]
+    ],
+    "ngspice47IdenticalNetlistParity": {
+      "fixture": {
+        "path": "benchmarks/diode-breakdown-temperature/dc-equivalent.cir",
+        "bytes": 588,
+        "sha256": "02551eb619592aa1065cd549dbabd65e0916c3d223c2cbef7ecd6de72d4c8b65",
+        "source": "project-authored DC-equivalent reference circuit for spice-ts issue #319",
+        "sourceUrl": "https://github.com/mfiumara/spice-ts/issues/319",
+        "revision": "fixture bytes pinned by sha256 in this verifier",
+        "licence": "MIT",
+        "redistribution": "allowed under the repository MIT licence",
+        "byteIdenticalBetweenEngines": true
+      },
+      "temperaturePointsC": [
+        -55,
+        25,
+        72
+      ],
+      "grid": ".dc VSWEEP 8 12 0.25 (17 matched points)",
+      "signals": [
+        "v(cold)",
+        "v(nominal)",
+        "v(hot)",
+        "i(VSWEEP)"
+      ],
+      "comparison": {
+        "name": "issue-319-diode-breakdown-temperature-dc-equivalent",
+        "analysis": "dc",
+        "netlistSha256": "02551eb619592aa1065cd549dbabd65e0916c3d223c2cbef7ecd6de72d4c8b65",
+        "status": "compared",
+        "signals": [
+          "v(cold)",
+          "v(nominal)",
+          "v(hot)",
+          "i(VSWEEP)"
+        ],
+        "engines": {
+          "spiceTs": {
+            "status": "success",
+            "convergence": "converged",
+            "runtimeMs": 99.49625000000003,
+            "command": [
+              "@spice-ts/core",
+              "simulate",
+              "<issue-319-diode-breakdown-temperature-dc-equivalent.cir>"
+            ]
+          },
+          "ngspice": {
+            "status": "success",
+            "convergence": "converged",
+            "runtimeMs": 17.810000000000002,
+            "command": [
+              "ngspice",
+              "-b",
+              "-r",
+              "<temporary-rawfile>",
+              "<issue-319-diode-breakdown-temperature-dc-equivalent.cir>"
+            ]
+          }
+        },
+        "metrics": {
+          "grid": {
+            "spiceTsPoints": 17,
+            "ngspicePoints": 17,
+            "alignedPoints": 17,
+            "excludedOutOfRange": 0
+          },
+          "signals": {
+            "v(cold)": {
+              "status": "compared",
+              "sampleCount": 17,
+              "absoluteError": {
+                "max": 0.000028848981084017566,
+                "rms": 0.000008823733284672561
+              },
+              "relativeError": {
+                "max": 0.000004016625665859145,
+                "rms": 0.0000012285099209986186,
+                "sampleCount": 17,
+                "excludedZeroReferences": 0
+              }
+            },
+            "v(nominal)": {
+              "status": "compared",
+              "sampleCount": 17,
+              "absoluteError": {
+                "max": 0.000039055879423877116,
+                "rms": 0.000011898138663686504
+              },
+              "relativeError": {
+                "max": 0.000005380523982650024,
+                "rms": 0.0000016391856212216462,
+                "sampleCount": 17,
+                "excludedZeroReferences": 0
+              }
+            },
+            "v(hot)": {
+              "status": "compared",
+              "sampleCount": 17,
+              "absoluteError": {
+                "max": 0.00004677802308883372,
+                "rms": 0.000014226327515008817
+              },
+              "relativeError": {
+                "max": 0.000006406676693456484,
+                "rms": 0.0000019485164032946205,
+                "sampleCount": 17,
+                "excludedZeroReferences": 0
+              }
+            },
+            "i(VSWEEP)": {
+              "status": "compared",
+              "sampleCount": 17,
+              "absoluteError": {
+                "max": 1.1468288359369957e-7,
+                "rms": 3.494016977902577e-8
+              },
+              "relativeError": {
+                "max": 0.00003052180284336488,
+                "rms": 0.000009546889027620006,
+                "sampleCount": 17,
+                "excludedZeroReferences": 0
+              }
+            }
+          }
+        }
+      }
+    }
   },
   "retainedLosses": {
     "originalDeckNgspice47": {
       "status": "failed",
-      "runtimeMs": 25.657,
+      "runtimeMs": 16.89,
       "exitCode": 1,
       "error": "Error on line 9 or its substitute: .tran 0 1 0 100m TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: incomplete or empty netlist or no \".plot\", \".print\", or \".fourier\" lines in batch mode; no simulations run! Note: No compatibility mode selected! Circuit: *trivial sweep of diode to produce i/v curve"
     },
@@ -150,6 +283,7 @@
       "TRS1",
       "TRS2"
     ],
+    "disposition": "each listed model parameter is rejected explicitly during circuit compilation",
     "exclusions": [
       "temperature-adjusted IS via EG/XTI",
       "avalanche noise",

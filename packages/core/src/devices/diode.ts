@@ -28,6 +28,9 @@ const VT = 0.02585; // Thermal voltage at 300K
 const KELVIN_OFFSET = 273.15;
 const K_OVER_Q = 8.617333262e-5;
 const GMIN = 1e-12;
+const UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS = new Set([
+  'NBV', 'IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2',
+]);
 
 interface BreakdownParams {
   voltage: number;
@@ -48,6 +51,13 @@ export class Diode implements DeviceModel {
     private readonly hasExternalSeriesResistance = false,
     readonly instanceParams: DiodeInstanceParams = {},
   ) {
+    for (const name of Object.keys(params)) {
+      if (UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS.has(name)) {
+        throw new Error(
+          `Unsupported bounded diode breakdown-temperature model parameter: '${name}'`,
+        );
+      }
+    }
     const effectiveArea = (instanceParams.AREA ?? 1) * (instanceParams.M ?? 1);
     const effectivePerimeter = (instanceParams.PJ ?? 0) * (instanceParams.M ?? 1);
     const junctionPotential = params.VJ ?? 0.7;

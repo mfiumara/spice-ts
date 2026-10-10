@@ -3,6 +3,7 @@ import { Circuit } from '../circuit.js';
 import { simulate } from '../simulate.js';
 import { resolveStepTarget } from '../analysis/step.js';
 import { MNAAssembler } from '../mna/assembler.js';
+import { parse } from '../parser/index.js';
 import { Diode } from './diode.js';
 
 describe('Diode', () => {
@@ -97,6 +98,19 @@ describe('Diode', () => {
     expect(diode.getTemperature()).toBe(27);
     expect(diode.params.BV).toBe(7.255);
   });
+
+  it.each(['NBV', 'IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2'])(
+    'rejects unsupported level-2 breakdown field %s explicitly',
+    (parameter) => {
+      expect(() => parse(`unsupported diode level-2 field
+        D1 out 0 DMOD
+        .model DMOD D(BV=7.255 IBV=1m TBV1=0.00013 TBV2=-5e-8 ${parameter}=1)
+        .op
+      `).compile()).toThrow(
+        `Unsupported bounded diode breakdown-temperature model parameter: '${parameter}'`,
+      );
+    },
+  );
 
   it('scales model parameters by instance area, perimeter, and multiplier', () => {
     const diode = new Diode('D1', [0, -1], {
