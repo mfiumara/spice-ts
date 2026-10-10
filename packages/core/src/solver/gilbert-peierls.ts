@@ -41,7 +41,6 @@ export class GilbertPeierlsSolver implements SparseSolver {
   private nonzeroFlag!: Int32Array;     // marker for workspace non-zero tracking
   private nonzeroList!: Int32Array;     // list of non-zero workspace positions
   private activeK!: Int32Array;         // active column indices during triangular solve
-  private activeFlag!: Int32Array;      // marker preventing duplicate active columns
 
   private analyzed = false;
   private factorized = false;
@@ -84,7 +83,6 @@ export class GilbertPeierlsSolver implements SparseSolver {
     this.nonzeroFlag = new Int32Array(n);
     this.nonzeroList = new Int32Array(n);
     this.activeK = new Int32Array(n);
-    this.activeFlag = new Int32Array(n);
 
     this.analyzed = true;
     this.factorized = false;
@@ -123,7 +121,6 @@ export class GilbertPeierlsSolver implements SparseSolver {
     const nonzeroFlag = this.nonzeroFlag;
     const nonzeroList = this.nonzeroList;
     const activeK = this.activeK;
-    const activeFlag = this.activeFlag;
 
     // A failed numeric pass invalidates the previous factors. Clear the dense
     // workspace up front as a singular pass exits before per-column cleanup.
@@ -134,7 +131,6 @@ export class GilbertPeierlsSolver implements SparseSolver {
     for (let i = 0; i < n; i++) perm[i] = i;
     pinv.fill(-1);
     nonzeroFlag.fill(-1);
-    activeFlag.fill(-1);
 
     let lp = 0;
     let up = 0;
@@ -170,7 +166,9 @@ export class GilbertPeierlsSolver implements SparseSolver {
         const k = pinv[origRow];
         if (k >= 0 && k < j && workspace[origRow] !== 0) {
           activeK[activeCount++] = k;
-          activeFlag[k] = j;
+          // Encode active state in the pivot entry until this column finishes.
+          // -1 remains the unused-row sentinel; active k is stored as -k - 2.
+          pinv[origRow] = -k - 2;
         }
       }
       // Sort active columns
@@ -211,8 +209,8 @@ export class GilbertPeierlsSolver implements SparseSolver {
           // A structural zero may already be in nonzeroList but become active
           // only after this update. Track activation separately from structure.
           const k2 = pinv[origI];
-          if (k2 > k && k2 < j && workspace[origI] !== 0 && activeFlag[k2] !== j) {
-            activeFlag[k2] = j;
+          if (k2 > k && k2 < j && workspace[origI] !== 0) {
+            pinv[origI] = -k2 - 2;
             activeK[activeCount] = k2;
             activeCount++;
             for (let q = activeCount - 1; q > ki; q--) {
@@ -226,6 +224,13 @@ export class GilbertPeierlsSolver implements SparseSolver {
             }
           }
         }
+      }
+
+      // Restore pivot-column indices before pivot selection. Encoded entries
+      // are all represented once in activeK, including fill-activated columns.
+      for (let t = 0; t < activeCount; t++) {
+        const k = activeK[t];
+        pinv[perm[k]] = k;
       }
 
       // === Step 3: THRESHOLD PIVOTING ===
