@@ -118,13 +118,16 @@ function dcConnectionGroups(device: DeviceModel): number[][] {
 
   if (device instanceof VCCS) {
     const [outP, outN, ctrlP, ctrlN] = device.nodes;
-    // The control port is high impedance and cannot give either port a DC
-    // reference. The one topology-equivalent conductance is a self-controlled
-    // VCCS, whose control and output node pairs are identical (in either
-    // polarity).
-    return outP === ctrlP && outN === ctrlN || outP === ctrlN && outN === ctrlP
-      ? [[outP!, outN!]]
-      : [];
+    // A control port is high impedance, so never join it to an unrelated
+    // output port. An overlapping non-ground terminal does contribute a
+    // diagonal gm stamp, however, making the control voltage a DC constraint.
+    const hasDiagonalStamp = [...new Set(device.nodes)]
+      .some(node =>
+        node >= 0
+        && terminalCoefficient(node, outP!, outN!) !== 0
+        && terminalCoefficient(node, ctrlP!, ctrlN!) !== 0,
+      );
+    return hasDiagonalStamp ? [[ctrlP!, ctrlN!]] : [];
   }
 
   if (device instanceof VCVS || device instanceof CCVS) {
@@ -137,6 +140,10 @@ function dcConnectionGroups(device: DeviceModel): number[][] {
 
   if (device instanceof BJT) return [device.nodes];
   return device.nodes.length > 0 ? [device.nodes] : [];
+}
+
+function terminalCoefficient(node: number, positive: number, negative: number): number {
+  return Number(node === positive) - Number(node === negative);
 }
 
 function findIdealConstraintLoop(

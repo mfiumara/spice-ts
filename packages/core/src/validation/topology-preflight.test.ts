@@ -26,6 +26,13 @@ const INVALID_CASES: TopologyCase[] = [
     sourcePaths: ['/compiled/devices/C1', '/compiled/devices/I1'],
   },
   {
+    name: 'VCCS control sharing only an output ground terminal',
+    source: 'G1 out 0 control 0 1m\nR1 out 0 1k\nI1 control 0 1m\n.op',
+    kind: 'NO_DC_REFERENCE',
+    involvedNodes: ['control'],
+    sourcePaths: ['/compiled/devices/G1', '/compiled/devices/I1'],
+  },
+  {
     name: 'ideal voltage-source/inductor loop',
     source: 'V1 a 0 1\nL1 a b 1m\nV2 b 0 2\n.op',
     kind: 'IDEAL_SOURCE_LOOP',
@@ -60,6 +67,18 @@ describe('deterministic topology preflight', () => {
 
   it('accepts DC conductance supplied by a VCCS', () => {
     const compiled = parseTitleless('G1 a 0 a 0 1m\nI1 a 0 1m\n.op').compile();
+
+    expect(() => preflightTopology(compiled)).not.toThrow();
+  });
+
+  it('accepts DC conductance from a partially self-controlled VCCS', () => {
+    const source = [
+      'G1 a 0 a b 1m',
+      'R1 b 0 1k',
+      'I1 0 a 1m',
+      '.op',
+    ].join('\n');
+    const compiled = parseTitleless(source).compile();
 
     expect(() => preflightTopology(compiled)).not.toThrow();
   });

@@ -69,6 +69,19 @@ describe('protocol v1 topology validation', () => {
     expect(canonicalHash(result)).toBe('48a4d28f73e23476e9fb124cb4e55433b8f52df4c128725556ff3c72f9000a5f');
   });
 
+  it('accepts a partially self-controlled VCCS without numerically solving', async () => {
+    const result = await validateProtocolV1(request([
+      'G1 a 0 a b 1m',
+      'R1 b 0 1k',
+      'I1 0 a 1m',
+      '.op',
+    ].join('\n')));
+
+    expect(result).toEqual({ status: 'valid', nodeCount: 2, branchCount: 0, analysisCount: 1 });
+    expect(simulateSpy).not.toHaveBeenCalled();
+    expect(canonicalHash(result)).toBe('8e6643e764c98f3e4580e0b5e28cf23ba36435576af05a45fc11cd2f33b3e5df');
+  });
+
   it('reports native-document component JSON pointers', async () => {
     const nativeRequest: SimulationRequestV1 = {
       apiVersion: '1',
