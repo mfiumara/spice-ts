@@ -1023,6 +1023,12 @@ export class Circuit {
       this.expandLossyTransmissionLines(this.expandAllSubcircuits(guard)),
     );
     guard?.maximum('maxComponents', expandedDescriptors.length, 'compile');
+    if (
+      expandedDescriptors.some(desc => desc.type === 'Z')
+      && this._steps.some(step => step.param.toUpperCase() === 'TEMP')
+    ) {
+      throw new InvalidCircuitError("Unsupported bounded HFET step: 'TEMP'");
+    }
 
     // Collect all nodes from expanded descriptors
     for (const desc of expandedDescriptors) {
