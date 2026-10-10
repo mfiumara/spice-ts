@@ -15,7 +15,9 @@ import {
   assertLinearDistortionSupported, solveLinearDistortion,
 } from './analysis/distortion.js';
 import { solveDCSweep } from './analysis/dc-sweep.js';
-import { solveStep, generateStepValues } from './analysis/step.js';
+import {
+  applyStepValue, generateStepValues, resolveStepTarget, solveStep,
+} from './analysis/step.js';
 import type { StepStreamEvent, StepAnalysis } from './types.js';
 import type { SimulationResult, StepResult } from './results.js';
 import { InvalidCircuitError } from './errors.js';
@@ -356,26 +358,13 @@ function* streamWithSteps(
   options: SimulationOptions | undefined,
 ): Generator<StepStreamEvent> {
   const values = generateStepValues(step);
-
-  const device = compiled.devices.find(d => d.name === step.param);
-  if (!device) {
-    throw new InvalidCircuitError(
-      `Step parameter device '${step.param}' not found`,
-    );
-  }
-  if (!device.setParameter || !device.getParameter) {
-    throw new InvalidCircuitError(
-      `Device '${step.param}' does not support parametric sweep`,
-    );
-  }
-
-  const originalValue = device.getParameter();
+  const target = resolveStepTarget(compiled, step);
   let prevDCSolution: Float64Array | undefined;
 
   try {
     for (let stepIndex = 0; stepIndex < values.length; stepIndex++) {
       const value = values[stepIndex];
-      device.setParameter(value);
+      prevDCSolution = applyStepValue(target, value, prevDCSolution);
 
       for (const analysis of compiled.analyses) {
         switch (analysis.type) {
@@ -384,7 +373,7 @@ function* streamWithSteps(
             const seed = transientInitialSolution(compiled, analysis, opts, prevDCSolution);
             if (!analysis.useInitialConditions) prevDCSolution = new Float64Array(seed);
             for (const point of streamTransient(compiled, runnableTransient(analysis), opts, seed)) {
-              yield { stepIndex, paramName: step.param, paramValue: value, point };
+              yield { stepIndex, paramName: target.paramName, paramValue: value, point };
             }
             break;
           }
@@ -393,7 +382,7 @@ function* streamWithSteps(
             const { assembler: dcAsm } = solveDCOperatingPoint(compiled, opts, prevDCSolution);
             prevDCSolution = new Float64Array(dcAsm.solution);
             for (const point of streamAC(compiled, analysis, opts, dcAsm.solution)) {
-              yield { stepIndex, paramName: step.param, paramValue: value, point };
+              yield { stepIndex, paramName: target.paramName, paramValue: value, point };
             }
             break;
           }
@@ -401,7 +390,7 @@ function* streamWithSteps(
       }
     }
   } finally {
-    device.setParameter(originalValue);
+    target.restore();
   }
 }
 

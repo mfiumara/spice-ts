@@ -105,9 +105,21 @@ describe('Xyce primitive parser compatibility', () => {
     });
   }
 
-  it('advances the unchanged diode temperature fixture to its TEMP step gap', async () => {
-    await expect(simulate(fixture('DIODE/Level2_Temp_Dep_Breakdown.cir')))
-      .rejects.toThrow("Step parameter device 'TEMP' not found");
+  it('executes TEMP stepping in the unchanged diode fixture while retaining the diode-model gap', async () => {
+    const result = await simulate(fixture('DIODE/Level2_Temp_Dep_Breakdown.cir'));
+
+    expect(result.steps!.map(step => [step.paramName, step.paramValue])).toEqual([
+      ['TEMP', -55],
+      ['TEMP', 25],
+      ['TEMP', 72],
+    ]);
+    // Diode temperature and reverse-breakdown semantics remain tracked by #319,
+    // so the three currents are still identical rather than a parity claim.
+    expect(result.steps!.map(step => step.transient!.current('VIN'))).toEqual([
+      result.steps![0].transient!.current('VIN'),
+      result.steps![0].transient!.current('VIN'),
+      result.steps![0].transient!.current('VIN'),
+    ]);
   });
 
   it('simulates the unchanged bounded level-1 NJF fixture', async () => {

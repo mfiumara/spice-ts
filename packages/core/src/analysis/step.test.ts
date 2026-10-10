@@ -2,8 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { Resistor } from '../devices/resistor.js';
 import { Capacitor } from '../devices/capacitor.js';
 import { Inductor } from '../devices/inductor.js';
-import { generateStepValues } from './step.js';
+import {
+  applyStepValue, generateStepValues, resolveStepTarget, solveStep,
+} from './step.js';
 import type { StepAnalysis } from '../types.js';
+import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 describe('Device parameter setters', () => {
   it('Resistor set/get parameter', () => {
@@ -280,7 +283,7 @@ import { simulate, simulateStepStream } from '../simulate.js';
 import type { StepStreamEvent } from '../types.js';
 
 describe('.step + .op integration', () => {
-  it('executes a case-insensitive TEMP LIST sweep', async () => {
+  it('executes a case-insensitive TEMP LIST sweep with stable metadata', async () => {
     const result = await simulate(`
       V1 in 0 DC 1
       R1 in 0 1k
@@ -292,6 +295,22 @@ describe('.step + .op integration', () => {
       ['TEMP', -55],
       ['TEMP', 25],
       ['TEMP', 72],
+    ]);
+  });
+
+  it('applies TEMP LIST values to a resistor temperature coefficient', async () => {
+    const result = await simulate(`
+      V1 in 0 DC 10
+      R1 in out 1k TC1=0.001 TC2=0.00001
+      R2 out 0 1k
+      .op
+      .step TEMP LIST -55 25 72
+    `, { stepWorkers: false });
+
+    expect(result.steps!.map(step => step.dc!.voltage('out'))).toEqual([
+      expect.closeTo(5.037174346678487, 10),
+      expect.closeTo(5.004904806710576, 10),
+      expect.closeTo(4.84202881007142, 10),
     ]);
   });
 
@@ -405,6 +424,48 @@ describe('.step + .tran integration', () => {
 });
 
 describe('.step streaming', () => {
+  it('matches batch metadata and resistor behavior for case-insensitive TEMP LIST', async () => {
+    const netlist = `
+      V1 in 0 AC 10
+      R1 in out 1k TC1=0.001 TC2=0.00001
+      R2 out 0 1k
+      .ac lin 1 1k 1k
+      .step temp LIST -55 25 72
+    `;
+    const batch = await simulate(netlist, { stepWorkers: false });
+    const events: StepStreamEvent[] = [];
+    for await (const event of simulateStepStream(netlist)) {
+      events.push(event);
+    }
+
+    const batchMetadata = batch.steps!.map(step => ({
+      paramName: step.paramName,
+      paramValue: step.paramValue,
+    }));
+    const streamMetadata = [0, 1, 2].map(stepIndex => {
+      const event = events.find(candidate => candidate.stepIndex === stepIndex)!;
+      return { paramName: event.paramName, paramValue: event.paramValue };
+    });
+    expect(streamMetadata).toEqual(batchMetadata);
+    expect(streamMetadata).toEqual([
+      { paramName: 'TEMP', paramValue: -55 },
+      { paramName: 'TEMP', paramValue: 25 },
+      { paramName: 'TEMP', paramValue: 72 },
+    ]);
+    const firstByStep = [0, 1, 2].map(index =>
+      events.find(event => event.stepIndex === index)!.point);
+    const streamVoltages = firstByStep.map(point => 'frequency' in point
+      ? point.voltages.get('out')!.magnitude
+      : NaN);
+    const batchVoltages = batch.steps!.map(step => step.ac!.voltage('out')[0].magnitude);
+    expect(streamVoltages).toEqual(batchVoltages);
+    expect(streamVoltages).toEqual([
+      expect.closeTo(5.037174346678487, 10),
+      expect.closeTo(5.004904806710576, 10),
+      expect.closeTo(4.84202881007142, 10),
+    ]);
+  });
+
   it('streams step events for .ac', async () => {
     const events: StepStreamEvent[] = [];
     for await (const event of simulateStepStream(`
@@ -536,6 +597,75 @@ describe('.step + .dc integration', () => {
 });
 
 describe('.step error handling', () => {
+  it('resets solver continuation state whenever TEMP changes', () => {
+    const compiled = parse(`
+      V1 in 0 DC 1
+      R1 in 0 1k TC1=0.001
+      .op
+      .step TEMP LIST -55 25
+    `).compile();
+    const target = resolveStepTarget(compiled, compiled.steps[0]);
+    const staleSolution = new Float64Array([123]);
+
+    expect(applyStepValue(target, -55, staleSolution)).toBeUndefined();
+    expect(applyStepValue(target, 25, staleSolution)).toBeUndefined();
+    target.restore();
+  });
+
+  it.each(['success', 'failure'] as const)(
+    'restores the default temperature after %s',
+    (outcome) => {
+      const compiled = parse(`
+        V1 in 0 DC 1
+        R1 in 0 1k TC1=0.001
+        .op
+        .step TEMP LIST -55
+      `).compile();
+      const resistor = compiled.devices.find(device => device.name === 'R1')!;
+      const guard = outcome === 'failure'
+        ? { checkpoint: () => { throw new Error('forced solve failure'); } } as unknown as ProtocolExecutionGuard
+        : undefined;
+
+      if (outcome === 'failure') {
+        expect(() => solveStep(compiled, compiled.steps[0], undefined, [], undefined, guard))
+          .toThrow('forced solve failure');
+      } else {
+        solveStep(compiled, compiled.steps[0], undefined, []);
+      }
+
+      expect(resistor.getTemperature!()).toBe(27);
+      expect(resistor.getParameter!()).toBe(1000);
+      expect((resistor as Resistor).resistance).toBe(1000);
+    },
+  );
+
+  it.each([
+    '.step TEMP -55 72 1',
+    '.step DEC TEMP 1 100 10',
+    '.step OCT TEMP 1 8 1',
+  ])('rejects unsupported TEMP mode explicitly: %s', async (directive) => {
+    await expect(simulate(`
+      V1 in 0 DC 1
+      R1 in 0 1k
+      .op
+      ${directive}
+    `, { stepWorkers: false })).rejects.toThrow('.step TEMP supports LIST mode only');
+  });
+
+  it.each([
+    ['TEMP first', '.step TEMP LIST -55 25\n.step R1 LIST 1k 2k'],
+    ['TEMP second', '.step R1 LIST 1k 2k\n.step TEMP LIST -55 25'],
+  ])('rejects multiple or combined .step targets with %s', async (_label, directives) => {
+    await expect(simulate(`
+      V1 in 0 DC 1
+      R1 in 0 1k
+      .op
+      ${directives}
+    `, { stepWorkers: false })).rejects.toThrow(
+      'Multiple .step directives are not supported; nested or multi-dimensional stepping is unsupported',
+    );
+  });
+
   it('throws on unknown device name', async () => {
     await expect(simulate(`
       V1 1 0 DC 5
