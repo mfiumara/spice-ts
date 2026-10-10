@@ -53,6 +53,42 @@ R1 1 0 1k
   });
 
   it.each([
+    ['scientific notation', '1e1', 10, 11],
+    ['fractional value', '10.5', 11, 12],
+  ])('uses ngspice numeric semantics for a %s DEC point count', async (
+    _label, pointToken, points, frequencyCount,
+  ) => {
+    const netlist = `V1 1 0 DC 0 DISTOF1 1\nR1 1 0 1k\n.disto dec ${pointToken} 1k 10k`;
+    expect(parse(netlist).analyses).toContainEqual({
+      type: 'disto', variation: 'dec', points, startFreq: 1e3, stopFreq: 1e4,
+    });
+
+    const result = await simulate(`Point count semantics\n${netlist}`);
+    expect(result.distortion?.frequencies).toHaveLength(frequencyCount);
+  });
+
+  it.each(['voltage', 'current'] as const)(
+    'preserves distortion terms for a programmatic DC %s source',
+    async (kind) => {
+      const circuit = new Circuit();
+      const waveform = {
+        dc: 0,
+        distortionF1: { magnitude: 1, phase: 15 },
+        distortionF2: { magnitude: 0, phase: 0 },
+      };
+      if (kind === 'voltage') circuit.addVoltageSource('V1', 'in', '0', waveform);
+      else circuit.addCurrentSource('I1', 'in', '0', waveform);
+      circuit.addResistor('R1', 'in', '0', 1e3);
+      circuit.addAnalysis('disto', {
+        variation: 'dec', points: 10, startFreq: 1e3, stopFreq: 1e4,
+      });
+
+      const result = await simulate(circuit);
+      expect(result.distortion?.frequencies).toHaveLength(11);
+    },
+  );
+
+  it.each([
     ['.disto dec 10 1k 1Meg 0.9', 'Two-tone .disto is not supported; omit f2overf1'],
     ['.disto lin 10 1k 1Meg', "Unsupported .disto sweep; expected '.disto dec points start stop'"],
     ['.disto oct 10 1k 1Meg', "Unsupported .disto sweep; expected '.disto dec points start stop'"],
