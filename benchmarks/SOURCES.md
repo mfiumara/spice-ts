@@ -197,7 +197,7 @@ Validate pinned provenance, unique hashes, byte-identical engine inputs, categor
     pnpm build
     node benchmarks/corpus/corpus-e/validate.mjs
 
-The pinned validation receipt is `6129f3b6cb61d788f30752d3b72276073a3f564ea8d906b2c7b8a9fb79d6c1e2`: ngspice-47 passes 5/20 and reports 15 unchanged-dialect failures; spice-ts passes 0/20 and reports 20 parse, unsupported, or convergence failures. These losses are retained rather than adapted or omitted.
+The pinned validation receipt is `a2acada11be950a85fdafebb6f346880ea0acaf0051261a796d2125694a65924`: ngspice-47 passes 5/20 and reports 15 unchanged-dialect failures; spice-ts passes 0/20 and reports 20 parse, unsupported, or convergence failures. These losses are retained rather than adapted or omitted.
 
 ## ahkab test-suite corpus D
 

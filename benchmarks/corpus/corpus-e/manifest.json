@@ -80,7 +80,7 @@
       "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_coil.1.ckt",
       "sha256": "45bf5fdc96b7985a744455ff7c3222478665e3db487bbcfedc5c7efa8297fc3c",
       "ngspice": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "Gnucap output/status directives in the unchanged deck are rejected by ngspice." },
-      "spiceTs": { "expectedStatus": "fail", "failureKind": "parse", "reason": "Mutual-inductor K elements are not recognized by the parser." }
+      "spiceTs": { "expectedStatus": "fail", "failureKind": "unsupported", "reason": "Mutual-inductor K elements are explicitly unsupported." }
     },
     {
       "id": "bjt-diffpair-ac",
