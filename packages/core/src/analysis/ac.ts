@@ -5,10 +5,16 @@ import { toCsc } from '../solver/csc-matrix.js';
 import { ComplexSparseSolver } from '../solver/complex-sparse-solver.js';
 import { ACResult } from '../results.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
+import { Diode } from '../devices/diode.js';
 
 export interface ComplexACRHS {
   real: Float64Array;
   imaginary: Float64Array;
+}
+
+export interface LinearizedFrequencySystem {
+  size: number;
+  solve(omega: number, rhs: ComplexACRHS): ComplexACRHS;
 }
 
 /** Assemble every declared AC source in deterministic compiled-device order. */
@@ -44,6 +50,44 @@ export function buildACRHS(compiled: CompiledCircuit): ComplexACRHS {
   return { real, imaginary };
 }
 
+export function createLinearizedFrequencySystem(
+  compiled: CompiledCircuit,
+  options: ResolvedOptions,
+  dcSolution: Float64Array,
+  mode: 'standard' | 'distortion' = 'standard',
+): LinearizedFrequencySystem {
+  const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
+  const assembler = new MNAAssembler(nodeCount, branchCount);
+  assembler.solution.set(dcSolution);
+  const ctx = assembler.getStampContext();
+  for (const device of devices) device.stamp(ctx);
+  for (const device of devices) {
+    if (mode === 'distortion' && device instanceof Diode) device.stampDistortionDynamic(ctx);
+    else device.stampDynamic?.(ctx);
+  }
+  for (let i = 0; i < nodeCount; i++) {
+    assembler.G.add(i, i, options.gmin ?? 1e-12);
+  }
+
+  const { csc: gCsc } = toCsc(assembler.G);
+  const { csc: cCsc } = toCsc(assembler.C);
+  const solver = new ComplexSparseSolver();
+  solver.analyzePattern(
+    gCsc,
+    cCsc,
+    createMatrixVariableIdentities(nodeNames, branchNames),
+  );
+
+  return {
+    size: nodeCount + branchCount,
+    solve(omega, rhs) {
+      solver.factorize(gCsc, cCsc, omega);
+      const [real, imaginary] = solver.solve(rhs.real, rhs.imaginary);
+      return { real, imaginary };
+    },
+  };
+}
+
 export function solveAC(
   compiled: CompiledCircuit,
   analysis: ACAnalysis,
@@ -51,22 +95,8 @@ export function solveAC(
   dcSolution: Float64Array,
   guard?: ProtocolExecutionGuard,
 ): ACResult {
-  const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
-
-  // Build linearized G and C matrices at DC operating point
-  const assembler = new MNAAssembler(nodeCount, branchCount);
-  assembler.solution.set(dcSolution);
-  const ctx = assembler.getStampContext();
-  for (const device of devices) device.stamp(ctx);
-  for (const device of devices) device.stampDynamic?.(ctx);
-
-  // Add GMIN to diagonal for numerical stability (same as DC/transient paths)
-  for (let i = 0; i < nodeCount; i++) {
-    assembler.G.add(i, i, options.gmin ?? 1e-12);
-  }
-
-  const G = assembler.G;
-  const C = assembler.C;
+  const { nodeCount, nodeNames, branchNames } = compiled;
+  const system = createLinearizedFrequencySystem(compiled, options, dcSolution);
 
   // Generate frequency points
   const frequencies = generateFrequencies(analysis);
@@ -77,28 +107,15 @@ export function solveAC(
   for (const name of nodeNames) voltageArrays.set(name, []);
   for (const name of branchNames) currentArrays.set(name, []);
 
-  // Build n*n CSC for G and C
-  const { csc: gCsc } = toCsc(G);
-  const { csc: cCsc } = toCsc(C);
-
-  // Complex sparse solver: analyze pattern once, factorize per frequency
-  const solver = new ComplexSparseSolver();
-  solver.analyzePattern(
-    gCsc,
-    cCsc,
-    createMatrixVariableIdentities(nodeNames, branchNames),
-  );
-
   // Pre-compute RHS (constant across frequencies)
-  const { real: bReal, imaginary: bImag } = buildACRHS(compiled);
+  const rhs = buildACRHS(compiled);
 
   for (const freq of frequencies) {
     guard?.checkpoint('solve:ac-point');
     guard?.recordResultPoint();
     const omega = 2 * Math.PI * freq;
 
-    solver.factorize(gCsc, cCsc, omega);
-    const [xReal, xImag] = solver.solve(bReal, bImag);
+    const { real: xReal, imaginary: xImag } = system.solve(omega, rhs);
 
     // Extract results
     for (let i = 0; i < nodeNames.length; i++) {

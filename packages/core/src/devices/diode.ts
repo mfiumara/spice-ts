@@ -1,4 +1,5 @@
 import type { DiodeInstanceParams } from '../parser/diode-parser.js';
+import { InvalidCircuitError } from '../errors.js';
 import type { DeviceModel, StampContext } from './device.js';
 
 export interface DiodeParams {
@@ -12,6 +13,7 @@ export interface DiodeParams {
   RS: number;
   JSW?: number;
   CJ0?: number;
+  CJO?: number;
   CJP?: number;
   CJSW?: number;
   VJ?: number;
@@ -24,9 +26,10 @@ export interface DiodeParams {
   AF?: number;
 }
 
-const VT = 0.02585; // Thermal voltage at 300K
+const VT = 0.02585;
 const KELVIN_OFFSET = 273.15;
 const K_OVER_Q = 8.617333262e-5;
+const DISTORTION_VT = (1.38064852e-23 / 1.6021766208e-19) * (27 + KELVIN_OFFSET);
 const GMIN = 1e-12;
 const UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS = new Set([
   'NBV', 'IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2',
@@ -38,11 +41,26 @@ interface BreakdownParams {
   thermalVoltage: number;
 }
 
+export interface DiodeDistortionCoefficients {
+  current2: number;
+  current3: number;
+  charge2: number;
+  charge3: number;
+}
+
+interface ChargeTaylorCoefficients {
+  capacitance: number;
+  second: number;
+  third: number;
+}
+
 export class Diode implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
   readonly params: DiodeParams;
+  readonly suppliedParams: Readonly<Partial<DiodeParams>>;
   private temperature = 27;
+  private distortionMode = false;
 
   constructor(
     readonly name: string,
@@ -51,6 +69,7 @@ export class Diode implements DeviceModel {
     private readonly hasExternalSeriesResistance = false,
     readonly instanceParams: DiodeInstanceParams = {},
   ) {
+    this.suppliedParams = { ...params };
     for (const name of Object.keys(params)) {
       if (UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS.has(name)) {
         throw new Error(
@@ -73,6 +92,7 @@ export class Diode implements DeviceModel {
       RS: (params.RS ?? 0) / effectiveArea,
       JSW: params.JSW ?? 0,
       CJ0: (params.CJ0 ?? 0) * effectiveArea,
+      CJO: params.CJO === undefined ? undefined : params.CJO * effectiveArea,
       CJSW: (params.CJSW ?? params.CJP ?? 0) * effectivePerimeter,
       VJ: junctionPotential,
       VJSW: params.VJSW ?? params.PHP ?? junctionPotential,
@@ -90,6 +110,66 @@ export class Diode implements DeviceModel {
 
   getTemperature(): number {
     return this.temperature;
+  }
+
+  setDistortionMode(enabled: boolean): void {
+    this.distortionMode = enabled;
+  }
+
+  distortionCoefficients(solution: Float64Array): DiodeDistortionCoefficients {
+    const supported = new Set(['IS', 'TT', 'CJ0', 'CJO', 'RS']);
+    const unsupported = Object.keys(this.suppliedParams).filter(name => !supported.has(name));
+    if (unsupported.length > 0) {
+      throw new InvalidCircuitError(
+        `.disto diode '${this.name}' does not support model parameter ${unsupported[0]}`,
+      );
+    }
+    if (Object.keys(this.instanceParams).length > 0) {
+      throw new InvalidCircuitError(
+        `.disto diode '${this.name}' supports only default instance geometry`,
+      );
+    }
+    if (this.suppliedParams.RS !== undefined
+        || this.hasExternalSeriesResistance || this.params.RS !== 0) {
+      throw new InvalidCircuitError(`.disto diode '${this.name}' does not support series resistance`);
+    }
+    if (this.temperature !== 27) {
+      throw new InvalidCircuitError(`.disto diode '${this.name}' does not support temperature overrides`);
+    }
+
+    const [nA, nK] = this.nodes;
+    const voltage = (nA >= 0 ? solution[nA] : 0) - (nK >= 0 ? solution[nK] : 0);
+    const { IS, N, TT, CJ0, CJO } = this.params;
+    const distortionCapacitance = CJ0 || CJO || 0;
+    const thermalVoltage = N * DISTORTION_VT;
+    const conductance = (IS / thermalVoltage) * safeExponential(voltage / thermalVoltage);
+    const current2 = conductance / (2 * thermalVoltage);
+    const current3 = conductance / (6 * thermalVoltage * thermalVoltage);
+    const depletion = depletionChargeTaylor(voltage, distortionCapacitance, 1, 0.5);
+    return {
+      current2,
+      current3,
+      charge2: TT! * current2 + depletion.second,
+      charge3: TT! * current3 + depletion.third,
+    };
+  }
+
+  stampDistortionDynamic(ctx: StampContext): void {
+    const { IS, N, TT, CJ0, CJO } = this.params;
+    const distortionCapacitance = CJ0 || CJO || 0;
+    if (!distortionCapacitance && !TT) return;
+    const [nA, nK] = this.nodes;
+    const voltage = (nA >= 0 ? ctx.getVoltage(nA) : 0) - (nK >= 0 ? ctx.getVoltage(nK) : 0);
+    const thermalVoltage = N * DISTORTION_VT;
+    const conductance = (IS / thermalVoltage) * safeExponential(voltage / thermalVoltage);
+    const capacitance = depletionChargeTaylor(voltage, distortionCapacitance, 1, 0.5).capacitance
+      + TT! * conductance;
+    if (nA >= 0) ctx.stampC(nA, nA, capacitance);
+    if (nK >= 0) ctx.stampC(nK, nK, capacitance);
+    if (nA >= 0 && nK >= 0) {
+      ctx.stampC(nA, nK, -capacitance);
+      ctx.stampC(nK, nA, -capacitance);
+    }
   }
 
   private breakdownParams(): BreakdownParams | undefined {
@@ -138,7 +218,7 @@ export class Diode implements DeviceModel {
     const vd = vA - vK;
 
     const { IS, N, RS } = this.params;
-    const vt = N * VT;
+    const vt = N * (this.distortionMode ? DISTORTION_VT : VT);
 
     const { current: id, conductance, linearizationVoltage } = diodeCurrent(
       vd,
@@ -219,6 +299,38 @@ function depletionCapacitance(
       / Math.pow(1 - junctionVoltage / junctionPotential, gradingCoefficient);
   }
   return zeroBiasCapacitance / Math.pow(0.5, gradingCoefficient);
+}
+
+function depletionChargeTaylor(
+  junctionVoltage: number,
+  zeroBiasCapacitance: number,
+  junctionPotential: number,
+  gradingCoefficient: number,
+): ChargeTaylorCoefficients {
+  if (!zeroBiasCapacitance) return { capacitance: 0, second: 0, third: 0 };
+  const forwardCoefficient = 0.5;
+  if (junctionVoltage < forwardCoefficient * junctionPotential) {
+    const depletion = 1 - junctionVoltage / junctionPotential;
+    const capacitance = zeroBiasCapacitance / Math.pow(depletion, gradingCoefficient);
+    const second = capacitance * gradingCoefficient
+      / (2 * junctionPotential * depletion);
+    return {
+      capacitance,
+      second,
+      third: second * (gradingCoefficient + 1)
+        / (3 * junctionPotential * depletion),
+    };
+  }
+  const continuation = Math.pow(1 - forwardCoefficient, 1 + gradingCoefficient);
+  return {
+    capacitance: zeroBiasCapacitance / continuation * (
+      1 - forwardCoefficient * (1 + gradingCoefficient)
+      + gradingCoefficient * junctionVoltage / junctionPotential
+    ),
+    second: zeroBiasCapacitance * gradingCoefficient
+      / (2 * junctionPotential * continuation),
+    third: 0,
+  };
 }
 
 function diodeCurrent(
