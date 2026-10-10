@@ -1,0 +1,6 @@
+Berkeley SPICE3f5 simplepz adapted for AC current-source sensitivity
+I1 0 out DC 0 AC 1m
+R1 out 0 2k
+C1 out 0 1u
+.sens V(out) AC DEC 2 10 1k
+.end

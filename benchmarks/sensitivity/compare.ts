@@ -1,8 +1,10 @@
 #!/usr/bin/env tsx
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { arch, platform, tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { performance } from 'node:perf_hooks';
 import {
   InvalidCircuitError,
   simulate,
@@ -26,6 +28,7 @@ interface RawData {
 const fixtures: FixtureCase[] = [
   { id: 'passive-rlc-dc', path: 'benchmarks/sensitivity/passive-rlc-dc.cir' },
   { id: 'passive-rlc-ac', path: 'benchmarks/sensitivity/passive-rlc-ac.cir' },
+  { id: 'passive-current-rc-ac', path: 'benchmarks/sensitivity/passive-current-rc-ac.cir' },
   { id: 'active-vcvs-ac', path: 'benchmarks/sensitivity/active-vcvs-ac.cir' },
   {
     id: 'multi-source-ac',
@@ -54,18 +57,23 @@ async function main(): Promise<void> {
 
     for (const fixture of fixtures) {
       try {
+        const netlist = readFileSync(resolve(fixture.path), 'utf8');
+        const netlistSha256 = createHash('sha256').update(netlist).digest('hex');
         const rawPath = join(workspace, `${fixture.id}.raw`);
+        const ngspiceStarted = performance.now();
         execFileSync('ngspice', ['-b', '-r', rawPath, resolve(fixture.path)], {
           cwd: workspace,
           encoding: 'utf8',
           timeout: 30_000,
           stdio: ['ignore', 'pipe', 'pipe'],
         });
+        const ngspiceRuntimeMs = performance.now() - ngspiceStarted;
         const ngspice = readAsciiRaw(rawPath);
         if (fixture.expectedSpiceTsError) {
           let actualError = 'no error';
+          const spiceTsStarted = performance.now();
           try {
-            await simulate(readFileSync(resolve(fixture.path), 'utf8'));
+            await simulate(netlist);
           } catch (error) {
             if (!(error instanceof InvalidCircuitError)) {
               throw new Error(
@@ -75,6 +83,7 @@ async function main(): Promise<void> {
             }
             actualError = message(error);
           }
+          const spiceTsRuntimeMs = performance.now() - spiceTsStarted;
           if (actualError !== fixture.expectedSpiceTsError) {
             throw new Error(
               `spice-ts rejection mismatch: ${JSON.stringify(actualError)} != `
@@ -89,7 +98,9 @@ async function main(): Promise<void> {
           comparisons.push({
             fixture: fixture.id,
             identicalNetlist: fixture.path,
+            identicalNetlistSha256: netlistSha256,
             command: `ngspice -b -r <temporary-raw-path> ${fixture.path}`,
+            runtimeMs: { ngspice: ngspiceRuntimeMs, spiceTs: spiceTsRuntimeMs },
             convergence: { ngspice: 'success', spiceTs: 'expected rejection' },
             mode: 'ac',
             pointCount: ngspice.points.length,
@@ -98,7 +109,9 @@ async function main(): Promise<void> {
           });
           continue;
         }
-        const result = await simulate(readFileSync(resolve(fixture.path), 'utf8'));
+        const spiceTsStarted = performance.now();
+        const result = await simulate(netlist);
+        const spiceTsRuntimeMs = performance.now() - spiceTsStarted;
         if (!result.sensitivity) throw new Error('spice-ts returned no sensitivity result');
 
         const vectors = result.sensitivity.entries.map(entry => ({
@@ -126,7 +139,9 @@ async function main(): Promise<void> {
         comparisons.push({
           fixture: fixture.id,
           identicalNetlist: fixture.path,
+          identicalNetlistSha256: netlistSha256,
           command: `ngspice -b -r <temporary-raw-path> ${fixture.path}`,
+          runtimeMs: { ngspice: ngspiceRuntimeMs, spiceTs: spiceTsRuntimeMs },
           convergence: { ngspice: 'success', spiceTs: 'success' },
           mode: result.sensitivity.mode,
           pointCount: result.sensitivity.mode === 'dc' ? 1 : result.sensitivity.frequencies.length,
@@ -148,6 +163,11 @@ async function main(): Promise<void> {
         berkeleySpice3f5: '3d9360bef370b432e473edb0c4333707d545a55f',
         gnucap: '5acb027125d6ea7c546badd03e026d8781c6a400',
       },
+      sourceLicences: {
+        berkeleySpice3f5: 'Berkeley SPICE grant (benchmarks/corpus/classic/COPYRIGHT.txt)',
+        gnucap: 'GPL-3.0-or-later (benchmarks/corpus/corpus-e/COPYING.txt)',
+        projectRegressions: 'MIT',
+      },
       derivative: 'absolute change in output per unit change in primary device value',
       relativeErrorDenominator: 'max(abs(ngspice), 1e-12)',
       comparisons,
@@ -165,7 +185,7 @@ async function main(): Promise<void> {
         { form: '.step combined with .sens', reason: 'stepped sensitivity' },
         { form: 'nonlinear or unrecognized devices', reason: 'device outside RLC/source/linear-controlled-source slice' },
         { form: 'multiple .sens directives', reason: 'single-result bounded API' },
-        { form: 'multiple AC-form voltage sources', reason: 'native AC solver superposition is not implemented' },
+        { form: 'multiple AC-form independent sources', reason: 'native AC solver superposition is not implemented' },
         { form: 'ngspice-wasm backend', reason: 'sensitivity raw-result mapping is not implemented' },
       ],
     }, null, 2));
@@ -233,6 +253,11 @@ function metrics(samples: Array<{
   value: ComplexSensitivityValue;
   expected: ComplexSensitivityValue;
 }>): object {
+  for (const { value, expected } of samples) {
+    if (![value.real, value.imaginary, expected.real, expected.imaginary].every(Number.isFinite)) {
+      throw new Error('non-finite complex sensitivity sample');
+    }
+  }
   const absolute = samples.map(({ value, expected }) => Math.hypot(
     value.real - expected.real,
     value.imaginary - expected.imaginary,
