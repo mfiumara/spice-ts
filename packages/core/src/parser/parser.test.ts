@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { parse, parseAsync } from './index.js';
+import {
+  parseTitleless as parse,
+  parseTitlelessAsync as parseAsync,
+} from './index.js';
 import { Capacitor } from '../devices/capacitor.js';
 import { Inductor } from '../devices/inductor.js';
 

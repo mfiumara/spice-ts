@@ -47,12 +47,21 @@ export interface ParsedLine {
   tokens: string[];
 }
 
-export function tokenizeNetlist(netlist: string): ParsedLine[] {
+export interface TokenizeNetlistOptions {
+  firstLineIsTitle?: boolean;
+}
+
+export function tokenizeNetlist(
+  netlist: string,
+  options: TokenizeNetlistOptions = {},
+): ParsedLine[] {
   const rawLines = netlist.split('\n');
   const result: ParsedLine[] = [];
   const mergedLines: { text: string; lineNumber: number }[] = [];
 
   for (let i = 0; i < rawLines.length; i++) {
+    if (i === 0 && options.firstLineIsTitle) continue;
+
     const trimmed = stripEndOfLineComment(rawLines[i]).trim();
     if (trimmed === '' || trimmed.startsWith('*') || trimmed.startsWith(';')) continue;
     if (trimmed.toUpperCase() === '.END') continue;

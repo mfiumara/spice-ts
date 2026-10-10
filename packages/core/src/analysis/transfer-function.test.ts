@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { InvalidCircuitError, ParseError } from '../errors.js';
-import { parse } from '../parser/index.js';
+import { parseTitleless as parse } from '../parser/index.js';
 import { TransferFunctionResult } from '../results.js';
 import { simulate } from '../simulate.js';
 
@@ -93,7 +93,7 @@ R2 out 0 1k
   });
 
   it('rejects an unknown input source with a typed circuit error', async () => {
-    await expect(simulate('R1 out 0 1k\n.tf V(out) Vmissing'))
+    await expect(simulate('Unknown input source test\nR1 out 0 1k\n.tf V(out) Vmissing'))
       .rejects.toBeInstanceOf(InvalidCircuitError);
   });
 

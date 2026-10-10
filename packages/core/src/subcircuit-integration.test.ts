@@ -53,14 +53,14 @@ describe('subcircuit integration (end-to-end)', () => {
     const resolver: IncludeResolver = async () => libContent;
 
     const resultTT = await simulate(
-      `.lib 'corners.lib' TT\nV1 1 0 DC 5\nX1 1 2 myres\nR2 2 0 1k\n.op`,
+      `TT corner test\n.lib 'corners.lib' TT\nV1 1 0 DC 5\nX1 1 2 myres\nR2 2 0 1k\n.op`,
       { resolveInclude: resolver },
     );
     // TT: 1k + 1k divider -> V(2) = 2.5
     expect(resultTT.dc!.voltage('2')).toBeCloseTo(2.5, 4);
 
     const resultFF = await simulate(
-      `.lib 'corners.lib' FF\nV1 1 0 DC 5\nX1 1 2 myres\nR2 2 0 1k\n.op`,
+      `FF corner test\n.lib 'corners.lib' FF\nV1 1 0 DC 5\nX1 1 2 myres\nR2 2 0 1k\n.op`,
       { resolveInclude: resolver },
     );
     // FF: 500 + 1k divider -> V(2) = 5 * 1k / 1.5k ≈ 3.333
@@ -74,7 +74,7 @@ describe('subcircuit integration (end-to-end)', () => {
     };
 
     const result = await simulate(
-      `.include 'params.lib'\nV1 1 0 DC 5\nR1 1 2 {rval}\nR2 2 0 {rval}\n.op`,
+      `Include parameter test\n.include 'params.lib'\nV1 1 0 DC 5\nR1 1 2 {rval}\nR2 2 0 {rval}\n.op`,
       { resolveInclude: resolver },
     );
     expect(result.dc!.voltage('2')).toBeCloseTo(2.5, 4);
@@ -111,7 +111,7 @@ describe('subcircuit integration (end-to-end)', () => {
     };
 
     const result = await simulate(
-      `.lib 'top.lib' TT\nV1 1 0 DC 9\nX1 1 2 0 divider R1VAL=1k R2VAL=2k\n.op`,
+      `Nested include test\n.lib 'top.lib' TT\nV1 1 0 DC 9\nX1 1 2 0 divider R1VAL=1k R2VAL=2k\n.op`,
       { resolveInclude: resolver },
     );
     expect(result.dc!.voltage('2')).toBeCloseTo(6, 4);

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createTransientSim } from './analysis/transient-driver.js';
 import { CurrentSource } from './devices/current-source.js';
 import { VoltageSource } from './devices/voltage-source.js';
-import { parse } from './parser/index.js';
+import { parseTitleless as parse } from './parser/index.js';
 
 const PWL_NETLIST = `
 V1 in 0 PWL(0 0 1u 1 2u 1 2u -1 3u 0)

@@ -10,7 +10,11 @@ import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../t
 export { parseSourceWaveform } from './waveform-parser.js';
 
 /**
- * Parse a SPICE netlist string into a {@link Circuit} object.
+ * Parse a standard SPICE deck into a {@link Circuit} object.
+ *
+ * SPICE reserves the first physical line as the deck title. It is always
+ * discarded, even when its text has the shape of a device or directive. Use
+ * {@link parseTitleless} for generated fragments that omit the title line.
  *
  * Handles device lines (R, C, L, V, I, D, Q, M, E, G, H, F, X),
  * dot commands (`.op`, `.dc`, `.tran`, `.ac`, `.model`, `.subckt`),
@@ -32,7 +36,22 @@ export { parseSourceWaveform } from './waveform-parser.js';
  * ```
  */
 export function parse(netlist: string): Circuit {
-  const lines = tokenizeNetlist(netlist);
+  return parseNetlist(netlist, true);
+}
+
+/**
+ * Parse a title-less SPICE fragment.
+ *
+ * Unlike {@link parse}, the first physical line is parsed as a device or
+ * directive. Use this explicit API for generated snippets that omit the
+ * standard SPICE title line.
+ */
+export function parseTitleless(netlist: string): Circuit {
+  return parseNetlist(netlist, false);
+}
+
+function parseNetlist(netlist: string, firstLineIsTitle: boolean): Circuit {
+  const lines = tokenizeNetlist(netlist, { firstLineIsTitle });
   const circuit = new Circuit();
 
   let subcktCollector: { name: string; ports: string[]; params: Record<string, number>; body: string[]; depth: number } | null = null;
@@ -138,8 +157,20 @@ export async function parseAsync(
   netlist: string,
   resolver?: IncludeResolver,
 ): Promise<Circuit> {
+  const newline = netlist.indexOf('\n');
+  const title = newline < 0 ? netlist : netlist.slice(0, newline);
+  const body = newline < 0 ? '' : netlist.slice(newline + 1);
+  const preprocessed = await preprocess(body, resolver);
+  return parse(`${title}\n${preprocessed}`);
+}
+
+/** Parse and preprocess a title-less SPICE fragment. */
+export async function parseTitlelessAsync(
+  netlist: string,
+  resolver?: IncludeResolver,
+): Promise<Circuit> {
   const preprocessed = await preprocess(netlist, resolver);
-  return parse(preprocessed);
+  return parseTitleless(preprocessed);
 }
 
 function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number): void {
@@ -401,6 +432,12 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
       break;
     }
     case 'D':
+      if (tokens.length > 4) {
+        throw new ParseError(
+          `Unsupported diode parameters: '${tokens.slice(4).join(' ')}'`,
+          lineNumber, tokens.join(' '),
+        );
+      }
       circuit.addDiode(name, tokens[1], tokens[2], tokens[3]);
       break;
     case 'Q':
@@ -459,6 +496,6 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
       break;
     }
     default:
-      throw new ParseError(`Unknown device type: '${type}'`, lineNumber, tokens.join(' '));
+      throw new ParseError(`Unsupported device card: '${type}'`, lineNumber, tokens.join(' '));
   }
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ParseError } from '../errors.js';
-import { parse } from '../parser/index.js';
+import { parseTitleless as parse } from '../parser/index.js';
 import { simulate } from '../simulate.js';
 
 describe('.noise analysis', () => {
