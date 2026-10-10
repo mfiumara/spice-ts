@@ -20,6 +20,7 @@ import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
 import { CCCS } from './devices/cccs.js';
 import { CCVS } from './devices/ccvs.js';
+import { TransmissionLine } from './devices/transmission-line.js';
 import { GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
@@ -167,6 +168,8 @@ function formatDevice(desc: DeviceDescriptor): string {
     }
     case 'K':
       return `${desc.name} ${desc.coupledA} ${desc.coupledB} ${formatNumber(desc.value ?? 0)}`;
+    case 'T':
+      return `${desc.name} ${desc.nodes.join(' ')} Z0=${formatNumber(desc.value ?? 0)} TD=${formatNumber(desc.params?.TD ?? 0)}`;
     case 'V':
     case 'I':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatWaveform(desc.waveform)}`;
@@ -304,9 +307,11 @@ export class Circuit {
   }
 
   get branchCount(): number {
-    return this.descriptors.filter(d =>
-      d.type === 'V' || d.type === 'L' || d.type === 'E' || d.type === 'H',
-    ).length;
+    return this.descriptors.reduce((count, descriptor) =>
+      count + (descriptor.type === 'T'
+        ? 2
+        : descriptor.type === 'V' || descriptor.type === 'L'
+          || descriptor.type === 'E' || descriptor.type === 'H' ? 1 : 0), 0);
   }
 
   getNodeIndex(name: string): number {
@@ -398,6 +403,28 @@ export class Circuit {
     this.descriptors.push({
       type: 'K', name, nodes: [], value: coupling,
       coupledA: indA, coupledB: indB,
+    });
+  }
+
+  /** Add a bounded ideal lossless T-element using characteristic impedance and delay. */
+  addTransmissionLine(
+    name: string,
+    port1Positive: string,
+    port1Negative: string,
+    port2Positive: string,
+    port2Negative: string,
+    impedance: number,
+    delay: number,
+  ): void {
+    for (const node of [port1Positive, port1Negative, port2Positive, port2Negative]) {
+      this.nodeSet.add(node);
+    }
+    this.descriptors.push({
+      type: 'T',
+      name,
+      nodes: [port1Positive, port1Negative, port2Positive, port2Negative],
+      value: impedance,
+      params: { TD: delay },
     });
   }
 
@@ -934,6 +961,20 @@ export class Circuit {
             );
           }
           devices.push(new MutualInductor(desc.name, indA, indB, desc.value!));
+          break;
+        }
+        case 'T': {
+          const firstBranch = branchIndex++;
+          const secondBranch = branchIndex++;
+          branchNames.push(`${desc.name}:1`, `${desc.name}:2`);
+          devices.push(new TransmissionLine(
+            desc.name,
+            nodeIndices,
+            firstBranch,
+            secondBranch,
+            desc.value!,
+            desc.params!.TD,
+          ));
           break;
         }
         case 'D': {

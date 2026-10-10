@@ -6,6 +6,7 @@ import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
 import { parsePoleZero } from './pole-zero-parser.js';
+import { parseTransmissionLine } from './transmission-line-parser.js';
 import { preprocess } from './preprocessor.js';
 import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 
@@ -277,9 +278,18 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
     case '.PZ':
       circuit.addAnalysis('pz', parsePoleZero(tokens, lineNumber));
       break;
-    case '.MODEL':
-      circuit.addModel(parseModelCard(tokens, lineNumber));
+    case '.MODEL': {
+      const model = parseModelCard(tokens, lineNumber);
+      if (model.type === 'LTRA') {
+        throw new ParseError(
+          'Lossy transmission line model LTRA is unsupported; use the bounded lossless T-card Z0/TD form',
+          lineNumber,
+          tokens.join(' '),
+        );
+      }
+      circuit.addModel(model);
       break;
+    }
     case '.OPTIONS':
       circuit.setSimulationOptions(parseSimulationOptions(tokens.slice(1)));
       break;
@@ -487,6 +497,21 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
       circuit.addInductorCoupling(name, tokens[1], tokens[2], parseNumber(tokens[3]));
       break;
     }
+    case 'T': {
+      const { impedance, delay } = parseTransmissionLine(tokens, lineNumber);
+      circuit.addTransmissionLine(
+        name,
+        tokens[1], tokens[2], tokens[3], tokens[4],
+        impedance, delay,
+      );
+      break;
+    }
+    case 'O':
+      throw new ParseError(
+        'Lossy transmission line (LTRA) cards are unsupported; use the bounded lossless T-card Z0/TD form',
+        lineNumber,
+        tokens.join(' '),
+      );
     case 'V': {
       const waveform = parseSourceWaveform(tokens, 3);
       circuit.addVoltageSource(name, tokens[1], tokens[2], waveform);

@@ -1,0 +1,81 @@
+{
+  "referenceSimulator": "ngspice-47",
+  "redReceipt": "pnpm -C packages/core exec vitest run src/parser/transmission-line-parser.test.ts src/devices/transmission-line.test.ts => 2 files failed; missing transmission-line module and Unsupported device card: 'T'",
+  "implementation": "bounded lossless T-card with positive Z0 and TD only",
+  "relativeErrorDenominator": "max(abs(ngspice reference), 1e-9 V); near-zero relative losses are intentionally retained",
+  "unsupported": [
+    "F/NL frequency-length form",
+    "IC",
+    "REL/ABS",
+    "O-card LTRA/lossy lines"
+  ],
+  "comparisons": [
+    {
+      "fixture": "benchmarks/lossless-tline/matched.cir",
+      "sha256": "84333a39888bc3dc72b8c492c749d493230fb705f39ce02fb689d76ad9fd9fbb",
+      "identicalNetlistForBothEngines": true,
+      "ngspiceCommand": "ngspice -b <temporary-deck-with-wrdata> benchmarks/lossless-tline/matched.cir",
+      "matchedPointCount": 414,
+      "waveformErrors": {
+        "input": {
+          "maximumAbsoluteError": 1.0547118733938987e-15,
+          "rmsAbsoluteError": 7.122854341573825e-17,
+          "maximumRelativeError": 2.42861286636753e-14,
+          "rmsRelativeError": 1.3020304467819397e-15
+        },
+        "output": {
+          "maximumAbsoluteError": 0.15000000000000058,
+          "rmsAbsoluteError": 0.009460669995569231,
+          "maximumRelativeError": 12499999.999999955,
+          "rmsRelativeError": 614341.4839787389
+        }
+      },
+      "propagation": {
+        "inputTransition": 1.0675e-9,
+        "outputTransition": 6.075e-9,
+        "measuredDelay": 5.0074999999999995e-9,
+        "configuredDelay": 5e-9
+      },
+      "reflections": {
+        "maximumInputDeviationAfterRoundTrip": 0
+      }
+    },
+    {
+      "fixture": "benchmarks/lossless-tline/mismatched.cir",
+      "sha256": "5da221908fe4c0a2f522026d3c1a25746b345adedf870442e14af67308ab22c1",
+      "identicalNetlistForBothEngines": true,
+      "ngspiceCommand": "ngspice -b <temporary-deck-with-wrdata> benchmarks/lossless-tline/mismatched.cir",
+      "matchedPointCount": 414,
+      "waveformErrors": {
+        "input": {
+          "maximumAbsoluteError": 0.06319895770954942,
+          "rmsAbsoluteError": 0.0035947479152494107,
+          "maximumRelativeError": 0.08980904512838747,
+          "rmsRelativeError": 0.0049932360328414855
+        },
+        "output": {
+          "maximumAbsoluteError": 0.26666666688888985,
+          "rmsAbsoluteError": 0.017064997976219635,
+          "maximumRelativeError": 22222222.222222146,
+          "rmsRelativeError": 1092162.6381844212
+        }
+      },
+      "propagation": {
+        "inputTransition": 1.0675e-9,
+        "outputTransition": 6.075e-9,
+        "measuredDelay": 5.0074999999999995e-9,
+        "configuredDelay": 5e-9
+      },
+      "reflections": {
+        "loadArrival": 6.125e-9,
+        "sourceReturn": 1.1075e-8,
+        "amplitudes": {
+          "initialInput": 0.666666667,
+          "firstLoad": 0.888888889,
+          "returnedInput": 0.814814815,
+          "secondLoad": 0.790123457
+        }
+      }
+    }
+  ]
+}

@@ -89,6 +89,19 @@ At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-di
 |---|---|---|---|---|
 | Passive RLC and active four-stage `.pz` | Berkeley SPICE3f5 [`simplepz.cir`](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/simplepz.cir) and [`pz2.cir`](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/pz2.cir), pinned mirror revision `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant retained at `benchmarks/corpus/classic/COPYRIGHT.txt`; redistribution is allowed with that notice | `passive-rlc.cir` preserves `simplepz.cir` and adds one 1 uH shunt inductor so the bounded fixture exercises R, L, and C dynamics. `active-four-stage.cir` changes only the source card from ngspice's implicit `iin 1 0 ac` zero bias to explicit `iin 1 0 dc 0`; its topology, values, and `.pz` command are unchanged. The committed local bytes are supplied identically to both engines. | `benchmarks/pole-zero/{passive-rlc,active-four-stage}.cir`; compare with `pnpm exec tsx benchmarks/pole-zero/compare.ts` using ngspice-47. |
 
+## Bounded lossless transmission-line parity fixtures
+
+- Canonical public source: ngspice User's Manual version 47, [lossless T-card syntax and `Z0=50 TD=10NS` example](https://nmg.gitlab.io/ngspice-manual/transmissionlines/losslesstransmissionlines.html) plus the public [transmission-line inverter step-response example](https://nmg.gitlab.io/ngspice-manual/examplecircuits/transmission-lineinverter.html).
+- Revision: ngspice release/manual version 47 (downloaded from the [versioned documentation page](https://ngspice.sourceforge.io/docs.html)).
+- Licence: CC-BY-SA-4.0; the manual's [documentation licence notice](https://nmg.gitlab.io/ngspice-manual/copyrightsandlicenses/documentationlicense.html) applies.
+- Redistribution decision: allowed with attribution and ShareAlike. The two small source-form fixtures are adaptations and this fixture section is offered under CC-BY-SA-4.0; simulator code remains MIT.
+- Adaptation: the documented one-line `Z0`/`TD` form and pulse-step topology are reduced to one grounded 50-ohm, 5 ns line. `matched.cir` uses 50-ohm source/load terminations. `mismatched.cir` changes only those terminations to 25/100 ohms so source and load reflections are observable. Both engines receive each committed netlist byte-for-byte; no engine-specific tolerance or circuit rewrite is used.
+
+| Fixture | SHA-256 | Expected behavior | Command |
+|---|---|---|---|
+| `benchmarks/lossless-tline/matched.cir` | `84333a39888bc3dc72b8c492c749d493230fb705f39ce02fb689d76ad9fd9fbb` | 0.5 V launch and 5 ns one-way propagation; no round-trip reflection | `pnpm exec tsx benchmarks/lossless-tline/compare.ts` (internally runs ngspice-47 in batch mode) |
+| `benchmarks/lossless-tline/mismatched.cir` | `5da221908fe4c0a2f522026d3c1a25746b345adedf870442e14af67308ab22c1` | 2/3 V launch, 8/9 V first load step, 22/27 V source return, 64/81 V second load step | same |
+
 ## Xyce Regression Suite corpus C
 
 - Repository: https://github.com/Xyce/Xyce_Regression
