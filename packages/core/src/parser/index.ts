@@ -5,6 +5,7 @@ import { parseModelCard } from './model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
+import { parsePoleZero } from './pole-zero-parser.js';
 import { preprocess } from './preprocessor.js';
 import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 
@@ -58,6 +59,7 @@ function parseNetlist(netlist: string, firstLineIsTitle: boolean): Circuit {
   let subcktCollector: { name: string; ports: string[]; params: Record<string, number>; body: string[]; depth: number } | null = null;
   let hasNoiseAnalysis = false;
   let hasTransferFunctionAnalysis = false;
+  let hasPoleZeroAnalysis = false;
   let hasStepAnalysis = false;
 
   for (const { tokens, lineNumber, raw } of lines) {
@@ -120,8 +122,16 @@ function parseNetlist(netlist: string, firstLineIsTitle: boolean): Circuit {
             raw,
           );
         }
+        if ((first === '.PZ' && hasStepAnalysis) || (first === '.STEP' && hasPoleZeroAnalysis)) {
+          throw new ParseError(
+            '.step cannot be combined with .pz',
+            lineNumber,
+            raw,
+          );
+        }
         if (first === '.NOISE') hasNoiseAnalysis = true;
         if (first === '.TF') hasTransferFunctionAnalysis = true;
+        if (first === '.PZ') hasPoleZeroAnalysis = true;
         if (first === '.STEP') hasStepAnalysis = true;
         parseDotCommand(circuit, tokens, lineNumber);
       } else {
@@ -264,6 +274,9 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
       });
       break;
     }
+    case '.PZ':
+      circuit.addAnalysis('pz', parsePoleZero(tokens, lineNumber));
+      break;
     case '.MODEL':
       circuit.addModel(parseModelCard(tokens, lineNumber));
       break;

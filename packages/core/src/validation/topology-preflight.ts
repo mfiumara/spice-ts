@@ -68,7 +68,7 @@ export function preflightTopology(
     throw topologyError('FLOATING_COMPONENT', compiled, floating, sourcePath);
   }
 
-  const needsDcOperatingPoint = compiled.analyses.some(analysis =>
+  const needsDcOperatingPoint = compiled.poleZeroAnalyses.length > 0 || compiled.analyses.some(analysis =>
     analysis.type !== 'tran' || !analysis.useInitialConditions,
   );
   if (needsDcOperatingPoint) {

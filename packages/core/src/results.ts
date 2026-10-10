@@ -184,6 +184,24 @@ export class TransferFunctionResult {
   ) {}
 }
 
+/** One finite pole or zero in radians per second. */
+export interface PoleZeroValue {
+  real: number;
+  imaginary: number;
+}
+
+/** Deterministically ordered finite poles and zeros from a bounded `.pz` analysis. */
+export class PoleZeroResult {
+  constructor(
+    public readonly inputPositive: string,
+    public readonly inputNegative: string,
+    public readonly outputPositive: string,
+    public readonly outputNegative: string,
+    public readonly poles: PoleZeroValue[],
+    public readonly zeros: PoleZeroValue[],
+  ) {}
+}
+
 /**
  * Result of a DC sweep (`.dc`) analysis.
  *
@@ -262,6 +280,8 @@ export interface SimulationResult {
   noise?: NoiseResult;
   /** DC small-signal transfer function (from `.tf`) */
   transferFunction?: TransferFunctionResult;
+  /** Finite poles and zeros (in rad/s) from `.pz`. */
+  poleZero?: PoleZeroResult;
   /** Parametric sweep results (from .step). When present, top-level result fields are empty. */
   steps?: StepResult[];
   /** Warnings collected during simulation */
