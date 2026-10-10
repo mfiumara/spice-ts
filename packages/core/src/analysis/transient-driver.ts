@@ -53,6 +53,9 @@ const MIN_BREAK = 1e-14;
 /** dt is divided by this on the first step after a breakpoint (ngspice dctran.c). */
 const POST_BREAK_DT_CUT = 10;
 
+/** Keep implicit-breakpoint recovery local while still crossing a vanished branch. */
+const IMPLICIT_BREAK_DT_CUT = 5;
+
 /**
  * Resumable transient simulation driver.
  *
@@ -179,6 +182,7 @@ class TransientSimImpl implements TransientSim {
     if (this.disposed) throw new InvalidCircuitError('TransientSim has been disposed');
 
     const prevSol = new Float64Array(this.assembler.solution);
+    let discontinuityRecoveryAttempted = false;
 
     while (true) {
       if (this.justCrossedBreakpoint) {
@@ -238,6 +242,20 @@ class TransientSimImpl implements TransientSim {
         this.convergenceTelemetry.transient.nrRetries++;
         this.dt = this.dt / DT_CUT_FACTOR;
         if (this.dt < MIN_TIMESTEP) {
+          if (result.oscillated && !discontinuityRecoveryAttempted) {
+            // A regenerative transition can create an implicit breakpoint
+            // that no independent source reports. Shrinking dt follows the
+            // disappearing branch into the femtosecond floor. Drop higher-
+            // order history as at an explicit breakpoint, but keep the first
+            // Backward-Euler recovery step local to the last accepted point.
+            // Subsequent steps retain history and resume LTE-controlled growth.
+            this.prevB = undefined;
+            this.secondPrevSol = undefined;
+            const recoveryCeiling = Math.min(this.config.timestep, this.config.maxTimestep);
+            this.dt = Math.max(recoveryCeiling / IMPLICIT_BREAK_DT_CUT, MIN_TIMESTEP);
+            discontinuityRecoveryAttempted = true;
+            continue;
+          }
           this.convergenceTelemetry.transient.failure = 'dt-floor';
           throw new TimestepTooSmallError(
             this.time, this.dt, snapshotConvergenceTelemetry(this.convergenceTelemetry),
