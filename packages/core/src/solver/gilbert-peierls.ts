@@ -41,6 +41,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
   private nonzeroFlag!: Int32Array;     // marker for workspace non-zero tracking
   private nonzeroList!: Int32Array;     // list of non-zero workspace positions
   private activeK!: Int32Array;         // active column indices during triangular solve
+  private workspaceDirty = false;
 
   private analyzed = false;
   private factorized = false;
@@ -83,6 +84,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
     this.nonzeroFlag = new Int32Array(n);
     this.nonzeroList = new Int32Array(n);
     this.activeK = new Int32Array(n);
+    this.workspaceDirty = false;
 
     this.analyzed = true;
     this.factorized = false;
@@ -122,10 +124,11 @@ export class GilbertPeierlsSolver implements SparseSolver {
     const nonzeroList = this.nonzeroList;
     const activeK = this.activeK;
 
-    // A failed numeric pass invalidates the previous factors. Clear the dense
-    // workspace up front as a singular pass exits before per-column cleanup.
+    // Freshly allocated and successfully factorized workspaces are already
+    // zero. Only solve() or a failed numeric pass can leave values behind.
     this.factorized = false;
-    workspace.fill(0);
+    if (this.workspaceDirty) workspace.fill(0);
+    this.workspaceDirty = true;
 
     // Initialize permutation and work arrays
     for (let i = 0; i < n; i++) perm[i] = i;
@@ -329,6 +332,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
       lRows[p] = pinv[lRows[p]];
     }
 
+    this.workspaceDirty = false;
     this.factorized = true;
   }
 
@@ -374,6 +378,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
     for (let k = 0; k < n; k++) {
       y[k] = b[perm[k]];
     }
+    this.workspaceDirty = true;
 
     // Forward substitution: Ly = Pb (L is unit lower triangular)
     for (let j = 0; j < n; j++) {
