@@ -103,6 +103,21 @@ describe('Xyce primitive parser compatibility', () => {
     expect(result.steps![0]!.dcSweep!.current('Vidmon')).toHaveLength(16);
   });
 
+  for (const [id, path, points, output] of [
+    ['nmos-level1-dc', 'NMOS1_DC/nmos1.cir', 19, { kind: 'voltage', name: '3' }],
+    ['pmos-level1-dc', 'PMOS1_DC/pmos1.cir', 6, { kind: 'current', name: 'VMON' }],
+    ['npn-dc', 'NPN_DC/npn1.cir', 13, { kind: 'current', name: 'VMON1' }],
+    ['pnp-dc', 'PNP_DC/pnp1.cir', 6, { kind: 'current', name: 'VMON3' }],
+  ] as const) {
+    it(`simulates unchanged ${id} output vectors despite brace notation in comments`, async () => {
+      const result = await simulate(fixture(path));
+      const sweep = result.dcSweep!;
+
+      expect(sweep.sweepValues).toHaveLength(points);
+      expect(sweep[output.kind](output.name)).toHaveLength(points);
+    });
+  }
+
   it('accepts the bounded level-2 NJF fixture', () => {
     expect(() => parse(fixture('NJFET_DC/njfet-2109.cir')).compile()).not.toThrow();
   });
