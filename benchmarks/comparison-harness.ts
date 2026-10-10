@@ -164,17 +164,57 @@ function interpolate(grid: number[], values: ComplexValue[], target: number): Co
   };
 }
 
+/**
+ * Split a sweep grid into maximal monotonic runs. A run ends only where the grid
+ * strictly reverses its direction (a nested DC sweep restarting its primary
+ * source); repeated values such as transient breakpoints stay in one run.
+ */
+function monotonicSegments(grid: number[]): Array<{ start: number; end: number }> {
+  const segments: Array<{ start: number; end: number }> = [];
+  let start = 0;
+  let direction = 0;
+  for (let index = 1; index < grid.length; index += 1) {
+    const step = Math.sign(grid[index] - grid[index - 1]);
+    if (step === 0) continue;
+    if (direction === 0) direction = step;
+    else if (step !== direction) {
+      segments.push({ start, end: index });
+      start = index;
+    }
+  }
+  if (grid.length > 0) segments.push({ start, end: grid.length });
+  return segments;
+}
+
 export function alignAndMeasure(
   spiceTs: SampleSeries,
   ngspice: SampleSeries,
   requestedSignals: string[],
 ): ComparisonMetrics {
-  const referenceDescending = ngspice.grid.length > 1
-    && ngspice.grid[0] > ngspice.grid[ngspice.grid.length - 1];
-  const referenceGrid = referenceDescending ? [...ngspice.grid].reverse() : ngspice.grid;
-  const targetIndexes = spiceTs.grid
-    .map((point, index) => ({ point, index }))
-    .filter(({ point }) => referenceGrid.length > 0 && point >= referenceGrid[0] && point <= referenceGrid[referenceGrid.length - 1]);
+  // A two-source nested DC sweep restarts the primary grid for every secondary
+  // value, so each engine's grid is a sequence of monotonic segments. Points are
+  // only ever aligned within the segment with the same ordinal in both engines;
+  // interpolating across the repeated grid would compare unrelated sweep points.
+  const spiceSegments = monotonicSegments(spiceTs.grid);
+  const referenceSegments = monotonicSegments(ngspice.grid).map(({ start, end }) => {
+    const grid = ngspice.grid.slice(start, end);
+    const descending = grid.length > 1 && grid[0] > grid[grid.length - 1];
+    return { start, end, descending, grid: descending ? grid.reverse() : grid };
+  });
+  const segmentsAlign = spiceSegments.length === referenceSegments.length;
+  const targetIndexes = segmentsAlign
+    ? spiceSegments.flatMap(({ start, end }, segment) => {
+      const referenceGrid = referenceSegments[segment].grid;
+      const targets: Array<{ point: number; index: number; segment: number }> = [];
+      for (let index = start; index < end; index += 1) {
+        const point = spiceTs.grid[index];
+        if (referenceGrid.length > 0 && point >= referenceGrid[0] && point <= referenceGrid[referenceGrid.length - 1]) {
+          targets.push({ point, index, segment });
+        }
+      }
+      return targets;
+    })
+    : [];
   const signals: Record<string, SignalComparison> = {};
 
   for (const requestedName of requestedSignals) {
@@ -192,10 +232,13 @@ export function alignAndMeasure(
     const absoluteErrors: number[] = [];
     const relativeErrors: number[] = [];
     let excludedZeroReferences = 0;
-    const referenceValues = referenceDescending ? [...ngspiceValues].reverse() : ngspiceValues;
-    for (const { point, index } of targetIndexes) {
+    const referenceValues = referenceSegments.map(({ start, end, descending }) => {
+      const values = ngspiceValues.slice(start, end);
+      return descending ? values.reverse() : values;
+    });
+    for (const { point, index, segment } of targetIndexes) {
       const actual = spiceValues[index];
-      const reference = interpolate(referenceGrid, referenceValues, point);
+      const reference = interpolate(referenceSegments[segment].grid, referenceValues[segment], point);
       if (actual === undefined || reference === null) continue;
       const absoluteError = difference(actual, reference);
       absoluteErrors.push(absoluteError);
