@@ -288,6 +288,60 @@ describe('bounded protocol-v1 tools', () => {
     expect(worker.terminate).toHaveBeenCalledOnce();
   });
 
+  it('exposes a canonical point while worker simulation is still live and cancels that work', async () => {
+    class StreamingWorker extends EventEmitter {
+      readonly terminate = vi.fn(() => 0);
+      resultSent = false;
+
+      postMessage(): void {
+        queueMicrotask(() => this.emit('message', {
+          type: 'events',
+          events: [
+            { type: 'analysis-start', analysis: 'tran', analysisIndex: 0 },
+            {
+              type: 'point', analysisIndex: 0, pointIndex: 0,
+              point: {
+                type: 'tran', timeS: 0,
+                voltagesV: { in: 1, out: 0 }, currentsA: { V1: 0 },
+              },
+            },
+          ],
+        }));
+      }
+    }
+    const worker = new StreamingWorker();
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const execute = createToolExecutor({
+      workerFactory: () => worker as unknown as ExecutionWorker,
+    });
+
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    const first = await readWhenReady(execute, { jobId, cursor, maxPoints: 1 });
+    const firstData = first.structuredContent as unknown as SimulationReadDataV1;
+
+    expect(firstData).toMatchObject({
+      status: 'running',
+      events: [
+        { type: 'analysis-start', analysis: 'tran', analysisIndex: 0 },
+        { type: 'point', analysisIndex: 0, pointIndex: 0, point: { type: 'tran', timeS: 0 } },
+      ],
+    });
+    expect(worker.resultSent).toBe(false);
+
+    const cancelled = await execute('spice_simulation_cancel', { jobId });
+    expect(cancelled.structuredContent).toMatchObject({
+      status: 'cancelled',
+      terminal: {
+        partial: {
+          analyses: [{ analysis: 'tran', analysisIndex: 0, emittedPointCount: 1, complete: false }],
+        },
+      },
+    });
+    expect(worker.terminate).toHaveBeenCalledOnce();
+    expect(worker.resultSent).toBe(false);
+  });
+
   it('streams canonical analysis events in bounded replayable chunks', async () => {
     const request: SimulationRequestV1 = {
       apiVersion: '1',
