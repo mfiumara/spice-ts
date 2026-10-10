@@ -995,10 +995,20 @@ export class Circuit {
           break;
         }
         case 'Q': {
-          const modelName = desc.modelName;
-          const model = modelName ? this._models.get(modelName) : undefined;
-          const modelParams = model?.params ?? {};
-          const polarity = model?.type === 'PNP' ? -1 : 1;
+          const modelName = desc.modelName!;
+          const model = this._models.get(modelName);
+          if (!model && modelName !== '0') {
+            throw new Error(`BJT '${desc.name}' references unknown model '${modelName}'`);
+          }
+          if (!model) {
+            devices.push(new BJT(desc.name, nodeIndices, { polarity: 1 }));
+            break;
+          }
+          if (model.type !== 'NPN' && model.type !== 'PNP') {
+            throw new Error(`Unsupported BJT model type: '${model.type}'`);
+          }
+          const modelParams = model.params;
+          const polarity = model.type === 'PNP' ? -1 : 1;
           devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }));
           break;
         }

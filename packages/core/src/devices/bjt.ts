@@ -1,14 +1,22 @@
 import type { DeviceModel, StampContext } from './device.js';
 
 export interface BJTParams {
+  LEVEL: number;
   BF: number;
   BR: number;
   IS: number;
   NF: number;
   NR: number;
   VAF: number;
+  IKF: number;
+  ISE: number;
+  NE: number;
   polarity: number; // 1 for NPN, -1 for PNP
 }
+
+const SUPPORTED_MODEL_PARAMETERS = new Set([
+  'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'IKF', 'ISE', 'NE',
+]);
 
 const VT = 0.02585; // Thermal voltage at 300K
 const GMIN = 1e-12;
@@ -21,6 +29,43 @@ function limitJunctionVoltage(vd: number, vt: number, IS: number): number {
   return Math.max(vd, -40 * vt);
 }
 
+export function resolveBJTParams(
+  params: Partial<BJTParams> & Record<string, number>,
+): BJTParams {
+  const boundedForwardActive = params.VAF !== undefined || params.IKF !== undefined
+    || params.ISE !== undefined || params.NE !== undefined;
+  if (boundedForwardActive) {
+    for (const name of Object.keys(params)) {
+      if (name !== 'polarity' && !SUPPORTED_MODEL_PARAMETERS.has(name)) {
+        throw new Error(`Unsupported bounded BJT model parameter: '${name}'`);
+      }
+    }
+  }
+
+  const resolved: BJTParams = {
+    LEVEL: params.LEVEL ?? 1,
+    BF: params.BF ?? 100,
+    BR: params.BR ?? 1,
+    IS: params.IS ?? 1e-14,
+    NF: params.NF ?? 1,
+    NR: params.NR ?? 1,
+    VAF: params.VAF ?? Infinity,
+    IKF: params.IKF ?? Infinity,
+    ISE: params.ISE ?? 0,
+    NE: params.NE ?? 1.5,
+    polarity: params.polarity ?? 1,
+  };
+  if (resolved.LEVEL !== 1) {
+    throw new Error(`Unsupported bounded BJT model level: ${resolved.LEVEL}`);
+  }
+  if (resolved.BF <= 0 || resolved.BR <= 0 || resolved.IS <= 0
+    || resolved.NF <= 0 || resolved.NR <= 0 || resolved.VAF <= 0
+    || resolved.IKF <= 0 || resolved.ISE < 0 || resolved.NE <= 0) {
+    throw new Error('Invalid bounded BJT model parameter value');
+  }
+  return resolved;
+}
+
 export class BJT implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
@@ -31,19 +76,11 @@ export class BJT implements DeviceModel {
     readonly nodes: number[],
     params: Partial<BJTParams> & Record<string, number>,
   ) {
-    this.params = {
-      BF: params.BF ?? 100,
-      BR: params.BR ?? 1,
-      IS: params.IS ?? 1e-14,
-      NF: params.NF ?? 1,
-      NR: params.NR ?? 1,
-      VAF: params.VAF ?? Infinity,
-      polarity: params.polarity ?? 1,
-    };
+    this.params = resolveBJTParams(params);
   }
 
   stamp(ctx: StampContext): void {
-    const { BF, BR, IS, NF, NR, polarity } = this.params;
+    const { BF, BR, IS, NF, NR, VAF, IKF, ISE, NE, polarity } = this.params;
     const [nC, nB, nE] = this.nodes;
 
     // Get node voltages
@@ -62,28 +99,49 @@ export class BJT implements DeviceModel {
     const vBE = limitJunctionVoltage(vBE_raw, vtF, IS);
     const vBC = limitJunctionVoltage(vBC_raw, vtR, IS);
 
-    // Forward and reverse currents
+    // Forward and reverse junction currents.
     const expBE = Math.exp(vBE / vtF);
     const expBC = Math.exp(vBC / vtR);
     const IF = IS * (expBE - 1);
     const IR = IS * (expBC - 1);
+    const gF = (IS / vtF) * expBE + GMIN;
+    const gR = (IS / vtR) * expBC + GMIN;
 
-    // Terminal currents (in terms of internal/polarity-adjusted voltages)
-    const IC = IF - IR * (1 + 1 / BR);
-    const IB = IF / BF + IR / BR;
-    // IE = -(IC + IB) by KCL
+    let IC: number;
+    let IB: number;
+    let gm_f: number;
+    let gm_r: number;
+    let go_be: number;
+    const go_bc = gR / BR;
+    if (!Number.isFinite(VAF) && !Number.isFinite(IKF) && ISE === 0) {
+      // Keep the established level-1 arithmetic byte-for-byte equivalent;
+      // nonlinear transient acceptance can be sensitive to operation order.
+      IC = IF - IR * (1 + 1 / BR);
+      IB = IF / BF + IR / BR;
+      gm_f = gF;
+      gm_r = gR * (1 + 1 / BR);
+      go_be = gF / BF;
+    } else {
+      // Bounded forward-active Gummel-Poon base charge.
+      const qEarly = Number.isFinite(VAF) ? 1 / (1 - vBC / VAF) : 1;
+      const highCurrent = Number.isFinite(IKF) ? IF / IKF : 0;
+      const root = Math.sqrt(Math.max(1 + 4 * highCurrent, Number.EPSILON));
+      const qB = 0.5 * qEarly * (1 + root);
+      const dqBdVBE = Number.isFinite(IKF) ? qEarly * gF / (IKF * root) : 0;
+      const dqBdVBC = Number.isFinite(VAF) ? qB * qEarly / VAF : 0;
+      const transport = (IF - IR) / qB;
+      const dTransportVBE = (gF * qB - (IF - IR) * dqBdVBE) / (qB * qB);
+      const dTransportVBC = (-gR * qB - (IF - IR) * dqBdVBC) / (qB * qB);
+      const leakageExp = Math.exp(vBE / (NE * VT));
+      const leakage = ISE * (leakageExp - 1);
+      const leakageG = ISE * leakageExp / (NE * VT);
 
-    // Conductances (derivatives)
-    const gF = (IS / vtF) * expBE + GMIN; // dIF/dVBE
-    const gR = (IS / vtR) * expBC + GMIN; // dIR/dVBC
-
-    // IC depends on VBE (gm_f = gF) and VBC (gm_r = gR*(1+1/BR))
-    const gm_f = gF;               // dIC/dVBE
-    const gm_r = gR * (1 + 1 / BR); // -dIC/dVBC (IC decreases with VBC)
-
-    // IB depends on VBE (go_be = gF/BF) and VBC (go_bc = gR/BR)
-    const go_be = gF / BF;  // dIB/dVBE
-    const go_bc = gR / BR;  // dIB/dVBC
+      IC = transport - IR / BR;
+      IB = IF / BF + IR / BR + leakage;
+      gm_f = dTransportVBE;
+      gm_r = -(dTransportVBC - gR / BR);
+      go_be = gF / BF + leakageG;
+    }
 
     // Equivalent currents for Newton-Raphson companion model
     // For IC: IC_eq = IC - gm_f * vBE + gm_r * vBC
