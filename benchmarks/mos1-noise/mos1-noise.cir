@@ -1,0 +1,8 @@
+MOS1 channel thermal and KF/AF flicker noise parity
+VDD vdd 0 DC 5
+Vgate gate 0 DC 2 AC 1
+Rload vdd out 2k
+M1 out gate 0 0 NMOD W=10u L=1u
+.model NMOD NMOS (LEVEL=1 VTO=0.7 KP=200u LAMBDA=0.02 KF=1e-25 AF=1)
+.noise v(out) Vgate dec 3 10 10k
+.end
