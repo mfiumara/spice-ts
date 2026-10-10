@@ -157,4 +157,15 @@ describe('BJT Ebers-Moll', () => {
       .pz b 0 c 0 cur pz
     `).compile()).toThrow("Unsupported bounded VBIC analysis: 'pz'");
   });
+
+  it('rejects TEMP stepping outside the nominal-temperature bounded VBIC subset', async () => {
+    await expect(simulate(`unsupported VBIC TEMP stepping
+      VBE b 0 0.7
+      VCE c 0 1
+      Q1 c b 0 QVBIC
+      .model QVBIC NPN(LEVEL=4)
+      .op
+      .step TEMP LIST -55 125
+    `)).rejects.toThrow("Unsupported bounded VBIC step: 'TEMP'");
+  });
 });
