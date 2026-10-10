@@ -1,0 +1,456 @@
+{
+  "schemaVersion": "spice-ts-classic-b-failure-audit/v1",
+  "corpus": {
+    "name": "Berkeley SPICE3f5 examples",
+    "revision": "3d9360bef370b432e473edb0c4333707d545a55f",
+    "fixtureCount": 20,
+    "fixtureAdaptation": "none"
+  },
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1",
+    "pnpm": "10.28.1"
+  },
+  "machine": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "commands": [
+    "pnpm install --frozen-lockfile",
+    "pnpm build",
+    "pnpm exec tsx benchmarks/corpus/classic-b-audit/audit.ts --output benchmarks/corpus/classic-b-audit/report.json --markdown benchmarks/corpus/classic-b-audit/README.md",
+    "pnpm exec tsx benchmarks/corpus/classic-b-audit/audit.ts --check",
+    "pnpm exec tsx --test benchmarks/corpus/classic-b-audit/audit.test.ts",
+    "pnpm lint",
+    "pnpm test",
+    "pnpm bench:accuracy",
+    "git diff --check"
+  ],
+  "issueLinks": [
+    {
+      "url": "https://github.com/mfiumara/spice-ts/issues/75",
+      "scope": "advanced analyses including pole-zero and distortion"
+    },
+    {
+      "url": "https://github.com/mfiumara/spice-ts/issues/223",
+      "scope": "AC-only independent-source parser crash"
+    },
+    {
+      "url": "https://github.com/mfiumara/spice-ts/issues/224",
+      "scope": "classic no-op directives and .options fields"
+    },
+    {
+      "url": "https://github.com/mfiumara/spice-ts/issues/225",
+      "scope": "compound independent-source syntax with DISTOF terms"
+    },
+    {
+      "url": "https://github.com/mfiumara/spice-ts/issues/226",
+      "scope": "lossy LTRA transmission-line device support"
+    }
+  ],
+  "limitations": [
+    "The audit classifies the first unchanged-fixture failure exposed by the existing parser/simulator path. Later failures can remain masked.",
+    "A spice-ts success is only a parity candidate here. This audit does not add tolerances or declare numeric parity.",
+    "The upstream bjt-mixer-distortion fixture has no enabled analysis, so ngspice exits without raw analysis data and is counted as failed.",
+    "Unsupported and failed outcomes remain losses. No fixture bytes, directives, models, or per-circuit tolerances are adapted."
+  ],
+  "totals": {
+    "fixtures": 20,
+    "ngspice": {
+      "success": 19,
+      "failed": 1,
+      "unsupported": 0
+    },
+    "spiceTs": {
+      "success": 2,
+      "failed": 0,
+      "unsupported": 18
+    },
+    "classifications": {
+      "parser-feature": 15,
+      "unsupported-analysis/device": 3,
+      "convergence": 0,
+      "execution": 0,
+      "none": 2
+    },
+    "parityCandidates": 2,
+    "losses": 18
+  },
+  "suiteEvidenceSha256": "69da171c70b6dafc55679888990f8d5f2c1d2714c61916f7274fcdc1824a8532",
+  "fixtures": [
+    {
+      "id": "bjt-noise",
+      "inputSha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 4: Cannot read properties of undefined (reading 'trim') vin 1 0 ac"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "ac-only-independent-source",
+        "signature": "ac-source-missing-dc-value"
+      },
+      "evidenceSha256": "dc1da23e7ffef83d3379cbe2bb27dae26cb9a78516c7b7676bc32543aa8d3995"
+    },
+    {
+      "id": "bsim1-device-sweep",
+      "inputSha256": "dffabf12d196b6b3d5ac058f7a402ee0dbb51c597c23599379f0502e84088062",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 21: Unsupported .options field: 'limpts' .OPTIONS LIMPTS=5000 ACCT"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "legacy-output-limit-option",
+        "signature": "unsupported-option-limpts"
+      },
+      "evidenceSha256": "d00672c621fbdc5d58df099bb979904a4d231f53e273ca77d7074355276a8963"
+    },
+    {
+      "id": "bsim2-device-sweep",
+      "inputSha256": "ff2da08b0c8db25fe617c9f1ba2f99d5169c26b8167b30258a1631d93b79beee",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 21: Unsupported .options field: 'limpts' .OPTIONS LIMPTS=5000 ACCT"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "legacy-output-limit-option",
+        "signature": "unsupported-option-limpts"
+      },
+      "evidenceSha256": "95da94dc7eabfeb0a5ecf9a99bf26b3ccbcd0febf884d55cec8ac916941f4b5d"
+    },
+    {
+      "id": "bjt-differential-pair",
+      "inputSha256": "d67594a868128d758cfa593047884990abff05d7ee4cc050afca8a152ace3add",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 3: Unsupported dot command: '.opt' .opt acct list node lvlcod=2"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "legacy-options-directive",
+        "signature": "unsupported-dot-opt"
+      },
+      "evidenceSha256": "ee2d3b6cac7908539a644f0d18d056476b628073826b33377e93b581dd7d9ed0"
+    },
+    {
+      "id": "diode-distortion",
+      "inputSha256": "912c8cedf66aadbe78f17ceb28644cb8c39a2cb3442559be3219fbaac6d11de8",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 5: Cannot parse number: 'sin' vcc 1 3 5v ac 0.001 sin(5 0.01 1000) distof1 0.01 distof2 0.01"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "compound-independent-source",
+        "signature": "compound-source-distof"
+      },
+      "evidenceSha256": "aea01dfd9acd1c4e136e42f9017a7fef942a20ac9d9c5d486ea4be8a424adb17"
+    },
+    {
+      "id": "lossy-line-24-inch",
+      "inputSha256": "53e333e9629c3e3c4e839c4b72c9a512a220dec4baf0536e36626f290d240cd6",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 23: Lossy transmission line (LTRA) cards are unsupported; use the bounded lossless T-card Z0/TD form o2 2 0 3 0 lline"
+      },
+      "classification": {
+        "kind": "unsupported-analysis/device",
+        "cause": "ltra-device",
+        "signature": "unsupported-ltra-card"
+      },
+      "evidenceSha256": "5820ba7ce4a1b1c30e58998c6dd95a07458e11f31bd6ae4e4aea74c1c8900b63"
+    },
+    {
+      "id": "lossy-line-aluminium",
+      "inputSha256": "4b5bacda04d9c528d4c88d58d211114cb53edbc213c34a62a8c6b2379958db97",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 48: Lossy transmission line model LTRA is unsupported; use the bounded lossless T-card Z0/TD form .model lline ltra rel=1.8 r=12.45 g=0 l=8.792e-9 c=0.468e-12 len=16 steplimit"
+      },
+      "classification": {
+        "kind": "unsupported-analysis/device",
+        "cause": "ltra-device",
+        "signature": "unsupported-ltra-card"
+      },
+      "evidenceSha256": "c6d6fad16a349ec19d1fb33ac37013777b5dfa3a8a2856eb4902a4d457f1941d"
+    },
+    {
+      "id": "coupled-lossy-lines",
+      "inputSha256": "1927a2a547342e6c60ab1e0489c26d5ca7e92f36d5b08f6a03690b95aa7448b3",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 81: Unsupported .options field: 'itl5' .options itl5=0 acct reltol=1e-3 abstol=1e-12"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "legacy-iteration-option",
+        "signature": "unsupported-option-itl5"
+      },
+      "evidenceSha256": "687d8ac74e477901ab0ef536ecd4c9a2ef5eb6379a39f22a27e30dbbc0dc8d92"
+    },
+    {
+      "id": "bjt-mixer-distortion",
+      "inputSha256": "9f172a78faabd09f0b4e61d733b542e48380a452a4767b83e05617ab4642894e",
+      "ngspice": {
+        "status": "failed",
+        "convergence": "not-run",
+        "error": "no raw analysis data produced"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 6: Cannot parse number: 'distof1' v1 1 0 0v ac 1.0 distof1 0.001"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "compound-independent-source",
+        "signature": "compound-source-distof"
+      },
+      "evidenceSha256": "800e666928630c5581c22fb5136f8ab2741be076dc7dd6f61d95d072f374a119"
+    },
+    {
+      "id": "mos6-inverter-chain",
+      "inputSha256": "60f1f49e2f9ac1eccf6bbf717b3c177de885e1e2438b175db4a4360bfe080434",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 44: Unsupported .options field: 'ACCT' .OPTIONS ACCT"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "legacy-accounting-option",
+        "signature": "unsupported-option-acct"
+      },
+      "evidenceSha256": "8c8f8e14e83976ed19bebd61331e059aed24578b092c52e78e65262a8dd82b50"
+    },
+    {
+      "id": "mos-amplifier",
+      "inputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 2: Unsupported .options field: 'acct' .options acct abstol=10n vntol=10n"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "legacy-accounting-option",
+        "signature": "unsupported-option-acct"
+      },
+      "evidenceSha256": "07badbb23041a003d49cd05684a36b94931740fcb5a6fc990f487340ec6e1af4"
+    },
+    {
+      "id": "mos-memory-cell",
+      "inputSha256": "f63d832e7e63dd866e528d6e41eb653859243fdbfed48a83e55d9274e111859d",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 2: Unsupported dot command: '.width' .width in=72"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "legacy-output-directive",
+        "signature": "unsupported-dot-width"
+      },
+      "evidenceSha256": "04d01cbb452ad5eb1885dd2121b080a4e6e0a3a5ef5d9b90726887682f09eed6"
+    },
+    {
+      "id": "pole-zero-four-stage",
+      "inputSha256": "c21a9628a46581ad9e163632d992422afafeaa15443787e00153dbd7331d3b73",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 2: Cannot read properties of undefined (reading 'trim') iin 1 0 ac"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "ac-only-independent-source",
+        "signature": "ac-source-missing-dc-value"
+      },
+      "evidenceSha256": "8b265b837c444d55bbf2d06e5ed7662fffb50a22c81ba0ab2574b03868f70831"
+    },
+    {
+      "id": "pole-zero-three-stage",
+      "inputSha256": "1c50c0623b02d991eb04a1523d1aa50914e88c0ea53a64438daeec97ec359a18",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 2: Cannot read properties of undefined (reading 'trim') iin 1 0 ac"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "ac-only-independent-source",
+        "signature": "ac-source-missing-dc-value"
+      },
+      "evidenceSha256": "7c02b01e44b18927e0952162df83a01a9ddaef55b8895387b99bb58b746ba52a"
+    },
+    {
+      "id": "rc-transient",
+      "inputSha256": "0abbffc7b66510fc170e9e57a9d2b94b13213e888be9060022bc00e06a30f1be",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "classification": null,
+      "evidenceSha256": "92ef236e38d8426dd70b12ad1de0f8fee23a91b3719d736bacbfb2715914bb16"
+    },
+    {
+      "id": "rca3040-wideband-amplifier",
+      "inputSha256": "5024b28b797b53f35d838e1fefeecae059302c4b0106485ff711c9306eedfad1",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "classification": null,
+      "evidenceSha256": "5a1122a5ed8c2f62e890b611a98e65c7826ddb222ba3b913e991c241c1075b1a"
+    },
+    {
+      "id": "resistor-noise",
+      "inputSha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 5: Cannot read properties of undefined (reading 'trim') iin 1 0 1m AC"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "ac-only-independent-source",
+        "signature": "ac-source-missing-dc-value"
+      },
+      "evidenceSha256": "af386b0b9ab86baa4980f757b31944edfadee411f5c70d5f2d210acf2300ff6b"
+    },
+    {
+      "id": "rtl-inverter-chain",
+      "inputSha256": "29aa3c8914aa7908881b4ab2657c23b5c4877811f09d1526ea6d5c833fce95c0",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 2: Unsupported dot command: '.width' .width in=72"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "legacy-output-directive",
+        "signature": "unsupported-dot-width"
+      },
+      "evidenceSha256": "36af5f576352a85d1a131099cb1e602f0945dee96653df800cdd3f41099df2bd"
+    },
+    {
+      "id": "ecl-schmitt-trigger",
+      "inputSha256": "ad673d52014030a49980fcbafeda898d547ab701fb5cf8eeaf374c9338324a31",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "Parse error at line 2: Unsupported dot command: '.width' .width in=72"
+      },
+      "classification": {
+        "kind": "parser-feature",
+        "cause": "legacy-output-directive",
+        "signature": "unsupported-dot-width"
+      },
+      "evidenceSha256": "a36aa1983ed4ebb1f16ab0d54ec921123fe24e8ae0a14c229ec86b4c435decb6"
+    },
+    {
+      "id": "high-pass-pole-zero",
+      "inputSha256": "750846efbf93b9ae9f93e477922589439b859648de15b7508d2ea8e39da23720",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged"
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "error": "no spice-ts result for analyses: pz"
+      },
+      "classification": {
+        "kind": "unsupported-analysis/device",
+        "cause": "pole-zero-analysis",
+        "signature": "missing-result-pz"
+      },
+      "evidenceSha256": "e84e9ed8d324193a8da0840680f9b5cc0d15c7ed8c51ddfa4dfcd1736c36cda1"
+    }
+  ]
+}
