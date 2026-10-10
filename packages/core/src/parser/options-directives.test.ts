@@ -7,6 +7,11 @@ import { parse as parseDeck, parseTitleless as parse } from './index.js';
 
 const ngspiceFixtureRoot = new URL('../../../../benchmarks/corpus/ngspice/fixtures/', import.meta.url);
 
+const outputControlFixtures = [
+  ['tests/filters/lowpass.cir', 'aa48cf8809bb62ada7bd48b8d81808589126a69f784482e5fb0c80cc3fbf718d'],
+  ['examples/probe/ac-test.cir', '3afb9105918f939cbbdab957f8f872bbc886209fb83dbd27003c605977916479'],
+] as const;
+
 const noacctFirstFailureFixtures = [
   ['tests/vbic/FO.cir', 'de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92'],
   ['tests/mos6/mos6inv.cir', 'c1ee39a6f458dc2b527ab1de29d6d6a4858e35c6acc4ff760ac45774512534dc'],
@@ -174,8 +179,54 @@ describe('ngspice control and output directives', () => {
     '.save v(out)\n.op',
     '.print tran v(out)\n.op',
     '.plot v(out)\n.op',
+    '.probe v(out)\n.op',
   ])('explicitly ignores output-only metadata: %s', netlist => {
     expect(() => parse(netlist)).not.toThrow();
+  });
+
+  it('keeps every computed AC vector available when .probe requests a subset', async () => {
+    const result = await simulate(`Probe output selection
+V1 1 0 dc 0 ac 1
+R1 1 2 1k
+R2 2 0 1k
+.ac lin 1 1k 1k
+.probe v(2)
+.end`);
+
+    expect([...result.ac!.voltages.keys()]).toEqual(['1', '2']);
+    expect([...result.ac!.currents.keys()]).toEqual(['V1']);
+  });
+
+  it.each([
+    '.probe',
+    '.options post=1\n.op',
+    '.options trans=1\n.op',
+    '.options post enabled\n.op',
+  ])('rejects unclassified output-control forms: %s', netlist => {
+    expect(() => parse(netlist)).toThrow(ParseError);
+  });
+
+  it('accepts only bare POST and TRANS reporting flags', () => {
+    expect(parse('.options list node post trans noacct\n.op').simulationOptions).toEqual({});
+  });
+
+  it('advances both unchanged output-control fixtures to their next honest outcome', async () => {
+    const [lowpassFixture, probeFixture] = outputControlFixtures.map(([path, sha256]) => {
+      const bytes = readFileSync(new URL(path, ngspiceFixtureRoot));
+      expect(createHash('sha256').update(bytes).digest('hex')).toBe(sha256);
+      return bytes.toString('utf8');
+    });
+
+    const lowpass = await simulate(lowpassFixture!);
+    expect(lowpass.dc).toBeDefined();
+    expect(lowpass.ac?.frequencies).toHaveLength(31);
+
+    expect(() => parseDeck(probeFixture!)).toThrow(/Unsupported dot command: '\.control'/);
+    try {
+      parseDeck(probeFixture!);
+    } catch (error) {
+      expect((error as Error).message).not.toContain('.probe');
+    }
   });
 
   it.each([

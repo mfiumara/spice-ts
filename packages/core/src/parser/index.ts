@@ -212,7 +212,9 @@ export async function parseTitlelessAsync(
   return parseNetlist(preprocessed, false, guard);
 }
 
-const OUTPUT_ONLY_GNUCAP_OPTION_FLAGS = new Set(['nopage', 'acct', 'noacct', 'list', 'node']);
+const OUTPUT_ONLY_OPTION_FLAGS = new Set([
+  'nopage', 'acct', 'noacct', 'list', 'node', 'post', 'trans',
+]);
 const BEHAVIOR_CHANGING_GNUCAP_OPTIONS = new Set([
   'cstray', 'dampstrategy', 'itermin', 'nobypass', 'noincmode', 'rstray', 'trsteporder',
 ]);
@@ -450,6 +452,13 @@ function parseDotCommand(
       // spice-ts returns all computed vectors through its result API, so these
       // ngspice output-selection and formatting directives are metadata-only.
       break;
+    case '.PROBE':
+      if (tokens.length === 1) {
+        throw new ParseError('Unsupported empty .probe output request', lineNumber, context);
+      }
+      // .probe selects raw-file vectors in ngspice. spice-ts returns every
+      // computed vector through its result API, so the request does not narrow results.
+      break;
     case '.INCLUDE':
       throw new ParseError(
         '.include directive requires async parsing. Use parseAsync() with a resolveInclude option.',
@@ -549,7 +558,7 @@ function parseSimulationOptions(
   for (const token of optionTokens) {
     const separator = token.indexOf('=');
     const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
-    if (OUTPUT_ONLY_GNUCAP_OPTION_FLAGS.has(name) && separator < 0) continue;
+    if (OUTPUT_ONLY_OPTION_FLAGS.has(name) && separator < 0) continue;
     if (isOutputOnlyGnucapOption(name, separator < 0 ? undefined : token.slice(separator + 1))) {
       continue;
     }
