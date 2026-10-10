@@ -4,7 +4,7 @@ import type {
 } from '../types.js';
 import { resolveOptions } from '../types.js';
 import { parse, parseAsync } from '../parser/index.js';
-import { MNAAssembler } from '../mna/assembler.js';
+import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
 import { solveDCOperatingPoint } from './dc.js';
 import { attemptStep } from './transient-step.js';
 import { TimestepTooSmallError, InvalidCircuitError } from '../errors.js';
@@ -153,7 +153,7 @@ class TransientSimImpl implements TransientSim {
     this.dt = Math.min(config.timestep, config.maxTimestep);
     this.prevDt = this.dt;
 
-    this.assembler = new MNAAssembler(compiled.nodeCount, compiled.branchCount);
+    this.assembler = this.createAssembler();
 
     if (config.initialSolution) {
       // Caller already computed DC — skip internal DC and seed directly.
@@ -310,7 +310,7 @@ class TransientSimImpl implements TransientSim {
 
   reset(): void {
     if (this.disposed) throw new InvalidCircuitError('TransientSim has been disposed');
-    this.assembler = new MNAAssembler(this.compiled.nodeCount, this.compiled.branchCount);
+    this.assembler = this.createAssembler();
     this.time = 0;
     this.dt = Math.min(this.config.timestep, this.config.maxTimestep);
     this.prevDt = this.dt;
@@ -350,6 +350,15 @@ class TransientSimImpl implements TransientSim {
       if (d.getBreakpoints) times.push(...d.getBreakpoints(stop));
     }
     return new BreakpointQueue(times, MIN_BREAK);
+  }
+
+  private createAssembler(): MNAAssembler {
+    return new MNAAssembler(this.compiled.nodeCount, this.compiled.branchCount, {
+      variables: createMatrixVariableIdentities(
+        this.compiled.nodeNames,
+        this.compiled.branchNames,
+      ),
+    });
   }
 
   private stampPrevB(): void {

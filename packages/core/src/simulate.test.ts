@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { simulate, parse, Circuit } from './index.js';
+import { simulate, parse, Circuit, SingularMatrixError } from './index.js';
 
 describe('simulate (end-to-end)', () => {
   it('simulates a voltage divider from netlist string', async () => {
@@ -55,5 +55,24 @@ describe('simulate (end-to-end)', () => {
 
     expect(result.warnings).toBeDefined();
     expect(Array.isArray(result.warnings)).toBe(true);
+  });
+
+  it('identifies the branch causing parallel ideal sources to be singular', async () => {
+    const ckt = new Circuit();
+    ckt.addVoltageSource('V1', '1', '0', { dc: 1 });
+    ckt.addVoltageSource('V2', '1', '0', { dc: 1 });
+    ckt.addAnalysis('op');
+
+    try {
+      await simulate(ckt);
+      expect.fail('expected parallel ideal voltage sources to be singular');
+    } catch (error) {
+      expect(error).toBeInstanceOf(SingularMatrixError);
+      expect(error).toMatchObject({
+        involvedNodes: [],
+        involvedBranches: ['V2'],
+        pivotIndex: 2,
+      });
+    }
   });
 });

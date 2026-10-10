@@ -2,7 +2,7 @@ import type { CompiledCircuit } from '../circuit.js';
 import { Resistor } from '../devices/resistor.js';
 import { VoltageSource } from '../devices/voltage-source.js';
 import { InvalidCircuitError } from '../errors.js';
-import { MNAAssembler } from '../mna/assembler.js';
+import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
 import { NoiseResult } from '../results.js';
 import { toCsc } from '../solver/csc-matrix.js';
 import { ComplexSparseSolver } from '../solver/complex-sparse-solver.js';
@@ -23,7 +23,7 @@ export function solveNoise(
   options: ResolvedOptions,
   dcSolution: Float64Array,
 ): NoiseResult {
-  const { devices, nodeCount, branchCount } = compiled;
+  const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
   const outputIndex = findNodeIndex(compiled, analysis.outputNode);
   const inputSource = devices.find(device =>
     device instanceof VoltageSource
@@ -45,7 +45,11 @@ export function solveNoise(
   const { csc: gCsc } = toCsc(assembler.G);
   const { csc: cCsc } = toCsc(assembler.C);
   const solver = new ComplexSparseSolver();
-  solver.analyzePattern(gCsc, cCsc);
+  solver.analyzePattern(
+    gCsc,
+    cCsc,
+    createMatrixVariableIdentities(nodeNames, branchNames),
+  );
 
   const systemSize = nodeCount + branchCount;
   const zeroImaginary = new Float64Array(systemSize);

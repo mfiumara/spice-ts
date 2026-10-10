@@ -1,6 +1,6 @@
 import type { ConvergenceTelemetry, ResolvedOptions, DCSweepAnalysis } from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
-import { MNAAssembler } from '../mna/assembler.js';
+import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
 import { newtonRaphson } from './newton-raphson.js';
 import { DCSweepResult } from '../results.js';
 import { VoltageSource } from '../devices/voltage-source.js';
@@ -37,7 +37,9 @@ export function solveDCSweep(
   for (const name of nodeNames) voltageArrays.set(name, new Float64Array(numPoints));
   for (const name of branchNames) currentArrays.set(name, new Float64Array(numPoints));
 
-  const assembler = new MNAAssembler(nodeCount, branchCount);
+  const assembler = new MNAAssembler(nodeCount, branchCount, {
+    variables: createMatrixVariableIdentities(nodeNames, branchNames),
+  });
 
   try {
     for (let i = 0; i < numPoints; i++) {

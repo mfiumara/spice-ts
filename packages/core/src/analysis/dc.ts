@@ -1,6 +1,6 @@
 import type { ConvergenceTelemetry, ResolvedOptions } from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
-import { MNAAssembler } from '../mna/assembler.js';
+import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
 import { newtonRaphson } from './newton-raphson.js';
 import { DCResult } from '../results.js';
 import { createConvergenceTelemetry, snapshotConvergenceTelemetry } from '../convergence-telemetry.js';
@@ -26,7 +26,9 @@ export function solveDCOperatingPoint(
   convergence: ConvergenceTelemetry = createConvergenceTelemetry(),
 ): { result: DCResult; assembler: MNAAssembler; convergence: ConvergenceTelemetry } {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
-  const assembler = new MNAAssembler(nodeCount, branchCount);
+  const assembler = new MNAAssembler(nodeCount, branchCount, {
+    variables: createMatrixVariableIdentities(nodeNames, branchNames),
+  });
 
   if (initialSolution) {
     assembler.solution.set(initialSolution);
