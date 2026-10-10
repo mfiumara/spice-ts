@@ -73,7 +73,7 @@ records ngspice at 47 success / 6 failed / 7 unsupported and spice-ts at 1 succe
 only the `jimi-fuzz` transient comparable and still substantially divergent. Corpus A's validator runs all 20 fixtures
 with ngspice (20/20 pass) and classifies 20/20 as unsupported or reclassified by spice-ts. Corpus B records 19/20
 ngspice outputs and 0/20 spice-ts parses. The latest unchanged-fixture corpus C validation records ngspice-47 at
-13/20 passes and spice-ts at 5/20 after the bounded parser, TIMEINT, and zero-ohm fixes; the remaining failures stay
+13/20 passes and spice-ts at 6/20 after the bounded parser, TIMEINT, and zero-ohm fixes; the remaining failures stay
 visible. Corpus D records 0/20 passes for both engines on unchanged ahkab decks: ngspice-47 rejects all 20 on
 ahkab-specific syntax, while spice-ts records 19 parse failures and 1 unsupported case. Corpus E records an
 independently reviewed loss: ngspice-47 passes 5/20 unchanged Gnucap fixtures while spice-ts passes 0/20. None of
