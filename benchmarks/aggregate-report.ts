@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Aggregate, identical-input parity report for the three public 20-circuit corpora.
+ * Aggregate, identical-input parity report for the five public 20-circuit corpora.
  *
  * Usage:
  *   pnpm exec tsx benchmarks/aggregate-report.ts
@@ -21,7 +21,9 @@ import {
 } from './corpus/classic/report.js';
 
 const SCHEMA = 'spice-ts-aggregate-parity/v1' as const;
-const CORPORA = ['ngspice', 'classic', 'xyce'] as const;
+const CORPORA = ['ngspice', 'classic', 'xyce', 'corpus-d', 'corpus-e'] as const;
+const FIXTURES_PER_CORPUS = 20;
+const TOTAL_FIXTURES = CORPORA.length * FIXTURES_PER_CORPUS;
 const JSON_PATH = resolve('benchmarks/aggregate-report.json');
 const MARKDOWN_PATH = resolve('benchmarks/AGGREGATE_PARITY.md');
 
@@ -69,7 +71,7 @@ interface FixtureReceipt {
   gapIssues: string[];
 }
 
-interface AggregateReport {
+export interface AggregateReport {
   schemaVersion: typeof SCHEMA;
   outcomeSha256: string;
   corpusSources: Array<{ id: CorpusId; name: string; revision: string; license: string; fixtureCount: number }>;
@@ -83,7 +85,7 @@ interface AggregateReport {
     comparisonGrid: 'spice-ts';
     interpolation: 'linear';
     timing: 'single wall-clock execution per engine and fixture; descriptive, not a speed claim';
-    deterministicHashExcludes: ['runtimeMs', 'error'];
+    deterministicHashExcludes: ['environment', 'runtimeMs', 'error'];
   };
   totals: {
     fixtures: number;
@@ -238,7 +240,9 @@ async function timed(run: () => Promise<EngineExecution>): Promise<{ execution: 
 function deterministicView(report: Omit<AggregateReport, 'outcomeSha256'> | AggregateReport): unknown {
   return JSON.parse(JSON.stringify(
     report,
-    (key, value) => key === 'outcomeSha256' || key === 'runtimeMs' || key === 'error' ? undefined : value,
+    (key, value) => key === 'outcomeSha256' || key === 'environment' || key === 'runtimeMs' || key === 'error'
+      ? undefined
+      : value,
   ));
 }
 
@@ -252,6 +256,58 @@ function countStatuses(fixtures: FixtureReceipt[], engine: 'ngspice' | 'spiceTs'
   return totals;
 }
 
+export function validateAggregateAccounting(report: AggregateReport): void {
+  if (report.fixtures.length !== TOTAL_FIXTURES || report.totals.fixtures !== TOTAL_FIXTURES) {
+    throw new Error(`aggregate accounting must contain ${TOTAL_FIXTURES} fixtures`);
+  }
+
+  if (new Set(report.fixtures.map(fixture => fixture.key)).size !== TOTAL_FIXTURES) {
+    throw new Error(`aggregate accounting must contain ${TOTAL_FIXTURES} unique fixture keys`);
+  }
+  if (new Set(report.fixtures.map(fixture => fixture.localPath)).size !== TOTAL_FIXTURES) {
+    throw new Error(`aggregate accounting must contain ${TOTAL_FIXTURES} unique local paths`);
+  }
+  if (new Set(report.fixtures.map(fixture => fixture.input.sha256)).size !== TOTAL_FIXTURES) {
+    throw new Error(`aggregate accounting must contain ${TOTAL_FIXTURES} unique input hashes`);
+  }
+
+  for (const corpus of CORPORA) {
+    const actual = report.fixtures.filter(fixture => fixture.corpus === corpus).length;
+    if (actual !== FIXTURES_PER_CORPUS || report.totals.corpusFixtures[corpus] !== actual) {
+      throw new Error(`${corpus}: aggregate accounting must contain ${FIXTURES_PER_CORPUS} fixtures`);
+    }
+  }
+  if (report.corpusSources.length !== CORPORA.length) {
+    throw new Error(`aggregate accounting must retain ${CORPORA.length} corpus sources`);
+  }
+
+  for (const fixture of report.fixtures) {
+    if (
+      fixture.input.identicalForBothEngines !== true
+      || fixture.ngspice.inputSha256 !== fixture.input.sha256
+      || fixture.spiceTs.inputSha256 !== fixture.input.sha256
+    ) {
+      throw new Error(`${fixture.key}: engine input hashes must match the byte-identical fixture`);
+    }
+  }
+
+  for (const engine of ['ngspice', 'spiceTs'] as const) {
+    const statuses = report.totals[engine];
+    if (statuses.success + statuses.failed + statuses.unsupported !== TOTAL_FIXTURES) {
+      throw new Error(`${engine} outcomes must reconcile to ${TOTAL_FIXTURES} fixtures`);
+    }
+    if (JSON.stringify(statuses) !== JSON.stringify(countStatuses(report.fixtures, engine))) {
+      throw new Error(`${engine} outcome totals differ from per-fixture outcomes`);
+    }
+  }
+
+  const comparedFixtures = report.fixtures.filter(fixture => fixture.comparisons.length > 0).length;
+  const comparedAnalyses = report.fixtures.reduce((sum, fixture) => sum + fixture.comparisons.length, 0);
+  if (report.totals.comparedFixtures !== comparedFixtures || report.totals.comparedAnalyses !== comparedAnalyses) {
+    throw new Error('comparison totals differ from per-fixture error availability');
+  }
+}
+
 export async function buildAggregateReport(): Promise<AggregateReport> {
   const fixtures: FixtureReceipt[] = [];
   const corpusSources: AggregateReport['corpusSources'] = [];
@@ -260,7 +316,9 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
     const manifest = JSON.parse(
       await readFile(resolve(`benchmarks/corpus/${corpus}/manifest.json`), 'utf8'),
     ) as CorpusManifest;
-    if (manifest.circuits.length !== 20) throw new Error(`${corpus}: expected 20 fixtures, found ${manifest.circuits.length}`);
+    if (manifest.circuits.length !== FIXTURES_PER_CORPUS) {
+      throw new Error(`${corpus}: expected ${FIXTURES_PER_CORPUS} fixtures, found ${manifest.circuits.length}`);
+    }
     corpusSources.push({ id: corpus, ...manifest.source, fixtureCount: manifest.circuits.length });
 
     for (const circuit of manifest.circuits) {
@@ -288,8 +346,6 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
     }
   }
 
-  const keys = new Set(fixtures.map(fixture => fixture.key));
-  if (fixtures.length !== 60 || keys.size !== 60) throw new Error(`aggregate accounting must contain 60 unique fixtures; got ${fixtures.length}/${keys.size}`);
   const corpusFixtures = Object.fromEntries(CORPORA.map(corpus => [corpus, fixtures.filter(fixture => fixture.corpus === corpus).length])) as Record<CorpusId, number>;
   const base: Omit<AggregateReport, 'outcomeSha256'> = {
     schemaVersion: SCHEMA,
@@ -313,7 +369,7 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
       comparisonGrid: 'spice-ts',
       interpolation: 'linear',
       timing: 'single wall-clock execution per engine and fixture; descriptive, not a speed claim',
-      deterministicHashExcludes: ['runtimeMs', 'error'],
+      deterministicHashExcludes: ['environment', 'runtimeMs', 'error'],
     },
     totals: {
       fixtures: fixtures.length,
@@ -326,13 +382,15 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
     gapIssues: [...GAP_ISSUES],
     fixtures,
   };
-  return { ...base, outcomeSha256: deterministicDigest(base) };
+  const report = { ...base, outcomeSha256: deterministicDigest(base) };
+  validateAggregateAccounting(report);
+  return report;
 }
 
 function markdown(report: AggregateReport): string {
   const { totals } = report;
   const lines = [
-    '# Aggregate 60-circuit parity report',
+    '# Aggregate 100-circuit parity report',
     '',
     'This report publishes all outcomes, including failures and unsupported cases. It makes no speed or superiority claim.',
     '',
@@ -342,14 +400,14 @@ function markdown(report: AggregateReport): string {
     `- Verify committed outcomes: \`${report.commands.verify}\``,
     `- Machine: ${report.environment.cpu}; ${report.environment.platform} ${report.environment.release} ${report.environment.arch}; Node ${report.environment.node}`,
     `- Tools: spice-ts ${report.tools.spiceTs}; ${report.tools.ngspice}; pnpm ${report.tools.pnpm}`,
-    `- Deterministic outcome SHA-256 (timings excluded): \`${report.outcomeSha256}\``,
+    `- Deterministic outcome SHA-256 (host, timings, and error text excluded): \`${report.outcomeSha256}\``,
     '- Runtime is one wall-clock sample per engine/fixture. Treat it as diagnostic data, not a performance comparison.',
     '',
     '## Policy and totals',
     '',
     '- Both engines receive the exact same fixture bytes; each row records the common SHA-256.',
     '- No fixture adaptation and no per-circuit tolerance tuning.',
-    `- Accounted fixtures: ${totals.fixtures} (ngspice=${totals.corpusFixtures.ngspice}, classic=${totals.corpusFixtures.classic}, xyce=${totals.corpusFixtures.xyce}).`,
+    `- Accounted fixtures: ${totals.fixtures} (${CORPORA.map(corpus => `${corpus}=${totals.corpusFixtures[corpus]}`).join(', ')}).`,
     `- ngspice: ${totals.ngspice.success} success, ${totals.ngspice.failed} failed, ${totals.ngspice.unsupported} unsupported.`,
     `- spice-ts: ${totals.spiceTs.success} success, ${totals.spiceTs.failed} failed, ${totals.spiceTs.unsupported} unsupported.`,
     `- Matched-point errors: ${totals.comparedAnalyses} analyses across ${totals.comparedFixtures} fixtures. Full per-signal max/RMS absolute and relative errors are in \`benchmarks/aggregate-report.json\`.`,
@@ -400,9 +458,7 @@ export function verifyCommittedArtifacts(
     throw new Error(`aggregate deterministic JSON projection hash mismatch: committed=${committed.outcomeSha256}; regenerated=${generated.outcomeSha256}; calculated=${digest}`);
   }
 
-  if (committed.fixtures.length !== 60 || new Set(committed.fixtures.map(fixture => fixture.key)).size !== 60) {
-    throw new Error('committed aggregate does not account for 60 unique fixtures');
-  }
+  validateAggregateAccounting(committed);
 
   if (committedMarkdown !== markdown(committed)) {
     throw new Error('committed aggregate Markdown differs from the committed JSON projection');
