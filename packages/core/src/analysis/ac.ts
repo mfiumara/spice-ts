@@ -50,7 +50,6 @@ export function solveAC(
   dcSolution: Float64Array,
 ): ACResult {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
-  const systemSize = nodeCount + branchCount;
 
   // Build linearized G and C matrices at DC operating point
   const assembler = new MNAAssembler(nodeCount, branchCount);
@@ -66,7 +65,6 @@ export function solveAC(
 
   const G = assembler.G;
   const C = assembler.C;
-
 
   // Generate frequency points
   const frequencies = generateFrequencies(analysis);

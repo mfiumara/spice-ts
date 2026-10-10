@@ -520,7 +520,6 @@ function* streamAC(
   const G = assembler.G;
   const C = assembler.C;
 
-
   const frequencies = generateStreamFreqs(analysis);
 
   // Build n*n CSC for G and C
