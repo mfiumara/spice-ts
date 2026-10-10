@@ -1,0 +1,8 @@
+Gnucap d_vcvs.1 adapted for active AC sensitivity
+V1 1 0 DC 0 AC 1
+R1 1 2 1k
+R2 2 0 1k
+E1 3 0 2 0 4
+R3 3 0 1k
+.sens V(3) AC DEC 2 10 1k
+.end

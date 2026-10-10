@@ -12,6 +12,23 @@ describe('.noise analysis', () => {
     .noise v(out) V1 lin 5 100 500
   `;
 
+  const mosfetFixture = `
+    VDD vdd 0 DC 5
+    Vgate gate 0 DC 2 AC 1
+    Rload vdd out 2k
+    M1 out gate 0 0 NMOD W=10u L=1u
+    .model NMOD NMOS (LEVEL=1 VTO=0.7 KP=200u LAMBDA=0.02 KF=1e-25 AF=1)
+    .noise v(out) Vgate dec 3 10 10k
+  `;
+
+  const diodeFixture = (sweep: string, flicker = false) => `
+    V1 in 0 DC 1 AC 1
+    R1 in out 1k
+    D1 out 0 DMOD
+    .model DMOD D(IS=1e-14 N=1${flicker ? ' KF=1e-10 AF=1' : ''})
+    .noise v(out) V1 ${sweep}
+  `;
+
   it('parses the bounded ngspice-compatible linear form', () => {
     expect(parse(fixture).analyses).toEqual([{
       type: 'noise',
@@ -110,6 +127,57 @@ describe('.noise analysis', () => {
       / ngspice47InputTotal).toBeLessThan(2e-6);
   });
 
+  it.each([
+    ['lin', 5, 10, 10_000, 5, 2.703131156357947e-7, 5.386271250478095e-8, 7.099001808395031e-5, 1.41455028024496e-5],
+    ['dec', 3, 10, 10_000, 10, 2.703131156357946e-7, 5.386271250478093e-8, 7.099001808395027e-5, 1.414550280244959e-5],
+    ['oct', 3, 10, 10_000, 30, 2.997883785551307e-7, 5.973596659714284e-8, 6.991504265477001e-5, 1.393130271691006e-5],
+  ] as const)('matches ngspice-47 MOS1 thermal plus KF/AF noise for %s', async (
+    variation, points, start, stop, count, outputLast, inputLast, outputTotal, inputTotal,
+  ) => {
+    const deck = mosfetFixture.replace('dec 3 10 10k', `${variation} ${points} ${start} ${stop}`);
+    expect(parse(deck).analyses[0]).toMatchObject({ variation, points, startFreq: start, stopFreq: stop });
+
+    const result = await simulate(deck);
+    const noise = result.noise!;
+    expect(noise.frequencies).toHaveLength(count);
+    expect(noise.outputNoiseDensity[0]).toBeCloseTo(8.540277088953039e-6, 11);
+    expect(noise.inputNoiseDensity[0]).toBeCloseTo(1.701739438249188e-6, 11);
+    expect(noise.outputNoiseDensity.at(-1)).toBeCloseTo(outputLast, 11);
+    expect(noise.inputNoiseDensity.at(-1)).toBeCloseTo(inputLast, 11);
+    expect(noise.integratedOutputNoise).toBeCloseTo(outputTotal, 10);
+    expect(noise.integratedInputNoise).toBeCloseTo(inputTotal, 10);
+  });
+
+  it.each([
+    ['unsupported model level', 'LEVEL=2', /only supports MOSFET level 1/i],
+    ['unsupported noisy parasitic resistance', 'LEVEL=1 RD=10', /does not support MOSFET model parameter 'RD'/i],
+    ['unsupported noise selector', 'LEVEL=1 NLEV=1', /only supports MOSFET NLEV=2/i],
+  ])('rejects %s explicitly', async (_name, modelParameters, expected) => {
+    const deck = mosfetFixture.replace(
+      'LEVEL=1 VTO=0.7 KP=200u LAMBDA=0.02 KF=1e-25 AF=1',
+      `${modelParameters} VTO=0.7 KP=200u LAMBDA=0.02 KF=1e-25 AF=1`,
+    );
+    await expect(simulate(deck)).rejects.toThrow(expected);
+  });
+
+  it.each([
+    ['non-source bulk', 'bulk', ''],
+    ['GAMMA body effect', '0', ' GAMMA=0.5'],
+    ['PHI body effect', '0', ' PHI=0.6'],
+    ['reviewer non-ground bulk plus GAMMA/PHI repro', 'bulk', ' GAMMA=0.5 PHI=0.6'],
+  ])('rejects a MOS1 %s form instead of silently returning non-parity noise', async (
+    _name, bulkNode, modelSuffix,
+  ) => {
+    const deck = mosfetFixture
+      .replace('Vgate gate 0 DC 2 AC 1', 'Vgate gate 0 DC 2 AC 1\n    Vbody bulk 0 DC -1')
+      .replace('M1 out gate 0 0 NMOD', `M1 out gate 0 ${bulkNode} NMOD`)
+      .replace('KF=1e-25 AF=1', `KF=1e-25 AF=1${modelSuffix}`);
+
+    await expect(simulate(deck)).rejects.toThrow(
+      new InvalidCircuitError(".noise does not support MOSFET bulk/body-effect form for 'M1'"),
+    );
+  });
+
   it('omits integrated totals when ngspice does not create an integrated-noise plot', async () => {
     const result = await simulate(fixture.replace('lin 5 100 500', 'dec 3 100 100'));
 
@@ -119,13 +187,59 @@ describe('.noise analysis', () => {
   });
 
   it.each([
-    ['diode', 'D1', `
-      Vbias in 0 DC 1 AC 1
+    ['lin 3 100 300', 'lin'],
+    ['dec 3 100 10k', 'dec'],
+    ['oct 3 100 800', 'oct'],
+  ] as const)('returns deterministic typed diode shot-noise results for %s', async (
+    sweep, variation,
+  ) => {
+    const deck = diodeFixture(sweep);
+    expect(parse(deck).analyses[0]).toMatchObject({ type: 'noise', variation });
+
+    const first = (await simulate(deck)).noise!;
+    const repeated = (await simulate(deck)).noise!;
+
+    expect(first).toEqual(repeated);
+    expect(Math.abs(first.outputNoiseDensity[0] - 7.589715009730822e-10)
+      / 7.589715009730822e-10).toBeLessThan(2e-3);
+    expect(Math.abs(first.inputNoiseDensity[0] - 1.163256983612927e-8)
+      / 1.163256983612927e-8).toBeLessThan(2e-3);
+  });
+
+  it('matches ngspice-47 diode flicker density and integrated totals', async () => {
+    const result = (await simulate(diodeFixture('dec 3 100 10k', true))).noise!;
+
+    const ngspice47Output = [
+      1.255970194504204e-6,
+      8.556827128505760e-7,
+      5.829701106297475e-7,
+      3.971733014469353e-7,
+      2.705915906695873e-7,
+      1.843527418367607e-7,
+      1.255992896962048e-7,
+    ];
+    expect(result.outputNoiseDensity).toHaveLength(ngspice47Output.length);
+    result.outputNoiseDensity.forEach((density, index) => {
+      expect(Math.abs(density - ngspice47Output[index]) / ngspice47Output[index])
+        .toBeLessThan(2e-3);
+    });
+    expect(Math.abs(result.integratedOutputNoise! - 2.695279454534208e-5)
+      / 2.695279454534208e-5).toBeLessThan(2e-3);
+    expect(Math.abs(result.integratedInputNoise! - 4.130988639567582e-4)
+      / 4.130988639567582e-4).toBeLessThan(2e-3);
+  });
+
+  it('keeps unexpanded diode series-resistance noise explicitly unsupported', async () => {
+    await expect(simulate(`
+      V1 in 0 DC 1 AC 1
       R1 in out 1k
-      D1 out 0 Dmod
-      .model Dmod D
-      .noise v(out) Vbias dec 3 100 10k
-    `],
+      D1 out 0 DMOD
+      .model DMOD D(IS=1e-14 RS=10)
+      .noise v(out) V1 dec 3 100 10k
+    `)).rejects.toThrow(".noise does not support diode series-resistance noise for 'D1'");
+  });
+
+  it.each([
     ['BJT', 'Q1', `
       Vbias vcc 0 DC 5 AC 1
       Rbase vcc base 100k
@@ -138,7 +252,7 @@ describe('.noise analysis', () => {
       Vbias drain 0 DC 1 AC 1
       Vgate gate 0 DC 2
       M1 drain gate 0 0 Mmod
-      .model Mmod NMOS (LEVEL=1 VTO=1 KP=1m)
+      .model Mmod NMOS (LEVEL=49 VTH0=1 U0=400 TOX=4n)
       .noise v(drain) Vbias dec 3 100 10k
     `],
   ])('explicitly rejects unsupported %s noise for %s', async (kind, name, deck) => {

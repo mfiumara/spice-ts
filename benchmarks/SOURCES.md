@@ -89,6 +89,24 @@ At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-di
 |---|---|---|---|---|
 | Passive RLC and active four-stage `.pz` | Berkeley SPICE3f5 [`simplepz.cir`](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/simplepz.cir) and [`pz2.cir`](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/pz2.cir), pinned mirror revision `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant retained at `benchmarks/corpus/classic/COPYRIGHT.txt`; redistribution is allowed with that notice | `passive-rlc.cir` preserves `simplepz.cir` and adds one 1 uH shunt inductor so the bounded fixture exercises R, L, and C dynamics. `active-four-stage.cir` changes only the source card from ngspice's implicit `iin 1 0 ac` zero bias to explicit `iin 1 0 dc 0`; its topology, values, and `.pz` command are unchanged. The committed local bytes are supplied identically to both engines. | `benchmarks/pole-zero/{passive-rlc,active-four-stage}.cir`; compare with `pnpm exec tsx benchmarks/pole-zero/compare.ts` using ngspice-47. |
 
+## Bounded sensitivity parity fixtures
+
+| Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
+|---|---|---|---|---|
+| Passive RLC DC and DEC AC `.sens` | Berkeley SPICE3f5 [`simplepz.cir`](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/simplepz.cir), pinned mirror revision `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant retained at `benchmarks/corpus/classic/COPYRIGHT.txt`; redistribution is allowed with that notice | The two fixtures retain the public two-resistor/capacitor filter basis, add an independent voltage source and series inductor, and replace `.pz` with bounded DC or DEC AC `.sens`. Values and topology are then frozen; each committed file is supplied byte-identically to both engines. | `benchmarks/sensitivity/passive-rlc-{dc,ac}.cir` |
+| Active VCVS DEC AC `.sens` | Gnucap [`tests/d_vcvs.1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_vcvs.1.ckt), pinned revision `5acb027125d6ea7c546badd03e026d8781c6a400` | GPL-3.0-or-later; pinned notice and complete licence retained at `benchmarks/corpus/corpus-e/LICENSE-NOTICE.md` and `benchmarks/corpus/corpus-e/COPYING.txt` | Retains the source, divider, gain-4 VCVS, and output load; removes Gnucap-only output cards and the unrelated VCCS branch, sets the source DC bias explicitly to zero, and replaces repeated `.op`/`.ac` cards with one bounded DEC AC `.sens`. The resulting committed file is supplied byte-identically to both engines. | `benchmarks/sensitivity/active-vcvs-ac.cir` |
+| Two-source DEC AC `.sens` rejection regressions | [spice-ts PR #178 review cases](https://github.com/mfiumara/spice-ts/pull/178), authored by project owner Mattia Fiumara | Original spice-ts project fixtures, distributed under the repository MIT licence | The two-active and zero-first review netlists are retained exactly apart from their descriptive title lines. Each committed file is supplied byte-identically to both engines; ngspice reference vectors and spice-ts's explicit unsupported-topology errors are verified by the comparison command. | `benchmarks/sensitivity/multi-source-ac.cir`, `benchmarks/sensitivity/zero-first-multi-source-ac.cir` |
+
+Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON receipt reports the engine version, machine, identical paths, deterministic native order, matched-point maximum/RMS absolute and relative errors, every non-zero residual as a retained loss, convergence failures, and the explicit unsupported matrix.
+
+## Bounded Gummel-Poon forward-active parity fixtures
+
+- Public source: John P. Doty's CA3080 ngspice model, [`ca3080.mod`](https://github.com/xxv/gedasymbols/blob/49eda5e627e167fcb6346ef9805535ca92e43b0c/www/user/john_doty/models/opamp/ca3080.mod), pinned `gedasymbols` revision `49eda5e627e167fcb6346ef9805535ca92e43b0c`.
+- Licence: GPL-2.0-or-later, stated in the source file by its copyright holder; the complete GPLv2 text is already retained at `benchmarks/corpus/corpus-d/COPYING.txt`.
+- Redistribution decision: allowed under GPL-2.0-or-later. The upstream file is not copied. The checked-in test decks identify the source and use only the bounded numeric subset of its `VERTNPN` model card: `LEVEL`, `IS`, `VAF`, `BF`, `ISE`, `NE`, `IKF`, and `BR`.
+- Adaptation: the original CA3080 subcircuit is replaced by a project-authored, deterministic common-emitter characterization grid. Unsupported temperature, resistance, capacitance, transit-time, reverse high-current, and substrate parameters are omitted rather than silently accepted. The resulting local deck bytes are supplied identically to spice-ts and ngspice-47 at VBE 0.55–0.70 V and VCE 1, 5, and 9 V.
+- Local paths: `benchmarks/gummel-poon/{vce-1,vce-5,vce-9}.cir`; compare with `pnpm exec tsx benchmarks/gummel-poon/compare.ts`.
+
 ## Bounded lossless transmission-line parity fixtures
 
 - Canonical public source: ngspice User's Manual version 47, [lossless T-card syntax and `Z0=50 TD=10NS` example](https://nmg.gitlab.io/ngspice-manual/transmissionlines/losslesstransmissionlines.html) plus the public [transmission-line inverter step-response example](https://nmg.gitlab.io/ngspice-manual/examplecircuits/transmission-lineinverter.html).
@@ -101,6 +119,14 @@ At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-di
 |---|---|---|---|
 | `benchmarks/lossless-tline/matched.cir` | `84333a39888bc3dc72b8c492c749d493230fb705f39ce02fb689d76ad9fd9fbb` | 0.5 V launch and 5 ns one-way propagation; no round-trip reflection | `pnpm exec tsx benchmarks/lossless-tline/compare.ts` (internally runs ngspice-47 in batch mode) |
 | `benchmarks/lossless-tline/mismatched.cir` | `5da221908fe4c0a2f522026d3c1a25746b345adedf870442e14af67308ab22c1` | 2/3 V launch, 8/9 V first load step, 22/27 V source return, 64/81 V second load step | same |
+
+## Bounded MOSFET level-1 noise parity fixture
+
+- Fixture: `benchmarks/mos1-noise/mos1-noise.cir` (SHA-256 `cd8f360eb0db90b1f4796df474bc6b2b435ad77a39d16ee8cbd4bc79197acb5b`).
+- Source: project-authored public reference circuit for [issue #189](https://github.com/mfiumara/spice-ts/issues/189), pinned by the fixture SHA-256 above.
+- Licence: MIT, under the repository [licence](../LICENSE); redistribution is allowed. No third-party netlist was copied.
+- Adaptation: none. The committed bytes are supplied identically to spice-ts and ngspice-47. The fixture exercises MOS1 channel thermal noise and default `NLEV=2` KF/AF flicker noise over a DEC sweep.
+- Reproduce with `pnpm exec tsx benchmarks/mos1-noise/compare.ts`; the command records source/hash, versions, machine, convergence, runtimes, matched-point max/RMS absolute and relative errors, integrated totals, and remaining unsupported losses.
 
 ## Xyce Regression Suite corpus C
 
@@ -146,6 +172,21 @@ At ingestion on ngspice-47, 13 circuits produce raw analysis data and 7 fail on 
 | Circuit | Source | Licence / redistribution basis | Local use |
 | --- | --- | --- | --- |
 | Showcase boost converter (5 V input, 100 kHz, 50% duty) | [spice-ts issue #43](https://github.com/mfiumara/spice-ts/issues/43) and `examples/showcase/main.tsx` | Authored in the spice-ts project by Mattia Fiumara; distributed under the repository [MIT licence](../LICENSE) | Identical netlist is exercised by `packages/core/src/analysis/transient-driver-integration.test.ts` and compared with ngspice-47 reference samples. |
+
+## Independent current-source polarity parity fixtures
+
+- Source: [spice-ts issue #196](https://github.com/mfiumara/spice-ts/issues/196) and the TDD reproduction introduced at revision [`61e05afe8c8bd7e6fd644410439dfbec0be97c19`](https://github.com/mfiumara/spice-ts/commit/61e05afe8c8bd7e6fd644410439dfbec0be97c19).
+- Licence: MIT, under the repository [licence](../LICENSE).
+- Redistribution decision: allowed. These three minimal netlists were authored in this project for issue #196 and contain no third-party circuit material.
+- Adaptation: none between engines. `compare.ts` reads each committed file once and supplies those bytes to spice-ts and ngspice-47. No per-engine values, tolerances, or rewrites are used.
+- Coverage: `op.cir`, `dc.cir`, and `tran.cir` exercise the shared positive-to-negative independent current-source stamp. An AC-form source's DC bias uses that stamp and has a core regression test. Nonzero independent current-source AC excitation uses a separate excitation path and is not claimed by this bounded comparison.
+- Command: `pnpm bench:current-source-polarity`. The JSON report records commands, versions, machine data, convergence status, and max/RMS absolute and relative errors for `V(out)`.
+
+## Bounded diode-noise parity fixtures
+
+| Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
+|---|---|---|---|---|
+| Forward-biased diode shot and flicker noise, LIN/DEC/OCT | Original spice-ts benchmark specified by [issue #179](https://github.com/mfiumara/spice-ts/issues/179), issue revision as of 2026-10-10. Reference equations and behavior are pinned to ngspice source revision [`032b1c32`](https://github.com/ngspice/ngspice/blob/032b1c32/src/spicelib/devices/dio/dionoise.c). | Fixtures dedicated [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/); ngspice reference source is BSD-3-Clause under its pinned `COPYING`. | The three original fixture decks differ only in the `.noise` LIN/DEC/OCT card and are committed for unrestricted redistribution. No values or tolerances are adapted between engines; the runner adds only temporary ngspice output-control commands. | `benchmarks/diode-noise/diode-noise-{lin,dec,oct}.cir`; compare against ngspice-47 with `pnpm exec tsx benchmarks/diode-noise/compare.ts`. |
 
 ## Chua & Lin circuit, issue #48
 

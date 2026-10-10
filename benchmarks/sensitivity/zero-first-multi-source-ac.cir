@@ -1,0 +1,7 @@
+zero AC source precedes active source
+V1 in 0 DC 0 AC 0
+V2 out 0 DC 0 AC 2
+R1 in out 1k
+R2 out 0 1k
+.sens V(out) AC DEC 1 1 10
+.end

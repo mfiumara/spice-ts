@@ -10,6 +10,7 @@ import { solveAC } from './analysis/ac.js';
 import { assertNoiseDevicesSupported, solveNoise } from './analysis/noise.js';
 import { solveTransferFunction } from './analysis/transfer-function.js';
 import { solvePoleZero } from './analysis/pole-zero.js';
+import { solveSensitivity } from './analysis/sensitivity.js';
 import { solveDCSweep } from './analysis/dc-sweep.js';
 import { solveStep, generateStepValues } from './analysis/step.js';
 import type { StepStreamEvent, StepAnalysis } from './types.js';
@@ -169,6 +170,13 @@ export async function simulate(
       case 'tf': {
         const opts = resolveOptions(options);
         result.transferFunction = solveTransferFunction(
+          compiled, analysis, opts, convergence,
+        );
+        break;
+      }
+      case 'sens': {
+        const opts = resolveOptions(options);
+        result.sensitivity = solveSensitivity(
           compiled, analysis, opts, convergence,
         );
         break;
@@ -390,6 +398,9 @@ function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[
   }
   if (compiled.steps.length > 0 && compiled.poleZeroAnalyses.length > 0) {
     throw new InvalidCircuitError('.step cannot be combined with .pz');
+  }
+  if (compiled.steps.length > 0 && compiled.analyses.some(analysis => analysis.type === 'sens')) {
+    throw new InvalidCircuitError('.step cannot be combined with .sens');
   }
 }
 

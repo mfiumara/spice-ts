@@ -92,8 +92,8 @@ describe('DC Sweep', () => {
     expect(v1.length).toBe(11);
     for (let i = 0; i < 11; i++) {
       const current = analysis.start + i * analysis.step;
-      // V = I * R (current injected into node 1, flows through R1 to ground)
-      expect(v1[i]).toBeCloseTo(current * 1000, 6);
+      // Positive source current flows from node 1 to ground.
+      expect(v1[i]).toBeCloseTo(-current * 1000, 6);
     }
   });
 
@@ -119,7 +119,7 @@ describe('DC Sweep', () => {
       type: 'dc', source: 'iBIAS', start: 0, stop: 0.001, step: 0.001,
     }, resolveOptions());
 
-    expect([...result.voltage('1')]).toEqual([0, 1]);
+    expect([...result.voltage('1')]).toEqual([0, -1]);
   });
 
   it('throws on unknown sweep source', () => {

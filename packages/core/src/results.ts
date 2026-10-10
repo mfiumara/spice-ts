@@ -202,6 +202,30 @@ export class PoleZeroResult {
   ) {}
 }
 
+/** One rectangular complex sensitivity value. */
+export interface ComplexSensitivityValue {
+  real: number;
+  imaginary: number;
+}
+
+/** Sensitivity to one non-zero primary device parameter. */
+export interface SensitivityEntry {
+  device: string;
+  parameter: 'resistance' | 'capacitance' | 'inductance' | 'dc' | 'acMagnitude' | 'gain';
+  dc?: number;
+  ac?: ComplexSensitivityValue[];
+}
+
+/** Deterministically ordered results from the bounded `.sens` slice. */
+export class SensitivityResult {
+  constructor(
+    public readonly outputNode: string,
+    public readonly mode: 'dc' | 'ac',
+    public readonly frequencies: number[],
+    public readonly entries: SensitivityEntry[],
+  ) {}
+}
+
 /**
  * Result of a DC sweep (`.dc`) analysis.
  *
@@ -282,6 +306,8 @@ export interface SimulationResult {
   transferFunction?: TransferFunctionResult;
   /** Finite poles and zeros (in rad/s) from `.pz`. */
   poleZero?: PoleZeroResult;
+  /** Primary-value sensitivities from the bounded `.sens` slice. */
+  sensitivity?: SensitivityResult;
   /** Parametric sweep results (from .step). When present, top-level result fields are empty. */
   steps?: StepResult[];
   /** Warnings collected during simulation */

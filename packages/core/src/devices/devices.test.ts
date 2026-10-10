@@ -59,7 +59,7 @@ describe('CurrentSource', () => {
     const i = new CurrentSource('I1', [0, 1], { type: 'dc', value: 0.002 });
     i.stamp(asm.getStampContext());
 
-    expect(asm.b[0]).toBeCloseTo(0.002);
-    expect(asm.b[1]).toBeCloseTo(-0.002);
+    expect(asm.b[0]).toBeCloseTo(-0.002);
+    expect(asm.b[1]).toBeCloseTo(0.002);
   });
 });

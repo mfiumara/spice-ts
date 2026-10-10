@@ -1,0 +1,5 @@
+* independent current-source polarity transient
+I1 out 0 DC 1m
+R1 out 0 1k
+.tran 1u 2u
+.end

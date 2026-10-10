@@ -6,6 +6,7 @@ import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
 import { parsePoleZero } from './pole-zero-parser.js';
+import { parseSensitivity } from './sensitivity-parser.js';
 import { parseTransmissionLine } from './transmission-line-parser.js';
 import { preprocess } from './preprocessor.js';
 import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
@@ -66,6 +67,7 @@ function parseNetlist(
   let hasNoiseAnalysis = false;
   let hasTransferFunctionAnalysis = false;
   let hasPoleZeroAnalysis = false;
+  let hasSensitivityAnalysis = false;
   let hasStepAnalysis = false;
 
   for (const { tokens, lineNumber, raw } of lines) {
@@ -136,9 +138,17 @@ function parseNetlist(
             raw,
           );
         }
+        if ((first === '.SENS' && hasStepAnalysis) || (first === '.STEP' && hasSensitivityAnalysis)) {
+          throw new ParseError(
+            '.step cannot be combined with .sens',
+            lineNumber,
+            raw,
+          );
+        }
         if (first === '.NOISE') hasNoiseAnalysis = true;
         if (first === '.TF') hasTransferFunctionAnalysis = true;
         if (first === '.PZ') hasPoleZeroAnalysis = true;
+        if (first === '.SENS') hasSensitivityAnalysis = true;
         if (first === '.STEP') hasStepAnalysis = true;
         parseDotCommand(circuit, tokens, lineNumber);
       } else {
@@ -285,6 +295,25 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
     case '.PZ':
       circuit.addAnalysis('pz', parsePoleZero(tokens, lineNumber));
       break;
+    case '.SENS': {
+      const analysis = parseSensitivity(tokens, lineNumber);
+      if (analysis.mode === 'dc') {
+        circuit.addAnalysis('sens', {
+          outputNode: analysis.outputNode,
+          mode: 'dc',
+        });
+      } else {
+        circuit.addAnalysis('sens', {
+          outputNode: analysis.outputNode,
+          mode: 'ac',
+          variation: analysis.variation,
+          points: analysis.points,
+          startFreq: analysis.startFreq,
+          stopFreq: analysis.stopFreq,
+        });
+      }
+      break;
+    }
     case '.MODEL': {
       const model = parseModelCard(tokens, lineNumber);
       if (model.type === 'LTRA') {
@@ -538,9 +567,26 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
         parseDiodeInstanceParams(tokens, 4),
       );
       break;
-    case 'Q':
+    case 'Q': {
+      if (tokens.length === 5) {
+        circuit.addBJT(name, tokens[1], tokens[2], tokens[3], tokens[4]);
+        break;
+      }
+      const groundedSubstrate = tokens[4] === '0';
+      const supportedOffFlag = tokens.length === 6
+        || (tokens.length === 7 && tokens[6].toUpperCase() === 'OFF=1');
+      if (!groundedSubstrate || !supportedOffFlag) {
+        throw new ParseError(
+          `Unsupported BJT Q-card form: '${tokens.join(' ')}'`,
+          lineNumber, tokens.join(' '),
+        );
+      }
+      // Preserve the historical grounded-substrate compatibility path: it
+      // used the substrate token as the model selector and therefore ran the
+      // default level-1 device. New bounded cards use the three-terminal form.
       circuit.addBJT(name, tokens[1], tokens[2], tokens[3], tokens[4]);
       break;
+    }
     case 'J':
       if (tokens.length !== 5) {
         throw new ParseError(
