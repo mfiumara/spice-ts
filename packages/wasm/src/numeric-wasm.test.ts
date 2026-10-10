@@ -8,12 +8,24 @@ import {
   type SpiceWorkerManifestV1,
   type WorkerLike,
 } from './index.js';
+import { NUMERIC_WASM_LIMITS, validateNumericWasmModule } from './numeric-abi.js';
 
 const circuits = [
   'V1 in 0 5\nR1 in 0 1k\n.op',
   'I1 0 out 2m\nR1 out 0 2k\n.op',
   'V1 in 0 12\nR1 in out 2k\nR2 out 0 1k\n.op',
   'V1 a 0 10\nR1 a b 1k\nI1 b 0 1m\nR2 b 0 2k\n.op',
+] as const;
+
+const acCircuits = [
+  'V1 in 0 AC 1\nR1 in out 1k\nC1 out 0 1u\n.ac dec 3 10 10k',
+  'V1 in 0 AC 2 30\nR1 in out 100\nL1 out 0 10m\n.ac dec 4 100 1k',
+  'I1 0 out AC 1m -45\nR1 out 0 1k\nC1 out 0 100n\n.ac oct 2 100 1600',
+] as const;
+
+const linCircuits = [
+  { points: 1, source: 'V1 in 0 AC 1\nR1 in 0 1k\n.ac lin 1 100 1k', expectedGrid: [100] },
+  { points: 4, source: 'V1 in 0 AC 1\nR1 in 0 1k\n.ac lin 4 100 1k', expectedGrid: [100, 400, 700, 1000] },
 ] as const;
 
 async function engine(backend: 'spice-ts-js' | 'spice-ts-wasm'): Promise<SpiceEngine> {
@@ -30,22 +42,41 @@ describe('bounded numeric WebAssembly backend', () => {
     try {
       expect(wasm.capabilities).toMatchObject({
         backends: ['spice-ts-wasm'],
-        analyses: ['op'],
+        analyses: ['op', 'ac'],
         nativeSchemaVersions: [],
         engineBuildId: expect.stringMatching(/^spice-ts-wasm-[0-9a-f]{16}$/),
         numericWasm: {
-          kernel: 'dense-gaussian-f64-v1',
+          kernel: 'dense-gaussian-complex-f64-v2',
+          abiVersion: 2,
           artifactSha256: expect.stringMatching(/^[0-9a-f]{64}$/),
-          artifactBytes: 1190,
+          artifactBytes: expect.any(Number),
           inputFormats: ['spice'],
-          devices: ['R', 'I', 'V'],
+          analyses: ['op', 'ac'],
+          devicesByAnalysis: {
+            op: ['R', 'I', 'V'],
+            ac: ['R', 'C', 'L', 'I', 'V'],
+          },
           fallback: 'reject',
-          limits: { maxSystemOrder: 64, memoryPages: 3 },
+          limits: { maxSystemOrder: 64, maxAcPoints: 1025, memoryPages: 3 },
         },
       });
     } finally {
       await wasm.close();
     }
+  });
+
+  it('loads an import-free ABI-v2 complex kernel with fixed memory', async () => {
+    const bytes = await readFile(new URL('../native/dense-solver.wasm', import.meta.url));
+    const module = await WebAssembly.compile(bytes);
+    expect(WebAssembly.Module.imports(module)).toEqual([]);
+    expect(WebAssembly.Module.exports(module).map(entry => entry.name)).toEqual(expect.arrayContaining([
+      'memory', '__heap_base', 'abi_version', 'max_order', 'solve_f64', 'solve_complex_f64',
+    ]));
+    await expect(validateNumericWasmModule(module)).resolves.toBeUndefined();
+    const instance = await WebAssembly.instantiate(module);
+    const memory = instance.exports.memory as WebAssembly.Memory;
+    expect(memory.buffer.byteLength).toBe(NUMERIC_WASM_LIMITS.memoryPages * 65_536);
+    expect(() => memory.grow(1)).toThrow();
   });
 
   it('matches the TypeScript backend on a fixed linear OP circuit suite', async () => {
@@ -81,6 +112,94 @@ describe('bounded numeric WebAssembly backend', () => {
       }
     } finally {
       await Promise.all([js.close(), wasm.close()]);
+    }
+  });
+
+  it('matches the TypeScript backend on fixed passive AC circuits through the complex WASM path', async () => {
+    const js = await engine('spice-ts-js');
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const [circuitIndex, source] of acCircuits.entries()) {
+        const [expected, actual] = await Promise.all([
+          js.simulate(request(source), { requestId: `js-ac-${circuitIndex}` }),
+          wasm.simulate(request(source), { requestId: `wasm-ac-${circuitIndex}` }),
+        ]);
+        expect(expected.ok).toBe(true);
+        expect(actual.ok).toBe(true);
+        if (!expected.ok || !actual.ok) continue;
+        const expectedAc = expected.data.analyses[0];
+        const actualAc = actual.data.analyses[0];
+        expect(expectedAc?.type).toBe('ac');
+        expect(actualAc?.type).toBe('ac');
+        if (expectedAc?.type !== 'ac' || actualAc?.type !== 'ac') continue;
+        expect(actualAc.frequencyHz).toEqual(expectedAc.frequencyHz);
+        expect(Object.keys(actualAc.voltagePhasors)).toEqual(Object.keys(expectedAc.voltagePhasors));
+        expect(Object.keys(actualAc.currentPhasors)).toEqual(Object.keys(expectedAc.currentPhasors));
+        for (const [name, expectedValues] of Object.entries(expectedAc.voltagePhasors) as
+          Array<[string, typeof expectedAc.voltagePhasors[string]]>) {
+          const actualValues = actualAc.voltagePhasors[name]!;
+          expect(actualValues).toHaveLength(expectedValues.length);
+          expectedValues.forEach((value, pointIndex) => {
+            expect(actualValues[pointIndex]?.magnitude).toBeCloseTo(value.magnitude, 11);
+            expect(actualValues[pointIndex]?.phaseDegrees).toBeCloseTo(value.phaseDegrees, 10);
+          });
+        }
+        for (const [name, expectedValues] of Object.entries(expectedAc.currentPhasors) as
+          Array<[string, typeof expectedAc.currentPhasors[string]]>) {
+          const actualValues = actualAc.currentPhasors[name]!;
+          expect(actualValues).toHaveLength(expectedValues.length);
+          expectedValues.forEach((value, pointIndex) => {
+            expect(actualValues[pointIndex]?.magnitude).toBeCloseTo(value.magnitude, 11);
+            expect(actualValues[pointIndex]?.phaseDegrees).toBeCloseTo(value.phaseDegrees, 10);
+          });
+        }
+      }
+    } finally {
+      await Promise.all([js.close(), wasm.close()]);
+    }
+  });
+
+  it('uses ngspice total-point semantics for LIN N=1 and N=4', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const { points, source, expectedGrid } of linCircuits) {
+        const result = await wasm.simulate(request(source), { requestId: `wasm-ac-lin-${points}` });
+        expect(result.ok).toBe(true);
+        if (!result.ok) continue;
+        const analysis = result.data.analyses[0];
+        expect(analysis?.type).toBe('ac');
+        if (analysis?.type !== 'ac') continue;
+        expect(analysis.frequencyHz).toEqual(expectedGrid);
+      }
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('bounds AC result points and rejects nonlinear AC without fallback', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const limited = await wasm.simulate(request(linCircuits[1].source, {
+        limits: { maxResultPoints: 2 },
+      }), { requestId: 'ac-point-limit' });
+      expect(limited).toMatchObject({
+        ok: false,
+        error: {
+          code: 'RESOURCE_LIMIT',
+          details: { limit: 'maxResultPoints', configured: 2, observed: 4 },
+        },
+      });
+
+      const nonlinear = await wasm.simulate(request(
+        'V1 in 0 AC 1\nR1 in out 1k\nD1 out 0 diode\n.model diode D\n.ac dec 3 10 10k',
+      ), { requestId: 'ac-nonlinear' });
+      expect(nonlinear).toMatchObject({
+        ok: false,
+        error: { code: 'UNSUPPORTED_FEATURE', retryable: false },
+        metadata: { backend: 'spice-ts-wasm' },
+      });
+    } finally {
+      await wasm.close();
     }
   });
 
@@ -147,6 +266,33 @@ describe('bounded numeric WebAssembly backend', () => {
       manifest,
       workerFactory: () => { constructions++; throw new Error('must not construct'); },
     })).rejects.toBeInstanceOf(SpiceEngineError);
+    expect(constructions).toBe(0);
+  });
+
+  it('rejects a numeric artifact integrity mismatch before worker construction', async () => {
+    const workerUrl = new URL('../dist/worker.js', import.meta.url);
+    const workerBytes = new Uint8Array(await readFile(workerUrl));
+    const numericUrl = new URL('../dist/dense-solver.wasm', import.meta.url);
+    const wrongSha256 = '0'.repeat(64);
+    const manifest: SpiceWorkerManifestV1 = {
+      schemaVersion: 1,
+      engineBuildId: `spice-ts-js-${sha256(workerBytes).slice(0, 16)}`,
+      worker: { url: workerUrl.href, sha256: sha256(workerBytes) },
+      numericWasm: {
+        url: numericUrl.href,
+        sha256: wrongSha256,
+        byteLength: (await readFile(numericUrl)).byteLength,
+        engineBuildId: `spice-ts-wasm-${wrongSha256.slice(0, 16)}`,
+      },
+    };
+    let constructions = 0;
+    await expect(createSpiceEngine({
+      backend: 'spice-ts-wasm',
+      manifest,
+      workerFactory: () => { constructions++; throw new Error('must not construct'); },
+    })).rejects.toMatchObject({
+      error: { code: 'BACKEND_UNAVAILABLE', phase: 'transport' },
+    });
     expect(constructions).toBe(0);
   });
 
