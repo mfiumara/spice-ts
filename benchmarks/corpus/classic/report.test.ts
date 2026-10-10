@@ -151,6 +151,73 @@ describe('classic corpus comparison report', () => {
     }
   });
 
+  it('emits native spice-ts noise spectra and totals with ngspice-47 plot and vector names', async () => {
+    const classicManifest = JSON.parse(
+      readFileSync(resolve('benchmarks/corpus/classic/manifest.json'), 'utf8'),
+    ) as ClassicManifest;
+    const expected = new Map([
+      ['bjt-noise', ['v(inoise_total)', 'v(onoise_total)']],
+      ['resistor-noise', ['i(inoise_total)', 'v(onoise_total)']],
+    ]);
+
+    for (const [id, totals] of expected) {
+      const fixture = classicManifest.circuits.find(candidate => candidate.id === id);
+      if (!fixture) throw new Error(`missing classic fixture ${id}`);
+      const input = readFileSync(resolve(fixture.localPath));
+      assert.equal(createHash('sha256').update(input).digest('hex'), fixture.sha256);
+
+      const execution = await runNativeSpiceTs(input, fixture);
+
+      assert.equal(execution.status, 'success', execution.error);
+      assert.equal(execution.convergence, 'converged');
+      assert.deepEqual(
+        execution.analyses.map(analysis => [analysis.type, analysis.plotName]),
+        [['noise', 'Noise Spectral Density Curves'], ['noise', 'Integrated Noise']],
+      );
+      const [spectrum, integrated] = execution.analyses;
+      assert.equal(spectrum?.series.grid.length, 41);
+      assert.deepEqual(Object.keys(spectrum?.series.signals ?? {}), ['inoise_spectrum', 'onoise_spectrum']);
+      assert.deepEqual(integrated?.series.grid, [0]);
+      assert.deepEqual(Object.keys(integrated?.series.signals ?? {}), totals);
+      assert.equal(
+        Object.values(integrated?.series.signals ?? {}).every(values => values.length === 1 && values[0]!.re > 0),
+        true,
+      );
+    }
+  });
+
+  it('pairs same-type plots by plot name so noise spectra and totals are both compared', async () => {
+    const noiseCircuit: ClassicCircuit = { ...circuit, analyses: ['noise'] };
+    const noisePlots = (spectrum: number[], total: number): EngineExecution => ({
+      status: 'success',
+      convergence: 'converged',
+      analyses: [
+        {
+          type: 'noise',
+          plotName: 'Noise Spectral Density Curves',
+          series: { grid: [10, 100], signals: { onoise_spectrum: spectrum.map(re => ({ re, im: 0 })) } },
+        },
+        {
+          type: 'noise',
+          plotName: 'Integrated Noise',
+          series: { grid: [0], signals: { 'v(onoise_total)': [{ re: total, im: 0 }] } },
+        },
+      ],
+    });
+    const report = await buildClassicReport({ ...manifest, circuits: [noiseCircuit] }, {
+      readFixture: async () => Buffer.from('fixture bytes'),
+      runNgspice: async () => noisePlots([4, 4], 2),
+      runSpiceTs: async () => noisePlots([4, 4], 2.5),
+      tools: { ngspice: 'ngspice-test', spiceTs: 'spice-ts-test' },
+    });
+
+    const comparisons = report.fixtures[0]?.comparisons ?? [];
+    assert.deepEqual(comparisons.map(comparison => comparison.signals), [['onoise_spectrum'], ['v(onoise_total)']]);
+    const total = comparisons[1]?.metrics.signals['v(onoise_total)'];
+    if (!total || total.status !== 'compared') throw new Error('expected compared total');
+    assert.equal(total.absoluteError.max, 0.5);
+  });
+
   it('programmatically verifies the committed 20-fixture loss totals and input hashes', () => {
     const report = JSON.parse(
       readFileSync(resolve('benchmarks/corpus/classic/report.json'), 'utf8'),

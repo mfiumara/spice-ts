@@ -283,6 +283,15 @@ export const DEFAULT_OPTIONS: ResolvedOptions = {
   gmin: 0,
 };
 
+/** Netlist `.options` overlaid by caller options; an explicit `undefined` keeps the netlist value. */
+export function withNetlistOptions<T extends SimulationOptions>(netlist: SimulationOptions, options?: T): T {
+  const merged: Record<string, unknown> = { ...netlist };
+  for (const [key, value] of Object.entries(options ?? {})) {
+    if (value !== undefined) merged[key] = value;
+  }
+  return merged as T;
+}
+
 export function resolveOptions(opts?: SimulationOptions, stopTime?: number): ResolvedOptions {
   return {
     abstol: opts?.abstol ?? DEFAULT_OPTIONS.abstol,
