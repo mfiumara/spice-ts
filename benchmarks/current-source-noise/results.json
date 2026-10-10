@@ -1,0 +1,151 @@
+{
+  "source": {
+    "name": "Berkeley SPICE3f5 classic noise fixtures",
+    "url": "https://github.com/obernin/spice/tree/3d9360bef370b432e473edb0c4333707d545a55f/examples",
+    "revision": "3d9360bef370b432e473edb0c4333707d545a55f",
+    "licence": "Berkeley SPICE grant",
+    "notice": "benchmarks/corpus/classic/COPYRIGHT.txt"
+  },
+  "adaptation": [
+    "The checked-in classic fixtures remain byte-for-byte unchanged.",
+    "For both engines, the runner removes only the legacy trailing noise-summary interval and output-only .print noise card because spice-ts does not yet parse those directives.",
+    "The circuit topology, device cards, values, noise sweep, and input source are unchanged; each engine receives the same adapted bytes."
+  ],
+  "commands": {
+    "ngspice": "ngspice -b -r <temporary-raw-path> <identical-temporary-adapted-deck>",
+    "spiceTs": "pnpm exec tsx benchmarks/current-source-noise/compare.ts"
+  },
+  "versions": {
+    "reference": "ngspice-47",
+    "spiceTsRevision": "62690c3d7a172aedf4b1cc23678d15c6c5a953c7",
+    "spiceTsWorkingTreeDirty": true,
+    "node": "v22.23.1"
+  },
+  "machine": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "fixtures": [
+    {
+      "fixture": "benchmarks/corpus/classic/fixtures/spice3f5/resnoise.cir",
+      "originalSha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661",
+      "adaptedSha256": "f9c9fd050ffeae094f0bfc3dfbc2bc1d21fc76d95505ba6b77e26232b5be06a7",
+      "identicalAdaptedNetlistForBothEngines": true,
+      "convergence": {
+        "ngspice": "success",
+        "spiceTs": "success"
+      },
+      "runtimeMilliseconds": {
+        "ngspiceProcess": 19.708458000000007,
+        "spiceTsInProcess": 5.325041999999996,
+        "caveat": "Different process boundaries; reported honestly, not a speed claim."
+      },
+      "matchedPointCount": 41,
+      "errors": {
+        "outputDensity": {
+          "maximumAbsoluteError": 7.0773196098395785e-16,
+          "rmsAbsoluteError": 7.077319609839581e-16,
+          "maximumRelativeError": 1.738313381272468e-7,
+          "rmsRelativeError": 1.738313381272468e-7
+        },
+        "inputDensity": {
+          "maximumAbsoluteError": 7.077319597044128e-19,
+          "rmsAbsoluteError": 7.0773195970441255e-19,
+          "maximumRelativeError": 1.7383133781296814e-7,
+          "rmsRelativeError": 1.7383133781296814e-7
+        },
+        "integratedOutput": {
+          "maximumAbsoluteError": 2.2379330507991252e-13,
+          "rmsAbsoluteError": 2.2379330507991252e-13,
+          "maximumRelativeError": 1.7383133705832843e-7,
+          "rmsRelativeError": 1.7383133705832843e-7
+        },
+        "integratedInput": {
+          "maximumAbsoluteError": 2.237933048582281e-16,
+          "rmsAbsoluteError": 2.237933048582281e-16,
+          "maximumRelativeError": 1.7383133688613518e-7,
+          "rmsRelativeError": 1.7383133688613518e-7
+        }
+      }
+    },
+    {
+      "fixture": "benchmarks/corpus/classic/fixtures/spice3f5/bjtnoise.cir",
+      "originalSha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc",
+      "adaptedSha256": "875bcbce8c9e6cdcf6f2d5349d9359b1150aa266b4fb41e5761b38d5c0ce7c9a",
+      "identicalAdaptedNetlistForBothEngines": true,
+      "convergence": {
+        "ngspice": "success",
+        "spiceTs": "success"
+      },
+      "runtimeMilliseconds": {
+        "ngspiceProcess": 19.149583000000007,
+        "spiceTsInProcess": 4.72770799999995,
+        "caveat": "Different process boundaries; reported honestly, not a speed claim."
+      },
+      "matchedPointCount": 41,
+      "errors": {
+        "outputDensity": {
+          "maximumAbsoluteError": 1.0644493237827972e-7,
+          "rmsAbsoluteError": 1.0644119765527102e-7,
+          "maximumRelativeError": 0.652243355822198,
+          "rmsRelativeError": 0.6522354373164336
+        },
+        "inputDensity": {
+          "maximumAbsoluteError": 2.9172330825441245e-10,
+          "rmsAbsoluteError": 2.917132735875478e-10,
+          "maximumRelativeError": 0.6653810952372762,
+          "rmsRelativeError": 0.6653734761659779
+        },
+        "integratedOutput": {
+          "maximumAbsoluteError": 0.000033657821335710916,
+          "rmsAbsoluteError": 0.000033657821335710916,
+          "maximumRelativeError": 0.6522343768018072,
+          "rmsRelativeError": 0.6522343768018072
+        },
+        "integratedInput": {
+          "maximumAbsoluteError": 9.224280038955374e-8,
+          "rmsAbsoluteError": 9.224280038955374e-8,
+          "maximumRelativeError": 0.6653724556862615,
+          "rmsRelativeError": 0.6653724556862615
+        }
+      }
+    }
+  ],
+  "unsupported": [
+    {
+      "form": "current-valued output",
+      "status": "explicitly rejected",
+      "error": "Parse error at line 4: Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop'\n  .noise i ( V1 ) V1 dec 3 100 10k"
+    },
+    {
+      "form": "dependent-source input referral",
+      "status": "explicitly rejected",
+      "error": ".noise input source 'E1' is not an independent voltage or current source"
+    },
+    {
+      "form": "differential BJT noise",
+      "status": "explicitly rejected",
+      "error": ".noise differential voltage output only supports resistor noise"
+    },
+    {
+      "form": "stepped noise",
+      "status": "explicitly rejected",
+      "error": "Parse error at line 5: .step cannot be combined with .noise\n  .step param R1 list 1k 2k"
+    },
+    {
+      "form": "temperature card",
+      "status": "explicitly rejected",
+      "error": "Parse error at line 5: Unsupported dot command: '.temp'\n  .temp 50"
+    }
+  ],
+  "losses": [
+    "Every non-zero residual is retained in the per-fixture errors; no tolerance or circuit value is tuned per engine.",
+    "Legacy .noise summary intervals and .print noise output cards require the documented common adaptation.",
+    "Current-valued noise outputs, dependent-source input referral, differential semiconductor noise, stepped noise, and temperature cards remain explicitly unsupported.",
+    "Runtime values are not directly comparable because ngspice includes process startup."
+  ],
+  "redReceipt": "Focused test failed before implementation: InvalidCircuitError: .noise input source 'I1' is not an independent voltage source (1 failed, 48 skipped).",
+  "potetoModeReceipt": "benchmarks/current-source-noise/POTETO.md"
+}
