@@ -21,6 +21,14 @@ describe('.noise analysis', () => {
     .noise v(out) Vgate dec 3 10 10k
   `;
 
+  const diodeFixture = (sweep: string, flicker = false) => `
+    V1 in 0 DC 1 AC 1
+    R1 in out 1k
+    D1 out 0 DMOD
+    .model DMOD D(IS=1e-14 N=1${flicker ? ' KF=1e-10 AF=1' : ''})
+    .noise v(out) V1 ${sweep}
+  `;
+
   it('parses the bounded ngspice-compatible linear form', () => {
     expect(parse(fixture).analyses).toEqual([{
       type: 'noise',
@@ -179,13 +187,59 @@ describe('.noise analysis', () => {
   });
 
   it.each([
-    ['diode', 'D1', `
-      Vbias in 0 DC 1 AC 1
+    ['lin 3 100 300', 'lin'],
+    ['dec 3 100 10k', 'dec'],
+    ['oct 3 100 800', 'oct'],
+  ] as const)('returns deterministic typed diode shot-noise results for %s', async (
+    sweep, variation,
+  ) => {
+    const deck = diodeFixture(sweep);
+    expect(parse(deck).analyses[0]).toMatchObject({ type: 'noise', variation });
+
+    const first = (await simulate(deck)).noise!;
+    const repeated = (await simulate(deck)).noise!;
+
+    expect(first).toEqual(repeated);
+    expect(Math.abs(first.outputNoiseDensity[0] - 7.589715009730822e-10)
+      / 7.589715009730822e-10).toBeLessThan(2e-3);
+    expect(Math.abs(first.inputNoiseDensity[0] - 1.163256983612927e-8)
+      / 1.163256983612927e-8).toBeLessThan(2e-3);
+  });
+
+  it('matches ngspice-47 diode flicker density and integrated totals', async () => {
+    const result = (await simulate(diodeFixture('dec 3 100 10k', true))).noise!;
+
+    const ngspice47Output = [
+      1.255970194504204e-6,
+      8.556827128505760e-7,
+      5.829701106297475e-7,
+      3.971733014469353e-7,
+      2.705915906695873e-7,
+      1.843527418367607e-7,
+      1.255992896962048e-7,
+    ];
+    expect(result.outputNoiseDensity).toHaveLength(ngspice47Output.length);
+    result.outputNoiseDensity.forEach((density, index) => {
+      expect(Math.abs(density - ngspice47Output[index]) / ngspice47Output[index])
+        .toBeLessThan(2e-3);
+    });
+    expect(Math.abs(result.integratedOutputNoise! - 2.695279454534208e-5)
+      / 2.695279454534208e-5).toBeLessThan(2e-3);
+    expect(Math.abs(result.integratedInputNoise! - 4.130988639567582e-4)
+      / 4.130988639567582e-4).toBeLessThan(2e-3);
+  });
+
+  it('keeps unexpanded diode series-resistance noise explicitly unsupported', async () => {
+    await expect(simulate(`
+      V1 in 0 DC 1 AC 1
       R1 in out 1k
-      D1 out 0 Dmod
-      .model Dmod D
-      .noise v(out) Vbias dec 3 100 10k
-    `],
+      D1 out 0 DMOD
+      .model DMOD D(IS=1e-14 RS=10)
+      .noise v(out) V1 dec 3 100 10k
+    `)).rejects.toThrow(".noise does not support diode series-resistance noise for 'D1'");
+  });
+
+  it.each([
     ['BJT', 'Q1', `
       Vbias vcc 0 DC 5 AC 1
       Rbase vcc base 100k

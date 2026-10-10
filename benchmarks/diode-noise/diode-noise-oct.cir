@@ -1,0 +1,7 @@
+* issue 179 CC0-1.0 diode shot and flicker noise, OCT
+V1 in 0 DC 1 AC 1
+R1 in out 1k
+D1 out 0 DMOD
+.model DMOD D(IS=1e-14 N=1 KF=1e-10 AF=1)
+.noise v(out) V1 oct 3 100 800
+.end

@@ -16,6 +16,8 @@ export interface DiodeParams {
   M?: number;
   MJSW?: number;
   TT?: number;
+  KF?: number;
+  AF?: number;
 }
 
 const VT = 0.02585; // Thermal voltage at 300K
@@ -50,6 +52,33 @@ export class Diode implements DeviceModel {
       M: params.M ?? 0.5,
       MJSW: params.MJSW ?? 0.33,
       TT: params.TT ?? 0,
+      KF: params.KF ?? 0,
+      AF: params.AF ?? 1,
+    };
+  }
+
+  /** DC junction current used by the small-signal shot/flicker noise model. */
+  noiseOperatingPoint(solution: Float64Array): {
+    current: number;
+    flickerCoefficient: number;
+    flickerExponent: number;
+    parallelMultiplier: number;
+  } {
+    const [nA, nK] = this.nodes;
+    const terminalVoltage = (nA >= 0 ? solution[nA] : 0) - (nK >= 0 ? solution[nK] : 0);
+    const { IS, N, RS, KF, AF } = this.params;
+    const { current } = diodeCurrent(
+      terminalVoltage,
+      N * VT,
+      IS,
+      RS,
+      !this.hasExternalSeriesResistance,
+    );
+    return {
+      current,
+      flickerCoefficient: KF!,
+      flickerExponent: AF!,
+      parallelMultiplier: this.instanceParams.M ?? 1,
     };
   }
 

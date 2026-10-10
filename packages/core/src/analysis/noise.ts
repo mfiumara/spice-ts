@@ -13,14 +13,19 @@ import { ComplexSparseSolver } from '../solver/complex-sparse-solver.js';
 import type { NoiseAnalysis, ResolvedOptions } from '../types.js';
 
 const BOLTZMANN_CONSTANT = 1.380649e-23;
+const ELEMENTARY_CHARGE = 1.602176634e-19;
 const DEFAULT_TEMPERATURE_KELVIN = 273.15 + 27;
 
-/** Reject devices whose noise sources are not part of the bounded resistor/MOS1 slice. */
+/** Reject devices whose noise sources are not part of the bounded slice. */
 export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
   for (const device of compiled.devices) {
+    if (device instanceof Diode && (device.params.RS ?? 0) > 0) {
+      throw new InvalidCircuitError(
+        `.noise does not support diode series-resistance noise for '${device.name}'`,
+      );
+    }
     let kind: string | undefined;
-    if (device instanceof Diode) kind = 'diode';
-    else if (device instanceof BJT) kind = 'BJT';
+    if (device instanceof BJT) kind = 'BJT';
     else if (device instanceof BSIM3v3) kind = 'MOSFET';
 
     if (device instanceof MOSFET) {
@@ -61,7 +66,6 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
         throw new InvalidCircuitError(`.noise requires a positive finite MOSFET TOX for '${device.name}'`);
       }
     }
-
     if (kind) {
       throw new InvalidCircuitError(
         `.noise does not support ${kind} noise for '${device.name}'`,
@@ -71,9 +75,9 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
 }
 
 /**
- * Solve the bounded resistor and MOSFET level-1 noise slice at ngspice's default
- * 27 C circuit temperature. MOS1 contributes channel thermal noise and KF/AF
- * flicker noise. Controlled and independent ideal sources are noiseless.
+ * Solve the bounded noise slice at ngspice's default 27 C circuit temperature:
+ * resistor thermal noise, diode junction shot/flicker noise, and MOS1 channel
+ * thermal/KF/AF flicker noise. Controlled and independent ideal sources are noiseless.
  */
 export function solveNoise(
   compiled: CompiledCircuit,
@@ -152,6 +156,29 @@ export function solveNoise(
       }
       return sources;
     });
+  const diodeSources = devices
+    .filter((device): device is Diode => device instanceof Diode)
+    .flatMap(diode => {
+      const operatingPoint = diode.noiseOperatingPoint(dcSolution);
+      const current = Math.abs(operatingPoint.current);
+      const sources: Array<{
+        nodes: number[];
+        powerDensity: (frequency: number) => number;
+      }> = [{
+        nodes: diode.nodes,
+        powerDensity: () => 2 * ELEMENTARY_CHARGE * current,
+      }];
+      if (operatingPoint.flickerCoefficient > 0) {
+        const multiplier = operatingPoint.parallelMultiplier;
+        sources.push({
+          nodes: diode.nodes,
+          powerDensity: (frequency: number) => operatingPoint.flickerCoefficient
+            * Math.pow(Math.max(current / multiplier, Number.MIN_VALUE), operatingPoint.flickerExponent)
+            * multiplier / frequency,
+        });
+      }
+      return sources;
+    });
   const noiseSources = [...resistorSources, ...mosfetSources];
 
   const frequencies = generateFrequencies(analysis, options.reltol);
@@ -160,6 +187,7 @@ export function solveNoise(
   const inputNoiseDensity: number[] = [];
   const gainSquaredInverse: number[] = [];
   const sourceOutputPowerDensity = noiseSources.map(() => [] as number[]);
+  const diodeOutputPowerDensity = diodeSources.map(() => [] as number[]);
 
   for (const frequency of frequencies) {
     solver.factorize(gCsc, cCsc, 2 * Math.PI * frequency);
@@ -184,6 +212,18 @@ export function solveNoise(
       sourceOutputPowerDensity[index].push(contribution);
       outputPowerDensity += contribution;
     }
+    for (let index = 0; index < diodeSources.length; index++) {
+      const { nodes, powerDensity } = diodeSources[index];
+      const rhs = new Float64Array(systemSize);
+      const [positive, negative] = nodes;
+      const currentDensity = Math.sqrt(powerDensity(frequency));
+      if (positive >= 0) rhs[positive] -= currentDensity;
+      if (negative >= 0) rhs[negative] += currentDensity;
+      const [real, imaginary] = solver.solve(rhs, zeroImaginary);
+      const contribution = real[outputIndex] ** 2 + imaginary[outputIndex] ** 2;
+      diodeOutputPowerDensity[index].push(contribution);
+      outputPowerDensity += contribution;
+    }
 
     const outputDensity = Math.sqrt(outputPowerDensity);
     outputNoiseDensity.push(outputDensity);
@@ -191,12 +231,15 @@ export function solveNoise(
   }
 
   const integratedOutputNoise = hasIntegratedTotals
-    ? Math.sqrt(sumIntegratedOutputPower(frequencies, sourceOutputPowerDensity))
+    ? Math.sqrt(sumIntegratedOutputPower(
+      frequencies,
+      [...sourceOutputPowerDensity, ...diodeOutputPowerDensity],
+    ))
     : undefined;
   const integratedInputNoise = hasIntegratedTotals
     ? Math.sqrt(sumIntegratedInputPower(
       frequencies,
-      sourceOutputPowerDensity,
+      [...sourceOutputPowerDensity, ...diodeOutputPowerDensity],
       gainSquaredInverse,
     ))
     : undefined;

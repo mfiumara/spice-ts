@@ -39,9 +39,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
   private workspace!: Float64Array;     // dense column vector of size n (indexed by original row)
   private workY!: Float64Array;         // solve workspace
   private uDiagIdx!: Int32Array;        // cached diagonal positions in U
-  private pivotOrigRow!: Int32Array;    // pivotOrigRow[k] = original row for column k's pivot
   private pinv!: Int32Array;            // pinv[origRow] = column that used origRow as pivot
-  private lTempOrigRows!: Int32Array;   // original row indices for L entries during factorize
   private nonzeroFlag!: Int32Array;     // marker for workspace non-zero tracking
   private nonzeroList!: Int32Array;     // list of non-zero workspace positions
   private activeK!: Int32Array;         // active column indices during triangular solve
@@ -86,9 +84,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
     this.workspace = new Float64Array(n);
     this.workY = new Float64Array(n);
     this.uDiagIdx = new Int32Array(n);
-    this.pivotOrigRow = new Int32Array(n);
     this.pinv = new Int32Array(n);
-    this.lTempOrigRows = new Int32Array(lNnz);
     this.nonzeroFlag = new Int32Array(n);
     this.nonzeroList = new Int32Array(n);
     this.activeK = new Int32Array(n);
@@ -106,8 +102,8 @@ export class GilbertPeierlsSolver implements SparseSolver {
    * Left-looking column-Crout factorization with threshold partial pivoting.
    *
    * The workspace vector is indexed by ORIGINAL row numbers throughout.
-   * During factorization, L entries are stored with original row indices
-   * (in a parallel array), then converted to elimination-order indices
+   * During factorization, L entries are stored with original row indices in
+   * the final row array, then converted in place to elimination-order indices
    * after the full factorization when the final permutation is known.
    *
    * This avoids a permutation-inconsistency where later pivots would
@@ -128,9 +124,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
     let uRows = this.uRows;
     let uValues = this.uValues;
     const uDiagIdx = this.uDiagIdx;
-    const pivotOrigRow = this.pivotOrigRow;
     const pinv = this.pinv;
-    let lTempOrigRows = this.lTempOrigRows;
     const nonzeroFlag = this.nonzeroFlag;
     const nonzeroList = this.nonzeroList;
     const activeK = this.activeK;
@@ -143,7 +137,6 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
     // Initialize permutation and work arrays
     for (let i = 0; i < n; i++) perm[i] = i;
-    pivotOrigRow.fill(-1);
     pinv.fill(-1);
     nonzeroFlag.fill(-1);
     activeFlag.fill(-1);
@@ -168,7 +161,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
       }
 
       // === Step 2: LEFT-LOOKING sparse triangular solve ===
-      // For each column k < j (in order), if workspace[pivotOrigRow[k]] != 0,
+      // For each column k < j (in order), if workspace[perm[k]] != 0,
       // record U[k,j] and subtract L[:,k] * U[k,j] from the workspace.
       //
       // We build the active set from nonzeroList: for each nonzero workspace
@@ -195,7 +188,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
         const k = activeK[ki];
         ki++;
 
-        const pr = pivotOrigRow[k];
+        const pr = perm[k];
         const ukj = workspace[pr];
         if (ukj === 0) continue;
 
@@ -211,7 +204,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
         // Apply L column k: subtract L[i,k] * U[k,j] from workspace
         for (let p = lColPtr[k]; p < lColPtr[k + 1]; p++) {
-          const origI = lTempOrigRows[p];
+          const origI = lRows[p];
           const lik = lValues[p];
           workspace[origI] -= lik * ukj;
 
@@ -275,7 +268,6 @@ export class GilbertPeierlsSolver implements SparseSolver {
       }
 
       // Record pivot assignment
-      pivotOrigRow[j] = chosenOrigRow;
       pinv[chosenOrigRow] = j;
 
       // Update perm: swap chosenOrigRow into position j
@@ -303,8 +295,8 @@ export class GilbertPeierlsSolver implements SparseSolver {
       // === Step 4: STORE L column j ===
       // For each original row not yet used as a pivot with nonzero workspace value,
       // store L[i,j] = workspace[origRow] / pivotVal.
-      // Row indices are stored as ORIGINAL rows in lTempOrigRows for use by the
-      // triangular solve in subsequent columns.
+      // Row indices remain in ORIGINAL row space until the factorization ends;
+      // the triangular solve in subsequent columns reads them from lRows.
       for (let t = 0; t < nonzeroCount; t++) {
         const origRow = nonzeroList[t];
         if (origRow !== chosenOrigRow && pinv[origRow] < 0 && workspace[origRow] !== 0) {
@@ -312,9 +304,8 @@ export class GilbertPeierlsSolver implements SparseSolver {
             this.growLFactors(lp + 1);
             lRows = this.lRows;
             lValues = this.lValues;
-            lTempOrigRows = this.lTempOrigRows;
           }
-          lTempOrigRows[lp] = origRow;
+          lRows[lp] = origRow;
           lValues[lp] = workspace[origRow] / pivotVal;
           lp++;
         }
@@ -336,7 +327,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
       pinv[perm[k]] = k;
     }
     for (let p = 0; p < lp; p++) {
-      lRows[p] = pinv[lTempOrigRows[p]];
+      lRows[p] = pinv[lRows[p]];
     }
 
     this.factorized = true;
@@ -346,13 +337,10 @@ export class GilbertPeierlsSolver implements SparseSolver {
     const capacity = Math.max(required, Math.max(4, this.lValues.length * 2));
     const rows = new Int32Array(capacity);
     const values = new Float64Array(capacity);
-    const originalRows = new Int32Array(capacity);
     rows.set(this.lRows);
     values.set(this.lValues);
-    originalRows.set(this.lTempOrigRows);
     this.lRows = rows;
     this.lValues = values;
-    this.lTempOrigRows = originalRows;
   }
 
   private growUFactors(required: number): void {
