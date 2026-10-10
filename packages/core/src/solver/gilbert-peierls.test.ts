@@ -355,6 +355,22 @@ describe('GilbertPeierlsSolver', () => {
       expect(solution[1]).toBeCloseTo(1.8, 10);
     });
 
+    it('reuses the numeric factor workspace for repeated solves', () => {
+      const matrix = new SparseMatrix(2);
+      matrix.add(0, 0, 2); matrix.add(0, 1, 1);
+      matrix.add(1, 0, 1); matrix.add(1, 1, 3);
+      const { csc } = toCsc(matrix);
+      const solver = new GilbertPeierlsSolver();
+      solver.analyzePattern(csc);
+
+      const storage = solver as unknown as { workY?: Float64Array };
+      expect(storage.workY).toBeUndefined();
+
+      solver.factorize(csc);
+      expect(Array.from(solver.solve(new Float64Array([5, 7])))).toEqual([1.6, 1.8]);
+      expect(Array.from(solver.solve(new Float64Array([8, 9])))).toEqual([3, 2]);
+    });
+
     it('recovers its numeric workspace after a singular value change', () => {
       const singular = new SparseMatrix(2);
       singular.touch(0, 0); singular.touch(0, 1);
