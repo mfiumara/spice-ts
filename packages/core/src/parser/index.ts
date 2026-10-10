@@ -311,10 +311,20 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
     }
     case '.TF': {
       if (tokens[1]?.toUpperCase() === 'I') {
-        throw new ParseError(
-          ".tf current output is not supported; expected '.tf v(node) source'",
-          lineNumber, tokens.join(' '),
-        );
+        const isSourceCurrentForm = tokens.length === 6
+          && tokens[2] === '('
+          && tokens[4] === ')';
+        if (!isSourceCurrentForm) {
+          const message = tokens.slice(3, -2).some(token => token === '(' || token === ')')
+            ? ".tf nested current output is not supported; expected '.tf i(source) input'"
+            : "Unsupported .tf current output; expected '.tf i(source) input'";
+          throw new ParseError(message, lineNumber, tokens.join(' '));
+        }
+        circuit.addAnalysis('tf', {
+          outputSource: tokens[3],
+          inputSource: tokens[5],
+        });
+        break;
       }
       if (tokens[1]?.toUpperCase() === 'V' && tokens.length > 6) {
         throw new ParseError(

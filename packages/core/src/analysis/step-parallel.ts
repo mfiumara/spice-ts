@@ -18,6 +18,7 @@ interface PlainResult {
   frequencies?: number[];
   sweepValues?: Float64Array;
   outputNode?: string;
+  outputSource?: string;
   inputSource?: string;
   transfer?: number;
   inputResistance?: number;
@@ -60,6 +61,7 @@ function reviveStepResult(step: StepResult): StepResult {
         plain.transferFunction.transfer!,
         plain.transferFunction.inputResistance!,
         plain.transferFunction.outputResistance!,
+        plain.transferFunction.outputSource,
       ) : step.transferFunction,
   };
 }
