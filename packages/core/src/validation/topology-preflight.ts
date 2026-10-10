@@ -116,11 +116,16 @@ function dcConnectionGroups(device: DeviceModel): number[][] {
     || device instanceof CCCS
   ) return [];
 
-  // A transconductance stamp can provide a DC voltage coefficient (for
-  // example G1 out 0 out 0 gm). Treat all terminals as potentially coupled;
-  // this deliberately avoids false rejection while numerical solve remains
-  // authoritative for less-obvious controlled-source singularities.
-  if (device instanceof VCCS) return [device.nodes];
+  if (device instanceof VCCS) {
+    const [outP, outN, ctrlP, ctrlN] = device.nodes;
+    // The control port is high impedance and cannot give either port a DC
+    // reference. The one topology-equivalent conductance is a self-controlled
+    // VCCS, whose control and output node pairs are identical (in either
+    // polarity).
+    return outP === ctrlP && outN === ctrlN || outP === ctrlN && outN === ctrlP
+      ? [[outP!, outN!]]
+      : [];
+  }
 
   if (device instanceof VCVS || device instanceof CCVS) {
     return [device.nodes.slice(0, 2)];

@@ -38,6 +38,7 @@ describe('protocol v1 topology validation', () => {
   it.each([
     ['topology-floating.cir', 'FLOATING_COMPONENT', ['a', 'b'], ['/input/source/lines/0'], '4edc2f75094dd88b1435d0257d41af699489cf2729a2f046d8ff3736ce35c063'],
     ['topology-no-dc-reference.cir', 'NO_DC_REFERENCE', ['sense'], ['/input/source/lines/1', '/input/source/lines/2'], '75a321d175413a1775e65e4c8a5476c5ec1c8e42fe1a873fc0d9fd794e4026f2'],
+    ['topology-vccs-floating-control.cir', 'NO_DC_REFERENCE', ['c', 'd'], ['/input/source/lines/1', '/input/source/lines/2'], '51ed3e8ce7b4040c807b6d00b06afd1ac584c96ba742dd610cd7646928ab8345'],
     ['topology-ideal-loop.cir', 'IDEAL_SOURCE_LOOP', ['0', 'a', 'b'], ['/input/source/lines/0', '/input/source/lines/1', '/input/source/lines/2'], '8d472b101c4d934d5470b3332c9cf164e3ce64f68382f30fd56d0064e12e89d9'],
   ] as const)('maps %s to typed INVALID_CIRCUIT details before solve', async (fixtureName, kind, involvedNodes, sourcePaths, expectedHash) => {
     let caught: unknown;

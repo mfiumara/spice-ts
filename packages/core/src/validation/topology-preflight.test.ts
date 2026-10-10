@@ -64,6 +64,17 @@ describe('deterministic topology preflight', () => {
     expect(() => preflightTopology(compiled)).not.toThrow();
   });
 
+  it('accepts a VCCS with independently DC-referenced output and control ports', () => {
+    const compiled = parseTitleless([
+      'V1 control 0 1',
+      'G1 output 0 control 0 1m',
+      'R1 output 0 1k',
+      '.op',
+    ].join('\n')).compile();
+
+    expect(() => preflightTopology(compiled)).not.toThrow();
+  });
+
   it('detects ideal controlled-voltage-source output loops', () => {
     const compiled = parseTitleless('V1 a 0 1\nE1 b 0 a 0 2\nV2 b 0 2\n.op').compile();
 
