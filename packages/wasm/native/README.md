@@ -7,6 +7,7 @@ The artifact was built with Homebrew LLVM/LLD 23.1.3:
     PATH="/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/lld/bin:$PATH" \
       clang --target=wasm32 -Oz -nostdlib -fno-builtin \
       -Wl,--no-entry \
+      -Wl,--export=stamp_vccs_f64 \
       -Wl,--export=solve_f64 \
       -Wl,--export=solve_complex_f64 \
       -Wl,--export=abi_version \
@@ -20,16 +21,17 @@ The artifact was built with Homebrew LLVM/LLD 23.1.3:
 
 Expected artifact:
 
-- byte length: 2900
-- SHA-256: `5d574b2b44f02e1e9b4f79351eaf2eaad75d2fd4c56ad7fd4a08ec515de4d76a`
+- byte length: 3275
+- SHA-256: `9521611634a21cd44771ffb76f0ac70b3f0bdd3df6f03f3828264c72238c7137`
 - imports: none
 - memory: fixed at 3 WebAssembly pages (196608 bytes)
 - ABI version: 2
 - maximum order: 64
 
-ABI v2 retains `solve_f64(order, matrix, rhs)` for real OP systems and adds
-`solve_complex_f64(order, matrixReal, matrixImaginary, rhsReal, rhsImaginary)` for split-complex AC systems.
-Both entry points mutate their row-major matrices and right-hand sides in place. Status 0 means success, 1 means
+ABI v2 exposes `stamp_vccs_f64(order, matrix, outP, outN, ctrlP, ctrlN, gm)` for bounded linear VCCS stamps,
+`solve_f64(order, matrix, rhs)` for real systems, and
+`solve_complex_f64(order, matrixReal, matrixImaginary, rhsReal, rhsImaginary)` for split-complex systems.
+The entry points mutate their row-major matrices and right-hand sides in place. Status 0 means success, 1 means
 singular, 2 means non-finite input/intermediate/output, and 3 means invalid arguments.
 
 The kernels perform deterministic dense f64 Gaussian elimination with partial pivoting. Equal pivot magnitudes

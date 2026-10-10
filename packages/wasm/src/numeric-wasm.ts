@@ -1,4 +1,4 @@
-import { parseTitleless, type CompiledCircuit, type StampContext } from '@spice-ts/core';
+import { parseTitleless, VCCS, type CompiledCircuit, type StampContext } from '@spice-ts/core';
 import type {
   JsonObject,
   SimulationRequestV1,
@@ -91,7 +91,9 @@ function simulateOp(
     sourceScale: 1,
     useDcSourceValue: true,
   };
-  for (const device of compiled.devices) device.stamp(context);
+  for (const device of compiled.devices) {
+    if (!(device instanceof VCCS)) device.stamp(context);
+  }
   const gmin = request.options?.gmin ?? 0;
   for (let node = 0; node < compiled.nodeCount; node++) matrix[node * order + node] += gmin;
 
@@ -103,6 +105,24 @@ function simulateOp(
   }
   new Float64Array(exports.memory.buffer, matrixPointer, matrix.length).set(matrix);
   new Float64Array(exports.memory.buffer, rhsPointer, rhs.length).set(rhs);
+  for (const device of compiled.devices) {
+    if (!(device instanceof VCCS)) continue;
+    const [outputPositive, outputNegative, controlPositive, controlNegative] = device.nodes;
+    const stampStatus = exports.stamp_vccs_f64(
+      order,
+      matrixPointer,
+      outputPositive!,
+      outputNegative!,
+      controlPositive!,
+      controlNegative!,
+      device.gm,
+    );
+    if (stampStatus !== 0) {
+      throw numericError('INVALID_CIRCUIT', 'The bounded WebAssembly VCCS stamp rejected numeric data', 'solve', {
+        device: device.name, order, status: stampStatus,
+      });
+    }
+  }
   const status = exports.solve_f64(order, matrixPointer, rhsPointer);
   if (status === 1) {
     throw numericError('SINGULAR_MATRIX', 'The bounded WebAssembly matrix is singular', 'solve', { order });
@@ -410,13 +430,14 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
     || compiled.analyses.length !== 1 || compiled.analyses[0]?.type !== analysis) {
     unsupported('analysis', `Exactly one unstepped .${analysis} analysis is supported`);
   }
-  const devices = analysis === 'op' ? ['R', 'I', 'V']
+  const devices = analysis === 'op' ? ['R', 'I', 'V', 'G']
     : analysis === 'tran' ? ['R', 'C', 'I', 'V']
       : ['R', 'C', 'L', 'I', 'V'];
   if (compiled.devices.some(device => !devices.includes(device.name[0]?.toUpperCase() ?? ''))) {
     unsupported('device', `Only ${devices.join(', ')} devices are supported for .${analysis}`);
   }
-  if (analysis !== 'op') validatePassiveValues(compiled);
+  if (analysis === 'op') validateVccsValues(compiled);
+  else validatePassiveValues(compiled);
   const order = compiled.nodeCount + compiled.branchCount;
   if (order < 1) throw numericError('INVALID_CIRCUIT', 'The circuit has no numeric unknowns', 'compile');
   if (order > NUMERIC_WASM_LIMITS.maxSystemOrder) {
@@ -440,7 +461,7 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
 }
 
 function validateCards(cards: string[], analysis: 'op' | 'tran' | 'ac'): void {
-  const allowedDevices = analysis === 'op' ? ['R', 'I', 'V']
+  const allowedDevices = analysis === 'op' ? ['R', 'I', 'V', 'G']
     : analysis === 'tran' ? ['R', 'C', 'I', 'V']
       : ['R', 'C', 'L', 'I', 'V'];
   for (const card of cards) {
@@ -453,6 +474,10 @@ function validateCards(cards: string[], analysis: 'op' | 'tran' | 'ac'): void {
     if (type === 'R' || type === 'C' || type === 'L') {
       if (tokens.length !== 4) {
         unsupported('passive-form', 'Passive devices must use name positive negative value');
+      }
+    } else if (type === 'G') {
+      if (tokens.length !== 6) {
+        unsupported('vccs-form', 'VCCS devices must use name out+ out- control+ control- transconductance');
       }
     } else if (analysis === 'op') {
       const dc = tokens.length === 5 && tokens[3]?.toUpperCase() === 'DC';
@@ -497,6 +522,14 @@ function validAcSourceTokens(tokens: string[]): boolean {
       || ((tokens.length === 7 || tokens.length === 8) && tokens[5]?.toUpperCase() === 'AC');
   }
   return first === 'AC' && (tokens.length === 5 || tokens.length === 6);
+}
+
+function validateVccsValues(compiled: CompiledCircuit): void {
+  for (const device of compiled.devices) {
+    if (device instanceof VCCS && !Number.isFinite(device.gm)) {
+      throw numericError('INVALID_CIRCUIT', `VCCS device '${device.name}' must have a finite transconductance`, 'compile');
+    }
+  }
 }
 
 function validatePassiveValues(compiled: CompiledCircuit): void {

@@ -1,0 +1,6 @@
+* Project-authored bounded VCCS OP single-ended fixture
+VCTRL control 0 2
+G1 out 0 control 0 2m
+R1 out 0 1k
+.op
+.end

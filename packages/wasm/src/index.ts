@@ -92,7 +92,7 @@ export interface SpiceEngineCapabilitiesV1 {
     inputFormats: readonly ['spice'];
     analyses: readonly ['op', 'tran', 'ac'];
     devicesByAnalysis: {
-      op: readonly ['R', 'I', 'V'];
+      op: readonly ['R', 'I', 'V', 'G'];
       tran: readonly ['R', 'C', 'I', 'V'];
       ac: readonly ['R', 'C', 'L', 'I', 'V'];
     };
@@ -202,7 +202,7 @@ export async function createSpiceEngine(options: CreateSpiceEngineOptions): Prom
         inputFormats: ['spice'] as const,
         analyses: ['op', 'tran', 'ac'] as const,
         devicesByAnalysis: {
-          op: ['R', 'I', 'V'] as const,
+          op: ['R', 'I', 'V', 'G'] as const,
           tran: ['R', 'C', 'I', 'V'] as const,
           ac: ['R', 'C', 'L', 'I', 'V'] as const,
         },

@@ -8,7 +8,7 @@ import {
   type SpiceWorkerManifestV1,
   type WorkerLike,
 } from './index.js';
-import { NUMERIC_WASM_LIMITS, validateNumericWasmModule } from './numeric-abi.js';
+import { NUMERIC_WASM_LIMITS, validateNumericWasmModule, type NumericWasmExports } from './numeric-abi.js';
 
 const circuits = [
   'V1 in 0 5\nR1 in 0 1k\n.op',
@@ -61,7 +61,7 @@ describe('bounded numeric WebAssembly backend', () => {
           inputFormats: ['spice'],
           analyses: ['op', 'tran', 'ac'],
           devicesByAnalysis: {
-            op: ['R', 'I', 'V'],
+            op: ['R', 'I', 'V', 'G'],
             tran: ['R', 'C', 'I', 'V'],
             ac: ['R', 'C', 'L', 'I', 'V'],
           },
@@ -79,12 +79,22 @@ describe('bounded numeric WebAssembly backend', () => {
     const module = await WebAssembly.compile(bytes);
     expect(WebAssembly.Module.imports(module)).toEqual([]);
     expect(WebAssembly.Module.exports(module).map(entry => entry.name)).toEqual(expect.arrayContaining([
-      'memory', '__heap_base', 'abi_version', 'max_order', 'solve_f64', 'solve_complex_f64',
+      'memory', '__heap_base', 'abi_version', 'max_order', 'stamp_vccs_f64', 'solve_f64', 'solve_complex_f64',
     ]));
     await expect(validateNumericWasmModule(module)).resolves.toBeUndefined();
     const instance = await WebAssembly.instantiate(module);
-    const memory = instance.exports.memory as WebAssembly.Memory;
+    const exports = instance.exports as unknown as NumericWasmExports;
+    const memory = exports.memory;
     expect(memory.buffer.byteLength).toBe(NUMERIC_WASM_LIMITS.memoryPages * 65_536);
+    const matrixPointer = Number(exports.__heap_base.value);
+    const matrix = new Float64Array(memory.buffer, matrixPointer, 16);
+    expect(exports.stamp_vccs_f64(4, matrixPointer, 0, 1, 2, 3, 0.01)).toBe(0);
+    expect(Array.from(matrix)).toEqual([
+      0, 0, 0.01, -0.01,
+      0, 0, -0.01, 0.01,
+      0, 0, 0, 0,
+      0, 0, 0, 0,
+    ]);
     expect(() => memory.grow(1)).toThrow();
   });
 
@@ -121,6 +131,91 @@ describe('bounded numeric WebAssembly backend', () => {
       }
     } finally {
       await Promise.all([js.close(), wasm.close()]);
+    }
+  });
+
+  it('solves the bounded linear VCCS OP slice through the WASM backend', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const source = [
+        'VCTRL control 0 2',
+        'G1 out 0 control 0 2m',
+        'R1 out 0 1k',
+        '.op',
+      ].join('\n');
+      const result = await wasm.simulate(request(source), { requestId: 'wasm-vccs-op' });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      const op = result.data.analyses[0];
+      expect(op?.type).toBe('op');
+      if (op?.type !== 'op') return;
+      expect(op.voltagesV).toMatchObject({ control: 2, out: -4 });
+      expect(op.currentsA.VCTRL).toBeCloseTo(0, 15);
+      expect(result.metadata).toMatchObject({ backend: 'spice-ts-wasm' });
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('rejects VCCS forms outside the bounded linear OP slice without fallback', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const [name, source, feature] of [
+        ['transient', 'V1 control 0 1\nG1 out 0 control 0 1m\nR1 out 0 1k\n.tran 1u 1m', 'device-or-directive'],
+        ['polynomial', 'V1 control 0 1\nG1 out 0 POLY(1) control 0 1m\nR1 out 0 1k\n.op', 'vccs-form'],
+        ['vcvs', 'V1 control 0 1\nE1 out 0 control 0 2\nR1 out 0 1k\n.op', 'device-or-directive'],
+      ] as const) {
+        const result = await wasm.simulate(request(source), { requestId: `wasm-vccs-reject-${name}` });
+        expect(result).toMatchObject({
+          ok: false,
+          error: {
+            code: 'UNSUPPORTED_FEATURE',
+            phase: 'validation',
+            retryable: false,
+            details: { backend: 'spice-ts-wasm', feature },
+          },
+          metadata: { backend: 'spice-ts-wasm' },
+        });
+      }
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('returns a structured singular-topology error for an unreferenced VCCS output', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const result = await wasm.simulate(request([
+        'VCTRL control 0 1',
+        'G1 out 0 control 0 1m',
+        '.op',
+      ].join('\n')), { requestId: 'wasm-vccs-singular' });
+      expect(result).toMatchObject({
+        ok: false,
+        error: { code: 'SINGULAR_MATRIX', phase: 'solve', retryable: false },
+        metadata: { backend: 'spice-ts-wasm' },
+      });
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('rejects non-finite VCCS transconductance before stamping', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const result = await wasm.simulate(request([
+        'VCTRL control 0 1',
+        'G1 out 0 control 0 1e999',
+        'R1 out 0 1k',
+        '.op',
+      ].join('\n')), { requestId: 'wasm-vccs-non-finite' });
+      expect(result).toMatchObject({
+        ok: false,
+        error: { code: 'INVALID_CIRCUIT', phase: 'compile', retryable: false },
+        metadata: { backend: 'spice-ts-wasm' },
+      });
+    } finally {
+      await wasm.close();
     }
   });
 

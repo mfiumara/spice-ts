@@ -58,7 +58,6 @@ try {
       apiVersion: '1',
       input: { format: 'spice', source: 'V1 in 0 AC 1\\nR1 in out 1k\\nC1 out 0 1u\\n.ac lin 1 100 100' },
     }, { requestId: 'packed-wasm' });
-    await engine.close();
     const analysis = result.ok ? result.data.analyses[0] : undefined;
     const output = analysis?.type === 'ac' ? analysis.voltagePhasors.out?.[0] : undefined;
     if (!result.ok || result.metadata.backend !== 'spice-ts-wasm'
@@ -67,6 +66,15 @@ try {
       || Math.abs(output.phaseDegrees - -32.141907635342065) > 1e-10) {
       throw new Error(JSON.stringify(result));
     }
+    const vccs = await engine.simulate({
+      apiVersion: '1',
+      input: { format: 'spice', source: 'VCTRL control 0 2\\nG1 out 0 control 0 2m\\nR1 out 0 1k\\n.op' },
+    }, { requestId: 'packed-wasm-vccs-op' });
+    const op = vccs.ok ? vccs.data.analyses[0] : undefined;
+    if (!vccs.ok || op?.type !== 'op' || op.voltagesV.out !== -4) {
+      throw new Error(JSON.stringify(vccs));
+    }
+    await engine.close();
   `);
   run('node', ['consume.mjs'], consumerRoot);
   console.log('Packed bounded WebAssembly consumer passed.');
