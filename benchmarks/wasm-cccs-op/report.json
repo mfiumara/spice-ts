@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-10T13:26:14.622Z",
+  "fixtures": [
+    {
+      "path": "benchmarks/wasm-cccs-op/differential.cir",
+      "sha256": "5462c18de8ebc84a8566638bfd6c004523f7ab8a8c301f7de219687ce55592d8",
+      "bytes": 166,
+      "identicalInputBytes": true,
+      "source": "project-authored",
+      "licence": "MIT"
+    },
+    {
+      "path": "benchmarks/wasm-cccs-op/mixed-source.cir",
+      "sha256": "16c5dfc66b2d9a637104898a6228ac1def0120baed62df17d20c5a599aaad5b0",
+      "bytes": 160,
+      "identicalInputBytes": true,
+      "source": "project-authored",
+      "licence": "MIT"
+    },
+    {
+      "path": "benchmarks/wasm-cccs-op/single-ended.cir",
+      "sha256": "66defab84846b8d5664fa5fc471e6d56c2060f3c647a824c8f3da141eab2e923",
+      "bytes": 142,
+      "identicalInputBytes": true,
+      "source": "project-authored",
+      "licence": "MIT"
+    }
+  ],
+  "methodology": {
+    "repetitions": 5,
+    "timing": "fresh WASM Node process for the three-fixture suite versus three fresh native ngspice processes per suite sample; includes parse, setup, solve, and serialization",
+    "matching": "same OP scalar vectors from byte-identical netlists; no interpolation",
+    "relativeErrorFloor": 1e-12,
+    "tolerances": "no per-circuit tuning; simulator defaults"
+  },
+  "versions": {
+    "spiceTsBaseRevision": "bfd35262d26216d62fafc2434c5ac2656f0d7db0",
+    "node": "v22.23.1",
+    "pnpm": "10.28.1",
+    "ngspice": "ngspice-47 : Circuit level simulation program"
+  },
+  "machine": {
+    "platform": "darwin arm64",
+    "os": "Darwin 27.0.0 Darwin Kernel Version 27.0.0: Tue Aug 11 21:06:40 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T6050",
+    "cpu": "Apple M5 Pro"
+  },
+  "commands": {
+    "build": "pnpm -C packages/wasm build",
+    "wasm": "pnpm exec tsx benchmarks/wasm-cccs-op/compare.ts --child=wasm",
+    "ngspice": "ngspice -b -r <raw> <identical-netlist>",
+    "reproduce": "pnpm --filter @spice-ts/wasm bench:cccs-op"
+  },
+  "convergence": {
+    "differential.cir": {
+      "wasm": "complete",
+      "ngspice": "complete"
+    },
+    "mixed-source.cir": {
+      "wasm": "complete",
+      "ngspice": "complete"
+    },
+    "single-ended.cir": {
+      "wasm": "complete",
+      "ngspice": "complete"
+    }
+  },
+  "counts": {
+    "fixtureCount": 3,
+    "wasmOpPointCount": 3,
+    "ngspiceOpPointCount": 3,
+    "vectorCount": 12,
+    "matchedScalarCount": 12
+  },
+  "errors": {
+    "aggregate": {
+      "maximumAbsoluteError": 0,
+      "rmsAbsoluteError": 0,
+      "maximumRelativeError": 0,
+      "rmsRelativeError": 0
+    },
+    "perVector": [
+      {
+        "fixture": "differential.cir",
+        "vector": "v(control)",
+        "reference": -1.5,
+        "actual": -1.5,
+        "absoluteError": 0,
+        "relativeError": 0
+      },
+      {
+        "fixture": "differential.cir",
+        "vector": "v(outn)",
+        "reference": -4,
+        "actual": -4,
+        "absoluteError": 0,
+        "relativeError": 0
+      },
+      {
+        "fixture": "differential.cir",
+        "vector": "v(outp)",
+        "reference": 4,
+        "actual": 4,
+        "absoluteError": 0,
+        "relativeError": 0
+      },
+      {
+        "fixture": "differential.cir",
+        "vector": "i(vctrl)",
+        "reference": 0.002,
+        "actual": 0.002,
+        "absoluteError": 0,
+        "relativeError": 0
+      },
+      {
+        "fixture": "mixed-source.cir",
+        "vector": "v(bias)",
+        "reference": 3,
+        "actual": 3,
+        "absoluteError": 0,
+        "relativeError": 0
+      },
+      {
+        "fixture": "mixed-source.cir",
+        "vector": "v(out)",
+        "reference": -16,
+        "actual": -16,
+        "absoluteError": 0,
+        "relativeError": 0
+      },
+      {
+        "fixture": "mixed-source.cir",
+        "vector": "v(sense)",
+        "reference": 1,
+        "actual": 1,
+        "absoluteError": 0,
+        "relativeError": 0
+      },
+      {
+        "fixture": "mixed-source.cir",
+        "vector": "i(vbias)",
+        "reference": -0.002,
+        "actual": -0.002,
+        "absoluteError": 0,
+        "relativeError": 0
+      },
+      {
+        "fixture": "mixed-source.cir",
+        "vector": "i(vsense)",
+        "reference": 0.002,
+        "actual": 0.002,
+        "absoluteError": 0,
+        "relativeError": 0
+      },
+      {
+        "fixture": "single-ended.cir",
+        "vector": "v(control)",
+        "reference": 2,
+        "actual": 2,
+        "absoluteError": 0,
+        "relativeError": 0
+      },
+      {
+        "fixture": "single-ended.cir",
+        "vector": "v(out)",
+        "reference": 6,
+        "actual": 6,
+        "absoluteError": 0,
+        "relativeError": 0
+      },
+      {
+        "fixture": "single-ended.cir",
+        "vector": "i(vctrl)",
+        "reference": -0.002,
+        "actual": -0.002,
+        "absoluteError": 0,
+        "relativeError": 0
+      }
+    ]
+  },
+  "performance": {
+    "wasmSuiteWallMs": {
+      "samples": [
+        1129.581666,
+        1747.0402919999997,
+        1394.5097500000002,
+        1210.6246660000006,
+        1047.9917919999998
+      ],
+      "median": 1210.6246660000006
+    },
+    "ngspiceSuiteWallMs": {
+      "samples": [
+        69.10304200000064,
+        59.60395799999969,
+        64.54824999999983,
+        78.59808300000077,
+        73.54824999999983
+      ],
+      "median": 69.10304200000064
+    },
+    "wasmLoss": {
+      "ratio": 17.519122616917347,
+      "percent": 1651.9122616917348
+    }
+  },
+  "artifactSizesBytes": {
+    "baselineRevision": "62690c3d7a172aedf4b1cc23678d15c6c5a953c7",
+    "baseline": {
+      "workerJs": 407419,
+      "indexJs": 42990,
+      "denseSolverWasm": 3275
+    },
+    "current": {
+      "workerJs": 413007,
+      "indexJs": 43043,
+      "denseSolverWasm": 3506
+    },
+    "delta": {
+      "workerJs": 5588,
+      "indexJs": 53,
+      "denseSolverWasm": 231
+    },
+    "note": "baseline was rebuilt from the exact issue branch base with the frozen lockfile; ABI version and fixed three-page memory are preserved"
+  },
+  "exclusions": [],
+  "retainedLosses": [
+    "Fresh-process WASM suite timing includes pnpm, tsx, and Node startup and loses to native ngspice; this is not a speed claim.",
+    "The bounded backend supports only five-token linear F elements in OP and rejects CCCS AC, DC, transient, POLY, behavioral, and nonlinear forms.",
+    "The backend remains limited to 64 numeric unknowns, 256 components, and three fixed WebAssembly memory pages.",
+    "TypeScript still performs bounded parsing, branch resolution, and stamps existing R/I/V primitives; each CCCS stamp and dense solve executes inside the verified WebAssembly artifact.",
+    "Relative errors at zero-valued references use the declared 1e-12 denominator floor."
+  ]
+}

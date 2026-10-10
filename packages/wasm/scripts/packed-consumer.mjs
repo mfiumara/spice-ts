@@ -75,6 +75,14 @@ try {
     if (!vccs.ok || op?.type !== 'op' || op.voltagesV.out !== -4) {
       throw new Error(JSON.stringify(vccs));
     }
+    const cccs = await engine.simulate({
+      apiVersion: '1',
+      input: { format: 'spice', source: 'VCTRL control 0 2\\nRCTRL control 0 1k\\nF1 out 0 VCTRL 3\\nRLOAD out 0 1k\\n.op' },
+    }, { requestId: 'packed-wasm-cccs-op' });
+    const cccsOp = cccs.ok ? cccs.data.analyses[0] : undefined;
+    if (!cccs.ok || cccsOp?.type !== 'op' || cccsOp.voltagesV.out !== 6) {
+      throw new Error(JSON.stringify(cccs));
+    }
     const dcResult = await engine.simulate({
       apiVersion: '1',
       input: { format: 'spice', source: 'V1 in 0 0\\nR1 in out 1k\\nR2 out 0 1k\\n.dc V1 0 1 0.5' },

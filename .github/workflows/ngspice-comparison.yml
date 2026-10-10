@@ -37,6 +37,9 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Build core from checked-out source
+        run: pnpm -C packages/core build
+
       - name: Install pinned ngspice
         run: sudo apt-get update && sudo apt-get install -y "ngspice=${NGSPICE_APT_VERSION}"
 
