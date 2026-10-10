@@ -6,7 +6,7 @@ import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, 
 import { resolveOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
 import { solveTransient } from './analysis/transient.js';
-import { solveAC } from './analysis/ac.js';
+import { buildACRHS, solveAC } from './analysis/ac.js';
 import { assertNoiseDevicesSupported, solveNoise } from './analysis/noise.js';
 import { solveTransferFunction } from './analysis/transfer-function.js';
 import { solvePoleZero } from './analysis/pole-zero.js';
@@ -510,7 +510,6 @@ function* streamAC(
   dcSolution: Float64Array,
 ): Generator<ACPoint> {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
-  const systemSize = nodeCount + branchCount;
 
   // Build linearized G and C matrices at DC operating point
   const assembler = new MNAAssembler(nodeCount, branchCount);
@@ -527,20 +526,6 @@ function* streamAC(
   const G = assembler.G;
   const C = assembler.C;
 
-  // Find AC excitation source
-  let excitationRow = -1;
-  let excitationMag = 1;
-  let excitationPhase = 0;
-  for (const device of devices) {
-    const exc = device.getACExcitation?.();
-    if (exc) {
-      excitationRow = nodeCount + exc.branch;
-      excitationMag = exc.magnitude;
-      excitationPhase = exc.phase;
-      break;
-    }
-  }
-
   const frequencies = generateStreamFreqs(analysis);
 
   // Build n*n CSC for G and C
@@ -556,13 +541,7 @@ function* streamAC(
   );
 
   // Pre-compute RHS (constant across frequencies)
-  const bReal = new Float64Array(systemSize);
-  const bImag = new Float64Array(systemSize);
-  if (excitationRow >= 0) {
-    const phaseRad = (excitationPhase * Math.PI) / 180;
-    bReal[excitationRow] = excitationMag * Math.cos(phaseRad);
-    bImag[excitationRow] = excitationMag * Math.sin(phaseRad);
-  }
+  const { real: bReal, imaginary: bImag } = buildACRHS(compiled);
 
   for (const freq of frequencies) {
     const omega = 2 * Math.PI * freq;

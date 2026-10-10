@@ -144,6 +144,23 @@ describe('protocol-v1 deterministic resource limits', () => {
     });
   });
 
+  it('stops before a later analysis when the serialized result ceiling is exceeded', async () => {
+    const safePoints: ProtocolSafePointV1[] = [];
+    const error = await publicFailure(simulateProtocolV1(
+      spice('V1 a 0 1\nR1 a 0 1k\n.op\n.op', { maxSerializedResultBytes: 8 }),
+      { onSafePoint: safePoint => safePoints.push(safePoint) },
+    ));
+
+    expect(error).toMatchObject({
+      code: 'RESOURCE_LIMIT', phase: 'serialize',
+      details: { limit: 'maxSerializedResultBytes', configured: 8, observed: expect.any(Number) },
+    });
+    expect(safePoints.filter(safePoint => safePoint === 'serialize:analysis')).toHaveLength(1);
+    const firstSerialization = safePoints.indexOf('serialize:analysis');
+    expect(firstSerialization).toBeGreaterThan(-1);
+    expect(safePoints.slice(firstSerialization + 1)).not.toContain('solve:newton-iteration');
+  });
+
   it('never leaks the internal backend name from guard failures', async () => {
     const error = await publicFailure(simulateProtocolV1(
       spice('V1 spice-ts 0 1\nR1 spice-ts 0 1k\n.op', { maxComponents: 1 }),

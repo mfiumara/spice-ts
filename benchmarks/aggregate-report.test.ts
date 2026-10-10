@@ -2,7 +2,11 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { describe, it } from 'node:test';
 import { resolve } from 'node:path';
-import { validateAggregateAccounting, verifyCommittedArtifacts } from './aggregate-report.js';
+import {
+  matchedPointEnvelope,
+  validateAggregateAccounting,
+  verifyCommittedArtifacts,
+} from './aggregate-report.js';
 
 const JSON_PATH = resolve('benchmarks/aggregate-report.json');
 const MARKDOWN_PATH = resolve('benchmarks/AGGREGATE_PARITY.md');
@@ -28,6 +32,37 @@ describe('aggregate report artifact verification', () => {
       'corpus-d': 20,
       'corpus-e': 20,
     });
+  });
+
+  it('commits a complete explained transition ledger against the prior accepted report', async () => {
+    const { json } = await committedArtifacts();
+    const report = JSON.parse(json);
+
+    assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/172');
+    assert.equal(report.comparisonToPrevious.outcomeSha256, 'b11ac2046fd57088d8e55f6b184c0eb07e80c9fecf857e6721d59e54fac8e8b0');
+    assert.deepEqual(report.comparisonToPrevious.statusTransitions, [
+      {
+        engine: 'spiceTs',
+        fixture: 'classic/lossy-line-aluminium',
+        from: 'success',
+        to: 'unsupported',
+        explanation: 'The bounded lossless T-card implementation now rejects this LTRA lossy-line model explicitly instead of silently treating it as a lossless line; issue #7 already tracks LTRA support.',
+        gapIssues: ['https://github.com/mfiumara/spice-ts/issues/7'],
+      },
+    ]);
+  });
+
+  it('commits matched-point envelopes derived from every compared signal', async () => {
+    const { json } = await committedArtifacts();
+    const report = JSON.parse(json);
+
+    assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
+    assert.equal(report.matchedPointEnvelope.comparedSignals, 189);
+    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 178);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 183.91564521207212);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 87.25304257950958);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 9829734.595793912);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 1160907.113030371);
   });
 
   it('rejects duplicate fixture paths and content hashes', async () => {

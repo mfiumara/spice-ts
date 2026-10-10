@@ -98,11 +98,15 @@ export async function simulateProtocolV1(
     appendAnalysisResult(serialized, result, analysis, analysisIndex, compiled.nodeNames, compiled.branchNames, circuit);
     guard.checkpoint('serialize:analysis');
     guard.maximum('maxResultPoints', resultPointCount(serialized), 'serialize');
+    guard.maximum(
+      'maxSerializedResultBytes',
+      utf8Bytes(JSON.stringify({ status: 'complete', analyses: serialized } satisfies SimulationResultV1)),
+      'serialize',
+    );
   }
 
   circuit.analyses.splice(0, circuit.analyses.length, ...analyses);
   const response: SimulationResultV1 = { status: 'complete', analyses: serialized };
-  guard.maximum('maxSerializedResultBytes', utf8Bytes(JSON.stringify(response)), 'serialize');
   return response;
 }
 
