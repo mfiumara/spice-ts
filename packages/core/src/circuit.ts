@@ -21,12 +21,14 @@ import { VCVS } from './devices/vcvs.js';
 import { CCCS } from './devices/cccs.js';
 import { CCVS } from './devices/ccvs.js';
 import { TransmissionLine } from './devices/transmission-line.js';
+import { expandLtraLadder, resolveLtraModel } from './devices/ltra-model.js';
 import { GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
+import { parseLtraModelCard } from './parser/transmission-line-parser.js';
 import {
   parseDiodeInstanceParams,
   type DiodeInstanceParams,
@@ -196,6 +198,8 @@ function formatDevice(desc: DeviceDescriptor): string {
       return `${desc.name} ${desc.coupledA} ${desc.coupledB} ${formatNumber(desc.value ?? 0)}`;
     case 'T':
       return `${desc.name} ${desc.nodes.join(' ')} Z0=${formatNumber(desc.value ?? 0)} TD=${formatNumber(desc.params?.TD ?? 0)}`;
+    case 'O':
+      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}`.trim();
     case 'V':
     case 'I':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatWaveform(desc.waveform)}`;
@@ -459,6 +463,26 @@ export class Circuit {
       nodes: [port1Positive, port1Negative, port2Positive, port2Negative],
       value: impedance,
       params: { TD: delay },
+    });
+  }
+
+  /** Add a benchmark-bounded common-reference O-element backed by an LTRA model. */
+  addLossyTransmissionLine(
+    name: string,
+    port1Positive: string,
+    port1Negative: string,
+    port2Positive: string,
+    port2Negative: string,
+    modelName: string,
+  ): void {
+    for (const node of [port1Positive, port1Negative, port2Positive, port2Negative]) {
+      this.nodeSet.add(node);
+    }
+    this.descriptors.push({
+      type: 'O',
+      name,
+      nodes: [port1Positive, port1Negative, port2Positive, port2Negative],
+      modelName,
     });
   }
 
@@ -972,7 +996,9 @@ export class Circuit {
    */
   compile(guard?: ProtocolExecutionGuard): CompiledCircuit {
     // Pre-expand subcircuit instances into flat device descriptors
-    const expandedDescriptors = this.expandPassiveParasitics(this.expandAllSubcircuits(guard));
+    const expandedDescriptors = this.expandPassiveParasitics(
+      this.expandLossyTransmissionLines(this.expandAllSubcircuits(guard)),
+    );
     guard?.maximum('maxComponents', expandedDescriptors.length, 'compile');
 
     // Collect all nodes from expanded descriptors
@@ -1250,6 +1276,30 @@ export class Circuit {
         result.push(desc);
       }
       guard?.maximum('maxComponents', result.length, 'compile');
+    }
+    return result;
+  }
+
+  private expandLossyTransmissionLines(descriptors: DeviceDescriptor[]): DeviceDescriptor[] {
+    const result: DeviceDescriptor[] = [];
+    for (const desc of descriptors) {
+      if (desc.type !== 'O') {
+        result.push(desc);
+        continue;
+      }
+      const [input, inputReference, output, outputReference] = desc.nodes;
+      if (inputReference.toUpperCase() !== outputReference.toUpperCase()) {
+        throw new Error(`Unsupported LTRA '${desc.name}': both ports must use a common reference node`);
+      }
+      const model = this._models.get(desc.modelName!);
+      if (!model) throw new Error(`LTRA '${desc.name}' references unknown model '${desc.modelName}'`);
+      result.push(...expandLtraLadder(
+        desc.name,
+        input,
+        output,
+        inputReference,
+        resolveLtraModel(model),
+      ));
     }
     return result;
   }
@@ -1564,7 +1614,9 @@ export class Circuit {
 
       // Handle .model inside subcircuit — register locally AND globally
       if (first === '.MODEL') {
-        const modelParams = parseModelCard(tokens, 0);
+        const modelParams = tokens[2]?.toUpperCase() === 'LTRA'
+          ? parseLtraModelCard(tokens, 0)
+          : parseModelCard(tokens, 0);
         // Register in the circuit's global model map so compile() can find it
         this._models.set(modelParams.name, modelParams);
         continue;
@@ -1653,6 +1705,21 @@ export class Circuit {
             type: 'I', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             waveform,
+          });
+          break;
+        }
+        case 'O': {
+          if (tokens.length !== 6) {
+            throw new Error(`Unsupported LTRA O-card '${tokens.join(' ')}'`);
+          }
+          if (tokens[2].toUpperCase() !== tokens[4].toUpperCase()) {
+            throw new Error(`Unsupported LTRA '${devName}': both ports must use a common reference node`);
+          }
+          result.push({
+            type: 'O',
+            name: devName,
+            nodes: [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3]), mapNode(tokens[4])],
+            modelName: tokens[5],
           });
           break;
         }
