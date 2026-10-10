@@ -179,7 +179,10 @@ function leakage(voltage: number, density: number, instance: HFET1InstanceParams
   const vt2 = THERMAL_VOLTAGE * m2;
   let current: number;
   let conductance: number;
-  if (is1 === 0 || is2 === 0 || voltage <= -10 * vt1) {
+  if (is1 === 0 || is2 === 0) {
+    current = 0;
+    conductance = 0;
+  } else if (voltage <= -10 * vt1) {
     current = 1e-12 * voltage - is1;
     conductance = 1e-12;
   } else {
