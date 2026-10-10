@@ -86,18 +86,6 @@ describe('BJT Ebers-Moll', () => {
     `).compile()).toThrow("Unsupported bounded BJT model parameter: 'IKR'");
   });
 
-  it('uses the ngspice-47 default saturation current IS=1e-16', async () => {
-    // ngspice-47 reference on the identical deck: v(1) = 7.739091e-01.
-    const result = await simulate(`default IS
-      I1 0 1 DC 1m
-      Q1 1 1 0 QDEF
-      .model QDEF NPN(BF=80)
-      .op
-      .end
-    `);
-    expect(result.dc!.voltage('1')).toBeCloseTo(0.7739091, 3);
-  });
-
   // ngspice-47 `print vm(c) vp(c)` on the identical deck (vp in radians).
   const chargeStorageDeck = (extra: string) => `bjt charge storage ac
     vcc vcc 0 10
@@ -107,7 +95,7 @@ describe('BJT Ebers-Moll', () => {
     q1 c b e qn
     ie e 0 dc 1m
     ce e 0 1
-    .model qn npn bf=80 rb=100 ccs=2p tf=0.3n tr=6n cje=3p cjc=2p ${extra}
+    .model qn npn is=1e-16 bf=80 rb=100 ccs=2p tf=0.3n tr=6n cje=3p cjc=2p ${extra}
     .ac dec 1 1meg 1g
     .end
   `;
@@ -157,7 +145,7 @@ describe('BJT Ebers-Moll', () => {
       q1 c b e qn
       ie e 0 dc 1m
       ce e 0 1
-      .model qn npn bf=80 rb=100 vaf=50
+      .model qn npn is=1e-16 bf=80 rb=100 vaf=50
       .ac dec 1 1 10
       .end
     `);

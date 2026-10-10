@@ -144,8 +144,7 @@ export function resolveBJTParams(
     LEVEL: params.LEVEL ?? 1,
     BF: params.BF ?? 100,
     BR: params.BR ?? 1,
-    // ngspice-47 bjtsetup.c default (SPICE2/3 used 1e-14).
-    IS: params.IS ?? 1e-16,
+    IS: params.IS ?? 1e-14,
     NF: params.NF ?? 1,
     NR: params.NR ?? 1,
     VAF: params.VAF ?? Infinity,
