@@ -5,14 +5,15 @@ import { InvalidCircuitError } from '../errors.js';
 import { MNAAssembler } from '../mna/assembler.js';
 import { TransferFunctionResult } from '../results.js';
 import { solveLU } from '../solver/lu-solver.js';
-import type { ResolvedOptions, TransferFunctionAnalysis } from '../types.js';
+import type { ConvergenceTelemetry, ResolvedOptions, TransferFunctionAnalysis } from '../types.js';
+import { solveDCOperatingPoint } from './dc.js';
 
 /** Solve the bounded single-node voltage-output form of ngspice `.tf`. */
 export function solveTransferFunction(
   compiled: CompiledCircuit,
   analysis: TransferFunctionAnalysis,
   options: ResolvedOptions,
-  dcSolution: Float64Array,
+  convergence?: ConvergenceTelemetry,
 ): TransferFunctionResult {
   const outputIndex = findNodeIndex(compiled, analysis.outputNode);
   const inputSource = compiled.devices.find(device =>
@@ -25,6 +26,7 @@ export function solveTransferFunction(
     );
   }
 
+  const dcSolution = solveSpiceOperatingPoint(compiled, options, convergence);
   const assembler = buildLinearizedSystem(compiled, options, dcSolution);
   const inputRhs = new Float64Array(assembler.systemSize);
   let inputResistance: number;
@@ -33,7 +35,8 @@ export function solveTransferFunction(
     inputRhs[compiled.nodeCount + inputSource.branchIndex] = 1;
     const response = solveLU(assembler.G, inputRhs);
     const inputCurrent = response[compiled.nodeCount + inputSource.branchIndex];
-    inputResistance = -1 / inputCurrent;
+    const resistance = -1 / inputCurrent;
+    inputResistance = Number.isFinite(resistance) ? resistance : 1e20;
     return resultWithOutputResistance(
       analysis, assembler, outputIndex, response[outputIndex], inputResistance,
     );
@@ -48,6 +51,25 @@ export function solveTransferFunction(
   return resultWithOutputResistance(
     analysis, assembler, outputIndex, response[outputIndex], inputResistance,
   );
+}
+
+function solveSpiceOperatingPoint(
+  compiled: CompiledCircuit,
+  options: ResolvedOptions,
+  convergence?: ConvergenceTelemetry,
+): Float64Array {
+  // Native current sources retain spice-ts's historical injection convention.
+  // .tf follows SPICE's positive-to-negative source convention, so solve its
+  // nonlinear operating point with every independent current source reversed.
+  const devices = compiled.devices.map(device => device instanceof CurrentSource
+    ? new CurrentSource(
+        device.name,
+        device.nodes,
+        { type: 'dc', value: -device.getCurrentAtTime(0) },
+      )
+    : device);
+  const tfCircuit = { ...compiled, devices };
+  return solveDCOperatingPoint(tfCircuit, options, undefined, convergence).assembler.solution;
 }
 
 function buildLinearizedSystem(

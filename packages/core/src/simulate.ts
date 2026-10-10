@@ -156,11 +156,8 @@ export async function simulate(
       }
       case 'tf': {
         const opts = resolveOptions(options);
-        const { assembler: dcAsm } = solveDCOperatingPoint(
-          compiled, opts, undefined, convergence,
-        );
         result.transferFunction = solveTransferFunction(
-          compiled, analysis, opts, dcAsm.solution,
+          compiled, analysis, opts, convergence,
         );
         break;
       }

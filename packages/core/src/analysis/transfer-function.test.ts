@@ -19,6 +19,23 @@ describe('.tf analysis', () => {
     .tf V(out) I1
   `;
 
+  const nonlinearCurrentFixture = `* nonlinear current-driven diode
+I1 0 out DC 1m
+D1 out 0 DM
+.model DM D(IS=1e-14 N=1)
+.tf V(out) I1
+.end
+`;
+
+  const unloadedVoltageFixture = `* unloaded voltage-source input
+V1 in 0 1
+E1 drive 0 in 0 3
+R1 drive out 1k
+R2 out 0 1k
+.tf V(out) V1
+.end
+`;
+
   it('parses the bounded single-node voltage-output form', () => {
     expect(parse(voltageGainFixture).analyses).toEqual([{
       type: 'tf',
@@ -49,6 +66,24 @@ describe('.tf analysis', () => {
     expect(result.transferFunction!.outputResistance).toBeCloseTo(1000, 6);
   });
 
+  it('linearizes a current-driven diode at the ngspice 47 operating point', async () => {
+    const result = await simulate(nonlinearCurrentFixture);
+
+    expect(result.transferFunction).toBeDefined();
+    expect(relativeError(result.transferFunction!.transfer, 25.86478)).toBeLessThan(1e-3);
+    expect(relativeError(result.transferFunction!.inputResistance, 25.86478)).toBeLessThan(1e-3);
+    expect(relativeError(result.transferFunction!.outputResistance, 25.86478)).toBeLessThan(1e-3);
+  });
+
+  it('reports ngspice 47 open-circuit resistance for an unloaded voltage input', async () => {
+    const result = await simulate(unloadedVoltageFixture);
+
+    expect(result.transferFunction).toBeDefined();
+    expect(result.transferFunction!.transfer).toBeCloseTo(1.5, 12);
+    expect(result.transferFunction!.inputResistance).toBe(1e20);
+    expect(result.transferFunction!.outputResistance).toBeCloseTo(500, 6);
+  });
+
   it.each([
     '.tf V(out,ref) V1',
     '.tf I(Vsense) V1',
@@ -75,3 +110,7 @@ describe('.tf analysis', () => {
     expect(() => parse(directive)).toThrow(ParseError);
   });
 });
+
+function relativeError(actual: number, expected: number): number {
+  return Math.abs(actual - expected) / Math.abs(expected);
+}
