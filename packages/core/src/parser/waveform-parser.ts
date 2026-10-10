@@ -1,9 +1,20 @@
 import { parseNumber } from './tokenizer.js';
-import type { SourceWaveform, PulseSource, SinSource, PWLSource } from '../types.js';
+import type {
+  DistortionExcitation, SourceWaveform, PulseSource, SinSource, PWLSource,
+} from '../types.js';
 
 const UNSUPPORTED_WAVEFORMS = new Set(['EXP', 'SFFM', 'AM', 'TRNOISE', 'EXTERNAL']);
 
 export function parseSourceWaveform(tokens: string[], startIdx: number): SourceWaveform {
+  const { baseTokens, distortionF1, distortionF2 } = extractDistortionTerms(tokens, startIdx);
+  return {
+    ...parseBaseSourceWaveform(baseTokens, startIdx),
+    ...(distortionF1 ? { distortionF1 } : {}),
+    ...(distortionF2 ? { distortionF2 } : {}),
+  } as SourceWaveform;
+}
+
+function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWaveform {
   if (startIdx >= tokens.length) return { type: 'dc', value: 0 };
 
   // Scan for AC keyword anywhere in the remaining tokens (e.g. "DC 1.5 AC 1").
@@ -17,7 +28,7 @@ export function parseSourceWaveform(tokens: string[], startIdx: number): SourceW
     const absIdx = startIdx + acIdx;
     const magnitude = parseNumber(tokens[absIdx + 1]);
     const maybePhase = tokens[absIdx + 2]?.toUpperCase();
-    const phase = (maybePhase && maybePhase !== 'DC' && !maybePhase.startsWith('.'))
+    const phase = (maybePhase && !SOURCE_KEYWORDS.has(maybePhase) && !maybePhase.startsWith('.'))
       ? parseNumber(tokens[absIdx + 2])
       : 0;
     let dc = 0;
@@ -106,6 +117,43 @@ export function parseSourceWaveform(tokens: string[], startIdx: number): SourceW
   }
 
   return { type: 'dc', value: parseNumber(tokens[startIdx]) };
+}
+
+const SOURCE_KEYWORDS = new Set([
+  'DC', 'AC', 'PULSE', 'SIN', 'SINE', 'PWL', 'DISTOF1', 'DISTOF2',
+  ...UNSUPPORTED_WAVEFORMS,
+]);
+
+function extractDistortionTerms(
+  tokens: string[],
+  startIdx: number,
+): {
+  baseTokens: string[];
+  distortionF1?: DistortionExcitation;
+  distortionF2?: DistortionExcitation;
+} {
+  const baseTokens = tokens.slice();
+  let distortionF1: DistortionExcitation | undefined;
+  let distortionF2: DistortionExcitation | undefined;
+  for (let index = tokens.length - 1; index >= startIdx; index--) {
+    const keyword = tokens[index].toUpperCase();
+    if (keyword !== 'DISTOF1' && keyword !== 'DISTOF2') continue;
+    const target = keyword === 'DISTOF1' ? distortionF1 : distortionF2;
+    if (target) throw new Error(`Duplicate ${keyword} specification`);
+    let end = index + 1;
+    while (end < tokens.length && !SOURCE_KEYWORDS.has(tokens[end].toUpperCase())) end++;
+    const valueTokens = tokens.slice(index + 1, end);
+    if (valueTokens.length === 0) throw new Error(`${keyword} requires a magnitude`);
+    if (valueTokens.length > 2) {
+      throw new Error(`Unsupported ${keyword} parameters: '${valueTokens.slice(2).join(' ')}'`);
+    }
+    const values = valueTokens.map(parseNumber);
+    const excitation = { magnitude: values[0], phase: values[1] ?? 0 };
+    if (keyword === 'DISTOF1') distortionF1 = excitation;
+    else distortionF2 = excitation;
+    baseTokens.splice(index, end - index);
+  }
+  return { baseTokens, distortionF1, distortionF2 };
 }
 
 /**

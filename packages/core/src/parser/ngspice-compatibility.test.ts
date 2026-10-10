@@ -3,6 +3,7 @@ import {
   parseTitleless as parse,
   parseTitlelessAsync as parseAsync,
 } from './index.js';
+import { ParseError } from '../errors.js';
 
 interface Fixture {
   feature: string;
@@ -29,6 +30,7 @@ const supportedFixtures: Fixture[] = [
   { feature: 'LIN/DEC/OCT .noise slice', netlist: 'V1 in 0 AC 1\nR1 in out 1k\nR2 out 0 1k\n.noise V(out) V1 dec 10 1 1Meg' },
   { feature: 'bounded transfer-function analysis', netlist: 'V1 in 0 1\nR1 in out 1k\nR2 out 0 1k\n.tf V(out) V1' },
   { feature: 'bounded sensitivity analysis', netlist: 'V1 in 0 1\nR1 in out 1k\nR2 out 0 1k\n.sens V(out)' },
+  { feature: 'bounded single-tone linear distortion analysis', netlist: 'V1 in 0 DC 0 DISTOF1 1 DISTOF2 0\nR1 in out 1k\nC1 out 0 1n\n.disto dec 10 1k 1Meg' },
   { feature: 'solver-backed .options', netlist: '.options reltol=1e-4 itl1=50 method=trap\n.op' },
   { feature: 'output-only directives', netlist: '.save v(out)\n.print tran v(out)\n.plot v(out)\n.op' },
   { feature: 'bounded lossless transmission line', netlist: 'T1 in 0 out 0 Z0=50 TD=1n\n.tran 1n 10n' },
@@ -43,7 +45,7 @@ const unsupportedFixtures: Fixture[] = [
   { feature: 'differential noise output', netlist: '.noise V(out,ref) V1 dec 10 1 1Meg' },
   { feature: 'pole-zero analysis', netlist: '.pz in 0 out 0 vol pz' },
 
-  { feature: 'distortion analysis', netlist: '.disto dec 10 1 1Meg' },
+
   { feature: 'control blocks', netlist: '.control\nop\n.endc' },
   { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
   { feature: 'measurements', netlist: '.measure tran peak MAX v(out)\n.op' },
@@ -62,6 +64,33 @@ describe('ngspice parser compatibility fixtures', () => {
     const circuit = parse('.tran 1n $ step\n+ 10n ; stop time');
 
     expect(circuit.analyses).toEqual([{ type: 'tran', timestep: 1e-9, stopTime: 10e-9 }]);
+  });
+
+  it.each([
+    ['bare DISTOF1', 'DISTOF1', "DISTOF1 requires a magnitude"],
+    ['bare DISTOF2', 'DISTOF2', "DISTOF2 requires a magnitude"],
+    ['DISTOF1 magnitude', 'DISTOF1 nope', "Cannot parse number: 'nope'"],
+    ['DISTOF1 phase', 'DISTOF1 1 nope', "Cannot parse number: 'nope'"],
+    ['DISTOF2 magnitude', 'DISTOF2 nope', "Cannot parse number: 'nope'"],
+    ['DISTOF2 phase', 'DISTOF2 1 nope', "Cannot parse number: 'nope'"],
+    ['DISTOF1 trailing token', 'DISTOF1 1 0 nope', "Unsupported DISTOF1 parameters: 'nope'"],
+    ['DISTOF2 trailing token', 'DISTOF2 0 0 nope', "Unsupported DISTOF2 parameters: 'nope'"],
+  ])('reports an explicitly malformed %s as a structured parser error', (_label, term, message) => {
+      const card = `V1 in 0 DC 0 ${term}`;
+      let error: unknown;
+
+      try {
+        parse(`${card}\nR1 in 0 1k\n.disto dec 10 1k 1.8k`);
+      } catch (caught) {
+        error = caught;
+      }
+
+      expect(error).toBeInstanceOf(ParseError);
+      expect(error).toMatchObject({
+        line: 1,
+        context: card,
+      });
+      expect((error as Error).message).toContain(message);
   });
 
   it('rejects unsupported resistor parameters continued onto the card', () => {

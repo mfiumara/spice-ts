@@ -168,6 +168,39 @@ export class NoiseResult {
   ) {}
 }
 
+/** Rectangular complex distortion component. */
+export interface ComplexDistortionValue {
+  real: number;
+  imaginary: number;
+}
+
+/** Harmonic products included in the bounded single-tone result. */
+export type DistortionOrder = 2 | 3;
+
+/** Deterministic second- and third-harmonic results from a bounded `.disto`. */
+export class DistortionResult {
+  constructor(
+    /** Fundamental F1 frequencies in ascending order. */
+    public readonly frequencies: number[],
+    private readonly secondVoltageArrays: Map<string, ComplexDistortionValue[]>,
+    private readonly thirdVoltageArrays: Map<string, ComplexDistortionValue[]>,
+    private readonly secondCurrentArrays: Map<string, ComplexDistortionValue[]>,
+    private readonly thirdCurrentArrays: Map<string, ComplexDistortionValue[]>,
+  ) {}
+
+  voltage(node: string, order: DistortionOrder): ComplexDistortionValue[] {
+    const values = (order === 2 ? this.secondVoltageArrays : this.thirdVoltageArrays).get(node);
+    if (!values) throw new Error(`Unknown node: ${node}`);
+    return values.map(value => ({ ...value }));
+  }
+
+  current(branch: string, order: DistortionOrder): ComplexDistortionValue[] {
+    const values = (order === 2 ? this.secondCurrentArrays : this.thirdCurrentArrays).get(branch);
+    if (!values) throw new Error(`Unknown branch: ${branch}`);
+    return values.map(value => ({ ...value }));
+  }
+}
+
 /** Scalar small-signal quantities from a bounded `.tf v(node) source` analysis. */
 export class TransferFunctionResult {
   constructor(
@@ -304,6 +337,8 @@ export interface SimulationResult {
   ac?: ACResult;
   /** Resistor-noise spectral result (from `.noise`) */
   noise?: NoiseResult;
+  /** Single-tone second- and third-harmonic distortion result (from `.disto`). */
+  distortion?: DistortionResult;
   /** DC small-signal transfer function (from `.tf`) */
   transferFunction?: TransferFunctionResult;
   /** Finite poles and zeros (in rad/s) from `.pz`. */

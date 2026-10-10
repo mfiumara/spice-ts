@@ -67,6 +67,7 @@ function parseNetlist(
   let hasNoiseAnalysis = false;
   let hasPoleZeroAnalysis = false;
   let hasSensitivityAnalysis = false;
+  let hasDistortionAnalysis = false;
   let hasStepAnalysis = false;
 
   for (const { tokens, lineNumber, raw } of lines) {
@@ -137,9 +138,20 @@ function parseNetlist(
             raw,
           );
         }
+        if ((first === '.DISTO' && hasStepAnalysis) || (first === '.STEP' && hasDistortionAnalysis)) {
+          throw new ParseError(
+            '.step cannot be combined with .disto',
+            lineNumber,
+            raw,
+          );
+        }
         if (first === '.NOISE') hasNoiseAnalysis = true;
         if (first === '.PZ') hasPoleZeroAnalysis = true;
         if (first === '.SENS') hasSensitivityAnalysis = true;
+        if (first === '.DISTO' && hasDistortionAnalysis) {
+          throw new ParseError('Multiple .disto analyses are not supported', lineNumber, raw);
+        }
+        if (first === '.DISTO') hasDistortionAnalysis = true;
         if (first === '.STEP' && hasStepAnalysis) {
           throw new ParseError(
             'Multiple .step directives are not supported; nested or multi-dimensional stepping is unsupported',
@@ -270,6 +282,30 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
         points,
         startFreq,
         stopFreq,
+      });
+      break;
+    }
+    case '.DISTO': {
+      if (tokens.length > 5) {
+        throw new ParseError(
+          'Two-tone .disto is not supported; omit f2overf1',
+          lineNumber, tokens.join(' '),
+        );
+      }
+      if (tokens.length !== 5 || tokens[1]?.toLowerCase() !== 'dec') {
+        throw new ParseError(
+          "Unsupported .disto sweep; expected '.disto dec points start stop'",
+          lineNumber, tokens.join(' '),
+        );
+      }
+      const points = Math.round(parseNumber(tokens[2]));
+      const startFreq = parseNumber(tokens[3]);
+      const stopFreq = parseNumber(tokens[4]);
+      if (!Number.isInteger(points) || points < 1 || startFreq <= 0 || stopFreq < startFreq) {
+        throw new ParseError('Invalid .disto dec sweep', lineNumber, tokens.join(' '));
+      }
+      circuit.addAnalysis('disto', {
+        variation: 'dec', points, startFreq, stopFreq,
       });
       break;
     }
