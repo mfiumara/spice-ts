@@ -371,6 +371,22 @@ describe('GilbertPeierlsSolver', () => {
       expect(Array.from(solver.solve(new Float64Array([8, 9])))).toEqual([3, 2]);
     });
 
+    it('does not retain a separate U-diagonal index workspace', () => {
+      const matrix = new SparseMatrix(3);
+      matrix.add(0, 0, 1); matrix.add(0, 1, 2); matrix.add(0, 2, 3);
+      matrix.add(1, 0, 4); matrix.add(1, 1, 5); matrix.add(1, 2, 6);
+      matrix.add(2, 0, 7); matrix.add(2, 1, 8);
+      const { csc } = toCsc(matrix);
+      const solver = new GilbertPeierlsSolver();
+      solver.analyzePattern(csc);
+
+      const storage = solver as unknown as { uDiagIdx?: Int32Array };
+      expect(storage.uDiagIdx).toBeUndefined();
+
+      solver.factorize(csc);
+      expect(Array.from(solver.solve(new Float64Array([14, 32, 23])))).toEqual([1, 2, 3]);
+    });
+
     it('recovers its numeric workspace after a singular value change', () => {
       const singular = new SparseMatrix(2);
       singular.touch(0, 0); singular.touch(0, 1);
