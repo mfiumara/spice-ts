@@ -2,6 +2,7 @@ import type { CompiledCircuit } from '../circuit.js';
 import { BJT } from '../devices/bjt.js';
 import { BSIM3v3 } from '../devices/bsim3v3.js';
 import { Diode } from '../devices/diode.js';
+import { JFET } from '../devices/jfet.js';
 import { MOSFET } from '../devices/mosfet.js';
 import { Resistor } from '../devices/resistor.js';
 import { VoltageSource } from '../devices/voltage-source.js';
@@ -22,7 +23,15 @@ const BJT_NOISE_MODEL_PARAMETERS = new Set([
 
 /** Reject devices whose noise sources are not part of the bounded slice. */
 export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
+  const hasDifferentialOutput = compiled.analyses.some(analysis =>
+    analysis.type === 'noise' && analysis.outputReferenceNode !== undefined
+  );
   for (const device of compiled.devices) {
+    if (hasDifferentialOutput && isSemiconductorNoiseDevice(device)) {
+      throw new InvalidCircuitError(
+        '.noise differential voltage output only supports resistor noise',
+      );
+    }
     if (device instanceof Diode && (device.params.RS ?? 0) > 0) {
       throw new InvalidCircuitError(
         `.noise does not support diode series-resistance noise for '${device.name}'`,
@@ -103,9 +112,7 @@ export function solveNoise(
   const outputReferenceIndex = analysis.outputReferenceNode === undefined
     ? -1
     : findNodeIndex(compiled, analysis.outputReferenceNode);
-  if (analysis.outputReferenceNode !== undefined && devices.some(device =>
-    device instanceof Diode || device instanceof BJT || device instanceof MOSFET
-  )) {
+  if (analysis.outputReferenceNode !== undefined && devices.some(isSemiconductorNoiseDevice)) {
     throw new InvalidCircuitError(
       '.noise differential voltage output only supports resistor noise',
     );
@@ -312,6 +319,14 @@ export function solveNoise(
     integratedInputNoise,
     analysis.outputReferenceNode,
   );
+}
+
+function isSemiconductorNoiseDevice(device: CompiledCircuit['devices'][number]): boolean {
+  return device instanceof Diode
+    || device instanceof BJT
+    || device instanceof JFET
+    || device instanceof MOSFET
+    || device instanceof BSIM3v3;
 }
 
 function findNodeIndex(compiled: CompiledCircuit, name: string): number {

@@ -96,15 +96,52 @@ describe('.noise analysis', () => {
     expect(first.integratedOutputNoise).toBeGreaterThan(0);
   });
 
-  it('rejects differential noise output outside the resistor-only slice', async () => {
-    await expect(simulate(`
+  it.each([
+    ['diode', `
       V1 in 0 DC 1 AC 1
       R1 in outp 1k
       R2 outn 0 1k
       D1 outp outn DMOD
       .model DMOD D(IS=1e-14)
       .noise v(outp,outn) V1 dec 3 100 10k
-    `)).rejects.toThrow(/differential.*resistor/i);
+    `],
+    ['BJT', `
+      V1 in 0 DC 1 AC 1
+      R1 in outp 1k
+      R2 outn 0 1k
+      Q1 outp in outn QMOD
+      .model QMOD NPN (LEVEL=1 IS=1e-14 BF=100)
+      .noise v(outp,outn) V1 dec 3 100 10k
+    `],
+    ['MOS1', `
+      V1 in 0 DC 1 AC 1
+      R1 in outp 1k
+      R2 outn 0 1k
+      M1 outp in outn outn MMOD
+      .model MMOD NMOS (LEVEL=1 VTO=0.7 KP=200u)
+      .noise v(outp,outn) V1 dec 3 100 10k
+    `],
+    ['JFET', `
+      VDD vdd 0 DC 5 AC 1
+      Vg g 0 DC -1
+      R1 vdd outp 1k
+      R2 outn 0 1k
+      J1 outp g outn MOD
+      .model MOD NJF LEVEL=1 BETA=2.69e-5 VTO=-3.795 LAMBDA=0.0181 AF=1 KF=0.05
+      .noise v(outp,outn) VDD dec 3 100 10k
+    `],
+    ['BSIM3', `
+      V1 in 0 DC 1 AC 1
+      R1 in outp 1k
+      R2 outn 0 1k
+      M1 outp in outn outn MMOD
+      .model MMOD NMOS (LEVEL=49 VTH0=1 U0=400 TOX=4n)
+      .noise v(outp,outn) V1 dec 3 100 10k
+    `],
+  ])('rejects differential %s noise outside the resistor-only slice', async (_kind, deck) => {
+    await expect(simulate(deck)).rejects.toEqual(
+      new InvalidCircuitError('.noise differential voltage output only supports resistor noise'),
+    );
   });
 
   it('returns structured output- and input-referred resistor noise spectra', async () => {

@@ -89,7 +89,7 @@ async function main(): Promise<void> {
       unsupported,
       exclusions: [
         'Current-valued noise outputs and current-source input referral remain unsupported.',
-        'Differential output with diode, BJT, MOS1, or broader noisy device forms remains unsupported.',
+        'Differential output with diode, BJT, JFET, MOS1, BSIM3, or broader noisy device forms remains unsupported.',
         'Stepped noise and temperature cards remain unsupported.',
       ],
       losses: [
@@ -97,8 +97,8 @@ async function main(): Promise<void> {
         'The bounded differential form covers resistor noise only.',
         'Runtime values are not directly comparable because ngspice includes process startup.',
       ],
-      redReceipt: '8c4de180f6733a9f90a990b5f434b0d711eaa638: focused test 2 failed, 38 passed; differential forms stopped at the explicit unsupported parse boundary.',
-      potetoModeReceipt: 'Kanban comment 390 records subsystem trace, two candidate data shapes, chosen backward-compatible seam, scope, and TDD sequence before implementation.',
+      redReceipt: 'Remediation RED: focused noise test 1 failed, 47 passed; the reviewer NJF deck unexpectedly returned 7 points and outputNoiseDensity[0]=5.028812192176008e-9.',
+      potetoModeReceipt: 'benchmarks/differential-noise/POTETO.md records the traced flow, considered designs, chosen explicit noisy-semiconductor guard, TDD sequence, benchmark checkpoint, and scope bounds.',
     }, null, 2);
 
     const outputIndex = process.argv.indexOf('--output');
@@ -135,9 +135,31 @@ async function verifyUnsupportedForms(): Promise<Array<{ form: string; status: s
       deck: 'V1 in 0 AC 1\nR1 in 0 1k\n.noise v(in) V1 dec 3 100 10k\n.temp 50',
       expected: /Unsupported dot command: '\.temp'/,
     },
+    ...[
+      {
+        kind: 'diode',
+        body: 'D1 outp outn DMOD\n.model DMOD D(IS=1e-14)',
+      },
+      {
+        kind: 'BJT',
+        body: 'Q1 outp in outn QMOD\n.model QMOD NPN (LEVEL=1 IS=1e-14 BF=100)',
+      },
+      {
+        kind: 'MOS1',
+        body: 'M1 outp in outn outn MMOD\n.model MMOD NMOS (LEVEL=1 VTO=0.7 KP=200u)',
+      },
+      {
+        kind: 'JFET',
+        body: 'J1 outp in outn JMOD\n.model JMOD NJF (LEVEL=1 BETA=2.69e-5 VTO=-3.795 LAMBDA=0.0181 AF=1 KF=0.05)',
+      },
+    ].map(({ kind, body }) => ({
+      form: `differential ${kind} noise`,
+      deck: `V1 in 0 DC 1 AC 1\nR1 in outp 1k\nR2 outn 0 1k\n${body}\n.noise v(outp,outn) V1 dec 3 100 10k`,
+      expected: /differential voltage output only supports resistor noise/,
+    })),
     {
-      form: 'differential semiconductor noise',
-      deck: 'V1 in 0 DC 1 AC 1\nR1 in outp 1k\nR2 outn 0 1k\nD1 outp outn DMOD\n.model DMOD D(IS=1e-14)\n.noise v(outp,outn) V1 dec 3 100 10k',
+      form: 'differential BSIM3 noise',
+      deck: 'V1 in 0 DC 1 AC 1\nR1 in outp 1k\nR2 outn 0 1k\nM1 outp in outn outn MMOD\n.model MMOD NMOS (LEVEL=49 VTH0=1 U0=400 TOX=4n)\n.noise v(outp,outn) V1 dec 3 100 10k',
       expected: /differential voltage output only supports resistor noise/,
     },
   ];

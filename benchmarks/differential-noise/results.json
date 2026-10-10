@@ -13,7 +13,7 @@
   },
   "versions": {
     "reference": "ngspice-47",
-    "spiceTsBaseRevision": "8c4de180f6733a9f90a990b5f434b0d711eaa638",
+    "spiceTsBaseRevision": "9bf735acb6390dcd93d42fb5b3abc3167578e0ac",
     "spiceTsWorkingTreeDirty": true,
     "node": "v22.23.1"
   },
@@ -28,8 +28,8 @@
     "spiceTs": "success"
   },
   "runtimeMilliseconds": {
-    "ngspiceProcess": 11.750332999999983,
-    "spiceTsInProcess": 2.896708999999987,
+    "ngspiceProcess": 10.491874999999993,
+    "spiceTsInProcess": 2.806166000000019,
     "caveat": "Different process boundaries; reported honestly, not a speed claim."
   },
   "matchedPointCount": 7,
@@ -81,14 +81,34 @@
       "error": "Parse error at line 4: Unsupported dot command: '.temp'\n  .temp 50"
     },
     {
-      "form": "differential semiconductor noise",
+      "form": "differential diode noise",
+      "status": "explicitly rejected",
+      "error": ".noise differential voltage output only supports resistor noise"
+    },
+    {
+      "form": "differential BJT noise",
+      "status": "explicitly rejected",
+      "error": ".noise differential voltage output only supports resistor noise"
+    },
+    {
+      "form": "differential MOS1 noise",
+      "status": "explicitly rejected",
+      "error": ".noise differential voltage output only supports resistor noise"
+    },
+    {
+      "form": "differential JFET noise",
+      "status": "explicitly rejected",
+      "error": ".noise differential voltage output only supports resistor noise"
+    },
+    {
+      "form": "differential BSIM3 noise",
       "status": "explicitly rejected",
       "error": ".noise differential voltage output only supports resistor noise"
     }
   ],
   "exclusions": [
     "Current-valued noise outputs and current-source input referral remain unsupported.",
-    "Differential output with diode, BJT, MOS1, or broader noisy device forms remains unsupported.",
+    "Differential output with diode, BJT, JFET, MOS1, BSIM3, or broader noisy device forms remains unsupported.",
     "Stepped noise and temperature cards remain unsupported."
   ],
   "losses": [
@@ -96,6 +116,6 @@
     "The bounded differential form covers resistor noise only.",
     "Runtime values are not directly comparable because ngspice includes process startup."
   ],
-  "redReceipt": "8c4de180f6733a9f90a990b5f434b0d711eaa638: focused test 2 failed, 38 passed; differential forms stopped at the explicit unsupported parse boundary.",
-  "potetoModeReceipt": "Kanban comment 390 records subsystem trace, two candidate data shapes, chosen backward-compatible seam, scope, and TDD sequence before implementation."
+  "redReceipt": "Remediation RED: focused noise test 1 failed, 47 passed; the reviewer NJF deck unexpectedly returned 7 points and outputNoiseDensity[0]=5.028812192176008e-9.",
+  "potetoModeReceipt": "benchmarks/differential-noise/POTETO.md records the traced flow, considered designs, chosen explicit noisy-semiconductor guard, TDD sequence, benchmark checkpoint, and scope bounds."
 }
