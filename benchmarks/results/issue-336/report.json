@@ -21,8 +21,8 @@
   "versions": {
     "ngspice": "ngspice-47",
     "node": "v22.23.1",
-    "spiceTsRevision": "af339c06f546246ef3d839911bf64db96bda359b",
-    "spiceTsWorkingTreeDirty": true
+    "spiceTsRevision": "d416d46d06f3998fd0816cdcff62b067e4c4a29f",
+    "spiceTsWorkingTreeDirty": false
   },
   "machine": {
     "platform": "darwin",
@@ -138,8 +138,8 @@
         }
       },
       "runtimeMilliseconds": {
-        "ngspiceProcessAndRawIo": 16.946458000000007,
-        "spiceTsInProcess": 5.124584000000027,
+        "ngspiceProcessAndRawIo": 42.325166999999965,
+        "spiceTsInProcess": 7.098124999999982,
         "directlyComparable": false
       },
       "losses": [
@@ -232,8 +232,8 @@
         }
       },
       "runtimeMilliseconds": {
-        "ngspiceProcessAndRawIo": 13.08220799999998,
-        "spiceTsInProcess": 0.6827910000000088,
+        "ngspiceProcessAndRawIo": 26.448540999999977,
+        "spiceTsInProcess": 0.725667000000044,
         "directlyComparable": false
       },
       "losses": [
