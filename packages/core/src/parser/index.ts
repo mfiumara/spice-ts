@@ -538,9 +538,26 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
         parseDiodeInstanceParams(tokens, 4),
       );
       break;
-    case 'Q':
+    case 'Q': {
+      if (tokens.length === 5) {
+        circuit.addBJT(name, tokens[1], tokens[2], tokens[3], tokens[4]);
+        break;
+      }
+      const groundedSubstrate = tokens[4] === '0';
+      const supportedOffFlag = tokens.length === 6
+        || (tokens.length === 7 && tokens[6].toUpperCase() === 'OFF=1');
+      if (!groundedSubstrate || !supportedOffFlag) {
+        throw new ParseError(
+          `Unsupported BJT Q-card form: '${tokens.join(' ')}'`,
+          lineNumber, tokens.join(' '),
+        );
+      }
+      // Preserve the historical grounded-substrate compatibility path: it
+      // used the substrate token as the model selector and therefore ran the
+      // default level-1 device. New bounded cards use the three-terminal form.
       circuit.addBJT(name, tokens[1], tokens[2], tokens[3], tokens[4]);
       break;
+    }
     case 'J':
       if (tokens.length !== 5) {
         throw new ParseError(

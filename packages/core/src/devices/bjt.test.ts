@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { simulate } from '../simulate.js';
+import { parse } from '../parser/index.js';
 
 describe('BJT Ebers-Moll', () => {
   it('NPN common-emitter amplifier has correct bias point', async () => {
@@ -34,5 +35,58 @@ describe('BJT Ebers-Moll', () => {
 
     const vc = result.dc!.voltage('2');
     expect(vc).toBeCloseTo(5, 0);
+  });
+
+  it('stamps and converges the bounded forward-active Gummel-Poon parameters', async () => {
+    const result = await simulate(`forward-active parameter probe
+      VBE base 0 DC 0.72
+      VCE collector 0 DC 1
+      Q1 collector base 0 QGP
+      .model QGP NPN(IS=1e-15 BF=100 VAF=50 IKF=1m ISE=2e-13 NE=1.5)
+      .dc VCE 1 9 4
+      .end
+    `);
+
+    const collectorSupply = result.dcSweep!.current('VCE');
+    const baseSupply = result.dcSweep!.current('VBE');
+    expect(collectorSupply).toHaveLength(3);
+    expect(collectorSupply[0]).toBeCloseTo(-0.0007282049836704018, 12);
+    expect(collectorSupply[2]).toBeCloseTo(-0.0008440689544214597, 12);
+    expect(baseSupply[0]).toBeCloseTo(-0.00003567532735368342, 12);
+    expect(result.convergence!.dc).toMatchObject({
+      acceptedSolves: 3,
+      rejectedSolves: 0,
+      failure: null,
+    });
+  });
+
+  it('preserves the level-1 Ebers-Moll defaults when GP parameters are absent', () => {
+    const compiled = parse(`level-1 compatibility
+      VCC c 0 5
+      Q1 c b 0 QLEGACY
+      .model QLEGACY NPN(IS=1e-14 BF=80 BR=2 NF=1.1 NR=1.2)
+      .op
+    `).compile();
+    const bjt = compiled.devices.find(device => device.name === 'Q1');
+    expect(bjt).toMatchObject({
+      params: { LEVEL: 1, IS: 1e-14, BF: 80, BR: 2, NF: 1.1, NR: 1.2, VAF: Infinity, IKF: Infinity, ISE: 0, NE: 1.5 },
+    });
+  });
+
+  it('rejects unsupported Gummel-Poon model parameters explicitly', () => {
+    expect(() => parse(`unsupported BJT parameter
+      Q1 c b 0 QGP
+      .model QGP NPN(BF=100 IKF=1m CJE=2p)
+      .op
+    `).compile()).toThrow("Unsupported bounded BJT model parameter: 'CJE'");
+  });
+
+  it('rejects unsupported BJT model and Q-card forms explicitly', () => {
+    expect(() => parse('title\nQ1 c b 0 QBAD\n.model QBAD VBIC BF=100\n.op').compile())
+      .toThrow("Unsupported BJT model type: 'VBIC'");
+    expect(() => parse('title\nQ1 c b e substrate QMOD\n.model QMOD NPN(BF=100)\n.op'))
+      .toThrow('Unsupported BJT Q-card form');
+    expect(() => parse('title\nQ1 c b e QMOD AREA=2\n.model QMOD NPN(BF=100)\n.op'))
+      .toThrow('Unsupported BJT Q-card form');
   });
 });

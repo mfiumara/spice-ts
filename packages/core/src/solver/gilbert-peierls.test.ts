@@ -214,6 +214,29 @@ describe('GilbertPeierlsSolver', () => {
       expect(Array.from(solution)).toEqual([1, 2, 3]);
     });
 
+    it('does not retain duplicate row-index workspaces for numeric factors', () => {
+      const matrix = new SparseMatrix(3);
+      matrix.add(0, 2, -1);
+      matrix.add(1, 1, -1);
+      matrix.add(1, 2, -1);
+      matrix.add(2, 0, -1);
+      matrix.add(2, 1, -1);
+      matrix.add(2, 2, -1);
+      const { csc } = toCsc(matrix);
+      const solver = new GilbertPeierlsSolver();
+      solver.analyzePattern(csc);
+
+      const storage = solver as unknown as {
+        lTempOrigRows?: Int32Array;
+        pivotOrigRow?: Int32Array;
+      };
+      expect(storage.lTempOrigRows).toBeUndefined();
+      expect(storage.pivotOrigRow).toBeUndefined();
+
+      solver.factorize(csc);
+      expect(Array.from(solver.solve(new Float64Array([-3, -5, -6])))).toEqual([1, 2, 3]);
+    });
+
     it('eliminates fill that activates a structurally-zero pivot row', () => {
       const matrix = new SparseMatrix(3);
       for (let row = 0; row < 3; row++) {

@@ -1,0 +1,9 @@
+CA3080 VERTNPN bounded forward-active bias grid, VCE=1V
+* VERTNPN subset from John P. Doty ca3080.mod, GPL-2.0-or-later; see benchmarks/SOURCES.md
+VBE base 0 DC 0.55
+VCE collector 0 DC 1
+Q1 collector base 0 VERTNPN
+.MODEL VERTNPN NPN(LEVEL=1 IS=21.48f VAF=80 BF=550 ISE=50f NE=1.5 IKF=10m BR=.1)
+.DC VBE 0.55 0.70 0.025
+.PRINT DC V(base) V(collector) I(VBE) I(VCE)
+.END
