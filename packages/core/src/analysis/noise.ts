@@ -2,6 +2,7 @@ import type { CompiledCircuit } from '../circuit.js';
 import { BJT } from '../devices/bjt.js';
 import { BSIM3v3 } from '../devices/bsim3v3.js';
 import { Diode } from '../devices/diode.js';
+import { JFET } from '../devices/jfet.js';
 import { MOSFET } from '../devices/mosfet.js';
 import { Resistor } from '../devices/resistor.js';
 import { VoltageSource } from '../devices/voltage-source.js';
@@ -22,7 +23,15 @@ const BJT_NOISE_MODEL_PARAMETERS = new Set([
 
 /** Reject devices whose noise sources are not part of the bounded slice. */
 export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
+  const hasDifferentialOutput = compiled.analyses.some(analysis =>
+    analysis.type === 'noise' && analysis.outputReferenceNode !== undefined
+  );
   for (const device of compiled.devices) {
+    if (hasDifferentialOutput && isSemiconductorNoiseDevice(device)) {
+      throw new InvalidCircuitError(
+        '.noise differential voltage output only supports resistor noise',
+      );
+    }
     if (device instanceof Diode && (device.params.RS ?? 0) > 0) {
       throw new InvalidCircuitError(
         `.noise does not support diode series-resistance noise for '${device.name}'`,
@@ -100,6 +109,14 @@ export function solveNoise(
 ): NoiseResult {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
   const outputIndex = findNodeIndex(compiled, analysis.outputNode);
+  const outputReferenceIndex = analysis.outputReferenceNode === undefined
+    ? -1
+    : findNodeIndex(compiled, analysis.outputReferenceNode);
+  if (analysis.outputReferenceNode !== undefined && devices.some(isSemiconductorNoiseDevice)) {
+    throw new InvalidCircuitError(
+      '.noise differential voltage output only supports resistor noise',
+    );
+  }
   const inputSource = devices.find(device =>
     device instanceof VoltageSource
       && device.name.toLowerCase() === analysis.inputSource.toLowerCase(),
@@ -231,10 +248,15 @@ export function solveNoise(
   for (const frequency of frequencies) {
     solver.factorize(gCsc, cCsc, 2 * Math.PI * frequency);
     const [gainReal, gainImaginary] = solver.solve(gainRhs, zeroImaginary);
-    const gain = Math.hypot(gainReal[outputIndex], gainImaginary[outputIndex]);
+    const gain = differentialMagnitude(
+      gainReal, gainImaginary, outputIndex, outputReferenceIndex,
+    );
     if (!(gain > 0) || !Number.isFinite(gain)) {
+      const outputName = analysis.outputReferenceNode === undefined
+        ? analysis.outputNode
+        : `${analysis.outputNode},${analysis.outputReferenceNode}`;
       throw new InvalidCircuitError(
-        `.noise input source '${analysis.inputSource}' has zero gain to '${analysis.outputNode}'`,
+        `.noise input source '${analysis.inputSource}' has zero gain to '${outputName}'`,
       );
     }
     gainSquaredInverse.push(1 / (gain * gain));
@@ -247,7 +269,9 @@ export function solveNoise(
       if (positive >= 0) rhs[positive] -= currentDensity;
       if (negative >= 0) rhs[negative] += currentDensity;
       const [real, imaginary] = solver.solve(rhs, zeroImaginary);
-      const contribution = real[outputIndex] ** 2 + imaginary[outputIndex] ** 2;
+      const contribution = differentialMagnitudeSquared(
+        real, imaginary, outputIndex, outputReferenceIndex,
+      );
       sourceOutputPowerDensity[index].push(contribution);
       outputPowerDensity += contribution;
     }
@@ -259,7 +283,9 @@ export function solveNoise(
       if (positive >= 0) rhs[positive] -= currentDensity;
       if (negative >= 0) rhs[negative] += currentDensity;
       const [real, imaginary] = solver.solve(rhs, zeroImaginary);
-      const contribution = real[outputIndex] ** 2 + imaginary[outputIndex] ** 2;
+      const contribution = differentialMagnitudeSquared(
+        real, imaginary, outputIndex, outputReferenceIndex,
+      );
       diodeOutputPowerDensity[index].push(contribution);
       outputPowerDensity += contribution;
     }
@@ -291,14 +317,44 @@ export function solveNoise(
     inputNoiseDensity,
     integratedOutputNoise,
     integratedInputNoise,
+    analysis.outputReferenceNode,
   );
+}
+
+function isSemiconductorNoiseDevice(device: CompiledCircuit['devices'][number]): boolean {
+  return device instanceof Diode
+    || device instanceof BJT
+    || device instanceof JFET
+    || device instanceof MOSFET
+    || device instanceof BSIM3v3;
 }
 
 function findNodeIndex(compiled: CompiledCircuit, name: string): number {
   for (const [nodeName, index] of compiled.nodeIndexMap) {
-    if (nodeName.toLowerCase() === name.toLowerCase() && index >= 0) return index;
+    if (nodeName.toLowerCase() === name.toLowerCase()) return index;
   }
   throw new InvalidCircuitError(`.noise output node '${name}' does not exist`);
+}
+
+function differentialMagnitude(
+  real: Float64Array,
+  imaginary: Float64Array,
+  positive: number,
+  negative: number,
+): number {
+  return Math.sqrt(differentialMagnitudeSquared(real, imaginary, positive, negative));
+}
+
+function differentialMagnitudeSquared(
+  real: Float64Array,
+  imaginary: Float64Array,
+  positive: number,
+  negative: number,
+): number {
+  const realDifference = (positive < 0 ? 0 : real[positive]) - (negative < 0 ? 0 : real[negative]);
+  const imaginaryDifference = (positive < 0 ? 0 : imaginary[positive])
+    - (negative < 0 ? 0 : imaginary[negative]);
+  return realDifference * realDifference + imaginaryDifference * imaginaryDifference;
 }
 
 function generateFrequencies(analysis: NoiseAnalysis, relativeTolerance: number): number[] {

@@ -1,0 +1,8 @@
+Differential resistor-noise divider parity
+V1 in 0 AC 1
+R1 in outp 1k
+R2 outp 0 1k
+R3 in outn 2k
+R4 outn 0 1k
+.noise v(outp,outn) V1 dec 3 100 10k
+.end

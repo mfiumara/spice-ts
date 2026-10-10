@@ -61,11 +61,13 @@ export interface ACAnalysis {
   stopFreq: number;
 }
 
-/** Bounded resistor-noise analysis (`.noise v(node) source {lin|dec|oct} ...`). */
+/** Bounded resistor-noise analysis (`.noise v(node[,reference]) source ...`). */
 export interface NoiseAnalysis {
   type: 'noise';
-  /** Output node whose voltage-noise density is reported. */
+  /** Positive output node whose voltage-noise density is reported. */
   outputNode: string;
+  /** Optional negative output node for a differential voltage result. */
+  outputReferenceNode?: string;
   /** Independent voltage source used to refer output noise back to the input. */
   inputSource: string;
   /** Frequency sweep spacing. */

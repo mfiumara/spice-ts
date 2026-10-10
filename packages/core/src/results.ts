@@ -165,6 +165,8 @@ export class NoiseResult {
     public readonly integratedOutputNoise: number | undefined,
     /** Integrated input-referred RMS noise in V, absent for a zero-width sweep. */
     public readonly integratedInputNoise: number | undefined,
+    /** Optional negative output node for a differential voltage result. */
+    public readonly outputReferenceNode?: string,
   ) {}
 }
 

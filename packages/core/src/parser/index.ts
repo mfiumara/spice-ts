@@ -256,11 +256,14 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
       break;
     }
     case '.NOISE': {
-      const variation = tokens[6]?.toLowerCase();
-      const isSupportedVoltageForm = tokens.length === 10
+      const isDifferential = tokens.length === 11;
+      const sourceIndex = isDifferential ? 6 : 5;
+      const variationIndex = sourceIndex + 1;
+      const variation = tokens[variationIndex]?.toLowerCase();
+      const isSupportedVoltageForm = (tokens.length === 10 || isDifferential)
         && tokens[1].toUpperCase() === 'V'
         && tokens[2] === '('
-        && tokens[4] === ')'
+        && tokens[isDifferential ? 5 : 4] === ')'
         && (variation === 'lin' || variation === 'dec' || variation === 'oct');
       if (!isSupportedVoltageForm) {
         throw new ParseError(
@@ -268,16 +271,17 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
           lineNumber, tokens.join(' '),
         );
       }
-      const points = parseInt(tokens[7], 10);
-      const startFreq = parseNumber(tokens[8]);
-      const stopFreq = parseNumber(tokens[9]);
+      const points = parseInt(tokens[variationIndex + 1], 10);
+      const startFreq = parseNumber(tokens[variationIndex + 2]);
+      const stopFreq = parseNumber(tokens[variationIndex + 3]);
       const minimumPoints = variation === 'lin' ? 2 : 1;
       if (!Number.isInteger(points) || points < minimumPoints || startFreq <= 0 || stopFreq < startFreq) {
         throw new ParseError(`Invalid .noise ${variation} sweep`, lineNumber, tokens.join(' '));
       }
       circuit.addAnalysis('noise', {
         outputNode: tokens[3],
-        inputSource: tokens[5],
+        ...(isDifferential ? { outputReferenceNode: tokens[4] } : {}),
+        inputSource: tokens[sourceIndex],
         variation: variation as 'dec' | 'oct' | 'lin',
         points,
         startFreq,

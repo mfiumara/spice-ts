@@ -153,6 +153,15 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 - Adaptation: none. The committed bytes are supplied identically to spice-ts and ngspice-47. The forward-active fixture exercises BJT level-1 collector and base shot noise together with external base/load resistance thermal noise over a DEC sweep.
 - Reproduce with `pnpm exec tsx benchmarks/bjt-noise/compare.ts`; the command records source/hash, versions, machine, convergence, runtimes, matched-point max/RMS absolute and relative errors, integrated totals, and all remaining unsupported losses.
 
+## Bounded differential resistor-noise parity fixture
+
+- Fixture: `benchmarks/differential-noise/differential-divider.cir` (SHA-256 `4a00d295e139c32f175870a5227df610ff4f23ff797616bdab5c675fc3b10040`).
+- Source: project-authored public reference circuit for [issue #255](https://github.com/mfiumara/spice-ts/issues/255), pinned by the fixture hash above.
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- Adaptation: none. The committed bytes are supplied identically to spice-ts and ngspice-47. The fixture measures `V(outp,outn)` across two unequal resistor-divider outputs over a DEC sweep.
+- Scope: differential voltage output for resistor thermal noise only. Current output, current-source referral, stepped noise, temperature cards, and differential semiconductor or broader noisy-device forms remain explicitly unsupported.
+- Reproduce with `pnpm bench:differential-noise -- --output benchmarks/differential-noise/results.json`. The JSON receipt records source, revision, licence, hash, versions, machine, convergence, runtimes, matched-point and integrated max/RMS absolute and relative errors, explicit exclusions, and every retained loss.
+
 ## Bounded BJT level-1 internal-resistance noise parity fixture
 
 - Fixture: `benchmarks/bjt-internal-resistance-noise/bjt-internal-resistance-noise.cir` (SHA-256 `f3166a899574399ae7351f48569c898a7c4353ed8d11951148eede4f6c8eeff4`).

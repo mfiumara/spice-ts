@@ -236,7 +236,7 @@ function formatAnalysis(analysis: AnalysisDirective | PoleZeroAnalysis): string 
     case 'ac':
       return `.ac ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
     case 'noise':
-      return `.noise v(${analysis.outputNode}) ${analysis.inputSource} ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
+      return `.noise v(${analysis.outputNode}${analysis.outputReferenceNode === undefined ? '' : `,${analysis.outputReferenceNode}`}) ${analysis.inputSource} ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
     case 'disto':
       return `.disto dec ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}${analysis.f2OverF1 === undefined ? '' : ` ${formatNumber(analysis.f2OverF1)}`}`;
     case 'tf':
@@ -696,7 +696,7 @@ export class Circuit {
   addAnalysis(type: 'dc', params: { source: string; start: number; stop: number; step: number }): void;
   addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; useInitialConditions?: boolean }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
-  addAnalysis(type: 'noise', params: { outputNode: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
+  addAnalysis(type: 'noise', params: { outputNode: string; outputReferenceNode?: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'disto', params: { variation: 'dec'; points: number; startFreq: number; stopFreq: number; f2OverF1?: number }): void;
   addAnalysis(type: 'tf', params: { outputNode: string; inputSource: string }): void;
   addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur'; mode: 'pol' | 'pz' }): void;
@@ -744,6 +744,9 @@ export class Circuit {
         this._analyses.push({
           type: 'noise',
           outputNode: params!.outputNode as string,
+          ...(params!.outputReferenceNode === undefined
+            ? {}
+            : { outputReferenceNode: params!.outputReferenceNode as string }),
           inputSource: params!.inputSource as string,
           variation: params!.variation as 'dec' | 'oct' | 'lin',
           points: params!.points as number,
