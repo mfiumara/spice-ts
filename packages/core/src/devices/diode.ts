@@ -317,7 +317,7 @@ export function diodeZeroBiasCapacitance(
  * Depletion capacitance dQ/dV and its Taylor terms, as in ngspice dioload.c:
  * the abrupt-junction law below FC*VJ, and above it the linear extension
  * C = CJ0/F2 * (F3 + M*V/VJ) with F2 = (1-FC)^(1+M), F3 = 1 - FC*(1+M),
- * which keeps both charge and capacitance continuous at V = FC*VJ.
+ * which keeps the capacitance continuous at V = FC*VJ.
  */
 function depletionChargeTaylor(
   junctionVoltage: number,
