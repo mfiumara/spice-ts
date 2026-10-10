@@ -104,7 +104,6 @@ R2 out 0 1k
 
   it.each([
     '.pz in 0 out 0 vol pz',
-    '.sens V(out)',
     '.disto dec 10 1 1Meg',
   ])('continues to reject unsupported advanced analysis with ParseError: %s', directive => {
     expect(() => parse(directive)).toThrow(ParseError);

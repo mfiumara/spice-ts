@@ -1,12 +1,24 @@
 import type { DeviceModel, StampContext } from './device.js';
 
 export interface MOSFETParams {
+  LEVEL: number;
   VTO: number;
   KP: number;
   LAMBDA: number;
   W: number;
   L: number;
+  KF: number;
+  AF: number;
+  NLEV: number;
+  TOX: number | undefined;
   polarity: number; // 1 for NMOS, -1 for PMOS
+}
+
+export interface MOSFETOperatingPoint {
+  drainNode: number;
+  sourceNode: number;
+  drainCurrent: number;
+  transconductance: number;
 }
 
 const GMIN = 1e-12;
@@ -15,20 +27,64 @@ export class MOSFET implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
   readonly params: MOSFETParams;
+  readonly suppliedParams: Readonly<Record<string, number>>;
 
   constructor(
     readonly name: string,
     readonly nodes: number[],
     params: Partial<MOSFETParams> & Record<string, number>,
   ) {
+    this.suppliedParams = { ...params };
     this.params = {
+      LEVEL: params.LEVEL ?? 1,
       VTO: params.VTO ?? 1,
       KP: params.KP ?? 2e-5,
       LAMBDA: params.LAMBDA ?? 0,
       W: params.W ?? 1,
       L: params.L ?? 1,
+      KF: params.KF ?? 0,
+      AF: params.AF ?? 1,
+      NLEV: params.NLEV ?? 2,
+      TOX: params.TOX,
       polarity: params.polarity ?? 1,
     };
+  }
+
+  /** Level-1 DC quantities used by the small-signal noise generators. */
+  noiseOperatingPoint(solution: Float64Array): MOSFETOperatingPoint {
+    const { VTO, KP, LAMBDA, W, L, polarity } = this.params;
+    let drainNode = this.nodes[0];
+    const gateNode = this.nodes[1];
+    let sourceNode = this.nodes[2];
+    const drainVoltage = drainNode >= 0 ? solution[drainNode] : 0;
+    const gateVoltage = gateNode >= 0 ? solution[gateNode] : 0;
+    const sourceVoltage = sourceNode >= 0 ? solution[sourceNode] : 0;
+    let vGS = polarity * (gateVoltage - sourceVoltage);
+    let vDS = polarity * (drainVoltage - sourceVoltage);
+
+    if (vDS < 0) {
+      [drainNode, sourceNode] = [sourceNode, drainNode];
+      vGS -= vDS;
+      vDS = -vDS;
+    }
+
+    const threshold = Math.abs(VTO);
+    const aspectRatio = W / L;
+    let drainCurrent = 0;
+    let transconductance = 0;
+    if (vGS > threshold) {
+      const overdrive = vGS - threshold;
+      if (vDS < overdrive) {
+        drainCurrent = KP * aspectRatio * (overdrive * vDS - vDS * vDS / 2)
+          * (1 + LAMBDA * vDS);
+        transconductance = KP * aspectRatio * vDS * (1 + LAMBDA * vDS);
+      } else {
+        drainCurrent = (KP * aspectRatio / 2) * overdrive * overdrive
+          * (1 + LAMBDA * vDS);
+        transconductance = KP * aspectRatio * overdrive * (1 + LAMBDA * vDS);
+      }
+    }
+    return { drainNode, sourceNode, drainCurrent, transconductance };
   }
 
   stamp(ctx: StampContext): void {

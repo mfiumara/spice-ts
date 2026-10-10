@@ -121,7 +121,7 @@ export class WasmNgspiceSimulator implements SimulatorAdapter {
     const result: Omit<SimulationResult, 'warnings' | 'steps'> = {};
 
     for (const analysis of compiled.analyses) {
-      if (analysis.type === 'noise' || analysis.type === 'tf') {
+      if (analysis.type === 'noise' || analysis.type === 'tf' || analysis.type === 'sens') {
         throw new InvalidCircuitError(
           `ngspice-wasm .${analysis.type} result mapping is not supported`,
         );
@@ -345,6 +345,8 @@ function formatAnalysis(analysis: AnalysisDirective): string {
       return `.noise v(${analysis.outputNode}) ${analysis.inputSource} lin ${analysis.points} ${analysis.startFreq} ${analysis.stopFreq}`;
     case 'tf':
       return `.tf v(${analysis.outputNode}) ${analysis.inputSource}`;
+    case 'sens':
+      throw new InvalidCircuitError('ngspice-wasm does not support .sens result mapping');
   }
 }
 

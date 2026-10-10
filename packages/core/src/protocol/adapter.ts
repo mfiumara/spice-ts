@@ -115,6 +115,7 @@ function protocolAnalysis(analysis: AnalysisDirective): AnalysisCommand {
       return analysis;
     case 'noise':
     case 'tf':
+    case 'sens':
       throw new InvalidCircuitError(`Protocol v1 does not support '${analysis.type}' analysis results`);
   }
 }

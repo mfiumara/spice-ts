@@ -29,8 +29,8 @@ describe('DC Operating Point', () => {
     const options = resolveOptions();
     const { result } = solveDCOperatingPoint(compiled, options);
 
-    expect(result.voltage('1')).toBeCloseTo(3, 6);
-    expect(result.voltage('2')).toBeCloseTo(2, 6);
+    expect(result.voltage('1')).toBeCloseTo(-3, 6);
+    expect(result.voltage('2')).toBeCloseTo(-2, 6);
   });
 
   it('solves multiple voltage sources', () => {

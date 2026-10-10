@@ -26,8 +26,46 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
     }
     let kind: string | undefined;
     if (device instanceof BJT) kind = 'BJT';
-    else if (device instanceof MOSFET || device instanceof BSIM3v3) kind = 'MOSFET';
+    else if (device instanceof BSIM3v3) kind = 'MOSFET';
 
+    if (device instanceof MOSFET) {
+      if (device.params.LEVEL !== 1) {
+        throw new InvalidCircuitError(
+          `.noise only supports MOSFET level 1 for '${device.name}'`,
+        );
+      }
+      for (const parameter of ['RD', 'RS'] as const) {
+        if (device.suppliedParams[parameter] !== undefined) {
+          throw new InvalidCircuitError(
+            `.noise does not support MOSFET model parameter '${parameter}' for '${device.name}'`,
+          );
+        }
+      }
+      const sourceNode = device.nodes[2];
+      const bulkNode = device.nodes[3] ?? sourceNode;
+      if (
+        bulkNode !== sourceNode
+        || device.suppliedParams.GAMMA !== undefined
+        || device.suppliedParams.PHI !== undefined
+      ) {
+        throw new InvalidCircuitError(
+          `.noise does not support MOSFET bulk/body-effect form for '${device.name}'`,
+        );
+      }
+      const { W, L, KF, AF, NLEV, TOX } = device.params;
+      if (!(W > 0) || !Number.isFinite(W) || !(L > 0) || !Number.isFinite(L)) {
+        throw new InvalidCircuitError(`.noise requires positive finite MOSFET W and L for '${device.name}'`);
+      }
+      if (!(KF >= 0) || !Number.isFinite(KF) || !(AF > 0) || !Number.isFinite(AF)) {
+        throw new InvalidCircuitError(`.noise requires finite MOSFET KF >= 0 and AF > 0 for '${device.name}'`);
+      }
+      if (NLEV !== 2) {
+        throw new InvalidCircuitError(`.noise only supports MOSFET NLEV=2 for '${device.name}'`);
+      }
+      if (TOX !== undefined && (!(TOX > 0) || !Number.isFinite(TOX))) {
+        throw new InvalidCircuitError(`.noise requires a positive finite MOSFET TOX for '${device.name}'`);
+      }
+    }
     if (kind) {
       throw new InvalidCircuitError(
         `.noise does not support ${kind} noise for '${device.name}'`,
@@ -37,9 +75,9 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
 }
 
 /**
- * Solve the bounded noise slice: resistor thermal noise and diode junction shot
- * and flicker noise at ngspice's default 27 C circuit temperature. Controlled
- * and independent ideal sources are noiseless.
+ * Solve the bounded noise slice at ngspice's default 27 C circuit temperature:
+ * resistor thermal noise, diode junction shot/flicker noise, and MOS1 channel
+ * thermal/KF/AF flicker noise. Controlled and independent ideal sources are noiseless.
  */
 export function solveNoise(
   compiled: CompiledCircuit,
@@ -89,11 +127,34 @@ export function solveNoise(
         );
       }
       return {
-        resistor,
-        currentDensity: Math.sqrt(
+        positive: resistor.nodes[0],
+        negative: resistor.nodes[1],
+        currentPowerDensity: (_frequency: number) =>
           4 * BOLTZMANN_CONSTANT * DEFAULT_TEMPERATURE_KELVIN / resistor.resistance,
-        ),
       };
+    });
+  const mosfetSources = devices
+    .filter((device): device is MOSFET => device instanceof MOSFET)
+    .flatMap(mosfet => {
+      const operatingPoint = mosfet.noiseOperatingPoint(dcSolution);
+      const { W, L, KF, AF, TOX } = mosfet.params;
+      const oxideCapacitance = 3.9 * 8.854214871e-12 / (TOX ?? 1e-7);
+      const sources = [{
+        positive: operatingPoint.drainNode,
+        negative: operatingPoint.sourceNode,
+        currentPowerDensity: (_frequency: number) => 4 * BOLTZMANN_CONSTANT * DEFAULT_TEMPERATURE_KELVIN
+          * (2 / 3) * Math.abs(operatingPoint.transconductance),
+      }];
+      if (KF > 0) {
+        sources.push({
+          positive: operatingPoint.drainNode,
+          negative: operatingPoint.sourceNode,
+          currentPowerDensity: (frequency: number) => KF
+            * operatingPoint.transconductance * operatingPoint.transconductance
+            / (Math.pow(frequency, AF) * W * L * oxideCapacitance),
+        });
+      }
+      return sources;
     });
   const diodeSources = devices
     .filter((device): device is Diode => device instanceof Diode)
@@ -118,13 +179,14 @@ export function solveNoise(
       }
       return sources;
     });
+  const noiseSources = [...resistorSources, ...mosfetSources];
 
   const frequencies = generateFrequencies(analysis, options.reltol);
   const hasIntegratedTotals = analysis.stopFreq > analysis.startFreq;
   const outputNoiseDensity: number[] = [];
   const inputNoiseDensity: number[] = [];
   const gainSquaredInverse: number[] = [];
-  const resistorOutputPowerDensity = resistorSources.map(() => [] as number[]);
+  const sourceOutputPowerDensity = noiseSources.map(() => [] as number[]);
   const diodeOutputPowerDensity = diodeSources.map(() => [] as number[]);
 
   for (const frequency of frequencies) {
@@ -139,15 +201,15 @@ export function solveNoise(
     gainSquaredInverse.push(1 / (gain * gain));
 
     let outputPowerDensity = 0;
-    for (let index = 0; index < resistorSources.length; index++) {
-      const { resistor, currentDensity } = resistorSources[index];
+    for (let index = 0; index < noiseSources.length; index++) {
+      const { positive, negative, currentPowerDensity } = noiseSources[index];
+      const currentDensity = Math.sqrt(currentPowerDensity(frequency));
       const rhs = new Float64Array(systemSize);
-      const [positive, negative] = resistor.nodes;
       if (positive >= 0) rhs[positive] -= currentDensity;
       if (negative >= 0) rhs[negative] += currentDensity;
       const [real, imaginary] = solver.solve(rhs, zeroImaginary);
       const contribution = real[outputIndex] ** 2 + imaginary[outputIndex] ** 2;
-      resistorOutputPowerDensity[index].push(contribution);
+      sourceOutputPowerDensity[index].push(contribution);
       outputPowerDensity += contribution;
     }
     for (let index = 0; index < diodeSources.length; index++) {
@@ -171,13 +233,13 @@ export function solveNoise(
   const integratedOutputNoise = hasIntegratedTotals
     ? Math.sqrt(sumIntegratedOutputPower(
       frequencies,
-      [...resistorOutputPowerDensity, ...diodeOutputPowerDensity],
+      [...sourceOutputPowerDensity, ...diodeOutputPowerDensity],
     ))
     : undefined;
   const integratedInputNoise = hasIntegratedTotals
     ? Math.sqrt(sumIntegratedInputPower(
       frequencies,
-      [...resistorOutputPowerDensity, ...diodeOutputPowerDensity],
+      [...sourceOutputPowerDensity, ...diodeOutputPowerDensity],
       gainSquaredInverse,
     ))
     : undefined;

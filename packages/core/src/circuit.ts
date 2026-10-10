@@ -1,6 +1,6 @@
 import type { DeviceModel } from './devices/device.js';
 import type {
-  AnalysisDirective, PoleZeroAnalysis, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis,
+  AnalysisDirective, PoleZeroAnalysis, SensitivityAnalysis, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis,
   SimulationOptions, NodeInitialState,
 } from './types.js';
 import type { CircuitIR } from './ir/types.js';
@@ -32,6 +32,7 @@ import {
   type DiodeInstanceParams,
 } from './parser/diode-parser.js';
 import { assertSupportedPoleZero } from './validation/pole-zero.js';
+import { assertSupportedSensitivity } from './validation/sensitivity.js';
 import {
   resolveCapacitance,
   resolveCapacitorModel,
@@ -216,6 +217,10 @@ function formatAnalysis(analysis: AnalysisDirective | PoleZeroAnalysis): string 
       return `.tf v(${analysis.outputNode}) ${analysis.inputSource}`;
     case 'pz':
       return `.pz ${analysis.inputPositive} ${analysis.inputNegative} ${analysis.outputPositive} ${analysis.outputNegative} ${analysis.inputType} ${analysis.mode}`;
+    case 'sens':
+      return analysis.mode === 'dc'
+        ? `.sens v(${analysis.outputNode})`
+        : `.sens v(${analysis.outputNode}) ac dec ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
   }
 }
 
@@ -668,6 +673,8 @@ export class Circuit {
   addAnalysis(type: 'noise', params: { outputNode: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'tf', params: { outputNode: string; inputSource: string }): void;
   addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur'; mode: 'pol' | 'pz' }): void;
+  addAnalysis(type: 'sens', params: { outputNode: string; mode: 'dc' }): void;
+  addAnalysis(type: 'sens', params: { outputNode: string; mode: 'ac'; variation: 'dec'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
     switch (type) {
       case 'op':
@@ -737,6 +744,18 @@ export class Circuit {
         assertSupportedPoleZero(analysis);
         this._poleZeroAnalyses.push(analysis);
         break;
+      case 'sens': {
+        if (this._steps.length > 0) {
+          throw new InvalidCircuitError('.step cannot be combined with .sens');
+        }
+        if (this._analyses.some(existing => existing.type === 'sens')) {
+          throw new InvalidCircuitError('Multiple .sens analyses are not supported');
+        }
+        const analysis = { type: 'sens', ...params } as SensitivityAnalysis;
+        assertSupportedSensitivity(analysis);
+        this._analyses.push(analysis);
+        break;
+      }
     }
   }
 
@@ -765,6 +784,9 @@ export class Circuit {
   }): void {
     if (this._poleZeroAnalyses.length > 0) {
       throw new InvalidCircuitError('.step cannot be combined with .pz');
+    }
+    if (this._analyses.some(analysis => analysis.type === 'sens')) {
+      throw new InvalidCircuitError('.step cannot be combined with .sens');
     }
     if (opts.values) {
       this._steps.push({ type: 'step', param, sweepMode: 'list', values: opts.values });
@@ -1048,7 +1070,15 @@ export class Circuit {
             ));
           } else {
             // Level 1 — existing behavior
-            const nodeIdxs = desc.nodes.slice(0, 3).map(resolveNode);
+            // Preserve the bulk terminal for analyses that must reject body-effect
+            // forms explicitly. The bounded Level-1 DC stamp still uses D/G/S only.
+            const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];
+            const nodeIdxs = [
+              resolveNode(desc.nodes[0]),
+              resolveNode(desc.nodes[1]),
+              resolveNode(desc.nodes[2]),
+              resolveNode(bulkNode),
+            ];
             devices.push(new MOSFET(desc.name, nodeIdxs, { ...modelParams, ...desc.params, polarity }));
           }
           break;
