@@ -193,4 +193,3 @@ function normalizeNegativeZero<T>(value: T): T {
   }
   return (Object.is(value, -0) ? 0 : value) as T;
 }
-
