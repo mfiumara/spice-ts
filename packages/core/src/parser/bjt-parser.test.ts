@@ -1,8 +1,24 @@
 import { describe, expect, it } from 'vitest';
 import { simulate } from '../simulate.js';
+import { parseBJTInstance } from './bjt-parser.js';
 import { parse } from './index.js';
 
 describe('BJT Q-card parser', () => {
+  it.each([
+    [['Q1', 'c', 'b', 'e', 'QMOD'], 'QMOD'],
+    [['Q1', 'c', 'b', 'e', 'QMOD', 'OFF'], 'QMOD'],
+    [['Q1', 'c', 'b', 'e', 'substrate', 'QMOD'], 'QMOD'],
+    [['Q1', 'c', 'b', 'e', 'substrate', 'QMOD', 'OFF'], 'QMOD'],
+    [['Q1', 'c', 'b', 'e', '0', 'QMOD', 'OFF=1'], '0'],
+  ])('resolves the bounded token shape %j', (tokens, modelName) => {
+    expect(parseBJTInstance(tokens, 1)).toEqual({
+      collector: 'c',
+      base: 'b',
+      emitter: 'e',
+      modelName,
+    });
+  });
+
   it('treats OFF as an initial-state hint rather than disabling the BJT', async () => {
     const result = await simulate(`BJT OFF startup hint
       VCC 1 0 DC 12
@@ -48,6 +64,8 @@ describe('BJT Q-card parser', () => {
   it.each([
     'Q1 c b e QMOD AREA=2',
     'Q1 c b e QMOD OFF=1',
+    'Q1 c b e substrate QMOD AREA=2',
+    'Q1 c b e substrate QMOD OFF=1',
   ])('rejects the unsupported instance form %s', card => {
     expect(() => parse(`unsupported Q-card\n${card}\n.model QMOD NPN(BF=100)\n.op`))
       .toThrow('Unsupported BJT Q-card form');
