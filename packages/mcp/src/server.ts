@@ -54,13 +54,14 @@ export interface ExecutionWorker {
 }
 
 interface WorkerReply {
-  type: 'result' | 'error';
+  type: 'result' | 'error' | 'events';
   result?: unknown;
   error?: SpiceApiErrorV1;
+  events?: SimulationEventV1[];
 }
 
 interface WorkerRequest {
-  operation: 'validate' | 'simulate';
+  operation: 'validate' | 'simulate' | 'stream';
   request: SimulationRequestV1;
   coreModulePath: string;
 }
@@ -300,12 +301,15 @@ interface StreamJob {
   request: SimulationRequestV1;
   state:
     | { status: 'pending' }
-    | { status: 'ready'; result: SimulationResultV1; events: SimulationEventV1[] }
+    | { status: 'ready'; result: SimulationResultV1 }
     | { status: 'failed'; error: SpiceApiErrorV1 };
   controller: AbortController;
   cursorOffsets: Map<string, number>;
   replay: Map<string, SimulationReadDataV1>;
+  events: SimulationEventV1[];
   emitted: SimulationEventV1[];
+  releaseBatch?: () => void;
+  batchEndOffset?: number;
   terminal?: SimulationReadDataV1;
 }
 
@@ -332,6 +336,7 @@ class StreamStore {
       controller: new AbortController(),
       cursorOffsets: new Map([[cursor, 0]]),
       replay: new Map(),
+      events: [],
       emitted: [],
     };
     this.jobs.set(jobId, job);
@@ -348,7 +353,7 @@ class StreamStore {
     const replay = job.replay.get(args.cursor);
     if (replay) return replay;
     if (job.terminal) return job.terminal;
-    if (job.state.status === 'pending') {
+    if (job.state.status === 'pending' && offset >= job.events.length) {
       return { status: 'running', events: [], nextCursor: args.cursor };
     }
     if (job.state.status === 'failed') {
@@ -360,8 +365,8 @@ class StreamStore {
     const events: SimulationEventV1[] = [];
     let pointCount = 0;
     let nextOffset = offset;
-    while (nextOffset < job.state.events.length) {
-      const event = job.state.events[nextOffset]!;
+    while (nextOffset < job.events.length) {
+      const event = job.events[nextOffset]!;
       if (event.type === 'point' && pointCount >= args.maxPoints) break;
       events.push(event);
       nextOffset++;
@@ -371,9 +376,14 @@ class StreamStore {
       }
     }
     job.emitted.push(...events);
+    if (events.length > 0 && job.batchEndOffset !== undefined && nextOffset >= job.batchEndOffset) {
+      job.releaseBatch?.();
+      job.releaseBatch = undefined;
+      job.batchEndOffset = undefined;
+    }
 
     let data: SimulationReadDataV1;
-    if (nextOffset < job.state.events.length) {
+    if (nextOffset < job.events.length || job.state.status === 'pending') {
       const nextCursor = streamCursor(args.jobId, nextOffset);
       job.cursorOffsets.set(nextCursor, nextOffset);
       data = { status: 'running', events, nextCursor };
@@ -392,6 +402,8 @@ class StreamStore {
     const job = this.job(jobId);
     if (job.terminal) return job.terminal;
     job.controller.abort();
+    job.releaseBatch?.();
+    job.releaseBatch = undefined;
     const data = failureRead(jobId, job.emitted, {
       code: 'CANCELLED', message: 'The simulation job was cancelled',
       retryable: true, phase: 'solve', details: {},
@@ -410,9 +422,16 @@ class StreamStore {
     try {
       const result = options.simulate
         ? await boundedCall(() => options.simulate!(job.request), limits.maxWallTimeMs, job.controller.signal)
-        : await runInWorker<SimulationResultV1>('simulate', job.request, limits.maxWallTimeMs, solveOptions);
+        : await runStreamingWorker(job.request, limits.maxWallTimeMs, solveOptions, events => {
+          job.events.push(...events);
+          job.batchEndOffset = job.events.length;
+          return new Promise<void>(resolve => { job.releaseBatch = resolve; });
+        });
       enforceResultBounds(result, limits);
-      if (!job.terminal) job.state = { status: 'ready', result, events: resultEvents(result) };
+      if (!job.terminal) {
+        if (job.events.length === 0) job.events.push(...resultEvents(result));
+        job.state = { status: 'ready', result };
+      }
     } catch (error) {
       if (!job.terminal) {
         const publicFailure = publicError(error);
@@ -736,9 +755,116 @@ async function boundedCall<T>(operation: () => Promise<T>, wallTimeMs: number, s
 
 const workerSource = String.raw`
 const { parentPort } = require('node:worker_threads');
+
+const compareCodePoints = (left, right) => {
+  const a = Array.from(left, character => character.codePointAt(0));
+  const b = Array.from(right, character => character.codePointAt(0));
+  for (let index = 0; index < Math.min(a.length, b.length); index++) {
+    if (a[index] !== b[index]) return a[index] - b[index];
+  }
+  return a.length - b.length;
+};
+
+const sortedMap = (values, convert = value => value) => Object.fromEntries(
+  [...values.entries()].sort(([left], [right]) => compareCodePoints(left, right))
+    .map(([name, value]) => [name, convert(value)]),
+);
+
+const pointEvent = (point, common, pointIndex) => 'time' in point
+  ? {
+    type: 'point', ...common, pointIndex,
+    point: {
+      type: 'tran', timeS: point.time,
+      voltagesV: sortedMap(point.voltages), currentsA: sortedMap(point.currents),
+    },
+  }
+  : {
+    type: 'point', ...common, pointIndex,
+    point: {
+      type: 'ac', frequencyHz: point.frequency,
+      voltagePhasors: sortedMap(point.voltages, value => ({
+        magnitude: value.magnitude, phaseDegrees: value.phase,
+      })),
+      currentPhasors: sortedMap(point.currents, value => ({
+        magnitude: value.magnitude, phaseDegrees: value.phase,
+      })),
+    },
+  };
+
+const coreOptions = options => ({
+  simulator: options?.backend === 'ngspice-wasm' ? 'ngspice-wasm' : 'spice-ts',
+  abstol: options?.abstol,
+  vntol: options?.vntol,
+  reltol: options?.reltol,
+  maxIterations: options?.maxIterations,
+  maxTransientIterations: options?.maxTransientIterations,
+  maxTimestep: options?.maxTimestep,
+  integrationMethod: options?.integrationMethod,
+  trtol: options?.trtol,
+  gmin: options?.gmin,
+});
+
+const sendEvents = events => new Promise(resolve => {
+  parentPort.once('message', resolve);
+  parentPort.postMessage({ type: 'events', events });
+});
+
+async function streamProtocol(core, request) {
+  if (request.input.format !== 'spice') return;
+  const files = request.input.virtualFiles ?? {};
+  const circuit = await core.parseTitlelessAsync(request.input.source, async path => {
+    const source = files[path];
+    if (source === undefined) throw new Error('A virtual include was not provided');
+    return source;
+  });
+  const analyses = [...circuit.analyses];
+  if (!analyses.every(analysis => analysis.type === 'tran' || analysis.type === 'ac')) return;
+  const hasSteps = circuit.compile().steps.length > 0;
+
+  for (let analysisIndex = 0; analysisIndex < analyses.length; analysisIndex++) {
+    const analysis = analyses[analysisIndex];
+    circuit.analyses.splice(0, circuit.analyses.length, analysis);
+    let activeKey;
+    let activeCommon;
+    let pointIndex = 0;
+    let batchPointCount = 0;
+    let events = [];
+    for await (const entry of core.simulateStepStream(circuit, coreOptions(request.options))) {
+      const step = hasSteps
+        ? { index: entry.stepIndex, parameter: entry.paramName, value: entry.paramValue }
+        : undefined;
+      const key = hasSteps ? String(entry.stepIndex) : '';
+      const common = { analysisIndex, ...(step ? { step } : {}) };
+      if (key !== activeKey) {
+        if (activeCommon) {
+          events.push({ type: 'analysis-end', analysis: analysis.type, ...activeCommon, pointCount: pointIndex });
+        }
+        activeKey = key;
+        activeCommon = common;
+        pointIndex = 0;
+        events.push({ type: 'analysis-start', analysis: analysis.type, ...common });
+      }
+      events.push(pointEvent(entry.point, common, pointIndex++));
+      batchPointCount++;
+      if (batchPointCount === 2) {
+        await sendEvents(events);
+        events = [];
+        batchPointCount = 0;
+      }
+    }
+    if (activeCommon) {
+      events.push({
+        type: 'analysis-end', analysis: analysis.type, ...activeCommon, pointCount: pointIndex,
+      });
+    }
+    if (events.length > 0) await sendEvents(events);
+  }
+}
+
 parentPort.once('message', async ({ operation, request, coreModulePath }) => {
   const core = require(coreModulePath);
   try {
+    if (operation === 'stream') await streamProtocol(core, request);
     const result = operation === 'validate'
       ? await core.validateProtocolV1(request)
       : await core.simulateProtocolV1(request);
@@ -754,6 +880,64 @@ const coreModulePath = packageRequire.resolve('@spice-ts/core');
 
 function createExecutionWorker(): ExecutionWorker {
   return new Worker(workerSource, { eval: true }) as unknown as ExecutionWorker;
+}
+
+async function runStreamingWorker(
+  request: SimulationRequestV1,
+  wallTimeMs: number,
+  options: ToolExecutionOptions,
+  onEvents: (events: SimulationEventV1[]) => Promise<void>,
+): Promise<SimulationResultV1> {
+  throwIfCancelled(options.signal);
+  const worker = (options.workerFactory ?? createExecutionWorker)();
+  return new Promise<SimulationResultV1>((resolve, reject) => {
+    let settled = false;
+    let timeout: ReturnType<typeof setTimeout>;
+    const finish = (outcome: () => void) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      options.signal?.removeEventListener('abort', onAbort);
+      worker.off('message', onMessage);
+      worker.off('error', onError);
+      worker.off('exit', onExit);
+      void Promise.resolve(worker.terminate()).catch(() => undefined);
+      outcome();
+    };
+    const onMessage = (message: WorkerReply) => {
+      if (message.type === 'events') {
+        if (!message.events) return finish(() => reject(workerFailure()));
+        void onEvents(message.events)
+          .then(() => { if (!settled) worker.postMessage({ type: 'ack' }); })
+          .catch(() => finish(() => reject(workerFailure())));
+        return;
+      }
+      finish(() => {
+        if (message.type === 'result') resolve(message.result as SimulationResultV1);
+        else reject(message.error ?? workerFailure());
+      });
+    };
+    const onError = () => finish(() => reject(workerFailure()));
+    const onExit = () => finish(() => reject(workerFailure()));
+    const onAbort = () => finish(() => reject(cancelledError()));
+
+    worker.on('message', onMessage);
+    worker.on('error', onError);
+    worker.on('exit', onExit);
+    options.signal?.addEventListener('abort', onAbort, { once: true });
+    timeout = setTimeout(() => finish(() => reject(apiError(
+      'RESOURCE_LIMIT',
+      'The simulation wall-time limit was exceeded',
+      'solve',
+      { limit: 'maxWallTimeMs', maximum: wallTimeMs },
+    ))), wallTimeMs);
+    try {
+      const message: WorkerRequest = { operation: 'stream', request, coreModulePath };
+      worker.postMessage(message);
+    } catch {
+      finish(() => reject(workerFailure()));
+    }
+  });
 }
 
 async function runInWorker<T>(

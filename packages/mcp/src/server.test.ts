@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { EventEmitter } from 'node:events';
 import { sha256CanonicalJson } from '@spice-ts/protocol';
 import type {
+  SimulationEventV1,
   SimulationReadDataV1,
   SimulationRequestV1,
   SimulationResultV1,
@@ -293,7 +294,8 @@ describe('bounded protocol-v1 tools', () => {
       readonly terminate = vi.fn(() => 0);
       resultSent = false;
 
-      postMessage(): void {
+      postMessage(message: unknown): void {
+        if (!isWorkerOperation(message)) return;
         queueMicrotask(() => this.emit('message', {
           type: 'events',
           events: [
@@ -340,6 +342,51 @@ describe('bounded protocol-v1 tools', () => {
     });
     expect(worker.terminate).toHaveBeenCalledOnce();
     expect(worker.resultSent).toBe(false);
+  });
+
+  it('keeps real transient point events canonical while the terminal result is pending', async () => {
+    const request: SimulationRequestV1 = {
+      apiVersion: '1',
+      input: {
+        format: 'spice',
+        source: 'V1 in 0 1\nR1 in out 1k\nC1 out 0 1u\n.tran 1u 3u',
+      },
+    };
+    const execute = createToolExecutor();
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    const first = await readWhenReady(execute, { jobId, cursor, maxPoints: 2 });
+    const firstData = first.structuredContent as unknown as SimulationReadDataV1;
+
+    expect(firstData.status).toBe('running');
+    expect(firstData.events.filter(event => event.type === 'point')).toHaveLength(2);
+    expect('terminal' in firstData).toBe(false);
+
+    const events = [...firstData.events];
+    let nextCursor = firstData.nextCursor;
+    let complete: Extract<SimulationReadDataV1, { status: 'complete' }> | undefined;
+    while (nextCursor !== null) {
+      const response = await readWhenReady(execute, { jobId, cursor: nextCursor, maxPoints: 2 });
+      const data = response.structuredContent as unknown as SimulationReadDataV1;
+      events.push(...data.events);
+      nextCursor = data.nextCursor;
+      if (data.status === 'complete') complete = data;
+    }
+
+    expect(complete).toBeDefined();
+    const result = complete!.terminal.data.analyses[0];
+    expect(result?.type).toBe('tran');
+    if (result?.type !== 'tran') throw new Error('Expected transient result');
+    const points = events.filter((event): event is Extract<SimulationEventV1, { type: 'point' }> =>
+      event.type === 'point');
+    expect(points).toHaveLength(result.timeS.length);
+    points.forEach((event, index) => {
+      expect(event.point).toEqual({
+        type: 'tran', timeS: result.timeS[index],
+        voltagesV: Object.fromEntries(Object.entries(result.voltagesV).map(([name, values]) => [name, values[index]])),
+        currentsA: Object.fromEntries(Object.entries(result.currentsA).map(([name, values]) => [name, values[index]])),
+      });
+    });
   });
 
   it('streams canonical analysis events in bounded replayable chunks', async () => {
@@ -527,4 +574,8 @@ function containsExactString(value: unknown, target: string): boolean {
     return Object.values(value).some(entry => containsExactString(entry, target));
   }
   return false;
+}
+
+function isWorkerOperation(value: unknown): boolean {
+  return value !== null && typeof value === 'object' && 'operation' in value;
 }
