@@ -1,0 +1,8 @@
+* Project-authored bounded CCCS OP fixture: differential output
+VCTRL control 0 -1.5
+RCTRL control 0 750
+F1 outp outn VCTRL -2
+RPOS outp 0 1k
+RNEG outn 0 1k
+.op
+.end

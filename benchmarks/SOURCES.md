@@ -89,6 +89,20 @@ At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-di
 |---|---|---|---|---|
 | Passive RC pulse-step transient | ngspice public corpus A [`tests/general/rc.cir`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/general/rc.cir), pinned revision `3ef069fb1f04177a153f342a32d941fc20ff047e` | BSD-3-Clause under the pinned ngspice [`COPYING`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/COPYING); retained at `benchmarks/corpus/ngspice/LICENSE.txt` | Redistribution is allowed. `rc-step.cir` keeps the public one-source, one-resistor, one-capacitor step-response topology. It scales R/C and stop time, names the output node, makes pulse rise/fall/width/period explicit, and removes output-only `.plot` and `.options` cards. The committed bytes are supplied unchanged to both engines. No tolerance differs by engine. SHA-256 is recorded by the focused report. | `benchmarks/wasm-rc-transient/rc-step.cir`; compare with `pnpm exec tsx benchmarks/wasm-rc-transient/compare.ts` using native ngspice and the explicit `spice-ts-wasm` backend. |
 
+## Bounded linear CCCS OP WASM fixtures
+
+- Source: project-authored reference circuits for [issue #309](https://github.com/mfiumara/spice-ts/issues/309), issue revision as of 2026-10-10.
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- Adaptation: none. The comparison runner reads each committed fixture once and supplies those exact bytes to the explicit `spice-ts-wasm` backend and ngspice-47. No engine-specific values, tolerances, or rewrites are used. `single-ended.cir` deliberately references the declared `VCTRL` branch as `vctrl` to verify SPICE-case-insensitive controller resolution in both engines.
+
+| Fixture | SHA-256 | Coverage |
+|---|---|---|
+| `benchmarks/wasm-cccs-op/differential.cir` | `5462c18de8ebc84a8566638bfd6c004523f7ab8a8c301f7de219687ce55592d8` | Differential CCCS output with negative source bias and gain. |
+| `benchmarks/wasm-cccs-op/mixed-source.cir` | `16c5dfc66b2d9a637104898a6228ac1def0120baed62df17d20c5a599aaad5b0` | Controller branch between an independent bias source and sense node. |
+| `benchmarks/wasm-cccs-op/single-ended.cir` | `66defab84846b8d5664fa5fc471e6d56c2060f3c647a824c8f3da141eab2e923` | Mixed-case controller lookup and single-ended output. |
+
+Reproduce with `pnpm --filter @spice-ts/wasm bench:cccs-op`. The JSON receipt records ngspice version, machine, fixture hashes, byte-identical inputs, convergence, scalar errors, runtimes, fixed-memory and artifact-size evidence, exclusions, and every retained loss.
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
