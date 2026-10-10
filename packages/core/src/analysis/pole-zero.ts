@@ -1,4 +1,7 @@
 import type { CompiledCircuit } from '../circuit.js';
+import { Capacitor } from '../devices/capacitor.js';
+import { Inductor } from '../devices/inductor.js';
+import { Resistor } from '../devices/resistor.js';
 import { InvalidCircuitError } from '../errors.js';
 import { MNAAssembler } from '../mna/assembler.js';
 import { PoleZeroResult, type PoleZeroValue } from '../results.js';
@@ -16,7 +19,7 @@ interface Complex {
 
 const MAX_DYNAMIC_ORDER = 12;
 
-/** Solve the bounded single-ended current-input ngspice `.pz` form. */
+/** Solve the bounded grounded-reference ngspice `.pz` forms. */
 export function solvePoleZero(
   compiled: CompiledCircuit,
   analysis: PoleZeroAnalysis,
@@ -27,6 +30,7 @@ export function solvePoleZero(
   const inputNegative = nodeIndex(compiled, analysis.inputNegative, 'input');
   const outputPositive = nodeIndex(compiled, analysis.outputPositive, 'output');
   const outputNegative = nodeIndex(compiled, analysis.outputNegative, 'output');
+  if (analysis.inputType === 'vol') assertVoltageInputDevicesSupported(compiled);
 
   const dcSolution = solveDCOperatingPoint(
     compiled,
@@ -66,20 +70,36 @@ export function solvePoleZero(
 
   const normalized = timeConstantMatrix.map(row => row.map(value => value / timeScale));
   const denominator = determinantPolynomial(normalized, dynamicOrder);
-  const poleRoots = polynomialRoots([...denominator].reverse());
+  const input = new Float64Array(compiled.nodeCount + compiled.branchCount);
+  if (inputPositive >= 0) input[inputPositive] -= 1;
+  if (inputNegative >= 0) input[inputNegative] += 1;
+  const output = new Float64Array(input.length);
+  if (outputPositive >= 0) output[outputPositive] += 1;
+  if (outputNegative >= 0) output[outputNegative] -= 1;
+
+  // For voltage input ngspice finds the roots of V(input)/I(input).
+  // Those roots are the denominator roots of V(output)/V(input), without
+  // cancelling roots shared with the output numerator.
+  let polePolynomial = denominator;
+  if (analysis.inputType === 'vol') {
+    const inputVoltage = new Float64Array(input.length);
+    inputVoltage[inputPositive] = 1;
+    polePolynomial = transferNumerator(
+      conductance,
+      storage,
+      input,
+      inputVoltage,
+      denominator,
+      timeScale,
+    );
+  }
+  const poleRoots = polynomialRoots([...polePolynomial].reverse());
   const poles = orderedValues(
     poleRoots.map(root => divideComplexByReal(root, timeScale)),
   );
 
   let zeros: PoleZeroValue[] = [];
   if (analysis.mode === 'pz') {
-    const input = new Float64Array(compiled.nodeCount + compiled.branchCount);
-    if (inputPositive >= 0) input[inputPositive] -= 1;
-    if (inputNegative >= 0) input[inputNegative] += 1;
-    const output = new Float64Array(input.length);
-    if (outputPositive >= 0) output[outputPositive] += 1;
-    if (outputNegative >= 0) output[outputNegative] -= 1;
-
     const numerator = transferNumerator(
       conductance,
       storage,
@@ -103,6 +123,19 @@ export function solvePoleZero(
     poles,
     zeros,
   );
+}
+
+function assertVoltageInputDevicesSupported(compiled: CompiledCircuit): void {
+  for (const device of compiled.devices) {
+    if (
+      device instanceof Resistor
+      || device instanceof Capacitor
+      || device instanceof Inductor
+    ) continue;
+    throw new InvalidCircuitError(
+      `.pz vol supports only ideal R, L, C devices; found ${device.name} (${device.constructor.name})`,
+    );
+  }
 }
 
 function buildLinearizedSystem(

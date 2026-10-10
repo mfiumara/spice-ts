@@ -67,6 +67,14 @@ try {
       || Math.abs(output.phaseDegrees - -32.141907635342065) > 1e-10) {
       throw new Error(JSON.stringify(result));
     }
+    const vccs = await engine.simulate({
+      apiVersion: '1',
+      input: { format: 'spice', source: 'VCTRL control 0 2\\nG1 out 0 control 0 2m\\nR1 out 0 1k\\n.op' },
+    }, { requestId: 'packed-wasm-vccs-op' });
+    const op = vccs.ok ? vccs.data.analyses[0] : undefined;
+    if (!vccs.ok || op?.type !== 'op' || op.voltagesV.out !== -4) {
+      throw new Error(JSON.stringify(vccs));
+    }
     const dcResult = await engine.simulate({
       apiVersion: '1',
       input: { format: 'spice', source: 'V1 in 0 0\\nR1 in out 1k\\nR2 out 0 1k\\n.dc V1 0 1 0.5' },

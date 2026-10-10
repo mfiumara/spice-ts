@@ -5,6 +5,7 @@ import { parseModelCard } from './model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
+import { parseBJTInstance } from './bjt-parser.js';
 import { parsePoleZero } from './pole-zero-parser.js';
 import { parseSensitivity } from './sensitivity-parser.js';
 import { parseTransmissionLine } from './transmission-line-parser.js';
@@ -212,7 +213,9 @@ export async function parseTitlelessAsync(
   return parseNetlist(preprocessed, false, guard);
 }
 
-const OUTPUT_ONLY_GNUCAP_OPTION_FLAGS = new Set(['nopage', 'acct', 'list', 'node']);
+const OUTPUT_ONLY_OPTION_FLAGS = new Set([
+  'nopage', 'acct', 'noacct', 'list', 'node', 'post', 'trans',
+]);
 const BEHAVIOR_CHANGING_GNUCAP_OPTIONS = new Set([
   'cstray', 'dampstrategy', 'itermin', 'nobypass', 'noincmode', 'rstray', 'trsteporder',
 ]);
@@ -450,6 +453,13 @@ function parseDotCommand(
       // spice-ts returns all computed vectors through its result API, so these
       // ngspice output-selection and formatting directives are metadata-only.
       break;
+    case '.PROBE':
+      if (tokens.length === 1) {
+        throw new ParseError('Unsupported empty .probe output request', lineNumber, context);
+      }
+      // .probe selects raw-file vectors in ngspice. spice-ts returns every
+      // computed vector through its result API, so the request does not narrow results.
+      break;
     case '.INCLUDE':
       throw new ParseError(
         '.include directive requires async parsing. Use parseAsync() with a resolveInclude option.',
@@ -549,7 +559,7 @@ function parseSimulationOptions(
   for (const token of optionTokens) {
     const separator = token.indexOf('=');
     const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
-    if (OUTPUT_ONLY_GNUCAP_OPTION_FLAGS.has(name) && separator < 0) continue;
+    if (OUTPUT_ONLY_OPTION_FLAGS.has(name) && separator < 0) continue;
     if (isOutputOnlyGnucapOption(name, separator < 0 ? undefined : token.slice(separator + 1))) {
       continue;
     }
@@ -752,23 +762,14 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
       );
       break;
     case 'Q': {
-      if (tokens.length === 5) {
-        circuit.addBJT(name, tokens[1], tokens[2], tokens[3], tokens[4]);
-        break;
-      }
-      const groundedSubstrate = tokens[4] === '0';
-      const supportedOffFlag = tokens.length === 6
-        || (tokens.length === 7 && tokens[6].toUpperCase() === 'OFF=1');
-      if (!groundedSubstrate || !supportedOffFlag) {
-        throw new ParseError(
-          `Unsupported BJT Q-card form: '${tokens.join(' ')}'`,
-          lineNumber, tokens.join(' '),
-        );
-      }
-      // Preserve the historical grounded-substrate compatibility path: it
-      // used the substrate token as the model selector and therefore ran the
-      // default level-1 device. New bounded cards use the three-terminal form.
-      circuit.addBJT(name, tokens[1], tokens[2], tokens[3], tokens[4]);
+      const instance = parseBJTInstance(tokens, lineNumber);
+      circuit.addBJT(
+        name,
+        instance.collector,
+        instance.base,
+        instance.emitter,
+        instance.modelName,
+      );
       break;
     }
     case 'J':

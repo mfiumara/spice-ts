@@ -34,6 +34,7 @@
     "test": "vitest run && pnpm test:packed-consumer",
     "test:packed-consumer": "pnpm build && node scripts/packed-consumer.mjs",
     "bench:ac": "pnpm build && tsx scripts/ac-accuracy.ts",
+    "bench:vccs-op": "pnpm build && tsx ../../benchmarks/wasm-vccs-op/compare.ts",
     "bench:dc": "pnpm build && tsx ../../benchmarks/wasm-dc-sweep/compare.ts",
     "pretest:coverage": "pnpm -C ../core build && pnpm -C ../protocol build",
     "test:coverage": "pnpm build && vitest run --coverage",

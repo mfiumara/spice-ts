@@ -21,7 +21,7 @@ await engine.close();
 
 - SPICE text input only
 - exactly one unstepped analysis
-- `.op` with resistors plus independent constant/DC voltage and current sources (`R`, `V`, `I`)
+- `.op` with resistors, independent constant/DC voltage and current sources, and linear voltage-controlled current sources (`R`, `V`, `I`, `G`)
 - `.dc` with one linear sweep of one independent constant/DC voltage or current source and resistors (`R`, `V`, `I`)
 - `.tran` with resistors, capacitors, and independent constant/DC or `PULSE` voltage and current sources (`R`, `C`, `V`, `I`)
 - `.ac lin|dec|oct` with positive finite resistors, capacitors and inductors plus independent voltage and current sources (`R`, `C`, `L`, `V`, `I`)
@@ -32,9 +32,9 @@ await engine.close();
 - at most 4,096 DC-sweep points, further reduced by the caller's `maxResultPoints`
 - fixed three-page WebAssembly memory with no imports or growth
 
-The WebAssembly backend does not support native/circuit-json input, virtual files, includes, subcircuits, models, parameters, controlled or nonlinear devices, switches, `.step`, nested/stepped DC sweeps, nonlinear DC source forms, transient UIC/initial conditions, start/max-time controls, adaptive timesteps, or non-trapezoidal integration. Inductors are AC-only. SIN, PWL, AC, and compound transient source forms remain unsupported. Unsupported input returns `UNSUPPORTED_FEATURE`; invalid grids return `INVALID_CIRCUIT`; exceeded bounds return `RESOURCE_LIMIT`. There is no automatic fallback. A caller that wants the TypeScript path must select `spice-ts-js` explicitly.
+The WebAssembly backend does not support native/circuit-json input, virtual files, includes, subcircuits, models, parameters, controlled sources other than the six-token linear `G` form in OP, nonlinear devices, switches, `.step`, nested/stepped DC sweeps, nonlinear DC source forms, transient UIC/initial conditions, start/max-time controls, adaptive timesteps, or non-trapezoidal integration. Inductors are AC-only. SIN, PWL, AC, and compound transient source forms remain unsupported. Unsupported input returns `UNSUPPORTED_FEATURE`; invalid grids return `INVALID_CIRCUIT`; exceeded bounds return `RESOURCE_LIMIT`. There is no automatic fallback. A caller that wants the TypeScript path must select `spice-ts-js` explicitly.
 
-The dense kernels are intentionally bounded and are not a speed claim. AC has O(points × n³) runtime and O(n²) memory, and transferring the verified 2,900-byte artifact with each one-shot worker request adds overhead. Sparse and nonlinear WASM remain unsupported.
+The dense kernels are intentionally bounded and are not a speed claim. AC has O(points × n³) runtime and O(n²) memory, and transferring the verified 3,275-byte artifact with each one-shot worker request adds overhead. Sparse and nonlinear WASM remain unsupported.
 
 ### Measured cost of this slice
 
@@ -59,7 +59,7 @@ The bounded passive DC-sweep receipt is `benchmarks/wasm-dc-sweep/report.json`. 
 
 `createSpiceEngine` verifies `dist/worker.js` and, for `spice-ts-wasm`, `dist/dense-solver.wasm` against `dist/manifest.json` before constructing a worker. Missing, malformed or mismatched assets fail with `BACKEND_UNAVAILABLE`. Build IDs use the first 16 hexadecimal characters of the selected artifact's SHA-256.
 
-The checked-in numeric artifact is copied during package builds, not rebuilt using an ambient toolchain. Its reviewable C source, pinned regeneration command, expected hash, size and ABI v2 are documented in `native/README.md`. ABI v2 retains the real `solve_f64` entry point and adds split-complex `solve_complex_f64`.
+The checked-in numeric artifact is copied during package builds, not rebuilt using an ambient toolchain. Its reviewable C source, pinned regeneration command, expected hash, size and ABI v2 are documented in `native/README.md`. ABI v2 exposes the bounded linear VCCS stamp plus the real and split-complex solver entry points.
 
 The worker receives request values and the already verified numeric bytes only. It exposes no WASI, socket, host-filesystem, clock, randomness or ambient fallback API. Package build and test scripts do not publish or deploy anything.
 

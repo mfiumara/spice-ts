@@ -1,7 +1,29 @@
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ParseError } from '../errors.js';
 import { simulate } from '../simulate.js';
-import { parseTitleless as parse } from './index.js';
+import { parse as parseDeck, parseTitleless as parse } from './index.js';
+
+const ngspiceFixtureRoot = new URL('../../../../benchmarks/corpus/ngspice/fixtures/', import.meta.url);
+
+const outputControlFixtures = [
+  ['tests/filters/lowpass.cir', 'aa48cf8809bb62ada7bd48b8d81808589126a69f784482e5fb0c80cc3fbf718d'],
+  ['examples/probe/ac-test.cir', '3afb9105918f939cbbdab957f8f872bbc886209fb83dbd27003c605977916479'],
+] as const;
+
+const noacctFirstFailureFixtures = [
+  ['tests/vbic/FO.cir', 'de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92'],
+  ['tests/mos6/mos6inv.cir', 'c1ee39a6f458dc2b527ab1de29d6d6a4858e35c6acc4ff760ac45774512534dc'],
+  ['tests/jfet/jfet_vds-vgs.cir', '64d61d79415c585195fcda1a21a170bda67f863e20b9492eaeb33e1efc9fd72a'],
+  ['tests/vbic/CEamp.cir', '088d1ebede86588ff8b823ba45219006bfeec34939af69e10c176e23d8a020ab'],
+  ['tests/general/rc.cir', '293c22e9953f3e28efcae55d6c00cab0b929d2c3fdf88810ab27b7a71e900bfe'],
+  ['tests/general/mosamp.cir', 'a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c'],
+  ['tests/mos6/simpleinv.cir', '3ad1ef05a4197b420b0d35b3a4c4c0aa2544025e200b619743a890e305b7e1b8'],
+  ['tests/hfet/inverter.cir', '3fa93266e9036443173bf9416eb67e8ff4c2c24aeefc6ef687f355d8548239e1'],
+  ['tests/mesa/mesosc.cir', '3cd4609cca7874775b7b2cac8cd0124bd2b8c5512064a0550a29de2da4896bcf'],
+  ['tests/general/schmitt.cir', 'c3e897ecd60c66cb5350c2a0fa7788f34af374803c10f4cf58d6f5ed01b00e55'],
+] as const;
 
 describe('ngspice option directives', () => {
   it('parses legacy .opt cards while ignoring reporting-only fields', () => {
@@ -12,10 +34,35 @@ describe('ngspice option directives', () => {
 
   it.each([
     ['ACCT', '.options ACCT'],
+    ['NOACCT', '.options NOACCT'],
+    ['noacct', '.options noacct'],
     ['LIMPTS', '.options LIMPTS=5000'],
     ['ITL5', '.options ITL5=0'],
   ])('accepts classic compatibility no-op %s', (_field, card) => {
     expect(parse(`${card}\n.op`).simulationOptions).toEqual({});
+  });
+
+  it.each(noacctFirstFailureFixtures)(
+    'advances the unchanged NOACCT fixture %s to its next outcome',
+    (path, sha256) => {
+      const bytes = readFileSync(new URL(path, ngspiceFixtureRoot));
+      expect(createHash('sha256').update(bytes).digest('hex')).toBe(sha256);
+
+      try {
+        parseDeck(bytes.toString('utf8'));
+      } catch (error) {
+        expect(error).toBeInstanceOf(ParseError);
+        expect((error as Error).message.toLowerCase()).not.toContain('noacct');
+      }
+    },
+  );
+
+  it.each([
+    '.options noacct=1\n.op',
+    '.options noacct yes\n.op',
+    '.options noincmode nobypass noacct\n.op',
+  ])('does not broaden report-only NOACCT into behavior-changing forms: %s', netlist => {
+    expect(() => parse(netlist)).toThrow(ParseError);
   });
 
   it('maps only solver-backed ngspice options to SimulationOptions', () => {
@@ -132,8 +179,54 @@ describe('ngspice control and output directives', () => {
     '.save v(out)\n.op',
     '.print tran v(out)\n.op',
     '.plot v(out)\n.op',
+    '.probe v(out)\n.op',
   ])('explicitly ignores output-only metadata: %s', netlist => {
     expect(() => parse(netlist)).not.toThrow();
+  });
+
+  it('keeps every computed AC vector available when .probe requests a subset', async () => {
+    const result = await simulate(`Probe output selection
+V1 1 0 dc 0 ac 1
+R1 1 2 1k
+R2 2 0 1k
+.ac lin 1 1k 1k
+.probe v(2)
+.end`);
+
+    expect([...result.ac!.voltages.keys()]).toEqual(['1', '2']);
+    expect([...result.ac!.currents.keys()]).toEqual(['V1']);
+  });
+
+  it.each([
+    '.probe',
+    '.options post=1\n.op',
+    '.options trans=1\n.op',
+    '.options post enabled\n.op',
+  ])('rejects unclassified output-control forms: %s', netlist => {
+    expect(() => parse(netlist)).toThrow(ParseError);
+  });
+
+  it('accepts only bare POST and TRANS reporting flags', () => {
+    expect(parse('.options list node post trans noacct\n.op').simulationOptions).toEqual({});
+  });
+
+  it('advances both unchanged output-control fixtures to their next honest outcome', async () => {
+    const [lowpassFixture, probeFixture] = outputControlFixtures.map(([path, sha256]) => {
+      const bytes = readFileSync(new URL(path, ngspiceFixtureRoot));
+      expect(createHash('sha256').update(bytes).digest('hex')).toBe(sha256);
+      return bytes.toString('utf8');
+    });
+
+    const lowpass = await simulate(lowpassFixture!);
+    expect(lowpass.dc).toBeDefined();
+    expect(lowpass.ac?.frequencies).toHaveLength(31);
+
+    expect(() => parseDeck(probeFixture!)).toThrow(/Unsupported dot command: '\.control'/);
+    try {
+      parseDeck(probeFixture!);
+    } catch (error) {
+      expect((error as Error).message).not.toContain('.probe');
+    }
   });
 
   it.each([

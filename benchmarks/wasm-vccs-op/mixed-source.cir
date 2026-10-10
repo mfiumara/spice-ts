@@ -1,0 +1,7 @@
+* Project-authored bounded VCCS OP mixed-source fixture
+VCTRL control 0 -1.5
+G1 out 0 control 0 -2m
+I1 0 out 1m
+R1 out 0 500
+.op
+.end

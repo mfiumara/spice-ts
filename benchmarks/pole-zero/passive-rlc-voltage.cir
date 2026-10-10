@@ -1,0 +1,10 @@
+spice-ts passive RLC voltage-input pole-zero fixture
+* Origin: spice-ts benchmark corpus, derived from passive-rlc.cir
+* License: MIT (repository license)
+R1 1 0 1k
+R2 2 0 1k
+C1 1 2 1e-12
+L1 1 0 1u
+.pz 1 0 2 0 vol pz
+.print pz all
+.end

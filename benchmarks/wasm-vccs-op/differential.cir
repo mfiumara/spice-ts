@@ -1,0 +1,8 @@
+* Project-authored bounded VCCS OP differential fixture
+VCP cp 0 3
+VCN cn 0 1
+G1 outp outn cp cn 1m
+R1 outp 0 2k
+R2 outn 0 2k
+.op
+.end

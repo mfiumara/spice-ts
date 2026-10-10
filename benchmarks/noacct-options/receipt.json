@@ -1,0 +1,146 @@
+{
+  "schemaVersion": "spice-ts-noacct-options/v1",
+  "issue": "https://github.com/mfiumara/spice-ts/issues/294",
+  "acceptedAuditHead": "8d295c492e5c48af385a3b24b327715a773db01c",
+  "countReconciliation": {
+    "issueClaim": 9,
+    "acceptedAuditObserved": 10,
+    "resolution": "All ten accepted-audit first failures are retained; schmitt-trigger is not silently excluded."
+  },
+  "provenance": {
+    "source": "benchmarks/corpus/ngspice/manifest.json",
+    "license": "BSD-3-Clause",
+    "sourcesSha256": "b6540a743d176a01cc8e8aff6412655cc09f5fbf30554a53222c1d290c3029a1",
+    "manifestSha256": "38a7b34cfbf14f840fa9f84bfeaf31a5696a19c4152accde8647b9c00ac63389",
+    "fixtureSetSha256": "78af5f10679e0842efbbb74815fb5d9403e7e9059fb3617524c66b04e13a26b3"
+  },
+  "policy": {
+    "input": "byte-identical fixture for both engines",
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "timing": "single wall-clock execution per engine and fixture; descriptive, not a speed claim",
+    "exclusions": [
+      "Waveform parity is not claimed by this first-outcome receipt.",
+      "Failures after the first hard diagnostic are not inferred.",
+      "Runtime variation is excluded from correctness conclusions."
+    ]
+  },
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0"
+  },
+  "commands": {
+    "ngspice": "ngspice -b -r <temporary-raw> <byte-identical-fixture>",
+    "spiceTs": "@spice-ts/core simulate(<byte-identical-fixture>)",
+    "focused": "pnpm -C packages/core exec vitest run src/parser/options-directives.test.ts"
+  },
+  "redReceipt": "Focused options/directives suite: 12 failures (2 NOACCT/noacct compatibility cases and all 10 unchanged fixtures stopped at Unsupported .options field: NOACCT/noacct); 71 passed.",
+  "totals": {
+    "fixtures": 10,
+    "ngspice": { "success": 10, "unsupported": 0, "failed": 0, "runtimeMs": 473.456 },
+    "spiceTs": { "success": 3, "unsupported": 3, "failed": 4, "runtimeMs": 124.881 },
+    "transitions": { "unsupportedToSuccess": 3, "unsupportedToNewLoss": 7 }
+  },
+  "fixtures": [
+    {
+      "id": "vbic-fo",
+      "path": "benchmarks/corpus/ngspice/fixtures/tests/vbic/FO.cir",
+      "sha256": "de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92",
+      "identicalBytes": true,
+      "ngspice": { "status": "success", "runtimeMs": 24.013 },
+      "before": { "status": "unsupported", "cause": "parser", "firstFailure": "NOACCT" },
+      "after": { "status": "unsupported", "cause": "device/model", "runtimeMs": 45.465, "firstFailure": "Unsupported bounded BJT model parameter: 'IBEI'" },
+      "transition": "unsupported/parser:NOACCT -> unsupported/device-model:IBEI"
+    },
+    {
+      "id": "mos6-inverter-transient",
+      "path": "benchmarks/corpus/ngspice/fixtures/tests/mos6/mos6inv.cir",
+      "sha256": "c1ee39a6f458dc2b527ab1de29d6d6a4858e35c6acc4ff760ac45774512534dc",
+      "identicalBytes": true,
+      "ngspice": { "status": "success", "runtimeMs": 30.466 },
+      "before": { "status": "unsupported", "cause": "parser", "firstFailure": "NOACCT" },
+      "after": { "status": "failed", "cause": "convergence", "runtimeMs": 47.317, "firstFailure": "Timestep too small at t=3.071226114412814e-8: dt=6.362405548354911e-16" },
+      "transition": "unsupported/parser:NOACCT -> failed/convergence"
+    },
+    {
+      "id": "jfet-vds-vgs",
+      "path": "benchmarks/corpus/ngspice/fixtures/tests/jfet/jfet_vds-vgs.cir",
+      "sha256": "64d61d79415c585195fcda1a21a170bda67f863e20b9492eaeb33e1efc9fd72a",
+      "identicalBytes": true,
+      "ngspice": { "status": "success", "runtimeMs": 15.072 },
+      "before": { "status": "unsupported", "cause": "parser", "firstFailure": "noacct" },
+      "after": { "status": "success", "runtimeMs": 6.242, "analyses": ["op", "dc"] },
+      "transition": "unsupported/parser:NOACCT -> success"
+    },
+    {
+      "id": "vbic-common-emitter-ac",
+      "path": "benchmarks/corpus/ngspice/fixtures/tests/vbic/CEamp.cir",
+      "sha256": "088d1ebede86588ff8b823ba45219006bfeec34939af69e10c176e23d8a020ab",
+      "identicalBytes": true,
+      "ngspice": { "status": "success", "runtimeMs": 22.659 },
+      "before": { "status": "unsupported", "cause": "parser", "firstFailure": "NOACCT" },
+      "after": { "status": "unsupported", "cause": "analysis", "runtimeMs": 8.773, "firstFailure": "no spice-ts result for analyses: pz" },
+      "transition": "unsupported/parser:NOACCT -> unsupported/analysis:pz"
+    },
+    {
+      "id": "rc-transient",
+      "path": "benchmarks/corpus/ngspice/fixtures/tests/general/rc.cir",
+      "sha256": "293c22e9953f3e28efcae55d6c00cab0b929d2c3fdf88810ab27b7a71e900bfe",
+      "identicalBytes": true,
+      "ngspice": { "status": "success", "runtimeMs": 13.872 },
+      "before": { "status": "unsupported", "cause": "parser", "firstFailure": "noacct" },
+      "after": { "status": "success", "runtimeMs": 1.719, "analyses": ["tran"] },
+      "transition": "unsupported/parser:NOACCT -> success"
+    },
+    {
+      "id": "mos-amplifier-transient",
+      "path": "benchmarks/corpus/ngspice/fixtures/tests/general/mosamp.cir",
+      "sha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
+      "identicalBytes": true,
+      "ngspice": { "status": "success", "runtimeMs": 291.911 },
+      "before": { "status": "unsupported", "cause": "parser", "firstFailure": "noacct" },
+      "after": { "status": "failed", "cause": "convergence", "runtimeMs": 9.271, "firstFailure": "Singular matrix: zero pivot at matrix column 22 (nodes: ; branches: vddn)" },
+      "transition": "unsupported/parser:NOACCT -> failed/convergence:singular-matrix"
+    },
+    {
+      "id": "mos6-simple-inverter-transient",
+      "path": "benchmarks/corpus/ngspice/fixtures/tests/mos6/simpleinv.cir",
+      "sha256": "3ad1ef05a4197b420b0d35b3a4c4c0aa2544025e200b619743a890e305b7e1b8",
+      "identicalBytes": true,
+      "ngspice": { "status": "success", "runtimeMs": 15.353 },
+      "before": { "status": "unsupported", "cause": "parser", "firstFailure": "NOACCT" },
+      "after": { "status": "success", "runtimeMs": 3.738, "analyses": ["tran"] },
+      "transition": "unsupported/parser:NOACCT -> success"
+    },
+    {
+      "id": "hfet-inverter",
+      "path": "benchmarks/corpus/ngspice/fixtures/tests/hfet/inverter.cir",
+      "sha256": "3fa93266e9036443173bf9416eb67e8ff4c2c24aeefc6ef687f355d8548239e1",
+      "identicalBytes": true,
+      "ngspice": { "status": "success", "runtimeMs": 17.141 },
+      "before": { "status": "unsupported", "cause": "parser", "firstFailure": "noacct" },
+      "after": { "status": "failed", "cause": "convergence", "runtimeMs": 0.735, "firstFailure": "Singular matrix: zero pivot at matrix column 2 (nodes: 3)" },
+      "transition": "unsupported/parser:NOACCT -> failed/convergence:singular-matrix"
+    },
+    {
+      "id": "mesa-oscillator",
+      "path": "benchmarks/corpus/ngspice/fixtures/tests/mesa/mesosc.cir",
+      "sha256": "3cd4609cca7874775b7b2cac8cd0124bd2b8c5512064a0550a29de2da4896bcf",
+      "identicalBytes": true,
+      "ngspice": { "status": "success", "runtimeMs": 27.489 },
+      "before": { "status": "unsupported", "cause": "parser", "firstFailure": "noacct" },
+      "after": { "status": "failed", "cause": "convergence", "runtimeMs": 1.009, "firstFailure": "Singular matrix: zero pivot at matrix column 14 (nodes: xinv01.2)" },
+      "transition": "unsupported/parser:NOACCT -> failed/convergence:singular-matrix"
+    },
+    {
+      "id": "schmitt-trigger",
+      "path": "benchmarks/corpus/ngspice/fixtures/tests/general/schmitt.cir",
+      "sha256": "c3e897ecd60c66cb5350c2a0fa7788f34af374803c10f4cf58d6f5ed01b00e55",
+      "identicalBytes": true,
+      "ngspice": { "status": "success", "runtimeMs": 15.48 },
+      "before": { "status": "unsupported", "cause": "parser", "firstFailure": "noacct" },
+      "after": { "status": "unsupported", "cause": "device/model", "runtimeMs": 0.612, "firstFailure": "Parse error at line 20: Unsupported BJT Q-card form: 'q1 3 2 4 qstd off' q1 3 2 4 qstd off" },
+      "transition": "unsupported/parser:NOACCT -> unsupported/device-model:Q-card-off"
+    }
+  ]
+}

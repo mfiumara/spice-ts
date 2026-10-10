@@ -22,6 +22,8 @@ export interface MOSFETOperatingPoint {
 }
 
 const GMIN = 1e-12;
+// Keep source-ramp Newton iterates finite without clipping ordinary supply steps.
+const MAX_NEWTON_TERMINAL_STEP = 10;
 
 export class MOSFET implements DeviceModel {
   readonly branches: number[] = [];
@@ -37,9 +39,9 @@ export class MOSFET implements DeviceModel {
     this.suppliedParams = { ...params };
     this.params = {
       LEVEL: params.LEVEL ?? 1,
-      VTO: params.VTO ?? 1,
-      KP: params.KP ?? 2e-5,
-      LAMBDA: params.LAMBDA ?? 0,
+      VTO: params.VTO ?? params.VT0 ?? 1,
+      KP: params.KP ?? params.KC ?? 2e-5,
+      LAMBDA: params.LAMBDA ?? params.LAMBDA0 ?? 0,
       W: params.W ?? 1,
       L: params.L ?? 1,
       KF: params.KF ?? 0,
@@ -48,6 +50,20 @@ export class MOSFET implements DeviceModel {
       TOX: params.TOX,
       polarity: params.polarity ?? 1,
     };
+  }
+
+  limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {
+    const [nD, nG, nS] = this.nodes;
+    const voltage = (solution: Float64Array, node: number): number =>
+      node >= 0 ? solution[node] : 0;
+    const terminal = (solution: Float64Array, positive: number, negative: number): number =>
+      voltage(solution, positive) - voltage(solution, negative);
+    const vgsStep = Math.abs(terminal(candidate, nG, nS) - terminal(previous, nG, nS));
+    const vdsStep = Math.abs(terminal(candidate, nD, nS) - terminal(previous, nD, nS));
+    const largestStep = Math.max(vgsStep, vdsStep);
+    return largestStep > MAX_NEWTON_TERMINAL_STEP
+      ? MAX_NEWTON_TERMINAL_STEP / largestStep
+      : 1;
   }
 
   /** Level-1 DC quantities used by the small-signal noise generators. */
@@ -171,6 +187,31 @@ export class MOSFET implements DeviceModel {
       if (nD >= 0) ctx.stampG(nS, nD, -gds);
       if (nS >= 0) ctx.stampG(nS, nS, gm + gds);
       ctx.stampB(nS, polarity * Ieq);
+    }
+  }
+
+  stampDynamic(ctx: StampContext): void {
+    const [nD, nG, nS, nB] = this.nodes;
+    const width = this.params.W;
+    this.stampCapacitance(ctx, nG, nD, (this.suppliedParams.CGDO ?? 0) * width);
+    this.stampCapacitance(ctx, nG, nS, (this.suppliedParams.CGSO ?? 0) * width);
+    this.stampCapacitance(ctx, nB, nD, this.suppliedParams.CBD ?? 0);
+    this.stampCapacitance(ctx, nB, nS, this.suppliedParams.CBS ?? 0);
+  }
+
+  stampAC(ctx: StampContext, _omega: number): void {
+    this.stampDynamic(ctx);
+  }
+
+  private stampCapacitance(ctx: StampContext, n1: number, n2: number, value: number): void {
+    if (value === 0) return;
+    if (n1 >= 0) {
+      ctx.stampC(n1, n1, value);
+      if (n2 >= 0) ctx.stampC(n1, n2, -value);
+    }
+    if (n2 >= 0) {
+      ctx.stampC(n2, n2, value);
+      if (n1 >= 0) ctx.stampC(n2, n1, -value);
     }
   }
 
