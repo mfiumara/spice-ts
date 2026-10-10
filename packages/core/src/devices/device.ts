@@ -27,6 +27,22 @@ export interface StampContext {
   useDcSourceValue: boolean;
 }
 
+/** A frequency-independent contribution to the complex AC right-hand side. */
+export type ACRHSContribution =
+  | {
+      kind: 'branch';
+      branch: number;
+      magnitude: number;
+      phase: number;
+    }
+  | {
+      kind: 'node-pair';
+      positiveNode: number;
+      negativeNode: number;
+      magnitude: number;
+      phase: number;
+    };
+
 /**
  * Interface that all device models must implement.
  *
@@ -52,8 +68,8 @@ export interface DeviceModel {
   resetTransient?(): void;
   /** Whether this device requires Newton-Raphson iteration (nonlinear). */
   readonly isNonlinear: boolean;
-  /** Return AC excitation info if this device is an AC source, or null. */
-  getACExcitation?(): { magnitude: number; phase: number; branch: number } | null;
+  /** Return this device's AC right-hand-side contribution, or null. */
+  getACExcitation?(): ACRHSContribution | null;
   /** Set the device's primary parameter value (resistance, capacitance, etc.). */
   setParameter?(value: number): void;
   /** Get the device's primary parameter value. */

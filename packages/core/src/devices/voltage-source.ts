@@ -1,4 +1,4 @@
-import type { DeviceModel, StampContext } from './device.js';
+import type { ACRHSContribution, DeviceModel, StampContext } from './device.js';
 import type { SourceWaveform, PulseSource, SinSource, PWLSource } from '../types.js';
 import { InvalidCircuitError } from '../errors.js';
 
@@ -53,9 +53,10 @@ export class VoltageSource implements DeviceModel {
     return this.getVoltageAtTime(ctx.time);
   }
 
-  getACExcitation(): { magnitude: number; phase: number; branch: number } | null {
+  getACExcitation(): ACRHSContribution | null {
     if (this.waveform.type === 'ac') {
       return {
+        kind: 'branch',
         magnitude: this.waveform.magnitude,
         phase: this.waveform.phase,
         branch: this.branchIndex,

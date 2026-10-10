@@ -1,0 +1,6 @@
+Independent current-source AC non-ground orientation and phase
+I1 positive negative AC 2 30
+R1 positive 0 1
+R2 negative 0 2
+.ac dec 5 10 100k
+.end
