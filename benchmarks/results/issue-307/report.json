@@ -1,0 +1,180 @@
+{
+  "schemaVersion": "spice-ts-issue-307/v1",
+  "issueUrl": "https://github.com/mfiumara/spice-ts/issues/307",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1"
+  },
+  "policy": {
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "engineInput": "the same immutable fixture Buffer"
+  },
+  "command": "pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-307/verify.ts --output benchmarks/results/issue-307/report.json",
+  "fixtures": [
+    {
+      "id": "capacitor-rc-oscillator",
+      "input": {
+        "bytes": 205,
+        "sha256": "add8ca9d2654398a4c394bc9232809677b479fe35172c66bbb8e2ad9bf9410a4",
+        "identicalForBothEngines": true
+      },
+      "before": {
+        "spiceTs": {
+          "status": "unsupported",
+          "error": "Unknown function 'v'"
+        }
+      },
+      "after": {
+        "ngspice": {
+          "status": "failed",
+          "convergence": "failed",
+          "analyses": [],
+          "error": "Error on line 2 or its substitute: .tran 0 2.0e-4 TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: rc_osc test"
+        },
+        "spiceTs": {
+          "status": "success",
+          "convergence": "converged",
+          "analyses": [
+            {
+              "type": "tran",
+              "points": 1780,
+              "signals": [
+                "i(v1)",
+                "v(1)",
+                "v(2)"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "diode-level2-temperature-breakdown",
+      "input": {
+        "bytes": 1467,
+        "sha256": "9c52a577a2f0b0a7419160b6cd340894ed41ebc403023a3b3f1d809d171bee0e",
+        "identicalForBothEngines": true
+      },
+      "before": {
+        "spiceTs": {
+          "status": "unsupported",
+          "error": "Unknown function 'I'"
+        }
+      },
+      "after": {
+        "ngspice": {
+          "status": "failed",
+          "convergence": "failed",
+          "analyses": [],
+          "error": "Error on line 9 or its substitute: .tran 0 1 0 100m TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: *trivial sweep of diode to produce i/v curve"
+        },
+        "spiceTs": {
+          "status": "failed",
+          "convergence": "not-run",
+          "analyses": [],
+          "error": "Step parameter device 'TEMP' not found"
+        }
+      }
+    },
+    {
+      "id": "diode-transient",
+      "input": {
+        "bytes": 1755,
+        "sha256": "334e2dde43335851dc96f76ba5e78ef3e0b1de142cca073b3c70f83937637d8c",
+        "identicalForBothEngines": true
+      },
+      "before": {
+        "spiceTs": {
+          "status": "unsupported",
+          "error": "Unknown function 'V'"
+        }
+      },
+      "after": {
+        "ngspice": {
+          "status": "failed",
+          "convergence": "failed",
+          "analyses": [],
+          "error": "Error on line 45 or its substitute: .tran 0 0.5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: diode circuit netlist"
+        },
+        "spiceTs": {
+          "status": "success",
+          "convergence": "converged",
+          "analyses": [
+            {
+              "type": "tran",
+              "points": 101,
+              "signals": [
+                "i(vin)",
+                "i(vmon)",
+                "v(1)",
+                "v(2)",
+                "v(3)"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rlc-transient",
+      "input": {
+        "bytes": 1116,
+        "sha256": "4d52f9df5eb4fe814fdd137e3f66cd4b4ec6c988174e0fe1c7a19e6eddf21763",
+        "identicalForBothEngines": true
+      },
+      "before": {
+        "spiceTs": {
+          "status": "unsupported",
+          "error": "Unknown function 'i'"
+        }
+      },
+      "after": {
+        "ngspice": {
+          "status": "success",
+          "convergence": "converged",
+          "analyses": [
+            {
+              "type": "tran",
+              "points": 1019,
+              "signals": [
+                "i(l1)",
+                "i(v1)",
+                "v(1)",
+                "v(2)",
+                "v(3)"
+              ]
+            }
+          ]
+        },
+        "spiceTs": {
+          "status": "success",
+          "convergence": "converged",
+          "analyses": [
+            {
+              "type": "tran",
+              "points": 1002,
+              "signals": [
+                "i(l1)",
+                "i(v1)",
+                "v(1)",
+                "v(2)",
+                "v(3)"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "newlyExposedLosses": [
+    {
+      "id": "diode-level2-temperature-breakdown",
+      "status": "failed",
+      "convergence": "not-run",
+      "analyses": [],
+      "error": "Step parameter device 'TEMP' not found"
+    }
+  ]
+}

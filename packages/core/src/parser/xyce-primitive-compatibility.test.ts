@@ -93,6 +93,23 @@ describe('Xyce primitive parser compatibility', () => {
     expect(() => parse(fixture('CAPACITOR/rc_osc.cir'))).not.toThrow();
   });
 
+  for (const [id, path, points] of [
+    ['capacitor-rc-oscillator', 'CAPACITOR/rc_osc.cir', 1780],
+    ['diode-transient', 'DIODE/diode.cir', 101],
+    ['rlc-transient', 'RLC/rlc.cir', 1002],
+  ] as const) {
+    it(`simulates unchanged ${id} with braced V/I output expressions`, async () => {
+      const result = await simulate(fixture(path));
+
+      expect(result.transient?.time).toHaveLength(points);
+    });
+  }
+
+  it('advances the unchanged diode temperature fixture to its TEMP step gap', async () => {
+    await expect(simulate(fixture('DIODE/Level2_Temp_Dep_Breakdown.cir')))
+      .rejects.toThrow("Step parameter device 'TEMP' not found");
+  });
+
   it('simulates the unchanged bounded level-1 NJF fixture', async () => {
     const result = await simulate(fixture('NJFET_DC/njfet.cir'));
 
