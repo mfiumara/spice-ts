@@ -41,6 +41,51 @@ describe('generateStepValues', () => {
     expect(values).toEqual([1000, 2000, 3000, 4000, 5000]);
   });
 
+  it('generates descending linear sweep values with a negative increment', () => {
+    const step: StepAnalysis = {
+      type: 'step', param: 'Vgs', sweepMode: 'lin',
+      start: 0, stop: -1.875, increment: -0.625,
+    };
+
+    expect(generateStepValues(step)).toEqual([0, -0.625, -1.25, -1.875]);
+  });
+
+  it.each([
+    [0, 1, 0.3, [0, 0.3, 0.6, 0.8999999999999999]],
+    [1, 0, -0.3, [1, 0.7, 0.4, 0.10000000000000009]],
+  ] as const)('stops before crossing a non-aligned endpoint (%s, %s, %s)',
+    (start, stop, increment, expected) => {
+      const step: StepAnalysis = {
+        type: 'step', param: 'R1', sweepMode: 'lin', start, stop, increment,
+      };
+
+      expect(generateStepValues(step)).toEqual(expected);
+    });
+
+  it.each([
+    [0, 1, -0.1],
+    [1, 0, 0.1],
+  ] as const)('rejects a linear increment directed away from the stop (%s, %s, %s)',
+    (start, stop, increment) => {
+      const step: StepAnalysis = {
+        type: 'step', param: 'R1', sweepMode: 'lin', start, stop, increment,
+      };
+
+      expect(() => generateStepValues(step)).toThrow(
+        `.step linear sweep: increment (${increment}) has the wrong direction for start (${start}) and stop (${stop})`,
+      );
+    });
+
+  it('rejects a zero linear increment explicitly', () => {
+    const step: StepAnalysis = {
+      type: 'step', param: 'R1', sweepMode: 'lin', start: 1, stop: 2, increment: 0,
+    };
+
+    expect(() => generateStepValues(step)).toThrow(
+      '.step linear sweep: increment must not be zero',
+    );
+  });
+
   it('generates decade sweep values', () => {
     const step: StepAnalysis = {
       type: 'step', param: 'C1', sweepMode: 'dec',
@@ -387,6 +432,20 @@ describe('.step via Circuit builder API', () => {
 });
 
 describe('.step + .dc integration', () => {
+  it('executes a descending parsed parameter range in deterministic order', async () => {
+    const result = await simulate(`
+      V1 1 0 DC 0
+      Vgs 2 0 DC 0
+      R1 1 0 1k
+      .dc V1 0 2 1
+      .step Vgs 0 -1.875 -0.625
+    `);
+
+    expect(result.steps!.map(step => step.paramValue))
+      .toEqual([0, -0.625, -1.25, -1.875]);
+    expect(result.steps!.every(step => step.dcSweep!.sweepValues.length === 3)).toBe(true);
+  });
+
   it('sweeps component while doing DC source sweep', async () => {
     const result = await simulate(`
       V1 1 0 DC 0

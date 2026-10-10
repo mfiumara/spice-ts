@@ -18,18 +18,22 @@ export function generateStepValues(step: StepAnalysis): number[] {
   switch (step.sweepMode) {
     case 'lin': {
       const { start, stop, increment } = step;
-      if (start! > stop!) {
+      if (increment === 0) {
         throw new InvalidCircuitError(
-          `.step linear sweep: start (${start}) must be <= stop (${stop})`,
+          '.step linear sweep: increment must not be zero',
         );
       }
-      if (increment! <= 0) {
+      if ((stop! - start!) * increment! < 0) {
         throw new InvalidCircuitError(
-          `.step linear sweep: increment must be positive`,
+          `.step linear sweep: increment (${increment}) has the wrong direction for start (${start}) and stop (${stop})`,
         );
       }
+      if (start === stop) return [start!];
+
       const values: number[] = [];
-      const n = Math.round((stop! - start!) / increment!) + 1;
+      const intervalRatio = (stop! - start!) / increment!;
+      const roundingTolerance = Number.EPSILON * Math.max(1, intervalRatio) * 8;
+      const n = Math.floor(intervalRatio + roundingTolerance) + 1;
       for (let i = 0; i < n; i++) {
         values.push(start! + i * increment!);
       }

@@ -1,5 +1,6 @@
 import type { DeviceModel, StampContext } from './device.js';
 import type { SourceWaveform, PulseSource, SinSource, PWLSource } from '../types.js';
+import { InvalidCircuitError } from '../errors.js';
 
 export class VoltageSource implements DeviceModel {
   readonly branches: number[];
@@ -61,6 +62,24 @@ export class VoltageSource implements DeviceModel {
       };
     }
     return null;
+  }
+
+  setParameter(value: number): void {
+    if (this.waveform.type === 'dc') {
+      this.waveform.value = value;
+      return;
+    }
+    if (this.waveform.type === 'ac') {
+      this.waveform.dc = value;
+      return;
+    }
+    throw new InvalidCircuitError(`Voltage source '${this.name}' has no sweepable DC value`);
+  }
+
+  getParameter(): number {
+    if (this.waveform.type === 'dc') return this.waveform.value;
+    if (this.waveform.type === 'ac') return this.waveform.dc ?? 0;
+    throw new InvalidCircuitError(`Voltage source '${this.name}' has no sweepable DC value`);
   }
 
   getBreakpoints(stopTime: number): number[] {
