@@ -38,6 +38,20 @@ describe('bounded .disto analysis', () => {
     expect(result.distortion?.current('V1', 2)).toHaveLength(31);
   });
 
+  it('stops a DEC sweep at a non-integral-decade upper bound', async () => {
+    const result = await simulate(`Non-integral DEC bound
+V1 1 0 DC 0 DISTOF1 1
+R1 1 0 1k
+.disto dec 10 1k 1.8k`);
+
+    expect(result.distortion?.frequencies).toEqual([
+      1000,
+      1000 * Math.pow(10, 1 / 10),
+      1000 * Math.pow(10, 2 / 10),
+    ]);
+    expect(result.distortion?.frequencies.every(frequency => frequency <= 1800)).toBe(true);
+  });
+
   it.each([
     ['.disto dec 10 1k 1Meg 0.9', 'Two-tone .disto is not supported; omit f2overf1'],
     ['.disto lin 10 1k 1Meg', "Unsupported .disto sweep; expected '.disto dec points start stop'"],

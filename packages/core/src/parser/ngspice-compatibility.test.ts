@@ -3,6 +3,7 @@ import {
   parseTitleless as parse,
   parseTitlelessAsync as parseAsync,
 } from './index.js';
+import { ParseError } from '../errors.js';
 
 interface Fixture {
   feature: string;
@@ -64,6 +65,27 @@ describe('ngspice parser compatibility fixtures', () => {
 
     expect(circuit.analyses).toEqual([{ type: 'tran', timestep: 1e-9, stopTime: 10e-9 }]);
   });
+
+  it.each(['DISTOF1', 'DISTOF2'])(
+    'reports an explicitly malformed %s value as a structured parser error',
+    keyword => {
+      const card = `V1 in 0 DC 0 ${keyword} nope`;
+      let error: unknown;
+
+      try {
+        parse(`${card}\nR1 in 0 1k\n.disto dec 10 1k 1.8k`);
+      } catch (caught) {
+        error = caught;
+      }
+
+      expect(error).toBeInstanceOf(ParseError);
+      expect(error).toMatchObject({
+        line: 1,
+        context: card,
+      });
+      expect((error as Error).message).toContain(`Cannot parse number: 'nope'`);
+    },
+  );
 
   it('rejects unsupported resistor parameters continued onto the card', () => {
     expect(() => parse('R1 in out 1k\n+ TC=0')).toThrow('Unsupported resistor parameters');
