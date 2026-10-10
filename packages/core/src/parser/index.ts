@@ -290,13 +290,13 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
       break;
     }
     case '.DISTO': {
-      if (tokens.length > 5) {
+      if (tokens.length < 5 || tokens.length > 6) {
         throw new ParseError(
-          'Two-tone .disto is not supported; omit f2overf1',
+          "Unsupported .disto sweep; expected '.disto dec points start stop [f2overf1]'",
           lineNumber, tokens.join(' '),
         );
       }
-      if (tokens.length !== 5 || tokens[1]?.toLowerCase() !== 'dec') {
+      if (tokens[1]?.toLowerCase() !== 'dec') {
         throw new ParseError(
           "Unsupported .disto sweep; expected '.disto dec points start stop'",
           lineNumber, tokens.join(' '),
@@ -308,8 +308,17 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
       if (!Number.isInteger(points) || points < 1 || startFreq <= 0 || stopFreq < startFreq) {
         throw new ParseError('Invalid .disto dec sweep', lineNumber, tokens.join(' '));
       }
+      const f2OverF1 = tokens[5] === undefined ? undefined : parseNumber(tokens[5]);
+      if (f2OverF1 !== undefined && (!Number.isFinite(f2OverF1)
+          || f2OverF1 <= 0 || f2OverF1 >= 1)) {
+        throw new ParseError(
+          'Invalid .disto f2overf1; expected a value greater than 0 and less than 1',
+          lineNumber, tokens.join(' '),
+        );
+      }
       circuit.addAnalysis('disto', {
         variation: 'dec', points, startFreq, stopFreq,
+        ...(f2OverF1 === undefined ? {} : { f2OverF1 }),
       });
       break;
     }

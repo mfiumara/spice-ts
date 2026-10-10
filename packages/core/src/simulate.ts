@@ -29,6 +29,17 @@ import { createConvergenceTelemetry } from './convergence-telemetry.js';
 import { solveStepInWorkers } from './analysis/step-parallel.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
+class UnsupportedStreamAnalysisError extends InvalidCircuitError {
+  readonly code = 'UNSUPPORTED_FEATURE' as const;
+  readonly details: { api: 'simulateStream'; analysis: string };
+
+  constructor(analysis: string) {
+    super(`simulateStream() does not support '.${analysis}' analysis`);
+    this.name = 'UnsupportedStreamAnalysisError';
+    this.details = { api: 'simulateStream', analysis };
+  }
+}
+
 class SpiceTsSimulator implements SimulatorAdapter {
   readonly name = 'spice-ts';
 
@@ -170,7 +181,7 @@ export async function simulate(
         break;
       }
       case 'disto': {
-        assertLinearDistortionSupported(compiled);
+        assertLinearDistortionSupported(compiled, analysis);
         const opts = resolveOptions(options);
         solveDCOperatingPoint(compiled, opts, undefined, convergence, 'operating-point', guard);
         result.distortion = solveLinearDistortion(compiled, analysis, guard);
@@ -242,6 +253,10 @@ export async function* simulateStream(
   options = withNetlistOptions(compiled, options);
   const warnings: SimulationWarning[] = [];
   validateCircuit(compiled, warnings);
+
+  if (compiled.analyses.some(analysis => analysis.type === 'disto')) {
+    throw new UnsupportedStreamAnalysisError('disto');
+  }
 
   if (compiled.steps.length > 0) {
     for (const event of streamWithSteps(compiled, compiled.steps[0], options)) {

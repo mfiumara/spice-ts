@@ -1,0 +1,13 @@
+A Simple Two-Tone Linear Distortion Run
+
+*.OPTIONS LIST NODE POST TRANS noacct
+.OP
+.DISTO DEC 10 1k 1Meg 0.9
+.PRINT AC V(2)
+
+V1 1 0 DC 0 AC 1 SIN 0 1 1K 0 0 DISTOF1 1 DISTOF2 0.25 30
+R1 1 2 10k
+R2 2 0 10k
+C1 2 0 1n
+
+.END

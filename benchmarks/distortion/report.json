@@ -1,244 +1,576 @@
 {
   "referenceSimulator": "ngspice-47",
   "machine": "darwin arm64, Node v22.23.1",
-  "source": {
-    "url": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/filters/lowpass.cir",
-    "revision": "3ef069fb1f04177a153f342a32d941fc20ff047e",
-    "licence": "BSD-3-Clause",
-    "fixture": "benchmarks/distortion/linear-lowpass.cir",
-    "fixtureSha256": "27fdeadabcb9ea90237b47137953c7728afc2c73d6a10a7a7774b9366e6be0f4",
-    "fixtureBytes": 214,
-    "identicalNetlistBytes": true
-  },
-  "commands": {
-    "ngspice": "ngspice -b -r <temporary-raw-path> benchmarks/distortion/linear-lowpass.cir",
-    "spiceTs": "simulate(readFileSync('benchmarks/distortion/linear-lowpass.cir', 'utf8'))"
-  },
-  "convergence": {
-    "ngspice": "success",
-    "spiceTs": "success",
-    "spiceTsTelemetry": {
-      "dc": {
-        "newtonIterations": 2,
-        "acceptedSolves": 2,
-        "rejectedSolves": 0,
-        "sourceStepAttempts": 0,
-        "sourceStepFailures": 0,
-        "gminStepAttempts": 0,
-        "gminStepFailures": 0,
-        "failure": null
-      },
-      "transient": {
-        "acceptedSteps": 0,
-        "rejectedSteps": 0,
-        "newtonIterations": 0,
-        "nrRetries": 0,
-        "lteRetries": 0,
-        "minimumAcceptedTimestep": null,
-        "failure": null
-      }
-    }
-  },
-  "runtimesMs": {
-    "ngspiceSubprocess": 11.071500000000015,
-    "spiceTsInProcess": 2.4817079999999976,
-    "caveat": "Different process boundaries; no speed superiority claim is made."
-  },
-  "frequencyOrder": [
-    1000,
-    1258.9254117941673,
-    1584.8931924611136,
-    1995.2623149688795,
-    2511.8864315095802,
-    3162.2776601683795,
-    3981.0717055349724,
-    5011.872336272722,
-    6309.573444801933,
-    7943.282347242815,
-    10000,
-    12589.254117941675,
-    15848.931924611134,
-    19952.623149688796,
-    25118.864315095794,
-    31622.776601683792,
-    39810.717055349734,
-    50118.72336272722,
-    63095.73444801933,
-    79432.82347242814,
-    100000,
-    125892.54117941676,
-    158489.3192461114,
-    199526.23149688786,
-    251188.64315095797,
-    316227.7660168379,
-    398107.17055349733,
-    501187.2336272725,
-    630957.344480193,
-    794328.2347242814,
-    1000000
-  ],
-  "comparisons": [
+  "cases": [
     {
-      "order": 2,
-      "plotName": "DISTORTION - 2nd harmonic",
-      "pointCount": 31,
-      "frequencies": [
+      "id": "single-tone-linear-lowpass",
+      "source": {
+        "url": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/filters/lowpass.cir",
+        "revision": "3ef069fb1f04177a153f342a32d941fc20ff047e",
+        "licence": "BSD-3-Clause",
+        "fixture": "benchmarks/distortion/linear-lowpass.cir",
+        "fixtureSha256": "27fdeadabcb9ea90237b47137953c7728afc2c73d6a10a7a7774b9366e6be0f4",
+        "fixtureBytes": 214,
+        "identicalNetlistBytes": true
+      },
+      "commands": {
+        "ngspice": "ngspice -b -r <temporary-raw-path> benchmarks/distortion/linear-lowpass.cir",
+        "spiceTs": "simulate(readFileSync('benchmarks/distortion/linear-lowpass.cir', 'utf8'))"
+      },
+      "convergence": {
+        "ngspice": "success",
+        "spiceTs": "success",
+        "spiceTsTelemetry": {
+          "dc": {
+            "newtonIterations": 2,
+            "acceptedSolves": 2,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 0,
+            "rejectedSteps": 0,
+            "newtonIterations": 0,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": null,
+            "failure": null
+          }
+        }
+      },
+      "runtimesMs": {
+        "ngspiceSubprocess": 16.602041999999983,
+        "spiceTsInProcess": 3.155000000000001
+      },
+      "productCount": 2,
+      "frequencyOrder": [
         1000,
         1258.9254117941673,
         1584.8931924611136,
-        1995.2623149688798,
+        1995.2623149688795,
         2511.8864315095802,
         3162.2776601683795,
-        3981.071705534973,
-        5011.872336272723,
+        3981.0717055349724,
+        5011.872336272722,
         6309.573444801933,
-        7943.282347242816,
-        10000.000000000002,
+        7943.282347242815,
+        10000,
         12589.254117941675,
-        15848.931924611139,
-        19952.623149688803,
-        25118.864315095812,
-        31622.77660168381,
-        39810.71705534975,
-        50118.72336272726,
-        63095.734448019364,
-        79432.82347242821,
-        100000.00000000007,
-        125892.54117941682,
-        158489.31924611147,
-        199526.23149688813,
-        251188.64315095823,
-        316227.76601683826,
-        398107.1705534977,
-        501187.2336272728,
-        630957.3444801939,
-        794328.2347242824,
-        1000000.0000000012
+        15848.931924611134,
+        19952.623149688796,
+        25118.864315095794,
+        31622.776601683792,
+        39810.717055349734,
+        50118.72336272722,
+        63095.73444801933,
+        79432.82347242814,
+        100000,
+        125892.54117941676,
+        158489.3192461114,
+        199526.23149688786,
+        251188.64315095797,
+        316227.7660168379,
+        398107.17055349733,
+        501187.2336272725,
+        630957.344480193,
+        794328.2347242814,
+        1000000
       ],
-      "frequencyMetrics": {
-        "sampleCount": 31,
-        "maximumAbsoluteError": 1.1641532182693481e-9,
-        "rmsAbsoluteError": 3.5215829100592027e-10,
-        "maximumRelativeError": 1.4760468084934277e-15,
-        "rmsRelativeError": 6.834797392873929e-16
-      },
-      "vectorOrder": [
-        "v(1)",
-        "v(2)",
-        "i(v1)"
-      ],
-      "vectors": [
+      "comparisons": [
         {
-          "name": "v(1)",
-          "metrics": {
+          "product": 2,
+          "plotName": "DISTORTION - 2nd harmonic",
+          "pointCount": 31,
+          "frequencies": [
+            1000,
+            1258.9254117941673,
+            1584.8931924611136,
+            1995.2623149688798,
+            2511.8864315095802,
+            3162.2776601683795,
+            3981.071705534973,
+            5011.872336272723,
+            6309.573444801933,
+            7943.282347242816,
+            10000.000000000002,
+            12589.254117941675,
+            15848.931924611139,
+            19952.623149688803,
+            25118.864315095812,
+            31622.77660168381,
+            39810.71705534975,
+            50118.72336272726,
+            63095.734448019364,
+            79432.82347242821,
+            100000.00000000007,
+            125892.54117941682,
+            158489.31924611147,
+            199526.23149688813,
+            251188.64315095823,
+            316227.76601683826,
+            398107.1705534977,
+            501187.2336272728,
+            630957.3444801939,
+            794328.2347242824,
+            1000000.0000000012
+          ],
+          "frequencyMetrics": {
             "sampleCount": 31,
-            "maximumAbsoluteError": 0,
-            "rmsAbsoluteError": 0,
-            "maximumRelativeError": 0,
-            "rmsRelativeError": 0
-          }
+            "maximumAbsoluteError": 1.1641532182693481e-9,
+            "rmsAbsoluteError": 3.5215829100592027e-10,
+            "maximumRelativeError": 1.4760468084934277e-15,
+            "rmsRelativeError": 6.834797392873929e-16
+          },
+          "vectorOrder": [
+            "v(1)",
+            "v(2)",
+            "i(v1)"
+          ],
+          "vectors": [
+            {
+              "name": "v(1)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            },
+            {
+              "name": "v(2)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            },
+            {
+              "name": "i(v1)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            }
+          ]
         },
         {
-          "name": "v(2)",
-          "metrics": {
+          "product": 3,
+          "plotName": "DISTORTION - 3rd harmonic",
+          "pointCount": 31,
+          "frequencies": [
+            1000,
+            1258.9254117941673,
+            1584.8931924611136,
+            1995.2623149688798,
+            2511.8864315095802,
+            3162.2776601683795,
+            3981.071705534973,
+            5011.872336272723,
+            6309.573444801933,
+            7943.282347242816,
+            10000.000000000002,
+            12589.254117941675,
+            15848.931924611139,
+            19952.623149688803,
+            25118.864315095812,
+            31622.77660168381,
+            39810.71705534975,
+            50118.72336272726,
+            63095.734448019364,
+            79432.82347242821,
+            100000.00000000007,
+            125892.54117941682,
+            158489.31924611147,
+            199526.23149688813,
+            251188.64315095823,
+            316227.76601683826,
+            398107.1705534977,
+            501187.2336272728,
+            630957.3444801939,
+            794328.2347242824,
+            1000000.0000000012
+          ],
+          "frequencyMetrics": {
             "sampleCount": 31,
-            "maximumAbsoluteError": 0,
-            "rmsAbsoluteError": 0,
-            "maximumRelativeError": 0,
-            "rmsRelativeError": 0
-          }
-        },
-        {
-          "name": "i(v1)",
-          "metrics": {
-            "sampleCount": 31,
-            "maximumAbsoluteError": 0,
-            "rmsAbsoluteError": 0,
-            "maximumRelativeError": 0,
-            "rmsRelativeError": 0
-          }
+            "maximumAbsoluteError": 1.1641532182693481e-9,
+            "rmsAbsoluteError": 3.5215829100592027e-10,
+            "maximumRelativeError": 1.4760468084934277e-15,
+            "rmsRelativeError": 6.834797392873929e-16
+          },
+          "vectorOrder": [
+            "v(1)",
+            "v(2)",
+            "i(v1)"
+          ],
+          "vectors": [
+            {
+              "name": "v(1)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            },
+            {
+              "name": "v(2)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            },
+            {
+              "name": "i(v1)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "order": 3,
-      "plotName": "DISTORTION - 3rd harmonic",
-      "pointCount": 31,
-      "frequencies": [
+      "id": "two-tone-linear-lowpass",
+      "source": {
+        "url": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/filters/lowpass.cir",
+        "revision": "3ef069fb1f04177a153f342a32d941fc20ff047e",
+        "licence": "BSD-3-Clause",
+        "fixture": "benchmarks/distortion/two-tone-linear-lowpass.cir",
+        "fixtureSha256": "451cb5a4e2030dd33d1a9be68af1c29f78318f208df6e3f30ae5b65cbc8d46d3",
+        "fixtureBytes": 221,
+        "identicalNetlistBytes": true
+      },
+      "commands": {
+        "ngspice": "ngspice -b -r <temporary-raw-path> benchmarks/distortion/two-tone-linear-lowpass.cir",
+        "spiceTs": "simulate(readFileSync('benchmarks/distortion/two-tone-linear-lowpass.cir', 'utf8'))"
+      },
+      "convergence": {
+        "ngspice": "success",
+        "spiceTs": "success",
+        "spiceTsTelemetry": {
+          "dc": {
+            "newtonIterations": 2,
+            "acceptedSolves": 2,
+            "rejectedSolves": 0,
+            "sourceStepAttempts": 0,
+            "sourceStepFailures": 0,
+            "gminStepAttempts": 0,
+            "gminStepFailures": 0,
+            "failure": null
+          },
+          "transient": {
+            "acceptedSteps": 0,
+            "rejectedSteps": 0,
+            "newtonIterations": 0,
+            "nrRetries": 0,
+            "lteRetries": 0,
+            "minimumAcceptedTimestep": null,
+            "failure": null
+          }
+        }
+      },
+      "runtimesMs": {
+        "ngspiceSubprocess": 40.264666999999974,
+        "spiceTsInProcess": 1.210374999999999
+      },
+      "productCount": 3,
+      "frequencyOrder": [
         1000,
         1258.9254117941673,
         1584.8931924611136,
-        1995.2623149688798,
+        1995.2623149688795,
         2511.8864315095802,
         3162.2776601683795,
-        3981.071705534973,
-        5011.872336272723,
+        3981.0717055349724,
+        5011.872336272722,
         6309.573444801933,
-        7943.282347242816,
-        10000.000000000002,
+        7943.282347242815,
+        10000,
         12589.254117941675,
-        15848.931924611139,
-        19952.623149688803,
-        25118.864315095812,
-        31622.77660168381,
-        39810.71705534975,
-        50118.72336272726,
-        63095.734448019364,
-        79432.82347242821,
-        100000.00000000007,
-        125892.54117941682,
-        158489.31924611147,
-        199526.23149688813,
-        251188.64315095823,
-        316227.76601683826,
-        398107.1705534977,
-        501187.2336272728,
-        630957.3444801939,
-        794328.2347242824,
-        1000000.0000000012
+        15848.931924611134,
+        19952.623149688796,
+        25118.864315095794,
+        31622.776601683792,
+        39810.717055349734,
+        50118.72336272722,
+        63095.73444801933,
+        79432.82347242814,
+        100000,
+        125892.54117941676,
+        158489.3192461114,
+        199526.23149688786,
+        251188.64315095797,
+        316227.7660168379,
+        398107.17055349733,
+        501187.2336272725,
+        630957.344480193,
+        794328.2347242814,
+        1000000
       ],
-      "frequencyMetrics": {
-        "sampleCount": 31,
-        "maximumAbsoluteError": 1.1641532182693481e-9,
-        "rmsAbsoluteError": 3.5215829100592027e-10,
-        "maximumRelativeError": 1.4760468084934277e-15,
-        "rmsRelativeError": 6.834797392873929e-16
-      },
-      "vectorOrder": [
-        "v(1)",
-        "v(2)",
-        "i(v1)"
-      ],
-      "vectors": [
+      "comparisons": [
         {
-          "name": "v(1)",
-          "metrics": {
+          "product": "f1+f2",
+          "plotName": "DISTORTION - IM: f1+f2",
+          "pointCount": 31,
+          "frequencies": [
+            1000,
+            1258.9254117941673,
+            1584.8931924611136,
+            1995.2623149688798,
+            2511.8864315095802,
+            3162.2776601683795,
+            3981.071705534973,
+            5011.872336272723,
+            6309.573444801933,
+            7943.282347242816,
+            10000.000000000002,
+            12589.254117941675,
+            15848.931924611139,
+            19952.623149688803,
+            25118.864315095812,
+            31622.77660168381,
+            39810.71705534975,
+            50118.72336272726,
+            63095.734448019364,
+            79432.82347242821,
+            100000.00000000007,
+            125892.54117941682,
+            158489.31924611147,
+            199526.23149688813,
+            251188.64315095823,
+            316227.76601683826,
+            398107.1705534977,
+            501187.2336272728,
+            630957.3444801939,
+            794328.2347242824,
+            1000000.0000000012
+          ],
+          "frequencyMetrics": {
             "sampleCount": 31,
-            "maximumAbsoluteError": 0,
-            "rmsAbsoluteError": 0,
-            "maximumRelativeError": 0,
-            "rmsRelativeError": 0
-          }
+            "maximumAbsoluteError": 1.1641532182693481e-9,
+            "rmsAbsoluteError": 3.5215829100592027e-10,
+            "maximumRelativeError": 1.4760468084934277e-15,
+            "rmsRelativeError": 6.834797392873929e-16
+          },
+          "vectorOrder": [
+            "v(1)",
+            "v(2)",
+            "i(v1)"
+          ],
+          "vectors": [
+            {
+              "name": "v(1)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            },
+            {
+              "name": "v(2)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            },
+            {
+              "name": "i(v1)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            }
+          ]
         },
         {
-          "name": "v(2)",
-          "metrics": {
+          "product": "f1-f2",
+          "plotName": "DISTORTION - IM: f1-f2",
+          "pointCount": 31,
+          "frequencies": [
+            1000,
+            1258.9254117941673,
+            1584.8931924611136,
+            1995.2623149688798,
+            2511.8864315095802,
+            3162.2776601683795,
+            3981.071705534973,
+            5011.872336272723,
+            6309.573444801933,
+            7943.282347242816,
+            10000.000000000002,
+            12589.254117941675,
+            15848.931924611139,
+            19952.623149688803,
+            25118.864315095812,
+            31622.77660168381,
+            39810.71705534975,
+            50118.72336272726,
+            63095.734448019364,
+            79432.82347242821,
+            100000.00000000007,
+            125892.54117941682,
+            158489.31924611147,
+            199526.23149688813,
+            251188.64315095823,
+            316227.76601683826,
+            398107.1705534977,
+            501187.2336272728,
+            630957.3444801939,
+            794328.2347242824,
+            1000000.0000000012
+          ],
+          "frequencyMetrics": {
             "sampleCount": 31,
-            "maximumAbsoluteError": 0,
-            "rmsAbsoluteError": 0,
-            "maximumRelativeError": 0,
-            "rmsRelativeError": 0
-          }
+            "maximumAbsoluteError": 1.1641532182693481e-9,
+            "rmsAbsoluteError": 3.5215829100592027e-10,
+            "maximumRelativeError": 1.4760468084934277e-15,
+            "rmsRelativeError": 6.834797392873929e-16
+          },
+          "vectorOrder": [
+            "v(1)",
+            "v(2)",
+            "i(v1)"
+          ],
+          "vectors": [
+            {
+              "name": "v(1)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            },
+            {
+              "name": "v(2)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            },
+            {
+              "name": "i(v1)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            }
+          ]
         },
         {
-          "name": "i(v1)",
-          "metrics": {
+          "product": "2f1-f2",
+          "plotName": "DISTORTION - IM: 2f1-f2",
+          "pointCount": 31,
+          "frequencies": [
+            1000,
+            1258.9254117941673,
+            1584.8931924611136,
+            1995.2623149688798,
+            2511.8864315095802,
+            3162.2776601683795,
+            3981.071705534973,
+            5011.872336272723,
+            6309.573444801933,
+            7943.282347242816,
+            10000.000000000002,
+            12589.254117941675,
+            15848.931924611139,
+            19952.623149688803,
+            25118.864315095812,
+            31622.77660168381,
+            39810.71705534975,
+            50118.72336272726,
+            63095.734448019364,
+            79432.82347242821,
+            100000.00000000007,
+            125892.54117941682,
+            158489.31924611147,
+            199526.23149688813,
+            251188.64315095823,
+            316227.76601683826,
+            398107.1705534977,
+            501187.2336272728,
+            630957.3444801939,
+            794328.2347242824,
+            1000000.0000000012
+          ],
+          "frequencyMetrics": {
             "sampleCount": 31,
-            "maximumAbsoluteError": 0,
-            "rmsAbsoluteError": 0,
-            "maximumRelativeError": 0,
-            "rmsRelativeError": 0
-          }
+            "maximumAbsoluteError": 1.1641532182693481e-9,
+            "rmsAbsoluteError": 3.5215829100592027e-10,
+            "maximumRelativeError": 1.4760468084934277e-15,
+            "rmsRelativeError": 6.834797392873929e-16
+          },
+          "vectorOrder": [
+            "v(1)",
+            "v(2)",
+            "i(v1)"
+          ],
+          "vectors": [
+            {
+              "name": "v(1)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            },
+            {
+              "name": "v(2)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            },
+            {
+              "name": "i(v1)",
+              "metrics": {
+                "sampleCount": 31,
+                "maximumAbsoluteError": 0,
+                "rmsAbsoluteError": 0,
+                "maximumRelativeError": 0,
+                "rmsRelativeError": 0
+              }
+            }
+          ]
         }
       ]
     }
@@ -246,21 +578,15 @@
   "relativeErrorDenominator": "max(abs(ngspice complex value), 1e-15)",
   "failures": [],
   "losses": [
-    "Only ideal linear RLC/source circuits are supported; all covered harmonic values are exactly zero.",
-    "Only DEC single-tone F1 sweeps and second/third harmonics are represented.",
-    "No nonlinear coefficient, intermodulation, fundamental response, or distortion ratio is computed.",
-    "Non-zero matched-frequency residuals are published in comparisons.frequencyMetrics.",
+    "Only ideal linear RLC/source circuits are supported; all covered product values are exactly zero.",
+    "Only DEC sweeps, single-tone second/third harmonics, and two-tone f1+f2, f1-f2, and 2f1-f2 products are represented.",
+    "No nonlinear coefficient, normalized distortion ratio, fundamental response, or coincident-product summation is computed.",
+    "Two-tone raw frequency axes are ngspice swept-F1 coordinates, not derived product frequencies.",
+    "Non-zero matched-frequency residuals are published in each comparison.frequencyMetrics.",
     "Runtime figures use different process boundaries and support no speed claim."
   ],
+  "runtimeCaveat": "Different process boundaries; no speed superiority claim is made.",
   "unsupported": [
-    {
-      "form": ".disto DEC points start stop f2overf1",
-      "reason": "two-tone/intermodulation analysis"
-    },
-    {
-      "form": "non-zero DISTOF2",
-      "reason": "second-tone excitation"
-    },
     {
       "form": ".disto LIN or OCT",
       "reason": "sweep outside the bounded DEC slice"
@@ -272,6 +598,18 @@
     {
       "form": "controlled, coupled, transmission-line, or custom devices",
       "reason": "device outside ideal RLC/source slice"
+    },
+    {
+      "form": "multiple non-zero DISTOF1 or DISTOF2 excitations",
+      "reason": "bounded one-source-per-tone slice"
+    },
+    {
+      "form": "single-tone intermodulation or two-tone harmonic selectors",
+      "reason": "products outside the selected analysis mode"
+    },
+    {
+      "form": "f2overf1 outside 0 < ratio < 1",
+      "reason": "unsupported two-tone frequency ordering"
     },
     {
       "form": ".step combined with .disto",

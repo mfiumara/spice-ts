@@ -99,14 +99,14 @@ At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-di
 
 Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON receipt reports the engine version, machine, identical paths, deterministic native order, matched-point maximum/RMS absolute and relative errors, every non-zero residual as a retained loss, convergence failures, and the explicit unsupported matrix.
 
-## Bounded single-tone linear distortion parity fixture
+## Bounded ideal-linear distortion parity fixtures
 
 - Canonical public source: ngspice public corpus A [`tests/filters/lowpass.cir`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/filters/lowpass.cir), pinned revision `3ef069fb1f04177a153f342a32d941fc20ff047e`.
 - Licence: BSD-3-Clause under the pinned ngspice [`COPYING`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/COPYING); the retained notice is `benchmarks/corpus/ngspice/LICENSE.txt`.
 - Redistribution decision: allowed. The adapted source-form fixture remains under BSD-3-Clause.
-- Adaptation: `benchmarks/distortion/linear-lowpass.cir` comments the unsupported `.OPTIONS` card, replaces `.AC DEC 10 1k 1Meg` with `.DISTO DEC 10 1k 1Meg`, and changes only `DISTOF1 0` to `DISTOF1 1`. The title describes the bounded run; topology, component values, source clauses, sweep bounds, and explicit zero `DISTOF2` remain unchanged. The committed bytes are supplied identically to spice-ts and ngspice-47.
-- Scope: one DEC single-tone ideal linear RC case. Only second- and third-harmonic complex outputs are covered; both are mathematically zero. Two-tone, semiconductor nonlinear, stepped, controlled-source, coupled, transmission-line, streaming, and external-backend distortion remain explicitly unsupported.
-- Reproduce with `pnpm exec tsx benchmarks/distortion/compare.ts`. The JSON receipt reports versions, machine, fixture hash, identical input, convergence, runtimes, stable frequency/vector order, matched-frequency maximum/RMS absolute and relative errors, every loss, and all unsupported forms.
+- Adaptation: `benchmarks/distortion/linear-lowpass.cir` comments the unsupported `.OPTIONS` card, replaces `.AC DEC 10 1k 1Meg` with `.DISTO DEC 10 1k 1Meg`, and changes only `DISTOF1 0` to `DISTOF1 1`. `benchmarks/distortion/two-tone-linear-lowpass.cir` makes the same changes, adds `f2overf1=0.9`, and changes `DISTOF2 0` to `DISTOF2 0.25 30`. Each title describes its bounded run. Topology, component values, remaining source clauses, and sweep bounds are unchanged. Each committed file is supplied byte-identically to spice-ts and ngspice-47.
+- Scope: one DEC single-tone and one DEC two-tone ideal-linear RC case. The single-tone result covers second- and third-harmonic complex outputs. The two-tone result covers ngspice's separate `f1+f2`, `f1-f2`, and `2f1-f2` plots. All represented values are mathematically zero. Semiconductor nonlinear, stepped, LIN/OCT, controlled-source, coupled, transmission-line, arbitrary multi-excitation, protocol-v1, streaming, and external-backend distortion remain explicitly unsupported.
+- Reproduce with `pnpm bench:disto`. The JSON receipt reports ngspice-47 and runtime versions, machine, fixture hashes, byte-identical inputs, convergence, runtimes, stable frequency/vector/product order, matched-point maximum/RMS absolute and relative errors, every loss, and all unsupported forms.
 
 ## Bounded stepped transfer-function parity fixture
 

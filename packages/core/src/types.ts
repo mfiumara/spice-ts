@@ -80,7 +80,7 @@ export interface NoiseAnalysis {
   stopFreq: number;
 }
 
-/** Bounded single-tone linear distortion analysis (`.disto dec ...`). */
+/** Bounded ideal-linear distortion analysis (`.disto dec ... [f2overf1]`). */
 export interface DistortionAnalysis {
   type: 'disto';
   variation: 'dec';
@@ -90,6 +90,8 @@ export interface DistortionAnalysis {
   startFreq: number;
   /** Fundamental-frequency sweep stop in Hz. */
   stopFreq: number;
+  /** Fixed F2/start-F1 ratio. Its presence selects the bounded two-tone mode. */
+  f2OverF1?: number;
 }
 
 /** Bounded DC transfer-function analysis (`.tf v(node) source`). */
