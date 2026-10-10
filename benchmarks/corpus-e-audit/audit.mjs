@@ -339,7 +339,7 @@ ${rows.join('\n')}
 
 ## /poteto-mode receipt
 
-Loaded \`pstack:poteto-mode\`, \`pstack:how\`, the feature playbook, and \`pstack:architect\`; compared a policy-table design with the chosen lower-surface inline parser-helper design. Parser RED commit \`c4cfe9bee38f9d90d4f2e0b4ece9ee83563fcb78\` failed 19 of 67 focused cases. GREEN passed all 67. Audit RED commit \`40e830182bc1d52c14b21db15b0bd8855d9eaafd\` failed the K-element classification and post-change totals. GREEN runs both engines over all 20 unchanged fixtures, locks totals and stable hashes, and records every #228 transition. REFACTOR keeps output-only classification internal and leaves every corpus fixture, manifest, source revision, and tolerance unchanged.
+Loaded \`pstack:poteto-mode\`, \`pstack:how\`, the feature playbook, and \`pstack:architect\`; compared a policy-table design with the chosen lower-surface inline parser-helper design. Parser RED commit \`c4cfe9bee38f9d90d4f2e0b4ece9ee83563fcb78\` produced 21 failed / 46 passed across 67 focused cases. GREEN passed all 67. Audit RED commit \`40e830182bc1d52c14b21db15b0bd8855d9eaafd\` failed the K-element classification and post-change totals. GREEN runs both engines over all 20 unchanged fixtures, locks totals and stable hashes, and records every #228 transition. REFACTOR keeps output-only classification internal and leaves every corpus fixture, manifest, source revision, and tolerance unchanged.
 `;
 }
 
