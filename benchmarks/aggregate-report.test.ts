@@ -54,11 +54,13 @@ describe('aggregate report artifact verification', () => {
       ]),
       [
         ['spiceTs', 'classic/diode-distortion', 'failed', 'unsupported'],
+        ['spiceTs', 'ngspice/vbic-fo', 'unsupported', 'success'],
+        ['spiceTs', 'ngspice/vbic-common-emitter-ac', 'success', 'unsupported'],
       ],
     );
     assert.deepEqual(report.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
     assert.deepEqual(report.totals.spiceTs, { success: 55, failed: 1, unsupported: 44 });
-    assert.equal(report.totals.comparedAnalyses, 58);
+    assert.equal(report.totals.comparedAnalyses, 57);
     assert.equal(report.totals.comparedFixtures, 43);
     const inductor = report.fixtures.find((fixture: { key: string }) => fixture.key === 'xyce/inductor-transient');
     assert.match(inductor.spiceTs.error, /exceeded the 120000 ms aggregate execution bound/);
@@ -87,10 +89,10 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
-    assert.equal(report.matchedPointEnvelope.comparedSignals, 878);
+    assert.equal(report.matchedPointEnvelope.comparedSignals, 877);
     assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 848);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 1169140310571.719);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 1169140310571.719);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 154.02408984579006);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 66.59015057379884);
     assert.equal(report.matchedPointEnvelope.maximumRelativeError, 45497356677842.63);
     assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 872317191517.6284);
   });
