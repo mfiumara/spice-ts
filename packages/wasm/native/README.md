@@ -2,12 +2,15 @@
 
 `dense-solver.wasm` is the checked-in numeric kernel used by the bounded `spice-ts-wasm` backend. Package builds copy and hash this artifact. They do not require a native compiler and do not regenerate it implicitly.
 
-The artifact was built with Homebrew LLVM/LLD 23.1.3:
+The artifact was built with Homebrew LLVM/LLD 23.1.3. Run this from `packages/wasm`; the explicit
+`llvm-objcopy` step removes LLVM's non-semantic `producers` custom section so the command reproduces the
+checked artifact bytes:
 
     PATH="/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/lld/bin:$PATH" \
       clang --target=wasm32 -Oz -nostdlib -fno-builtin \
       -Wl,--no-entry \
       -Wl,--export=stamp_vccs_f64 \
+      -Wl,--export=stamp_cccs_f64 \
       -Wl,--export=solve_f64 \
       -Wl,--export=solve_complex_f64 \
       -Wl,--export=abi_version \
@@ -17,18 +20,28 @@ The artifact was built with Homebrew LLVM/LLD 23.1.3:
       -Wl,--initial-memory=196608 \
       -Wl,--max-memory=196608 \
       -Wl,--strip-all \
-      -o native/dense-solver.wasm native/dense-solver.c
+      -o native/dense-solver.unstripped.wasm native/dense-solver.c
+    PATH="/opt/homebrew/opt/llvm/bin:$PATH" \
+      llvm-objcopy --remove-section=producers \
+      native/dense-solver.unstripped.wasm native/dense-solver.wasm
+    rm native/dense-solver.unstripped.wasm
+    chmod 0644 native/dense-solver.wasm
+    test "$(wc -c < native/dense-solver.wasm | tr -d ' ')" = 3506
+    printf '%s  %s\n' \
+      d034ba96f6fc6c183020f3b15a86557b1b68e37ba7e2c97619beeb693ab33cfd \
+      native/dense-solver.wasm | shasum -a 256 -c -
 
 Expected artifact:
 
-- byte length: 3275
-- SHA-256: `9521611634a21cd44771ffb76f0ac70b3f0bdd3df6f03f3828264c72238c7137`
+- byte length: 3506
+- SHA-256: `d034ba96f6fc6c183020f3b15a86557b1b68e37ba7e2c97619beeb693ab33cfd`
 - imports: none
 - memory: fixed at 3 WebAssembly pages (196608 bytes)
 - ABI version: 2
 - maximum order: 64
 
 ABI v2 exposes `stamp_vccs_f64(order, matrix, outP, outN, ctrlP, ctrlN, gm)` for bounded linear VCCS stamps,
+`stamp_cccs_f64(order, matrix, outP, outN, controlBranchColumn, gain)` for bounded linear CCCS stamps,
 `solve_f64(order, matrix, rhs)` for real systems, and
 `solve_complex_f64(order, matrixReal, matrixImaginary, rhsReal, rhsImaginary)` for split-complex systems.
 The entry points mutate their row-major matrices and right-hand sides in place. Status 0 means success, 1 means

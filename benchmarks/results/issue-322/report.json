@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "spice-ts-issue-322/v1",
+  "issueUrl": "https://github.com/mfiumara/spice-ts/issues/322",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1"
+  },
+  "policy": {
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "engineInput": "the same immutable fixture Buffer",
+    "timing": "single wall-clock execution per engine; descriptive only; no speed claim",
+    "spiceTsTimeoutMs": 30000,
+    "comparisonGrid": "spice-ts",
+    "interpolation": "linear"
+  },
+  "command": "pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-322/verify.ts --output benchmarks/results/issue-322/report.json",
+  "fixture": {
+    "id": "inductor-transient",
+    "input": {
+      "bytes": 1006,
+      "sha256": "a0a869d9fe3b04d3bbdc8abf9e8a89a9302a54ac5be9c97f446f06834a248b35",
+      "identicalForBothEngines": true
+    },
+    "before": {
+      "spiceTs": {
+        "status": "unsupported",
+        "runtimeMs": 0.339,
+        "error": "Parse error at line 21: Unsupported .options TIMEINT field: 'newbpstepping' .options timeint newbpstepping=0 reltol=1.0e-4"
+      }
+    },
+    "after": {
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 36.06,
+        "analyses": [
+          {
+            "type": "tran",
+            "points": 233,
+            "signals": [
+              "i(l1)",
+              "v(1)",
+              "v(2)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "convergence": "failed",
+        "runtimeMs": 30006.699,
+        "analyses": [],
+        "error": "spice-ts exceeded the 30000 ms benchmark limit"
+      }
+    },
+    "comparisons": [],
+    "laterFailures": [
+      {
+        "status": "failed",
+        "error": "spice-ts exceeded the 30000 ms benchmark limit"
+      }
+    ]
+  }
+}

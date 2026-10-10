@@ -184,6 +184,14 @@ describe('browser protocol-v1 worker facade', () => {
         if (!vccsResult.ok || vccsOp?.type !== 'op' || vccsOp.voltagesV.out !== -4) {
           throw new Error('wrong WASM VCCS OP result');
         }
+        const cccsResult = await wasm.simulate({
+          apiVersion: '1',
+          input: { format: 'spice', source: 'VCTRL control 0 2\\nRCTRL control 0 1k\\nF1 out 0 VCTRL 3\\nRLOAD out 0 1k\\n.op' },
+        }, { requestId: 'browser-wasm-cccs-op' });
+        const cccsOp = cccsResult.ok ? cccsResult.data.analyses[0] : undefined;
+        if (!cccsResult.ok || cccsOp?.type !== 'op' || cccsOp.voltagesV.out !== 6) {
+          throw new Error('wrong WASM CCCS OP result');
+        }
         const wasmDcResult = await wasm.simulate({
           apiVersion: '1',
           input: { format: 'spice', source: 'V1 in 0 0\\nR1 in out 1k\\nR2 out 0 1k\\n.dc V1 0 1 0.5' },
