@@ -41,7 +41,7 @@ import {
   type ResolvedCapacitorModel,
   type ResolvedInductorModel,
 } from './devices/passive-model.js';
-import { CycleError, InvalidCircuitError } from './errors.js';
+import { CycleError, InvalidCircuitError, ParseError } from './errors.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
 /**
@@ -1557,7 +1557,7 @@ export class Circuit {
     // Tokenize body lines
     const parsedLines = tokenizeNetlist(def.body.join('\n'));
 
-    for (const { tokens } of parsedLines) {
+    for (const { tokens, lineNumber, raw } of parsedLines) {
       guard?.checkpoint('compile:device');
       if (tokens.length === 0) continue;
       const first = tokens[0].toUpperCase();
@@ -1762,7 +1762,8 @@ export class Circuit {
           result.push(...nested);
           break;
         }
-        // Skip unknown device types inside subcircuits silently
+        default:
+          throw new ParseError(`Unsupported device card: '${devType}'`, lineNumber, raw);
       }
       guard?.maximum('maxComponents', result.length, 'compile');
     }
