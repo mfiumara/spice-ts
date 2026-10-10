@@ -4,11 +4,11 @@ spice-ts is pursuing correctness parity with ngspice before performance, AI-nati
 models. [CHARTER.md](CHARTER.md) is the source of truth for priorities and program rules; this document is the
 public issue map and measurable delivery sequence.
 
-Issue state below was verified against live GitHub state on 2026-10-10. The repository had 17 open issues: four in
-M1, one in M2, five in M3, and seven in M4.
+Issue state below was verified against live GitHub state on 2026-10-10. The repository had 19 open issues: five in
+M1, one in M2, seven in M3, and six in M4.
 Every open issue is represented below. A delivery is marked merged only when its PR is on `main`; accepted but
 unmerged work remains an open gap. This reconciliation closes
-[#183](https://github.com/mfiumara/spice-ts/issues/183) only when its PR merges.
+[#192](https://github.com/mfiumara/spice-ts/issues/192) only when its PR merges.
 
 ## M1 Correctness parity
 
@@ -68,15 +68,17 @@ published parity report; agreed error thresholds met or gaps filed
 | Eighth-wave roadmap reconciliation | [#156](https://github.com/mfiumara/spice-ts/issues/156) | [PR #157](https://github.com/mfiumara/spice-ts/pull/157), reviewed head `dd7df765a767bbef1ea06d8040a26642415b86c4`, squash merge `b64aeef485477e87a52e260a18a099e05148b801`, reconciled the live 17-issue inventory after PRs #145, #147, #149–#152 while preserving all recorded benchmark and performance losses |
 | Ninth-wave roadmap reconciliation | [#163](https://github.com/mfiumara/spice-ts/issues/163) | [PR #164](https://github.com/mfiumara/spice-ts/pull/164), reviewed head `a7949c9843abf3d9f919ea2dc91384981b834d34`, squash merge `81708a8829a065d66ac5ea403ccda4a2a9011e9f`, reconciled the live 17-issue inventory after PRs #157–#159 while preserving all recorded benchmark and performance losses |
 | Tenth-wave roadmap reconciliation | [#168](https://github.com/mfiumara/spice-ts/issues/168) | [PR #170](https://github.com/mfiumara/spice-ts/pull/170), reviewed head `8e3973b6f9184c42fa04ae2a27e51fb409b25ad0`, squash merge `406d36eea8aafd24a1d880c93f1e835cd82bcfb7`, reconciled the live 15-issue inventory after PRs #165–#169 while preserving all recorded benchmark and performance losses |
+| Eleventh-wave roadmap reconciliation | [#183](https://github.com/mfiumara/spice-ts/issues/183) | [PR #184](https://github.com/mfiumara/spice-ts/pull/184), reviewed head `6d700c37267769cb0f2696ec109ba8a9f49793ce`, squash merge `840cd8e70f55599b34ce09b129f8d276fddf8cf7`, reconciled the live 17-issue inventory after PRs #170, #175, and #176 while retaining the then-rejected T-line defect and all benchmark and performance losses |
 
 ### Open residual gaps
 
 | Work | Issue | Current residual |
 |------|-------|------------------|
-| Advanced analysis support | [#75](https://github.com/mfiumara/spice-ts/issues/75) | After the bounded LIN/DEC/OCT resistor-noise, `.tf`, and `.pz` slices, differential/current noise outputs, temperature cards, semiconductor/flicker noise, stepped noise, differential/current-output and stepped `.tf`, `.sens`, and `.disto` remain explicitly unsupported on `main` |
-| Bounded sensitivity analysis | [#171](https://github.com/mfiumara/spice-ts/issues/171) | Add a benchmark-driven linear RLC and active small-signal `.sens` slice with deterministic DC/AC ordering, typed parser/programmatic results, identical-netlist ngspice-47 errors, and explicit rejection of unsupported forms |
-| Parity-backed diode noise slice | [#179](https://github.com/mfiumara/spice-ts/issues/179) | Add a public, identical-netlist diode shot- and flicker-noise slice with matched-frequency ngspice-47 errors and integrated totals while retaining stable errors for BJT/MOS, temperature-card, stepped, differential/current-output, and other out-of-scope variants |
-| Reconcile this roadmap | [#183](https://github.com/mfiumara/spice-ts/issues/183) | This documentation-only PR closes the issue only after merge |
+| Advanced analysis support | [#75](https://github.com/mfiumara/spice-ts/issues/75) | Parent gap after the bounded LIN/DEC/OCT resistor-noise, `.tf`, and `.pz` slices: differential/current noise outputs, temperature cards, semiconductor/flicker noise, stepped noise, differential/current-output and stepped `.tf`, `.sens`, and `.disto` remain unsupported on `main`; bounded children #171, #179, and #189 do not close this parent until independently accepted and merged |
+| Bounded sensitivity analysis | [#171](https://github.com/mfiumara/spice-ts/issues/171) | [PR #178](https://github.com/mfiumara/spice-ts/pull/178) remains open at rejected head `3ca826f0ec9b465aaf315cc9ed89c21d8867efb0`: multiple nonzero AC sources can silently return the wrong sensitivity for every source after the first, so the otherwise measured three-fixture DC/AC slice is not delivered |
+| Parity-backed diode noise slice | [#179](https://github.com/mfiumara/spice-ts/issues/179) | [PR #187](https://github.com/mfiumara/spice-ts/pull/187) remains open at rejected head `440d0f073e2d19e2ef3f95b5557082f3c8898795` because required `/poteto-mode` evidence is absent; its unmerged receipt reports 3/3 fixtures and 22/22 points with maximum output/input/integrated relative errors `9.356436623966881e-4` / `4.564031710174417e-4` / `9.356420630676564e-4`, but those results are not a delivery |
+| Parity-backed MOSFET noise slice | [#189](https://github.com/mfiumara/spice-ts/issues/189) | Bounded child of #75 for level-1 channel thermal plus KF/AF flicker noise with public identical-netlist LIN/DEC/OCT evidence; unsupported levels and forms must remain explicit |
+| Reconcile this roadmap | [#192](https://github.com/mfiumara/spice-ts/issues/192) | This documentation-only PR closes the issue only after merge |
 
 Issue #121 is closed only because its two named Xyce fixtures are covered by the independently reviewed bounded
 slices: PR #152 supplies LEVEL=1 J-card/model support, PR #165 executes the unchanged LEVEL=1 fixture through
@@ -136,7 +138,7 @@ Optimization follows correctness measurement and must not weaken parity threshol
 
 | Work | Issue | Current residual |
 |------|-------|------------------|
-| Sparse numeric-factor allocations | [#180](https://github.com/mfiumara/spice-ts/issues/180) | Profile deterministic 1k/5k/10k scaling plus sweep/transient workloads, make one general sparse numeric-factor or solve allocation improvement, preserve dynamic fill and numerical parity, and report same-machine runtime and peak-RSS regressions as well as wins |
+| Sparse numeric-factor allocations | [#180](https://github.com/mfiumara/spice-ts/issues/180) | [PR #185](https://github.com/mfiumara/spice-ts/pull/185) remains open at rejected head `0b3f2c4904cf42a0b6a3429842fbeaa7d758ac09` because required `/poteto-mode` evidence is absent. Its unmerged receipts report 1k/5k/10k upper-median runtime `1.715→1.630` / `7.200→16.185` / `15.299→14.486 ms` and peak RSS `166.266→145.125` / `175.984→180.000` / `223.563→225.641 MiB`; the 5k runtime and 5k/10k memory regressions stay visible, and the after-run remains 4.25× slower and uses 9.22× ngspice internal-analysis peak RSS at 10k |
 
 The milestone exit remains evidence-based and is not implied by the existing bounded allocation work or this focused
 memory-reduction issue.
@@ -166,6 +168,9 @@ PR #176 removed boxed symbolic capacity prediction and improved its same-machine
 remained 4.25× slower than ngspice internal analysis and used 8.48× its peak RSS at 10k. Its 1,001-point DC sweep
 improved from 0.765 to 0.732 ms while peak RSS regressed from 58.188 to 58.297 MiB (+0.2%). These are bounded
 allocation results with process-level RSS variability, not a milestone-completion or superiority claim.
+PR #185's proposed numeric-factor storage reduction is not on `main`. Its receipts retain a 124.79% 5k runtime
+regression, 2.28% 5k RSS regression, and 0.93% 10k RSS regression alongside its wins; rejected workflow evidence
+means none of those changes are counted as a delivery.
 
 ## M3 AI-native API
 
@@ -190,18 +195,26 @@ explicit contracts.
 
 | Work | Issue | Current residual |
 |------|-------|------------------|
-| Core protocol adapter | [#60](https://github.com/mfiumara/spice-ts/issues/60) | Any remaining solver typed-error work beyond existing `SpiceError` subclasses, cooperative cancellation safe points, hard document, expansion, analysis, point, and serialized-result limits, and streaming events, capabilities, and metadata envelopes with complete backend-name non-leak coverage remain open after the merged topology-preflight slice |
-| Bounded MCP simulation server | [#61](https://github.com/mfiumara/spice-ts/issues/61) | Typed tools with deterministic output and enforced execution bounds remain open |
-| Worker and WASM facade | [#62](https://github.com/mfiumara/spice-ts/issues/62) | A protocol-compatible browser worker and WASM-facing API remain open |
+| Core protocol adapter | [#60](https://github.com/mfiumara/spice-ts/issues/60) | Parent gap after the merged protocol and topology-preflight slices: remaining solver typed errors, cooperative cancellation safe points, hard document/expansion/analysis/point/result limits, and streaming envelopes stay open; bounded child #190 owns the reusable guard/cancellation slice |
+| Bounded MCP simulation server | [#61](https://github.com/mfiumara/spice-ts/issues/61) | Parent gap for deterministic typed MCP tools and enforced execution bounds; bounded child #181 remains unmerged and depends on the core guards in #190 |
+| Worker and WASM facade | [#62](https://github.com/mfiumara/spice-ts/issues/62) | Parent gap for a protocol-compatible browser worker and WASM-facing API; bounded child #191 covers only the TypeScript worker facade and explicitly does not deliver a numeric WASM backend |
 | Executable agent workflows | [#63](https://github.com/mfiumara/spice-ts/issues/63) | Tested examples for tool-driven simulation and error recovery remain open |
-| Bounded protocol-v1 MCP server slice | [#181](https://github.com/mfiumara/spice-ts/issues/181) | Add deterministic capability, validation, and bounded simulation tools over stdio with hard document, analysis, point, result-size, wall-time, and cancellation limits, structured JSON-safe errors, and no backend-name leakage |
+| Bounded protocol-v1 MCP server slice | [#181](https://github.com/mfiumara/spice-ts/issues/181) | [PR #186](https://github.com/mfiumara/spice-ts/pull/186) remains open at rejected head `5496e05f38bee1f9a21c775cb51ec82a50f3fccd`: same-event-loop timers cannot interrupt the synchronous core solve, so advertised wall-time and cancellation limits are not real; remediation depends on #190 and is not delivered despite green exact-head CI |
+| Cooperative cancellation and protocol limits | [#190](https://github.com/mfiumara/spice-ts/issues/190) | Bounded child of #60 and prerequisite for #181/#186 and #191: add reusable core safe points and deterministic parse/compile, Newton, transient, AC, count, point, and serialized-result guards without changing existing public APIs |
+| Protocol-v1 TypeScript worker facade | [#191](https://github.com/mfiumara/spice-ts/issues/191) | Bounded child of #62, dependent on #190, for deterministic `spice-ts-js` validate/simulate/stream/cancel behavior and worker-asset integrity; `spice-ts-wasm` remains reserved and unavailable |
 
 ## M4 Device models
 
 **Exit:** Gummel-Poon, BSIM4 (or documented subset), EKV, T-line, driven by benchmark gaps
 
-Benchmark gaps determine model order; feature breadth does not outrank known correctness bugs. No M4 program issue
-has a merged delivery in this snapshot.
+Benchmark gaps determine model order; feature breadth does not outrank known correctness bugs. The M4 milestone is
+not complete merely because a bounded child slice merges.
+
+### Merged deliveries
+
+| Work | Issue | Merged evidence |
+|------|-------|-----------------|
+| Bounded lossless T-line transient slice (partial #7) | [#174](https://github.com/mfiumara/spice-ts/issues/174) | [PR #177](https://github.com/mfiumara/spice-ts/pull/177), accepted remediation head `7ae757ba57edc5c860282f646c747a342daf9840`, squash merge `6191fabb2b06096c918a580774091fefa51ba479`, moved history mutation to accepted transient steps after independently reproducing the rejected-head pre-arrival leak. The configured 5 ns line retained a measured 5.0075 ns delay; matched max/RMS absolute error improved to `1.887379141862766e-15` / `9.284985247008207e-17 V`, while mismatched input and output retained `0.004550045527923263` and `0.003349544520010017 V` maximum absolute errors and near-zero relative-error losses |
 
 ### Open residual gaps
 
@@ -209,18 +222,15 @@ has a merged delivery in this snapshot.
 |------|-------|------------------|
 | BSIM4 MOSFET model or documented subset | [#3](https://github.com/mfiumara/spice-ts/issues/3) | Reference operating points and a benchmark-driven supported parameter set remain open |
 | EKV compact MOSFET model | [#4](https://github.com/mfiumara/spice-ts/issues/4) | Reference-circuit operating points across inversion regions remain open |
-| Gummel-Poon BJT model | [#5](https://github.com/mfiumara/spice-ts/issues/5) | Reference operating points and multi-BJT convergence coverage remain open |
-| Lossless transmission line | [#7](https://github.com/mfiumara/spice-ts/issues/7) | Matched and mismatched transient step-response comparisons remain open |
+| Gummel-Poon BJT model | [#5](https://github.com/mfiumara/spice-ts/issues/5) | Parent model gap remains open; bounded forward-active child #182 does not imply full Gummel-Poon support, including capacitance, transit-time, resistance, temperature, reverse-effect, breakdown, substrate-current, and area behavior |
+| Lossless transmission line | [#7](https://github.com/mfiumara/spice-ts/issues/7) | The bounded positive-`Z0`/`TD` T-card slice merged through #174, but frequency-length, initial-condition, lossy, frequency-dependent, O-card/LTRA, and broader model coverage remain open under this parent |
 | Unsupported device-card coverage | [#76](https://github.com/mfiumara/spice-ts/issues/76) | A benchmark-driven parser matrix and explicit device-card gaps remain open |
-| Bounded lossless T-line slice | [#174](https://github.com/mfiumara/spice-ts/issues/174) | Implement the public-corpus lossless T-card subset with matched and mismatched identical-netlist ngspice-47 transient comparisons while explicitly rejecting LTRA, lossy, and frequency-dependent forms |
-| Bounded Gummel-Poon forward-active slice | [#182](https://github.com/mfiumara/spice-ts/issues/182) | Add a public-reference, byte-identical DC/OP bias grid for a documented forward-active parameter subset with stable errors for out-of-scope forms; preserve existing level-1 BJT behavior and do not imply full Gummel-Poon coverage |
+| Bounded Gummel-Poon forward-active slice | [#182](https://github.com/mfiumara/spice-ts/issues/182) | [PR #188](https://github.com/mfiumara/spice-ts/pull/188) remains open at current head `be9c75e749ab33610ac4f8dc261159bb19075c89`; acceptance applied only to prior head `bc18c40474b8187b5c67c5c2b027d8e7d2b6073d` and was invalidated by the newer commit. The prior unmerged 21-point receipt retained base/collector-current maximum relative errors `1.5033458336233197%` / `1.324569419093589%`; no delivery or full-model claim is made without exact-head re-review and merge |
 
-[PR #177](https://github.com/mfiumara/spice-ts/pull/177) remains open at rejected head
-`dff34168c59f788a60ac8b6db77deebae14d8196`; green exact-head CI is not acceptance. Its post-accept restamping
-timestamps accepted transmission-line history one timestep early: the matched fixture first produces nonzero output
-at 5.950024712575982 ns and reaches 0.023656282496570407 V by 5.99731256499314 ns, before the physical 6 ns
-source-plus-delay arrival. The committed comparison also retains a 0.15 V matched-output maximum absolute error.
-Issue #174 therefore remains a correctness gap until an independently reviewed remediation merges.
+The original PR #177 head `dff34168c59f788a60ac8b6db77deebae14d8196` was rejected after it leaked
+`0.023656282496570407 V` before the physical 6 ns arrival and retained `0.15 V` matched-output maximum absolute
+error. Those defects were reproduced before the accepted head fixed accepted-step/retry/reset history semantics;
+the merged result above does not erase its remaining mismatched-waveform or near-zero-relative-error losses.
 
 ## Benchmark policy
 
