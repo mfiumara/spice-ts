@@ -1,1 +1,164 @@
-{}
+{
+  "workflow": "point-ceiling-recovery",
+  "callOrder": [
+    "spice_capabilities",
+    "spice_simulation_start:rejected",
+    "spice_simulation_start/read:first",
+    "spice_simulation_start/read:second"
+  ],
+  "capabilities": {
+    "protocolVersion": "1",
+    "analyses": [
+      "op",
+      "dc",
+      "tran",
+      "ac"
+    ],
+    "inputFormats": [
+      "spice",
+      "spice-ts"
+    ],
+    "limits": {
+      "maxDocumentBytes": 262144,
+      "maxAnalyses": 8,
+      "maxResultPoints": 100000,
+      "maxSerializedResultBytes": 4194304,
+      "maxWallTimeMs": 10000
+    },
+    "streaming": {
+      "defaultChunkPoints": 256,
+      "maxChunkPoints": 1024,
+      "maxRetainedJobs": 16,
+      "runningJobTtlMs": 30000,
+      "terminalJobTtlMs": 60000,
+      "maxUnreadEvents": 256,
+      "maxUnreadBytes": 1048576
+    }
+  },
+  "rejection": {
+    "code": "RESOURCE_LIMIT",
+    "message": "A configured resource limit was exceeded",
+    "retryable": false,
+    "phase": "validation",
+    "details": {
+      "limit": "maxResultPoints",
+      "maximum": 3,
+      "actual": 4
+    }
+  },
+  "correction": {
+    "changedPaths": [
+      "/options/limits/maxResultPoints"
+    ],
+    "maxResultPoints": 4
+  },
+  "success": {
+    "diagnostics": [],
+    "metadata": {
+      "protocolVersion": "1",
+      "spiceTsVersion": "0.3.0",
+      "engineBuildId": "mcp-node-v1",
+      "backend": "spice-ts-js",
+      "backendVersion": "0.3.0",
+      "resolvedBackend": "spice-ts-js",
+      "determinism": "strict",
+      "runtimeFamily": "node"
+    },
+    "inputSha256": "a777b736347435f90a17d26ebdf290f112533472427cf70cb77f1a8dded930d8",
+    "resultSha256": "f8699d1ee0618dac9da7f1e00afb80dc1bdfc2dee366ddf708d0a1553a12ca5d",
+    "stableTerminalSha256": "2d67cb2f3791c8857027218473d095bb26d8c5cda98822973466a49df5b8523f",
+    "resultPointCount": 4,
+    "sameCursorReplay": true,
+    "deterministicSecondRun": true
+  },
+  "stableTerminal": {
+    "apiVersion": "1",
+    "ok": true,
+    "data": {
+      "status": "complete",
+      "analyses": [
+        {
+          "type": "op",
+          "analysisIndex": 0,
+          "voltagesV": {
+            "in": 1
+          },
+          "currentsA": {
+            "V1": -0.001
+          }
+        },
+        {
+          "type": "op",
+          "analysisIndex": 1,
+          "voltagesV": {
+            "in": 1
+          },
+          "currentsA": {
+            "V1": -0.001
+          }
+        },
+        {
+          "type": "op",
+          "analysisIndex": 2,
+          "voltagesV": {
+            "in": 1
+          },
+          "currentsA": {
+            "V1": -0.001
+          }
+        },
+        {
+          "type": "tran",
+          "analysisIndex": 3,
+          "timeS": [
+            0
+          ],
+          "voltagesV": {
+            "in": [
+              1
+            ]
+          },
+          "currentsA": {
+            "V1": [
+              -0.001
+            ]
+          }
+        }
+      ]
+    },
+    "diagnostics": [],
+    "metadata": {
+      "protocolVersion": "1",
+      "spiceTsVersion": "0.3.0",
+      "engineBuildId": "mcp-node-v1",
+      "backend": "spice-ts-js",
+      "backendVersion": "0.3.0",
+      "resolvedOptions": {
+        "backend": "spice-ts-js",
+        "abstol": 1e-12,
+        "vntol": 0.000001,
+        "reltol": 0.001,
+        "maxIterations": 100,
+        "maxTransientIterations": 50,
+        "maxTimestep": 1.7976931348623157e+308,
+        "integrationMethod": "trapezoidal",
+        "trtol": 7,
+        "gmin": 0,
+        "determinism": "strict",
+        "limits": {
+          "maxSourceBytes": 16384,
+          "maxAnalyses": 4,
+          "maxResultPoints": 4,
+          "maxSerializedResultBytes": 131072,
+          "maxWallTimeMs": 5000
+        }
+      },
+      "inputSha256": "a777b736347435f90a17d26ebdf290f112533472427cf70cb77f1a8dded930d8",
+      "resultSha256": "f8699d1ee0618dac9da7f1e00afb80dc1bdfc2dee366ddf708d0a1553a12ca5d",
+      "runtime": {
+        "family": "node"
+      },
+      "determinism": "strict"
+    }
+  }
+}
