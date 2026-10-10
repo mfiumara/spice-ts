@@ -1,0 +1,8 @@
+Berkeley SPICE3f5 simplepz adapted for AC sensitivity
+V1 in 0 DC 0 AC 1
+R1 in mid 1k
+L1 mid out 1m
+C1 out 0 1u
+R2 out 0 2k
+.sens V(out) AC DEC 2 10 1k
+.end

@@ -6,6 +6,7 @@ import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
 import { parsePoleZero } from './pole-zero-parser.js';
+import { parseSensitivity } from './sensitivity-parser.js';
 import { parseTransmissionLine } from './transmission-line-parser.js';
 import { preprocess } from './preprocessor.js';
 import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
@@ -61,6 +62,7 @@ function parseNetlist(netlist: string, firstLineIsTitle: boolean): Circuit {
   let hasNoiseAnalysis = false;
   let hasTransferFunctionAnalysis = false;
   let hasPoleZeroAnalysis = false;
+  let hasSensitivityAnalysis = false;
   let hasStepAnalysis = false;
 
   for (const { tokens, lineNumber, raw } of lines) {
@@ -130,9 +132,17 @@ function parseNetlist(netlist: string, firstLineIsTitle: boolean): Circuit {
             raw,
           );
         }
+        if ((first === '.SENS' && hasStepAnalysis) || (first === '.STEP' && hasSensitivityAnalysis)) {
+          throw new ParseError(
+            '.step cannot be combined with .sens',
+            lineNumber,
+            raw,
+          );
+        }
         if (first === '.NOISE') hasNoiseAnalysis = true;
         if (first === '.TF') hasTransferFunctionAnalysis = true;
         if (first === '.PZ') hasPoleZeroAnalysis = true;
+        if (first === '.SENS') hasSensitivityAnalysis = true;
         if (first === '.STEP') hasStepAnalysis = true;
         parseDotCommand(circuit, tokens, lineNumber);
       } else {
@@ -278,6 +288,25 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
     case '.PZ':
       circuit.addAnalysis('pz', parsePoleZero(tokens, lineNumber));
       break;
+    case '.SENS': {
+      const analysis = parseSensitivity(tokens, lineNumber);
+      if (analysis.mode === 'dc') {
+        circuit.addAnalysis('sens', {
+          outputNode: analysis.outputNode,
+          mode: 'dc',
+        });
+      } else {
+        circuit.addAnalysis('sens', {
+          outputNode: analysis.outputNode,
+          mode: 'ac',
+          variation: analysis.variation,
+          points: analysis.points,
+          startFreq: analysis.startFreq,
+          stopFreq: analysis.stopFreq,
+        });
+      }
+      break;
+    }
     case '.MODEL': {
       const model = parseModelCard(tokens, lineNumber);
       if (model.type === 'LTRA') {
