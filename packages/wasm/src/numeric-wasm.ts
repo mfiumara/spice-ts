@@ -507,8 +507,8 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
   if (analysis === 'dc') validateDcControls(analyses[0]!);
   if (analysis === 'tran') validateTransientControls(analyses[0]!, request);
   validateCards(cards, analysis);
-  if (analysis === 'op') validateCccsControlSources(cards);
-  const circuit = parseTitleless(source);
+  const normalizedCards = analysis === 'op' ? normalizeAndValidateCccsControlSources(cards) : cards;
+  const circuit = parseTitleless(normalizedCards.join('\n'));
   const compiled = circuit.compile();
   if (compiled.steps.length > 0 || compiled.poleZeroAnalyses.length > 0
     || compiled.analyses.length !== 1 || compiled.analyses[0]?.type !== analysis) {
@@ -610,30 +610,40 @@ function validateCards(cards: string[], analysis: 'op' | 'dc' | 'tran' | 'ac'): 
   }
 }
 
-function validateCccsControlSources(cards: string[]): void {
+function normalizeAndValidateCccsControlSources(cards: string[]): string[] {
+  const normalizedCards = [...cards];
   const devices = cards
-    .filter(card => !card.startsWith('.'))
-    .map((card, index) => {
+    .map((card, cardIndex) => ({ card, cardIndex }))
+    .filter(({ card }) => !card.startsWith('.'))
+    .map(({ card, cardIndex }) => {
       const tokens = card.split(/\s+/);
       return {
-        index,
+        cardIndex,
         name: tokens[0]!,
+        normalizedName: tokens[0]!.toUpperCase(),
         type: tokens[0]![0]!.toUpperCase(),
         controlSource: tokens[3],
+        normalizedControlSource: tokens[3]?.toUpperCase(),
+        tokens,
       };
     });
 
   for (const device of devices) {
     if (device.type !== 'F') continue;
     const controllingVoltageSource = devices.find(candidate =>
-      candidate.name === device.controlSource && candidate.type === 'V');
-    const referencedDevice = devices.find(candidate => candidate.name === device.controlSource);
-    const reason = controllingVoltageSource && controllingVoltageSource.index > device.index
+      candidate.normalizedName === device.normalizedControlSource && candidate.type === 'V');
+    const referencedDevice = devices.find(candidate =>
+      candidate.normalizedName === device.normalizedControlSource);
+    const reason = controllingVoltageSource && controllingVoltageSource.cardIndex > device.cardIndex
       ? 'forward-reference'
       : referencedDevice
         ? 'branchless'
         : 'missing';
-    if (controllingVoltageSource && controllingVoltageSource.index < device.index) continue;
+    if (controllingVoltageSource && controllingVoltageSource.cardIndex < device.cardIndex) {
+      device.tokens[3] = controllingVoltageSource.name;
+      normalizedCards[device.cardIndex] = device.tokens.join(' ');
+      continue;
+    }
     throw numericError(
       'INVALID_CIRCUIT',
       `CCCS device '${device.name}' must reference a preceding voltage-source branch`,
@@ -647,6 +657,7 @@ function validateCccsControlSources(cards: string[]): void {
       },
     );
   }
+  return normalizedCards;
 }
 
 function validateDcControls(card: string): void {

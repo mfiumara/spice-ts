@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-10T13:01:35.764Z",
+  "generatedAt": "2026-10-10T13:22:06.824Z",
   "fixtures": [
     {
       "path": "benchmarks/wasm-cccs-op/differential.cir",
@@ -20,7 +20,7 @@
     },
     {
       "path": "benchmarks/wasm-cccs-op/single-ended.cir",
-      "sha256": "90d731edae7b0cfe4c5b9dd9ec6b2178f2e3bdde1a570cf25dce7893ce4ccff2",
+      "sha256": "66defab84846b8d5664fa5fc471e6d56c2060f3c647a824c8f3da141eab2e923",
       "bytes": 142,
       "identicalInputBytes": true,
       "source": "project-authored",
@@ -35,7 +35,7 @@
     "tolerances": "no per-circuit tuning; simulator defaults"
   },
   "versions": {
-    "spiceTsBaseRevision": "0e8473d7b4d09f4db7afcab4aa24731809146c7a",
+    "spiceTsBaseRevision": "a0bb83f7323eb1a7309307aef4fed2e708c624d2",
     "node": "v22.23.1",
     "pnpm": "10.28.1",
     "ngspice": "ngspice-47 : Circuit level simulation program"
@@ -181,27 +181,27 @@
   "performance": {
     "wasmSuiteWallMs": {
       "samples": [
-        1106.558125,
-        1336.7795419999998,
-        969.8725839999997,
-        948.7222499999998,
-        943.8777909999999
+        1162.872042,
+        977.721667,
+        940.2332080000001,
+        1489.9041249999996,
+        1279.5902080000005
       ],
-      "median": 969.8725839999997
+      "median": 1162.872042
     },
     "ngspiceSuiteWallMs": {
       "samples": [
-        59.968166999999994,
-        64.62812500000018,
-        56.512957999999344,
-        61.79316699999981,
-        57.02891700000055
+        58.43208299999969,
+        54.751124999999774,
+        54.94612500000039,
+        54.99262499999986,
+        54.68812499999967
       ],
-      "median": 59.968166999999994
+      "median": 54.94612500000039
     },
     "wasmLoss": {
-      "ratio": 16.17312371745496,
-      "percent": 1517.312371745496
+      "ratio": 21.163858998245857,
+      "percent": 2016.3858998245857
     }
   },
   "artifactSizesBytes": {
@@ -212,12 +212,12 @@
       "denseSolverWasm": 3275
     },
     "current": {
-      "workerJs": 412495,
+      "workerJs": 413007,
       "indexJs": 43043,
       "denseSolverWasm": 3506
     },
     "delta": {
-      "workerJs": 5076,
+      "workerJs": 5588,
       "indexJs": 53,
       "denseSolverWasm": 231
     },

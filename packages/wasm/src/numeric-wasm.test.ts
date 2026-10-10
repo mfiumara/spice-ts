@@ -367,6 +367,29 @@ describe('bounded numeric WebAssembly backend', () => {
     }
   });
 
+  it('resolves a mixed-case CCCS controlling voltage source like SPICE', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const result = await wasm.simulate(request([
+        'VCTRL control 0 2',
+        'RCTRL control 0 1k',
+        'F1 out 0 vctrl 3',
+        'RLOAD out 0 1k',
+        '.op',
+      ].join('\n')), { requestId: 'wasm-cccs-mixed-case-control' });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      const op = result.data.analyses[0];
+      expect(op?.type).toBe('op');
+      if (op?.type !== 'op') return;
+      expect(op.voltagesV).toMatchObject({ control: 2, out: 6 });
+      expect(op.currentsA.VCTRL).toBeCloseTo(-0.002, 15);
+      expect(result.metadata).toMatchObject({ backend: 'spice-ts-wasm' });
+    } finally {
+      await wasm.close();
+    }
+  });
+
   it('enforces the serialized-result ceiling for bounded CCCS OP', async () => {
     const wasm = await engine('spice-ts-wasm');
     try {
