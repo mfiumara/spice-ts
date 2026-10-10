@@ -1,0 +1,15 @@
+{
+  "status": "complete",
+  "analyses": [
+    {
+      "type": "op",
+      "analysisIndex": 0,
+      "voltagesV": {
+        "b": 2
+      },
+      "currentsA": {
+        "V1": -0.002
+      }
+    }
+  ]
+}
