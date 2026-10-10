@@ -137,10 +137,10 @@ describe('Xyce primitive parser compatibility', () => {
   });
 
   for (const [id, path, points, output] of [
-    ['nmos-level1-dc', 'NMOS1_DC/nmos1.cir', 19, { kind: 'voltage', name: '3' }],
+    ['nmos-level1-dc', 'NMOS1_DC/nmos1.cir', 361, { kind: 'voltage', name: '3' }],
     ['pmos-level1-dc', 'PMOS1_DC/pmos1.cir', 6, { kind: 'current', name: 'VMON' }],
     ['npn-dc', 'NPN_DC/npn1.cir', 13, { kind: 'current', name: 'VMON1' }],
-    ['pnp-dc', 'PNP_DC/pnp1.cir', 6, { kind: 'current', name: 'VMON3' }],
+    ['pnp-dc', 'PNP_DC/pnp1.cir', 30, { kind: 'current', name: 'VMON3' }],
   ] as const) {
     it(`simulates unchanged ${id} output vectors despite brace notation in comments`, async () => {
       const result = await simulate(fixture(path));

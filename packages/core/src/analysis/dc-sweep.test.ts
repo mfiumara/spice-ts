@@ -173,4 +173,67 @@ describe('DC Sweep via simulate()', () => {
       expect(v2[i]).toBeCloseTo(vsrc * 2000 / 3000, 6);
     }
   });
+
+  it('runs the vbic-fo 707-point grid with the primary source varying fastest', async () => {
+    const textResult = await simulate(`
+      Vinner inner 0 DC 0
+      Vouter outer 0 DC 0
+      R1 inner outer 1k
+      .dc Vinner 0 5 50m Vouter 700m 1 50m
+      .end
+    `);
+
+    const circuit = new Circuit();
+    circuit.addVoltageSource('Vinner', 'inner', '0', { dc: 0 });
+    circuit.addVoltageSource('Vouter', 'outer', '0', { dc: 0 });
+    circuit.addResistor('R1', 'inner', 'outer', 1000);
+    circuit.addAnalysis('dc', {
+      source: 'Vinner', start: 0, stop: 5, step: 0.05,
+      secondary: { source: 'Vouter', start: 0.7, stop: 1, step: 0.05 },
+    });
+    const programmaticResult = await simulate(circuit);
+
+    const text = textResult.dcSweep!;
+    const programmatic = programmaticResult.dcSweep!;
+    expect(text.sweepValues).toHaveLength(707);
+    expect(text.secondarySweepValues).toHaveLength(707);
+    expect([...text.sweepValues]).toEqual([...programmatic.sweepValues]);
+    expect([...text.secondarySweepValues!]).toEqual([...programmatic.secondarySweepValues!]);
+    expect(text.sweepValues[0]).toBe(0);
+    expect(text.sweepValues[100]).toBe(5);
+    expect(text.sweepValues[101]).toBe(0);
+    expect(text.secondarySweepValues![0]).toBeCloseTo(0.7, 15);
+    expect(text.secondarySweepValues![100]).toBeCloseTo(0.7, 15);
+    expect(text.secondarySweepValues![101]).toBeCloseTo(0.75, 15);
+    expect(text.secondarySweepValues![706]).toBeCloseTo(1, 15);
+    expect([...text.voltage('inner')]).toEqual([...text.sweepValues]);
+    expect([...text.voltage('outer')]).toEqual([...text.secondarySweepValues!]);
+  });
+
+  it('stops non-divisible nested sweeps before either source overshoots', async () => {
+    const result = await simulate(`
+      V1 inner 0 DC 0
+      V2 outer 0 DC 0
+      R1 inner outer 1k
+      .dc V1 0 1 0.6 V2 0 1 0.6
+      .end
+    `);
+
+    const sweep = result.dcSweep!;
+    expect([...sweep.sweepValues]).toEqual([0, 0.6, 0, 0.6]);
+    expect([...sweep.secondarySweepValues!]).toEqual([0, 0, 0.6, 0.6]);
+    expect([...sweep.sweepValues]).not.toContain(1.2);
+    expect([...sweep.secondarySweepValues!]).not.toContain(1.2);
+  });
+
+  it('does not expose a rounded endpoint beyond the directed stop', async () => {
+    const result = await simulate(`
+      V1 out 0 DC 0
+      R1 out 0 1k
+      .dc V1 0 0.3 0.1
+      .end
+    `);
+
+    expect([...result.dcSweep!.sweepValues]).toEqual([0, 0.1, 0.2, 0.3]);
+  });
 });

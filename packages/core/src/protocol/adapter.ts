@@ -43,6 +43,7 @@ import {
   ProtocolExecutionGuard,
   type ProtocolExecutionOptionsV1,
 } from './execution-guard.js';
+import { directedLinearPointCount } from '../analysis/directed-linear-grid.js';
 
 const MAX_DETAIL_NAMES = 32;
 const API_ERROR_CODES = new Set<SpiceApiErrorV1['code']>([
@@ -298,7 +299,15 @@ function estimatedStepCount(step?: StepAnalysis): number {
 function estimatedAnalysisPoints(analysis: AnalysisDirective): number {
   switch (analysis.type) {
     case 'op': return 1;
-    case 'dc': return finiteLinearPoints(analysis.start, analysis.stop, analysis.step);
+    case 'dc': {
+      const primaryPoints = finiteLinearPoints(analysis.start, analysis.stop, analysis.step);
+      const secondaryPoints = analysis.secondary === undefined
+        ? 1
+        : finiteLinearPoints(
+          analysis.secondary.start, analysis.secondary.stop, analysis.secondary.step,
+        );
+      return primaryPoints * secondaryPoints;
+    }
     case 'tran': return finiteLinearPoints(analysis.startTime ?? 0, analysis.stopTime, analysis.timestep);
     case 'ac': {
       if (analysis.variation === 'lin') return analysis.points + 1;
@@ -319,8 +328,7 @@ function estimatedAnalysisPoints(analysis: AnalysisDirective): number {
 }
 
 function finiteLinearPoints(start: number, stop: number, step: number): number {
-  if (![start, stop, step].every(Number.isFinite) || step === 0) return 0;
-  return Math.max(0, Math.floor(Math.abs((stop - start) / step) + 1 + 1e-12));
+  return directedLinearPointCount(start, stop, step);
 }
 
 function resultPointCount(analyses: readonly AnalysisResultV1[]): number {

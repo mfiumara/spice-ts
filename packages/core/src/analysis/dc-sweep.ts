@@ -1,4 +1,6 @@
-import type { ConvergenceTelemetry, ResolvedOptions, DCSweepAnalysis } from '../types.js';
+import type {
+  ConvergenceTelemetry, DCSweepAnalysis, DCSweepDimension, ResolvedOptions,
+} from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
 import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
 import { newtonRaphson } from './newton-raphson.js';
@@ -10,6 +12,7 @@ import {
   createConvergenceTelemetry, snapshotConvergenceTelemetry,
 } from '../convergence-telemetry.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
+import { directedLinearPointCount, directedLinearPointValue } from './directed-linear-grid.js';
 
 export function solveDCSweep(
   compiled: CompiledCircuit,
@@ -20,27 +23,23 @@ export function solveDCSweep(
 ): DCSweepResult {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
 
-  // SPICE identifiers are case-insensitive, but retain declaration spelling in
-  // result maps and diagnostics.
-  const normalizedSourceName = analysis.source.toUpperCase();
-  const matchingSources = devices.filter(
-    (device): device is VoltageSource | CurrentSource =>
-      (device instanceof VoltageSource || device instanceof CurrentSource)
-      && device.name.toUpperCase() === normalizedSourceName,
-  );
-  if (matchingSources.length === 0) {
-    throw new InvalidCircuitError(`DC sweep source '${analysis.source}' not found`);
+  assertDCSweepDimension(analysis);
+  if (analysis.secondary !== undefined) assertDCSweepDimension(analysis.secondary);
+  const source = resolveSweepSource(devices, analysis);
+  const secondarySource = analysis.secondary === undefined
+    ? undefined
+    : resolveSweepSource(devices, analysis.secondary);
+  if (secondarySource === source) {
+    throw new InvalidCircuitError(`DC sweep source '${analysis.secondary!.source}' is repeated`);
   }
-  if (matchingSources.length > 1) {
-    const names = matchingSources.map(device => `'${device.name}'`).join(', ');
-    throw new InvalidCircuitError(
-      `DC sweep source '${analysis.source}' is ambiguous; matches: ${names}`,
-    );
-  }
-  const source = matchingSources[0]!;
 
   const originalWaveform = source.waveform;
-  const numPoints = Math.round((analysis.stop - analysis.start) / analysis.step) + 1;
+  const secondaryOriginalWaveform = secondarySource?.waveform;
+  const primaryPoints = sweepPointCount(analysis);
+  const secondaryPoints = analysis.secondary === undefined
+    ? 1
+    : sweepPointCount(analysis.secondary);
+  const numPoints = primaryPoints * secondaryPoints;
 
   // Pre-allocate result arrays
   const sweepValues = new Float64Array(numPoints);
@@ -52,25 +51,44 @@ export function solveDCSweep(
   const assembler = new MNAAssembler(nodeCount, branchCount, {
     variables: createMatrixVariableIdentities(nodeNames, branchNames),
   });
+  const secondarySweepValues = analysis.secondary === undefined
+    ? undefined
+    : new Float64Array(numPoints);
 
   try {
-    for (let i = 0; i < numPoints; i++) {
-      guard?.recordResultPoint();
-      const sweepValue = analysis.start + i * analysis.step;
-      sweepValues[i] = sweepValue;
-
-      source.waveform = { type: 'dc', value: sweepValue };
-
-      newtonRaphson(
-        assembler, devices, options, options.maxIterations, nodeNames, convergence.dc, guard,
-      );
-
-      // Record solution
-      for (let n = 0; n < nodeNames.length; n++) {
-        voltageArrays.get(nodeNames[n])![i] = assembler.solution[n];
+    for (let outer = 0; outer < secondaryPoints; outer++) {
+      const secondarySweepValue = analysis.secondary === undefined
+        ? undefined
+        : directedLinearPointValue(
+          analysis.secondary.start, analysis.secondary.stop, analysis.secondary.step, outer,
+        );
+      if (secondarySource !== undefined && secondarySweepValue !== undefined) {
+        secondarySource.waveform = { type: 'dc', value: secondarySweepValue };
       }
-      for (let b = 0; b < branchNames.length; b++) {
-        currentArrays.get(branchNames[b])![i] = assembler.solution[nodeCount + b];
+      for (let inner = 0; inner < primaryPoints; inner++) {
+        guard?.recordResultPoint();
+        const i = outer * primaryPoints + inner;
+        const sweepValue = directedLinearPointValue(
+          analysis.start, analysis.stop, analysis.step, inner,
+        );
+        sweepValues[i] = sweepValue;
+        if (secondarySweepValues !== undefined) {
+          secondarySweepValues[i] = secondarySweepValue!;
+        }
+
+        source.waveform = { type: 'dc', value: sweepValue };
+
+        newtonRaphson(
+          assembler, devices, options, options.maxIterations, nodeNames, convergence.dc, guard,
+        );
+
+        // Record solution
+        for (let n = 0; n < nodeNames.length; n++) {
+          voltageArrays.get(nodeNames[n])![i] = assembler.solution[n];
+        }
+        for (let b = 0; b < branchNames.length; b++) {
+          currentArrays.get(branchNames[b])![i] = assembler.solution[nodeCount + b];
+        }
       }
     }
   } catch (error) {
@@ -81,7 +99,46 @@ export function solveDCSweep(
     throw error;
   } finally {
     source.waveform = originalWaveform;
+    if (secondarySource !== undefined && secondaryOriginalWaveform !== undefined) {
+      secondarySource.waveform = secondaryOriginalWaveform;
+    }
   }
 
-  return new DCSweepResult(sweepValues, voltageArrays, currentArrays);
+  return new DCSweepResult(sweepValues, voltageArrays, currentArrays, secondarySweepValues);
+}
+
+function resolveSweepSource(
+  devices: CompiledCircuit['devices'],
+  sweep: DCSweepDimension,
+): VoltageSource | CurrentSource {
+  // SPICE identifiers are case-insensitive, but retain declaration spelling in
+  // result maps and diagnostics.
+  const normalizedSourceName = sweep.source.toUpperCase();
+  const matchingSources = devices.filter(
+    (device): device is VoltageSource | CurrentSource =>
+      (device instanceof VoltageSource || device instanceof CurrentSource)
+      && device.name.toUpperCase() === normalizedSourceName,
+  );
+  if (matchingSources.length === 0) {
+    throw new InvalidCircuitError(`DC sweep source '${sweep.source}' not found`);
+  }
+  if (matchingSources.length > 1) {
+    const names = matchingSources.map(device => `'${device.name}'`).join(', ');
+    throw new InvalidCircuitError(
+      `DC sweep source '${sweep.source}' is ambiguous; matches: ${names}`,
+    );
+  }
+  return matchingSources[0]!;
+}
+
+function sweepPointCount(sweep: DCSweepDimension): number {
+  return directedLinearPointCount(sweep.start, sweep.stop, sweep.step);
+}
+
+function assertDCSweepDimension(sweep: DCSweepDimension): void {
+  const { start, stop, step } = sweep;
+  if (sweep.source.length === 0 || ![start, stop, step].every(Number.isFinite) || step === 0
+      || (stop > start && step < 0) || (stop < start && step > 0)) {
+    throw new InvalidCircuitError('DC sweep grid must be finite with a nonzero step toward stop');
+  }
 }
