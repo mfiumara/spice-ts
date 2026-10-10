@@ -14,6 +14,7 @@ import { MutualInductor } from './devices/mutual-inductor.js';
 import { Diode } from './devices/diode.js';
 import { BJT } from './devices/bjt.js';
 import { MOSFET } from './devices/mosfet.js';
+import { JFET, resolveNJFETParams } from './devices/jfet.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
 import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
@@ -169,6 +170,8 @@ function formatDevice(desc: DeviceDescriptor): string {
     case 'D':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.modelName ?? ''}${tail}`.trim();
     case 'Q':
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.nodes[2]} ${desc.modelName ?? ''}`.trim();
+    case 'J':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.nodes[2]} ${desc.modelName ?? ''}`.trim();
     case 'M':
       return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail}`.trim();
@@ -529,6 +532,16 @@ export class Circuit {
     this.nodeSet.add(nodeBase);
     this.nodeSet.add(nodeEmitter);
     this.descriptors.push({ type: 'Q', name, nodes: [nodeCollector, nodeBase, nodeEmitter], modelName });
+  }
+
+  /** Add a bounded level-1 N-channel junction field-effect transistor. */
+  addJFET(name: string, nodeDrain: string, nodeGate: string, nodeSource: string, modelName: string): void {
+    this.nodeSet.add(nodeDrain);
+    this.nodeSet.add(nodeGate);
+    this.nodeSet.add(nodeSource);
+    this.descriptors.push({
+      type: 'J', name, nodes: [nodeDrain, nodeGate, nodeSource], modelName,
+    });
   }
 
   /**
@@ -915,6 +928,16 @@ export class Circuit {
           devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }));
           break;
         }
+        case 'J': {
+          const modelName = desc.modelName!;
+          const model = this._models.get(modelName);
+          if (!model) throw new Error(`JFET '${desc.name}' references unknown model '${modelName}'`);
+          if (model.type !== 'NJF') {
+            throw new Error(`Unsupported JFET model type: '${model.type}'`);
+          }
+          devices.push(new JFET(desc.name, nodeIndices, model.params));
+          break;
+        }
         case 'M': {
           const modelName = desc.modelName;
           const model = modelName ? this._models.get(modelName) : undefined;
@@ -1081,6 +1104,33 @@ export class Circuit {
         } else {
           result.push(desc);
         }
+        continue;
+      }
+
+      if (desc.type === 'J') {
+        const modelName = desc.modelName!;
+        const model = this._models.get(modelName);
+        if (!model) throw new Error(`JFET '${desc.name}' references unknown model '${modelName}'`);
+        if (model.type !== 'NJF') {
+          throw new Error(`Unsupported JFET model type: '${model.type}'`);
+        }
+        const params = resolveNJFETParams(model.params);
+        let [drain, gate, source] = desc.nodes;
+        if (params.RD > 0) {
+          const drainPrime = internalNodeName(desc.name, 'rd');
+          result.push({
+            type: 'R', name: `${desc.name}.RD`, nodes: [drain, drainPrime], value: params.RD,
+          });
+          drain = drainPrime;
+        }
+        if (params.RS > 0) {
+          const sourcePrime = internalNodeName(desc.name, 'rs');
+          result.push({
+            type: 'R', name: `${desc.name}.RS`, nodes: [source, sourcePrime], value: params.RS,
+          });
+          source = sourcePrime;
+        }
+        result.push({ ...desc, nodes: [drain, gate, source] });
         continue;
       }
 

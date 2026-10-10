@@ -17,7 +17,7 @@ export { parseSourceWaveform } from './waveform-parser.js';
  * discarded, even when its text has the shape of a device or directive. Use
  * {@link parseTitleless} for generated fragments that omit the title line.
  *
- * Handles device lines (R, C, L, V, I, D, Q, M, E, G, H, F, X),
+ * Handles device lines (R, C, L, V, I, D, Q, J, M, E, G, H, F, X),
  * dot commands (`.op`, `.dc`, `.tran`, `.ac`, `.model`, `.subckt`),
  * and subcircuit definitions. Does not resolve `.include` or `.lib`
  * directives -- use {@link parseAsync} for netlists with file includes.
@@ -493,6 +493,15 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
       break;
     case 'Q':
       circuit.addBJT(name, tokens[1], tokens[2], tokens[3], tokens[4]);
+      break;
+    case 'J':
+      if (tokens.length !== 5) {
+        throw new ParseError(
+          `Unsupported JFET instance parameter: '${tokens.slice(5).join(' ')}'`,
+          lineNumber, tokens.join(' '),
+        );
+      }
+      circuit.addJFET(name, tokens[1], tokens[2], tokens[3], tokens[4]);
       break;
     case 'M': {
       // SPICE MOSFET: M name D G S [B] modelName [W=x L=y ...]
