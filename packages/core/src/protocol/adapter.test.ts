@@ -125,11 +125,20 @@ describe('protocol v1 core adapter', () => {
     ['noise', 'V1 in 0 DC 0 AC 1\nR1 in out 1k\nR2 out 0 1k\n.noise v(out) V1 lin 2 1 2'],
     ['tf', 'V1 in 0 1\nR1 in out 1k\nR2 out 0 1k\n.tf v(out) V1'],
   ])('rejects parsed %s analyses that protocol v1 cannot serialize', async (type, source) => {
-    const promise = simulateProtocolV1({ apiVersion: '1', input: { format: 'spice', source } });
+    let caught: unknown;
+    try {
+      await simulateProtocolV1({ apiVersion: '1', input: { format: 'spice', source } });
+    } catch (error) {
+      caught = error;
+    }
 
-    await expect(promise).rejects.toEqual(
-      new InvalidCircuitError(`Protocol v1 does not support '${type}' analysis results`),
-    );
+    expect(mapProtocolErrorV1(caught)).toEqual({
+      code: 'UNSUPPORTED_FEATURE',
+      message: `Protocol v1 does not support '${type}' analysis results`,
+      retryable: false,
+      phase: 'validation',
+      details: { analysis: type },
+    });
   });
 
   it('round-trips the CircuitIR representation of a PWL source', async () => {

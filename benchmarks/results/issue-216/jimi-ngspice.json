@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/usr/bin/time",
+    "-lp",
+    "ngspice",
+    "-b",
+    "-r",
+    "<raw>",
+    "benchmarks/corpus/ngspice/fixtures/examples/wave/jimi_fuzz.cir"
+  ],
+  "version": "ngspice-47 : Circuit level simulation program",
+  "netlistSha256": "0607c7f358628d0ce60eff584b329a4d685ae215894c466622a19357c7163b0e",
+  "runs": [
+    {
+      "run": 1,
+      "wallMs": 594.1064999788068,
+      "peakRssMiB": 10.25
+    },
+    {
+      "run": 2,
+      "wallMs": 588.5972090181895,
+      "peakRssMiB": 10.28125
+    },
+    {
+      "run": 3,
+      "wallMs": 608.314834011253,
+      "peakRssMiB": 10.265625
+    },
+    {
+      "run": 4,
+      "wallMs": 572.7580829989165,
+      "peakRssMiB": 10.234375
+    },
+    {
+      "run": 5,
+      "wallMs": 578.0860410013702,
+      "peakRssMiB": 10.25
+    }
+  ]
+}

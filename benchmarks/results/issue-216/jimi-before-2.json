@@ -1,0 +1,37 @@
+{
+  "mode": "one-shot",
+  "input": {
+    "bytes": 1009,
+    "sha256": "0607c7f358628d0ce60eff584b329a4d685ae215894c466622a19357c7163b0e"
+  },
+  "completed": true,
+  "points": 567378,
+  "stopTimeSeconds": 5,
+  "wallTimeMs": 10010.008083,
+  "memory": {
+    "heapUsedMiB": 86.2347412109375,
+    "rssMiB": 193.078125,
+    "maxRssMiB": 278.984375
+  },
+  "convergence": {
+    "dc": {
+      "newtonIterations": 108,
+      "acceptedSolves": 28,
+      "rejectedSolves": 0,
+      "sourceStepAttempts": 26,
+      "sourceStepFailures": 0,
+      "gminStepAttempts": 0,
+      "gminStepFailures": 0,
+      "failure": null
+    },
+    "transient": {
+      "acceptedSteps": 567377,
+      "rejectedSteps": 112170,
+      "newtonIterations": 1904147,
+      "nrRetries": 0,
+      "lteRetries": 112170,
+      "minimumAcceptedTimestep": 2.263254460638909e-8,
+      "failure": null
+    }
+  }
+}

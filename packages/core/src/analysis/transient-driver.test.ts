@@ -9,6 +9,14 @@ C1 2 0 1u
 .tran 1u 1m
 `;
 
+const DYNAMIC_HISTORY_NETLIST = `
+V1 in 0 PULSE(0 1 1u 100n 100n 2u 5u)
+R1 in out 1k
+D1 out 0 DMOD
+.model DMOD D(CJO=1n)
+.tran 100n 10u
+`;
+
 describe('createTransientSim', () => {
   it('returns a driver with simTime=0 after creation', async () => {
     const sim = await createTransientSim(RC_NETLIST);
@@ -32,6 +40,23 @@ describe('createTransientSim', () => {
     const steps = sim.advanceUntil(100e-6);
     expect(steps.length).toBeGreaterThan(3);
     expect(steps[steps.length - 1].time).toBeGreaterThanOrEqual(100e-6);
+    sim.dispose();
+  });
+
+  it.each([
+    ['static-current history', RC_NETLIST],
+    ['device RHS history', DYNAMIC_HISTORY_NETLIST],
+  ])('reuses the accepted-step buffer for %s', async (_label, netlist) => {
+    const sim = await createTransientSim(netlist);
+    const internal = sim as unknown as { prevB: Float64Array };
+    const initialHistory = internal.prevB;
+
+    sim.advance();
+    expect(internal.prevB).toBe(initialHistory);
+    sim.advance();
+    expect(internal.prevB).toBe(initialHistory);
+    sim.reset();
+    expect(internal.prevB).toBe(initialHistory);
     sim.dispose();
   });
 

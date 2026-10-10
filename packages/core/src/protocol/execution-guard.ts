@@ -1,4 +1,4 @@
-import type { ResourceLimitsV1, SpiceApiErrorV1 } from './types.js';
+import type { AnalysisResultV1, ResourceLimitsV1, SpiceApiErrorV1 } from './types.js';
 
 /**
  * Stable cooperative boundaries for bounded protocol execution.
@@ -26,6 +26,8 @@ export interface ProtocolExecutionOptionsV1 {
   now?: () => number;
   /** Observability hook invoked immediately before each cooperative check. */
   onSafePoint?: (safePoint: ProtocolSafePointV1) => void;
+  /** Receives each fully serialized analysis before the following cooperative check. */
+  onAnalysisComplete?: (analysis: AnalysisResultV1) => void;
 }
 
 export class ProtocolExecutionError extends Error {

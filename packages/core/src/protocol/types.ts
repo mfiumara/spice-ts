@@ -90,6 +90,52 @@ export interface AcResultV1 {
 export type AnalysisResultV1 = OperatingPointResultV1 | DcResultV1 | TransientResultV1 | AcResultV1;
 export interface SimulationResultV1 { status: 'complete'; analyses: AnalysisResultV1[] }
 
+export type ProtocolCompletionV1 = 'complete' | 'failed' | 'limited' | 'cancelled';
+export type ProtocolLimitNameV1 = keyof ResourceLimitsV1;
+export interface ProtocolCapabilityAnalysisV1 {
+  id: `analysis:${AnalysisV1['type']}`;
+  type: AnalysisV1['type'];
+}
+export interface ProtocolCapabilityInputV1 {
+  id: 'input:spice' | 'input:spice-ts';
+  format: 'spice' | 'spice-ts';
+}
+export interface ProtocolCapabilityLimitV1 {
+  id: `limit:${ProtocolLimitNameV1}`;
+  name: ProtocolLimitNameV1;
+  unit: 'bytes' | 'count' | 'depth' | 'milliseconds';
+}
+export interface ProtocolCapabilitiesV1 {
+  apiVersion: '1';
+  kind: 'capabilities';
+  capabilityId: 'protocol-v1';
+  analyses: ProtocolCapabilityAnalysisV1[];
+  inputFormats: ProtocolCapabilityInputV1[];
+  limits: ProtocolCapabilityLimitV1[];
+  completions: ProtocolCompletionV1[];
+}
+export interface ProtocolExecutionMetadataV1 {
+  protocolVersion: '1';
+  executionId: `execution:${string}`;
+  inputId: `input:${string}`;
+  resultId?: `result:${string}`;
+  completion: ProtocolCompletionV1;
+  partial: boolean;
+  timing: { startedAtMs: number; finishedAtMs: number; durationMs: number };
+  counts: { requestedAnalyses: number; completedAnalyses: number; resultPoints: number };
+}
+export interface PartialSimulationResultV1 { status: 'partial'; analyses: AnalysisResultV1[] }
+export interface ProtocolSuccessEnvelopeV1 {
+  apiVersion: '1'; kind: 'terminal'; ok: true; requestId: string;
+  data: SimulationResultV1; metadata: ProtocolExecutionMetadataV1 & { completion: 'complete'; partial: false; resultId: `result:${string}` };
+}
+export interface ProtocolFailureEnvelopeV1 {
+  apiVersion: '1'; kind: 'terminal'; ok: false; requestId: string;
+  error: SpiceApiErrorV1; partial: PartialSimulationResultV1;
+  metadata: ProtocolExecutionMetadataV1 & { completion: Exclude<ProtocolCompletionV1, 'complete'> };
+}
+export type ProtocolTerminalEnvelopeV1 = ProtocolSuccessEnvelopeV1 | ProtocolFailureEnvelopeV1;
+
 export type SpiceApiErrorCodeV1 =
   | 'INVALID_REQUEST' | 'PARSE_ERROR' | 'INVALID_CIRCUIT' | 'UNSUPPORTED_FEATURE'
   | 'SINGULAR_MATRIX' | 'CONVERGENCE_FAILED' | 'TIMESTEP_TOO_SMALL' | 'RESOURCE_LIMIT'

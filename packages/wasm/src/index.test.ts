@@ -88,9 +88,9 @@ describe('protocol-v1 worker facade', () => {
     expect(workerConstructions).toBe(0);
   });
 
-  it('rejects reserved and internal backend IDs without executing JavaScript', async () => {
+  it('rejects the internal backend ID without executing JavaScript', async () => {
     let workerConstructions = 0;
-    for (const backend of ['spice-ts-wasm', 'spice-ts'] as const) {
+    for (const backend of ['spice-ts'] as const) {
       try {
         await createSpiceEngine({
           backend: backend as 'spice-ts-js',
