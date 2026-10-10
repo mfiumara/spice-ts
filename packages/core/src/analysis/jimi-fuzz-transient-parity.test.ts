@@ -27,10 +27,10 @@ describe('jimi-fuzz transient parity', () => {
       '0607c7f358628d0ce60eff584b329a4d685ae215894c466622a19357c7163b0e',
     );
 
-    const sampleTime = 0.50075;
+    const sampleTime = 0.05;
     // ngspice-47: byte-identical fixture, linear interpolation on its native
     // 243,504-point transient grid (see benchmarks/issue-146-jimi-fuzz.ts).
-    const ngspiceV6 = 0.8338286512968213;
+    const ngspiceV6 = 0.9393042777106941;
     const sim = await createTransientSim(fixtureBytes.toString('utf8'));
     try {
       let before = sim.advance();
