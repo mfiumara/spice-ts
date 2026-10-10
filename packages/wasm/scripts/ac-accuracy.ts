@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFile, stat, writeFile } from 'node:fs/promises';
 import { arch, cpus, platform, release } from 'node:os';
 import { resolve } from 'node:path';
-import { createSpiceEngine, type SpiceEngine } from '../dist/index.js';
+import { createSpiceEngine, type SpiceEngine } from '../src/index.js';
 
 interface ComplexValue { re: number; im: number }
 interface SampleSeries { grid: number[]; signals: Record<string, ComplexValue[]> }
