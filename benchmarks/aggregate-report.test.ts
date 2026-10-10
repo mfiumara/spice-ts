@@ -34,22 +34,15 @@ describe('aggregate report artifact verification', () => {
     });
   });
 
-  it('commits a complete explained transition ledger against the prior accepted report', async () => {
+  it('commits the unchanged transition ledger against the prior accepted report', async () => {
     const { json } = await committedArtifacts();
     const report = JSON.parse(json);
 
-    assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/172');
-    assert.equal(report.comparisonToPrevious.outcomeSha256, 'b11ac2046fd57088d8e55f6b184c0eb07e80c9fecf857e6721d59e54fac8e8b0');
-    assert.deepEqual(report.comparisonToPrevious.statusTransitions, [
-      {
-        engine: 'spiceTs',
-        fixture: 'classic/lossy-line-aluminium',
-        from: 'success',
-        to: 'unsupported',
-        explanation: 'The bounded lossless T-card implementation now rejects this LTRA lossy-line model explicitly instead of silently treating it as a lossless line; issue #7 already tracks LTRA support.',
-        gapIssues: ['https://github.com/mfiumara/spice-ts/issues/7'],
-      },
-    ]);
+    assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/200');
+    assert.equal(report.comparisonToPrevious.pullRequestUrl, 'https://github.com/mfiumara/spice-ts/pull/201');
+    assert.equal(report.comparisonToPrevious.headSha, 'c41391cb9b4dc537863f430a80288d1f28024f6c');
+    assert.equal(report.comparisonToPrevious.outcomeSha256, '1623472590a082b6af2a82d9fd09b0756ef0458a50f2fd4b1d095b90bf6b6e7f');
+    assert.deepEqual(report.comparisonToPrevious.statusTransitions, []);
   });
 
   it('commits matched-point envelopes derived from every compared signal', async () => {
@@ -63,6 +56,19 @@ describe('aggregate report artifact verification', () => {
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 87.25304257950958);
     assert.equal(report.matchedPointEnvelope.maximumRelativeError, 9829734.595793912);
     assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 1160907.113030371);
+  });
+
+  it('commits runtime sums derived from all 100 engine receipts', async () => {
+    const { json } = await committedArtifacts();
+    const report = JSON.parse(json);
+    const sum = (engine: 'ngspice' | 'spiceTs') => Number(report.fixtures
+      .reduce((total: number, fixture: Record<string, { runtimeMs: number }>) => total + fixture[engine].runtimeMs, 0)
+      .toFixed(3));
+
+    assert.deepEqual(report.totals.runtimeMs, {
+      ngspice: sum('ngspice'),
+      spiceTs: sum('spiceTs'),
+    });
   });
 
   it('rejects duplicate fixture paths and content hashes', async () => {
