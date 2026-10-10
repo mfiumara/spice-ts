@@ -1,4 +1,7 @@
 import { describe, it, expect } from 'vitest';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { simulate } from '../simulate.js';
 import { parse } from '../parser/index.js';
 
@@ -84,5 +87,23 @@ describe('BJT Ebers-Moll', () => {
   it('rejects unsupported BJT model types explicitly', () => {
     expect(() => parse('title\nQ1 c b 0 QBAD\n.model QBAD VBIC BF=100\n.op').compile())
       .toThrow("Unsupported BJT model type: 'VBIC'");
+  });
+
+  it('runs the unchanged bounded VBIC forward-output DC fixture', async () => {
+    const fixture = readFileSync(resolve(
+      process.cwd(),
+      '../../benchmarks/corpus/ngspice/fixtures/tests/vbic/FO.cir',
+    ));
+    expect(createHash('sha256').update(fixture).digest('hex'))
+      .toBe('de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92');
+
+    const result = await simulate(fixture.toString('utf8'));
+
+    expect(result.dcSweep?.sweepValues).toHaveLength(707);
+    expect(Array.from(result.dcSweep!.current('VC'))).toHaveLength(707);
+    expect(Array.from(result.dcSweep!.current('VB'))).toHaveLength(707);
+    expect(Array.from(result.dcSweep!.current('VC')).every(Number.isFinite)).toBe(true);
+    expect(Array.from(result.dcSweep!.current('VB')).every(Number.isFinite)).toBe(true);
+    expect(result.convergence?.dc).toMatchObject({ rejectedSolves: 0, failure: null });
   });
 });
