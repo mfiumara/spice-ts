@@ -16,7 +16,8 @@ const BOLTZMANN_CONSTANT = 1.380649e-23;
 const ELEMENTARY_CHARGE = 1.602176634e-19;
 const DEFAULT_TEMPERATURE_KELVIN = 273.15 + 27;
 const BJT_NOISE_MODEL_PARAMETERS = new Set([
-  'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'IKF', 'ISE', 'NE', 'polarity',
+  'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'IKF', 'ISE', 'NE', 'RB', 'RC', 'RE',
+  'polarity',
 ]);
 
 /** Reject devices whose noise sources are not part of the bounded slice. */
@@ -87,7 +88,8 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
 /**
  * Solve the bounded noise slice at ngspice's default 27 C circuit temperature:
  * resistor thermal noise, diode junction shot/flicker noise, BJT level-1
- * collector/base shot noise, and MOS1 channel thermal/KF/AF flicker noise.
+ * collector/base shot and RB/RC/RE thermal noise, and MOS1 channel
+ * thermal/KF/AF flicker noise.
  * Controlled and independent ideal sources are noiseless.
  */
 export function solveNoise(
