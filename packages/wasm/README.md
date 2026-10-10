@@ -43,7 +43,7 @@ Measured on 2026-10-10 with Node 22.23.1, pnpm 10.28.1, ngspice-47, LLVM/LLD 23.
 
 One ngspice endpoint was excluded because its floating frequency landed just below spice-ts's final OCT point; the complete per-fixture grids and every signal metric are retained in `ac-accuracy-results.json`. No zero-reference samples were excluded.
 
-Five samples each ran 20 one-shot worker simulations after five warmups. Median time was 1,885.183 ms for `spice-ts-js` (94.2592 ms/run) and 1,884.865 ms for `spice-ts-wasm` (94.2433 ms/run). The observed -0.0169% difference is noise-level and is not a speed claim. The measured losses are size: the artifact grows from 1,190 to 2,900 bytes (+143.70%), worker.js from 355,517 to 376,957 bytes (+6.03%), index.js from 41,878 to 42,815 bytes (+2.24%), and their combined uncompressed size grows 24,087 bytes (+6.04%). Larger or sparse circuits cannot use this backend at all.
+Five samples each ran 20 one-shot worker simulations after five warmups. Median time was 1,559.939 ms for `spice-ts-js` (77.9970 ms/run) and 1,559.986 ms for `spice-ts-wasm` (77.9993 ms/run), a 0.0030% WASM loss. This worker-dominated difference is noise-level and is not a speed claim. The measured size losses are larger: the artifact grows from 1,190 to 2,900 bytes (+143.70%), worker.js from 355,517 to 376,957 bytes (+6.03%), index.js from 41,878 to 42,815 bytes (+2.24%), and their combined uncompressed size grows 24,087 bytes (+6.04%). Larger or sparse circuits cannot use this backend at all.
 
 Reproduce the receipt with `pnpm --filter @spice-ts/wasm bench:ac`. It records tool versions, hashes, full samples, commands, per-fixture metrics and ngspice runtimes in `ac-accuracy-results.json`.
 
