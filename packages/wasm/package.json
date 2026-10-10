@@ -33,6 +33,7 @@
     "pretest": "pnpm build",
     "test": "vitest run && pnpm test:packed-consumer",
     "test:packed-consumer": "pnpm build && node scripts/packed-consumer.mjs",
+    "bench:ac": "pnpm build && tsx scripts/ac-accuracy.ts",
     "test:coverage": "pnpm build && vitest run --coverage",
     "lint": "tsc --noEmit"
   },

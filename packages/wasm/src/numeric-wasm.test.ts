@@ -8,6 +8,7 @@ import {
   type SpiceWorkerManifestV1,
   type WorkerLike,
 } from './index.js';
+import { NUMERIC_WASM_LIMITS, validateNumericWasmModule } from './numeric-abi.js';
 
 const circuits = [
   'V1 in 0 5\nR1 in 0 1k\n.op',
@@ -57,6 +58,20 @@ describe('bounded numeric WebAssembly backend', () => {
     } finally {
       await wasm.close();
     }
+  });
+
+  it('loads an import-free ABI-v2 complex kernel with fixed memory', async () => {
+    const bytes = await readFile(new URL('../native/dense-solver.wasm', import.meta.url));
+    const module = await WebAssembly.compile(bytes);
+    expect(WebAssembly.Module.imports(module)).toEqual([]);
+    expect(WebAssembly.Module.exports(module).map(entry => entry.name)).toEqual(expect.arrayContaining([
+      'memory', '__heap_base', 'abi_version', 'max_order', 'solve_f64', 'solve_complex_f64',
+    ]));
+    await expect(validateNumericWasmModule(module)).resolves.toBeUndefined();
+    const instance = await WebAssembly.instantiate(module);
+    const memory = instance.exports.memory as WebAssembly.Memory;
+    expect(memory.buffer.byteLength).toBe(NUMERIC_WASM_LIMITS.memoryPages * 65_536);
+    expect(() => memory.grow(1)).toThrow();
   });
 
   it('matches the TypeScript backend on a fixed linear OP circuit suite', async () => {
@@ -229,6 +244,33 @@ describe('bounded numeric WebAssembly backend', () => {
       manifest,
       workerFactory: () => { constructions++; throw new Error('must not construct'); },
     })).rejects.toBeInstanceOf(SpiceEngineError);
+    expect(constructions).toBe(0);
+  });
+
+  it('rejects a numeric artifact integrity mismatch before worker construction', async () => {
+    const workerUrl = new URL('../dist/worker.js', import.meta.url);
+    const workerBytes = new Uint8Array(await readFile(workerUrl));
+    const numericUrl = new URL('../dist/dense-solver.wasm', import.meta.url);
+    const wrongSha256 = '0'.repeat(64);
+    const manifest: SpiceWorkerManifestV1 = {
+      schemaVersion: 1,
+      engineBuildId: `spice-ts-js-${sha256(workerBytes).slice(0, 16)}`,
+      worker: { url: workerUrl.href, sha256: sha256(workerBytes) },
+      numericWasm: {
+        url: numericUrl.href,
+        sha256: wrongSha256,
+        byteLength: (await readFile(numericUrl)).byteLength,
+        engineBuildId: `spice-ts-wasm-${wrongSha256.slice(0, 16)}`,
+      },
+    };
+    let constructions = 0;
+    await expect(createSpiceEngine({
+      backend: 'spice-ts-wasm',
+      manifest,
+      workerFactory: () => { constructions++; throw new Error('must not construct'); },
+    })).rejects.toMatchObject({
+      error: { code: 'BACKEND_UNAVAILABLE', phase: 'transport' },
+    });
     expect(constructions).toBe(0);
   });
 
