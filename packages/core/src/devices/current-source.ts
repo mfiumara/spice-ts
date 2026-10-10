@@ -16,8 +16,9 @@ export class CurrentSource implements DeviceModel {
     const [nPlus, nMinus] = this.nodes;
     const current = this.getValue(ctx) * ctx.sourceScale;
 
-    if (nPlus >= 0) ctx.stampB(nPlus, current);
-    if (nMinus >= 0) ctx.stampB(nMinus, -current);
+    // SPICE defines positive current from the first node to the second.
+    if (nPlus >= 0) ctx.stampB(nPlus, -current);
+    if (nMinus >= 0) ctx.stampB(nMinus, current);
   }
 
   getCurrentAtTime(time: number): number {

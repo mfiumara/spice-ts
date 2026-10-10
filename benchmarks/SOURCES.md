@@ -165,6 +165,15 @@ At ingestion on ngspice-47, 13 circuits produce raw analysis data and 7 fail on 
 | --- | --- | --- | --- |
 | Showcase boost converter (5 V input, 100 kHz, 50% duty) | [spice-ts issue #43](https://github.com/mfiumara/spice-ts/issues/43) and `examples/showcase/main.tsx` | Authored in the spice-ts project by Mattia Fiumara; distributed under the repository [MIT licence](../LICENSE) | Identical netlist is exercised by `packages/core/src/analysis/transient-driver-integration.test.ts` and compared with ngspice-47 reference samples. |
 
+## Independent current-source polarity parity fixtures
+
+- Source: [spice-ts issue #196](https://github.com/mfiumara/spice-ts/issues/196) and the TDD reproduction introduced at revision [`61e05afe8c8bd7e6fd644410439dfbec0be97c19`](https://github.com/mfiumara/spice-ts/commit/61e05afe8c8bd7e6fd644410439dfbec0be97c19).
+- Licence: MIT, under the repository [licence](../LICENSE).
+- Redistribution decision: allowed. These three minimal netlists were authored in this project for issue #196 and contain no third-party circuit material.
+- Adaptation: none between engines. `compare.ts` reads each committed file once and supplies those bytes to spice-ts and ngspice-47. No per-engine values, tolerances, or rewrites are used.
+- Coverage: `op.cir`, `dc.cir`, and `tran.cir` exercise the shared positive-to-negative independent current-source stamp. An AC-form source's DC bias uses that stamp and has a core regression test. Nonzero independent current-source AC excitation uses a separate excitation path and is not claimed by this bounded comparison.
+- Command: `pnpm bench:current-source-polarity`. The JSON report records commands, versions, machine data, convergence status, and max/RMS absolute and relative errors for `V(out)`.
+
 ## Bounded diode-noise parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |

@@ -58,18 +58,7 @@ function solveSpiceOperatingPoint(
   options: ResolvedOptions,
   convergence?: ConvergenceTelemetry,
 ): Float64Array {
-  // Native current sources retain spice-ts's historical injection convention.
-  // .tf follows SPICE's positive-to-negative source convention, so solve its
-  // nonlinear operating point with every independent current source reversed.
-  const devices = compiled.devices.map(device => device instanceof CurrentSource
-    ? new CurrentSource(
-        device.name,
-        device.nodes,
-        { type: 'dc', value: -device.getCurrentAtTime(0) },
-      )
-    : device);
-  const tfCircuit = { ...compiled, devices };
-  return solveDCOperatingPoint(tfCircuit, options, undefined, convergence).assembler.solution;
+  return solveDCOperatingPoint(compiled, options, undefined, convergence).assembler.solution;
 }
 
 function buildLinearizedSystem(
