@@ -103,6 +103,20 @@ At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-di
 
 Reproduce with `pnpm --filter @spice-ts/wasm bench:cccs-op`. The JSON receipt records ngspice version, machine, fixture hashes, byte-identical inputs, convergence, scalar errors, runtimes, fixed-memory and artifact-size evidence, exclusions, and every retained loss.
 
+## Bounded linear VCVS OP WASM fixtures
+
+- Source: project-authored reference circuits for [issue #355](https://github.com/mfiumara/spice-ts/issues/355), issue revision as of 2026-10-10.
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- Adaptation: none. The comparison runner reads each committed fixture once and supplies those exact bytes to the explicit `spice-ts-wasm` backend and ngspice-47. No engine-specific values, tolerances, or rewrites are used.
+
+| Fixture | SHA-256 | Coverage |
+|---|---|---|
+| `benchmarks/results/issue-355/differential.cir` | `4fb27d12127586283fe8a2ea67ce3d95fdfd1b2bfa0878ea2d6bacec3d055356` | Differential VCVS control and output polarity with negative gain. |
+| `benchmarks/results/issue-355/mixed-source.cir` | `c6b56aa6e0233cd19ef5ae9394ae334919979f7c0bab310ce38ac0b51e37a863` | Control ordering, non-ground output reference, and VCVS branch ordering after independent source branches. |
+| `benchmarks/results/issue-355/single-ended.cir` | `ce33f5e116c8a171b2cade5ec3d449028026cc05e7728255d10d1118dfa4dfe4` | Positive single-ended gain and VCVS output current. |
+
+Reproduce with `pnpm --filter @spice-ts/wasm bench:vcvs-op`. The JSON receipt records ngspice-47, machine, fixture hashes, byte-identical inputs, convergence, scalar errors, fresh-process boundaries and runtimes, artifact-size changes, exclusions, and every retained loss.
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |

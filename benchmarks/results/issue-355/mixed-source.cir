@@ -1,0 +1,8 @@
+* Project-authored bounded VCVS OP fixture: mixed branch ordering
+VBIAS bias 0 1
+VCTRL control 0 3
+VREF ref 0 -1
+E1 out ref control bias 2
+RLOAD out 0 1k
+.op
+.end
