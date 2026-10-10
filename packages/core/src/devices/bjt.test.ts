@@ -106,4 +106,55 @@ describe('BJT Ebers-Moll', () => {
     expect(Array.from(result.dcSweep!.current('VB')).every(Number.isFinite)).toBe(true);
     expect(result.convergence?.dc).toMatchObject({ rejectedSolves: 0, failure: null });
   });
+
+  it('rejects parameters outside the bounded VBIC DC subset', () => {
+    expect(() => parse(`unsupported VBIC parameter
+      Q1 c b 0 QVBIC
+      .model QVBIC NPN(LEVEL=4 BF=100)
+      .op
+    `).compile()).toThrow("Unsupported bounded VBIC DC model parameter: 'BF'");
+  });
+
+  it('rejects invalid bounded VBIC parameter values', () => {
+    expect(() => parse(`invalid VBIC parameter
+      Q1 c b 0 QVBIC
+      .model QVBIC NPN(LEVEL=4 CJE=-1p)
+      .op
+    `).compile()).toThrow("Invalid bounded VBIC DC model parameter: 'CJE'");
+  });
+
+  it('rejects PNP polarity outside the bounded VBIC DC subset', () => {
+    expect(() => parse(`unsupported VBIC polarity
+      Q1 c b 0 QVBIC
+      .model QVBIC PNP(LEVEL=4)
+      .op
+    `).compile()).toThrow('Unsupported bounded VBIC polarity: only NPN LEVEL=4 is supported');
+  });
+
+  it('rejects AC analysis outside the bounded VBIC DC subset', () => {
+    expect(() => parse(`unsupported VBIC AC analysis
+      VBE b 0 DC 0.7 AC 1
+      Q1 c b 0 QVBIC
+      .model QVBIC NPN(LEVEL=4)
+      .ac dec 10 1 1meg
+    `).compile()).toThrow("Unsupported bounded VBIC analysis: 'ac'");
+  });
+
+  it('rejects transient analysis outside the bounded VBIC DC subset', () => {
+    expect(() => parse(`unsupported VBIC transient analysis
+      VBE b 0 0.7
+      Q1 c b 0 QVBIC
+      .model QVBIC NPN(LEVEL=4)
+      .tran 1n 10n
+    `).compile()).toThrow("Unsupported bounded VBIC analysis: 'tran'");
+  });
+
+  it('rejects pole-zero analysis outside the bounded VBIC DC subset', () => {
+    expect(() => parse(`unsupported VBIC pole-zero analysis
+      VIN b 0 0.7
+      Q1 c b 0 QVBIC
+      .model QVBIC NPN(LEVEL=4)
+      .pz b 0 c 0 cur pz
+    `).compile()).toThrow("Unsupported bounded VBIC analysis: 'pz'");
+  });
 });
