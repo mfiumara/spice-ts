@@ -50,7 +50,6 @@ export class TransmissionLine implements DeviceModel {
       return;
     }
 
-    this.captureAcceptedBase(ctx);
     const delayed = this.sampleAt(ctx.time - this.delay);
 
     // V1 - Z0*I1 = V2(t-TD) + Z0*I2(t-TD), and vice versa.
@@ -67,6 +66,36 @@ export class TransmissionLine implements DeviceModel {
     return this.delay <= stopTime ? [this.delay] : [];
   }
 
+  acceptTransientStep(ctx: StampContext): void {
+    const portVoltage = (positive: number, negative: number): number =>
+      (positive >= 0 ? ctx.getVoltage(positive) : 0)
+      - (negative >= 0 ? ctx.getVoltage(negative) : 0);
+    const sample: PortSample = {
+      time: ctx.time,
+      port1Incoming: portVoltage(this.nodes[0], this.nodes[1])
+        + this.impedance * ctx.getCurrent(this.branch1),
+      port2Incoming: portVoltage(this.nodes[2], this.nodes[3])
+        + this.impedance * ctx.getCurrent(this.branch2),
+    };
+    const last = this.history[this.history.length - 1];
+    if (last && Math.abs(last.time - ctx.time) <= Number.EPSILON * Math.max(1, Math.abs(ctx.time))) {
+      this.history[this.history.length - 1] = sample;
+    } else if (!last || ctx.time > last.time) {
+      this.history.push(sample);
+    }
+    // Only the interval bracketing one delay in the past can affect future
+    // wave equations. Retain one earlier point for interpolation and discard
+    // older accepted states so long transient runs stay bounded.
+    const oldestNeeded = ctx.time - this.delay;
+    while (this.history.length > 2 && this.history[1].time < oldestNeeded) {
+      this.history.shift();
+    }
+  }
+
+  resetTransient(): void {
+    this.history.length = 0;
+  }
+
   private stampPortKcl(ctx: StampContext, positive: number, negative: number, branch: number): void {
     if (positive >= 0) ctx.stampG(positive, branch, 1);
     if (negative >= 0) ctx.stampG(negative, branch, -1);
@@ -81,35 +110,6 @@ export class TransmissionLine implements DeviceModel {
   ): void {
     if (positive >= 0) ctx.stampG(row, positive, scale);
     if (negative >= 0) ctx.stampG(row, negative, -scale);
-  }
-
-  private captureAcceptedBase(ctx: StampContext): void {
-    const time = ctx.time - ctx.dt;
-    const previousRun = this.history[this.history.length - 1];
-    if (time === 0 && previousRun && previousRun.time > 0) this.history.length = 0;
-    const portVoltage = (positive: number, negative: number): number =>
-      (positive >= 0 ? ctx.getVoltage(positive) : 0)
-      - (negative >= 0 ? ctx.getVoltage(negative) : 0);
-    const sample: PortSample = {
-      time,
-      port1Incoming: portVoltage(this.nodes[0], this.nodes[1])
-        + this.impedance * ctx.getCurrent(this.branch1),
-      port2Incoming: portVoltage(this.nodes[2], this.nodes[3])
-        + this.impedance * ctx.getCurrent(this.branch2),
-    };
-    const last = this.history[this.history.length - 1];
-    if (last && Math.abs(last.time - time) <= Number.EPSILON * Math.max(1, Math.abs(time))) {
-      this.history[this.history.length - 1] = sample;
-    } else if (!last || time > last.time) {
-      this.history.push(sample);
-    }
-    // Only the interval bracketing one delay in the past can affect future
-    // wave equations. Retain one earlier point for interpolation and discard
-    // older accepted states so long transient runs stay bounded.
-    const oldestNeeded = time - this.delay;
-    while (this.history.length > 2 && this.history[1].time < oldestNeeded) {
-      this.history.shift();
-    }
   }
 
   private sampleAt(time: number): PortSample {

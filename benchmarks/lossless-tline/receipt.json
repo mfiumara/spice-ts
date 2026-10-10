@@ -24,10 +24,10 @@
           "rmsRelativeError": 1.3020304467819397e-15
         },
         "output": {
-          "maximumAbsoluteError": 0.15000000000000058,
-          "rmsAbsoluteError": 0.009460669995569231,
-          "maximumRelativeError": 12499999.999999955,
-          "rmsRelativeError": 614341.4839787389
+          "maximumAbsoluteError": 1.887379141862766e-15,
+          "rmsAbsoluteError": 9.284985247008207e-17,
+          "maximumRelativeError": 5.0330110449673766e-15,
+          "rmsRelativeError": 2.4951612321419553e-16
         }
       },
       "propagation": {
@@ -48,16 +48,16 @@
       "matchedPointCount": 414,
       "waveformErrors": {
         "input": {
-          "maximumAbsoluteError": 0.06319895770954942,
-          "rmsAbsoluteError": 0.0035947479152494107,
-          "maximumRelativeError": 0.08980904512838747,
-          "rmsRelativeError": 0.0049932360328414855
+          "maximumAbsoluteError": 0.004550045527923263,
+          "rmsAbsoluteError": 0.0002236225377437703,
+          "maximumRelativeError": 0.005850058534229893,
+          "rmsRelativeError": 0.00028751469130276725
         },
         "output": {
-          "maximumAbsoluteError": 0.26666666688888985,
-          "rmsAbsoluteError": 0.017064997976219635,
-          "maximumRelativeError": 22222222.222222146,
-          "rmsRelativeError": 1092162.6381844212
+          "maximumAbsoluteError": 0.003349544520010017,
+          "rmsAbsoluteError": 0.00022901276302476206,
+          "maximumRelativeError": 0.004110804637259839,
+          "rmsRelativeError": 0.00027191598737132095
         }
       },
       "propagation": {

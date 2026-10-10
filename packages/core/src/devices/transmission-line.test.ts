@@ -18,6 +18,18 @@ RL output 0 ${loadResistance}
 `;
 
 describe('bounded lossless transmission line transient execution', () => {
+  it('commits only accepted history and stays zero before source edge plus TD', async () => {
+    const result = await simulate(parse(fixture(50, 50)));
+    const transient = result.transient!;
+    const output = transient.voltage('output');
+    const beforeArrival = output.filter((_value, index) => transient.time[index] < 6e-9);
+
+    expect(result.convergence!.transient.lteRetries).toBeGreaterThan(0);
+    expect(result.convergence!.transient.rejectedSteps).toBeGreaterThan(0);
+    expect(transient.time.some(time => time > 5.9e-9 && time < 6e-9)).toBe(true);
+    expect(Math.max(...beforeArrival.map(Math.abs))).toBe(0);
+  });
+
   it('propagates a matched step by TD without a reflection', async () => {
     const result = await simulate(parse(fixture(50, 50)));
     const transient = result.transient!;
