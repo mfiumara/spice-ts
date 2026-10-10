@@ -20,6 +20,7 @@ import {
   type SuccessEnvelopeV1,
 } from '@spice-ts/protocol';
 import { bundledWorker } from './build-manifest.js';
+import { NUMERIC_WASM_LIMITS, validateNumericWasmModule } from './numeric-abi.js';
 import type { WorkerOperation, WorkerRequest, WorkerResponse } from './worker-protocol.js';
 
 const PACKAGE_VERSION = '0.3.0';
@@ -32,6 +33,12 @@ export interface SpiceWorkerManifestV1 {
   schemaVersion: 1;
   engineBuildId: string;
   worker: { url: string; sha256: string };
+  numericWasm?: {
+    url: string;
+    sha256: string;
+    byteLength: number;
+    engineBuildId: string;
+  };
 }
 
 export interface WorkerLike {
@@ -71,12 +78,22 @@ type SimulationEnvelope = SuccessEnvelopeV1<SimulationResultV1> | FailureEnvelop
 
 export interface SpiceEngineCapabilitiesV1 {
   protocolVersions: readonly ['1'];
-  nativeSchemaVersions: readonly ['1.0'];
-  backends: readonly ['spice-ts-js'];
-  analyses: readonly ['op', 'dc', 'tran', 'ac'];
+  nativeSchemaVersions: readonly ('1.0')[];
+  backends: readonly BackendV1[];
+  analyses: readonly ('op' | 'dc' | 'tran' | 'ac')[];
   determinism: readonly ['strict', 'relaxed'];
   streamChunkPoints: 256;
   engineBuildId: string;
+  numericWasm?: {
+    kernel: 'dense-gaussian-f64-v1';
+    artifactSha256: string;
+    artifactBytes: number;
+    inputFormats: readonly ['spice'];
+    devices: readonly ['R', 'I', 'V'];
+    analyses: readonly ['op'];
+    fallback: 'reject';
+    limits: typeof NUMERIC_WASM_LIMITS;
+  };
 }
 
 export interface SpiceEngine {
@@ -104,29 +121,57 @@ interface StreamJobState {
 }
 
 export async function createSpiceEngine(options: CreateSpiceEngineOptions): Promise<SpiceEngine> {
-  if (options.backend !== 'spice-ts-js') {
+  if (options.backend !== 'spice-ts-js' && options.backend !== 'spice-ts-wasm') {
     throw backendUnavailable(String(options.backend));
   }
+  const backend = options.backend;
 
   const usesBundledManifest = options.manifest === undefined && options.manifestUrl === undefined;
   const manifest = options.manifest ?? await loadManifest(options.manifestUrl ?? defaultManifestUrl());
   validateManifest(manifest);
-  if (usesBundledManifest
-    && (manifest.engineBuildId !== bundledWorker.engineBuildId || manifest.worker.sha256 !== bundledWorker.sha256)) {
-    throw backendUnavailable('spice-ts-js', 'The worker build manifest does not match the facade build');
+  if (usesBundledManifest && (manifest.engineBuildId !== bundledWorker.engineBuildId
+    || manifest.worker.sha256 !== bundledWorker.sha256
+    || manifest.numericWasm?.engineBuildId !== bundledWorker.numericEngineBuildId
+    || manifest.numericWasm?.sha256 !== bundledWorker.numericSha256
+    || manifest.numericWasm?.byteLength !== bundledWorker.numericByteLength)) {
+    throw backendUnavailable(backend, 'The worker build manifest does not match the facade build');
   }
   const assetUrl = new URL(manifest.worker.url, options.manifestUrl ?? defaultManifestUrl());
   const workerBytes = await loadBytes(assetUrl).catch(() => {
-    throw backendUnavailable('spice-ts-js', 'The module-worker asset could not be loaded');
+    throw backendUnavailable(backend, 'The module-worker asset could not be loaded');
   });
   const observedSha256 = sha256(workerBytes);
   if (observedSha256 !== manifest.worker.sha256) {
-    throw backendUnavailable('spice-ts-js', 'The module-worker checksum does not match the build manifest', {
+    throw backendUnavailable(backend, 'The module-worker checksum does not match the build manifest', {
       expectedSha256: manifest.worker.sha256,
       observedSha256,
     });
   }
   const verifiedWorker = verifiedWorkerUrl(workerBytes);
+  let wasmBytes: Uint8Array | undefined;
+  if (backend === 'spice-ts-wasm') {
+    const numeric = manifest.numericWasm;
+    if (!numeric) throw backendUnavailable(backend, 'The numeric WebAssembly artifact is missing from the manifest');
+    const numericUrl = new URL(numeric.url, options.manifestUrl ?? defaultManifestUrl());
+    wasmBytes = await loadBytes(numericUrl).catch(() => {
+      throw backendUnavailable(backend, 'The numeric WebAssembly artifact could not be loaded');
+    });
+    const observedNumericSha256 = sha256(wasmBytes);
+    if (wasmBytes.byteLength !== numeric.byteLength || observedNumericSha256 !== numeric.sha256) {
+      throw backendUnavailable(backend, 'The numeric WebAssembly artifact does not match the build manifest', {
+        expectedSha256: numeric.sha256,
+        observedSha256: observedNumericSha256,
+        expectedBytes: numeric.byteLength,
+        observedBytes: wasmBytes.byteLength,
+      });
+    }
+    try {
+      await validateNumericWasmModule(await WebAssembly.compile(wasmBytes.slice().buffer as ArrayBuffer));
+    } catch (error) {
+      if (error instanceof SpiceEngineError) throw error;
+      throw backendUnavailable(backend, 'The numeric WebAssembly artifact could not be compiled');
+    }
+  }
 
   const factory = options.workerFactory ?? defaultWorkerFactory;
   const jobs = new Map<string, ActiveJob>();
@@ -135,12 +180,26 @@ export async function createSpiceEngine(options: CreateSpiceEngineOptions): Prom
 
   const capabilities: SpiceEngineCapabilitiesV1 = Object.freeze({
     protocolVersions: ['1'],
-    nativeSchemaVersions: ['1.0'],
-    backends: ['spice-ts-js'],
-    analyses: ['op', 'dc', 'tran', 'ac'],
+    nativeSchemaVersions: backend === 'spice-ts-js' ? ['1.0'] as const : [] as const,
+    backends: [backend] as readonly BackendV1[],
+    analyses: backend === 'spice-ts-js'
+      ? ['op', 'dc', 'tran', 'ac'] as const
+      : ['op'] as const,
     determinism: ['strict', 'relaxed'],
     streamChunkPoints: DEFAULT_CHUNK_POINTS,
-    engineBuildId: manifest.engineBuildId,
+    engineBuildId: backend === 'spice-ts-js' ? manifest.engineBuildId : manifest.numericWasm!.engineBuildId,
+    ...(backend === 'spice-ts-wasm' ? {
+      numericWasm: {
+        kernel: 'dense-gaussian-f64-v1' as const,
+        artifactSha256: manifest.numericWasm!.sha256,
+        artifactBytes: manifest.numericWasm!.byteLength,
+        inputFormats: ['spice'] as const,
+        devices: ['R', 'I', 'V'] as const,
+        analyses: ['op'] as const,
+        fallback: 'reject' as const,
+        limits: NUMERIC_WASM_LIMITS,
+      },
+    } : {}),
   } as const);
 
   const execute = async (
@@ -149,11 +208,11 @@ export async function createSpiceEngine(options: CreateSpiceEngineOptions): Prom
     requestId: string,
     streamState?: StreamJobState,
   ): Promise<ValidationEnvelope | SimulationEnvelope> => {
-    if (closed) return failure(requestId, transportError('BACKEND_UNAVAILABLE', 'The spice engine is closed'), request, manifest);
+    if (closed) return failure(requestId, transportError('BACKEND_UNAVAILABLE', 'The spice engine is closed'), request, manifest, backend);
     if (!validateRequestSchema?.(request)) return invalidRequestFailure(requestId, validateRequestSchema?.errors ?? []);
-    const rejected = rejectedBackend(request, requestId, manifest);
+    const rejected = rejectedBackend(request, requestId, manifest, backend);
     if (rejected) return rejected;
-    if (jobs.has(requestId)) return failure(requestId, transportError('INVALID_REQUEST', `Request '${requestId}' is already active`), request, manifest);
+    if (jobs.has(requestId)) return failure(requestId, transportError('INVALID_REQUEST', `Request '${requestId}' is already active`), request, manifest, backend);
 
     let cancellationRequested = false;
     let cancelCurrent = (): void => {
@@ -174,12 +233,13 @@ export async function createSpiceEngine(options: CreateSpiceEngineOptions): Prom
           : transportError('BACKEND_UNAVAILABLE', 'The module worker could not be constructed'),
         request,
         manifest,
+        backend,
       );
     }
     if (cancellationRequested) {
       jobs.delete(requestId);
       void worker.terminate();
-      return failure(requestId, cancelledError(), request, manifest);
+      return failure(requestId, cancelledError(), request, manifest, backend);
     }
 
     const id = ++operationId;
@@ -188,7 +248,9 @@ export async function createSpiceEngine(options: CreateSpiceEngineOptions): Prom
       let removeMessage = (): void => {};
       let removeError = (): void => {};
       let removeExit = (): void => {};
+      let deadline: ReturnType<typeof setTimeout> | undefined;
       const cleanup = (preserveJob = false): void => {
+        if (deadline) clearTimeout(deadline);
         removeMessage();
         removeError();
         removeExit();
@@ -205,30 +267,42 @@ export async function createSpiceEngine(options: CreateSpiceEngineOptions): Prom
         const response = event.data as WorkerResponse;
         if (response.id !== id) return;
         if (!response.ok) {
-          finish(failure(requestId, response.error as SpiceApiErrorV1, request, manifest));
+          finish(failure(requestId, response.error as SpiceApiErrorV1, request, manifest, backend));
           return;
         }
         if (operation === 'validate') {
-          finish(success(requestId, response.data as ProtocolValidationResultV1 & JsonObject, request, manifest));
+          finish(success(requestId, response.data as ProtocolValidationResultV1 & JsonObject, request, manifest, backend));
         } else {
           if (streamState) cancelCurrent = () => { streamState.cancelled = true; };
-          finish(success(requestId, response.data as SimulationResultV1, request, manifest), streamState !== undefined);
+          finish(success(requestId, response.data as SimulationResultV1, request, manifest, backend), streamState !== undefined);
         }
       };
       const onError = (event: ErrorEvent): void => {
-        finish(failure(requestId, transportError('BACKEND_UNAVAILABLE', event.message || 'The module worker failed'), request, manifest));
+        finish(failure(requestId, transportError('BACKEND_UNAVAILABLE', event.message || 'The module worker failed'), request, manifest, backend));
       };
       const onExit = (code: number): void => {
-        finish(failure(requestId, transportError('BACKEND_UNAVAILABLE', `The module worker exited before replying (code ${code})`), request, manifest));
+        finish(failure(requestId, transportError('BACKEND_UNAVAILABLE', `The module worker exited before replying (code ${code})`), request, manifest, backend));
       };
       removeMessage = worker.onMessage(onMessage);
       removeError = worker.onError(onError);
       removeExit = worker.onExit?.(onExit) ?? removeExit;
+      const maxWallTimeMs = request.options?.limits?.maxWallTimeMs;
+      if (maxWallTimeMs !== undefined) {
+        deadline = setTimeout(() => {
+          finish(failure(
+            requestId,
+            resourceLimitError('maxWallTimeMs', maxWallTimeMs, maxWallTimeMs),
+            request,
+            manifest,
+            backend,
+          ));
+        }, maxWallTimeMs);
+      }
       cancelCurrent = () => {
         if (streamState) streamState.cancelled = true;
-        finish(failure(requestId, cancelledError(), request, manifest));
+        finish(failure(requestId, cancelledError(), request, manifest, backend));
       };
-      const message: WorkerRequest = { id, operation, request };
+      const message: WorkerRequest = { id, operation, backend, request, ...(wasmBytes ? { wasmBytes } : {}) };
       worker.postMessage(message);
     });
   };
@@ -240,7 +314,7 @@ export async function createSpiceEngine(options: CreateSpiceEngineOptions): Prom
     async *simulateStream(request, streamOptions) {
       const chunkPoints = streamOptions.chunkPoints ?? DEFAULT_CHUNK_POINTS;
       if (!Number.isInteger(chunkPoints) || chunkPoints <= 0) {
-        yield failedRead(failure(streamOptions.requestId, transportError('INVALID_REQUEST', 'chunkPoints must be a positive integer'), request, manifest));
+        yield failedRead(failure(streamOptions.requestId, transportError('INVALID_REQUEST', 'chunkPoints must be a positive integer'), request, manifest, backend));
         return;
       }
       const streamState: StreamJobState = { cancelled: false };
@@ -256,7 +330,7 @@ export async function createSpiceEngine(options: CreateSpiceEngineOptions): Prom
       try {
         for (const event of resultEvents(envelope.data)) {
           if (streamState.cancelled) {
-            yield cancelledRead(streamOptions.requestId, request, manifest, emitted);
+            yield cancelledRead(streamOptions.requestId, request, manifest, emitted, backend);
             return;
           }
           pending.push(event);
@@ -269,7 +343,7 @@ export async function createSpiceEngine(options: CreateSpiceEngineOptions): Prom
           }
         }
         if (streamState.cancelled) {
-          yield cancelledRead(streamOptions.requestId, request, manifest, emitted);
+          yield cancelledRead(streamOptions.requestId, request, manifest, emitted, backend);
           return;
         }
         emitted.push(...pending);
@@ -333,9 +407,10 @@ function cancelledRead(
   request: SimulationRequestV1,
   manifest: SpiceWorkerManifestV1,
   events: SimulationEventV1[],
+  backend: BackendV1,
 ): SimulationReadDataV1 {
   const terminal: StreamTerminalV1 = {
-    ...failure(requestId, cancelledError(), request, manifest),
+    ...failure(requestId, cancelledError(), request, manifest, backend),
     partial: {
       status: 'partial',
       analyses: partialAnalyses(events),
@@ -378,10 +453,11 @@ function rejectedBackend(
   request: SimulationRequestV1,
   requestId: string,
   manifest: SpiceWorkerManifestV1,
+  selectedBackend: BackendV1,
 ): FailureEnvelopeV1 | undefined {
   const backend = (request.options as { backend?: string } | undefined)?.backend;
-  if (backend === undefined || backend === 'spice-ts-js') return undefined;
-  return failure(requestId, transportError('BACKEND_UNAVAILABLE', `Protocol backend '${backend}' is not available in this engine`, { backend }), request, manifest);
+  if (backend === undefined || backend === selectedBackend) return undefined;
+  return failure(requestId, transportError('BACKEND_UNAVAILABLE', `Protocol backend '${backend}' is not available in this engine`, { backend }), request, manifest, selectedBackend);
 }
 
 function invalidRequestFailure(
@@ -407,10 +483,11 @@ function success<T extends JsonObject | SimulationResultV1>(
   data: T,
   request: SimulationRequestV1,
   manifest: SpiceWorkerManifestV1,
+  backend: BackendV1,
 ): SuccessEnvelopeV1<T> {
   return {
     apiVersion: '1', ok: true, requestId, data, diagnostics: [],
-    metadata: metadata(request, manifest, sha256CanonicalJson(data)),
+    metadata: metadata(request, manifest, sha256CanonicalJson(data), backend),
   };
 }
 
@@ -419,27 +496,29 @@ function failure(
   error: SpiceApiErrorV1,
   request: SimulationRequestV1,
   manifest: SpiceWorkerManifestV1,
+  backend: BackendV1,
 ): FailureEnvelopeV1 {
   return {
     apiVersion: '1', ok: false, requestId, error, diagnostics: [],
     metadata: {
-      protocolVersion: '1', spiceTsVersion: PACKAGE_VERSION, engineBuildId: manifest.engineBuildId,
-      backend: 'spice-ts-js', backendVersion: PACKAGE_VERSION,
-      resolvedOptions: resolvedOptions(request), inputSha256: sha256CanonicalJson(request.input),
+      protocolVersion: '1', spiceTsVersion: PACKAGE_VERSION,
+      engineBuildId: backend === 'spice-ts-js' ? manifest.engineBuildId : manifest.numericWasm!.engineBuildId,
+      backend, backendVersion: PACKAGE_VERSION,
+      resolvedOptions: resolvedOptions(request, backend), inputSha256: sha256CanonicalJson(request.input),
       runtime: runtime(), architecture: architecture(), determinism: request.options?.determinism ?? 'strict',
     },
   };
 }
 
-function metadata(request: SimulationRequestV1, manifest: SpiceWorkerManifestV1, resultSha256: string): RunMetadataV1 {
+function metadata(request: SimulationRequestV1, manifest: SpiceWorkerManifestV1, resultSha256: string, backend: BackendV1): RunMetadataV1 {
   return {
     protocolVersion: '1',
     ...(request.input.format === 'spice-ts' ? { nativeSchemaVersion: '1.0' as const } : {}),
     spiceTsVersion: PACKAGE_VERSION,
-    engineBuildId: manifest.engineBuildId,
-    backend: 'spice-ts-js',
+    engineBuildId: backend === 'spice-ts-js' ? manifest.engineBuildId : manifest.numericWasm!.engineBuildId,
+    backend,
     backendVersion: PACKAGE_VERSION,
-    resolvedOptions: resolvedOptions(request),
+    resolvedOptions: resolvedOptions(request, backend),
     inputSha256: sha256CanonicalJson(request.input),
     resultSha256,
     runtime: runtime(),
@@ -448,10 +527,10 @@ function metadata(request: SimulationRequestV1, manifest: SpiceWorkerManifestV1,
   };
 }
 
-function resolvedOptions(request: SimulationRequestV1): ResolvedOptionsV1 {
+function resolvedOptions(request: SimulationRequestV1, backend: BackendV1): ResolvedOptionsV1 {
   const options = request.options;
   return {
-    backend: 'spice-ts-js', abstol: options?.abstol ?? 1e-12, vntol: options?.vntol ?? 1e-6,
+    backend, abstol: options?.abstol ?? 1e-12, vntol: options?.vntol ?? 1e-6,
     reltol: options?.reltol ?? 1e-3, maxIterations: options?.maxIterations ?? 100,
     maxTransientIterations: options?.maxTransientIterations ?? 50,
     maxTimestep: options?.maxTimestep ?? Number.MAX_VALUE,
@@ -478,6 +557,13 @@ function transportError(code: 'INVALID_REQUEST' | 'BACKEND_UNAVAILABLE', message
   return { code, message, retryable: false, phase: 'transport', details };
 }
 
+function resourceLimitError(limit: string, configured: number, observed: number): SpiceApiErrorV1 {
+  return {
+    code: 'RESOURCE_LIMIT', message: `Resource limit '${limit}' exceeded`, retryable: false,
+    phase: 'solve', details: { limit, configured, observed },
+  };
+}
+
 function backendUnavailable(backend: string, message = `Protocol backend '${backend}' is not available`, details: JsonObject = {}): SpiceEngineError {
   return new SpiceEngineError(transportError('BACKEND_UNAVAILABLE', message, { backend, ...details }));
 }
@@ -489,6 +575,12 @@ function validateManifest(manifest: SpiceWorkerManifestV1): void {
   }
   if (manifest.engineBuildId !== `spice-ts-js-${manifest.worker.sha256.slice(0, 16)}`) {
     throw backendUnavailable('spice-ts-js', 'The worker build ID does not match its asset checksum');
+  }
+  const numeric = manifest.numericWasm;
+  if (numeric && (!/^[0-9a-f]{64}$/.test(numeric.sha256)
+    || !Number.isInteger(numeric.byteLength) || numeric.byteLength <= 0
+    || numeric.engineBuildId !== `spice-ts-wasm-${numeric.sha256.slice(0, 16)}`)) {
+    throw backendUnavailable('spice-ts-wasm', 'The numeric WebAssembly manifest entry is invalid');
   }
 }
 

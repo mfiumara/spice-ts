@@ -31,7 +31,8 @@
   "scripts": {
     "build": "tsx scripts/build.ts",
     "pretest": "pnpm build",
-    "test": "vitest run",
+    "test": "vitest run && pnpm test:packed-consumer",
+    "test:packed-consumer": "pnpm build && node scripts/packed-consumer.mjs",
     "test:coverage": "pnpm build && vitest run --coverage",
     "lint": "tsc --noEmit"
   },
