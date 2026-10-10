@@ -692,7 +692,7 @@ export class Circuit {
   addAnalysis(type: 'noise', params: { outputNode: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'disto', params: { variation: 'dec'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'tf', params: { outputNode: string; inputSource: string }): void;
-  addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur'; mode: 'pol' | 'pz' }): void;
+  addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur' | 'vol'; mode: 'pol' | 'pz' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'dc' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'ac'; variation: 'dec'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
@@ -783,7 +783,7 @@ export class Circuit {
           inputNegative: params!.inputNegative as string,
           outputPositive: params!.outputPositive as string,
           outputNegative: params!.outputNegative as string,
-          inputType: params!.inputType as 'cur',
+          inputType: params!.inputType as 'cur' | 'vol',
           mode: params!.mode as 'pol' | 'pz',
         };
         assertSupportedPoleZero(analysis);

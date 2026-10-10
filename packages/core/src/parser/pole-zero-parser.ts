@@ -2,7 +2,7 @@ import { ParseError } from '../errors.js';
 import type { PoleZeroAnalysis } from '../types.js';
 import { assertSupportedPoleZero, BOUNDED_POLE_ZERO_FORM } from '../validation/pole-zero.js';
 
-/** Parse the bounded ngspice `.pz in 0 out 0 cur {pol|pz}` slice. */
+/** Parse the bounded ngspice `.pz in 0 out 0 {cur|vol} {pol|pz}` slice. */
 export function parsePoleZero(tokens: string[], lineNumber: number): PoleZeroAnalysis {
   if (tokens.length !== 7) {
     throw new ParseError(
