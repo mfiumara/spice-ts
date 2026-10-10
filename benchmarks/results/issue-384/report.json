@@ -1,0 +1,1157 @@
+{
+  "issue": "https://github.com/mfiumara/spice-ts/issues/384",
+  "metricsOrder": "abs max / abs RMS / rel max / rel RMS",
+  "fixtures": [
+    {
+      "fixture": "ngspice/jfet-vds-vgs",
+      "localPath": "benchmarks/corpus/ngspice/fixtures/tests/jfet/jfet_vds-vgs.cir",
+      "sha256": "64d61d79415c585195fcda1a21a170bda67f863e20b9492eaeb33e1efc9fd72a",
+      "engines": {
+        "spiceTs": "success",
+        "ngspice": "success"
+      },
+      "before": {
+        "grid": {
+          "spiceTsPoints": 104,
+          "ngspicePoints": 104,
+          "alignedPoints": 104,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vd)": {
+            "status": "compared",
+            "sampleCount": 104,
+            "absoluteError": {
+              "max": 0.005145611069386556,
+              "rms": 0.002682551898314825
+            },
+            "relativeError": {
+              "max": 47.903757607967876,
+              "rms": 25.11715795722868,
+              "sampleCount": 104,
+              "excludedZeroReferences": 0
+            }
+          },
+          "i(vg)": {
+            "status": "compared",
+            "sampleCount": 104,
+            "absoluteError": {
+              "max": 7.039122205250577e-12,
+              "rms": 4.219978558089351e-12
+            },
+            "relativeError": {
+              "max": 1,
+              "rms": 0.3129206947299135,
+              "sampleCount": 104,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 104,
+            "absoluteError": {
+              "max": 3,
+              "rms": 1.8501559185854912
+            },
+            "relativeError": {
+              "max": 1,
+              "rms": 0.6231811140067556,
+              "sampleCount": 104,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 104,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 100,
+              "excludedZeroReferences": 4
+            }
+          }
+        }
+      },
+      "after": {
+        "grid": {
+          "spiceTsPoints": 104,
+          "ngspicePoints": 104,
+          "alignedPoints": 104,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vd)": {
+            "status": "compared",
+            "sampleCount": 104,
+            "absoluteError": {
+              "max": 0.0000030968731972733435,
+              "rms": 3.4751410013075697e-7
+            },
+            "relativeError": {
+              "max": 0.0006248085454513884,
+              "rms": 0.00007885143049910667,
+              "sampleCount": 103,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vg)": {
+            "status": "compared",
+            "sampleCount": 104,
+            "absoluteError": {
+              "max": 6.193831287762721e-16,
+              "rms": 6.951216078454814e-17
+            },
+            "relativeError": {
+              "max": 0.00020518228501437843,
+              "rms": 0.000027358444713549112,
+              "sampleCount": 103,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 104,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 78,
+              "excludedZeroReferences": 26
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 104,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 100,
+              "excludedZeroReferences": 4
+            }
+          }
+        }
+      }
+    },
+    {
+      "fixture": "xyce/njfet-2109-dc",
+      "localPath": "benchmarks/corpus/xyce/fixtures/NJFET_DC/njfet-2109.cir",
+      "sha256": "d25578ed59ddc0f94e3a2f9281f1200982f82c682ec63d5256bf0399f34ecd46",
+      "engines": {
+        "spiceTs": "success",
+        "ngspice": "success"
+      },
+      "before": {
+        "grid": {
+          "spiceTsPoints": 64,
+          "ngspicePoints": 64,
+          "alignedPoints": 64,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vds)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0.003293892704117239,
+              "rms": 0.0018137360690517483
+            },
+            "relativeError": {
+              "max": 0.7134574963372068,
+              "rms": 0.44181970306458734,
+              "sampleCount": 60,
+              "excludedZeroReferences": 4
+            }
+          },
+          "i(vgs)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 2.823499999871638e-10,
+              "rms": 6.089446309143313e-11
+            },
+            "relativeError": {
+              "max": 0.013171800974131473,
+              "rms": 0.007346967834047898,
+              "sampleCount": 60,
+              "excludedZeroReferences": 4
+            }
+          },
+          "i(vidmon)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0.003293892704117239,
+              "rms": 0.0018137360690517483
+            },
+            "relativeError": {
+              "max": 0.7134574963372068,
+              "rms": 0.44181970306458734,
+              "sampleCount": 60,
+              "excludedZeroReferences": 4
+            }
+          },
+          "i(vigmon)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 2.823499999871638e-10,
+              "rms": 6.089446309143313e-11
+            },
+            "relativeError": {
+              "max": 0.013171800974131473,
+              "rms": 0.007346967834047898,
+              "sampleCount": 60,
+              "excludedZeroReferences": 4
+            }
+          },
+          "i(vismon)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0.003293892707523027,
+              "rms": 0.0018137360710316788
+            },
+            "relativeError": {
+              "max": 0.713457543530935,
+              "rms": 0.44181973481542647,
+              "sampleCount": 60,
+              "excludedZeroReferences": 4
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 60,
+              "excludedZeroReferences": 4
+            }
+          },
+          "v(1a)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 60,
+              "excludedZeroReferences": 4
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 1.875,
+              "rms": 1.1481983169296148
+            },
+            "relativeError": {
+              "max": 2,
+              "rms": 1.224744871391589,
+              "sampleCount": 4,
+              "excludedZeroReferences": 60
+            }
+          },
+          "v(2a)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 1.875,
+              "rms": 1.1481983169296148
+            },
+            "relativeError": {
+              "max": 2,
+              "rms": 1.224744871391589,
+              "sampleCount": 4,
+              "excludedZeroReferences": 60
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": null,
+              "rms": null,
+              "sampleCount": 0,
+              "excludedZeroReferences": 64
+            }
+          }
+        }
+      },
+      "after": {
+        "grid": {
+          "spiceTsPoints": 64,
+          "ngspicePoints": 64,
+          "alignedPoints": 64,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vds)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0.0000014652818413449405,
+              "rms": 3.3642055688029704e-7
+            },
+            "relativeError": {
+              "max": 0.0005784466832588132,
+              "rms": 0.00013672418482938797,
+              "sampleCount": 63,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vgs)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 1.911928622623679e-14,
+              "rms": 2.3902419534887374e-15
+            },
+            "relativeError": {
+              "max": 0.0000683422366292325,
+              "rms": 0.000008611488211255173,
+              "sampleCount": 63,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vidmon)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0.0000014652818413449405,
+              "rms": 3.3642055688029704e-7
+            },
+            "relativeError": {
+              "max": 0.0005784466832588132,
+              "rms": 0.00013672418482938797,
+              "sampleCount": 63,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vigmon)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 1.911928622623679e-14,
+              "rms": 2.3902419534887374e-15
+            },
+            "relativeError": {
+              "max": 0.0000683422366292325,
+              "rms": 0.000008611488211255173,
+              "sampleCount": 63,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vismon)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0.0000014652818411927185,
+              "rms": 3.364205570779356e-7
+            },
+            "relativeError": {
+              "max": 0.0005784467476202882,
+              "rms": 0.0001367242064973914,
+              "sampleCount": 63,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 60,
+              "excludedZeroReferences": 4
+            }
+          },
+          "v(1a)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 60,
+              "excludedZeroReferences": 4
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 48,
+              "excludedZeroReferences": 16
+            }
+          },
+          "v(2a)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 48,
+              "excludedZeroReferences": 16
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 64,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": null,
+              "rms": null,
+              "sampleCount": 0,
+              "excludedZeroReferences": 64
+            }
+          }
+        }
+      }
+    },
+    {
+      "fixture": "xyce/nmos-level1-dc",
+      "localPath": "benchmarks/corpus/xyce/fixtures/NMOS1_DC/nmos1.cir",
+      "sha256": "3ab24382b4fb966d2111ba8b2aa0590b989fc09b367c09eb41cc7ac475e0e255",
+      "engines": {
+        "spiceTs": "success",
+        "ngspice": "success"
+      },
+      "before": {
+        "grid": {
+          "spiceTsPoints": 361,
+          "ngspicePoints": 361,
+          "alignedPoints": 361,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vdd)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 2.608695652183511e-7,
+              "rms": 1.3785167489112365e-7
+            },
+            "relativeError": {
+              "max": 17,
+              "rms": 5.079086956471153,
+              "sampleCount": 323,
+              "excludedZeroReferences": 38
+            }
+          },
+          "i(vgg)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 0.001926428017869661,
+              "rms": 0.0010618742478510999
+            },
+            "relativeError": {
+              "max": 739888253.1927755,
+              "rms": 146868399.1088845,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 5.739130434782608,
+              "rms": 3.032736847599439
+            },
+            "relativeError": {
+              "max": 17,
+              "rms": 5.079086956471404,
+              "sampleCount": 323,
+              "excludedZeroReferences": 38
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 0.9632140089348304,
+              "rms": 0.53093712392555
+            },
+            "relativeError": {
+              "max": 739888253.1927755,
+              "rms": 146868399.10888454,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          },
+          "v(4)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 18,
+              "rms": 9.511765567470968
+            },
+            "relativeError": {
+              "max": 17,
+              "rms": 5.079086956471404,
+              "sampleCount": 323,
+              "excludedZeroReferences": 38
+            }
+          },
+          "v(5)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 18,
+              "rms": 9.511765567470968
+            },
+            "relativeError": {
+              "max": 17,
+              "rms": 5.079086956471404,
+              "sampleCount": 323,
+              "excludedZeroReferences": 38
+            }
+          }
+        }
+      },
+      "after": {
+        "grid": {
+          "spiceTsPoints": 361,
+          "ngspicePoints": 361,
+          "alignedPoints": 361,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vdd)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 1.2362975260768547e-18,
+              "rms": 3.650663297622053e-19
+            },
+            "relativeError": {
+              "max": 4.739140516610507e-12,
+              "rms": 2.2822413428350445e-12,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          },
+          "i(vgg)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 0.000001363344424575334,
+              "rms": 9.387619211978847e-8
+            },
+            "relativeError": {
+              "max": 1.0000000000000002,
+              "rms": 0.6114843039596093,
+              "sampleCount": 345,
+              "excludedZeroReferences": 16
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 1.7763568394002505e-15,
+              "rms": 4.635749905653263e-16
+            },
+            "relativeError": {
+              "max": 5.223094684031985e-16,
+              "rms": 2.0135027811579496e-16,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 0.000681672212287987,
+              "rms": 0.000046938096059894926
+            },
+            "relativeError": {
+              "max": 1.0000000000000002,
+              "rms": 0.6114843039596093,
+              "sampleCount": 345,
+              "excludedZeroReferences": 16
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          },
+          "v(4)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 1.7763568394002505e-15,
+              "rms": 4.2006633856979884e-16
+            },
+            "relativeError": {
+              "max": 1.4802973661668753e-16,
+              "rms": 4.934324553889585e-17,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          },
+          "v(5)": {
+            "status": "compared",
+            "sampleCount": 361,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 342,
+              "excludedZeroReferences": 19
+            }
+          }
+        }
+      },
+      "diagnosticTightNgspice": {
+        "options": ".OPTIONS RELTOL=1e-9 VNTOL=1e-12 ABSTOL=1e-15",
+        "metrics": {
+          "grid": {
+            "spiceTsPoints": 361,
+            "ngspicePoints": 361,
+            "alignedPoints": 361,
+            "excludedOutOfRange": 0
+          },
+          "signals": {
+            "i(vdd)": {
+              "status": "compared",
+              "sampleCount": 361,
+              "absoluteError": {
+                "max": 1.2362975260768547e-18,
+                "rms": 3.650663297622053e-19
+              },
+              "relativeError": {
+                "max": 4.739140516610507e-12,
+                "rms": 2.2822413428350445e-12,
+                "sampleCount": 342,
+                "excludedZeroReferences": 19
+              }
+            },
+            "i(vgg)": {
+              "status": "compared",
+              "sampleCount": 361,
+              "absoluteError": {
+                "max": 3.8084672785224094e-11,
+                "rms": 9.849094366906579e-12
+              },
+              "relativeError": {
+                "max": 0.9999999999722378,
+                "rms": 0.6069769786082503,
+                "sampleCount": 342,
+                "excludedZeroReferences": 19
+              }
+            },
+            "v(1)": {
+              "status": "compared",
+              "sampleCount": 361,
+              "absoluteError": {
+                "max": 1.7763568394002505e-15,
+                "rms": 4.635749905653263e-16
+              },
+              "relativeError": {
+                "max": 5.223094684031985e-16,
+                "rms": 2.0135027811579496e-16,
+                "sampleCount": 342,
+                "excludedZeroReferences": 19
+              }
+            },
+            "v(2)": {
+              "status": "compared",
+              "sampleCount": 361,
+              "absoluteError": {
+                "max": 1.904233637439745e-8,
+                "rms": 4.924547178309107e-9
+              },
+              "relativeError": {
+                "max": 0.9999999999722378,
+                "rms": 0.6069769786082503,
+                "sampleCount": 342,
+                "excludedZeroReferences": 19
+              }
+            },
+            "v(3)": {
+              "status": "compared",
+              "sampleCount": 361,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": 0,
+                "rms": 0,
+                "sampleCount": 342,
+                "excludedZeroReferences": 19
+              }
+            },
+            "v(4)": {
+              "status": "compared",
+              "sampleCount": 361,
+              "absoluteError": {
+                "max": 1.7763568394002505e-15,
+                "rms": 4.2006633856979884e-16
+              },
+              "relativeError": {
+                "max": 1.4802973661668753e-16,
+                "rms": 4.934324553889585e-17,
+                "sampleCount": 342,
+                "excludedZeroReferences": 19
+              }
+            },
+            "v(5)": {
+              "status": "compared",
+              "sampleCount": 361,
+              "absoluteError": {
+                "max": 0,
+                "rms": 0
+              },
+              "relativeError": {
+                "max": 0,
+                "rms": 0,
+                "sampleCount": 342,
+                "excludedZeroReferences": 19
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "fixture": "xyce/pnp-dc",
+      "localPath": "benchmarks/corpus/xyce/fixtures/PNP_DC/pnp1.cir",
+      "sha256": "95796ac998eb051a535fcb498c259e715c1e8edd237e1e07add401fc6a1601df",
+      "engines": {
+        "spiceTs": "success",
+        "ngspice": "success"
+      },
+      "before": {
+        "grid": {
+          "spiceTsPoints": 30,
+          "ngspicePoints": 30,
+          "alignedPoints": 30,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vbb)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0.000007524965998798406,
+              "rms": 0.000003198578649242324
+            },
+            "relativeError": {
+              "max": 14.282046767117171,
+              "rms": 3.263038903852647,
+              "sampleCount": 30,
+              "excludedZeroReferences": 0
+            }
+          },
+          "i(vmon1)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0.000007524965998798406,
+              "rms": 0.000003198578649242324
+            },
+            "relativeError": {
+              "max": 14.282046767117171,
+              "rms": 3.263038903852647,
+              "sampleCount": 30,
+              "excludedZeroReferences": 0
+            }
+          },
+          "i(vmon2)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0.00038269856264819193,
+              "rms": 0.00015772670797208196
+            },
+            "relativeError": {
+              "max": 14.369613269330978,
+              "rms": 3.2738338715625592,
+              "sampleCount": 30,
+              "excludedZeroReferences": 0
+            }
+          },
+          "i(vmon3)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0.0003890768724041506,
+              "rms": 0.00016041434125881672
+            },
+            "relativeError": {
+              "max": 8.811547275054066,
+              "rms": 2.162194580232473,
+              "sampleCount": 30,
+              "excludedZeroReferences": 0
+            }
+          },
+          "i(vpos)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0.0003890768724041506,
+              "rms": 0.00016041434125881672
+            },
+            "relativeError": {
+              "max": 8.811547275054066,
+              "rms": 2.162194580232473,
+              "sampleCount": 30,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 25,
+              "excludedZeroReferences": 5
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0.7781537448083005,
+              "rms": 0.3208286825176333
+            },
+            "relativeError": {
+              "max": 8.811547275054068,
+              "rms": 2.1451065943070065,
+              "sampleCount": 30,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0.7881215067739566,
+              "rms": 0.3365319605955053
+            },
+            "relativeError": {
+              "max": 6.458996927820185,
+              "rms": 1.6964876774528002,
+              "sampleCount": 30,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(4)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 2,
+              "rms": 0.9128709291752769
+            },
+            "relativeError": {
+              "max": 3,
+              "rms": 1.1211353372561428,
+              "sampleCount": 30,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(5)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": null,
+              "rms": null,
+              "sampleCount": 0,
+              "excludedZeroReferences": 30
+            }
+          },
+          "v(6)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 2,
+              "rms": 0.9128709291752769
+            },
+            "relativeError": {
+              "max": 3,
+              "rms": 1.1211353372561428,
+              "sampleCount": 30,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(7)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0.7781537448083005,
+              "rms": 0.3208286825176333
+            },
+            "relativeError": {
+              "max": 8.811547275054068,
+              "rms": 2.1451065943070065,
+              "sampleCount": 30,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      },
+      "after": {
+        "grid": {
+          "spiceTsPoints": 30,
+          "ngspicePoints": 30,
+          "alignedPoints": 30,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(vbb)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 6.238381851196364e-9,
+              "rms": 2.085198317087592e-9
+            },
+            "relativeError": {
+              "max": 0.0018308730136432031,
+              "rms": 0.00045463603746966253,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vmon1)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 6.238381851196364e-9,
+              "rms": 2.085198317087592e-9
+            },
+            "relativeError": {
+              "max": 0.0018308730136432031,
+              "rms": 0.00045463603746966253,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vmon2)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 3.741984777536891e-7,
+              "rms": 1.1969404818008225e-7
+            },
+            "relativeError": {
+              "max": 0.0018338633278153146,
+              "rms": 0.00045130253297257715,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vmon3)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 3.804355827760316e-7,
+              "rms": 1.2168592203233962e-7
+            },
+            "relativeError": {
+              "max": 0.0016923042673886726,
+              "rms": 0.00042298988559453615,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          },
+          "i(vpos)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 3.8043558277614e-7,
+              "rms": 1.2168592203233575e-7
+            },
+            "relativeError": {
+              "max": 0.0016923042673886726,
+              "rms": 0.00042298988559453924,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 25,
+              "excludedZeroReferences": 5
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0.0007608711655522349,
+              "rms": 0.00024337184406471245
+            },
+            "relativeError": {
+              "max": 0.0016923042673888595,
+              "rms": 0.0003801502631177592,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0.0011852925517279456,
+              "rms": 0.0003961876802467089
+            },
+            "relativeError": {
+              "max": 0.0025641666705050327,
+              "rms": 0.0009066499456963283,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          },
+          "v(4)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 24,
+              "excludedZeroReferences": 6
+            }
+          },
+          "v(5)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": null,
+              "rms": null,
+              "sampleCount": 0,
+              "excludedZeroReferences": 30
+            }
+          },
+          "v(6)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0,
+              "rms": 0
+            },
+            "relativeError": {
+              "max": 0,
+              "rms": 0,
+              "sampleCount": 24,
+              "excludedZeroReferences": 6
+            }
+          },
+          "v(7)": {
+            "status": "compared",
+            "sampleCount": 30,
+            "absoluteError": {
+              "max": 0.0007608711655522349,
+              "rms": 0.00024337184406471245
+            },
+            "relativeError": {
+              "max": 0.0016923042673888595,
+              "rms": 0.0003801502631177592,
+              "sampleCount": 29,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}
