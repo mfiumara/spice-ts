@@ -941,7 +941,7 @@ async function readWhenReady(
   execute: ReturnType<typeof createToolExecutor> | typeof executeTool,
   args: { jobId: string; cursor: string; maxPoints?: number },
 ): Promise<Awaited<ReturnType<typeof executeTool>>> {
-  for (let attempt = 0; attempt < 100; attempt++) {
+  for (let attempt = 0; attempt < 2_000; attempt++) {
     const response = await execute('spice_simulation_read', args);
     const data = response.structuredContent as unknown as SimulationReadDataV1;
     if (data.status !== 'running' || data.events.length > 0) return response;
