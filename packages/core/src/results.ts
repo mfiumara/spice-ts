@@ -283,6 +283,8 @@ export interface StepResult {
   transient?: TransientResult;
   /** AC small-signal analysis result (from .ac) */
   ac?: ACResult;
+  /** DC small-signal transfer function (from .tf) */
+  transferFunction?: TransferFunctionResult;
 }
 
 /**

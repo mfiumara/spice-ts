@@ -187,6 +187,15 @@ describe('Circuit.addStep', () => {
     expect(compiled.steps[0].sweepMode).toBe('list');
     expect(compiled.steps[0].values).toEqual([1000, 10000, 100000]);
   });
+
+  it('rejects nested or multi-dimensional builder sweeps explicitly', () => {
+    const ckt = new Circuit();
+    ckt.addStep('R1', { values: [1000, 2000] });
+
+    expect(() => ckt.addStep('R2', { values: [1000, 2000] })).toThrow(
+      'Multiple .step directives are not supported; nested or multi-dimensional stepping is unsupported',
+    );
+  });
 });
 
 describe('.step netlist parsing', () => {

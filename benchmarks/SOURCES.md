@@ -99,6 +99,14 @@ At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-di
 
 Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON receipt reports the engine version, machine, identical paths, deterministic native order, matched-point maximum/RMS absolute and relative errors, every non-zero residual as a retained loss, convergence failures, and the explicit unsupported matrix.
 
+## Bounded stepped transfer-function parity fixture
+
+- Fixture: `benchmarks/stepped-transfer-function/stepped-divider.cir` (SHA-256 `dfb418673a8064df89b93eaa3524580523aaf5db9f5dbdf93345827afd8e684c`).
+- Source: project-authored public reference circuit for [issue #208](https://github.com/mfiumara/spice-ts/issues/208).
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- Adaptation: the committed four-point `R2` LIST grid is executed directly by spice-ts. ngspice-47 reports `unimplemented dot command '.step'`, so the comparison harness records that loss and expands the grid deterministically. At each matched value, the same expanded netlist bytes are supplied to both engines. The direct spice-ts result is also checked against its expanded single-point runs. No circuit value, tolerance, or engine-specific deck is used to hide an error.
+- Reproduce with `pnpm bench:stepped-tf`. The JSON receipt reports convergence at every step, deterministic order, max/RMS absolute and relative errors for transfer, input resistance, and output resistance, runtimes with process-boundary caveats, unsupported forms, and all retained losses.
+
 ## Bounded Gummel-Poon forward-active parity fixtures
 
 - Public source: John P. Doty's CA3080 ngspice model, [`ca3080.mod`](https://github.com/xxv/gedasymbols/blob/49eda5e627e167fcb6346ef9805535ca92e43b0c/www/user/john_doty/models/opamp/ca3080.mod), pinned `gedasymbols` revision `49eda5e627e167fcb6346ef9805535ca92e43b0c`.
