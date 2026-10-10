@@ -8,11 +8,12 @@ Issue state below was verified against live GitHub state on 2026-10-10. The repo
 M1, one in M2, six in M3, and six in M4. GitHub assigns #223–#225 to M1 and #226 to M4. Every open issue is
 represented below exactly once.
 
-[PR #236](https://github.com/mfiumara/spice-ts/pull/236) was the sole open PR at verification time. Its prior head
-`86b1d142f9fc9194fb5cc41f59eb959c200d6074` was rejected because it described superseded live PR states; this
-remediation remains pending exact-head review and merge. A delivery is marked merged only when its reviewed PR head
-and squash commit are on `main`. This reconciliation closes [#234](https://github.com/mfiumara/spice-ts/issues/234)
-only when PR #236 merges.
+GitHub had two open PRs at verification time. [PR #236](https://github.com/mfiumara/spice-ts/pull/236) had advanced
+from rejected head `86b1d142f9fc9194fb5cc41f59eb959c200d6074` to this pending remediation. [PR
+#241](https://github.com/mfiumara/spice-ts/pull/241) was open and unreviewed at head
+`177c75866888684edca7cea98655f6db33e8b655`, so it is not a delivery. A delivery is marked merged only when its
+reviewed PR head and squash commit are on `main`. This
+reconciliation closes [#234](https://github.com/mfiumara/spice-ts/issues/234) only when PR #236 merges.
 
 ## M1 Correctness parity
 
@@ -91,7 +92,7 @@ published parity report; agreed error thresholds met or gaps filed
 | Work | Issue | Current residual |
 |------|-------|------------------|
 | Advanced analysis support | [#75](https://github.com/mfiumara/spice-ts/issues/75) | Parent gap after the bounded resistor, diode, BJT, and MOS1-noise, `.tf`, stepped `.tf`, `.pz`, `.sens`, and single-tone linear `.disto` slices: differential/current noise outputs, temperature cards, broader BJT and MOSFET noise, stepped noise, unsupported `.sens` forms, nested/multidimensional/differential/current-output stepped `.tf`, and nonlinear/two-tone/stepped distortion remain unsupported |
-| AC-only independent-source cards | [#223](https://github.com/mfiumara/spice-ts/issues/223) | Four unchanged classic fixtures currently reach an internal TypeError instead of a structured parse outcome; add voltage/current AC-only parsing, then publish every next honest outcome without changing fixture bytes |
+| AC-only independent-source cards | [#223](https://github.com/mfiumara/spice-ts/issues/223) | Open PR #241 is unreviewed at exact head `177c75866888684edca7cea98655f6db33e8b655`; it proposes default AC magnitude handling and reports all four unchanged fixtures advancing from parser crashes to explicit `.noise` or pole-zero losses. It is not a delivery |
 | Classic no-op directives and option fields | [#224](https://github.com/mfiumara/spice-ts/issues/224) | Classify `.opt`, `.width`, and observed `ACCT`, `LIMPTS`, and `ITL5` fields as safe compatibility no-ops, implemented behavior, or explicit unsupported behavior before rerunning all unchanged classic fixtures |
 | Compound independent-source `DISTOF` syntax | [#225](https://github.com/mfiumara/spice-ts/issues/225) | Preserve combined DC, AC, waveform, and `DISTOF1`/`DISTOF2` terms on the two unchanged classic distortion fixtures; the bounded single-tone analysis merged through #215, but broader compound source-card grammar remains open |
 | Gnucap independent-source value forms | [#227](https://github.com/mfiumara/spice-ts/issues/227) | Three unchanged Gnucap fixtures still expose `dc=`, combined pulse/AC, and unparenthesized PWL grammar gaps; retain strict malformed-input diagnostics and publish each resulting analysis loss |
