@@ -1,0 +1,6 @@
+* Issue 368 unsupported form: inductor initial condition (project-authored, MIT)
+V1 in 0 1
+R1 in a 10
+L1 a 0 1m IC=1m
+.tran 1u 100u
+.end

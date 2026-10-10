@@ -148,7 +148,7 @@ describe('bounded numeric WebAssembly backend', () => {
           devicesByAnalysis: {
             op: ['R', 'I', 'V', 'G', 'F', 'E', 'H'],
             dc: ['R', 'I', 'V'],
-            tran: ['R', 'C', 'I', 'V'],
+            tran: ['R', 'C', 'L', 'I', 'V'],
             ac: ['R', 'C', 'L', 'I', 'V'],
           },
           fallback: 'reject',
@@ -954,6 +954,135 @@ describe('bounded numeric WebAssembly backend', () => {
     }
   });
 
+  it('runs a bounded series RL step through WASM with the analytic inductor current', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      const result = await wasm.simulate(request([
+        'V1 in 0 PULSE(0 1 0 1u 1u 1 2)',
+        'R1 in out 1k',
+        'L1 out 0 100m',
+        '.tran 1u 500u',
+      ].join('\n')), { requestId: 'tran-rl-step' });
+      expect(result).toMatchObject({ ok: true, metadata: { backend: 'spice-ts-wasm' } });
+      if (!result.ok) return;
+      const transient = result.data.analyses[0];
+      expect(transient?.type).toBe('tran');
+      if (transient?.type !== 'tran') return;
+      expect(transient.timeS).toHaveLength(501);
+      expect(Object.keys(transient.currentsA).sort()).toEqual(['L1', 'V1']);
+      const resistance = 1e3;
+      const tau = 100e-3 / resistance;
+      const rise = 1e-6;
+      const atRiseEnd = (rise - tau * (1 - Math.exp(-rise / tau))) / (rise * resistance);
+      const analytic = (time: number) => time <= rise
+        ? (time - tau * (1 - Math.exp(-time / tau))) / (rise * resistance)
+        : atRiseEnd * Math.exp(-(time - rise) / tau) + (1 - Math.exp(-(time - rise) / tau)) / resistance;
+      const errors = transient.timeS.map((time, index) => Math.abs(transient.currentsA.L1![index]! - analytic(time)));
+      expect(transient.currentsA.L1![0]).toBe(0);
+      expect(Math.max(...errors)).toBeLessThan(1e-7);
+      expect(transient.currentsA.L1!.at(-1)).toBeGreaterThan(0.99e-3);
+
+      const dcShort = await wasm.simulate(request('V1 in 0 1\nR1 in out 1k\nL1 out 0 1m\n.tran 1u 10u'), {
+        requestId: 'tran-rl-dc-short',
+      });
+      expect(dcShort.ok).toBe(true);
+      if (!dcShort.ok || dcShort.data.analyses[0]?.type !== 'tran') return;
+      for (const current of dcShort.data.analyses[0].currentsA.L1!) expect(current).toBeCloseTo(1e-3, 15);
+      for (const voltage of dcShort.data.analyses[0].voltagesV.out!) expect(Math.abs(voltage)).toBeLessThan(1e-15);
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('matches the TypeScript engine on series and parallel RLC transients without fallback', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    const js = await engine('spice-ts-js');
+    try {
+      for (const [name, source, vector, tolerance] of [
+        ['series', 'V1 in 0 PULSE(0 1 0 1u 1u 10m 20m)\nR1 in a 10\nL1 a out 1m\nC1 out 0 1u\n.tran 1u 400u', 'out', 5e-4],
+        ['parallel', 'I1 0 out PULSE(0 1m 0 1u 1u 10m 20m)\nR1 out 0 1k\nL1 out 0 1m\nC1 out 0 1u\n.tran 1u 400u', 'out', 2e-5],
+      ] as const) {
+        const actual = await wasm.simulate(request(source), { requestId: `rlc-${name}-wasm` });
+        const reference = await js.simulate(request(source), { requestId: `rlc-${name}-js` });
+        expect(actual).toMatchObject({ ok: true, metadata: { backend: 'spice-ts-wasm' } });
+        expect(reference.ok).toBe(true);
+        if (!actual.ok || !reference.ok) return;
+        const wasmTran = actual.data.analyses[0];
+        const jsTran = reference.data.analyses[0];
+        if (wasmTran?.type !== 'tran' || jsTran?.type !== 'tran') throw new Error('missing transient analysis');
+        expect(wasmTran.timeS).toHaveLength(401);
+        let maximum = 0;
+        wasmTran.timeS.forEach((time, index) => {
+          const upper = jsTran.timeS.findIndex(candidate => candidate >= time);
+          const t1 = jsTran.timeS[upper]!;
+          const lower = t1 === time ? upper : upper - 1;
+          const t0 = jsTran.timeS[lower]!;
+          const v0 = jsTran.voltagesV[vector]![lower]!;
+          const v1 = jsTran.voltagesV[vector]![upper]!;
+          const expected = t1 === t0 ? v1 : v0 + (time - t0) / (t1 - t0) * (v1 - v0);
+          maximum = Math.max(maximum, Math.abs(wasmTran.voltagesV[vector]![index]! - expected));
+        });
+        expect(maximum, name).toBeLessThan(tolerance);
+      }
+    } finally {
+      await wasm.close();
+      await js.close();
+    }
+  });
+
+  it('rejects unsupported inductor forms with deterministic structured errors', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const [name, source, feature, message] of [
+        ['coupled', 'V1 in 0 1\nR1 in a 1\nL1 a 0 1m\nL2 b 0 1m\nR2 b 0 1\nK1 L1 L2 0.5\n.tran 1u 10u',
+          'inductor-coupling', 'Coupled inductors (K) are not supported'],
+        ['coupled-ac', 'V1 in 0 AC 1\nR1 in a 1\nL1 a 0 1m\nL2 b 0 1m\nR2 b 0 1\nk1 L1 L2 0.5\n.ac lin 1 1k 1k',
+          'inductor-coupling', 'Coupled inductors (K) are not supported'],
+        ['initial-condition', 'V1 in 0 1\nR1 in a 1\nL1 a 0 1m IC=1m\n.tran 1u 10u',
+          'inductor-initial-condition', 'Inductor initial conditions (IC=) are not supported'],
+        ['initial-condition-spaced', 'V1 in 0 1\nR1 in a 1\nL1 a 0 1m ic = 1m\n.tran 1u 10u',
+          'inductor-initial-condition', 'Inductor initial conditions (IC=) are not supported'],
+        ['model', 'V1 in 0 1\nR1 in a 1\nL1 a 0 lmod 1m\n.tran 1u 10u',
+          'inductor-form', 'Inductors must use name positive negative constant-inductance'],
+        ['instance-parameter', 'V1 in 0 1\nR1 in a 1\nL1 a 0 1m m=2\n.tran 1u 10u',
+          'inductor-form', 'Inductors must use name positive negative constant-inductance'],
+        ['expression', 'V1 in 0 1\nR1 in a 1\nL1 a 0 {1m*2}\n.tran 1u 10u',
+          'inductor-form', 'Inductors must use name positive negative constant-inductance'],
+        ['nonlinear-expression', "V1 in 0 1\nR1 in a 1\nL1 a 0 L='1m*(1+i(V1))'\n.tran 1u 10u",
+          'inductor-form', 'Inductors must use name positive negative constant-inductance'],
+      ] as const) {
+        const result = await wasm.simulate(request(source), { requestId: `inductor-${name}` });
+        expect(result, name).toMatchObject({ ok: false, metadata: { backend: 'spice-ts-wasm' } });
+        if (result.ok) continue;
+        expect(result.error, name).toEqual({
+          code: 'UNSUPPORTED_FEATURE', message, retryable: false, phase: 'validation',
+          details: { backend: 'spice-ts-wasm', feature },
+        });
+      }
+
+      const nonpositive = await wasm.simulate(request('V1 in 0 1\nR1 in a 1\nL1 a 0 0\n.tran 1u 10u'), {
+        requestId: 'inductor-zero',
+      });
+      expect(nonpositive).toMatchObject({
+        ok: false,
+        error: { code: 'INVALID_CIRCUIT', phase: 'compile', message: "Passive device 'L1' must have a positive finite value" },
+      });
+
+      const loop = await wasm.simulate(request('V1 in 0 1\nL1 in 0 1m\n.tran 1u 10u'), { requestId: 'inductor-loop' });
+      expect(loop).toMatchObject({ ok: false, error: { code: 'SINGULAR_MATRIX', phase: 'solve' } });
+
+      const ladder = ['V1 n0 0 1', ...Array.from({ length: 32 }, (_, index) => `L${index + 1} n${index} n${index + 1} 1m`),
+        'R1 n32 0 1', '.tran 1u 10u'].join('\n');
+      const bounded = await wasm.simulate(request(ladder), { requestId: 'inductor-order-limit' });
+      expect(bounded).toMatchObject({
+        ok: false,
+        error: { code: 'RESOURCE_LIMIT', details: { limit: 'maxSystemOrder', configured: 64, observed: 66 } },
+      });
+    } finally {
+      await wasm.close();
+    }
+  });
+
   it('enforces the serialized-result byte limit for transient results', async () => {
     const wasm = await engine('spice-ts-wasm');
     try {
@@ -1064,7 +1193,7 @@ describe('bounded numeric WebAssembly backend', () => {
       for (const [name, source] of Object.entries({
         capacitor: 'V1 in 0 1\nC1 in 0 1u\n.op',
         waveform: 'V1 in 0 PULSE(0 1 0 1n 1n 1m 2m)\nR1 in 0 1k\n.op',
-        inductorTransient: 'V1 in 0 1\nL1 in 0 1m\n.tran 1u 1m',
+        coupledInductorTransient: 'V1 in 0 1\nR1 in a 1\nL1 a 0 1m\nL2 b 0 1m\nR2 b 0 1\nK1 L1 L2 0.5\n.tran 1u 1m',
         nonlinearTransient: 'V1 in 0 1\nD1 in 0 D\n.model D D\n.tran 1u 1m',
       })) {
         const result = await wasm.simulate(request(source), { requestId: `unsupported-${name}` });
