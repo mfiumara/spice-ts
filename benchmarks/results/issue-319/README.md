@@ -6,10 +6,11 @@ This receipt covers the bounded diode model slice implemented for issue #319. It
 
 ```sh
 pnpm -C packages/core build
+pnpm exec tsx --test benchmarks/results/issue-319/acceptance.test.ts
 pnpm exec tsx benchmarks/results/issue-319/verify.ts --output benchmarks/results/issue-319/report.json
 ```
 
-The verifier runs the unchanged public Xyce fixture through spice-ts, fetches the pinned Xyce committed gold output, checks both SHA-256 hashes, linearly interpolates the gold waveform onto spice-ts timestamps, and records max/RMS absolute and relative errors. It also runs ngspice-47 on the unchanged fixture and records the retained parser loss.
+The verifier runs the unchanged public Xyce fixture through spice-ts, fetches the pinned Xyce committed gold output, checks both SHA-256 hashes, linearly interpolates the gold waveform onto spice-ts timestamps, and records max/RMS absolute and relative errors. It exits non-zero when any temperature step exceeds the fixture's `*COMP V(2) reltol=0.005` maximum-relative-error bound, including an over-bound interior sample even when both endpoints match. It also runs ngspice-47 on the unchanged fixture and records the retained parser loss.
 
 ## Source and licence
 

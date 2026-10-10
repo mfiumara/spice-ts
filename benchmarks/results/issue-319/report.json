@@ -1,7 +1,7 @@
 {
   "schemaVersion": "spice-ts-issue-319/v1",
   "issueUrl": "https://github.com/mfiumara/spice-ts/issues/319",
-  "generatedAt": "2026-10-10T14:29:07.153Z",
+  "generatedAt": "2026-10-10T15:38:06.504Z",
   "tools": {
     "spiceTs": "0.3.0",
     "node": "v22.23.1",
@@ -18,6 +18,7 @@
     "perCircuitToleranceTuning": false,
     "comparisonGrid": "spice-ts transient timestamps",
     "interpolation": "linear interpolation of pinned Xyce gold output",
+    "waveformAcceptance": "max relative error <= 0.005 (fixture *COMP V(2) reltol)",
     "speedClaim": false,
     "ngspiceParityClaim": false
   },
@@ -42,7 +43,7 @@
   "after": {
     "spiceTs": {
       "status": "success",
-      "runtimeMs": 7.057,
+      "runtimeMs": 11.695,
       "temperatureStepsC": [
         -55,
         25,
@@ -121,7 +122,7 @@
   "retainedLosses": {
     "originalDeckNgspice47": {
       "status": "failed",
-      "runtimeMs": 13.166,
+      "runtimeMs": 25.657,
       "exitCode": 1,
       "error": "Error on line 9 or its substitute: .tran 0 1 0 100m TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: incomplete or empty netlist or no \".plot\", \".print\", or \".fourier\" lines in batch mode; no simulations run! Note: No compatibility mode selected! Circuit: *trivial sweep of diode to produce i/v curve"
     },

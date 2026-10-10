@@ -6,6 +6,10 @@ import { cpus, platform, release } from 'node:os';
 import { performance } from 'node:perf_hooks';
 import { resolve } from 'node:path';
 import { simulate } from '../../../packages/core/dist/index.js';
+import {
+  compareWaveform,
+  XYCE_WAVEFORM_RELTOL,
+} from './acceptance.js';
 
 const FIXTURE_PATH = 'benchmarks/corpus/xyce/fixtures/DIODE/Level2_Temp_Dep_Breakdown.cir';
 const FIXTURE_SHA256 = '9c52a577a2f0b0a7419160b6cd340894ed41ebc403023a3b3f1d809d171bee0e';
@@ -17,14 +21,6 @@ interface GoldPoint {
   time: number;
   voltage: number;
   temperature: number;
-}
-
-interface ErrorMetrics {
-  points: number;
-  maxAbsolute: number;
-  rmsAbsolute: number;
-  maxRelative: number;
-  rmsRelative: number;
 }
 
 function sha256(input: Uint8Array): string {
@@ -47,21 +43,6 @@ function interpolate(points: GoldPoint[], time: number): number {
   const after = points[upper];
   const ratio = (time - before.time) / (after.time - before.time);
   return before.voltage + ratio * (after.voltage - before.voltage);
-}
-
-function metrics(actual: number[], reference: number[]): ErrorMetrics {
-  const absolute = actual.map((value, index) => Math.abs(value - reference[index]));
-  const relative = absolute.map((error, index) => error / Math.max(Math.abs(reference[index]), 1e-12));
-  const rms = (values: number[]) => Math.sqrt(
-    values.reduce((sum, value) => sum + value * value, 0) / values.length,
-  );
-  return {
-    points: actual.length,
-    maxAbsolute: Math.max(...absolute),
-    rmsAbsolute: rms(absolute),
-    maxRelative: Math.max(...relative),
-    rmsRelative: rms(relative),
-  };
 }
 
 function ngspiceVersion(): string {
@@ -118,7 +99,7 @@ async function main(): Promise<void> {
         spiceTs: [actual[0], actual.at(-1)],
         xyceGold: [goldStep[0].voltage, goldStep.at(-1)!.voltage],
       },
-      metrics: metrics(actual, reference),
+      metrics: compareWaveform(actual, reference, step.paramValue),
     };
   });
 
@@ -143,6 +124,7 @@ async function main(): Promise<void> {
       perCircuitToleranceTuning: false,
       comparisonGrid: 'spice-ts transient timestamps',
       interpolation: 'linear interpolation of pinned Xyce gold output',
+      waveformAcceptance: `max relative error <= ${XYCE_WAVEFORM_RELTOL} (fixture *COMP V(2) reltol)`,
       speedClaim: false,
       ngspiceParityClaim: false,
     },
