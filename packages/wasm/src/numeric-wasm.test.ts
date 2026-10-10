@@ -421,6 +421,34 @@ describe('bounded numeric WebAssembly backend', () => {
     }
   });
 
+  it('rejects behavioral VCVS VALUE forms as unsupported without fallback', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const [name, card] of [
+        ['spaced', 'E1 out 0 VALUE = {V(in)*2}'],
+        ['compact', 'E1 out 0 VALUE={V(in)*2}'],
+        ['mixed-case', 'e1 out 0 VaLuE= {V(in)*2}'],
+      ] as const) {
+        const result = await wasm.simulate(request([
+          'V1 in 0 1',
+          card,
+          'R1 out 0 1k',
+          '.op',
+        ].join('\n')), { requestId: `wasm-vcvs-reject-behavioral-${name}` });
+        expect(result).toMatchObject({
+          ok: false,
+          error: {
+            code: 'UNSUPPORTED_FEATURE', phase: 'validation', retryable: false,
+            details: { backend: 'spice-ts-wasm', feature: 'vcvs-form' },
+          },
+          metadata: { backend: 'spice-ts-wasm' },
+        });
+      }
+    } finally {
+      await wasm.close();
+    }
+  });
+
   it('returns structured VCVS singular, finite-gain, and resource errors', async () => {
     const wasm = await engine('spice-ts-wasm');
     try {
