@@ -1,4 +1,7 @@
 import { describe, it, expect } from 'vitest';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { simulate } from '../simulate.js';
 import { parse } from '../parser/index.js';
 
@@ -84,5 +87,85 @@ describe('BJT Ebers-Moll', () => {
   it('rejects unsupported BJT model types explicitly', () => {
     expect(() => parse('title\nQ1 c b 0 QBAD\n.model QBAD VBIC BF=100\n.op').compile())
       .toThrow("Unsupported BJT model type: 'VBIC'");
+  });
+
+  it('runs the unchanged bounded VBIC forward-output DC fixture', async () => {
+    const fixture = readFileSync(resolve(
+      process.cwd(),
+      '../../benchmarks/corpus/ngspice/fixtures/tests/vbic/FO.cir',
+    ));
+    expect(createHash('sha256').update(fixture).digest('hex'))
+      .toBe('de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92');
+
+    const result = await simulate(fixture.toString('utf8'));
+
+    expect(result.dcSweep?.sweepValues).toHaveLength(707);
+    expect(Array.from(result.dcSweep!.current('VC'))).toHaveLength(707);
+    expect(Array.from(result.dcSweep!.current('VB'))).toHaveLength(707);
+    expect(Array.from(result.dcSweep!.current('VC')).every(Number.isFinite)).toBe(true);
+    expect(Array.from(result.dcSweep!.current('VB')).every(Number.isFinite)).toBe(true);
+    expect(result.convergence?.dc).toMatchObject({ rejectedSolves: 0, failure: null });
+  });
+
+  it('rejects parameters outside the bounded VBIC DC subset', () => {
+    expect(() => parse(`unsupported VBIC parameter
+      Q1 c b 0 QVBIC
+      .model QVBIC NPN(LEVEL=4 BF=100)
+      .op
+    `).compile()).toThrow("Unsupported bounded VBIC DC model parameter: 'BF'");
+  });
+
+  it('rejects invalid bounded VBIC parameter values', () => {
+    expect(() => parse(`invalid VBIC parameter
+      Q1 c b 0 QVBIC
+      .model QVBIC NPN(LEVEL=4 CJE=-1p)
+      .op
+    `).compile()).toThrow("Invalid bounded VBIC DC model parameter: 'CJE'");
+  });
+
+  it('rejects PNP polarity outside the bounded VBIC DC subset', () => {
+    expect(() => parse(`unsupported VBIC polarity
+      Q1 c b 0 QVBIC
+      .model QVBIC PNP(LEVEL=4)
+      .op
+    `).compile()).toThrow('Unsupported bounded VBIC polarity: only NPN LEVEL=4 is supported');
+  });
+
+  it('rejects AC analysis outside the bounded VBIC DC subset', () => {
+    expect(() => parse(`unsupported VBIC AC analysis
+      VBE b 0 DC 0.7 AC 1
+      Q1 c b 0 QVBIC
+      .model QVBIC NPN(LEVEL=4)
+      .ac dec 10 1 1meg
+    `).compile()).toThrow("Unsupported bounded VBIC analysis: 'ac'");
+  });
+
+  it('rejects transient analysis outside the bounded VBIC DC subset', () => {
+    expect(() => parse(`unsupported VBIC transient analysis
+      VBE b 0 0.7
+      Q1 c b 0 QVBIC
+      .model QVBIC NPN(LEVEL=4)
+      .tran 1n 10n
+    `).compile()).toThrow("Unsupported bounded VBIC analysis: 'tran'");
+  });
+
+  it('rejects pole-zero analysis outside the bounded VBIC DC subset', () => {
+    expect(() => parse(`unsupported VBIC pole-zero analysis
+      VIN b 0 0.7
+      Q1 c b 0 QVBIC
+      .model QVBIC NPN(LEVEL=4)
+      .pz b 0 c 0 cur pz
+    `).compile()).toThrow("Unsupported bounded VBIC analysis: 'pz'");
+  });
+
+  it('rejects TEMP stepping outside the nominal-temperature bounded VBIC subset', async () => {
+    await expect(simulate(`unsupported VBIC TEMP stepping
+      VBE b 0 0.7
+      VCE c 0 1
+      Q1 c b 0 QVBIC
+      .model QVBIC NPN(LEVEL=4)
+      .op
+      .step TEMP LIST -55 125
+    `)).rejects.toThrow("Unsupported bounded VBIC step: 'TEMP'");
   });
 });

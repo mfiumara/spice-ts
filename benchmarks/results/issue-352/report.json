@@ -1,0 +1,184 @@
+{
+  "schemaVersion": "spice-ts-issue-352/v1",
+  "issueUrl": "https://github.com/mfiumara/spice-ts/issues/352",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1"
+  },
+  "machine": {
+    "platform": "darwin",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "commands": {
+    "generate": "pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-352/verify.ts --output benchmarks/results/issue-352/report.json",
+    "verify": "pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-352/verify.ts --check",
+    "ngspice": "ngspice -b -r <temporary-rawfile> <byte-identical-fixture>",
+    "spiceTs": "@spice-ts/core simulate(<byte-identical-fixture>)"
+  },
+  "processBoundaries": {
+    "ngspice": "One native ngspice subprocess with an isolated temporary HOME and ASCII rawfile.",
+    "spiceTs": "One in-process @spice-ts/core simulate call in the verifier Node.js process.",
+    "timing": "Single wall-clock observation per engine. Descriptive only, not a speed claim."
+  },
+  "input": {
+    "path": "benchmarks/corpus/ngspice/fixtures/tests/vbic/FO.cir",
+    "bytes": 492,
+    "sha256": "de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92",
+    "identicalForBothEngines": true,
+    "adaptation": "none",
+    "perCircuitToleranceTuning": false
+  },
+  "beforeSpiceTs": {
+    "status": "unsupported",
+    "convergence": "not-run",
+    "error": "Unsupported bounded BJT model parameter: 'IBEI'",
+    "evidenceCommit": "96eb20b"
+  },
+  "supportedContract": {
+    "model": "NPN LEVEL=4 only",
+    "analyses": [
+      "op",
+      "dc"
+    ],
+    "activeParameters": [
+      "IS",
+      "IBEI",
+      "IBEN",
+      "IBCI",
+      "IBCN",
+      "ISP",
+      "RCX",
+      "RCI",
+      "RBX",
+      "RBI",
+      "RE",
+      "RS",
+      "RBP",
+      "VEF",
+      "VER",
+      "IKF",
+      "IKR",
+      "IKP",
+      "VO",
+      "GAMM",
+      "HRCF",
+      "AVC1",
+      "AVC2"
+    ],
+    "dcInertParameters": [
+      "CJE",
+      "CJC",
+      "CJEP",
+      "CJCP",
+      "QCO",
+      "TF",
+      "TR",
+      "TD",
+      "ITF",
+      "XTF",
+      "RTH"
+    ],
+    "equations": [
+      "isothermal intrinsic forward/reverse transport with Early and high-current rolloff",
+      "BE and BC ideal/non-ideal junction currents",
+      "parasitic substrate transistor transport",
+      "quasi-saturation collector resistance and avalanche multiplication",
+      "explicit external and intrinsic series resistances"
+    ],
+    "unsupported": [
+      "PNP LEVEL=4 polarity",
+      "VBIC model parameters outside the listed set",
+      "AC, transient, noise, distortion, sensitivity, transfer-function, and pole-zero analyses",
+      "self-heating, charge storage, and temperature-dependent equations"
+    ]
+  },
+  "grid": {
+    "analysis": "dc",
+    "order": "primary-fast Cartesian product",
+    "primary": {
+      "source": "VC",
+      "start": 0,
+      "stop": 5,
+      "step": 0.05,
+      "pointsPerOuterStep": 101
+    },
+    "secondary": {
+      "source": "VB",
+      "start": 0.7,
+      "stop": 1,
+      "step": 0.05,
+      "points": 7
+    },
+    "totalPoints": 707
+  },
+  "ngspice": {
+    "status": "success",
+    "convergence": "converged",
+    "runtimeMs": 48.36441599999998,
+    "analyses": [
+      {
+        "type": "dc",
+        "points": 707,
+        "comparedSignals": [
+          "i(vc)",
+          "i(vb)"
+        ]
+      }
+    ]
+  },
+  "spiceTs": {
+    "status": "success",
+    "convergence": "converged",
+    "runtimeMs": 181.780458,
+    "acceptedSolves": 707,
+    "rejectedSolves": 0,
+    "analyses": [
+      {
+        "type": "dc",
+        "points": 707,
+        "comparedSignals": [
+          "i(vc)",
+          "i(vb)"
+        ]
+      }
+    ]
+  },
+  "comparisons": {
+    "i(vc)": {
+      "sampleCount": 707,
+      "absoluteError": {
+        "max": 0.00000671477496222081,
+        "rms": 2.8800072646750996e-7
+      },
+      "relativeError": {
+        "max": 0.0006405032259879082,
+        "rms": 0.00003599353191942653,
+        "sampleCount": 707,
+        "excludedZeroReferences": 0,
+        "zeroThreshold": 1e-15
+      }
+    },
+    "i(vb)": {
+      "sampleCount": 707,
+      "absoluteError": {
+        "max": 0.000003771582702246333,
+        "rms": 2.2398384510206596e-7
+      },
+      "relativeError": {
+        "max": 0.001239710577669167,
+        "rms": 0.00008043938897648535,
+        "sampleCount": 707,
+        "excludedZeroReferences": 0,
+        "zeroThreshold": 1e-15
+      }
+    }
+  },
+  "losses": [
+    "This is a benchmark-bounded, nominal-temperature NPN VBIC DC subset, not broad VBIC support.",
+    "Dynamic charge, self-heating, temperature dependence, PNP, and non-DC analyses remain unsupported.",
+    "The committed aggregate report is intentionally not refreshed in this implementation PR; the aggregate lane must record the status transition after merge.",
+    "Runtime observations are single runs and do not support a performance claim."
+  ]
+}
