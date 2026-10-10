@@ -17,7 +17,7 @@ export class VoltageSource implements DeviceModel {
   stamp(ctx: StampContext): void {
     const [nPlus, nMinus] = this.nodes;
     const bi = ctx.numNodes + this.branchIndex;
-    const voltage = this.getVoltageAtTime(ctx.time) * ctx.sourceScale;
+    const voltage = this.getValue(ctx) * ctx.sourceScale;
 
     // KCL: branch current enters positive node, leaves negative
     if (nPlus >= 0) ctx.stampG(nPlus, bi, 1);
@@ -43,6 +43,13 @@ export class VoltageSource implements DeviceModel {
       case 'ac':
         return this.waveform.dc ?? 0;
     }
+  }
+
+  private getValue(ctx: StampContext): number {
+    if (ctx.useDcSourceValue && this.waveform.type === 'sin' && this.waveform.dc !== undefined) {
+      return this.waveform.dc;
+    }
+    return this.getVoltageAtTime(ctx.time);
   }
 
   getACExcitation(): { magnitude: number; phase: number; branch: number } | null {
