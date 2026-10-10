@@ -53,12 +53,12 @@ try {
     import { createSpiceEngine } from '@spice-ts/wasm';
     const engine = await createSpiceEngine({ backend: 'spice-ts-wasm' });
     if (engine.capabilities.numericWasm?.kernel !== 'dense-gaussian-complex-f64-v2'
-      || !engine.capabilities.analyses.includes('ac')) throw new Error('missing packed AC capability');
+      || !engine.capabilities.analyses.includes('ac')
+      || !engine.capabilities.analyses.includes('dc')) throw new Error('missing packed numeric capabilities');
     const result = await engine.simulate({
       apiVersion: '1',
       input: { format: 'spice', source: 'V1 in 0 AC 1\\nR1 in out 1k\\nC1 out 0 1u\\n.ac lin 1 100 100' },
     }, { requestId: 'packed-wasm' });
-    await engine.close();
     const analysis = result.ok ? result.data.analyses[0] : undefined;
     const output = analysis?.type === 'ac' ? analysis.voltagePhasors.out?.[0] : undefined;
     if (!result.ok || result.metadata.backend !== 'spice-ts-wasm'
@@ -67,6 +67,15 @@ try {
       || Math.abs(output.phaseDegrees - -32.141907635342065) > 1e-10) {
       throw new Error(JSON.stringify(result));
     }
+    const dcResult = await engine.simulate({
+      apiVersion: '1',
+      input: { format: 'spice', source: 'V1 in 0 0\\nR1 in out 1k\\nR2 out 0 1k\\n.dc V1 0 1 0.5' },
+    }, { requestId: 'packed-wasm-dc' });
+    const dc = dcResult.ok ? dcResult.data.analyses[0] : undefined;
+    if (!dcResult.ok || dcResult.metadata.backend !== 'spice-ts-wasm'
+      || dc?.type !== 'dc' || dc.axis.values.join(',') !== '0,0.5,1'
+      || dc.voltagesV.out.join(',') !== '0,0.25,0.5') throw new Error(JSON.stringify(dcResult));
+    await engine.close();
   `);
   run('node', ['consume.mjs'], consumerRoot);
   console.log('Packed bounded WebAssembly consumer passed.');

@@ -1,0 +1,6 @@
+* Project-owned bounded passive voltage-divider DC sweep
+Vdrive in 0 0
+R1 in out 1k
+R2 out 0 1k
+.dc Vdrive -1 1 0.5
+.end

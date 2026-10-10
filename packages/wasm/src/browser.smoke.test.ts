@@ -176,6 +176,14 @@ describe('browser protocol-v1 worker facade', () => {
         const outputPhasor = wasmAc?.type === 'ac' ? wasmAc.voltagePhasors.out?.[0] : undefined;
         if (wasmAc?.type !== 'ac' || !outputPhasor || Math.abs(outputPhasor.magnitude - 0.8467330159648304) > 1e-12
           || Math.abs(outputPhasor.phaseDegrees - -32.141907635342065) > 1e-10) throw new Error('wrong WASM AC result');
+        const wasmDcResult = await wasm.simulate({
+          apiVersion: '1',
+          input: { format: 'spice', source: 'V1 in 0 0\\nR1 in out 1k\\nR2 out 0 1k\\n.dc V1 0 1 0.5' },
+        }, { requestId: 'browser-wasm-dc' });
+        const wasmDc = wasmDcResult.ok ? wasmDcResult.data.analyses[0] : undefined;
+        if (!wasmDcResult.ok || wasmDc?.type !== 'dc'
+          || wasmDc.axis.values.join(',') !== '0,0.5,1'
+          || wasmDc.voltagesV.out.join(',') !== '0,0.25,0.5') throw new Error('wrong WASM DC result');
         const unsupported = await wasm.simulate({
           apiVersion: '1',
           input: { format: 'spice', source: 'V1 in 0 1\\nL1 in 0 1u\\n.op' },
