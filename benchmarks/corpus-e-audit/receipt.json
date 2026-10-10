@@ -1,0 +1,369 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "repository": "https://github.com/gnucap/gnucap",
+    "revision": "5acb027125d6ea7c546badd03e026d8781c6a400",
+    "adaptation": "none"
+  },
+  "commands": {
+    "ngspice": "ngspice -b -r output.raw <unchanged-fixture-basename>",
+    "spiceTs": "node benchmarks/corpus/corpus-e/run-spice-ts.mjs <repo-root> <unchanged-fixture-path>",
+    "audit": "node benchmarks/corpus-e-audit/audit.mjs --write",
+    "test": "node --test benchmarks/corpus-e-audit/audit.test.mjs"
+  },
+  "versions": {
+    "ngspice": "** ngspice-47 : Circuit level simulation program",
+    "node": "v22.23.1",
+    "spiceTsHead": "80a6f3f586410bb30c63e5a790ee253ba0d5c445"
+  },
+  "machine": {
+    "os": "macOS 27.0.1",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro",
+    "memoryBytes": 51539607552
+  },
+  "totals": {
+    "ngspice": {
+      "pass": 5,
+      "parser": 2,
+      "device/model": 2,
+      "analysis": 11,
+      "convergence": 0,
+      "execution": 0
+    },
+    "spiceTs": {
+      "pass": 4,
+      "parser": 3,
+      "device/model": 0,
+      "analysis": 13,
+      "convergence": 0,
+      "execution": 0
+    }
+  },
+  "fixtureSetSha256": "e6346a45392800a58c186eb691d242f4b88611f1609b29db4b0f1c1110a08897",
+  "outcomeSha256": "dd99c57c31e72613e2e532ab0708d9810b0e6d5d09950ba74c03539b66314290",
+  "fixtures": [
+    {
+      "id": "cccs-mixed-analysis",
+      "category": "op-dc",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_cccs.1.ckt",
+      "sha256": "87e7a7e164e9cdac5891b12fd038c06945043f5455a79fb31d26c97bc0463e05",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "unimplemented dot command '.list'"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Parse error at line 17: Unsupported dot command: '.list'"
+      }
+    },
+    {
+      "id": "vcvs-operating-point",
+      "category": "op-dc",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_vcvs.1.ckt",
+      "sha256": "cd4c6c8b18a27254b06859424268763a7f5b4a39a648981fc27d6a18b91e2cd1",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "parser",
+        "evidence": "device already exists, bail out"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Parse error at line 9: Unsupported dot command: '.list'"
+      }
+    },
+    {
+      "id": "diode-bias-sweep",
+      "category": "op-dc",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_diode.1.ckt",
+      "sha256": "f84c531a2e0b4ef201f1cef5d85279b360d5fd20d17d3deb91563581a9371055",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "pass"
+      },
+      "spiceTs": {
+        "status": "pass"
+      }
+    },
+    {
+      "id": "mos1-inverter-sweep",
+      "category": "op-dc",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_mos1.inv1.ckt",
+      "sha256": "e832b2a4c0099a68c035342e81e780256fa8369239fcd61c0fd1ad5a5a249de5",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "pass"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Parse error at line 3: Unsupported dot command: '.width'"
+      }
+    },
+    {
+      "id": "transmission-line-ac",
+      "category": "ac",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_trln.ac.ckt",
+      "sha256": "99cc373d602fad9ecd4ea0e8f14d9eba9322b0083ae02c7631091dcbece7828b",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "parser",
+        "evidence": "unknown parameter (gen)"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Parse error at line 3: Unsupported dot command: '.width'"
+      }
+    },
+    {
+      "id": "mutual-inductance-ac",
+      "category": "ac",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_coil.1.ckt",
+      "sha256": "45bf5fdc96b7985a744455ff7c3222478665e3db487bbcfedc5c7efa8297fc3c",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "unimplemented dot command '.list'"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Parse error at line 24: Unsupported .options field: 'nopage'"
+      }
+    },
+    {
+      "id": "bjt-diffpair-ac",
+      "category": "ac",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-diffpair-tf.ckt",
+      "sha256": "f8cde99b71d9978c5216dffbc9dfc036c8bdf7b37f1c9949fa9835e6eb741213",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "unimplemented dot command '.status'"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Parse error at line 6: Unsupported dot command: '.option'"
+      }
+    },
+    {
+      "id": "opamp-open-loop-ac",
+      "category": "ac",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/opamp-ol.ckt",
+      "sha256": "92e47652dbecdbd2c971cce3c047fc0b8e4a0406a7d2c953dffce299c60b183c",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Missing DEC, OCT, or LIN."
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "parser",
+        "evidence": "Parse error at line 17: Cannot parse number: 'dc=0'"
+      }
+    },
+    {
+      "id": "capacitor-step-transient",
+      "category": "tran",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_cap.1.ckt",
+      "sha256": "2c0864497272439baa44213381271915107ccd9f8c47354df2e4b9c3028a1608",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "unimplemented dot command '.list'"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "parser",
+        "evidence": "Parse error at line 2: Cannot parse number: 'pulse'"
+      }
+    },
+    {
+      "id": "capacitor-initial-condition",
+      "category": "tran",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_cap.ic1.ckt",
+      "sha256": "65199506e3a8b9bd05b3842cc9ef180308d0d02ba2e9857e89f7f1f8c32c3c84",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "unimplemented dot command '.list'"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Parse error at line 4: Unsupported dot command: '.list'"
+      }
+    },
+    {
+      "id": "lc-oscillator-transient",
+      "category": "tran",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/oscillator.1.ckt",
+      "sha256": "020684099d172ec7cc2a6fe3d57792ef51b3d9162f41f83ed486704062d6d702",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "unimplemented dot command '.status'"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "parser",
+        "evidence": "Parse error at line 4: PWL source requires a parenthesized list of time/value pairs"
+      }
+    },
+    {
+      "id": "bjt-diffpair-transient",
+      "category": "tran",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-diffpair-tran.ckt",
+      "sha256": "f142fa0c6378f80666343a83c8582cca065ed7ad5d49dd3d9e5cd88e7474301e",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "pass"
+      },
+      "spiceTs": {
+        "status": "pass"
+      }
+    },
+    {
+      "id": "bjt-schmitt-trigger",
+      "category": "nonlinear",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-schmitt-nobypass.ckt",
+      "sha256": "ec6efed82593b525b1661173b3a11dbec4880449968389ff86424051d42274b5",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "device/model",
+        "evidence": "unknown parameter (1)"
+      },
+      "spiceTs": {
+        "status": "pass"
+      }
+    },
+    {
+      "id": "diode-temperature-sweep",
+      "category": "nonlinear",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_diode.6.ckt",
+      "sha256": "d2d7df0b8050008df98e6a8410433c6ef346d9851371c2032edaeb0c9c43dd48",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "unimplemented dot command '.list'"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Parse error at line 7: Unsupported dot command: '.list'"
+      }
+    },
+    {
+      "id": "mos1-nand-transient",
+      "category": "nonlinear",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_mos1.nand1.ckt",
+      "sha256": "183f57f24707d2597f83396a777896e336a17a4ec8a13027f89c5029440d8300",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Error: unknown parameter on .tran - ignored"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Parse error at line 32: Cannot parse number: 'trace'"
+      }
+    },
+    {
+      "id": "bjt-rtl-inverter-chain",
+      "category": "nonlinear",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-rtlinv.ckt",
+      "sha256": "48b7f67014d43f0c9987ebbc9b349cf53908cc51426d784c4be6db3397fd6e2d",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "pass"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Parse error at line 4: Unsupported dot command: '.width'"
+      }
+    },
+    {
+      "id": "dual-lc-uic-rejection",
+      "category": "convergence",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/oscillator.7.ckt",
+      "sha256": "f1f6a53ef0bb2d41988b1ec4fb022abea8830cd8a847aa3b693d96fe7e66e36d",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "unimplemented dot command '.status'"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Parse error at line 8: Unsupported dot command: '.width'"
+      }
+    },
+    {
+      "id": "opamp-voltage-follower",
+      "category": "convergence",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/opamp-vf.1.ckt",
+      "sha256": "923e0da63d9fbeca5cb94d049af3f85036f5b1a1af38a0701dbed8c258ff1ebd",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "unimplemented dot command '.stat'"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Parse error at line 34: Unsupported dot command: '.width'"
+      }
+    },
+    {
+      "id": "mos7-nand-no-bypass",
+      "category": "convergence",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_mos7.nand1.nobypass.ckt",
+      "sha256": "81a387433d50c7d280d2b80d2463f3a9d42fc6ea969ef783333b16eaca046868",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "fail",
+        "cause": "device/model",
+        "evidence": "Device type MOS7 not available in this binary"
+      },
+      "spiceTs": {
+        "status": "fail",
+        "cause": "analysis",
+        "evidence": "Parse error at line 3: Unsupported dot command: '.option'"
+      }
+    },
+    {
+      "id": "bjt-diffpair-current-source",
+      "category": "convergence",
+      "localPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-diffpair-ccs.ckt",
+      "sha256": "7060377579bdb6bfef87225ee4710b81744462af1548ccff755adf061f14f37c",
+      "inputIdentity": "byte-identical",
+      "ngspice": {
+        "status": "pass"
+      },
+      "spiceTs": {
+        "status": "pass"
+      }
+    }
+  ]
+}
