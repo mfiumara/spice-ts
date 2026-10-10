@@ -32,8 +32,13 @@
     "examples"
   ],
   "scripts": {
+    "prebuild": "pnpm -C ../core build && pnpm -C ../protocol build",
     "build": "tsup",
+    "pretest": "pnpm -C ../core build && pnpm -C ../protocol build",
     "test": "vitest run",
+    "pretest:coverage": "pnpm -C ../core build && pnpm -C ../protocol build",
+    "test:coverage": "vitest run",
+    "prelint": "pnpm -C ../core build && pnpm -C ../protocol build",
     "lint": "tsc --noEmit",
     "example": "tsx examples/agent.ts"
   },
