@@ -59,10 +59,12 @@ describe('corpus-E BJT Schmitt transient convergence (#139)', () => {
       || (sample.v6 > regenerativeSamples[index - 1]!.v6
         && sample.v7 > regenerativeSamples[index - 1]!.v7)
     ))).toBe(true);
-    expect(v6[edgeStart - 1]).toBeCloseTo(-1.0896, 3);
-    expect(v7[edgeStart - 1]).toBeCloseTo(-1.7692, 3);
-    expect(v6[edgeStart]).toBeCloseTo(-0.0262, 3);
-    expect(v7[edgeStart]).toBeCloseTo(-0.7475, 3);
+    // Q1 uses the fixture's qstd model like Q2-Q4 (#382); ngspice-47 rejects
+    // this fixture's `off=1` card, so these are spice-ts regression pins only.
+    expect(v6[edgeStart - 1]).toBeCloseTo(-1.0128, 3);
+    expect(v7[edgeStart - 1]).toBeCloseTo(-1.8103, 3);
+    expect(v6[edgeStart]).toBeCloseTo(-0.0461, 3);
+    expect(v7[edgeStart]).toBeCloseTo(-0.8945, 3);
 
     const telemetry = first.convergence!.transient;
     expect(telemetry.acceptedSteps).toBe(transient.time.length - 1);
