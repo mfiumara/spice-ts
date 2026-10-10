@@ -1,0 +1,61 @@
+{
+  "callOrder": [
+    "spice_capabilities",
+    "spice_validate",
+    "spice_simulate:bounded",
+    "spice_simulate:recovered"
+  ],
+  "capabilities": {
+    "protocolVersion": "1",
+    "analyses": [
+      "op",
+      "dc",
+      "tran",
+      "ac"
+    ],
+    "inputFormats": [
+      "spice",
+      "spice-ts"
+    ],
+    "maxResultPoints": 100000
+  },
+  "validation": {
+    "status": "valid",
+    "nodeCount": 2,
+    "branchCount": 1,
+    "analysisCount": 1
+  },
+  "boundedFailure": {
+    "error": {
+      "code": "RESOURCE_LIMIT",
+      "message": "A configured resource limit was exceeded",
+      "retryable": false,
+      "phase": "validation",
+      "details": {
+        "limit": "maxResultPoints",
+        "maximum": 0,
+        "actual": 1
+      }
+    }
+  },
+  "recovery": {
+    "action": "raise-maxResultPoints-to-observed",
+    "maxResultPoints": 1,
+    "result": {
+      "status": "complete",
+      "analyses": [
+        {
+          "type": "op",
+          "analysisIndex": 0,
+          "voltagesV": {
+            "in": 10,
+            "out": 5
+          },
+          "currentsA": {
+            "V1": -0.005
+          }
+        }
+      ]
+    }
+  }
+}

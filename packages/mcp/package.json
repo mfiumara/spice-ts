@@ -41,7 +41,7 @@
     "test:packed-consumer": "pnpm build && node scripts/packed-consumer.mjs",
     "prelint": "pnpm -C ../core build && pnpm -C ../protocol build",
     "lint": "tsc --noEmit",
-    "example": "tsx examples/agent.ts"
+    "example": "pnpm build && node examples/agent.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",
