@@ -162,6 +162,63 @@ describe('GilbertPeierlsSolver', () => {
       expect(x[1]).toBeCloseTo(3, 10);
     });
 
+    it('grows numeric factors when row pivoting exceeds the symbolic row-order estimate', () => {
+      const matrix = new SparseMatrix(3);
+      matrix.add(0, 2, -1);
+      matrix.add(1, 1, -1);
+      matrix.add(1, 2, -1);
+      matrix.add(2, 0, -1);
+      matrix.add(2, 1, -1);
+      matrix.add(2, 2, -1);
+      const { csc } = toCsc(matrix);
+      const solver = new GilbertPeierlsSolver();
+      solver.analyzePattern(csc);
+      solver.factorize(csc);
+
+      const solution = solver.solve(new Float64Array([-3, -5, -6]));
+
+      expect(Array.from(solution)).toEqual([1, 2, 3]);
+    });
+
+    it('eliminates fill that activates a structurally-zero pivot row', () => {
+      const matrix = new SparseMatrix(3);
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 3; col++) matrix.touch(row, col);
+      }
+      matrix.add(0, 0, 1);
+      matrix.add(0, 1, -1);
+      matrix.add(0, 2, -1);
+      matrix.add(1, 0, -1);
+      matrix.add(1, 1, -1);
+      matrix.add(2, 0, -1);
+      matrix.add(2, 1, -1);
+      matrix.add(2, 2, -1);
+      const { csc } = toCsc(matrix);
+      const solver = new GilbertPeierlsSolver();
+      solver.analyzePattern(csc);
+      solver.factorize(csc);
+
+      const solution = solver.solve(new Float64Array([-4, -3, -6]));
+
+      expect(Array.from(solution)).toEqual([1, 2, 3]);
+    });
+
+    it('solves the upper-triangular matrix stamped by the VCCS/R/I repro deck', () => {
+      const matrix = new SparseMatrix(2);
+      matrix.add(0, 0, 1e-3);
+      matrix.add(0, 1, -1e-3);
+      matrix.add(1, 1, 1e-3);
+      const { csc } = toCsc(matrix);
+      const solver = new GilbertPeierlsSolver();
+      solver.analyzePattern(csc);
+      solver.factorize(csc);
+
+      const solution = solver.solve(new Float64Array([1e-3, 0]));
+
+      expect(solution[0]).toBeCloseTo(1, 12);
+      expect(solution[1]).toBeCloseTo(0, 12);
+    });
+
     it('solves a diagonal system', () => {
       const m = new SparseMatrix(3);
       m.add(0, 0, 5); m.add(1, 1, 3); m.add(2, 2, 7);

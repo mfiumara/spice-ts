@@ -12,8 +12,9 @@ import { SingularMatrixError, type MatrixVariableIdentity } from '../errors.js';
  *
  * The factorization uses a left-looking column-Crout algorithm with a dense
  * workspace vector of length n (instead of an n*n dense matrix). The symbolic
- * phase computes fill-in on the symmetric structure A+A^T, guaranteeing the
- * pre-allocated L/U arrays are large enough for any pivoting outcome.
+ * phase computes an initial fill estimate on the symmetric structure A+A^T.
+ * Numeric row pivoting can change which entries belong to L and U, so those
+ * arrays grow on demand and retain their enlarged capacity for pattern reuse.
  *
  * Storage:
  *   L is unit lower triangular (implicit 1s on diagonal), stored in CSC.
@@ -44,6 +45,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
   private nonzeroFlag!: Int32Array;     // marker for workspace non-zero tracking
   private nonzeroList!: Int32Array;     // list of non-zero workspace positions
   private activeK!: Int32Array;         // active column indices during triangular solve
+  private activeFlag!: Int32Array;      // marker preventing duplicate active columns
 
   private analyzed = false;
   private factorized = false;
@@ -151,6 +153,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
     this.nonzeroFlag = new Int32Array(n);
     this.nonzeroList = new Int32Array(n);
     this.activeK = new Int32Array(n);
+    this.activeFlag = new Int32Array(n);
 
     this.analyzed = true;
     this.factorized = false;
@@ -180,18 +183,19 @@ export class GilbertPeierlsSolver implements SparseSolver {
     const perm = this.perm;
     const workspace = this.workspace;
     const lColPtr = this.lColPtr;
-    const lRows = this.lRows;
-    const lValues = this.lValues;
+    let lRows = this.lRows;
+    let lValues = this.lValues;
     const uColPtr = this.uColPtr;
-    const uRows = this.uRows;
-    const uValues = this.uValues;
+    let uRows = this.uRows;
+    let uValues = this.uValues;
     const uDiagIdx = this.uDiagIdx;
     const pivotOrigRow = this.pivotOrigRow;
     const pinv = this.pinv;
-    const lTempOrigRows = this.lTempOrigRows;
+    let lTempOrigRows = this.lTempOrigRows;
     const nonzeroFlag = this.nonzeroFlag;
     const nonzeroList = this.nonzeroList;
     const activeK = this.activeK;
+    const activeFlag = this.activeFlag;
 
     // A failed numeric pass invalidates the previous factors. Clear the dense
     // workspace up front as a singular pass exits before per-column cleanup.
@@ -203,6 +207,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
     pivotOrigRow.fill(-1);
     pinv.fill(-1);
     nonzeroFlag.fill(-1);
+    activeFlag.fill(-1);
 
     let lp = 0;
     let up = 0;
@@ -238,6 +243,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
         const k = pinv[origRow];
         if (k >= 0 && k < j && workspace[origRow] !== 0) {
           activeK[activeCount++] = k;
+          activeFlag[k] = j;
         }
       }
       // Sort active columns
@@ -255,6 +261,11 @@ export class GilbertPeierlsSolver implements SparseSolver {
         if (ukj === 0) continue;
 
         // Store U[k,j]
+        if (up === uValues.length) {
+          this.growUFactors(up + 1);
+          uRows = this.uRows;
+          uValues = this.uValues;
+        }
         uRows[up] = k;
         uValues[up] = ukj;
         up++;
@@ -268,20 +279,22 @@ export class GilbertPeierlsSolver implements SparseSolver {
           if (nonzeroFlag[origI] !== j) {
             nonzeroFlag[origI] = j;
             nonzeroList[nonzeroCount++] = origI;
-            // If this fills in a position that's a previous pivot row, add to activeK
-            const k2 = pinv[origI];
-            if (k2 >= 0 && k2 < j && k2 > k) {
-              // Insert k2 in sorted position (insertion sort into activeK)
-              activeK[activeCount] = k2;
-              activeCount++;
-              for (let q = activeCount - 1; q > ki; q--) {
-                if (activeK[q] < activeK[q - 1]) {
-                  const tmp = activeK[q];
-                  activeK[q] = activeK[q - 1];
-                  activeK[q - 1] = tmp;
-                } else {
-                  break;
-                }
+          }
+
+          // A structural zero may already be in nonzeroList but become active
+          // only after this update. Track activation separately from structure.
+          const k2 = pinv[origI];
+          if (k2 > k && k2 < j && workspace[origI] !== 0 && activeFlag[k2] !== j) {
+            activeFlag[k2] = j;
+            activeK[activeCount] = k2;
+            activeCount++;
+            for (let q = activeCount - 1; q > ki; q--) {
+              if (activeK[q] < activeK[q - 1]) {
+                const tmp = activeK[q];
+                activeK[q] = activeK[q - 1];
+                activeK[q - 1] = tmp;
+              } else {
+                break;
               }
             }
           }
@@ -338,6 +351,11 @@ export class GilbertPeierlsSolver implements SparseSolver {
       }
 
       // Store U diagonal for column j
+      if (up === uValues.length) {
+        this.growUFactors(up + 1);
+        uRows = this.uRows;
+        uValues = this.uValues;
+      }
       uDiagIdx[j] = up;
       uRows[up] = j;
       uValues[up] = pivotVal;
@@ -351,6 +369,12 @@ export class GilbertPeierlsSolver implements SparseSolver {
       for (let t = 0; t < nonzeroCount; t++) {
         const origRow = nonzeroList[t];
         if (origRow !== chosenOrigRow && pinv[origRow] < 0 && workspace[origRow] !== 0) {
+          if (lp === lValues.length) {
+            this.growLFactors(lp + 1);
+            lRows = this.lRows;
+            lValues = this.lValues;
+            lTempOrigRows = this.lTempOrigRows;
+          }
           lTempOrigRows[lp] = origRow;
           lValues[lp] = workspace[origRow] / pivotVal;
           lp++;
@@ -377,6 +401,29 @@ export class GilbertPeierlsSolver implements SparseSolver {
     }
 
     this.factorized = true;
+  }
+
+  private growLFactors(required: number): void {
+    const capacity = Math.max(required, Math.max(4, this.lValues.length * 2));
+    const rows = new Int32Array(capacity);
+    const values = new Float64Array(capacity);
+    const originalRows = new Int32Array(capacity);
+    rows.set(this.lRows);
+    values.set(this.lValues);
+    originalRows.set(this.lTempOrigRows);
+    this.lRows = rows;
+    this.lValues = values;
+    this.lTempOrigRows = originalRows;
+  }
+
+  private growUFactors(required: number): void {
+    const capacity = Math.max(required, Math.max(4, this.uValues.length * 2));
+    const rows = new Int32Array(capacity);
+    const values = new Float64Array(capacity);
+    rows.set(this.uRows);
+    values.set(this.uValues);
+    this.uRows = rows;
+    this.uValues = values;
   }
 
   solve(b: Float64Array): Float64Array {
