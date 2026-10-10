@@ -133,6 +133,23 @@ Reproduce with `pnpm --filter @spice-ts/wasm bench:vcvs-op`. The JSON receipt re
 
 Reproduce with `pnpm --filter @spice-ts/wasm bench:rlc-tran`. The JSON receipt records ngspice-47, machine, fixture hashes, byte-identical inputs, convergence, point counts, matched-timepoint max/RMS absolute and relative errors for WASM vs ngspice, TypeScript vs ngspice and WASM vs TypeScript, unsupported-form outcomes for all three engines, fresh-process runtimes, artifact-size changes, and every retained loss.
 
+## MOS1 bulk-junction fixtures
+
+- Source: project-authored reference circuits for [issue #393](https://github.com/mfiumara/spice-ts/issues/393), issue revision as of 2026-10-11.
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- Adaptation: none. `benchmarks/results/issue-393/compare.ts` supplies the exact committed bytes to spice-ts and ngspice-47 with no engine-specific values, tolerances, or rewrites.
+
+| Fixture | SHA-256 | Coverage |
+|---|---|---|
+| `benchmarks/results/issue-393/fixtures/cutoff-leakage.cir` | `115e3adeaef71dec0c4048548c43c0d1b13e751e90e19363ab44da474bc8d895` | Cutoff bulk-drain leakage IS + GMIN*VBD through a source resistor (OP). |
+| `benchmarks/results/issue-393/fixtures/js-area.cir` | `afc8dd4543d8d68d489e0565ad230bbf8ca1b6cfdb8e2301af7d554f975ddddd` | JS*AD / JS*AS saturation-current scaling (OP). |
+| `benchmarks/results/issue-393/fixtures/nmos-forward-bulk.cir` | `665a4c2d483d35d0575e9e7b34c325423770486d6fe1290de532f20e817a3b19` | NMOS bulk junctions from reverse to forward bias (DC sweep) and their AC linearisation. |
+| `benchmarks/results/issue-393/fixtures/pmos-forward-bulk.cir` | `153742314916166194cee919a9fc6cc81e90bf8e038231752e2750b6bd75f89f` | PMOS polarity of the bulk junctions (DC sweep). |
+| `benchmarks/results/issue-393/fixtures/bulk-transient.cir` | `0305d225672ab9f17e337a64a6241177128a997efe2d955e4dada64386dfde62` | Bulk junction forward/reverse ramp in transient with the channel on. |
+| `benchmarks/results/issue-393/fixtures/body-diode-high-current.cir` | `4e03394eda229e4cf2d64e09d2c5f9c8db7b03c2a26345d2c226385263224b26` | Body diode at up to ~3.3 A forward current (DC sweep), exercising junction limiting. |
+
+Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-393/compare.ts --label after`, then `pnpm exec tsx benchmarks/results/issue-393/summarize.ts`. The receipts record ngspice-47, the measured revision, fixture hashes, engine status, and per-signal max/RMS absolute and relative errors for these fixtures and for every corpus fixture that runs through the level-1 MOSFET class.
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
