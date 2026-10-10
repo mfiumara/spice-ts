@@ -15,6 +15,9 @@ export interface JFETParams {
   FC: number;
   KF: number;
   AF: number;
+  DELTA: number;
+  /** ngspice-47 warns that THETA is unrecognized and ignores it. */
+  THETA: number;
 }
 
 export const NJF_LEVEL1_PARAMETERS = new Set<keyof JFETParams>([
@@ -22,16 +25,22 @@ export const NJF_LEVEL1_PARAMETERS = new Set<keyof JFETParams>([
   'PB', 'IS', 'B', 'FC', 'KF', 'AF',
 ]);
 
+export const NJF_LEVEL2_PARAMETERS = new Set<keyof JFETParams>([
+  'LEVEL', 'VTO', 'BETA', 'LAMBDA', 'DELTA', 'THETA', 'RD', 'RS',
+  'CGS', 'CGD', 'PB', 'IS', 'FC', 'KF', 'AF',
+]);
+
 const THERMAL_VOLTAGE = 0.02585;
 const GMIN = 1e-12;
 
 export function resolveNJFETParams(params: Record<string, number>): JFETParams {
   const level = params.LEVEL ?? 1;
-  if (level !== 1) throw new Error(`Unsupported NJF model level: ${level}`);
+  if (level !== 1 && level !== 2) throw new Error(`Unsupported NJF model level: ${level}`);
 
+  const supported = level === 1 ? NJF_LEVEL1_PARAMETERS : NJF_LEVEL2_PARAMETERS;
   for (const name of Object.keys(params)) {
-    if (!NJF_LEVEL1_PARAMETERS.has(name as keyof JFETParams)) {
-      throw new Error(`Unsupported NJF level-1 model parameter: '${name}'`);
+    if (!supported.has(name as keyof JFETParams)) {
+      throw new Error(`Unsupported NJF level-${level} model parameter: '${name}'`);
     }
   }
 
@@ -50,12 +59,15 @@ export function resolveNJFETParams(params: Record<string, number>): JFETParams {
     FC: params.FC ?? 0.5,
     KF: params.KF ?? 0,
     AF: params.AF ?? 1,
+    DELTA: params.DELTA ?? 0,
+    THETA: params.THETA ?? 0,
   };
 
   if (resolved.BETA < 0 || resolved.RD < 0 || resolved.RS < 0
     || resolved.CGS < 0 || resolved.CGD < 0 || resolved.PB <= 0
-    || resolved.IS <= 0 || resolved.FC <= 0 || resolved.FC >= 1) {
-    throw new Error('Invalid NJF level-1 model parameter value');
+    || resolved.IS <= 0 || resolved.FC <= 0 || resolved.FC >= 1
+    || resolved.DELTA < 0) {
+    throw new Error(`Invalid NJF level-${level} model parameter value`);
   }
   return resolved;
 }
@@ -153,6 +165,8 @@ function channelCurrent(
   vDS: number,
   params: JFETParams,
 ): { current: number; gm: number; gds: number } {
+  if (params.LEVEL === 2) return parkerSkellernCurrent(vGS, vDS, params);
+
   const overdrive = vGS - params.VTO;
   if (overdrive <= 0) return { current: 0, gm: 0, gds: 0 };
 
@@ -179,6 +193,60 @@ function channelCurrent(
     gm: betaPrime * overdrive * (2 * params.B + 3 * scaledBFactor),
     gds: params.LAMBDA * params.BETA * cPart,
   };
+}
+
+/**
+ * Bounded DC subset of the Parker-Skellern model used by ngspice JFET2.
+ *
+ * This is the PSids Q-law path with the ngspice-47 defaults P=Q=2,
+ * XI=1000, Z=1, MXI=VST=LFGAM=HFETA=HFGAM=0, followed by LAMBDA/BETA
+ * scaling and DELTA self-heating reduction. THETA is deliberately absent:
+ * ngspice-47 reports it as unrecognized and ignores it.
+ *
+ * Source: ngspice src/spicelib/devices/jfet2/psmodel.c, PSids().
+ */
+function parkerSkellernCurrent(
+  vGS: number,
+  vDS: number,
+  params: JFETParams,
+): { current: number; gm: number; gds: number } {
+  const vGT = vGS - params.VTO;
+  if (vGT <= 0) return { current: 0, gm: 0, gds: 0 };
+
+  const xi = 1000;
+  const z = 1;
+  const xiWoo = xi * (params.PB - params.VTO);
+  const za = Math.sqrt(1 + z) / 2;
+  const vSatFactor = vGT / xiWoo;
+  const vSat = vGT / (1 + vSatFactor);
+  const aa = za * vDS + vSat / 2;
+  const saturationTerm = vSat * vSat * z / 4;
+  const rootPositive = Math.sqrt(aa * aa + saturationTerm);
+  const rootNegative = Math.sqrt((aa - vSat) ** 2 + saturationTerm);
+  const vDT = rootPositive - rootNegative;
+  const dvdtDvds = za * (aa / rootPositive - (aa - vSat) / rootNegative);
+  const dvdtDvgt = (vDT - vDS * dvdtDvds)
+    * (1 + vSatFactor * vSatFactor) / (1 + vSatFactor) / vGT;
+
+  const remaining = vGT - vDT;
+  let gds = 2 * remaining;
+  let current = vDT * remaining + vGT * vDT;
+  let gm = 2 * vDT;
+  gm += gds * dvdtDvgt;
+  gds *= dvdtDvds;
+
+  const betaScale = params.BETA * (1 + params.LAMBDA * vDS);
+  gm *= betaScale;
+  gds = params.BETA * params.LAMBDA * current + gds * betaScale;
+  current *= betaScale;
+
+  const powerFactor = 1 + params.DELTA * vDS * current;
+  current /= powerFactor;
+  const derivativeScale = 1 / (powerFactor * powerFactor);
+  gm *= derivativeScale;
+  gds = gds * derivativeScale - params.DELTA * current * current;
+
+  return { current, gm, gds };
 }
 
 function stampTwoTerminal(
