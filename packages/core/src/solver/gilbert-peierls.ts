@@ -12,9 +12,9 @@ import { SingularMatrixError, type MatrixVariableIdentity } from '../errors.js';
  *
  * The factorization uses a left-looking column-Crout algorithm with a dense
  * workspace vector of length n (instead of an n*n dense matrix). The symbolic
- * phase computes an initial fill estimate on the symmetric structure A+A^T.
- * Numeric row pivoting can change which entries belong to L and U, so those
- * arrays grow on demand and retain their enlarged capacity for pattern reuse.
+ * phase sizes the initial factor buffers from the CSC structure. Numeric fill
+ * and row pivoting can exceed that estimate, so those arrays grow on demand and
+ * retain their enlarged capacity for pattern reuse.
  *
  * Storage:
  *   L is unit lower triangular (implicit 1s on diagonal), stored in CSC.
@@ -58,82 +58,21 @@ export class GilbertPeierlsSolver implements SparseSolver {
     this.n = n;
     this.variables = variables;
 
-    // Compute symbolic fill-in on the symmetric structure (A + A^T).
-    // This gives a superset of the actual non-zero structure regardless of pivoting.
-    const symAdj = buildSymmetricAdjacency(A);
-    const lRowSets: number[][] = new Array(n);
-    const uRowSets: number[][] = new Array(n);
-
-    const parent = new Int32Array(n).fill(-1);
-    const visited = new Int32Array(n).fill(-1);
-
-    for (let j = 0; j < n; j++) {
-      const allRows = new Set<number>();
-
-      for (const i of symAdj[j]) {
-        allRows.add(i);
-      }
-
-      // Walk up elimination tree from each row < j to find U-part reachability
-      for (const startRow of symAdj[j]) {
-        let i = startRow;
-        while (i !== -1 && i < j && visited[i] !== j) {
-          visited[i] = j;
-          const p = parent[i];
-          if (p === -1) {
-            parent[i] = j;
-          }
-          i = p;
-        }
-      }
-
-      // Propagate fill-in: for each k < j reachable from A[:,j], the rows
-      // of L[:,k] create fill-in positions in column j
-      const uRowList: number[] = [];
-      for (const row of allRows) {
-        if (row < j) uRowList.push(row);
-      }
-      uRowList.sort((a, b) => a - b);
-
-      let qi = 0;
-      while (qi < uRowList.length) {
-        const k = uRowList[qi];
-        qi++;
-        if (lRowSets[k]) {
-          for (const row of lRowSets[k]) {
-            if (!allRows.has(row)) {
-              allRows.add(row);
-              if (row < j) {
-                uRowList.push(row);
-              }
-            }
-          }
-        }
-      }
-
-      // Rebuild sorted lists after fill-in propagation
-      uRowList.length = 0;
-      for (const row of allRows) {
-        if (row < j) uRowList.push(row);
-      }
-      uRowList.sort((a, b) => a - b);
-
-      const lRowList: number[] = [];
-      for (const row of allRows) {
-        if (row > j) lRowList.push(row);
-      }
-      lRowList.sort((a, b) => a - b);
-
-      uRowSets[j] = uRowList;
-      lRowSets[j] = lRowList;
-    }
-
-    // Compute total nnz for L and U
+    // Size the initial factors directly from A's structural lower/upper parts.
+    // The previous fill predictor materialized one Set and multiple boxed arrays
+    // per column, although numeric pivoting could still invalidate its estimate.
+    // Dynamic growth already preserves correctness for fill beyond this bound.
     let lNnz = 0;
     let uNnz = 0;
     for (let j = 0; j < n; j++) {
-      lNnz += lRowSets[j].length;
-      uNnz += uRowSets[j].length + 1; // +1 for diagonal
+      let hasDiagonal = false;
+      for (let p = A.colPtr[j]; p < A.colPtr[j + 1]; p++) {
+        const row = A.rowIdx[p];
+        if (row > j) lNnz++;
+        else uNnz++;
+        if (row === j) hasDiagonal = true;
+      }
+      if (!hasDiagonal) uNnz++;
     }
 
     // Pre-allocate all arrays. These are reused across factorize calls.
@@ -487,28 +426,4 @@ function sortInt32Prefix(arr: Int32Array, count: number): void {
     }
     arr[j + 1] = val;
   }
-}
-
-/**
- * Build symmetric adjacency lists from CSC matrix.
- * For each column j, returns the set of rows i such that A[i,j] != 0 OR A[j,i] != 0.
- */
-function buildSymmetricAdjacency(A: CscMatrix): number[][] {
-  const n = A.size;
-  const adj: Set<number>[] = new Array(n);
-  for (let j = 0; j < n; j++) adj[j] = new Set();
-
-  for (let j = 0; j < n; j++) {
-    for (let p = A.colPtr[j]; p < A.colPtr[j + 1]; p++) {
-      const i = A.rowIdx[p];
-      adj[j].add(i);
-      adj[i].add(j);
-    }
-  }
-
-  const result: number[][] = new Array(n);
-  for (let j = 0; j < n; j++) {
-    result[j] = Array.from(adj[j]).sort((a, b) => a - b);
-  }
-  return result;
 }

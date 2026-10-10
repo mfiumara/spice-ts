@@ -175,10 +175,11 @@ class TransientSimImpl implements TransientSim {
     if (config.initialSolution) {
       // Caller already computed DC — skip internal DC and seed directly.
       this.assembler.solution.set(config.initialSolution);
-      this.stampPrevB();
     } else {
       this.initDC();
     }
+    this.acceptTransientStep();
+    this.stampPrevB();
 
     this.breakpoints = this.collectBreakpoints();
   }
@@ -310,6 +311,10 @@ class TransientSimImpl implements TransientSim {
       }
       this.lteRejectCount = 0;
 
+      // Device-owned histories must observe only committed solutions. In
+      // particular, NR/LTE retries and the stampPrevB restamp below are not
+      // accepted timepoints and must remain side-effect free.
+      this.acceptTransientStep();
       // Update trapezoidal history.
       if (this.integrationMethod === 'trapezoidal') {
         this.stampPrevB();
@@ -357,6 +362,7 @@ class TransientSimImpl implements TransientSim {
 
   reset(): void {
     if (this.disposed) throw new InvalidCircuitError('TransientSim has been disposed');
+    for (const device of this.compiled.devices) device.resetTransient?.();
     this.assembler = this.createAssembler();
     this.time = 0;
     this.dt = Math.min(this.config.timestep, this.config.maxTimestep);
@@ -370,10 +376,11 @@ class TransientSimImpl implements TransientSim {
     resetConvergenceTelemetry(this.convergenceTelemetry);
     if (this.config.initialSolution) {
       this.assembler.solution.set(this.config.initialSolution);
-      this.stampPrevB();
     } else {
       this.initDC();
     }
+    this.acceptTransientStep();
+    this.stampPrevB();
     this.breakpoints = this.collectBreakpoints();
   }
 
@@ -443,12 +450,16 @@ class TransientSimImpl implements TransientSim {
     this.prevB = current;
   }
 
+  private acceptTransientStep(): void {
+    const ctx = this.assembler.getStampContext();
+    for (const device of this.compiled.devices) device.acceptTransientStep?.(ctx);
+  }
+
   private initDC(): void {
     const { assembler: dcAsm } = solveDCOperatingPoint(
       this.compiled, this.options, undefined, this.convergenceTelemetry, 'transient',
     );
     this.assembler.solution.set(dcAsm.solution);
-    this.stampPrevB();
   }
 
   private checkLTE(current: Float64Array, previous: Float64Array, dt: number): number {
