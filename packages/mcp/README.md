@@ -7,8 +7,11 @@ A bounded stdio MCP server exposing the existing spice-ts protocol-v1 adapter. I
 - `spice_capabilities`: deterministic discovery of supported analyses, input formats, and server limits.
 - `spice_validate`: bounded parse/compile/topology validation without solving.
 - `spice_simulate`: one bounded protocol-v1 simulation.
+- `spice_simulation_start`: run a bounded simulation and retain canonical protocol-v1 events behind an opaque job cursor.
+- `spice_simulation_read`: pull a replayable chunk containing at most 256 points by default (caller-selectable from 1 through the hard cap of 1024).
+- `spice_simulation_cancel`: idempotently stop delivery and return the protocol-v1 cancelled terminal with partial analysis counts and `partialEventSha256`.
 
-Both request tools accept `{ "request": SimulationRequestV1 }`. Successful results are returned as MCP `structuredContent` and as compact JSON text. Failures set `isError` and return `{ "error": SpiceApiErrorV1 }`; implementation backend names are removed from public errors.
+The validation, one-shot simulation, and stream-start tools accept `{ "request": SimulationRequestV1 }`. Successful results are returned as MCP `structuredContent` and as compact JSON text. Failures set `isError` and return `{ "error": SpiceApiErrorV1 }`; implementation backend names are removed from public errors.
 
 The server supports protocol-v1 `spice` and `spice-ts` inputs and `op`, `dc`, `tran`, and `ac` analyses. `circuit-json` conversion remains owned by `@spice-ts/circuit-json` and is not exposed by this slice.
 
@@ -35,7 +38,7 @@ Expected stable fields are `capabilities.protocolVersion: "1"`, validation count
 
 ## Resource and cancellation policy
 
-The default hard ceilings are:
+The default simulation ceilings are:
 
 - document: 262144 UTF-8 bytes
 - analyses: 8
@@ -43,8 +46,12 @@ The default hard ceilings are:
 - serialized result: 4194304 UTF-8 bytes
 - wall time: 10000 ms
 
+Streaming applies the same document, analysis, point, serialized-result, and wall-time ceilings before a job is retained. Read chunks are point-counted rather than time- or byte-timed. The default chunk is 256 points and `maxPoints` cannot exceed 1024. Each server retains at most 16 jobs; starting a seventeenth evicts the oldest terminal job or returns `RESOURCE_LIMIT` when all retained jobs are unfinished. A cursor is job-scoped, forward-only, and replayable: once read, the same cursor returns the identical chunk even if a later call supplies a different `maxPoints`.
+
+`spice_simulation_start` returns `{ jobId, status: "running", cursor }`. Pass those identifiers to `spice_simulation_read`. Read results use `SimulationReadDataV1` directly: canonical `analysis-start`, contiguous `point`, and `analysis-end` events followed by the existing success terminal. Cancelling after any read returns the same shape with `status: "cancelled"`; its partial hash covers only point events already emitted. Cancellation is tied to cursor progress, never sleeps or wall-clock timing. The internal core backend name is not a public value; successful metadata uses the protocol backend `spice-ts-js`.
+
 A request may specify tighter protocol limits but cannot raise these ceilings. Source directives are preflighted for analysis and point counts, and completed results are checked again before serialization. MCP cancellation is observed before and during adapter calls. A cancelled call returns `CANCELLED`; a ceiling returns `RESOURCE_LIMIT` with the limit name, maximum, and observed value where available.
 
-The executable example proves the current packed Node stdio package, its three tools, JSON-safe results, and one deterministic point-bound recovery path. It does not prove the browser worker or WASM facade, network deployment, authentication, cancellation timing, or every resource ceiling.
+The executable example proves the current packed Node stdio package's capability, validation, and one-shot tools, JSON-safe results, and one deterministic point-bound recovery path. The packed-consumer and official-client tests additionally exercise normal stream completion, replay, hard chunk bounds, cancellation, malformed reads, and backend-name non-leakage. They do not prove the browser worker or WASM facade, network deployment, authentication, TTL, backpressure, or every resource ceiling.
 
 The stdio process writes protocol messages only to stdout. Do not wrap it with a network listener without adding the authentication, isolation, and deployment design that this bounded package intentionally omits.

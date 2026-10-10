@@ -1,12 +1,20 @@
 import { mapProtocolErrorV1, simulateProtocolV1, validateProtocolV1 } from '@spice-ts/core';
-import { commonSchemaV1 } from '@spice-ts/protocol';
+import { commonSchemaV1, sha256CanonicalJson } from '@spice-ts/protocol';
 import type {
+  AnalysisResultV1,
   AnalysisV1,
   JsonObject,
   JsonValue,
+  PartialAnalysisV1,
+  ResolvedOptionsV1,
+  RunMetadataV1,
+  SimulationEventV1,
+  SimulationReadDataV1,
   SimulationRequestV1,
   SimulationResultV1,
   SpiceApiErrorV1,
+  StreamTerminalV1,
+  SuccessEnvelopeV1,
 } from '@spice-ts/protocol';
 import type { CallToolResult, Tool } from '@modelcontextprotocol/sdk/types.js';
 import { createRequire } from 'node:module';
@@ -27,6 +35,12 @@ export interface ToolExecutionOptions {
   simulate?: typeof simulateProtocolV1;
   workerFactory?: () => ExecutionWorker;
 }
+
+export type ToolExecutor = (
+  name: string,
+  args: unknown,
+  options?: ToolExecutionOptions,
+) => Promise<CallToolResult>;
 
 export interface ExecutionWorker {
   postMessage(message: unknown): void;
@@ -59,6 +73,12 @@ export const DEFAULT_MCP_LIMITS: Readonly<McpLimits> = Object.freeze({
   maxWallTimeMs: 10_000,
 });
 
+export const DEFAULT_STREAM_CHUNK_POINTS = 256;
+export const MAX_STREAM_CHUNK_POINTS = 1024;
+export const MAX_RETAINED_STREAM_JOBS = 16;
+const PACKAGE_VERSION = '0.3.0';
+const ENGINE_BUILD_ID = 'mcp-node-v1';
+
 const requestInputSchema = {
   type: 'object',
   required: ['request'],
@@ -69,7 +89,7 @@ const requestInputSchema = {
 
 const capabilitiesOutputSchema = {
   type: 'object',
-  required: ['protocolVersion', 'analyses', 'inputFormats', 'limits'],
+  required: ['protocolVersion', 'analyses', 'inputFormats', 'limits', 'streaming'],
   properties: {
     protocolVersion: { const: '1' },
     analyses: { type: 'array', items: { enum: ['op', 'dc', 'tran', 'ac'] } },
@@ -78,6 +98,16 @@ const capabilitiesOutputSchema = {
       type: 'object',
       required: Object.keys(DEFAULT_MCP_LIMITS),
       properties: Object.fromEntries(Object.keys(DEFAULT_MCP_LIMITS).map(key => [key, { type: 'integer', minimum: 0 }])),
+      additionalProperties: false,
+    },
+    streaming: {
+      type: 'object',
+      required: ['defaultChunkPoints', 'maxChunkPoints', 'maxRetainedJobs'],
+      properties: {
+        defaultChunkPoints: { const: DEFAULT_STREAM_CHUNK_POINTS },
+        maxChunkPoints: { const: MAX_STREAM_CHUNK_POINTS },
+        maxRetainedJobs: { const: MAX_RETAINED_STREAM_JOBS },
+      },
       additionalProperties: false,
     },
   },
@@ -94,6 +124,57 @@ const validationOutputSchema = {
     analysisCount: { type: 'integer', minimum: 0 },
   },
   additionalProperties: false,
+};
+
+const streamStartOutputSchema = {
+  type: 'object',
+  required: ['jobId', 'status', 'cursor'],
+  properties: {
+    jobId: { type: 'string', minLength: 1 },
+    status: { const: 'running' },
+    cursor: { type: 'string', minLength: 1 },
+  },
+  additionalProperties: false,
+};
+
+const toolFailureOutputSchema = {
+  type: 'object',
+  required: ['error'],
+  properties: { error: { $ref: '#/$defs/apiError' } },
+  additionalProperties: false,
+};
+
+const streamStartToolOutputSchema = {
+  type: 'object',
+  oneOf: [streamStartOutputSchema, toolFailureOutputSchema],
+  $defs: commonSchemaV1.$defs,
+};
+
+const streamReadInputSchema = {
+  type: 'object',
+  required: ['jobId', 'cursor'],
+  properties: {
+    jobId: { type: 'string', minLength: 1 },
+    cursor: { type: 'string', minLength: 1 },
+    maxPoints: { type: 'integer', minimum: 1, maximum: MAX_STREAM_CHUNK_POINTS },
+  },
+  additionalProperties: false,
+};
+
+const streamCancelInputSchema = {
+  type: 'object',
+  required: ['jobId'],
+  properties: { jobId: { type: 'string', minLength: 1 } },
+  additionalProperties: false,
+};
+
+const streamToolOutputSchema = {
+  type: 'object',
+  oneOf: [
+    { $ref: '#/$defs/simulationReadData' },
+    toolFailureOutputSchema,
+  ],
+  $defs: commonSchemaV1.$defs,
 };
 
 export const MCP_TOOLS = Object.freeze([
@@ -115,6 +196,24 @@ export const MCP_TOOLS = Object.freeze([
     inputSchema: requestInputSchema,
     outputSchema: { ...commonSchemaV1.$defs.simulationResult, $defs: commonSchemaV1.$defs },
   },
+  {
+    name: 'spice_simulation_start',
+    description: 'Start one bounded protocol-v1 simulation job and return its first opaque cursor.',
+    inputSchema: requestInputSchema,
+    outputSchema: streamStartToolOutputSchema,
+  },
+  {
+    name: 'spice_simulation_read',
+    description: 'Read one deterministic point-bounded chunk from a simulation job.',
+    inputSchema: streamReadInputSchema,
+    outputSchema: streamToolOutputSchema,
+  },
+  {
+    name: 'spice_simulation_cancel',
+    description: 'Cancel a simulation job and return its protocol-v1 partial terminal.',
+    inputSchema: streamCancelInputSchema,
+    outputSchema: streamToolOutputSchema,
+  },
 ]) as readonly Tool[];
 
 const capabilities = Object.freeze({
@@ -122,6 +221,11 @@ const capabilities = Object.freeze({
   analyses: Object.freeze(['op', 'dc', 'tran', 'ac']),
   inputFormats: Object.freeze(['spice', 'spice-ts']),
   limits: DEFAULT_MCP_LIMITS,
+  streaming: Object.freeze({
+    defaultChunkPoints: DEFAULT_STREAM_CHUNK_POINTS,
+    maxChunkPoints: MAX_STREAM_CHUNK_POINTS,
+    maxRetainedJobs: MAX_RETAINED_STREAM_JOBS,
+  }),
 });
 
 export async function executeTool(
@@ -129,10 +233,31 @@ export async function executeTool(
   args: unknown,
   options: ToolExecutionOptions = {},
 ): Promise<CallToolResult> {
+  return executeToolWithStore(name, args, options, defaultStreamStore);
+}
+
+export function createToolExecutor(baseOptions: ToolExecutionOptions = {}): ToolExecutor {
+  const store = new StreamStore();
+  return (name, args, options = {}) => executeToolWithStore(
+    name,
+    args,
+    { ...baseOptions, ...options },
+    store,
+  );
+}
+
+async function executeToolWithStore(
+  name: string,
+  args: unknown,
+  options: ToolExecutionOptions,
+  streamStore: StreamStore,
+): Promise<CallToolResult> {
   const limits = options.limits ?? DEFAULT_MCP_LIMITS;
   try {
     if (name === 'spice_capabilities') return success(capabilities);
-    if (name !== 'spice_validate' && name !== 'spice_simulate') {
+    if (name === 'spice_simulation_read') return success(streamStore.read(streamReadArgs(args)));
+    if (name === 'spice_simulation_cancel') return success(streamStore.cancel(streamCancelArgs(args)));
+    if (name !== 'spice_validate' && name !== 'spice_simulate' && name !== 'spice_simulation_start') {
       return failure(apiError('INVALID_REQUEST', 'Unknown tool', 'transport', {}));
     }
 
@@ -156,10 +281,248 @@ export async function executeTool(
       ? await boundedCall(() => options.simulate!(bounded), effective.maxWallTimeMs, options.signal)
       : await runInWorker<SimulationResultV1>('simulate', bounded, effective.maxWallTimeMs, options);
     enforceResultBounds(result, effective);
+    if (name === 'spice_simulation_start') return success(streamStore.start(bounded, result));
     return success(result);
   } catch (error) {
     return failure(publicError(error));
   }
+}
+
+interface StreamReadArgs {
+  jobId: string;
+  cursor: string;
+  maxPoints: number;
+}
+
+interface StreamJob {
+  request: SimulationRequestV1;
+  result: SimulationResultV1;
+  events: SimulationEventV1[];
+  cursorOffsets: Map<string, number>;
+  replay: Map<string, SimulationReadDataV1>;
+  emitted: SimulationEventV1[];
+  terminal?: SimulationReadDataV1;
+}
+
+class StreamStore {
+  private readonly jobs = new Map<string, StreamJob>();
+  private nextJobId = 1;
+
+  start(request: SimulationRequestV1, result: SimulationResultV1): JsonObject {
+    if (this.jobs.size >= MAX_RETAINED_STREAM_JOBS) {
+      const completed = [...this.jobs].find(([, job]) => job.terminal !== undefined);
+      if (completed) this.jobs.delete(completed[0]);
+    }
+    if (this.jobs.size >= MAX_RETAINED_STREAM_JOBS) {
+      throw apiError('RESOURCE_LIMIT', 'The retained stream-job limit was exceeded', 'transport', {
+        limit: 'maxRetainedStreamJobs', maximum: MAX_RETAINED_STREAM_JOBS,
+        actual: this.jobs.size + 1,
+      });
+    }
+    const jobId = `job-${this.nextJobId++}`;
+    const cursor = streamCursor(jobId, 0);
+    this.jobs.set(jobId, {
+      request,
+      result,
+      events: resultEvents(result),
+      cursorOffsets: new Map([[cursor, 0]]),
+      replay: new Map(),
+      emitted: [],
+    });
+    return { jobId, status: 'running', cursor };
+  }
+
+  read(args: StreamReadArgs): SimulationReadDataV1 {
+    const job = this.job(args.jobId);
+    const offset = job.cursorOffsets.get(args.cursor);
+    if (offset === undefined) {
+      throw apiError('INVALID_REQUEST', 'The stream cursor is invalid for this job', 'validation', {});
+    }
+    const replay = job.replay.get(args.cursor);
+    if (replay) return replay;
+    if (job.terminal) return job.terminal;
+
+    const events: SimulationEventV1[] = [];
+    let pointCount = 0;
+    let nextOffset = offset;
+    while (nextOffset < job.events.length) {
+      const event = job.events[nextOffset]!;
+      if (event.type === 'point' && pointCount >= args.maxPoints) break;
+      events.push(event);
+      nextOffset++;
+      if (event.type === 'point') {
+        pointCount++;
+        if (pointCount === args.maxPoints) break;
+      }
+    }
+    job.emitted.push(...events);
+
+    let data: SimulationReadDataV1;
+    if (nextOffset < job.events.length) {
+      const nextCursor = streamCursor(args.jobId, nextOffset);
+      job.cursorOffsets.set(nextCursor, nextOffset);
+      data = { status: 'running', events, nextCursor };
+    } else {
+      data = {
+        status: 'complete', events, nextCursor: null,
+        terminal: successTerminal(args.jobId, job.request, job.result),
+      };
+      job.terminal = data;
+    }
+    job.replay.set(args.cursor, data);
+    return data;
+  }
+
+  cancel(jobId: string): SimulationReadDataV1 {
+    const job = this.job(jobId);
+    if (job.terminal) return job.terminal;
+    const terminal: StreamTerminalV1 = {
+      apiVersion: '1', ok: false, requestId: jobId,
+      error: {
+        code: 'CANCELLED', message: 'The simulation job was cancelled',
+        retryable: true, phase: 'solve', details: {},
+      },
+      diagnostics: [],
+      partial: {
+        status: 'partial',
+        analyses: partialAnalyses(job.emitted),
+        partialEventSha256: sha256CanonicalJson(job.emitted.filter(event => event.type === 'point')),
+      },
+    };
+    const data: SimulationReadDataV1 = {
+      status: 'cancelled', events: [], nextCursor: null, terminal,
+    };
+    job.terminal = data;
+    return data;
+  }
+
+  private job(jobId: string): StreamJob {
+    const job = this.jobs.get(jobId);
+    if (!job) throw apiError('INVALID_REQUEST', 'The simulation job was not found', 'validation', {});
+    return job;
+  }
+}
+
+const defaultStreamStore = new StreamStore();
+
+function streamReadArgs(args: unknown): StreamReadArgs {
+  if (!isRecord(args) || typeof args.jobId !== 'string' || typeof args.cursor !== 'string') {
+    throw apiError('INVALID_REQUEST', "Expected 'jobId' and 'cursor' strings", 'validation', {});
+  }
+  const maxPoints = args.maxPoints ?? DEFAULT_STREAM_CHUNK_POINTS;
+  if (!Number.isInteger(maxPoints) || (maxPoints as number) <= 0) {
+    throw apiError('INVALID_REQUEST', "'maxPoints' must be a positive integer", 'validation', {});
+  }
+  enforceMaximum('maxStreamChunkPoints', MAX_STREAM_CHUNK_POINTS, maxPoints as number, 'transport');
+  return { jobId: args.jobId, cursor: args.cursor, maxPoints: maxPoints as number };
+}
+
+function streamCancelArgs(args: unknown): string {
+  if (!isRecord(args) || typeof args.jobId !== 'string') {
+    throw apiError('INVALID_REQUEST', "Expected a 'jobId' string", 'validation', {});
+  }
+  return args.jobId;
+}
+
+function streamCursor(jobId: string, offset: number): string {
+  return Buffer.from(`${jobId}:${offset}`, 'utf8').toString('base64url');
+}
+
+function resultEvents(result: SimulationResultV1): SimulationEventV1[] {
+  const events: SimulationEventV1[] = [];
+  for (const analysis of result.analyses) {
+    const common = { analysisIndex: analysis.analysisIndex, ...(analysis.step ? { step: analysis.step } : {}) };
+    events.push({ type: 'analysis-start', analysis: analysis.type, ...common });
+    const points = analysisPoints(analysis);
+    points.forEach((point, pointIndex) => events.push({ type: 'point', ...common, pointIndex, point }));
+    events.push({ type: 'analysis-end', analysis: analysis.type, ...common, pointCount: points.length });
+  }
+  return events;
+}
+
+function analysisPoints(analysis: AnalysisResultV1): Array<Extract<SimulationEventV1, { type: 'point' }>['point']> {
+  switch (analysis.type) {
+    case 'op': return [];
+    case 'dc': return analysis.axis.values.map((value, index) => ({
+      type: 'dc', axis: { name: analysis.axis.name, unit: analysis.axis.unit, value },
+      voltagesV: indexedRecord(analysis.voltagesV, index), currentsA: indexedRecord(analysis.currentsA, index),
+    }));
+    case 'tran': return analysis.timeS.map((timeS, index) => ({
+      type: 'tran', timeS,
+      voltagesV: indexedRecord(analysis.voltagesV, index), currentsA: indexedRecord(analysis.currentsA, index),
+    }));
+    case 'ac': return analysis.frequencyHz.map((frequencyHz, index) => ({
+      type: 'ac', frequencyHz,
+      voltagePhasors: indexedRecord(analysis.voltagePhasors, index),
+      currentPhasors: indexedRecord(analysis.currentPhasors, index),
+    }));
+  }
+}
+
+function indexedRecord<T>(record: Record<string, T[]>, index: number): Record<string, T> {
+  return Object.fromEntries(Object.entries(record).map(([key, values]) => [key, values[index]!]));
+}
+
+function partialAnalyses(events: SimulationEventV1[]): PartialAnalysisV1[] {
+  const analyses = new Map<string, PartialAnalysisV1>();
+  for (const event of events) {
+    if (event.type === 'diagnostic') continue;
+    const key = `${event.analysisIndex}:${event.step?.index ?? ''}`;
+    if (event.type === 'analysis-start' && event.analysis !== 'op') {
+      analyses.set(key, {
+        analysis: event.analysis, analysisIndex: event.analysisIndex,
+        ...(event.step ? { step: event.step } : {}), emittedPointCount: 0, complete: false,
+      });
+    } else if (event.type === 'point') {
+      const analysis = analyses.get(key);
+      if (analysis) analysis.emittedPointCount++;
+    } else if (event.type === 'analysis-end') {
+      const analysis = analyses.get(key);
+      if (analysis) analysis.complete = true;
+    }
+  }
+  return [...analyses.values()];
+}
+
+function successTerminal(
+  requestId: string,
+  request: SimulationRequestV1,
+  result: SimulationResultV1,
+): SuccessEnvelopeV1<SimulationResultV1> {
+  return {
+    apiVersion: '1', ok: true, requestId, data: result, diagnostics: [],
+    metadata: runMetadata(request, sha256CanonicalJson(result)),
+  };
+}
+
+function runMetadata(request: SimulationRequestV1, resultSha256: string): RunMetadataV1 {
+  return {
+    protocolVersion: '1',
+    ...(request.input.format === 'spice-ts' ? { nativeSchemaVersion: '1.0' as const } : {}),
+    spiceTsVersion: PACKAGE_VERSION,
+    engineBuildId: ENGINE_BUILD_ID,
+    backend: 'spice-ts-js',
+    backendVersion: PACKAGE_VERSION,
+    resolvedOptions: resolvedOptions(request),
+    inputSha256: sha256CanonicalJson(request.input),
+    resultSha256,
+    runtime: { family: 'node', version: process.versions.node },
+    architecture: process.arch,
+    determinism: request.options?.determinism ?? 'strict',
+  };
+}
+
+function resolvedOptions(request: SimulationRequestV1): ResolvedOptionsV1 {
+  const options = request.options;
+  return {
+    backend: 'spice-ts-js', abstol: options?.abstol ?? 1e-12, vntol: options?.vntol ?? 1e-6,
+    reltol: options?.reltol ?? 1e-3, maxIterations: options?.maxIterations ?? 100,
+    maxTransientIterations: options?.maxTransientIterations ?? 50,
+    maxTimestep: options?.maxTimestep ?? Number.MAX_VALUE,
+    integrationMethod: options?.integrationMethod ?? 'trapezoidal', trtol: options?.trtol ?? 7,
+    gmin: options?.gmin ?? 0, determinism: options?.determinism ?? 'strict',
+    ...(options?.limits ? { limits: options.limits } : {}),
+  };
 }
 
 function effectiveLimits(request: SimulationRequestV1, configured: McpLimits): McpLimits {
@@ -289,7 +652,12 @@ function enforceResultBounds(result: SimulationResultV1, limits: McpLimits): voi
   enforceMaximum('maxSerializedResultBytes', limits.maxSerializedResultBytes, Buffer.byteLength(JSON.stringify(result)), 'serialize');
 }
 
-function enforceMaximum(limit: keyof McpLimits, maximum: number, actual: number, phase: SpiceApiErrorV1['phase']): void {
+function enforceMaximum(
+  limit: keyof McpLimits | 'maxStreamChunkPoints',
+  maximum: number,
+  actual: number,
+  phase: SpiceApiErrorV1['phase'],
+): void {
   if (actual > maximum) {
     throw apiError('RESOURCE_LIMIT', 'A configured resource limit was exceeded', phase, { limit, maximum, actual });
   }
@@ -413,7 +781,11 @@ function sanitizeError(error: SpiceApiErrorV1): SpiceApiErrorV1 {
 
 function sanitizeValue(value: JsonValue): JsonValue {
   if (typeof value === 'string') {
-    return value.replaceAll('spice-ts-js', 'simulation backend').replaceAll('spice-ts-wasm', 'simulation backend').replaceAll('ngspice-wasm', 'simulation backend');
+    return value
+      .replaceAll('spice-ts-js', 'simulation backend')
+      .replaceAll('spice-ts-wasm', 'simulation backend')
+      .replaceAll('ngspice-wasm', 'simulation backend')
+      .replaceAll('spice-ts', 'simulation backend');
   }
   if (Array.isArray(value)) return value.map(sanitizeValue);
   if (value !== null && typeof value === 'object') {

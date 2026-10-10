@@ -1,9 +1,14 @@
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { EventEmitter } from 'node:events';
-import type { SimulationRequestV1, SimulationResultV1 } from '@spice-ts/protocol';
+import { sha256CanonicalJson } from '@spice-ts/protocol';
+import type {
+  SimulationReadDataV1,
+  SimulationRequestV1,
+  SimulationResultV1,
+} from '@spice-ts/protocol';
 import { describe, expect, it, vi } from 'vitest';
-import { DEFAULT_MCP_LIMITS, executeTool } from './server.js';
+import { createToolExecutor, DEFAULT_MCP_LIMITS, executeTool } from './server.js';
 import type { ExecutionWorker } from './server.js';
 
 const fixture = async <T>(name: string): Promise<T> => JSON.parse(await readFile(
@@ -23,6 +28,7 @@ describe('bounded protocol-v1 tools', () => {
       analyses: ['op', 'dc', 'tran', 'ac'],
       inputFormats: ['spice', 'spice-ts'],
       limits: DEFAULT_MCP_LIMITS,
+      streaming: { defaultChunkPoints: 256, maxChunkPoints: 1024, maxRetainedJobs: 16 },
     });
   });
 
@@ -224,4 +230,171 @@ describe('bounded protocol-v1 tools', () => {
       },
     });
   });
+
+  it('streams canonical analysis events in bounded replayable chunks', async () => {
+    const request: SimulationRequestV1 = {
+      apiVersion: '1',
+      input: {
+        format: 'spice',
+        source: 'V1 in 0 1\nR1 in out 1k\nC1 out 0 1u\n.tran 1u 3u',
+      },
+    };
+    const result: SimulationResultV1 = {
+      status: 'complete',
+      analyses: [{
+        type: 'tran', analysisIndex: 0, timeS: [0, 1e-6, 2e-6, 3e-6],
+        voltagesV: { in: [1, 1, 1, 1], out: [0, 0.5, 0.75, 0.875] },
+        currentsA: { V1: [0, 0, 0, 0] },
+      }],
+    };
+    const started = await executeTool('spice_simulation_start', { request }, {
+      simulate: async () => result,
+    });
+    expect(started.structuredContent).toMatchObject({ status: 'running' });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+
+    const first = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints: 2 });
+    const replay = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints: 4 });
+    expect(replay).toEqual(first);
+    const firstData = first.structuredContent as unknown as SimulationReadDataV1;
+    expect(firstData).toMatchObject({
+      status: 'running',
+      events: [
+        { type: 'analysis-start', analysis: 'tran', analysisIndex: 0 },
+        { type: 'point', analysisIndex: 0, pointIndex: 0, point: { type: 'tran' } },
+        { type: 'point', analysisIndex: 0, pointIndex: 1, point: { type: 'tran' } },
+      ],
+    });
+
+    const second = await executeTool('spice_simulation_read', {
+      jobId,
+      cursor: firstData.nextCursor,
+      maxPoints: 2,
+    });
+    const secondData = second.structuredContent as unknown as SimulationReadDataV1;
+    expect(secondData.status).toBe('running');
+    const final = await executeTool('spice_simulation_read', {
+      jobId,
+      cursor: secondData.nextCursor,
+      maxPoints: 2,
+    });
+    const finalData = final.structuredContent as unknown as SimulationReadDataV1;
+    expect(finalData).toMatchObject({
+      status: 'complete',
+      events: [{ type: 'analysis-end', analysis: 'tran', analysisIndex: 0, pointCount: 4 }],
+      nextCursor: null,
+      terminal: { apiVersion: '1', ok: true, requestId: jobId, data: { status: 'complete' } },
+    });
+    expect(finalData.status === 'complete' && finalData.terminal.metadata.resultSha256)
+      .toBe(sha256CanonicalJson(finalData.status === 'complete' ? finalData.terminal.data : null));
+
+    const values = JSON.parse(JSON.stringify([firstData, secondData, finalData])) as unknown;
+    expect(containsExactString(values, 'spice-ts')).toBe(false);
+  });
+
+  it('cancels deterministically at an emitted cursor and returns the protocol partial terminal', async () => {
+    const request: SimulationRequestV1 = {
+      apiVersion: '1',
+      input: {
+        format: 'spice',
+        source: 'V1 in 0 1\nR1 in out 1k\nC1 out 0 1u\n.tran 1u 3u',
+      },
+    };
+    const started = await executeTool('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    const first = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints: 2 });
+    const emitted = (first.structuredContent as unknown as SimulationReadDataV1).events;
+
+    const cancelled = await executeTool('spice_simulation_cancel', { jobId });
+    const replay = await executeTool('spice_simulation_cancel', { jobId });
+    expect(replay).toEqual(cancelled);
+    expect(cancelled.structuredContent).toMatchObject({
+      status: 'cancelled', events: [], nextCursor: null,
+      terminal: {
+        apiVersion: '1', ok: false, requestId: jobId,
+        error: { code: 'CANCELLED', phase: 'solve', retryable: true },
+        partial: {
+          status: 'partial',
+          analyses: [{ analysis: 'tran', analysisIndex: 0, emittedPointCount: 2, complete: false }],
+          partialEventSha256: sha256CanonicalJson(emitted.filter(event => event.type === 'point')),
+        },
+      },
+    });
+    expect(JSON.stringify(cancelled.structuredContent)).not.toContain('resultSha256');
+    expect(containsExactString(cancelled.structuredContent, 'spice-ts')).toBe(false);
+  });
+
+  it('rejects malformed stream requests and hard chunk bounds without creating jobs', async () => {
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const malformed = await executeTool('spice_simulation_read', { jobId: 'missing' });
+    const started = await executeTool('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+    const bounded = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints: 1025 });
+
+    expect(malformed).toMatchObject({
+      isError: true,
+      structuredContent: { error: { code: 'INVALID_REQUEST', phase: 'validation' } },
+    });
+    expect(bounded).toMatchObject({
+      isError: true,
+      structuredContent: {
+        error: {
+          code: 'RESOURCE_LIMIT', phase: 'transport',
+          details: { limit: 'maxStreamChunkPoints', maximum: 1024, actual: 1025 },
+        },
+      },
+    });
+  });
+
+  it('removes the internal backend name from stream-start failures', async () => {
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const response = await executeTool('spice_simulation_start', { request }, {
+      simulate: async () => {
+        throw {
+          code: 'INTERNAL_ERROR', message: 'spice-ts failed', retryable: false,
+          phase: 'solve', details: { backend: 'spice-ts' },
+        };
+      },
+    });
+
+    expect(response.isError).toBe(true);
+    expect(containsExactString(response.structuredContent, 'spice-ts')).toBe(false);
+    expect(JSON.stringify(response.structuredContent)).not.toContain('spice-ts failed');
+  });
+
+  it('bounds retained unfinished jobs and evicts the oldest terminal job', async () => {
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const result = await fixture<SimulationResultV1>('simulate-response.json');
+    const execute = createToolExecutor({ simulate: async () => result });
+    const starts = [];
+    for (let index = 0; index < 16; index++) {
+      starts.push(await execute('spice_simulation_start', { request }));
+    }
+    const rejected = await execute('spice_simulation_start', { request });
+    expect(rejected).toMatchObject({
+      isError: true,
+      structuredContent: {
+        error: { code: 'RESOURCE_LIMIT', details: { limit: 'maxRetainedStreamJobs', maximum: 16, actual: 17 } },
+      },
+    });
+
+    const first = starts[0]!.structuredContent as { jobId: string };
+    await execute('spice_simulation_cancel', { jobId: first.jobId });
+    const replacement = await execute('spice_simulation_start', { request });
+    expect(replacement.isError).not.toBe(true);
+    const evicted = await execute('spice_simulation_cancel', { jobId: first.jobId });
+    expect(evicted).toMatchObject({
+      isError: true,
+      structuredContent: { error: { code: 'INVALID_REQUEST' } },
+    });
+  });
 });
+
+function containsExactString(value: unknown, target: string): boolean {
+  if (value === target) return true;
+  if (Array.isArray(value)) return value.some(entry => containsExactString(entry, target));
+  if (value !== null && typeof value === 'object') {
+    return Object.values(value).some(entry => containsExactString(entry, target));
+  }
+  return false;
+}
