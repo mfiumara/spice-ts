@@ -13,8 +13,9 @@ export { Circuit } from './circuit.js';
 export type { CompiledCircuit } from './circuit.js';
 export {
   DCResult, TransientResult, ACResult, DCSweepResult, NoiseResult, TransferFunctionResult,
+  PoleZeroResult,
 } from './results.js';
-export type { SimulationResult, StepResult } from './results.js';
+export type { SimulationResult, StepResult, PoleZeroValue } from './results.js';
 export type {
   SimulationOptions,
   IntegrationMethod,
@@ -22,6 +23,7 @@ export type {
   ACPoint,
   NoiseAnalysis,
   TransferFunctionAnalysis,
+  PoleZeroAnalysis,
   AnalysisCommand,
   AnalysisDirective,
   NodeInitialState,

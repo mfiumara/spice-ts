@@ -1,0 +1,8 @@
+public passive RLC pole-zero fixture
+R1 1 0 1k
+R2 2 0 1k
+C1 1 2 1e-12
+L1 1 0 1u
+.pz 1 0 2 0 cur pz
+.print pz all
+.end

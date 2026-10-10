@@ -9,6 +9,7 @@ import { solveTransient } from './analysis/transient.js';
 import { solveAC } from './analysis/ac.js';
 import { assertNoiseDevicesSupported, solveNoise } from './analysis/noise.js';
 import { solveTransferFunction } from './analysis/transfer-function.js';
+import { solvePoleZero } from './analysis/pole-zero.js';
 import { solveDCSweep } from './analysis/dc-sweep.js';
 import { solveStep, generateStepValues } from './analysis/step.js';
 import type { StepStreamEvent, StepAnalysis } from './types.js';
@@ -168,6 +169,11 @@ export async function simulate(
         break;
       }
     }
+  }
+
+  for (const analysis of compiled.poleZeroAnalyses) {
+    const opts = resolveOptions(options);
+    result.poleZero = solvePoleZero(compiled, analysis, opts, convergence);
   }
 
   return result;
@@ -374,7 +380,7 @@ function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[
   if (compiled.nodeCount === 0) {
     throw new InvalidCircuitError('Circuit has no nodes');
   }
-  if (compiled.analyses.length === 0) {
+  if (compiled.analyses.length === 0 && compiled.poleZeroAnalyses.length === 0) {
     throw new InvalidCircuitError('No analysis command specified');
   }
 }

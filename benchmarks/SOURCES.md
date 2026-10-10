@@ -83,6 +83,12 @@ Validate provenance fields, pinned URLs, fixture hashes, declared analyses, ngsp
 
 At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-distortion` is retained as a visible source-suite failure: both of its upstream `.disto` commands are commented out, so ngspice exits successfully without producing raw data. All 20 byte-identical fixtures currently fail spice-ts parsing. The validator prints each failure and checks it against the manifest instead of hiding or rewriting unsupported inputs.
 
+## Bounded pole-zero parity fixtures
+
+| Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
+|---|---|---|---|---|
+| Passive RLC and active four-stage `.pz` | Berkeley SPICE3f5 [`simplepz.cir`](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/simplepz.cir) and [`pz2.cir`](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/pz2.cir), pinned mirror revision `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant retained at `benchmarks/corpus/classic/COPYRIGHT.txt`; redistribution is allowed with that notice | `passive-rlc.cir` preserves `simplepz.cir` and adds one 1 uH shunt inductor so the bounded fixture exercises R, L, and C dynamics. `active-four-stage.cir` changes only the source card from ngspice's implicit `iin 1 0 ac` zero bias to explicit `iin 1 0 dc 0`; its topology, values, and `.pz` command are unchanged. The committed local bytes are supplied identically to both engines. | `benchmarks/pole-zero/{passive-rlc,active-four-stage}.cir`; compare with `pnpm exec tsx benchmarks/pole-zero/compare.ts` using ngspice-47. |
+
 ## Xyce Regression Suite corpus C
 
 - Repository: https://github.com/Xyce/Xyce_Regression

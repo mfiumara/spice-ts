@@ -5,7 +5,7 @@ export type NodeName = string;
 export const GROUND_NODE = '0';
 
 /** Supported analysis command types. */
-export type AnalysisType = 'op' | 'dc' | 'tran' | 'ac';
+export type AnalysisType = 'op' | 'dc' | 'tran' | 'ac' | 'noise' | 'tf' | 'pz';
 
 /** DC operating point analysis (`.op`). */
 export interface DCAnalysis {
@@ -85,6 +85,23 @@ export interface TransferFunctionAnalysis {
   outputNode: string;
   /** Independent voltage or current source used as the small-signal input. */
   inputSource: string;
+}
+
+/** Bounded pole-zero analysis (`.pz input 0 output 0 cur {pol|pz}`). */
+export interface PoleZeroAnalysis {
+  type: 'pz';
+  /** Positive current-injection terminal. */
+  inputPositive: string;
+  /** Negative current-injection terminal; bounded to ground in this slice. */
+  inputNegative: string;
+  /** Positive voltage-output terminal. */
+  outputPositive: string;
+  /** Negative voltage-output terminal; bounded to ground in this slice. */
+  outputNegative: string;
+  /** Only ngspice's current-input form is supported. */
+  inputType: 'cur';
+  /** Compute poles only, or both poles and zeros. */
+  mode: 'pol' | 'pz';
 }
 
 /** Established time/frequency analysis command types. */

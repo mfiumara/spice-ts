@@ -1,6 +1,6 @@
 import type { DeviceModel } from './devices/device.js';
 import type {
-  AnalysisDirective, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis,
+  AnalysisDirective, PoleZeroAnalysis, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis,
   SimulationOptions, NodeInitialState,
 } from './types.js';
 import type { CircuitIR } from './ir/types.js';
@@ -61,6 +61,8 @@ export interface CompiledCircuit {
   branchNames: string[];
   /** Analysis commands to execute */
   analyses: AnalysisDirective[];
+  /** Bounded native pole-zero commands, kept outside adapters without `.pz` result support. */
+  poleZeroAnalyses: PoleZeroAnalysis[];
   /** Device model parameter cards */
   models: Map<string, ModelParams>;
   /** Subcircuit definitions */
@@ -188,7 +190,7 @@ function formatDevice(desc: DeviceDescriptor): string {
   }
 }
 
-function formatAnalysis(analysis: AnalysisDirective): string {
+function formatAnalysis(analysis: AnalysisDirective | PoleZeroAnalysis): string {
   switch (analysis.type) {
     case 'op':
       return '.op';
@@ -207,6 +209,8 @@ function formatAnalysis(analysis: AnalysisDirective): string {
       return `.noise v(${analysis.outputNode}) ${analysis.inputSource} ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
     case 'tf':
       return `.tf v(${analysis.outputNode}) ${analysis.inputSource}`;
+    case 'pz':
+      return `.pz ${analysis.inputPositive} ${analysis.inputNegative} ${analysis.outputPositive} ${analysis.outputNegative} ${analysis.inputType} ${analysis.mode}`;
   }
 }
 
@@ -259,6 +263,7 @@ function internalNodeName(deviceName: string, suffix: string): string {
 export class Circuit {
   private descriptors: DeviceDescriptor[] = [];
   private _analyses: AnalysisDirective[] = [];
+  private _poleZeroAnalyses: PoleZeroAnalysis[] = [];
   private _steps: StepAnalysis[] = [];
   private _models = new Map<string, ModelParams>();
   private _subcircuits = new Map<string, SubcktDefinition>();
@@ -269,6 +274,10 @@ export class Circuit {
 
   get analyses(): AnalysisDirective[] {
     return this._analyses;
+  }
+
+  get poleZeroAnalyses(): PoleZeroAnalysis[] {
+    return this._poleZeroAnalyses;
   }
 
   get simulationOptions(): Readonly<SimulationOptions> {
@@ -629,6 +638,7 @@ export class Circuit {
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'noise', params: { outputNode: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'tf', params: { outputNode: string; inputSource: string }): void;
+  addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur'; mode: 'pol' | 'pz' }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
     switch (type) {
       case 'op':
@@ -680,6 +690,17 @@ export class Circuit {
           type: 'tf',
           outputNode: params!.outputNode as string,
           inputSource: params!.inputSource as string,
+        });
+        break;
+      case 'pz':
+        this._poleZeroAnalyses.push({
+          type: 'pz',
+          inputPositive: params!.inputPositive as string,
+          inputNegative: params!.inputNegative as string,
+          outputPositive: params!.outputPositive as string,
+          outputNegative: params!.outputNegative as string,
+          inputType: 'cur',
+          mode: params!.mode as 'pol' | 'pz',
         });
         break;
     }
@@ -787,6 +808,9 @@ export class Circuit {
     }
 
     for (const analysis of this._analyses) {
+      lines.push(formatAnalysis(analysis));
+    }
+    for (const analysis of this._poleZeroAnalyses) {
       lines.push(formatAnalysis(analysis));
     }
 
@@ -1012,7 +1036,7 @@ export class Circuit {
     return {
       devices, nodeCount, branchCount: branchNames.length,
       nodeNames, nodeIndexMap, branchNames,
-      analyses: this._analyses, models: this._models,
+      analyses: this._analyses, poleZeroAnalyses: this._poleZeroAnalyses, models: this._models,
       subcircuits: this._subcircuits,
       steps: this._steps,
       simulationOptions: { ...this._simulationOptions },
