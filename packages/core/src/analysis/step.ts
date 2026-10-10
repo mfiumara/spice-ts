@@ -123,7 +123,7 @@ export function solveStep(
             const seed = analysis.useInitialConditions
               ? computeUICInitialSolution(compiled)
               : solveDCOperatingPoint(
-                compiled, opts, prevDCSolution, convergence,
+                compiled, opts, prevDCSolution, convergence, 'transient',
               ).assembler.solution;
             const runnable = analysis.timestep > 0 ? analysis : {
               ...analysis,

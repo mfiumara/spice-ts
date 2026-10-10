@@ -17,6 +17,7 @@ export function createMatrixVariableIdentities(
 export interface MNAAssemblerOptions {
   solverFactory?: () => SparseSolver;
   variables?: readonly MatrixVariableIdentity[];
+  useDcSourceValue?: boolean;
 }
 
 export class MNAAssembler {
@@ -268,6 +269,7 @@ export class MNAAssembler {
           dt: 0,
           numNodes: this.numNodes,
           sourceScale: 1,
+          useDcSourceValue: this.options.useDcSourceValue ?? false,
         };
       }
       this._cachedFastCtx.time = this.time;
@@ -293,6 +295,7 @@ export class MNAAssembler {
       dt: this.dt,
       numNodes: this.numNodes,
       sourceScale: this.sourceScale,
+      useDcSourceValue: this.options.useDcSourceValue ?? false,
     };
   }
 

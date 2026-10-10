@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { VoltageSource } from '../devices/voltage-source.js';
+import { simulate } from '../simulate.js';
 import { parse } from './index.js';
 import { parseSourceWaveform } from './waveform-parser.js';
 
@@ -12,6 +13,7 @@ describe('independent-source waveform grammar', () => {
       3,
     )).toEqual({
       type: 'sin',
+      dc: 1.5,
       offset: 2,
       amplitude: 3,
       frequency: 4e3,
@@ -27,6 +29,7 @@ describe('independent-source waveform grammar', () => {
       3,
     )).toEqual({
       type: 'sin',
+      dc: 0,
       offset: 0,
       amplitude: 0.3,
       frequency: 440,
@@ -50,6 +53,22 @@ describe('independent-source waveform grammar', () => {
       3,
     )).toEqual({ type: 'pwl', points: [{ time: 0, value: 0 }, { time: 1e-6, value: 1 }] });
   });
+
+  it('uses explicit DC for .op and the SIN waveform for .tran', async () => {
+    const result = await simulate(`
+      V1 in 0 DC 1.5 SIN(2 3 1k 0 0 0)
+      R1 in 0 1k
+      .op
+      .tran 50u 250u
+      .end
+    `);
+
+    // ngspice-47: `ngspice -b composed-dc-sin.cir` reports v(in)=1.5 V
+    // for .op, then 2 V at t=0 and 5 V at t=250 us for .tran.
+    expect(result.dc!.voltage('in')).toBeCloseTo(1.5, 12);
+    expect(result.transient!.voltage('in')[0]).toBeCloseTo(2, 12);
+    expect(result.transient!.voltage('in').at(-1)).toBeCloseTo(5, 12);
+  });
 });
 
 describe('jimi-fuzz source regression', () => {
@@ -63,6 +82,7 @@ describe('jimi-fuzz source regression', () => {
     expect(source).toBeInstanceOf(VoltageSource);
     expect((source as VoltageSource).waveform).toEqual({
       type: 'sin',
+      dc: 0,
       offset: 0,
       amplitude: 0.3,
       frequency: 440,

@@ -14,7 +14,7 @@ export class CurrentSource implements DeviceModel {
 
   stamp(ctx: StampContext): void {
     const [nPlus, nMinus] = this.nodes;
-    const current = this.getCurrentAtTime(ctx.time) * ctx.sourceScale;
+    const current = this.getValue(ctx) * ctx.sourceScale;
 
     if (nPlus >= 0) ctx.stampB(nPlus, current);
     if (nMinus >= 0) ctx.stampB(nMinus, -current);
@@ -49,6 +49,13 @@ export class CurrentSource implements DeviceModel {
       case 'ac':
         return this.waveform.dc ?? 0;
     }
+  }
+
+  private getValue(ctx: StampContext): number {
+    if (ctx.useDcSourceValue && this.waveform.type === 'sin' && this.waveform.dc !== undefined) {
+      return this.waveform.dc;
+    }
+    return this.getCurrentAtTime(ctx.time);
   }
 
   getBreakpoints(stopTime: number): number[] {

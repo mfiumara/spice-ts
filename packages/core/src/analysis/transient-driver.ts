@@ -372,7 +372,7 @@ class TransientSimImpl implements TransientSim {
 
   private initDC(): void {
     const { assembler: dcAsm } = solveDCOperatingPoint(
-      this.compiled, this.options, undefined, this.convergenceTelemetry,
+      this.compiled, this.options, undefined, this.convergenceTelemetry, 'transient',
     );
     this.assembler.solution.set(dcAsm.solution);
     this.stampPrevB();

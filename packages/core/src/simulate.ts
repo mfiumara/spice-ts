@@ -386,7 +386,9 @@ function transientInitialSolution(
   convergence?: ConvergenceTelemetry,
 ): Float64Array {
   if (analysis.useInitialConditions) return computeUICInitialSolution(compiled);
-  return solveDCOperatingPoint(compiled, options, initialGuess, convergence).assembler.solution;
+  return solveDCOperatingPoint(
+    compiled, options, initialGuess, convergence, 'transient',
+  ).assembler.solution;
 }
 
 function* streamFromSimulationResult(result: SimulationResult): Generator<TransientStep | ACPoint> {

@@ -282,6 +282,8 @@ export interface PulseSource {
 /** Sinusoidal source waveform (SIN). */
 export interface SinSource {
   type: 'sin';
+  /** Explicit DC operating-point value when declared before SIN/SINE. */
+  dc?: number;
   /** DC offset */
   offset: number;
   /** Peak amplitude */

@@ -809,8 +809,8 @@ export class Circuit {
           phase: wf.phase ?? 0,
         };
       }
-      if (wf.dc !== undefined) return { type: 'dc', value: wf.dc };
       if (wf.type) return wf as SourceWaveform;
+      if (wf.dc !== undefined) return { type: 'dc', value: wf.dc };
       return { type: 'dc', value: 0 };
     };
 

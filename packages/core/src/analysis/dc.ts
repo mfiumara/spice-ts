@@ -19,15 +19,19 @@ import { createNodeStateSolution } from './initial-state.js';
  */
 const DC_GMIN_SCHEDULE = [1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11] as const;
 
+type DCSourceMode = 'operating-point' | 'transient';
+
 export function solveDCOperatingPoint(
   compiled: CompiledCircuit,
   options: ResolvedOptions,
   initialSolution?: Float64Array,
   convergence: ConvergenceTelemetry = createConvergenceTelemetry(),
+  sourceMode: DCSourceMode = 'operating-point',
 ): { result: DCResult; assembler: MNAAssembler; convergence: ConvergenceTelemetry } {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
   const assembler = new MNAAssembler(nodeCount, branchCount, {
     variables: createMatrixVariableIdentities(nodeNames, branchNames),
+    useDcSourceValue: sourceMode === 'operating-point',
   });
 
   if (initialSolution) {

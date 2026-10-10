@@ -71,6 +71,7 @@ export function parseSourceWaveform(tokens: string[], startIdx: number): SourceW
     const parenEnd = tokens.indexOf(')', waveformIdx);
     const args = tokens.slice(parenStart + 1, parenEnd).map(parseNumber);
     return {
+      ...(dcIdx >= 0 ? { dc: parseNumber(tokens[startIdx + dcIdx + 1]) } : {}),
       type: 'sin', offset: args[0] ?? 0, amplitude: args[1] ?? 0,
       frequency: args[2] ?? 0, delay: args[3], damping: args[4], phase: args[5],
     } satisfies SinSource;

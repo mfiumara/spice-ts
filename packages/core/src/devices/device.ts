@@ -23,6 +23,8 @@ export interface StampContext {
   numNodes: number;
   /** Scale factor for source values (used during DC sweep ramping). */
   sourceScale: number;
+  /** Use an explicit DC value instead of a transient waveform when available. */
+  useDcSourceValue: boolean;
 }
 
 /**
