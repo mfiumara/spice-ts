@@ -7,6 +7,7 @@ import type {
   ComplexPolarV1,
   DcResultV1,
   JsonObject,
+  JsonValue,
   SimulationOptionsV1,
   SimulationRequestV1,
   SimulationResultV1,
@@ -29,14 +30,14 @@ import {
 import { parseTitlelessAsync } from '../parser/index.js';
 import type { ACResult, DCSweepResult, DCResult, SimulationResult, StepResult, TransientResult } from '../results.js';
 import { simulate } from '../simulate.js';
-import type { AnalysisCommand, SimulationOptions, SourceWaveform } from '../types.js';
+import type { AnalysisCommand, AnalysisDirective, SimulationOptions, SourceWaveform } from '../types.js';
 
 const MAX_DETAIL_NAMES = 32;
 
 /** Execute a protocol-v1 request through the existing core simulator. */
 export async function simulateProtocolV1(request: SimulationRequestV1): Promise<SimulationResultV1> {
   const circuit = await requestCircuit(request);
-  const analyses = [...circuit.analyses] as AnalysisCommand[];
+  const analyses = circuit.analyses.map(protocolAnalysis);
   const options = coreOptions(request.options);
   const serialized: AnalysisResultV1[] = [];
 
@@ -50,6 +51,19 @@ export async function simulateProtocolV1(request: SimulationRequestV1): Promise<
 
   circuit.analyses.splice(0, circuit.analyses.length, ...analyses);
   return { status: 'complete', analyses: serialized };
+}
+
+function protocolAnalysis(analysis: AnalysisDirective): AnalysisCommand {
+  switch (analysis.type) {
+    case 'op':
+    case 'dc':
+    case 'tran':
+    case 'ac':
+      return analysis;
+    case 'noise':
+    case 'tf':
+      throw new InvalidCircuitError(`Protocol v1 does not support '${analysis.type}' analysis results`);
+  }
 }
 
 /** Convert an existing typed core error to its stable protocol-v1 representation. */
@@ -302,11 +316,22 @@ function solutionSummary(last: Float64Array, previous: Float64Array): JsonObject
 }
 
 function apiError(code: SpiceApiErrorV1['code'], error: Error, phase: SpiceApiErrorV1['phase'], details: JsonObject): SpiceApiErrorV1 {
-  return { code, message: wireMessage(error.message), retryable: false, phase, details };
+  return { code, message: wireMessage(error.message), retryable: false, phase, details: wireObject(details) };
 }
 
 function wireMessage(message: string): string {
   return message.replace(/\bspice-ts\b(?!-(?:js|wasm))/g, 'spice-ts-js');
+}
+
+function wireObject(value: JsonObject): JsonObject {
+  return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, wireValue(entry)]));
+}
+
+function wireValue(value: JsonValue): JsonValue {
+  if (typeof value === 'string') return wireMessage(value);
+  if (Array.isArray(value)) return value.map(wireValue);
+  if (value !== null && typeof value === 'object') return wireObject(value);
+  return value;
 }
 
 function numberParams(params: JsonObject): Record<string, number> {
@@ -353,15 +378,32 @@ function waveform(params: JsonObject): Partial<SourceWaveform> & { dc?: number }
     case 'pulse': return { type: 'pulse', v1: numberParam(params, 'v1'), v2: numberParam(params, 'v2'), delay: numberParam(params, 'delay'), rise: numberParam(params, 'rise'), fall: numberParam(params, 'fall'), width: numberParam(params, 'width'), period: numberParam(params, 'period') };
     case 'pwl': {
       const points = params.points;
-      if (!Array.isArray(points)) throw new InvalidCircuitError("Native PWL parameter 'points' must be an array");
-      return { type: 'pwl', points: points.map((point, index) => {
+      if (typeof points === 'string') return { type: 'pwl', points: parseIrPwlPoints(points) };
+      if (Array.isArray(points)) return { type: 'pwl', points: points.map((point, index) => {
         if (typeof point !== 'object' || point === null || Array.isArray(point)) throw new InvalidCircuitError(`Native PWL point ${index} is invalid`);
         const entry = point as JsonObject;
         return { time: numberParam(entry, 'time'), value: numberParam(entry, 'value') };
       }) };
+      throw new InvalidCircuitError("Native PWL parameter 'points' must be an array or CircuitIR string");
     }
     default: throw new InvalidCircuitError(`Unsupported native source waveform '${kind}'`);
   }
+}
+
+function parseIrPwlPoints(value: string): Array<{ time: number; value: number }> {
+  if (value === '') return [];
+  return value.split(',').map((point, index) => {
+    const separator = point.indexOf(':');
+    if (separator <= 0 || separator !== point.lastIndexOf(':')) {
+      throw new InvalidCircuitError(`Native PWL point ${index} is invalid`);
+    }
+    const time = Number(point.slice(0, separator));
+    const sample = Number(point.slice(separator + 1));
+    if (!Number.isFinite(time) || !Number.isFinite(sample)) {
+      throw new InvalidCircuitError(`Native PWL point ${index} is invalid`);
+    }
+    return { time, value: sample };
+  });
 }
 
 function modelLine(model: CircuitModelV1): string {

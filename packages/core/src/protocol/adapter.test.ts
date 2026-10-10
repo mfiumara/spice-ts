@@ -5,8 +5,9 @@ import {
   ConvergenceError, CycleError, InvalidCircuitError, ParseError,
   SingularMatrixError, TimestepTooSmallError,
 } from '../errors.js';
+import { Circuit } from '../circuit.js';
 import { mapProtocolErrorV1, simulateProtocolV1 } from './adapter.js';
-import type { SimulationRequestV1, SimulationResultV1 } from './types.js';
+import type { SimulationRequestV1, SimulationResultV1, SpiceTsCircuitDocumentV1 } from './types.js';
 
 function fixture<T>(name: string): T {
   return JSON.parse(readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8')) as T;
@@ -104,6 +105,37 @@ describe('protocol v1 core adapter', () => {
     expect(ac.voltagePhasors.z![0]).toHaveProperty('phaseDegrees');
   });
 
+  it.each([
+    ['noise', 'V1 in 0 DC 0 AC 1\nR1 in out 1k\nR2 out 0 1k\n.noise v(out) V1 lin 2 1 2'],
+    ['tf', 'V1 in 0 1\nR1 in out 1k\nR2 out 0 1k\n.tf v(out) V1'],
+  ])('rejects parsed %s analyses that protocol v1 cannot serialize', async (type, source) => {
+    const promise = simulateProtocolV1({ apiVersion: '1', input: { format: 'spice', source } });
+
+    await expect(promise).rejects.toEqual(
+      new InvalidCircuitError(`Protocol v1 does not support '${type}' analysis results`),
+    );
+  });
+
+  it('round-trips the CircuitIR representation of a PWL source', async () => {
+    const circuit = new Circuit();
+    circuit.addVoltageSource('V1', 'out', '0', {
+      type: 'pwl', points: [{ time: 0, value: 0 }, { time: 1, value: 1 }],
+    });
+    circuit.addResistor('R1', 'out', '0', 1000);
+    const document: SpiceTsCircuitDocumentV1 = {
+      format: 'spice-ts', schemaVersion: '1.0', circuit: circuit.toIR(),
+      analyses: [{ type: 'tran', timestep: 0.5, stopTime: 1 }], models: [], subcircuits: [],
+    };
+    expect(document.circuit.components[0]?.params.points).toBe('0:0,1:1');
+
+    const result = await simulateProtocolV1({ apiVersion: '1', input: { format: 'spice-ts', document } });
+
+    const transient = result.analyses[0];
+    expect(transient?.type).toBe('tran');
+    if (transient?.type !== 'tran') throw new Error('expected transient result');
+    expect(transient.voltagesV.out?.at(-1)).toBeCloseTo(1);
+  });
+
   it('maps every existing typed SpiceError subtype without parsing messages', () => {
     const errors = [
       new ParseError('bad token', 2, '???'),
@@ -121,11 +153,21 @@ describe('protocol v1 core adapter', () => {
   it('never exposes the internal backend name on protocol values', async () => {
     const request = fixture<SimulationRequestV1>('request-v1.json');
     const result = await simulateProtocolV1(request);
-    const failure = mapProtocolErrorV1(new InvalidCircuitError('spice-ts backend failed'));
+    const failures = [
+      mapProtocolErrorV1(new ParseError('bad spice-ts token', 1, 'spice-ts')),
+      mapProtocolErrorV1(new SingularMatrixError('spice-ts pivot', ['spice-ts'], ['spice-ts'])),
+      mapProtocolErrorV1(new ConvergenceError(
+        'spice-ts stalled', undefined, ['spice-ts'], Float64Array.of(1), Float64Array.of(0),
+      )),
+      mapProtocolErrorV1(new CycleError(['spice-ts', 'spice-ts'])),
+    ];
     expect(request.options?.backend).toBe('spice-ts-js');
-    for (const wireValue of [result, failure]) {
-      expect(JSON.stringify(wireValue)).not.toContain('"spice-ts"');
+    for (const wireValue of [result, ...failures]) {
+      expect(JSON.stringify(wireValue)).not.toMatch(/\bspice-ts\b(?!-(?:js|wasm))/);
     }
-    expect(failure.message).toBe('spice-ts-js backend failed');
+    expect(failures[0]).toMatchObject({
+      message: expect.stringContaining('spice-ts-js'),
+      details: { context: 'spice-ts-js' },
+    });
   });
 });
