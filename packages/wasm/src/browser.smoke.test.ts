@@ -161,8 +161,27 @@ describe('browser protocol-v1 worker facade', () => {
         }
         if (engine.capabilities.backends.join(',') !== 'spice-ts-js') throw new Error('wrong capabilities');
         await engine.close();
+
+        const wasm = await createSpiceEngine({ backend: 'spice-ts-wasm', manifestUrl: new URL('/manifest.json', location.href) });
+        if (wasm.capabilities.backends.join(',') !== 'spice-ts-wasm') throw new Error('wrong WASM capabilities');
+        if (wasm.capabilities.numericWasm?.kernel !== 'dense-gaussian-f64-v1') throw new Error('missing WASM kernel metadata');
+        const wasmRequest = {
+          apiVersion: '1',
+          input: { format: 'spice', source: 'V1 in 0 12\\nR1 in out 2k\\nR2 out 0 1k\\n.op' },
+        };
+        const wasmResult = await wasm.simulate(wasmRequest, { requestId: 'browser-wasm-op' });
+        if (!wasmResult.ok) throw new Error(JSON.stringify(wasmResult));
+        if (wasmResult.metadata.backend !== 'spice-ts-wasm') throw new Error('wrong WASM metadata');
+        const wasmOp = wasmResult.data.analyses[0];
+        if (wasmOp?.type !== 'op' || Math.abs(wasmOp.voltagesV.out - 4) > 1e-12) throw new Error('wrong WASM OP result');
+        const unsupported = await wasm.simulate({
+          apiVersion: '1',
+          input: { format: 'spice', source: 'V1 in 0 1\\nC1 in 0 1u\\n.op' },
+        }, { requestId: 'browser-wasm-unsupported' });
+        if (unsupported.ok || unsupported.error.code !== 'UNSUPPORTED_FEATURE') throw new Error('WASM fallback was not rejected');
+        await wasm.close();
         output.dataset.status = 'passed';
-        output.textContent = 'browser-worker-facade-passed';
+        output.textContent = 'browser-worker-facade-and-wasm-passed';
       } catch (error) {
         output.dataset.status = 'failed';
         output.textContent = error instanceof Error ? error.stack ?? error.message : String(error);
@@ -200,7 +219,7 @@ describe('browser protocol-v1 worker facade', () => {
       try {
         const debuggerUrl = await pageDebuggerUrl(profileDirectory);
         const result = await waitForResult(debuggerUrl, `http://127.0.0.1:${address.port}/`);
-        expect(result).toBe('browser-worker-facade-passed');
+        expect(result).toBe('browser-worker-facade-and-wasm-passed');
       } finally { await terminateProcess(browser); }
     } finally {
       await new Promise<void>(resolveClose => server.close(() => resolveClose()));

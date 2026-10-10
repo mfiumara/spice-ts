@@ -5,7 +5,9 @@ export type WorkerOperation = 'validate' | 'simulate';
 export interface WorkerRequest {
   id: number;
   operation: WorkerOperation;
+  backend: 'spice-ts-js' | 'spice-ts-wasm';
   request: SimulationRequestV1;
+  wasmBytes?: Uint8Array;
 }
 
 export interface WorkerSuccess {
