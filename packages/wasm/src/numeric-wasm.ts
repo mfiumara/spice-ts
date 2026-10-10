@@ -262,6 +262,7 @@ function simulateTransient(
   );
   if (pointCount > pointLimit) throw resourceLimit('maxResultPoints', pointLimit, pointCount);
 
+  for (const device of compiled.devices) device.setTransientTimestep?.(transient.timestep);
   const gmin = request.options?.gmin ?? 0;
   const initial = stampTransientSystem(compiled, order, 0, true, new Float64Array(order));
   addGmin(initial.conductance, compiled.nodeCount, order, gmin);
