@@ -43,6 +43,20 @@ describe('ngspice HFET1 model', () => {
     expect(point.capGD).toBeCloseTo(5.42055e-16, 19);
   });
 
+  it('adds only gate-resistance leakage when junction saturation currents are zero', () => {
+    const model = resolveHFET1Model({
+      ...fixtureModel,
+      params: { ...fixtureModel.params, JS1S: 0, JS1D: 0 },
+    });
+    const instance = resolveHFET1Instance({ L: 1e-6, W: 10e-6 });
+    const point = evaluateHFET1(0, 0, model, instance);
+
+    expect(point.gateSourceCurrent).toBe(0);
+    expect(point.gateDrainCurrent).toBe(0);
+    expect(point.gateSourceConductance).toBeCloseTo(2e-10, 20);
+    expect(point.gateDrainConductance).toBeCloseTo(2e-10, 20);
+  });
+
   it.each([
     [{ ...fixtureModel, type: 'PHFET' }, "Unsupported Z-card model type: 'PHFET'"],
     [{ ...fixtureModel, type: 'NMF' }, "Unsupported Z-card model type: 'NMF'"],
