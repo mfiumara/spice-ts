@@ -372,14 +372,16 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
       circuit.addModel(model);
       break;
     }
+    case '.OPT':
     case '.OPTIONS':
       circuit.setSimulationOptions(parseSimulationOptions(tokens.slice(1)));
       break;
+    case '.WIDTH':
     case '.SAVE':
     case '.PRINT':
     case '.PLOT':
       // spice-ts returns all computed vectors through its result API, so these
-      // ngspice output-selection directives are intentionally metadata-only.
+      // ngspice output-selection and formatting directives are metadata-only.
       break;
     case '.INCLUDE':
       throw new ParseError(
@@ -434,15 +436,31 @@ function parseSimulationOptions(tokens: string[]): SimulationOptions {
   }
 
   const options: SimulationOptions = {};
+  const reportingFlags = new Set(['acct', 'list', 'node']);
+  const obsoleteNumericFields = new Set(['limpts', 'itl5', 'lvlcod']);
 
   for (const token of optionTokens) {
     const separator = token.indexOf('=');
+    const name = token.slice(0, separator < 0 ? undefined : separator).toLowerCase();
+    if (separator < 0 && reportingFlags.has(name)) {
+      // These only select legacy textual reports. spice-ts exposes structured
+      // results and does not produce the corresponding batch-mode listings.
+      continue;
+    }
     if (separator <= 0 || separator === token.length - 1) {
       throw new Error(`Unsupported .options field: '${token}'`);
     }
 
-    const name = token.slice(0, separator).toLowerCase();
     const rawValue = token.slice(separator + 1);
+    if (obsoleteNumericFields.has(name)) {
+      const value = parseNumber(rawValue);
+      if (!Number.isInteger(value) || value < 0) {
+        throw new Error(`Invalid .options ${name} value: '${rawValue}'`);
+      }
+      // LIMPTS limits legacy printed/plotted points, ITL5 is documented as
+      // unimplemented in SPICE3, and LVLCOD selected CDC matrix codegen.
+      continue;
+    }
     if (name === 'method') {
       const methods: Record<string, IntegrationMethod> = {
         trap: 'trapezoidal',
