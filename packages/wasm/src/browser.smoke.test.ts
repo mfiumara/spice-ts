@@ -1,0 +1,209 @@
+import { spawn, type ChildProcess } from 'node:child_process';
+import { createServer } from 'node:http';
+import { access, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { extname, join, relative, resolve } from 'node:path';
+import { afterAll, describe, expect, it } from 'vitest';
+import { build } from 'vite';
+import WebSocket from 'ws';
+import negative from '../../protocol/fixtures/negative-v1.json';
+import positive from '../../protocol/fixtures/positive-v1.json';
+
+const temporaryDirectories: string[] = [];
+
+function chromeCandidates(): string[] {
+  return [
+    process.env.CHROME_PATH,
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/Applications/Chromium.app/Contents/MacOS/Chromium',
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/chromium',
+    '/usr/bin/chromium-browser',
+  ].filter((candidate): candidate is string => Boolean(candidate));
+}
+
+async function findChrome(): Promise<string | null> {
+  for (const candidate of chromeCandidates()) {
+    try { await access(candidate); return candidate; } catch { /* Try the next candidate. */ }
+  }
+  return null;
+}
+
+function contentType(pathname: string): string {
+  if (extname(pathname) === '.js') return 'text/javascript';
+  if (extname(pathname) === '.json') return 'application/json';
+  if (extname(pathname) === '.html') return 'text/html';
+  return 'application/octet-stream';
+}
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise(resolveDelay => setTimeout(resolveDelay, milliseconds));
+}
+
+async function pageDebuggerUrl(profileDirectory: string): Promise<string> {
+  for (let attempt = 0; attempt < 400; attempt++) {
+    try {
+      const [port] = (await readFile(join(profileDirectory, 'DevToolsActivePort'), 'utf8')).split('\n');
+      const response = await fetch(`http://127.0.0.1:${port}/json/list`);
+      const targets = await response.json() as Array<{ type: string; webSocketDebuggerUrl: string }>;
+      const page = targets.find(target => target.type === 'page');
+      if (page) return page.webSocketDebuggerUrl;
+    } catch { await delay(50); }
+  }
+  throw new Error('Chrome DevTools endpoint did not become ready');
+}
+
+async function terminateProcess(child: ChildProcess): Promise<void> {
+  if (child.exitCode !== null) return;
+  const exited = new Promise<void>(resolveExit => child.once('exit', () => resolveExit()));
+  child.kill('SIGTERM');
+  await Promise.race([exited, delay(2_000)]);
+  if (child.exitCode === null) child.kill('SIGKILL');
+}
+
+async function waitForResult(debuggerUrl: string, pageUrl: string): Promise<string> {
+  const socket = new WebSocket(debuggerUrl);
+  await new Promise<void>((resolveOpen, rejectOpen) => {
+    socket.once('open', resolveOpen);
+    socket.once('error', rejectOpen);
+  });
+  let nextId = 1;
+  const pending = new Map<number, { resolve(value: unknown): void; reject(reason: unknown): void }>();
+  socket.on('message', data => {
+    const message = JSON.parse(data.toString()) as { id?: number; result?: unknown; error?: { message: string } };
+    if (message.id === undefined) return;
+    const request = pending.get(message.id);
+    if (!request) return;
+    pending.delete(message.id);
+    if (message.error) request.reject(new Error(message.error.message));
+    else request.resolve(message.result);
+  });
+  const send = (method: string, params: object = {}): Promise<unknown> => {
+    const id = nextId++;
+    return new Promise((resolveRequest, rejectRequest) => {
+      pending.set(id, { resolve: resolveRequest, reject: rejectRequest });
+      socket.send(JSON.stringify({ id, method, params }));
+    });
+  };
+  try {
+    await send('Page.enable');
+    await send('Runtime.enable');
+    await send('Page.navigate', { url: pageUrl });
+    for (let attempt = 0; attempt < 200; attempt++) {
+      const response = await send('Runtime.evaluate', {
+        expression: `JSON.stringify({ status: document.querySelector('#result')?.dataset.status ?? 'pending', text: document.querySelector('#result')?.textContent ?? '' })`,
+        returnByValue: true,
+      }) as { result?: { value?: string } };
+      const value = response.result?.value;
+      if (value) {
+        const result = JSON.parse(value) as { status: string; text: string };
+        if (result.status === 'passed') return result.text;
+        if (result.status === 'failed') throw new Error(result.text);
+      }
+      await delay(50);
+    }
+    throw new Error('browser facade promise never settled');
+  } finally { socket.close(); }
+}
+
+afterAll(async () => {
+  await Promise.all(temporaryDirectories.map(directory => rm(directory, { recursive: true, force: true })));
+});
+
+describe('browser protocol-v1 worker facade', () => {
+  it('runs the same conformance request in a real headless browser module worker', async () => {
+    const chrome = await findChrome();
+    expect(chrome, 'Chrome/Chromium is required for the production worker smoke').not.toBeNull();
+
+    const root = await realpath(await mkdtemp(join(process.env.TMPDIR ?? tmpdir(), 'spice-ts-facade-')));
+    temporaryDirectories.push(root);
+    const outDir = join(root, 'dist');
+    const profileDirectory = join(root, 'chrome-profile');
+    const packageRoot = resolve(import.meta.dirname, '..');
+    const entry = relative(root, join(packageRoot, 'src/index.ts')).replaceAll('\\', '/');
+    const importPath = entry.startsWith('.') ? entry : `./${entry}`;
+    const protocolEntry = relative(root, join(packageRoot, '../protocol/src/index.ts')).replaceAll('\\', '/');
+    const protocolImportPath = protocolEntry.startsWith('.') ? protocolEntry : `./${protocolEntry}`;
+
+    await writeFile(join(root, 'index.html'), '<main id="result">pending</main><script type="module" src="/main.js"></script>');
+    await writeFile(join(root, 'main.js'), `
+      import { createSpiceEngine } from ${JSON.stringify(importPath)};
+      import { checkConformanceV1 } from ${JSON.stringify(protocolImportPath)};
+      const output = document.querySelector('#result');
+      try {
+        const engine = await createSpiceEngine({ backend: 'spice-ts-js', manifestUrl: new URL('/manifest.json', location.href) });
+        const requests = ${JSON.stringify(positive.requests)};
+        for (const [name, request] of Object.entries(requests)) {
+          const validation = await engine.validate(request, { requestId: 'browser-validate-' + name });
+          const simulation = await engine.simulate(request, { requestId: 'browser-simulate-' + name });
+          if (name === 'circuitJson') {
+            if (validation.ok || validation.error.code !== 'INVALID_CIRCUIT') throw new Error(JSON.stringify(validation));
+            if (simulation.ok || simulation.error.code !== 'INVALID_CIRCUIT') throw new Error(JSON.stringify(simulation));
+            continue;
+          }
+          if (!validation.ok || !simulation.ok) throw new Error(JSON.stringify({ validation, simulation }));
+          const conformance = checkConformanceV1('simulation-result', simulation.data);
+          if (conformance.length !== 0) throw new Error(JSON.stringify(conformance));
+          if (simulation.metadata.backend !== 'spice-ts-js') throw new Error('wrong backend metadata');
+          const analysis = simulation.data.analyses[0];
+          if (analysis?.type !== 'op') throw new Error('missing OP result');
+          if (analysis.voltagesV.in !== 5 || analysis.currentsA.V1 !== -0.005) throw new Error('wrong OP values');
+        }
+        const negativeRequests = ${JSON.stringify({
+          unsupportedVersion: negative.unsupportedVersion,
+          invalidUnion: negative.invalidUnion,
+          internalBackend: negative.internalBackend,
+        })};
+        for (const [name, request] of Object.entries(negativeRequests)) {
+          const response = await engine.simulate(request, { requestId: 'browser-negative-' + name });
+          if (response.ok || response.error.code !== 'INVALID_REQUEST') throw new Error(JSON.stringify(response));
+        }
+        if (engine.capabilities.backends.join(',') !== 'spice-ts-js') throw new Error('wrong capabilities');
+        await engine.close();
+        output.dataset.status = 'passed';
+        output.textContent = 'browser-worker-facade-passed';
+      } catch (error) {
+        output.dataset.status = 'failed';
+        output.textContent = error instanceof Error ? error.stack ?? error.message : String(error);
+      }
+    `);
+
+    await build({ root, logLevel: 'silent', build: { outDir, emptyOutDir: true } });
+    const assetRoot = join(packageRoot, 'dist');
+    const server = createServer(async (request, response) => {
+      const pathname = request.url === '/' ? 'index.html' : (request.url ?? '').replace(/^\//, '');
+      const primary = join(outDir, pathname);
+      const fallback = join(assetRoot, pathname);
+      try {
+        let contents: Buffer;
+        try { contents = await readFile(primary); } catch { contents = await readFile(fallback); }
+        response.writeHead(200, { 'content-type': contentType(pathname) });
+        response.end(contents);
+      } catch {
+        response.writeHead(404);
+        response.end('not found');
+      }
+    });
+    await new Promise<void>((resolveListen, rejectListen) => {
+      server.once('error', rejectListen);
+      server.listen(0, '127.0.0.1', resolveListen);
+    });
+
+    try {
+      const address = server.address();
+      if (!address || typeof address === 'string') throw new Error('Smoke server has no TCP address');
+      const browser = spawn(chrome!, [
+        '--headless', '--disable-background-networking', '--disable-gpu', '--no-first-run', '--no-sandbox',
+        '--remote-debugging-port=0', `--user-data-dir=${profileDirectory}`, 'about:blank',
+      ], { stdio: 'ignore' });
+      try {
+        const debuggerUrl = await pageDebuggerUrl(profileDirectory);
+        const result = await waitForResult(debuggerUrl, `http://127.0.0.1:${address.port}/`);
+        expect(result).toBe('browser-worker-facade-passed');
+      } finally { await terminateProcess(browser); }
+    } finally {
+      await new Promise<void>(resolveClose => server.close(() => resolveClose()));
+    }
+  }, 45_000);
+});
