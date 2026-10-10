@@ -4,9 +4,12 @@ import { describe, it } from 'node:test';
 import { resolve } from 'node:path';
 import {
   matchedPointEnvelope,
+  runBoundedSpiceTs,
+  SPICE_TS_TIMEOUT_MS,
   validateAggregateAccounting,
   verifyCommittedArtifacts,
 } from './aggregate-report.js';
+import { runNativeSpiceTs } from './corpus/classic/report.js';
 
 const JSON_PATH = resolve('benchmarks/aggregate-report.json');
 const MARKDOWN_PATH = resolve('benchmarks/AGGREGATE_PARITY.md');
@@ -38,10 +41,10 @@ describe('aggregate report artifact verification', () => {
     const { json } = await committedArtifacts();
     const report = JSON.parse(json);
 
-    assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/296');
-    assert.equal(report.comparisonToPrevious.pullRequestUrl, 'https://github.com/mfiumara/spice-ts/pull/297');
-    assert.equal(report.comparisonToPrevious.headSha, '602518710a6605e229821eff8b93b106b1cb0421');
-    assert.equal(report.comparisonToPrevious.outcomeSha256, '05a0675e6e948ac23959c6804fcf91782035823f074f52336a0ca8983942f68a');
+    assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/321');
+    assert.equal(report.comparisonToPrevious.pullRequestUrl, 'https://github.com/mfiumara/spice-ts/pull/325');
+    assert.equal(report.comparisonToPrevious.headSha, 'e400d87c791dfa27f572a349777c8ebb9f2450d4');
+    assert.equal(report.comparisonToPrevious.outcomeSha256, '26be9f80744c077c0bdb98fa5c6c9cffc8615c2e2589383507abd59fd6fed41b');
     assert.deepEqual(
       report.comparisonToPrevious.statusTransitions.map((transition: Record<string, string>) => [
         transition.engine,
@@ -50,33 +53,35 @@ describe('aggregate report artifact verification', () => {
         transition.to,
       ]),
       [
-        ['spiceTs', 'ngspice/mos6-inverter-transient', 'unsupported', 'failed'],
-        ['spiceTs', 'ngspice/jfet-vds-vgs', 'unsupported', 'success'],
-        ['spiceTs', 'ngspice/rc-transient', 'unsupported', 'success'],
-        ['spiceTs', 'ngspice/mos-amplifier-transient', 'unsupported', 'failed'],
-        ['spiceTs', 'ngspice/mos6-simple-inverter-transient', 'unsupported', 'success'],
-        ['spiceTs', 'ngspice/hfet-inverter', 'unsupported', 'failed'],
-        ['spiceTs', 'ngspice/mesa-oscillator', 'unsupported', 'failed'],
-        ['spiceTs', 'classic/rca3040-wideband-amplifier', 'failed', 'success'],
-        ['spiceTs', 'xyce/nmos-level1-dc', 'failed', 'success'],
-        ['spiceTs', 'xyce/npn-dc', 'failed', 'success'],
-        ['spiceTs', 'xyce/pmos-level1-dc', 'failed', 'success'],
-        ['spiceTs', 'xyce/pnp-dc', 'failed', 'success'],
+        ['spiceTs', 'ngspice/ltra-line-transient', 'unsupported', 'success'],
+        ['spiceTs', 'classic/lossy-line-24-inch', 'unsupported', 'success'],
+        ['spiceTs', 'classic/lossy-line-aluminium', 'unsupported', 'success'],
+        ['spiceTs', 'classic/coupled-lossy-lines', 'unsupported', 'success'],
+        ['spiceTs', 'ngspice/hfet-inverter', 'failed', 'unsupported'],
+        ['spiceTs', 'ngspice/mesa-oscillator', 'failed', 'unsupported'],
+        ['spiceTs', 'xyce/inductor-transient', 'unsupported', 'failed'],
       ],
     );
+    assert.deepEqual(report.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
+    assert.deepEqual(report.totals.spiceTs, { success: 55, failed: 2, unsupported: 43 });
+    assert.equal(report.totals.comparedAnalyses, 58);
+    assert.equal(report.totals.comparedFixtures, 43);
+    const inductor = report.fixtures.find((fixture: { key: string }) => fixture.key === 'xyce/inductor-transient');
+    assert.match(inductor.spiceTs.error, /exceeded the 120000 ms aggregate execution bound/);
+    assert.ok(inductor.gapIssues.includes('https://github.com/mfiumara/spice-ts/issues/366'));
     assert.deepEqual(report.comparisonToPrevious.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
-    assert.deepEqual(report.comparisonToPrevious.totals.spiceTs, { success: 28, failed: 9, unsupported: 63 });
-    assert.equal(report.comparisonToPrevious.totals.comparedAnalyses, 28);
-    assert.equal(report.comparisonToPrevious.totals.comparedFixtures, 18);
+    assert.deepEqual(report.comparisonToPrevious.totals.spiceTs, { success: 51, failed: 3, unsupported: 46 });
+    assert.equal(report.comparisonToPrevious.totals.comparedAnalyses, 54);
+    assert.equal(report.comparisonToPrevious.totals.comparedFixtures, 39);
   });
 
-  it('locks the unchanged aggregate fixture tree and records the current source catalogue', async () => {
+  it('locks the current aggregate corpus tree and unchanged source catalogue', async () => {
     const { json } = await committedArtifacts();
     const report = JSON.parse(json);
 
     assert.deepEqual(report.provenance, {
-      fixtureTreeSha256: '9bea16d967510fe868e68bfad672b02b477802d63bfe191660d4a0a737602cba',
-      sourcesSha256: 'b6540a743d176a01cc8e8aff6412655cc09f5fbf30554a53222c1d290c3029a1',
+      fixtureTreeSha256: '01b19fe5baf170d91aa5bd72c3ffb3891ed2f2c45cca5adfee8288552a7e14f1',
+      sourcesSha256: 'f8cc57771ac07684b1bdebb43ad2ab572f048a9e67d5df98386dc9eb706a188f',
     });
   });
 
@@ -85,12 +90,12 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
-    assert.equal(report.matchedPointEnvelope.comparedSignals, 371);
-    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 349);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 1158.4523167631219);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 693.3260545761561);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 739888253.1927755);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 326930690.296368);
+    assert.equal(report.matchedPointEnvelope.comparedSignals, 878);
+    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 848);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 1169140310571.719);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 1169140310571.719);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 45497356677842.63);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 872317191517.6284);
   });
 
   it('commits runtime sums derived from all 100 engine receipts', async () => {
@@ -147,6 +152,44 @@ describe('aggregate report artifact verification', () => {
       () => verifyCommittedArtifacts(generated, `${JSON.stringify(tampered, null, 2)}\n`, markdown),
       /deterministic JSON projection/,
     );
+  });
+
+  it('names the fixtures whose regenerated outcome differs from the committed artifact', async () => {
+    const { json, markdown } = await committedArtifacts();
+    const generated = JSON.parse(json);
+    generated.fixtures[0].spiceTs.status = 'failed';
+
+    assert.throws(
+      () => verifyCommittedArtifacts(generated, json, markdown),
+      new RegExp(`differing fixtures: ${generated.fixtures[0].key.replace('/', '\\/')} \\(spice-ts `),
+    );
+  });
+
+  it('runs spice-ts in a bounded child process with the in-process execution result', async () => {
+    const manifest = JSON.parse(await readFile(resolve('benchmarks/corpus/xyce/manifest.json'), 'utf8'));
+    const circuit = manifest.circuits.find((candidate: { id: string }) => candidate.id === 'rlc-transient');
+    const input = await readFile(resolve(circuit.localPath));
+
+    const bounded = await runBoundedSpiceTs(input, circuit, SPICE_TS_TIMEOUT_MS);
+    const inProcess = await runNativeSpiceTs(input, circuit);
+
+    assert.equal(SPICE_TS_TIMEOUT_MS, 120_000);
+    assert.equal(bounded.execution.status, 'success');
+    assert.ok(bounded.runtimeMs > 0);
+    assert.deepEqual(bounded.execution, inProcess);
+  });
+
+  it('reports a spice-ts run that exceeds the bound as a failed execution', async () => {
+    const manifest = JSON.parse(await readFile(resolve('benchmarks/corpus/xyce/manifest.json'), 'utf8'));
+    const circuit = manifest.circuits.find((candidate: { id: string }) => candidate.id === 'rlc-transient');
+    const input = await readFile(resolve(circuit.localPath));
+
+    const bounded = await runBoundedSpiceTs(input, circuit, 1);
+
+    assert.equal(bounded.execution.status, 'failed');
+    assert.equal(bounded.execution.convergence, 'failed');
+    assert.deepEqual(bounded.execution.analyses, []);
+    assert.match(bounded.execution.error ?? '', /exceeded the 1 ms aggregate execution bound/);
   });
 
   it('rejects tampered Markdown even when the committed JSON is unchanged', async () => {
