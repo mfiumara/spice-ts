@@ -231,6 +231,29 @@ describe('bounded protocol-v1 tools', () => {
     });
   });
 
+  it('returns a live stream job before an injected simulation completes', async () => {
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const result = await fixture<SimulationResultV1>('simulate-response.json');
+    let completeSimulation!: (result: SimulationResultV1) => void;
+    const simulation = new Promise<SimulationResultV1>((resolve) => {
+      completeSimulation = resolve;
+    });
+    const execute = createToolExecutor({ simulate: () => simulation });
+    let startSettled = false;
+
+    const startedPromise = execute('spice_simulation_start', { request }).then((started) => {
+      startSettled = true;
+      return started;
+    });
+    await Promise.resolve();
+    await Promise.resolve();
+    const settledBeforeSimulationCompletion = startSettled;
+    completeSimulation(result);
+    await startedPromise;
+
+    expect(settledBeforeSimulationCompletion).toBe(true);
+  });
+
   it('streams canonical analysis events in bounded replayable chunks', async () => {
     const request: SimulationRequestV1 = {
       apiVersion: '1',
