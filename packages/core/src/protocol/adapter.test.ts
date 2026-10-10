@@ -6,6 +6,7 @@ import {
   SingularMatrixError, TimestepTooSmallError,
 } from '../errors.js';
 import { Circuit } from '../circuit.js';
+import { simulate } from '../simulate.js';
 import { mapProtocolErrorV1, simulateProtocolV1 } from './adapter.js';
 import { ProtocolExecutionError } from './execution-guard.js';
 import { TopologyPreflightError } from '../validation/topology-preflight.js';
@@ -38,6 +39,17 @@ describe('protocol v1 core adapter', () => {
     expect(JSON.parse(JSON.stringify(actual))).toEqual(actual);
     expect(sha256CanonicalJson(request)).toBe('5fc67488af7a936090a9835bf048f2b970d22c0751ca621dce0fed668759d8c3');
     expect(sha256CanonicalJson(actual)).toBe('be52bdaf72e22ce359b2565fda9c2c148eb243dbb032a612b36f9b0649150e12');
+  });
+
+  it('applies netlist .options when the request leaves them unset', async () => {
+    const source = 'V1 a 0 1\nR1 a b 1k\nR2 b 0 1k\n.options gmin=1e-3\n.op';
+    const direct = await simulate(`title\n${source}`);
+    const result = await simulateProtocolV1({ apiVersion: '1', input: { format: 'spice', source } });
+    const op = result.analyses[0];
+    if (op?.type !== 'op') throw new Error('expected OP result');
+    // gmin=1e-3 S on node b halves R2's 1k to 500 ohm: 1 V * 500 / 1500.
+    expect(op.voltagesV.b).toBeCloseTo(1 / 3, 9);
+    expect(op.voltagesV.b).toBeCloseTo(direct.dc!.voltage('b'), 12);
   });
 
   it('maps titleless SPICE input and preserves declaration order', async () => {
