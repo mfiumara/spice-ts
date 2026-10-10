@@ -52,7 +52,42 @@ test('all unchanged fixtures produce a complete deterministic device-card audit'
   );
   assert.ok(report.fixtures.every(fixture => fixture.spiceTs.status === 'success' || fixture.spiceTs.firstFailure));
   assert.ok(report.fixtures.every(fixture => fixture.ngspice.status === 'success' || fixture.ngspice.firstFailure));
-  assert.ok(report.fixtures.every(fixture => fixture.transition.from.length > 0 && fixture.transition.to.length > 0));
+  assert.ok(report.fixtures.every(fixture => fixture.transition.from.status.length > 0 && fixture.transition.to.status.length > 0));
+  const coupledLines = report.fixtures.find(fixture => fixture.key === 'classic/coupled-lossy-lines');
+  assert.deepEqual(coupledLines?.transition.from, {
+    status: 'unsupported',
+    cause: 'parser',
+    card: null,
+    model: null,
+    parameter: 'itl5',
+    evidence: "Parse error at line 81: Unsupported .options field: 'itl5' .options itl5=0 acct reltol=1e-3 abstol=1e-12",
+  });
+  assert.equal(coupledLines?.transition.to.cause, 'device/model');
+  assert.equal(coupledLines?.transition.changed, true);
+  assert.equal(report.totals.transitions.changed, 37);
+  assert.equal(report.totals.transitions.unchanged, 63);
+  const sameStatusTransitions = report.fixtures.filter(
+    fixture => fixture.transition.changed && fixture.transition.from.status === fixture.transition.to.status,
+  );
+  assert.equal(sameStatusTransitions.length, 18);
+  assert.equal(
+    sameStatusTransitions.filter(fixture => fixture.transition.from.cause !== fixture.transition.to.cause).length,
+    9,
+  );
+
+  const reachedExecutionFailures = report.fixtures.filter(
+    fixture => fixture.deviceCardCoverage === 'reached-execution-failed',
+  );
+  assert.equal(reachedExecutionFailures.length, 8);
+  assert.deepEqual(
+    new Set(reachedExecutionFailures.map(fixture => fixture.spiceTs.firstFailure?.cause)),
+    new Set(['convergence', 'execution']),
+  );
+  assert.equal(
+    report.fixtures.find(fixture => fixture.key === 'xyce/nmos-level1-dc')?.deviceCardCoverage,
+    'reached-execution-failed',
+  );
+  assert.equal(report.totals.deviceCardCoverage['blocked-before-execution'], 56);
   assert.equal(report.exclusions.perCircuitToleranceTuning, true);
   assert.equal(report.exclusions.fixtureAdaptation, true);
 });

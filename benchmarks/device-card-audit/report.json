@@ -37,7 +37,7 @@
     "fixtureSetSha256": "355a411e47573852dc29680eb520996099ad7836e0ff1372fbcdf9c8a154e614",
     "baselineReportSha256": "bf8913b77c3741290f926d087261de5502d67634365709e8055c991fc58341b3",
     "baselineOutcomeSha256": "45aee36e07a056380b1b0057b9397cc323f594fdb381f254b023e11fdfe2b009",
-    "deterministicOutcomeSha256": "8bd22eb25a979fa1322dca6c449045dad0047de6d206295ea6ffba4412548a5e"
+    "deterministicOutcomeSha256": "40b0b125ef99535a0e4cc30b23fce320fc800f5696c5ed8c93dac5f09e305e31"
   },
   "totals": {
     "fixtures": 100,
@@ -58,19 +58,20 @@
       "execution": 4
     },
     "runtimeMs": {
-      "ngspice": 10463.36,
-      "spiceTs": 7743.256
+      "ngspice": 9457.65,
+      "spiceTs": 5981.721
     },
     "transitions": {
-      "changed": 19,
-      "unchanged": 81,
+      "changed": 37,
+      "unchanged": 63,
       "gains": 14,
       "regressions": 1
     },
     "deviceCardCoverage": {
-      "reached-execution": 28,
+      "completed-execution": 28,
+      "reached-execution-failed": 8,
       "direct-device-model-gap": 8,
-      "blocked-before-device-card": 64
+      "blocked-before-execution": 56
     }
   },
   "exclusions": {
@@ -136,13 +137,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 23.242,
+        "runtimeMs": 20.219,
         "inputSha256": "de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 59.196,
+        "runtimeMs": 51.082,
         "inputSha256": "de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92",
         "firstFailure": {
           "cause": "parser",
@@ -154,11 +155,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "NOACCT",
+          "evidence": "Parse error at line 7: Unsupported .options field: 'NOACCT' .OPTIONS NOACCT"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "NOACCT",
+          "evidence": "Parse error at line 7: Unsupported .options field: 'NOACCT' .OPTIONS NOACCT"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/vbic-temperature",
@@ -173,13 +188,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 14.898,
+        "runtimeMs": 12.681,
         "inputSha256": "5dfd5fb1e620eac69af1eed64463aac62efd23dee169f2a3773d1091088f31e7",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.61,
+        "runtimeMs": 0.523,
         "inputSha256": "5dfd5fb1e620eac69af1eed64463aac62efd23dee169f2a3773d1091088f31e7",
         "firstFailure": {
           "cause": "parser",
@@ -191,11 +206,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "temp",
+          "evidence": "Parse error at line 7: Unsupported .options field: 'temp' .OPTIONS TEMP=150 NOACCT"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "temp",
+          "evidence": "Parse error at line 7: Unsupported .options field: 'temp' .OPTIONS TEMP=150 NOACCT"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/mos6-inverter-transient",
@@ -210,13 +239,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 28.066,
+        "runtimeMs": 25.658,
         "inputSha256": "c1ee39a6f458dc2b527ab1de29d6d6a4858e35c6acc4ff760ac45774512534dc",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.99,
+        "runtimeMs": 0.912,
         "inputSha256": "c1ee39a6f458dc2b527ab1de29d6d6a4858e35c6acc4ff760ac45774512534dc",
         "firstFailure": {
           "cause": "parser",
@@ -228,11 +257,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "NOACCT",
+          "evidence": "Parse error at line 45: Unsupported .options field: 'NOACCT' .OPTIONS NOACCT"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "NOACCT",
+          "evidence": "Parse error at line 45: Unsupported .options field: 'NOACCT' .OPTIONS NOACCT"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/jfet-vds-vgs",
@@ -248,13 +291,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 13.455,
+        "runtimeMs": 11.83,
         "inputSha256": "64d61d79415c585195fcda1a21a170bda67f863e20b9492eaeb33e1efc9fd72a",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.518,
+        "runtimeMs": 11.28,
         "inputSha256": "64d61d79415c585195fcda1a21a170bda67f863e20b9492eaeb33e1efc9fd72a",
         "firstFailure": {
           "cause": "parser",
@@ -266,11 +309,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "noacct",
+          "evidence": "Parse error at line 10: Unsupported .options field: 'noacct' .options noacct"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "noacct",
+          "evidence": "Parse error at line 10: Unsupported .options field: 'noacct' .options noacct"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/rc-lowpass-ac",
@@ -286,13 +343,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 12.881,
+        "runtimeMs": 10.956,
         "inputSha256": "aa48cf8809bb62ada7bd48b8d81808589126a69f784482e5fb0c80cc3fbf718d",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 12.271,
+        "runtimeMs": 0.434,
         "inputSha256": "aa48cf8809bb62ada7bd48b8d81808589126a69f784482e5fb0c80cc3fbf718d",
         "firstFailure": {
           "cause": "parser",
@@ -304,11 +361,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "LIST",
+          "evidence": "Parse error at line 3: Unsupported .options field: 'LIST' .OPTIONS LIST NODE POST TRANS noacct"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "POST",
+          "evidence": "Parse error at line 3: Unsupported .options field: 'POST' .OPTIONS LIST NODE POST TRANS noacct"
+        },
+        "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/ac-zero-frequency",
@@ -323,7 +394,7 @@
       },
       "ngspice": {
         "status": "failed",
-        "runtimeMs": 12.926,
+        "runtimeMs": 10.68,
         "inputSha256": "40371f8363b2d3b494a05c604ab2e4b20052fd5b413fba4b5ceeedbc9104ecb6",
         "firstFailure": {
           "cause": "execution",
@@ -336,7 +407,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.614,
+        "runtimeMs": 0.541,
         "inputSha256": "40371f8363b2d3b494a05c604ab2e4b20052fd5b413fba4b5ceeedbc9104ecb6",
         "firstFailure": {
           "cause": "parser",
@@ -348,11 +419,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "dc=0",
+          "evidence": "Parse error at line 5: Cannot parse number: 'dc=0' v1 1 0 dc=0 ac=1"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".control",
+          "evidence": "Parse error at line 11: Unsupported dot command: '.control' .control"
+        },
+        "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/vbic-common-emitter-ac",
@@ -368,13 +453,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 19.459,
+        "runtimeMs": 16.192,
         "inputSha256": "088d1ebede86588ff8b823ba45219006bfeec34939af69e10c176e23d8a020ab",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.482,
+        "runtimeMs": 0.47,
         "inputSha256": "088d1ebede86588ff8b823ba45219006bfeec34939af69e10c176e23d8a020ab",
         "firstFailure": {
           "cause": "parser",
@@ -386,11 +471,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "NOACCT",
+          "evidence": "Parse error at line 12: Unsupported .options field: 'NOACCT' .OPTIONS NOACCT"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "NOACCT",
+          "evidence": "Parse error at line 12: Unsupported .options field: 'NOACCT' .OPTIONS NOACCT"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/probe-ac",
@@ -405,13 +504,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 12.642,
+        "runtimeMs": 10.919,
         "inputSha256": "3afb9105918f939cbbdab957f8f872bbc886209fb83dbd27003c605977916479",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.389,
+        "runtimeMs": 0.442,
         "inputSha256": "3afb9105918f939cbbdab957f8f872bbc886209fb83dbd27003c605977916479",
         "firstFailure": {
           "cause": "parser",
@@ -423,11 +522,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".probe",
+          "evidence": "Parse error at line 12: Unsupported dot command: '.probe' .probe i ( R2 ) vd ( R2 ) vd ( R3 ) v ( 2 )"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".probe",
+          "evidence": "Parse error at line 12: Unsupported dot command: '.probe' .probe i ( R2 ) vd ( R2 ) vd ( R3 ) v ( 2 )"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/rc-transient",
@@ -442,13 +555,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 13.302,
+        "runtimeMs": 12.118,
         "inputSha256": "293c22e9953f3e28efcae55d6c00cab0b929d2c3fdf88810ab27b7a71e900bfe",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 12.579,
+        "runtimeMs": 0.569,
         "inputSha256": "293c22e9953f3e28efcae55d6c00cab0b929d2c3fdf88810ab27b7a71e900bfe",
         "firstFailure": {
           "cause": "parser",
@@ -460,11 +573,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "noacct",
+          "evidence": "Parse error at line 6: Unsupported .options field: 'noacct' .options noacct"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "noacct",
+          "evidence": "Parse error at line 6: Unsupported .options field: 'noacct' .options noacct"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/mos-amplifier-transient",
@@ -479,13 +606,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 247.006,
+        "runtimeMs": 250.13,
         "inputSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.429,
+        "runtimeMs": 0.44,
         "inputSha256": "a6d0f4220bde7a548209e0e845e3c9bb731b2819f7f7e256d284e5a85e10fa7c",
         "firstFailure": {
           "cause": "parser",
@@ -497,11 +624,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "noacct",
+          "evidence": "Parse error at line 6: Unsupported .options field: 'noacct' .options abstol=10n vntol=10n noacct"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "noacct",
+          "evidence": "Parse error at line 6: Unsupported .options field: 'noacct' .options abstol=10n vntol=10n noacct"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/mos6-simple-inverter-transient",
@@ -516,13 +657,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 14.38,
+        "runtimeMs": 14.594,
         "inputSha256": "3ad1ef05a4197b420b0d35b3a4c4c0aa2544025e200b619743a890e305b7e1b8",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 13.019,
+        "runtimeMs": 13.833,
         "inputSha256": "3ad1ef05a4197b420b0d35b3a4c4c0aa2544025e200b619743a890e305b7e1b8",
         "firstFailure": {
           "cause": "parser",
@@ -534,11 +675,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "NOACCT",
+          "evidence": "Parse error at line 13: Unsupported .options field: 'NOACCT' .OPTIONS NOACCT"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "NOACCT",
+          "evidence": "Parse error at line 13: Unsupported .options field: 'NOACCT' .OPTIONS NOACCT"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/ltra-line-transient",
@@ -553,13 +708,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 17.226,
+        "runtimeMs": 16.56,
         "inputSha256": "4e7cf33648f6d6039772716720afce93dfd5e44c9ad7eaf40eb7347b6c03b7d4",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.364,
+        "runtimeMs": 0.359,
         "inputSha256": "4e7cf33648f6d6039772716720afce93dfd5e44c9ad7eaf40eb7347b6c03b7d4",
         "firstFailure": {
           "cause": "device/model",
@@ -571,8 +726,22 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "device/model",
+          "card": "O/LTRA",
+          "model": "LTRA",
+          "parameter": null,
+          "evidence": "Parse error at line 6: Lossy transmission line (LTRA) cards are unsupported; use the bounded lossless T-card Z0/TD form o1 2 0 3 0 lline"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "device/model",
+          "card": "O/LTRA",
+          "model": "LTRA",
+          "parameter": null,
+          "evidence": "Parse error at line 6: Lossy transmission line (LTRA) cards are unsupported; use the bounded lossless T-card Z0/TD form o1 2 0 3 0 lline"
+        },
         "changed": false
       },
       "deviceCardCoverage": "direct-device-model-gap"
@@ -590,13 +759,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 14.997,
+        "runtimeMs": 14.29,
         "inputSha256": "3fa93266e9036443173bf9416eb67e8ff4c2c24aeefc6ef687f355d8548239e1",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 14.288,
+        "runtimeMs": 13.542,
         "inputSha256": "3fa93266e9036443173bf9416eb67e8ff4c2c24aeefc6ef687f355d8548239e1",
         "firstFailure": {
           "cause": "parser",
@@ -608,11 +777,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "noacct",
+          "evidence": "Parse error at line 17: Unsupported .options field: 'noacct' .options noacct"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "noacct",
+          "evidence": "Parse error at line 17: Unsupported .options field: 'noacct' .options noacct"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/mesa-oscillator",
@@ -627,13 +810,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 23.741,
+        "runtimeMs": 22.509,
         "inputSha256": "3cd4609cca7874775b7b2cac8cd0124bd2b8c5512064a0550a29de2da4896bcf",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 22.105,
+        "runtimeMs": 21.037,
         "inputSha256": "3cd4609cca7874775b7b2cac8cd0124bd2b8c5512064a0550a29de2da4896bcf",
         "firstFailure": {
           "cause": "parser",
@@ -645,11 +828,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "noacct",
+          "evidence": "Parse error at line 16: Unsupported .options field: 'noacct' .options noacct"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "noacct",
+          "evidence": "Parse error at line 16: Unsupported .options field: 'noacct' .options noacct"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/jimi-fuzz",
@@ -665,22 +862,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 7817.064,
+        "runtimeMs": 7330.57,
         "inputSha256": "0607c7f358628d0ce60eff584b329a4d685ae215894c466622a19357c7163b0e",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 6726.441,
+        "runtimeMs": 5132.748,
         "inputSha256": "0607c7f358628d0ce60eff584b329a4d685ae215894c466622a19357c7163b0e",
         "firstFailure": null
       },
       "transition": {
-        "from": "success",
-        "to": "success",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": false
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "ngspice/schmitt-trigger",
@@ -695,13 +906,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 17.153,
+        "runtimeMs": 13.584,
         "inputSha256": "c3e897ecd60c66cb5350c2a0fa7788f34af374803c10f4cf58d6f5ed01b00e55",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 16.328,
+        "runtimeMs": 12.838,
         "inputSha256": "c3e897ecd60c66cb5350c2a0fa7788f34af374803c10f4cf58d6f5ed01b00e55",
         "firstFailure": {
           "cause": "parser",
@@ -713,11 +924,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".width",
+          "evidence": "Parse error at line 2: Unsupported dot command: '.width' .width in=72"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "noacct",
+          "evidence": "Parse error at line 4: Unsupported .options field: 'noacct' .opt list node lvlcod=2 noacct"
+        },
+        "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/inductive-positive-definite-2x2",
@@ -732,7 +957,7 @@
       },
       "ngspice": {
         "status": "failed",
-        "runtimeMs": 15.014,
+        "runtimeMs": 11.162,
         "inputSha256": "47f725038c0199c042484ae480336ea3fd52f6de4d59d46d996824ad0eea1c2b",
         "firstFailure": {
           "cause": "execution",
@@ -745,7 +970,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.494,
+        "runtimeMs": 0.424,
         "inputSha256": "47f725038c0199c042484ae480336ea3fd52f6de4d59d46d996824ad0eea1c2b",
         "firstFailure": {
           "cause": "parser",
@@ -757,11 +982,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".control",
+          "evidence": "Parse error at line 26: Unsupported dot command: '.control' .control"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".control",
+          "evidence": "Parse error at line 26: Unsupported dot command: '.control' .control"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/inductive-positive-definite-3x3",
@@ -776,7 +1015,7 @@
       },
       "ngspice": {
         "status": "failed",
-        "runtimeMs": 15.283,
+        "runtimeMs": 10.853,
         "inputSha256": "e5130509610d8f8b25861f00467fdf29be3b4a03c25a6652bb9961442443f62e",
         "firstFailure": {
           "cause": "execution",
@@ -789,7 +1028,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.467,
+        "runtimeMs": 0.383,
         "inputSha256": "e5130509610d8f8b25861f00467fdf29be3b4a03c25a6652bb9961442443f62e",
         "firstFailure": {
           "cause": "parser",
@@ -801,11 +1040,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".control",
+          "evidence": "Parse error at line 25: Unsupported dot command: '.control' .control"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".control",
+          "evidence": "Parse error at line 25: Unsupported dot command: '.control' .control"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/inductive-positive-definite-4x4",
@@ -820,7 +1073,7 @@
       },
       "ngspice": {
         "status": "failed",
-        "runtimeMs": 15.066,
+        "runtimeMs": 10.362,
         "inputSha256": "8ade81e9db6be13889c589c9a32656d415b462b8628fe4dd6fb2cc3dcc31ea56",
         "firstFailure": {
           "cause": "execution",
@@ -833,7 +1086,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.526,
+        "runtimeMs": 0.321,
         "inputSha256": "8ade81e9db6be13889c589c9a32656d415b462b8628fe4dd6fb2cc3dcc31ea56",
         "firstFailure": {
           "cause": "parser",
@@ -845,11 +1098,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".control",
+          "evidence": "Parse error at line 27: Unsupported dot command: '.control' .control"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".control",
+          "evidence": "Parse error at line 27: Unsupported dot command: '.control' .control"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "ngspice/inductive-positive-definite-ac",
@@ -865,7 +1132,7 @@
       },
       "ngspice": {
         "status": "failed",
-        "runtimeMs": 14.092,
+        "runtimeMs": 10.647,
         "inputSha256": "cec36ec4288af28a58a2ce62a0904b075345684f794ffc9b732179a5d44f5782",
         "firstFailure": {
           "cause": "execution",
@@ -878,7 +1145,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.618,
+        "runtimeMs": 0.462,
         "inputSha256": "cec36ec4288af28a58a2ce62a0904b075345684f794ffc9b732179a5d44f5782",
         "firstFailure": {
           "cause": "parser",
@@ -890,11 +1157,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "dc=0",
+          "evidence": "Parse error at line 9: Cannot parse number: 'dc=0' V1 x 0 dc=0 ac=1"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".control",
+          "evidence": "Parse error at line 31: Unsupported dot command: '.control' .control"
+        },
+        "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "classic/bjt-noise",
@@ -909,13 +1190,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 14.434,
+        "runtimeMs": 10.981,
         "inputSha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.492,
+        "runtimeMs": 0.308,
         "inputSha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc",
         "firstFailure": {
           "cause": "analysis",
@@ -927,11 +1208,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Parse error at line 4: Cannot read properties of undefined (reading 'trim') vin 1 0 ac"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "noise",
+          "evidence": "Parse error at line 15: Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop' .noise v ( 3 ) vin dec 10 10 100k 1"
+        },
+        "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "classic/bsim1-device-sweep",
@@ -946,22 +1241,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 30.95,
+        "runtimeMs": 23.624,
         "inputSha256": "dffabf12d196b6b3d5ac058f7a402ee0dbb51c597c23599379f0502e84088062",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 7.065,
+        "runtimeMs": 5.565,
         "inputSha256": "dffabf12d196b6b3d5ac058f7a402ee0dbb51c597c23599379f0502e84088062",
         "firstFailure": null
       },
       "transition": {
-        "from": "unsupported",
-        "to": "success",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "limpts",
+          "evidence": "Parse error at line 21: Unsupported .options field: 'limpts' .OPTIONS LIMPTS=5000 ACCT"
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": true
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "classic/bsim2-device-sweep",
@@ -976,22 +1285,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 27.954,
+        "runtimeMs": 21.705,
         "inputSha256": "ff2da08b0c8db25fe617c9f1ba2f99d5169c26b8167b30258a1631d93b79beee",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 23.178,
+        "runtimeMs": 3.945,
         "inputSha256": "ff2da08b0c8db25fe617c9f1ba2f99d5169c26b8167b30258a1631d93b79beee",
         "firstFailure": null
       },
       "transition": {
-        "from": "unsupported",
-        "to": "success",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "limpts",
+          "evidence": "Parse error at line 21: Unsupported .options field: 'limpts' .OPTIONS LIMPTS=5000 ACCT"
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": true
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "classic/bjt-differential-pair",
@@ -1006,22 +1329,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 26.512,
+        "runtimeMs": 19.742,
         "inputSha256": "d67594a868128d758cfa593047884990abff05d7ee4cc050afca8a152ace3add",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 10.213,
+        "runtimeMs": 19.081,
         "inputSha256": "d67594a868128d758cfa593047884990abff05d7ee4cc050afca8a152ace3add",
         "firstFailure": null
       },
       "transition": {
-        "from": "unsupported",
-        "to": "success",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".opt",
+          "evidence": "Parse error at line 3: Unsupported dot command: '.opt' .opt acct list node lvlcod=2"
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": true
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "classic/diode-distortion",
@@ -1036,13 +1373,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 17.121,
+        "runtimeMs": 13.508,
         "inputSha256": "912c8cedf66aadbe78f17ceb28644cb8c39a2cb3442559be3219fbaac6d11de8",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "failed",
-        "runtimeMs": 0.8,
+        "runtimeMs": 12.707,
         "inputSha256": "912c8cedf66aadbe78f17ceb28644cb8c39a2cb3442559be3219fbaac6d11de8",
         "firstFailure": {
           "cause": "analysis",
@@ -1054,11 +1391,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "failed",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "sin",
+          "evidence": "Parse error at line 5: Cannot parse number: 'sin' vcc 1 3 5v ac 0.001 sin(5 0.01 1000) distof1 0.01 distof2 0.01"
+        },
+        "to": {
+          "status": "failed",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "disto",
+          "evidence": ".disto supports only independent sources and ideal R, L, C devices; found d1 (Diode)"
+        },
         "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "classic/lossy-line-24-inch",
@@ -1073,13 +1424,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 30.994,
+        "runtimeMs": 23.396,
         "inputSha256": "53e333e9629c3e3c4e839c4b72c9a512a220dec4baf0536e36626f290d240cd6",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.605,
+        "runtimeMs": 0.454,
         "inputSha256": "53e333e9629c3e3c4e839c4b72c9a512a220dec4baf0536e36626f290d240cd6",
         "firstFailure": {
           "cause": "device/model",
@@ -1091,8 +1442,22 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "device/model",
+          "card": "O/LTRA",
+          "model": "LTRA",
+          "parameter": null,
+          "evidence": "Parse error at line 23: Lossy transmission line (LTRA) cards are unsupported; use the bounded lossless T-card Z0/TD form o2 2 0 3 0 lline"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "device/model",
+          "card": "O/LTRA",
+          "model": "LTRA",
+          "parameter": null,
+          "evidence": "Parse error at line 23: Lossy transmission line (LTRA) cards are unsupported; use the bounded lossless T-card Z0/TD form o2 2 0 3 0 lline"
+        },
         "changed": false
       },
       "deviceCardCoverage": "direct-device-model-gap"
@@ -1110,13 +1475,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 213.507,
+        "runtimeMs": 167.608,
         "inputSha256": "4b5bacda04d9c528d4c88d58d211114cb53edbc213c34a62a8c6b2379958db97",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 138.684,
+        "runtimeMs": 107.718,
         "inputSha256": "4b5bacda04d9c528d4c88d58d211114cb53edbc213c34a62a8c6b2379958db97",
         "firstFailure": {
           "cause": "device/model",
@@ -1128,8 +1493,22 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "device/model",
+          "card": "O/LTRA",
+          "model": "LTRA",
+          "parameter": null,
+          "evidence": "Parse error at line 48: Lossy transmission line model LTRA is unsupported; use the bounded lossless T-card Z0/TD form .model lline ltra rel=1.8 r=12.45 g=0 l=8.792e-9 c=0.468e-12 len=16 steplimit"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "device/model",
+          "card": "O/LTRA",
+          "model": "LTRA",
+          "parameter": null,
+          "evidence": "Parse error at line 48: Lossy transmission line model LTRA is unsupported; use the bounded lossless T-card Z0/TD form .model lline ltra rel=1.8 r=12.45 g=0 l=8.792e-9 c=0.468e-12 len=16 steplimit"
+        },
         "changed": false
       },
       "deviceCardCoverage": "direct-device-model-gap"
@@ -1147,13 +1526,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 70.557,
+        "runtimeMs": 58.391,
         "inputSha256": "1927a2a547342e6c60ab1e0489c26d5ca7e92f36d5b08f6a03690b95aa7448b3",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.79,
+        "runtimeMs": 0.614,
         "inputSha256": "1927a2a547342e6c60ab1e0489c26d5ca7e92f36d5b08f6a03690b95aa7448b3",
         "firstFailure": {
           "cause": "device/model",
@@ -1165,9 +1544,23 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "itl5",
+          "evidence": "Parse error at line 81: Unsupported .options field: 'itl5' .options itl5=0 acct reltol=1e-3 abstol=1e-12"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "device/model",
+          "card": "O/LTRA",
+          "model": "LTRA",
+          "parameter": null,
+          "evidence": "Parse error at line 249: Lossy transmission line model LTRA is unsupported; use the bounded lossless T-card Z0/TD form .model llfifth ltra nocontrol rel=10 r=0 g=0 l=9.13e-9 c=3.65e-12 len=0.2 steplimit quadinterp"
+        },
+        "changed": true
       },
       "deviceCardCoverage": "direct-device-model-gap"
     },
@@ -1182,7 +1575,7 @@
       },
       "ngspice": {
         "status": "failed",
-        "runtimeMs": 15.579,
+        "runtimeMs": 11.306,
         "inputSha256": "9f172a78faabd09f0b4e61d733b542e48380a452a4767b83e05617ab4642894e",
         "firstFailure": {
           "cause": "execution",
@@ -1195,7 +1588,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.567,
+        "runtimeMs": 0.431,
         "inputSha256": "9f172a78faabd09f0b4e61d733b542e48380a452a4767b83e05617ab4642894e",
         "firstFailure": {
           "cause": "device/model",
@@ -1207,9 +1600,23 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "distof1",
+          "evidence": "Parse error at line 6: Cannot parse number: 'distof1' v1 1 0 0v ac 1.0 distof1 0.001"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "device/model",
+          "card": "Q",
+          "model": "BJT",
+          "parameter": "Q-card form",
+          "evidence": "Parse error at line 16: Unsupported BJT Q-card form: 'q1 3 1 4 2 mod1' q1 3 1 4 2 mod1"
+        },
+        "changed": true
       },
       "deviceCardCoverage": "direct-device-model-gap"
     },
@@ -1226,13 +1633,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 87.796,
+        "runtimeMs": 60.218,
         "inputSha256": "60f1f49e2f9ac1eccf6bbf717b3c177de885e1e2438b175db4a4360bfe080434",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "failed",
-        "runtimeMs": 43.969,
+        "runtimeMs": 37.128,
         "inputSha256": "60f1f49e2f9ac1eccf6bbf717b3c177de885e1e2438b175db4a4360bfe080434",
         "firstFailure": {
           "cause": "convergence",
@@ -1244,11 +1651,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "failed",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "ACCT",
+          "evidence": "Parse error at line 44: Unsupported .options field: 'ACCT' .OPTIONS ACCT"
+        },
+        "to": {
+          "status": "failed",
+          "cause": "convergence",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Timestep too small at t=3.071226114412814e-8: dt=6.362405548354911e-16"
+        },
         "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "reached-execution-failed"
     },
     {
       "key": "classic/mos-amplifier",
@@ -1263,13 +1684,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 314.538,
+        "runtimeMs": 255.458,
         "inputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "failed",
-        "runtimeMs": 298.194,
+        "runtimeMs": 242.792,
         "inputSha256": "d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469",
         "firstFailure": {
           "cause": "convergence",
@@ -1281,11 +1702,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "failed",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "acct",
+          "evidence": "Parse error at line 2: Unsupported .options field: 'acct' .options acct abstol=10n vntol=10n"
+        },
+        "to": {
+          "status": "failed",
+          "cause": "convergence",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Singular matrix: zero pivot at matrix column 22 (nodes: ; branches: vddn)"
+        },
         "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "reached-execution-failed"
     },
     {
       "key": "classic/mos-memory-cell",
@@ -1300,13 +1735,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 25.509,
+        "runtimeMs": 21.924,
         "inputSha256": "f63d832e7e63dd866e528d6e41eb653859243fdbfed48a83e55d9274e111859d",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "failed",
-        "runtimeMs": 6.239,
+        "runtimeMs": 21.137,
         "inputSha256": "f63d832e7e63dd866e528d6e41eb653859243fdbfed48a83e55d9274e111859d",
         "firstFailure": {
           "cause": "convergence",
@@ -1318,11 +1753,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "failed",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".width",
+          "evidence": "Parse error at line 2: Unsupported dot command: '.width' .width in=72"
+        },
+        "to": {
+          "status": "failed",
+          "cause": "convergence",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Timestep too small at t=2.9772551177916905e-8: dt=7.331183713840461e-16"
+        },
         "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "reached-execution-failed"
     },
     {
       "key": "classic/pole-zero-four-stage",
@@ -1337,13 +1786,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 17.185,
+        "runtimeMs": 12.897,
         "inputSha256": "c21a9628a46581ad9e163632d992422afafeaa15443787e00153dbd7331d3b73",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 2.457,
+        "runtimeMs": 12.442,
         "inputSha256": "c21a9628a46581ad9e163632d992422afafeaa15443787e00153dbd7331d3b73",
         "firstFailure": {
           "cause": "analysis",
@@ -1355,11 +1804,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Parse error at line 2: Cannot read properties of undefined (reading 'trim') iin 1 0 ac"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "pz",
+          "evidence": "no spice-ts result for analyses: pz"
+        },
+        "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "classic/pole-zero-three-stage",
@@ -1374,13 +1837,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 15.691,
+        "runtimeMs": 11.216,
         "inputSha256": "1c50c0623b02d991eb04a1523d1aa50914e88c0ea53a64438daeec97ec359a18",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.98,
+        "runtimeMs": 0.681,
         "inputSha256": "1c50c0623b02d991eb04a1523d1aa50914e88c0ea53a64438daeec97ec359a18",
         "firstFailure": {
           "cause": "analysis",
@@ -1392,11 +1855,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Parse error at line 2: Cannot read properties of undefined (reading 'trim') iin 1 0 ac"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "pz",
+          "evidence": "no spice-ts result for analyses: pz"
+        },
+        "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "classic/rc-transient",
@@ -1411,22 +1888,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 16.133,
+        "runtimeMs": 11.546,
         "inputSha256": "0abbffc7b66510fc170e9e57a9d2b94b13213e888be9060022bc00e06a30f1be",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 1.105,
+        "runtimeMs": 0.764,
         "inputSha256": "0abbffc7b66510fc170e9e57a9d2b94b13213e888be9060022bc00e06a30f1be",
         "firstFailure": null
       },
       "transition": {
-        "from": "success",
-        "to": "success",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": false
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "classic/rca3040-wideband-amplifier",
@@ -1443,13 +1934,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 37.538,
+        "runtimeMs": 28.504,
         "inputSha256": "5024b28b797b53f35d838e1fefeecae059302c4b0106485ff711c9306eedfad1",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "failed",
-        "runtimeMs": 15.412,
+        "runtimeMs": 13.286,
         "inputSha256": "5024b28b797b53f35d838e1fefeecae059302c4b0106485ff711c9306eedfad1",
         "firstFailure": {
           "cause": "convergence",
@@ -1461,11 +1952,25 @@
         }
       },
       "transition": {
-        "from": "success",
-        "to": "failed",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "failed",
+          "cause": "convergence",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Convergence failed: Did not converge in 100 iterations (oscillating nodes: 10, 11, 12, 13, 14, 15, 16, 30, 31, 5, 6, 7, 8, 9, q1.rb, q10.rb, q11.rb, q2.rb, q3.rb, q4.rb, q5.rb, q6.rb, q7.rb, q9.rb)"
+        },
         "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "reached-execution-failed"
     },
     {
       "key": "classic/resistor-noise",
@@ -1480,13 +1985,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 15.16,
+        "runtimeMs": 10.844,
         "inputSha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.494,
+        "runtimeMs": 0.349,
         "inputSha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661",
         "firstFailure": {
           "cause": "analysis",
@@ -1498,11 +2003,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Parse error at line 5: Cannot read properties of undefined (reading 'trim') iin 1 0 1m AC"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "noise",
+          "evidence": "Parse error at line 14: Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop' .noise v ( 1 ) iin dec 10 10 100k 1"
+        },
+        "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "classic/rtl-inverter-chain",
@@ -1518,22 +2037,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 28.063,
+        "runtimeMs": 21.834,
         "inputSha256": "29aa3c8914aa7908881b4ab2657c23b5c4877811f09d1526ea6d5c833fce95c0",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 10.683,
+        "runtimeMs": 9.172,
         "inputSha256": "29aa3c8914aa7908881b4ab2657c23b5c4877811f09d1526ea6d5c833fce95c0",
         "firstFailure": null
       },
       "transition": {
-        "from": "unsupported",
-        "to": "success",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".width",
+          "evidence": "Parse error at line 2: Unsupported dot command: '.width' .width in=72"
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": true
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "classic/ecl-schmitt-trigger",
@@ -1548,13 +2081,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 17.039,
+        "runtimeMs": 12.373,
         "inputSha256": "ad673d52014030a49980fcbafeda898d547ab701fb5cf8eeaf374c9338324a31",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.555,
+        "runtimeMs": 0.45,
         "inputSha256": "ad673d52014030a49980fcbafeda898d547ab701fb5cf8eeaf374c9338324a31",
         "firstFailure": {
           "cause": "device/model",
@@ -1566,9 +2099,23 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".width",
+          "evidence": "Parse error at line 2: Unsupported dot command: '.width' .width in=72"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "device/model",
+          "card": "Q",
+          "model": "BJT",
+          "parameter": "Q-card form",
+          "evidence": "Parse error at line 16: Unsupported BJT Q-card form: 'q1 3 2 4 qstd off' q1 3 2 4 qstd off"
+        },
+        "changed": true
       },
       "deviceCardCoverage": "direct-device-model-gap"
     },
@@ -1585,13 +2132,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 15.532,
+        "runtimeMs": 11.121,
         "inputSha256": "750846efbf93b9ae9f93e477922589439b859648de15b7508d2ea8e39da23720",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.944,
+        "runtimeMs": 0.707,
         "inputSha256": "750846efbf93b9ae9f93e477922589439b859648de15b7508d2ea8e39da23720",
         "firstFailure": {
           "cause": "analysis",
@@ -1603,11 +2150,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "pz",
+          "evidence": "no spice-ts result for analyses: pz"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "pz",
+          "evidence": "no spice-ts result for analyses: pz"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "xyce/capacitor-rc-transient",
@@ -1622,29 +2183,43 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 15.683,
+        "runtimeMs": 11.15,
         "inputSha256": "38b0d8271d4cef0f783be9a5ba0bc391c6d164fbe0dba9027e93927f0656e90b",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 29 or its substitute: .tran 0 5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: regression test to show proper transient rc circuit Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.844 MB. Current ngspice program size = 9.844 MB.",
+          "evidence": "Error on line 29 or its substitute: .tran 0 5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: regression test to show proper transient rc circuit Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 21441.125 MB. Maximum ngspice program size = 9.844 MB. Current ngspice program size = 9.844 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 0.946,
+        "runtimeMs": 0.655,
         "inputSha256": "38b0d8271d4cef0f783be9a5ba0bc391c6d164fbe0dba9027e93927f0656e90b",
         "firstFailure": null
       },
       "transition": {
-        "from": "success",
-        "to": "success",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": false
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "xyce/capacitor-rc-transient-newlte",
@@ -1659,20 +2234,20 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 15.19,
+        "runtimeMs": 10.103,
         "inputSha256": "628f4953ca83a0e8840e100ea4671c778afe47bdcad0f52c09f5053c023c5194",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 29 or its substitute: .tran 0 5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: regression test to show proper transient rc circuit Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB.",
+          "evidence": "Error on line 29 or its substitute: .tran 0 5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: regression test to show proper transient rc circuit Total elapsed time (seconds) = 0.002 Total DRAM available = 49152.000 MB. DRAM currently available = 21441.125 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.473,
+        "runtimeMs": 0.42,
         "inputSha256": "628f4953ca83a0e8840e100ea4671c778afe47bdcad0f52c09f5053c023c5194",
         "firstFailure": {
           "cause": "parser",
@@ -1684,11 +2259,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "newlte",
+          "evidence": "Parse error at line 31: Unsupported .options TIMEINT field: 'newlte' .options timeint reltol=1e-6 abstol=1e-6 newlte=2"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "newlte",
+          "evidence": "Parse error at line 31: Unsupported .options TIMEINT field: 'newlte' .options timeint reltol=1e-6 abstol=1e-6 newlte=2"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "xyce/capacitor-rc-oscillator",
@@ -1703,20 +2292,20 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 16.13,
+        "runtimeMs": 11,
         "inputSha256": "add8ca9d2654398a4c394bc9232809677b479fe35172c66bbb8e2ad9bf9410a4",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 2 or its substitute: .tran 0 2.0e-4 TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: rc_osc test Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.844 MB. Current ngspice program size = 9.844 MB.",
+          "evidence": "Error on line 2 or its substitute: .tran 0 2.0e-4 TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: rc_osc test Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 21441.125 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.952,
+        "runtimeMs": 0.56,
         "inputSha256": "add8ca9d2654398a4c394bc9232809677b479fe35172c66bbb8e2ad9bf9410a4",
         "firstFailure": {
           "cause": "analysis",
@@ -1728,11 +2317,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "v1",
+          "evidence": "Parse error at line 8: Cannot parse number: 'v1' v1 1 0 sin 0 1V 1e5 0 0"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "v",
+          "evidence": "Unknown function 'v'"
+        },
+        "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "xyce/diode-level2-temperature-breakdown",
@@ -1747,20 +2350,20 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 15.105,
+        "runtimeMs": 10.568,
         "inputSha256": "9c52a577a2f0b0a7419160b6cd340894ed41ebc403023a3b3f1d809d171bee0e",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 9 or its substitute: .tran 0 1 0 100m TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: *trivial sweep of diode to produce i/v curve Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB.",
+          "evidence": "Error on line 9 or its substitute: .tran 0 1 0 100m TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: *trivial sweep of diode to produce i/v curve Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 21441.125 MB. Maximum ngspice program size = 9.875 MB. Current ngspice program size = 9.875 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 14.668,
+        "runtimeMs": 0.505,
         "inputSha256": "9c52a577a2f0b0a7419160b6cd340894ed41ebc403023a3b3f1d809d171bee0e",
         "firstFailure": {
           "cause": "analysis",
@@ -1772,11 +2375,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "I",
+          "evidence": "Unknown function 'I'"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "I",
+          "evidence": "Unknown function 'I'"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "xyce/diode-zener-5229",
@@ -1791,20 +2408,20 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 14.31,
+        "runtimeMs": 11.1,
         "inputSha256": "aefc2180e4bb6a5b39e3f4105546f3c5ba22af3b74f003d2d4d3c55f45938e9e",
         "firstFailure": {
           "cause": "device/model",
           "card": null,
           "model": "level 2",
           "parameter": null,
-          "evidence": "Fatal error: x1:dfor: Diode model level 2 is not supported. doAnalyses: no such parameter on this device or parameter is missing run simulation(s) aborted Note: No compatibility mode selected! Circuit: mmsz5229bt1 zener subcircuit using pspice level 2 diode at elevated temperature ASCII raw file \"output.raw\" Doing analysis at TEMP = 35.000000 and TNOM = 27.000000 .print line ignored since rawfile was produced. Total analysis time (seconds) = 0 Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.953 MB. Current ngspice program size = 9.953 MB.",
+          "evidence": "Fatal error: x1:dfor: Diode model level 2 is not supported. doAnalyses: no such parameter on this device or parameter is missing run simulation(s) aborted Note: No compatibility mode selected! Circuit: mmsz5229bt1 zener subcircuit using pspice level 2 diode at elevated temperature ASCII raw file \"output.raw\" Doing analysis at TEMP = 35.000000 and TNOM = 27.000000 .print line ignored since rawfile was produced. Total analysis time (seconds) = 0 Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 21441.125 MB. Maximum ngspice program size = 9.953 MB. Current ngspice program size = 9.953 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.464,
+        "runtimeMs": 0.424,
         "inputSha256": "aefc2180e4bb6a5b39e3f4105546f3c5ba22af3b74f003d2d4d3c55f45938e9e",
         "firstFailure": {
           "cause": "parser",
@@ -1816,11 +2433,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "DEVICE",
+          "evidence": "Parse error at line 7: Unsupported .options field: 'DEVICE' .OPTIONS DEVICE TEMP=35"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "DEVICE",
+          "evidence": "Parse error at line 7: Unsupported .options field: 'DEVICE' .OPTIONS DEVICE TEMP=35"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "xyce/diode-transient",
@@ -1835,20 +2466,20 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 14.667,
+        "runtimeMs": 10.599,
         "inputSha256": "334e2dde43335851dc96f76ba5e78ef3e0b1de142cca073b3c70f83937637d8c",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 45 or its substitute: .tran 0 0.5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: diode circuit netlist Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.875 MB. Current ngspice program size = 9.875 MB.",
+          "evidence": "Error on line 45 or its substitute: .tran 0 0.5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: diode circuit netlist Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 21441.125 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.502,
+        "runtimeMs": 0.398,
         "inputSha256": "334e2dde43335851dc96f76ba5e78ef3e0b1de142cca073b3c70f83937637d8c",
         "firstFailure": {
           "cause": "analysis",
@@ -1860,11 +2491,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "V",
+          "evidence": "Unknown function 'V'"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "V",
+          "evidence": "Unknown function 'V'"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "xyce/diode-sidewall-dc",
@@ -1879,22 +2524,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 15.023,
+        "runtimeMs": 11.177,
         "inputSha256": "fb7d40fe14305d830afa0c4477e68b2da541f428883cec677f4c8cb13906d658",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 0.921,
+        "runtimeMs": 0.786,
         "inputSha256": "fb7d40fe14305d830afa0c4477e68b2da541f428883cec677f4c8cb13906d658",
         "firstFailure": null
       },
       "transition": {
-        "from": "success",
-        "to": "success",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": false
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "xyce/inductor-transient",
@@ -1909,13 +2568,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 14.697,
+        "runtimeMs": 11.418,
         "inputSha256": "a0a869d9fe3b04d3bbdc8abf9e8a89a9302a54ac5be9c97f446f06834a248b35",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.502,
+        "runtimeMs": 0.339,
         "inputSha256": "a0a869d9fe3b04d3bbdc8abf9e8a89a9302a54ac5be9c97f446f06834a248b35",
         "firstFailure": {
           "cause": "parser",
@@ -1927,11 +2586,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "newbpstepping",
+          "evidence": "Parse error at line 21: Unsupported .options TIMEINT field: 'newbpstepping' .options timeint newbpstepping=0 reltol=1.0e-4"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "newbpstepping",
+          "evidence": "Parse error at line 21: Unsupported .options TIMEINT field: 'newbpstepping' .options timeint newbpstepping=0 reltol=1.0e-4"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "xyce/njfet-2109-dc",
@@ -1946,22 +2619,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 15.583,
+        "runtimeMs": 11.794,
         "inputSha256": "d25578ed59ddc0f94e3a2f9281f1200982f82c682ec63d5256bf0399f34ecd46",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 1.157,
+        "runtimeMs": 0.953,
         "inputSha256": "d25578ed59ddc0f94e3a2f9281f1200982f82c682ec63d5256bf0399f34ecd46",
         "firstFailure": null
       },
       "transition": {
-        "from": "success",
-        "to": "success",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": false
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "xyce/njfet-stepped-dc",
@@ -1976,20 +2663,20 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 14.164,
+        "runtimeMs": 11.501,
         "inputSha256": "295e3d4208ea2d839acf4724473b921ef1706976b254912b6e8455508c65b412",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 8 or its substitute: .step vgs 0 -1.875 -0.625 unimplemented dot command '.step' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: test circuit for n-channel jfet Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.828 MB. Current ngspice program size = 9.828 MB.",
+          "evidence": "Error on line 8 or its substitute: .step vgs 0 -1.875 -0.625 unimplemented dot command '.step' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: test circuit for n-channel jfet Total elapsed time (seconds) = 0.002 Total DRAM available = 49152.000 MB. DRAM currently available = 21441.125 MB. Maximum ngspice program size = 9.828 MB. Current ngspice program size = 9.828 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 1.521,
+        "runtimeMs": 1.135,
         "inputSha256": "295e3d4208ea2d839acf4724473b921ef1706976b254912b6e8455508c65b412",
         "firstFailure": {
           "cause": "analysis",
@@ -2001,11 +2688,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "dc",
+          "evidence": "no spice-ts result for analyses: dc"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "dc",
+          "evidence": "no spice-ts result for analyses: dc"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "xyce/nmos-level1-dc",
@@ -2020,13 +2721,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 17.502,
+        "runtimeMs": 12.269,
         "inputSha256": "3ab24382b4fb966d2111ba8b2aa0590b989fc09b367c09eb41cc7ac475e0e255",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "failed",
-        "runtimeMs": 0.833,
+        "runtimeMs": 0.558,
         "inputSha256": "3ab24382b4fb966d2111ba8b2aa0590b989fc09b367c09eb41cc7ac475e0e255",
         "firstFailure": {
           "cause": "execution",
@@ -2038,11 +2739,25 @@
         }
       },
       "transition": {
-        "from": "failed",
-        "to": "failed",
+        "from": {
+          "status": "failed",
+          "cause": "execution",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Undefined variable 'R2'"
+        },
+        "to": {
+          "status": "failed",
+          "cause": "execution",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Undefined variable 'R2'"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "reached-execution-failed"
     },
     {
       "key": "xyce/npn-dc",
@@ -2057,13 +2772,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 13.118,
+        "runtimeMs": 10.834,
         "inputSha256": "8775a88a3f9c032ee047d770781a5a0cbcf21a2e28b7b6352e63636a7c9f1ce0",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "failed",
-        "runtimeMs": 0.562,
+        "runtimeMs": 0.44,
         "inputSha256": "8775a88a3f9c032ee047d770781a5a0cbcf21a2e28b7b6352e63636a7c9f1ce0",
         "firstFailure": {
           "cause": "execution",
@@ -2075,11 +2790,25 @@
         }
       },
       "transition": {
-        "from": "failed",
-        "to": "failed",
+        "from": {
+          "status": "failed",
+          "cause": "execution",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Undefined variable 'VCC'"
+        },
+        "to": {
+          "status": "failed",
+          "cause": "execution",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Undefined variable 'VCC'"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "reached-execution-failed"
     },
     {
       "key": "xyce/pmos-level1-dc",
@@ -2094,13 +2823,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 13.189,
+        "runtimeMs": 10.698,
         "inputSha256": "767c989ba6c4ad761d2211ae39c9c82536895e76f6288e77276ad9468b2b2093",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "failed",
-        "runtimeMs": 0.501,
+        "runtimeMs": 0.387,
         "inputSha256": "767c989ba6c4ad761d2211ae39c9c82536895e76f6288e77276ad9468b2b2093",
         "firstFailure": {
           "cause": "execution",
@@ -2112,11 +2841,25 @@
         }
       },
       "transition": {
-        "from": "failed",
-        "to": "failed",
+        "from": {
+          "status": "failed",
+          "cause": "execution",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Undefined variable 'R2'"
+        },
+        "to": {
+          "status": "failed",
+          "cause": "execution",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Undefined variable 'R2'"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "reached-execution-failed"
     },
     {
       "key": "xyce/pnp-dc",
@@ -2131,13 +2874,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 15.259,
+        "runtimeMs": 10.914,
         "inputSha256": "95796ac998eb051a535fcb498c259e715c1e8edd237e1e07add401fc6a1601df",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "failed",
-        "runtimeMs": 0.475,
+        "runtimeMs": 0.369,
         "inputSha256": "95796ac998eb051a535fcb498c259e715c1e8edd237e1e07add401fc6a1601df",
         "firstFailure": {
           "cause": "execution",
@@ -2149,11 +2892,25 @@
         }
       },
       "transition": {
-        "from": "failed",
-        "to": "failed",
+        "from": {
+          "status": "failed",
+          "cause": "execution",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Undefined variable 'VCC'"
+        },
+        "to": {
+          "status": "failed",
+          "cause": "execution",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Undefined variable 'VCC'"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "reached-execution-failed"
     },
     {
       "key": "xyce/resistor-dc",
@@ -2168,22 +2925,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 16.232,
+        "runtimeMs": 10.658,
         "inputSha256": "c0def3533cd6c07bf3cc6ee06f806c50d0b491d4d70d8296cc286ad8fc6066ba",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 0.581,
+        "runtimeMs": 0.378,
         "inputSha256": "c0def3533cd6c07bf3cc6ee06f806c50d0b491d4d70d8296cc286ad8fc6066ba",
         "firstFailure": null
       },
       "transition": {
-        "from": "success",
-        "to": "success",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": false
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "xyce/resistor-level3-zero",
@@ -2198,22 +2969,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 13.181,
+        "runtimeMs": 10.733,
         "inputSha256": "ab40c80d1175ad3079155b07bfed914b7085a6d9396f16a577446deb7693eb81",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 0.526,
+        "runtimeMs": 0.402,
         "inputSha256": "ab40c80d1175ad3079155b07bfed914b7085a6d9396f16a577446deb7693eb81",
         "firstFailure": null
       },
       "transition": {
-        "from": "success",
-        "to": "success",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": false
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "xyce/resistor-negative",
@@ -2228,22 +3013,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 13.043,
+        "runtimeMs": 10.389,
         "inputSha256": "7576379306251dd8c2baf89b4dbbe25527c399edb1fd701e7e5d38e83851614b",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 0.507,
+        "runtimeMs": 0.329,
         "inputSha256": "7576379306251dd8c2baf89b4dbbe25527c399edb1fd701e7e5d38e83851614b",
         "firstFailure": null
       },
       "transition": {
-        "from": "success",
-        "to": "success",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": false
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "xyce/rlc-transient",
@@ -2258,13 +3057,13 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 19.098,
+        "runtimeMs": 13.888,
         "inputSha256": "4d52f9df5eb4fe814fdd137e3f66cd4b4ec6c988174e0fe1c7a19e6eddf21763",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 17.652,
+        "runtimeMs": 0.406,
         "inputSha256": "4d52f9df5eb4fe814fdd137e3f66cd4b4ec6c988174e0fe1c7a19e6eddf21763",
         "firstFailure": {
           "cause": "analysis",
@@ -2276,11 +3075,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "i",
+          "evidence": "Unknown function 'i'"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "analysis",
+          "card": null,
+          "model": null,
+          "parameter": "i",
+          "evidence": "Unknown function 'i'"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "xyce/vccs-dc",
@@ -2295,22 +3108,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 12.99,
+        "runtimeMs": 10.503,
         "inputSha256": "963d8d506600a2ac7f43812156739c8f49d332c50701f64268041ecd51b0306d",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 0.553,
+        "runtimeMs": 10.098,
         "inputSha256": "963d8d506600a2ac7f43812156739c8f49d332c50701f64268041ecd51b0306d",
         "firstFailure": null
       },
       "transition": {
-        "from": "success",
-        "to": "success",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": false
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "xyce/vcvs-dc",
@@ -2325,22 +3152,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 13.722,
+        "runtimeMs": 10.278,
         "inputSha256": "62541466b4010245a24d2c37b35c3debfc675b86f1bd3b2523fb91a01b4bbd5c",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 0.775,
+        "runtimeMs": 0.471,
         "inputSha256": "62541466b4010245a24d2c37b35c3debfc675b86f1bd3b2523fb91a01b4bbd5c",
         "firstFailure": null
       },
       "transition": {
-        "from": "success",
-        "to": "success",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": false
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "corpus-d/ohms-law-op",
@@ -2355,7 +3196,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 12.72,
+        "runtimeMs": 9.498,
         "inputSha256": "be2e9901695aab2a53c140f845bb0fe41d3c43eecd41cddca3ce6c4946b5bbd2",
         "firstFailure": {
           "cause": "execution",
@@ -2368,7 +3209,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.439,
+        "runtimeMs": 0.31,
         "inputSha256": "be2e9901695aab2a53c140f845bb0fe41d3c43eecd41cddca3ce6c4946b5bbd2",
         "firstFailure": {
           "cause": "parser",
@@ -2380,11 +3221,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' v1 supply 0 type=vdc vdc=5"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' v1 supply 0 type=vdc vdc=5"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/diode-operating-point",
@@ -2399,7 +3254,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 12.631,
+        "runtimeMs": 9.884,
         "inputSha256": "1c7dbbf5941ce07f6806803f1c22df8165acde82d5dd66f9a9076da009e19b8e",
         "firstFailure": {
           "cause": "execution",
@@ -2412,7 +3267,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.512,
+        "runtimeMs": 0.298,
         "inputSha256": "1c7dbbf5941ce07f6806803f1c22df8165acde82d5dd66f9a9076da009e19b8e",
         "firstFailure": {
           "cause": "parser",
@@ -2424,11 +3279,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' v1 1 0 type=vdc vdc=1"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' v1 1 0 type=vdc vdc=1"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/ekv-bias-sweep",
@@ -2444,7 +3313,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 12.957,
+        "runtimeMs": 10.166,
         "inputSha256": "2d680251e499b4b857ea78280d8e8c0e2114eb0977d2b1b4f69ba234a08f0271",
         "firstFailure": {
           "cause": "execution",
@@ -2457,7 +3326,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.434,
+        "runtimeMs": 0.256,
         "inputSha256": "2d680251e499b4b857ea78280d8e8c0e2114eb0977d2b1b4f69ba234a08f0271",
         "firstFailure": {
           "cause": "parser",
@@ -2469,11 +3338,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 3: Cannot parse number: 'type=vdc' vdd nd 0 type=vdc vdc=2.5"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 3: Cannot parse number: 'type=vdc' vdd nd 0 type=vdc vdc=2.5"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/downscaling-current-mirror",
@@ -2489,7 +3372,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 13.956,
+        "runtimeMs": 9.687,
         "inputSha256": "09fa542dd664647c2deaef15f2d8bf07f7f3e30b40e7e6a9242673b62d28da1f",
         "firstFailure": {
           "cause": "execution",
@@ -2502,7 +3385,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.462,
+        "runtimeMs": 0.334,
         "inputSha256": "09fa542dd664647c2deaef15f2d8bf07f7f3e30b40e7e6a9242673b62d28da1f",
         "firstFailure": {
           "cause": "parser",
@@ -2514,11 +3397,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=idc",
+          "evidence": "Parse error at line 22: Cannot parse number: 'type=idc' i1 0 inc type=idc idc=16e-6"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=idc",
+          "evidence": "Parse error at line 22: Cannot parse number: 'type=idc' i1 0 inc type=idc idc=16e-6"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/transresistance-ac",
@@ -2534,7 +3431,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 13.541,
+        "runtimeMs": 11.284,
         "inputSha256": "e9c675ae1029b278422be65104ef1c10925d3506b7432274c9dce4c8c49d0765",
         "firstFailure": {
           "cause": "execution",
@@ -2547,7 +3444,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.558,
+        "runtimeMs": 0.287,
         "inputSha256": "e9c675ae1029b278422be65104ef1c10925d3506b7432274c9dce4c8c49d0765",
         "firstFailure": {
           "cause": "parser",
@@ -2559,11 +3456,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' va 1 2 type=vdc vdc=.1 vac=1"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' va 1 2 type=vdc vdc=.1 vac=1"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/passive-pole-zero-ac",
@@ -2580,7 +3491,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 14.011,
+        "runtimeMs": 10.436,
         "inputSha256": "3a597bfe073b0d0219444b15559e6390a2aabe9ca8f1b9246db626efd8dda94c",
         "firstFailure": {
           "cause": "execution",
@@ -2593,7 +3504,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.459,
+        "runtimeMs": 0.298,
         "inputSha256": "3a597bfe073b0d0219444b15559e6390a2aabe9ca8f1b9246db626efd8dda94c",
         "firstFailure": {
           "cause": "parser",
@@ -2605,11 +3516,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=idc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=idc' IN 0 1 type=idc idc=1.00 iac=1"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=idc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=idc' IN 0 1 type=idc idc=1.00 iac=1"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/resistor-voltage-ac",
@@ -2625,7 +3550,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 14.005,
+        "runtimeMs": 9.541,
         "inputSha256": "a632b37a296d71114ea1bb8185029e041c28f86defdc4e6e671dfbe55de3a6ed",
         "firstFailure": {
           "cause": "execution",
@@ -2638,7 +3563,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.543,
+        "runtimeMs": 0.312,
         "inputSha256": "a632b37a296d71114ea1bb8185029e041c28f86defdc4e6e671dfbe55de3a6ed",
         "firstFailure": {
           "cause": "parser",
@@ -2650,11 +3575,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 3: Cannot parse number: 'type=vdc' vd 1 0 type=vdc vdc=1"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 3: Cannot parse number: 'type=vdc' vd 1 0 type=vdc vdc=1"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/series-resonance-ac",
@@ -2670,7 +3609,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 14.1,
+        "runtimeMs": 9.395,
         "inputSha256": "6b687bc2f3cd7415af561f26e80669ce8df3e08be977958dbc6db1446f5f22d0",
         "firstFailure": {
           "cause": "execution",
@@ -2683,7 +3622,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.427,
+        "runtimeMs": 0.267,
         "inputSha256": "6b687bc2f3cd7415af561f26e80669ce8df3e08be977958dbc6db1446f5f22d0",
         "firstFailure": {
           "cause": "parser",
@@ -2695,11 +3634,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' va1 1 0 type=vdc vdc=0 type=vac vac=1"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' va1 1 0 type=vdc vdc=0 type=vac vac=1"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/am-source-transient",
@@ -2714,7 +3667,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 14.203,
+        "runtimeMs": 9.347,
         "inputSha256": "e5027b8f925e83ac09ef477b77b7219b215dcb74e0e172c8369c3c777a7e5632",
         "firstFailure": {
           "cause": "execution",
@@ -2727,7 +3680,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.412,
+        "runtimeMs": 0.267,
         "inputSha256": "e5027b8f925e83ac09ef477b77b7219b215dcb74e0e172c8369c3c777a7e5632",
         "firstFailure": {
           "cause": "parser",
@@ -2739,11 +3692,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' V1 1 0 type=vdc vdc=0 type=AM 10 1 100 1K 1M"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' V1 1 0 type=vdc vdc=0 type=AM 10 1 100 1K 1M"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/fft-source-transient",
@@ -2758,7 +3725,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 13.686,
+        "runtimeMs": 9.282,
         "inputSha256": "04d2554f966d5ffd8cfd00f665575e02d11045790cf201bb596b610c0e2ff59b",
         "firstFailure": {
           "cause": "execution",
@@ -2771,7 +3738,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.416,
+        "runtimeMs": 0.238,
         "inputSha256": "04d2554f966d5ffd8cfd00f665575e02d11045790cf201bb596b610c0e2ff59b",
         "firstFailure": {
           "cause": "parser",
@@ -2783,11 +3750,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=sin",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=sin' vs 1 0 type=sin 0 15 60 0 0"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=sin",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=sin' vs 1 0 type=sin 0 15 60 0 0"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/coupled-transformer-transient",
@@ -2803,7 +3784,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 13.135,
+        "runtimeMs": 9.537,
         "inputSha256": "df9bf42844508fc38edffdc685e935ac90e10bde5fab0ee957ce68f5da6ba4a5",
         "firstFailure": {
           "cause": "execution",
@@ -2816,7 +3797,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.412,
+        "runtimeMs": 0.284,
         "inputSha256": "df9bf42844508fc38edffdc685e935ac90e10bde5fab0ee957ce68f5da6ba4a5",
         "firstFailure": {
           "cause": "parser",
@@ -2828,11 +3809,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 3: Cannot parse number: 'type=vdc' VIN 2 0 type=vdc vdc=0 type=sin 0 170 60 0 0"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 3: Cannot parse number: 'type=vdc' VIN 2 0 type=vdc vdc=0 type=sin 0 170 60 0 0"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/rlc-trapezoidal-transient",
@@ -2848,7 +3843,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 12.648,
+        "runtimeMs": 11.175,
         "inputSha256": "8932d8cc9e536d8ad910c67d199536f39750dea7a0ff282d9ee81bc861145cc8",
         "firstFailure": {
           "cause": "execution",
@@ -2861,7 +3856,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 12.226,
+        "runtimeMs": 0.267,
         "inputSha256": "8932d8cc9e536d8ad910c67d199536f39750dea7a0ff282d9ee81bc861145cc8",
         "firstFailure": {
           "cause": "parser",
@@ -2873,11 +3868,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' v1 1 0 type=vdc vdc=0 type=pulse v1=0 v2=1 td=0 tr=1n tf=1n pw=1n per=1000"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' v1 1 0 type=vdc vdc=0 type=pulse v1=0 v2=1 td=0 tr=1n tf=1n pw=1n per=1000"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/diode-voltage-doubler",
@@ -2893,7 +3902,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 12.54,
+        "runtimeMs": 9.787,
         "inputSha256": "de110e81dd425b8117efd6acd32d7d4311b854bf1236715f3233b1e12419da50",
         "firstFailure": {
           "cause": "execution",
@@ -2906,7 +3915,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.384,
+        "runtimeMs": 0.31,
         "inputSha256": "de110e81dd425b8117efd6acd32d7d4311b854bf1236715f3233b1e12419da50",
         "firstFailure": {
           "cause": "parser",
@@ -2918,11 +3927,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 6: Cannot parse number: 'type=vdc' V1 4 0 type=vdc vdc=0 type=SIN vo=0 va=5 freq=1k"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 6: Cannot parse number: 'type=vdc' V1 4 0 type=vdc vdc=0 type=SIN vo=0 va=5 freq=1k"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/ekv-ring-oscillator",
@@ -2938,7 +3961,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 12.862,
+        "runtimeMs": 9.199,
         "inputSha256": "300a3d7c7441224ce67bbed31f9ecd334e8dd79cf4bfbeca9e49dc673a09f9ef",
         "firstFailure": {
           "cause": "execution",
@@ -2951,7 +3974,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.446,
+        "runtimeMs": 0.312,
         "inputSha256": "300a3d7c7441224ce67bbed31f9ecd334e8dd79cf4bfbeca9e49dc673a09f9ef",
         "firstFailure": {
           "cause": "parser",
@@ -2963,11 +3986,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 13: Cannot parse number: 'type=vdc' v2 2 0 type=vdc vdc=2.5"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 13: Cannot parse number: 'type=vdc' v2 2 0 type=vdc vdc=2.5"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/cockcroft-walton-x8",
@@ -2983,7 +4020,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 16.478,
+        "runtimeMs": 9.624,
         "inputSha256": "050a38d7396b25410446e79dd8106578825bcce223f4c2cb0bb6889fdb18727b",
         "firstFailure": {
           "cause": "execution",
@@ -2996,7 +4033,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.48,
+        "runtimeMs": 0.316,
         "inputSha256": "050a38d7396b25410446e79dd8106578825bcce223f4c2cb0bb6889fdb18727b",
         "firstFailure": {
           "cause": "parser",
@@ -3008,11 +4045,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 18: Cannot parse number: 'type=vdc' V1 99 0 type=vdc vdc=0 type=SIN vo=0 va=5 freq=1k"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 18: Cannot parse number: 'type=vdc' V1 99 0 type=vdc vdc=0 type=SIN vo=0 va=5 freq=1k"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/pwm-switch",
@@ -3028,7 +4079,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 17.205,
+        "runtimeMs": 9.515,
         "inputSha256": "e3d1544f41fef2361132c89b6a85776f3e2f32c7ec95b1321144c82cd6799ff5",
         "firstFailure": {
           "cause": "execution",
@@ -3041,7 +4092,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.458,
+        "runtimeMs": 0.302,
         "inputSha256": "e3d1544f41fef2361132c89b6a85776f3e2f32c7ec95b1321144c82cd6799ff5",
         "firstFailure": {
           "cause": "device/model",
@@ -3053,8 +4104,22 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "device/model",
+          "card": "S",
+          "model": null,
+          "parameter": null,
+          "evidence": "Parse error at line 6: Unsupported device card: 'S' S1 dd out dd in HIGH_SW"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "device/model",
+          "card": "S",
+          "model": null,
+          "parameter": null,
+          "evidence": "Parse error at line 6: Unsupported device card: 'S' S1 dd out dd in HIGH_SW"
+        },
         "changed": false
       },
       "deviceCardCoverage": "direct-device-model-gap"
@@ -3073,7 +4138,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 13.411,
+        "runtimeMs": 9.403,
         "inputSha256": "98fd4fd298a27da8d9286ec29a1af412b7fa7d9098809b8f0635dc42e9062219",
         "firstFailure": {
           "cause": "execution",
@@ -3086,7 +4151,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.455,
+        "runtimeMs": 0.261,
         "inputSha256": "98fd4fd298a27da8d9286ec29a1af412b7fa7d9098809b8f0635dc42e9062219",
         "firstFailure": {
           "cause": "parser",
@@ -3098,11 +4163,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' v1 1 0 type=vdc vdc=0 type=pulse v1=0 v2=1 td=0 tr=1n tf=1n pw=1n per=1000"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' v1 1 0 type=vdc vdc=0 type=pulse v1=0 v2=1 td=0 tr=1n tf=1n pw=1n per=1000"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/rlc-gear5",
@@ -3118,7 +4197,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 12.488,
+        "runtimeMs": 9.266,
         "inputSha256": "ac0ae49a5c9868c6d783449b84514d69e9dc171354782d53785b1b2300a064a4",
         "firstFailure": {
           "cause": "execution",
@@ -3131,7 +4210,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.435,
+        "runtimeMs": 0.28,
         "inputSha256": "ac0ae49a5c9868c6d783449b84514d69e9dc171354782d53785b1b2300a064a4",
         "firstFailure": {
           "cause": "parser",
@@ -3143,11 +4222,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' v1 1 0 type=vdc vdc=0 type=pulse v1=0 v2=1 td=0 tr=1n tf=1n pw=1n per=1000"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' v1 1 0 type=vdc vdc=0 type=pulse v1=0 v2=1 td=0 tr=1n tf=1n pw=1n per=1000"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/rlc-gear6",
@@ -3163,7 +4256,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 12.795,
+        "runtimeMs": 9.983,
         "inputSha256": "1974b92f58344b953e481e579f63a374d722ca3a90bff1d3b305d2c35fb3d5d6",
         "firstFailure": {
           "cause": "execution",
@@ -3176,7 +4269,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.427,
+        "runtimeMs": 0.308,
         "inputSha256": "1974b92f58344b953e481e579f63a374d722ca3a90bff1d3b305d2c35fb3d5d6",
         "firstFailure": {
           "cause": "parser",
@@ -3188,11 +4281,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' v1 1 0 type=vdc vdc=0 type=pulse v1=0 v2=1 td=0 tr=1n tf=1n pw=1n per=1000"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 2: Cannot parse number: 'type=vdc' v1 1 0 type=vdc vdc=0 type=pulse v1=0 v2=1 td=0 tr=1n tf=1n pw=1n per=1000"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-d/colpitts-oscillator",
@@ -3208,7 +4315,7 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 12.326,
+        "runtimeMs": 10.095,
         "inputSha256": "02bc0b17610975b80bb01bf5b73e5a334ef39412d3c14cc39ba6f8e236f67d8c",
         "firstFailure": {
           "cause": "execution",
@@ -3221,7 +4328,7 @@
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.436,
+        "runtimeMs": 0.343,
         "inputSha256": "02bc0b17610975b80bb01bf5b73e5a334ef39412d3c14cc39ba6f8e236f67d8c",
         "firstFailure": {
           "cause": "parser",
@@ -3233,11 +4340,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 3: Cannot parse number: 'type=vdc' vdd dd 0 type=vdc vdc=2.5"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "type=vdc",
+          "evidence": "Parse error at line 3: Cannot parse number: 'type=vdc' vdd dd 0 type=vdc vdc=2.5"
+        },
         "changed": false
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-e/cccs-mixed-analysis",
@@ -3254,29 +4375,43 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 14.062,
+        "runtimeMs": 11.184,
         "inputSha256": "87e7a7e164e9cdac5891b12fd038c06945043f5455a79fb31d26c97bc0463e05",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 17 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: # cccs test, with element probes (forces full eval) Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB.",
+          "evidence": "Error on line 17 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: # cccs test, with element probes (forces full eval) Total elapsed time (seconds) = 0.002 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.891 MB. Current ngspice program size = 9.891 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 1.532,
+        "runtimeMs": 1.31,
         "inputSha256": "87e7a7e164e9cdac5891b12fd038c06945043f5455a79fb31d26c97bc0463e05",
         "firstFailure": null
       },
       "transition": {
-        "from": "unsupported",
-        "to": "success",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".list",
+          "evidence": "Parse error at line 17: Unsupported dot command: '.list' .list"
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": true
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "corpus-e/vcvs-operating-point",
@@ -3292,20 +4427,20 @@
       },
       "ngspice": {
         "status": "failed",
-        "runtimeMs": 12.764,
+        "runtimeMs": 10.373,
         "inputSha256": "cd4c6c8b18a27254b06859424268763a7f5b4a39a648981fc27d6a18b91e2cd1",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 8 or its substitute: r3 4 0 1k device already exists, bail out Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: # voltage source test Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB.",
+          "evidence": "Error on line 8 or its substitute: r3 4 0 1k device already exists, bail out Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: # voltage source test Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.518,
+        "runtimeMs": 0.397,
         "inputSha256": "cd4c6c8b18a27254b06859424268763a7f5b4a39a648981fc27d6a18b91e2cd1",
         "firstFailure": {
           "cause": "parser",
@@ -3317,11 +4452,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".list",
+          "evidence": "Parse error at line 9: Unsupported dot command: '.list' .list"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Parse error at line 17: Cannot read properties of undefined (reading 'trim') .ac 1k"
+        },
+        "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-e/diode-bias-sweep",
@@ -3337,22 +4486,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 15.925,
+        "runtimeMs": 11.14,
         "inputSha256": "f84c531a2e0b4ef201f1cef5d85279b360d5fd20d17d3deb91563581a9371055",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 15.331,
+        "runtimeMs": 0.561,
         "inputSha256": "f84c531a2e0b4ef201f1cef5d85279b360d5fd20d17d3deb91563581a9371055",
         "firstFailure": null
       },
       "transition": {
-        "from": "success",
-        "to": "success",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": false
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "corpus-e/mos1-inverter-sweep",
@@ -3369,22 +4532,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 19.893,
+        "runtimeMs": 14.923,
         "inputSha256": "e832b2a4c0099a68c035342e81e780256fa8369239fcd61c0fd1ad5a5a249de5",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 3.867,
+        "runtimeMs": 3.46,
         "inputSha256": "e832b2a4c0099a68c035342e81e780256fa8369239fcd61c0fd1ad5a5a249de5",
         "firstFailure": null
       },
       "transition": {
-        "from": "unsupported",
-        "to": "success",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".width",
+          "evidence": "Parse error at line 3: Unsupported dot command: '.width' .width out=150"
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": true
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "corpus-e/transmission-line-ac",
@@ -3399,20 +4576,20 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 14.945,
+        "runtimeMs": 12.362,
         "inputSha256": "99cc373d602fad9ecd4ea0e8f14d9eba9322b0083ae02c7631091dcbece7828b",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "warning, can't find model 'rs' from line r1s 1 11 rs warning, can't find model 'rs' from line r2s 1 21 rs warning, can't find model 'rs' from line r3s 1 31 rs warning, can't find model 'rs' from line r4s 1 41 rs warning, can't find model 'rs' from line r5s 1 51 rs Error on line 5 or its substitute: v1 1 0 gen(1) unknown parameter (gen) Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: #transmission lines Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.828 MB. Current ngspice program size = 9.828 MB.",
+          "evidence": "warning, can't find model 'rs' from line r1s 1 11 rs warning, can't find model 'rs' from line r2s 1 21 rs warning, can't find model 'rs' from line r3s 1 31 rs warning, can't find model 'rs' from line r4s 1 41 rs warning, can't find model 'rs' from line r5s 1 51 rs Error on line 5 or its substitute: v1 1 0 gen(1) unknown parameter (gen) Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: #transmission lines Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.73,
+        "runtimeMs": 0.395,
         "inputSha256": "99cc373d602fad9ecd4ea0e8f14d9eba9322b0083ae02c7631091dcbece7828b",
         "firstFailure": {
           "cause": "parser",
@@ -3424,11 +4601,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".width",
+          "evidence": "Parse error at line 3: Unsupported dot command: '.width' .width out=160"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "gen",
+          "evidence": "Parse error at line 5: Cannot parse number: 'gen' V1 1 0 gen(1)"
+        },
+        "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-e/mutual-inductance-ac",
@@ -3444,20 +4635,20 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 13.744,
+        "runtimeMs": 10.547,
         "inputSha256": "45bf5fdc96b7985a744455ff7c3222478665e3db487bbcfedc5c7efa8297fc3c",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 25 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: mutual inductance test circuit Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.875 MB. Current ngspice program size = 9.875 MB.",
+          "evidence": "Error on line 25 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: mutual inductance test circuit Total elapsed time (seconds) = 0.002 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.664,
+        "runtimeMs": 10.222,
         "inputSha256": "45bf5fdc96b7985a744455ff7c3222478665e3db487bbcfedc5c7efa8297fc3c",
         "firstFailure": {
           "cause": "device/model",
@@ -3469,9 +4660,23 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "nopage",
+          "evidence": "Parse error at line 24: Unsupported .options field: 'nopage' .options nopage"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "device/model",
+          "card": "K",
+          "model": null,
+          "parameter": "inductor references",
+          "evidence": "K-element 'k1' references unknown or non-inductor device(s): l1a, l1b"
+        },
+        "changed": true
       },
       "deviceCardCoverage": "direct-device-model-gap"
     },
@@ -3491,29 +4696,43 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 18.746,
+        "runtimeMs": 17.625,
         "inputSha256": "f8cde99b71d9978c5216dffbc9dfc036c8bdf7b37f1c9949fa9835e6eb741213",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 48 or its substitute: .status notime unimplemented dot command '.status' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: difpair ckt - simple differential pair Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.922 MB. Current ngspice program size = 9.922 MB.",
+          "evidence": "Error on line 48 or its substitute: .status notime unimplemented dot command '.status' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: difpair ckt - simple differential pair Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.953 MB. Current ngspice program size = 9.953 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 5.847,
+        "runtimeMs": 4.803,
         "inputSha256": "f8cde99b71d9978c5216dffbc9dfc036c8bdf7b37f1c9949fa9835e6eb741213",
         "firstFailure": null
       },
       "transition": {
-        "from": "unsupported",
-        "to": "success",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".option",
+          "evidence": "Parse error at line 6: Unsupported dot command: '.option' .option method=gear"
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": true
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "corpus-e/opamp-open-loop-ac",
@@ -3530,20 +4749,20 @@
       },
       "ngspice": {
         "status": "failed",
-        "runtimeMs": 12.77,
+        "runtimeMs": 11.048,
         "inputSha256": "92e47652dbecdbd2c971cce3c047fc0b8e4a0406a7d2c953dffce299c60b183c",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 49 or its substitute: .ac Missing DEC, OCT, or LIN. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 2 stage op-amp open loop 02/16/88 Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.938 MB. Current ngspice program size = 9.938 MB.",
+          "evidence": "Error on line 49 or its substitute: .ac Missing DEC, OCT, or LIN. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 2 stage op-amp open loop 02/16/88 Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.953 MB. Current ngspice program size = 9.953 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.702,
+        "runtimeMs": 10.688,
         "inputSha256": "92e47652dbecdbd2c971cce3c047fc0b8e4a0406a7d2c953dffce299c60b183c",
         "firstFailure": {
           "cause": "parser",
@@ -3555,11 +4774,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "dc=0",
+          "evidence": "Parse error at line 17: Cannot parse number: 'dc=0' vin 1 0 dc=0 ac=.5"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Parse error at line 49: Cannot read properties of undefined (reading 'toLowerCase') .ac"
+        },
+        "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-e/capacitor-step-transient",
@@ -3574,29 +4807,43 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 13.181,
+        "runtimeMs": 11.123,
         "inputSha256": "2c0864497272439baa44213381271915107ccd9f8c47354df2e4b9c3028a1608",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 5 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 'c check Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.844 MB. Current ngspice program size = 9.844 MB.",
+          "evidence": "Error on line 5 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 'c check Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.875 MB. Current ngspice program size = 9.875 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 0.806,
+        "runtimeMs": 0.601,
         "inputSha256": "2c0864497272439baa44213381271915107ccd9f8c47354df2e4b9c3028a1608",
         "firstFailure": null
       },
       "transition": {
-        "from": "unsupported",
-        "to": "success",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "pulse",
+          "evidence": "Parse error at line 2: Cannot parse number: 'pulse' v1 1 0 dc pulse(0 1 0 .01 .01 1k 1k) ac 1"
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": true
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "corpus-e/capacitor-initial-condition",
@@ -3611,29 +4858,43 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 13.919,
+        "runtimeMs": 10.538,
         "inputSha256": "65199506e3a8b9bd05b3842cc9ef180308d0d02ba2e9857e89f7f1f8c32c3c84",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 4 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: ' cap with initial condition, ignored because i didn't say \"uic\" Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.844 MB. Current ngspice program size = 9.844 MB.",
+          "evidence": "Error on line 4 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: ' cap with initial condition, ignored because i didn't say \"uic\" Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.844 MB. Current ngspice program size = 9.844 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 0.611,
+        "runtimeMs": 0.513,
         "inputSha256": "65199506e3a8b9bd05b3842cc9ef180308d0d02ba2e9857e89f7f1f8c32c3c84",
         "firstFailure": null
       },
       "transition": {
-        "from": "unsupported",
-        "to": "success",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".list",
+          "evidence": "Parse error at line 4: Unsupported dot command: '.list' .list"
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": true
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "corpus-e/lc-oscillator-transient",
@@ -3648,29 +4909,43 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 19.606,
+        "runtimeMs": 15.553,
         "inputSha256": "020684099d172ec7cc2a6fe3d57792ef51b3d9162f41f83ed486704062d6d702",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 9 or its substitute: .status notime unimplemented dot command '.status' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: *oscillator, .159 hz. Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 20448.547 MB. Maximum ngspice program size = 9.844 MB. Current ngspice program size = 9.844 MB.",
+          "evidence": "Error on line 9 or its substitute: .status notime unimplemented dot command '.status' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: *oscillator, .159 hz. Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 6.314,
+        "runtimeMs": 5.225,
         "inputSha256": "020684099d172ec7cc2a6fe3d57792ef51b3d9162f41f83ed486704062d6d702",
         "firstFailure": null
       },
       "transition": {
-        "from": "unsupported",
-        "to": "success",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Parse error at line 4: PWL source requires a parenthesized list of time/value pairs i1 1 0 pwl 0 5 .1 0"
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": true
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "corpus-e/bjt-diffpair-transient",
@@ -3686,22 +4961,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 23.104,
+        "runtimeMs": 19.072,
         "inputSha256": "f142fa0c6378f80666343a83c8582cca065ed7ad5d49dd3d9e5cd88e7474301e",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 6.184,
+        "runtimeMs": 5.093,
         "inputSha256": "f142fa0c6378f80666343a83c8582cca065ed7ad5d49dd3d9e5cd88e7474301e",
         "firstFailure": null
       },
       "transition": {
-        "from": "success",
-        "to": "success",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": false
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "corpus-e/bjt-schmitt-trigger",
@@ -3717,29 +5006,43 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 185.591,
+        "runtimeMs": 145.397,
         "inputSha256": "ec6efed82593b525b1661173b3a11dbec4880449968389ff86424051d42274b5",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 15 or its substitute: q1 3 2 4 0 qstd off=1 unknown parameter (1) Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: schmitt ckt - ecl compatible schmitt trigger Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 20727.766 MB. Maximum ngspice program size = 9.891 MB. Current ngspice program size = 9.891 MB.",
+          "evidence": "Error on line 15 or its substitute: q1 3 2 4 0 qstd off=1 unknown parameter (1) Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: schmitt ckt - ecl compatible schmitt trigger Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.906 MB. Current ngspice program size = 9.906 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 169.973,
+        "runtimeMs": 144.933,
         "inputSha256": "ec6efed82593b525b1661173b3a11dbec4880449968389ff86424051d42274b5",
         "firstFailure": null
       },
       "transition": {
-        "from": "success",
-        "to": "success",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": false
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "corpus-e/diode-temperature-sweep",
@@ -3755,29 +5058,43 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 13.943,
+        "runtimeMs": 12.053,
         "inputSha256": "d2d7df0b8050008df98e6a8410433c6ef346d9851371c2032edaeb0c9c43dd48",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 7 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: simple diode test Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 20727.766 MB. Maximum ngspice program size = 9.844 MB. Current ngspice program size = 9.844 MB.",
+          "evidence": "Error on line 7 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: simple diode test Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 0.768,
+        "runtimeMs": 0.647,
         "inputSha256": "d2d7df0b8050008df98e6a8410433c6ef346d9851371c2032edaeb0c9c43dd48",
         "firstFailure": null
       },
       "transition": {
-        "from": "unsupported",
-        "to": "success",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".list",
+          "evidence": "Parse error at line 7: Unsupported dot command: '.list' .list"
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": true
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "corpus-e/mos1-nand-transient",
@@ -3793,29 +5110,43 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 15.073,
+        "runtimeMs": 12.63,
         "inputSha256": "183f57f24707d2597f83396a777896e336a17a4ec8a13027f89c5029440d8300",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 32 or its substitute: .tran 0.1n 10n trace all Error: unknown parameter on .tran - ignored Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: na2 Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 20727.766 MB. Maximum ngspice program size = 9.906 MB. Current ngspice program size = 9.906 MB.",
+          "evidence": "Error on line 32 or its substitute: .tran 0.1n 10n trace all Error: unknown parameter on .tran - ignored Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: na2 Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.906 MB. Current ngspice program size = 9.906 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 2.045,
+        "runtimeMs": 1.732,
         "inputSha256": "183f57f24707d2597f83396a777896e336a17a4ec8a13027f89c5029440d8300",
         "firstFailure": null
       },
       "transition": {
-        "from": "unsupported",
-        "to": "success",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": "trace",
+          "evidence": "Parse error at line 32: Cannot parse number: 'trace' .tran 0.1n 10n trace all"
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": true
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "corpus-e/bjt-rtl-inverter-chain",
@@ -3832,22 +5163,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 18.48,
+        "runtimeMs": 14.834,
         "inputSha256": "48b7f67014d43f0c9987ebbc9b349cf53908cc51426d784c4be6db3397fd6e2d",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 3.115,
+        "runtimeMs": 2.472,
         "inputSha256": "48b7f67014d43f0c9987ebbc9b349cf53908cc51426d784c4be6db3397fd6e2d",
         "firstFailure": null
       },
       "transition": {
-        "from": "unsupported",
-        "to": "success",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".width",
+          "evidence": "Parse error at line 4: Unsupported dot command: '.width' .width out=80"
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": true
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "corpus-e/dual-lc-uic-rejection",
@@ -3862,29 +5207,43 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 20.436,
+        "runtimeMs": 16.637,
         "inputSha256": "f1f6a53ef0bb2d41988b1ec4fb022abea8830cd8a847aa3b693d96fe7e66e36d",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 14 or its substitute: .status notime unimplemented dot command '.status' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: *oscillator, .159 hz. Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 20727.766 MB. Maximum ngspice program size = 9.828 MB. Current ngspice program size = 9.828 MB.",
+          "evidence": "Error on line 14 or its substitute: .status notime unimplemented dot command '.status' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: *oscillator, .159 hz. Total elapsed time (seconds) = 0.002 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.844 MB. Current ngspice program size = 9.844 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 7.292,
+        "runtimeMs": 6.315,
         "inputSha256": "f1f6a53ef0bb2d41988b1ec4fb022abea8830cd8a847aa3b693d96fe7e66e36d",
         "firstFailure": null
       },
       "transition": {
-        "from": "unsupported",
-        "to": "success",
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".width",
+          "evidence": "Parse error at line 8: Unsupported dot command: '.width' .width out=80"
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": true
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     },
     {
       "key": "corpus-e/opamp-voltage-follower",
@@ -3902,20 +5261,20 @@
       },
       "ngspice": {
         "status": "unsupported",
-        "runtimeMs": 13.631,
+        "runtimeMs": 10.328,
         "inputSha256": "923e0da63d9fbeca5cb94d049af3f85036f5b1a1af38a0701dbed8c258ff1ebd",
         "firstFailure": {
           "cause": "parser",
           "card": null,
           "model": null,
           "parameter": null,
-          "evidence": "Error on line 52 or its substitute: .stat notime unimplemented dot command '.stat' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 2 stage op-amp, conected as voltage follower 02/16/88 Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 20727.766 MB. Maximum ngspice program size = 9.938 MB. Current ngspice program size = 9.938 MB.",
+          "evidence": "Error on line 52 or its substitute: .stat notime unimplemented dot command '.stat' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 2 stage op-amp, conected as voltage follower 02/16/88 Total elapsed time (seconds) = 0.002 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.938 MB. Current ngspice program size = 9.938 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.548,
+        "runtimeMs": 0.41,
         "inputSha256": "923e0da63d9fbeca5cb94d049af3f85036f5b1a1af38a0701dbed8c258ff1ebd",
         "firstFailure": {
           "cause": "parser",
@@ -3927,11 +5286,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".width",
+          "evidence": "Parse error at line 34: Unsupported dot command: '.width' .width out=80"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Parse error at line 35: Unsupported behavior-changing .options field: 'dampstrategy' .options dampstrategy=11"
+        },
+        "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-e/mos7-nand-no-bypass",
@@ -3947,20 +5320,20 @@
       },
       "ngspice": {
         "status": "failed",
-        "runtimeMs": 13.049,
+        "runtimeMs": 10.35,
         "inputSha256": "81a387433d50c7d280d2b80d2463f3a9d42fc6ea969ef783333b16eaca046868",
         "firstFailure": {
           "cause": "device/model",
           "card": "M",
           "model": "MOS7",
           "parameter": null,
-          "evidence": "Warning: Model issue on line 4 : .model nmos nmos level=7 vth0=0.7 ... Device type MOS7 not available in this binary Warning: Model issue on line 5 : .model pmos pmos level=7 vth0=-0.7 ... Device type MOS7 not available in this binary Error on line 8 or its substitute: m.xi10.mp1 4 2 1 1 pmos w=8e-6 l=600e-9 could not find a valid modelname Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: na2 Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 20727.766 MB. Maximum ngspice program size = 10.016 MB. Current ngspice program size = 10.016 MB.",
+          "evidence": "Warning: Model issue on line 4 : .model nmos nmos level=7 vth0=0.7 ... Device type MOS7 not available in this binary Warning: Model issue on line 5 : .model pmos pmos level=7 vth0=-0.7 ... Device type MOS7 not available in this binary Error on line 8 or its substitute: m.xi10.mp1 4 2 1 1 pmos w=8e-6 l=600e-9 could not find a valid modelname Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: na2 Total elapsed time (seconds) = 0.002 Total DRAM available = 49152.000 MB. DRAM currently available = 21389.406 MB. Maximum ngspice program size = 9.984 MB. Current ngspice program size = 9.984 MB.",
           "owningGap": null
         }
       },
       "spiceTs": {
         "status": "unsupported",
-        "runtimeMs": 0.445,
+        "runtimeMs": 0.3,
         "inputSha256": "81a387433d50c7d280d2b80d2463f3a9d42fc6ea969ef783333b16eaca046868",
         "firstFailure": {
           "cause": "parser",
@@ -3972,11 +5345,25 @@
         }
       },
       "transition": {
-        "from": "unsupported",
-        "to": "unsupported",
-        "changed": false
+        "from": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": ".option",
+          "evidence": "Parse error at line 3: Unsupported dot command: '.option' .option noincmode nobypass"
+        },
+        "to": {
+          "status": "unsupported",
+          "cause": "parser",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": "Parse error at line 3: Unsupported behavior-changing .options field: 'noincmode' .option noincmode nobypass"
+        },
+        "changed": true
       },
-      "deviceCardCoverage": "blocked-before-device-card"
+      "deviceCardCoverage": "blocked-before-execution"
     },
     {
       "key": "corpus-e/bjt-diffpair-current-source",
@@ -3993,22 +5380,36 @@
       },
       "ngspice": {
         "status": "success",
-        "runtimeMs": 21.229,
+        "runtimeMs": 17.545,
         "inputSha256": "7060377579bdb6bfef87225ee4710b81744462af1548ccff755adf061f14f37c",
         "firstFailure": null
       },
       "spiceTs": {
         "status": "success",
-        "runtimeMs": 3.918,
+        "runtimeMs": 3.41,
         "inputSha256": "7060377579bdb6bfef87225ee4710b81744462af1548ccff755adf061f14f37c",
         "firstFailure": null
       },
       "transition": {
-        "from": "success",
-        "to": "success",
+        "from": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
+        "to": {
+          "status": "success",
+          "cause": "success",
+          "card": null,
+          "model": null,
+          "parameter": null,
+          "evidence": null
+        },
         "changed": false
       },
-      "deviceCardCoverage": "reached-execution"
+      "deviceCardCoverage": "completed-execution"
     }
   ]
 }

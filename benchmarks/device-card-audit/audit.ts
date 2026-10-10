@@ -36,6 +36,15 @@ interface EngineAudit {
   firstFailure: FirstFailure | null;
 }
 
+interface TransitionOutcome {
+  status: string;
+  cause: Cause;
+  card: string | null;
+  model: string | null;
+  parameter: string | null;
+  evidence: string | null;
+}
+
 interface AuditedFixture {
   key: string;
   category: string;
@@ -43,16 +52,17 @@ interface AuditedFixture {
   input: { bytes: number; sha256: string; identicalForBothEngines: true };
   ngspice: EngineAudit;
   spiceTs: EngineAudit;
-  transition: { from: string; to: string; changed: boolean };
-  deviceCardCoverage: 'reached-execution' | 'direct-device-model-gap' | 'blocked-before-device-card';
+  transition: { from: TransitionOutcome; to: TransitionOutcome; changed: boolean };
+  deviceCardCoverage: 'completed-execution' | 'reached-execution-failed' | 'direct-device-model-gap' | 'blocked-before-execution';
 }
 
 interface BaselineReport {
   outcomeSha256: string;
   fixtures: Array<{
     key: string;
+    declaredAnalyses: string[];
     ngspice: { status: string };
-    spiceTs: { status: string };
+    spiceTs: { status: string; error?: string };
   }>;
 }
 
@@ -180,6 +190,22 @@ function outcome(engine: EngineAudit): string {
   return engine.status === 'success' ? 'success' : `${engine.status}/${engine.firstFailure?.cause ?? 'execution'}`;
 }
 
+function transitionOutcome(status: string, failure: Omit<FirstFailure, 'owningGap'> | FirstFailure | null): TransitionOutcome {
+  return {
+    status,
+    cause: status === 'success' ? 'success' : failure?.cause ?? 'execution',
+    card: failure?.card ?? null,
+    model: failure?.model ?? null,
+    parameter: failure?.parameter ?? null,
+    evidence: failure?.evidence ?? null,
+  };
+}
+
+function transitionIdentity(result: TransitionOutcome): string {
+  const { evidence: _evidence, ...deterministicDetail } = result;
+  return JSON.stringify(deterministicDetail);
+}
+
 function emptyTotals(): Record<Cause, number> {
   return Object.fromEntries(CAUSES.map(cause => [cause, 0])) as Record<Cause, number>;
 }
@@ -219,13 +245,18 @@ export async function buildDeviceCardAudit(): Promise<DeviceCardAudit> {
     const spiceTs = engineAudit('spiceTs', fixture);
     const beforeFixture = baselineFixtures.get(fixture.key);
     if (!beforeFixture) throw new Error(`${fixture.key}: missing from accepted aggregate baseline`);
-    const from = beforeFixture.spiceTs.status;
-    const to = spiceTs.status;
+    const baselineFailure = beforeFixture.spiceTs.status === 'success'
+      ? null
+      : classifyFirstFailure(beforeFixture.spiceTs.error ?? 'no engine result', beforeFixture.declaredAnalyses);
+    const from = transitionOutcome(beforeFixture.spiceTs.status, baselineFailure);
+    const to = transitionOutcome(spiceTs.status, spiceTs.firstFailure);
     const deviceCardCoverage: AuditedFixture['deviceCardCoverage'] = spiceTs.status === 'success'
-      ? 'reached-execution'
+      ? 'completed-execution'
       : spiceTs.firstFailure?.cause === 'device/model'
         ? 'direct-device-model-gap'
-        : 'blocked-before-device-card';
+        : spiceTs.firstFailure?.cause === 'execution' || spiceTs.firstFailure?.cause === 'convergence'
+          ? 'reached-execution-failed'
+          : 'blocked-before-execution';
     return {
       key: fixture.key,
       category: fixture.category,
@@ -233,7 +264,7 @@ export async function buildDeviceCardAudit(): Promise<DeviceCardAudit> {
       input: fixture.input,
       ngspice,
       spiceTs,
-      transition: { from, to, changed: from !== to },
+      transition: { from, to, changed: transitionIdentity(from) !== transitionIdentity(to) },
       deviceCardCoverage,
     };
   });
@@ -247,10 +278,10 @@ export async function buildDeviceCardAudit(): Promise<DeviceCardAudit> {
     return totals;
   };
   const changed = fixtures.filter(fixture => fixture.transition.changed).length;
-  const gains = fixtures.filter(fixture => fixture.transition.from !== 'success' && fixture.transition.to === 'success').length;
-  const regressions = fixtures.filter(fixture => fixture.transition.from === 'success' && fixture.transition.to !== 'success').length;
+  const gains = fixtures.filter(fixture => fixture.transition.from.status !== 'success' && fixture.transition.to.status === 'success').length;
+  const regressions = fixtures.filter(fixture => fixture.transition.from.status === 'success' && fixture.transition.to.status !== 'success').length;
   const coverage = Object.fromEntries(
-    ['reached-execution', 'direct-device-model-gap', 'blocked-before-device-card'].map(state => [
+    ['completed-execution', 'reached-execution-failed', 'direct-device-model-gap', 'blocked-before-execution'].map(state => [
       state,
       fixtures.filter(fixture => fixture.deviceCardCoverage === state).length,
     ]),
@@ -321,6 +352,11 @@ export async function buildDeviceCardAudit(): Promise<DeviceCardAudit> {
 }
 
 function markdown(report: DeviceCardAudit): string {
+  const formatTransition = (result: TransitionOutcome): string => {
+    const outcome = result.cause === 'success' ? 'success' : `${result.status}/${result.cause}`;
+    if (result.cause === 'success') return outcome;
+    return `${outcome} [card=${result.card ?? 'n/a'}; model=${result.model ?? 'n/a'}; parameter=${result.parameter ?? 'n/a'}; diagnostic=${result.evidence?.replaceAll('|', '\\|') ?? 'n/a'}]`;
+  };
   const rows = report.fixtures.map(fixture => {
     const format = (engine: EngineAudit): string => {
       if (engine.status === 'success') return `success (${engine.runtimeMs} ms)`;
@@ -331,10 +367,10 @@ function markdown(report: DeviceCardAudit): string {
     const detail = failure
       ? `card=${failure.card ?? 'n/a'}; model=${failure.model ?? 'n/a'}; parameter=${failure.parameter ?? 'n/a'}; [gap](${failure.owningGap})`
       : 'n/a';
-    return `| ${fixture.key} | \`${fixture.input.sha256}\` | ${format(fixture.ngspice)} | ${format(fixture.spiceTs)} | ${detail} | ${fixture.transition.from} → ${fixture.transition.to} | ${fixture.deviceCardCoverage} |`;
+    return `| ${fixture.key} | \`${fixture.input.sha256}\` | ${format(fixture.ngspice)} | ${format(fixture.spiceTs)} | ${detail} | ${formatTransition(fixture.transition.from)} → ${formatTransition(fixture.transition.to)} | ${fixture.deviceCardCoverage} |`;
   });
   const { totals } = report;
-  return `# Unsupported device-card coverage audit\n\nThis audit reruns all 100 provenance-tracked fixtures byte-for-byte through ngspice-47 and spice-ts. It publishes execution coverage and first failures; it does not claim waveform parity, milestone completion, or speed superiority.\n\n## Results\n\n- ngspice first outcomes: ${CAUSES.map(cause => `${cause}=${totals.ngspice[cause]}`).join(', ')}.\n- spice-ts first outcomes: ${CAUSES.map(cause => `${cause}=${totals.spiceTs[cause]}`).join(', ')}.\n- Device-card reach: ${Object.entries(totals.deviceCardCoverage).map(([key, value]) => `${key}=${value}`).join(', ')}. A blocked fixture can contain a later device card that this first-failure audit intentionally does not infer.\n- Transitions from accepted aggregate baseline \`${report.hashes.baselineOutcomeSha256}\`: changed=${totals.transitions.changed}, unchanged=${totals.transitions.unchanged}, gains=${totals.transitions.gains}, regressions=${totals.transitions.regressions}.\n- Descriptive one-run totals: ngspice=${totals.runtimeMs.ngspice} ms; spice-ts=${totals.runtimeMs.spiceTs} ms. These timings are published, not compared as a performance claim.\n- Deterministic outcome SHA-256 (environment, runtimes, and diagnostic wording excluded): \`${report.hashes.deterministicOutcomeSha256}\`.\n\n## Reproduction and identity\n\n- Generate: \`${report.commands.generate}\`.\n- Check committed receipt: \`${report.commands.check}\`.\n- Input policy: ${report.policy.input}; adaptation=${report.policy.fixtureAdaptation}; per-circuit tolerance tuning=${report.policy.perCircuitToleranceTuning}.\n- Tools: ${report.tools.ngspice}; spice-ts ${report.tools.spiceTs}; pnpm ${report.tools.pnpm}; Node ${report.environment.node}.\n- Machine: ${report.environment.cpu}; ${report.environment.platform} ${report.environment.release} ${report.environment.arch}.\n- Fixture-set SHA-256: \`${report.hashes.fixtureSetSha256}\`.\n- benchmarks/SOURCES.md SHA-256: \`${report.hashes.sourcesSha256}\`.\n- Manifest SHA-256: ${Object.entries(report.hashes.manifestsSha256).map(([name, hash]) => `${name}=\`${hash}\``).join('; ')}.\n- Accepted aggregate receipt SHA-256: \`${report.hashes.baselineReportSha256}\`.\n\n## Classification and exclusions\n\nThe first hard diagnostic is classified as parser, device/model, analysis, convergence, or execution. Each spice-ts failure records card, model, parameter, and an owning open gap when extractable; non-applicable fields remain explicit as n/a. Later failures are excluded because changing or adapting fixtures to expose them would violate the byte-identity policy. Runtime variation, error wording, waveform parity, and any speed claim are excluded from the deterministic outcome.\n\nAll observed first failures map to the open gap registry below. Issue #289 was filed for the previously untracked four-fixture Xyce execution gap; no duplicate issue was filed for already-tracked failures.\n\n${report.gapRegistry.map(gap => `- [${gap.issue.split('/').at(-1)}](${gap.issue}) (${gap.state}): ${gap.scope}.`).join('\n')}\n\n## Per-fixture outcomes\n\n| Fixture | Input SHA-256 | ngspice | spice-ts | spice-ts first-failure detail | spice-ts transition | device-card reach |\n|---|---|---|---|---|---|---|\n${rows.join('\n')}\n\nEvery success, loss, transition, runtime, and first-failure exclusion is represented above. Status success means execution completed, not that waveforms match.\n\n## /poteto-mode receipt\n\nThe feature lane followed RED/GREEN/REFACTOR: the focused test first failed because the audit module did not exist; GREEN introduced only this isolated benchmark directory and reused the established 100-fixture dual-engine runner; REFACTOR centralized deterministic projection, classification, hashes, and Markdown rendering. The lower-surface design imports the existing runner rather than duplicating simulator execution or editing shared benchmark and simulator files.\n`;
+  return `# Unsupported device-card coverage audit\n\nThis audit reruns all 100 provenance-tracked fixtures byte-for-byte through ngspice-47 and spice-ts. It publishes execution coverage and first failures; it does not claim waveform parity, milestone completion, or speed superiority.\n\n## Results\n\n- ngspice first outcomes: ${CAUSES.map(cause => `${cause}=${totals.ngspice[cause]}`).join(', ')}.\n- spice-ts first outcomes: ${CAUSES.map(cause => `${cause}=${totals.spiceTs[cause]}`).join(', ')}.\n- Device-card reach: ${Object.entries(totals.deviceCardCoverage).map(([key, value]) => `${key}=${value}`).join(', ')}. Successes completed execution; convergence and execution failures reached execution; parser and analysis failures were blocked before execution. Any non-device/model first failure can hide a later device card that this audit intentionally does not infer.\n- First-failure transitions (status, cause, card, model, and parameter) from accepted aggregate baseline \`${report.hashes.baselineOutcomeSha256}\`: changed=${totals.transitions.changed}, unchanged=${totals.transitions.unchanged}, gains=${totals.transitions.gains}, regressions=${totals.transitions.regressions}.\n- Descriptive one-run totals: ngspice=${totals.runtimeMs.ngspice} ms; spice-ts=${totals.runtimeMs.spiceTs} ms. These timings are published, not compared as a performance claim.\n- Deterministic outcome SHA-256 (environment, runtimes, and diagnostic wording excluded): \`${report.hashes.deterministicOutcomeSha256}\`.\n\n## Reproduction and identity\n\n- Generate: \`${report.commands.generate}\`.\n- Check committed receipt: \`${report.commands.check}\`.\n- Input policy: ${report.policy.input}; adaptation=${report.policy.fixtureAdaptation}; per-circuit tolerance tuning=${report.policy.perCircuitToleranceTuning}.\n- Tools: ${report.tools.ngspice}; spice-ts ${report.tools.spiceTs}; pnpm ${report.tools.pnpm}; Node ${report.environment.node}.\n- Machine: ${report.environment.cpu}; ${report.environment.platform} ${report.environment.release} ${report.environment.arch}.\n- Fixture-set SHA-256: \`${report.hashes.fixtureSetSha256}\`.\n- benchmarks/SOURCES.md SHA-256: \`${report.hashes.sourcesSha256}\`.\n- Manifest SHA-256: ${Object.entries(report.hashes.manifestsSha256).map(([name, hash]) => `${name}=\`${hash}\``).join('; ')}.\n- Accepted aggregate receipt SHA-256: \`${report.hashes.baselineReportSha256}\`.\n\n## Classification and exclusions\n\nThe first hard diagnostic is classified as parser, device/model, analysis, convergence, or execution. Each spice-ts failure records card, model, parameter, and an owning open gap when extractable; non-applicable fields remain explicit as n/a. Later failures are excluded because changing or adapting fixtures to expose them would violate the byte-identity policy. Runtime variation, error wording, waveform parity, and any speed claim are excluded from the deterministic outcome.\n\nAll observed first failures map to the open gap registry below. Issue #289 was filed for the previously untracked four-fixture Xyce execution gap; no duplicate issue was filed for already-tracked failures.\n\n${report.gapRegistry.map(gap => `- [${gap.issue.split('/').at(-1)}](${gap.issue}) (${gap.state}): ${gap.scope}.`).join('\n')}\n\n## Per-fixture outcomes\n\n| Fixture | Input SHA-256 | ngspice | spice-ts | spice-ts first-failure detail | spice-ts transition | device-card reach |\n|---|---|---|---|---|---|---|\n${rows.join('\n')}\n\nEvery success, loss, transition, runtime, and first-failure exclusion is represented above. Status success means execution completed, not that waveforms match.\n\n## /poteto-mode receipt\n\nThe feature lane followed RED/GREEN/REFACTOR: the focused test first failed because the audit module did not exist; GREEN introduced only this isolated benchmark directory and reused the established 100-fixture dual-engine runner; REFACTOR centralized deterministic projection, classification, hashes, and Markdown rendering. The lower-surface design imports the existing runner rather than duplicating simulator execution or editing shared benchmark and simulator files.\n`;
 }
 
 function stableJson(report: DeviceCardAudit): string {
