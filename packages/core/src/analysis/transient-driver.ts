@@ -14,6 +14,7 @@ import {
   createConvergenceTelemetry, resetConvergenceTelemetry, snapshotConvergenceTelemetry,
 } from '../convergence-telemetry.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
+import { Inductor } from '../devices/inductor.js';
 
 /**
  * Smallest allowed timestep (femtosecond). Must be small enough that LTE can
@@ -144,6 +145,7 @@ class TransientSimImpl implements TransientSim {
   private compiled: CompiledCircuit;
   private convergenceTelemetry: ConvergenceTelemetry;
   private readonly useStaticCurrentHistory: boolean;
+  private readonly useDampedInductiveRecovery: boolean;
 
   private time = 0;
   private dt: number;
@@ -170,6 +172,8 @@ class TransientSimImpl implements TransientSim {
       (device.isNonlinear && device.stampDynamic !== undefined)
       || (config.stopTime !== undefined && (device.getBreakpoints?.(config.stopTime).length ?? 0) > 0)
     ));
+    this.useDampedInductiveRecovery = compiled.devices.some(device => device instanceof Inductor)
+      && compiled.devices.some(device => device.isNonlinear);
     this.dt = Math.min(config.timestep, config.maxTimestep);
     this.prevDt = this.dt;
     this.integrationMethod = options.integrationMethod;
@@ -266,15 +270,16 @@ class TransientSimImpl implements TransientSim {
         this.convergenceTelemetry.transient.nrRetries++;
         if (
           this.integrationMethod === 'trapezoidal'
-          && ++this.trapNrRetries === MAX_TRAP_NR_RETRIES
+          && ++this.trapNrRetries === (this.useDampedInductiveRecovery ? 1 : MAX_TRAP_NR_RETRIES)
         ) {
-          // A persistent trap/Newton grow-fail-cut cycle can hold dt near the
-          // numerical floor indefinitely while one-shot result arrays keep
-          // growing. SPICE-family solvers commonly move stiff regions to a
-          // more damped integration method. Switch the remaining run to
-          // Gear-2, drop trap history, and retry this timepoint without a cut.
+          // A trap/Newton grow-fail-cut cycle can hold dt near the numerical
+          // floor indefinitely while one-shot result arrays keep growing.
+          // Nonlinear inductive systems can enter that cycle on the first trap
+          // failure, so move them immediately to damped Backward Euler. Other
+          // systems retain the established sustained-retry Gear-2 fallback.
+          // Drop history and retry this timepoint without a timestep cut.
           // This is a global convergence safeguard, not output decimation.
-          this.integrationMethod = 'gear2';
+          this.integrationMethod = this.useDampedInductiveRecovery ? 'euler' : 'gear2';
           this.prevB = undefined;
           this.secondPrevSol = undefined;
           this.assembler.solution.set(prevSol);
