@@ -5,6 +5,7 @@ import { parseModelCard } from './model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
+import { parseBJTInstance } from './bjt-parser.js';
 import { parsePoleZero } from './pole-zero-parser.js';
 import { parseSensitivity } from './sensitivity-parser.js';
 import { parseTransmissionLine } from './transmission-line-parser.js';
@@ -752,23 +753,14 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
       );
       break;
     case 'Q': {
-      if (tokens.length === 5) {
-        circuit.addBJT(name, tokens[1], tokens[2], tokens[3], tokens[4]);
-        break;
-      }
-      const groundedSubstrate = tokens[4] === '0';
-      const supportedOffFlag = tokens.length === 6
-        || (tokens.length === 7 && tokens[6].toUpperCase() === 'OFF=1');
-      if (!groundedSubstrate || !supportedOffFlag) {
-        throw new ParseError(
-          `Unsupported BJT Q-card form: '${tokens.join(' ')}'`,
-          lineNumber, tokens.join(' '),
-        );
-      }
-      // Preserve the historical grounded-substrate compatibility path: it
-      // used the substrate token as the model selector and therefore ran the
-      // default level-1 device. New bounded cards use the three-terminal form.
-      circuit.addBJT(name, tokens[1], tokens[2], tokens[3], tokens[4]);
+      const instance = parseBJTInstance(tokens, lineNumber);
+      circuit.addBJT(
+        name,
+        instance.collector,
+        instance.base,
+        instance.emitter,
+        instance.modelName,
+      );
       break;
     }
     case 'J':
