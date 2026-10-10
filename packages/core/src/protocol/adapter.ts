@@ -33,6 +33,7 @@ import { simulate } from '../simulate.js';
 import type {
   AnalysisCommand, AnalysisDirective, SimulationOptions, SourceWaveform, StepAnalysis,
 } from '../types.js';
+import { DEFAULT_OPTIONS } from '../types.js';
 import {
   preflightTopology,
   TopologyPreflightError,
@@ -44,6 +45,7 @@ import {
   type ProtocolExecutionOptionsV1,
 } from './execution-guard.js';
 import { directedLinearPointCount } from '../analysis/directed-linear-grid.js';
+import { frequencyPointCount } from '../analysis/frequency-grid.js';
 
 const MAX_DETAIL_NAMES = 32;
 const API_ERROR_CODES = new Set<SpiceApiErrorV1['code']>([
@@ -72,7 +74,7 @@ export async function validateProtocolV1(
   const circuit = await requestCircuit(request, guard);
   guard.maximum('maxAnalyses', circuit.analyses.length, 'validation');
   const compiled = circuit.compile(guard);
-  enforcePointLimit(circuit.analyses, guard, compiled.steps[0]);
+  enforcePointLimit(circuit.analyses, guard, requestReltol(request, circuit), compiled.steps[0]);
   if (compiled.nodeCount === 0) throw new InvalidCircuitError('Circuit has no nodes');
   if (compiled.analyses.length === 0) throw new InvalidCircuitError('No analysis command specified');
   preflightTopology(compiled, protocolSourcePath(request));
@@ -95,7 +97,7 @@ export async function simulateProtocolV1(
   const analyses = circuit.analyses.map(protocolAnalysis);
   guard.maximum('maxAnalyses', analyses.length, 'validation');
   const preflight = circuit.compile(guard);
-  enforcePointLimit(analyses, guard, preflight.steps[0]);
+  enforcePointLimit(analyses, guard, requestReltol(request, circuit), preflight.steps[0]);
   preflightTopology(preflight, protocolSourcePath(request));
   const options = coreOptions(request.options);
   const serialized: AnalysisResultV1[] = [];
@@ -272,6 +274,7 @@ function enforceInputLimits(request: SimulationRequestV1, guard: ProtocolExecuti
 function enforcePointLimit(
   analyses: readonly AnalysisDirective[],
   guard: ProtocolExecutionGuard,
+  reltol: number,
   step?: StepAnalysis,
 ): void {
   guard.maximum('maxResultPoints', estimateProtocolResultPointsV1(analyses, step), 'validation');
@@ -287,10 +290,14 @@ export function estimateProtocolResultPointsV1(
   step?: StepAnalysis,
 ): number {
   const analysisPoints = analyses.reduce(
-    (total, analysis) => total + estimatedAnalysisPoints(analysis),
+    (total, analysis) => total + estimatedAnalysisPoints(analysis, reltol),
     0,
   );
   return analysisPoints * estimatedStepCount(step);
+}
+
+function requestReltol(request: SimulationRequestV1, circuit: Circuit): number {
+  return request.options?.reltol ?? circuit.simulationOptions.reltol ?? DEFAULT_OPTIONS.reltol;
 }
 
 function estimatedStepCount(step?: StepAnalysis): number {
@@ -307,7 +314,7 @@ function estimatedStepCount(step?: StepAnalysis): number {
   return Number.isFinite(span) ? Math.max(0, Math.floor(span * points + 1 + 1e-12)) : 0;
 }
 
-function estimatedAnalysisPoints(analysis: AnalysisDirective): number {
+function estimatedAnalysisPoints(analysis: AnalysisDirective, reltol: number): number {
   switch (analysis.type) {
     case 'op': return 1;
     case 'dc': {
@@ -320,20 +327,13 @@ function estimatedAnalysisPoints(analysis: AnalysisDirective): number {
       return primaryPoints * secondaryPoints;
     }
     case 'tran': return finiteLinearPoints(analysis.startTime ?? 0, analysis.stopTime, analysis.timestep);
-    case 'ac': {
-      if (analysis.variation === 'lin') return analysis.points + 1;
-      const span = analysis.variation === 'dec'
-        ? Math.log10(analysis.stopFreq / analysis.startFreq)
-        : Math.log2(analysis.stopFreq / analysis.startFreq);
-      return Number.isFinite(span) ? Math.max(0, Math.round(span * analysis.points) + 1) : 0;
-    }
+    case 'ac': return frequencyPointCount(analysis, reltol);
     case 'noise':
     case 'disto':
     case 'tf': return 0;
     case 'sens': {
       if (analysis.mode === 'dc') return 1;
-      const span = Math.log10(analysis.stopFreq / analysis.startFreq);
-      return Number.isFinite(span) ? Math.max(0, Math.round(span * analysis.points) + 1) : 0;
+      return frequencyPointCount(analysis, reltol);
     }
   }
 }

@@ -26,6 +26,7 @@ import { ComplexSparseSolver } from './solver/complex-sparse-solver.js';
 import { createDriverFromCompiled } from './analysis/transient-driver.js';
 import { WasmNgspiceSimulator } from './simulators/ngspice-wasm.js';
 import { computeUICInitialSolution } from './analysis/uic.js';
+import { frequencyGrid } from './analysis/frequency-grid.js';
 import { createConvergenceTelemetry } from './convergence-telemetry.js';
 import { solveStepInWorkers } from './analysis/step-parallel.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
@@ -548,7 +549,7 @@ function* streamAC(
   const G = assembler.G;
   const C = assembler.C;
 
-  const frequencies = generateStreamFreqs(analysis);
+  const frequencies = frequencyGrid(analysis, options.reltol);
 
   // Build n*n CSC for G and C
   const { csc: gCsc } = toCsc(G);
@@ -591,29 +592,4 @@ function* streamAC(
 
     yield { frequency: freq, voltages, currents };
   }
-}
-
-function generateStreamFreqs(analysis: ACAnalysis): number[] {
-  const { variation, points, startFreq, stopFreq } = analysis;
-  const frequencies: number[] = [];
-  switch (variation) {
-    case 'dec': {
-      const decades = Math.log10(stopFreq / startFreq);
-      const totalPoints = Math.round(decades * points);
-      for (let i = 0; i <= totalPoints; i++) frequencies.push(startFreq * Math.pow(10, i / points));
-      break;
-    }
-    case 'oct': {
-      const octaves = Math.log2(stopFreq / startFreq);
-      const totalPoints = Math.round(octaves * points);
-      for (let i = 0; i <= totalPoints; i++) frequencies.push(startFreq * Math.pow(2, i / points));
-      break;
-    }
-    case 'lin': {
-      const step = (stopFreq - startFreq) / points;
-      for (let i = 0; i <= points; i++) frequencies.push(startFreq + i * step);
-      break;
-    }
-  }
-  return frequencies;
 }

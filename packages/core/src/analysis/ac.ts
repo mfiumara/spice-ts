@@ -4,6 +4,7 @@ import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.j
 import { toCsc } from '../solver/csc-matrix.js';
 import { ComplexSparseSolver } from '../solver/complex-sparse-solver.js';
 import { ACResult } from '../results.js';
+import { frequencyGrid } from './frequency-grid.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { Diode } from '../devices/diode.js';
 
@@ -99,7 +100,7 @@ export function solveAC(
   const system = createLinearizedFrequencySystem(compiled, options, dcSolution);
 
   // Generate frequency points
-  const frequencies = generateFrequencies(analysis);
+  const frequencies = frequencyGrid(analysis, options.reltol);
 
   // Sweep frequencies
   const voltageArrays = new Map<string, { magnitude: number; phase: number }[]>();
@@ -135,29 +136,4 @@ export function solveAC(
   }
 
   return new ACResult(frequencies, voltageArrays, currentArrays);
-}
-
-function generateFrequencies(analysis: ACAnalysis): number[] {
-  const { variation, points, startFreq, stopFreq } = analysis;
-  const frequencies: number[] = [];
-  switch (variation) {
-    case 'dec': {
-      const decades = Math.log10(stopFreq / startFreq);
-      const totalPoints = Math.round(decades * points);
-      for (let i = 0; i <= totalPoints; i++) frequencies.push(startFreq * Math.pow(10, i / points));
-      break;
-    }
-    case 'oct': {
-      const octaves = Math.log2(stopFreq / startFreq);
-      const totalPoints = Math.round(octaves * points);
-      for (let i = 0; i <= totalPoints; i++) frequencies.push(startFreq * Math.pow(2, i / points));
-      break;
-    }
-    case 'lin': {
-      const step = (stopFreq - startFreq) / points;
-      for (let i = 0; i <= points; i++) frequencies.push(startFreq + i * step);
-      break;
-    }
-  }
-  return frequencies;
 }

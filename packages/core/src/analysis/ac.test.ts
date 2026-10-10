@@ -116,7 +116,7 @@ describe('AC Small-Signal Analysis', () => {
     const result = await simulate(`
       V1 in 0 AC 1 0
       C1 in 0 1u ESR=1 ESL=1u RLEAK=1e12
-      .ac lin 1 ${fLow} ${fRes}
+      .ac lin 2 ${fLow} ${fRes}
       .end
     `);
 
