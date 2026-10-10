@@ -1,0 +1,101 @@
+{
+  "fixture": "benchmarks/differential-noise/differential-divider.cir",
+  "sha256": "4a00d295e139c32f175870a5227df610ff4f23ff797616bdab5c675fc3b10040",
+  "source": {
+    "url": "https://github.com/mfiumara/spice-ts/issues/255",
+    "revision": "issue-255 project-authored reference fixture as of 2026-10-10",
+    "licence": "MIT"
+  },
+  "identicalNetlistForBothEngines": true,
+  "commands": {
+    "ngspice": "ngspice -b -r <temporary-raw-path> benchmarks/differential-noise/differential-divider.cir",
+    "spiceTs": "pnpm bench:differential-noise"
+  },
+  "versions": {
+    "reference": "ngspice-47",
+    "spiceTsBaseRevision": "8c4de180f6733a9f90a990b5f434b0d711eaa638",
+    "spiceTsWorkingTreeDirty": true,
+    "node": "v22.23.1"
+  },
+  "machine": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "convergence": {
+    "ngspice": "success",
+    "spiceTs": "success"
+  },
+  "runtimeMilliseconds": {
+    "ngspiceProcess": 11.750332999999983,
+    "spiceTsInProcess": 2.896708999999987,
+    "caveat": "Different process boundaries; reported honestly, not a speed claim."
+  },
+  "matchedPointCount": 7,
+  "errors": {
+    "outputDensity": {
+      "maximumAbsoluteError": 7.644378852745424e-16,
+      "rmsAbsoluteError": 7.644378852745423e-16,
+      "maximumRelativeError": 1.7383133769270947e-7,
+      "rmsRelativeError": 1.7383133769270947e-7
+    },
+    "inputDensity": {
+      "maximumAbsoluteError": 4.586627329845228e-15,
+      "rmsAbsoluteError": 4.586627329845228e-15,
+      "maximumRelativeError": 1.7383133838240538e-7,
+      "rmsRelativeError": 1.7383133838240538e-7
+    },
+    "integratedOutput": {
+      "maximumAbsoluteError": 7.606060918883471e-14,
+      "rmsAbsoluteError": 7.606060918883471e-14,
+      "maximumRelativeError": 1.7383133759942404e-7,
+      "rmsRelativeError": 1.7383133759942404e-7
+    },
+    "integratedInput": {
+      "maximumAbsoluteError": 4.563636570388324e-13,
+      "rmsAbsoluteError": 4.563636570388324e-13,
+      "maximumRelativeError": 1.7383133832536259e-7,
+      "rmsRelativeError": 1.7383133832536259e-7
+    }
+  },
+  "unsupported": [
+    {
+      "form": "current output",
+      "status": "explicitly rejected",
+      "error": "Parse error at line 3: Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop'\n  .noise i ( V1 ) V1 dec 3 100 10k"
+    },
+    {
+      "form": "current-source referral",
+      "status": "explicitly rejected",
+      "error": ".noise input source 'I1' is not an independent voltage source"
+    },
+    {
+      "form": "stepped noise",
+      "status": "explicitly rejected",
+      "error": "Parse error at line 4: .step cannot be combined with .noise\n  .step param R1 list 1k 2k"
+    },
+    {
+      "form": "temperature card",
+      "status": "explicitly rejected",
+      "error": "Parse error at line 4: Unsupported dot command: '.temp'\n  .temp 50"
+    },
+    {
+      "form": "differential semiconductor noise",
+      "status": "explicitly rejected",
+      "error": ".noise differential voltage output only supports resistor noise"
+    }
+  ],
+  "exclusions": [
+    "Current-valued noise outputs and current-source input referral remain unsupported.",
+    "Differential output with diode, BJT, MOS1, or broader noisy device forms remains unsupported.",
+    "Stepped noise and temperature cards remain unsupported."
+  ],
+  "losses": [
+    "Every non-zero residual is retained in errors; no tolerance or circuit value is tuned per engine.",
+    "The bounded differential form covers resistor noise only.",
+    "Runtime values are not directly comparable because ngspice includes process startup."
+  ],
+  "redReceipt": "8c4de180f6733a9f90a990b5f434b0d711eaa638: focused test 2 failed, 38 passed; differential forms stopped at the explicit unsupported parse boundary.",
+  "potetoModeReceipt": "Kanban comment 390 records subsystem trace, two candidate data shapes, chosen backward-compatible seam, scope, and TDD sequence before implementation."
+}
