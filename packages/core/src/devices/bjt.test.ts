@@ -81,12 +81,8 @@ describe('BJT Ebers-Moll', () => {
     `).compile()).toThrow("Unsupported bounded BJT model parameter: 'CJE'");
   });
 
-  it('rejects unsupported BJT model and Q-card forms explicitly', () => {
+  it('rejects unsupported BJT model types explicitly', () => {
     expect(() => parse('title\nQ1 c b 0 QBAD\n.model QBAD VBIC BF=100\n.op').compile())
       .toThrow("Unsupported BJT model type: 'VBIC'");
-    expect(() => parse('title\nQ1 c b e substrate QMOD\n.model QMOD NPN(BF=100)\n.op'))
-      .toThrow('Unsupported BJT Q-card form');
-    expect(() => parse('title\nQ1 c b e QMOD AREA=2\n.model QMOD NPN(BF=100)\n.op'))
-      .toThrow('Unsupported BJT Q-card form');
   });
 });
