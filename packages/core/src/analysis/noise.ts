@@ -36,6 +36,17 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
           );
         }
       }
+      const sourceNode = device.nodes[2];
+      const bulkNode = device.nodes[3] ?? sourceNode;
+      if (
+        bulkNode !== sourceNode
+        || device.suppliedParams.GAMMA !== undefined
+        || device.suppliedParams.PHI !== undefined
+      ) {
+        throw new InvalidCircuitError(
+          `.noise does not support MOSFET bulk/body-effect form for '${device.name}'`,
+        );
+      }
       const { W, L, KF, AF, NLEV, TOX } = device.params;
       if (!(W > 0) || !Number.isFinite(W) || !(L > 0) || !Number.isFinite(L)) {
         throw new InvalidCircuitError(`.noise requires positive finite MOSFET W and L for '${device.name}'`);

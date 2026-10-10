@@ -1035,7 +1035,15 @@ export class Circuit {
             ));
           } else {
             // Level 1 — existing behavior
-            const nodeIdxs = desc.nodes.slice(0, 3).map(resolveNode);
+            // Preserve the bulk terminal for analyses that must reject body-effect
+            // forms explicitly. The bounded Level-1 DC stamp still uses D/G/S only.
+            const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];
+            const nodeIdxs = [
+              resolveNode(desc.nodes[0]),
+              resolveNode(desc.nodes[1]),
+              resolveNode(desc.nodes[2]),
+              resolveNode(bulkNode),
+            ];
             devices.push(new MOSFET(desc.name, nodeIdxs, { ...modelParams, ...desc.params, polarity }));
           }
           break;
