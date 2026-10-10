@@ -87,12 +87,15 @@ function resultWithOutputResistance(
   inputResistance: number,
 ): TransferFunctionResult {
   if (output.kind === 'current') {
+    const outputResistance = output.source.name.toLowerCase() === analysis.inputSource.toLowerCase()
+      ? inputResistance
+      : 1e20;
     return new TransferFunctionResult(
       undefined,
       analysis.inputSource,
       transfer,
       inputResistance,
-      1e20,
+      outputResistance,
       output.source.name,
     );
   }
