@@ -38,11 +38,32 @@ describe('aggregate report artifact verification', () => {
     const { json } = await committedArtifacts();
     const report = JSON.parse(json);
 
-    assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/275');
-    assert.equal(report.comparisonToPrevious.pullRequestUrl, 'https://github.com/mfiumara/spice-ts/pull/284');
-    assert.equal(report.comparisonToPrevious.headSha, '47da214e26d348f41baea47b80acff8afe6f2881');
-    assert.equal(report.comparisonToPrevious.outcomeSha256, '2c5abd0d6ffb637d98ef8a9248ce2007932b0b211064a6445175fc3bb9056ba8');
-    assert.deepEqual(report.comparisonToPrevious.statusTransitions, []);
+    assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/296');
+    assert.equal(report.comparisonToPrevious.pullRequestUrl, 'https://github.com/mfiumara/spice-ts/pull/297');
+    assert.equal(report.comparisonToPrevious.headSha, '602518710a6605e229821eff8b93b106b1cb0421');
+    assert.equal(report.comparisonToPrevious.outcomeSha256, '05a0675e6e948ac23959c6804fcf91782035823f074f52336a0ca8983942f68a');
+    assert.deepEqual(
+      report.comparisonToPrevious.statusTransitions.map((transition: Record<string, string>) => [
+        transition.engine,
+        transition.fixture,
+        transition.from,
+        transition.to,
+      ]),
+      [
+        ['spiceTs', 'ngspice/mos6-inverter-transient', 'unsupported', 'failed'],
+        ['spiceTs', 'ngspice/jfet-vds-vgs', 'unsupported', 'success'],
+        ['spiceTs', 'ngspice/rc-transient', 'unsupported', 'success'],
+        ['spiceTs', 'ngspice/mos-amplifier-transient', 'unsupported', 'failed'],
+        ['spiceTs', 'ngspice/mos6-simple-inverter-transient', 'unsupported', 'success'],
+        ['spiceTs', 'ngspice/hfet-inverter', 'unsupported', 'failed'],
+        ['spiceTs', 'ngspice/mesa-oscillator', 'unsupported', 'failed'],
+        ['spiceTs', 'classic/rca3040-wideband-amplifier', 'failed', 'success'],
+        ['spiceTs', 'xyce/nmos-level1-dc', 'failed', 'success'],
+        ['spiceTs', 'xyce/npn-dc', 'failed', 'success'],
+        ['spiceTs', 'xyce/pmos-level1-dc', 'failed', 'success'],
+        ['spiceTs', 'xyce/pnp-dc', 'failed', 'success'],
+      ],
+    );
     assert.deepEqual(report.comparisonToPrevious.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
     assert.deepEqual(report.comparisonToPrevious.totals.spiceTs, { success: 28, failed: 9, unsupported: 63 });
     assert.equal(report.comparisonToPrevious.totals.comparedAnalyses, 28);
@@ -64,12 +85,12 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
-    assert.equal(report.matchedPointEnvelope.comparedSignals, 253);
-    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 235);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 90.09458674829554);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 59.660512653520904);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 273625086.91875815);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 131055144.90676585);
+    assert.equal(report.matchedPointEnvelope.comparedSignals, 371);
+    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 349);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 1158.4523167631219);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 693.3260545761561);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 739888253.1927755);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 326930690.296368);
   });
 
   it('commits runtime sums derived from all 100 engine receipts', async () => {
