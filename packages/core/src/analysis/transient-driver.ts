@@ -2,13 +2,14 @@ import type { Circuit, CompiledCircuit } from '../circuit.js';
 import type {
   ConvergenceTelemetry, IntegrationMethod, SimulationOptions, ResolvedOptions, TransientStep,
 } from '../types.js';
-import { resolveOptions } from '../types.js';
+import { resolveOptions, withNetlistOptions } from '../types.js';
 import { parse, parseAsync } from '../parser/index.js';
 import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
 import { solveDCOperatingPoint } from './dc.js';
 import { attemptStep } from './transient-step.js';
-import { TimestepTooSmallError, InvalidCircuitError } from '../errors.js';
+import { ConvergenceError, TimestepTooSmallError, InvalidCircuitError } from '../errors.js';
 import { BreakpointQueue } from './breakpoint-queue.js';
+import { TransientProgressMonitor } from './transient-progress.js';
 import { computeUICInitialSolution } from './uic.js';
 import {
   createConvergenceTelemetry, resetConvergenceTelemetry, snapshotConvergenceTelemetry,
@@ -54,6 +55,9 @@ const MIN_BREAK = 1e-14;
 
 /** dt is divided by this on the first step after a breakpoint (ngspice dctran.c). */
 const POST_BREAK_DT_CUT = 10;
+
+/** First step after a t=0 breakpoint spans at most this fraction of the next gap (ngspice). */
+const START_BREAK_GAP_FRACTION = 0.1;
 
 /** Keep implicit-breakpoint recovery local while still crossing a vanished branch. */
 const IMPLICIT_BREAK_DT_CUT = 5;
@@ -104,10 +108,7 @@ export async function createTransientSim(
     circuit = input;
   }
   const compiled = circuit.compile();
-  const effectiveOptions: TransientSimOptions = {
-    ...compiled.simulationOptions,
-    ...options,
-  };
+  const effectiveOptions = withNetlistOptions<TransientSimOptions>(compiled.simulationOptions, options);
   validateCircuit(compiled);
 
   const tranAnalysis = compiled.analyses.find(a => a.type === 'tran');
@@ -159,6 +160,18 @@ class TransientSimImpl implements TransientSim {
   private disposed = false;
   private breakpoints: BreakpointQueue;
   private justCrossedBreakpoint = false;
+  /**
+   * Take the next step at order 1 (Backward Euler) without higher-order
+   * history. Set when a device reports a breakpoint at t=0: the DC operating
+   * point carries no derivative information, so a trapezoidal first step
+   * across that kink treats the new source slope as if it had always existed
+   * and leaves an undamped +/- ringing in algebraic reactive voltages
+   * (ngspice dctran.c integrates the first step at order 1). The progress
+   * monitor requests the same restart when that ringing appears behind a
+   * slope discontinuity no device reports as a breakpoint.
+   */
+  private orderOnePending = false;
+  private progress: TransientProgressMonitor;
 
   constructor(compiled: CompiledCircuit, options: ResolvedOptions, config: InternalTransientConfig) {
     this.compiled = compiled;
@@ -171,7 +184,7 @@ class TransientSimImpl implements TransientSim {
     // history while using the exact static residual for constant-C circuits.
     this.useStaticCurrentHistory = !compiled.devices.some(device => (
       (device.isNonlinear && device.stampDynamic !== undefined)
-      || (config.stopTime !== undefined && (device.getBreakpoints?.(config.stopTime).length ?? 0) > 0)
+      || (config.stopTime !== undefined && (device.getBreakpoints?.(config.stopTime) ?? []).some(time => time > 0))
     ));
     this.useDampedInductiveRecovery = compiled.devices.some(device => device instanceof Inductor)
       && compiled.devices.some(device => device.isNonlinear);
@@ -191,6 +204,7 @@ class TransientSimImpl implements TransientSim {
     this.stampPrevB();
 
     this.breakpoints = this.collectBreakpoints();
+    this.progress = new TransientProgressMonitor(config.maxTimestep);
   }
 
   get simTime(): number { return this.time; }
@@ -251,7 +265,7 @@ class TransientSimImpl implements TransientSim {
           dt: actualDt,
           time: nextTime,
           prevSolution: prevSol,
-          prevB: this.prevB,
+          prevB: this.orderOnePending ? undefined : this.prevB,
           gmin: this.options.gmin,
           voltageLimit: NR_VOLTAGE_LIMIT,
           prevPrevSolution: this.secondPrevSol,
@@ -312,12 +326,14 @@ class TransientSimImpl implements TransientSim {
       }
 
       const sol = result.solution;
+      const lteVerified = this.lteChecked(actualDt);
       const lteRatio = this.checkLTE(sol, prevSol, actualDt);
       if (lteRatio > 1) {
         const factor = Math.max(0.25, 0.9 / Math.sqrt(lteRatio));
         this.dt = Math.max(actualDt * factor, MIN_TIMESTEP);
         this.assembler.solution.set(prevSol);
         this.lteRejectCount++;
+        this.progress.lteRejected();
         this.convergenceTelemetry.transient.rejectedSteps++;
         this.convergenceTelemetry.transient.lteRetries++;
         continue;
@@ -335,6 +351,7 @@ class TransientSimImpl implements TransientSim {
       this.secondPrevSol = prevSol;
       this.prevDt = actualDt;
       this.time = nextTime;
+      this.orderOnePending = false;
       this.convergenceTelemetry.transient.acceptedSteps++;
       const minimum = this.convergenceTelemetry.transient.minimumAcceptedTimestep;
       this.convergenceTelemetry.transient.minimumAcceptedTimestep = minimum === null
@@ -344,6 +361,25 @@ class TransientSimImpl implements TransientSim {
       if (this.breakpoints.isNear(this.time)) {
         this.breakpoints.pop();
         this.justCrossedBreakpoint = true;
+      }
+
+      const progress = this.progress.accept(this.time, actualDt, lteVerified);
+      if (progress === 'stalled') {
+        this.convergenceTelemetry.transient.failure = 'lte-cascade';
+        const error = new ConvergenceError(
+          `Transient step loop stopped advancing: dt=${actualDt}`
+            + ' after a window of accepted steps without timestep growth',
+          this.time, [], sol, prevSol, 'lte-cascade', actualDt, this.options.gmin,
+        );
+        error.convergence = snapshotConvergenceTelemetry(this.convergenceTelemetry);
+        throw error;
+      }
+      if (progress === 'reduce-order') {
+        // LTE could not be satisfied at any dt down to the floor. Restart
+        // integration at order 1 from this accepted point, exactly as after
+        // an explicit breakpoint but without cutting dt.
+        this.orderOnePending = true;
+        this.secondPrevSol = undefined;
       }
 
       const growFactor = lteRatio > 0.001 ? Math.min(2.0, 0.9 / Math.sqrt(lteRatio)) : 2.0;
@@ -386,6 +422,7 @@ class TransientSimImpl implements TransientSim {
     this.secondPrevSol = undefined;
     this.lteRejectCount = 0;
     this.justCrossedBreakpoint = false;
+    this.progress.reset();
     resetConvergenceTelemetry(this.convergenceTelemetry);
     if (this.config.initialSolution) {
       this.assembler.solution.set(this.config.initialSolution);
@@ -411,14 +448,30 @@ class TransientSimImpl implements TransientSim {
     return this.breakpoints.remaining();
   }
 
+  /**
+   * Collect breakpoints after t=0. A device kink at t=0 itself is handled as
+   * ngspice dctran.c handles its first breakpoint: integrate at order 1 with
+   * dt limited to 0.1 x the gap to the next breakpoint, then cut by
+   * POST_BREAK_DT_CUT, so the first-order step error stays local.
+   */
   private collectBreakpoints(): BreakpointQueue {
     const stop = this.config.stopTime;
+    this.orderOnePending = false;
     if (stop === undefined) return new BreakpointQueue([], MIN_BREAK);
     const times: number[] = [];
     for (const d of this.compiled.devices) {
       if (d.getBreakpoints) times.push(...d.getBreakpoints(stop));
     }
-    return new BreakpointQueue(times, MIN_BREAK);
+    const queue = new BreakpointQueue(times, MIN_BREAK);
+    if (times.some(time => Math.abs(time) <= MIN_BREAK)) {
+      this.orderOnePending = true;
+      const firstGap = queue.peek() ?? stop;
+      this.dt = Math.max(
+        Math.min(this.dt, START_BREAK_GAP_FRACTION * firstGap) / POST_BREAK_DT_CUT,
+        MIN_TIMESTEP,
+      );
+    }
+    return queue;
   }
 
   private createAssembler(): MNAAssembler {
@@ -478,12 +531,15 @@ class TransientSimImpl implements TransientSim {
     this.assembler.solution.set(dcAsm.solution);
   }
 
+  /** Whether {@link checkLTE} will evaluate truncation error for this step. */
+  private lteChecked(dt: number): boolean {
+    return this.secondPrevSol !== undefined
+      && dt > MIN_LTE_TIMESTEP
+      && this.lteRejectCount < MAX_LTE_REJECTS_BEFORE_BYPASS;
+  }
+
   private checkLTE(current: Float64Array, previous: Float64Array, dt: number): number {
-    if (
-      !this.secondPrevSol
-      || dt <= MIN_LTE_TIMESTEP
-      || this.lteRejectCount >= MAX_LTE_REJECTS_BEFORE_BYPASS
-    ) return 0;
+    if (!this.lteChecked(dt) || !this.secondPrevSol) return 0;
     let maxRatio = 0;
     // 2nd-order methods (trap, gear2) have O(dt³) LTE → larger divider; BE is O(dt²).
     const method = this.integrationMethod;

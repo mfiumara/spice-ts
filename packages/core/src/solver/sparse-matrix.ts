@@ -73,8 +73,4 @@ export class SparseMatrix {
   getRow(row: number): Map<number, number> {
     return this.rows.get(row) ?? new Map();
   }
-
-  get isEmpty(): boolean {
-    return this.rows.size === 0;
-  }
 }

@@ -1,0 +1,194 @@
+{
+  "schemaVersion": "spice-ts-issue-339/v1",
+  "issueUrl": "https://github.com/mfiumara/spice-ts/issues/339",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "node": "v22.23.1"
+  },
+  "input": {
+    "localPath": "benchmarks/corpus/ngspice/fixtures/tests/hfet/inverter.cir",
+    "bytes": 613,
+    "sha256": "3fa93266e9036443173bf9416eb67e8ff4c2c24aeefc6ef687f355d8548239e1",
+    "identicalForBothEngines": true
+  },
+  "policy": {
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "comparisonGrid": "spice-ts",
+    "interpolation": "linear",
+    "timing": "single wall-clock execution per engine; descriptive, not a speed claim"
+  },
+  "contract": {
+    "supported": [
+      "Z-card with D/G/S terminals inside a subcircuit",
+      "NHFET LEVEL=5",
+      "model parameters LEVEL RD RS M LAMBDA VS MU VT0/VTO ETA SIGMA0 VSIGMA VSIGMAT JS1S JS1D NMAX",
+      "instance parameters L W",
+      "DC channel/gate leakage and transient Cgs/Cgd"
+    ],
+    "unsupported": [
+      "top-level Z-card parsing",
+      "PHFET and NMF models",
+      "HFET levels other than 5",
+      "model or instance parameters outside the supported lists",
+      "HFET noise, distortion, temperature parameters, and alternate gate model"
+    ]
+  },
+  "ngspice": {
+    "status": "success",
+    "convergence": "converged",
+    "runtimeMs": 23.22720799999999,
+    "analyses": [
+      {
+        "type": "tran",
+        "points": 324,
+        "signals": [
+          "i(vdd)",
+          "i(vin)",
+          "v(1)",
+          "v(2)",
+          "v(3)",
+          "v(4)"
+        ]
+      }
+    ]
+  },
+  "spiceTs": {
+    "status": "success",
+    "convergence": "converged",
+    "runtimeMs": 173.229041,
+    "analyses": [
+      {
+        "type": "tran",
+        "points": 568,
+        "signals": [
+          "i(vdd)",
+          "i(vin)",
+          "v(1)",
+          "v(2)",
+          "v(3)",
+          "v(4)",
+          "v(x1.z1.rd)",
+          "v(x1.z1.rs)",
+          "v(x1.z2.rd)",
+          "v(x1.z2.rs)",
+          "v(x2.z1.rd)",
+          "v(x2.z1.rs)",
+          "v(x2.z2.rd)",
+          "v(x2.z2.rs)"
+        ]
+      }
+    ]
+  },
+  "comparison": {
+    "signals": [
+      "i(vdd)",
+      "i(vin)",
+      "v(1)",
+      "v(2)",
+      "v(3)",
+      "v(4)"
+    ],
+    "metrics": {
+      "grid": {
+        "spiceTsPoints": 568,
+        "ngspicePoints": 324,
+        "alignedPoints": 568,
+        "excludedOutOfRange": 0
+      },
+      "signals": {
+        "i(vdd)": {
+          "status": "compared",
+          "sampleCount": 568,
+          "absoluteError": {
+            "max": 0.0037128355894599768,
+            "rms": 0.0010314166335882416
+          },
+          "relativeError": {
+            "max": 435991.91691805114,
+            "rms": 178574.70230093432,
+            "sampleCount": 568,
+            "excludedZeroReferences": 0
+          }
+        },
+        "i(vin)": {
+          "status": "compared",
+          "sampleCount": 568,
+          "absoluteError": {
+            "max": 0.0016157980287475936,
+            "rms": 0.00022963850844021357
+          },
+          "relativeError": {
+            "max": 4184.773976709555,
+            "rms": 231.88161267600154,
+            "sampleCount": 568,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(1)": {
+          "status": "compared",
+          "sampleCount": 568,
+          "absoluteError": {
+            "max": 0,
+            "rms": 0
+          },
+          "relativeError": {
+            "max": 0,
+            "rms": 0,
+            "sampleCount": 568,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(2)": {
+          "status": "compared",
+          "sampleCount": 568,
+          "absoluteError": {
+            "max": 3.9968028886505635e-14,
+            "rms": 2.7535455710160145e-15
+          },
+          "relativeError": {
+            "max": 4.927626130289006e-14,
+            "rms": 3.8253457214976734e-15,
+            "sampleCount": 467,
+            "excludedZeroReferences": 101
+          }
+        },
+        "v(3)": {
+          "status": "compared",
+          "sampleCount": 568,
+          "absoluteError": {
+            "max": 2.2311729017830086,
+            "rms": 1.2403323198323681
+          },
+          "relativeError": {
+            "max": 917.1791377674638,
+            "rms": 61.82081677771667,
+            "sampleCount": 568,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(4)": {
+          "status": "compared",
+          "sampleCount": 568,
+          "absoluteError": {
+            "max": 2.2722614897930553,
+            "rms": 1.6112442970925571
+          },
+          "relativeError": {
+            "max": 8.347883233896857,
+            "rms": 5.89591904325476,
+            "sampleCount": 568,
+            "excludedZeroReferences": 0
+          }
+        }
+      }
+    }
+  },
+  "losses": [
+    "spice-ts emits 568 adaptive points versus ngspice-47 324; comparison interpolates ngspice onto the spice-ts grid",
+    "spice-ts exposes internal RD/RS node signals not present in ngspice .print all: v(x1.z1.rd), v(x1.z1.rs), v(x1.z2.rd), v(x1.z2.rs), v(x2.z1.rd), v(x2.z1.rs), v(x2.z2.rd), v(x2.z2.rs)",
+    "The bounded model reproduces ngspice-47 HFET1 operating-point equations, but the host Newton initialization follows a different DC branch for this multistable inverter; waveform errors are published above and remain a parity loss.",
+    "Top-level Z cards remain explicitly unsupported to avoid the parser registry collision with issue #340.",
+    "B-card and Z-card NMF/MESA support remain deferred to issue #340."
+  ]
+}

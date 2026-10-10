@@ -3,7 +3,7 @@ import type { CompiledCircuit } from './circuit.js';
 import { parse, parseAsync } from './parser/index.js';
 import type { ConvergenceTelemetry, SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
 import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, SimulatorBackend } from './types.js';
-import { resolveOptions } from './types.js';
+import { resolveOptions, withNetlistOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
 import { solveTransient } from './analysis/transient.js';
 import { buildACRHS, solveAC } from './analysis/ac.js';
@@ -74,10 +74,6 @@ function selectedExternalSimulator(options?: SimulationOptions): SimulatorAdapte
   return createSimulator(simulator);
 }
 
-function withNetlistOptions(compiled: CompiledCircuit, options?: SimulationOptions): SimulationOptions {
-  return { ...compiled.simulationOptions, ...options };
-}
-
 /**
  * Run all analyses declared in a SPICE netlist or {@link Circuit} object.
  *
@@ -118,7 +114,7 @@ export async function simulate(
     circuit = input;
   }
   const compiled = circuit.compile(guard);
-  options = withNetlistOptions(compiled, options);
+  options = withNetlistOptions(compiled.simulationOptions, options);
   const warnings: SimulationWarning[] = [];
   const convergence = createConvergenceTelemetry();
 
@@ -261,7 +257,7 @@ export async function* simulateStream(
     circuit = input;
   }
   const compiled = circuit.compile();
-  options = withNetlistOptions(compiled, options);
+  options = withNetlistOptions(compiled.simulationOptions, options);
   const warnings: SimulationWarning[] = [];
   validateCircuit(compiled, warnings);
 
@@ -330,7 +326,7 @@ export async function* simulateStepStream(
     circuit = input;
   }
   const compiled = circuit.compile();
-  options = withNetlistOptions(compiled, options);
+  options = withNetlistOptions(compiled.simulationOptions, options);
   const warnings: SimulationWarning[] = [];
   validateCircuit(compiled, warnings);
 

@@ -3,6 +3,7 @@ import { BJT } from '../devices/bjt.js';
 import { BSIM3v3 } from '../devices/bsim3v3.js';
 import { CurrentSource } from '../devices/current-source.js';
 import { Diode } from '../devices/diode.js';
+import { HFET1 } from '../devices/hfet1.js';
 import { JFET } from '../devices/jfet.js';
 import { MOSFET } from '../devices/mosfet.js';
 import { Resistor } from '../devices/resistor.js';
@@ -48,6 +49,9 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
         }
       }
     } else if (device instanceof BSIM3v3) kind = 'MOSFET';
+    // ngspice HFETA has no noise routine, so its RD/RS are noiseless; reject
+    // rather than add thermal noise from the expanded series resistors.
+    else if (device instanceof HFET1) kind = 'HFET';
 
     if (device instanceof MOSFET) {
       if (device.params.LEVEL !== 1) {

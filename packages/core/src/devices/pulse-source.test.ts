@@ -26,16 +26,17 @@ describe('PULSE waveform with zero rise/fall (ngspice semantics)', () => {
     source.setTransientTimestep(0.01);
     expect(source.getVoltageAtTime(0.005)).toBeCloseTo(5, 12);
     expect(source.getVoltageAtTime(0.01)).toBe(10);
-    // Falling edge starts at TR + PW = 10.01 and lasts TF = TSTEP.
+    // Falling edge starts at TR + PW = 10.01 and lasts TF = TSTEP. The
+    // rising-edge start at t=0 is kept as a corner (issue #366).
     expect(source.getVoltageAtTime(10.015)).toBeCloseTo(5, 9);
-    expect(source.getBreakpoints(10.05)).toEqual([0.01, 0.01 + 10, 0.01 + 10 + 0.01]);
+    expect(source.getBreakpoints(10.05)).toEqual([0, 0.01, 0.01 + 10, 0.01 + 10 + 0.01]);
   });
 
   it('ramps a zero rise/fall over the transient TSTEP for a current source', () => {
     const source = new CurrentSource('I1', [0, -1], zeroEdgePulse());
     source.setTransientTimestep(0.01);
     expect(source.getCurrentAtTime(0.0025)).toBeCloseTo(2.5, 12);
-    expect(source.getBreakpoints(1)).toEqual([0.01]);
+    expect(source.getBreakpoints(1)).toEqual([0, 0.01]);
   });
 
   it('keeps an explicit non-zero rise/fall regardless of TSTEP', () => {
