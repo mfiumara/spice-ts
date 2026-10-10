@@ -21,6 +21,16 @@ describe('.noise analysis', () => {
     .noise v(out) Vgate dec 3 10 10k
   `;
 
+  const bjtFixture = `
+    VDD vdd 0 DC 5
+    Vinput in 0 DC 1 AC 1
+    Rbase in base 100k
+    Rload vdd out 2k
+    Q1 out base 0 QMOD
+    .model QMOD NPN (LEVEL=1 IS=1e-14 BF=100 BR=1 NF=1 NR=1)
+    .noise v(out) Vinput dec 3 10 10k
+  `;
+
   const diodeFixture = (sweep: string, flicker = false) => `
     V1 in 0 DC 1 AC 1
     R1 in out 1k
@@ -178,6 +188,34 @@ describe('.noise analysis', () => {
     );
   });
 
+  it('matches ngspice-47 BJT level-1 collector/base shot and external resistance noise', async () => {
+    const result = (await simulate(bjtFixture)).noise!;
+
+    expect(result.frequencies).toHaveLength(10);
+    for (const density of result.outputNoiseDensity) {
+      expect(Math.abs(density - 2.186370381333404e-7) / 2.186370381333404e-7)
+        .toBeLessThan(2e-3);
+    }
+    for (const density of result.inputNoiseDensity) {
+      expect(Math.abs(density - 1.1694891259268678e-7) / 1.1694891259268678e-7)
+        .toBeLessThan(2e-3);
+    }
+    expect(Math.abs(result.integratedOutputNoise! - 2.1852769227097065e-5)
+      / 2.1852769227097065e-5).toBeLessThan(2e-3);
+    expect(Math.abs(result.integratedInputNoise! - 1.168904235104625e-5)
+      / 1.168904235104625e-5).toBeLessThan(2e-3);
+  });
+
+  it.each(['RB', 'RC', 'RE', 'KF', 'AF', 'CJE'])(
+    'rejects unsupported BJT noise model parameter %s explicitly',
+    async parameter => {
+      const deck = bjtFixture.replace('NR=1)', `NR=1 ${parameter}=1)`);
+      await expect(simulate(deck)).rejects.toThrow(
+        `.noise does not support BJT model parameter '${parameter}' for 'Q1'`,
+      );
+    },
+  );
+
   it('omits integrated totals when ngspice does not create an integrated-noise plot', async () => {
     const result = await simulate(fixture.replace('lin 5 100 500', 'dec 3 100 100'));
 
@@ -240,14 +278,6 @@ describe('.noise analysis', () => {
   });
 
   it.each([
-    ['BJT', 'Q1', `
-      Vbias vcc 0 DC 5 AC 1
-      Rbase vcc base 100k
-      Rload vcc out 1k
-      Q1 out base 0 Qmod
-      .model Qmod NPN
-      .noise v(out) Vbias dec 3 100 10k
-    `],
     ['MOSFET', 'M1', `
       Vbias drain 0 DC 1 AC 1
       Vgate gate 0 DC 2
@@ -272,7 +302,13 @@ describe('.noise analysis', () => {
     '.noise i(V1) V1 dec 10 1 1Meg',
     '.noise v(out) V1 log 10 1 1Meg',
   ])('rejects noise forms outside the first bounded slice: %s', netlist => {
-    expect(() => parse(netlist)).toThrow();
+    expect(() => parse(netlist)).toThrow(
+      "Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop'",
+    );
+  });
+
+  it('rejects a BJT noise temperature card with a stable parse error', () => {
+    expect(() => parse(`${bjtFixture}\n.temp 50`)).toThrow("Unsupported dot command: '.temp'");
   });
 
   it('rejects .step combined with .noise instead of returning empty step results', () => {

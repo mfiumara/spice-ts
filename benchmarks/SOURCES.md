@@ -128,6 +128,14 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 - Adaptation: none. The committed bytes are supplied identically to spice-ts and ngspice-47. The fixture exercises MOS1 channel thermal noise and default `NLEV=2` KF/AF flicker noise over a DEC sweep.
 - Reproduce with `pnpm exec tsx benchmarks/mos1-noise/compare.ts`; the command records source/hash, versions, machine, convergence, runtimes, matched-point max/RMS absolute and relative errors, integrated totals, and remaining unsupported losses.
 
+## Bounded BJT level-1 noise parity fixture
+
+- Fixture: `benchmarks/bjt-noise/bjt-noise.cir` (SHA-256 `4e005d6433ee14cd41c8d6d793e661077e99d5802a91e93419ab1e5b4c4f93d3`).
+- Source: project-authored public reference circuit for [issue #199](https://github.com/mfiumara/spice-ts/issues/199), pinned by the fixture SHA-256 above.
+- Licence: MIT, under the repository [licence](../LICENSE); redistribution is allowed. No third-party netlist was copied.
+- Adaptation: none. The committed bytes are supplied identically to spice-ts and ngspice-47. The forward-active fixture exercises BJT level-1 collector and base shot noise together with external base/load resistance thermal noise over a DEC sweep.
+- Reproduce with `pnpm exec tsx benchmarks/bjt-noise/compare.ts`; the command records source/hash, versions, machine, convergence, runtimes, matched-point max/RMS absolute and relative errors, integrated totals, and all remaining unsupported losses.
+
 ## Xyce Regression Suite corpus C
 
 - Repository: https://github.com/Xyce/Xyce_Regression

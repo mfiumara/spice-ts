@@ -1,0 +1,9 @@
+BJT level-1 collector and base shot noise with external resistance noise
+VDD vdd 0 DC 5
+Vinput in 0 DC 1 AC 1
+Rbase in base 100k
+Rload vdd out 2k
+Q1 out base 0 QMOD
+.model QMOD NPN (LEVEL=1 IS=1e-14 BF=100 BR=1 NF=1 NR=1)
+.noise v(out) Vinput dec 3 10 10k
+.end
