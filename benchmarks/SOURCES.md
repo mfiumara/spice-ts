@@ -99,6 +99,14 @@ At ingestion on ngspice-47, 19 circuits produce raw analysis data. `bjt-mixer-di
 
 Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON receipt reports the engine version, machine, identical paths, deterministic native order, matched-point maximum/RMS absolute and relative errors, every non-zero residual as a retained loss, convergence failures, and the explicit unsupported matrix.
 
+## Bounded Gummel-Poon forward-active parity fixtures
+
+- Public source: John P. Doty's CA3080 ngspice model, [`ca3080.mod`](https://github.com/xxv/gedasymbols/blob/49eda5e627e167fcb6346ef9805535ca92e43b0c/www/user/john_doty/models/opamp/ca3080.mod), pinned `gedasymbols` revision `49eda5e627e167fcb6346ef9805535ca92e43b0c`.
+- Licence: GPL-2.0-or-later, stated in the source file by its copyright holder; the complete GPLv2 text is already retained at `benchmarks/corpus/corpus-d/COPYING.txt`.
+- Redistribution decision: allowed under GPL-2.0-or-later. The upstream file is not copied. The checked-in test decks identify the source and use only the bounded numeric subset of its `VERTNPN` model card: `LEVEL`, `IS`, `VAF`, `BF`, `ISE`, `NE`, `IKF`, and `BR`.
+- Adaptation: the original CA3080 subcircuit is replaced by a project-authored, deterministic common-emitter characterization grid. Unsupported temperature, resistance, capacitance, transit-time, reverse high-current, and substrate parameters are omitted rather than silently accepted. The resulting local deck bytes are supplied identically to spice-ts and ngspice-47 at VBE 0.55–0.70 V and VCE 1, 5, and 9 V.
+- Local paths: `benchmarks/gummel-poon/{vce-1,vce-5,vce-9}.cir`; compare with `pnpm exec tsx benchmarks/gummel-poon/compare.ts`.
+
 ## Bounded lossless transmission-line parity fixtures
 
 - Canonical public source: ngspice User's Manual version 47, [lossless T-card syntax and `Z0=50 TD=10NS` example](https://nmg.gitlab.io/ngspice-manual/transmissionlines/losslesstransmissionlines.html) plus the public [transmission-line inverter step-response example](https://nmg.gitlab.io/ngspice-manual/examplecircuits/transmission-lineinverter.html).
@@ -156,6 +164,12 @@ At ingestion on ngspice-47, 13 circuits produce raw analysis data and 7 fail on 
 | Circuit | Source | Licence / redistribution basis | Local use |
 | --- | --- | --- | --- |
 | Showcase boost converter (5 V input, 100 kHz, 50% duty) | [spice-ts issue #43](https://github.com/mfiumara/spice-ts/issues/43) and `examples/showcase/main.tsx` | Authored in the spice-ts project by Mattia Fiumara; distributed under the repository [MIT licence](../LICENSE) | Identical netlist is exercised by `packages/core/src/analysis/transient-driver-integration.test.ts` and compared with ngspice-47 reference samples. |
+
+## Bounded diode-noise parity fixtures
+
+| Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
+|---|---|---|---|---|
+| Forward-biased diode shot and flicker noise, LIN/DEC/OCT | Original spice-ts benchmark specified by [issue #179](https://github.com/mfiumara/spice-ts/issues/179), issue revision as of 2026-10-10. Reference equations and behavior are pinned to ngspice source revision [`032b1c32`](https://github.com/ngspice/ngspice/blob/032b1c32/src/spicelib/devices/dio/dionoise.c). | Fixtures dedicated [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/); ngspice reference source is BSD-3-Clause under its pinned `COPYING`. | The three original fixture decks differ only in the `.noise` LIN/DEC/OCT card and are committed for unrestricted redistribution. No values or tolerances are adapted between engines; the runner adds only temporary ngspice output-control commands. | `benchmarks/diode-noise/diode-noise-{lin,dec,oct}.cir`; compare against ngspice-47 with `pnpm exec tsx benchmarks/diode-noise/compare.ts`. |
 
 ## Chua & Lin circuit, issue #48
 
