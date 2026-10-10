@@ -46,6 +46,10 @@ export interface DeviceModel {
   stampDynamic?(ctx: StampContext): void;
   /** Stamp AC small-signal contributions at angular frequency omega. */
   stampAC?(ctx: StampContext, omega: number): void;
+  /** Commit state from a transient timepoint after NR and LTE acceptance. */
+  acceptTransientStep?(ctx: StampContext): void;
+  /** Clear device-owned transient history before restarting at t=0. */
+  resetTransient?(): void;
   /** Whether this device requires Newton-Raphson iteration (nonlinear). */
   readonly isNonlinear: boolean;
   /** Return AC excitation info if this device is an AC source, or null. */

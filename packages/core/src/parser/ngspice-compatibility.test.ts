@@ -31,6 +31,7 @@ const supportedFixtures: Fixture[] = [
   { feature: 'bounded sensitivity analysis', netlist: 'V1 in 0 1\nR1 in out 1k\nR2 out 0 1k\n.sens V(out)' },
   { feature: 'solver-backed .options', netlist: '.options reltol=1e-4 itl1=50 method=trap\n.op' },
   { feature: 'output-only directives', netlist: '.save v(out)\n.print tran v(out)\n.plot v(out)\n.op' },
+  { feature: 'bounded lossless transmission line', netlist: 'T1 in 0 out 0 Z0=50 TD=1n\n.tran 1n 10n' },
 ];
 
 const unsupportedFixtures: Fixture[] = [
@@ -48,7 +49,6 @@ const unsupportedFixtures: Fixture[] = [
   { feature: 'measurements', netlist: '.measure tran peak MAX v(out)\n.op' },
   { feature: 'behavioral source', netlist: 'B1 out 0 V=V(in)*2\n.op' },
   { feature: 'switch', netlist: 'S1 out 0 ctrl 0 SMOD\n.op' },
-  { feature: 'transmission line', netlist: 'T1 in 0 out 0 Z0=50 TD=1n\n.tran 1n 10n' },
 ];
 
 describe('ngspice parser compatibility fixtures', () => {
