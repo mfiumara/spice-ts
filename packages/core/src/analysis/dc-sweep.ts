@@ -18,14 +18,24 @@ export function solveDCSweep(
 ): DCSweepResult {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
 
-  // Find the sweep source
-  const source = devices.find(
-    (d): d is VoltageSource | CurrentSource =>
-      (d instanceof VoltageSource || d instanceof CurrentSource) && d.name === analysis.source,
+  // SPICE identifiers are case-insensitive, but retain declaration spelling in
+  // result maps and diagnostics.
+  const normalizedSourceName = analysis.source.toUpperCase();
+  const matchingSources = devices.filter(
+    (device): device is VoltageSource | CurrentSource =>
+      (device instanceof VoltageSource || device instanceof CurrentSource)
+      && device.name.toUpperCase() === normalizedSourceName,
   );
-  if (!source) {
+  if (matchingSources.length === 0) {
     throw new InvalidCircuitError(`DC sweep source '${analysis.source}' not found`);
   }
+  if (matchingSources.length > 1) {
+    const names = matchingSources.map(device => `'${device.name}'`).join(', ');
+    throw new InvalidCircuitError(
+      `DC sweep source '${analysis.source}' is ambiguous; matches: ${names}`,
+    );
+  }
+  const source = matchingSources[0]!;
 
   const originalWaveform = source.waveform;
   const numPoints = Math.round((analysis.stop - analysis.start) / analysis.step) + 1;

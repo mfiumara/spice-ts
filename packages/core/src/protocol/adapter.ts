@@ -304,10 +304,14 @@ function serializeOp(result: DCResult, analysisIndex: number, nodes: string[], b
 }
 
 function serializeDc(result: DCSweepResult, analysis: Extract<AnalysisCommand, { type: 'dc' }>, analysisIndex: number, nodes: string[], branches: string[], circuit: Circuit, step?: StepCoordinateV1): DcResultV1 {
-  const source = circuit.toIR().components.find(component => component.name === analysis.source);
+  const normalizedSourceName = analysis.source.toUpperCase();
+  const source = circuit.toIR().components.find(component =>
+    (component.type === 'V' || component.type === 'I')
+    && component.name.toUpperCase() === normalizedSourceName,
+  );
   return withStep({
     type: 'dc', analysisIndex,
-    axis: { name: analysis.source, unit: source?.type === 'I' ? 'A' : 'V', values: Array.from(result.sweepValues) },
+    axis: { name: source?.name ?? analysis.source, unit: source?.type === 'I' ? 'A' : 'V', values: Array.from(result.sweepValues) },
     voltagesV: sortedRecord(nodes, name => Array.from(result.voltage(name))),
     currentsA: sortedRecord(branches, name => Array.from(result.current(name))),
   }, step);
