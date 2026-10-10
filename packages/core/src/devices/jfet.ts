@@ -225,8 +225,9 @@ function parkerSkellernCurrent(
   const rootNegative = Math.sqrt((aa - vSat) ** 2 + saturationTerm);
   const vDT = rootPositive - rootNegative;
   const dvdtDvds = za * (aa / rootPositive - (aa - vSat) / rootNegative);
+  // PSids uses (1 + MXI * vSatFactor²); this bounded subset fixes MXI=0.
   const dvdtDvgt = (vDT - vDS * dvdtDvds)
-    * (1 + vSatFactor * vSatFactor) / (1 + vSatFactor) / vGT;
+    / (1 + vSatFactor) / vGT;
 
   const remaining = vGT - vDT;
   let gds = 2 * remaining;
