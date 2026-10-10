@@ -4,6 +4,7 @@ import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.j
 import { toCsc } from '../solver/csc-matrix.js';
 import { ComplexSparseSolver } from '../solver/complex-sparse-solver.js';
 import { ACResult } from '../results.js';
+import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 export interface ComplexACRHS {
   real: Float64Array;
@@ -48,6 +49,7 @@ export function solveAC(
   analysis: ACAnalysis,
   options: ResolvedOptions,
   dcSolution: Float64Array,
+  guard?: ProtocolExecutionGuard,
 ): ACResult {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
 
@@ -91,6 +93,8 @@ export function solveAC(
   const { real: bReal, imaginary: bImag } = buildACRHS(compiled);
 
   for (const freq of frequencies) {
+    guard?.checkpoint('solve:ac-point');
+    guard?.recordResultPoint();
     const omega = 2 * Math.PI * freq;
 
     solver.factorize(gCsc, cCsc, omega);

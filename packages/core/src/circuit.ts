@@ -42,6 +42,7 @@ import {
   type ResolvedInductorModel,
 } from './devices/passive-model.js';
 import { CycleError, InvalidCircuitError } from './errors.js';
+import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
 /**
  * The compiled representation of a circuit, ready for numerical simulation.
@@ -886,9 +887,10 @@ export class Circuit {
    * @throws Error if a referenced subcircuit or control source is undefined
    * @throws {@link CycleError} if subcircuit instances form a circular dependency
    */
-  compile(): CompiledCircuit {
+  compile(guard?: ProtocolExecutionGuard): CompiledCircuit {
     // Pre-expand subcircuit instances into flat device descriptors
-    const expandedDescriptors = this.expandPassiveParasitics(this.expandAllSubcircuits());
+    const expandedDescriptors = this.expandPassiveParasitics(this.expandAllSubcircuits(guard));
+    guard?.maximum('maxComponents', expandedDescriptors.length, 'compile');
 
     // Collect all nodes from expanded descriptors
     for (const desc of expandedDescriptors) {
@@ -930,6 +932,7 @@ export class Circuit {
     const deviceMap = new Map<string, DeviceModel>();
 
     for (const desc of expandedDescriptors) {
+      guard?.checkpoint('compile:device');
       const nodeIndices = desc.nodes.map(resolveNode);
       const prevLength = devices.length;
 
@@ -1139,9 +1142,10 @@ export class Circuit {
    * Expand all subcircuit instances (type 'X') in the descriptor list
    * into flat device descriptors. Non-X descriptors pass through unchanged.
    */
-  private expandAllSubcircuits(): DeviceDescriptor[] {
+  private expandAllSubcircuits(guard?: ProtocolExecutionGuard): DeviceDescriptor[] {
     const result: DeviceDescriptor[] = [];
     for (const desc of this.descriptors) {
+      guard?.checkpoint('compile:device');
       if (desc.type === 'X') {
         const expanded = this.expandSubcircuit(
           desc.name,
@@ -1149,11 +1153,14 @@ export class Circuit {
           desc.modelName!,
           desc.params ?? {},
           new Set<string>(),
+          guard,
+          1,
         );
         result.push(...expanded);
       } else {
         result.push(desc);
       }
+      guard?.maximum('maxComponents', result.length, 'compile');
     }
     return result;
   }
@@ -1367,7 +1374,10 @@ export class Circuit {
     subcktName: string,
     instanceParams: Record<string, number>,
     visited: Set<string>,
+    guard?: ProtocolExecutionGuard,
+    depth = 1,
   ): DeviceDescriptor[] {
+    guard?.maximum('maxSubcircuitDepth', depth, 'compile');
     const key = subcktName.toUpperCase();
 
     if (visited.has(key)) {
@@ -1434,6 +1444,7 @@ export class Circuit {
     const parsedLines = tokenizeNetlist(def.body.join('\n'));
 
     for (const { tokens } of parsedLines) {
+      guard?.checkpoint('compile:device');
       if (tokens.length === 0) continue;
       const first = tokens[0].toUpperCase();
 
@@ -1631,12 +1642,15 @@ export class Circuit {
             nestedSubcktName,
             nestedParams,
             newVisited,
+            guard,
+            depth + 1,
           );
           result.push(...nested);
           break;
         }
         // Skip unknown device types inside subcircuits silently
       }
+      guard?.maximum('maxComponents', result.length, 'compile');
     }
 
     return result;
