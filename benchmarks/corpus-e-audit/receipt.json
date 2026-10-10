@@ -14,7 +14,7 @@
   "versions": {
     "ngspice": "** ngspice-47 : Circuit level simulation program",
     "node": "v22.23.1",
-    "spiceTsHead": "d39f6e8c4df2f449d0737aa8d4ef0b9d9a594119"
+    "spiceTsHead": "a5153d1593619d151cb6a7d82eda5118cf9e5710"
   },
   "machine": {
     "os": "macOS 27.0.1",
