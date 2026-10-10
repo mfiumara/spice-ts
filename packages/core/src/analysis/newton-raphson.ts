@@ -3,6 +3,7 @@ import type { MNAAssembler } from '../mna/assembler.js';
 import type { DCConvergenceTelemetry, ResolvedOptions } from '../types.js';
 import { ConvergenceError } from '../errors.js';
 import { MOSFET } from '../devices/mosfet.js';
+import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 export function newtonRaphson(
   assembler: MNAAssembler,
@@ -11,12 +12,14 @@ export function newtonRaphson(
   maxIter: number,
   nodeNames: string[],
   telemetry?: DCConvergenceTelemetry,
+  guard?: ProtocolExecutionGuard,
 ): number {
   // Pre-classify devices for batch stamping (built lazily after first iteration)
   let mosfets: MOSFET[] | null = null;
   let otherDevices: DeviceModel[] | null = null;
 
   for (let iter = 0; iter < maxIter; iter++) {
+    guard?.checkpoint('solve:newton-iteration');
     assembler.saveSolution();
     assembler.clear();
 

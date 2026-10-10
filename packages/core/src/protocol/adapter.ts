@@ -30,12 +30,19 @@ import {
 import { parseTitlelessAsync } from '../parser/index.js';
 import type { ACResult, DCSweepResult, DCResult, SimulationResult, StepResult, TransientResult } from '../results.js';
 import { simulate } from '../simulate.js';
-import type { AnalysisCommand, AnalysisDirective, SimulationOptions, SourceWaveform } from '../types.js';
+import type {
+  AnalysisCommand, AnalysisDirective, SimulationOptions, SourceWaveform, StepAnalysis,
+} from '../types.js';
 import {
   preflightTopology,
   TopologyPreflightError,
   type TopologySourcePath,
 } from '../validation/topology-preflight.js';
+import {
+  ProtocolExecutionError,
+  ProtocolExecutionGuard,
+  type ProtocolExecutionOptionsV1,
+} from './execution-guard.js';
 
 const MAX_DETAIL_NAMES = 32;
 
@@ -47,9 +54,16 @@ export interface ProtocolValidationResultV1 {
 }
 
 /** Parse, compile, and validate topology without assembling or solving a matrix. */
-export async function validateProtocolV1(request: SimulationRequestV1): Promise<ProtocolValidationResultV1> {
-  const circuit = await requestCircuit(request);
-  const compiled = circuit.compile();
+export async function validateProtocolV1(
+  request: SimulationRequestV1,
+  execution?: ProtocolExecutionOptionsV1,
+): Promise<ProtocolValidationResultV1> {
+  const guard = protocolGuard(request, execution);
+  enforceInputLimits(request, guard);
+  const circuit = await requestCircuit(request, guard);
+  guard.maximum('maxAnalyses', circuit.analyses.length, 'validation');
+  const compiled = circuit.compile(guard);
+  enforcePointLimit(circuit.analyses, guard, compiled.steps[0]);
   if (compiled.nodeCount === 0) throw new InvalidCircuitError('Circuit has no nodes');
   if (compiled.analyses.length === 0) throw new InvalidCircuitError('No analysis command specified');
   preflightTopology(compiled, protocolSourcePath(request));
@@ -62,22 +76,38 @@ export async function validateProtocolV1(request: SimulationRequestV1): Promise<
 }
 
 /** Execute a protocol-v1 request through the existing core simulator. */
-export async function simulateProtocolV1(request: SimulationRequestV1): Promise<SimulationResultV1> {
-  const circuit = await requestCircuit(request);
+export async function simulateProtocolV1(
+  request: SimulationRequestV1,
+  execution?: ProtocolExecutionOptionsV1,
+): Promise<SimulationResultV1> {
+  const guard = protocolGuard(request, execution);
+  enforceInputLimits(request, guard);
+  const circuit = await requestCircuit(request, guard);
   const analyses = circuit.analyses.map(protocolAnalysis);
+  guard.maximum('maxAnalyses', analyses.length, 'validation');
+  const preflight = circuit.compile(guard);
+  enforcePointLimit(analyses, guard, preflight.steps[0]);
   const options = coreOptions(request.options);
   const serialized: AnalysisResultV1[] = [];
 
   for (let analysisIndex = 0; analysisIndex < analyses.length; analysisIndex++) {
     const analysis = analyses[analysisIndex]!;
     circuit.analyses.splice(0, circuit.analyses.length, analysis);
-    const compiled = circuit.compile();
-    const result = await simulate(circuit, options);
+    const compiled = circuit.compile(guard);
+    const result = await simulate(circuit, options, guard);
     appendAnalysisResult(serialized, result, analysis, analysisIndex, compiled.nodeNames, compiled.branchNames, circuit);
+    guard.checkpoint('serialize:analysis');
+    guard.maximum('maxResultPoints', resultPointCount(serialized), 'serialize');
+    guard.maximum(
+      'maxSerializedResultBytes',
+      utf8Bytes(JSON.stringify({ status: 'complete', analyses: serialized } satisfies SimulationResultV1)),
+      'serialize',
+    );
   }
 
   circuit.analyses.splice(0, circuit.analyses.length, ...analyses);
-  return { status: 'complete', analyses: serialized };
+  const response: SimulationResultV1 = { status: 'complete', analyses: serialized };
+  return response;
 }
 
 function protocolAnalysis(analysis: AnalysisDirective): AnalysisCommand {
@@ -96,6 +126,7 @@ function protocolAnalysis(analysis: AnalysisDirective): AnalysisCommand {
 
 /** Convert an existing typed core error to its stable protocol-v1 representation. */
 export function mapProtocolErrorV1(error: unknown): SpiceApiErrorV1 {
+  if (error instanceof ProtocolExecutionError) return wireApiError(error.apiError);
   if (error instanceof ParseError) {
     return apiError('PARSE_ERROR', error, 'parse', { line: error.line, context: error.context });
   }
@@ -168,7 +199,10 @@ function jsonPointerSegment(value: string): string {
   return value.replaceAll('~', '~0').replaceAll('/', '~1');
 }
 
-async function requestCircuit(request: SimulationRequestV1): Promise<Circuit> {
+async function requestCircuit(
+  request: SimulationRequestV1,
+  guard: ProtocolExecutionGuard,
+): Promise<Circuit> {
   switch (request.input.format) {
     case 'spice': {
       const files = request.input.virtualFiles ?? {};
@@ -176,13 +210,104 @@ async function requestCircuit(request: SimulationRequestV1): Promise<Circuit> {
         const source = files[path];
         if (source === undefined) throw new ParseError(`Virtual include '${path}' was not provided`, 0, path);
         return source;
-      });
+      }, guard);
     }
     case 'spice-ts':
       return circuitFromDocument(request.input.document);
     case 'circuit-json':
       throw new InvalidCircuitError('circuit-json conversion is owned by @spice-ts/circuit-json and is unavailable in core');
   }
+}
+
+function protocolGuard(
+  request: SimulationRequestV1,
+  execution?: ProtocolExecutionOptionsV1,
+): ProtocolExecutionGuard {
+  return new ProtocolExecutionGuard(request.options?.limits ?? {}, execution);
+}
+
+function enforceInputLimits(request: SimulationRequestV1, guard: ProtocolExecutionGuard): void {
+  if (request.input.format === 'spice') {
+    const files = request.input.virtualFiles ?? {};
+    const sourceBytes = utf8Bytes(request.input.source)
+      + Object.values(files).reduce((total, source) => total + utf8Bytes(source), 0);
+    guard.maximum('maxSourceBytes', sourceBytes, 'validation');
+    guard.maximum('maxVirtualFiles', Object.keys(files).length, 'validation');
+    return;
+  }
+  if (request.input.format === 'spice-ts') {
+    guard.maximum(
+      'maxComponents',
+      request.input.document.circuit.components.length,
+      'compile',
+    );
+  }
+  guard.maximum('maxSourceBytes', utf8Bytes(JSON.stringify(request.input)), 'validation');
+}
+
+function enforcePointLimit(
+  analyses: readonly AnalysisDirective[],
+  guard: ProtocolExecutionGuard,
+  step?: StepAnalysis,
+): void {
+  const analysisPoints = analyses.reduce(
+    (total, analysis) => total + estimatedAnalysisPoints(analysis),
+    0,
+  );
+  const observed = analysisPoints * estimatedStepCount(step);
+  guard.maximum('maxResultPoints', observed, 'validation');
+}
+
+function estimatedStepCount(step?: StepAnalysis): number {
+  if (!step) return 1;
+  if (step.sweepMode === 'list') return step.values?.length ?? 0;
+  const start = step.start;
+  const stop = step.stop;
+  if (start === undefined || stop === undefined) return 0;
+  if (step.sweepMode === 'lin') return finiteLinearPoints(start, stop, step.increment ?? 0);
+  const points = step.points ?? 0;
+  const span = step.sweepMode === 'dec'
+    ? Math.log10(stop / start)
+    : Math.log2(stop / start);
+  return Number.isFinite(span) ? Math.max(0, Math.floor(span * points + 1 + 1e-12)) : 0;
+}
+
+function estimatedAnalysisPoints(analysis: AnalysisDirective): number {
+  switch (analysis.type) {
+    case 'op': return 1;
+    case 'dc': return finiteLinearPoints(analysis.start, analysis.stop, analysis.step);
+    case 'tran': return finiteLinearPoints(analysis.startTime ?? 0, analysis.stopTime, analysis.timestep);
+    case 'ac': {
+      if (analysis.variation === 'lin') return analysis.points + 1;
+      const span = analysis.variation === 'dec'
+        ? Math.log10(analysis.stopFreq / analysis.startFreq)
+        : Math.log2(analysis.stopFreq / analysis.startFreq);
+      return Number.isFinite(span) ? Math.max(0, Math.round(span * analysis.points) + 1) : 0;
+    }
+    case 'noise':
+    case 'tf':
+    case 'sens': return 0;
+  }
+}
+
+function finiteLinearPoints(start: number, stop: number, step: number): number {
+  if (![start, stop, step].every(Number.isFinite) || step === 0) return 0;
+  return Math.max(0, Math.floor(Math.abs((stop - start) / step) + 1 + 1e-12));
+}
+
+function resultPointCount(analyses: readonly AnalysisResultV1[]): number {
+  return analyses.reduce((total, analysis) => {
+    switch (analysis.type) {
+      case 'op': return total + 1;
+      case 'dc': return total + analysis.axis.values.length;
+      case 'tran': return total + analysis.timeS.length;
+      case 'ac': return total + analysis.frequencyHz.length;
+    }
+  }, 0);
+}
+
+function utf8Bytes(value: string): number {
+  return new TextEncoder().encode(value).byteLength;
 }
 
 function coreOptions(options?: SimulationOptionsV1): SimulationOptions {
@@ -383,6 +508,10 @@ function solutionSummary(last: Float64Array, previous: Float64Array): JsonObject
 
 function apiError(code: SpiceApiErrorV1['code'], error: Error, phase: SpiceApiErrorV1['phase'], details: JsonObject): SpiceApiErrorV1 {
   return { code, message: wireMessage(error.message), retryable: false, phase, details: wireObject(details) };
+}
+
+function wireApiError(error: SpiceApiErrorV1): SpiceApiErrorV1 {
+  return { ...error, message: wireMessage(error.message), details: wireObject(error.details) };
 }
 
 function wireMessage(message: string): string {

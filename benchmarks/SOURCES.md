@@ -182,6 +182,15 @@ At ingestion on ngspice-47, 13 circuits produce raw analysis data and 7 fail on 
 - Coverage: `op.cir`, `dc.cir`, and `tran.cir` exercise the shared positive-to-negative independent current-source stamp. An AC-form source's DC bias uses that stamp and has a core regression test. Nonzero independent current-source AC excitation uses a separate excitation path and is not claimed by this bounded comparison.
 - Command: `pnpm bench:current-source-polarity`. The JSON report records commands, versions, machine data, convergence status, and max/RMS absolute and relative errors for `V(out)`.
 
+## Independent current-source AC parity fixtures
+
+- Source: [spice-ts issue #198](https://github.com/mfiumara/spice-ts/issues/198) and its TDD reproduction at revision [`61bef6f4a1a69420ef306e52de27bb0686379cac`](https://github.com/mfiumara/spice-ts/commit/61bef6f4a1a69420ef306e52de27bb0686379cac).
+- Licence: MIT, under the repository [licence](../LICENSE).
+- Redistribution decision: allowed. The three minimal netlists were authored in this project for issue #198 and contain no third-party circuit material.
+- Adaptation: none. `compare.ts` reads each committed file once and supplies those exact bytes to spice-ts and ngspice-47. No engine-specific values, tolerances, or circuit rewrites are used.
+- Coverage: grounded positive-to-ground orientation (`grounded.cir`, SHA-256 `0eb133dbf34d18fdf231a0d35d361d5040fd0d599a5b83a9de909c27e0a9c120`), phased non-ground node-pair orientation (`floating.cir`, SHA-256 `c3817778c2d5757caae8f2ad67771c3f58ee799e29c7974a5f0eb2a00a6e019f`), and deterministic mixed voltage/two-current-source complex superposition (`mixed.cir`, SHA-256 `50419ff61998734392e2c626ef5a2494eadd682de7d4da5e9c7962ed07467bfa`).
+- Command: `pnpm bench:current-source-ac -- --output benchmarks/current-source-ac/results.json`. The JSON receipt records ngspice version, machine, commands, convergence, runtimes, and matched-frequency max/RMS absolute and relative errors. Every residual is retained as a loss; no superiority claim is made.
+
 ## Bounded diode-noise parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |

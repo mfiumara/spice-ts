@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { simulateStream, parse } from './index.js';
+import { simulate, simulateStream, parse } from './index.js';
 
 describe('simulateStream', () => {
   it('streams transient results as TransientStep objects', async () => {
@@ -51,5 +51,25 @@ describe('simulateStream', () => {
     expect(points.length).toBeGreaterThan(5);
     expect(points[0].mag).toBeCloseTo(1, 0);
     expect(points[points.length - 1].mag).toBeLessThan(0.5);
+  });
+
+  it('uses the batch AC excitation assembly for mixed-source streams', async () => {
+    const netlist = `
+      V1 source 0 AC 1 15
+      R1 source out 2
+      I1 out 0 AC 0.25 -30
+      I2 0 out AC 0.1 90
+      R2 out 0 3
+      .ac dec 3 1 1k
+      .end
+    `;
+    const batch = (await simulate(netlist)).ac!;
+    const streamed = [];
+    for await (const point of simulateStream(netlist)) {
+      if ('frequency' in point) streamed.push(point);
+    }
+
+    expect(streamed.map(point => point.frequency)).toEqual(batch.frequencies);
+    expect(streamed.map(point => point.voltages.get('out'))).toEqual(batch.voltage('out'));
   });
 });

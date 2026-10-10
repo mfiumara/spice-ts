@@ -6,7 +6,7 @@ import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, 
 import { resolveOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
 import { solveTransient } from './analysis/transient.js';
-import { solveAC } from './analysis/ac.js';
+import { buildACRHS, solveAC } from './analysis/ac.js';
 import { assertNoiseDevicesSupported, solveNoise } from './analysis/noise.js';
 import { solveTransferFunction } from './analysis/transfer-function.js';
 import { solvePoleZero } from './analysis/pole-zero.js';
@@ -24,6 +24,7 @@ import { WasmNgspiceSimulator } from './simulators/ngspice-wasm.js';
 import { computeUICInitialSolution } from './analysis/uic.js';
 import { createConvergenceTelemetry } from './convergence-telemetry.js';
 import { solveStepInWorkers } from './analysis/step-parallel.js';
+import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
 class SpiceTsSimulator implements SimulatorAdapter {
   readonly name = 'spice-ts';
@@ -88,6 +89,7 @@ function withNetlistOptions(compiled: CompiledCircuit, options?: SimulationOptio
 export async function simulate(
   input: string | Circuit,
   options?: SimulationOptions,
+  guard?: ProtocolExecutionGuard,
 ): Promise<SimulationResult> {
   const simulator = selectedExternalSimulator(options);
   if (simulator) {
@@ -100,7 +102,7 @@ export async function simulate(
   } else {
     circuit = input;
   }
-  const compiled = circuit.compile();
+  const compiled = circuit.compile(guard);
   options = withNetlistOptions(compiled, options);
   const warnings: SimulationWarning[] = [];
   const convergence = createConvergenceTelemetry();
@@ -118,7 +120,7 @@ export async function simulate(
       ? await solveStepInWorkers(input, compiled.steps[0], options, warnings, convergence)
       : null;
     const stepResults = parallelResults
-      ?? solveStep(compiled, compiled.steps[0], options, warnings, convergence);
+      ?? solveStep(compiled, compiled.steps[0], options, warnings, convergence, guard);
     return { steps: stepResults, warnings, convergence };
   }
 
@@ -128,29 +130,32 @@ export async function simulate(
     switch (analysis.type) {
       case 'op': {
         const opts = resolveOptions(options);
-        const { result: dcResult } = solveDCOperatingPoint(compiled, opts, undefined, convergence);
+        const { result: dcResult } = solveDCOperatingPoint(
+          compiled, opts, undefined, convergence, 'operating-point', guard,
+        );
+        guard?.recordResultPoint();
         result.dc = dcResult;
         break;
       }
       case 'dc': {
         const opts = resolveOptions(options);
-        result.dcSweep = solveDCSweep(compiled, analysis, opts, convergence);
+        result.dcSweep = solveDCSweep(compiled, analysis, opts, convergence, guard);
         break;
       }
       case 'tran': {
         const opts = resolveOptions(options, analysis.stopTime);
-        const seed = transientInitialSolution(compiled, analysis, opts, undefined, convergence);
+        const seed = transientInitialSolution(compiled, analysis, opts, undefined, convergence, guard);
         result.transient = solveTransient(
-          compiled, runnableTransient(analysis), opts, seed, convergence,
+          compiled, runnableTransient(analysis), opts, seed, convergence, guard,
         );
         break;
       }
       case 'ac': {
         const opts = resolveOptions(options);
         const { assembler: dcAsm } = solveDCOperatingPoint(
-          compiled, opts, undefined, convergence,
+          compiled, opts, undefined, convergence, 'operating-point', guard,
         );
-        result.ac = solveAC(compiled, analysis, opts, dcAsm.solution);
+        result.ac = solveAC(compiled, analysis, opts, dcAsm.solution, guard);
         break;
       }
       case 'noise': {
@@ -405,10 +410,11 @@ function transientInitialSolution(
   options: ResolvedOptions,
   initialGuess?: Float64Array,
   convergence?: ConvergenceTelemetry,
+  guard?: ProtocolExecutionGuard,
 ): Float64Array {
   if (analysis.useInitialConditions) return computeUICInitialSolution(compiled);
   return solveDCOperatingPoint(
-    compiled, options, initialGuess, convergence, 'transient',
+    compiled, options, initialGuess, convergence, 'transient', guard,
   ).assembler.solution;
 }
 
@@ -504,7 +510,6 @@ function* streamAC(
   dcSolution: Float64Array,
 ): Generator<ACPoint> {
   const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
-  const systemSize = nodeCount + branchCount;
 
   // Build linearized G and C matrices at DC operating point
   const assembler = new MNAAssembler(nodeCount, branchCount);
@@ -521,20 +526,6 @@ function* streamAC(
   const G = assembler.G;
   const C = assembler.C;
 
-  // Find AC excitation source
-  let excitationRow = -1;
-  let excitationMag = 1;
-  let excitationPhase = 0;
-  for (const device of devices) {
-    const exc = device.getACExcitation?.();
-    if (exc) {
-      excitationRow = nodeCount + exc.branch;
-      excitationMag = exc.magnitude;
-      excitationPhase = exc.phase;
-      break;
-    }
-  }
-
   const frequencies = generateStreamFreqs(analysis);
 
   // Build n*n CSC for G and C
@@ -550,13 +541,7 @@ function* streamAC(
   );
 
   // Pre-compute RHS (constant across frequencies)
-  const bReal = new Float64Array(systemSize);
-  const bImag = new Float64Array(systemSize);
-  if (excitationRow >= 0) {
-    const phaseRad = (excitationPhase * Math.PI) / 180;
-    bReal[excitationRow] = excitationMag * Math.cos(phaseRad);
-    bImag[excitationRow] = excitationMag * Math.sin(phaseRad);
-  }
+  const { real: bReal, imaginary: bImag } = buildACRHS(compiled);
 
   for (const freq of frequencies) {
     const omega = 2 * Math.PI * freq;
