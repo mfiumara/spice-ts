@@ -19,6 +19,7 @@ export class Resistor implements DeviceModel {
   ) {
     this.branches = branchIndex === undefined ? [] : [branchIndex];
     this.nominalResistance = resistance;
+    this.applyTemperature();
   }
 
   setParameter(value: number): void {

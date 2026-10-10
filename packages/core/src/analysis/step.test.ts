@@ -579,15 +579,16 @@ describe('.step + .dc integration', () => {
 
 describe('.step error handling', () => {
   it.each(['success', 'failure'] as const)(
-    'restores the default temperature after %s',
+    'restores the effective resistor state after %s',
     (outcome) => {
       const compiled = parse(`
         V1 in 0 DC 1
-        R1 in 0 1k TC1=0.001
+        R1 in 0 1k TC1=0.001 TNOM=25
         .op
         .step TEMP LIST -55
       `).compile();
       const resistor = compiled.devices.find(device => device.name === 'R1')!;
+      expect((resistor as Resistor).resistance).toBeCloseTo(1002);
       const guard = outcome === 'failure'
         ? { checkpoint: () => { throw new Error('forced solve failure'); } } as unknown as ProtocolExecutionGuard
         : undefined;
@@ -601,9 +602,18 @@ describe('.step error handling', () => {
 
       expect(resistor.getTemperature!()).toBe(27);
       expect(resistor.getParameter!()).toBe(1000);
-      expect((resistor as Resistor).resistance).toBe(1000);
+      expect((resistor as Resistor).resistance).toBeCloseTo(1002);
     },
   );
+
+  it('rejects an empty TEMP LIST explicitly', () => {
+    expect(() => parse(`
+      V1 in 0 DC 1
+      R1 in 0 1k
+      .op
+      .step TEMP LIST
+    `)).toThrow('.step TEMP LIST requires at least one value');
+  });
 
   it.each([
     '.step TEMP -55 72 1',

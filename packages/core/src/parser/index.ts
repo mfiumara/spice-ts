@@ -486,6 +486,13 @@ function parseDotCommand(
         for (; idx < tokens.length; idx++) {
           values.push(parseNumber(tokens[idx]));
         }
+        if (paramName.toUpperCase() === 'TEMP' && values.length === 0) {
+          throw new ParseError(
+            '.step TEMP LIST requires at least one value',
+            lineNumber,
+            context,
+          );
+        }
         circuit.addStep(paramName, { values });
       } else {
         const start = parseNumber(tokens[idx++]);

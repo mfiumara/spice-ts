@@ -82,9 +82,9 @@
     }
   },
   "runtimeMilliseconds": {
-    "spiceTsDirectStep": 4.286124999999998,
-    "spiceTsExpandedPoints": 70.60620800000004,
-    "ngspiceExpandedProcesses": 58.05108299999995,
+    "spiceTsDirectStep": 3.554957999999999,
+    "spiceTsExpandedPoints": 63.162082999999996,
+    "ngspiceExpandedProcesses": 50.21733300000005,
     "caveat": "ngspice includes one process startup per matched point; this is not a speed claim."
   },
   "samples": [
