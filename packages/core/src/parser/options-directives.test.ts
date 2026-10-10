@@ -192,6 +192,7 @@ describe('Gnucap control and output directives', () => {
     ['nobypass', 'nobypass'],
     ['dampstrategy=11', 'dampstrategy'],
     ['trsteporder=1', 'trsteporder'],
+    ['itermin=99', 'itermin'],
   ])('rejects behavior-changing Gnucap option field %s explicitly', (field, name) => {
     try {
       parse(`V1 in 0 1\n.option ${field}\n.op`);
