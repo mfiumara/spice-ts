@@ -1,0 +1,88 @@
+{
+  "transport": "stdio",
+  "callOrder": [
+    "tools/list",
+    "spice_capabilities",
+    "spice_validate:invalid",
+    "spice_validate:corrected",
+    "spice_simulate:corrected"
+  ],
+  "tools": [
+    "spice_capabilities",
+    "spice_validate",
+    "spice_simulate"
+  ],
+  "capabilities": {
+    "protocolVersion": "1",
+    "analyses": [
+      "op",
+      "dc",
+      "tran",
+      "ac"
+    ],
+    "inputFormats": [
+      "spice",
+      "spice-ts"
+    ],
+    "limits": {
+      "maxDocumentBytes": 262144,
+      "maxAnalyses": 8,
+      "maxResultPoints": 100000,
+      "maxSerializedResultBytes": 4194304,
+      "maxWallTimeMs": 10000
+    }
+  },
+  "invalidRequest": {
+    "requestedMaxResultPoints": 0,
+    "diagnosis": {
+      "code": "RESOURCE_LIMIT",
+      "message": "A configured resource limit was exceeded",
+      "retryable": false,
+      "phase": "validation",
+      "details": {
+        "limit": "maxResultPoints",
+        "maximum": 0,
+        "actual": 1
+      }
+    }
+  },
+  "correction": {
+    "action": "set-maxResultPoints-to-diagnosed-actual",
+    "maxResultPoints": 1,
+    "retainedLimits": {
+      "maxSourceBytes": 256,
+      "maxAnalyses": 1,
+      "maxResultPoints": 1,
+      "maxSerializedResultBytes": 4096,
+      "maxWallTimeMs": 2000
+    }
+  },
+  "validation": {
+    "status": "valid",
+    "nodeCount": 2,
+    "branchCount": 1,
+    "analysisCount": 1
+  },
+  "verification": {
+    "method": "exact-json-and-sha256",
+    "expectedFixture": "expected-result.json",
+    "matched": true,
+    "resultSha256": "2bfa4bbcfe3fdf9fa0cae9f2edc696e2a201c4eaba8128aa791c9a329ec4c463"
+  },
+  "result": {
+    "status": "complete",
+    "analyses": [
+      {
+        "type": "op",
+        "analysisIndex": 0,
+        "voltagesV": {
+          "in": 10,
+          "out": 5
+        },
+        "currentsA": {
+          "V1": -0.005
+        }
+      }
+    ]
+  }
+}

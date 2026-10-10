@@ -1,0 +1,16 @@
+{
+  "apiVersion": "1",
+  "input": {
+    "format": "spice",
+    "source": "V1 in 0 10\nR1 in out 1k\nR2 out 0 1k\n.op"
+  },
+  "options": {
+    "limits": {
+      "maxSourceBytes": 256,
+      "maxAnalyses": 1,
+      "maxResultPoints": 0,
+      "maxSerializedResultBytes": 4096,
+      "maxWallTimeMs": 2000
+    }
+  }
+}
