@@ -16,7 +16,8 @@ const BOLTZMANN_CONSTANT = 1.380649e-23;
 const ELEMENTARY_CHARGE = 1.602176634e-19;
 const DEFAULT_TEMPERATURE_KELVIN = 273.15 + 27;
 const BJT_NOISE_MODEL_PARAMETERS = new Set([
-  'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'IKF', 'ISE', 'NE', 'polarity',
+  'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'IKF', 'ISE', 'NE', 'RB', 'RC', 'RE',
+  'KF', 'AF', 'polarity',
 ]);
 
 /** Reject devices whose noise sources are not part of the bounded slice. */
@@ -87,7 +88,8 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
 /**
  * Solve the bounded noise slice at ngspice's default 27 C circuit temperature:
  * resistor thermal noise, diode junction shot/flicker noise, BJT level-1
- * collector/base shot noise, and MOS1 channel thermal/KF/AF flicker noise.
+ * collector/base shot, base-current KF/AF flicker noise, and RB/RC/RE
+ * thermal noise, plus MOS1 channel thermal/KF/AF flicker noise.
  * Controlled and independent ideal sources are noiseless.
  */
 export function solveNoise(
@@ -181,7 +183,7 @@ export function solveNoise(
     .filter((device): device is BJT => device instanceof BJT)
     .flatMap(bjt => {
       const operatingPoint = bjt.noiseOperatingPoint(dcSolution);
-      return [{
+      const sources = [{
         positive: operatingPoint.collectorNode,
         negative: operatingPoint.emitterNode,
         currentPowerDensity: (_frequency: number) => 2 * ELEMENTARY_CHARGE
@@ -192,6 +194,16 @@ export function solveNoise(
         currentPowerDensity: (_frequency: number) => 2 * ELEMENTARY_CHARGE
           * operatingPoint.baseCurrent,
       }];
+      if (bjt.params.KF > 0) {
+        sources.push({
+          positive: operatingPoint.baseNode,
+          negative: operatingPoint.emitterNode,
+          currentPowerDensity: (frequency: number) => bjt.params.KF
+            * Math.pow(Math.max(operatingPoint.baseCurrent, 1e-38), bjt.params.AF)
+            / frequency,
+        });
+      }
+      return sources;
     });
   const diodeSources = devices
     .filter((device): device is Diode => device instanceof Diode)

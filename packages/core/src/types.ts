@@ -320,6 +320,8 @@ export interface DCSource {
 /** Pulse source waveform (PULSE). */
 export interface PulseSource {
   type: 'pulse';
+  /** Explicit DC operating-point value declared before the waveform. */
+  dc?: number;
   /** Initial value */
   v1: number;
   /** Pulsed value */
@@ -366,6 +368,8 @@ export interface PWLPoint {
 /** Piecewise-linear source waveform (PWL). */
 export interface PWLSource {
   type: 'pwl';
+  /** Explicit DC operating-point value declared before the waveform. */
+  dc?: number;
   /** Ordered time/value pairs. Equal adjacent times describe a discontinuity. */
   points: PWLPoint[];
 }
@@ -379,6 +383,17 @@ export interface ACSource {
   magnitude: number;
   /** AC phase in degrees */
   phase: number;
+}
+
+/** AC small-signal excitation that coexists with a transient waveform. */
+export interface ACExcitation {
+  magnitude: number;
+  phase: number;
+}
+
+/** Optional AC term carried alongside a transient source waveform. */
+export interface SourceACTerm {
+  ac?: ACExcitation;
 }
 
 /** One source's small-signal distortion excitation at F1 or F2. */
@@ -395,7 +410,7 @@ export interface SourceDistortionTerms {
 
 /** Union of all source waveform types. Discriminated on the `type` field. */
 export type SourceWaveform =
-  (DCSource | PulseSource | SinSource | PWLSource | ACSource) & SourceDistortionTerms;
+  (DCSource | PulseSource | SinSource | PWLSource | ACSource) & SourceACTerm & SourceDistortionTerms;
 
 /** Warning collected during simulation (non-fatal). */
 export interface SimulationWarning {

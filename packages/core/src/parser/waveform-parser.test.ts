@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -98,6 +99,66 @@ describe('independent-source waveform grammar', () => {
     expect(result.dc!.voltage('in')).toBeCloseTo(1.5, 12);
     expect(result.transient!.voltage('in')[0]).toBeCloseTo(2, 12);
     expect(result.transient!.voltage('in').at(-1)).toBeCloseTo(5, 12);
+  });
+
+  it('preserves every term on the unchanged classic DISTOF source cards', () => {
+    const fixtures = [
+      {
+        path: '../../../../benchmarks/corpus/classic/fixtures/spice3f5/diodisto.cir',
+        sha256: '912c8cedf66aadbe78f17ceb28644cb8c39a2cb3442559be3219fbaac6d11de8',
+        cards: ['vcc 1 3 5v ac 0.001 sin(5 0.01 1000) distof1 0.01 distof2 0.01'],
+      },
+      {
+        path: '../../../../benchmarks/corpus/classic/fixtures/spice3f5/mixdisto.cir',
+        sha256: '9f172a78faabd09f0b4e61d733b542e48380a452a4767b83e05617ab4642894e',
+        cards: [
+          'v1 1 0  0v ac 1.0 distof1 0.001',
+          'v2 7 0 0v ac 1.0 distof1 0.001',
+        ],
+      },
+    ] as const;
+
+    const parsed = fixtures.flatMap((fixture) => {
+      const bytes = readFileSync(resolve(import.meta.dirname, fixture.path));
+      expect(createHash('sha256').update(bytes).digest('hex')).toBe(fixture.sha256);
+      const lines = bytes.toString('utf8').split(/\r?\n/);
+      return fixture.cards.map((card) => {
+        expect(lines).toContain(card);
+        const source = parse(`classic fixture source\n${card}`).compile().devices[0];
+        expect(source).toBeInstanceOf(VoltageSource);
+        return (source as VoltageSource).waveform;
+      });
+    });
+
+    expect(parsed).toEqual([
+      {
+        type: 'sin',
+        dc: 5,
+        offset: 5,
+        amplitude: 0.01,
+        frequency: 1000,
+        delay: undefined,
+        damping: undefined,
+        phase: undefined,
+        ac: { magnitude: 0.001, phase: 0 },
+        distortionF1: { magnitude: 0.01, phase: 0 },
+        distortionF2: { magnitude: 0.01, phase: 0 },
+      },
+      {
+        type: 'ac',
+        dc: 0,
+        magnitude: 1,
+        phase: 0,
+        distortionF1: { magnitude: 0.001, phase: 0 },
+      },
+      {
+        type: 'ac',
+        dc: 0,
+        magnitude: 1,
+        phase: 0,
+        distortionF1: { magnitude: 0.001, phase: 0 },
+      },
+    ]);
   });
 });
 

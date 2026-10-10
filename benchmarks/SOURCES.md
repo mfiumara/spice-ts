@@ -162,6 +162,23 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 - Scope: differential voltage output for resistor thermal noise only. Current output, current-source referral, stepped noise, temperature cards, and differential semiconductor or broader noisy-device forms remain explicitly unsupported.
 - Reproduce with `pnpm bench:differential-noise -- --output benchmarks/differential-noise/results.json`. The JSON receipt records source, revision, licence, hash, versions, machine, convergence, runtimes, matched-point and integrated max/RMS absolute and relative errors, explicit exclusions, and every retained loss.
 
+## Bounded BJT level-1 internal-resistance noise parity fixture
+
+- Fixture: `benchmarks/bjt-internal-resistance-noise/bjt-internal-resistance-noise.cir` (SHA-256 `f3166a899574399ae7351f48569c898a7c4353ed8d11951148eede4f6c8eeff4`).
+- Source: project-authored public reference circuit for [issue #243](https://github.com/mfiumara/spice-ts/issues/243), pinned by the fixture SHA-256 above.
+- Licence: MIT, under the repository [licence](../LICENSE); redistribution is allowed. No third-party netlist was copied.
+- Adaptation: none. The committed bytes are supplied identically to spice-ts and ngspice-47. The fixture adds fixed level-1 `RB=100`, `RC=10`, and `RE=10` to the existing forward-active topology and exercises their thermal noise together with collector/base shot noise and external resistance noise over a DEC sweep.
+- Reproduce with `pnpm exec tsx benchmarks/bjt-internal-resistance-noise/compare.ts`; the command records source/hash, versions, machine, convergence, runtimes, matched-point max/RMS absolute and relative errors, integrated totals, explicit exclusions, and every retained loss. The `/poteto-mode` design receipt is `benchmarks/bjt-internal-resistance-noise/POTETO.md`.
+
+## Bounded BJT level-1 flicker-noise parity fixture
+
+- Fixture: `benchmarks/bjt-flicker-noise/bjt-flicker-noise.cir` (SHA-256 `d9001973f05126c8590e28818d83655eb0ff315b3a3eecc69ee76c28296daa4a`).
+- Source: project-authored public reference circuit for [issue #248](https://github.com/mfiumara/spice-ts/issues/248), pinned by the immutable fixture hash above.
+- Licence: MIT, under the repository [licence](../LICENSE); redistribution is allowed. No third-party netlist was copied.
+- Reference equation: ngspice [`bjtnoise.c`](https://github.com/ngspice/ngspice/blob/032b1c32/src/spicelib/devices/bjt/bjtnoise.c#L126-L149), pinned revision `032b1c32`, BSD-3-Clause under ngspice's [`COPYING`](https://github.com/ngspice/ngspice/blob/032b1c32/COPYING).
+- Adaptation: none. The committed bytes are supplied identically to spice-ts and ngspice-47. The fixture exercises level-1 `KF=1e-9`, `AF=1.2` base-current flicker noise while retaining collector/base shot noise and `RB`/`RC`/`RE` plus external-resistance thermal noise over a DEC sweep. No per-engine tolerance or value changes are made.
+- Reproduce with `pnpm exec tsx benchmarks/bjt-flicker-noise/compare.ts -- --output benchmarks/bjt-flicker-noise/results.json`; the receipt reports source revision/licence/hash, versions, machine, identical inputs, matched-point max/RMS absolute and relative errors, integrated errors, runtimes, unsupported forms, and every retained loss. The `/poteto-mode` design receipt is `benchmarks/bjt-flicker-noise/POTETO.md`.
+
 ## Xyce Regression Suite corpus C
 
 - Repository: https://github.com/Xyce/Xyce_Regression
