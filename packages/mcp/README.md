@@ -7,8 +7,11 @@ A bounded stdio MCP server exposing the existing spice-ts protocol-v1 adapter. I
 - `spice_capabilities`: deterministic discovery of supported analyses, input formats, and server limits.
 - `spice_validate`: bounded parse/compile/topology validation without solving.
 - `spice_simulate`: one bounded protocol-v1 simulation.
+- `spice_simulation_start`: start a bounded simulation worker and return its opaque job cursor before solving completes.
+- `spice_simulation_read`: pull a replayable chunk containing at most 256 points by default (caller-selectable from 1 through the hard cap of 1024).
+- `spice_simulation_cancel`: idempotently stop delivery and return the protocol-v1 cancelled terminal with partial analysis counts and `partialEventSha256`.
 
-Both request tools accept `{ "request": SimulationRequestV1 }`. Successful results are returned as MCP `structuredContent` and as compact JSON text. Failures set `isError` and return `{ "error": SpiceApiErrorV1 }`; implementation backend names are removed from public errors.
+The validation, one-shot simulation, and stream-start tools accept `{ "request": SimulationRequestV1 }`. Successful results are returned as MCP `structuredContent` and as compact JSON text. Failures set `isError` and return `{ "error": SpiceApiErrorV1 }`; implementation backend names are removed from public errors.
 
 The server supports protocol-v1 `spice` and `spice-ts` inputs and `op`, `dc`, `tran`, and `ac` analyses. `circuit-json` conversion remains owned by `@spice-ts/circuit-json` and is not exposed by this slice.
 
@@ -35,7 +38,7 @@ Expected stable fields are `capabilities.protocolVersion: "1"`, validation count
 
 ## Resource and cancellation policy
 
-The default hard ceilings are:
+The default simulation ceilings are:
 
 - document: 262144 UTF-8 bytes
 - analyses: 8
@@ -43,8 +46,12 @@ The default hard ceilings are:
 - serialized result: 4194304 UTF-8 bytes
 - wall time: 10000 ms
 
-A request may specify tighter protocol limits but cannot raise these ceilings. Source directives are preflighted for analysis and point counts, and completed results are checked again before serialization. MCP cancellation is observed before and during adapter calls. A cancelled call returns `CANCELLED`; a ceiling returns `RESOURCE_LIMIT` with the limit name, maximum, and observed value where available.
+Streaming applies the same document, analysis, point, serialized-result, and wall-time ceilings. Request limits are checked before a job is retained, then result limits are checked when its worker finishes. Read chunks are point-counted rather than time- or byte-timed. The default chunk is 256 points and `maxPoints` cannot exceed 1024. Each server retains at most 16 jobs; starting a seventeenth evicts the oldest terminal job or returns `RESOURCE_LIMIT` when all retained jobs are unfinished. A cursor is job-scoped, forward-only, and replayable: once it emits a chunk, the same cursor returns the identical chunk even if a later call supplies a different `maxPoints`.
 
-The executable example proves the current packed Node stdio package, its three tools, JSON-safe results, and one deterministic point-bound recovery path. It does not prove the browser worker or WASM facade, network deployment, authentication, cancellation timing, or every resource ceiling.
+`spice_simulation_start` returns `{ jobId, status: "running", cursor }` while the isolated worker is live. Pass those identifiers to `spice_simulation_read`. A read made before points are available returns `status: "running"`, no events, and the same cursor. SPICE requests containing only transient or AC analyses forward canonical points from the live solver in internally backpressured two-point batches, before the terminal `SimulationResultV1` exists. The effective `maxResultPoints` ceiling is enforced before each live batch is retained, so an over-limit batch is not delivered and the job ends with a deterministic `RESOURCE_LIMIT` terminal. Other supported requests retain deterministic post-result chunking. Reads use `SimulationReadDataV1` directly with canonical `analysis-start`, contiguous `point`, and `analysis-end` events followed by the existing success terminal. Cancelling after a live batch terminates the worker before its terminal solve and returns `status: "cancelled"`; its partial hash covers only point events already emitted. The internal core backend name is not a public error value; successful metadata uses the protocol backend `spice-ts-js`.
+
+A request may specify tighter protocol limits but cannot raise these ceilings. Source directives are preflighted for analysis and point counts, and completed results are checked again before serialization. MCP cancellation is observed before and during adapter calls. Stream cancellation aborts the job controller, terminates its isolated worker, and keeps an idempotent partial terminal. A cancelled call returns `CANCELLED`; a ceiling returns `RESOURCE_LIMIT` with the limit name, maximum, and observed value where available.
+
+The executable example proves the current packed Node stdio package's capability, validation, and one-shot tools, JSON-safe results, and one deterministic point-bound recovery path. The packed-consumer and official-client tests additionally exercise live-worker cancellation, normal stream completion, transport backpressure, replay, hard chunk bounds, partial cancellation, malformed reads, and backend-name non-leakage. They do not prove the browser worker or WASM facade, network deployment, authentication, TTL, slow-consumer timeout policy, or every resource ceiling.
 
 The stdio process writes protocol messages only to stdout. Do not wrap it with a network listener without adding the authentication, isolation, and deployment design that this bounded package intentionally omits.

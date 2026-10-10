@@ -342,6 +342,8 @@ function formatAnalysis(analysis: AnalysisDirective): string {
       return `.ac ${analysis.variation} ${analysis.points} ${analysis.startFreq} ${analysis.stopFreq}`;
     case 'noise':
       return `.noise v(${analysis.outputNode}) ${analysis.inputSource} lin ${analysis.points} ${analysis.startFreq} ${analysis.stopFreq}`;
+    case 'disto':
+      throw new InvalidCircuitError('ngspice-wasm does not support .disto result mapping');
     case 'tf':
       return `.tf v(${analysis.outputNode}) ${analysis.inputSource}`;
     case 'sens':

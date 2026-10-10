@@ -21,11 +21,12 @@ export { preprocess } from './parser/preprocessor.js';
 export { Circuit } from './circuit.js';
 export type { CompiledCircuit } from './circuit.js';
 export {
-  DCResult, TransientResult, ACResult, DCSweepResult, NoiseResult, TransferFunctionResult,
-  PoleZeroResult, SensitivityResult,
+  DCResult, TransientResult, ACResult, DCSweepResult, NoiseResult, DistortionResult,
+  TransferFunctionResult, PoleZeroResult, SensitivityResult,
 } from './results.js';
 export type {
   SimulationResult, StepResult, PoleZeroValue, SensitivityEntry, ComplexSensitivityValue,
+  ComplexDistortionValue, DistortionOrder,
 } from './results.js';
 export type {
   SimulationOptions,
@@ -33,6 +34,8 @@ export type {
   TransientStep,
   ACPoint,
   NoiseAnalysis,
+  DistortionAnalysis,
+  DistortionExcitation,
   TransferFunctionAnalysis,
   PoleZeroAnalysis,
   SensitivityAnalysis,

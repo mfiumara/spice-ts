@@ -116,42 +116,59 @@ function formatModel(model: ModelParams): string {
 
 function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string {
   if (!wf) return 'DC 0';
-  if (!wf.type) return wf.dc !== undefined ? `DC ${formatNumber(wf.dc)}` : 'DC 0';
-
-  switch (wf.type) {
-    case 'dc':
-      return `DC ${formatNumber(wf.value ?? 0)}`;
-    case 'ac': {
-      const ac = `AC ${formatNumber(wf.magnitude ?? 1)} ${formatNumber(wf.phase ?? 0)}`;
-      return wf.dc !== undefined ? `DC ${formatNumber(wf.dc)} ${ac}` : ac;
+  let base: string;
+  if (!wf.type) {
+    base = wf.dc !== undefined ? `DC ${formatNumber(wf.dc)}` : 'DC 0';
+  } else {
+    switch (wf.type) {
+      case 'dc':
+        base = `DC ${formatNumber(wf.value ?? 0)}`;
+        break;
+      case 'ac': {
+        const ac = `AC ${formatNumber(wf.magnitude ?? 1)} ${formatNumber(wf.phase ?? 0)}`;
+        base = wf.dc !== undefined ? `DC ${formatNumber(wf.dc)} ${ac}` : ac;
+        break;
+      }
+      case 'pulse':
+        base = `PULSE(${[
+          wf.v1 ?? 0,
+          wf.v2 ?? 0,
+          wf.delay ?? 0,
+          wf.rise ?? 1e-12,
+          wf.fall ?? 1e-12,
+          wf.width ?? Infinity,
+          wf.period ?? Infinity,
+        ].map(formatNumber).join(' ')})`;
+        break;
+      case 'sin':
+        base = `SIN(${[
+          wf.offset ?? 0,
+          wf.amplitude ?? 0,
+          wf.frequency ?? 0,
+          wf.delay,
+          wf.damping,
+          wf.phase,
+        ].filter(v => v !== undefined).map(v => formatNumber(v as number)).join(' ')})`;
+        break;
+      case 'pwl':
+        base = `PWL(${(wf.points ?? [])
+          .flatMap(point => [point.time, point.value])
+          .map(formatNumber)
+          .join(' ')})`;
+        break;
+      default:
+        base = 'DC 0';
     }
-    case 'pulse':
-      return `PULSE(${[
-        wf.v1 ?? 0,
-        wf.v2 ?? 0,
-        wf.delay ?? 0,
-        wf.rise ?? 1e-12,
-        wf.fall ?? 1e-12,
-        wf.width ?? Infinity,
-        wf.period ?? Infinity,
-      ].map(formatNumber).join(' ')})`;
-    case 'sin':
-      return `SIN(${[
-        wf.offset ?? 0,
-        wf.amplitude ?? 0,
-        wf.frequency ?? 0,
-        wf.delay,
-        wf.damping,
-        wf.phase,
-      ].filter(v => v !== undefined).map(v => formatNumber(v as number)).join(' ')})`;
-    case 'pwl':
-      return `PWL(${(wf.points ?? [])
-        .flatMap(point => [point.time, point.value])
-        .map(formatNumber)
-        .join(' ')})`;
-    default:
-      return 'DC 0';
   }
+  const distortion = [
+    wf.distortionF1
+      ? `DISTOF1 ${formatNumber(wf.distortionF1.magnitude)} ${formatNumber(wf.distortionF1.phase)}`
+      : '',
+    wf.distortionF2
+      ? `DISTOF2 ${formatNumber(wf.distortionF2.magnitude)} ${formatNumber(wf.distortionF2.phase)}`
+      : '',
+  ].filter(Boolean).join(' ');
+  return distortion ? `${base} ${distortion}` : base;
 }
 
 function formatDevice(desc: DeviceDescriptor): string {
@@ -213,6 +230,8 @@ function formatAnalysis(analysis: AnalysisDirective | PoleZeroAnalysis): string 
       return `.ac ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
     case 'noise':
       return `.noise v(${analysis.outputNode}) ${analysis.inputSource} ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
+    case 'disto':
+      return `.disto dec ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
     case 'tf':
       return `.tf v(${analysis.outputNode}) ${analysis.inputSource}`;
     case 'pz':
@@ -671,6 +690,7 @@ export class Circuit {
   addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; useInitialConditions?: boolean }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'noise', params: { outputNode: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
+  addAnalysis(type: 'disto', params: { variation: 'dec'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'tf', params: { outputNode: string; inputSource: string }): void;
   addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur'; mode: 'pol' | 'pz' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'dc' }): void;
@@ -719,6 +739,28 @@ export class Circuit {
           outputNode: params!.outputNode as string,
           inputSource: params!.inputSource as string,
           variation: params!.variation as 'dec' | 'oct' | 'lin',
+          points: params!.points as number,
+          startFreq: params!.startFreq as number,
+          stopFreq: params!.stopFreq as number,
+        });
+        break;
+      case 'disto':
+        if (this._steps.length > 0) {
+          throw new InvalidCircuitError('.step cannot be combined with .disto');
+        }
+        if (this._analyses.some(existing => existing.type === 'disto')) {
+          throw new InvalidCircuitError('Multiple .disto analyses are not supported');
+        }
+        if (params!.variation !== 'dec'
+            || !Number.isInteger(params!.points) || (params!.points as number) < 1
+            || !Number.isFinite(params!.startFreq) || (params!.startFreq as number) <= 0
+            || !Number.isFinite(params!.stopFreq)
+            || (params!.stopFreq as number) < (params!.startFreq as number)) {
+          throw new InvalidCircuitError('Invalid .disto dec sweep');
+        }
+        this._analyses.push({
+          type: 'disto',
+          variation: 'dec',
           points: params!.points as number,
           startFreq: params!.startFreq as number,
           stopFreq: params!.stopFreq as number,
@@ -798,6 +840,9 @@ export class Circuit {
     }
     if (this._analyses.some(analysis => analysis.type === 'noise')) {
       throw new InvalidCircuitError('.step cannot be combined with .noise');
+    }
+    if (this._analyses.some(analysis => analysis.type === 'disto')) {
+      throw new InvalidCircuitError('.step cannot be combined with .disto');
     }
     if (opts.values) {
       this._steps.push({ type: 'step', param, sweepMode: 'list', values: opts.values });
@@ -932,11 +977,17 @@ export class Circuit {
           dc: wf.dc ?? 0,
           magnitude: wf.magnitude ?? 1,
           phase: wf.phase ?? 0,
+          ...(wf.distortionF1 ? { distortionF1: { ...wf.distortionF1 } } : {}),
+          ...(wf.distortionF2 ? { distortionF2: { ...wf.distortionF2 } } : {}),
         };
       }
       if (wf.type) return wf as SourceWaveform;
-      if (wf.dc !== undefined) return { type: 'dc', value: wf.dc };
-      return { type: 'dc', value: 0 };
+      const distortion = {
+        ...(wf.distortionF1 ? { distortionF1: { ...wf.distortionF1 } } : {}),
+        ...(wf.distortionF2 ? { distortionF2: { ...wf.distortionF2 } } : {}),
+      };
+      if (wf.dc !== undefined) return { type: 'dc', value: wf.dc, ...distortion };
+      return { type: 'dc', value: 0, ...distortion };
     };
 
     const devices: DeviceModel[] = [];
