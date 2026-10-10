@@ -67,10 +67,13 @@ R1 in 0 1k
 
   it.each([
     '.options unsupported_option=1\n.op',
+    '.options unsupported_flag\n.op',
     '.options method=euler\n.op',
     '.options reltol=not-a-number\n.op',
     '.options reltol=-1m\n.op',
     '.options itl1=1.5\n.op',
+    '.options limpts=1.5\n.op',
+    '.options itl5=-1\n.op',
   ])('rejects unsupported or invalid option semantics: %s', netlist => {
     expect(() => parse(netlist)).toThrow();
   });
