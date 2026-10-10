@@ -478,6 +478,17 @@ describe('bounded numeric WebAssembly backend', () => {
         error: { code: 'RESOURCE_LIMIT', details: { limit: 'maxComponents', configured: 1, observed: 2 } },
       });
 
+      const vccsLimited = await wasm.simulate(request([
+        'VCTRL control 0 1',
+        'G1 out 0 control 0 1m',
+        'R1 out 0 1k',
+        '.op',
+      ].join('\n'), { limits: { maxComponents: 2 } }), { requestId: 'vccs-component-limit' });
+      expect(vccsLimited).toMatchObject({
+        ok: false,
+        error: { code: 'RESOURCE_LIMIT', details: { limit: 'maxComponents', configured: 2, observed: 3 } },
+      });
+
       const oversized = Array.from({ length: 65 }, (_, index) => `V${index + 1} n${index + 1} 0 ${index + 1}`).join('\n') + '\n.op';
       const bounded = await wasm.simulate(request(oversized), { requestId: 'order-limit' });
       expect(bounded).toMatchObject({
