@@ -43,7 +43,7 @@ import {
   type ResolvedCapacitorModel,
   type ResolvedInductorModel,
 } from './devices/passive-model.js';
-import { CycleError, InvalidCircuitError } from './errors.js';
+import { CycleError, InvalidCircuitError, ParseError } from './errors.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
 /**
@@ -240,7 +240,7 @@ function formatAnalysis(analysis: AnalysisDirective | PoleZeroAnalysis): string 
     case 'ac':
       return `.ac ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
     case 'noise':
-      return `.noise v(${analysis.outputNode}${analysis.outputReferenceNode === undefined ? '' : `,${analysis.outputReferenceNode}`}) ${analysis.inputSource} ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
+      return `.noise v(${analysis.outputNode}${analysis.outputReferenceNode === undefined ? '' : `,${analysis.outputReferenceNode}`}) ${analysis.inputSource} ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}${analysis.pointsPerSummary === undefined ? '' : ` ${analysis.pointsPerSummary}`}`;
     case 'disto':
       return `.disto dec ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}${analysis.f2OverF1 === undefined ? '' : ` ${formatNumber(analysis.f2OverF1)}`}`;
     case 'tf':
@@ -731,7 +731,7 @@ export class Circuit {
   addAnalysis(type: 'dc', params: { source: string; start: number; stop: number; step: number }): void;
   addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; useInitialConditions?: boolean }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
-  addAnalysis(type: 'noise', params: { outputNode: string; outputReferenceNode?: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
+  addAnalysis(type: 'noise', params: { outputNode: string; outputReferenceNode?: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number; pointsPerSummary?: number }): void;
   addAnalysis(type: 'disto', params: { variation: 'dec'; points: number; startFreq: number; stopFreq: number; f2OverF1?: number }): void;
   addAnalysis(type: 'tf', params:
     | { outputNode: string; inputSource: string }
@@ -778,6 +778,13 @@ export class Circuit {
         if (this._steps.length > 0) {
           throw new InvalidCircuitError('.step cannot be combined with .noise');
         }
+        if (params!.pointsPerSummary !== undefined
+            && (!Number.isInteger(params!.pointsPerSummary)
+              || (params!.pointsPerSummary as number) < 1)) {
+          throw new InvalidCircuitError(
+            'Invalid .noise points_per_summary; expected a positive integer',
+          );
+        }
         this._analyses.push({
           type: 'noise',
           outputNode: params!.outputNode as string,
@@ -789,6 +796,9 @@ export class Circuit {
           points: params!.points as number,
           startFreq: params!.startFreq as number,
           stopFreq: params!.stopFreq as number,
+          ...(params!.pointsPerSummary === undefined
+            ? {}
+            : { pointsPerSummary: params!.pointsPerSummary as number }),
         });
         break;
       case 'disto':
@@ -1621,7 +1631,7 @@ export class Circuit {
     // Tokenize body lines
     const parsedLines = tokenizeNetlist(def.body.join('\n'));
 
-    for (const { tokens } of parsedLines) {
+    for (const { tokens, lineNumber, raw } of parsedLines) {
       guard?.checkpoint('compile:device');
       if (tokens.length === 0) continue;
       const first = tokens[0].toUpperCase();
@@ -1843,7 +1853,8 @@ export class Circuit {
           result.push(...nested);
           break;
         }
-        // Skip unknown device types inside subcircuits silently
+        default:
+          throw new ParseError(`Unsupported device card: '${devType}'`, lineNumber, raw);
       }
       guard?.maximum('maxComponents', result.length, 'compile');
     }

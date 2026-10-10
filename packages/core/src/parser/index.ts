@@ -283,27 +283,38 @@ function parseDotCommand(
       break;
     }
     case '.NOISE': {
-      const isDifferential = tokens.length === 11;
+      const isDifferential = tokens[5] === ')';
       const sourceIndex = isDifferential ? 6 : 5;
       const variationIndex = sourceIndex + 1;
       const variation = tokens[variationIndex]?.toLowerCase();
-      const isSupportedVoltageForm = (tokens.length === 10 || isDifferential)
+      const baseTokenCount = variationIndex + 4;
+      const isSupportedVoltageForm = (tokens.length === baseTokenCount || tokens.length === baseTokenCount + 1)
         && tokens[1].toUpperCase() === 'V'
         && tokens[2] === '('
         && tokens[isDifferential ? 5 : 4] === ')'
         && (variation === 'lin' || variation === 'dec' || variation === 'oct');
       if (!isSupportedVoltageForm) {
         throw new ParseError(
-          "Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop'",
+          "Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop [points_per_summary]'",
           lineNumber, tokens.join(' '),
         );
       }
       const points = parseInt(tokens[variationIndex + 1], 10);
       const startFreq = parseNumber(tokens[variationIndex + 2]);
       const stopFreq = parseNumber(tokens[variationIndex + 3]);
+      const pointsPerSummary = tokens[variationIndex + 4] === undefined
+        ? undefined
+        : parseNumber(tokens[variationIndex + 4]);
       const minimumPoints = variation === 'lin' ? 2 : 1;
       if (!Number.isInteger(points) || points < minimumPoints || startFreq <= 0 || stopFreq < startFreq) {
         throw new ParseError(`Invalid .noise ${variation} sweep`, lineNumber, tokens.join(' '));
+      }
+      if (pointsPerSummary !== undefined
+          && (!Number.isInteger(pointsPerSummary) || pointsPerSummary < 1)) {
+        throw new ParseError(
+          'Invalid .noise points_per_summary; expected a positive integer',
+          lineNumber, tokens.join(' '),
+        );
       }
       circuit.addAnalysis('noise', {
         outputNode: tokens[3],
@@ -313,6 +324,7 @@ function parseDotCommand(
         points,
         startFreq,
         stopFreq,
+        ...(pointsPerSummary === undefined ? {} : { pointsPerSummary }),
       });
       break;
     }

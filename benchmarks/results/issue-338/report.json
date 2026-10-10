@@ -1,0 +1,184 @@
+{
+  "schemaVersion": "spice-ts-issue-338/v1",
+  "issueUrl": "https://github.com/mfiumara/spice-ts/issues/338",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1"
+  },
+  "commands": {
+    "generate": "pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-338/verify.ts --output benchmarks/results/issue-338/report.json",
+    "verify": "pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-338/verify.ts --check",
+    "ngspice": "ngspice -b -r <temporary-rawfile> <byte-identical-fixture>",
+    "spiceTs": "@spice-ts/core simulate(<byte-identical-fixture>)"
+  },
+  "policy": {
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "engineInput": "the same immutable fixture Buffer",
+    "timing": "single wall-clock execution per engine and fixture; descriptive, not a speed claim"
+  },
+  "rootCause": "Subcircuit expansion silently discarded unknown device cards, leaving unstamped nodes that reached sparse LU as zero pivots.",
+  "outcome": "The shared singular-matrix symptom is removed by rejecting unsupported subcircuit cards before solve. No device model is approximated and both fixtures remain explicit losses.",
+  "fixtures": [
+    {
+      "id": "hfet-inverter",
+      "input": {
+        "bytes": 613,
+        "sha256": "3fa93266e9036443173bf9416eb67e8ff4c2c24aeefc6ef687f355d8548239e1",
+        "identicalForBothEngines": true
+      },
+      "beforeSpiceTs": {
+        "status": "failed",
+        "convergence": "failed",
+        "runtimeMs": 2.9253330000000233,
+        "error": "Singular matrix: zero pivot at matrix column 2 (nodes: 3)",
+        "observation": "Single RED wall-clock execution through packages/core/src on this machine."
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 25.965666999999996,
+        "analyses": [
+          {
+            "type": "tran",
+            "points": 324,
+            "signals": [
+              "i(vdd)",
+              "i(vin)",
+              "v(1)",
+              "v(2)",
+              "v(3)",
+              "v(4)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "runtimeMs": 75.76870800000003,
+        "analyses": [],
+        "error": "Parse error at line 1: Unsupported device card: 'Z' z1 1 3 3 aload l=1u w=10u"
+      },
+      "comparisons": [],
+      "errorMetrics": {
+        "maximumAbsoluteError": null,
+        "rmsAbsoluteError": null,
+        "maximumRelativeError": null,
+        "rmsRelativeError": null,
+        "reason": "spice-ts produced no analysis points because required device semantics remain unsupported"
+      },
+      "residualIssue": "https://github.com/mfiumara/spice-ts/issues/339",
+      "losses": [
+        "Z-card HFET/MESFET device semantics are not implemented.",
+        "NHFET level=5 model semantics are not implemented."
+      ]
+    },
+    {
+      "id": "mesa-oscillator",
+      "input": {
+        "bytes": 771,
+        "sha256": "3cd4609cca7874775b7b2cac8cd0124bd2b8c5512064a0550a29de2da4896bcf",
+        "identicalForBothEngines": true
+      },
+      "beforeSpiceTs": {
+        "status": "failed",
+        "convergence": "failed",
+        "runtimeMs": 1.9506660000000124,
+        "error": "Singular matrix: zero pivot at matrix column 14 (nodes: xinv01.2)",
+        "observation": "Single RED wall-clock execution through packages/core/src on this machine."
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 32.195042,
+        "analyses": [
+          {
+            "type": "tran",
+            "points": 201,
+            "signals": [
+              "i(vdd)",
+              "i(vnoise)",
+              "v(1)",
+              "v(10)",
+              "v(11)",
+              "v(12)",
+              "v(2)",
+              "v(2000)",
+              "v(3)",
+              "v(4)",
+              "v(5)",
+              "v(6)",
+              "v(7)",
+              "v(8)",
+              "v(9)",
+              "v(xinv01.1)",
+              "v(xinv01.2)",
+              "v(xinv02.1)",
+              "v(xinv02.2)",
+              "v(xinv03.1)",
+              "v(xinv03.2)",
+              "v(xinv04.1)",
+              "v(xinv04.2)",
+              "v(xinv05.1)",
+              "v(xinv05.2)",
+              "v(xinv06.1)",
+              "v(xinv06.2)",
+              "v(xinv07.1)",
+              "v(xinv07.2)",
+              "v(xinv08.1)",
+              "v(xinv08.2)",
+              "v(xinv09.1)",
+              "v(xinv09.2)",
+              "v(xinv10.1)",
+              "v(xinv10.2)",
+              "v(xinv11.1)",
+              "v(xinv11.2)"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "convergence": "not-run",
+        "runtimeMs": 29.419791999999973,
+        "analyses": [],
+        "error": "Parse error at line 2: Unsupported device card: 'B' bl1 1 2 i=0.00025*tanh(v(1,2)/0.00025/2240)*(1+v(1,2)*0.027)"
+      },
+      "comparisons": [],
+      "errorMetrics": {
+        "maximumAbsoluteError": null,
+        "rmsAbsoluteError": null,
+        "maximumRelativeError": null,
+        "rmsRelativeError": null,
+        "reason": "spice-ts produced no analysis points because required device semantics remain unsupported"
+      },
+      "residualIssue": "https://github.com/mfiumara/spice-ts/issues/340",
+      "losses": [
+        "B-card behavioral current-source semantics are not implemented.",
+        "Z-card HFET/MESFET device semantics are not implemented.",
+        "NMF level=2 model semantics are not implemented."
+      ]
+    }
+  ],
+  "remainingLosses": [
+    {
+      "id": "hfet-inverter",
+      "residualIssue": "https://github.com/mfiumara/spice-ts/issues/339",
+      "losses": [
+        "Z-card HFET/MESFET device semantics are not implemented.",
+        "NHFET level=5 model semantics are not implemented."
+      ]
+    },
+    {
+      "id": "mesa-oscillator",
+      "residualIssue": "https://github.com/mfiumara/spice-ts/issues/340",
+      "losses": [
+        "B-card behavioral current-source semantics are not implemented.",
+        "Z-card HFET/MESFET device semantics are not implemented.",
+        "NMF level=2 model semantics are not implemented."
+      ]
+    }
+  ]
+}
