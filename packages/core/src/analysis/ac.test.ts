@@ -13,6 +13,52 @@ describe('AC Small-Signal Analysis', () => {
     expect(result.ac!.voltage('out')[0].magnitude).toBeCloseTo(1, 9);
   });
 
+  it('preserves current-source orientation between two non-ground nodes', async () => {
+    const result = await simulate(`
+      I1 positive negative AC 1 0
+      R1 positive 0 1
+      R2 negative 0 1
+      .ac lin 1 1 1
+      .end
+    `);
+
+    const positive = result.ac!.voltage('positive')[0];
+    const negative = result.ac!.voltage('negative')[0];
+    expect(positive.magnitude).toBeCloseTo(1, 9);
+    expect(Math.abs(positive.phase)).toBeCloseTo(180, 9);
+    expect(negative.magnitude).toBeCloseTo(1, 9);
+    expect(negative.phase).toBeCloseTo(0, 9);
+  });
+
+  it('superposes multiple phased current sources', async () => {
+    const result = await simulate(`
+      I1 out 0 AC 2 30
+      I2 0 out AC 1 -30
+      R1 out 0 1
+      .ac lin 1 1 1
+      .end
+    `);
+
+    const output = result.ac!.voltage('out')[0];
+    expect(output.magnitude).toBeCloseTo(Math.sqrt(3), 9);
+    expect(output.phase).toBeCloseTo(-120, 9);
+  });
+
+  it('superposes voltage and phased current excitations', async () => {
+    const result = await simulate(`
+      V1 source 0 AC 1 0
+      R1 source out 1
+      I1 out 0 AC 1 90
+      R2 out 0 1
+      .ac lin 1 1 1
+      .end
+    `);
+
+    const output = result.ac!.voltage('out')[0];
+    expect(output.magnitude).toBeCloseTo(1 / Math.sqrt(2), 9);
+    expect(output.phase).toBeCloseTo(-45, 9);
+  });
+
   it('RC lowpass filter has correct -3dB frequency', async () => {
     const result = await simulate(`
       V1 1 0 AC 1 0

@@ -8,6 +8,7 @@
     "bench": "pnpm -C packages/core bench",
     "bench:scaling": "cd packages/core && pnpm build && cd ../.. && tsx benchmarks/performance/scaling.ts",
     "bench:accuracy": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/accuracy.ts",
+    "bench:current-source-ac": "pnpm -C packages/core build && tsx benchmarks/current-source-ac/compare.ts",
     "bench:current-source-polarity": "pnpm -C packages/core build && tsx benchmarks/current-source-polarity/compare.ts",
     "bench:compare": "cd packages/core && pnpm build && cd ../.. && npx tsx benchmarks/comparison.ts",
     "bench:compare:v2": "pnpm -C packages/core build && tsx benchmarks/comparison-harness.ts",

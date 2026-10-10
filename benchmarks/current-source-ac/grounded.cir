@@ -1,0 +1,5 @@
+Independent current-source AC grounded orientation
+I1 out 0 AC 1 0
+R1 out 0 1
+.ac dec 5 10 100k
+.end
