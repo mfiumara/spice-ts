@@ -1,0 +1,187 @@
+{
+  "referenceSimulator": "ngspice-47",
+  "repetitions": 5,
+  "method": "Committed netlist bytes are passed unchanged to spice-ts; ngspice receives only appended batch output-control commands.",
+  "comparisons": [
+    {
+      "fixture": "benchmarks/diode-noise/diode-noise-lin.cir",
+      "sweep": "LIN",
+      "identicalNetlistSha256": "6fe326541a8d875436354ebf997c865fb8a15cc113733d36119963a5a2e817f5",
+      "points": {
+        "spiceTs": 5,
+        "ngspice": 5
+      },
+      "errors": {
+        "frequencyHz": {
+          "status": "matched",
+          "maxAbsolute": 0,
+          "rmsAbsolute": 0,
+          "maxRelative": 0,
+          "rmsRelative": 0
+        },
+        "outputDensityVPerSqrtHz": {
+          "status": "matched",
+          "maxAbsolute": 1.175138019429566e-9,
+          "rmsAbsolute": 7.941245808338253e-10,
+          "maxRelative": 0.0009356417269510235,
+          "rmsRelative": 0.0009356416862033864
+        },
+        "inputDensityVPerSqrtHz": {
+          "status": "matched",
+          "maxAbsolute": 8.785736751345917e-9,
+          "rmsAbsolute": 5.937148528759199e-9,
+          "maxRelative": 0.0004564031710174417,
+          "rmsRelative": 0.0004564031302128998
+        },
+        "integratedOutputV": {
+          "spiceTs": 0.000015918789155770556,
+          "ngspice": 0.00001593369738709419,
+          "absolute": 1.4908231323634727e-8,
+          "relative": 0.0009356416757173975
+        },
+        "integratedInputV": {
+          "spiceTs": 0.00024432332652537506,
+          "ngspice": 0.000244211867462066,
+          "absolute": 1.1145906330908058e-7,
+          "relative": 0.0004564031407130278
+        }
+      },
+      "runtimeDiagnosticsMs": {
+        "spiceTsPublicApi": {
+          "samples": [
+            3.3687499999999773,
+            0.868583000000001,
+            0.6263340000000142,
+            0.2976250000000107,
+            0.3198329999999885
+          ],
+          "median": 0.6263340000000142
+        },
+        "ngspiceFreshCliWall": 11.574124999999981
+      }
+    },
+    {
+      "fixture": "benchmarks/diode-noise/diode-noise-dec.cir",
+      "sweep": "DEC",
+      "identicalNetlistSha256": "969dd046751128f3e42289855e7343ce81a78db4965aea302204c2271c177081",
+      "points": {
+        "spiceTs": 7,
+        "ngspice": 7
+      },
+      "errors": {
+        "frequencyHz": {
+          "status": "matched",
+          "maxAbsolute": 9.094947017729282e-13,
+          "rmsAbsolute": 3.850815745723822e-13,
+          "maxRelative": 2.1107502259896036e-16,
+          "rmsRelative": 1.2836786165557234e-16
+        },
+        "outputDensityVPerSqrtHz": {
+          "status": "matched",
+          "maxAbsolute": 1.175138019429566e-9,
+          "rmsAbsolute": 6.053573652626149e-10,
+          "maxRelative": 0.0009356436623966881,
+          "rmsRelative": 0.0009356421657224491
+        },
+        "inputDensityVPerSqrtHz": {
+          "status": "matched",
+          "maxAbsolute": 8.785736751345917e-9,
+          "rmsAbsolute": 4.525859418180357e-9,
+          "maxRelative": 0.0004564031710174417,
+          "rmsRelative": 0.000456402650026694
+        },
+        "integratedOutputV": {
+          "spiceTs": 0.000026927576377048236,
+          "ngspice": 0.00002695279454534208,
+          "absolute": 2.521816829384254e-8,
+          "relative": 0.0009356420630676564
+        },
+        "integratedInputV": {
+          "spiceTs": 0.0004132874034154564,
+          "ngspice": 0.0004130988639567582,
+          "absolute": 1.8853945869817682e-7,
+          "relative": 0.0004564027528236255
+        }
+      },
+      "runtimeDiagnosticsMs": {
+        "spiceTsPublicApi": {
+          "samples": [
+            0.5297920000000147,
+            0.2741669999999772,
+            0.7072079999999801,
+            0.5568330000000117,
+            0.304458000000011
+          ],
+          "median": 0.5297920000000147
+        },
+        "ngspiceFreshCliWall": 11.507334000000014
+      }
+    },
+    {
+      "fixture": "benchmarks/diode-noise/diode-noise-oct.cir",
+      "sweep": "OCT",
+      "identicalNetlistSha256": "7e559708388bb98d16022b0e38629e33e23ed749be25e9f569645320374ab27c",
+      "points": {
+        "spiceTs": 10,
+        "ngspice": 10
+      },
+      "errors": {
+        "frequencyHz": {
+          "status": "matched",
+          "maxAbsolute": 5.684341886080802e-14,
+          "rmsAbsolute": 2.8774787681579403e-14,
+          "maxRelative": 1.790455499268082e-16,
+          "rmsRelative": 1.0113380856982797e-16
+        },
+        "outputDensityVPerSqrtHz": {
+          "status": "matched",
+          "maxAbsolute": 1.175138019429566e-9,
+          "rmsAbsolute": 7.765172200449098e-10,
+          "maxRelative": 0.0009356417880722685,
+          "rmsRelative": 0.0009356416962502339
+        },
+        "inputDensityVPerSqrtHz": {
+          "status": "matched",
+          "maxAbsolute": 8.785736751345917e-9,
+          "rmsAbsolute": 5.805509804172956e-9,
+          "maxRelative": 0.0004564031710174417,
+          "rmsRelative": 0.0004564031201520939
+        },
+        "integratedOutputV": {
+          "spiceTs": 0.000018094489903022307,
+          "ngspice": 0.00001811143571741168,
+          "absolute": 1.694581438937444e-8,
+          "relative": 0.0009356416936666896
+        },
+        "integratedInputV": {
+          "spiceTs": 0.00027771622085236613,
+          "ngspice": 0.00027758952812489,
+          "absolute": 1.266927274761083e-7,
+          "relative": 0.0004564031227399475
+        }
+      },
+      "runtimeDiagnosticsMs": {
+        "spiceTsPublicApi": {
+          "samples": [
+            0.4029999999999916,
+            0.28708299999999554,
+            0.24320800000000986,
+            0.2380420000000072,
+            0.25099999999997635
+          ],
+          "median": 0.25099999999997635
+        },
+        "ngspiceFreshCliWall": 11.595208000000014
+      }
+    }
+  ],
+  "failures": [],
+  "unsupported": [
+    "BJT and MOSFET device noise",
+    "unexpanded diode series-resistance noise",
+    "temperature-card and per-instance diode temperature noise",
+    "stepped noise analysis",
+    "differential and current noise outputs",
+    "current-source input referral"
+  ]
+}
