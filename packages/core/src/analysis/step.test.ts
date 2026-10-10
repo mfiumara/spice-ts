@@ -2,8 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { Resistor } from '../devices/resistor.js';
 import { Capacitor } from '../devices/capacitor.js';
 import { Inductor } from '../devices/inductor.js';
-import { generateStepValues } from './step.js';
+import { generateStepValues, solveStep } from './step.js';
 import type { StepAnalysis } from '../types.js';
+import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 describe('Device parameter setters', () => {
   it('Resistor set/get parameter', () => {
@@ -280,6 +281,37 @@ import { simulate, simulateStepStream } from '../simulate.js';
 import type { StepStreamEvent } from '../types.js';
 
 describe('.step + .op integration', () => {
+  it('executes a case-insensitive TEMP LIST sweep with stable metadata', async () => {
+    const result = await simulate(`
+      V1 in 0 DC 1
+      R1 in 0 1k
+      .op
+      .step temp LIST -55 25 72
+    `, { stepWorkers: false });
+
+    expect(result.steps!.map(step => [step.paramName, step.paramValue])).toEqual([
+      ['TEMP', -55],
+      ['TEMP', 25],
+      ['TEMP', 72],
+    ]);
+  });
+
+  it('applies TEMP LIST values to a resistor temperature coefficient', async () => {
+    const result = await simulate(`
+      V1 in 0 DC 10
+      R1 in out 1k TC1=0.001
+      R2 out 0 1k
+      .op
+      .step TEMP LIST -55 25 72
+    `, { stepWorkers: false });
+
+    expect(result.steps!.map(step => step.dc!.voltage('out'))).toEqual([
+      expect.closeTo(5.213764337851929, 10),
+      expect.closeTo(5.005005005005005, 10),
+      expect.closeTo(4.88997555012225, 10),
+    ]);
+  });
+
   it('sweeps resistor in voltage divider', async () => {
     const result = await simulate(`
       V1 1 0 DC 10
@@ -390,6 +422,31 @@ describe('.step + .tran integration', () => {
 });
 
 describe('.step streaming', () => {
+  it('streams case-insensitive TEMP LIST metadata and resistor behavior', async () => {
+    const events: StepStreamEvent[] = [];
+    for await (const event of simulateStepStream(`
+      V1 in 0 AC 10
+      R1 in out 1k TC1=0.001
+      R2 out 0 1k
+      .ac lin 1 1k 1k
+      .step temp LIST -55 25 72
+    `)) {
+      events.push(event);
+    }
+
+    expect(events.map(event => event.paramName)).toEqual(events.map(() => 'TEMP'));
+    expect([...new Set(events.map(event => event.paramValue))]).toEqual([-55, 25, 72]);
+    const firstByStep = [0, 1, 2].map(index =>
+      events.find(event => event.stepIndex === index)!.point);
+    expect(firstByStep.map(point => 'frequency' in point
+      ? point.voltages.get('out')!.magnitude
+      : NaN)).toEqual([
+      expect.closeTo(5.213764337851929, 10),
+      expect.closeTo(5.005005005005005, 10),
+      expect.closeTo(4.88997555012225, 10),
+    ]);
+  });
+
   it('streams step events for .ac', async () => {
     const events: StepStreamEvent[] = [];
     for await (const event of simulateStepStream(`
@@ -521,6 +578,56 @@ describe('.step + .dc integration', () => {
 });
 
 describe('.step error handling', () => {
+  it.each(['success', 'failure'] as const)(
+    'restores the effective resistor state after %s',
+    (outcome) => {
+      const compiled = parse(`
+        V1 in 0 DC 1
+        R1 in 0 1k TC1=0.001 TNOM=25
+        .op
+        .step TEMP LIST -55
+      `).compile();
+      const resistor = compiled.devices.find(device => device.name === 'R1')!;
+      expect((resistor as Resistor).resistance).toBeCloseTo(1002);
+      const guard = outcome === 'failure'
+        ? { checkpoint: () => { throw new Error('forced solve failure'); } } as unknown as ProtocolExecutionGuard
+        : undefined;
+
+      if (outcome === 'failure') {
+        expect(() => solveStep(compiled, compiled.steps[0], undefined, [], undefined, guard))
+          .toThrow('forced solve failure');
+      } else {
+        solveStep(compiled, compiled.steps[0], undefined, []);
+      }
+
+      expect(resistor.getTemperature!()).toBe(27);
+      expect(resistor.getParameter!()).toBe(1000);
+      expect((resistor as Resistor).resistance).toBeCloseTo(1002);
+    },
+  );
+
+  it('rejects an empty TEMP LIST explicitly', () => {
+    expect(() => parse(`
+      V1 in 0 DC 1
+      R1 in 0 1k
+      .op
+      .step TEMP LIST
+    `)).toThrow('.step TEMP LIST requires at least one value');
+  });
+
+  it.each([
+    '.step TEMP -55 72 1',
+    '.step DEC TEMP 1 100 10',
+    '.step OCT TEMP 1 8 1',
+  ])('rejects unsupported TEMP mode explicitly: %s', async (directive) => {
+    await expect(simulate(`
+      V1 in 0 DC 1
+      R1 in 0 1k
+      .op
+      ${directive}
+    `, { stepWorkers: false })).rejects.toThrow('.step TEMP supports LIST mode only');
+  });
+
   it('throws on unknown device name', async () => {
     await expect(simulate(`
       V1 1 0 DC 5

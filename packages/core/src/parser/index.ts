@@ -485,6 +485,13 @@ function parseDotCommand(
         for (; idx < tokens.length; idx++) {
           values.push(parseNumber(tokens[idx]));
         }
+        if (paramName.toUpperCase() === 'TEMP' && values.length === 0) {
+          throw new ParseError(
+            '.step TEMP LIST requires at least one value',
+            lineNumber,
+            context,
+          );
+        }
         circuit.addStep(paramName, { values });
       } else {
         const start = parseNumber(tokens[idx++]);
@@ -724,14 +731,18 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
 
   switch (type) {
     case 'R': {
-      if (tokens.length > 4) {
+      const params = parseInstanceParams(tokens, 4);
+      const unsupported = Object.keys(params).filter(
+        parameter => !['TC1', 'TC2', 'TNOM'].includes(parameter),
+      );
+      if (unsupported.length > 0) {
         throw new ParseError(
-          `Unsupported resistor parameters: '${tokens.slice(4).join(' ')}'`,
+          `Unsupported resistor parameters: '${unsupported.join(' ')}'`,
           lineNumber, tokens.join(' '),
         );
       }
       const value = parseNumber(tokens[3]);
-      circuit.addResistor(name, tokens[1], tokens[2], value);
+      circuit.addResistor(name, tokens[1], tokens[2], value, params);
       break;
     }
     case 'C': {
