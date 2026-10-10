@@ -147,6 +147,12 @@ At ingestion on ngspice-47, 13 circuits produce raw analysis data and 7 fail on 
 | --- | --- | --- | --- |
 | Showcase boost converter (5 V input, 100 kHz, 50% duty) | [spice-ts issue #43](https://github.com/mfiumara/spice-ts/issues/43) and `examples/showcase/main.tsx` | Authored in the spice-ts project by Mattia Fiumara; distributed under the repository [MIT licence](../LICENSE) | Identical netlist is exercised by `packages/core/src/analysis/transient-driver-integration.test.ts` and compared with ngspice-47 reference samples. |
 
+## Bounded diode-noise parity fixtures
+
+| Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
+|---|---|---|---|---|
+| Forward-biased diode shot and flicker noise, LIN/DEC/OCT | Original spice-ts benchmark specified by [issue #179](https://github.com/mfiumara/spice-ts/issues/179), issue revision as of 2026-10-10. Reference equations and behavior are pinned to ngspice source revision [`032b1c32`](https://github.com/ngspice/ngspice/blob/032b1c32/src/spicelib/devices/dio/dionoise.c). | Fixtures dedicated [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/); ngspice reference source is BSD-3-Clause under its pinned `COPYING`. | The three original fixture decks differ only in the `.noise` LIN/DEC/OCT card and are committed for unrestricted redistribution. No values or tolerances are adapted between engines; the runner adds only temporary ngspice output-control commands. | `benchmarks/diode-noise/diode-noise-{lin,dec,oct}.cir`; compare against ngspice-47 with `pnpm exec tsx benchmarks/diode-noise/compare.ts`. |
+
 ## Chua & Lin circuit, issue #48
 
 - Fixture: `benchmarks/circuits/chua-issue-48.cir`
