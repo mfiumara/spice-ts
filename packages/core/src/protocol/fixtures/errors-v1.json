@@ -1,0 +1,8 @@
+[
+  { "code": "PARSE_ERROR", "message": "Parse error at line 2: bad token\n  ???", "retryable": false, "phase": "parse", "details": { "line": 2, "context": "???" } },
+  { "code": "INVALID_CIRCUIT", "message": "empty", "retryable": false, "phase": "compile", "details": {} },
+  { "code": "SINGULAR_MATRIX", "message": "Singular matrix: zero pivot (nodes: out; branches: V1)", "retryable": false, "phase": "solve", "details": { "involvedNodes": ["out"], "involvedBranches": ["V1"], "pivotIndex": 1 } },
+  { "code": "CONVERGENCE_FAILED", "message": "Convergence failed: stalled (oscillating nodes: out)", "retryable": false, "phase": "solve", "details": { "kind": "nr-divergence", "oscillatingNodes": ["out"], "solutionSummary": { "lastMinimum": 1, "lastMaximum": 2, "previousMinimum": 0, "previousMaximum": 3, "changedCount": 2 } } },
+  { "code": "TIMESTEP_TOO_SMALL", "message": "Timestep too small at t=1: dt=1e-15", "retryable": false, "phase": "solve", "details": { "kind": "dt-floor", "time": 1, "dt": 1e-15, "oscillatingNodes": [], "timestep": 1e-15, "solutionSummary": { "lastMinimum": null, "lastMaximum": null, "previousMinimum": null, "previousMaximum": null, "changedCount": 0 } } },
+  { "code": "INVALID_CIRCUIT", "message": "Circular dependency detected: A → B → A", "retryable": false, "phase": "compile", "details": { "chain": ["A", "B", "A"] } }
+]
