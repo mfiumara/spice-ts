@@ -320,9 +320,14 @@ function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number)
 }
 
 function parseSimulationOptions(tokens: string[]): SimulationOptions {
+  const optionTokens = tokens.filter(value => value !== '(' && value !== ')');
+  if (optionTokens[0]?.toLowerCase() === 'timeint') {
+    return parseXyceTimeintOptions(optionTokens.slice(1));
+  }
+
   const options: SimulationOptions = {};
 
-  for (const token of tokens.filter(value => value !== '(' && value !== ')')) {
+  for (const token of optionTokens) {
     const separator = token.indexOf('=');
     if (separator <= 0 || separator === token.length - 1) {
       throw new Error(`Unsupported .options field: '${token}'`);
@@ -387,6 +392,51 @@ function parseNodeInitialState(
     }
     circuit.addInitialState(kind, { node, value: parseNumber(valueToken) });
   }
+}
+
+function parseXyceTimeintOptions(tokens: string[]): SimulationOptions {
+  const options: SimulationOptions = {};
+
+  for (const token of tokens) {
+    const separator = token.indexOf('=');
+    const name = token.slice(0, Math.max(separator, 0)).toLowerCase();
+    if (separator <= 0 || separator === token.length - 1) {
+      throw new Error(`Unsupported .options TIMEINT field: '${name || token.toLowerCase()}'`);
+    }
+
+    const rawValue = token.slice(separator + 1);
+    if (name === 'method') {
+      const methods: Record<string, IntegrationMethod> = {
+        trap: 'trapezoidal',
+        '7': 'trapezoidal',
+        gear: 'gear2',
+        '8': 'gear2',
+      };
+      const method = methods[rawValue.toLowerCase()];
+      if (!method) throw new Error(`Unsupported .options TIMEINT method: '${rawValue}'`);
+      options.integrationMethod = method;
+      continue;
+    }
+
+    if (name !== 'reltol' && name !== 'abstol') {
+      throw new Error(`Unsupported .options TIMEINT field: '${name}'`);
+    }
+
+    const value = parseNumber(rawValue);
+    if (!Number.isFinite(value) || value < 0) {
+      throw new Error(`Invalid .options TIMEINT ${name} value: '${rawValue}'`);
+    }
+    if (name === 'abstol') {
+      // Xyce uses one TIMEINT ABSTOL for both voltage and current solution
+      // components; spice-ts represents those tolerances separately.
+      options.abstol = value;
+      options.vntol = value;
+    } else {
+      options.reltol = value;
+    }
+  }
+
+  return options;
 }
 
 function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): void {

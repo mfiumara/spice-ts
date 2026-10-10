@@ -62,6 +62,49 @@ R1 in 0 1k
   });
 });
 
+describe('Xyce TIMEINT option directives', () => {
+  it.each([
+    [
+      '.options timeint reltol=1e-6 abstol=1e-6',
+      { reltol: 1e-6, abstol: 1e-6, vntol: 1e-6 },
+    ],
+    ['.options timeint reltol=1.0e-4', { reltol: 1e-4 }],
+    [
+      '.options timeint reltol=1.0e-4 abstol=1e-4 method=7',
+      { reltol: 1e-4, abstol: 1e-4, vntol: 1e-4, integrationMethod: 'trapezoidal' },
+    ],
+  ])('maps solver-backed fields from the primitive corpus card: %s', (card, expected) => {
+    expect(parse(`${card}\n.op`).simulationOptions).toEqual(expected);
+  });
+
+  it.each([
+    ['trap', 'trapezoidal'],
+    ['7', 'trapezoidal'],
+    ['gear', 'gear2'],
+    ['8', 'gear2'],
+  ] as const)('maps documented TIMEINT METHOD=%s', (method, expected) => {
+    expect(parse(`.options timeint method=${method}\n.op`).simulationOptions.integrationMethod)
+      .toBe(expected);
+  });
+
+  it.each([
+    ['.options timeint reltol=1e-6 abstol=1e-6 newlte=2', 'newlte'],
+    ['.options timeint newbpstepping=0 reltol=1.0e-4', 'newbpstepping'],
+    ['.options timeint delmax=1u', 'delmax'],
+  ])('keeps unsupported primitive-corpus TIMEINT fields explicit: %s', (card, field) => {
+    expect(() => parse(`${card}\n.op`))
+      .toThrow(`Unsupported .options TIMEINT field: '${field}'`);
+  });
+
+  it.each([
+    '.options timeint method=9\n.op',
+    '.options timeint reltol=-1m\n.op',
+    '.options timeint abstol=not-a-number\n.op',
+  ])('rejects unsupported or invalid TIMEINT semantics: %s', netlist => {
+    expect(() => parse(netlist)).toThrow();
+  });
+});
+
 describe('ngspice control and output directives', () => {
   it.each([
     '.save v(out)\n.op',
