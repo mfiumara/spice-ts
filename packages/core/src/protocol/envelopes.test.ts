@@ -160,6 +160,7 @@ describe('protocol-v1 capability and terminal envelopes', () => {
       'spice-ts': 1,
       'spice-ts-js': 2,
     });
+    expect(canonicalHash(success.data)).toBe('b232bd63fde198019d973bcddf515612df4090e243132df074796b51225cc452');
   });
 
   it('recursively sanitizes backend-origin failure details', async () => {
@@ -176,7 +177,7 @@ describe('protocol-v1 capability and terminal envelopes', () => {
     request.options = { reltol: Number.NaN };
 
     const terminal = await executeProtocolV1(request, {
-      requestId: 'req-non-canonical', now: scriptedClock(50, 50, 51),
+      requestId: 'req-non-canonical', now: scriptedClock(50, 51),
     });
 
     expect(terminal).toMatchObject({
@@ -193,6 +194,7 @@ describe('protocol-v1 capability and terminal envelopes', () => {
         counts: { requestedAnalyses: 1, completedAnalyses: 0, resultPoints: 0 },
       },
     });
+    expect(canonicalHash(terminal)).toBe('38a70c0373d56a264948bd3fec3e9d7db1df4eafd5f5c193c5adcea5f785ef67');
     assertWireSafe(terminal);
   });
 });
