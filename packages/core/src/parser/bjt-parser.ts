@@ -11,8 +11,9 @@ export interface ParsedBJTInstance {
  * Parse the bounded classic Q-card forms used by the public benchmark corpus.
  *
  * Supported forms are the ordinary three-terminal card, its trailing OFF
- * startup hint, and the four-node substrate form (optionally with OFF). Prior
- * grounded-substrate compatibility forms retain their historical model selection.
+ * startup hint, and the four-node substrate form (optionally with OFF). As in
+ * ngspice-47, a grounded substrate (`Qx c b e 0 MODEL`) is a node like any other:
+ * the model is always the token after the substrate, never the substrate itself.
  * OFF is consumed as an initial-state
  * hint: the solver already starts nonlinear
  * devices from its zero solution, so it must not disable the transistor at the
@@ -42,7 +43,7 @@ export function parseBJTInstance(
       modelName = tokens[4];
     } else {
       if (tokens[5].includes('=')) unsupported();
-      modelName = tokens[4] === '0' ? tokens[4] : tokens[5];
+      modelName = tokens[5];
     }
   } else {
     const startupHint = tokens[6].toUpperCase();
@@ -50,12 +51,8 @@ export function parseBJTInstance(
       (startupHint !== 'OFF' && startupHint !== 'OFF=1')
       || tokens[5].includes('=')
     ) unsupported();
-    if (startupHint === 'OFF=1') {
-      if (tokens[4] !== '0') unsupported();
-      modelName = tokens[4];
-    } else {
-      modelName = tokens[5];
-    }
+    if (startupHint === 'OFF=1' && tokens[4] !== '0') unsupported();
+    modelName = tokens[5];
   }
 
   if (!modelName || modelName.includes('=')) unsupported();

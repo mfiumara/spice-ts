@@ -9,7 +9,9 @@ describe('BJT Q-card parser', () => {
     [['Q1', 'c', 'b', 'e', 'QMOD', 'OFF'], 'QMOD'],
     [['Q1', 'c', 'b', 'e', 'substrate', 'QMOD'], 'QMOD'],
     [['Q1', 'c', 'b', 'e', 'substrate', 'QMOD', 'OFF'], 'QMOD'],
-    [['Q1', 'c', 'b', 'e', '0', 'QMOD', 'OFF=1'], '0'],
+    [['Q1', 'c', 'b', 'e', '0', 'QMOD'], 'QMOD'],
+    [['Q1', 'c', 'b', 'e', '0', 'QMOD', 'OFF'], 'QMOD'],
+    [['Q1', 'c', 'b', 'e', '0', 'QMOD', 'OFF=1'], 'QMOD'],
   ])('resolves the bounded token shape %j', (tokens, modelName) => {
     expect(parseBJTInstance(tokens, 1)).toEqual({
       collector: 'c',
@@ -45,6 +47,27 @@ describe('BJT Q-card parser', () => {
       name: 'Q1',
       params: { BF: 80 },
     });
+  });
+
+  it('resolves the model of a grounded-substrate card like ngspice (#382)', () => {
+    const compiled = parse(`grounded substrate BJT
+      Q1 3 2 0 0 test
+      .model test npn kf=1e-20 af=1 bf=100 rb=10
+      .op
+    `).compile();
+
+    const names = compiled.devices.map(device => device.name);
+    expect(names).toContain('Q1.RB');
+    expect(compiled.devices.find(device => device.name === 'Q1')).toMatchObject({
+      params: { BF: 100, RB: 10 },
+    });
+  });
+
+  it('rejects a grounded-substrate card whose model is undefined instead of using a default BJT', () => {
+    expect(() => parse(`grounded substrate, missing model
+      Q1 3 2 0 0 missing
+      .op
+    `).compile()).toThrow("BJT 'Q1' references unknown model 'missing'");
   });
 
   it('exposes the next unsupported model fields after classic Q-card parsing', () => {
