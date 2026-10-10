@@ -9,7 +9,7 @@ This receipt covers the unchanged 100-fixture aggregate run after PRs #257, #258
 - `benchmarks/SOURCES.md` SHA-256: `b6540a743d176a01cc8e8aff6412655cc09f5fbf30554a53222c1d290c3029a1`.
 - The five aggregate corpus Git trees match accepted PR #213 exactly: ngspice `699f294d0fc87274038a3e172764fbef8eabba5c`, classic `0415034d4a71644edc5d8cbc05fe24993feb06ab`, Xyce `da56eb29bfa63e6834d4923335fb41fb55a897ab`, corpus D `85c56dbef57304ef6d1871faa62f24cb505d7713`, corpus E `f1aad3d7785e4479fe45ff86e3094cf9d43a9fd7`.
 - The source catalogue changed from SHA-256 `a426f7636c0ea8559a6c7961270f518406e4529f336d3f622931c7d9f0918873` at PR #213 only through later additive benchmark records. The 100 aggregate fixture source and licence records were not edited.
-- Apple M5 Pro, Darwin 27.0.1 arm64, Node v22.23.1, pnpm 10.28.1, spice-ts 0.3.0, ngspice-47.
+- Apple M5 Pro, macOS 27.0.1 (Darwin 27.0.0) arm64, Node v22.23.1, pnpm 10.28.1, spice-ts 0.3.0, ngspice-47.
 - Both engines received the same bytes recorded by each fixture receipt. No fixture, tolerance, manifest, or source record was changed for this refresh.
 
 ## Aggregate result
