@@ -36,8 +36,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
   private perm!: Int32Array;
 
   // Pre-allocated work arrays (reused across factorize/solve calls)
-  private workspace!: Float64Array;     // dense column vector of size n (indexed by original row)
-  private workY!: Float64Array;         // solve workspace
+  private workspace!: Float64Array;     // factor column / solve y, used in non-overlapping phases
   private uDiagIdx!: Int32Array;        // cached diagonal positions in U
   private pinv!: Int32Array;            // pinv[origRow] = column that used origRow as pivot
   private nonzeroFlag!: Int32Array;     // marker for workspace non-zero tracking
@@ -82,7 +81,6 @@ export class GilbertPeierlsSolver implements SparseSolver {
     this.uValues = new Float64Array(uNnz);
     this.perm = new Int32Array(n);
     this.workspace = new Float64Array(n);
-    this.workY = new Float64Array(n);
     this.uDiagIdx = new Int32Array(n);
     this.pinv = new Int32Array(n);
     this.nonzeroFlag = new Int32Array(n);
@@ -367,7 +365,10 @@ export class GilbertPeierlsSolver implements SparseSolver {
     const uRows = this.uRows;
     const uValues = this.uValues;
     const uDiagIdx = this.uDiagIdx;
-    const y = this.workY;
+    // Factorization leaves the dense column workspace unused. Reuse it for y
+    // rather than retaining a second n-element vector for the solve phase.
+    // Every entry is initialized below, and factorize() clears it before reuse.
+    const y = this.workspace;
 
     // Apply permutation: y = Pb
     for (let k = 0; k < n; k++) {
