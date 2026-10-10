@@ -70,13 +70,62 @@ export class BJT implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
   readonly params: BJTParams;
+  readonly suppliedParams: Readonly<Record<string, number>>;
 
   constructor(
     readonly name: string,
     readonly nodes: number[],
     params: Partial<BJTParams> & Record<string, number>,
   ) {
+    this.suppliedParams = { ...params };
     this.params = resolveBJTParams(params);
+  }
+
+  noiseOperatingPoint(solution: Float64Array): {
+    collectorNode: number;
+    baseNode: number;
+    emitterNode: number;
+    collectorCurrent: number;
+    baseCurrent: number;
+  } {
+    const { BF, BR, IS, NF, NR, VAF, IKF, ISE, NE, polarity } = this.params;
+    const [collectorNode, baseNode, emitterNode] = this.nodes;
+    const voltage = (node: number): number => node >= 0 ? solution[node] : 0;
+    const vBE = limitJunctionVoltage(
+      polarity * (voltage(baseNode) - voltage(emitterNode)),
+      NF * VT,
+      IS,
+    );
+    const vBC = limitJunctionVoltage(
+      polarity * (voltage(baseNode) - voltage(collectorNode)),
+      NR * VT,
+      IS,
+    );
+    const forwardCurrent = IS * (Math.exp(vBE / (NF * VT)) - 1);
+    const reverseCurrent = IS * (Math.exp(vBC / (NR * VT)) - 1);
+
+    let collectorCurrent: number;
+    let baseCurrent: number;
+    if (!Number.isFinite(VAF) && !Number.isFinite(IKF) && ISE === 0) {
+      collectorCurrent = forwardCurrent - reverseCurrent * (1 + 1 / BR);
+      baseCurrent = forwardCurrent / BF + reverseCurrent / BR;
+    } else {
+      const qEarly = Number.isFinite(VAF) ? 1 / (1 - vBC / VAF) : 1;
+      const highCurrent = Number.isFinite(IKF) ? forwardCurrent / IKF : 0;
+      const qB = 0.5 * qEarly
+        * (1 + Math.sqrt(Math.max(1 + 4 * highCurrent, Number.EPSILON)));
+      const leakage = ISE * (Math.exp(vBE / (NE * VT)) - 1);
+      collectorCurrent = (forwardCurrent - reverseCurrent) / qB - reverseCurrent / BR;
+      baseCurrent = forwardCurrent / BF + reverseCurrent / BR + leakage;
+    }
+
+    return {
+      collectorNode,
+      baseNode,
+      emitterNode,
+      collectorCurrent: Math.abs(collectorCurrent),
+      baseCurrent: Math.abs(baseCurrent),
+    };
   }
 
   stamp(ctx: StampContext): void {

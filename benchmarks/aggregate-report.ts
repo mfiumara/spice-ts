@@ -71,6 +71,27 @@ interface FixtureReceipt {
   gapIssues: string[];
 }
 
+interface MatchedPointEnvelope {
+  comparedSignals: number;
+  relativeComparedSignals: number;
+  absoluteSamples: number;
+  relativeSamples: number;
+  excludedZeroReferences: number;
+  maximumAbsoluteError: number;
+  maximumAbsoluteRms: number;
+  maximumRelativeError: number | null;
+  maximumRelativeRms: number | null;
+}
+
+interface StatusTransition {
+  engine: 'ngspice' | 'spiceTs';
+  fixture: string;
+  from: Status;
+  to: Status;
+  explanation: string;
+  gapIssues: string[];
+}
+
 export interface AggregateReport {
   schemaVersion: typeof SCHEMA;
   outcomeSha256: string;
@@ -95,9 +116,53 @@ export interface AggregateReport {
     comparedFixtures: number;
     comparedAnalyses: number;
   };
+  matchedPointEnvelope: MatchedPointEnvelope;
+  comparisonToPrevious: {
+    issueUrl: string;
+    pullRequestUrl: string;
+    headSha: string;
+    outcomeSha256: string;
+    totals: AggregateReport['totals'];
+    matchedPointEnvelope: MatchedPointEnvelope;
+    statusTransitions: StatusTransition[];
+  };
   gapIssues: Array<{ url: string; scope: string }>;
   fixtures: FixtureReceipt[];
 }
+
+const PREVIOUS_REPORT: AggregateReport['comparisonToPrevious'] = {
+  issueUrl: 'https://github.com/mfiumara/spice-ts/issues/172',
+  pullRequestUrl: 'https://github.com/mfiumara/spice-ts/pull/175',
+  headSha: '2a1968714b9059567a1146d6cc39e4cf3229f5c7',
+  outcomeSha256: 'b11ac2046fd57088d8e55f6b184c0eb07e80c9fecf857e6721d59e54fac8e8b0',
+  totals: {
+    fixtures: 100,
+    corpusFixtures: { ngspice: 20, classic: 20, xyce: 20, 'corpus-d': 20, 'corpus-e': 20 },
+    ngspice: { success: 52, failed: 9, unsupported: 39 },
+    spiceTs: { success: 16, failed: 4, unsupported: 80 },
+    comparedFixtures: 14,
+    comparedAnalyses: 21,
+  },
+  matchedPointEnvelope: {
+    comparedSignals: 450,
+    relativeComparedSignals: 439,
+    absoluteSamples: 9_580_662,
+    relativeSamples: 9_572_514,
+    excludedZeroReferences: 8_148,
+    maximumAbsoluteError: 183.91564521207212,
+    maximumAbsoluteRms: 87.25304257950958,
+    maximumRelativeError: 9829734.595793912,
+    maximumRelativeRms: 1160907.113030371,
+  },
+  statusTransitions: [{
+    engine: 'spiceTs',
+    fixture: 'classic/lossy-line-aluminium',
+    from: 'success',
+    to: 'unsupported',
+    explanation: 'The bounded lossless T-card implementation now rejects this LTRA lossy-line model explicitly instead of silently treating it as a lossless line; issue #7 already tracks LTRA support.',
+    gapIssues: ['https://github.com/mfiumara/spice-ts/issues/7'],
+  }],
+};
 
 const GAP_ISSUES = [
   { url: 'https://github.com/mfiumara/spice-ts/issues/76', scope: 'parser syntax, directives, expressions, and unsupported device cards' },
@@ -256,6 +321,24 @@ function countStatuses(fixtures: FixtureReceipt[], engine: 'ngspice' | 'spiceTs'
   return totals;
 }
 
+export function matchedPointEnvelope(fixtures: FixtureReceipt[]): MatchedPointEnvelope {
+  const compared = fixtures.flatMap(fixture => fixture.comparisons.flatMap(comparison =>
+    Object.values(comparison.metrics.signals).filter(signal => signal.status === 'compared'),
+  ));
+  const relative = compared.filter(signal => signal.relativeError.max !== null);
+  return {
+    comparedSignals: compared.length,
+    relativeComparedSignals: relative.length,
+    absoluteSamples: compared.reduce((sum, signal) => sum + signal.sampleCount, 0),
+    relativeSamples: compared.reduce((sum, signal) => sum + signal.relativeError.sampleCount, 0),
+    excludedZeroReferences: compared.reduce((sum, signal) => sum + signal.relativeError.excludedZeroReferences, 0),
+    maximumAbsoluteError: Math.max(0, ...compared.map(signal => signal.absoluteError.max)),
+    maximumAbsoluteRms: Math.max(0, ...compared.map(signal => signal.absoluteError.rms)),
+    maximumRelativeError: relative.length === 0 ? null : Math.max(...relative.map(signal => signal.relativeError.max as number)),
+    maximumRelativeRms: relative.length === 0 ? null : Math.max(...relative.map(signal => signal.relativeError.rms as number)),
+  };
+}
+
 export function validateAggregateAccounting(report: AggregateReport): void {
   if (report.fixtures.length !== TOTAL_FIXTURES || report.totals.fixtures !== TOTAL_FIXTURES) {
     throw new Error(`aggregate accounting must contain ${TOTAL_FIXTURES} fixtures`);
@@ -305,6 +388,15 @@ export function validateAggregateAccounting(report: AggregateReport): void {
   const comparedAnalyses = report.fixtures.reduce((sum, fixture) => sum + fixture.comparisons.length, 0);
   if (report.totals.comparedFixtures !== comparedFixtures || report.totals.comparedAnalyses !== comparedAnalyses) {
     throw new Error('comparison totals differ from per-fixture error availability');
+  }
+  if (JSON.stringify(report.matchedPointEnvelope) !== JSON.stringify(matchedPointEnvelope(report.fixtures))) {
+    throw new Error('matched-point envelope differs from per-signal metrics');
+  }
+  for (const transition of report.comparisonToPrevious.statusTransitions) {
+    const fixture = report.fixtures.find(candidate => candidate.key === transition.fixture);
+    if (!fixture || fixture[transition.engine].status !== transition.to || transition.explanation.length === 0) {
+      throw new Error(`${transition.engine}/${transition.fixture}: invalid or unexplained status transition`);
+    }
   }
 }
 
@@ -379,6 +471,8 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
       comparedFixtures: fixtures.filter(fixture => fixture.comparisons.length > 0).length,
       comparedAnalyses: fixtures.reduce((sum, fixture) => sum + fixture.comparisons.length, 0),
     },
+    matchedPointEnvelope: matchedPointEnvelope(fixtures),
+    comparisonToPrevious: PREVIOUS_REPORT,
     gapIssues: [...GAP_ISSUES],
     fixtures,
   };
@@ -389,6 +483,10 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
 
 function markdown(report: AggregateReport): string {
   const { totals } = report;
+  const { matchedPointEnvelope: envelope, comparisonToPrevious: previous } = report;
+  const runtime = (engine: 'ngspice' | 'spiceTs') => report.fixtures
+    .reduce((sum, fixture) => sum + fixture[engine].runtimeMs, 0)
+    .toFixed(3);
   const lines = [
     '# Aggregate 100-circuit parity report',
     '',
@@ -411,6 +509,17 @@ function markdown(report: AggregateReport): string {
     `- ngspice: ${totals.ngspice.success} success, ${totals.ngspice.failed} failed, ${totals.ngspice.unsupported} unsupported.`,
     `- spice-ts: ${totals.spiceTs.success} success, ${totals.spiceTs.failed} failed, ${totals.spiceTs.unsupported} unsupported.`,
     `- Matched-point errors: ${totals.comparedAnalyses} analyses across ${totals.comparedFixtures} fixtures. Full per-signal max/RMS absolute and relative errors are in \`benchmarks/aggregate-report.json\`.`,
+    `- Matched signals: ${envelope.comparedSignals} absolute (${envelope.absoluteSamples} samples); ${envelope.relativeComparedSignals} relative (${envelope.relativeSamples} samples, ${envelope.excludedZeroReferences} zero references excluded).`,
+    `- Matched-point envelope (worst per signal): absolute max ${envelope.maximumAbsoluteError}, absolute RMS ${envelope.maximumAbsoluteRms}, relative max ${envelope.maximumRelativeError}, relative RMS ${envelope.maximumRelativeRms}.`,
+    `- Descriptive single-run runtime sums: ngspice ${runtime('ngspice')} ms; spice-ts ${runtime('spiceTs')} ms.`,
+    '',
+    '## Transition from the previous accepted report',
+    '',
+    `- Baseline: [issue #172](${previous.issueUrl}), [PR #175](${previous.pullRequestUrl}), head \`${previous.headSha}\`, outcome \`${previous.outcomeSha256}\`.`,
+    `- Previous totals: ngspice ${previous.totals.ngspice.success}/${previous.totals.ngspice.failed}/${previous.totals.ngspice.unsupported} success/failed/unsupported; spice-ts ${previous.totals.spiceTs.success}/${previous.totals.spiceTs.failed}/${previous.totals.spiceTs.unsupported}; ${previous.totals.comparedAnalyses} analyses across ${previous.totals.comparedFixtures} fixtures.`,
+    `- Previous matched-point envelope: absolute max ${previous.matchedPointEnvelope.maximumAbsoluteError}, absolute RMS ${previous.matchedPointEnvelope.maximumAbsoluteRms}, relative max ${previous.matchedPointEnvelope.maximumRelativeError}, relative RMS ${previous.matchedPointEnvelope.maximumRelativeRms}.`,
+    '- ngspice status transitions: none.',
+    ...previous.statusTransitions.map(transition => `- ${transition.engine} \`${transition.fixture}\`: ${transition.from} → ${transition.to}. ${transition.explanation}`),
     '',
     '## Gap tracking',
     '',

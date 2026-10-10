@@ -1,0 +1,7 @@
+{
+  "apiVersion": "1",
+  "input": {
+    "format": "spice",
+    "source": "V1 b 0 2\nR1 b 0 1k\n.op"
+  }
+}

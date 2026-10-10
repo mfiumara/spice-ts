@@ -2,6 +2,7 @@ import type { CompiledCircuit } from '../circuit.js';
 import type { IntegrationMethod, ResolvedOptions } from '../types.js';
 import type { MNAAssembler } from '../mna/assembler.js';
 import { buildCompanionSystem } from '../mna/companion.js';
+import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 /**
  * When sign-flip oscillation is detected on any node, the per-iteration
@@ -23,6 +24,7 @@ export interface StepContext {
   /** Shared assembler — reused across attempts to avoid re-allocation. */
   readonly assembler: MNAAssembler;
   readonly options: ResolvedOptions;
+  readonly guard?: ProtocolExecutionGuard;
 }
 
 /**
@@ -95,6 +97,7 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
   let oscillated = false;
 
   for (let iter = 0; iter < options.maxTransientIterations; iter++) {
+    ctx.guard?.checkpoint('solve:newton-iteration');
     buildCompanionSystem(
       assembler, devices, dt, attempt.integrationMethod ?? options.integrationMethod,
       prevSolution, prevB, gmin, prevPrevSolution, prevDt, staticCurrentHistory,

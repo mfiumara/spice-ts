@@ -10,6 +10,7 @@ import { parseSensitivity } from './sensitivity-parser.js';
 import { parseTransmissionLine } from './transmission-line-parser.js';
 import { preprocess } from './preprocessor.js';
 import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
+import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 export { parseSourceWaveform } from './waveform-parser.js';
 
@@ -54,7 +55,11 @@ export function parseTitleless(netlist: string): Circuit {
   return parseNetlist(netlist, false);
 }
 
-function parseNetlist(netlist: string, firstLineIsTitle: boolean): Circuit {
+function parseNetlist(
+  netlist: string,
+  firstLineIsTitle: boolean,
+  guard?: ProtocolExecutionGuard,
+): Circuit {
   const lines = tokenizeNetlist(netlist, { firstLineIsTitle });
   const circuit = new Circuit();
 
@@ -66,6 +71,7 @@ function parseNetlist(netlist: string, firstLineIsTitle: boolean): Circuit {
   let hasStepAnalysis = false;
 
   for (const { tokens, lineNumber, raw } of lines) {
+    guard?.checkpoint('parse:line');
     if (tokens.length === 0) continue;
     const first = tokens[0].toUpperCase();
 
@@ -190,9 +196,10 @@ export async function parseAsync(
 export async function parseTitlelessAsync(
   netlist: string,
   resolver?: IncludeResolver,
+  guard?: ProtocolExecutionGuard,
 ): Promise<Circuit> {
-  const preprocessed = await preprocess(netlist, resolver);
-  return parseTitleless(preprocessed);
+  const preprocessed = await preprocess(netlist, resolver, guard);
+  return parseNetlist(preprocessed, false, guard);
 }
 
 function parseDotCommand(circuit: Circuit, tokens: string[], lineNumber: number): void {
