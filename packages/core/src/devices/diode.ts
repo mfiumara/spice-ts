@@ -91,8 +91,7 @@ export class Diode implements DeviceModel {
       TNOM: params.TNOM ?? 27,
       RS: (params.RS ?? 0) / effectiveArea,
       JSW: params.JSW ?? 0,
-      CJ0: (params.CJ0 ?? 0) * effectiveArea,
-      CJO: params.CJO === undefined ? undefined : params.CJO * effectiveArea,
+      CJ0: (diodeZeroBiasCapacitance(name, params) ?? 0) * effectiveArea,
       CJSW: (params.CJSW ?? params.CJP ?? 0) * effectivePerimeter,
       VJ: junctionPotential,
       VJSW: params.VJSW ?? params.PHP ?? junctionPotential,
@@ -143,13 +142,12 @@ export class Diode implements DeviceModel {
     this.assertDistortionSupported();
     const [nA, nK] = this.nodes;
     const voltage = (nA >= 0 ? solution[nA] : 0) - (nK >= 0 ? solution[nK] : 0);
-    const { IS, N, TT, CJ0, CJO } = this.params;
-    const distortionCapacitance = CJ0 || CJO || 0;
+    const { IS, N, TT, CJ0: distortionCapacitance } = this.params;
     const thermalVoltage = N * DISTORTION_VT;
     const conductance = (IS / thermalVoltage) * safeExponential(voltage / thermalVoltage);
     const current2 = conductance / (2 * thermalVoltage);
     const current3 = conductance / (6 * thermalVoltage * thermalVoltage);
-    const depletion = depletionChargeTaylor(voltage, distortionCapacitance, 1, 0.5);
+    const depletion = depletionChargeTaylor(voltage, distortionCapacitance!, 1, 0.5);
     return {
       current2,
       current3,
@@ -159,14 +157,13 @@ export class Diode implements DeviceModel {
   }
 
   stampDistortionDynamic(ctx: StampContext): void {
-    const { IS, N, TT, CJ0, CJO } = this.params;
-    const distortionCapacitance = CJ0 || CJO || 0;
+    const { IS, N, TT, CJ0: distortionCapacitance } = this.params;
     if (!distortionCapacitance && !TT) return;
     const [nA, nK] = this.nodes;
     const voltage = (nA >= 0 ? ctx.getVoltage(nA) : 0) - (nK >= 0 ? ctx.getVoltage(nK) : 0);
     const thermalVoltage = N * DISTORTION_VT;
     const conductance = (IS / thermalVoltage) * safeExponential(voltage / thermalVoltage);
-    const capacitance = depletionChargeTaylor(voltage, distortionCapacitance, 1, 0.5).capacitance
+    const capacitance = depletionChargeTaylor(voltage, distortionCapacitance!, 1, 0.5).capacitance
       + TT! * conductance;
     if (nA >= 0) ctx.stampC(nA, nA, capacitance);
     if (nK >= 0) ctx.stampC(nK, nK, capacitance);
@@ -289,6 +286,25 @@ export class Diode implements DeviceModel {
       ctx.stampC(nK, nA, -cj);
     }
   }
+}
+
+/**
+ * Resolve the zero-bias junction capacitance. ngspice accepts both CJO (letter)
+ * and CJ0 (digit) for the same model field; conflicting values are rejected
+ * rather than silently picking one.
+ */
+export function diodeZeroBiasCapacitance(
+  name: string,
+  params: Readonly<Partial<DiodeParams>>,
+): number | undefined {
+  const { CJ0, CJO } = params;
+  if (CJ0 !== undefined && CJO !== undefined && CJ0 !== CJO) {
+    throw new InvalidCircuitError(
+      `Diode '${name}' sets both CJO=${CJO} and CJ0=${CJ0}; they are aliases of the same `
+        + 'zero-bias junction capacitance, so supply only one',
+    );
+  }
+  return CJ0 ?? CJO;
 }
 
 function depletionCapacitance(
