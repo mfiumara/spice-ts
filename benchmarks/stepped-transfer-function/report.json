@@ -1,0 +1,185 @@
+{
+  "fixture": "benchmarks/stepped-transfer-function/stepped-divider.cir",
+  "sha256": "dfb418673a8064df89b93eaa3524580523aaf5db9f5dbdf93345827afd8e684c",
+  "source": {
+    "url": "https://github.com/mfiumara/spice-ts/issues/208",
+    "revision": "issue-208 project-authored reference fixture",
+    "licence": "MIT"
+  },
+  "referenceSimulator": "ngspice-47",
+  "machine": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro",
+    "node": "v22.23.1"
+  },
+  "identicalPerPointNetlistForBothEngines": true,
+  "directStepSupport": {
+    "spiceTs": "success",
+    "ngspice": "unsupported: unimplemented dot command '.step'",
+    "method": "The committed grid is expanded deterministically once per value; each expanded deck is supplied byte-identically to both engines. The direct spice-ts grid is checked against those expanded runs."
+  },
+  "commands": {
+    "comparison": "pnpm bench:stepped-tf",
+    "ngspice": "ngspice -b -r <temporary-raw-path> <byte-identical-expanded-benchmarks/stepped-transfer-function/stepped-divider.cir>"
+  },
+  "convergence": {
+    "spiceTsDirectStep": "success",
+    "spiceTsExpandedPoints": [
+      {
+        "stepValue": 500,
+        "status": "success"
+      },
+      {
+        "stepValue": 1000,
+        "status": "success"
+      },
+      {
+        "stepValue": 2000,
+        "status": "success"
+      },
+      {
+        "stepValue": 4000,
+        "status": "success"
+      }
+    ],
+    "ngspiceExpandedPoints": [
+      {
+        "stepValue": 500,
+        "status": "success"
+      },
+      {
+        "stepValue": 1000,
+        "status": "success"
+      },
+      {
+        "stepValue": 2000,
+        "status": "success"
+      },
+      {
+        "stepValue": 4000,
+        "status": "success"
+      }
+    ]
+  },
+  "stepOrder": [
+    500,
+    1000,
+    2000,
+    4000
+  ],
+  "matchedStepCount": 4,
+  "runtimeMilliseconds": {
+    "spiceTsDirectStep": 2.843208000000004,
+    "spiceTsExpandedPoints": 1.4382499999999823,
+    "ngspiceExpandedProcesses": 44.388667,
+    "caveat": "ngspice includes one process startup per point; runtimes are reported honestly and are not a speed claim."
+  },
+  "errors": {
+    "transfer": {
+      "maximumAbsoluteError": 0,
+      "rmsAbsoluteError": 0,
+      "maximumRelativeError": 0,
+      "rmsRelativeError": 0
+    },
+    "inputResistance": {
+      "maximumAbsoluteError": 9.094947017729282e-13,
+      "rmsAbsoluteError": 5.209785393794664e-13,
+      "maximumRelativeError": 1.818989403545856e-16,
+      "rmsRelativeError": 1.4057178146527958e-16
+    },
+    "outputResistance": {
+      "maximumAbsoluteError": 0,
+      "rmsAbsoluteError": 0,
+      "maximumRelativeError": 0,
+      "rmsRelativeError": 0
+    }
+  },
+  "samples": [
+    {
+      "stepValue": 500,
+      "spiceTs": {
+        "transfer": 0.3333333333333333,
+        "inputResistance": 1499.9999999999998,
+        "outputResistance": 333.3333333333333
+      },
+      "ngspice": {
+        "transfer": 0.3333333333333333,
+        "inputResistance": 1500,
+        "outputResistance": 333.3333333333333
+      }
+    },
+    {
+      "stepValue": 1000,
+      "spiceTs": {
+        "transfer": 0.5,
+        "inputResistance": 2000,
+        "outputResistance": 500
+      },
+      "ngspice": {
+        "transfer": 0.5,
+        "inputResistance": 2000,
+        "outputResistance": 500
+      }
+    },
+    {
+      "stepValue": 2000,
+      "spiceTs": {
+        "transfer": 0.6666666666666666,
+        "inputResistance": 2999.9999999999995,
+        "outputResistance": 666.6666666666666
+      },
+      "ngspice": {
+        "transfer": 0.6666666666666666,
+        "inputResistance": 3000,
+        "outputResistance": 666.6666666666666
+      }
+    },
+    {
+      "stepValue": 4000,
+      "spiceTs": {
+        "transfer": 0.8,
+        "inputResistance": 5000,
+        "outputResistance": 800
+      },
+      "ngspice": {
+        "transfer": 0.8,
+        "inputResistance": 5000.000000000001,
+        "outputResistance": 800
+      }
+    }
+  ],
+  "unsupported": [
+    {
+      "form": "multiple .step directives",
+      "reason": "nested or multi-dimensional stepping"
+    },
+    {
+      "form": ".tf V(out,ref) source",
+      "reason": "differential voltage output"
+    },
+    {
+      "form": ".tf I(branch) source",
+      "reason": "current output"
+    },
+    {
+      "form": ".tf V(out)",
+      "reason": "missing independent input source"
+    },
+    {
+      "form": ".step combined with .noise, .pz, or .sens",
+      "reason": "analysis outside the bounded stepped slice"
+    },
+    {
+      "form": "ngspice-47 direct .step",
+      "reason": "ngspice-47 reports unimplemented dot command '.step'"
+    }
+  ],
+  "losses": [
+    "ngspice-47 cannot execute the committed .step directive directly; the harness reports this and compares byte-identical deterministic single-point expansions instead.",
+    "Any non-zero max/RMS residual in errors is retained.",
+    "Runtime process boundaries differ and do not support a speed or superiority claim."
+  ],
+  "redReceipt": "pnpm -C packages/core exec vitest run src/analysis/transfer-function.test.ts => 4 failed, 11 passed before implementation"
+}

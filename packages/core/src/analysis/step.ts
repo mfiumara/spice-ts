@@ -8,6 +8,7 @@ import { solveDCOperatingPoint } from './dc.js';
 import { solveDCSweep } from './dc-sweep.js';
 import { solveTransient } from './transient.js';
 import { solveAC } from './ac.js';
+import { solveTransferFunction } from './transfer-function.js';
 import { InvalidCircuitError } from '../errors.js';
 import { computeUICInitialSolution } from './uic.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -157,6 +158,13 @@ export function solveStep(
             );
             stepResult.ac = solveAC(compiled, analysis, opts, dcAsm.solution, guard);
             prevDCSolution = new Float64Array(dcAsm.solution);
+            break;
+          }
+          case 'tf': {
+            const opts = resolveOptions(options);
+            stepResult.transferFunction = solveTransferFunction(
+              compiled, analysis, opts, convergence,
+            );
             break;
           }
         }

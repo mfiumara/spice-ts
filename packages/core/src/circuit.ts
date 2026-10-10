@@ -782,6 +782,11 @@ export class Circuit {
     points?: number;
     values?: number[];
   }): void {
+    if (this._steps.length > 0) {
+      throw new InvalidCircuitError(
+        'Multiple .step directives are not supported; nested or multi-dimensional stepping is unsupported',
+      );
+    }
     if (this._poleZeroAnalyses.length > 0) {
       throw new InvalidCircuitError('.step cannot be combined with .pz');
     }

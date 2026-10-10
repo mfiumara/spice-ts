@@ -72,10 +72,9 @@ export class WasmNgspiceSimulator implements SimulatorAdapter {
 
     if (prepared.compiled.steps.length > 0) {
       if (prepared.compiled.steps.length > 1) {
-        warnings.push({
-          type: 'unsupported',
-          message: 'Multiple .step directives found; only the first is used. Nested sweeps are not yet supported.',
-        });
+        throw new InvalidCircuitError(
+          'Multiple .step directives are not supported; nested or multi-dimensional stepping is unsupported',
+        );
       }
       result.steps = await this.runStepAnalyses(baseNetlist, prepared.compiled, prepared.compiled.steps[0], warnings);
       return result;
