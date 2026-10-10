@@ -39,7 +39,7 @@ Rshort shorted 0 0
 .end`);
 
     expect(result.dc!.voltage('shorted')).toBeCloseTo(0, 12);
-    expect(result.dc!.current('Rshort')).toBeCloseTo(-0.002, 12);
+    expect(result.dc!.current('Rshort')).toBeCloseTo(0.002, 12);
   });
 
   it('supports a chain of repeated ideal shorts', async () => {

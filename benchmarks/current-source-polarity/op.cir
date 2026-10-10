@@ -1,0 +1,5 @@
+* independent current-source polarity OP
+I1 out 0 DC 1m
+R1 out 0 1k
+.op
+.end

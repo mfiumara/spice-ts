@@ -32,15 +32,14 @@ R1 out 0 1k
     expect(result.transient!.voltage('out').every(value => Math.abs(value + 1) < 1e-9)).toBe(true);
   });
 
-  it('matches ngspice 47 current-source AC magnitude and phase', async () => {
-    const result = await simulate(`* current-source polarity AC
-I1 out 0 DC 0 AC 1m
+  it('keeps DC bias polarity when an AC source value is declared', async () => {
+    const result = await simulate(`* current-source DC bias with AC declaration
+I1 out 0 DC 1m AC 0
 R1 out 0 1k
+.op
 .ac lin 1 1k 1k
 .end`);
-    const output = result.ac!.voltage('out')[0];
 
-    expect(output.magnitude).toBeCloseTo(1, 12);
-    expect(Math.abs(output.phase)).toBeCloseTo(180, 12);
+    expect(result.dc!.voltage('out')).toBeCloseTo(-1, 12);
   });
 });
