@@ -354,6 +354,20 @@ function phasors(values: Iterable<{ magnitude: number; phase: number }>): Comple
   });
 }
 
+function poleZeroSignals(result: {
+  poles: Array<{ real: number; imaginary: number }>;
+  zeros: Array<{ real: number; imaginary: number }>;
+}): Record<string, ComplexValue[]> {
+  const signals: Record<string, ComplexValue[]> = {};
+  result.poles.forEach((value, index) => {
+    signals[`v(pole(${index + 1}))`] = [{ re: value.real, im: value.imaginary }];
+  });
+  result.zeros.forEach((value, index) => {
+    signals[`v(zero(${index + 1}))`] = [{ re: value.real, im: value.imaginary }];
+  });
+  return signals;
+}
+
 function mapSignals<T>(
   voltages: Map<string, T>,
   currents: Map<string, T>,
@@ -421,6 +435,12 @@ export async function runNativeSpiceTs(input: Buffer, circuit: ClassicCircuit): 
             grid: Array.from(internal.sweepValues),
             signals: mapSignals(internal.voltageArrays, internal.currentArrays, real),
           },
+        });
+      } else if (type === 'pz' && result.poleZero) {
+        analyses.push({
+          type,
+          plotName: 'Pole-Zero Analysis',
+          series: { grid: [0], signals: poleZeroSignals(result.poleZero) },
         });
       }
     }
