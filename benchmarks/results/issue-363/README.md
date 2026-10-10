@@ -73,6 +73,16 @@ The fixture is two-tone. Single-tone `HD2`/`HD3` support is covered by `packages
 
 Sabotage checks run before commit: removing the slice fails 8 focused tests. Halving the `HD3` output scale fails 2. Dropping the depletion-charge second-order term fails the reactive-load test.
 
+## Current-source excitation
+
+ngspice-47 `cktdisto.c` stamps an `ISRC` `DISTOF1`/`DISTOF2` tone with the opposite node polarity of its own `.ac` `ISRC` stamp (`isrcacld.c`). spice-ts follows the distortion stamp; `.ac` is unchanged. Before this was matched, every odd-order product (`HD3`, `2f1-f2`) of a current-driven nonlinear deck came out negated (relative error 2.0), while even orders agreed. Three byte-identical decks in `distortion.test.ts` now cover it, compared against ngspice-47 `print` output (7 significant digits):
+
+- PR #367 review deck (`I1 0 a DC 1m DISTOF1 0.0001`, antiparallel `IS=1e-15 TT=5n CJO=3p` pair): `HD2`/`HD3` at `v(a)`, `v(b)`, max relative error 3.5e-7
+- the same pair, two-tone `DISTOF1 0.0001 30 DISTOF2 0.00005 -20`, `f2overf1=0.7`: all three products, max relative error 8.8e-7
+- voltage `DISTOF1` plus a floating current `DISTOF2` source: all three products, max relative error 7.2e-7
+
+The residuals are at the print-precision floor.
+
 ## Related defects found, not fixed here
 
 - #365: outside `.disto`, the standard `CJO` spelling is silently ignored by AC/transient diode stamping; only `CJ0` is honored. This slice reads both spellings. The global fix changes corpus-wide AC/transient results, so it is out of scope here.

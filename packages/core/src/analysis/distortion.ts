@@ -73,13 +73,16 @@ function assertSupportedDevices(compiled: CompiledCircuit): asserts compiled is 
   devices: SupportedDevice[];
 } {
   for (const device of compiled.devices) {
+    if (device instanceof Diode) {
+      device.assertDistortionSupported();
+      continue;
+    }
     if (
       device instanceof Resistor
       || device instanceof Capacitor
       || device instanceof Inductor
       || device instanceof VoltageSource
       || device instanceof CurrentSource
-      || device instanceof Diode
     ) continue;
     throw new InvalidCircuitError(
       `.disto supports only independent sources, ideal R, L, C devices, and bounded diodes; found ${device.name} (${device.constructor.name})`,
@@ -295,14 +298,17 @@ function buildDistortionRhs(
       imaginary[row] += value.imaginary;
       continue;
     }
+    // ngspice-47 cktdisto.c (D_RHSF1/D_RHSF2) stamps an ISRC DISTOF tone with
+    // the opposite polarity of its own .ac ISRC stamp (isrcacld.c). Mirror that
+    // relative to buildACRHS so every product, including odd orders, matches.
     const [positive, negative] = device.nodes;
     if (positive >= 0) {
-      real[positive] -= value.real;
-      imaginary[positive] -= value.imaginary;
+      real[positive] += value.real;
+      imaginary[positive] += value.imaginary;
     }
     if (negative >= 0) {
-      real[negative] += value.real;
-      imaginary[negative] += value.imaginary;
+      real[negative] -= value.real;
+      imaginary[negative] -= value.imaginary;
     }
   }
   return { real, imaginary };

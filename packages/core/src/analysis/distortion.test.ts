@@ -6,6 +6,8 @@ import { parseTitleless as parse } from '../parser/index.js';
 import { DistortionResult } from '../results.js';
 import { simulate } from '../simulate.js';
 import { Circuit } from '../circuit.js';
+import type { DistortionAnalysis } from '../types.js';
+import { assertDistortionSupported } from './distortion.js';
 
 const fixture = readFileSync(new URL(
   '../../../../benchmarks/distortion/linear-lowpass.cir',
@@ -260,6 +262,93 @@ C1 out 0 1n
       real: 1.9748489286944552e-7,
       imaginary: -9.731815597724925e-8,
     });
+  });
+
+  it('matches ngspice odd-order polarity for a current-source-driven diode pair', async () => {
+    const result = await simulate(`cs
+I1 0 a DC 1m DISTOF1 0.0001
+D1 a b DM
+D2 0 b DM
+R1 b 0 10k
+R2 a 0 100k
+.model DM D IS=1e-15 TT=5n CJO=3p
+.disto dec 1 1k 1k
+.end`);
+
+    // ngspice-47 batch run of the byte-identical deck (PR #367 review repro).
+    expectComplexParity(result.distortion!.voltage('b', 2)[0], {
+      real: 5.958587e-6, imaginary: 1.113690e-6,
+    });
+    expectComplexParity(result.distortion!.voltage('b', 3)[0], {
+      real: 1.999220e-7, imaginary: 3.782076e-8,
+    });
+    expectComplexParity(result.distortion!.voltage('a', 3)[0], {
+      real: -1.999040e-6, imaginary: 3.798324e-8,
+    });
+  });
+
+  it('matches ngspice two-tone products for a current-source-driven diode pair', async () => {
+    const result = await simulate(`cs two-tone
+I1 0 a DC 1m DISTOF1 0.0001 30 DISTOF2 0.00005 -20
+D1 a b DM
+D2 0 b DM
+R1 b 0 10k
+R2 a 0 100k
+.model DM D IS=1e-15 TT=5n CJO=3p
+.disto dec 1 1k 1k 0.7
+.end`);
+
+    // ngspice-47 batch run of the byte-identical deck.
+    expectComplexParity(result.distortion!.voltage('b', 'f1+f2')[0], {
+      real: 5.703615e-6, imaginary: 1.966941e-6,
+    });
+    expectComplexParity(result.distortion!.voltage('b', 'f1-f2')[0], {
+      real: 3.701984e-6, imaginary: 4.671742e-6,
+    });
+    expectComplexParity(result.distortion!.voltage('b', '2f1-f2')[0], {
+      real: 2.786066e-8, imaginary: 2.995763e-7,
+    });
+    expectComplexParity(result.distortion!.voltage('a', '2f1-f2')[0], {
+      real: -5.45012e-7, imaginary: -2.94874e-6,
+    });
+  });
+
+  it('matches ngspice two-tone products with a voltage F1 and floating current F2', async () => {
+    const result = await simulate(`mixed v f1 i f2
+V1 in 0 DC 0.7 DISTOF1 0.01 45
+R0 in a 1k
+I2 a c DC 0 DISTOF2 0.0001 30
+R3 c 0 1k
+D1 a b DM
+R1 b 0 1k
+C1 b 0 1n
+.model DM D IS=1e-15 TT=5n CJO=3p
+.disto dec 1 1k 1k 0.7
+.end`);
+
+    // ngspice-47 batch run of the byte-identical deck.
+    expectComplexParity(result.distortion!.voltage('b', 'f1+f2')[0], {
+      real: 1.310724e-4, imaginary: 4.835240e-4,
+    });
+    expectComplexParity(result.distortion!.voltage('b', 'f1-f2')[0], {
+      real: 4.839816e-4, imaginary: 1.294155e-4,
+    });
+    expectComplexParity(result.distortion!.voltage('b', '2f1-f2')[0], {
+      real: -7.78572e-6, imaginary: -1.33749e-5,
+    });
+  });
+
+  it('validates bounded diode fields before attempting the DC solve', () => {
+    const circuit = parse(`V1 in 0 DC 5 DISTOF1 0.01
+D1 in out DM
+R1 out 0 1k
+.model DM D IS=1e-14 N=2
+.disto dec 1 1k 1k`);
+    const compiled = circuit.compile();
+    const analysis = compiled.analyses.find(entry => entry.type === 'disto')!;
+
+    expect(() => assertDistortionSupported(compiled, analysis as DistortionAnalysis))
+      .toThrow(".disto diode 'D1' does not support model parameter N");
   });
 
   it.each([

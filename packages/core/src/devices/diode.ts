@@ -116,7 +116,8 @@ export class Diode implements DeviceModel {
     this.distortionMode = enabled;
   }
 
-  distortionCoefficients(solution: Float64Array): DiodeDistortionCoefficients {
+  /** Reject diode fields outside the bounded `.disto` slice (no solution needed). */
+  assertDistortionSupported(): void {
     const supported = new Set(['IS', 'TT', 'CJ0', 'CJO', 'RS']);
     const unsupported = Object.keys(this.suppliedParams).filter(name => !supported.has(name));
     if (unsupported.length > 0) {
@@ -136,7 +137,10 @@ export class Diode implements DeviceModel {
     if (this.temperature !== 27) {
       throw new InvalidCircuitError(`.disto diode '${this.name}' does not support temperature overrides`);
     }
+  }
 
+  distortionCoefficients(solution: Float64Array): DiodeDistortionCoefficients {
+    this.assertDistortionSupported();
     const [nA, nK] = this.nodes;
     const voltage = (nA >= 0 ? solution[nA] : 0) - (nK >= 0 ? solution[nK] : 0);
     const { IS, N, TT, CJ0, CJO } = this.params;
