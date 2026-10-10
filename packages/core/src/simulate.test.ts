@@ -31,7 +31,7 @@ describe('simulate (end-to-end)', () => {
 
   it('simulates with .include resolved via resolveInclude', async () => {
     const result = await simulate(
-      `.include 'divider.lib'\n.op`,
+      `Divider include test\n.include 'divider.lib'\n.op`,
       {
         resolveInclude: async (path) => {
           if (path === 'divider.lib') {

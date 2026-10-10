@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { simulate } from '../simulate.js';
-import { parse } from './index.js';
+import { parseTitleless as parse } from './index.js';
 
 describe('ngspice option directives', () => {
   it('maps only solver-backed ngspice options to SimulationOptions', () => {
@@ -43,7 +43,7 @@ R1 in 0 1k
   });
 
   it('applies deck options while explicit API options take precedence', async () => {
-    const netlist = '.options itl1=0\nV1 in 0 1\nR1 in 0 1k\n.op';
+    const netlist = 'Options precedence test\n.options itl1=0\nV1 in 0 1\nR1 in 0 1k\n.op';
 
     await expect(simulate(netlist)).rejects.toThrow();
     await expect(simulate(netlist, { maxIterations: 100 })).resolves.toMatchObject({

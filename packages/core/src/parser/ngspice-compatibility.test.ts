@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { parse, parseAsync } from './index.js';
+import {
+  parseTitleless as parse,
+  parseTitlelessAsync as parseAsync,
+} from './index.js';
 
 interface Fixture {
   feature: string;
