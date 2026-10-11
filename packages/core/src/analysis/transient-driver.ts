@@ -5,6 +5,7 @@ import type {
 import { resolveOptions, withNetlistOptions } from '../types.js';
 import { parse, parseAsync } from '../parser/index.js';
 import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
+import { stampStaticDevices } from '../mna/linear-stamp.js';
 import { solveDCOperatingPoint } from './dc.js';
 import { attemptStep } from './transient-step.js';
 import { ConvergenceError, TimestepTooSmallError, InvalidCircuitError } from '../errors.js';
@@ -170,6 +171,10 @@ class TransientSimImpl implements TransientSim {
   private readonly useDampedInductiveRecovery: boolean;
   /** Devices with an ngspice DEVtrunc charge truncation-error hook. */
   private readonly truncatingDevices: readonly DeviceModel[];
+  /** Devices with an `acceptTransientStep` hook, in netlist order. */
+  private readonly acceptingDevices: readonly DeviceModel[];
+  /** Charge-integrating devices with an accepted charge current, in netlist order. */
+  private readonly chargeCurrentDevices: readonly DeviceModel[];
 
   private time = 0;
   private dt: number;
@@ -221,6 +226,10 @@ class TransientSimImpl implements TransientSim {
     this.useDampedInductiveRecovery = compiled.devices.some(device => device instanceof Inductor)
       && compiled.devices.some(device => device.isNonlinear);
     this.truncatingDevices = compiled.devices.filter(device => device.truncateTransientStep !== undefined);
+    this.acceptingDevices = compiled.devices.filter(device => device.acceptTransientStep !== undefined);
+    this.chargeCurrentDevices = compiled.devices.filter(device => (
+      device.integratesTransientCharge && device.stampAcceptedChargeCurrent !== undefined
+    ));
     this.dt = Math.min(config.timestep, config.maxTimestep);
     this.prevDt = this.dt;
     this.prevPrevDt = this.dt;
@@ -541,12 +550,10 @@ class TransientSimImpl implements TransientSim {
     // A separate stamp-pass kind: this restamp's device sequence differs from
     // the companion build's, so they keep separate slot caches.
     const ctx = this.assembler.getStampContext(HISTORY_STAMP_PASS);
-    for (const d of this.compiled.devices) d.stamp(ctx);
+    stampStaticDevices(this.assembler, this.compiled.devices, ctx);
     // Charge currents accepted at x(n) belong to the static side of the KCL
     // that defines the trapezoidal history of the linear reactive elements.
-    for (const d of this.compiled.devices) {
-      if (d.integratesTransientCharge) d.stampAcceptedChargeCurrent?.(ctx);
-    }
+    for (const d of this.chargeCurrentDevices) d.stampAcceptedChargeCurrent!(ctx);
     const current = this.historyWorkspace ??= new Float64Array(this.assembler.systemSize);
     if (!this.useStaticCurrentHistory) {
       current.set(this.assembler.b);
@@ -579,7 +586,7 @@ class TransientSimImpl implements TransientSim {
 
   private acceptTransientStep(): void {
     const ctx = this.assembler.getStampContext();
-    for (const device of this.compiled.devices) device.acceptTransientStep?.(ctx);
+    for (const device of this.acceptingDevices) device.acceptTransientStep!(ctx);
   }
 
   private initDC(): void {
