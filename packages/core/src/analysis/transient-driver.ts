@@ -18,7 +18,7 @@ import {
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { Inductor } from '../devices/inductor.js';
 import { maxTimestepOption } from './max-timestep.js';
-import type { DeviceModel } from '../devices/device.js';
+import type { DeviceModel, TransientBreakpointSink } from '../devices/device.js';
 
 /**
  * Smallest allowed timestep (femtosecond). Must be small enough that LTE can
@@ -198,6 +198,15 @@ class TransientSimImpl implements TransientSim {
   private lteRejectCount = 0;
   private disposed = false;
   private breakpoints: BreakpointQueue;
+  /** Accepted time of the {@link acceptTransientStep} pass in progress. */
+  private acceptingTime = 0;
+  /** Device-created breakpoints (ngspice CKTsetBreak from DEVaccept). */
+  private readonly breakpointSink: TransientBreakpointSink = {
+    schedule: time => {
+      // Absent only while the constructor accepts t=0, where no history exists yet.
+      this.breakpoints?.insert(time, this.acceptingTime);
+    },
+  };
   private justCrossedBreakpoint = false;
   /**
    * Take the next step at order 1 (Backward Euler) without higher-order
@@ -416,7 +425,7 @@ class TransientSimImpl implements TransientSim {
       // Device-owned histories must observe only committed solutions. In
       // particular, NR/LTE retries and the stampPrevB restamp below are not
       // accepted timepoints and must remain side-effect free.
-      this.acceptTransientStep();
+      this.acceptTransientStep(nextTime);
       // Update trapezoidal history.
       if (this.integrationMethod === 'trapezoidal') {
         this.stampPrevB();
@@ -574,7 +583,7 @@ class TransientSimImpl implements TransientSim {
    * so the first step integrates at order 1 without it.
    */
   private acceptInitialPoint(): void {
-    this.acceptTransientStep();
+    this.acceptTransientStep(this.time);
     this.startsFromUICSeed = this.config.useInitialConditions === true;
     if (this.startsFromUICSeed) this.prevB = undefined;
     else this.stampPrevB();
@@ -620,9 +629,10 @@ class TransientSimImpl implements TransientSim {
     this.prevB = current;
   }
 
-  private acceptTransientStep(): void {
+  private acceptTransientStep(time: number): void {
     const ctx = this.assembler.getStampContext();
-    for (const device of this.acceptingDevices) device.acceptTransientStep!(ctx);
+    this.acceptingTime = time;
+    for (const device of this.acceptingDevices) device.acceptTransientStep!(ctx, this.breakpointSink);
   }
 
   private initDC(): void {
