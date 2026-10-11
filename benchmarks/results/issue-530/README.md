@@ -32,8 +32,8 @@ The level-1 MOSFET (`packages/core/src/devices/mosfet.ts`) now evaluates the dra
 `compare.ts` feeds byte-identical inputs to native ngspice-47 and to spice-ts. The inputs are every committed
 corpus fixture that the base revision ran through the level-1 MOSFET class (an NMOS/PMOS card whose LEVEL is
 not 6/8/49) plus the six project-authored fixtures in `fixtures/` (MIT). Fixture hashes are checked against
-the manifests. `before.json` was measured at base `fbbbe85`, and `after.json` was measured with this branch's
-runtime code. `SUMMARY.md` is the full before/after table: every changed signal with its max/RMS absolute and
+the manifests. `before.json` was measured at base `fbbbe85`, and `after.json` at `ea5e664`, the commit with this branch's
+runtime change (later commits only add evidence). `SUMMARY.md` is the full before/after table: every changed signal with its max/RMS absolute and
 relative errors, losses included. No fixture, tolerance or per-circuit setting changed.
 
 ## Wins (after vs ngspice-47, worst absolute max)

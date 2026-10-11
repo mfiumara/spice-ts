@@ -1,8 +1,8 @@
 {
   "issue": "https://github.com/mfiumara/spice-ts/issues/530",
   "label": "after",
-  "measuredRevision": "fbbbe85ab6c49b6c168f53dcad6a24322249d2ef",
-  "coreSourceDirty": true,
+  "measuredRevision": "ea5e664857e7ba9a522b56047364ee02941d99ed",
+  "coreSourceDirty": false,
   "ngspice": "ngspice-47 : Circuit level simulation program",
   "metricsOrder": "abs max / abs RMS / rel max / rel RMS",
   "fixtures": [
@@ -2499,7 +2499,7 @@
         "ngspice": {
           "status": "failed",
           "convergence": "failed",
-          "error": "Error on line 49 or its substitute: .ac Missing DEC, OCT, or LIN. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 2 stage op-amp open loop 02/16/88 Total elapsed time (seconds) = 0.043 Total DRAM available = 49152.000 MB. DRAM currently available = 21029.812 MB. Maximum ngspice program size = 9.938 MB. Current ngspice program size = 9.938 MB."
+          "error": "Error on line 49 or its substitute: .ac Missing DEC, OCT, or LIN. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 2 stage op-amp open loop 02/16/88 Total elapsed time (seconds) = 0.013 Total DRAM available = 49152.000 MB. DRAM currently available = 15702.844 MB. Maximum ngspice program size = 10.000 MB. Current ngspice program size = 10.000 MB."
         }
       },
       "comparisons": []
@@ -2516,7 +2516,7 @@
         "ngspice": {
           "status": "failed",
           "convergence": "failed",
-          "error": "Error on line 32 or its substitute: .tran 0.1n 10n trace all Error: unknown parameter on .tran - ignored Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: na2 Total elapsed time (seconds) = 0.095 Total DRAM available = 49152.000 MB. DRAM currently available = 21042.906 MB. Maximum ngspice program size = 9.938 MB. Current ngspice program size = 9.938 MB."
+          "error": "Error on line 32 or its substitute: .tran 0.1n 10n trace all Error: unknown parameter on .tran - ignored Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: na2 Total elapsed time (seconds) = 0.054 Total DRAM available = 49152.000 MB. DRAM currently available = 15702.844 MB. Maximum ngspice program size = 9.953 MB. Current ngspice program size = 9.953 MB."
         }
       },
       "comparisons": []
@@ -2534,7 +2534,7 @@
         "ngspice": {
           "status": "failed",
           "convergence": "failed",
-          "error": "Error on line 52 or its substitute: .stat notime unimplemented dot command '.stat' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 2 stage op-amp, conected as voltage follower 02/16/88 Total elapsed time (seconds) = 0.008 Total DRAM available = 49152.000 MB. DRAM currently available = 21042.906 MB. Maximum ngspice program size = 9.953 MB. Current ngspice program size = 9.953 MB."
+          "error": "Error on line 52 or its substitute: .stat notime unimplemented dot command '.stat' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 2 stage op-amp, conected as voltage follower 02/16/88 Total elapsed time (seconds) = 0.010 Total DRAM available = 49152.000 MB. DRAM currently available = 15702.844 MB. Maximum ngspice program size = 9.969 MB. Current ngspice program size = 9.969 MB."
         }
       },
       "comparisons": []
@@ -2552,7 +2552,7 @@
         "ngspice": {
           "status": "failed",
           "convergence": "failed",
-          "error": "Warning: Model issue on line 4 : .model nmos nmos level=7 vth0=0.7 ... Device type MOS7 not available in this binary Warning: Model issue on line 5 : .model pmos pmos level=7 vth0=-0.7 ... Device type MOS7 not available in this binary Error on line 8 or its substitute: m.xi10.mp1 4 2 1 1 pmos w=8e-6 l=600e-9 could not find a valid modelname Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: na2 Total elapsed time (seconds) = 0.050 Total DRAM available = 49152.000 MB. DRAM currently available = 21042.906 MB. Maximum ngspice program size = 10.078 MB. Current ngspice program size = 10.078 MB."
+          "error": "Warning: Model issue on line 4 : .model nmos nmos level=7 vth0=0.7 ... Device type MOS7 not available in this binary Warning: Model issue on line 5 : .model pmos pmos level=7 vth0=-0.7 ... Device type MOS7 not available in this binary Error on line 8 or its substitute: m.xi10.mp1 4 2 1 1 pmos w=8e-6 l=600e-9 could not find a valid modelname Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: na2 Total elapsed time (seconds) = 0.008 Total DRAM available = 49152.000 MB. DRAM currently available = 15702.844 MB. Maximum ngspice program size = 10.062 MB. Current ngspice program size = 10.062 MB."
         }
       },
       "comparisons": []
