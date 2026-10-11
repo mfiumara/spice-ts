@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "spice-ts-issue-381/v1",
+  "issueUrl": "https://github.com/mfiumara/spice-ts/issues/381",
+  "fixture": {
+    "path": "benchmarks/corpus/ngspice/fixtures/examples/probe/ac-test.cir",
+    "bytes": 208,
+    "sha256": "3afb9105918f939cbbdab957f8f872bbc886209fb83dbd27003c605977916479",
+    "adaptation": "none"
+  },
+  "tools": {
+    "spiceTs": "0.3.0",
+    "ngspice": "ngspice-47",
+    "node": "v22.23.1",
+    "platform": "darwin-arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "commands": {
+    "verify": "pnpm exec tsx benchmarks/results/issue-381/verify.ts --output benchmarks/results/issue-381/report.json",
+    "ngspice": "ngspice -b -r <temporary-ascii-raw> <identical-fixture>",
+    "spiceTs": "@spice-ts/core simulate(<identical-fixture>)"
+  },
+  "before": {
+    "spiceTs": "ParseError: Parse error at line 14: Unsupported dot command: '.control'"
+  },
+  "alignment": {
+    "targetGrid": "spice-ts",
+    "interpolation": "linear",
+    "relativeZeroThreshold": 1e-15
+  },
+  "grid": {
+    "spiceTsPoints": 16,
+    "ngspicePoints": 16,
+    "alignedPoints": 15,
+    "excludedOutOfRange": 1
+  },
+  "gridEndpoints": {
+    "spiceTs": {
+      "first": 10,
+      "last": 10000
+    },
+    "ngspice": {
+      "first": 10,
+      "last": 9999.999999999989
+    },
+    "note": "spice-ts grid points outside the ngspice grid range are excluded by the harness instead of extrapolated"
+  },
+  "acceptance": {
+    "absoluteMax": 2e-9,
+    "relativeMax": 2e-9,
+    "perCircuitTuning": false,
+    "withinTolerance": true
+  },
+  "compared": {
+    "v(1)": {
+      "status": "compared",
+      "sampleCount": 15,
+      "absoluteError": {
+        "max": 4.441021343590601e-16,
+        "rms": 2.668442397143694e-16
+      },
+      "relativeError": {
+        "max": 4.441021343590601e-16,
+        "rms": 2.668442397143694e-16,
+        "sampleCount": 15,
+        "excludedZeroReferences": 0
+      }
+    },
+    "v(2)": {
+      "status": "compared",
+      "sampleCount": 15,
+      "absoluteError": {
+        "max": 2.2247786310271853e-16,
+        "rms": 1.2676153763494157e-16
+      },
+      "relativeError": {
+        "max": 1.0371519621769214e-15,
+        "rms": 4.482204574999501e-16,
+        "sampleCount": 15,
+        "excludedZeroReferences": 0
+      }
+    },
+    "v(3)": {
+      "status": "compared",
+      "sampleCount": 15,
+      "absoluteError": {
+        "max": 1.1236938283130691e-16,
+        "rms": 6.841886709153678e-17
+      },
+      "relativeError": {
+        "max": 7.137883021906439e-16,
+        "rms": 3.8493071167762325e-16,
+        "sampleCount": 15,
+        "excludedZeroReferences": 0
+      }
+    },
+    "i(V1)": {
+      "status": "compared",
+      "sampleCount": 15,
+      "absoluteError": {
+        "max": 4.412383163948269e-19,
+        "rms": 2.160329261377537e-19
+      },
+      "relativeError": {
+        "max": 7.173925288553883e-16,
+        "rms": 3.988455385539855e-16,
+        "sampleCount": 15,
+        "excludedZeroReferences": 0
+      }
+    }
+  },
+  "probeOnlyVectors": {
+    "i(R2)": {
+      "ngspice": true,
+      "spiceTs": false,
+      "status": "missing-from-spice-ts"
+    },
+    "v(vd_r2)": {
+      "ngspice": true,
+      "spiceTs": false,
+      "status": "missing-from-spice-ts"
+    },
+    "v(vd_r3)": {
+      "ngspice": true,
+      "spiceTs": false,
+      "status": "missing-from-spice-ts"
+    }
+  },
+  "losses": [
+    "spice-ts does not return the ngspice .probe vectors i(r2), vd_r2 and vd_r3 (device-terminal currents and differential probe voltages); they are reported as missing, not compared.",
+    "The .control print/plot/display output is not produced by spice-ts; results are returned through the result API instead.",
+    "No runtime comparison or superiority claim is made.",
+    "The 10 kHz endpoint is not compared: ngspice accumulates the decade grid to 9999.999999999989 Hz while spice-ts returns 10000 Hz, so the shared harness excludes that out-of-range point rather than extrapolating (15 of 16 points compared)."
+  ]
+}

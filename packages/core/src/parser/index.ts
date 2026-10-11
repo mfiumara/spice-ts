@@ -14,6 +14,7 @@ import {
   parseTransmissionLine,
 } from './transmission-line-parser.js';
 import { preprocess } from './preprocessor.js';
+import { validateControlCommand } from './control-block.js';
 import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
@@ -74,6 +75,7 @@ function parseNetlist(
   let hasSensitivityAnalysis = false;
   let hasDistortionAnalysis = false;
   let hasStepAnalysis = false;
+  let controlStart: { lineNumber: number; raw: string } | null = null;
 
   for (const { tokens, lineNumber, raw } of lines) {
     guard?.checkpoint('parse:line');
@@ -103,6 +105,29 @@ function parseNetlist(
           subcktCollector.body.push(raw);
         }
         continue;
+      }
+
+      // Inside a .control block — ngspice control language, not netlist cards
+      if (controlStart !== null) {
+        if (first === '.ENDC') {
+          requireNoDirectiveArguments(tokens, lineNumber, raw);
+          controlStart = null;
+        } else if (first === '.CONTROL') {
+          throw new ParseError("Nested '.control' blocks are not supported", lineNumber, raw);
+        } else {
+          validateControlCommand(tokens, lineNumber, raw);
+        }
+        continue;
+      }
+
+      if (first === '.CONTROL') {
+        requireNoDirectiveArguments(tokens, lineNumber, raw);
+        controlStart = { lineNumber, raw };
+        continue;
+      }
+
+      if (first === '.ENDC') {
+        throw new ParseError("'.endc' without a matching '.control'", lineNumber, raw);
       }
 
       if (first === '.SUBCKT') {
@@ -175,7 +200,25 @@ function parseNetlist(
     }
   }
 
+  if (controlStart !== null) {
+    throw new ParseError(
+      "Unterminated .control block: missing '.endc'",
+      controlStart.lineNumber,
+      controlStart.raw,
+    );
+  }
+
   return circuit;
+}
+
+function requireNoDirectiveArguments(tokens: string[], lineNumber: number, context: string): void {
+  if (tokens.length > 1) {
+    throw new ParseError(
+      `Unsupported ${tokens[0].toLowerCase()} arguments: '${tokens.slice(1).join(' ')}'`,
+      lineNumber,
+      context,
+    );
+  }
 }
 
 /**

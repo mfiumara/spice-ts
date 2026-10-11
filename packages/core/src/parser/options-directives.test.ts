@@ -243,12 +243,9 @@ R2 2 0 1k
     expect(lowpass.dc).toBeDefined();
     expect(lowpass.ac?.frequencies).toHaveLength(31);
 
-    expect(() => parseDeck(probeFixture!)).toThrow(/Unsupported dot command: '\.control'/);
-    try {
-      parseDeck(probeFixture!);
-    } catch (error) {
-      expect((error as Error).message).not.toContain('.probe');
-    }
+    const probe = await simulate(probeFixture!);
+    expect(probe.ac?.frequencies).toHaveLength(16);
+    expect([...probe.ac!.voltages.keys()]).toEqual(['1', '2', '3']);
   });
 
   it.each([
@@ -257,6 +254,81 @@ R2 2 0 1k
     '.control\nop\n.endc',
   ])('rejects unsupported semantic/control directives: %s', netlist => {
     expect(() => parse(netlist)).toThrow();
+  });
+});
+
+describe('ngspice .control/.endc contract', () => {
+  const deck = (control: string) => `V1 1 0 dc 0 ac 1
+R1 1 2 1k
+C1 2 0 1u
+.ac dec 2 10 1k
+.control
+${control}
+.endc`;
+
+  it.each([
+    'run',
+    'display',
+    'print vd_r2/i(r2)',
+    'plot mag(v(2))',
+    'asciiplot v(2)',
+    'echo done',
+    'listing',
+    'quit',
+    'exit',
+    'RUN\nPrint v(2)\nQUIT 0',
+  ])('accepts run and output-only commands without changing results: %s', async control => {
+    const reference = await simulate(`Control contract\n${deck('').replace('.control\n\n.endc', '')}`);
+    const withControl = await simulate(`Control contract\n${deck(control)}`);
+
+    expect(withControl.ac!.frequencies).toEqual(reference.ac!.frequencies);
+    expect(withControl.ac!.voltages.get('2')).toEqual(reference.ac!.voltages.get('2'));
+  });
+
+  it('accepts an empty control block and multiple control blocks', () => {
+    expect(() => parse(`${deck('')}\n.control\nprint v(2)\n.endc`)).not.toThrow();
+  });
+
+  it.each([
+    ['op', 'op'],
+    ['ac lin 1 1k 1k', 'ac'],
+    ['tran 1u 1m', 'tran'],
+    ['let x = v(2)', 'let'],
+    ['set temp = 50', 'set'],
+    ['alter R1 2k', 'alter'],
+    ['alterparam r = 2k', 'alterparam'],
+    ['meas ac gain max vm(2)', 'meas'],
+    ['remcirc', 'remcirc'],
+    ['if 1\necho x\nend', 'if'],
+    ['run out.raw', 'run'],
+  ])('rejects result-affecting or unclassified control command %s with a structured error', (control, command) => {
+    let error: unknown;
+    try {
+      parse(deck(`print v(2)\n${control}`));
+    } catch (caught) {
+      error = caught;
+    }
+
+    expect(error).toBeInstanceOf(ParseError);
+    expect((error as ParseError).line).toBe(7);
+    expect((error as ParseError).message).toContain(`Unsupported .control command '${command}'`);
+  });
+
+  it('does not parse control-language lines as devices', () => {
+    // `run`, `display` and `print` would otherwise be read as R/D/P elements.
+    const circuit = parse(deck('run\ndisplay'));
+    expect(circuit.compile().devices.map(device => device.name)).toEqual(['V1', 'R1', 'C1']);
+  });
+
+  it.each([
+    ['.control\nrun', "Unterminated .control block: missing '.endc'"],
+    ['.endc', "'.endc' without a matching '.control'"],
+    ['.control\n.control\n.endc', "Nested '.control' blocks are not supported"],
+    ['.control extra\n.endc', "Unsupported .control arguments: 'extra'"],
+    ['.control\n.endc extra', "Unsupported .endc arguments: 'extra'"],
+  ])('rejects malformed control block structure: %s', (netlist, message) => {
+    expect(() => parse(`V1 1 0 1\nR1 1 0 1k\n.op\n${netlist}`)).toThrow(ParseError);
+    expect(() => parse(`V1 1 0 1\nR1 1 0 1k\n.op\n${netlist}`)).toThrow(message);
   });
 });
 
