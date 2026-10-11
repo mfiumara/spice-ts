@@ -1,0 +1,148 @@
+{
+  "schemaVersion": "spice-ts-corpus-f-triage/v1",
+  "issue": "https://github.com/mfiumara/spice-ts/issues/511",
+  "measuredOn": {
+    "spiceTsCommit": "bf2e4169d8c903d7e35f5de6886d5aaa127d9cf8",
+    "ngspice": "ngspice-47",
+    "metric": "corpus-f published metric (lib.ts normalizedSignalErrors, MATCH_THRESHOLD 0.01), unchanged",
+    "tool": "pnpm exec tsx benchmarks/corpus/corpus-f/triage-detail.ts <fixture-id> [--tmax s] [--deck variant] [--reference-tmax s [--candidate ngspice]]",
+    "diagnosticLimitations": "Fine-step runs do not establish step convergence. Reference-TMAX comparisons use each candidate's own grid and breakpoint alignment, so their maxima do not rank engine accuracy on a common grid."
+  },
+  "rootCauses": [
+    {
+      "id": "mos1-junction-capacitance",
+      "kind": "simulator",
+      "issue": "https://github.com/mfiumara/spice-ts/issues/590",
+      "summary": "MOS1 treats CBD/CBS as constant capacitors and silently ignores CJ/CJSW/MJ/MJSW/PB/FC; ngspice-47 uses voltage-dependent depletion capacitance."
+    },
+    {
+      "id": "mos1-meyer-gate-capacitance",
+      "kind": "simulator",
+      "issue": "https://github.com/mfiumara/spice-ts/issues/591",
+      "summary": "MOS1 has no Meyer intrinsic gate capacitance from TOX; only constant CGSO/CGDO overlaps are stamped."
+    },
+    {
+      "id": "reference-grid-artefact",
+      "kind": "metric",
+      "issue": "https://github.com/mfiumara/spice-ts/issues/592",
+      "summary": "The transient metric interpolates ngspice's coarse default-step output onto spice-ts points, so ngspice's own truncation and interpolation error is scored as a spice-ts mismatch."
+    },
+    {
+      "id": "near-zero-peak-normalisation",
+      "kind": "metric",
+      "issue": "https://github.com/mfiumara/spice-ts/issues/593",
+      "summary": "Signals with zero or ~100 uV ngspice peaks are normalised by that peak (floor 1e-12), so fV-uV residuals exceed 1%."
+    },
+    {
+      "id": "mos-level-4-5-unimplemented",
+      "kind": "model-gap",
+      "issue": "https://github.com/mfiumara/spice-ts/issues/565",
+      "summary": "BSIM1/BSIM2 (LEVEL 4/5) are not implemented. Since #552 they raise UnsupportedModelLevelError instead of silently running Level-1 equations, which caused the issue-table mismatch."
+    },
+    {
+      "id": "vdmos-model-drop-fixed",
+      "kind": "fixed",
+      "issue": "https://github.com/mfiumara/spice-ts/issues/509",
+      "summary": "The .model VDMOS card was silently dropped. #542 made unsupported model types a typed error and #562 (#506) added the ngspice-47 VDMOS model; both VDMOS decks now match."
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "examples-vdmos-vdmosp-out-sp",
+      "issueTable": { "outcome": "mismatch", "worst": 5.05e+242, "signal": "dc i(vs)" },
+      "current": { "outcome": "matched", "worst": 1.48e-8, "signal": "dc i(vs)" },
+      "rootCauses": ["vdmos-model-drop-fixed"],
+      "evidence": "6 dc signals compared, worst 1.48e-8 (abs 2.14e-7 A on a 14.4 A peak)."
+    },
+    {
+      "id": "examples-vdmos-ro-11-vdmos-sp",
+      "issueTable": null,
+      "current": { "outcome": "matched", "worst": 0.00348, "signal": "tran i(vdd)" },
+      "rootCauses": ["vdmos-model-drop-fixed"],
+      "evidence": "Listed as a mismatch (3.19) in the committed outcomes.json, not in the #511 table. 11 tran signals now compared, worst 0.00348."
+    },
+    {
+      "id": "tests-general-fourbitadder-cir",
+      "issueTable": { "outcome": "mismatch", "worst": 8.64, "signal": "tran v(x1.x1.x1.x7.8)" },
+      "current": { "outcome": "mismatch", "worst": 0.0677, "signal": "tran v(x1.x1.x1.x7.8)" },
+      "rootCauses": ["near-zero-peak-normalisation", "reference-grid-artefact"],
+      "evidence": "Worst signals are TTL NAND internal nodes x*.8 with 75-125 uV peaks on a 5 V circuit (abs 6.7 uV). At ngspice points: 0.0377. spice-ts default vs fine-step ngspice (TMAX 10 ps): 0.0107 on its grid; ngspice default vs the same reference: 0.0415 on its grid. Residual 1.1 uV (1.02-1.07% of a ~100 uV peak) on 5/270 signals at t~13 ps with both engines at TMAX 10 ps is not yet root-caused; tracked in #593."
+    },
+    {
+      "id": "tests-transmission-ltra2-2-line-cir",
+      "issueTable": { "outcome": "mismatch", "worst": 1, "signal": "tran i(vs)" },
+      "current": { "outcome": "mismatch", "worst": 0.974, "signal": "tran i(vs)" },
+      "rootCauses": ["mos1-meyer-gate-capacitance", "reference-grid-artefact"],
+      "evidence": "i(vs) gate-drive current: spice-ts 0, ngspice peak 2.5 uA (1.0 at ngspice points, 1.0 with both engines at TMAX 10 ps). Removing TOX=18000N from both model cards (diagnostic variant) makes i(vs) agree. Other signals (v(3) 0.0413, i(vdd) 0.0362, v(2) 0.0165) are <= 0.0074 at ngspice points and <= 0.0034 at TMAX 10 ps."
+    },
+    {
+      "id": "tests-bsim2-test-cir",
+      "issueTable": { "outcome": "mismatch", "worst": 0.738, "signal": "dc i(v1)" },
+      "current": { "outcome": "spice-ts-loss", "worst": null, "signal": null },
+      "rootCauses": ["mos-level-4-5-unimplemented"],
+      "evidence": "spice-ts: MOSFET 'MN1' (model 'NMOS') uses unsupported model LEVEL=5 (supported MOSFET levels: 1, 6, 8, 49)."
+    },
+    {
+      "id": "tests-general-mosmem-cir",
+      "issueTable": { "outcome": "mismatch", "worst": 0.714, "signal": "tran v(8)" },
+      "current": { "outcome": "mismatch", "worst": 0.227, "signal": "tran i(vdd)" },
+      "rootCauses": ["mos1-junction-capacitance"],
+      "evidence": "9/13 signals over 1%: i(vdd) 0.227, v(6) 0.103, i(vw) 0.0994, v(3) 0.0618, v(8) 0.0311. Unchanged with both engines at TMAX 0.1 ns. Adding mj=0 to the model card (both engines; makes ngspice CBD/CBS constant) brings all 13 signals to <= 3.95e-4. Identical errors on classic/mos-memory-cell."
+    },
+    {
+      "id": "tests-bsim1-test-cir",
+      "issueTable": { "outcome": "mismatch", "worst": 0.628, "signal": "dc i(v1)" },
+      "current": { "outcome": "spice-ts-loss", "worst": null, "signal": null },
+      "rootCauses": ["mos-level-4-5-unimplemented"],
+      "evidence": "spice-ts: MOSFET 'MN1' (model 'NMOS') uses unsupported model LEVEL=4 (supported MOSFET levels: 1, 6, 8, 49)."
+    },
+    {
+      "id": "tests-general-rtlinv-cir",
+      "issueTable": { "outcome": "mismatch", "worst": 0.432, "signal": "dc v(4)" },
+      "current": { "outcome": "mismatch", "worst": 0.0527, "signal": "tran v(2)" },
+      "rootCauses": ["reference-grid-artefact"],
+      "evidence": "At ngspice points: 0.0013. Both engines at TMAX 20 ps: all 16 signals <= 8.5e-4. spice-ts default transient vs fine-step ngspice: 5.24e-4 on its grid (DC remains 8.43e-4); ngspice default vs the same reference: 0.00173 on its grid."
+    },
+    {
+      "id": "tests-general-rca3040-cir",
+      "issueTable": { "outcome": "mismatch", "worst": 0.148, "signal": "dc v(12)" },
+      "current": { "outcome": "mismatch", "worst": 0.0511, "signal": "tran v(1)" },
+      "rootCauses": ["reference-grid-artefact", "near-zero-peak-normalisation"],
+      "evidence": "tran v(1) is the SIN source node (108 ngspice points for 10 cycles at 50 MHz); at ngspice points 0.0021. spice-ts default vs fine-step ngspice (TMAX 10 ps): all tran signals <= 0.0010 on its grid; ngspice default vs the same reference: 0.031 on its grid. The remaining over-threshold signal is ac v(2), node held by vcc with no AC value: spice-ts 4.84e-14 V vs ngspice 0, normalised by the 1e-12 floor to 0.0484."
+    },
+    {
+      "id": "examples-xspice-various-xspice-c1-cir",
+      "issueTable": { "outcome": "mismatch", "worst": 0.0439, "signal": "tran v(emit)" },
+      "current": { "outcome": "matched", "worst": 0.0000226, "signal": "tran i(vin)" },
+      "rootCauses": [],
+      "evidence": "Already matched in the imported outcomes.json (0.000493); fresh bf2e4169 run gives 0.0000226 after #531 initial-condition handling."
+    },
+    {
+      "id": "examples-xspice-original-examples-spice3-deck",
+      "issueTable": { "outcome": "mismatch", "worst": 0.0439, "signal": "tran v(emit)" },
+      "current": { "outcome": "matched", "worst": 0.0000226, "signal": "tran i(vin)" },
+      "rootCauses": [],
+      "evidence": "Already matched in the imported outcomes.json (0.000493); fresh bf2e4169 run gives 0.0000226 after #531 initial-condition handling."
+    },
+    {
+      "id": "examples-probe-mos-test-cir",
+      "issueTable": null,
+      "current": { "outcome": "mismatch", "worst": 0.176, "signal": "tran v(out)" },
+      "rootCauses": ["reference-grid-artefact"],
+      "evidence": "Capacitance-free inverter (default MOS1, no TOX/CJ, lambda 0, equal KP): v(out) jumps vertically at vin = 2.5 V (t = 5 ns); interpolating ngspice's 135-point grid across it gives 0.176 (spice-ts 3.64 V is the analytic value at vin = 2.33 V). At ngspice points: 0.0023; spice-ts default vs fine-step ngspice (TMAX 0.1 ns): 0.0030 at reference points."
+    }
+  ],
+  "deferredMismatches": {
+    "issue": "https://github.com/mfiumara/spice-ts/issues/597",
+    "reason": "Newly runnable after prior feature merges, not rows of #511 or mismatches in the imported report. Published losses, root causes not established; follow-up investigation required.",
+    "fixtures": [
+      "examples-ddt-ddt-test1-cir",
+      "examples-ddt-ddt-test3-cir",
+      "examples-xspice-original-examples-analog-models1-transient-deck",
+      "tests-resistance-res-array-cir",
+      "tests-transmission-cpl-ibm2-cir",
+      "tests-transmission-txl1-1-line-cir",
+      "tests-transmission-txl2-3-line-cir"
+    ]
+  }
+}

@@ -148,6 +148,10 @@ export const FOLLOW_UP_ISSUES: ReadonlyArray<{ url: string; scope: string }> = [
   { url: 'https://github.com/mfiumara/spice-ts/issues/510', scope: 'parse() rejects .param decks that simulate() accepts; the shared corpus adapter reports parse()\'s error (corpus-f calls simulate() only)' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/511', scope: 'triage of the 10 ngspice-successful decks that exceed the 1% parity threshold' },
   { url: HARNESS_ISSUE, scope: 'the ngspice harness exports no vectors for decks that run analyses from .control or quit inside it' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/590', scope: 'MOS1 bulk-junction capacitance is constant CBD/CBS; CJ/CJSW/MJ/PB depletion C(V) silently ignored (tests/general/mosmem.cir; #511 triage in TRIAGE-511.md)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/591', scope: 'MOS1 has no Meyer intrinsic gate capacitance from TOX (tests/transmission/ltra2_2_line.cir i(vs); #511 triage)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/592', scope: 'metric: ngspice\'s coarse default-step output is scored as spice-ts error (rca3040, rtlinv, mos-test, fourbitadder; #511 triage)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/593', scope: 'metric: zero/near-zero ngspice peaks turn fV-uV residuals into mismatches (rca3040 AC v(2), fourbitadder; #511 triage)' },
 ];
 
 const OUTCOMES: Outcome[] = ['matched', 'mismatch', 'not-compared', 'spice-ts-loss', 'ngspice-failed', 'both-failed'];
