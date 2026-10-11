@@ -13,7 +13,7 @@ import {
   parseLtraModelCard,
   parseTransmissionLine,
 } from './transmission-line-parser.js';
-import { preprocess } from './preprocessor.js';
+import { preprocess, preprocessLines } from './preprocessor.js';
 import { validateControlCommand } from './control-block.js';
 import { parseBehavioralSourceCard } from './behavioral-expression.js';
 import { parseZInstance } from './z-device-parser.js';
@@ -248,7 +248,8 @@ export async function parseAsync(
   const newline = netlist.indexOf('\n');
   const title = newline < 0 ? netlist : netlist.slice(0, newline);
   const body = newline < 0 ? '' : netlist.slice(newline + 1);
-  const preprocessed = await preprocess(body, resolver);
+  // The body starts on line 2 of the caller's netlist (after the title).
+  const preprocessed = await preprocessLines(body, resolver, undefined, 1);
   return parse(`${title}\n${preprocessed}`);
 }
 
@@ -308,6 +309,12 @@ function parseDotCommand(
       break;
     }
     case '.TRAN': {
+      if (tokens.length < 3) {
+        throw new ParseError(
+          ".tran requires TSTEP and TSTOP; expected '.tran tstep tstop [tstart [tmax]] [uic]'",
+          lineNumber, context,
+        );
+      }
       const timestep = parseNumber(tokens[1]);
       const stopTime = parseNumber(tokens[2]);
       const args = stripGnucapTraceSuffix(
@@ -333,6 +340,11 @@ function parseDotCommand(
       parseNodeInitialState(circuit, 'nodeset', tokens, lineNumber);
       break;
     case '.AC': {
+      if (tokens.length < 5) {
+        throw new ParseError(
+          ".ac requires '.ac {dec|oct|lin} points fstart fstop'", lineNumber, context,
+        );
+      }
       const variation = tokens[1].toLowerCase() as 'dec' | 'oct' | 'lin';
       const points = parseInt(tokens[2], 10);
       const startFreq = parseNumber(tokens[3]);

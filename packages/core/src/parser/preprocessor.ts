@@ -17,7 +17,8 @@ const MAX_DEPTH = 64;
  * @param resolver - Async function that returns file contents given a path;
  *   required if the netlist contains `.include` or `.lib` directives
  * @returns The preprocessed netlist with all includes inlined and expressions evaluated
- * @throws {@link ParseError} if include depth exceeds 64 or resolver is missing
+ * @throws {@link ParseError} if include depth exceeds 64, resolver is missing,
+ *   or a `{expression}` references an undefined or circular `.param`
  * @throws {@link CycleError} if includes form a circular dependency
  */
 export async function preprocess(
@@ -25,53 +26,155 @@ export async function preprocess(
   resolver?: IncludeResolver,
   guard?: ProtocolExecutionGuard,
 ): Promise<string> {
-  return preprocessInternal(netlist, resolver, new Set(), [], 0, {}, guard);
+  return preprocessLines(netlist, resolver, guard, 0);
 }
 
-async function preprocessInternal(
+/**
+ * @internal Preprocess a netlist fragment that starts `lineOffset` lines into the
+ * original netlist (e.g. the body after a title line), so ParseError line
+ * numbers refer to the caller's netlist.
+ */
+export async function preprocessLines(
+  netlist: string,
+  resolver: IncludeResolver | undefined,
+  guard: ProtocolExecutionGuard | undefined,
+  lineOffset: number,
+): Promise<string> {
+  const definitions = new Map<string, ParamDefinition>();
+  const statements: PendingStatement[] = [];
+  await collectStatements(netlist, resolver, new Set(), [], 0, definitions, statements, guard, lineOffset);
+  // ngspice collects every top-level `.param` before substituting, so a
+  // parameter may be used before its definition and the last definition wins.
+  const params = createParamScope(definitions);
+  return statements.map(statement => statement.substitute
+    ? substituteStatement(statement, params)
+    : statement.text).join('\n');
+}
+
+interface ParamDefinition {
+  expression: string;
+  line: number;
+  context: string;
+}
+
+interface PendingStatement {
+  text: string;
+  substitute: boolean;
+  line: number;
+}
+
+/**
+ * Lazily evaluates `.param` definitions on first use, in dependency order.
+ * Returned as a variable record so the expression evaluator can look names up.
+ */
+function createParamScope(definitions: Map<string, ParamDefinition>): Record<string, number> {
+  const values = new Map<string, number>();
+  const resolving: string[] = [];
+  const isParam = (key: string | symbol): key is string => typeof key === 'string' && definitions.has(key);
+  const scope: Record<string, number> = new Proxy({}, {
+    has: (_target, key) => isParam(key),
+    get: (_target, key) => (isParam(key) ? resolve(key) : undefined),
+  });
+
+  function resolve(name: string): number {
+    const known = values.get(name);
+    if (known !== undefined) return known;
+    const definition = definitions.get(name)!;
+    if (resolving.includes(name)) {
+      const cycle = [...resolving.slice(resolving.indexOf(name)), name].join(' -> ');
+      throw new ParseError(`Circular .param dependency: ${cycle}`, definition.line, definition.context);
+    }
+    resolving.push(name);
+    try {
+      const value = evaluateParamExpression(definition, scope);
+      values.set(name, value);
+      return value;
+    } finally {
+      resolving.pop();
+    }
+  }
+
+  return scope;
+}
+
+function evaluateParamExpression(definition: ParamDefinition, scope: Record<string, number>): number {
+  try {
+    return evaluateExpression(definition.expression, scope);
+  } catch (error) {
+    if (error instanceof ParseError) throw error;
+    // A bare SPICE number (e.g. `1meg`) is not an expression; anything else
+    // that fails to evaluate is reported at the `.param` definition.
+    try {
+      return parseNumber(definition.expression);
+    } catch {
+      throw toParseError(error, definition.line, definition.context);
+    }
+  }
+}
+
+function substituteStatement(statement: PendingStatement, params: Record<string, number>): string {
+  const preserveOutputFunctions = /^\.PRINT(?:\s|$)/i.test(statement.text.trim());
+  try {
+    return substituteExpressions(statement.text, params, preserveOutputFunctions);
+  } catch (error) {
+    if (error instanceof ParseError) throw error;
+    throw toParseError(error, statement.line, statement.text.trim());
+  }
+}
+
+function toParseError(error: unknown, line: number, context: string): ParseError {
+  const message = (error as Error).message
+    .replace(/^Undefined variable '([^']*)'$/, "Undefined parameter '$1'");
+  return new ParseError(message, line, context);
+}
+
+async function collectStatements(
   netlist: string,
   resolver: IncludeResolver | undefined,
   visited: Set<string>,
   chain: string[],
   depth: number,
-  params: Record<string, number>,
+  definitions: Map<string, ParamDefinition>,
+  statements: PendingStatement[],
   guard?: ProtocolExecutionGuard,
-): Promise<string> {
+  lineOffset = 0,
+): Promise<void> {
   guard?.maximum('maxIncludeDepth', depth, 'parse');
   if (depth > MAX_DEPTH) {
     throw new ParseError(`Include depth limit exceeded (${MAX_DEPTH})`, 0, '');
   }
 
   const lines = netlist.split('\n');
-  const output: string[] = [];
   let inSubckt = 0;
 
-  for (const line of lines) {
+  for (const [index, line] of lines.entries()) {
     guard?.checkpoint('parse:line');
+    const lineNumber = index + 1 + lineOffset;
     const trimmed = line.trim();
     const upper = trimmed.toUpperCase();
+    const passThrough = () => statements.push({ text: line, substitute: false, line: lineNumber });
 
     // Comments are metadata, not expression-bearing netlist statements.
     if (trimmed.startsWith('*')) {
-      output.push(line);
+      passThrough();
       continue;
     }
 
     // Track .subckt nesting — don't evaluate params inside subcircuits
     if (upper.startsWith('.SUBCKT ')) {
       inSubckt++;
-      output.push(line);
+      passThrough();
       continue;
     }
     if (upper.startsWith('.ENDS')) {
       inSubckt--;
-      output.push(line);
+      passThrough();
       continue;
     }
 
     // Inside a subcircuit — pass through without processing
     if (inSubckt > 0) {
-      output.push(line);
+      passThrough();
       continue;
     }
 
@@ -85,11 +188,7 @@ async function preprocessInternal(
         if (valStr.startsWith('{') && valStr.endsWith('}')) {
           valStr = valStr.slice(1, -1);
         }
-        try {
-          params[name] = evaluateExpression(valStr, params);
-        } catch {
-          params[name] = parseNumber(valStr);
-        }
+        definitions.set(name, { expression: valStr, line: lineNumber, context: trimmed });
       }
       continue;
     }
@@ -112,11 +211,10 @@ async function preprocessInternal(
       }
       visited.add(path);
       const content = await resolver(path);
-      const processed = await preprocessInternal(
-        content, resolver, visited, [...chain, path], depth + 1, params, guard,
+      await collectStatements(
+        content, resolver, visited, [...chain, path], depth + 1, definitions, statements, guard,
       );
       visited.delete(path);
-      output.push(processed);
       continue;
     }
 
@@ -143,11 +241,10 @@ async function preprocessInternal(
         visited.add(visitKey);
         const content = await resolver(filePath);
         const extracted = extractLibSection(content, section);
-        const processed = await preprocessInternal(
-          extracted, resolver, visited, [...chain, visitKey], depth + 1, params, guard,
+        await collectStatements(
+          extracted, resolver, visited, [...chain, visitKey], depth + 1, definitions, statements, guard,
         );
         visited.delete(visitKey);
-        output.push(processed);
         continue;
       }
       continue;
@@ -158,15 +255,11 @@ async function preprocessInternal(
       continue;
     }
 
-    // Output vectors are evaluated after simulation, not as scalar parameters.
-    const preserveOutputFunctions = /^\.PRINT(?:\s|$)/i.test(trimmed);
-    const substituted = substituteExpressions(line, params, preserveOutputFunctions);
-    output.push(substituted);
+    statements.push({ text: line, substitute: true, line: lineNumber });
   }
-
-  return output.join('\n');
 }
 
+// Output vectors are evaluated after simulation, not as scalar parameters.
 function substituteExpressions(
   line: string,
   params: Record<string, number>,
