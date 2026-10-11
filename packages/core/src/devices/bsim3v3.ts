@@ -24,6 +24,8 @@ export class BSIM3v3 implements DeviceModel {
    * (DEVqmeyer): q = q(n) + (C(v) + C(v(n)))/2 * (v - v(n)).
    */
   readonly integratesTransientCharge = true;
+  /** {@link truncateTransientStep} bounds every stored charge (BSIM3trunc). */
+  readonly truncationCoversCharges = true;
   private readonly charges = new TransientChargeState(5);
   private readonly capacitanceScratch = new Float64Array(5);
 
