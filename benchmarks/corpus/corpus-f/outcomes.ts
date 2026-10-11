@@ -152,10 +152,9 @@ export const FOLLOW_UP_ISSUES: ReadonlyArray<{ url: string; scope: string }> = [
   { url: 'https://github.com/mfiumara/spice-ts/issues/511', scope: 'triage of the 10 ngspice-successful decks that exceed the 1% parity threshold' },
   { url: HARNESS_ISSUE, scope: 'the ngspice harness exports no vectors for decks that run analyses from .control or quit inside it' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/590', scope: 'closed by #601: MOS1 depletion junction capacitance (tests/general/mosmem.cir now matches; #511 triage in TRIAGE-511.md)' },
-  { url: 'https://github.com/mfiumara/spice-ts/issues/591', scope: 'closed by #601: MOS1 Meyer gate capacitance from TOX; residual i(vs) mismatch tracked in #627' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/591', scope: 'closed by #601: MOS1 Meyer gate capacitance from TOX; residual i(vs) mismatch is grid discretisation per #627/#629, routed to #592' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/626', scope: 'BSIM3 4-bit NAND adder (examples/snapshot/adder_mos_circ.cir) completes but i(vcc) is ~40x ngspice-47; root cause not established (#511 triage)' },
-  { url: 'https://github.com/mfiumara/spice-ts/issues/627', scope: 'MOS1 gate-drive current i(vs) still ~0.37 off after #601 (ltra2_2_line, txl1_1_line; #511 triage)' },
-  { url: 'https://github.com/mfiumara/spice-ts/issues/592', scope: 'metric: ngspice\'s coarse default-step output is scored as spice-ts error (rca3040, rtlinv, mos-test, fourbitadder, switches-manual-p92; #511 triage)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/592', scope: 'metric: ngspice\'s coarse default-step output is scored as spice-ts error (rca3040, rtlinv, mos-test, fourbitadder, switches-manual-p92, ltra2_2_line/txl1_1_line i(vs); #511 triage)' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/593', scope: 'metric: zero/near-zero ngspice peaks turn fV-uV residuals into mismatches (rca3040 AC v(2), fourbitadder; #511 triage)' },
 ];
 

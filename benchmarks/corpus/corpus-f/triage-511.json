@@ -19,13 +19,7 @@
       "id": "mos1-meyer-gate-capacitance",
       "kind": "fixed",
       "issue": "https://github.com/mfiumara/spice-ts/issues/591",
-      "summary": "MOS1 had no Meyer intrinsic gate capacitance from TOX. Fixed by #601 (Meyer gate charges); ltra2_2_line i(vs) improved from 0.974 to 0.374 but did not reach parity."
-    },
-    {
-      "id": "mos1-gate-current-residual",
-      "kind": "simulator",
-      "issue": "https://github.com/mfiumara/spice-ts/issues/627",
-      "summary": "After #601 the MOS1 gate-drive current spike i(vs) is still 0.374 off (0.151 at ngspice points, 0.029 with both engines at TMAX 10 ps). Not root-caused."
+      "summary": "MOS1 had no Meyer intrinsic gate capacitance from TOX. Fixed by #601 (Meyer gate charges). The remaining ltra2_2_line i(vs) gap was investigated under #627 (#629): it is step/grid discretisation, routed to #592."
     },
     {
       "id": "bsim3-adder-supply-current",
@@ -84,8 +78,8 @@
       "id": "tests-transmission-ltra2-2-line-cir",
       "issueTable": { "outcome": "mismatch", "worst": 1, "signal": "tran i(vs)" },
       "current": { "outcome": "mismatch", "worst": 0.374, "signal": "tran i(vs)" },
-      "rootCauses": ["mos1-meyer-gate-capacitance", "mos1-gate-current-residual", "reference-grid-artefact"],
-      "evidence": "At bf2e4169 i(vs) was 0 in spice-ts vs a 2.5 uA ngspice peak (0.974); removing TOX=18000N from both cards made it agree, which led to #591. Since #601: 0.374 (near t=16.1 ns spice-ts -42.5 nA vs ngspice -2.4 uA), 0.151 at ngspice points, and 0.029 with both engines at TMAX 10 ps. That residual is tracked in #627. Other signals (v(3) 0.0414, i(vdd) 0.0361, v(2) 0.0137) are <= 0.0071 at ngspice points and <= 0.0033 at TMAX 10 ps."
+      "rootCauses": ["mos1-meyer-gate-capacitance", "reference-grid-artefact"],
+      "evidence": "At bf2e4169 i(vs) was 0 in spice-ts vs a 2.5 uA ngspice peak (0.974). Removing TOX=18000N from both cards made it agree, which led to #591, fixed by #601. Since #601: 0.374 (near t=16.1 ns spice-ts -42.5 nA vs ngspice -2.4 uA), 0.151 at ngspice points, 0.029 with both engines at TMAX 10 ps. #627 traced the residual to discretisation of a current that is discontinuous at the pulse corners (#629). Against ngspice-47 at TMAX 1 ps, spice-ts default is 0.0233 and ngspice-47 default is 0.0401. The post-breakpoint step rule differs from ngspice (#608). Routed to #592. Other signals (v(3) 0.0414, i(vdd) 0.0361, v(2) 0.0137) are <= 0.0071 at ngspice points and <= 0.0033 at TMAX 10 ps."
     },
     {
       "id": "tests-bsim2-test-cir",
