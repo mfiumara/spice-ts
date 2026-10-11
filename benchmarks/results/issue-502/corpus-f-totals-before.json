@@ -1,0 +1,21 @@
+{
+  "fixtures": 336,
+  "ngspice": {
+    "success": 306,
+    "failed": 18,
+    "unsupported": 12
+  },
+  "spiceTs": {
+    "success": 32,
+    "failed": 8,
+    "unsupported": 296
+  },
+  "outcomes": {
+    "matched": 11,
+    "mismatch": 10,
+    "not-compared": 11,
+    "spice-ts-loss": 274,
+    "ngspice-failed": 0,
+    "both-failed": 30
+  }
+}

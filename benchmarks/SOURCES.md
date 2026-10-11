@@ -3,6 +3,13 @@
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## Global-node semantic probes (#502)
+
+- Source: original resistor-divider netlists authored in `benchmarks/global-nodes/compare.ts` in this repository (MIT, see `LICENSE`). No third-party fixture is copied or adapted.
+- Coverage: nested global supplies, global/formal-port collisions (including an unused actual port), mixed-case references, and global declarations in reachable versus unused subcircuit definitions.
+- Both engines receive identical bytes. `pnpm build && pnpm exec tsx benchmarks/global-nodes/compare.ts` writes every input, its SHA-256, both engines' OP vectors, timings and all signal errors to `benchmarks/global-nodes/report.json`. A uniform 1e-12 absolute-error check applies to these linear OP probes; it does not change any corpus threshold.
+- The four unchanged corpus-f measurement decks retain their existing BSD-3-Clause provenance in `benchmarks/corpus/corpus-f/SOURCES.md`. Their before/after failures are not replaced by these smaller probes or counted as parity wins.
+
 ## ngspice public corpus A
 
 - Repository: https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/
