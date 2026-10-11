@@ -274,12 +274,23 @@ function enforcePointLimit(
   guard: ProtocolExecutionGuard,
   step?: StepAnalysis,
 ): void {
+  guard.maximum('maxResultPoints', estimateProtocolResultPointsV1(analyses, step), 'validation');
+}
+
+/**
+ * Result points a protocol run of `analyses` is estimated to produce before
+ * solving, multiplied by the sweep count of the optional `.step` directive.
+ * This is the count the `maxResultPoints` validation check compares.
+ */
+export function estimateProtocolResultPointsV1(
+  analyses: readonly AnalysisDirective[],
+  step?: StepAnalysis,
+): number {
   const analysisPoints = analyses.reduce(
     (total, analysis) => total + estimatedAnalysisPoints(analysis),
     0,
   );
-  const observed = analysisPoints * estimatedStepCount(step);
-  guard.maximum('maxResultPoints', observed, 'validation');
+  return analysisPoints * estimatedStepCount(step);
 }
 
 function estimatedStepCount(step?: StepAnalysis): number {
