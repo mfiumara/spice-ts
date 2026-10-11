@@ -6,11 +6,11 @@ Every deck below is byte-identical to ngspice `3ef069fb1f04177a153f342a32d941fc2
 
 ## Totals
 
-- Fixtures: 336. Outcome SHA-256: `157de6acde9c3159d0c8da4bf3acb53b3d383180e479b4c97d19a34ea0569134`.
+- Fixtures: 336. Outcome SHA-256: `dc42e15f43adc1f05782c71770f2ca150d8fe493a6930bf4c7a97dfce14489e8`.
 - ngspice (ngspice-47): 306 success, 18 failed, 12 unsupported.
-- spice-ts (0.3.0): 98 success, 22 failed, 216 unsupported.
-- Outcomes: matched 32, mismatch 14, not-compared 52, spice-ts-loss 208, ngspice-failed 0, both-failed 30.
-- Of the 306 decks ngspice runs successfully, spice-ts matches 32, mismatches 14, produces no comparable result for 52 and fails 208. For 155 of those ngspice successes the deck runs its analyses from `.control` (or its control block ends with `quit`), so `ngspice -r` exports no vectors: they cannot be compared even when spice-ts runs them (harness follow-up https://github.com/mfiumara/spice-ts/issues/528).
+- spice-ts (0.3.0): 99 success, 22 failed, 215 unsupported.
+- Outcomes: matched 32, mismatch 14, not-compared 53, spice-ts-loss 207, ngspice-failed 0, both-failed 30.
+- Of the 306 decks ngspice runs successfully, spice-ts matches 32, mismatches 14, produces no comparable result for 53 and fails 207. For 155 of those ngspice successes the deck runs its analyses from `.control` (or its control block ends with `quit`), so `ngspice -r` exports no vectors: they cannot be compared even when spice-ts runs them (harness follow-up https://github.com/mfiumara/spice-ts/issues/528).
 
 ## Method
 
@@ -30,10 +30,9 @@ Every deck below is byte-identical to ngspice `3ef069fb1f04177a153f342a32d941fc2
 - https://github.com/mfiumara/spice-ts/issues/511: triage of the 10 ngspice-successful decks that exceed the 1% parity threshold.
 - https://github.com/mfiumara/spice-ts/issues/528: the ngspice harness exports no vectors for decks that run analyses from .control or quit inside it.
 - https://github.com/mfiumara/spice-ts/issues/590: closed by #601: MOS1 depletion junction capacitance (tests/general/mosmem.cir now matches; #511 triage in TRIAGE-511.md).
-- https://github.com/mfiumara/spice-ts/issues/591: closed by #601: MOS1 Meyer gate capacitance from TOX; residual i(vs) mismatch tracked in #627.
+- https://github.com/mfiumara/spice-ts/issues/591: closed by #601: MOS1 Meyer gate capacitance from TOX; residual i(vs) mismatch is grid discretisation per #627/#629, routed to #592.
 - https://github.com/mfiumara/spice-ts/issues/626: BSIM3 4-bit NAND adder (examples/snapshot/adder_mos_circ.cir) completes but i(vcc) is ~40x ngspice-47; root cause not established (#511 triage).
-- https://github.com/mfiumara/spice-ts/issues/627: MOS1 gate-drive current i(vs) still ~0.37 off after #601 (ltra2_2_line, txl1_1_line; #511 triage).
-- https://github.com/mfiumara/spice-ts/issues/592: metric: ngspice's coarse default-step output is scored as spice-ts error (rca3040, rtlinv, mos-test, fourbitadder, switches-manual-p92; #511 triage).
+- https://github.com/mfiumara/spice-ts/issues/592: metric: ngspice's coarse default-step output is scored as spice-ts error (rca3040, rtlinv, mos-test, fourbitadder, switches-manual-p92, ltra2_2_line/txl1_1_line i(vs); #511 triage).
 - https://github.com/mfiumara/spice-ts/issues/593: metric: zero/near-zero ngspice peaks turn fV-uV residuals into mismatches (rca3040 AC v(2), fourbitadder; #511 triage).
 
 ## spice-ts gap buckets
@@ -56,11 +55,10 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | convergence | 4 | 2 | none filed |
 | device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP) | 4 | 2 | https://github.com/mfiumara/spice-ts/issues/490 |
 | analysis: .sens forms | 3 | 0 | none: ngspice also fails every fixture in this bucket |
+| directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo) | 3 | 3 | https://github.com/mfiumara/spice-ts/issues/494 |
 | harness: analysis result not produced or not mapped | 3 | 3 | none filed |
 | model: BSIM4 (LEVEL=14/54) | 3 | 3 | https://github.com/mfiumara/spice-ts/issues/3 |
-| directive: .global | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/502 |
 | directive: .measure | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/505 |
-| directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo) | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/494 |
 | expression: B-source V= and expression functions/operators | 2 | 0 | https://github.com/mfiumara/spice-ts/issues/495 |
 | model: BSIM3 revisions other than 3.3 (VERSION=3.0/3.1/3.2.x) | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/594 |
 | source: parenthesised and extended waveform syntax | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/492 |
@@ -132,7 +130,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [examples/measure/buggy-meas-tran.sp](fixtures/examples/measure/buggy-meas-tran.sp) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 30: Unknown function 'v' .measure tran vtest find par('v(2)*v(1)') AT=2.3m |
 | [examples/measure/func_cap.sp](fixtures/examples/measure/func_cap.sp) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 10: Unsupported dot command: '.measure' .measure tran capacitance param=9.797958971132712 |
 | [examples/measure/inv-meas-tran-auto.sp](fixtures/examples/measure/inv-meas-tran-auto.sp) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 85: Undefined parameter 'inv_delay' .meas tran delay_chk param='(inv_delay < 100ps) ? 1 : 0' |
-| [examples/measure/inv-meas-tran-control.sp](fixtures/examples/measure/inv-meas-tran-control.sp) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 26: Unsupported dot command: '.global' .global vdd gnd |
+| [examples/measure/inv-meas-tran-control.sp](fixtures/examples/measure/inv-meas-tran-control.sp) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 31: Unsupported .options field: 'scale' .option scale = 1e-6 |
 | [examples/measure/inv-meas-tran.sp](fixtures/examples/measure/inv-meas-tran.sp) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 85: Undefined parameter 'inv_delay' .meas tran delay_chk param='(inv_delay < 100ps) ? 1 : 0' |
 | [examples/measure/meas_expression.cir](fixtures/examples/measure/meas_expression.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 10: Unknown function 'v' .measure tran yeval1 FIND v(2) WHEN v(1)=par('0.9*v(2)') |
 | [examples/measure/mos-meas-dc-control-file.sp](fixtures/examples/measure/mos-meas-dc-control-file.sp) | unsupported | unsupported | both-failed |  |  | ngspice: Error: measure vd_diff2 trig(TARG) : out of interval / spice-ts: Parse error at line 21: Unsupported .control command 'meas': control-language measurements are not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, c |
@@ -390,7 +388,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [tests/regression/sens/sens-ac-2.cir](fixtures/tests/regression/sens/sens-ac-2.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 24: Unsupported .control command 'sens': control-language sensitivity analysis is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/des |
 | [tests/regression/sens/sens-dc-1.cir](fixtures/tests/regression/sens/sens-dc-1.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 31: Unsupported .control command 'sens': control-language sensitivity analysis is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/des |
 | [tests/regression/sens/sens-dc-2.cir](fixtures/tests/regression/sens/sens-dc-2.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 26: Unsupported .control command 'sens': control-language sensitivity analysis is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/des |
-| [tests/regression/subckt-processing/global-1.cir](fixtures/tests/regression/subckt-processing/global-1.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 8: Unsupported dot command: '.global' .global n1001_t n1002_t |
+| [tests/regression/subckt-processing/global-1.cir](fixtures/tests/regression/subckt-processing/global-1.cir) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
 | [tests/regression/subckt-processing/model-scope-5.cir](fixtures/tests/regression/subckt-processing/model-scope-5.cir) | success | failed | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Undefined subcircuit 'sub3' |
 | [tests/regression/temper/temper-1.cir](fixtures/tests/regression/temper/temper-1.cir) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
 | [tests/regression/temper/temper-2.cir](fixtures/tests/regression/temper/temper-2.cir) | success | failed | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: DC sweep source 'temp' not found |
@@ -413,13 +411,13 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 
 This supplement supersedes the historical batch-1 rows above for every `.control` deck. The original `outcomes.json` is deliberately unchanged.
 
-Measured with core tree `1937defa80d07e4e947f1b4c86b9b9e5a8d6fe07` (`git rev-parse HEAD:packages/core`), ngspice-47, Node v22.23.1, darwin/arm64, Apple M5 Pro.
+Measured with core tree `91e0f224cfeb923d87c99183ba6a96809e9ff279` (`git rev-parse HEAD:packages/core`), ngspice-47, Node v22.23.1, darwin/arm64, Apple M5 Pro.
 `pnpm build && pnpm exec tsx benchmarks/corpus/corpus-f/control-vectors.ts > control-receipt.json` regenerates this section and prints the full receipt. Add `--check` to rerun without changing files; `--jobs N` controls parallelism.
 
 Every reference comes only from `ngspice -b wrapper.cir`. In a fresh temporary directory, the wrapper runs `source fixture.cir`, then `setplot <type>1` and `write <type>.raw all` for each declared analysis type. `fixture.cir` is a byte-identical copy, verified against the manifest. No rewritten decks or `-r` reference fallback.
 Scoring reuses `runFixture`, `compareExecutions` and `normalizedSignalErrors` with MATCH_THRESHOLD = 0.01. There is no per-circuit tuning. Only the first plot of each type is compared, matching the existing adapter; repeated analyses are not independently scored. A failed `setplot` cannot be mistaken for the requested analysis. Decks that quit before export remain unscored, not matches.
 
-All 207 control decks: matched 13, mismatch 36, not-compared 12, spice-ts-loss 128, ngspice-failed 1, both-failed 17.
+All 207 control decks: matched 13, mismatch 36, not-compared 13, spice-ts-loss 127, ngspice-failed 1, both-failed 17.
 Bucket “loss” includes numerical mismatches and typed-unsupported/failed spice-ts executions with an ngspice reference. “No reference” and “not compared” are explicitly unscored. Worst error/signal is — where no comparison exists. #511 tracks untriaged numerical losses; #528 tracks reference/export limitations. Links do not affect scoring.
 
 | Fixture | Bucket | Outcome | Worst normalized error | Worst signal | Tracking issue | Diagnostic |
@@ -444,7 +442,7 @@ Bucket “loss” includes numerical mismatches and typed-unsupported/failed spi
 | [examples/loops/loop-param.cir](fixtures/examples/loops/loop-param.cir) | no reference | both-failed | — | — | https://github.com/mfiumara/spice-ts/issues/528 | Error: no such plot named op1 / Parse error at line 38: Unsupported .control command 'alterparam': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option |
 | [examples/measure/buggy-meas-tran.sp](fixtures/examples/measure/buggy-meas-tran.sp) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/493 | Parse error at line 30: Unknown function 'v' .measure tran vtest find par('v(2)*v(1)') AT=2.3m |
 | [examples/measure/inv-meas-tran-auto.sp](fixtures/examples/measure/inv-meas-tran-auto.sp) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/511 | Parse error at line 85: Undefined parameter 'inv_delay' .meas tran delay_chk param='(inv_delay < 100ps) ? 1 : 0' |
-| [examples/measure/inv-meas-tran-control.sp](fixtures/examples/measure/inv-meas-tran-control.sp) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/502 | Parse error at line 26: Unsupported dot command: '.global' .global vdd gnd |
+| [examples/measure/inv-meas-tran-control.sp](fixtures/examples/measure/inv-meas-tran-control.sp) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/494 | Parse error at line 31: Unsupported .options field: 'scale' .option scale = 1e-6 |
 | [examples/measure/inv-meas-tran.sp](fixtures/examples/measure/inv-meas-tran.sp) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/511 | Parse error at line 85: Undefined parameter 'inv_delay' .meas tran delay_chk param='(inv_delay < 100ps) ? 1 : 0' |
 | [examples/measure/meas_expression.cir](fixtures/examples/measure/meas_expression.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/493 | Parse error at line 10: Unknown function 'v' .measure tran yeval1 FIND v(2) WHEN v(1)=par('0.9*v(2)') |
 | [examples/measure/mos-meas-dc-control-file.sp](fixtures/examples/measure/mos-meas-dc-control-file.sp) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/488 | Parse error at line 21: Unsupported .control command 'meas': control-language measurements are not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, c |
@@ -625,7 +623,7 @@ Bucket “loss” includes numerical mismatches and typed-unsupported/failed spi
 | [tests/regression/sens/sens-ac-2.cir](fixtures/tests/regression/sens/sens-ac-2.cir) | no reference | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/489 | source/write wrapper exported no reference vectors (e.g. quit before export) / Parse error at line 24: Unsupported .control command 'sens': control-language sensitivity analysis is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/des |
 | [tests/regression/sens/sens-dc-1.cir](fixtures/tests/regression/sens/sens-dc-1.cir) | no reference | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/489 | source/write wrapper exported no reference vectors (e.g. quit before export) / Parse error at line 31: Unsupported .control command 'sens': control-language sensitivity analysis is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/des |
 | [tests/regression/sens/sens-dc-2.cir](fixtures/tests/regression/sens/sens-dc-2.cir) | no reference | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/489 | source/write wrapper exported no reference vectors (e.g. quit before export) / Parse error at line 26: Unsupported .control command 'sens': control-language sensitivity analysis is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/des |
-| [tests/regression/subckt-processing/global-1.cir](fixtures/tests/regression/subckt-processing/global-1.cir) | no reference | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/502 | source/write wrapper exported no reference vectors (e.g. quit before export) / Parse error at line 8: Unsupported dot command: '.global' .global n1001_t n1002_t |
+| [tests/regression/subckt-processing/global-1.cir](fixtures/tests/regression/subckt-processing/global-1.cir) | no reference | not-compared | — | — | https://github.com/mfiumara/spice-ts/issues/528 | source/write wrapper exported no reference vectors (e.g. quit before export) |
 | [tests/regression/subckt-processing/model-scope-5.cir](fixtures/tests/regression/subckt-processing/model-scope-5.cir) | no reference | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/511 | source/write wrapper exported no reference vectors (e.g. quit before export) / Undefined subcircuit 'sub3' |
 | [tests/regression/temper/temper-1.cir](fixtures/tests/regression/temper/temper-1.cir) | no reference | not-compared | — | — | https://github.com/mfiumara/spice-ts/issues/528 | source/write wrapper exported no reference vectors (e.g. quit before export) |
 | [tests/regression/temper/temper-2.cir](fixtures/tests/regression/temper/temper-2.cir) | no reference | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/511 | source/write wrapper exported no reference vectors (e.g. quit before export) / DC sweep source 'temp' not found |

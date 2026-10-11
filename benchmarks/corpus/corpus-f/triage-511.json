@@ -2,7 +2,7 @@
   "schemaVersion": "spice-ts-corpus-f-triage/v1",
   "issue": "https://github.com/mfiumara/spice-ts/issues/511",
   "measuredOn": {
-    "spiceTsCommit": "0f255516978fe874896cba7d087fc6e03c1cf0b5",
+    "spiceTsCommit": "68b649095fa0b7e6bf14d92078fb3c7de176e3c6",
     "ngspice": "ngspice-47",
     "metric": "corpus-f published metric (lib.ts normalizedSignalErrors, MATCH_THRESHOLD 0.01), unchanged",
     "tool": "pnpm exec tsx benchmarks/corpus/corpus-f/triage-detail.ts <fixture-id> [--tmax s] [--deck variant] [--reference-tmax s [--candidate ngspice]]",
@@ -121,14 +121,14 @@
       "issueTable": { "outcome": "mismatch", "worst": 0.0439, "signal": "tran v(emit)" },
       "current": { "outcome": "matched", "worst": 2.26e-05, "signal": "tran i(vin)" },
       "rootCauses": [],
-      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and 0f255516 give 0.0000226 after #531 initial-condition handling."
+      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and 68b64909 give 0.0000226 after #531 initial-condition handling."
     },
     {
       "id": "examples-xspice-original-examples-spice3-deck",
       "issueTable": { "outcome": "mismatch", "worst": 0.0439, "signal": "tran v(emit)" },
       "current": { "outcome": "matched", "worst": 2.26e-05, "signal": "tran i(vin)" },
       "rootCauses": [],
-      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and 0f255516 give 0.0000226 after #531 initial-condition handling."
+      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and 68b64909 give 0.0000226 after #531 initial-condition handling."
     },
     {
       "id": "examples-probe-mos-test-cir",
