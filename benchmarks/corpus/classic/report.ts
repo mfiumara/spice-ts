@@ -285,7 +285,7 @@ export async function buildClassicReport(
   };
 }
 
-function analysisType(plotName: string): ClassicAnalysisType | null {
+export function analysisType(plotName: string): ClassicAnalysisType | null {
   const name = plotName.toLowerCase();
   if (name.includes('operating point')) return 'op';
   if (name.includes('dc transfer')) return 'dc';
@@ -482,7 +482,16 @@ function distortionAnalyses(distortion: {
   });
 }
 
-export async function runNativeSpiceTs(input: Buffer, circuit: ClassicCircuit): Promise<EngineExecution> {
+/**
+ * `parseFirst` (default, used by the classic and aggregate reports) calls the stricter `parse()`
+ * before `simulate()`. `parse()` does not expand `.param`, so corpora that must report what
+ * `simulate()` itself does (corpus-f) pass `parseFirst: false`.
+ */
+export async function runNativeSpiceTs(
+  input: Buffer,
+  circuit: ClassicCircuit,
+  options: { parseFirst?: boolean } = {},
+): Promise<EngineExecution> {
   const text = input.toString('utf8');
   if (!Buffer.from(text, 'utf8').equals(input)) {
     return {
@@ -495,7 +504,7 @@ export async function runNativeSpiceTs(input: Buffer, circuit: ClassicCircuit): 
 
   try {
     const core = await import(pathToFileURL(resolve('packages/core/dist/index.js')).href);
-    core.parse(text);
+    if (options.parseFirst ?? true) core.parse(text);
     const result = await core.simulate(text);
     const analyses: EngineAnalysis[] = [];
     for (const type of circuit.analyses) {

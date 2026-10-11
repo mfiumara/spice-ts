@@ -1,0 +1,3 @@
+# Fixtures are byte-identical upstream decks (SHA-256 pinned); never normalise line endings.
+fixtures/** -text
+LICENSE.txt -text
