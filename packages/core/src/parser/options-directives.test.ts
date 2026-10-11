@@ -251,7 +251,7 @@ R2 2 0 1k
   it.each([
     '.temp 27\n.op',
     '.measure tran peak MAX v(out)\n.op',
-    '.control\nlet x = 1\n.endc',
+    '.control\nfft v(1)\n.endc',
   ])('rejects unsupported semantic/control directives: %s', netlist => {
     expect(() => parse(netlist)).toThrow();
   });
@@ -290,15 +290,12 @@ ${control}
   });
 
   it.each([
-    ['let x = v(2)', 'let'],
-    ['set temp = 50', 'set'],
-    ['alter R1 2k', 'alter'],
     ['alterparam r = 2k', 'alterparam'],
     ['meas ac gain max vm(2)', 'meas'],
     ['remcirc', 'remcirc'],
-    ['if 1\necho x\nend', 'if'],
-    ['run out.raw', 'run'],
-  ])('rejects result-affecting or unclassified control command %s with a structured error', (control, command) => {
+    ['fft v(2)', 'fft'],
+    ['linearize v(2)', 'linearize'],
+  ])('rejects an unexecuted control command %s with a structured error at parse time', (control, command) => {
     let error: unknown;
     try {
       parse(deck(`print v(2)\n${control}`));
