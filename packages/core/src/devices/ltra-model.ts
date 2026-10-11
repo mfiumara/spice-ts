@@ -35,6 +35,21 @@ export interface ResolvedLtraModel {
    * integration accurate (ngspice LTRAmaxSafeStep; RLC only, else Infinity).
    */
   maxSafeStep: number;
+  /** REL: relative slope change of an outgoing wave that sets a breakpoint (ngspice LTRAreltol, default 1). */
+  breakpointReltol: number;
+  /** Absolute slope change for the same rule (ngspice LTRAabstol; ABS stays unsupported, so always 1). */
+  breakpointAbstol: number;
+  /** Circuit RELTOL and ABSTOL for the LTRAaccept steady-waveform check. */
+  circuitReltol: number;
+  circuitAbstol: number;
+  /**
+   * ngspice LTRAstepLimit: true (STEPLIMIT, the ltraset.c default) bounds
+   * every step by the delay; false (NOSTEPLIMIT) only when the incoming wave
+   * slope changes (ltratrun.c).
+   */
+  stepLimit: boolean;
+  /** ngspice LTRAtruncDontCut (TRUNCDONTCUT): skip the RLC maxSafeStep bound. */
+  truncDontCut: boolean;
 }
 
 export interface LtraTolerances {
@@ -82,8 +97,14 @@ export function resolveLtraModel(
   const inductancePerLength = requireFinite(model.params, 'L', value => value > 0);
   const capacitancePerLength = requireFinite(model.params, 'C', value => value > 0);
   const length = requireFinite(model.params, 'LEN', value => value > 0);
-  // REL only steers LTRAaccept breakpoints, which are not ported; still validate it.
-  optionalNonNegative(model.params, 'REL');
+  // ltraset.c: REL defaults to 1. It steers the LTRAaccept breakpoints.
+  const breakpointReltol = optionalNonNegative(model.params, 'REL') ?? 1;
+  // ltraset.c:75-77 keeps NOCONTROL unless FULLCONTROL/HALFCONTROL is given.
+  // The LTRAlteCalculate truncation-error control and its TRUNCNR Newton
+  // search (ltratrun.c:129-186) are not ported.
+  for (const flag of ['FULLCONTROL', 'HALFCONTROL', 'TRUNCNR']) {
+    if (model.params[flag]) throw new Error(`Unsupported LTRA model: ${flag} is not supported`);
+  }
   // ltraset.c: a zero or omitted straight-line tolerance takes RELTOL/ABSTOL.
   const stLineReltol = optionalNonNegative(model.params, 'COMPACTREL') || tolerances.reltol;
   const stLineAbstol = optionalNonNegative(model.params, 'COMPACTABS') || tolerances.abstol;
@@ -122,6 +143,13 @@ export function resolveLtraModel(
     intH2,
     intH3dash,
     maxSafeStep,
+    breakpointReltol,
+    breakpointAbstol: 1,
+    circuitReltol: tolerances.reltol,
+    circuitAbstol: tolerances.abstol,
+    // ltraset.c:73-74: anything but NOSTEPLIMIT is STEPLIMIT.
+    stepLimit: !model.params.NOSTEPLIMIT,
+    truncDontCut: Boolean(model.params.TRUNCDONTCUT),
   };
 }
 

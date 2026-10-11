@@ -122,6 +122,7 @@ describe('aggregate report artifact verification', () => {
         ['spiceTs', 'classic/bjt-mixer-distortion', 'unsupported', 'failed'],
         ['spiceTs', 'ngspice/mesa-oscillator', 'unsupported', 'success'],
         ['spiceTs', 'ngspice/vbic-temperature', 'unsupported', 'success'],
+        ['spiceTs', 'ngspice/ac-zero-frequency', 'unsupported', 'success'],
         ['spiceTs', 'ngspice/mos-amplifier-transient', 'success', 'unsupported'],
         ['spiceTs', 'classic/mos-amplifier', 'success', 'unsupported'],
         ['spiceTs', 'classic/bsim1-device-sweep', 'success', 'unsupported'],
@@ -129,7 +130,7 @@ describe('aggregate report artifact verification', () => {
       ],
     );
     assert.deepEqual(report.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
-    assert.deepEqual(report.totals.spiceTs, { success: 60, failed: 1, unsupported: 39 });
+    assert.deepEqual(report.totals.spiceTs, { success: 61, failed: 1, unsupported: 38 });
     assert.equal(report.totals.comparedAnalyses, 67);
     assert.equal(report.totals.comparedFixtures, 48);
     // .OPTIONS TEMP (#459): the unchanged tests/vbic/temp.cir DC sweep at 150 C, losses locked exactly.
@@ -155,6 +156,12 @@ describe('aggregate report artifact verification', () => {
       && text.includes('PR #587') && text.includes('PR #585') && text.includes('PR #599') && text.includes('PR #580')
       && text.includes('13b4675c to d5327777') && text.includes('outcome-neutral together')
       && text.includes('PR #601') && text.includes('worst 0.248 V v(3) to 1.40e-3 V v(4)') && text.includes('PR #610') && text.includes('PR #605') && text.includes('e9d9663c to a0fc235c') && text.includes('v(2) abs max 0.0768 to 0.0836 V')));
+    // Merges after #613 are bisected one by one: #600, #614, #617 and #620 are each outcome-neutral,
+    // #584 moves only ngspice/ac-zero-frequency, and #502 .global is outcome-neutral (#603).
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #600') && text.includes('PR #614')
+      && text.includes('PR #617') && text.includes('PR #620') && text.includes('each is outcome-neutral on its own')
+      && text.includes('PR #584') && text.includes('ngspice/ac-zero-frequency') && text.includes('PR #603')
+      && text.includes('391461fe to 98991942') && text.includes('60/1/39 to 61/1/38')));
     const vbicAc = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/vbic-common-emitter-ac');
     assert.equal(vbicAc.spiceTs.status, 'success');
     assert.deepEqual(vbicAc.comparisons.map((comparison: { analysis: string }) => comparison.analysis), ['ac', 'pz']);
@@ -248,7 +255,7 @@ describe('aggregate report artifact verification', () => {
 
     assert.deepEqual(report.provenance, {
       fixtureTreeSha256: 'd53277772db73fd3fb2a193f323b0681db173fa8798b764b97755998a5f36d87',
-      sourcesSha256: 'a0fc235cd194ff914fabcf25718c6f67f709d95263dfcdf507f8feb5226cf457',
+      sourcesSha256: '98991942508358a0fb9bf9ae388837c7bb5d44b73bcba57345a627c3f933ed90',
     });
   });
 

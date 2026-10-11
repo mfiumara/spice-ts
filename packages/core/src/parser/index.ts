@@ -610,6 +610,9 @@ function parseDotCommand(
       circuit.addModel(model);
       break;
     }
+    case '.GLOBAL':
+      circuit.addGlobalNodes(tokens.slice(1));
+      break;
     case '.OPT':
     case '.OPTION':
     case '.OPTIONS': {
