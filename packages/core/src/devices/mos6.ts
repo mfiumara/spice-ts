@@ -1,0 +1,753 @@
+import type { DeviceModel, StampContext } from './device.js';
+import { InvalidCircuitError } from '../errors.js';
+
+/**
+ * MOSFET level 6: Sakurai-Newton n-th power law model, ported from ngspice-47
+ * src/spicelib/devices/mos6 (mos6set.c defaults, mos6temp.c temperature and
+ * parameter preprocessing, mos6load.c DC equations, junctions and limiting)
+ * plus devsup.c DEVqmeyer for the Meyer gate capacitances.
+ *
+ * Capacitances follow the spice-ts capacitance-matrix contract: the Meyer
+ * gate capacitance at a transient timepoint is, as in mos6load.c, the half
+ * capacitance at the current iterate plus the half capacitance at the last
+ * accepted timepoint plus the constant overlap capacitance.
+ */
+
+// ngspice const.h
+const CHARGE = 1.6021766208e-19;
+const CONSTBOLTZ = 1.38064852e-23;
+const CONSTKOVERQ = CONSTBOLTZ / CHARGE;
+const CONSTCTOK = 273.15;
+const REFTEMP = 27 + CONSTCTOK;
+const CONSTROOT2 = Math.SQRT2;
+const MAX_EXP_ARG = 709;
+// ngspice default CKTgmin, used by the bulk junction model.
+const JUNCTION_GMIN = 1e-12;
+// ngspice CKTdefaultMosL / CKTdefaultMosW.
+const DEFAULT_MOS_LENGTH = 100e-6;
+const DEFAULT_MOS_WIDTH = 100e-6;
+const EPS_OX = 3.9 * 8.854214871e-12;
+const EPS_SI = 11.70 * 8.854214871e-12;
+const MEYER_MAGIC_VDS = 0.025;
+
+/** Resolved MOS6 model card after mos6set.c defaulting and mos6temp.c preprocessing. */
+export interface MOS6ModelParams {
+  polarity: number;
+  VTO: number;
+  KV: number;
+  NV: number;
+  KC: number;
+  NC: number;
+  GAMMA: number;
+  GAMMA1: number;
+  SIGMA: number;
+  PHI: number;
+  LAMBDA0: number;
+  LAMBDA1: number;
+  IS: number;
+  JS: number;
+  PB: number;
+  CJ: number;
+  CJSW: number;
+  MJ: number;
+  MJSW: number;
+  FC: number;
+  CBD: number;
+  CBS: number;
+  CGSO: number;
+  CGDO: number;
+  CGBO: number;
+  LD: number;
+  TNOM: number;
+  oxideCapFactor: number;
+  given: {
+    CBD: boolean;
+    CBS: boolean;
+    CJ: boolean;
+    CJSW: boolean;
+  };
+}
+
+export interface MOS6InstanceParams {
+  W: number;
+  L: number;
+  M: number;
+  AD: number;
+  AS: number;
+  PD: number;
+  PS: number;
+}
+
+/** Temperature-dependent instance quantities (mos6temp.c). */
+interface MOS6TemperatureState {
+  vt: number;
+  tKc: number;
+  tPhi: number;
+  tVbi: number;
+  tVto: number;
+  tSatCur: number;
+  tSatCurDens: number;
+  tBulkPot: number;
+  tDepCap: number;
+  drainVcrit: number;
+  sourceVcrit: number;
+  Cbd: number;
+  Cbdsw: number;
+  Cbs: number;
+  Cbssw: number;
+  f2d: number;
+  f3d: number;
+  f4d: number;
+  f2s: number;
+  f3s: number;
+  f4s: number;
+}
+
+function given(params: Record<string, number | undefined>, ...names: string[]): number | undefined {
+  for (const name of names) {
+    const value = params[name];
+    if (value !== undefined) return value;
+  }
+  return undefined;
+}
+
+/**
+ * Apply mos6set.c defaults and the model-level part of mos6temp.c. Throws the
+ * same fatal model errors ngspice reports (non-positive PHI, NSUB < Ni).
+ */
+export function resolveMOS6Model(
+  name: string,
+  params: Readonly<Record<string, number | undefined>>,
+  polarity: number,
+): MOS6ModelParams {
+  for (const parameter of ['RD', 'RS', 'RSH'] as const) {
+    const value = params[parameter];
+    if (value !== undefined && value !== 0) {
+      throw new InvalidCircuitError(
+        `MOSFET level 6 model '${name}': series resistance parameter ${parameter} is not supported`,
+      );
+    }
+  }
+  const tnom = (params.TNOM ?? 27) + CONSTCTOK;
+  const vtnom = tnom * CONSTKOVERQ;
+  const egfet1 = 1.16 - (7.02e-4 * tnom * tnom) / (tnom + 1108);
+
+  const lambda = given(params, 'LAMBDA0') ?? given(params, 'LAMBDA') ?? 0;
+  let kc = params.KC ?? 5e-5;
+  let phi = params.PHI ?? 0.6;
+  let gamma = params.GAMMA ?? 0;
+  const gamma1 = params.GAMMA1 ?? 0;
+  let vto = given(params, 'VTO', 'VT0') ?? 0;
+
+  if (phi <= 0) {
+    throw new InvalidCircuitError(`MOSFET level 6 model '${name}': Phi is not positive`);
+  }
+
+  let oxideCapFactor = 0;
+  const tox = params.TOX;
+  if (tox !== undefined && tox !== 0) {
+    oxideCapFactor = EPS_OX / tox;
+    if (params.KC === undefined) {
+      const mobility = given(params, 'U0', 'UO') ?? 600;
+      kc = 0.5 * mobility * oxideCapFactor * 1e-4;
+    }
+    const nsub = params.NSUB;
+    if (nsub !== undefined) {
+      if (nsub * 1e6 > 1.45e16) {
+        if (params.PHI === undefined) {
+          phi = Math.max(0.1, 2 * vtnom * Math.log(nsub * 1e6 / 1.45e16));
+        }
+        const fermis = polarity * 0.5 * phi;
+        let wkfng = 3.2;
+        const gateType = params.TPG ?? 1;
+        if (gateType !== 0) {
+          const fermig = polarity * gateType * 0.5 * egfet1;
+          wkfng = 3.25 + 0.5 * egfet1 - fermig;
+        }
+        const wkfngs = wkfng - (3.25 + 0.5 * egfet1 + fermis);
+        if (params.GAMMA === undefined) {
+          gamma = Math.sqrt(2 * EPS_SI * CHARGE * nsub * 1e6) / oxideCapFactor;
+        }
+        if (given(params, 'VTO', 'VT0') === undefined) {
+          const nss = params.NSS ?? 0;
+          const vfb = wkfngs - nss * 1e4 * CHARGE / oxideCapFactor;
+          vto = vfb + polarity * (gamma * Math.sqrt(phi) + phi);
+        }
+      } else {
+        throw new InvalidCircuitError(`MOSFET level 6 model '${name}': Nsub < Ni`);
+      }
+    }
+  }
+
+  return {
+    polarity,
+    VTO: vto,
+    KV: params.KV ?? 2,
+    NV: params.NV ?? 0.5,
+    KC: kc,
+    NC: params.NC ?? 1,
+    GAMMA: gamma,
+    GAMMA1: gamma1,
+    SIGMA: params.SIGMA ?? 0,
+    PHI: phi,
+    LAMBDA0: lambda,
+    LAMBDA1: params.LAMBDA1 ?? 0,
+    IS: params.IS ?? 1e-14,
+    JS: params.JS ?? 0,
+    PB: params.PB ?? 0.8,
+    CJ: params.CJ ?? 0,
+    CJSW: params.CJSW ?? 0,
+    MJ: params.MJ ?? 0.5,
+    MJSW: params.MJSW ?? 0.5,
+    FC: params.FC ?? 0.5,
+    CBD: params.CBD ?? 0,
+    CBS: params.CBS ?? 0,
+    CGSO: params.CGSO ?? 0,
+    CGDO: params.CGDO ?? 0,
+    CGBO: params.CGBO ?? 0,
+    LD: params.LD ?? 0,
+    TNOM: tnom,
+    oxideCapFactor,
+    given: {
+      CBD: params.CBD !== undefined,
+      CBS: params.CBS !== undefined,
+      CJ: params.CJ !== undefined,
+      CJSW: params.CJSW !== undefined,
+    },
+  };
+}
+
+/** devsup.c DEVfetlim. */
+function fetlim(vnew: number, vold: number, vto: number): number {
+  const vtsthi = Math.abs(2 * (vold - vto)) + 2;
+  const vtstlo = Math.abs(vold - vto) + 1;
+  const vtox = vto + 3.5;
+  const delv = vnew - vold;
+  if (vold >= vto) {
+    if (vold >= vtox) {
+      if (delv <= 0) {
+        if (vnew >= vtox) return -delv > vtstlo ? vold - vtstlo : vnew;
+        return Math.max(vnew, vto + 2);
+      }
+      return delv >= vtsthi ? vold + vtsthi : vnew;
+    }
+    return delv <= 0 ? Math.max(vnew, vto - 0.5) : Math.min(vnew, vto + 4);
+  }
+  if (delv <= 0) return -delv > vtsthi ? vold - vtsthi : vnew;
+  const vtemp = vto + 0.5;
+  if (vnew <= vtemp) return delv > vtstlo ? vold + vtstlo : vnew;
+  return vtemp;
+}
+
+/** devsup.c DEVlimvds. */
+function limvds(vnew: number, vold: number): number {
+  if (vold >= 3.5) {
+    if (vnew > vold) return Math.min(vnew, 3 * vold + 2);
+    return vnew < 3.5 ? Math.max(vnew, 2) : vnew;
+  }
+  return vnew > vold ? Math.min(vnew, 4) : Math.max(vnew, -0.5);
+}
+
+/** devsup.c DEVpnjlim. */
+function pnjlim(vnew: number, vold: number, vt: number, vcrit: number): number {
+  if (vnew > vcrit && Math.abs(vnew - vold) > vt + vt) {
+    if (vold > 0) {
+      const arg = (vnew - vold) / vt;
+      return arg > 0
+        ? vold + vt * (2 + Math.log(arg - 2))
+        : vold - vt * (2 + Math.log(2 - arg));
+    }
+    return vt * Math.log(vnew / vt);
+  }
+  if (vnew < 0) {
+    const arg = vold > 0 ? -1 * vold - 1 : 2 * vold - 1;
+    if (vnew < arg) return arg;
+  }
+  return vnew;
+}
+
+/** devsup.c DEVqmeyer: half of the non-constant Meyer capacitances. */
+export function meyerHalfCapacitances(
+  vgs: number,
+  vgd: number,
+  von: number,
+  vdsatIn: number,
+  phi: number,
+  cox: number,
+  out: Float64Array,
+): void {
+  const vgst = vgs - von;
+  const vdsat = Math.max(vdsatIn, MEYER_MAGIC_VDS);
+  let capgs: number;
+  let capgd: number;
+  let capgb: number;
+  if (vgst <= -phi) {
+    capgb = cox / 2;
+    capgs = 0;
+    capgd = 0;
+  } else if (vgst <= -phi / 2) {
+    capgb = -vgst * cox / (2 * phi);
+    capgs = 0;
+    capgd = 0;
+  } else if (vgst <= 0) {
+    capgb = -vgst * cox / (2 * phi);
+    capgs = vgst * cox / (1.5 * phi) + cox / 3;
+    const vds = vgs - vgd;
+    if (vds >= vdsat) {
+      capgd = 0;
+    } else {
+      const vddif = 2 * vdsat - vds;
+      const vddif1 = vdsat - vds;
+      const vddif2 = vddif * vddif;
+      capgd = capgs * (1 - vdsat * vdsat / vddif2);
+      capgs = capgs * (1 - vddif1 * vddif1 / vddif2);
+    }
+  } else {
+    const vds = vgs - vgd;
+    if (vdsat <= vds) {
+      capgs = cox / 3;
+      capgd = 0;
+      capgb = 0;
+    } else {
+      const vddif = 2 * vdsat - vds;
+      const vddif1 = vdsat - vds;
+      const vddif2 = vddif * vddif;
+      capgd = cox * (1 - vdsat * vdsat / vddif2) / 3;
+      capgs = cox * (1 - vddif1 * vddif1 / vddif2) / 3;
+      capgb = 0;
+    }
+  }
+  out[0] = capgs;
+  out[1] = capgd;
+  out[2] = capgb;
+}
+
+/** Channel evaluation result (polarity domain). */
+export interface MOS6Channel {
+  /** +1 normal mode (vds >= 0), -1 inverse mode. */
+  mode: number;
+  cdrain: number;
+  gm: number;
+  gds: number;
+  gmbs: number;
+  von: number;
+  vdsat: number;
+}
+
+/** Reused scratch buffers; consumed immediately by each caller. */
+const halfScratch = new Float64Array(3);
+
+export class MOS6 implements DeviceModel {
+  readonly branches: number[] = [];
+  readonly isNonlinear = true;
+  readonly model: MOS6ModelParams;
+  readonly instance: MOS6InstanceParams;
+  private readonly effectiveLength: number;
+  private readonly betaFactor: number;
+  private readonly oxideCap: number;
+  private readonly overlapGS: number;
+  private readonly overlapGD: number;
+  private readonly overlapGB: number;
+  private temperature = 27;
+  private temp!: MOS6TemperatureState;
+  /** ngspice CKTstate0 vbs/vbd/von of the previous load. */
+  private lastVbs = 0;
+  private lastVbd = 0;
+  private lastVon: number;
+  /** Meyer half capacitances [gs, gd, gb] at the last accepted timepoint. */
+  private acceptedHalf: Float64Array | undefined;
+
+  constructor(
+    readonly name: string,
+    /** [drain, gate, source, bulk] */
+    readonly nodes: number[],
+    model: MOS6ModelParams,
+    instance: Partial<MOS6InstanceParams>,
+  ) {
+    this.model = model;
+    this.instance = {
+      W: instance.W ?? DEFAULT_MOS_WIDTH,
+      L: instance.L ?? DEFAULT_MOS_LENGTH,
+      M: instance.M ?? 1,
+      AD: instance.AD ?? 0,
+      AS: instance.AS ?? 0,
+      PD: instance.PD ?? 0,
+      PS: instance.PS ?? 0,
+    };
+    const { W, L } = this.instance;
+    this.effectiveLength = L - 2 * model.LD;
+    if (!(this.effectiveLength > 0)) {
+      throw new InvalidCircuitError(`${name}: MOSFET level 6 effective channel length is not positive`);
+    }
+    this.betaFactor = W / this.effectiveLength;
+    this.oxideCap = model.oxideCapFactor * this.effectiveLength * W;
+    this.overlapGS = model.CGSO * W;
+    this.overlapGD = model.CGDO * W;
+    this.overlapGB = model.CGBO * this.effectiveLength;
+    this.applyTemperature();
+    this.lastVon = this.temp.tVto * model.polarity;
+  }
+
+  setTemperature(value: number): void {
+    this.temperature = value;
+    this.applyTemperature();
+  }
+
+  getTemperature(): number {
+    return this.temperature;
+  }
+
+  /** mos6temp.c instance loop. */
+  private applyTemperature(): void {
+    const model = this.model;
+    const { AD, AS, PD, PS } = this.instance;
+    const tnom = model.TNOM;
+    const fact1 = tnom / REFTEMP;
+    const vtnom = tnom * CONSTKOVERQ;
+    const kt1 = CONSTBOLTZ * tnom;
+    const egfet1 = 1.16 - (7.02e-4 * tnom * tnom) / (tnom + 1108);
+    const arg1 = -egfet1 / (kt1 + kt1) + 1.1150877 / (CONSTBOLTZ * (REFTEMP + REFTEMP));
+    const pbfact1 = -2 * vtnom * (1.5 * Math.log(fact1) + CHARGE * arg1);
+
+    const temp = this.temperature + CONSTCTOK;
+    const vt = temp * CONSTKOVERQ;
+    const ratio = temp / tnom;
+    const fact2 = temp / REFTEMP;
+    const kt = temp * CONSTBOLTZ;
+    const egfet = 1.16 - (7.02e-4 * temp * temp) / (temp + 1108);
+    const arg = -egfet / (kt + kt) + 1.1150877 / (CONSTBOLTZ * (REFTEMP + REFTEMP));
+    const pbfact = -2 * vt * (1.5 * Math.log(fact2) + CHARGE * arg);
+
+    const ratio4 = ratio * Math.sqrt(ratio);
+    const tKc = model.KC / ratio4;
+    const phio = (model.PHI - pbfact1) / fact1;
+    const tPhi = fact2 * phio + pbfact;
+    const type = model.polarity;
+    const tVbi = model.VTO - type * (model.GAMMA * Math.sqrt(model.PHI))
+      + 0.5 * (egfet1 - egfet) + type * 0.5 * (tPhi - model.PHI);
+    const tVto = tVbi + type * model.GAMMA * Math.sqrt(tPhi);
+    const satScale = Math.exp(-egfet / vt + egfet1 / vtnom);
+    const tSatCur = model.IS * satScale;
+    const tSatCurDens = model.JS * satScale;
+    const pbo = (model.PB - pbfact1) / fact1;
+    const gmaold = (model.PB - pbo) / pbo;
+    let capfact = 1 / (1 + model.MJ * (4e-4 * (tnom - REFTEMP) - gmaold));
+    let tCbd = model.CBD * capfact;
+    let tCbs = model.CBS * capfact;
+    let tCj = model.CJ * capfact;
+    capfact = 1 / (1 + model.MJSW * (4e-4 * (tnom - REFTEMP) - gmaold));
+    let tCjsw = model.CJSW * capfact;
+    const tBulkPot = fact2 * pbo + pbfact;
+    const gmanew = (tBulkPot - pbo) / pbo;
+    capfact = 1 + model.MJ * (4e-4 * (temp - REFTEMP) - gmanew);
+    tCbd *= capfact;
+    tCbs *= capfact;
+    tCj *= capfact;
+    capfact = 1 + model.MJSW * (4e-4 * (temp - REFTEMP) - gmanew);
+    tCjsw *= capfact;
+    const tDepCap = model.FC * tBulkPot;
+
+    let drainVcrit: number;
+    let sourceVcrit: number;
+    if (tSatCurDens === 0 || AD === 0 || AS === 0) {
+      drainVcrit = sourceVcrit = vt * Math.log(vt / (CONSTROOT2 * tSatCur));
+    } else {
+      drainVcrit = vt * Math.log(vt / (CONSTROOT2 * tSatCurDens * AD));
+      sourceVcrit = vt * Math.log(vt / (CONSTROOT2 * tSatCurDens * AS));
+    }
+
+    const junction = (zeroBias: number, sidewall: number) => {
+      const argFc = 1 - model.FC;
+      const sarg = Math.exp(-model.MJ * Math.log(argFc));
+      const sargsw = Math.exp(-model.MJSW * Math.log(argFc));
+      const f2 = zeroBias * (1 - model.FC * (1 + model.MJ)) * sarg / argFc
+        + sidewall * (1 - model.FC * (1 + model.MJSW)) * sargsw / argFc;
+      const f3 = zeroBias * model.MJ * sarg / argFc / tBulkPot
+        + sidewall * model.MJSW * sargsw / argFc / tBulkPot;
+      const f4 = zeroBias * tBulkPot * (1 - argFc * sarg) / (1 - model.MJ)
+        + sidewall * tBulkPot * (1 - argFc * sargsw) / (1 - model.MJSW)
+        - f3 / 2 * (tDepCap * tDepCap)
+        - tDepCap * f2;
+      return { f2, f3, f4 };
+    };
+    const czbd = model.given.CBD ? tCbd : model.given.CJ ? tCj * AD : 0;
+    const czbdsw = model.given.CJSW ? tCjsw * PD : 0;
+    const czbs = model.given.CBS ? tCbs : model.given.CJ ? tCj * AS : 0;
+    const czbssw = model.given.CJSW ? tCjsw * PS : 0;
+    const drain = junction(czbd, czbdsw);
+    const source = junction(czbs, czbssw);
+
+    this.temp = {
+      vt, tKc, tPhi, tVbi, tVto, tSatCur, tSatCurDens, tBulkPot, tDepCap,
+      drainVcrit, sourceVcrit,
+      Cbd: czbd, Cbdsw: czbdsw, Cbs: czbs, Cbssw: czbssw,
+      f2d: drain.f2, f3d: drain.f3, f4d: drain.f4,
+      f2s: source.f2, f3s: source.f3, f4s: source.f4,
+    };
+  }
+
+  private get drainSatCur(): number {
+    const { tSatCur, tSatCurDens } = this.temp;
+    const { AD, AS } = this.instance;
+    return tSatCurDens === 0 || AD === 0 || AS === 0 ? tSatCur : tSatCurDens * AD;
+  }
+
+  private get sourceSatCur(): number {
+    const { tSatCur, tSatCurDens } = this.temp;
+    const { AD, AS } = this.instance;
+    return tSatCurDens === 0 || AD === 0 || AS === 0 ? tSatCur : tSatCurDens * AS;
+  }
+
+  /** mos6load.c n-th power law block, polarity domain. */
+  evaluateChannel(vgs: number, vds: number, vbs: number): MOS6Channel {
+    const model = this.model;
+    const { tPhi, tVbi, tKc } = this.temp;
+    const mode = vds >= 0 ? 1 : -1;
+    const vbd = vbs - vds;
+    const vbsvbd = mode === 1 ? vbs : vbd;
+    let sarg1: number;
+    if (vbsvbd <= 0) {
+      sarg1 = Math.sqrt(tPhi - vbsvbd);
+    } else {
+      sarg1 = Math.sqrt(tPhi);
+      sarg1 = Math.max(0, sarg1 - vbsvbd / (sarg1 + sarg1));
+    }
+    const vdshere = vds * mode;
+    const von = tVbi * model.polarity + model.GAMMA * sarg1
+      - model.GAMMA1 * vbsvbd - model.SIGMA * vdshere;
+    const vgon = (mode === 1 ? vgs : vgs - vds) - von;
+    if (vgon <= 0) {
+      return { mode, cdrain: 0, gm: 0, gds: 0, gmbs: 0, von, vdsat: 0 };
+    }
+    let vonbm = 0;
+    if (sarg1 > 0) {
+      vonbm = vbsvbd <= 0
+        ? model.GAMMA1 + model.GAMMA / (sarg1 + sarg1)
+        : model.GAMMA1 + model.GAMMA / 2 / Math.sqrt(tPhi);
+    }
+    const logVgon = Math.log(vgon);
+    const vdsat = model.KV * Math.exp(logVgon * model.NV);
+    const idsat = tKc * this.betaFactor * Math.exp(logVgon * model.NC);
+    const lambda = model.LAMBDA0 - model.LAMBDA1 * vbsvbd;
+    let cdrain = idsat * (1 + lambda * vdshere);
+    let gm = cdrain * model.NC / vgon;
+    let gds = gm * model.SIGMA + idsat * lambda;
+    let gmbs = gm * vonbm - idsat * model.LAMBDA1 * vdshere;
+    if (vdsat > vdshere) {
+      const vdst = vdshere / vdsat;
+      const vdst2 = (2 - vdst) * vdst;
+      const vdstg = -vdst * model.NV / vgon;
+      const ivdst1 = cdrain * (2 - vdst - vdst);
+      cdrain *= vdst2;
+      gm = gm * vdst2 + ivdst1 * vdstg;
+      gds = gds * vdst2 + ivdst1 * (1 / vdsat + vdstg * model.SIGMA);
+      gmbs = gmbs * vdst2 + ivdst1 * vdstg * vonbm;
+    }
+    return { mode, cdrain, gm, gds, gmbs, von, vdsat };
+  }
+
+  /** Terminal voltages [vgs, vds, vbs] in the polarity domain. */
+  private terminalVoltages(voltage: (node: number) => number): [number, number, number] {
+    const [nD, nG, nS, nB] = this.nodes;
+    const type = this.model.polarity;
+    const vS = voltage(nS);
+    return [
+      type * (voltage(nG) - vS),
+      type * (voltage(nD) - vS),
+      type * (voltage(nB) - vS),
+    ];
+  }
+
+  limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {
+    const read = (solution: Float64Array) => (node: number) => (node >= 0 ? solution[node] : 0);
+    const [vgsOld, vdsOld] = this.terminalVoltages(read(previous));
+    const [vgsNew, vdsNew] = this.terminalVoltages(read(candidate));
+    const vgdOld = vgsOld - vdsOld;
+    const vgdNew = vgsNew - vdsNew;
+    const von = this.lastVon;
+    // mos6load.c limits vgs (vgd in inverse mode) with DEVfetlim and vds with
+    // DEVlimvds. spice-ts limits by scaling the whole Newton step, so each
+    // limited voltage contributes its own scale. Neither limiter returns the
+    // old value for a non-zero step, so the scale stays positive and Newton
+    // cannot stall on an unchanged iterate.
+    const gateScale = vdsOld >= 0
+      ? stepScale(vgsOld, vgsNew, fetlim(vgsNew, vgsOld, von))
+      : stepScale(vgdOld, vgdNew, fetlim(vgdNew, vgdOld, von));
+    const drainScale = vdsOld >= 0
+      ? stepScale(vdsOld, vdsNew, limvds(vdsNew, vdsOld))
+      : stepScale(-vdsOld, -vdsNew, limvds(-vdsNew, -vdsOld));
+    return Math.min(gateScale, drainScale);
+  }
+
+  stamp(ctx: StampContext): void {
+    const model = this.model;
+    const type = model.polarity;
+    const m = this.instance.M;
+    const { vt, sourceVcrit, drainVcrit } = this.temp;
+    const [nD, nG, nS, nB] = this.nodes;
+    const voltage = (node: number) => (node >= 0 ? ctx.getVoltage(node) : 0);
+    const [vgs, vds, vbsRaw] = this.terminalVoltages(voltage);
+
+    // mos6load.c junction limiting against the previous load.
+    let vbs = vbsRaw;
+    let vbd = vbs - vds;
+    if (vds >= 0) {
+      vbs = pnjlim(vbs, this.lastVbs, vt, sourceVcrit);
+      vbd = vbs - vds;
+    } else {
+      vbd = pnjlim(vbd, this.lastVbd, vt, drainVcrit);
+      vbs = vbd + vds;
+    }
+    this.lastVbs = vbs;
+    this.lastVbd = vbd;
+
+    const sourceSatCur = this.sourceSatCur;
+    const drainSatCur = this.drainSatCur;
+    let gbs: number;
+    let cbs: number;
+    if (vbs <= -3 * vt) {
+      gbs = JUNCTION_GMIN;
+      cbs = gbs * vbs - sourceSatCur;
+    } else {
+      const evbs = Math.exp(Math.min(MAX_EXP_ARG, vbs / vt));
+      gbs = sourceSatCur * evbs / vt + JUNCTION_GMIN;
+      cbs = sourceSatCur * (evbs - 1) + JUNCTION_GMIN * vbs;
+    }
+    let gbd: number;
+    let cbd: number;
+    if (vbd <= -3 * vt) {
+      gbd = JUNCTION_GMIN;
+      cbd = gbd * vbd - drainSatCur;
+    } else {
+      const evbd = Math.exp(Math.min(MAX_EXP_ARG, vbd / vt));
+      gbd = drainSatCur * evbd / vt + JUNCTION_GMIN;
+      cbd = drainSatCur * (evbd - 1) + JUNCTION_GMIN * vbd;
+    }
+
+    const channel = this.evaluateChannel(vgs, vds, vbs);
+    this.lastVon = channel.von;
+    const { mode, cdrain, gm, gds, gmbs } = channel;
+
+    const ceqbs = type * (cbs - gbs * vbs);
+    const ceqbd = type * (cbd - gbd * vbd);
+    const xnrm = mode >= 0 ? 1 : 0;
+    const xrev = 1 - xnrm;
+    const cdreq = mode >= 0
+      ? type * (cdrain - gds * vds - gm * vgs - gmbs * vbs)
+      : -type * (cdrain - gds * (-vds) - gm * (vgs - vds) - gmbs * vbd);
+
+    const g = (row: number, col: number, value: number) => {
+      if (row >= 0 && col >= 0) ctx.stampG(row, col, m * value);
+    };
+    const b = (row: number, value: number) => {
+      if (row >= 0) ctx.stampB(row, m * value);
+    };
+    b(nB, -(ceqbs + ceqbd));
+    b(nD, ceqbd - cdreq);
+    b(nS, cdreq + ceqbs);
+
+    g(nB, nB, gbd + gbs);
+    g(nD, nD, gds + gbd + xrev * (gm + gmbs));
+    g(nS, nS, gds + gbs + xnrm * (gm + gmbs));
+    g(nB, nD, -gbd);
+    g(nB, nS, -gbs);
+    g(nD, nG, (xnrm - xrev) * gm);
+    g(nD, nB, -gbd + (xnrm - xrev) * gmbs);
+    g(nD, nS, -gds - xnrm * (gm + gmbs));
+    g(nS, nG, -(xnrm - xrev) * gm);
+    g(nS, nB, -gbs - (xnrm - xrev) * gmbs);
+    g(nS, nD, -gds - xrev * (gm + gmbs));
+  }
+
+  /** Meyer half capacitances [gs, gd, gb] at the given solution. */
+  private meyerHalf(voltage: (node: number) => number, out: Float64Array): void {
+    const [vgs, vds, vbs] = this.terminalVoltages(voltage);
+    const channel = this.evaluateChannel(vgs, vds, vbs);
+    const vgd = vgs - vds;
+    const { tPhi } = this.temp;
+    if (channel.mode > 0) {
+      meyerHalfCapacitances(vgs, vgd, channel.von, channel.vdsat, tPhi, this.oxideCap, out);
+    } else {
+      meyerHalfCapacitances(vgd, vgs, channel.von, channel.vdsat, tPhi, this.oxideCap, out);
+      const capgs = out[0];
+      out[0] = out[1];
+      out[1] = capgs;
+    }
+  }
+
+  stampDynamic(ctx: StampContext): void {
+    const voltage = (node: number) => (node >= 0 ? ctx.getVoltage(node) : 0);
+    const half = halfScratch;
+    this.meyerHalf(voltage, half);
+    const history = ctx.dt > 0 && this.acceptedHalf ? this.acceptedHalf : half;
+    const m = this.instance.M;
+    const [nD, nG, nS, nB] = this.nodes;
+    stampCapacitance(ctx, nG, nS, m * (half[0] + history[0] + this.overlapGS));
+    stampCapacitance(ctx, nG, nD, m * (half[1] + history[1] + this.overlapGD));
+    stampCapacitance(ctx, nG, nB, m * (half[2] + history[2] + this.overlapGB));
+
+    const { Cbs, Cbssw, Cbd, Cbdsw } = this.temp;
+    if (Cbs !== 0 || Cbssw !== 0 || Cbd !== 0 || Cbdsw !== 0) {
+      const [, vds, vbs] = this.terminalVoltages(voltage);
+      const vbd = vbs - vds;
+      stampCapacitance(ctx, nB, nS, m * this.depletionCapacitance(vbs, Cbs, Cbssw, this.temp.f2s, this.temp.f3s));
+      stampCapacitance(ctx, nB, nD, m * this.depletionCapacitance(vbd, Cbd, Cbdsw, this.temp.f2d, this.temp.f3d));
+    }
+  }
+
+  stampAC(ctx: StampContext, _omega: number): void {
+    this.stampDynamic(ctx);
+  }
+
+  acceptTransientStep(ctx: StampContext): void {
+    const voltage = (node: number) => (node >= 0 ? ctx.getVoltage(node) : 0);
+    const accepted = this.acceptedHalf ??= new Float64Array(3);
+    this.meyerHalf(voltage, accepted);
+  }
+
+  resetTransient(): void {
+    this.acceptedHalf = undefined;
+  }
+
+  /** mos6load.c bulk junction depletion capacitance. */
+  private depletionCapacitance(
+    voltage: number,
+    bottom: number,
+    sidewall: number,
+    f2: number,
+    f3: number,
+  ): number {
+    if (bottom === 0 && sidewall === 0) return 0;
+    const { tDepCap, tBulkPot } = this.temp;
+    if (voltage < tDepCap) {
+      const arg = 1 - voltage / tBulkPot;
+      const sarg = Math.exp(-this.model.MJ * Math.log(arg));
+      const sargsw = Math.exp(-this.model.MJSW * Math.log(arg));
+      return bottom * sarg + sidewall * sargsw;
+    }
+    return f2 + f3 * voltage;
+  }
+}
+
+function stepScale(previous: number, proposed: number, limited: number): number {
+  const delta = proposed - previous;
+  if (delta === 0) return 1;
+  return Math.min(1, Math.max(0, (limited - previous) / delta));
+}
+
+/**
+ * Stamp a two-terminal capacitance. Zero values are stamped too, so the
+ * sparsity pattern captured on the first assembly already holds every
+ * bias-dependent Meyer entry.
+ */
+function stampCapacitance(ctx: StampContext, n1: number, n2: number, value: number): void {
+  if (n1 === n2) return;
+  if (n1 >= 0) {
+    ctx.stampC(n1, n1, value);
+    if (n2 >= 0) ctx.stampC(n1, n2, -value);
+  }
+  if (n2 >= 0) {
+    ctx.stampC(n2, n2, value);
+    if (n1 >= 0) ctx.stampC(n2, n1, -value);
+  }
+}
