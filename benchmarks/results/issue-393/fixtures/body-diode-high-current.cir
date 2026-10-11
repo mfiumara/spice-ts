@@ -1,0 +1,9 @@
+MOS1 NMOS body diode at high forward current - issue 393
+VS s 0 DC 0
+RS0 s si 0.1
+VD d 0 DC -0.2
+VG g 0 DC 0
+M1 d g si si NFET
+.MODEL NFET NMOS(LEVEL=1 KP=0.5M VTO=2 IS=1e-14)
+.DC VD -1.2 0 0.01
+.END
