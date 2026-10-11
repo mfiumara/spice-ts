@@ -105,7 +105,8 @@ export function buildCompanionSystem(
   }
 
   for (const device of devices) {
-    if (!device.integratesTransientCharge) device.stampDynamic?.(ctx);
+    // storesCharge === false: stampDynamic stamps nothing for this instance.
+    if (!device.integratesTransientCharge && device.storesCharge !== false) device.stampDynamic?.(ctx);
   }
 
   // Gear-2 bootstraps with BE when x(n-1) is unavailable.
