@@ -121,12 +121,22 @@ describe('aggregate report artifact verification', () => {
         ['spiceTs', 'ngspice/probe-ac', 'unsupported', 'success'],
         ['spiceTs', 'classic/bjt-mixer-distortion', 'unsupported', 'failed'],
         ['spiceTs', 'ngspice/mesa-oscillator', 'unsupported', 'success'],
+        ['spiceTs', 'ngspice/vbic-temperature', 'unsupported', 'success'],
       ],
     );
     assert.deepEqual(report.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
-    assert.deepEqual(report.totals.spiceTs, { success: 63, failed: 1, unsupported: 36 });
-    assert.equal(report.totals.comparedAnalyses, 70);
-    assert.equal(report.totals.comparedFixtures, 51);
+    assert.deepEqual(report.totals.spiceTs, { success: 64, failed: 1, unsupported: 35 });
+    assert.equal(report.totals.comparedAnalyses, 71);
+    assert.equal(report.totals.comparedFixtures, 52);
+    // .OPTIONS TEMP (#459): the unchanged tests/vbic/temp.cir DC sweep at 150 C, losses locked exactly.
+    const vbicTemp = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/vbic-temperature');
+    assert.equal(vbicTemp.spiceTs.status, 'success');
+    assert.deepEqual(vbicTemp.comparisons.map((comparison: { analysis: string }) => comparison.analysis), ['dc']);
+    assert.deepEqual(vbicTemp.comparisons[0].metrics.grid, { spiceTsPoints: 101, ngspicePoints: 101, alignedPoints: 101, excludedOutOfRange: 0 });
+    assert.equal(vbicTemp.comparisons[0].metrics.signals['i(vc)'].absoluteError.max, 9.235316265725213e-7);
+    assert.equal(vbicTemp.comparisons[0].metrics.signals['i(vb)'].absoluteError.max, 1.6703690530533652e-7);
+    // #537, #542 and #541 are outcome-neutral; #459 changes only vbic-temperature.
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #537') && text.includes('PR #542') && text.includes('PR #541') && text.includes('#459') && text.includes('corpus-d/pwm-switch')));
     const vbicAc = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/vbic-common-emitter-ac');
     assert.equal(vbicAc.spiceTs.status, 'success');
     assert.deepEqual(vbicAc.comparisons.map((comparison: { analysis: string }) => comparison.analysis), ['ac', 'pz']);
@@ -217,7 +227,7 @@ describe('aggregate report artifact verification', () => {
 
     assert.deepEqual(report.provenance, {
       fixtureTreeSha256: '13b4675cfb97766fc7caed79d023ca514840880d17cb924c0e70561ff8b82e00',
-      sourcesSha256: '2552da006e53a7d8e7d9c887a81b7d491bb52f3dab8ef21f76546d27d19962c0',
+      sourcesSha256: 'c00b9106453eab407c87527bd360a7795316058084b0c424775d01b4a4f8d359',
     });
   });
 
@@ -226,8 +236,8 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
-    assert.equal(report.matchedPointEnvelope.comparedSignals, 969);
-    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 933);
+    assert.equal(report.matchedPointEnvelope.comparedSignals, 975);
+    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 939);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 7853.15771484375);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 7853.15771484375);
     assert.equal(report.matchedPointEnvelope.maximumRelativeError, 1075904.729730855);
