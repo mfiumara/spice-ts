@@ -618,6 +618,19 @@ export class MOSFET implements DeviceModel {
   }
 
   /**
+   * True when every G entry {@link batchStamp} writes for this instance lies
+   * in the locked topology behind `stampIndex` (resolving its slots).
+   */
+  canBatchStamp(stampIndex: (row: number, col: number) => number): boolean {
+    try {
+      this.resolveBatchSlots(stampIndex);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Batch-stamp multiple MOSFETs with direct typed-array writes,
    * bypassing StampContext closures for better performance on the fast path.
    */
