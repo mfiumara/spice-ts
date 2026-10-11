@@ -346,13 +346,18 @@ function evaluate(voltages: number[], params: VBICParams): Evaluation {
     charge[from] = add(charge[from], stored);
     charge[to] = sub(charge[to], stored);
   };
-  branch(CX, CI, irci);
+  // ngspice vbicload.c adds CKTgmin to Ibe, Ibex, Ibc, Ibep, Ibcp and to
+  // Irci (via Vrci, Vbci and Vbcx). Ibep/Ibcp diode currents are zero in the
+  // bounded subset (IBEIP/IBENP/IBCIP/IBCNP unsupported), leaving only gmin.
+  branch(CX, CI, add(irci, scale(add(add(vrci, vbci), vbcx), GMIN)));
   branch(BX, BI, irbi);
   branch(BP, CX, irbp);
   branch(BI, EI, add(ibe, scale(vbei, GMIN)));
-  branch(BX, EI, ibex);
+  branch(BX, EI, add(ibex, scale(vbex, GMIN)));
   branch(CI, EI, iciei);
   branch(BI, CI, add(ibc, scale(vbci, GMIN)));
+  branch(BX, BP, scale(vbep, GMIN));
+  branch(SI, BP, scale(vbcp, GMIN));
   branch(BX, SI, iccp);
   store(BI, EI, qbe);
   store(BI, CI, qbc);
