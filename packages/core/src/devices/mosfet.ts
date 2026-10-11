@@ -33,20 +33,54 @@ const MAX_EXP_ARG = 709;
 /** ngspice cktinit.c CKTdefaultMosW / CKTdefaultMosL, used when W or L is omitted. */
 const DEFAULT_MOS_WIDTH = 1e-4;
 const DEFAULT_MOS_LENGTH = 1e-4;
-/** ngspice mos1temp.c gate-oxide permittivity 3.9 * eps0 (F/m). */
+/** ngspice const.h CHARGE, CONSTboltz and the 27 C nominal temperature (CKTnomTemp). */
+const ELECTRON_CHARGE = 1.6021766208e-19;
+const K_OVER_Q = 1.38064852e-23 / ELECTRON_CHARGE;
+const NOMINAL_TEMPERATURE = 300.15;
+/** ngspice mos1temp.c permittivities 3.9 * eps0 (oxide) and 11.7 * eps0 (silicon), F/m. */
 const OXIDE_PERMITTIVITY = 3.9 * 8.854214871e-12;
+const SILICON_PERMITTIVITY = 11.7 * 8.854214871e-12;
 
 /**
- * KP when the model card omits it. mos1set.c defaults KP to 2e-5, but
- * mos1temp.c derives it from UO (default 600 cm^2/Vs) and Cox = 3.9*eps0/TOX
- * whenever a non-zero TOX is given. mos2temp.c and mos3set.c default TOX to
- * 1e-7, so levels 2 and 3 always derive it.
+ * VTO and KP when the model card omits them, for the ngspice MOS levels 1-3
+ * whose defaults this model follows (mos1set.c/mos1temp.c, mos2set.c/mos2temp.c,
+ * mos3set.c/mos3temp.c, all at TNOM = 27 C):
+ * - VTO defaults to 0 and KP to 2e-5.
+ * - With a non-zero oxide capacitance Cox = 3.9*eps0/TOX, KP = UO*Cox*1e-4
+ *   (UO default 600), and a given NSUB > ni sets VTO from the flat-band voltage:
+ *   vfb + type*(GAMMA*sqrt(PHI) + PHI), with PHI and GAMMA derived from NSUB
+ *   when omitted. Level 1 has Cox only when TOX is given; levels 2 and 3
+ *   default TOX to 1e-7.
+ * Any other level reaching this Level-1 evaluator is not an ngspice MOS1-3
+ * card, so it keeps the historical VTO=1, KP=2e-5 fallback unchanged.
  */
-function defaultTransconductance(level: number, params: Record<string, number | undefined>): number {
-  const oxideThickness = params.TOX ?? (level === 2 || level === 3 ? 1e-7 : undefined);
-  if (oxideThickness === undefined || oxideThickness === 0) return 2e-5;
-  const surfaceMobility = params.UO ?? params.U0 ?? 600;
-  return surfaceMobility * (OXIDE_PERMITTIVITY / oxideThickness) * 1e-4;
+function modelDefaults(
+  level: number, polarity: number, params: Record<string, number | undefined>,
+): { VTO: number; KP: number } {
+  if (level !== 1 && level !== 2 && level !== 3) return { VTO: 1, KP: 2e-5 };
+  const oxideThickness = params.TOX ?? (level === 1 ? undefined : 1e-7);
+  if (oxideThickness === undefined || oxideThickness === 0) return { VTO: 0, KP: 2e-5 };
+  const oxideCapacitance = OXIDE_PERMITTIVITY / oxideThickness;
+  const KP = (params.UO ?? params.U0 ?? 600) * oxideCapacitance * 1e-4;
+  const doping = params.NSUB === undefined ? 0 : params.NSUB * 1e6;
+  const vtnom = NOMINAL_TEMPERATURE * K_OVER_Q;
+  const bandGap = 1.16 - (7.02e-4 * NOMINAL_TEMPERATURE * NOMINAL_TEMPERATURE) / (NOMINAL_TEMPERATURE + 1108);
+  // mos3temp.c scales the intrinsic density to TNOM; mos1temp.c and mos2temp.c use 1.45e16.
+  const intrinsic = level === 3
+    ? 1.45e16 * Math.pow(NOMINAL_TEMPERATURE / 300, 1.5)
+      * Math.exp(0.5 * bandGap * (1 / 300 - 1 / NOMINAL_TEMPERATURE) / K_OVER_Q)
+    : 1.45e16;
+  if (!(doping > intrinsic)) return { VTO: 0, KP };
+  const phi = params.PHI ?? Math.max(0.1, 2 * vtnom * Math.log(doping / intrinsic));
+  const gateType = params.TPG ?? 1;
+  const surfaceFermi = polarity * 0.5 * phi;
+  const gateWorkFunction = gateType !== 0
+    ? 3.25 + 0.5 * bandGap - polarity * gateType * 0.5 * bandGap
+    : 3.2;
+  const workFunctionDifference = gateWorkFunction - (3.25 + 0.5 * bandGap + surfaceFermi);
+  const gamma = params.GAMMA ?? Math.sqrt(2 * SILICON_PERMITTIVITY * ELECTRON_CHARGE * doping) / oxideCapacitance;
+  const flatBand = workFunctionDifference - (params.NSS ?? 0) * 1e4 * ELECTRON_CHARGE / oxideCapacitance;
+  return { VTO: flatBand + polarity * (gamma * Math.sqrt(phi) + phi), KP };
 }
 
 /**
@@ -174,11 +208,12 @@ export class MOSFET implements DeviceModel {
   ) {
     this.suppliedParams = { ...params };
     const level = params.LEVEL ?? 1;
+    const polarity = params.polarity ?? 1;
+    const defaults = modelDefaults(level, polarity, params);
     this.params = {
       LEVEL: level,
-      // mos1set.c, mos2set.c and mos3set.c all default VTO to 0.
-      VTO: params.VTO ?? params.VT0 ?? 0,
-      KP: params.KP ?? params.KC ?? defaultTransconductance(level, params),
+      VTO: params.VTO ?? params.VT0 ?? defaults.VTO,
+      KP: params.KP ?? params.KC ?? defaults.KP,
       LAMBDA: params.LAMBDA ?? params.LAMBDA0 ?? 0,
       // cktinit.c CKTdefaultMosW / CKTdefaultMosL (.option defw / defl).
       W: params.W ?? DEFAULT_MOS_WIDTH,
@@ -187,7 +222,7 @@ export class MOSFET implements DeviceModel {
       AF: params.AF ?? 1,
       NLEV: params.NLEV ?? 2,
       TOX: params.TOX,
-      polarity: params.polarity ?? 1,
+      polarity,
     };
     // mos1load.c: JS*AD / JS*AS only when JS and both areas are non-zero.
     const saturationCurrent = params.IS ?? 1e-14;
