@@ -20,6 +20,19 @@ function interpolate(time: number, times: ArrayLike<number>, values: ArrayLike<n
   return values[index - 1] + (values[index] - values[index - 1]) * (time - start) / (end - start);
 }
 
+/** Times at which `values` crosses `level`, linearly interpolated. */
+function edges(times: ArrayLike<number>, values: ArrayLike<number>, level: number): number[] {
+  const out: number[] = [];
+  for (let index = 1; index < times.length; index++) {
+    const before = values[index - 1] - level;
+    const after = values[index] - level;
+    if (before * after < 0) {
+      out.push(times[index - 1] + (times[index] - times[index - 1]) * before / (before - after));
+    }
+  }
+  return out;
+}
+
 async function maxDeviation(
   netlist: string,
   signal: string,
@@ -143,8 +156,27 @@ describe('nonlinear device charge integration matches ngspice-47 (#456)', () => 
     const time = converged.transient!.time;
     const values = converged.transient!.voltage('inv3');
     const reference = Array.from(time, (t, index) => [t, values[index]] as const);
-    // Before #456 (C(v)*dv/dt companion): 200 mV; after: 10.0 mV; with the #589 b3ld.c DC core: 10.9 mV.
-    expect(await maxDeviation(bsim3InverterChain('.tran 50p 10n'), 'inv3', reference)).toBeLessThan(3e-2);
+    // Default RELTOL at TMAX=5 ps, so the check is on the charge integration,
+    // not on the timestep control. Before #456 (C(v)*dv/dt companion, default
+    // TMAX): 200 mV; after: 10.0 mV; with the #589 b3ld.c DC core: 10.9 mV.
+    // At TMAX=5 ps after #638: 19.2 mV.
+    expect(await maxDeviation(bsim3InverterChain('.tran 50p 10n 0 5p'), 'inv3', reference)).toBeLessThan(3e-2);
+
+    // Default tolerances and TMAX. Since #638 the BSIM3 nodes are sized by
+    // charge truncation alone, as in ngspice-47 (no node-voltage LTE). Both
+    // engines then take TMAX-bound steps: ngspice-47 222 accepted, spice-ts 218
+    // (588 with node-voltage LTE). Each engine's 0.9 V edges against its own
+    // converged run: ngspice-47 1.0 / 2.8 ps (max |dv| 248 mV), spice-ts
+    // 5.6 / 11.0 ps (max |dv| 458 mV; 0.2 / 0.1 ps and 10.9 mV with node LTE).
+    // The gap at equal step count is the Meyer capacitance model against
+    // ngspice's charge-based capMod (#626), published as a loss.
+    const coarse = await simulate(bsim3InverterChain('.tran 50p 10n'));
+    const coarseEdges = edges(coarse.transient!.time, coarse.transient!.voltage('inv3'), 0.9);
+    const convergedEdges = edges(time, values, 0.9);
+    expect(coarseEdges).toHaveLength(convergedEdges.length);
+    coarseEdges.forEach((edge, index) => {
+      expect(Math.abs(edge - convergedEdges[index])).toBeLessThan(15e-12);
+    });
   });
 
   it('replays the identical JFET trajectory after a transient reset', async () => {
