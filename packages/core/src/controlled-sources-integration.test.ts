@@ -17,6 +17,26 @@ describe('Controlled sources integration', () => {
     });
   });
 
+  describe('zero-gain E sharing columns with a nonlinear B source (#568)', () => {
+    it('solves the OP and matches ngspice-47 v(o11) = 1.853333e+03', async () => {
+      const result = await simulate(`t
+V1 in 0 0.7
+V2 n2 0 -1.5
+R1 in 0 1k
+R2 n2 0 1k
+E9 o9 0 in n2 0
+R19 o9 0 1k
+B11 o11 0 I=-v(in)*v(in)*3 - 1/v(n2) + v(n2)*v(in)
+R21 o11 0 1k
+.op
+.end
+`);
+      // ngspice-47 batch .op: o11 = 1.853333e+03
+      expect(result.dc!.voltage('o11')).toBeCloseTo(1853.333333, 3);
+      expect(result.dc!.voltage('o9')).toBeCloseTo(0, 12);
+    });
+  });
+
   describe('VCVS (E element)', () => {
     it('voltage amplifier: Vout = gain * Vin', async () => {
       // gain=10, Vin=1V => Vout = 10V

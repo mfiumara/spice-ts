@@ -598,6 +598,41 @@ describe('GilbertPeierlsSolver', () => {
       }
     });
 
+    it('pivots a column singleton on its only row despite explicit zero stamps (#568)', () => {
+      // First Newton matrix of the #568 deck (nodes in, n2, o11, o9; branches
+      // V1, V2, E9). E9's zero gain stores explicit zeros in row E9 and the
+      // B source's d/dv(n2) of -1/v(n2) at v(n2)=0 puts 1e64 in row o11.
+      // Column o11 has a single entry, so row o11 must be its pivot; a
+      // threshold pivot on column n2 must not consume it first.
+      const entries: Array<[number, number, number]> = [
+        [0, 0, 1e-3], [2, 0, 0], [4, 0, 1], [6, 0, 0],
+        [1, 1, 1e-3], [2, 1, 1e64], [5, 1, 1], [6, 1, 0],
+        [2, 2, 1e-3],
+        [3, 3, 1e-3], [6, 3, 1],
+        [0, 4, 1], [1, 5, 1], [3, 6, 1],
+      ];
+      const matrix = new SparseMatrix(7);
+      for (const [row, col, value] of entries) {
+        matrix.touch(row, col);
+        matrix.add(row, col, value);
+      }
+      const { csc } = toCsc(matrix);
+      // v(n2) = 0 keeps b exact despite the 1e64 coefficient.
+      const x = [0.7, 0, 2, 0, -0.7e-3, 0, 0];
+      const b = new Float64Array(7);
+      for (const [row, col, value] of entries) b[row] += value * x[col];
+
+      for (const ordering of ['amd', 'natural'] as const) {
+        const solver = new GilbertPeierlsSolver({ ordering });
+        solver.analyzePattern(csc);
+        solver.factorize(csc);
+        const solution = solver.solve(b.slice());
+        for (let i = 0; i < 7; i++) {
+          expect(solution[i], `${ordering} x[${i}]`).toBeCloseTo(x[i], 9);
+        }
+      }
+    });
+
     it('replaces reusable workspaces when the analyzed topology changes', () => {
       const solver = new GilbertPeierlsSolver();
       const one = new SparseMatrix(1);
