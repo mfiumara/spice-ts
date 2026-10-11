@@ -2,7 +2,7 @@
   "schemaVersion": "spice-ts-aggregate-parity/v1",
   "provenance": {
     "fixtureTreeSha256": "13b4675cfb97766fc7caed79d023ca514840880d17cb924c0e70561ff8b82e00",
-    "sourcesSha256": "2ce09abb1114cfd77b8dc354ccbf951649dc6e8bdcc42bf35f20263f2e7fd3a3"
+    "sourcesSha256": "fd8b534c908d9248278301a9ec9f2189372f0c70674378a85b6ee7391cf95a0c"
   },
   "corpusSources": [
     {
@@ -143,8 +143,8 @@
     "comparedFixtures": 48,
     "comparedAnalyses": 67,
     "runtimeMs": {
-      "ngspice": 25955.679,
-      "spiceTs": 80859.721
+      "ngspice": 11424.335,
+      "spiceTs": 37743.897
     }
   },
   "matchedPointEnvelope": {
@@ -381,7 +381,8 @@
       "Merged after the 7a0a486 run above (PR #470 head 0eeb242, outcome c6f33703), bisected the same way: one full 100-fixture run per main commit with 0eeb242 merged in (git merge --no-commit in throwaway worktrees). MOS1-3 defaults matching ngspice-47, with TOX/NSUB-derived KP and VTO (PR #534, main 5967c02, outcome 3fa89735), changes only ngspice/mos-amplifier-transient and classic/mos-amplifier (same deck, 442 to 435 points, ngspice 2429). Gains: abs RMS down on 9 of 24 signals, v(12) 1.170 to 0.093 V, v(11) 0.720 to 0.183 V, v(7) 0.757 to 0.228 V, v(13) 0.969 to 0.428 V, v(4) 1.270 to 0.767 V, v(10) 2.152 to 1.254 V, v(16) 2.731 to 2.159 V and i(vin) rel max 481.9 to 189.4. Published losses: abs RMS up on 12 of 24; the worst abs max moves from 4.806 V v(6) to 5.255 V v(5) (v(5) RMS 2.345 to 2.897 V), v(6) 4.806 to 5.053 V, v(1) 1.837 to 2.379 V, v(9) 1.093 to 1.374 V, i(vccp) 3.60e-3 to 4.52e-3 A and v(8) rel max 225.9 to 971.3. The ngspice-47 LTRA convolution model for O elements (#520, PR #536, main e029152, outcome 546f7478) changes only the three LTRA transients and drops the internal line nodes from the spice-ts signal lists. Gains: ngspice/ltra-line-transient (662 to 599 points, ngspice 497) worst v(3) 0.4126 to 0.0880 V, v(2) 0.342 to 0.084 V (RMS 0.0816 to 0.0098 V), v(3) rel max 31.0 to 0.93, abs RMS down on 4 of 6; classic/lossy-line-24-inch (3380 to 2488 points) worst 1.414 V v(2) to 0.494 V v(3), v(2) 1.414 to 0.368 V, v(3) 1.210 to 0.494 V and v(3) rel max 858 to 113; classic/coupled-lossy-lines (5972 to 3141 points) worst 0.865 to 0.816 V v(x3.3), abs RMS down on 39 of 47, v(5) 0.517 to 0.058 V, v(2) 0.495 to 0.115 V, and v(5) rel max 535751686335.6694 to 190231.44 (rel RMS 7807328392.665471 to 7661.09). That removes the relative envelope loss published for #522: the relative envelope falls to 1075904.729730855 (ngspice/mos6-inverter-transient v(xndinv2.32), unchanged by these merges) and the relative RMS envelope to 201300.57592313777 (ngspice/hfet-inverter i(vdd), also unchanged). Published losses: ngspice/ltra-line-transient i(vs) abs RMS 5.524e-7 to 5.600e-7 A; classic/coupled-lossy-lines v(x1.21) 0.0136 to 0.0141 V (RMS 6.66e-4 to 9.89e-4 V) and i(v1) rel max 14.0 to 26.9 at a lower abs max. Analysis commands run from .control blocks (#489, PR #516, main d8a5d41) reproduces outcome 546f7478 exactly, so it is outcome-neutral. BJT default IS=1e-16 and the kT/q thermal voltage for ngspice-47 parity (#519/#525, PR #540, main 5aa704d, outcome 0c36526c) changes 23 analyses on 14 fixtures and no status. Gains: classic/rca3040-wideband-amplifier DC worst 0.2383 V v(12) to 0.0638 V v(15) and TRAN 0.3386 V v(14) to 0.2563 V v(15), abs RMS down on 18 and 19 of 21; classic/rtl-inverter-chain DC v(5) 1.803 to 0.0035 V and TRAN worst 0.2846 V v(5) to 0.0880 V v(3) (210 to 203 points); corpus-e/bjt-rtl-inverter-chain DC v(5) 1.801 to 0.0019 V, OP 0.1187 V to 4.6e-8 V and TRAN worst v(3) 0.2940 to 0.0880 V; classic/bjt-differential-pair TRAN worst 0.1194 to 0.0059 V; corpus-e/bjt-diffpair-transient OP 0.1194 V to 5.2e-7 V and TRAN 0.1202 to 0.0334 V; corpus-e/bjt-diffpair-current-source AC 0.517 V to 2.7e-5 V, OP 0.1194 V to 5.0e-7 V and TRAN 0.1309 to 0.0339 V (228 to 238 points); xyce/npn-dc v(1) 0.1192 V to 5.4e-4 V; xyce/pnp-dc v(3) 1.19e-3 to 9.8e-4 V; classic/bjt-noise onoise_total rel max 4.886e-4 to 1.23e-7; ngspice/jimi-fuzz OP worst 6.71e-4 to 3.5e-8 V; ngspice/schmitt-trigger and classic/ecl-schmitt-trigger (204 to 210 points) v(6) 0.7580 to 0.7573 V, abs RMS down on 9 of 10; classic/coupled-lossy-lines v(5) rel max 190231.44 to 178278.03. Published losses: classic/rca3040-wideband-amplifier AC v(14) abs max 1.017 to 1.775 V (RMS 0.521 to 1.382 V), with v(15), v(16) and v(17) moving the same way, while their relative max falls (v(14) 0.0285 to 0.0220); its TRAN i(vin) rel max 19.3 to 290; classic/coupled-lossy-lines worst 0.816 V v(x3.3) to 0.927 V v(x3.1) and abs RMS up on 34 of 47 (v(x3.2) rel max 18.9 to 546); classic/lossy-line-24-inch v(3) 0.494 to 0.512 V and v(2) 0.368 to 0.383 V (RMS 0.054 to 0.064 V, rel max 13.0 to 71.6); ngspice/jimi-fuzz TRAN (567405 to 567030 points) v(11) 3.656 to 3.662 V and v(3)/v(9) rel max 2.49e4 to 6.38e4; classic/bjt-differential-pair v(3) rel max 3.6 to 28.3 at a lower abs max; corpus-e/bjt-diffpair-transient v(2) abs RMS 5.03e-4 to 5.67e-4 V. corpus-e/bjt-diffpair-ac, which ngspice cannot run (no comparison), moves from 100 to 99 spice-ts transient points. The ahkab and Gnucap SPICE3 translation corpora (#524, PR #535 main 670acce and PR #533 main fbbbe85) add corpora outside the five aggregate corpora and leave the fixture tree pin unchanged; #533 adds a benchmarks/SOURCES.md section, so the pin moves from 8fa511b0 to 2552da00, and the run on the fbbbe85 merge reproduces every per-fixture metric, grid and status of the 5aa704d run. Absolute samples change from 9,568,125 to 9,427,074, relative samples from 9,530,324 to 9,400,650, and excluded zero references from 37,801 to 26,424. The absolute envelope (7853.15771484375, vbic-common-emitter-ac pole(1)) is unchanged; without the PZ rows the worst absolute max is now 5.255 V and the worst absolute RMS 2.897 V, both on ngspice/mos-amplifier-transient v(5). Engine totals stay at 52/9/39 (ngspice) and 63/1/36 (spice-ts), and coverage at 70 analyses across 51 fixtures and 969/933 signals, through all six merges. No fixture, tolerance or harness logic changed.",
       "Merged after the fbbbe85 run above (PR #470 head 969d955, outcome 9d9321d6, squash-merged as 38acdbb with an identical tree), bisected with one full 100-fixture run per main commit in throwaway worktrees, each with only the SOURCES.md pin set to that commit's catalogue. The Xyce SPICE3 translation corpus (#524 lane 3, PR #537, main fdc3af6) adds a corpus outside the five aggregate corpora and a benchmarks/SOURCES.md section, so the pin moves from 2552da00 to 33b51481; its run reproduces every per-fixture metric, grid and status of the fbbbe85 run. The typed UnsupportedModelTypeError for unsupported .model types (#509, PR #542, main 327aa28) reproduces them too; it changes only the spice-ts error text of corpus-d/pwm-switch, which stays unsupported (the HIGH_SW .model card is now rejected before the S device card) and is excluded from the deterministic projection. LU factor reuse when the matrix is bit-identical (#486, PR #541, main 5589ab1) also reproduces every per-fixture metric, grid and status exactly (outcome c703b84a with pin 33b51481), so all three merges are outcome-neutral. The mcp lifecycle-script fix (#517, PR #546, main 21eea3e) reproduces outcome c703b84a exactly. The ngspice first transient step at the t = 0 breakpoint (#532, PR #545, main 7b8a1ba, outcome b682fde3) changes 25 transient analyses on 25 compared fixtures, and the spice-ts output of 9 fixtures that ngspice cannot run (no comparison); no status, signal list or non-transient analysis changes. Gains: classic/bjt-differential-pair abs RMS down on 10 of 12 (v(2) 6.35e-4 to 1.79e-4 V, i(vin) 6.54e-7 to 1.36e-7 A); classic/coupled-lossy-lines worst 0.9272 V v(x3.1) to 0.8275 V v(x3.3) (v(x3.1) 0.927 to 0.727 V), abs RMS down on 32 of 47; classic/lossy-line-24-inch v(3) 0.5115 to 0.4979 V and v(2) 0.3828 to 0.3745 V; classic/rca3040-wideband-amplifier TRAN worst 0.2563 V v(15) to 0.2304 V v(14), abs RMS down on 16 of 21; ngspice/ltra-line-transient v(2) 0.0842 to 0.0768 V, abs RMS down on 5 of 6; ngspice/mos6-inverter-transient and classic/mos6-inverter-chain worst v(xndinv3.14) 0.2921 to 0.2849 V; ngspice/mesa-oscillator worst v(8) 0.2901 to 0.2889 V, abs max down on 35 of 37; classic/lossy-line-aluminium abs RMS down on 236 of 261; classic/rtl-inverter-chain v(5) RMS 2.87e-3 to 2.62e-3 V; corpus-e/bjt-rtl-inverter-chain abs RMS down on 7 of 8; the relative max envelope falls from 1075904.729730855 to 975815.5539797375 (ngspice/mos6-inverter-transient v(xndinv2.32)). Published losses: ngspice/mos-amplifier-transient and classic/mos-amplifier worst v(5) 5.255 to 5.300 V and v(6) 5.053 to 5.083 V, abs max up on 17 of 24 (abs RMS down on 17); ngspice/schmitt-trigger and classic/ecl-schmitt-trigger v(6) 0.7573 to 0.7638 V and v(7) 0.7110 to 0.7153 V; ngspice/rc-transient and classic/rc-transient v(2) and i(vin) 1.665e-3 to 1.720e-3 (RMS 3.91e-4 to 4.07e-4) on 107 to 109 points; ngspice/mos6-inverter-transient and classic/mos6-inverter-chain abs RMS up on 36 of 44 signals (i(vin) 1.04e-5 to 1.14e-5 A, RMS 7.93e-7 to 8.65e-7 A; v(42) rel max 218 to 1220); corpus-e/bjt-diffpair-transient v(5) 0.0334 to 0.0346 V and v(4) 0.0326 to 0.0338 V; classic/mos-memory-cell v(4) 0.0160 to 0.0172 V; corpus-e/mos1-inverter-sweep TRAN abs RMS up on 7 of 9 at a 0.8361 to 0.8363 V v(3) worst; ngspice/hfet-inverter i(vin) 1.513e-3 to 1.546e-3 A; ngspice/jimi-fuzz v(3) and v(9) rel max 6.38e4 to 3.59e5; and the relative RMS envelope rises from 201300.57592313777 to 203361.3440880642 (ngspice/hfet-inverter i(vdd)). Gummel-Poon iterate-relative junction limiting and the substrate junction (#538/#539, PR #550, main 2a8112c, outcome 75420c0c) changes 24 analyses on 14 BJT fixtures and no status or signal list. Gains: classic/coupled-lossy-lines (3165 to 3098 points) abs RMS down on 38 of 47 (v(2) 0.1220 to 0.0472 V, v(4) 0.1426 to 0.0256 V, v(5) rel max 2.99e5 to 32.1, i(vcc) 3.87e-3 to 2.47e-3 A); classic/lossy-line-24-inch (2529 to 2429 points) v(3) 0.4979 to 0.4559 V and v(2) 0.3745 to 0.3005 V; corpus-e/bjt-diffpair-transient and corpus-e/bjt-diffpair-current-source OP v(5) 5.17e-7 and 4.98e-7 to 4.03e-7 and 3.85e-7 V; corpus-e/bjt-rtl-inverter-chain OP v(3) 8.4e-9 to 4.2e-9 V. Published losses: classic/coupled-lossy-lines worst v(x3.3) 0.8275 to 0.8435 V and i(v1) 1.16e-4 to 1.25e-4 A; classic/lossy-line-24-inch v(3) rel max 6.05 to 8520 and v(2) rel max 250 to 693; classic/bjt-noise onoise_spectrum abs max 2.58e-14 to 3.38e-14 (rel max 1.58e-7 to 2.07e-7) and onoise_total 6.37e-12 to 9.83e-12 (rel 1.23e-7 to 1.91e-7); ngspice/jimi-fuzz TRAN i(v_v2) rel max 4198 to 2.38e5; ngspice/schmitt-trigger and classic/ecl-schmitt-trigger abs max up on 7 of 10 at an unchanged 0.7638 V worst; classic/rtl-inverter-chain DC, xyce/npn-dc and corpus-e/bjt-rtl-inverter-chain DC abs RMS up on 6 of 8 signals at unchanged worst values. Absolute samples change from 9,427,074 to 9,437,401 (#545) and then 9,433,536 (#550), relative samples from 9,400,650 to 9,410,774 and then 9,407,172, and excluded zero references from 26,424 to 26,627 and then 26,364. The absolute envelope (7853.15771484375, vbic-common-emitter-ac pole(1)) is unchanged; without the PZ rows the worst absolute max is now 5.300 V and the worst absolute RMS 2.893 V, both on ngspice/mos-amplifier-transient v(5). Engine totals stay at 52/9/39 (ngspice) and 63/1/36 (spice-ts), and coverage at 70 analyses across 51 fixtures and 969/933 signals, through all six merges. No fixture, tolerance or harness logic changed.",
       "MOS level-1 body effect, signed VTO and LD, with a typed UnsupportedModelLevelError for unimplemented MOSFET levels (#530, PR #552, main 2812371, outcome 3c88e414), merged after the 2a8112c run above, adds a benchmarks/SOURCES.md section and re-pins SOURCES_SHA256 to d4a0994d on main; its run with that pin, against the 2a8112c run (outcome 75420c0c), changes 8 fixtures. ngspice/mos-amplifier-transient, classic/mos-amplifier (LEVEL=2), classic/bsim1-device-sweep (LEVEL=4) and classic/bsim2-device-sweep (LEVEL=5) move from success to unsupported (status transitions above, follow-up #565), removing 4 analyses, 96 absolute and 92 relative signals; the published 5.300 V v(5) mos-amplifier loss leaves the report because the fixture is no longer simulated, not because it was fixed. Gains: classic/mos-memory-cell (155 points) worst 1.906 V v(8) to 0.248 V v(3), with v(8) 1.906 to 0.0831 V, v(3) 1.875 to 0.248 V, v(5) 1.861 to 0.0284 V and v(6) 0.0518 to 0.0150 V, abs max down on 8 of 13 signals. Published losses: classic/mos-memory-cell abs RMS up on 6 of 13 signals (v(4) 6.41e-3 to 6.79e-3 V) and i(vdd) abs max 6.42e-5 to 6.72e-5 A. ngspice/ltra-line-transient, xyce/nmos-level1-dc and corpus-e/mos1-inverter-sweep change only at rounding level (no abs max or abs RMS moves by more than 0.84%). Engine totals move from 63/1/36 to 59/1/40 (spice-ts) with ngspice unchanged at 52/9/39, and coverage from 70 analyses across 51 fixtures to 66 across 47 and from 969/933 to 873/841 signals. Absolute samples change from 9,433,536 to 9,388,320, relative samples from 9,407,172 to 9,364,374, and excluded zero references from 26,364 to 23,946. The absolute envelope (7853.15771484375, vbic-common-emitter-ac pole(1)) and the relative envelopes (975815.5539797375 and 203361.3440880642) are unchanged; without the PZ rows the worst absolute max is now 3.663 V on ngspice/jimi-fuzz TRAN v(11) and the worst absolute RMS 1.619 V on ngspice/hfet-inverter v(4). No fixture, tolerance or harness logic changed.",
-      ".OPTIONS TEMP with the ngspice-47 VBIC temperature mapping (#459, this branch on main 2812371, pin 2ce09abb after its SOURCES.md section), run against the 2812371 run (outcome 3c88e414), changes only ngspice/vbic-temperature (status transition above): one DC analysis of 6 signals and 101 aligned points; no other fixture, grid, status or envelope changes. Signals change from 873 to 879 absolute and from 841 to 847 relative, absolute samples from 9,388,320 to 9,388,926 and relative samples from 9,364,374 to 9,364,980; excluded zero references stay at 23,946. Engine totals move from 59/1/40 to 60/1/39 (spice-ts) with ngspice unchanged at 52/9/39, and coverage from 66 analyses across 47 fixtures to 67 across 48. No fixture, tolerance or harness logic changed.",
+      "Merged after the 2812371 run above, bisected the same way. The VDMOS power MOSFET model (#506, PR #562, main a32f755) leaves benchmarks/SOURCES.md (pin d4a0994d) unchanged, and its run reproduces outcome 3c88e414 of the 2812371 run exactly, so it is outcome-neutral (no corpus deck uses a VDMOS card). XSPICE A elements with the gain, summer, mult, divide, pwl, limit, int and d_dt code models (#487, PR #554, main 0e1aeb4) add a benchmarks/SOURCES.md section, so the pin moves from d4a0994d to fa95e5d0 (main itself still pins d4a0994d, so --check fails on 0e1aeb4 alone on the pin); with that pin its run (outcome 8a19a9d7) reproduces every per-fixture metric, grid and status of the a32f755 run, and only the pin moves the outcome hash. Engine totals, coverage, signal and sample counts and every envelope are unchanged by both merges. No fixture, tolerance or harness logic changed.",
+      ".OPTIONS TEMP with the ngspice-47 VBIC temperature mapping (#459, this branch on main 0e1aeb4, pin fd8b534c after its SOURCES.md section), run against the 0e1aeb4 run (outcome 8a19a9d7), changes only ngspice/vbic-temperature (status transition above): one DC analysis of 6 signals and 101 aligned points; no other fixture, grid, status or envelope changes. Signals change from 873 to 879 absolute and from 841 to 847 relative, absolute samples from 9,388,320 to 9,388,926 and relative samples from 9,364,374 to 9,364,980; excluded zero references stay at 23,946. Engine totals move from 59/1/40 to 60/1/39 (spice-ts) with ngspice unchanged at 52/9/39, and coverage from 66 analyses across 47 fixtures to 67 across 48. No fixture, tolerance or harness logic changed.",
       "The runtime sums in the totals above are single samples on a shared, heavily loaded host. No spice-ts run hit the 120000 ms bound in this run. They are not comparable with the previous 77150.906 / 270491.926 ms sample and support no speed claim."
     ]
   },
@@ -465,7 +466,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 61.46,
+        "runtimeMs": 180.414,
         "command": [
           "ngspice",
           "-b",
@@ -496,7 +497,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 2954.5,
+        "runtimeMs": 1110.012,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -749,7 +750,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 35.672,
+        "runtimeMs": 110.759,
         "command": [
           "ngspice",
           "-b",
@@ -780,7 +781,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 1056.722,
+        "runtimeMs": 482.273,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -1033,7 +1034,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 221.849,
+        "runtimeMs": 258.876,
         "command": [
           "ngspice",
           "-b",
@@ -1098,7 +1099,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 1740.377,
+        "runtimeMs": 1048.029,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -2484,7 +2485,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 123.866,
+        "runtimeMs": 151.562,
         "command": [
           "ngspice",
           "-b",
@@ -2519,7 +2520,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 594.309,
+        "runtimeMs": 441.238,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -2857,7 +2858,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 239.894,
+        "runtimeMs": 180.236,
         "command": [
           "ngspice",
           "-b",
@@ -2890,7 +2891,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 347.557,
+        "runtimeMs": 453.058,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -3165,7 +3166,7 @@
       "ngspice": {
         "status": "failed",
         "convergence": "not-run",
-        "runtimeMs": 26.711,
+        "runtimeMs": 134.063,
         "command": [
           "ngspice",
           "-b",
@@ -3180,7 +3181,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 372.338,
+        "runtimeMs": 907.924,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -3213,7 +3214,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 55.265,
+        "runtimeMs": 47.806,
         "command": [
           "ngspice",
           "-b",
@@ -3263,7 +3264,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 364.248,
+        "runtimeMs": 560.791,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -3939,7 +3940,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 35.117,
+        "runtimeMs": 93.964,
         "command": [
           "ngspice",
           "-b",
@@ -3969,7 +3970,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 373.523,
+        "runtimeMs": 270.974,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -4153,7 +4154,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 42.509,
+        "runtimeMs": 110.766,
         "command": [
           "ngspice",
           "-b",
@@ -4177,7 +4178,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 578.131,
+        "runtimeMs": 265.541,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -4331,7 +4332,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 2536.09,
+        "runtimeMs": 1974.396,
         "command": [
           "ngspice",
           "-b",
@@ -4376,7 +4377,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 499.06,
+        "runtimeMs": 616.017,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -4408,7 +4409,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 81.003,
+        "runtimeMs": 68.471,
         "command": [
           "ngspice",
           "-b",
@@ -4434,7 +4435,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 832.155,
+        "runtimeMs": 1134.096,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -4649,7 +4650,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 209.27,
+        "runtimeMs": 160.821,
         "command": [
           "ngspice",
           "-b",
@@ -4678,7 +4679,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 861.457,
+        "runtimeMs": 1392.649,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -4925,7 +4926,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 49.148,
+        "runtimeMs": 100.501,
         "command": [
           "ngspice",
           "-b",
@@ -4952,7 +4953,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 791.948,
+        "runtimeMs": 1619.602,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -5204,7 +5205,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 199.154,
+        "runtimeMs": 89.836,
         "command": [
           "ngspice",
           "-b",
@@ -5262,7 +5263,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 2545.444,
+        "runtimeMs": 4567.672,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -6460,7 +6461,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 9727.574,
+        "runtimeMs": 4785.296,
         "command": [
           "ngspice",
           "-b",
@@ -6513,7 +6514,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 22367.595,
+        "runtimeMs": 8396.785,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -7389,7 +7390,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 163.088,
+        "runtimeMs": 92.548,
         "command": [
           "ngspice",
           "-b",
@@ -7420,7 +7421,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 491.329,
+        "runtimeMs": 150.869,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -7792,7 +7793,7 @@
       "ngspice": {
         "status": "failed",
         "convergence": "not-run",
-        "runtimeMs": 66.018,
+        "runtimeMs": 22.523,
         "command": [
           "ngspice",
           "-b",
@@ -7807,7 +7808,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 193.435,
+        "runtimeMs": 109.915,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -7839,7 +7840,7 @@
       "ngspice": {
         "status": "failed",
         "convergence": "not-run",
-        "runtimeMs": 109.207,
+        "runtimeMs": 27.244,
         "command": [
           "ngspice",
           "-b",
@@ -7854,7 +7855,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 255.718,
+        "runtimeMs": 99.01,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -7886,7 +7887,7 @@
       "ngspice": {
         "status": "failed",
         "convergence": "not-run",
-        "runtimeMs": 95.675,
+        "runtimeMs": 20.524,
         "command": [
           "ngspice",
           "-b",
@@ -7901,7 +7902,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 441.303,
+        "runtimeMs": 99.215,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -7934,7 +7935,7 @@
       "ngspice": {
         "status": "failed",
         "convergence": "not-run",
-        "runtimeMs": 100.865,
+        "runtimeMs": 55.571,
         "command": [
           "ngspice",
           "-b",
@@ -7949,7 +7950,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 675.963,
+        "runtimeMs": 127.313,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -7981,7 +7982,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 138.085,
+        "runtimeMs": 30.095,
         "command": [
           "ngspice",
           "-b",
@@ -8042,7 +8043,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 423.97,
+        "runtimeMs": 114.808,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -8258,7 +8259,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 259.131,
+        "runtimeMs": 34.302,
         "command": [
           "ngspice",
           "-b",
@@ -8303,7 +8304,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 382.803,
+        "runtimeMs": 109.765,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -8335,7 +8336,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 163.408,
+        "runtimeMs": 35.375,
         "command": [
           "ngspice",
           "-b",
@@ -8380,7 +8381,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 436.482,
+        "runtimeMs": 99.208,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -8412,7 +8413,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 191.322,
+        "runtimeMs": 20.507,
         "command": [
           "ngspice",
           "-b",
@@ -8445,7 +8446,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 502.265,
+        "runtimeMs": 128.295,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -8873,7 +8874,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 143.379,
+        "runtimeMs": 20.453,
         "command": [
           "ngspice",
           "-b",
@@ -8921,7 +8922,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 410.872,
+        "runtimeMs": 100.23,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -9498,7 +9499,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 232.269,
+        "runtimeMs": 38.093,
         "command": [
           "ngspice",
           "-b",
@@ -9522,7 +9523,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 2663.374,
+        "runtimeMs": 773.074,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -9727,7 +9728,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 1089.15,
+        "runtimeMs": 283.62,
         "command": [
           "ngspice",
           "-b",
@@ -10073,7 +10074,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 4664.774,
+        "runtimeMs": 2189.895,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -18032,7 +18033,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 498.084,
+        "runtimeMs": 97.552,
         "command": [
           "ngspice",
           "-b",
@@ -18121,7 +18122,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 6626.984,
+        "runtimeMs": 2071.222,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -19632,7 +19633,7 @@
       "ngspice": {
         "status": "failed",
         "convergence": "not-run",
-        "runtimeMs": 96.287,
+        "runtimeMs": 24.335,
         "command": [
           "ngspice",
           "-b",
@@ -19647,7 +19648,7 @@
       "spiceTs": {
         "status": "failed",
         "convergence": "not-run",
-        "runtimeMs": 267.655,
+        "runtimeMs": 98.266,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -19680,7 +19681,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 157.655,
+        "runtimeMs": 43.431,
         "command": [
           "ngspice",
           "-b",
@@ -19745,7 +19746,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 1315.256,
+        "runtimeMs": 559.737,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -21131,7 +21132,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 1260.716,
+        "runtimeMs": 661.978,
         "command": [
           "ngspice",
           "-b",
@@ -21176,7 +21177,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 277.353,
+        "runtimeMs": 155.932,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -21209,7 +21210,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 103.113,
+        "runtimeMs": 16.382,
         "command": [
           "ngspice",
           "-b",
@@ -21243,7 +21244,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 525.505,
+        "runtimeMs": 153.064,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -21698,7 +21699,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 228.826,
+        "runtimeMs": 25.024,
         "command": [
           "ngspice",
           "-b",
@@ -21723,7 +21724,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 261.898,
+        "runtimeMs": 105.54,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -21908,7 +21909,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 89.627,
+        "runtimeMs": 58.263,
         "command": [
           "ngspice",
           "-b",
@@ -21932,7 +21933,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 228.043,
+        "runtimeMs": 90.82,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -22087,7 +22088,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 191.567,
+        "runtimeMs": 30.258,
         "command": [
           "ngspice",
           "-b",
@@ -22111,7 +22112,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 312.145,
+        "runtimeMs": 93.332,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -22267,7 +22268,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 85.228,
+        "runtimeMs": 40.938,
         "command": [
           "ngspice",
           "-b",
@@ -22363,7 +22364,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 1004.236,
+        "runtimeMs": 261.385,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -24413,7 +24414,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 118.158,
+        "runtimeMs": 23.807,
         "command": [
           "ngspice",
           "-b",
@@ -24453,7 +24454,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 463.46,
+        "runtimeMs": 100.473,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -24670,7 +24671,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 56.168,
+        "runtimeMs": 24.015,
         "command": [
           "ngspice",
           "-b",
@@ -24713,7 +24714,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 433.365,
+        "runtimeMs": 130.303,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -25296,7 +25297,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 137.715,
+        "runtimeMs": 21.059,
         "command": [
           "ngspice",
           "-b",
@@ -25327,7 +25328,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 345.628,
+        "runtimeMs": 133.5,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -25699,7 +25700,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 34.147,
+        "runtimeMs": 20.475,
         "command": [
           "ngspice",
           "-b",
@@ -25722,7 +25723,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 209.725,
+        "runtimeMs": 102.203,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -25847,7 +25848,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 64.81,
+        "runtimeMs": 24.019,
         "command": [
           "ngspice",
           "-b",
@@ -25857,12 +25858,12 @@
         ],
         "inputSha256": "38b0d8271d4cef0f783be9a5ba0bc391c6d164fbe0dba9027e93927f0656e90b",
         "analyses": [],
-        "error": "Error on line 29 or its substitute: .tran 0 5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: regression test to show proper transient rc circuit Total elapsed time (seconds) = 0.007 Total DRAM available = 49152.000 MB. DRAM currently available = 17695.656 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB."
+        "error": "Error on line 29 or its substitute: .tran 0 5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: regression test to show proper transient rc circuit Total elapsed time (seconds) = 0.006 Total DRAM available = 49152.000 MB. DRAM currently available = 18991.453 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB."
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 243.417,
+        "runtimeMs": 103.806,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -25903,7 +25904,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 29.709,
+        "runtimeMs": 19.146,
         "command": [
           "ngspice",
           "-b",
@@ -25913,12 +25914,12 @@
         ],
         "inputSha256": "628f4953ca83a0e8840e100ea4671c778afe47bdcad0f52c09f5053c023c5194",
         "analyses": [],
-        "error": "Error on line 29 or its substitute: .tran 0 5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: regression test to show proper transient rc circuit Total elapsed time (seconds) = 0.007 Total DRAM available = 49152.000 MB. DRAM currently available = 17505.469 MB. Maximum ngspice program size = 9.875 MB. Current ngspice program size = 9.875 MB."
+        "error": "Error on line 29 or its substitute: .tran 0 5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: regression test to show proper transient rc circuit Total elapsed time (seconds) = 0.005 Total DRAM available = 49152.000 MB. DRAM currently available = 19037.734 MB. Maximum ngspice program size = 9.812 MB. Current ngspice program size = 9.812 MB."
       },
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 233.767,
+        "runtimeMs": 86.168,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -25950,7 +25951,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 86.537,
+        "runtimeMs": 17.902,
         "command": [
           "ngspice",
           "-b",
@@ -25960,12 +25961,12 @@
         ],
         "inputSha256": "add8ca9d2654398a4c394bc9232809677b479fe35172c66bbb8e2ad9bf9410a4",
         "analyses": [],
-        "error": "Error on line 2 or its substitute: .tran 0 2.0e-4 TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: rc_osc test Total elapsed time (seconds) = 0.006 Total DRAM available = 49152.000 MB. DRAM currently available = 17369.391 MB. Maximum ngspice program size = 9.828 MB. Current ngspice program size = 9.828 MB."
+        "error": "Error on line 2 or its substitute: .tran 0 2.0e-4 TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: rc_osc test Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 19037.734 MB. Maximum ngspice program size = 9.828 MB. Current ngspice program size = 9.828 MB."
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 365.494,
+        "runtimeMs": 129.265,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -26006,7 +26007,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 124.792,
+        "runtimeMs": 18.117,
         "command": [
           "ngspice",
           "-b",
@@ -26016,12 +26017,12 @@
         ],
         "inputSha256": "9c52a577a2f0b0a7419160b6cd340894ed41ebc403023a3b3f1d809d171bee0e",
         "analyses": [],
-        "error": "Error on line 9 or its substitute: .tran 0 1 0 100m TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: *trivial sweep of diode to produce i/v curve Total elapsed time (seconds) = 0.026 Total DRAM available = 49152.000 MB. DRAM currently available = 17002.625 MB. Maximum ngspice program size = 9.844 MB. Current ngspice program size = 9.844 MB."
+        "error": "Error on line 9 or its substitute: .tran 0 1 0 100m TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: *trivial sweep of diode to produce i/v curve Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 18873.578 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB."
       },
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 350.952,
+        "runtimeMs": 106.73,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -26053,7 +26054,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 178.082,
+        "runtimeMs": 17.137,
         "command": [
           "ngspice",
           "-b",
@@ -26063,12 +26064,12 @@
         ],
         "inputSha256": "aefc2180e4bb6a5b39e3f4105546f3c5ba22af3b74f003d2d4d3c55f45938e9e",
         "analyses": [],
-        "error": "Fatal error: x1:dfor: Diode model level 2 is not supported. doAnalyses: no such parameter on this device or parameter is missing run simulation(s) aborted Note: No compatibility mode selected! Circuit: mmsz5229bt1 zener subcircuit using pspice level 2 diode at elevated temperature ASCII raw file \"output.raw\" Doing analysis at TEMP = 35.000000 and TNOM = 27.000000 .print line ignored since rawfile was produced. Total analysis time (seconds) = 0 Total elapsed time (seconds) = 0.050 Total DRAM available = 49152.000 MB. DRAM currently available = 17156.016 MB. Maximum ngspice program size = 10.000 MB. Current ngspice program size = 10.000 MB."
+        "error": "Fatal error: x1:dfor: Diode model level 2 is not supported. doAnalyses: no such parameter on this device or parameter is missing run simulation(s) aborted Note: No compatibility mode selected! Circuit: mmsz5229bt1 zener subcircuit using pspice level 2 diode at elevated temperature ASCII raw file \"output.raw\" Doing analysis at TEMP = 35.000000 and TNOM = 27.000000 .print line ignored since rawfile was produced. Total analysis time (seconds) = 0 Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 18873.578 MB. Maximum ngspice program size = 9.984 MB. Current ngspice program size = 9.984 MB."
       },
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 354.257,
+        "runtimeMs": 86.015,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -26100,7 +26101,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 37.797,
+        "runtimeMs": 16.754,
         "command": [
           "ngspice",
           "-b",
@@ -26110,12 +26111,12 @@
         ],
         "inputSha256": "334e2dde43335851dc96f76ba5e78ef3e0b1de142cca073b3c70f83937637d8c",
         "analyses": [],
-        "error": "Error on line 45 or its substitute: .tran 0 0.5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: diode circuit netlist Total elapsed time (seconds) = 0.005 Total DRAM available = 49152.000 MB. DRAM currently available = 16792.266 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB."
+        "error": "Error on line 45 or its substitute: .tran 0 0.5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: diode circuit netlist Total elapsed time (seconds) = 0.005 Total DRAM available = 49152.000 MB. DRAM currently available = 18873.578 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB."
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 499.394,
+        "runtimeMs": 123.415,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -26158,7 +26159,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 213.521,
+        "runtimeMs": 27.294,
         "command": [
           "ngspice",
           "-b",
@@ -26183,7 +26184,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 500.138,
+        "runtimeMs": 111.424,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -26368,7 +26369,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 33.81,
+        "runtimeMs": 21.063,
         "command": [
           "ngspice",
           "-b",
@@ -26392,7 +26393,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 689.557,
+        "runtimeMs": 109.565,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -26547,7 +26548,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 325.373,
+        "runtimeMs": 21.018,
         "command": [
           "ngspice",
           "-b",
@@ -26578,7 +26579,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 419.59,
+        "runtimeMs": 107.039,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -26943,7 +26944,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 180.627,
+        "runtimeMs": 22.054,
         "command": [
           "ngspice",
           "-b",
@@ -26953,12 +26954,12 @@
         ],
         "inputSha256": "295e3d4208ea2d839acf4724473b921ef1706976b254912b6e8455508c65b412",
         "analyses": [],
-        "error": "Error on line 8 or its substitute: .step vgs 0 -1.875 -0.625 unimplemented dot command '.step' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: test circuit for n-channel jfet Total elapsed time (seconds) = 0.003 Total DRAM available = 49152.000 MB. DRAM currently available = 16395.641 MB. Maximum ngspice program size = 9.812 MB. Current ngspice program size = 9.812 MB."
+        "error": "Error on line 8 or its substitute: .step vgs 0 -1.875 -0.625 unimplemented dot command '.step' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: test circuit for n-channel jfet Total elapsed time (seconds) = 0.008 Total DRAM available = 49152.000 MB. DRAM currently available = 19251.875 MB. Maximum ngspice program size = 9.797 MB. Current ngspice program size = 9.797 MB."
       },
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 503.811,
+        "runtimeMs": 88.984,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -26990,7 +26991,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 765.478,
+        "runtimeMs": 21.516,
         "command": [
           "ngspice",
           "-b",
@@ -27018,7 +27019,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 462.912,
+        "runtimeMs": 95.256,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -27293,7 +27294,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 338.488,
+        "runtimeMs": 18.112,
         "command": [
           "ngspice",
           "-b",
@@ -27322,7 +27323,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 486.52,
+        "runtimeMs": 96.578,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -27627,7 +27628,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 329.975,
+        "runtimeMs": 14.651,
         "command": [
           "ngspice",
           "-b",
@@ -27654,7 +27655,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 505.643,
+        "runtimeMs": 96.192,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -27899,7 +27900,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 224.897,
+        "runtimeMs": 18.643,
         "command": [
           "ngspice",
           "-b",
@@ -27932,7 +27933,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 716.412,
+        "runtimeMs": 91.362,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -28357,7 +28358,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 61.223,
+        "runtimeMs": 17.395,
         "command": [
           "ngspice",
           "-b",
@@ -28380,7 +28381,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 310.439,
+        "runtimeMs": 78.732,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -28504,7 +28505,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 47.465,
+        "runtimeMs": 16.222,
         "command": [
           "ngspice",
           "-b",
@@ -28528,7 +28529,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 355.142,
+        "runtimeMs": 85.363,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -28683,7 +28684,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 251.12,
+        "runtimeMs": 16.394,
         "command": [
           "ngspice",
           "-b",
@@ -28706,7 +28707,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 444.079,
+        "runtimeMs": 86.523,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -28830,7 +28831,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 250.575,
+        "runtimeMs": 21.069,
         "command": [
           "ngspice",
           "-b",
@@ -28856,7 +28857,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 576.422,
+        "runtimeMs": 107.859,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -29070,7 +29071,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 205.386,
+        "runtimeMs": 16.46,
         "command": [
           "ngspice",
           "-b",
@@ -29095,7 +29096,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 546.093,
+        "runtimeMs": 86.466,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -29279,7 +29280,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 54.559,
+        "runtimeMs": 16.347,
         "command": [
           "ngspice",
           "-b",
@@ -29306,7 +29307,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 1202.443,
+        "runtimeMs": 93.458,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -29550,7 +29551,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 137.774,
+        "runtimeMs": 17.156,
         "command": [
           "ngspice",
           "-b",
@@ -29565,7 +29566,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 656.736,
+        "runtimeMs": 92.618,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -29597,7 +29598,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 154.87,
+        "runtimeMs": 17.984,
         "command": [
           "ngspice",
           "-b",
@@ -29612,7 +29613,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 372.484,
+        "runtimeMs": 86.829,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -29645,7 +29646,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 36.837,
+        "runtimeMs": 18.584,
         "command": [
           "ngspice",
           "-b",
@@ -29660,7 +29661,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 343.826,
+        "runtimeMs": 84.962,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -29693,7 +29694,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 37.699,
+        "runtimeMs": 15.51,
         "command": [
           "ngspice",
           "-b",
@@ -29708,7 +29709,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 348.262,
+        "runtimeMs": 83.903,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -29741,7 +29742,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 25.27,
+        "runtimeMs": 16.723,
         "command": [
           "ngspice",
           "-b",
@@ -29756,7 +29757,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 319.591,
+        "runtimeMs": 80.895,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -29790,7 +29791,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 26.119,
+        "runtimeMs": 15.124,
         "command": [
           "ngspice",
           "-b",
@@ -29805,7 +29806,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 114.126,
+        "runtimeMs": 87.042,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -29839,7 +29840,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 23.705,
+        "runtimeMs": 20.486,
         "command": [
           "ngspice",
           "-b",
@@ -29854,7 +29855,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 140.516,
+        "runtimeMs": 95.411,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -29887,7 +29888,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 25.621,
+        "runtimeMs": 73.938,
         "command": [
           "ngspice",
           "-b",
@@ -29902,7 +29903,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 209.841,
+        "runtimeMs": 88.443,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -29934,7 +29935,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 24.559,
+        "runtimeMs": 16.997,
         "command": [
           "ngspice",
           "-b",
@@ -29949,7 +29950,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 128.741,
+        "runtimeMs": 92.059,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -29981,7 +29982,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 20.915,
+        "runtimeMs": 24.965,
         "command": [
           "ngspice",
           "-b",
@@ -29996,7 +29997,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 100.936,
+        "runtimeMs": 103.221,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -30029,7 +30030,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 89.475,
+        "runtimeMs": 18.146,
         "command": [
           "ngspice",
           "-b",
@@ -30044,7 +30045,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 273.662,
+        "runtimeMs": 91.019,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -30077,7 +30078,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 117.14,
+        "runtimeMs": 18.615,
         "command": [
           "ngspice",
           "-b",
@@ -30092,7 +30093,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 335.486,
+        "runtimeMs": 102.497,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -30125,7 +30126,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 80.692,
+        "runtimeMs": 20.109,
         "command": [
           "ngspice",
           "-b",
@@ -30140,7 +30141,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 222.941,
+        "runtimeMs": 104.039,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -30173,7 +30174,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 22.77,
+        "runtimeMs": 21.83,
         "command": [
           "ngspice",
           "-b",
@@ -30188,7 +30189,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 222.37,
+        "runtimeMs": 114.437,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -30221,7 +30222,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 70.424,
+        "runtimeMs": 22.354,
         "command": [
           "ngspice",
           "-b",
@@ -30236,7 +30237,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 175.644,
+        "runtimeMs": 93.732,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -30269,7 +30270,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 29.335,
+        "runtimeMs": 19.23,
         "command": [
           "ngspice",
           "-b",
@@ -30284,7 +30285,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 158.734,
+        "runtimeMs": 91.185,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -30292,7 +30293,7 @@
         ],
         "inputSha256": "e3d1544f41fef2361132c89b6a85776f3e2f32c7ec95b1321144c82cd6799ff5",
         "analyses": [],
-        "error": "Parse error at line 3: .model 'SW' has unsupported type 'HIGH_SW' (supported: D, NPN, PNP, NJF, NMOS, PMOS, NHFET, NMF, C, L, LTRA) .model SW HIGH_SW VON=0.5 VOFF=0.5 RON=10 ROFF=10E6"
+        "error": "Parse error at line 3: .model 'SW' has unsupported type 'HIGH_SW' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, C, L, LTRA) .model SW HIGH_SW VON=0.5 VOFF=0.5 RON=10 ROFF=10E6"
       },
       "comparisons": [],
       "gapIssues": [
@@ -30317,7 +30318,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 71.511,
+        "runtimeMs": 18.586,
         "command": [
           "ngspice",
           "-b",
@@ -30332,7 +30333,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 171.289,
+        "runtimeMs": 95.72,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -30365,7 +30366,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 68.004,
+        "runtimeMs": 19.572,
         "command": [
           "ngspice",
           "-b",
@@ -30380,7 +30381,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 192.392,
+        "runtimeMs": 97.761,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -30413,7 +30414,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 131.217,
+        "runtimeMs": 19.199,
         "command": [
           "ngspice",
           "-b",
@@ -30428,7 +30429,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 155.657,
+        "runtimeMs": 99.977,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -30461,7 +30462,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 71.955,
+        "runtimeMs": 19.986,
         "command": [
           "ngspice",
           "-b",
@@ -30476,7 +30477,7 @@
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 245.772,
+        "runtimeMs": 107.018,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -30510,7 +30511,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 23.148,
+        "runtimeMs": 19.469,
         "command": [
           "ngspice",
           "-b",
@@ -30520,12 +30521,12 @@
         ],
         "inputSha256": "87e7a7e164e9cdac5891b12fd038c06945043f5455a79fb31d26c97bc0463e05",
         "analyses": [],
-        "error": "Error on line 17 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: # cccs test, with element probes (forces full eval) Total elapsed time (seconds) = 0.007 Total DRAM available = 49152.000 MB. DRAM currently available = 19271.312 MB. Maximum ngspice program size = 9.797 MB. Current ngspice program size = 9.797 MB."
+        "error": "Error on line 17 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: # cccs test, with element probes (forces full eval) Total elapsed time (seconds) = 0.005 Total DRAM available = 49152.000 MB. DRAM currently available = 18102.719 MB. Maximum ngspice program size = 9.844 MB. Current ngspice program size = 9.844 MB."
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 230.279,
+        "runtimeMs": 110.761,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -30606,7 +30607,7 @@
       "ngspice": {
         "status": "failed",
         "convergence": "failed",
-        "runtimeMs": 23.246,
+        "runtimeMs": 18.854,
         "command": [
           "ngspice",
           "-b",
@@ -30616,12 +30617,12 @@
         ],
         "inputSha256": "cd4c6c8b18a27254b06859424268763a7f5b4a39a648981fc27d6a18b91e2cd1",
         "analyses": [],
-        "error": "Error on line 8 or its substitute: r3 4 0 1k device already exists, bail out Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: # voltage source test Total elapsed time (seconds) = 0.006 Total DRAM available = 49152.000 MB. DRAM currently available = 19271.312 MB. Maximum ngspice program size = 9.875 MB. Current ngspice program size = 9.875 MB."
+        "error": "Error on line 8 or its substitute: r3 4 0 1k device already exists, bail out Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: # voltage source test Total elapsed time (seconds) = 0.005 Total DRAM available = 49152.000 MB. DRAM currently available = 18102.719 MB. Maximum ngspice program size = 9.812 MB. Current ngspice program size = 9.812 MB."
       },
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 227.692,
+        "runtimeMs": 115.573,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -30654,7 +30655,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 30.969,
+        "runtimeMs": 22.617,
         "command": [
           "ngspice",
           "-b",
@@ -30687,7 +30688,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 333.73,
+        "runtimeMs": 114.342,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -30964,7 +30965,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 95.561,
+        "runtimeMs": 23.89,
         "command": [
           "ngspice",
           "-b",
@@ -31024,7 +31025,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 374.459,
+        "runtimeMs": 145.818,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -31961,7 +31962,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 23.183,
+        "runtimeMs": 20.581,
         "command": [
           "ngspice",
           "-b",
@@ -31971,12 +31972,12 @@
         ],
         "inputSha256": "99cc373d602fad9ecd4ea0e8f14d9eba9322b0083ae02c7631091dcbece7828b",
         "analyses": [],
-        "error": "warning, can't find model 'rs' from line r1s 1 11 rs warning, can't find model 'rs' from line r2s 1 21 rs warning, can't find model 'rs' from line r3s 1 31 rs warning, can't find model 'rs' from line r4s 1 41 rs warning, can't find model 'rs' from line r5s 1 51 rs Error on line 5 or its substitute: v1 1 0 gen(1) unknown parameter (gen) Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: #transmission lines Total elapsed time (seconds) = 0.005 Total DRAM available = 49152.000 MB. DRAM currently available = 18773.188 MB. Maximum ngspice program size = 9.828 MB. Current ngspice program size = 9.828 MB."
+        "error": "warning, can't find model 'rs' from line r1s 1 11 rs warning, can't find model 'rs' from line r2s 1 21 rs warning, can't find model 'rs' from line r3s 1 31 rs warning, can't find model 'rs' from line r4s 1 41 rs warning, can't find model 'rs' from line r5s 1 51 rs Error on line 5 or its substitute: v1 1 0 gen(1) unknown parameter (gen) Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: #transmission lines Total elapsed time (seconds) = 0.006 Total DRAM available = 49152.000 MB. DRAM currently available = 18687.953 MB. Maximum ngspice program size = 9.812 MB. Current ngspice program size = 9.812 MB."
       },
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 270.446,
+        "runtimeMs": 96.437,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -32009,7 +32010,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 37.176,
+        "runtimeMs": 17.045,
         "command": [
           "ngspice",
           "-b",
@@ -32019,12 +32020,12 @@
         ],
         "inputSha256": "45bf5fdc96b7985a744455ff7c3222478665e3db487bbcfedc5c7efa8297fc3c",
         "analyses": [],
-        "error": "Error on line 25 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: mutual inductance test circuit Total elapsed time (seconds) = 0.006 Total DRAM available = 49152.000 MB. DRAM currently available = 19269.969 MB. Maximum ngspice program size = 9.828 MB. Current ngspice program size = 9.828 MB."
+        "error": "Error on line 25 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: mutual inductance test circuit Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 18687.953 MB. Maximum ngspice program size = 9.844 MB. Current ngspice program size = 9.844 MB."
       },
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 261.782,
+        "runtimeMs": 106.752,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -32059,7 +32060,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 26.645,
+        "runtimeMs": 20.877,
         "command": [
           "ngspice",
           "-b",
@@ -32069,12 +32070,12 @@
         ],
         "inputSha256": "f8cde99b71d9978c5216dffbc9dfc036c8bdf7b37f1c9949fa9835e6eb741213",
         "analyses": [],
-        "error": "Error on line 48 or its substitute: .status notime unimplemented dot command '.status' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: difpair ckt - simple differential pair Total elapsed time (seconds) = 0.006 Total DRAM available = 49152.000 MB. DRAM currently available = 18869.734 MB. Maximum ngspice program size = 9.875 MB. Current ngspice program size = 9.875 MB."
+        "error": "Error on line 48 or its substitute: .status notime unimplemented dot command '.status' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: difpair ckt - simple differential pair Total elapsed time (seconds) = 0.005 Total DRAM available = 49152.000 MB. DRAM currently available = 18764.375 MB. Maximum ngspice program size = 9.891 MB. Current ngspice program size = 9.891 MB."
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 480.323,
+        "runtimeMs": 148.984,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -32204,7 +32205,7 @@
       "ngspice": {
         "status": "failed",
         "convergence": "failed",
-        "runtimeMs": 94.372,
+        "runtimeMs": 15.984,
         "command": [
           "ngspice",
           "-b",
@@ -32214,12 +32215,12 @@
         ],
         "inputSha256": "92e47652dbecdbd2c971cce3c047fc0b8e4a0406a7d2c953dffce299c60b183c",
         "analyses": [],
-        "error": "Error on line 49 or its substitute: .ac Missing DEC, OCT, or LIN. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 2 stage op-amp open loop 02/16/88 Total elapsed time (seconds) = 0.007 Total DRAM available = 49152.000 MB. DRAM currently available = 18762.500 MB. Maximum ngspice program size = 9.984 MB. Current ngspice program size = 9.984 MB."
+        "error": "Error on line 49 or its substitute: .ac Missing DEC, OCT, or LIN. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 2 stage op-amp open loop 02/16/88 Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 18764.375 MB. Maximum ngspice program size = 9.906 MB. Current ngspice program size = 9.906 MB."
       },
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 209.91,
+        "runtimeMs": 84.715,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -32251,7 +32252,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 26.449,
+        "runtimeMs": 16.164,
         "command": [
           "ngspice",
           "-b",
@@ -32261,12 +32262,12 @@
         ],
         "inputSha256": "2c0864497272439baa44213381271915107ccd9f8c47354df2e4b9c3028a1608",
         "analyses": [],
-        "error": "Error on line 5 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 'c check Total elapsed time (seconds) = 0.006 Total DRAM available = 49152.000 MB. DRAM currently available = 19306.188 MB. Maximum ngspice program size = 9.891 MB. Current ngspice program size = 9.891 MB."
+        "error": "Error on line 5 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 'c check Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 18764.375 MB. Maximum ngspice program size = 9.828 MB. Current ngspice program size = 9.828 MB."
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 149.584,
+        "runtimeMs": 89.759,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -32307,7 +32308,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 23.136,
+        "runtimeMs": 15.375,
         "command": [
           "ngspice",
           "-b",
@@ -32317,12 +32318,12 @@
         ],
         "inputSha256": "65199506e3a8b9bd05b3842cc9ef180308d0d02ba2e9857e89f7f1f8c32c3c84",
         "analyses": [],
-        "error": "Error on line 4 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: ' cap with initial condition, ignored because i didn't say \"uic\" Total elapsed time (seconds) = 0.006 Total DRAM available = 49152.000 MB. DRAM currently available = 19306.188 MB. Maximum ngspice program size = 9.875 MB. Current ngspice program size = 9.875 MB."
+        "error": "Error on line 4 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: ' cap with initial condition, ignored because i didn't say \"uic\" Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 19020.297 MB. Maximum ngspice program size = 9.812 MB. Current ngspice program size = 9.812 MB."
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 154.793,
+        "runtimeMs": 81.443,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -32361,7 +32362,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 107.593,
+        "runtimeMs": 15.72,
         "command": [
           "ngspice",
           "-b",
@@ -32371,12 +32372,12 @@
         ],
         "inputSha256": "020684099d172ec7cc2a6fe3d57792ef51b3d9162f41f83ed486704062d6d702",
         "analyses": [],
-        "error": "Error on line 9 or its substitute: .status notime unimplemented dot command '.status' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: *oscillator, .159 hz. Total elapsed time (seconds) = 0.012 Total DRAM available = 49152.000 MB. DRAM currently available = 19446.359 MB. Maximum ngspice program size = 9.812 MB. Current ngspice program size = 9.812 MB."
+        "error": "Error on line 9 or its substitute: .status notime unimplemented dot command '.status' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: *oscillator, .159 hz. Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 19020.297 MB. Maximum ngspice program size = 9.828 MB. Current ngspice program size = 9.828 MB."
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 196.084,
+        "runtimeMs": 95.861,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -32417,7 +32418,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 69.014,
+        "runtimeMs": 18.843,
         "command": [
           "ngspice",
           "-b",
@@ -32468,7 +32469,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 250.611,
+        "runtimeMs": 125.696,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -33292,7 +33293,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 37.677,
+        "runtimeMs": 18.608,
         "command": [
           "ngspice",
           "-b",
@@ -33302,12 +33303,12 @@
         ],
         "inputSha256": "ec6efed82593b525b1661173b3a11dbec4880449968389ff86424051d42274b5",
         "analyses": [],
-        "error": "Error on line 15 or its substitute: q1 3 2 4 0 qstd off=1 unknown parameter (1) Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: schmitt ckt - ecl compatible schmitt trigger Total elapsed time (seconds) = 0.006 Total DRAM available = 49152.000 MB. DRAM currently available = 19466.984 MB. Maximum ngspice program size = 9.969 MB. Current ngspice program size = 9.969 MB."
+        "error": "Error on line 15 or its substitute: q1 3 2 4 0 qstd off=1 unknown parameter (1) Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: schmitt ckt - ecl compatible schmitt trigger Total elapsed time (seconds) = 0.005 Total DRAM available = 49152.000 MB. DRAM currently available = 18356.688 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB."
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 209.199,
+        "runtimeMs": 159.885,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -33388,7 +33389,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 67.475,
+        "runtimeMs": 22.582,
         "command": [
           "ngspice",
           "-b",
@@ -33398,12 +33399,12 @@
         ],
         "inputSha256": "d2d7df0b8050008df98e6a8410433c6ef346d9851371c2032edaeb0c9c43dd48",
         "analyses": [],
-        "error": "Error on line 7 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: simple diode test Total elapsed time (seconds) = 0.005 Total DRAM available = 49152.000 MB. DRAM currently available = 19466.984 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB."
+        "error": "Error on line 7 or its substitute: .list unimplemented dot command '.list' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: simple diode test Total elapsed time (seconds) = 0.007 Total DRAM available = 49152.000 MB. DRAM currently available = 18356.688 MB. Maximum ngspice program size = 9.906 MB. Current ngspice program size = 9.906 MB."
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 402.215,
+        "runtimeMs": 170.565,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -33454,7 +33455,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 149.518,
+        "runtimeMs": 16.18,
         "command": [
           "ngspice",
           "-b",
@@ -33464,12 +33465,12 @@
         ],
         "inputSha256": "183f57f24707d2597f83396a777896e336a17a4ec8a13027f89c5029440d8300",
         "analyses": [],
-        "error": "Error on line 32 or its substitute: .tran 0.1n 10n trace all Error: unknown parameter on .tran - ignored Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: na2 Total elapsed time (seconds) = 0.021 Total DRAM available = 49152.000 MB. DRAM currently available = 18487.625 MB. Maximum ngspice program size = 9.969 MB. Current ngspice program size = 9.969 MB."
+        "error": "Error on line 32 or its substitute: .tran 0.1n 10n trace all Error: unknown parameter on .tran - ignored Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: na2 Total elapsed time (seconds) = 0.004 Total DRAM available = 49152.000 MB. DRAM currently available = 17448.156 MB. Maximum ngspice program size = 9.859 MB. Current ngspice program size = 9.859 MB."
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 435.253,
+        "runtimeMs": 169.011,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -33527,7 +33528,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 181.252,
+        "runtimeMs": 26.539,
         "command": [
           "ngspice",
           "-b",
@@ -33584,7 +33585,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 606.283,
+        "runtimeMs": 149.31,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -34442,7 +34443,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 191.395,
+        "runtimeMs": 20.763,
         "command": [
           "ngspice",
           "-b",
@@ -34452,12 +34453,12 @@
         ],
         "inputSha256": "f1f6a53ef0bb2d41988b1ec4fb022abea8830cd8a847aa3b693d96fe7e66e36d",
         "analyses": [],
-        "error": "Error on line 14 or its substitute: .status notime unimplemented dot command '.status' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: *oscillator, .159 hz. Total elapsed time (seconds) = 0.102 Total DRAM available = 49152.000 MB. DRAM currently available = 19098.344 MB. Maximum ngspice program size = 9.812 MB. Current ngspice program size = 9.812 MB."
+        "error": "Error on line 14 or its substitute: .status notime unimplemented dot command '.status' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: *oscillator, .159 hz. Total elapsed time (seconds) = 0.005 Total DRAM available = 49152.000 MB. DRAM currently available = 17687.562 MB. Maximum ngspice program size = 9.797 MB. Current ngspice program size = 9.797 MB."
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 470.124,
+        "runtimeMs": 132.883,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -34502,7 +34503,7 @@
       "ngspice": {
         "status": "unsupported",
         "convergence": "failed",
-        "runtimeMs": 67.61,
+        "runtimeMs": 19.822,
         "command": [
           "ngspice",
           "-b",
@@ -34512,12 +34513,12 @@
         ],
         "inputSha256": "923e0da63d9fbeca5cb94d049af3f85036f5b1a1af38a0701dbed8c258ff1ebd",
         "analyses": [],
-        "error": "Error on line 52 or its substitute: .stat notime unimplemented dot command '.stat' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 2 stage op-amp, conected as voltage follower 02/16/88 Total elapsed time (seconds) = 0.015 Total DRAM available = 49152.000 MB. DRAM currently available = 19458.859 MB. Maximum ngspice program size = 9.953 MB. Current ngspice program size = 9.953 MB."
+        "error": "Error on line 52 or its substitute: .stat notime unimplemented dot command '.stat' Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: 2 stage op-amp, conected as voltage follower 02/16/88 Total elapsed time (seconds) = 0.005 Total DRAM available = 49152.000 MB. DRAM currently available = 17687.562 MB. Maximum ngspice program size = 9.922 MB. Current ngspice program size = 9.922 MB."
       },
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 196.575,
+        "runtimeMs": 109.404,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -34550,7 +34551,7 @@
       "ngspice": {
         "status": "failed",
         "convergence": "failed",
-        "runtimeMs": 80.162,
+        "runtimeMs": 19.251,
         "command": [
           "ngspice",
           "-b",
@@ -34560,12 +34561,12 @@
         ],
         "inputSha256": "81a387433d50c7d280d2b80d2463f3a9d42fc6ea969ef783333b16eaca046868",
         "analyses": [],
-        "error": "Warning: Model issue on line 4 : .model nmos nmos level=7 vth0=0.7 ... Device type MOS7 not available in this binary Warning: Model issue on line 5 : .model pmos pmos level=7 vth0=-0.7 ... Device type MOS7 not available in this binary Error on line 8 or its substitute: m.xi10.mp1 4 2 1 1 pmos w=8e-6 l=600e-9 could not find a valid modelname Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: na2 Total elapsed time (seconds) = 0.007 Total DRAM available = 49152.000 MB. DRAM currently available = 19418.047 MB. Maximum ngspice program size = 10.016 MB. Current ngspice program size = 10.016 MB."
+        "error": "Warning: Model issue on line 4 : .model nmos nmos level=7 vth0=0.7 ... Device type MOS7 not available in this binary Warning: Model issue on line 5 : .model pmos pmos level=7 vth0=-0.7 ... Device type MOS7 not available in this binary Error on line 8 or its substitute: m.xi10.mp1 4 2 1 1 pmos w=8e-6 l=600e-9 could not find a valid modelname Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: na2 Total elapsed time (seconds) = 0.005 Total DRAM available = 49152.000 MB. DRAM currently available = 17687.562 MB. Maximum ngspice program size = 9.984 MB. Current ngspice program size = 9.984 MB."
       },
       "spiceTs": {
         "status": "unsupported",
         "convergence": "not-run",
-        "runtimeMs": 150.025,
+        "runtimeMs": 100.185,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -34599,7 +34600,7 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 76.512,
+        "runtimeMs": 22.625,
         "command": [
           "ngspice",
           "-b",
@@ -34704,7 +34705,7 @@
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 501.961,
+        "runtimeMs": 149.51,
         "command": [
           "@spice-ts/core",
           "simulate",
@@ -35906,5 +35907,5 @@
       ]
     }
   ],
-  "outcomeSha256": "4ed6d9d373178cf24434b06741eb99a7acf3c7c07e24eff66a13343c7835d973"
+  "outcomeSha256": "7f5da3cf6733f44e095a5b2582c320387ae0cd55c618e291976793901b665d69"
 }

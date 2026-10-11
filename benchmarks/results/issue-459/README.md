@@ -1,4 +1,4 @@
-# Issue #459: `.OPTIONS TEMP` and the aggregate refresh after #470, #537, #542, #541, #546, #545, #550 and #552
+# Issue #459: `.OPTIONS TEMP` and the aggregate refresh after #470, #537, #542, #541, #546, #545, #550, #552, #562 and #554
 
 Host: Apple M5 Pro, darwin arm64, Node v22, ngspice-47 (shared host, load average above 200, so
 runtimes are diagnostic only). Every row is one full 100-fixture `benchmarks/aggregate-report.ts`
@@ -23,8 +23,11 @@ worktrees is committed.
 | 7 | `2a8112c` | #550 GP BJT junction limiting + substrate junction | `75420c0c` | 63/1/36 | 70 / 51 | 24 analyses on 14 BJT fixtures; coupled-lossy-lines RMS down on 38 of 47 but **loss** worst v(x3.3) 0.8275 → 0.8435 V; lossy-line-24-inch 0.498 → 0.456 V; **loss** bjt-noise onoise_total rel 1.23e-7 → 1.91e-7 |
 | 8 | `2a8112c` + #459 (pin `c00b9106`, before ledger edit) | #459 `.OPTIONS TEMP` | `e5d648fa` | 64/1/35 | 71 / 52 | only ngspice/vbic-temperature: unsupported → success (superseded by rows 9-10) |
 | 9 | `2812371` (its own pin `d4a0994d`) | #552 MOS1 body effect, signed VTO, LD; typed UnsupportedModelLevelError | `3c88e414` | 59/1/40 | 66 / 47 | **coverage loss**: mos-amplifier pair (LEVEL=2), bsim1 (LEVEL=4), bsim2 (LEVEL=5) success → unsupported (follow-up #565); mos-memory-cell 1.906 → 0.248 V gain |
-| 10 | `2812371` + #459 (pin `2ce09abb`, before ledger edit) | #459 `.OPTIONS TEMP` | `d3b4fb48` | 60/1/39 | 67 / 48 | only ngspice/vbic-temperature: unsupported → success |
-| final | this branch on `2812371`, regenerated ledger | — | see `AGGREGATE_PARITY.md` | 60/1/39 | 67 / 48 | ledger text only; `--check` passes |
+| 10 | `2812371` + #459 (pin `2ce09abb`, before ledger edit) | #459 `.OPTIONS TEMP` | `d3b4fb48` | 60/1/39 | 67 / 48 | only ngspice/vbic-temperature: unsupported → success (superseded by row 13) |
+| 11 | `a32f755` (pin `d4a0994d`, unchanged by #562) | #562 VDMOS power MOSFET | `3c88e414` | 59/1/40 | 66 / 47 | outcome-neutral (reproduces row 9 exactly) |
+| 12 | `0e1aeb4` (pin `fa95e5d0`, #554's SOURCES.md) | #554 XSPICE A elements | `8a19a9d7` | 59/1/40 | 66 / 47 | per-fixture metrics, grids and statuses identical to row 11; only the pin moves the hash (main 0e1aeb4 itself still pins `d4a0994d`, so `--check` fails there on the pin) |
+| 13 | `0e1aeb4` + #459 (pin `fd8b534c`, before ledger edit) | #459 `.OPTIONS TEMP` | `c9cb2850` | 60/1/39 | 67 / 48 | only ngspice/vbic-temperature: unsupported → success |
+| final | this branch on `0e1aeb4`, regenerated ledger | — | see `AGGREGATE_PARITY.md` | 60/1/39 | 67 / 48 | ledger text only; `--check` passes |
 
 ngspice stays at 52/9/39 throughout. The full gain and loss lists for rows 6, 7 and 9 are in the
 `metricTransitions` ledger of `benchmarks/aggregate-report.ts` (rendered in `AGGREGATE_PARITY.md`).
@@ -34,6 +37,8 @@ for a follow-up, as #552 noted.
 
 An earlier pass of this branch on main 5589ab1 (pushed as `0f381ea`, outcome `6dc28693`, `--check`
 exit 0) went stale when #546, #545 and #550 merged, and row 8 went stale when #552 merged. Rows 5-10 replace them.
+The pass on main 2812371 (pushed as `ea541987`, outcome `4ed6d9d3`, `--check` exit 0) went stale when #562 and
+#554 merged; rows 11-13 replace it.
 
 ## ngspice/vbic-temperature (unchanged `tests/vbic/temp.cir`, TEMP = 150 C)
 
@@ -51,7 +56,7 @@ harness (ngspice-47 `wrdata` with 12 digits against `simulate()` on the same byt
 maxima. The same deck with TEMP=27 differs by up to 2.669e-6 A on i(vc) and 5.65e-7 A on i(vb), so
 the residual at 150 C is the existing bounded-model gap (#76), not the temperature mapping.
 
-On top of main 2812371, #459 moves totals from 873 to 879 absolute and from 841 to 847 relative
+On top of main 0e1aeb4 (per fixture identical to 2812371), #459 moves totals from 873 to 879 absolute and from 841 to 847 relative
 signals, and from 9,388,320 to 9,388,926 absolute and from 9,364,374 to 9,364,980 relative samples.
 #459 changes neither envelope. No fixture, tolerance or harness logic changed.
 
