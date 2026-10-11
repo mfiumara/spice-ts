@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/run2/prof-after/cmos-inverter-chain-tran-10000.cpuprofile: 9964 samples, 68639.9 ms sampled
+
+Top self time
+   14034.3 ms  20.4%  batchStamp packages/core/dist/chunk-P2PXJXZ6.js:4132
+    9139.2 ms  13.3%  stampG packages/core/dist/chunk-P2PXJXZ6.js:17410
+    7499.3 ms  10.9%  stamp packages/core/dist/chunk-P2PXJXZ6.js:3970
+    7283.6 ms  10.6%  evaluateBulkJunctions packages/core/dist/chunk-P2PXJXZ6.js:3862
+    6060.4 ms   8.8%  (garbage collector)
+    5125.0 ms   7.5%  factorize packages/core/dist/chunk-P2PXJXZ6.js:16804
+    3277.1 ms   4.8%  stampStaticDevices packages/core/dist/chunk-P2PXJXZ6.js:17582
+    1901.7 ms   2.8%  limitNewtonStep packages/core/dist/chunk-P2PXJXZ6.js:3923
+    1629.4 ms   2.4%  getVoltage packages/core/dist/chunk-P2PXJXZ6.js:17419
+    1598.3 ms   2.3%  stampDynamicDevices packages/core/dist/chunk-P2PXJXZ6.js:17612
+    1418.1 ms   2.1%  attemptStep packages/core/dist/chunk-P2PXJXZ6.js:18251
+    1288.2 ms   1.9%  stampB packages/core/dist/chunk-P2PXJXZ6.js:17413
+
+Top inclusive time
+   68639.9 ms 100.0%  (root)
+   62340.6 ms  90.8%  simulate packages/core/dist/chunk-P2PXJXZ6.js:22356
+   46907.6 ms  68.3%  solveTransient packages/core/dist/chunk-P2PXJXZ6.js:19249
+   46113.5 ms  67.2%  advanceSolution packages/core/dist/chunk-P2PXJXZ6.js:18711
+   28125.1 ms  41.0%  attemptStep packages/core/dist/chunk-P2PXJXZ6.js:18251
+   25774.6 ms  37.6%  stampStaticDevices packages/core/dist/chunk-P2PXJXZ6.js:17582
+   21969.3 ms  32.0%  buildCompanionSystem packages/core/dist/chunk-P2PXJXZ6.js:18075
+   21495.2 ms  31.3%  stamp packages/core/dist/chunk-P2PXJXZ6.js:3970
+   18898.1 ms  27.5%  batchStamp packages/core/dist/chunk-P2PXJXZ6.js:4132
+   16489.9 ms  24.0%  stampPrevB packages/core/dist/chunk-P2PXJXZ6.js:18939
+   15142.0 ms  22.1%  solveDCOperatingPoint packages/core/dist/chunk-P2PXJXZ6.js:17873
+   15142.0 ms  22.1%  transientInitialSolution packages/core/dist/chunk-P2PXJXZ6.js:22644

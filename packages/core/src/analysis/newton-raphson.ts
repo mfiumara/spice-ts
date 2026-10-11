@@ -3,6 +3,7 @@ import type { MNAAssembler } from '../mna/assembler.js';
 import type { DCConvergenceTelemetry, ResolvedOptions } from '../types.js';
 import { ConvergenceError } from '../errors.js';
 import { MOSFET } from '../devices/mosfet.js';
+import { stampStaticDevices } from '../mna/linear-stamp.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 function applyDeviceStepLimits(
@@ -50,9 +51,9 @@ export function newtonRaphson(
         mosfets, assembler.gValues, assembler.b, assembler.solution,
         assembler.stampIndex, assembler.deviceGmin,
       );
-      for (const device of otherDevices!) device.stamp(ctx);
+      stampStaticDevices(assembler, otherDevices!, ctx);
     } else {
-      for (const device of devices) device.stamp(ctx);
+      stampStaticDevices(assembler, devices, ctx);
     }
 
     if (!assembler.isFastPath) {

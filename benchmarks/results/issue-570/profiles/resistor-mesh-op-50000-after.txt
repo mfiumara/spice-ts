@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/run2/prof-after/resistor-mesh-op-50000.cpuprofile: 1152 samples, 8951.9 ms sampled
+
+Top self time
+    5002.9 ms  55.9%  factorize packages/core/dist/chunk-P2PXJXZ6.js:16804
+    1092.7 ms  12.2%  amdOrdering packages/core/dist/chunk-P2PXJXZ6.js:16488
+     890.8 ms  10.0%  (garbage collector)
+     214.5 ms   2.4%  compile packages/core/dist/chunk-P2PXJXZ6.js:13591
+     202.9 ms   2.3%  lockTopology packages/core/dist/chunk-P2PXJXZ6.js:17220
+     152.2 ms   1.7%  analyzePattern packages/core/dist/chunk-P2PXJXZ6.js:16708
+     145.0 ms   1.6%  addResistor packages/core/dist/chunk-P2PXJXZ6.js:12947
+     139.5 ms   1.6%  newtonRaphson packages/core/dist/chunk-P2PXJXZ6.js:17656
+     106.9 ms   1.2%  resolveNode packages/core/dist/chunk-P2PXJXZ6.js:13661
+      74.0 ms   0.8%  resolveResistor packages/core/dist/chunk-P2PXJXZ6.js:815
+      72.2 ms   0.8%  parseDevice packages/core/dist/chunk-P2PXJXZ6.js:15994
+      61.9 ms   0.7%  validateCircuit2 packages/core/dist/chunk-P2PXJXZ6.js:22622
+
+Top inclusive time
+    8951.9 ms 100.0%  (root)
+    7492.3 ms  83.7%  simulate packages/core/dist/chunk-P2PXJXZ6.js:22356
+    6909.4 ms  77.2%  solveDCOperatingPoint packages/core/dist/chunk-P2PXJXZ6.js:17873
+    6854.4 ms  76.6%  newtonRaphson packages/core/dist/chunk-P2PXJXZ6.js:17656
+    5012.1 ms  56.0%  factorize packages/core/dist/chunk-P2PXJXZ6.js:16804
+    1265.1 ms  14.1%  analyzePattern packages/core/dist/chunk-P2PXJXZ6.js:16708
+    1265.1 ms  14.1%  getSparseSolver packages/core/dist/chunk-P2PXJXZ6.js:17347
+    1092.7 ms  12.2%  amdOrdering packages/core/dist/chunk-P2PXJXZ6.js:16488
+     890.8 ms  10.0%  (garbage collector)
+     465.5 ms   5.2%  compile packages/core/dist/chunk-P2PXJXZ6.js:13591
+     372.6 ms   4.2%  parseAsync packages/core/dist/chunk-P2PXJXZ6.js:15448
+     338.8 ms   3.8%  parseNetlist packages/core/dist/chunk-P2PXJXZ6.js:15289

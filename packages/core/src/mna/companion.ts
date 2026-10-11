@@ -2,6 +2,7 @@ import { MNAAssembler } from './assembler.js';
 import type { DeviceModel } from '../devices/device.js';
 import type { IntegrationMethod } from '../types.js';
 import { MOSFET } from '../devices/mosfet.js';
+import { stampDynamicDevices, stampStaticDevices } from './linear-stamp.js';
 
 interface DevicePlan {
   readonly devices: readonly DeviceModel[];
@@ -10,6 +11,10 @@ interface DevicePlan {
   readonly mosfets: MOSFET[];
   /** Every other device, in netlist order, stamped through the context. */
   readonly others: DeviceModel[];
+  /** Devices whose C(v) companion comes from `stampDynamic`, in netlist order. */
+  readonly dynamic: DeviceModel[];
+  /** Devices that stamp their own integrated charge companion, in netlist order. */
+  readonly charged: DeviceModel[];
 }
 
 interface CompanionWorkspace {
@@ -27,11 +32,20 @@ function devicePlan(devices: readonly DeviceModel[]): DevicePlan {
   if (plan === undefined || plan.length !== devices.length) {
     const mosfets: MOSFET[] = [];
     const others: DeviceModel[] = [];
+    const dynamic: DeviceModel[] = [];
+    const charged: DeviceModel[] = [];
     for (const d of devices) {
       if (d instanceof MOSFET) mosfets.push(d);
       else others.push(d);
+      // Both flags are fixed at construction, so the split is per list.
+      // storesCharge === false: stampDynamic stamps nothing for this instance.
+      if (d.integratesTransientCharge) {
+        if (d.stampTransientCharge !== undefined) charged.push(d);
+      } else if (d.storesCharge !== false && d.stampDynamic !== undefined) {
+        dynamic.push(d);
+      }
     }
-    plan = { devices, length: devices.length, mosfets, others };
+    plan = { devices, length: devices.length, mosfets, others, dynamic, charged };
     devicePlans.set(devices, plan);
   }
   return plan;
@@ -87,11 +101,11 @@ export function buildCompanionSystem(
   // Clear and re-stamp at current time
   assembler.clear();
   const ctx = assembler.getStampContext();
+  const plan = devicePlan(devices);
 
   if (assembler.isFastPath && assembler.topologyNnz > 0) {
     // Batch-stamp MOSFETs with direct array writes, fall back for others
-    const plan = devicePlan(devices);
-    for (const d of plan.others) d.stamp(ctx);
+    stampStaticDevices(assembler, plan.others, ctx);
     if (plan.mosfets.length > 0) {
       MOSFET.batchStamp(
         plan.mosfets, assembler.gValues, assembler.b, assembler.solution,
@@ -104,10 +118,7 @@ export function buildCompanionSystem(
     }
   }
 
-  for (const device of devices) {
-    // storesCharge === false: stampDynamic stamps nothing for this instance.
-    if (!device.integratesTransientCharge && device.storesCharge !== false) device.stampDynamic?.(ctx);
-  }
+  stampDynamicDevices(assembler, plan.dynamic, ctx);
 
   // Gear-2 bootstraps with BE when x(n-1) is unavailable.
   // Trapezoidal bootstraps with BE when b(n) is unavailable — this is how
@@ -324,7 +335,5 @@ export function buildCompanionSystem(
     dt,
     prevDt: useGear2 ? prevDt : undefined,
   };
-  for (const device of devices) {
-    if (device.integratesTransientCharge) device.stampTransientCharge?.(ctx, integration);
-  }
+  for (const device of plan.charged) device.stampTransientCharge!(ctx, integration);
 }
