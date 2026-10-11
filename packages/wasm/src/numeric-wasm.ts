@@ -1,4 +1,4 @@
-import { CCCS, CCVS, parseTitleless, VCCS, VCVS, type CompiledCircuit, type StampContext } from '@spice-ts/core';
+import { CCCS, CCVS, frequencyGrid, parseTitleless, VCCS, VCVS, type CompiledCircuit, type StampContext } from '@spice-ts/core';
 import type {
   JsonObject,
   SimulationRequestV1,
@@ -585,13 +585,13 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
     return { analysis, compiled, order, transient: compiledAnalysis };
   }
   if (compiledAnalysis?.type !== 'ac') unsupported('analysis', 'Exactly one .ac analysis is supported');
-  const pointCount = acPointCount(compiledAnalysis);
+  const frequenciesHz = frequencyGrid(compiledAnalysis, request.options?.reltol ?? DEFAULT_RELTOL, 'ac');
   const pointLimit = Math.min(
     NUMERIC_WASM_LIMITS.maxAcPoints,
     request.options?.limits?.maxResultPoints ?? Infinity,
   );
-  if (pointCount > pointLimit) throw resourceLimit('maxResultPoints', pointLimit, pointCount);
-  return { analysis, compiled, order, frequenciesHz: acFrequencies(compiledAnalysis, pointCount) };
+  if (frequenciesHz.length > pointLimit) throw resourceLimit('maxResultPoints', pointLimit, frequenciesHz.length);
+  return { analysis, compiled, order, frequenciesHz };
 }
 
 function validateCards(cards: string[], analysis: 'op' | 'dc' | 'tran' | 'ac'): void {
@@ -654,6 +654,8 @@ function validateCards(cards: string[], analysis: 'op' | 'dc' | 'tran' | 'ac'): 
   }
 }
 
+/** Default protocol reltol, matching the resolved options reported by the facade (index.ts). */
+const DEFAULT_RELTOL = 1e-3;
 const SPICE_NUMBER = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?[a-z]*$/i;
 
 function normalizeAndValidateCurrentControlledSources(cards: string[]): string[] {
@@ -791,35 +793,6 @@ function validatePassiveValues(compiled: CompiledCircuit): void {
       throw numericError('INVALID_CIRCUIT', `Passive device '${device.name}' must have a positive finite value`, 'compile');
     }
   }
-}
-
-function acPointCount(analysis: {
-  variation: 'dec' | 'oct' | 'lin';
-  points: number;
-  startFreq: number;
-  stopFreq: number;
-}): number {
-  if (analysis.variation === 'lin') return analysis.points;
-  const span = analysis.variation === 'dec'
-    ? Math.log10(analysis.stopFreq / analysis.startFreq)
-    : Math.log2(analysis.stopFreq / analysis.startFreq);
-  return Math.round(span * analysis.points) + 1;
-}
-
-function acFrequencies(
-  analysis: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number },
-  pointCount: number,
-): number[] {
-  if (analysis.variation === 'lin') {
-    if (pointCount === 1) return [analysis.startFreq];
-    const step = (analysis.stopFreq - analysis.startFreq) / (pointCount - 1);
-    return Array.from({ length: pointCount }, (_, index) => analysis.startFreq + index * step);
-  }
-  const base = analysis.variation === 'dec' ? 10 : 2;
-  return Array.from(
-    { length: pointCount },
-    (_, index) => analysis.startFreq * Math.pow(base, index / analysis.points),
-  );
 }
 
 function align8(value: number): number {
