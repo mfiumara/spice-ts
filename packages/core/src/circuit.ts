@@ -91,6 +91,7 @@ import {
 } from './devices/passive-model.js';
 import {
   CycleError, InvalidCircuitError, ParseError, UnsupportedModelLevelError, UnsupportedModelVersionError,
+  UnsupportedTemperatureError,
 } from './errors.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
@@ -2171,8 +2172,9 @@ export class Circuit {
   /**
    * Evaluate the compiled devices at a non-nominal `.options TEMP` like ngspice.
    * Only devices whose temperature model follows ngspice-47 are accepted:
-   * resistors (TC1/TC2 around TNOM), the bounded VBIC (vbictemp.c mapping) and
-   * B sources (asrctemp.c tc1/tc2 and `temper`).
+   * resistors (TC1/TC2 around TNOM), the bounded VBIC (vbictemp.c mapping),
+   * B sources (asrctemp.c tc1/tc2 and `temper`), diodes (diotemp.c), the
+   * Gummel-Poon BJT (bjttemp.c) and MOS level 1 (mos1temp.c).
    * Every other temperature-dependent element is rejected instead of silently
    * running at 27 C.
    */
@@ -2202,10 +2204,11 @@ export class Circuit {
     }
 
     for (const device of devices) {
-      if (device instanceof Resistor || device instanceof VBIC || device instanceof BehavioralSource) {
+      if (device instanceof Resistor || device instanceof VBIC || device instanceof BehavioralSource
+        || device instanceof Diode || device instanceof BJT || device instanceof MOSFET) {
         device.setTemperature(temperature);
       } else if (device.isNonlinear) {
-        throw unsupported(`device '${device.name}'`);
+        throw new UnsupportedTemperatureError(device.name, temperature);
       }
     }
   }

@@ -9,7 +9,8 @@ import { solveDCSweep } from './dc-sweep.js';
 import { runnableTransient, solveTransient } from './transient.js';
 import { solveAC } from './ac.js';
 import { solveTransferFunction } from './transfer-function.js';
-import { InvalidCircuitError } from '../errors.js';
+import { InvalidCircuitError, UnsupportedTemperatureError } from '../errors.js';
+import { NOMINAL_TEMPERATURE_C } from '../devices/junction-temperature.js';
 import { computeUICInitialSolution } from './uic.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
@@ -27,6 +28,11 @@ export function resolveStepTarget(compiled: CompiledCircuit, step: StepAnalysis)
       throw new InvalidCircuitError('.step TEMP supports LIST mode only');
     }
     const devices = compiled.devices.filter(device => device.setTemperature && device.getTemperature);
+    // #374: a nonlinear device without a temperature hook would silently stay
+    // at 27 C; ngspice re-runs every device's *temp.c at each temperature.
+    const fixed = compiled.devices.find(device => device.isNonlinear && !device.setTemperature);
+    const offNominal = (step.values ?? []).find(value => value !== NOMINAL_TEMPERATURE_C);
+    if (fixed && offNominal !== undefined) throw new UnsupportedTemperatureError(fixed.name, offNominal);
     const originalTemperatures = devices.map(device => device.getTemperature!());
     return {
       paramName: 'TEMP',

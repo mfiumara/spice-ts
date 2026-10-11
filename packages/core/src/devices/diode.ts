@@ -1,6 +1,7 @@
 import type { DiodeInstanceParams } from '../parser/diode-parser.js';
 import { InvalidCircuitError } from '../errors.js';
 import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import { assertNoUnsupportedTemperatureParameters, temperatureJunction } from './junction-temperature.js';
 
 export interface DiodeParams {
   IS: number;
@@ -41,6 +42,29 @@ export interface DiodeParams {
   AF?: number;
   /** Forward knee current (high injection); ngspice alias IK. */
   IKF?: number;
+  /** Activation energy (eV) of the IS temperature law; ngspice default 1.11. */
+  EG?: number;
+  /** Saturation-current temperature exponent; ngspice default 3. */
+  XTI?: number;
+}
+
+/**
+ * diotemp.c fields whose temperature laws are not implemented. They only act
+ * away from TNOM, where they are rejected rather than ignored (#374).
+ */
+const UNSUPPORTED_TEMPERATURE_PARAMETERS = [
+  'TLEVC', 'CTA', 'CTP', 'TPB', 'TPHP', 'TM1', 'TM2', 'TTT1', 'TTT2',
+] as const;
+
+/** Values at TNOM that diotemp.c maps to the device temperature. */
+interface DiodeNominalParams {
+  /** Area saturation current IS*AREA*M and sidewall JSW*PJ*M. */
+  areaSaturationCurrent: number;
+  sidewallSaturationCurrent: number;
+  CJ0: number;
+  CJSW: number;
+  VJ: number;
+  VJSW: number;
 }
 
 /**
@@ -177,6 +201,7 @@ export class Diode implements DeviceModel {
   readonly suppliedParams: Readonly<Partial<DiodeParams>>;
   readonly modelWarnings: readonly string[];
   private temperature = 27;
+  private readonly nominal: DiodeNominalParams;
   /** Limited junction voltage of the last stamp (ngspice CKTstate0 DIOvoltage). */
   private previousJunctionVoltage: number | undefined;
   /** Junction voltage of the last accepted transient timepoint (CKTstate1). */
@@ -276,7 +301,18 @@ export class Diode implements DeviceModel {
       KF: params.KF ?? 0,
       AF: params.AF ?? 1,
       IKF: (params.IKF ?? 0) >= MIN_KNEE_CURRENT ? params.IKF! * effectiveArea : 0,
+      EG: params.EG ?? 1.11,
+      XTI: params.XTI ?? 3,
     };
+    this.nominal = {
+      areaSaturationCurrent: (params.IS ?? 1e-14) * effectiveArea,
+      sidewallSaturationCurrent: (params.JSW ?? 0) * effectivePerimeter,
+      CJ0: this.params.CJ0!,
+      CJSW: this.params.CJSW!,
+      VJ: this.params.VJ!,
+      VJSW: this.params.VJSW!,
+    };
+    this.applyTemperature();
     this.limitsOwnJunctions = this.params.RS === 0;
     this.storesCharge = Boolean(this.params.CJ0 || this.params.CJSW || this.params.TT);
     // A two-terminal RS fallback cannot carry the internal junction charge, so
@@ -361,6 +397,49 @@ export class Diode implements DeviceModel {
 
   setTemperature(value: number): void {
     this.temperature = value;
+    this.applyTemperature();
+  }
+
+  /**
+   * ngspice-47 diotemp.c (TLEV = TLEVC = 0) at the device temperature: the
+   * saturation currents follow exp((T/TNOM - 1)*EG/(N*vt) + XTI/N*ln(T/TNOM))
+   * (the sidewall current with its emission coefficient NS = 1), and the
+   * junction potentials and zero-bias capacitances follow the REFTEMP-mapped
+   * band-gap law. BV is mapped in {@link breakdownParams}; RS has no law
+   * without TRS. At T = TNOM every factor is exactly 1.
+   */
+  private applyTemperature(): void {
+    assertNoUnsupportedTemperatureParameters(
+      this.name, this.suppliedParams as Record<string, number | undefined>,
+      UNSUPPORTED_TEMPERATURE_PARAMETERS, this.temperature, this.params.TNOM,
+    );
+    const nominal = this.nominal;
+    const params = this.params;
+    const kelvin = this.temperature + KELVIN_OFFSET;
+    const nominalKelvin = params.TNOM + KELVIN_OFFSET;
+    if (kelvin === nominalKelvin) {
+      params.IS = nominal.areaSaturationCurrent + nominal.sidewallSaturationCurrent;
+      params.CJ0 = nominal.CJ0;
+      params.CJSW = nominal.CJSW;
+      params.VJ = nominal.VJ;
+      params.VJSW = nominal.VJSW;
+      return;
+    }
+    const vt = K_OVER_Q * kelvin;
+    const activationEnergy = params.EG!;
+    const exponent = params.XTI!;
+    const ratio = kelvin / nominalKelvin;
+    const saturationScale = (emission: number) => Math.exp(
+      (ratio - 1) * activationEnergy / (emission * vt) + exponent / emission * Math.log(ratio),
+    );
+    params.IS = nominal.areaSaturationCurrent * saturationScale(params.N)
+      + nominal.sidewallSaturationCurrent * saturationScale(1);
+    const bottom = temperatureJunction(nominal.VJ, nominal.CJ0, params.M!, kelvin, nominalKelvin);
+    const sidewall = temperatureJunction(nominal.VJSW, nominal.CJSW, params.MJSW!, kelvin, nominalKelvin);
+    params.VJ = bottom.potential;
+    params.CJ0 = bottom.capacitance;
+    params.VJSW = sidewall.potential;
+    params.CJSW = sidewall.capacitance;
   }
 
   getTemperature(): number {

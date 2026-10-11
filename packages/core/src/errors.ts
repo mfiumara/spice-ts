@@ -280,3 +280,32 @@ export class ModelTypeMismatchError extends InvalidCircuitError {
     this.name = 'ModelTypeMismatchError';
   }
 }
+
+/**
+ * Thrown when a circuit temperature other than the nominal one (`.options
+ * TEMP`, `.step TEMP`) reaches a device, or a model parameter, whose ngspice
+ * temperature law spice-ts does not implement. Such devices used to run at
+ * 27 C silently (#374).
+ */
+export class UnsupportedTemperatureError extends InvalidCircuitError {
+  /** Stable machine-readable error code. */
+  readonly code = 'UNSUPPORTED_TEMPERATURE';
+
+  constructor(
+    /** Instance name, e.g. `D1` */
+    public readonly deviceName: string,
+    /** Requested device temperature in degrees Celsius */
+    public readonly temperature: number,
+    /** Model parameter without a temperature law; undefined when the whole device has none */
+    public readonly parameter?: string,
+  ) {
+    super(
+      parameter === undefined
+        ? `Device '${deviceName}' has no ngspice temperature model in spice-ts`
+          + ` and cannot be simulated at TEMP=${temperature} C`
+        : `Device '${deviceName}' cannot be simulated at TEMP=${temperature} C: model parameter`
+          + ` '${parameter}' has an ngspice temperature law that spice-ts does not implement`,
+    );
+    this.name = 'UnsupportedTemperatureError';
+  }
+}

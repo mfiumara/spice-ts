@@ -4,6 +4,10 @@ import {
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import { meyerHalfCapacitances } from './mos6.js';
 import { MOS1DepletionCharge } from './mosfet-charge.js';
+import {
+  CHARGE, CONSTCTOK, CONSTKOVERQ, junctionPotentialFactor, NOMINAL_TEMPERATURE_C, REFTEMP,
+  siliconBandGap, temperatureJunction,
+} from './junction-temperature.js';
 import { InvalidCircuitError, UnsupportedModelLevelError } from '../errors.js';
 
 export interface MOSFETParams {
@@ -36,23 +40,19 @@ export interface MOSFETOperatingPoint {
 const GMIN = 1e-12;
 // Keep source-ramp Newton iterates finite without clipping ordinary supply steps.
 const MAX_NEWTON_TERMINAL_STEP = 10;
-// ngspice CONSTKoverQ (const.h) at the default 27 C circuit temperature.
-const JUNCTION_VT = (1.38064852e-23 / 1.6021766208e-19) * 300.15;
 const MAX_EXP_ARG = 709;
 /** ngspice cktinit.c CKTdefaultMosW / CKTdefaultMosL, used when W or L is omitted. */
 const DEFAULT_MOS_WIDTH = 1e-4;
 const DEFAULT_MOS_LENGTH = 1e-4;
-/** ngspice const.h CHARGE, CONSTboltz and the 27 C nominal temperature (CKTnomTemp). */
-const ELECTRON_CHARGE = 1.6021766208e-19;
-const K_OVER_Q = 1.38064852e-23 / ELECTRON_CHARGE;
-const NOMINAL_TEMPERATURE = 300.15;
+/** ngspice const.h CHARGE. */
+const ELECTRON_CHARGE = CHARGE;
 /** ngspice mos1temp.c permittivities 3.9 * eps0 (oxide) and 11.7 * eps0 (silicon), F/m. */
 const OXIDE_PERMITTIVITY = 3.9 * 8.854214871e-12;
 const SILICON_PERMITTIVITY = 11.7 * 8.854214871e-12;
 
 /**
  * VTO, KP, PHI and GAMMA when the model card omits them, as ngspice-47
- * mos1set.c/mos1temp.c resolve them at TNOM = 27 C:
+ * mos1set.c/mos1temp.c resolve them at TNOM (default 27 C):
  * - VTO defaults to 0, KP to 2e-5, PHI to 0.6 and GAMMA to 0.
  * - With a non-zero oxide capacitance Cox = 3.9*eps0/TOX (TOX given), KP =
  *   UO*Cox*1e-4 (UO default 600). A given NSUB > ni then sets PHI =
@@ -60,7 +60,7 @@ const SILICON_PERMITTIVITY = 11.7 * 8.854214871e-12;
  *   the flat-band voltage: vfb + type*(GAMMA*sqrt(PHI) + PHI).
  */
 function level1Defaults(
-  polarity: number, params: Record<string, number | undefined>,
+  polarity: number, params: Record<string, number | undefined>, nominalKelvin: number,
 ): { VTO: number; KP: number; PHI: number; GAMMA: number } {
   const plain = { PHI: params.PHI ?? 0.6, GAMMA: params.GAMMA ?? 0 };
   const oxideThickness = params.TOX;
@@ -70,8 +70,8 @@ function level1Defaults(
   const doping = params.NSUB === undefined ? 0 : params.NSUB * 1e6;
   const intrinsic = 1.45e16;
   if (!(doping > intrinsic)) return { VTO: 0, KP, ...plain };
-  const vtnom = NOMINAL_TEMPERATURE * K_OVER_Q;
-  const bandGap = 1.16 - (7.02e-4 * NOMINAL_TEMPERATURE * NOMINAL_TEMPERATURE) / (NOMINAL_TEMPERATURE + 1108);
+  const vtnom = nominalKelvin * CONSTKOVERQ;
+  const bandGap = siliconBandGap(nominalKelvin);
   const phi = params.PHI ?? Math.max(0.1, 2 * vtnom * Math.log(doping / intrinsic));
   const gateType = params.TPG ?? 1;
   const surfaceFermi = polarity * 0.5 * phi;
@@ -89,25 +89,25 @@ const channelScratch = new Float64Array(5);
 
 /**
  * ngspice mos1load.c bulk junction (bulk-source or bulk-drain), in the
- * polarity-adjusted domain, with `gmin` the circuit CKTgmin. Writes
- * [conductance, current] into `out`.
+ * polarity-adjusted domain, with `gmin` the circuit CKTgmin and `vt` the
+ * thermal voltage at the device temperature. Writes [conductance, current]
+ * into `out`.
  */
 function bulkJunction(
-  voltage: number, saturationCurrent: number, gmin: number, out: Float64Array, offset: number,
+  voltage: number, saturationCurrent: number, vt: number, gmin: number, out: Float64Array, offset: number,
 ): void {
-  if (voltage <= -3 * JUNCTION_VT) {
+  if (voltage <= -3 * vt) {
     out[offset] = gmin;
     out[offset + 1] = gmin * voltage - saturationCurrent;
     return;
   }
-  const expTerm = Math.exp(Math.min(MAX_EXP_ARG, voltage / JUNCTION_VT));
-  out[offset] = saturationCurrent * expTerm / JUNCTION_VT + gmin;
+  const expTerm = Math.exp(Math.min(MAX_EXP_ARG, voltage / vt));
+  out[offset] = saturationCurrent * expTerm / vt + gmin;
   out[offset + 1] = saturationCurrent * (expTerm - 1) + gmin * voltage;
 }
 
 /** ngspice devsup.c DEVpnjlim: limit a junction voltage step from `previous`. */
-function pnjlim(proposed: number, previous: number, criticalVoltage: number): number {
-  const vt = JUNCTION_VT;
+function pnjlim(proposed: number, previous: number, vt: number, criticalVoltage: number): number {
   if (proposed > criticalVoltage && Math.abs(proposed - previous) > 2 * vt) {
     if (previous > 0) {
       const argument = (proposed - previous) / vt;
@@ -124,9 +124,9 @@ function pnjlim(proposed: number, previous: number, criticalVoltage: number): nu
   return proposed;
 }
 
-function criticalVoltage(saturationCurrent: number): number {
+function criticalVoltage(saturationCurrent: number, vt: number): number {
   return saturationCurrent > 0
-    ? JUNCTION_VT * Math.log(JUNCTION_VT / (Math.SQRT2 * saturationCurrent))
+    ? vt * Math.log(vt / (Math.SQRT2 * saturationCurrent))
     : Infinity;
 }
 
@@ -187,27 +187,34 @@ export class MOSFET implements DeviceModel {
   readonly isNonlinear = true;
   readonly params: MOSFETParams;
   readonly suppliedParams: Readonly<Record<string, number>>;
-  /** Bulk-drain / bulk-source junction saturation currents (mos1temp.c at TNOM). */
-  readonly drainSatCur: number;
-  readonly sourceSatCur: number;
-  private readonly drainVcrit: number;
-  private readonly sourceVcrit: number;
+  /** Bulk-drain / bulk-source junction saturation currents at the device temperature (mos1temp.c). */
+  drainSatCur = 0;
+  sourceSatCur = 0;
+  private drainVcrit = 0;
+  private sourceVcrit = 0;
   /** Junction voltages used by the previous stamp (ngspice CKTstate0 vbs/vbd). */
   private lastVbs = 0;
   private lastVbd = 0;
   /** Effective channel length L - 2*LD (m), as used by mos1load.c and mos1noi.c. */
   readonly effectiveLength: number;
-  /** mos1load.c Beta = KP*W/Leff and the polarity-domain threshold terms. */
-  private readonly beta: number;
-  private readonly sqrtPhi: number;
-  private readonly zeroBiasVon: number;
-  private readonly builtInVon: number;
+  /** Device temperature (C) and the mos1temp.c values derived from it. */
+  private temperature = NOMINAL_TEMPERATURE_C;
+  private readonly nominalKelvin: number;
+  /** Thermal voltage at the device temperature (mos1temp.c vt). */
+  private vt = 0;
+  /** mos1temp.c MOS1tPhi: the surface potential at the device temperature. */
+  private tPhi = 0;
+  /** mos1load.c Beta = tKP*W/Leff and the polarity-domain threshold terms. */
+  private beta = 0;
+  private sqrtPhi = 0;
+  private zeroBiasVon = 0;
+  private builtInVon = 0;
   /** Threshold of the previous stamp (ngspice MOS1von), the DEVfetlim pivot. */
-  private lastVon: number;
+  private lastVon = 0;
   private readonly overlaps: Float64Array;
   private readonly oxideCap: number;
-  private readonly drainDepletion: MOS1DepletionCharge;
-  private readonly sourceDepletion: MOS1DepletionCharge;
+  private drainDepletion!: MOS1DepletionCharge;
+  private sourceDepletion!: MOS1DepletionCharge;
   private readonly capacitances = new Float64Array(CHARGE_BRANCHES.length);
   private readonly junctionCharges = new Float64Array(CHARGE_BRANCHES.length);
   private readonly meyerHalf = new Float64Array(3);
@@ -229,7 +236,12 @@ export class MOSFET implements DeviceModel {
     // #530: only ngspice mos1 is implemented here; other levels must not run these equations.
     if (level !== 1) throw new UnsupportedModelLevelError(name, undefined, level, [1]);
     const polarity = params.polarity ?? 1;
-    const defaults = level1Defaults(polarity, params);
+    // mos1temp.c: TNOM defaults to CKTnomTemp (27 C).
+    this.nominalKelvin = (params.TNOM ?? NOMINAL_TEMPERATURE_C) + CONSTCTOK;
+    if (!(this.nominalKelvin > 0)) {
+      throw new InvalidCircuitError(`MOSFET '${name}' has an invalid TNOM = ${params.TNOM}`);
+    }
+    const defaults = level1Defaults(polarity, params, this.nominalKelvin);
     this.params = {
       LEVEL: level,
       VTO: params.VTO ?? params.VT0 ?? defaults.VTO,
@@ -247,19 +259,7 @@ export class MOSFET implements DeviceModel {
       TOX: params.TOX,
       polarity,
     };
-    // mos1load.c: JS*AD / JS*AS only when JS and both areas are non-zero.
-    const saturationCurrent = params.IS ?? 1e-14;
-    const saturationDensity = params.JS ?? 0;
-    const drainArea = params.AD ?? 0;
-    const sourceArea = params.AS ?? 0;
-    const useDensity = saturationDensity !== 0 && drainArea !== 0 && sourceArea !== 0;
-    this.drainSatCur = useDensity ? saturationDensity * drainArea : saturationCurrent;
-    this.sourceSatCur = useDensity ? saturationDensity * sourceArea : saturationCurrent;
-    this.drainVcrit = criticalVoltage(this.drainSatCur);
-    this.sourceVcrit = criticalVoltage(this.sourceSatCur);
-    // mos1load.c: Beta = KP * W / (L - 2*LD); von = type*tVbi + GAMMA*sarg with
-    // type*tVbi = type*VTO - GAMMA*sqrt(PHI) at TNOM (mos1temp.c).
-    const { KP, VTO, GAMMA, PHI, LD, L, W } = this.params;
+    const { PHI, LD, L } = this.params;
     const effectiveLength = L - 2 * LD;
     if (!(effectiveLength > 0)) {
       throw new InvalidCircuitError(
@@ -268,11 +268,6 @@ export class MOSFET implements DeviceModel {
     }
     if (!(PHI > 0)) throw new InvalidCircuitError(`MOSFET '${name}' requires PHI > 0, got ${PHI}`);
     this.effectiveLength = effectiveLength;
-    this.beta = KP * W / effectiveLength;
-    this.sqrtPhi = Math.sqrt(PHI);
-    this.zeroBiasVon = polarity * VTO;
-    this.builtInVon = this.zeroBiasVon - GAMMA * this.sqrtPhi;
-    this.lastVon = this.zeroBiasVon;
     const width = this.params.W;
     this.overlaps = Float64Array.of(
       (this.suppliedParams.CGDO ?? 0) * width,
@@ -280,14 +275,81 @@ export class MOSFET implements DeviceModel {
       (this.suppliedParams.CGBO ?? 0) * effectiveLength,
     );
     this.oxideCap = params.TOX ? OXIDE_PERMITTIVITY / params.TOX * width * effectiveLength : 0;
-    const junction = (bottom: number, sidewall: number) => new MOS1DepletionCharge(
-      bottom, sidewall, params.PB ?? 0.8, params.MJ ?? 0.5, params.MJSW ?? 0.5, params.FC ?? 0.5,
-    );
-    this.drainDepletion = junction(params.CBD ?? (params.CJ ?? 0) * drainArea, (params.CJSW ?? 0) * (params.PD ?? 0));
-    this.sourceDepletion = junction(params.CBS ?? (params.CJ ?? 0) * sourceArea, (params.CJSW ?? 0) * (params.PS ?? 0));
+    this.applyTemperature();
     this.storesCharge = this.oxideCap !== 0 || this.overlaps.some(value => value !== 0)
       || this.drainDepletion.active || this.sourceDepletion.active;
     this.integratesTransientCharge = this.storesCharge;
+  }
+
+  setTemperature(value: number): void {
+    this.temperature = value;
+    this.applyTemperature();
+  }
+
+  getTemperature(): number {
+    return this.temperature;
+  }
+
+  /**
+   * ngspice-47 mos1temp.c instance loop at the device temperature: KP scales
+   * by (T/TNOM)^-1.5, PHI and the built-in voltage follow the band gap, the
+   * bulk saturation currents by exp(-EG(T)/vt + EG(TNOM)/vtnom), and the bulk
+   * junction potential and capacitances by the REFTEMP-mapped law (the
+   * sidewall with MJSW but the bottom PB). At T = TNOM every factor is 1.
+   */
+  private applyTemperature(): void {
+    const supplied = this.suppliedParams;
+    const { KP, VTO, GAMMA, PHI, W, polarity } = this.params;
+    const kelvin = this.temperature + CONSTCTOK;
+    const nominalKelvin = this.nominalKelvin;
+    const vt = CONSTKOVERQ * kelvin;
+    const vtnom = CONSTKOVERQ * nominalKelvin;
+    const ratio = kelvin / nominalKelvin;
+    const egfet = siliconBandGap(kelvin);
+    const egfet1 = siliconBandGap(nominalKelvin);
+    const phio = (PHI - junctionPotentialFactor(nominalKelvin)) / (nominalKelvin / REFTEMP);
+    const tPhi = kelvin === nominalKelvin ? PHI : (kelvin / REFTEMP) * phio + junctionPotentialFactor(kelvin);
+    const tVbi = VTO - polarity * GAMMA * Math.sqrt(PHI)
+      + 0.5 * (egfet1 - egfet) + polarity * 0.5 * (tPhi - PHI);
+    this.vt = vt;
+    this.tPhi = tPhi;
+    this.beta = KP / (ratio * Math.sqrt(ratio)) * W / this.effectiveLength;
+    this.sqrtPhi = Math.sqrt(tPhi);
+    this.builtInVon = polarity * tVbi;
+    this.zeroBiasVon = this.builtInVon + GAMMA * this.sqrtPhi;
+    this.lastVon = this.zeroBiasVon;
+
+    // mos1load.c: JS*AD / JS*AS only when JS and both areas are non-zero.
+    const saturationScale = kelvin === nominalKelvin ? 1 : Math.exp(-egfet / vt + egfet1 / vtnom);
+    const saturationCurrent = (supplied.IS ?? 1e-14) * saturationScale;
+    const saturationDensity = (supplied.JS ?? 0) * saturationScale;
+    const drainArea = supplied.AD ?? 0;
+    const sourceArea = supplied.AS ?? 0;
+    const useDensity = saturationDensity !== 0 && drainArea !== 0 && sourceArea !== 0;
+    this.drainSatCur = useDensity ? saturationDensity * drainArea : saturationCurrent;
+    this.sourceSatCur = useDensity ? saturationDensity * sourceArea : saturationCurrent;
+    this.drainVcrit = criticalVoltage(this.drainSatCur, vt);
+    this.sourceVcrit = criticalVoltage(this.sourceSatCur, vt);
+
+    const potential = supplied.PB ?? 0.8;
+    const grading = supplied.MJ ?? 0.5;
+    const sideGrading = supplied.MJSW ?? 0.5;
+    const bottom = kelvin === nominalKelvin
+      ? { potential, capacitance: 1 }
+      : temperatureJunction(potential, 1, grading, kelvin, nominalKelvin);
+    const sidewall = kelvin === nominalKelvin
+      ? 1
+      : temperatureJunction(potential, 1, sideGrading, kelvin, nominalKelvin).capacitance;
+    const junction = (zeroBias: number, sidewallCap: number) => new MOS1DepletionCharge(
+      zeroBias * bottom.capacitance, sidewallCap * sidewall,
+      bottom.potential, grading, sideGrading, supplied.FC ?? 0.5,
+    );
+    this.drainDepletion = junction(
+      supplied.CBD ?? (supplied.CJ ?? 0) * drainArea, (supplied.CJSW ?? 0) * (supplied.PD ?? 0),
+    );
+    this.sourceDepletion = junction(
+      supplied.CBS ?? (supplied.CJ ?? 0) * sourceArea, (supplied.CJSW ?? 0) * (supplied.PS ?? 0),
+    );
   }
 
   private get bulkNode(): number {
@@ -307,17 +369,17 @@ export class MOSFET implements DeviceModel {
     let vbs = polarity * (vB - vS);
     let vbd = vbs - vds;
     if (vds >= 0) {
-      vbs = pnjlim(vbs, this.lastVbs, this.sourceVcrit);
+      vbs = pnjlim(vbs, this.lastVbs, this.vt, this.sourceVcrit);
       vbd = vbs - vds;
     } else {
-      vbd = pnjlim(vbd, this.lastVbd, this.drainVcrit);
+      vbd = pnjlim(vbd, this.lastVbd, this.vt, this.drainVcrit);
       vbs = vbd + vds;
     }
     this.lastVbs = vbs;
     this.lastVbd = vbd;
     const out = junctionScratch;
-    bulkJunction(vbs, this.sourceSatCur, gmin, out, 0);
-    bulkJunction(vbd, this.drainSatCur, gmin, out, 2);
+    bulkJunction(vbs, this.sourceSatCur, this.vt, gmin, out, 0);
+    bulkJunction(vbd, this.drainSatCur, this.vt, gmin, out, 2);
     out[1] -= out[0] * vbs;
     out[3] -= out[2] * vbd;
     return out;
@@ -332,7 +394,7 @@ export class MOSFET implements DeviceModel {
     const { GAMMA, LAMBDA } = this.params;
     let sarg: number;
     if (vbs <= 0) {
-      sarg = Math.sqrt(this.params.PHI - vbs);
+      sarg = Math.sqrt(this.tPhi - vbs);
     } else {
       sarg = this.sqrtPhi - vbs / (2 * this.sqrtPhi);
       sarg = Math.max(0, sarg);
@@ -577,7 +639,7 @@ export class MOSFET implements DeviceModel {
 
   /** mos1load.c DEVqmeyer plus qbd/qbs, evaluated without mutating accepted history. */
   private evaluateCharges(ctx: StampContext): void {
-    const { polarity, PHI } = this.params;
+    const { polarity } = this.params;
     const vgs = polarity * branchVoltage(ctx, this.nodes[1], this.nodes[2]);
     const vds = polarity * branchVoltage(ctx, this.nodes[0], this.nodes[2]);
     const vbs = polarity * branchVoltage(ctx, this.bulkNode, this.nodes[2]);
@@ -586,8 +648,9 @@ export class MOSFET implements DeviceModel {
     const gate = inverse ? vgs - vds : vgs;
     const channel = this.evaluateChannel(gate, Math.abs(vds), inverse ? vbd : vbs);
     const von = channel[4];
+    // mos1load.c passes the temperature-adjusted MOS1tPhi to DEVqmeyer.
     meyerHalfCapacitances(gate, inverse ? vgs : vgs - vds, von,
-      Math.max(0, gate - von), PHI, this.oxideCap, this.meyerHalf);
+      Math.max(0, gate - von), this.tPhi, this.oxideCap, this.meyerHalf);
     this.capacitances[0] = 2 * this.meyerHalf[inverse ? 0 : 1] + this.overlaps[0];
     this.capacitances[1] = 2 * this.meyerHalf[inverse ? 1 : 0] + this.overlaps[1];
     this.capacitances[2] = 2 * this.meyerHalf[2] + this.overlaps[2];

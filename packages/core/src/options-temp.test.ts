@@ -140,14 +140,13 @@ R3 4 0 1k
   });
 
   it.each([
-    ['diode', 'D1 1 0 DMOD\n.model DMOD D IS=1e-14'],
-    ['level-1 BJT', 'Q1 1 1 0 QMOD\n.model QMOD NPN BF=100'],
-    ['MOSFET', 'M1 1 1 0 0 MMOD\n.model MMOD NMOS LEVEL=1'],
+    ['JFET', 'J1 1 0 0 JMOD\n.model JMOD NJF'],
+    ['level-6 MOSFET', 'M1 1 1 0 0 MMOD\n.model MMOD NMOS LEVEL=6'],
   ])('rejects a non-nominal TEMP for a %s without an ngspice temperature model', (_kind, cards) => {
     const circuit = parse(`unsupported temp\nV1 1 0 1\n${cards}\n.options temp=100\n.op`);
 
     expect(() => circuit.compile()).toThrow(InvalidCircuitError);
-    expect(() => circuit.compile()).toThrow(/\.options TEMP=100/);
+    expect(() => circuit.compile()).toThrow(/cannot be simulated at TEMP=100 C/);
   });
 
   it('accepts TEMP=27 for devices without a temperature model', async () => {
