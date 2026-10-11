@@ -36,7 +36,8 @@ import { VCVS } from './devices/vcvs.js';
 import { CCCS } from './devices/cccs.js';
 import { CCVS } from './devices/ccvs.js';
 import { TransmissionLine } from './devices/transmission-line.js';
-import { expandLtraLadder, resolveLtraModel } from './devices/ltra-model.js';
+import { resolveLtraModel } from './devices/ltra-model.js';
+import { LossyTransmissionLine, LtraModelState } from './devices/lossy-transmission-line.js';
 import { GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
@@ -1249,6 +1250,7 @@ export class Circuit {
 
     const devices: DeviceModel[] = [];
     const deviceMap = new Map<string, DeviceModel>();
+    const ltraStates = new Map<string, LtraModelState>();
 
     for (const desc of expandedDescriptors) {
       guard?.checkpoint('compile:device');
@@ -1324,6 +1326,22 @@ export class Circuit {
             desc.value!,
             desc.params!.TD,
           ));
+          break;
+        }
+        case 'O': {
+          const firstBranch = branchIndex++;
+          const secondBranch = branchIndex++;
+          branchNames.push(`${desc.name}:1`, `${desc.name}:2`);
+          const modelName = desc.modelName!;
+          let state = ltraStates.get(modelName);
+          if (!state) {
+            state = new LtraModelState(resolveLtraModel(this._models.get(modelName)!, {
+              reltol: this._simulationOptions.reltol ?? 1e-3,
+              abstol: this._simulationOptions.abstol ?? 1e-12,
+            }));
+            ltraStates.set(modelName, state);
+          }
+          devices.push(new LossyTransmissionLine(desc.name, nodeIndices, firstBranch, secondBranch, state));
           break;
         }
         case 'D': {
@@ -1530,28 +1548,35 @@ export class Circuit {
     return result;
   }
 
+  /**
+   * Validate O/LTRA instances after subcircuit expansion. Model lookup happens
+   * here, not at parse time, because O cards in uncalled subcircuits may name
+   * undefined models.
+   */
   private expandLossyTransmissionLines(descriptors: DeviceDescriptor[]): DeviceDescriptor[] {
-    const result: DeviceDescriptor[] = [];
+    let hasLossyLine = false;
     for (const desc of descriptors) {
-      if (desc.type !== 'O') {
-        result.push(desc);
-        continue;
-      }
-      const [input, inputReference, output, outputReference] = desc.nodes;
+      if (desc.type !== 'O') continue;
+      hasLossyLine = true;
+      const [, inputReference, , outputReference] = desc.nodes;
       if (inputReference.toUpperCase() !== outputReference.toUpperCase()) {
         throw new Error(`Unsupported LTRA '${desc.name}': both ports must use a common reference node`);
       }
       const model = this._models.get(desc.modelName!);
       if (!model) throw new InvalidCircuitError(`LTRA '${desc.name}' references unknown model '${desc.modelName}'`);
-      result.push(...expandLtraLadder(
-        desc.name,
-        input,
-        output,
-        inputReference,
-        resolveLtraModel(model),
-      ));
+      resolveLtraModel(model);
     }
-    return result;
+    if (hasLossyLine) {
+      // The LTRA small-signal response is not a polynomial in s, which the
+      // G + sC frequency-domain assembly cannot represent.
+      const unsupported = this._poleZeroAnalyses.length > 0
+        ? 'pz'
+        : this._analyses.find(analysis => !['op', 'dc', 'tran', 'tf'].includes(analysis.type))?.type;
+      if (unsupported) {
+        throw new InvalidCircuitError(`LTRA lossy lines support only .op, .dc, .tf and .tran analyses; '.${unsupported}' is unsupported`);
+      }
+    }
+    return descriptors;
   }
 
   private expandPassiveParasitics(descriptors: DeviceDescriptor[]): DeviceDescriptor[] {
