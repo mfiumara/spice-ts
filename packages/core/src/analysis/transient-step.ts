@@ -89,6 +89,7 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
     dt, time, prevSolution, prevB, gmin, prevPrevSolution, prevDt, staticCurrentHistory,
   } = attempt;
   let voltageLimit = attempt.voltageLimit;
+  const limitedNodes = nonlinearTerminalNodes(compiled);
 
   assembler.setTime(time, dt);
 
@@ -115,7 +116,7 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
     for (let i = 0; i < nodeCount; i++) rawDelta[i] = x[i] - prev[i];
 
     if (prevDelta) {
-      for (let i = 0; i < nodeCount; i++) {
+      for (const i of limitedNodes) {
         if (rawDelta[i] * prevDelta[i] < 0 && Math.abs(rawDelta[i]) > options.vntol) {
           oscillated = true;
           if (voltageLimit > TIGHT_LIMIT) voltageLimit = TIGHT_LIMIT;
@@ -124,8 +125,8 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
       }
     }
 
-    // Apply damping
-    for (let i = 0; i < nodeCount; i++) {
+    // Damp only nodes a nonlinear device reads (issue #376); see nonlinearTerminalNodes.
+    for (const i of limitedNodes) {
       const delta = rawDelta[i];
       if (Math.abs(delta) > voltageLimit) {
         x[i] = prev[i] + Math.sign(delta) * voltageLimit;
@@ -154,6 +155,36 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
     prevIterSolution,
     oscillated,
   };
+}
+
+const nonlinearTerminalCache = new WeakMap<CompiledCircuit, Int32Array>();
+
+/**
+ * Node indices read by at least one nonlinear device, ascending.
+ *
+ * Only these nodes take the per-iteration voltage cap. Every other node is
+ * read by linear stamps alone, so it never feeds the next linearisation:
+ * capping it cannot help Newton and only stalls convergence of large linear
+ * jumps (issue #376, e.g. V = L di/dt across an inductor). ngspice likewise
+ * limits only device terminal/junction voltages (pnjlim, fetlim, limvds),
+ * never node voltages. Damping on these nodes is unchanged.
+ */
+function nonlinearTerminalNodes(compiled: CompiledCircuit): Int32Array {
+  let nodes = nonlinearTerminalCache.get(compiled);
+  if (nodes === undefined) {
+    const marked = new Uint8Array(compiled.nodeCount);
+    for (const device of compiled.devices) {
+      if (!device.isNonlinear) continue;
+      for (const node of device.nodes) {
+        if (node >= 0 && node < compiled.nodeCount) marked[node] = 1;
+      }
+    }
+    const indices: number[] = [];
+    for (let i = 0; i < marked.length; i++) if (marked[i]) indices.push(i);
+    nodes = Int32Array.from(indices);
+    nonlinearTerminalCache.set(compiled, nodes);
+  }
+  return nodes;
 }
 
 function isConvergedTransient(
