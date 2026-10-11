@@ -1,0 +1,986 @@
+{
+  "schemaVersion": "spice-ts-bsim3-diagnostic/v1",
+  "generatedAt": "2026-10-11T20:09:48.178Z",
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v22.23.1",
+    "cpu": "Apple M5 Pro"
+  },
+  "tools": {
+    "spiceTs": {
+      "version": "0.3.0",
+      "command": [
+        "pnpm",
+        "bench:compare:v2"
+      ]
+    },
+    "ngspice": {
+      "version": "ngspice-47",
+      "command": [
+        "ngspice",
+        "-b",
+        "-r",
+        "<raw>",
+        "<netlist>"
+      ]
+    }
+  },
+  "alignment": {
+    "targetGrid": "spice-ts",
+    "interpolation": "linear",
+    "relativeZeroThreshold": 1e-15
+  },
+  "fixtures": [
+    {
+      "name": "sram-write-0",
+      "analysis": "tran",
+      "netlistSha256": "a9a1989f10c9d1aaa24b00488a59450dab6fe75d02791a238d3b8916ceda6b60",
+      "status": "compared",
+      "signals": [
+        "v(q)",
+        "v(qb)"
+      ],
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 1008.830834,
+        "command": [
+          "@spice-ts/core",
+          "simulate",
+          "<sram-write-0.cir>"
+        ],
+        "points": 1189,
+        "first": {
+          "v(q)": {
+            "re": 1.7999999999999998,
+            "im": 0
+          },
+          "v(qb)": {
+            "re": 1.8105617946930135e-22,
+            "im": 0
+          }
+        },
+        "last": {
+          "v(q)": {
+            "re": 4.5807703071867555e-9,
+            "im": 0
+          },
+          "v(qb)": {
+            "re": 1.799999987991029,
+            "im": 0
+          }
+        }
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 123.02937499999996,
+        "command": [
+          "ngspice",
+          "-b",
+          "-r",
+          "<temporary-rawfile>",
+          "<sram-write-0.cir>"
+        ],
+        "points": 1032,
+        "first": {
+          "v(vdd)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(wl)": {
+            "re": 0,
+            "im": 0
+          },
+          "v(bl)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(blb)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(q)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(qb)": {
+            "re": 0,
+            "im": 0
+          },
+          "i(vblb)": {
+            "re": -1.810289392936489e-12,
+            "im": 0
+          },
+          "i(vbl)": {
+            "re": -1.81e-12,
+            "im": 0
+          },
+          "i(vwl)": {
+            "re": 0,
+            "im": 0
+          },
+          "i(vdd)": {
+            "re": -1.810272480585471e-12,
+            "im": 0
+          }
+        },
+        "last": {
+          "v(vdd)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(wl)": {
+            "re": 0,
+            "im": 0
+          },
+          "v(bl)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(blb)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(q)": {
+            "re": 4.58077046066705e-9,
+            "im": 0
+          },
+          "v(qb)": {
+            "re": 1.79999998799103,
+            "im": 0
+          },
+          "i(vblb)": {
+            "re": -1.810000026868168e-12,
+            "im": 0
+          },
+          "i(vbl)": {
+            "re": -1.81028938930416e-12,
+            "im": 0
+          },
+          "i(vwl)": {
+            "re": -7.638079651551995e-19,
+            "im": 0
+          },
+          "i(vdd)": {
+            "re": -5.430561428058003e-12,
+            "im": 0
+          }
+        }
+      },
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 1189,
+          "ngspicePoints": 1032,
+          "alignedPoints": 1189,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "v(q)": {
+            "status": "compared",
+            "sampleCount": 1189,
+            "absoluteError": {
+              "max": 0.352937499136717,
+              "rms": 0.02757300573264912
+            },
+            "relativeError": {
+              "max": 417.3269800136694,
+              "rms": 12.587596526551739,
+              "sampleCount": 1189,
+              "excludedZeroReferences": 0
+            }
+          },
+          "v(qb)": {
+            "status": "compared",
+            "sampleCount": 1189,
+            "absoluteError": {
+              "max": 0.6739881736131554,
+              "rms": 0.0653068896172117
+            },
+            "relativeError": {
+              "max": 6.850356613935157,
+              "rms": 0.3231323859032433,
+              "sampleCount": 1188,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "nmos-forward",
+      "analysis": "op",
+      "netlistSha256": "cd3c9c534b361ebc85796f3a0d06c632e849cd38ee75ed980a9302d1101c7f03",
+      "status": "compared",
+      "signals": [
+        "i(VD)"
+      ],
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 84.85629199999994,
+        "command": [
+          "@spice-ts/core",
+          "simulate",
+          "<nmos-forward.cir>"
+        ],
+        "points": 1,
+        "first": {
+          "i(vd)": {
+            "re": -0.00016520052547599787,
+            "im": 0
+          }
+        },
+        "last": {
+          "i(vd)": {
+            "re": -0.00016520052547599787,
+            "im": 0
+          }
+        }
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 79.643959,
+        "command": [
+          "ngspice",
+          "-b",
+          "-r",
+          "<temporary-rawfile>",
+          "<nmos-forward.cir>"
+        ],
+        "points": 1,
+        "first": {
+          "v(d)": {
+            "re": 0.9,
+            "im": 0
+          },
+          "v(g)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "i(vg)": {
+            "re": 0,
+            "im": 0
+          },
+          "i(vd)": {
+            "re": -0.0001652005254759979,
+            "im": 0
+          }
+        },
+        "last": {
+          "v(d)": {
+            "re": 0.9,
+            "im": 0
+          },
+          "v(g)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "i(vg)": {
+            "re": 0,
+            "im": 0
+          },
+          "i(vd)": {
+            "re": -0.0001652005254759979,
+            "im": 0
+          }
+        }
+      },
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 1,
+          "ngspicePoints": 1,
+          "alignedPoints": 1,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(VD)": {
+            "status": "compared",
+            "sampleCount": 1,
+            "absoluteError": {
+              "max": 2.710505431213761e-20,
+              "rms": 2.710505431213761e-20
+            },
+            "relativeError": {
+              "max": 1.6407365675162894e-16,
+              "rms": 1.6407365675162894e-16,
+              "sampleCount": 1,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "pmos-forward",
+      "analysis": "op",
+      "netlistSha256": "e1befc5849d6cc35adc3f21ee4bb22e7dec3dbf3268dbfc136388407eda6c513",
+      "status": "compared",
+      "signals": [
+        "i(VD)"
+      ],
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 128.25095800000008,
+        "command": [
+          "@spice-ts/core",
+          "simulate",
+          "<pmos-forward.cir>"
+        ],
+        "points": 1,
+        "first": {
+          "i(vd)": {
+            "re": 0.0001401348473423328,
+            "im": 0
+          }
+        },
+        "last": {
+          "i(vd)": {
+            "re": 0.0001401348473423328,
+            "im": 0
+          }
+        }
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 116.60341700000004,
+        "command": [
+          "ngspice",
+          "-b",
+          "-r",
+          "<temporary-rawfile>",
+          "<pmos-forward.cir>"
+        ],
+        "points": 1,
+        "first": {
+          "v(s)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(d)": {
+            "re": 0.9,
+            "im": 0
+          },
+          "i(vd)": {
+            "re": 0.0001401348473423327,
+            "im": 0
+          },
+          "i(vs)": {
+            "re": -0.0001401348473423327,
+            "im": 0
+          }
+        },
+        "last": {
+          "v(s)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(d)": {
+            "re": 0.9,
+            "im": 0
+          },
+          "i(vd)": {
+            "re": 0.0001401348473423327,
+            "im": 0
+          },
+          "i(vs)": {
+            "re": -0.0001401348473423327,
+            "im": 0
+          }
+        }
+      },
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 1,
+          "ngspicePoints": 1,
+          "alignedPoints": 1,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(VD)": {
+            "status": "compared",
+            "sampleCount": 1,
+            "absoluteError": {
+              "max": 1.0842021724855044e-19,
+              "rms": 1.0842021724855044e-19
+            },
+            "relativeError": {
+              "max": 7.736849135297004e-16,
+              "rms": 7.736849135297004e-16,
+              "sampleCount": 1,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "nmos-reverse",
+      "analysis": "op",
+      "netlistSha256": "2e50b34fde3c155c84e4197daf9888c4308d5276ae447d3226fd896417683052",
+      "status": "compared",
+      "signals": [
+        "i(VD)"
+      ],
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 168.233792,
+        "command": [
+          "@spice-ts/core",
+          "simulate",
+          "<nmos-reverse.cir>"
+        ],
+        "points": 1,
+        "first": {
+          "i(vd)": {
+            "re": -0.00016520052547599787,
+            "im": 0
+          }
+        },
+        "last": {
+          "i(vd)": {
+            "re": -0.00016520052547599787,
+            "im": 0
+          }
+        }
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 145.0792919999999,
+        "command": [
+          "ngspice",
+          "-b",
+          "-r",
+          "<temporary-rawfile>",
+          "<nmos-reverse.cir>"
+        ],
+        "points": 1,
+        "first": {
+          "v(d)": {
+            "re": 0.9,
+            "im": 0
+          },
+          "v(g)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "i(vg)": {
+            "re": 0,
+            "im": 0
+          },
+          "i(vd)": {
+            "re": -0.0001652005254759979,
+            "im": 0
+          }
+        },
+        "last": {
+          "v(d)": {
+            "re": 0.9,
+            "im": 0
+          },
+          "v(g)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "i(vg)": {
+            "re": 0,
+            "im": 0
+          },
+          "i(vd)": {
+            "re": -0.0001652005254759979,
+            "im": 0
+          }
+        }
+      },
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 1,
+          "ngspicePoints": 1,
+          "alignedPoints": 1,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(VD)": {
+            "status": "compared",
+            "sampleCount": 1,
+            "absoluteError": {
+              "max": 2.710505431213761e-20,
+              "rms": 2.710505431213761e-20
+            },
+            "relativeError": {
+              "max": 1.6407365675162894e-16,
+              "rms": 1.6407365675162894e-16,
+              "sampleCount": 1,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "pmos-reverse",
+      "analysis": "op",
+      "netlistSha256": "6e9efca1f7a6ab363e8bc4ef290e41bf5d9e3dd4dbf60b725f3903fb6ee1853b",
+      "status": "compared",
+      "signals": [
+        "i(VD)"
+      ],
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 84.73312499999997,
+        "command": [
+          "@spice-ts/core",
+          "simulate",
+          "<pmos-reverse.cir>"
+        ],
+        "points": 1,
+        "first": {
+          "i(vd)": {
+            "re": 0.0001401348473423328,
+            "im": 0
+          }
+        },
+        "last": {
+          "i(vd)": {
+            "re": 0.0001401348473423328,
+            "im": 0
+          }
+        }
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 82.02016700000013,
+        "command": [
+          "ngspice",
+          "-b",
+          "-r",
+          "<temporary-rawfile>",
+          "<pmos-reverse.cir>"
+        ],
+        "points": 1,
+        "first": {
+          "v(s)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(d)": {
+            "re": 0.9,
+            "im": 0
+          },
+          "i(vd)": {
+            "re": 0.0001401348473423327,
+            "im": 0
+          },
+          "i(vs)": {
+            "re": -0.0001401348473423327,
+            "im": 0
+          }
+        },
+        "last": {
+          "v(s)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(d)": {
+            "re": 0.9,
+            "im": 0
+          },
+          "i(vd)": {
+            "re": 0.0001401348473423327,
+            "im": 0
+          },
+          "i(vs)": {
+            "re": -0.0001401348473423327,
+            "im": 0
+          }
+        }
+      },
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 1,
+          "ngspicePoints": 1,
+          "alignedPoints": 1,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(VD)": {
+            "status": "compared",
+            "sampleCount": 1,
+            "absoluteError": {
+              "max": 1.0842021724855044e-19,
+              "rms": 1.0842021724855044e-19
+            },
+            "relativeError": {
+              "max": 7.736849135297004e-16,
+              "rms": 7.736849135297004e-16,
+              "sampleCount": 1,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "pmos-off",
+      "analysis": "op",
+      "netlistSha256": "9cbef5057173f476049ff6bf94b01a9506a05f3105124b225d4be0ef39614275",
+      "status": "compared",
+      "signals": [
+        "i(VD)"
+      ],
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 108.39554199999975,
+        "command": [
+          "@spice-ts/core",
+          "simulate",
+          "<pmos-off.cir>"
+        ],
+        "points": 1,
+        "first": {
+          "i(vd)": {
+            "re": 1.8102724017565244e-12,
+            "im": 0
+          }
+        },
+        "last": {
+          "i(vd)": {
+            "re": 1.8102724017565244e-12,
+            "im": 0
+          }
+        }
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 101.29479200000014,
+        "command": [
+          "ngspice",
+          "-b",
+          "-r",
+          "<temporary-rawfile>",
+          "<pmos-off.cir>"
+        ],
+        "points": 1,
+        "first": {
+          "v(s)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(g)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(d)": {
+            "re": 0,
+            "im": 0
+          },
+          "i(vd)": {
+            "re": 1.810272401756524e-12,
+            "im": 0
+          },
+          "i(vg)": {
+            "re": 0,
+            "im": 0
+          },
+          "i(vs)": {
+            "re": -1.810272401756523e-12,
+            "im": 0
+          }
+        },
+        "last": {
+          "v(s)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(g)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(d)": {
+            "re": 0,
+            "im": 0
+          },
+          "i(vd)": {
+            "re": 1.810272401756524e-12,
+            "im": 0
+          },
+          "i(vg)": {
+            "re": 0,
+            "im": 0
+          },
+          "i(vs)": {
+            "re": -1.810272401756523e-12,
+            "im": 0
+          }
+        }
+      },
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 1,
+          "ngspicePoints": 1,
+          "alignedPoints": 1,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(VD)": {
+            "status": "compared",
+            "sampleCount": 1,
+            "absoluteError": {
+              "max": 4.0389678347315804e-28,
+              "rms": 4.0389678347315804e-28
+            },
+            "relativeError": {
+              "max": 2.231138159545786e-16,
+              "rms": 2.231138159545786e-16,
+              "sampleCount": 1,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "pmos-id-vgs",
+      "analysis": "dc",
+      "netlistSha256": "c5554815a9fde310583f38309a2b89e758e7998ed764c7d6822efff9ba716677",
+      "status": "compared",
+      "signals": [
+        "i(VSD)"
+      ],
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 38.061125000000175,
+        "command": [
+          "@spice-ts/core",
+          "simulate",
+          "<pmos-id-vgs.cir>"
+        ],
+        "points": 181,
+        "first": {
+          "i(vsd)": {
+            "re": -0.00320296521160024,
+            "im": 0
+          }
+        },
+        "last": {
+          "i(vsd)": {
+            "re": -1.034485552590162e-12,
+            "im": 0
+          }
+        }
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 27.090124999999716,
+        "command": [
+          "ngspice",
+          "-b",
+          "-r",
+          "<temporary-rawfile>",
+          "<pmos-id-vgs.cir>"
+        ],
+        "points": 181,
+        "first": {
+          "v(vdd)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(gate)": {
+            "re": 0,
+            "im": 0
+          },
+          "v(drain)": {
+            "re": 0.8,
+            "im": 0
+          },
+          "i(vsd)": {
+            "re": -0.003202965211600237,
+            "im": 0
+          },
+          "i(vgs)": {
+            "re": 0,
+            "im": 0
+          },
+          "i(vdd)": {
+            "re": -1.734723475976807e-18,
+            "im": 0
+          }
+        },
+        "last": {
+          "v(vdd)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(gate)": {
+            "re": 1.800000000000001,
+            "im": 0
+          },
+          "v(drain)": {
+            "re": 0.8,
+            "im": 0
+          },
+          "i(vsd)": {
+            "re": -1.034485552590161e-12,
+            "im": 0
+          },
+          "i(vgs)": {
+            "re": 0,
+            "im": 0
+          },
+          "i(vdd)": {
+            "re": 0,
+            "im": 0
+          }
+        }
+      },
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 181,
+          "ngspicePoints": 181,
+          "alignedPoints": 181,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(VSD)": {
+            "status": "compared",
+            "sampleCount": 181,
+            "absoluteError": {
+              "max": 3.990911523563817e-9,
+              "rms": 2.966421173655345e-10
+            },
+            "relativeError": {
+              "max": 0.0000012607463747310885,
+              "rms": 9.371054002399598e-8,
+              "sampleCount": 181,
+              "excludedZeroReferences": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "nmos-id-vds",
+      "analysis": "dc",
+      "netlistSha256": "43e64b1eac135df747eb5135c516658cfd2dd277da11131e2f8277bf461f3178",
+      "status": "compared",
+      "signals": [
+        "i(VDS)"
+      ],
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 156.06458299999986,
+        "command": [
+          "@spice-ts/core",
+          "simulate",
+          "<nmos-id-vds.cir>"
+        ],
+        "points": 181,
+        "first": {
+          "i(vds)": {
+            "re": 0,
+            "im": 0
+          }
+        },
+        "last": {
+          "i(vds)": {
+            "re": -0.004309028741491323,
+            "im": 0
+          }
+        }
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "runtimeMs": 141.12637500000028,
+        "command": [
+          "ngspice",
+          "-b",
+          "-r",
+          "<temporary-rawfile>",
+          "<nmos-id-vds.cir>"
+        ],
+        "points": 181,
+        "first": {
+          "v(gate)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(drain)": {
+            "re": 0,
+            "im": 0
+          },
+          "i(vds)": {
+            "re": 0,
+            "im": 0
+          },
+          "i(vgs)": {
+            "re": 0,
+            "im": 0
+          }
+        },
+        "last": {
+          "v(gate)": {
+            "re": 1.8,
+            "im": 0
+          },
+          "v(drain)": {
+            "re": 1.800000000000001,
+            "im": 0
+          },
+          "i(vds)": {
+            "re": -0.004309028741491321,
+            "im": 0
+          },
+          "i(vgs)": {
+            "re": 0,
+            "im": 0
+          }
+        }
+      },
+      "metrics": {
+        "grid": {
+          "spiceTsPoints": 181,
+          "ngspicePoints": 181,
+          "alignedPoints": 181,
+          "excludedOutOfRange": 0
+        },
+        "signals": {
+          "i(VDS)": {
+            "status": "compared",
+            "sampleCount": 181,
+            "absoluteError": {
+              "max": 3.469446951953614e-18,
+              "rms": 1.0437288471115347e-18
+            },
+            "relativeError": {
+              "max": 1.1426690438011498e-15,
+              "rms": 3.6875004010810493e-16,
+              "sampleCount": 180,
+              "excludedZeroReferences": 1
+            }
+          }
+        }
+      }
+    }
+  ],
+  "command": [
+    "pnpm",
+    "exec",
+    "tsx",
+    "benchmarks/bsim3-reverse/compare.ts"
+  ],
+  "note": "Diagnostic comparison, not a parity pass. BSIM3 model approximation losses remain in #589; SRAM waveform acceptance in #582 is not met."
+}
