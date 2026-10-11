@@ -1,4 +1,6 @@
-import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import type {
+  ChargeIntegration, ChargeTruncation, DeviceModel, StampContext,
+} from './device.js';
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import {
   evaluateHFET1,
@@ -108,6 +110,11 @@ export class HFET1 implements DeviceModel {
 
   resetTransient(): void {
     this.charges.reset();
+  }
+
+  /** ngspice HFETAtrunc: qgs and qgd. */
+  truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
+    return this.charges.truncationTimestep(truncation, () => this.acceptTransientStep(ctx));
   }
 }
 

@@ -202,6 +202,8 @@ export interface SimulationOptions {
   integrationMethod?: IntegrationMethod;
   /** Trapezoidal truncation error factor. Default: 7 */
   trtol?: number;
+  /** Charge tolerance (C) of the device-charge truncation error (ngspice CHGTOL). Default: 1e-14 */
+  chgtol?: number;
   /** Minimum conductance added to all node diagonals for gmin stepping. Default: 0 (disabled) */
   gmin?: number;
   /** Resolver for .include and .lib file directives */
@@ -272,6 +274,7 @@ export interface ResolvedOptions {
   maxTimestep: number;
   integrationMethod: IntegrationMethod;
   trtol: number;
+  chgtol: number;
   gmin: number;
 }
 
@@ -284,6 +287,7 @@ export const DEFAULT_OPTIONS: ResolvedOptions = {
   maxTimestep: Infinity,
   integrationMethod: 'trapezoidal',
   trtol: 7,
+  chgtol: 1e-14,
   gmin: 0,
 };
 
@@ -306,6 +310,7 @@ export function resolveOptions(opts?: SimulationOptions, stopTime?: number): Res
     maxTimestep: opts?.maxTimestep ?? (stopTime ? stopTime / 50 : DEFAULT_OPTIONS.maxTimestep),
     integrationMethod: opts?.integrationMethod ?? DEFAULT_OPTIONS.integrationMethod,
     trtol: opts?.trtol ?? DEFAULT_OPTIONS.trtol,
+    chgtol: opts?.chgtol ?? DEFAULT_OPTIONS.chgtol,
     gmin: opts?.gmin ?? DEFAULT_OPTIONS.gmin,
   };
 }
@@ -372,6 +377,12 @@ export interface PulseSource {
   width: number;
   /** Period in seconds */
   period: number;
+  /**
+   * Number of pulses (ngspice's eighth PULSE field, NP). When positive, the
+   * source holds V1 once `time - delay` exceeds `pulses * period`; omitted or
+   * non-positive means the pulse train repeats indefinitely.
+   */
+  pulses?: number;
 }
 
 /** Sinusoidal source waveform (SIN). */

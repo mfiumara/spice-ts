@@ -1,0 +1,66 @@
+2 stage op-amp, conected as voltage follower 02/16/88
+* SPICE3 (ngspice-dialect) translation of Gnucap tests/opamp-vf.1.ckt at gnucap/gnucap@5acb027125d6ea7c546badd03e026d8781c6a400.
+* Original: Gnucap regression tests, GPL-3.0-or-later (see LICENSE-NOTICE.MakeList and COPYING.txt here).
+* Modified 2026-10-11 by benchmarks/translate/gnucap-to-spice3.ts (spice-ts issue #524); changes:
+*   - commented out `.width out=80` (Gnucap `.width` only sets the console output width)
+*   - removed Gnucap-only option `dampstrategy=11` (Gnucap Newton damping strategy; no SPICE3 equivalent, no circuit meaning)
+*   - removed Gnucap-only option `trsteporder=1` (Gnucap transient step-size predictor order; no SPICE3 equivalent, no circuit meaning)
+*   - commented out bare `.options` (Gnucap prints the option table; no settings change)
+*   - commented out `.print op iter(0) v(1 3 4 5 6 7 8 9)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)
+*   - `.plot ac vdb(6) (-90,30) vp(6) (-180,180)`: `.plot` written as `.print` (line-printer plot is console formatting only); plot ranges (-90,30) (-180,180) removed
+*   - `.plot dc v(6) (-4,4)`: `.plot` written as `.print` (line-printer plot is console formatting only); plot ranges (-4,4) removed
+*   - `.plot tran v(6) (-4,4)`: `.plot` written as `.print` (line-printer plot is console formatting only); plot ranges (-4,4) removed
+*   - commented out `.stat notime` (Gnucap `.stat` only prints solver statistics)
+* The first line above is the unchanged original title line.
+*
+m1 3 6 5 8 cmosn w=5u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+m2 4 1 5 8 cmosn w=5u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+m3 3 3 9 9 cmosp w=5u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+m4 4 3 9 9 cmosp w=5u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+m5 5 7 8 8 cmosn w=5u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+m6 6 4 9 9 cmosp w=9u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+m7 6 7 8 8 cmosn w=5u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+m8 7 7 8 8 cmosn w=5u l=5u ad=45p as=45p pd=28u ps=28u nrd=1.8 nrs=1.8
+cc 4 6 5.0p
+ib 9 7 .36u
+vdd 9 0 2.5
+vss 8 0 -2.5
+cl 6 0 20p
+*
+vin 1 0  pulse(-1.0 1.0 200u 1u 1u 300u 600u) ac 1
+*
+.model cmosn nmos (level=2 ld=0.265073u tox=418.0e-10
++ nsub=1.53142e+16 vto=0.844345 kp=4.15964e-05 gamma=0.863074
++ phi=0.6 uo=503.521 uexp=0.163917 ucrit=161166
++ delta=1e-06 vmax=55903.5 xj=0.400000u lambda=0.01
++ nfs=3.5934e+12 neff=1.001 nss=1e+12 tpg=1.000000
++ rsh=29.3 cgdo=2.18971e-10 cgso=2.18971e-10
++ cj=0.0003844 mj=0.488400 cjsw=5.272e-10 mjsw=0.300200 pb=0.700000)
+.model cmosp pmos (level=2 ld=0.299878u tox=418.0e-10
++ nsub=4.19363e+15 vto=-0.79089 kp=1.64047e-05 gamma=0.451645
++ phi=0.6 uo=198.577 uexp=0.343935 ucrit=110988
++ delta=0.956806 vmax=41456.3 xj=0.400000u lambda=0.02
++ nfs=1e+12 neff=1.001 nss=1e+12 tpg=-1.000000
++ rsh=107.6 cgdo=2.47722e-10 cgso=2.47722e-10
++ cj=0.0002281 mj=0.508000 cjsw=3.077e-10 mjsw=0.193500 pb=0.740000)
+*
+*gnucap-only: .width out=80
+*gnucap-only: .options dampstrategy=11
+*gnucap-only: .options trsteporder=1
+*gnucap-only: .options
+*gnucap-only: .print op iter(0) v(1 3 4 5 6 7 8 9)
+.op
+*
+.print ac vdb(6) vp(6)
+.ac dec 5 1 10meg
+*ac steps start stop
+*
+.print dc v(6)
+.dc vin -5 5 .2
+*dc start stop stepsize
+*
+.print tran v(6)
+.tran 10u 1000u 0
+*tran step stop start
+*gnucap-only: .stat notime
+.end

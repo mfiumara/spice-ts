@@ -1,4 +1,10 @@
 /**
+ * Default device minimum conductance in siemens (ngspice `CKTgmin`), added by
+ * models across their pn junctions.
+ */
+export const DEVICE_GMIN = 1e-12;
+
+/**
  * Context provided to device models during MNA matrix assembly.
  *
  * Devices use `stampG`, `stampB`, and `stampC` to contribute their
@@ -25,6 +31,12 @@ export interface StampContext {
   sourceScale: number;
   /** Use an explicit DC value instead of a transient waveform when available. */
   useDcSourceValue: boolean;
+  /**
+   * Device minimum conductance (ngspice `CKTgmin`) to add across pn junctions.
+   * Absent means {@link DEVICE_GMIN}; the DC operating point's true gmin
+   * stepping raises it temporarily.
+   */
+  gmin?: number;
 }
 
 /**
@@ -37,6 +49,24 @@ export interface ChargeIntegration {
   readonly dt: number;
   /** Previous accepted step t(n) - t(n-1); required for `gear2`. */
   readonly prevDt?: number;
+}
+
+/**
+ * Inputs of the ngspice charge truncation-error estimate (cktterr.c CKTterr)
+ * for one converged trial timepoint.
+ */
+export interface ChargeTruncation {
+  /**
+   * Step history, newest first (ngspice CKTdeltaOld): the trial step
+   * t(n+1) - t(n), then t(n) - t(n-1) and t(n-1) - t(n-2).
+   */
+  readonly deltas: readonly [number, number, number];
+  readonly reltol: number;
+  /** Current tolerance (A). */
+  readonly abstol: number;
+  /** Charge tolerance (C). */
+  readonly chgtol: number;
+  readonly trtol: number;
 }
 
 /** A frequency-independent contribution to the complex AC right-hand side. */
@@ -108,6 +138,12 @@ export interface DeviceModel {
   stampAC?(ctx: StampContext, omega: number): void;
   /** Commit state from a transient timepoint after NR and LTE acceptance. */
   acceptTransientStep?(ctx: StampContext): void;
+  /**
+   * ngspice DEVtrunc: the largest next timestep the truncation error of the
+   * device's integrated charges allows, evaluated at the converged but not yet
+   * accepted solution in `ctx`. Must not change accepted state.
+   */
+  truncateTransientStep?(ctx: StampContext, truncation: ChargeTruncation): number;
   /**
    * True when the device limits every junction voltage it reads relative to
    * its previous Newton iterate (ngspice DEVpnjlim). Transient Newton leaves

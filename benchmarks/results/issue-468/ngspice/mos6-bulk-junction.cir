@@ -1,0 +1,12 @@
+mos6 bulk junction charge across FC*PB
+VD d 0 2
+VG g 0 1.5
+VB in 0 PULSE(-3 0.8 0 2n 2n 40n 100n)
+RB in b 100k
+M1 d g 0 b NM L=1u W=10u AD=20p AS=20p PD=24u PS=24u
+.model NM NMOS LEVEL=6 KC=3.8921e-05 NC=1.1739 KV=0.91602 NV=0.87225
++ VT0=0.69486 GAMMA=0.60309 PHI=1 TOX=1.98e-8 IS=1e-18
++ CJ=4.091e-4 MJ=0.307 PB=1 CJSW=3.078e-10 MJSW=1e-2
++ CGSO=3.93e-10 CGDO=3.93e-10
+.tran 0.1n 100n
+.end

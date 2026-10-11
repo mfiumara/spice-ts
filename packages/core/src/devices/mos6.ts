@@ -1,4 +1,5 @@
-import type { DeviceModel, StampContext } from './device.js';
+import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import { InvalidCircuitError } from '../errors.js';
 
 /**
@@ -7,10 +8,13 @@ import { InvalidCircuitError } from '../errors.js';
  * parameter preprocessing, mos6load.c DC equations, junctions and limiting)
  * plus devsup.c DEVqmeyer for the Meyer gate capacitances.
  *
- * Capacitances follow the spice-ts capacitance-matrix contract: the Meyer
- * gate capacitance at a transient timepoint is, as in mos6load.c, the half
- * capacitance at the current iterate plus the half capacitance at the last
- * accepted timepoint plus the constant overlap capacitance.
+ * Transient charges are integrated as mos6load.c does with NIintegrate
+ * (TransientChargeState): the Meyer gate charges advance from the accepted
+ * point with the half capacitance at the current iterate plus the half
+ * capacitance at the accepted point plus the constant overlap capacitance
+ * (DEVqmeyer), and the bulk junction charges are the exact depletion charges
+ * qbs/qbd. AC and other small-signal analyses stamp the capacitances through
+ * stampDynamic.
  */
 
 // ngspice const.h
@@ -337,6 +341,19 @@ export interface MOS6Channel {
 /** Reused scratch buffers; consumed immediately by each caller. */
 const halfScratch = new Float64Array(3);
 
+/** Charge indices of the gate-source, gate-drain, gate-bulk, bulk-source and bulk-drain charges. */
+const GATE_SOURCE = 0;
+const GATE_DRAIN = 1;
+const GATE_BULK = 2;
+const BULK_SOURCE = 3;
+const BULK_DRAIN = 4;
+/** Number of Meyer gate charges (indices below this use the averaged DEVqmeyer increment). */
+const GATE_CHARGES = 3;
+/** Terminal indices (D, G, S, B) of each charge, positive then negative, in charge-index order. */
+const CHARGE_BRANCHES: ReadonlyArray<readonly [number, number]> = [
+  [1, 2], [1, 0], [1, 3], [3, 2], [3, 0],
+];
+
 export class MOS6 implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
@@ -354,8 +371,13 @@ export class MOS6 implements DeviceModel {
   private lastVbs = 0;
   private lastVbd = 0;
   private lastVon: number;
-  /** Meyer half capacitances [gs, gd, gb] at the last accepted timepoint. */
-  private acceptedHalf: Float64Array | undefined;
+  /** Transient gate and bulk-junction charges (ngspice MOS6qgs..MOS6qbd), integrated by the device. */
+  readonly integratesTransientCharge = true;
+  readonly storesCharge: boolean;
+  private readonly charges = new TransientChargeState(CHARGE_BRANCHES.length);
+  /** Capacitance (gate) or charge/capacitance (junction) evaluation scratch, in charge-index order. */
+  private readonly chargeScratch = new Float64Array(CHARGE_BRANCHES.length);
+  private readonly capacitanceScratch = new Float64Array(CHARGE_BRANCHES.length);
 
   constructor(
     readonly name: string,
@@ -386,6 +408,9 @@ export class MOS6 implements DeviceModel {
     this.overlapGB = model.CGBO * this.effectiveLength;
     this.applyTemperature();
     this.lastVon = this.temp.tVto * model.polarity;
+    const { Cbs, Cbssw, Cbd, Cbdsw } = this.temp;
+    this.storesCharge = [this.oxideCap, this.overlapGS, this.overlapGD, this.overlapGB, Cbs, Cbssw, Cbd, Cbdsw]
+      .some(value => value !== 0);
   }
 
   setTemperature(value: number): void {
@@ -679,12 +704,11 @@ export class MOS6 implements DeviceModel {
     const voltage = (node: number) => (node >= 0 ? ctx.getVoltage(node) : 0);
     const half = halfScratch;
     this.meyerHalf(voltage, half);
-    const history = ctx.dt > 0 && this.acceptedHalf ? this.acceptedHalf : half;
     const m = this.instance.M;
     const [nD, nG, nS, nB] = this.nodes;
-    stampCapacitance(ctx, nG, nS, m * (half[0] + history[0] + this.overlapGS));
-    stampCapacitance(ctx, nG, nD, m * (half[1] + history[1] + this.overlapGD));
-    stampCapacitance(ctx, nG, nB, m * (half[2] + history[2] + this.overlapGB));
+    stampCapacitance(ctx, nG, nS, m * (2 * half[0] + this.overlapGS));
+    stampCapacitance(ctx, nG, nD, m * (2 * half[1] + this.overlapGD));
+    stampCapacitance(ctx, nG, nB, m * (2 * half[2] + this.overlapGB));
 
     const { Cbs, Cbssw, Cbd, Cbdsw } = this.temp;
     if (Cbs !== 0 || Cbssw !== 0 || Cbd !== 0 || Cbdsw !== 0) {
@@ -699,14 +723,106 @@ export class MOS6 implements DeviceModel {
     this.stampDynamic(ctx);
   }
 
+  stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
+    const charges = this.charges;
+    const capacitances = this.capacitanceScratch;
+    const junctionCharges = this.chargeScratch;
+    this.evaluateCharges(ctx, capacitances, junctionCharges);
+    charges.begin(integration);
+    for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
+      const [p, n] = CHARGE_BRANCHES[index];
+      const positive = this.nodes[p];
+      const negative = this.nodes[n];
+      if (positive === negative) continue;
+      const voltage = branchVoltage(ctx, positive, negative);
+      const capacitance = capacitances[index];
+      if (index < GATE_CHARGES) {
+        const charge = charges.incrementalCharge(index, voltage, capacitance, true);
+        const effective = charges.factor * charges.incrementalCapacitance(index, capacitance, true);
+        stampChargeBranch(ctx, positive, negative, charges.current(index, charge), effective, voltage);
+      } else {
+        stampChargeBranch(
+          ctx, positive, negative, charges.current(index, junctionCharges[index]),
+          charges.factor * capacitance, voltage,
+        );
+      }
+    }
+  }
+
+  stampAcceptedChargeCurrent(ctx: StampContext): void {
+    for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
+      const [p, n] = CHARGE_BRANCHES[index];
+      if (this.nodes[p] === this.nodes[n]) continue;
+      stampChargeCurrent(ctx, this.nodes[p], this.nodes[n], this.charges.acceptedChargeCurrent(index));
+    }
+  }
+
   acceptTransientStep(ctx: StampContext): void {
-    const voltage = (node: number) => (node >= 0 ? ctx.getVoltage(node) : 0);
-    const accepted = this.acceptedHalf ??= new Float64Array(3);
-    this.meyerHalf(voltage, accepted);
+    const charges = this.charges;
+    const capacitances = this.capacitanceScratch;
+    const junctionCharges = this.chargeScratch;
+    this.evaluateCharges(ctx, capacitances, junctionCharges);
+    for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
+      const [p, n] = CHARGE_BRANCHES[index];
+      const voltage = branchVoltage(ctx, this.nodes[p], this.nodes[n]);
+      const capacitance = capacitances[index];
+      const charge = index < GATE_CHARGES
+        ? charges.incrementalCharge(index, voltage, capacitance, true)
+        : junctionCharges[index];
+      charges.accept(index, charge, voltage, capacitance);
+    }
+    charges.commit();
   }
 
   resetTransient(): void {
-    this.acceptedHalf = undefined;
+    this.charges.reset();
+  }
+
+  /**
+   * Node-domain capacitances of every charge at the present solution, and the
+   * exact bulk-junction charges (mos6load.c qbs/qbd, scaled by the polarity so
+   * q and C refer to the node-domain branch voltage). The gate entries are the
+   * full Meyer capacitance 2 * half + overlap; TransientChargeState averages
+   * it with the accepted value, which yields mos6load.c's
+   * capgs = half(n+1) + half(n) + overlap.
+   */
+  private evaluateCharges(ctx: StampContext, capacitances: Float64Array, junctionCharges: Float64Array): void {
+    const voltage = (node: number) => (node >= 0 ? ctx.getVoltage(node) : 0);
+    const half = halfScratch;
+    this.meyerHalf(voltage, half);
+    const m = this.instance.M;
+    capacitances[GATE_SOURCE] = m * (2 * half[0] + this.overlapGS);
+    capacitances[GATE_DRAIN] = m * (2 * half[1] + this.overlapGD);
+    capacitances[GATE_BULK] = m * (2 * half[2] + this.overlapGB);
+    const type = this.model.polarity;
+    const [, vds, vbs] = this.terminalVoltages(voltage);
+    const vbd = vbs - vds;
+    const { Cbs, Cbssw, Cbd, Cbdsw, f2s, f3s, f4s, f2d, f3d, f4d } = this.temp;
+    capacitances[BULK_SOURCE] = m * this.depletionCapacitance(vbs, Cbs, Cbssw, f2s, f3s);
+    capacitances[BULK_DRAIN] = m * this.depletionCapacitance(vbd, Cbd, Cbdsw, f2d, f3d);
+    junctionCharges[BULK_SOURCE] = type * m * this.depletionCharge(vbs, Cbs, Cbssw, f2s, f3s, f4s);
+    junctionCharges[BULK_DRAIN] = type * m * this.depletionCharge(vbd, Cbd, Cbdsw, f2d, f3d, f4d);
+  }
+
+  /** mos6load.c bulk junction depletion charge (MOS6qbs / MOS6qbd). */
+  private depletionCharge(
+    voltage: number,
+    bottom: number,
+    sidewall: number,
+    f2: number,
+    f3: number,
+    f4: number,
+  ): number {
+    if (bottom === 0 && sidewall === 0) return 0;
+    const { tDepCap, tBulkPot } = this.temp;
+    if (voltage < tDepCap) {
+      const arg = 1 - voltage / tBulkPot;
+      const sarg = Math.exp(-this.model.MJ * Math.log(arg));
+      const sargsw = Math.exp(-this.model.MJSW * Math.log(arg));
+      return tBulkPot * (bottom * (1 - arg * sarg) / (1 - this.model.MJ)
+        + sidewall * (1 - arg * sargsw) / (1 - this.model.MJSW));
+    }
+    return f4 + voltage * (f2 + voltage * (f3 / 2));
   }
 
   /** mos6load.c bulk junction depletion capacitance. */
@@ -727,6 +843,11 @@ export class MOS6 implements DeviceModel {
     }
     return f2 + f3 * voltage;
   }
+}
+
+function branchVoltage(ctx: StampContext, positive: number, negative: number): number {
+  return (positive >= 0 ? ctx.getVoltage(positive) : 0)
+    - (negative >= 0 ? ctx.getVoltage(negative) : 0);
 }
 
 function stepScale(previous: number, proposed: number, limited: number): number {

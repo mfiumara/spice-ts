@@ -1,4 +1,6 @@
-import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import type {
+  ChargeIntegration, ChargeTruncation, DeviceModel, StampContext,
+} from './device.js';
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import type { BSIM3v3ModelParams, BSIM3v3InstanceParams, BSIM3v3Derived } from './bsim3v3-params.js';
 import { BSIM3v3_DEFAULTS, computeDerived } from './bsim3v3-params.js';
@@ -155,6 +157,11 @@ export class BSIM3v3 implements DeviceModel {
 
   resetTransient(): void {
     this.charges.reset();
+  }
+
+  /** ngspice BSIM3trunc truncates the terminal charges; this Meyer model's branch charges stand in for them. */
+  truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
+    return this.charges.truncationTimestep(truncation, () => this.acceptTransientStep(ctx));
   }
 
   /** Cgd, Cgs, Cgb, Cbd, Cbs at the present terminal voltages, in CHARGE_BRANCHES order. */

@@ -3,6 +3,53 @@ import type { DeviceModel } from '../devices/device.js';
 import type { IntegrationMethod } from '../types.js';
 import { MOSFET } from '../devices/mosfet.js';
 
+interface DevicePlan {
+  readonly devices: readonly DeviceModel[];
+  readonly length: number;
+  /** Level-1 MOSFETs stamped by {@link MOSFET.batchStamp}. */
+  readonly mosfets: MOSFET[];
+  /** Every other device, in netlist order, stamped through the context. */
+  readonly others: DeviceModel[];
+}
+
+interface CompanionWorkspace {
+  readonly isDynamic: Uint8Array;
+  /** Gear-2 C-history or trapezoidal G*x(n) accumulator. */
+  readonly history: Float64Array;
+}
+
+const devicePlans = new WeakMap<readonly DeviceModel[], DevicePlan>();
+const workspaces = new WeakMap<MNAAssembler, CompanionWorkspace>();
+
+/** MOSFET/other split of a device list, computed once per list. */
+function devicePlan(devices: readonly DeviceModel[]): DevicePlan {
+  let plan = devicePlans.get(devices);
+  if (plan === undefined || plan.length !== devices.length) {
+    const mosfets: MOSFET[] = [];
+    const others: DeviceModel[] = [];
+    for (const d of devices) {
+      if (d instanceof MOSFET) mosfets.push(d);
+      else others.push(d);
+    }
+    plan = { devices, length: devices.length, mosfets, others };
+    devicePlans.set(devices, plan);
+  }
+  return plan;
+}
+
+/** Per-assembler scratch vectors reused across Newton iterations and steps. */
+function companionWorkspace(assembler: MNAAssembler): CompanionWorkspace {
+  let work = workspaces.get(assembler);
+  if (work === undefined) {
+    work = {
+      isDynamic: new Uint8Array(assembler.systemSize),
+      history: new Float64Array(assembler.systemSize),
+    };
+    workspaces.set(assembler, work);
+  }
+  return work;
+}
+
 /**
  * Build the effective conductance matrix for transient analysis.
  *
@@ -43,15 +90,11 @@ export function buildCompanionSystem(
 
   if (assembler.isFastPath && assembler.topologyNnz > 0) {
     // Batch-stamp MOSFETs with direct array writes, fall back for others
-    let hasMosfets = false;
-    const mosfets: MOSFET[] = [];
-    for (const d of devices) {
-      if (d instanceof MOSFET) { mosfets.push(d); hasMosfets = true; }
-      else d.stamp(ctx);
-    }
-    if (hasMosfets) {
+    const plan = devicePlan(devices);
+    for (const d of plan.others) d.stamp(ctx);
+    if (plan.mosfets.length > 0) {
       MOSFET.batchStamp(
-        mosfets, assembler.gValues, assembler.b, assembler.solution,
+        plan.mosfets, assembler.gValues, assembler.b, assembler.solution,
         assembler.stampIndex,
       );
     }
@@ -62,7 +105,8 @@ export function buildCompanionSystem(
   }
 
   for (const device of devices) {
-    if (!device.integratesTransientCharge) device.stampDynamic?.(ctx);
+    // storesCharge === false: stampDynamic stamps nothing for this instance.
+    if (!device.integratesTransientCharge && device.storesCharge !== false) device.stampDynamic?.(ctx);
   }
 
   // Gear-2 bootstraps with BE when x(n-1) is unavailable.
@@ -77,6 +121,7 @@ export function buildCompanionSystem(
 
   if (assembler.isFastPath) {
     // ---- Fast path: typed-array CSC arithmetic ----
+    // b already holds b(n+1); the history terms below are added in place.
     const gv = assembler.gValues;
     const cv = assembler.cValues;
     const colPtr = assembler.colPtr;
@@ -113,22 +158,20 @@ export function buildCompanionSystem(
       const a2 = (1 + alpha) / (alpha * dt);
       const a3 = 1 / (alpha * (1 + alpha) * dt);
       const nnz = colPtr[n];
+      const work = companionWorkspace(assembler);
 
       // Dynamic-row mask (C has at least one non-zero entry in that row)
-      const isDynamic = new Uint8Array(n);
+      const isDynamic = work.isDynamic.fill(0);
       for (let p = 0; p < nnz; p++) {
         if (cv[p] !== 0) isDynamic[rowIdx[p]] = 1;
       }
-
-      // Save b(n+1) before we overwrite it with the BDF2 RHS
-      const bCurrent = new Float64Array(b);
 
       // G_eff = G + a1 * C
       for (let i = 0; i < nnz; i++) gv[i] += a1 * cv[i];
 
       // Build b_eff: for dynamic rows use the BDF2 RHS; algebraic rows keep b(n+1)
       // Compute (a2 * C * x(n) - a3 * C * x(n-1)) via two CSC SpMV passes
-      const histDyn = new Float64Array(n);
+      const histDyn = work.history.fill(0);
       const xNm1 = prevPrevSolution!;
       for (let j = 0; j < n; j++) {
         const xj = prevSolution[j];
@@ -141,9 +184,7 @@ export function buildCompanionSystem(
         }
       }
 
-      b.fill(0);
       for (let i = 0; i < n; i++) {
-        b[i] = bCurrent[i];
         if (isDynamic[i]) b[i] += histDyn[i];
       }
     } else {
@@ -153,17 +194,17 @@ export function buildCompanionSystem(
       //   Algebraic: b(n+1) only
       const factor = 2 / dt;
       const nnz = colPtr[n];
+      const work = companionWorkspace(assembler);
 
       // Determine which rows have dynamic (C≠0) entries
-      const isDynamic = new Uint8Array(n);
+      const isDynamic = work.isDynamic.fill(0);
       for (let p = 0; p < nnz; p++) {
         if (cv[p] !== 0) isDynamic[rowIdx[p]] = 1;
       }
 
-      // Save b(n+1) before modification
-      const bCurrent = new Float64Array(b);
-      const Gx = new Float64Array(n);
+      const Gx = work.history;
       if (!staticCurrentHistory) {
+        Gx.fill(0);
         for (let j = 0; j < n; j++) {
           const xj = prevSolution[j];
           if (xj === 0) continue;
@@ -173,12 +214,6 @@ export function buildCompanionSystem(
 
       // G_eff = G + 2C/dt (one tight loop)
       for (let i = 0; i < nnz; i++) gv[i] += factor * cv[i];
-
-      // Build b_eff
-      b.fill(0);
-
-      // Start with b(n+1) for all rows
-      for (let i = 0; i < n; i++) b[i] = bCurrent[i];
 
       // Add (2C/dt)*x(n) — CSC SpMV (only affects dynamic rows via cv)
       for (let j = 0; j < n; j++) {

@@ -1,0 +1,27 @@
+*oscillator, .159 Hz.
+* SPICE3 (ngspice-dialect) translation of Gnucap tests/oscillator.7.ckt at gnucap/gnucap@5acb027125d6ea7c546badd03e026d8781c6a400.
+* Original: Gnucap regression tests, GPL-3.0-or-later (see LICENSE-NOTICE.MakeList and COPYING.txt here).
+* Modified 2026-10-11 by benchmarks/translate/gnucap-to-spice3.ts (spice-ts issue #524); changes:
+*   - commented out `.width out=80` (Gnucap `.width` only sets the console output width)
+*   - `.print tran v(1) v(2) iter(0) control(0)`: Gnucap-only probes iter(0) control(0) dropped (no SPICE3 output-variable syntax)
+*   - `.tran .1 100 0 uic trace rejected`: removed Gnucap console-trace option `trace rejected`
+*   - commented out `.status notime` (Gnucap `.status` only prints solver statistics)
+*   - `.tran .1 100 0 uic trace rejected`: removed Gnucap console-trace option `trace rejected`
+*   - commented out `.status notime` (Gnucap `.status` only prints solver statistics)
+* The first line above is the unchanged original title line.
+C1 1 0 1 ic=5
+L1 1 0 1
+
+C2 2 0 1
+L2 2 0 1 ic=5
+
+*gnucap-only: .width out=80
+.print tran v(1) v(2)
+.tran .1 100 0 uic
+*.tran
+*.tran
+*.tran .1 100 0
+*gnucap-only: .status notime
+.tran .1 100 0 uic
+*gnucap-only: .status notime
+.end

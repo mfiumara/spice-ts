@@ -44,7 +44,7 @@ const unsupportedFixtures: Fixture[] = [
   { feature: 'trnoise source waveform', netlist: 'V1 in 0 TRNOISE(1 1n)\n.tran 1n 10n' },
   { feature: 'external source waveform', netlist: 'V1 in 0 EXTERNAL\n.tran 1n 10n' },
   { feature: 'differential pole-zero analysis', netlist: '.pz in ref out 0 vol pz' },
-  { feature: 'control blocks', netlist: '.control\nop\n.endc' },
+  { feature: 'control-language commands', netlist: '.control\nlet x = 1\n.endc' },
   { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
   { feature: 'measurements', netlist: '.measure tran peak MAX v(out)\n.op' },
   { feature: 'behavioral source', netlist: 'B1 out 0 V=V(in)*2\n.op' },

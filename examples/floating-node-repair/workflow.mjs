@@ -181,7 +181,7 @@ try {
 
 async function readToTerminal(clientInstance, start) {
   let cursor = start.cursor;
-  for (let attempt = 0; attempt < 200; attempt++) {
+  for (;;) {
     const response = structured(await clientInstance.call('tools/call', {
       name: 'spice_simulation_read',
       arguments: { jobId: start.jobId, cursor, maxPoints: 1 },
@@ -191,7 +191,6 @@ async function readToTerminal(clientInstance, start) {
     cursor = response.nextCursor;
     await new Promise(resolvePromise => setTimeout(resolvePromise, 5));
   }
-  throw new Error('Timed out waiting for repaired operating-point terminal');
 }
 
 function structured(response) {
@@ -271,21 +270,11 @@ class StdioClient {
 
   call(method, params) {
     const id = this.nextId++;
+    // No per-request wall-clock deadline (#411): a loaded machine makes the
+    // workflow slower, never wrong. A server that exits early rejects at once,
+    // and the caller's process-level hang guard bounds a genuinely stuck server.
     return new Promise((resolvePromise, rejectPromise) => {
-      const timeout = setTimeout(() => {
-        this.pending.delete(id);
-        rejectPromise(new Error(`Timed out waiting for ${method}: ${this.stderr}`));
-      }, 5_000);
-      this.pending.set(id, {
-        resolve: value => {
-          clearTimeout(timeout);
-          resolvePromise(value);
-        },
-        reject: error => {
-          clearTimeout(timeout);
-          rejectPromise(error);
-        },
-      });
+      this.pending.set(id, { resolve: resolvePromise, reject: rejectPromise });
       this.write({ jsonrpc: '2.0', id, method, params });
     });
   }

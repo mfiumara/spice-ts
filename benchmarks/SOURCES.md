@@ -176,6 +176,26 @@ Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/
 
 Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-456/verify.ts --output <file>` (see `benchmarks/results/issue-456/README.md`).
 
+## MOS1 inverter-chain `.op` scaling decks (issue #462)
+
+- Source: project-authored, generated reference circuits for [issue #428](https://github.com/mfiumara/spice-ts/issues/428) and [issue #462](https://github.com/mfiumara/spice-ts/issues/462): an N-stage level-1 CMOS inverter chain with a 10 fF load per stage. The `issue-428` variant (lambda=0.02, W_p=2u) is the #426 scaling-fixture deck with `.op`; the `true-gmin` variant (lambda=0.005, W_p=1u) at 6000 stages is a CI-sized deck on which ngspice-47 also falls back to true gmin stepping (at 5000 stages its dynamic gmin stepping still completes).
+- Licence: MIT, under the repository [licence](../LICENSE).
+- Adaptation: none. `benchmarks/results/issue-462/measure.mjs` and `packages/core/src/mos1-inverter-chain-op.test.ts` generate the same deck text; the script writes it once and supplies those bytes to both ngspice-47 and spice-ts. Each receipt records the deck SHA-256.
+
+Reproduce with `pnpm -C packages/core build && node benchmarks/results/issue-462/measure.mjs --stages 40000` (see `benchmarks/results/issue-462/README.md`).
+
+## MOS6 charge-integration fixture
+
+- Source: project-authored reference circuit for [issue #468](https://github.com/mfiumara/spice-ts/issues/468), issue revision as of 2026-10-11. The model card reuses the `N10L5` level-6 parameters of the ngspice `tests/mos6/simpleinv.cir` fixture, adding `IS=1e-18` and instance junction areas/perimeters.
+- Licence: MIT, under the repository [licence](../LICENSE).
+- Adaptation: none. The committed bytes are run unchanged by ngspice-47 and spice-ts.
+
+| Fixture | SHA-256 | Coverage |
+|---|---|---|
+| `benchmarks/results/issue-468/ngspice/mos6-bulk-junction.cir` | `fa2a0dee6b790db2ac4deef8c77184f3bd84406cd1f91a59eb7632a4d4fabd53` | NMOS level-6 bulk driven through 100k to 0.71 V, past FC·PB = 0.5 V, with bottom and sidewall junction caps (MOS6 qbs/qbd charges including the f2/f3/f4 continuation). Reference for `mos6.test.ts`. |
+
+The corpus comparisons for #468 are reproduced with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-468/verify.ts --output <file>` (see `benchmarks/results/issue-468/README.md`).
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
@@ -391,6 +411,12 @@ At ingestion on ngspice-47, 13 circuits produce raw analysis data and 7 fail on 
 |---|---|---|---|---|
 | Forward-biased diode shot and flicker noise, LIN/DEC/OCT | Original spice-ts benchmark specified by [issue #179](https://github.com/mfiumara/spice-ts/issues/179), issue revision as of 2026-10-10. Reference equations and behavior are pinned to ngspice source revision [`032b1c32`](https://github.com/ngspice/ngspice/blob/032b1c32/src/spicelib/devices/dio/dionoise.c). | Fixtures dedicated [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/); ngspice reference source is BSD-3-Clause under its pinned `COPYING`. | The three original fixture decks differ only in the `.noise` LIN/DEC/OCT card and are committed for unrestricted redistribution. No values or tolerances are adapted between engines; the runner adds only temporary ngspice output-control commands. | `benchmarks/diode-noise/diode-noise-{lin,dec,oct}.cir`; compare against ngspice-47 with `pnpm exec tsx benchmarks/diode-noise/compare.ts`. |
 
+## Independent-source waveform syntax, issue #492
+
+| Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
+|---|---|---|---|---|
+| 14 minimal decks, one per parenthesised/extended source form | Source cards copied verbatim from ngspice examples at [`3ef069fb`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/): `cider/diode/{diode,diotran,pd1,pindiode}.cir`, `cider/mos/bootinv.cir`, `cider/serial/recovery.cir`, `cider/surfmob/Tbicmpd1.cir`, `xspice/original-examples/{arbitrary_phase,digital_models1,hybrid_models1_transient}.deck` (corpus-f batch 1, #484). One NP-truncation deck is project-authored. | ngspice examples are BSD-3-Clause; the project-authored deck and the added RC loads are MIT, as is this repository. | Each deck is the verbatim source card plus a linear RC load and the analysis line, so both engines can run it without CIDER/XSPICE devices. Both engines read the same text. ngspice also receives a `.control` block that only runs the deck and writes the vectors. | `benchmarks/source-waveform-syntax/compare.ts` writes `report.json`; the README there records every residual. |
+
 ## Chua & Lin circuit, issue #48
 
 - Fixture: `benchmarks/circuits/chua-issue-48.cir`
@@ -484,6 +510,40 @@ Validate pinned provenance, unique hashes, byte-identical engine inputs, categor
     node benchmarks/corpus/corpus-e/validate.mjs
 
 The pinned validation receipt is `a2acada11be950a85fdafebb6f346880ea0acaf0051261a796d2125694a65924`: ngspice-47 passes 5/20 and reports 15 unchanged-dialect failures; spice-ts passes 0/20 and reports 20 parse, unsupported, or convergence failures. These losses are retained rather than adapted or omitted.
+
+## Gnucap corpus E translated to SPICE3 (corpus-e-spice3, issue #524 lane 2)
+
+- Repository: https://github.com/gnucap/gnucap
+- Pinned revision: `5acb027125d6ea7c546badd03e026d8781c6a400` (same pin as corpus E).
+- Licence: GNU General Public License v3.0 or later (`GPL-3.0-or-later`), for both the translated decks and the Gnucap reference outputs.
+- Licence retention: byte-identical pinned [`tests/MakeList`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/MakeList) notice as `benchmarks/corpus/corpus-e-spice3/LICENSE-NOTICE.MakeList` (SHA-256 `c601be3b6a490b37c25e23e6a3b5ac5b34eedf07555a5b0ae01349b6cea474eb`) and byte-identical pinned [`COPYING`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/COPYING) as `benchmarks/corpus/corpus-e-spice3/COPYING.txt` (SHA-256 `8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903`).
+- Redistribution decision: Allowed under GPL-3.0-or-later. Translated decks are modified versions of the Gnucap tests, redistributed under the same licence with the tests/MakeList notice and the full GPLv3 text; every modified deck states that it was modified, by what, and when (2026-10-11) in its header. Gnucap reference outputs (tests/==out) are redistributed verbatim.
+- Deck provenance: `fixtures/*.cir` are modified versions of the byte-identical corpus E originals in `benchmarks/corpus/corpus-e/fixtures/tests/*.ckt`. They are generated by the project-authored translator `benchmarks/translate/gnucap-to-spice3.ts` (deterministic; `--check` verifies committed output) on 2026-10-11. The translation is syntax-only and never changes topology, element values, models or analyses; each deck header and `manifest.json` (`translation.changes`) list every change, and `translations.json` records the per-fixture translation status, hashes and change list. Fixtures needing anything beyond the documented syntax rules are recorded as `unsupported-translation` with reasons and no deck is committed.
+- Reference provenance: `reference/gnucap-out/*.ckt.out` are Gnucap's own upstream regression outputs from `tests/==out/` at the pinned revision, copied byte for byte (no adaptation). Gnucap produced them from the ORIGINAL decks, at its own strobe points and probe set, so they are a descriptive third column, not a byte-matched engine comparison.
+- Project-authored support files (MIT, this repository): `README.md`, `manifest.json`, `translations.json`, `run-engines.ts`, and `benchmarks/translate/gnucap-to-spice3.ts` with its test.
+- Coverage: 12 translated decks and 15 Gnucap reference outputs (3 for unsupported translations).
+
+| ID | Category | Upstream deck | Translation | Local deck (SHA-256 prefix) | Upstream reference | Local reference (SHA-256 prefix) |
+|---|---|---|---|---|---|---|
+| `cccs-mixed-analysis` | op-dc | [`tests/d_cccs.1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_cccs.1.ckt) | translated (6 syntax changes, listed in the deck header and manifest) | `fixtures/d_cccs.1.cir` (`65800d08f5ae`) | [`tests/==out/d_cccs.1.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/d_cccs.1.ckt.out) | `reference/gnucap-out/d_cccs.1.ckt.out` (`302d7b8d52b3`) |
+| `vcvs-operating-point` | op-dc | [`tests/d_vcvs.1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_vcvs.1.ckt) | translated (10 syntax changes, listed in the deck header and manifest) | `fixtures/d_vcvs.1.cir` (`00d220af322f`) | [`tests/==out/d_vcvs.1.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/d_vcvs.1.ckt.out) | `reference/gnucap-out/d_vcvs.1.ckt.out` (`cc32fd9d2117`) |
+| `mutual-inductance-ac` | ac | [`tests/d_coil.1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_coil.1.ckt) | translated (5 syntax changes, listed in the deck header and manifest) | `fixtures/d_coil.1.cir` (`1f7c99b465df`) | [`tests/==out/d_coil.1.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/d_coil.1.ckt.out) | `reference/gnucap-out/d_coil.1.ckt.out` (`496e9232068f`) |
+| `bjt-diffpair-ac` | ac | [`tests/d_bjt-diffpair-tf.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_bjt-diffpair-tf.ckt) | translated (5 syntax changes, listed in the deck header and manifest) | `fixtures/d_bjt-diffpair-tf.cir` (`4d4ec35915c2`) | [`tests/==out/d_bjt-diffpair-tf.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/d_bjt-diffpair-tf.ckt.out) | `reference/gnucap-out/d_bjt-diffpair-tf.ckt.out` (`023823372cd0`) |
+| `capacitor-step-transient` | tran | [`tests/d_cap.1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_cap.1.ckt) | translated (3 syntax changes, listed in the deck header and manifest) | `fixtures/d_cap.1.cir` (`cca6e79eb0b8`) | [`tests/==out/d_cap.1.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/d_cap.1.ckt.out) | `reference/gnucap-out/d_cap.1.ckt.out` (`bbc177787c4d`) |
+| `capacitor-initial-condition` | tran | [`tests/d_cap.ic1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_cap.ic1.ckt) | translated (1 syntax change, listed in the deck header and manifest) | `fixtures/d_cap.ic1.cir` (`e4ff0bbe53f4`) | [`tests/==out/d_cap.ic1.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/d_cap.ic1.ckt.out) | `reference/gnucap-out/d_cap.ic1.ckt.out` (`2d5d14d49798`) |
+| `lc-oscillator-transient` | tran | [`tests/oscillator.1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/oscillator.1.ckt) | translated (4 syntax changes, listed in the deck header and manifest) | `fixtures/oscillator.1.cir` (`2926b46a55e9`) | [`tests/==out/oscillator.1.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/oscillator.1.ckt.out) | `reference/gnucap-out/oscillator.1.ckt.out` (`4994e28de979`) |
+| `bjt-schmitt-trigger` | nonlinear | [`tests/d_bjt-schmitt-nobypass.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_bjt-schmitt-nobypass.ckt) | translated (2 syntax changes, listed in the deck header and manifest) | `fixtures/d_bjt-schmitt-nobypass.cir` (`6974ee6972fe`) | [`tests/==out/d_bjt-schmitt-nobypass.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/d_bjt-schmitt-nobypass.ckt.out) | `reference/gnucap-out/d_bjt-schmitt-nobypass.ckt.out` (`5b4fbe1d374c`) |
+| `diode-temperature-sweep` | nonlinear | [`tests/d_diode.6.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_diode.6.ckt) | translated (5 syntax changes, listed in the deck header and manifest) | `fixtures/d_diode.6.cir` (`208068d25733`) | [`tests/==out/d_diode.6.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/d_diode.6.ckt.out) | `reference/gnucap-out/d_diode.6.ckt.out` (`dd58e46202e9`) |
+| `mos1-nand-transient` | nonlinear | [`tests/d_mos1.nand1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_mos1.nand1.ckt) | translated (9 syntax changes, listed in the deck header and manifest) | `fixtures/d_mos1.nand1.cir` (`57de959ed069`) | [`tests/==out/d_mos1.nand1.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/d_mos1.nand1.ckt.out) | `reference/gnucap-out/d_mos1.nand1.ckt.out` (`a1b4e2fb63bf`) |
+| `dual-lc-uic-rejection` | convergence | [`tests/oscillator.7.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/oscillator.7.ckt) | translated (6 syntax changes, listed in the deck header and manifest) | `fixtures/oscillator.7.cir` (`0d9459725ec0`) | [`tests/==out/oscillator.7.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/oscillator.7.ckt.out) | `reference/gnucap-out/oscillator.7.ckt.out` (`3f55221ce7ba`) |
+| `opamp-voltage-follower` | convergence | [`tests/opamp-vf.1.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/opamp-vf.1.ckt) | translated (9 syntax changes, listed in the deck header and manifest) | `fixtures/opamp-vf.1.cir` (`6143822b2505`) | [`tests/==out/opamp-vf.1.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/opamp-vf.1.ckt.out) | `reference/gnucap-out/opamp-vf.1.ckt.out` (`d41afa4cd582`) |
+| `transmission-line-ac` | ac | [`tests/d_trln.ac.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_trln.ac.ckt) | unsupported-translation (no deck committed; reasons in manifest) | - | [`tests/==out/d_trln.ac.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/d_trln.ac.ckt.out) | `reference/gnucap-out/d_trln.ac.ckt.out` (`ee03920f9cd3`) |
+| `opamp-open-loop-ac` | ac | [`tests/opamp-ol.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/opamp-ol.ckt) | unsupported-translation (no deck committed; reasons in manifest) | - | [`tests/==out/opamp-ol.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/opamp-ol.ckt.out) | `reference/gnucap-out/opamp-ol.ckt.out` (`59e300d8d416`) |
+| `mos7-nand-no-bypass` | convergence | [`tests/d_mos7.nand1.nobypass.ckt`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/d_mos7.nand1.nobypass.ckt) | unsupported-translation (no deck committed; reasons in manifest) | - | [`tests/==out/d_mos7.nand1.nobypass.ckt.out`](https://github.com/gnucap/gnucap/blob/5acb027125d6ea7c546badd03e026d8781c6a400/tests/==out/d_mos7.nand1.nobypass.ckt.out) | `reference/gnucap-out/d_mos7.nand1.nobypass.ckt.out` (`72556ecf692e`) |
+
+Local paths are relative to `benchmarks/corpus/corpus-e-spice3/`; full SHA-256 values are in `manifest.json`. Verify hashes, licence files and that the committed decks equal the translator output with:
+
+    pnpm exec tsx --test benchmarks/translate/gnucap-to-spice3.test.ts
 
 ## ahkab test-suite corpus D
 

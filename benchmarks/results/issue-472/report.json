@@ -1,0 +1,2326 @@
+{
+  "schemaVersion": "spice-ts-issue-472/v1",
+  "issueUrl": "https://github.com/mfiumara/spice-ts/issues/472",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "node": "v22.23.1"
+  },
+  "policy": {
+    "input": "byte-identical netlist for both engines",
+    "comparison": "benchmarks/aggregate-report.ts compareExecutions (spice-ts grid, linear interpolation)",
+    "perCircuitToleranceTuning": false,
+    "speedClaim": false
+  },
+  "fixtures": [
+    {
+      "key": "vbic-substrate/dc-latchup",
+      "source": "project-authored (MIT), issue #453",
+      "input": {
+        "localPath": "benchmarks/vbic-substrate/dc-latchup.cir",
+        "bytes": 697,
+        "sha256": "53259667c7b0fe7f2e20b5591b9273c4beca5c51e9b5027a74b06d04c964173d",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 41
+          }
+        ],
+        "runtimeMs": 43.261
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 41
+          }
+        ],
+        "runtimeMs": 247.239
+      },
+      "comparisons": [
+        {
+          "analysis": "dc",
+          "alignedPoints": 41,
+          "signals": {
+            "i(vb)": {
+              "samples": 41,
+              "maxAbsoluteError": 0.000004282319965305537,
+              "rmsAbsoluteError": 6.688453565549475e-7,
+              "maxRelativeError": 0.0005521378267219456
+            },
+            "i(vcc)": {
+              "samples": 41,
+              "maxAbsoluteError": 1.241974887911633e-7,
+              "rmsAbsoluteError": 1.94040434377792e-8,
+              "maxRelativeError": 0.00006726440101417774
+            },
+            "i(vsub)": {
+              "samples": 41,
+              "maxAbsoluteError": 0.0000035840111395624152,
+              "rmsAbsoluteError": 5.598327918685533e-7,
+              "maxRelativeError": 0.0024901966396356718
+            },
+            "v(1)": {
+              "samples": 41,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            },
+            "v(2)": {
+              "samples": 41,
+              "maxAbsoluteError": 0.0001241974887905839,
+              "rmsAbsoluteError": 0.000019404043437686983,
+              "maxRelativeError": 0.0008086164361844567
+            },
+            "v(3)": {
+              "samples": 41,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            },
+            "v(4)": {
+              "samples": 41,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            }
+          }
+        }
+      ],
+      "perPoint": [
+        {
+          "sweep": -1,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197422570393,
+              "ngspice": -0.000003792919742236223,
+              "absoluteError": 2.0816258195248058e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867768794878583,
+              "ngspice": -0.0002867768794878134,
+              "absoluteError": 4.4885969940899884e-17
+            },
+            "i(vsub)": {
+              "spiceTs": 2.710352775547875e-12,
+              "ngspice": 2.710354163326656e-12,
+              "absoluteError": 1.387778780862225e-18
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231205121418,
+              "ngspice": 1.713223120512187,
+              "absoluteError": 4.529709940470639e-14
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": -1,
+              "ngspice": -1,
+              "absoluteError": 0
+            }
+          }
+        },
+        {
+          "sweep": -0.9,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197422431615,
+              "ngspice": -0.00000379291974226953,
+              "absoluteError": 2.6368559164499997e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.000286776879389187,
+              "ngspice": -0.0002867768793891963,
+              "absoluteError": 9.324138683375338e-18
+            },
+            "i(vsub)": {
+              "spiceTs": 2.610349436604764e-12,
+              "ngspice": 2.610352489718082e-12,
+              "absoluteError": 3.0531133177353364e-18
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.713223120610813,
+              "ngspice": 1.713223120610804,
+              "absoluteError": 9.103828801926284e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": -0.9,
+              "ngspice": -0.9,
+              "absoluteError": 0
+            }
+          }
+        },
+        {
+          "sweep": -0.8,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197422292837,
+              "ngspice": -0.000003792919742258427,
+              "absoluteError": 2.9143439099705085e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687929068094,
+              "ngspice": -0.0002867768792906726,
+              "absoluteError": 8.348356728138384e-18
+            },
+            "i(vsub)": {
+              "spiceTs": 2.510353036555557e-12,
+              "ngspice": 2.510350816109508e-12,
+              "absoluteError": 2.220446048894884e-18
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231207093191,
+              "ngspice": 1.713223120709327,
+              "absoluteError": 7.771561172376096e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": -0.8,
+              "ngspice": -0.8,
+              "absoluteError": 0
+            }
+          }
+        },
+        {
+          "sweep": -0.7,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.000003792919742215406,
+              "ngspice": -0.000003792919742225121,
+              "absoluteError": 9.715044388533198e-18
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687919213325,
+              "ngspice": -0.000286776879192129,
+              "absoluteError": 4.228388472693467e-18
+            },
+            "i(vsub)": {
+              "spiceTs": 2.410349697612446e-12,
+              "ngspice": 2.410353305837276e-12,
+              "absoluteError": 3.608224829757109e-18
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231208078668,
+              "ngspice": 1.713223120807871,
+              "absoluteError": 4.218847493575595e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": -0.7,
+              "ngspice": -0.7000000000000001,
+              "absoluteError": 1.1102230246251565e-16
+            }
+          }
+        },
+        {
+          "sweep": -0.6,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197421876504,
+              "ngspice": -0.000003792919742202916,
+              "absoluteError": 1.5265651291890628e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687909357623,
+              "ngspice": -0.0002867768790935639,
+              "absoluteError": 1.235990476633475e-17
+            },
+            "i(vsub)": {
+              "spiceTs": 2.310356767010191e-12,
+              "ngspice": 2.310351632228702e-12,
+              "absoluteError": 5.1347814888267255e-18
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231209064237,
+              "ngspice": 1.713223120906436,
+              "absoluteError": 1.2212453270876722e-14
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": -0.6,
+              "ngspice": -0.6000000000000001,
+              "absoluteError": 1.1102230246251565e-16
+            }
+          }
+        },
+        {
+          "sweep": -0.5,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197421876504,
+              "ngspice": -0.000003792919742180711,
+              "absoluteError": 6.939317420380856e-18
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867768789950758,
+              "ngspice": -0.0002867768789950664,
+              "absoluteError": 9.432558900623889e-18
+            },
+            "i(vsub)": {
+              "spiceTs": 2.21035342806708e-12,
+              "ngspice": 2.21035273417769e-12,
+              "absoluteError": 6.938893898252673e-19
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231210049242,
+              "ngspice": 1.713223121004934,
+              "absoluteError": 9.769962616701378e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": -0.5,
+              "ngspice": -0.5000000000000001,
+              "absoluteError": 1.1102230246251565e-16
+            }
+          }
+        },
+        {
+          "sweep": -0.4,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197421737726,
+              "ngspice": -0.000003792919742191814,
+              "absoluteError": 1.804137826004297e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867768788965186,
+              "ngspice": -0.0002867768788965104,
+              "absoluteError": 8.185726402265558e-18
+            },
+            "i(vsub)": {
+              "spiceTs": 2.110353558570921e-12,
+              "ngspice": 2.110353142237287e-12,
+              "absoluteError": 4.1633363381438105e-19
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231211034814,
+              "ngspice": 1.71322312110349,
+              "absoluteError": 8.659739592076221e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": -0.3999999999999999,
+              "ngspice": -0.4000000000000001,
+              "absoluteError": 1.6653345369377348e-16
+            }
+          }
+        },
+        {
+          "sweep": -0.3,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197421737726,
+              "ngspice": -0.000003792919742158507,
+              "absoluteError": 1.5265651291890628e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687879796504,
+              "ngspice": -0.0002867768787979757,
+              "absoluteError": 1.0679391398982219e-17
+            },
+            "i(vsub)": {
+              "spiceTs": 2.010355423798238e-12,
+              "ngspice": 2.010352509462798e-12,
+              "absoluteError": 2.9143354399318416e-18
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.713223121202035,
+              "ngspice": 1.713223121202024,
+              "absoluteError": 1.1102230246251565e-14
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": -0.29999999999999993,
+              "ngspice": -0.3000000000000002,
+              "absoluteError": 2.7755575615628914e-16
+            }
+          }
+        },
+        {
+          "sweep": -0.2,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197421737726,
+              "ngspice": -0.000003792919742158507,
+              "absoluteError": 1.5265651291890628e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867768786994594,
+              "ngspice": -0.0002867768786994589,
+              "absoluteError": 5.421010862427522e-19
+            },
+            "i(vsub)": {
+              "spiceTs": 1.910355554302079e-12,
+              "ngspice": 1.910354652245871e-12,
+              "absoluteError": 9.020562079441482e-19
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231213005407,
+              "ngspice": 1.713223121300541,
+              "absoluteError": 4.440892098500626e-16
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": -0.19999999999999996,
+              "ngspice": -0.2000000000000001,
+              "absoluteError": 1.3877787807814457e-16
+            }
+          }
+        },
+        {
+          "sweep": -0.1,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.000003792919742146017,
+              "ngspice": -0.000003792919742147405,
+              "absoluteError": 1.3878634840761711e-18
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687860091347,
+              "ngspice": -0.0002867768786009033,
+              "absoluteError": 1.0191500421363742e-17
+            },
+            "i(vsub)": {
+              "spiceTs": 1.810354817444182e-12,
+              "ngspice": 1.810355060305469e-12,
+              "absoluteError": 2.428612870648836e-19
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231213990865,
+              "ngspice": 1.713223121399097,
+              "absoluteError": 1.0436096431476471e-14
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": -0.09999999999999998,
+              "ngspice": -0.1000000000000001,
+              "absoluteError": 1.249000902703301e-16
+            }
+          }
+        },
+        {
+          "sweep": 0,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197421321392,
+              "ngspice": -0.000003792919742114098,
+              "absoluteError": 1.804137826004297e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867768785023519,
+              "ngspice": -0.0002867768785023608,
+              "absoluteError": 8.890457814381136e-18
+            },
+            "i(vsub)": {
+              "spiceTs": 1.7103553525715873e-12,
+              "ngspice": 1.710355352571579e-12,
+              "absoluteError": 8.27988406119974e-27
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.713223121497648,
+              "ngspice": 1.713223121497639,
+              "absoluteError": 9.103828801926284e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 0,
+              "ngspice": -1.387778780781446e-16,
+              "absoluteError": 1.387778780781446e-16
+            }
+          }
+        },
+        {
+          "sweep": 0.1,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197421043837,
+              "ngspice": -0.000003792919742114098,
+              "absoluteError": 9.714197355585943e-18
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687840385647,
+              "ngspice": -0.0002867768784038567,
+              "absoluteError": 2.168404344971009e-19
+            },
+            "i(vsub)": {
+              "spiceTs": 1.6103550784518639e-12,
+              "ngspice": 1.610355876424663e-12,
+              "absoluteError": 7.979727990866562e-19
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231215961435,
+              "ngspice": 1.713223121596143,
+              "absoluteError": 4.440892098500626e-16
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 0.10000000000000009,
+              "ngspice": 0.09999999999999987,
+              "absoluteError": 2.220446049250313e-16
+            }
+          }
+        },
+        {
+          "sweep": 0.2,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197421043837,
+              "ngspice": -0.000003792919742091894,
+              "absoluteError": 1.2489500807264658e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867768783052975,
+              "ngspice": -0.0002867768783052898,
+              "absoluteError": 7.697835424647081e-18
+            },
+            "i(vsub)": {
+              "spiceTs": 1.5103560763174428e-12,
+              "ngspice": 1.51035628448426e-12,
+              "absoluteError": 2.0816681710913892e-19
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231216947025,
+              "ngspice": 1.71322312169471,
+              "absoluteError": 7.549516567451064e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 0.20000000000000018,
+              "ngspice": 0.1999999999999999,
+              "absoluteError": 2.7755575615628914e-16
+            }
+          }
+        },
+        {
+          "sweep": 0.3,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.000003792919742090506,
+              "ngspice": -0.000003792919742102996,
+              "absoluteError": 1.2490347840211913e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687820675155,
+              "ngspice": -0.0002867768782067386,
+              "absoluteError": 1.2956215961201778e-17
+            },
+            "i(vsub)": {
+              "spiceTs": 1.4103544720978078e-12,
+              "ngspice": 1.410355651709772e-12,
+              "absoluteError": 1.1796119641569829e-18
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231217932485,
+              "ngspice": 1.713223121793261,
+              "absoluteError": 1.2434497875801753e-14
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 0.30000000000000004,
+              "ngspice": 0.2999999999999999,
+              "absoluteError": 1.6653345369377348e-16
+            }
+          }
+        },
+        {
+          "sweep": 0.4,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.000003792919742076628,
+              "ngspice": -0.000003792919742080792,
+              "absoluteError": 4.1640139687021405e-18
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687810825113,
+              "ngspice": -0.000286776878108231,
+              "absoluteError": 2.0111950299606107e-17
+            },
+            "i(vsub)": {
+              "spiceTs": 1.3103546026016488e-12,
+              "ngspice": 1.310354325045893e-12,
+              "absoluteError": 2.775557558089379e-19
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231218917489,
+              "ngspice": 1.713223121891769,
+              "absoluteError": 2.020605904817785e-14
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 0.40000000000000013,
+              "ngspice": 0.3999999999999999,
+              "absoluteError": 2.220446049250313e-16
+            }
+          }
+        },
+        {
+          "sweep": 0.5,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.000003792919742076628,
+              "ngspice": -0.000003792919742069689,
+              "absoluteError": 6.938893903907228e-18
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687800969195,
+              "ngspice": -0.0002867768780096878,
+              "absoluteError": 4.174178364069192e-18
+            },
+            "i(vsub)": {
+              "spiceTs": 1.2103547331054898e-12,
+              "ngspice": 1.21035542699488e-12,
+              "absoluteError": 6.938893902291641e-19
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.713223121990308,
+              "ngspice": 1.713223121990312,
+              "absoluteError": 3.9968028886505635e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 0.5,
+              "ngspice": 0.4999999999999999,
+              "absoluteError": 1.1102230246251565e-16
+            }
+          }
+        },
+        {
+          "sweep": 0.6,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.000003792919742021117,
+              "ngspice": -0.000003792919742058587,
+              "absoluteError": 3.7470196487688484e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867768779111406,
+              "ngspice": -0.0002867768779111317,
+              "absoluteError": 8.890457814381136e-18
+            },
+            "i(vsub)": {
+              "spiceTs": 1.1103548636093308e-12,
+              "ngspice": 1.110355835054477e-12,
+              "absoluteError": 9.714451462400504e-19
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231220888594,
+              "ngspice": 1.713223122088868,
+              "absoluteError": 8.659739592076221e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 0.6000000000000001,
+              "ngspice": 0.5999999999999999,
+              "absoluteError": 2.220446049250313e-16
+            }
+          }
+        },
+        {
+          "sweep": 0.7,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.000003792919742021117,
+              "ngspice": -0.000003792919742025281,
+              "absoluteError": 4.1640139687021405e-18
+            },
+            "i(vcc)": {
+              "spiceTs": -0.000286776877812633,
+              "ngspice": -0.0002867768778126303,
+              "absoluteError": 2.710505431213761e-18
+            },
+            "i(vsub)": {
+              "spiceTs": 1.0103515246662198e-12,
+              "ngspice": 1.010356243114075e-12,
+              "absoluteError": 4.718447855214293e-18
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.713223122187367,
+              "ngspice": 1.71322312218737,
+              "absoluteError": 2.886579864025407e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 0.7000000000000002,
+              "ngspice": 0.6999999999999998,
+              "absoluteError": 3.3306690738754696e-16
+            }
+          }
+        },
+        {
+          "sweep": 0.8,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197420488725,
+              "ngspice": -0.000003792919742047485,
+              "absoluteError": 1.387439967602544e-18
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687771407837,
+              "ngspice": -0.0002867768777140672,
+              "absoluteError": 1.1167282376600696e-17
+            },
+            "i(vsub)": {
+              "spiceTs": 9.103551246170127e-13,
+              "ngspice": 9.103545695055005e-13,
+              "absoluteError": 5.55111512223721e-19
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231222859216,
+              "ngspice": 1.713223122285933,
+              "absoluteError": 1.1546319456101628e-14
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 0.8,
+              "ngspice": 0.7999999999999998,
+              "absoluteError": 2.220446049250313e-16
+            }
+          }
+        },
+        {
+          "sweep": 0.9,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.000003792919742021117,
+              "ngspice": -0.000003792919742025281,
+              "absoluteError": 4.1640139687021405e-18
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867768776155333,
+              "ngspice": -0.0002867768776155235,
+              "absoluteError": 9.812029660993815e-18
+            },
+            "i(vsub)": {
+              "spiceTs": 8.103517856739018e-13,
+              "ngspice": 8.103584470120496e-13,
+              "absoluteError": 6.661338147795368e-18
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231223844667,
+              "ngspice": 1.713223122384476,
+              "absoluteError": 9.325873406851315e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 0.9000000000000001,
+              "ngspice": 0.8999999999999998,
+              "absoluteError": 3.3306690738754696e-16
+            }
+          }
+        },
+        {
+          "sweep": 1,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.000003792919742007239,
+              "ngspice": -0.000003792919741991974,
+              "absoluteError": 1.5265227775417e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687751702615,
+              "ngspice": -0.0002867768775170254,
+              "absoluteError": 7.589415207398531e-19
+            },
+            "i(vsub)": {
+              "spiceTs": 7.103553856246947e-13,
+              "ngspice": 7.103567734034756e-13,
+              "absoluteError": 1.387778780862225e-18
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.713223122482974,
+              "ngspice": 1.713223122482975,
+              "absoluteError": 1.1102230246251565e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 1,
+              "ngspice": 0.9999999999999998,
+              "absoluteError": 2.220446049250313e-16
+            }
+          }
+        },
+        {
+          "sweep": 1.1,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197419656058,
+              "ngspice": -0.000003792919741991974,
+              "absoluteError": 2.636813564802637e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687741846935,
+              "ngspice": -0.0002867768774184676,
+              "absoluteError": 1.734723475976807e-18
+            },
+            "i(vsub)": {
+              "spiceTs": 6.103589855754876e-13,
+              "ngspice": 6.103592631312438e-13,
+              "absoluteError": 2.775557562128347e-19
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231225815306,
+              "ngspice": 1.713223122581532,
+              "absoluteError": 1.3322676295501878e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 1.1,
+              "ngspice": 1.1,
+              "absoluteError": 0
+            }
+          }
+        },
+        {
+          "sweep": 1.2,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197419794836,
+              "ngspice": -0.000003792919741980871,
+              "absoluteError": 1.387439967602544e-18
+            },
+            "i(vcc)": {
+              "spiceTs": -0.000286776877319921,
+              "ngspice": -0.0002867768773199089,
+              "absoluteError": 1.2088854223213374e-17
+            },
+            "i(vsub)": {
+              "spiceTs": 5.103556466323766e-13,
+              "ngspice": 5.103617528590121e-13,
+              "absoluteError": 6.106226635470673e-18
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.713223122680079,
+              "ngspice": 1.713223122680091,
+              "absoluteError": 1.199040866595169e-14
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 1.2000000000000002,
+              "ngspice": 1.2,
+              "absoluteError": 2.220446049250313e-16
+            }
+          }
+        },
+        {
+          "sweep": 1.3,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197419656058,
+              "ngspice": -0.000003792919741980871,
+              "absoluteError": 1.5265227775417e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867768772214217,
+              "ngspice": -0.0002867768772214108,
+              "absoluteError": 1.089623183347932e-17
+            },
+            "i(vsub)": {
+              "spiceTs": 4.1035230768926567e-13,
+              "ngspice": 4.103531403565342e-13,
+              "absoluteError": 8.326672685375299e-19
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231227785784,
+              "ngspice": 1.713223122778589,
+              "absoluteError": 1.0658141036401503e-14
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 1.3000000000000003,
+              "ngspice": 1.3,
+              "absoluteError": 2.220446049250313e-16
+            }
+          }
+        },
+        {
+          "sweep": 1.4,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.00000379291974193785,
+              "ngspice": -0.000003792919741936463,
+              "absoluteError": 1.3870164511289168e-18
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687712287247,
+              "ngspice": -0.0002867768771228594,
+              "absoluteError": 1.3064636178450328e-17
+            },
+            "i(vsub)": {
+              "spiceTs": 3.103489687461547e-13,
+              "ngspice": 3.103556300843024e-13,
+              "absoluteError": 6.661338147694394e-18
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231228771275,
+              "ngspice": 1.713223122877141,
+              "absoluteError": 1.354472090042691e-14
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 1.4000000000000004,
+              "ngspice": 1.4,
+              "absoluteError": 4.440892098500626e-16
+            }
+          }
+        },
+        {
+          "sweep": 1.5,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.00000379291974193785,
+              "ngspice": -0.000003792919741947565,
+              "absoluteError": 9.71462087205957e-18
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687702430635,
+              "ngspice": -0.0002867768770243113,
+              "absoluteError": 4.933119884809045e-18
+            },
+            "i(vsub)": {
+              "spiceTs": 2.1034562980304372e-13,
+              "ngspice": 2.103581198120708e-13,
+              "absoluteError": 1.249000902707845e-17
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231229756936,
+              "ngspice": 1.713223122975689,
+              "absoluteError": 4.6629367034256575e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 1.5,
+              "ngspice": 1.5,
+              "absoluteError": 0
+            }
+          }
+        },
+        {
+          "sweep": 1.6,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.000003792919741896217,
+              "ngspice": -0.000003792919741914258,
+              "absoluteError": 1.8040954743569343e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867768769258092,
+              "ngspice": -0.0002867768769257997,
+              "absoluteError": 9.486769009248164e-18
+            },
+            "i(vsub)": {
+              "spiceTs": 1.1035616864774056e-13,
+              "ngspice": 1.103495073095928e-13,
+              "absoluteError": 6.6613381477575026e-18
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231230741908,
+              "ngspice": 1.7132231230742,
+              "absoluteError": 9.325873406851315e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 1.6,
+              "ngspice": 1.6,
+              "absoluteError": 0
+            }
+          }
+        },
+        {
+          "sweep": 1.7,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.000003792919741230083,
+              "ngspice": -0.000003792919741237022,
+              "absoluteError": 6.938893903907228e-18
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867768768273595,
+              "ngspice": -0.0002867768768273207,
+              "absoluteError": 3.881443777498106e-17
+            },
+            "i(vsub)": {
+              "spiceTs": 9.672818102046676e-15,
+              "ngspice": 9.696965452832274e-15,
+              "absoluteError": 2.414735078559728e-17
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231231726405,
+              "ngspice": 1.713223123172679,
+              "absoluteError": 3.863576125695545e-14
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 1.7000000000000002,
+              "ngspice": 1.7,
+              "absoluteError": 2.220446049250313e-16
+            }
+          }
+        },
+        {
+          "sweep": 1.8,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929197099356715,
+              "ngspice": -0.000003792919709950937,
+              "absoluteError": 1.5265651291890628e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867768767317372,
+              "ngspice": -0.0002867768767317209,
+              "absoluteError": 1.6317242695906842e-17
+            },
+            "i(vsub)": {
+              "spiceTs": -1.2163881013549371e-13,
+              "ngspice": -1.216421408045676e-13,
+              "absoluteError": 3.330669073897684e-18
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231232682629,
+              "ngspice": 1.713223123268279,
+              "absoluteError": 1.6209256159527285e-14
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 1.8000000000000003,
+              "ngspice": 1.8,
+              "absoluteError": 2.220446049250313e-16
+            }
+          }
+        },
+        {
+          "sweep": 1.9,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037929182154922136,
+              "ngspice": -0.00000379291821551303,
+              "absoluteError": 2.0816258195248058e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.00028677687677479175,
+              "ngspice": -0.0002867768767747991,
+              "absoluteError": 7.37257477290143e-18
+            },
+            "i(vsub)": {
+              "spiceTs": -1.7182505418489313e-12,
+              "ngspice": -1.718231390501757e-12,
+              "absoluteError": 1.915134717424273e-17
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231232252082,
+              "ngspice": 1.713223123225201,
+              "absoluteError": 7.105427357601002e-15
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 1.9000000000000004,
+              "ngspice": 1.900000000000001,
+              "absoluteError": 6.661338147750939e-16
+            }
+          }
+        },
+        {
+          "sweep": 2,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037928468383380265,
+              "ngspice": -0.000003792846838319986,
+              "absoluteError": 1.8040531227095716e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867768834388443,
+              "ngspice": -0.0002867768834388311,
+              "absoluteError": 1.3227266504323154e-17
+            },
+            "i(vsub)": {
+              "spiceTs": -7.329860329807758e-11,
+              "ngspice": -7.329858386917466e-11,
+              "absoluteError": 1.942890292318542e-17
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132231165611558,
+              "ngspice": 1.713223116561169,
+              "absoluteError": 1.3322676295501878e-14
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            }
+          }
+        },
+        {
+          "sweep": 2.1,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000037894376788832895,
+              "ngspice": -0.000003789437678898555,
+              "absoluteError": 1.5265651291890628e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867772063393167,
+              "ngspice": -0.0002867772063390926,
+              "absoluteError": 2.2410458905275377e-16
+            },
+            "i(vsub)": {
+              "spiceTs": -3.487486632813841e-9,
+              "ngspice": -3.48748661588294e-9,
+              "absoluteError": 1.6930901108990025e-17
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132227936606832,
+              "ngspice": 1.713222793660907,
+              "absoluteError": 2.2382096176443156e-13
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 2.1,
+              "ngspice": 2.100000000000001,
+              "absoluteError": 8.881784197001252e-16
+            }
+          }
+        },
+        {
+          "sweep": 2.2,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": -0.0000036265297345405845,
+              "ngspice": -0.000003626529748153307,
+              "absoluteError": 1.361272239949838e-14
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002867926412403073,
+              "ngspice": -0.0002867926408873363,
+              "absoluteError": 3.5297096192057897e-13
+            },
+            "i(vsub)": {
+              "spiceTs": -1.6663105333047934e-7,
+              "ngspice": -1.666310329101473e-7,
+              "absoluteError": 2.0420332046402483e-14
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.7132073587596928,
+              "ngspice": 1.713207359112664,
+              "absoluteError": 3.529712078176317e-10
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 2.2,
+              "ngspice": 2.200000000000001,
+              "absoluteError": 8.881784197001252e-16
+            }
+          }
+        },
+        {
+          "sweep": 2.3,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": 0.000004341919106976011,
+              "ngspice": 0.000004339523092126985,
+              "absoluteError": 2.3960148490263482e-9
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0002875485220151159,
+              "ngspice": -0.0002875474522693429,
+              "absoluteError": 1.0697457730290787e-9
+            },
+            "i(vsub)": {
+              "spiceTs": -0.000008146617747173401,
+              "ngspice": -0.000008144201856424005,
+              "absoluteError": 2.4158907493963176e-9
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 1.712451477984884,
+              "ngspice": 1.712452547730657,
+              "absoluteError": 0.0000010697457728525706
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 2.3000000000000003,
+              "ngspice": 2.300000000000001,
+              "absoluteError": 8.881784197001252e-16
+            }
+          }
+        },
+        {
+          "sweep": 2.4,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": 0.03143346359814497,
+              "ngspice": 0.031433463598145,
+              "absoluteError": 2.7755575615628914e-17
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0018536783445965528,
+              "ngspice": -0.001853678344596554,
+              "absoluteError": 1.3010426069826053e-18
+            },
+            "i(vsub)": {
+              "spiceTs": -0.06535780513081654,
+              "ngspice": -0.06535780513081658,
+              "absoluteError": 4.163336342344337e-17
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 0.14632165540344721,
+              "ngspice": 0.1463216554034465,
+              "absoluteError": 7.216449660063518e-16
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 2.4000000000000004,
+              "ngspice": 2.400000000000001,
+              "absoluteError": 4.440892098500626e-16
+            }
+          }
+        },
+        {
+          "sweep": 2.5,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": 0.032579136311931226,
+              "ngspice": 0.03257485399196593,
+              "absoluteError": 0.000004282319965298598
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0018462832174079148,
+              "ngspice": -0.001846407414896706,
+              "absoluteError": 1.241974887911633e-7
+            },
+            "i(vsub)": {
+              "spiceTs": -0.06979499100077471,
+              "ngspice": -0.06979857501191432,
+              "absoluteError": 0.0000035840111396040486
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 0.15371678259208513,
+              "ngspice": 0.1535925851032946,
+              "absoluteError": 0.0001241974887905284
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 2.5,
+              "ngspice": 2.500000000000001,
+              "absoluteError": 8.881784197001252e-16
+            }
+          }
+        },
+        {
+          "sweep": 2.6,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": 0.03370173862415235,
+              "ngspice": 0.03370170185400131,
+              "absoluteError": 3.677015104203152e-8
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0018388702935387496,
+              "ngspice": -0.001838873609836949,
+              "absoluteError": 3.3162981993763857e-9
+            },
+            "i(vsub)": {
+              "spiceTs": -0.07424287729008949,
+              "ngspice": -0.07424294282507322,
+              "absoluteError": 6.553498373140787e-8
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 0.16112970646125055,
+              "ngspice": 0.1611263901630516,
+              "absoluteError": 0.00000331629819894097
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 2.6,
+              "ngspice": 2.600000000000001,
+              "absoluteError": 8.881784197001252e-16
+            }
+          }
+        },
+        {
+          "sweep": 2.7,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": 0.03480409723167316,
+              "ngspice": 0.03480412410680779,
+              "absoluteError": 2.6875134631620945e-8
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0018314431471660071,
+              "ngspice": -0.001831442963668431,
+              "absoluteError": 1.8349757607491468e-10
+            },
+            "i(vsub)": {
+              "spiceTs": -0.07870022036267224,
+              "ngspice": -0.07870020443621036,
+              "absoluteError": 1.592646188541824e-8
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 0.16855685283399285,
+              "ngspice": 0.1685570363315693,
+              "absoluteError": 1.834975764392066e-7
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 2.7,
+              "ngspice": 2.700000000000001,
+              "absoluteError": 8.881784197001252e-16
+            }
+          }
+        },
+        {
+          "sweep": 2.8,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": 0.03588854021426513,
+              "ngspice": 0.0358885643969544,
+              "absoluteError": 2.41826892677377e-8
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0018240044324178983,
+              "ngspice": -0.001824004446600138,
+              "absoluteError": 1.4182239584104028e-11
+            },
+            "i(vsub)": {
+              "spiceTs": -0.08316598361527697,
+              "ngspice": -0.08316597281634883,
+              "absoluteError": 1.0798928140598463e-8
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 0.17599556758210172,
+              "ngspice": 0.1759955533998624,
+              "absoluteError": 1.4182239327364954e-8
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 2.8000000000000003,
+              "ngspice": 2.800000000000001,
+              "absoluteError": 8.881784197001252e-16
+            }
+          }
+        },
+        {
+          "sweep": 2.9,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": 0.03695701929582129,
+              "ngspice": 0.0369570383011945,
+              "absoluteError": 1.9005373205760456e-8
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0018165561795805039,
+              "ngspice": -0.001816556201353522,
+              "absoluteError": 2.1773018067314243e-11
+            },
+            "i(vsub)": {
+              "spiceTs": -0.087639289401714,
+              "ngspice": -0.08763928101970674,
+              "absoluteError": 8.382007268825653e-9
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 0.18344382041949614,
+              "ngspice": 0.1834437986464784,
+              "absoluteError": 2.1773017749859847e-8
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 2.9000000000000004,
+              "ngspice": 2.900000000000001,
+              "absoluteError": 4.440892098500626e-16
+            }
+          }
+        },
+        {
+          "sweep": 3,
+          "signals": {
+            "i(vb)": {
+              "spiceTs": 0.03801118580886517,
+              "ngspice": 0.03801120091517871,
+              "absoluteError": 1.5106313540347305e-8
+            },
+            "i(vcc)": {
+              "spiceTs": -0.0018090999656151946,
+              "ngspice": -0.001809099980198117,
+              "absoluteError": 1.4582922326297765e-11
+            },
+            "i(vsub)": {
+              "spiceTs": -0.09211938867067297,
+              "ngspice": -0.09211938189552013,
+              "absoluteError": 6.775152841531629e-9
+            },
+            "v(1)": {
+              "spiceTs": 0.75,
+              "ngspice": 0.75,
+              "absoluteError": 0
+            },
+            "v(2)": {
+              "spiceTs": 0.1909000343848054,
+              "ngspice": 0.1909000198018835,
+              "absoluteError": 1.4582921897821066e-8
+            },
+            "v(3)": {
+              "spiceTs": 2,
+              "ngspice": 2,
+              "absoluteError": 0
+            },
+            "v(4)": {
+              "spiceTs": 3,
+              "ngspice": 3.000000000000001,
+              "absoluteError": 8.881784197001252e-16
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "vbic-substrate/dc-latchup@10mV-up",
+      "source": "in-memory variant of dc-latchup.cir",
+      "input": {
+        "localPath": "benchmarks/vbic-substrate/dc-latchup.cir",
+        "dcCard": ".dc Vsub 2 3 0.01",
+        "bytes": 697,
+        "sha256": "25f3a8c71cb02cb19d045163d38e461a5843e82b6633c3e6251327d8240e971f",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 101
+          }
+        ],
+        "runtimeMs": 22.758
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 101
+          }
+        ],
+        "runtimeMs": 106.044
+      },
+      "comparisons": [
+        {
+          "analysis": "dc",
+          "alignedPoints": 100,
+          "signals": {
+            "i(vb)": {
+              "samples": 100,
+              "maxAbsoluteError": 4.0900915828083906e-8,
+              "rmsAbsoluteError": 4.7224305037123386e-9,
+              "maxRelativeError": 0.0006482343981297469
+            },
+            "i(vcc)": {
+              "samples": 100,
+              "maxAbsoluteError": 5.320939953131886e-9,
+              "rmsAbsoluteError": 5.490053614798405e-10,
+              "maxRelativeError": 0.00001814936463312406
+            },
+            "i(vsub)": {
+              "samples": 100,
+              "maxAbsoluteError": 4.098841602081713e-8,
+              "rmsAbsoluteError": 4.627131313797362e-9,
+              "maxRelativeError": 0.0006118890359633107
+            },
+            "v(1)": {
+              "samples": 100,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            },
+            "v(2)": {
+              "samples": 100,
+              "maxAbsoluteError": 0.000005320939953534776,
+              "rmsAbsoluteError": 5.490053615325553e-7,
+              "maxRelativeError": 0.000005006670108623306
+            },
+            "v(3)": {
+              "samples": 100,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            },
+            "v(4)": {
+              "samples": 100,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "vbic-substrate/dc-latchup@10mV-down",
+      "source": "in-memory variant of dc-latchup.cir",
+      "input": {
+        "localPath": "benchmarks/vbic-substrate/dc-latchup.cir",
+        "dcCard": ".dc Vsub 3 -1 -0.01",
+        "bytes": 699,
+        "sha256": "bf3b02a18c5d6ace660eeb05abaa545ae3fb4495726eb9e746d53d83a1b912ea",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 401
+          }
+        ],
+        "runtimeMs": 50.557
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 401
+          }
+        ],
+        "runtimeMs": 276.226
+      },
+      "comparisons": [
+        {
+          "analysis": "dc",
+          "alignedPoints": 400,
+          "signals": {
+            "i(vb)": {
+              "samples": 400,
+              "maxAbsoluteError": 0.000001406867349625085,
+              "rmsAbsoluteError": 7.53110730333546e-8,
+              "maxRelativeError": 0.00016086673921914164
+            },
+            "i(vcc)": {
+              "samples": 400,
+              "maxAbsoluteError": 7.30913204626503e-8,
+              "rmsAbsoluteError": 3.913209403131447e-9,
+              "maxRelativeError": 0.00003848838437782544
+            },
+            "i(vsub)": {
+              "samples": 400,
+              "maxAbsoluteError": 0.0000015139019409853016,
+              "rmsAbsoluteError": 8.075148361752434e-8,
+              "maxRelativeError": 0.0001680028176283444
+            },
+            "v(1)": {
+              "samples": 400,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            },
+            "v(2)": {
+              "samples": 400,
+              "maxAbsoluteError": 0.00007309132046234845,
+              "rmsAbsoluteError": 0.000003913209403123024,
+              "maxRelativeError": 0.0007240263219318696
+            },
+            "v(3)": {
+              "samples": 400,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            },
+            "v(4)": {
+              "samples": 400,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "vbic-substrate/dc",
+      "source": "project-authored (MIT), issue #453",
+      "input": {
+        "localPath": "benchmarks/vbic-substrate/dc.cir",
+        "bytes": 696,
+        "sha256": "3229c4f71f6e450c0da6f5b1b371d8f8c3e7fd3ad845ae04859e7c3aacb1a32c",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 34
+          }
+        ],
+        "runtimeMs": 26.188
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 34
+          }
+        ],
+        "runtimeMs": 23.188
+      },
+      "comparisons": [
+        {
+          "analysis": "dc",
+          "alignedPoints": 34,
+          "signals": {
+            "i(vb)": {
+              "samples": 34,
+              "maxAbsoluteError": 1.36127236700478e-14,
+              "rmsAbsoluteError": 2.5996744541541773e-15,
+              "maxRelativeError": 3.7536500774548e-9
+            },
+            "i(vcc)": {
+              "samples": 34,
+              "maxAbsoluteError": 3.529736724260102e-13,
+              "rmsAbsoluteError": 6.053462675760011e-14,
+              "maxRelativeError": 1.230762656021832e-9
+            },
+            "i(vsub)": {
+              "samples": 34,
+              "maxAbsoluteError": 2.042033350224036e-14,
+              "rmsAbsoluteError": 3.684331135467255e-15,
+              "maxRelativeError": 0.0024901966396356718
+            },
+            "v(1)": {
+              "samples": 34,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            },
+            "v(2)": {
+              "samples": 34,
+              "maxAbsoluteError": 3.52973206219076e-10,
+              "rmsAbsoluteError": 6.05345468988367e-11,
+              "maxRelativeError": 2.0603063858066428e-10
+            },
+            "v(3)": {
+              "samples": 34,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            },
+            "v(4)": {
+              "samples": 34,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "vbic-substrate/ac",
+      "source": "project-authored (MIT), issue #453",
+      "input": {
+        "localPath": "benchmarks/vbic-substrate/ac.cir",
+        "bytes": 850,
+        "sha256": "897e30fd367d4ad14ad4fc355bf1cc7f76e0afdae12671e6a6a3e83fcf40ed66",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "ac",
+            "points": 51
+          }
+        ],
+        "runtimeMs": 29.815
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "ac",
+            "points": 51
+          }
+        ],
+        "runtimeMs": 24.49
+      },
+      "comparisons": [
+        {
+          "analysis": "ac",
+          "alignedPoints": 51,
+          "signals": {
+            "i(vcc)": {
+              "samples": 51,
+              "maxAbsoluteError": 4.5684017068744006e-8,
+              "rmsAbsoluteError": 1.0543201547310491e-8,
+              "maxRelativeError": 1.0628601437609312e-7
+            },
+            "i(vmeas)": {
+              "samples": 51,
+              "maxAbsoluteError": 0.000002872980780248994,
+              "rmsAbsoluteError": 0.0000022263937400104373,
+              "maxRelativeError": 6.670905911238082e-8
+            },
+            "i(vsub)": {
+              "samples": 51,
+              "maxAbsoluteError": 3.0522888392886886e-9,
+              "rmsAbsoluteError": 1.2400183507045611e-9,
+              "maxRelativeError": 6.402829909205253e-8
+            },
+            "v(1)": {
+              "samples": 51,
+              "maxAbsoluteError": 0.00012081664202263718,
+              "rmsAbsoluteError": 0.00009388808832737195,
+              "maxRelativeError": 1.102104335756159e-7
+            },
+            "v(2)": {
+              "samples": 51,
+              "maxAbsoluteError": 0.000045693026675998024,
+              "rmsAbsoluteError": 0.000010535313161108343,
+              "maxRelativeError": 6.670914794328875e-8
+            },
+            "v(3)": {
+              "samples": 51,
+              "maxAbsoluteError": 8.007530641530304e-10,
+              "rmsAbsoluteError": 2.8337228791898247e-10,
+              "maxRelativeError": null
+            },
+            "v(4)": {
+              "samples": 51,
+              "maxAbsoluteError": 0.00004569301249003548,
+              "rmsAbsoluteError": 0.00001053531105228913,
+              "maxRelativeError": 6.670905888408115e-8
+            },
+            "v(5)": {
+              "samples": 51,
+              "maxAbsoluteError": 0.0000030522821629478636,
+              "rmsAbsoluteError": 0.0000012400204226628174,
+              "maxRelativeError": 6.436573393167915e-8
+            },
+            "v(6)": {
+              "samples": 51,
+              "maxAbsoluteError": 5.680360479291311e-10,
+              "rmsAbsoluteError": 2.1348408855275174e-10,
+              "maxRelativeError": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "ngspice/vbic-fo",
+      "source": "ngspice corpus (BSD-3-Clause), aggregate row",
+      "input": {
+        "localPath": "benchmarks/corpus/ngspice/fixtures/tests/vbic/FO.cir",
+        "bytes": 492,
+        "sha256": "de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 707
+          }
+        ],
+        "runtimeMs": 41.267
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 707
+          }
+        ],
+        "runtimeMs": 445.591
+      },
+      "comparisons": [
+        {
+          "analysis": "dc",
+          "alignedPoints": 700,
+          "signals": {
+            "i(v1)": {
+              "samples": 700,
+              "maxAbsoluteError": 0.0000037715831947005007,
+              "rmsAbsoluteError": 2.251010166219435e-7,
+              "maxRelativeError": 0.0009286494839870664
+            },
+            "i(vb)": {
+              "samples": 700,
+              "maxAbsoluteError": 0.0000037715831947005007,
+              "rmsAbsoluteError": 2.251010166219435e-7,
+              "maxRelativeError": 0.0009286494839870664
+            },
+            "i(vc)": {
+              "samples": 700,
+              "maxAbsoluteError": 0.000006714775452595911,
+              "rmsAbsoluteError": 2.8943715834731796e-7,
+              "maxRelativeError": 0.0006405032727633901
+            },
+            "v(q1_c)": {
+              "samples": 700,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            },
+            "v(v1_n)": {
+              "samples": 700,
+              "maxAbsoluteError": 3.3306690738754696e-16,
+              "rmsAbsoluteError": 2.220446049250313e-16,
+              "maxRelativeError": 3.7007434154171876e-16
+            },
+            "v(v1_p)": {
+              "samples": 700,
+              "maxAbsoluteError": 3.3306690738754696e-16,
+              "rmsAbsoluteError": 2.220446049250313e-16,
+              "maxRelativeError": 3.7007434154171876e-16
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "ngspice/vbic-common-emitter-ac",
+      "source": "ngspice corpus (BSD-3-Clause), aggregate row",
+      "input": {
+        "localPath": "benchmarks/corpus/ngspice/fixtures/tests/vbic/CEamp.cir",
+        "bytes": 583,
+        "sha256": "088d1ebede86588ff8b823ba45219006bfeec34939af69e10c176e23d8a020ab",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "ac",
+            "points": 501
+          },
+          {
+            "type": "pz",
+            "points": 1
+          }
+        ],
+        "runtimeMs": 37.219
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "ac",
+            "points": 501
+          },
+          {
+            "type": "pz",
+            "points": 1
+          }
+        ],
+        "runtimeMs": 37.31
+      },
+      "comparisons": [
+        {
+          "analysis": "ac",
+          "alignedPoints": 500,
+          "signals": {
+            "i(vcc)": {
+              "samples": 500,
+              "maxAbsoluteError": 4.568409122341233e-8,
+              "rmsAbsoluteError": 9.644775179679163e-9,
+              "maxRelativeError": 1.0631975887941205e-7
+            },
+            "i(vmeas)": {
+              "samples": 500,
+              "maxAbsoluteError": 0.000002872988010671368,
+              "rmsAbsoluteError": 0.0000022320412833829994,
+              "maxRelativeError": 6.670924600417611e-8
+            },
+            "v(1)": {
+              "samples": 500,
+              "maxAbsoluteError": 0.00012081692685627434,
+              "rmsAbsoluteError": 0.00009412746793484089,
+              "maxRelativeError": 1.1021070019874367e-7
+            },
+            "v(2)": {
+              "samples": 500,
+              "maxAbsoluteError": 0.00004569308566447696,
+              "rmsAbsoluteError": 0.000009635547342643396,
+              "maxRelativeError": 6.670952145430664e-8
+            },
+            "v(3)": {
+              "samples": 500,
+              "maxAbsoluteError": 1.1984493472929842e-9,
+              "rmsAbsoluteError": 2.2844456153163296e-10,
+              "maxRelativeError": null
+            },
+            "v(4)": {
+              "samples": 500,
+              "maxAbsoluteError": 0.00004569308892034719,
+              "rmsAbsoluteError": 0.000009635547049326232,
+              "maxRelativeError": 6.670924563271577e-8
+            }
+          }
+        },
+        {
+          "analysis": "pz",
+          "alignedPoints": 1,
+          "signals": {
+            "v(pole(1))": {
+              "samples": 1,
+              "maxAbsoluteError": 7853.15771484375,
+              "rmsAbsoluteError": 7853.15771484375,
+              "maxRelativeError": 6.717036079128198e-9
+            },
+            "v(pole(2))": {
+              "samples": 1,
+              "maxAbsoluteError": 4755.41748046875,
+              "rmsAbsoluteError": 4755.41748046875,
+              "maxRelativeError": 8.770260149243642e-9
+            },
+            "v(pole(3))": {
+              "samples": 1,
+              "maxAbsoluteError": 68.59339041005512,
+              "rmsAbsoluteError": 68.59339041005512,
+              "maxRelativeError": 7.927665428117733e-10
+            },
+            "v(pole(4))": {
+              "samples": 1,
+              "maxAbsoluteError": 68.59339041005512,
+              "rmsAbsoluteError": 68.59339041005512,
+              "maxRelativeError": 7.927665428117733e-10
+            },
+            "v(pole(5))": {
+              "samples": 1,
+              "maxAbsoluteError": 159.40192413330078,
+              "rmsAbsoluteError": 159.40192413330078,
+              "maxRelativeError": 2.692573101703259e-9
+            },
+            "v(pole(6))": {
+              "samples": 1,
+              "maxAbsoluteError": 80.39469265937805,
+              "rmsAbsoluteError": 80.39469265937805,
+              "maxRelativeError": 7.621515960343561e-8
+            },
+            "v(pole(7))": {
+              "samples": 1,
+              "maxAbsoluteError": 0.0005212858122831676,
+              "rmsAbsoluteError": 0.0005212858122831676,
+              "maxRelativeError": 2.79963292748951e-8
+            },
+            "v(zero(1))": {
+              "samples": 1,
+              "maxAbsoluteError": 7021.922607421875,
+              "rmsAbsoluteError": 7021.922607421875,
+              "maxRelativeError": 5.317618017413699e-9
+            },
+            "v(zero(2))": {
+              "samples": 1,
+              "maxAbsoluteError": 140.03875732421875,
+              "rmsAbsoluteError": 140.03875732421875,
+              "maxRelativeError": 4.682734188661181e-10
+            },
+            "v(zero(3))": {
+              "samples": 1,
+              "maxAbsoluteError": 1607.9319387040732,
+              "rmsAbsoluteError": 1607.9319387040732,
+              "maxRelativeError": 8.951374521547797e-9
+            },
+            "v(zero(4))": {
+              "samples": 1,
+              "maxAbsoluteError": 1607.9319387040732,
+              "rmsAbsoluteError": 1607.9319387040732,
+              "maxRelativeError": 8.951374521547797e-9
+            },
+            "v(zero(5))": {
+              "samples": 1,
+              "maxAbsoluteError": 223.98095703125,
+              "rmsAbsoluteError": 223.98095703125,
+              "maxRelativeError": 3.458918332277934e-9
+            },
+            "v(zero(6))": {
+              "samples": 1,
+              "maxAbsoluteError": 1390.1898956298828,
+              "rmsAbsoluteError": 1390.1898956298828,
+              "maxRelativeError": 1.4715406403328917e-8
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

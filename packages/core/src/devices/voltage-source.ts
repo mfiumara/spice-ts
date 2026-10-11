@@ -111,24 +111,50 @@ export class VoltageSource implements DeviceModel {
  * Period offsets are computed as `delay + n * period` rather than an additive
  * accumulator so that breakpoints at high `n` land exactly on their analytic
  * values (no FP drift).
+ *
+ * A PULSE without a usable PER (omitted, so `Infinity`, or <= 0) is a single
+ * pulse, exactly as {@link evaluatePulse} evaluates it; its corners are still
+ * breakpoints. (`0 * Infinity` is NaN, which used to drop every corner of an
+ * omitted-PER pulse, #469.)
+ *
+ * A positive NP (`pulses`) ends the train after NP periods, as in ngspice.
  */
 export function pulseBreakpoints(p: PulseSource, stopTime: number): number[] {
   const { delay, rise, width, fall, period } = p;
   const result: number[] = [];
-  if (period <= 0) return result; // invalid period → no breakpoints
-  for (let n = 0; delay + n * period < stopTime; n++) {
-    const periodStart = delay + n * period;
+  const periodic = Number.isFinite(period) && period > 0;
+  const limit = pulseTrainEnd(p);
+  for (let n = 0; n === 0 || periodic; n++) {
+    const periodStart = n === 0 ? delay : delay + n * period;
+    if (!(periodStart < stopTime)) break;
     const corners = [
       periodStart,                       // rising-edge start
       periodStart + rise,                // rising-edge end
       periodStart + rise + width,        // falling-edge start
       periodStart + rise + width + fall, // falling-edge end
     ];
-    for (const t of corners) {
+    const offsets = [0, rise, rise + width, rise + width + fall];
+    for (let corner = 0; corner < corners.length; corner++) {
+      const t = corners[corner];
       if (t >= 0 && t <= stopTime) result.push(t);
+      // ngspice vsrcacct.c stops scheduling once TIME-TD > NP*PER; the last
+      // evaluation at or before that point still queues the next corner.
+      if (n * period + offsets[corner] > limit) return result;
     }
   }
   return result;
+}
+
+/**
+ * Time after the delay at which an NP-limited pulse train stops (ngspice
+ * `tmax = NP * PER`), or `Infinity` when the train is unlimited. NP only
+ * applies to a positive, finite PER; an aperiodic PULSE is a single pulse.
+ */
+function pulseTrainEnd(p: PulseSource): number {
+  const { pulses, period } = p;
+  if (pulses === undefined || !(pulses > 0)) return Infinity;
+  if (!(Number.isFinite(period) && period > 0)) return Infinity;
+  return pulses * period;
 }
 
 /** Return PWL corners in [0, stopTime], preserving their declared times. */
@@ -180,6 +206,7 @@ export function effectivePulse(p: PulseSource, transientTimestep: number): Pulse
 export function evaluatePulse(pulse: PulseSource, time: number, transientTimestep = 0): number {
   const { v1, v2, rise, width, fall, period } = effectivePulse(pulse, transientTimestep);
   let t = time - pulse.delay;
+  if (t > pulseTrainEnd(pulse)) return v1;
   if (period > 0 && t > period) t -= period * Math.floor(t / period);
   if (t <= 0 || t >= rise + width + fall) return v1;
   if (t < rise) return v1 + (v2 - v1) * t / rise;
