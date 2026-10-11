@@ -52,6 +52,7 @@ export function solveTransient(
     timestep: analysis.timestep,
     maxTimestep: analysis.maxTimestep ?? Math.min(analysis.timestep, analysis.stopTime / 50),
     initialSolution,
+    useInitialConditions: analysis.useInitialConditions,
     convergence,
     guard,
   });
