@@ -1,0 +1,1495 @@
+{
+  "command": "pnpm build && pnpm exec tsx benchmarks/global-nodes/compare.ts",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "node": "v22.23.1"
+  },
+  "environment": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "policy": {
+    "identicalInput": true,
+    "perCircuitToleranceTuning": false,
+    "absoluteErrorLimit": 1e-12,
+    "timing": "single samples on a shared host; no speed claim"
+  },
+  "rows": [
+    {
+      "id": "nested",
+      "netlist": "Global supplies through nested instances\n.global supply\nV1 supply 0 10\n.subckt leaf out\nR1 supply out 1k\nR2 out 0 1k\n.ends\n.subckt wrapper out\nXinner out leaf\n.ends\nXone a wrapper\nXtwo b wrapper\n.op\n.end\n",
+      "inputSha256": "ec000fc1fb3c0c907e42ab415950f3bda40ae572b617ed03e6e00812f4a63864",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "op",
+            "plotName": "Operating Point",
+            "series": {
+              "grid": [
+                0
+              ],
+              "signals": {
+                "v(supply)": [
+                  {
+                    "re": 10,
+                    "im": 0
+                  }
+                ],
+                "v(a)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "v(b)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "i(v1)": [
+                  {
+                    "re": -0.009999999999999998,
+                    "im": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "op",
+            "plotName": "Operating Point",
+            "series": {
+              "grid": [
+                0
+              ],
+              "signals": {
+                "v(a)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "v(b)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "v(supply)": [
+                  {
+                    "re": 10,
+                    "im": 0
+                  }
+                ],
+                "i(v1)": [
+                  {
+                    "re": -0.009999999999999998,
+                    "im": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "ngspiceMs": 707.3143330000003,
+      "spiceTsMs": 2845.651584,
+      "comparisons": [
+        {
+          "analysis": "op",
+          "signals": [
+            "i(v1)",
+            "v(a)",
+            "v(b)",
+            "v(supply)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(a)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(b)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(a)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(b)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "port-collision",
+      "netlist": "Global name takes precedence over formal port\n.global supply\nV1 supply 0 10\nV2 local 0 2\n.subckt divider supply out\nR1 supply out 1k\nR2 out 0 1k\n.ends\nX1 local out divider\n.op\n.end\n",
+      "inputSha256": "ebd39b0929ae78c0715abad49455edad383524873d9d41d8c04e7fd4f32e7764",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "op",
+            "plotName": "Operating Point",
+            "series": {
+              "grid": [
+                0
+              ],
+              "signals": {
+                "v(supply)": [
+                  {
+                    "re": 10,
+                    "im": 0
+                  }
+                ],
+                "v(local)": [
+                  {
+                    "re": 2,
+                    "im": 0
+                  }
+                ],
+                "v(out)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "i(v2)": [
+                  {
+                    "re": 0,
+                    "im": 0
+                  }
+                ],
+                "i(v1)": [
+                  {
+                    "re": -0.005,
+                    "im": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "op",
+            "plotName": "Operating Point",
+            "series": {
+              "grid": [
+                0
+              ],
+              "signals": {
+                "v(local)": [
+                  {
+                    "re": 2,
+                    "im": 0
+                  }
+                ],
+                "v(out)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "v(supply)": [
+                  {
+                    "re": 10,
+                    "im": 0
+                  }
+                ],
+                "i(v1)": [
+                  {
+                    "re": -0.005,
+                    "im": 0
+                  }
+                ],
+                "i(v2)": [
+                  {
+                    "re": 0,
+                    "im": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "ngspiceMs": 1309.5791669999999,
+      "spiceTsMs": 33.33100000000013,
+      "comparisons": [
+        {
+          "analysis": "op",
+          "signals": [
+            "i(v1)",
+            "i(v2)",
+            "v(local)",
+            "v(out)",
+            "v(supply)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "i(v2)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(local)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(out)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "i(v2)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(local)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(out)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "unused-actual-port",
+      "netlist": "Global name takes precedence over formal port\n.global supply\nV1 supply 0 10\n.subckt divider supply out\nR1 supply out 1k\nR2 out 0 1k\n.ends\nX1 local out divider\n.op\n.end\n",
+      "inputSha256": "a74f49e1e4e0c9ca6814819b4376244cfe2403b3619a6651393bd6f9e4399240",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "op",
+            "plotName": "Operating Point",
+            "series": {
+              "grid": [
+                0
+              ],
+              "signals": {
+                "v(supply)": [
+                  {
+                    "re": 10,
+                    "im": 0
+                  }
+                ],
+                "v(out)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "i(v1)": [
+                  {
+                    "re": -0.005,
+                    "im": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "op",
+            "plotName": "Operating Point",
+            "series": {
+              "grid": [
+                0
+              ],
+              "signals": {
+                "v(out)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "v(supply)": [
+                  {
+                    "re": 10,
+                    "im": 0
+                  }
+                ],
+                "i(v1)": [
+                  {
+                    "re": -0.005,
+                    "im": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "ngspiceMs": 756.2428749999999,
+      "spiceTsMs": 90.1062920000004,
+      "comparisons": [
+        {
+          "analysis": "op",
+          "signals": [
+            "i(v1)",
+            "v(out)",
+            "v(supply)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(out)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(out)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-case",
+      "netlist": "Global supplies through nested instances\n.GLOBAL SUPPLY\nV1 supply 0 10\n.subckt leaf out\nR1 Supply out 1k\nR2 out 0 1k\n.ends\n.subckt wrapper out\nXinner out leaf\n.ends\nXone a wrapper\nXtwo b wrapper\n.op\n.end\n",
+      "inputSha256": "bcc2298c77422e781d4f96ef1c3c66dcdb22335e63ddd331ed0ac946012cbfaf",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "op",
+            "plotName": "Operating Point",
+            "series": {
+              "grid": [
+                0
+              ],
+              "signals": {
+                "v(supply)": [
+                  {
+                    "re": 10,
+                    "im": 0
+                  }
+                ],
+                "v(a)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "v(b)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "i(v1)": [
+                  {
+                    "re": -0.009999999999999998,
+                    "im": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "op",
+            "plotName": "Operating Point",
+            "series": {
+              "grid": [
+                0
+              ],
+              "signals": {
+                "v(a)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "v(b)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "v(supply)": [
+                  {
+                    "re": 10,
+                    "im": 0
+                  }
+                ],
+                "i(v1)": [
+                  {
+                    "re": -0.009999999999999998,
+                    "im": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "ngspiceMs": 1094.7079159999994,
+      "spiceTsMs": 57.32791600000019,
+      "comparisons": [
+        {
+          "analysis": "op",
+          "signals": [
+            "i(v1)",
+            "v(a)",
+            "v(b)",
+            "v(supply)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(a)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(b)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(a)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(b)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "unused-definition",
+      "netlist": "Global supplies through nested instances\nV1 supply 0 10\n.subckt leaf out\nR1 supply out 1k\nR2 out 0 1k\n.ends\n.subckt wrapper out\nXinner out leaf\n.ends\nXone a wrapper\nXtwo b wrapper\n.subckt unused p\n.global supply\n.ends\n.op\n.end\n",
+      "inputSha256": "ead089b7ff86d8e926fc7da157ecec52d94bcc23cf786fddd145017d23f3c197",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "op",
+            "plotName": "Operating Point",
+            "series": {
+              "grid": [
+                0
+              ],
+              "signals": {
+                "v(supply)": [
+                  {
+                    "re": 10,
+                    "im": 0
+                  }
+                ],
+                "v(xone.xinner.supply)": [
+                  {
+                    "re": 0,
+                    "im": 0
+                  }
+                ],
+                "v(a)": [
+                  {
+                    "re": 0,
+                    "im": 0
+                  }
+                ],
+                "v(xtwo.xinner.supply)": [
+                  {
+                    "re": 0,
+                    "im": 0
+                  }
+                ],
+                "v(b)": [
+                  {
+                    "re": 0,
+                    "im": 0
+                  }
+                ],
+                "i(v1)": [
+                  {
+                    "re": 0,
+                    "im": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "op",
+            "plotName": "Operating Point",
+            "series": {
+              "grid": [
+                0
+              ],
+              "signals": {
+                "v(a)": [
+                  {
+                    "re": 0,
+                    "im": 0
+                  }
+                ],
+                "v(b)": [
+                  {
+                    "re": 0,
+                    "im": 0
+                  }
+                ],
+                "v(supply)": [
+                  {
+                    "re": 10,
+                    "im": 0
+                  }
+                ],
+                "v(xone.xinner.supply)": [
+                  {
+                    "re": 0,
+                    "im": 0
+                  }
+                ],
+                "v(xtwo.xinner.supply)": [
+                  {
+                    "re": 0,
+                    "im": 0
+                  }
+                ],
+                "i(v1)": [
+                  {
+                    "re": 0,
+                    "im": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "ngspiceMs": 1406.8035830000008,
+      "spiceTsMs": 42.649875000000975,
+      "comparisons": [
+        {
+          "analysis": "op",
+          "signals": [
+            "i(v1)",
+            "v(a)",
+            "v(b)",
+            "v(supply)",
+            "v(xone.xinner.supply)",
+            "v(xtwo.xinner.supply)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(a)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(b)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(xone.xinner.supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(xtwo.xinner.supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(a)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(b)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(xone.xinner.supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 1
+                }
+              },
+              "v(xtwo.xinner.supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": null,
+                  "rms": null,
+                  "sampleCount": 0,
+                  "excludedZeroReferences": 1
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "reachable-definition",
+      "netlist": "Global supplies through nested instances\nV1 supply 0 10\n.subckt leaf out\n.global supply\nR1 supply out 1k\nR2 out 0 1k\n.ends\n.subckt wrapper out\nXinner out leaf\n.ends\nXone a wrapper\nXtwo b wrapper\n.op\n.end\n",
+      "inputSha256": "a1ad9d270dde665ee50a360996d770c5d01ba8782f528d435c65571eb3692b53",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "op",
+            "plotName": "Operating Point",
+            "series": {
+              "grid": [
+                0
+              ],
+              "signals": {
+                "v(supply)": [
+                  {
+                    "re": 10,
+                    "im": 0
+                  }
+                ],
+                "v(a)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "v(b)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "i(v1)": [
+                  {
+                    "re": -0.009999999999999998,
+                    "im": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "op",
+            "plotName": "Operating Point",
+            "series": {
+              "grid": [
+                0
+              ],
+              "signals": {
+                "v(a)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "v(b)": [
+                  {
+                    "re": 5,
+                    "im": 0
+                  }
+                ],
+                "v(supply)": [
+                  {
+                    "re": 10,
+                    "im": 0
+                  }
+                ],
+                "i(v1)": [
+                  {
+                    "re": -0.009999999999999998,
+                    "im": 0
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "ngspiceMs": 1580.8505830000013,
+      "spiceTsMs": 90.70229199999994,
+      "comparisons": [
+        {
+          "analysis": "op",
+          "signals": [
+            "i(v1)",
+            "v(a)",
+            "v(b)",
+            "v(supply)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(a)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(b)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          },
+          "linearMetrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(v1)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(a)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(b)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(supply)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0,
+                  "rms": 0
+                },
+                "relativeError": {
+                  "max": 0,
+                  "rms": 0,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
