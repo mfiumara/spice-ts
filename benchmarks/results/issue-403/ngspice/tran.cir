@@ -1,0 +1,13 @@
+x
+V1 in 0 PULSE(-1 1 0 1n 1n 20n 50n)
+R1 in out 1k
+D1 out 0 DM
+.model DM D IS=1e-14 CJO=10p
+.tran 0.1n 50n
+.control
+run
+set numdgt=12
+linearize
+print time v(out)
+.endc
+.end

@@ -62,7 +62,7 @@ export function buildCompanionSystem(
   }
 
   for (const device of devices) {
-    device.stampDynamic?.(ctx);
+    if (!device.integratesTransientCharge) device.stampDynamic?.(ctx);
   }
 
   // Gear-2 bootstraps with BE when x(n-1) is unavailable.
@@ -279,5 +279,17 @@ export function buildCompanionSystem(
         }
       }
     }
+  }
+
+  // Charge-integrating devices (ngspice NIintegrate) stamp their complete
+  // companion into G and b. They are added after the C-matrix history so they
+  // neither mark rows dynamic nor enter the G*x(n) history product.
+  const integration = {
+    method: effectiveMethod,
+    dt,
+    prevDt: useGear2 ? prevDt : undefined,
+  };
+  for (const device of devices) {
+    if (device.integratesTransientCharge) device.stampTransientCharge?.(ctx, integration);
   }
 }

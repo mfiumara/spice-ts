@@ -1,6 +1,7 @@
 import type { CompiledCircuit } from '../circuit.js';
 import type { IntegrationMethod, ResolvedOptions } from '../types.js';
 import type { MNAAssembler } from '../mna/assembler.js';
+import type { DeviceModel } from '../devices/device.js';
 import { buildCompanionSystem } from '../mna/companion.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
@@ -89,9 +90,11 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
     dt, time, prevSolution, prevB, gmin, prevPrevSolution, prevDt, staticCurrentHistory,
   } = attempt;
   let voltageLimit = attempt.voltageLimit;
-  const limitedNodes = nonlinearTerminalNodes(compiled);
+  const { watched: limitedNodes, damped: dampedNodes } = nonlinearTerminalNodes(compiled);
+  const selfLimiting = selfLimitingDevices(compiled);
 
   assembler.setTime(time, dt);
+  for (const device of selfLimiting) device.beginTransientNewton?.();
 
   let prevIterSolution = new Float64Array(assembler.solution);
   let prevDelta: Float64Array | undefined;
@@ -125,8 +128,12 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
       }
     }
 
+    // Junction limiting follows the Newton solve itself; node damping below
+    // only slows the node down and must not push the limited junction away.
+    for (const device of selfLimiting) device.observeTransientNewton?.(x);
+
     // Damp only nodes a nonlinear device reads (issue #376); see nonlinearTerminalNodes.
-    for (const i of limitedNodes) {
+    for (const i of dampedNodes) {
       const delta = rawDelta[i];
       if (Math.abs(delta) > voltageLimit) {
         x[i] = prev[i] + Math.sign(delta) * voltageLimit;
@@ -135,7 +142,10 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
 
     assembler.solution.set(x);
 
-    if (isConvergedTransient(x, prev, nodeCount, options)) {
+    // ngspice CKTnoncon: an iterate a device had to limit was linearised at a
+    // junction voltage the solution does not have, so it cannot converge.
+    const limited = selfLimiting.some(device => device.limitedLastStamp?.() === true);
+    if (!limited && isConvergedTransient(x, prev, nodeCount, options)) {
       return {
         ok: true,
         solution: new Float64Array(x),
@@ -157,31 +167,61 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
   };
 }
 
-const nonlinearTerminalCache = new WeakMap<CompiledCircuit, Int32Array>();
+interface TerminalNodes {
+  /** Nodes read by any nonlinear device: watched for sign-flip oscillation. */
+  readonly watched: Int32Array;
+  /** Watched nodes that also take the per-iteration voltage cap. */
+  readonly damped: Int32Array;
+}
+
+const nonlinearTerminalCache = new WeakMap<CompiledCircuit, TerminalNodes>();
+const selfLimitingCache = new WeakMap<CompiledCircuit, readonly DeviceModel[]>();
+
+function selfLimitingDevices(compiled: CompiledCircuit): readonly DeviceModel[] {
+  let devices = selfLimitingCache.get(compiled);
+  if (devices === undefined) {
+    devices = compiled.devices.filter(device => device.limitsOwnJunctions === true);
+    selfLimitingCache.set(compiled, devices);
+  }
+  return devices;
+}
 
 /**
- * Node indices read by at least one nonlinear device, ascending.
+ * Node indices read by at least one nonlinear device, ascending, and the
+ * subset that takes the per-iteration voltage cap.
  *
- * Only these nodes take the per-iteration voltage cap. Every other node is
- * read by linear stamps alone, so it never feeds the next linearisation:
- * capping it cannot help Newton and only stalls convergence of large linear
- * jumps (issue #376, e.g. V = L di/dt across an inductor). ngspice likewise
- * limits only device terminal/junction voltages (pnjlim, fetlim, limvds),
- * never node voltages. Damping on these nodes is unchanged.
+ * Every other node is read by linear stamps alone, so it never feeds the next
+ * linearisation: capping it cannot help Newton and only stalls convergence of
+ * large linear jumps (issue #376, e.g. V = L di/dt across an inductor).
+ *
+ * Nodes of devices that limit their own junctions against the previous
+ * iterate (ngspice DEVpnjlim) are not capped either. ngspice never damps node
+ * voltages; with a capped node the solution cannot follow the limited
+ * junction, the junction keeps stepping away from the node, and Newton
+ * ratchets to the timestep floor (the boost converter in
+ * transient-driver-integration.test.ts).
  */
-function nonlinearTerminalNodes(compiled: CompiledCircuit): Int32Array {
+function nonlinearTerminalNodes(compiled: CompiledCircuit): TerminalNodes {
   let nodes = nonlinearTerminalCache.get(compiled);
   if (nodes === undefined) {
     const marked = new Uint8Array(compiled.nodeCount);
+    const needsDamping = new Uint8Array(compiled.nodeCount);
     for (const device of compiled.devices) {
       if (!device.isNonlinear) continue;
       for (const node of device.nodes) {
-        if (node >= 0 && node < compiled.nodeCount) marked[node] = 1;
+        if (node < 0 || node >= compiled.nodeCount) continue;
+        marked[node] = 1;
+        if (!device.limitsOwnJunctions) needsDamping[node] = 1;
       }
     }
-    const indices: number[] = [];
-    for (let i = 0; i < marked.length; i++) if (marked[i]) indices.push(i);
-    nodes = Int32Array.from(indices);
+    const watched: number[] = [];
+    const damped: number[] = [];
+    for (let i = 0; i < marked.length; i++) {
+      if (!marked[i]) continue;
+      watched.push(i);
+      if (needsDamping[i]) damped.push(i);
+    }
+    nodes = { watched: Int32Array.from(watched), damped: Int32Array.from(damped) };
     nonlinearTerminalCache.set(compiled, nodes);
   }
   return nodes;

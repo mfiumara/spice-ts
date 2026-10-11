@@ -47,12 +47,13 @@ R2 2 0 1k
     }
   });
 
-  it('still damps the terminal nodes of a nonlinear device', () => {
+  it('still damps the terminal nodes of a nonlinear device without its own junction limit', () => {
     const { compiled, options, assembler } = buildContext(`
 V1 1 0 DC 100
 R1 1 2 1k
-D1 2 0 DMOD
-.model DMOD D(IS=1e-14)
+V2 3 0 DC 5
+M1 2 3 0 0 NMOD W=10u L=1u
+.model NMOD NMOS(VTO=1 KP=1e-5)
 .tran 1u 1m
 `);
     const prevSol = new Float64Array(assembler.solution);
@@ -64,8 +65,42 @@ D1 2 0 DMOD
 
     // Node 1 is only touched by V1/R1: it takes the full linear update.
     expect(assembler.solution[nodeIndex(compiled, '1')]).toBeCloseTo(100, 9);
-    // Node 2 is the diode anode: its first update stays capped at 3.5 V.
+    // Node 2 is the MOSFET drain: its first update stays capped at 3.5 V.
     expect(Math.abs(assembler.solution[nodeIndex(compiled, '2')])).toBeLessThanOrEqual(3.5 + 1e-12);
+  });
+
+  it('leaves diode-only nodes to the diode junction limit (ngspice pnjlim)', () => {
+    const { compiled, options, assembler } = buildContext(`
+V1 1 0 DC 100
+R1 1 2 1k
+D1 2 0 DMOD
+.model DMOD D(IS=1e-14)
+.tran 1u 1m
+`);
+    const prevSol = new Float64Array(assembler.solution);
+
+    const first = attemptStep(
+      { compiled, assembler, options: { ...options, maxTransientIterations: 1 } },
+      { dt: 1e-6, time: 1e-6, prevSolution: prevSol, prevB: undefined, gmin: 1e-12, voltageLimit: 3.5 },
+    );
+    // The first solve linearises the diode at 0 V, so the anode takes the full
+    // update instead of a node cap; the diode limits its junction next stamp.
+    expect(first.ok).toBe(false);
+    expect(assembler.solution[nodeIndex(compiled, '2')]).toBeGreaterThan(3.5);
+
+    assembler.solution.set(prevSol);
+    const result = attemptStep(
+      { compiled, assembler, options },
+      { dt: 1e-6, time: 1e-6, prevSolution: prevSol, prevB: undefined, gmin: 1e-12, voltageLimit: 3.5 },
+    );
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      const anode = result.solution[nodeIndex(compiled, '2')];
+      const vt = (1.38064852e-23 / 1.6021766208e-19) * 300.15;
+      const diode = 1e-14 * Math.expm1(anode / vt) + 1e-12 * anode;
+      // Converged on the exact diode law, not a compressed junction.
+      expect(Math.abs(vt * Math.log(((100 - anode) / 1e3) / diode))).toBeLessThan(1e-5);
+    }
   });
 
   it('completes the delayed-sine inductor repro and tracks V(2) = -L di/dt', async () => {

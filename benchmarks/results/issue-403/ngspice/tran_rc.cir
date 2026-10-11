@@ -1,0 +1,14 @@
+diode rectifier with load capacitor and junction charge
+V1 in 0 SIN(0 5 10meg)
+D1 in out DM
+R1 out 0 1k
+C1 out 0 100p
+.model DM D IS=1e-14 CJO=10p TT=2n
+.tran 1n 300n
+.control
+run
+set numdgt=12
+linearize
+print time v(out)
+.endc
+.end
