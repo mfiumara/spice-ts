@@ -74,10 +74,7 @@ export function solveDCOperatingPoint(
     // handing each converged iterate off as the initial guess for the next
     // lower gmin, then finishes at the nominal gmin.
     const savedSolution = new Float64Array(assembler.solution);
-    if (
-      !dynamicGminStepping(assembler, devices, options, nodeNames, convergence, guard)
-      && !trueGminStepping(assembler, devices, options, nodeNames, convergence, guard)
-    ) {
+    if (!gminSteppingHomotopy(assembler, devices, options, nodeNames, convergence, guard)) {
       assembler.solution.set(savedSolution);
       if (err instanceof ConvergenceError) {
         convergence.dc.failure = err.kind;
@@ -104,6 +101,23 @@ export function solveDCOperatingPoint(
   };
 }
 
+
+/**
+ * ngspice-47 CKTop gmin homotopies after a failed plain Newton solve: dynamic
+ * gmin stepping, then true gmin stepping. Returns whether the final solve at
+ * the nominal gmin converged; the solution is then left in `assembler`.
+ */
+export function gminSteppingHomotopy(
+  assembler: MNAAssembler,
+  devices: CompiledCircuit['devices'],
+  options: ResolvedOptions,
+  nodeNames: string[],
+  convergence: ConvergenceTelemetry,
+  guard?: ProtocolExecutionGuard,
+): boolean {
+  return dynamicGminStepping(assembler, devices, options, nodeNames, convergence, guard)
+    || trueGminStepping(assembler, devices, options, nodeNames, convergence, guard);
+}
 
 /** ngspice defaults: `itl2` (CKTdcTrcvMaxIter), `gminfactor` (CKTgminFactor). */
 const DC_TRCV_MAX_ITER = 50;

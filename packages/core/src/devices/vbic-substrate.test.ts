@@ -56,15 +56,38 @@ describe('bounded VBIC substrate terminal (issue #453)', () => {
     }
   });
 
-  // Retained loss (#472): driving the substrate further forward
-  // latches the NPN + parasitic PNP pair. ngspice-47 snaps from v(2)=1.702 V
-  // at VSUB=2.36 to 0.1441 V at 2.37 and stays on the latched branch; the
-  // spice-ts Newton/homotopy loop does not converge between 2.38 and 2.42 V.
-  it.fails('follows ngspice-47 through the substrate latch-up fold (dc-latchup.cir)', async () => {
+  // Issue #472: driving the substrate further forward latches the NPN +
+  // parasitic PNP pair. ngspice-47 snaps from v(2)=1.702 V at VSUB=2.36 to
+  // 0.1441 V at 2.37 and stays on the latched branch.
+  it('follows ngspice-47 through the substrate latch-up fold (dc-latchup.cir)', async () => {
     const result = await simulate(fixture('dc-latchup.cir'));
     const sweep = result.dcSweep!;
     const index = Array.from(sweep.sweepValues).findIndex(v => Math.abs(v - 2.4) < 1e-9);
     expectNear(sweep.voltage('2')[index], 1.463217e-1, 1e-6);
+  });
+
+  // ngspice-47 on dc-latchup.cir with only the .dc card changed to
+  // `.dc Vsub 2.3 2.45 0.01`: VSUB, v(2), i(vb). The fold sits between 2.36
+  // and 2.37 V; the points next to it need ngspice's CKTop gmin homotopy.
+  const NGSPICE_FOLD = [
+    [2.35, 1.706825, 6.309587e-5],
+    [2.36, 1.702303, 1.095791e-4],
+    [2.37, 1.441072e-1, 3.108478e-2],
+    [2.38, 1.448444e-1, 3.120126e-2],
+    [2.45, 1.500167e-1, 3.200937e-2],
+  ] as const;
+
+  it('resolves the latch-up fold on a 10 mV grid where ngspice-47 does', async () => {
+    const netlist = fixture('dc-latchup.cir').replace(/^\.dc .*$/m, '.dc Vsub 2.3 2.45 0.01');
+    const sweep = (await simulate(netlist)).dcSweep!;
+    const vsub = Array.from(sweep.sweepValues);
+    for (const [value, v2, ib] of NGSPICE_FOLD) {
+      const index = vsub.findIndex(v => Math.abs(v - value) < 1e-9);
+      expect(index, `VSUB=${value}`).toBeGreaterThanOrEqual(0);
+      // ngspice prints 7 significant digits and converges to its reltol=1e-3.
+      expect(Math.abs(sweep.voltage('2')[index] - v2), `v(2) at ${value}`).toBeLessThan(1e-5);
+      expect(Math.abs(sweep.current('Vb')[index] / ib - 1), `i(vb) at ${value}`).toBeLessThan(1e-3);
+    }
   });
 
   it('honours a non-ground substrate node in AC like ngspice-47', async () => {
