@@ -115,6 +115,90 @@ describe('preprocessor', () => {
     });
   });
 
+  describe('quoted and brace numparam expressions (#493)', () => {
+    // Card lines are copied from the corpus-f ngspice decks listed in #493.
+    it('evaluates a single-quoted instance value (minus-minus.cir)', async () => {
+      expect(await preprocess("v1  1 0  '2--3'\n.op")).toContain('v1  1 0  5');
+    });
+
+    it('evaluates single-quoted function calls (xpressn-2.cir, log-functions-1.cir)', async () => {
+      const result = await preprocess("v0 n0 0 'sin(1.0e-9)'\nvn1 n1 0 'ln(2.7)'\n.op");
+      expect(result).toContain(`v0 n0 0 ${Math.sin(1e-9)}`);
+      expect(result).toContain(`vn1 n1 0 ${Math.log(2.7)}`);
+    });
+
+    it('evaluates a single-quoted .param value with spaces (alterparam.sp)', async () => {
+      const result = await preprocess(".param vv = 1\n.param rr = 'vv + 1'\nR1 1 0 {rr + 1}\n.op");
+      expect(result).toContain('R1 1 0 3');
+    });
+
+    it('evaluates TEMPER at the 27 C circuit temperature in braces and quotes (temper-1.cir, dc_loop.sp)', async () => {
+      const result = await preprocess([
+        "R1 r2 0 r = {5k + 50*TEMPER}",
+        ".model dplain d is='temper+1000'",
+        '.model dt d is={temper >= 25 ? 1e-10 : (temper+1)*1e-11}',
+        ".model rtest r r='1000 + temper'",
+        '.op',
+      ].join('\n'));
+      expect(result).toContain('R1 r2 0 r = 6350');
+      expect(result).toContain('.model dplain d is=1027');
+      expect(result).toContain('.model dt d is=1e-10');
+      expect(result).toContain('.model rtest r r=1027');
+    });
+
+    it('rejects TEMPER under a .step TEMP sweep instead of freezing it at 27 C', async () => {
+      const failure = await preprocess("T\n.model d1 d is='1e-12*temper'\n.step temp list 0 50\n.op")
+        .catch((e: unknown) => e);
+      expect(failure).toBeInstanceOf(ParseError);
+      expect((failure as ParseError).line).toBe(2);
+      expect((failure as ParseError).message).toContain('TEMPER');
+      expect((failure as ParseError).message).toContain('.step TEMP');
+    });
+
+    it('accepts an unused string .param and rejects one that is used (vector_param.cir)', async () => {
+      await expect(preprocess('.param actual_vec="[1.3e-3 2e-3]"\nR1 1 0 1k\n.op')).resolves.toContain('R1 1 0 1k');
+      const failure = await preprocess('T\n.param actual_vec="[1.3e-3 2e-3]"\nR1 1 0 {actual_vec}\n.op')
+        .catch((e: unknown) => e);
+      expect(failure).toBeInstanceOf(ParseError);
+      expect((failure as ParseError).message).toContain("String-valued .param 'ACTUAL_VEC' is not supported");
+    });
+
+    it('rewrites a node-voltage dependent resistor into an ngspice B-source (tmp-noise.cir)', async () => {
+      const result = await preprocess("R20 20 0 '1k*v(200)' tc1=0.001 ; tc2=1e-5\n.op");
+      expect(result).toContain('bR20 20 0 i = v(20, 0)/(1k*v(200)) tc1=0.001 reciproctc=1');
+    });
+
+    it('rewrites an r= {expression} with v() into a B-source (asrc-tc-2.cir)', async () => {
+      const result = await preprocess('.param base=1k\nr3  1 3  r = {base + v(9)}  tc1=0.001\n.op');
+      expect(result).toContain('br3 1 3 i = v(1, 3)/(1000 + v(9)) tc1=0.001 reciproctc=1');
+    });
+
+    it('rejects resistor parameters the behavioral rewrite cannot carry', async () => {
+      await expect(preprocess("R20 20 0 '1k*v(200)' m=2\n.op"))
+        .rejects.toThrow("behavioral resistor 'R20'");
+    });
+
+    it('leaves quotes in .control blocks, comments and B-cards to their own handlers', async () => {
+      const input = [
+        "* it's a comment",
+        "b1 2 0 v = '2*3' + v(1)",
+        '.control',
+        "echo 'it''s fine'",
+        '.endc',
+      ].join('\n');
+      const result = await preprocess(input);
+      expect(result).toContain("* it's a comment");
+      expect(result).toContain("echo 'it''s fine'");
+      expect(result).toContain('b1 2 0 v = 6 + v(1)');
+    });
+
+    it('normalises quoted subcircuit-body values to compact brace expressions (alterparam.sp)', async () => {
+      const result = await preprocess(".subckt subr in out rint1 = 6\n  R1 in out 'rint1 * 2'\n  R2 in out {rint1 + 1}\n.ends\n.op");
+      expect(result).toContain('R1 in out {rint1*2}');
+      expect(result).toContain('R2 in out {rint1+1}');
+    });
+  });
+
   describe('.include resolution', () => {
     it('resolves a simple .include', async () => {
       const resolver: IncludeResolver = async (path) => {
