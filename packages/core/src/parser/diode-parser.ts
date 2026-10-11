@@ -20,6 +20,19 @@ export function parseDiodeInstanceParams(
     const eqIdx = token.indexOf('=');
 
     if (eqIdx < 0) {
+      if (token.toUpperCase() === 'THERMAL') {
+        throw new Error(
+          "Unsupported diode instance flag: 'THERMAL' (diode self-heating is not implemented)",
+        );
+      }
+      if (i === startIdx && token.toUpperCase() !== 'OFF' && !/^[+-]?(?:\d|\.\d)/.test(token)) {
+        // ngspice-47 `Dname n+ n- tj model ...`: a bare name after the third
+        // token means that token was a thermal node and this is the model.
+        throw new Error(
+          `Unsupported diode thermal node '${tokens[startIdx - 1]}' (model '${token}'): `
+          + 'diode self-heating is not implemented',
+        );
+      }
       if (
         i !== startIdx
         || params.AREA !== undefined

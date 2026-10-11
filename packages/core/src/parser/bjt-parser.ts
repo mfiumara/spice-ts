@@ -1,4 +1,13 @@
 import { ParseError } from '../errors.js';
+import { parseNumber } from './tokenizer.js';
+
+/** Per-instance BJT scaling; ngspice-47 bjtsetup.c/vbicsetup.c default both to 1. */
+export interface BJTInstanceParams {
+  /** Emitter area factor (ngspice `area`, positional or keyword). */
+  AREA?: number;
+  /** Parallel multiplier (ngspice `m`). */
+  M?: number;
+}
 
 export interface ParsedBJTInstance {
   collector: string;
@@ -9,82 +18,113 @@ export interface ParsedBJTInstance {
   substrate?: string;
   /** Fifth (thermal) terminal; only VBIC/HICUM accept it in ngspice-47. */
   thermal?: string;
+  /** Instance scaling; absent when the card gives neither AREA nor M. */
+  params?: BJTInstanceParams;
 }
 
 /**
- * Parse the bounded classic Q-card forms used by the public benchmark corpus.
+ * A complete SPICE number with an optional scale/unit suffix. Trailing digits
+ * after letters are not a number, so `2N3904` stays a model name.
+ */
+const STRICT_NUMBER = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?[a-z]*$/i;
+
+const isKeywordOrFlag = (token: string): boolean =>
+  token.includes('=') || token.toUpperCase() === 'OFF';
+
+/**
+ * Parse the ngspice-47 Q-card forms used by the public benchmark corpora:
  *
- * Supported forms are the ordinary three-terminal card, its trailing OFF
- * startup hint, the four-node substrate form (optionally with OFF), and the
- * five-node substrate+thermal form (optionally with OFF). As in
- * ngspice-47, a grounded substrate (`Qx c b e 0 MODEL`) is a node like any other:
- * the model is always the token after the substrate, never the substrate itself.
- * OFF is consumed as an initial-state
- * hint: the solver already starts nonlinear
- * devices from its zero solution, so it must not disable the transistor at the
- * converged operating point. The substrate and thermal terminals are returned
- * to the circuit, which knows the model: bounded VBIC (LEVEL=4) stamps the
- * substrate, the bounded Gummel-Poon BJT has no substrate-junction parameters
- * (such parameters remain explicit model errors), and a thermal terminal is
- * rejected with a typed error until self-heating exists.
+ *   Qname c b e [s [t]] model [area] [AREA=val] [M=val] [OFF]
+ *
+ * As in ngspice-47, a grounded substrate (`Qx c b e 0 MODEL`) is a node like
+ * any other: the model is the last positional token (before an optional
+ * positional area), never the substrate itself. A positional area is
+ * recognised only when it is a complete number following a non-numeric model
+ * name, so `Q1 c b e QMOD 2` is area 2 while `Q1 c b e 0 2` keeps model `2`.
+ *
+ * AREA and M are returned in `params`; the circuit scales the device exactly
+ * as ngspice bjttemp.c/bjtload.c and vbicload.c (SCALE = area * m) do. OFF
+ * (or OFF=0/1) is consumed as an initial-state hint: the solver already starts
+ * nonlinear devices from its zero solution, so it must not disable the
+ * transistor at the converged operating point. Every other instance keyword
+ * (AREAB, AREAC, IC, TEMP, DTEMP, ...) is rejected rather than ignored.
+ *
+ * The substrate and thermal terminals are returned to the circuit, which
+ * knows the model: bounded VBIC (LEVEL=4) stamps the substrate, the bounded
+ * Gummel-Poon BJT has no substrate-junction parameters (such parameters remain
+ * explicit model errors), and a thermal terminal is rejected with a typed
+ * error until self-heating exists.
  */
 export function parseBJTInstance(
   tokens: string[],
   lineNumber: number,
 ): ParsedBJTInstance {
-  const unsupported = (): never => {
-    throw new ParseError(
-      `Unsupported BJT Q-card form: '${tokens.join(' ')}'`,
-      lineNumber,
-      tokens.join(' '),
-    );
+  const line = tokens.join(' ');
+  const fail = (message: string): never => {
+    throw new ParseError(message, lineNumber, line);
   };
+  const unsupported = (): never => fail(`Unsupported BJT Q-card form: '${line}'`);
 
-  if (tokens.length < 5 || tokens.length > 8) unsupported();
+  let firstTrailing = tokens.findIndex((token, index) => index > 0 && isKeywordOrFlag(token));
+  if (firstTrailing < 0) firstTrailing = tokens.length;
+  const positional = tokens.slice(1, firstTrailing);
 
-  let modelName: string;
-  let substrate: string | undefined;
-  let thermal: string | undefined;
-  if (tokens.length === 5) {
-    modelName = tokens[4];
-  } else if (tokens.length === 6) {
-    if (tokens[5].toUpperCase() === 'OFF') {
-      modelName = tokens[4];
-    } else {
-      if (tokens[5].includes('=')) unsupported();
-      substrate = tokens[4];
-      modelName = tokens[5];
+  const params: BJTInstanceParams = {};
+  const last = positional[positional.length - 1];
+  const beforeLast = positional[positional.length - 2];
+  if (
+    positional.length >= 5
+    && STRICT_NUMBER.test(last)
+    && !STRICT_NUMBER.test(beforeLast)
+  ) {
+    params.AREA = parseNumber(last);
+    positional.pop();
+  }
+  // c b e model | c b e s model | c b e s t model
+  if (positional.length < 4 || positional.length > 6) unsupported();
+
+  for (const token of tokens.slice(firstTrailing)) {
+    const eqIdx = token.indexOf('=');
+    const key = (eqIdx < 0 ? token : token.slice(0, eqIdx)).toUpperCase();
+    const value = eqIdx < 0 ? undefined : token.slice(eqIdx + 1);
+    if (key === 'OFF') {
+      if (value !== undefined && value !== '0' && value !== '1') unsupported();
+      continue;
     }
-  } else if (tokens.length === 7) {
-    const last = tokens[6].toUpperCase();
-    if (last === 'OFF' || last === 'OFF=1') {
-      if (tokens[5].includes('=')) unsupported();
-      if (last === 'OFF=1' && tokens[4] !== '0') unsupported();
-      substrate = tokens[4];
-      modelName = tokens[5];
-    } else {
-      // Five-node form: collector base emitter substrate thermal model.
-      if (tokens[5].includes('=') || tokens[6].includes('=')) unsupported();
-      substrate = tokens[4];
-      thermal = tokens[5];
-      modelName = tokens[6];
+    if (value === undefined) {
+      fail(`Unsupported BJT instance token after the model: '${token}' in '${line}'`);
     }
-  } else {
-    if (tokens[7].toUpperCase() !== 'OFF' || tokens[6].includes('=')) unsupported();
-    if (tokens[5].includes('=')) unsupported();
-    substrate = tokens[4];
-    thermal = tokens[5];
-    modelName = tokens[6];
+    if (key !== 'AREA' && key !== 'M') {
+      fail(`Unsupported BJT instance parameter: '${token}' in '${line}'`);
+    }
+    const name = key as keyof BJTInstanceParams;
+    if (params[name] !== undefined) {
+      fail(`Duplicate BJT instance parameter: '${key}' in '${line}'`);
+    }
+    if (!STRICT_NUMBER.test(value!)) {
+      fail(`Invalid BJT instance parameter value: '${token}' in '${line}'`);
+    }
+    params[name] = parseNumber(value!);
+  }
+  for (const name of ['AREA', 'M'] as const) {
+    const value = params[name];
+    if (value !== undefined && !(value > 0 && Number.isFinite(value))) {
+      fail(`BJT ${name} must be a finite number greater than zero: '${line}'`);
+    }
   }
 
-  if (!modelName || modelName.includes('=')) unsupported();
+  const [collector, base, emitter] = positional;
+  const modelName = positional[positional.length - 1];
+  const substrate = positional.length >= 5 ? positional[3] : undefined;
+  const thermal = positional.length === 6 ? positional[4] : undefined;
 
   return {
-    collector: tokens[1],
-    base: tokens[2],
-    emitter: tokens[3],
+    collector,
+    base,
+    emitter,
     modelName,
     ...(substrate !== undefined ? { substrate } : {}),
     ...(thermal !== undefined ? { thermal } : {}),
+    ...(Object.keys(params).length > 0 ? { params } : {}),
   };
 }
