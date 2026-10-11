@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import {
   INITIAL_STATE_FIXTURES,
@@ -11,6 +13,7 @@ import {
   type ComparisonFixture,
   type EngineRun,
 } from './comparison-harness.js';
+import { runNativeNgspice, runNativeSpiceTs, type ClassicCircuit } from './corpus/classic/report.js';
 import './corpus/classic/report.test.js';
 
 const real = (values: number[]) => values.map(re => ({ re, im: 0 }));
@@ -44,6 +47,72 @@ describe('comparison metrics', () => {
     assert.equal(signal?.status, 'compared');
     if (!signal || signal.status !== 'compared') throw new Error('expected compared signal');
     assert.deepEqual(signal.absoluteError, { max: 0, rms: 0 });
+  });
+
+  it('aligns a two-source nested DC sweep segment by segment instead of across repeated primary grids', () => {
+    // `.dc V1 0 2 1 V2 0 10 10`: the primary grid restarts for every secondary value.
+    const result = alignAndMeasure(
+      { grid: [0, 1, 2, 0, 1, 2], signals: { 'v(2)': real([0, 0, 0, 10, 10, 10]) } },
+      { grid: [0, 1, 2, 0, 1, 2], signals: { 'v(2)': real([0, 0, 0, 10, 10, 10]) } },
+      ['v(2)'],
+    );
+
+    assert.equal(result.grid.alignedPoints, 6);
+    const signal = result.signals['v(2)'];
+    if (!signal || signal.status !== 'compared') throw new Error('expected compared signal');
+    assert.equal(signal.sampleCount, 6);
+    assert.deepEqual(signal.absoluteError, { max: 0, rms: 0 });
+  });
+
+  it('interpolates within the matching nested DC sweep segment when primary grids differ', () => {
+    const result = alignAndMeasure(
+      { grid: [0, 0.5, 1, 0, 0.5, 1], signals: { 'v(2)': real([0, 0.5, 1, 10, 10.5, 11]) } },
+      { grid: [0, 1, 0, 1], signals: { 'v(2)': real([0, 1, 10, 11]) } },
+      ['v(2)'],
+    );
+
+    assert.equal(result.grid.alignedPoints, 6);
+    const signal = result.signals['v(2)'];
+    if (!signal || signal.status !== 'compared') throw new Error('expected compared signal');
+    assert.deepEqual(signal.absoluteError, { max: 0, rms: 0 });
+  });
+
+  it('refuses to align nested DC sweeps whose segment counts differ', () => {
+    const result = alignAndMeasure(
+      { grid: [0, 1, 0, 1, 0, 1], signals: { 'v(2)': real([0, 1, 10, 11, 20, 21]) } },
+      { grid: [0, 1, 0, 1], signals: { 'v(2)': real([0, 1, 10, 11]) } },
+      ['v(2)'],
+    );
+
+    assert.equal(result.grid.alignedPoints, 0);
+    assert.equal(result.grid.excludedOutOfRange, 6);
+  });
+
+  it('matches the unchanged xyce nmos-level1-dc nested sweep against ngspice (#384)', { skip: !hasNgspice }, async () => {
+    const manifest = JSON.parse(readFileSync('benchmarks/corpus/xyce/manifest.json', 'utf8')) as {
+      circuits: Array<ClassicCircuit>;
+    };
+    const circuit = manifest.circuits.find(candidate => candidate.id === 'nmos-level1-dc');
+    if (!circuit) throw new Error('missing nmos-level1-dc fixture');
+    const input = readFileSync(circuit.localPath);
+    assert.equal(createHash('sha256').update(input).digest('hex'), circuit.sha256);
+
+    const [spiceTs, ngspice] = await Promise.all([
+      runNativeSpiceTs(input, circuit),
+      runNativeNgspice(input, circuit),
+    ]);
+    const spiceDc = spiceTs.analyses.find(analysis => analysis.type === 'dc');
+    const ngspiceDc = ngspice.analyses.find(analysis => analysis.type === 'dc');
+    if (!spiceDc || !ngspiceDc) throw new Error('expected DC results from both engines');
+    const result = alignAndMeasure(spiceDc.series, ngspiceDc.series, ['v(5)', 'v(2)']);
+
+    assert.equal(result.grid.alignedPoints, 361);
+    const supply = result.signals['v(5)'];
+    const source = result.signals['v(2)'];
+    if (supply?.status !== 'compared' || source?.status !== 'compared') throw new Error('expected compared signals');
+    assert.equal(supply.absoluteError.max, 0);
+    // ngspice stops Newton at RELTOL=1e-3; spice-ts lands on the analytic square-law root.
+    assert.ok(source.absoluteError.max < 1e-3, `v(2) max abs error ${source.absoluteError.max}`);
   });
 
   it('reports zero-reference relative error as unavailable instead of Infinity', () => {

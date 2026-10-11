@@ -11,10 +11,13 @@ import { CurrentSource } from './devices/current-source.js';
 import { Capacitor } from './devices/capacitor.js';
 import { Inductor } from './devices/inductor.js';
 import { MutualInductor } from './devices/mutual-inductor.js';
-import { Diode } from './devices/diode.js';
+import { Diode, diodeZeroBiasCapacitance } from './devices/diode.js';
 import { BJT } from './devices/bjt.js';
+import { VBIC, resolveVBICParams } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
 import { JFET, resolveNJFETParams } from './devices/jfet.js';
+import { HFET1 } from './devices/hfet1.js';
+import { resolveHFET1Instance, resolveHFET1Model } from './devices/hfet1-model.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
 import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
@@ -28,6 +31,7 @@ import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
+import { parseHFET1Instance } from './parser/hfet1-parser.js';
 import { parseLtraModelCard } from './parser/transmission-line-parser.js';
 import {
   parseDiodeInstanceParams,
@@ -208,6 +212,7 @@ function formatDevice(desc: DeviceDescriptor): string {
     case 'Q':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.nodes[2]} ${desc.modelName ?? ''}`.trim();
     case 'J':
+    case 'Z':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.nodes[2]} ${desc.modelName ?? ''}`.trim();
     case 'M':
       return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail}`.trim();
@@ -1028,6 +1033,29 @@ export class Circuit {
       this.expandLossyTransmissionLines(this.expandAllSubcircuits(guard)),
     );
     guard?.maximum('maxComponents', expandedDescriptors.length, 'compile');
+    if (
+      expandedDescriptors.some(desc => desc.type === 'Z')
+      && this._steps.some(step => step.param.toUpperCase() === 'TEMP')
+    ) {
+      throw new InvalidCircuitError("Unsupported bounded HFET step: 'TEMP'");
+    }
+
+    const hasBoundedVBIC = expandedDescriptors.some(desc =>
+      desc.type === 'Q' && this._models.get(desc.modelName!)?.params.LEVEL === 4);
+    if (hasBoundedVBIC) {
+      const unsupportedStep = this._steps.find(step => step.param.toUpperCase() === 'TEMP');
+      if (unsupportedStep) {
+        throw new Error("Unsupported bounded VBIC step: 'TEMP'");
+      }
+      const unsupported = this._analyses.find(analysis =>
+        analysis.type !== 'op' && analysis.type !== 'dc');
+      if (unsupported) {
+        throw new Error(`Unsupported bounded VBIC analysis: '${unsupported.type}'`);
+      }
+      if (this._poleZeroAnalyses.length > 0) {
+        throw new Error("Unsupported bounded VBIC analysis: 'pz'");
+      }
+    }
 
     // Collect all nodes from expanded descriptors
     for (const desc of expandedDescriptors) {
@@ -1182,7 +1210,11 @@ export class Circuit {
           }
           const modelParams = model.params;
           const polarity = model.type === 'PNP' ? -1 : 1;
-          devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }));
+          if (modelParams.LEVEL === 4) {
+            devices.push(new VBIC(desc.name, nodeIndices, modelParams, polarity));
+          } else {
+            devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }));
+          }
           break;
         }
         case 'J': {
@@ -1193,6 +1225,18 @@ export class Circuit {
             throw new Error(`Unsupported JFET model type: '${model.type}'`);
           }
           devices.push(new JFET(desc.name, nodeIndices, model.params));
+          break;
+        }
+        case 'Z': {
+          const modelName = desc.modelName!;
+          const model = this._models.get(modelName);
+          if (!model) throw new Error(`HFET '${desc.name}' references unknown model '${modelName}'`);
+          devices.push(new HFET1(
+            desc.name,
+            nodeIndices,
+            resolveHFET1Model(model),
+            resolveHFET1Instance(desc.params),
+          ));
           break;
         }
         case 'M': {
@@ -1372,7 +1416,7 @@ export class Circuit {
       if (desc.type === 'D') {
         const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
         const seriesResistance = desc.params?.RS ?? model?.params.RS;
-        const junctionCapacitance = desc.params?.CJ0 ?? model?.params.CJ0;
+        const junctionCapacitance = model ? diodeZeroBiasCapacitance(desc.name, model.params) : undefined;
         const sidewallCapacitance = model?.params.CJSW ?? model?.params.CJP;
         const effectiveArea = (desc.params?.AREA ?? 1) * (desc.params?.M ?? 1);
         const effectivePerimeter = (desc.params?.PJ ?? 0) * (desc.params?.M ?? 1);
@@ -1403,6 +1447,56 @@ export class Circuit {
       if (desc.type === 'Q') {
         const model = this._models.get(desc.modelName!);
         if (model?.type === 'NPN' || model?.type === 'PNP') {
+          if (model.params.LEVEL === 4) {
+            const polarity = model.type === 'PNP' ? -1 : 1;
+            const params = resolveVBICParams(model.params, polarity);
+            let [collector, base, emitter] = desc.nodes;
+            let collectorExternal = collector;
+            let baseExternal = base;
+            let emitterInternal = emitter;
+            let substrateInternal = GROUND_NODE;
+            if (params.RCX > 0) {
+              collectorExternal = internalNodeName(desc.name, 'cx');
+              result.push({
+                type: 'R', name: `${desc.name}.RCX`, nodes: [collector, collectorExternal],
+                value: params.RCX,
+              });
+            }
+            if (params.RBX > 0) {
+              baseExternal = internalNodeName(desc.name, 'bx');
+              result.push({
+                type: 'R', name: `${desc.name}.RBX`, nodes: [base, baseExternal],
+                value: params.RBX,
+              });
+            }
+            if (params.RE > 0) {
+              emitterInternal = internalNodeName(desc.name, 'ei');
+              result.push({
+                type: 'R', name: `${desc.name}.RE`, nodes: [emitter, emitterInternal],
+                value: params.RE,
+              });
+            }
+            if (params.RS > 0) {
+              substrateInternal = internalNodeName(desc.name, 'si');
+              result.push({
+                type: 'R', name: `${desc.name}.RS`, nodes: [GROUND_NODE, substrateInternal],
+                value: params.RS,
+              });
+            }
+            result.push({
+              ...desc,
+              nodes: [
+                collectorExternal,
+                internalNodeName(desc.name, 'ci'),
+                baseExternal,
+                internalNodeName(desc.name, 'bi'),
+                emitterInternal,
+                internalNodeName(desc.name, 'bp'),
+                substrateInternal,
+              ],
+            });
+            continue;
+          }
           let [collector, base, emitter] = desc.nodes;
           for (const [parameter, terminal] of [
             ['RC', collector], ['RB', base], ['RE', emitter],
@@ -1433,6 +1527,31 @@ export class Circuit {
           throw new Error(`Unsupported JFET model type: '${model.type}'`);
         }
         const params = resolveNJFETParams(model.params);
+        let [drain, gate, source] = desc.nodes;
+        if (params.RD > 0) {
+          const drainPrime = internalNodeName(desc.name, 'rd');
+          result.push({
+            type: 'R', name: `${desc.name}.RD`, nodes: [drain, drainPrime], value: params.RD,
+          });
+          drain = drainPrime;
+        }
+        if (params.RS > 0) {
+          const sourcePrime = internalNodeName(desc.name, 'rs');
+          result.push({
+            type: 'R', name: `${desc.name}.RS`, nodes: [source, sourcePrime], value: params.RS,
+          });
+          source = sourcePrime;
+        }
+        result.push({ ...desc, nodes: [drain, gate, source] });
+        continue;
+      }
+
+      if (desc.type === 'Z') {
+        const modelName = desc.modelName!;
+        const model = this._models.get(modelName);
+        if (!model) throw new Error(`HFET '${desc.name}' references unknown model '${modelName}'`);
+        const params = resolveHFET1Model(model);
+        resolveHFET1Instance(desc.params);
         let [drain, gate, source] = desc.nodes;
         if (params.RD > 0) {
           const drainPrime = internalNodeName(desc.name, 'rd');
@@ -1772,6 +1891,18 @@ export class Circuit {
             type: 'Q', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3])],
             modelName: tokens[4],
+          });
+          break;
+        }
+        case 'Z': {
+          const evaluatedTokens = tokens.map(t => evalToken(t));
+          const parsed = parseHFET1Instance(evaluatedTokens, lineNumber, raw);
+          result.push({
+            type: 'Z',
+            name: devName,
+            nodes: parsed.nodes.map(mapNode),
+            modelName: parsed.modelName,
+            params: parsed.params,
           });
           break;
         }

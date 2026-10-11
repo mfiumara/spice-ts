@@ -1,0 +1,7 @@
+* Issue 368 bounded parallel RLC current-step transient (project-authored, MIT)
+I1 0 out PULSE(0 1m 0 1u 1u 10m 20m)
+R1 out 0 1k
+L1 out 0 1m
+C1 out 0 1u
+.tran 1u 400u
+.end

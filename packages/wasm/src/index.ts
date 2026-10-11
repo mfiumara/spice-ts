@@ -94,7 +94,7 @@ export interface SpiceEngineCapabilitiesV1 {
     devicesByAnalysis: {
       op: readonly ['R', 'I', 'V', 'G', 'F', 'E', 'H'];
       dc: readonly ['R', 'I', 'V'];
-      tran: readonly ['R', 'C', 'I', 'V'];
+      tran: readonly ['R', 'C', 'L', 'I', 'V'];
       ac: readonly ['R', 'C', 'L', 'I', 'V'];
     };
     fallback: 'reject';
@@ -205,7 +205,7 @@ export async function createSpiceEngine(options: CreateSpiceEngineOptions): Prom
         devicesByAnalysis: {
           op: ['R', 'I', 'V', 'G', 'F', 'E', 'H'] as const,
           dc: ['R', 'I', 'V'] as const,
-          tran: ['R', 'C', 'I', 'V'] as const,
+          tran: ['R', 'C', 'L', 'I', 'V'] as const,
           ac: ['R', 'C', 'L', 'I', 'V'] as const,
         },
         fallback: 'reject' as const,

@@ -88,7 +88,7 @@ export interface NoiseAnalysis {
   pointsPerSummary?: number;
 }
 
-/** Bounded ideal-linear distortion analysis (`.disto dec ... [f2overf1]`). */
+/** Bounded distortion analysis (`.disto dec ... [f2overf1]`). */
 export interface DistortionAnalysis {
   type: 'disto';
   variation: 'dec';
@@ -282,6 +282,15 @@ export const DEFAULT_OPTIONS: ResolvedOptions = {
   trtol: 7,
   gmin: 0,
 };
+
+/** Netlist `.options` overlaid by caller options; an explicit `undefined` keeps the netlist value. */
+export function withNetlistOptions<T extends SimulationOptions>(netlist: SimulationOptions, options?: T): T {
+  const merged: Record<string, unknown> = { ...netlist };
+  for (const [key, value] of Object.entries(options ?? {})) {
+    if (value !== undefined) merged[key] = value;
+  }
+  return merged as T;
+}
 
 export function resolveOptions(opts?: SimulationOptions, stopTime?: number): ResolvedOptions {
   return {

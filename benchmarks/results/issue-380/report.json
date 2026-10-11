@@ -1,0 +1,392 @@
+{
+  "schemaVersion": "spice-ts-issue-380-noise-parity/v1",
+  "issue": "https://github.com/mfiumara/spice-ts/issues/380",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0"
+  },
+  "policy": {
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "comparisonGrid": "spice-ts",
+    "interpolation": "linear"
+  },
+  "fixtures": [
+    {
+      "id": "bjt-noise",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/bjtnoise.cir",
+      "inputSha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc",
+        "analyses": [
+          {
+            "type": "noise",
+            "plotName": "Integrated Noise",
+            "points": 1,
+            "signals": [
+              "v(inoise_total_q1_1overf)",
+              "v(inoise_total_q1_ib)",
+              "v(inoise_total_q1_ic)",
+              "v(inoise_total_q1_rb)",
+              "v(inoise_total_q1_rc)",
+              "v(inoise_total_q1_re)",
+              "v(inoise_total_q1)",
+              "v(inoise_total_rload_1overf)",
+              "v(inoise_total_rload_thermal)",
+              "v(inoise_total_rload)",
+              "v(inoise_total)",
+              "v(onoise_total_q1_1overf)",
+              "v(onoise_total_q1_ib)",
+              "v(onoise_total_q1_ic)",
+              "v(onoise_total_q1_rb)",
+              "v(onoise_total_q1_rc)",
+              "v(onoise_total_q1_re)",
+              "v(onoise_total_q1)",
+              "v(onoise_total_rload_1overf)",
+              "v(onoise_total_rload_thermal)",
+              "v(onoise_total_rload)",
+              "v(onoise_total)"
+            ]
+          },
+          {
+            "type": "noise",
+            "plotName": "Noise Spectral Density Curves",
+            "points": 41,
+            "signals": [
+              "inoise_spectrum",
+              "onoise_q1",
+              "onoise_q1_1overf",
+              "onoise_q1_ib",
+              "onoise_q1_ic",
+              "onoise_q1_rb",
+              "onoise_q1_rc",
+              "onoise_q1_re",
+              "onoise_rload",
+              "onoise_rload_1overf",
+              "onoise_rload_thermal",
+              "onoise_spectrum"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "183a30585cee976f2990857df941ca500aea2755a1e4ecf946c14699f09b36fc",
+        "analyses": [
+          {
+            "type": "noise",
+            "plotName": "Integrated Noise",
+            "points": 1,
+            "signals": [
+              "v(inoise_total)",
+              "v(onoise_total)"
+            ]
+          },
+          {
+            "type": "noise",
+            "plotName": "Noise Spectral Density Curves",
+            "points": 41,
+            "signals": [
+              "inoise_spectrum",
+              "onoise_spectrum"
+            ]
+          }
+        ]
+      },
+      "comparisons": [
+        {
+          "analysis": "noise",
+          "signals": [
+            "inoise_spectrum",
+            "onoise_spectrum"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 41,
+              "ngspicePoints": 41,
+              "alignedPoints": 41,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "inoise_spectrum": {
+                "status": "compared",
+                "sampleCount": 41,
+                "absoluteError": {
+                  "max": 2.917233082544125e-10,
+                  "rms": 2.917132735875478e-10
+                },
+                "relativeError": {
+                  "max": 0.6653810952372762,
+                  "rms": 0.6653734761659779,
+                  "sampleCount": 41,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "onoise_spectrum": {
+                "status": "compared",
+                "sampleCount": 41,
+                "absoluteError": {
+                  "max": 1.0644493237827966e-7,
+                  "rms": 1.0644119765527101e-7
+                },
+                "relativeError": {
+                  "max": 0.6522433558221978,
+                  "rms": 0.6522354373164336,
+                  "sampleCount": 41,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          }
+        },
+        {
+          "analysis": "noise",
+          "signals": [
+            "v(inoise_total)",
+            "v(onoise_total)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "v(inoise_total)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 9.224280038955371e-8,
+                  "rms": 9.224280038955371e-8
+                },
+                "relativeError": {
+                  "max": 0.6653724556862614,
+                  "rms": 0.6653724556862614,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(onoise_total)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 0.000033657821335710916,
+                  "rms": 0.000033657821335710916
+                },
+                "relativeError": {
+                  "max": 0.6522343768018072,
+                  "rms": 0.6522343768018072,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          }
+        }
+      ],
+      "notComparedNgspiceVectors": [
+        "Integrated Noise: v(inoise_total_q1)",
+        "Integrated Noise: v(inoise_total_q1_1overf)",
+        "Integrated Noise: v(inoise_total_q1_ib)",
+        "Integrated Noise: v(inoise_total_q1_ic)",
+        "Integrated Noise: v(inoise_total_q1_rb)",
+        "Integrated Noise: v(inoise_total_q1_rc)",
+        "Integrated Noise: v(inoise_total_q1_re)",
+        "Integrated Noise: v(inoise_total_rload)",
+        "Integrated Noise: v(inoise_total_rload_1overf)",
+        "Integrated Noise: v(inoise_total_rload_thermal)",
+        "Integrated Noise: v(onoise_total_q1)",
+        "Integrated Noise: v(onoise_total_q1_1overf)",
+        "Integrated Noise: v(onoise_total_q1_ib)",
+        "Integrated Noise: v(onoise_total_q1_ic)",
+        "Integrated Noise: v(onoise_total_q1_rb)",
+        "Integrated Noise: v(onoise_total_q1_rc)",
+        "Integrated Noise: v(onoise_total_q1_re)",
+        "Integrated Noise: v(onoise_total_rload)",
+        "Integrated Noise: v(onoise_total_rload_1overf)",
+        "Integrated Noise: v(onoise_total_rload_thermal)",
+        "Noise Spectral Density Curves: onoise_q1",
+        "Noise Spectral Density Curves: onoise_q1_1overf",
+        "Noise Spectral Density Curves: onoise_q1_ib",
+        "Noise Spectral Density Curves: onoise_q1_ic",
+        "Noise Spectral Density Curves: onoise_q1_rb",
+        "Noise Spectral Density Curves: onoise_q1_rc",
+        "Noise Spectral Density Curves: onoise_q1_re",
+        "Noise Spectral Density Curves: onoise_rload",
+        "Noise Spectral Density Curves: onoise_rload_1overf",
+        "Noise Spectral Density Curves: onoise_rload_thermal"
+      ]
+    },
+    {
+      "id": "resistor-noise",
+      "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/resnoise.cir",
+      "inputSha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661",
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661",
+        "analyses": [
+          {
+            "type": "noise",
+            "plotName": "Integrated Noise",
+            "points": 1,
+            "signals": [
+              "i(inoise_total_rl_1overf)",
+              "i(inoise_total_rl_thermal)",
+              "i(inoise_total_rl)",
+              "i(inoise_total)",
+              "v(onoise_total_rl_1overf)",
+              "v(onoise_total_rl_thermal)",
+              "v(onoise_total_rl)",
+              "v(onoise_total)"
+            ]
+          },
+          {
+            "type": "noise",
+            "plotName": "Noise Spectral Density Curves",
+            "points": 41,
+            "signals": [
+              "inoise_spectrum",
+              "onoise_rl",
+              "onoise_rl_1overf",
+              "onoise_rl_thermal",
+              "onoise_spectrum"
+            ]
+          }
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "inputSha256": "241ea1ce167a449e91b1cf29904f5c9513338cff31c2c0beb72a845482048661",
+        "analyses": [
+          {
+            "type": "noise",
+            "plotName": "Integrated Noise",
+            "points": 1,
+            "signals": [
+              "i(inoise_total)",
+              "v(onoise_total)"
+            ]
+          },
+          {
+            "type": "noise",
+            "plotName": "Noise Spectral Density Curves",
+            "points": 41,
+            "signals": [
+              "inoise_spectrum",
+              "onoise_spectrum"
+            ]
+          }
+        ]
+      },
+      "comparisons": [
+        {
+          "analysis": "noise",
+          "signals": [
+            "inoise_spectrum",
+            "onoise_spectrum"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 41,
+              "ngspicePoints": 41,
+              "alignedPoints": 41,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "inoise_spectrum": {
+                "status": "compared",
+                "sampleCount": 41,
+                "absoluteError": {
+                  "max": 7.077319597044128e-19,
+                  "rms": 7.0773195970441255e-19
+                },
+                "relativeError": {
+                  "max": 1.7383133781296814e-7,
+                  "rms": 1.7383133781296814e-7,
+                  "sampleCount": 41,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "onoise_spectrum": {
+                "status": "compared",
+                "sampleCount": 41,
+                "absoluteError": {
+                  "max": 7.0773196098395785e-16,
+                  "rms": 7.077319609839581e-16
+                },
+                "relativeError": {
+                  "max": 1.738313381272468e-7,
+                  "rms": 1.738313381272468e-7,
+                  "sampleCount": 41,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          }
+        },
+        {
+          "analysis": "noise",
+          "signals": [
+            "i(inoise_total)",
+            "v(onoise_total)"
+          ],
+          "metrics": {
+            "grid": {
+              "spiceTsPoints": 1,
+              "ngspicePoints": 1,
+              "alignedPoints": 1,
+              "excludedOutOfRange": 0
+            },
+            "signals": {
+              "i(inoise_total)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 2.237933048582281e-16,
+                  "rms": 2.237933048582281e-16
+                },
+                "relativeError": {
+                  "max": 1.7383133688613518e-7,
+                  "rms": 1.7383133688613518e-7,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              },
+              "v(onoise_total)": {
+                "status": "compared",
+                "sampleCount": 1,
+                "absoluteError": {
+                  "max": 2.2379330507991252e-13,
+                  "rms": 2.2379330507991252e-13
+                },
+                "relativeError": {
+                  "max": 1.7383133705832843e-7,
+                  "rms": 1.7383133705832843e-7,
+                  "sampleCount": 1,
+                  "excludedZeroReferences": 0
+                }
+              }
+            }
+          }
+        }
+      ],
+      "notComparedNgspiceVectors": [
+        "Integrated Noise: i(inoise_total_rl)",
+        "Integrated Noise: i(inoise_total_rl_1overf)",
+        "Integrated Noise: i(inoise_total_rl_thermal)",
+        "Integrated Noise: v(onoise_total_rl)",
+        "Integrated Noise: v(onoise_total_rl_1overf)",
+        "Integrated Noise: v(onoise_total_rl_thermal)",
+        "Noise Spectral Density Curves: onoise_rl",
+        "Noise Spectral Density Curves: onoise_rl_1overf",
+        "Noise Spectral Density Curves: onoise_rl_thermal"
+      ]
+    }
+  ]
+}

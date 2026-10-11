@@ -1,0 +1,76 @@
+{
+  "comparisonGrid": "spice-ts",
+  "interpolation": "linear",
+  "fixtures": {
+    "capacitor-rc-transient": {
+      "spiceTs": "success",
+      "ngspice": "failed",
+      "error": "Error on line 29 or its substitute: .tran 0 5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: regression test to show proper transient rc circuit Total elapsed time (seconds) = 0.009 Total DRAM available = 49152.000 MB. DRAM currently available = 18126.391 MB. Maximum ngspice program size = 9.906 MB. Current ngspice program size = 9.906 MB."
+    },
+    "capacitor-rc-transient-newlte": {
+      "spiceTs": "unsupported",
+      "ngspice": "failed",
+      "error": "Parse error at line 31: Unsupported .options TIMEINT field: 'newlte' .options timeint reltol=1e-6 abstol=1e-6 newlte=2"
+    },
+    "capacitor-rc-oscillator": {
+      "spiceTs": "success",
+      "ngspice": "failed",
+      "error": "Error on line 2 or its substitute: .tran 0 2.0e-4 TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: rc_osc test Total elapsed time (seconds) = 0.007 Total DRAM available = 49152.000 MB. DRAM currently available = 18126.391 MB. Maximum ngspice program size = 9.844 MB. Current ngspice program size = 9.844 MB."
+    },
+    "diode-level2-temperature-breakdown": {
+      "spiceTs": "unsupported",
+      "ngspice": "failed",
+      "error": "no spice-ts result for analyses: tran"
+    },
+    "diode-transient": {
+      "spiceTs": "success",
+      "ngspice": "failed",
+      "error": "Error on line 45 or its substitute: .tran 0 0.5ms TSTEP is invalid, must be greater than zero. Simulation interrupted due to error! Error: circuit not parsed. Note: no resource usage information for 'time', or no active circuit available Note: No compatibility mode selected! Circuit: diode circuit netlist Total elapsed time (seconds) = 0.008 Total DRAM available = 49152.000 MB. DRAM currently available = 18126.391 MB. Maximum ngspice program size = 9.906 MB. Current ngspice program size = 9.906 MB."
+    },
+    "inductor-transient": {
+      "skipped": "excluded on this run (does not terminate on the base commit)"
+    },
+    "rlc-transient": {
+      "spiceTs": "success",
+      "ngspice": "success",
+      "spiceTsPoints": 1002,
+      "ngspicePoints": 1019,
+      "runtimeMs": {
+        "spiceTs": 23,
+        "ngspice": 123.3
+      },
+      "signals": {
+        "i(l1)": {
+          "absMax": 2.500010641470221,
+          "absRms": 0.9119575703247226,
+          "relMax": 1.0000000000000384,
+          "relRms": 1.0000000000000018
+        },
+        "i(v1)": {
+          "absMax": 2.5000106414702206,
+          "absRms": 0.9119575703247222,
+          "relMax": 1.0000000000000384,
+          "relRms": 1.0000000000000018
+        },
+        "v(1)": {
+          "absMax": 10,
+          "absRms": 0.3159120118032817,
+          "relMax": 1.7763568394002506e-16,
+          "relRms": 5.61452698769406e-18
+        },
+        "v(2)": {
+          "absMax": 10,
+          "absRms": 2.7540515408856727,
+          "relMax": 3.0000510797093374,
+          "relRms": 0.8137062267032011
+        },
+        "v(3)": {
+          "absMax": 10,
+          "absRms": 3.0410788937863247,
+          "relMax": 29697.470540086375,
+          "relRms": 949.8862549195626
+        }
+      }
+    }
+  }
+}

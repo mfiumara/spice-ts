@@ -52,8 +52,7 @@
     "build": "pnpm -C packages/wasm build",
     "wasm": "pnpm exec tsx benchmarks/results/issue-355/compare.ts --child=wasm",
     "ngspice": "ngspice -b -r <raw> <identical-netlist>",
-    "reproduce": "pnpm --filter @spice-ts/wasm bench:vcvs-op",
-    "verify": "pnpm --filter @spice-ts/wasm bench:vcvs-op:check"
+    "reproduce": "pnpm --filter @spice-ts/wasm bench:vcvs-op"
   },
   "convergence": {
     "differential.cir": {

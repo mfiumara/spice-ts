@@ -1,4 +1,5 @@
 import type { DiodeInstanceParams } from '../parser/diode-parser.js';
+import { InvalidCircuitError } from '../errors.js';
 import type { DeviceModel, StampContext } from './device.js';
 
 export interface DiodeParams {
@@ -12,6 +13,7 @@ export interface DiodeParams {
   RS: number;
   JSW?: number;
   CJ0?: number;
+  CJO?: number;
   CJP?: number;
   CJSW?: number;
   VJ?: number;
@@ -19,14 +21,17 @@ export interface DiodeParams {
   VJSW?: number;
   M?: number;
   MJSW?: number;
+  FC?: number;
+  FCS?: number;
   TT?: number;
   KF?: number;
   AF?: number;
 }
 
-const VT = 0.02585; // Thermal voltage at 300K
+const VT = 0.02585;
 const KELVIN_OFFSET = 273.15;
 const K_OVER_Q = 8.617333262e-5;
+const DISTORTION_VT = (1.38064852e-23 / 1.6021766208e-19) * (27 + KELVIN_OFFSET);
 const GMIN = 1e-12;
 const UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS = new Set([
   'NBV', 'IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2',
@@ -38,11 +43,26 @@ interface BreakdownParams {
   thermalVoltage: number;
 }
 
+export interface DiodeDistortionCoefficients {
+  current2: number;
+  current3: number;
+  charge2: number;
+  charge3: number;
+}
+
+interface ChargeTaylorCoefficients {
+  capacitance: number;
+  second: number;
+  third: number;
+}
+
 export class Diode implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
   readonly params: DiodeParams;
+  readonly suppliedParams: Readonly<Partial<DiodeParams>>;
   private temperature = 27;
+  private distortionMode = false;
 
   constructor(
     readonly name: string,
@@ -51,6 +71,7 @@ export class Diode implements DeviceModel {
     private readonly hasExternalSeriesResistance = false,
     readonly instanceParams: DiodeInstanceParams = {},
   ) {
+    this.suppliedParams = { ...params };
     for (const name of Object.keys(params)) {
       if (UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS.has(name)) {
         throw new Error(
@@ -60,7 +81,6 @@ export class Diode implements DeviceModel {
     }
     const effectiveArea = (instanceParams.AREA ?? 1) * (instanceParams.M ?? 1);
     const effectivePerimeter = (instanceParams.PJ ?? 0) * (instanceParams.M ?? 1);
-    const junctionPotential = params.VJ ?? 0.7;
     this.params = {
       IS: (params.IS ?? 1e-14) * effectiveArea
         + (params.JSW ?? 0) * effectivePerimeter,
@@ -72,12 +92,15 @@ export class Diode implements DeviceModel {
       TNOM: params.TNOM ?? 27,
       RS: (params.RS ?? 0) / effectiveArea,
       JSW: params.JSW ?? 0,
-      CJ0: (params.CJ0 ?? 0) * effectiveArea,
+      CJ0: (diodeZeroBiasCapacitance(name, params) ?? 0) * effectiveArea,
       CJSW: (params.CJSW ?? params.CJP ?? 0) * effectivePerimeter,
-      VJ: junctionPotential,
-      VJSW: params.VJSW ?? params.PHP ?? junctionPotential,
+      // ngspice diosetup.c defaults: VJ = VJSW = 1 V, FC = FCS = 0.5.
+      VJ: params.VJ ?? 1,
+      VJSW: params.VJSW ?? params.PHP ?? 1,
       M: params.M ?? 0.5,
       MJSW: params.MJSW ?? 0.33,
+      FC: params.FC ?? 0.5,
+      FCS: params.FCS ?? 0.5,
       TT: params.TT ?? 0,
       KF: params.KF ?? 0,
       AF: params.AF ?? 1,
@@ -90,6 +113,70 @@ export class Diode implements DeviceModel {
 
   getTemperature(): number {
     return this.temperature;
+  }
+
+  setDistortionMode(enabled: boolean): void {
+    this.distortionMode = enabled;
+  }
+
+  /** Reject diode fields outside the bounded `.disto` slice (no solution needed). */
+  assertDistortionSupported(): void {
+    const supported = new Set(['IS', 'TT', 'CJ0', 'CJO', 'RS']);
+    const unsupported = Object.keys(this.suppliedParams).filter(name => !supported.has(name));
+    if (unsupported.length > 0) {
+      throw new InvalidCircuitError(
+        `.disto diode '${this.name}' does not support model parameter ${unsupported[0]}`,
+      );
+    }
+    if (Object.keys(this.instanceParams).length > 0) {
+      throw new InvalidCircuitError(
+        `.disto diode '${this.name}' supports only default instance geometry`,
+      );
+    }
+    if (this.suppliedParams.RS !== undefined
+        || this.hasExternalSeriesResistance || this.params.RS !== 0) {
+      throw new InvalidCircuitError(`.disto diode '${this.name}' does not support series resistance`);
+    }
+    if (this.temperature !== 27) {
+      throw new InvalidCircuitError(`.disto diode '${this.name}' does not support temperature overrides`);
+    }
+  }
+
+  distortionCoefficients(solution: Float64Array): DiodeDistortionCoefficients {
+    this.assertDistortionSupported();
+    const [nA, nK] = this.nodes;
+    const voltage = (nA >= 0 ? solution[nA] : 0) - (nK >= 0 ? solution[nK] : 0);
+    const { IS, N, TT, CJ0: distortionCapacitance } = this.params;
+    const thermalVoltage = N * DISTORTION_VT;
+    const conductance = (IS / thermalVoltage) * safeExponential(voltage / thermalVoltage);
+    const current2 = conductance / (2 * thermalVoltage);
+    const current3 = conductance / (6 * thermalVoltage * thermalVoltage);
+    const { VJ, M, FC } = this.params;
+    const depletion = depletionChargeTaylor(voltage, distortionCapacitance!, VJ!, M!, FC!);
+    return {
+      current2,
+      current3,
+      charge2: TT! * current2 + depletion.second,
+      charge3: TT! * current3 + depletion.third,
+    };
+  }
+
+  stampDistortionDynamic(ctx: StampContext): void {
+    const { IS, N, TT, CJ0: distortionCapacitance } = this.params;
+    if (!distortionCapacitance && !TT) return;
+    const [nA, nK] = this.nodes;
+    const voltage = (nA >= 0 ? ctx.getVoltage(nA) : 0) - (nK >= 0 ? ctx.getVoltage(nK) : 0);
+    const thermalVoltage = N * DISTORTION_VT;
+    const conductance = (IS / thermalVoltage) * safeExponential(voltage / thermalVoltage);
+    const { VJ, M, FC } = this.params;
+    const capacitance = depletionChargeTaylor(voltage, distortionCapacitance!, VJ!, M!, FC!)
+      .capacitance + TT! * conductance;
+    if (nA >= 0) ctx.stampC(nA, nA, capacitance);
+    if (nK >= 0) ctx.stampC(nK, nK, capacitance);
+    if (nA >= 0 && nK >= 0) {
+      ctx.stampC(nA, nK, -capacitance);
+      ctx.stampC(nK, nA, -capacitance);
+    }
   }
 
   private breakdownParams(): BreakdownParams | undefined {
@@ -138,7 +225,7 @@ export class Diode implements DeviceModel {
     const vd = vA - vK;
 
     const { IS, N, RS } = this.params;
-    const vt = N * VT;
+    const vt = N * (this.distortionMode ? DISTORTION_VT : VT);
 
     const { current: id, conductance, linearizationVoltage } = diodeCurrent(
       vd,
@@ -165,7 +252,7 @@ export class Diode implements DeviceModel {
   }
 
   stampDynamic(ctx: StampContext): void {
-    const { CJ0, CJSW, VJ, VJSW, M, MJSW, TT, IS, N, RS } = this.params;
+    const { CJ0, CJSW, VJ, VJSW, M, MJSW, FC, FCS, TT, IS, N, RS } = this.params;
     if (!CJ0 && !CJSW && !TT) return;
 
     const [nA, nK] = this.nodes;
@@ -184,8 +271,8 @@ export class Diode implements DeviceModel {
       ? 1 / (1 + RS * operatingPoint.junctionConductance)
       : 1;
 
-    let cj = depletionCapacitance(junctionVoltage, CJ0!, VJ!, M!);
-    cj += depletionCapacitance(junctionVoltage, CJSW!, VJSW!, MJSW!);
+    let cj = depletionChargeTaylor(junctionVoltage, CJ0!, VJ!, M!, FC!).capacitance;
+    cj += depletionChargeTaylor(junctionVoltage, CJSW!, VJSW!, MJSW!, FCS!).capacitance;
 
     if (TT) {
       const junctionConductance = operatingPoint?.junctionConductance
@@ -207,18 +294,61 @@ export class Diode implements DeviceModel {
   }
 }
 
-function depletionCapacitance(
+/**
+ * Resolve the zero-bias junction capacitance. ngspice accepts both CJO (letter)
+ * and CJ0 (digit) for the same model field; conflicting values are rejected
+ * rather than silently picking one.
+ */
+export function diodeZeroBiasCapacitance(
+  name: string,
+  params: Readonly<Partial<DiodeParams>>,
+): number | undefined {
+  const { CJ0, CJO } = params;
+  if (CJ0 !== undefined && CJO !== undefined && CJ0 !== CJO) {
+    throw new InvalidCircuitError(
+      `Diode '${name}' sets both CJO=${CJO} and CJ0=${CJ0}; they are aliases of the same `
+        + 'zero-bias junction capacitance, so supply only one',
+    );
+  }
+  return CJ0 ?? CJO;
+}
+
+/**
+ * Depletion capacitance dQ/dV and its Taylor terms, as in ngspice dioload.c:
+ * the abrupt-junction law below FC*VJ, and above it the linear extension
+ * C = CJ0/F2 * (F3 + M*V/VJ) with F2 = (1-FC)^(1+M), F3 = 1 - FC*(1+M),
+ * which keeps the capacitance continuous at V = FC*VJ.
+ */
+function depletionChargeTaylor(
   junctionVoltage: number,
   zeroBiasCapacitance: number,
   junctionPotential: number,
   gradingCoefficient: number,
-): number {
-  if (!zeroBiasCapacitance) return 0;
-  if (junctionVoltage < 0.5 * junctionPotential) {
-    return zeroBiasCapacitance
-      / Math.pow(1 - junctionVoltage / junctionPotential, gradingCoefficient);
+  forwardCoefficient: number,
+): ChargeTaylorCoefficients {
+  if (!zeroBiasCapacitance) return { capacitance: 0, second: 0, third: 0 };
+  if (junctionVoltage < forwardCoefficient * junctionPotential) {
+    const depletion = 1 - junctionVoltage / junctionPotential;
+    const capacitance = zeroBiasCapacitance / Math.pow(depletion, gradingCoefficient);
+    const second = capacitance * gradingCoefficient
+      / (2 * junctionPotential * depletion);
+    return {
+      capacitance,
+      second,
+      third: second * (gradingCoefficient + 1)
+        / (3 * junctionPotential * depletion),
+    };
   }
-  return zeroBiasCapacitance / Math.pow(0.5, gradingCoefficient);
+  const continuation = Math.pow(1 - forwardCoefficient, 1 + gradingCoefficient);
+  return {
+    capacitance: zeroBiasCapacitance / continuation * (
+      1 - forwardCoefficient * (1 + gradingCoefficient)
+      + gradingCoefficient * junctionVoltage / junctionPotential
+    ),
+    second: zeroBiasCapacitance * gradingCoefficient
+      / (2 * junctionPotential * continuation),
+    third: 0,
+  };
 }
 
 function diodeCurrent(

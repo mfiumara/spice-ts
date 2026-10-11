@@ -3,7 +3,7 @@ import type { CompiledCircuit } from './circuit.js';
 import { parse, parseAsync } from './parser/index.js';
 import type { ConvergenceTelemetry, SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
 import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, SimulatorBackend } from './types.js';
-import { resolveOptions } from './types.js';
+import { resolveOptions, withNetlistOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
 import { solveTransient } from './analysis/transient.js';
 import { buildACRHS, solveAC } from './analysis/ac.js';
@@ -12,8 +12,9 @@ import { solveTransferFunction } from './analysis/transfer-function.js';
 import { solvePoleZero } from './analysis/pole-zero.js';
 import { solveSensitivity } from './analysis/sensitivity.js';
 import {
-  assertLinearDistortionSupported, solveLinearDistortion,
+  assertDistortionSupported, solveDistortion,
 } from './analysis/distortion.js';
+import { Diode } from './devices/diode.js';
 import { solveDCSweep } from './analysis/dc-sweep.js';
 import { solveStep, generateStepValues, resolveStepTarget } from './analysis/step.js';
 import type { StepStreamEvent, StepAnalysis } from './types.js';
@@ -73,10 +74,6 @@ function selectedExternalSimulator(options?: SimulationOptions): SimulatorAdapte
   return createSimulator(simulator);
 }
 
-function withNetlistOptions(compiled: CompiledCircuit, options?: SimulationOptions): SimulationOptions {
-  return { ...compiled.simulationOptions, ...options };
-}
-
 /**
  * Run all analyses declared in a SPICE netlist or {@link Circuit} object.
  *
@@ -117,7 +114,7 @@ export async function simulate(
     circuit = input;
   }
   const compiled = circuit.compile(guard);
-  options = withNetlistOptions(compiled, options);
+  options = withNetlistOptions(compiled.simulationOptions, options);
   const warnings: SimulationWarning[] = [];
   const convergence = createConvergenceTelemetry();
 
@@ -181,10 +178,20 @@ export async function simulate(
         break;
       }
       case 'disto': {
-        assertLinearDistortionSupported(compiled, analysis);
+        assertDistortionSupported(compiled, analysis);
         const opts = resolveOptions(options);
-        solveDCOperatingPoint(compiled, opts, undefined, convergence, 'operating-point', guard);
-        result.distortion = solveLinearDistortion(compiled, analysis, guard);
+        const diodes = compiled.devices.filter((device): device is Diode => device instanceof Diode);
+        for (const diode of diodes) diode.setDistortionMode(true);
+        try {
+          const { assembler: dcAsm } = solveDCOperatingPoint(
+            compiled, opts, undefined, convergence, 'operating-point', guard,
+          );
+          result.distortion = solveDistortion(
+            compiled, analysis, opts, dcAsm.solution, guard,
+          );
+        } finally {
+          for (const diode of diodes) diode.setDistortionMode(false);
+        }
         break;
       }
       case 'tf': {
@@ -250,7 +257,7 @@ export async function* simulateStream(
     circuit = input;
   }
   const compiled = circuit.compile();
-  options = withNetlistOptions(compiled, options);
+  options = withNetlistOptions(compiled.simulationOptions, options);
   const warnings: SimulationWarning[] = [];
   validateCircuit(compiled, warnings);
 
@@ -319,7 +326,7 @@ export async function* simulateStepStream(
     circuit = input;
   }
   const compiled = circuit.compile();
-  options = withNetlistOptions(compiled, options);
+  options = withNetlistOptions(compiled.simulationOptions, options);
   const warnings: SimulationWarning[] = [];
   validateCircuit(compiled, warnings);
 
