@@ -1,0 +1,45 @@
+rc-ladder-tran-1000-after.cpuprofile: 305 samples, 5223.4 ms sampled
+
+Top self time
+    1264.5 ms  24.2%  (garbage collector)
+     712.7 ms  13.6%  buildCompanionSystem core-dist(change)/chunk-5LJ64ZMW.js:11561
+     582.1 ms  11.1%  attemptStep core-dist(change)/chunk-5LJ64ZMW.js:11741
+     368.2 ms   7.0%  stamp core-dist(change)/chunk-5LJ64ZMW.js:763
+     294.1 ms   5.6%  stampG core-dist(change)/chunk-5LJ64ZMW.js:11035
+     208.8 ms   4.0%  factorize core-dist(change)/chunk-5LJ64ZMW.js:10497
+     205.5 ms   3.9%  solveLinearized core-dist(change)/chunk-5LJ64ZMW.js:11833
+     168.6 ms   3.2%  advanceSolution core-dist(change)/chunk-5LJ64ZMW.js:12168
+     157.3 ms   3.0%  stampDynamic core-dist(change)/chunk-5LJ64ZMW.js:1031
+     140.2 ms   2.7%  stampPrevB core-dist(change)/chunk-5LJ64ZMW.js:12383
+     113.5 ms   2.2%  accept core-dist(change)/chunk-5LJ64ZMW.js:11953
+     113.2 ms   2.2%  analyzePattern core-dist(change)/chunk-5LJ64ZMW.js:10405
+     111.3 ms   2.1%  parseNetlist core-dist(change)/chunk-5LJ64ZMW.js:9040
+     106.8 ms   2.0%  compileFunction
+      86.0 ms   1.6%  getModuleJobForImport node:internal/modules/esm/loader:319
+      83.2 ms   1.6%  compileSourceTextModule node:internal/modules/esm/utils:344
+      73.9 ms   1.4%  #cachedDefaultResolve node:internal/modules/esm/loader:739
+      69.3 ms   1.3%  compileForInternalLoader node:internal/bootstrap/realm:385
+      56.8 ms   1.1%  simulate core-dist(change)/chunk-5LJ64ZMW.js:15776
+      44.8 ms   0.9%  stampC core-dist(change)/chunk-5LJ64ZMW.js:11041
+
+Top inclusive time
+    5223.4 ms 100.0%  (root)
+    3344.9 ms  64.0%  simulate core-dist(change)/chunk-5LJ64ZMW.js:15776
+    3097.8 ms  59.3%  solveTransient core-dist(change)/chunk-5LJ64ZMW.js:12693
+    3062.0 ms  58.6%  advanceSolution core-dist(change)/chunk-5LJ64ZMW.js:12168
+    2601.1 ms  49.8%  attemptStep core-dist(change)/chunk-5LJ64ZMW.js:11741
+    1558.5 ms  29.8%  buildCompanionSystem core-dist(change)/chunk-5LJ64ZMW.js:11561
+    1264.5 ms  24.2%  (garbage collector)
+     652.7 ms  12.5%  stamp core-dist(change)/chunk-5LJ64ZMW.js:763
+     432.3 ms   8.3%  solveLinearized core-dist(change)/chunk-5LJ64ZMW.js:11833
+     382.2 ms   7.3%  getModuleJobForImport node:internal/modules/esm/loader:319
+     294.5 ms   5.6%  stampG core-dist(change)/chunk-5LJ64ZMW.js:11035
+     226.8 ms   4.3%  factorize core-dist(change)/chunk-5LJ64ZMW.js:10497
+     217.5 ms   4.2%  loadAndTranslate node:internal/modules/esm/loader:608
+     217.5 ms   4.2%  #createModuleJob node:internal/modules/esm/loader:632
+     217.5 ms   4.2%  #getJobFromResolveResult node:internal/modules/esm/loader:347
+     189.4 ms   3.6%  stampDynamic core-dist(change)/chunk-5LJ64ZMW.js:1031
+     182.5 ms   3.5%  solveDCOperatingPoint core-dist(change)/chunk-5LJ64ZMW.js:11366
+     182.5 ms   3.5%  transientInitialSolution core-dist(change)/chunk-5LJ64ZMW.js:16064
+     177.6 ms   3.4%  stampPrevB core-dist(change)/chunk-5LJ64ZMW.js:12383
+     176.6 ms   3.4%  newtonRaphson core-dist(change)/chunk-5LJ64ZMW.js:11150

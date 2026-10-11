@@ -1,0 +1,45 @@
+rc-ladder-tran-10000-before.cpuprofile: 1712 samples, 17099.0 ms sampled
+
+Top self time
+    3778.5 ms  22.1%  buildStep core-dist(pr541)/chunk-CD3JVUSG.js:12471
+    2469.6 ms  14.4%  (garbage collector)
+    1997.2 ms  11.7%  stampG core-dist(pr541)/chunk-CD3JVUSG.js:11035
+    1877.1 ms  11.0%  buildCompanionSystem core-dist(pr541)/chunk-CD3JVUSG.js:11561
+    1531.5 ms   9.0%  attemptStep core-dist(pr541)/chunk-CD3JVUSG.js:11741
+    1048.1 ms   6.1%  appendOrdered core-dist(pr541)/chunk-CD3JVUSG.js:12698
+     746.9 ms   4.4%  factorize core-dist(pr541)/chunk-CD3JVUSG.js:10497
+     665.7 ms   3.9%  stamp core-dist(pr541)/chunk-CD3JVUSG.js:763
+     589.4 ms   3.4%  stampPrevB core-dist(pr541)/chunk-CD3JVUSG.js:12371
+     433.9 ms   2.5%  stampDynamic core-dist(pr541)/chunk-CD3JVUSG.js:1031
+     310.6 ms   1.8%  stampC core-dist(pr541)/chunk-CD3JVUSG.js:11041
+     228.5 ms   1.3%  advance core-dist(pr541)/chunk-CD3JVUSG.js:12160
+     169.0 ms   1.0%  lockTopology core-dist(pr541)/chunk-CD3JVUSG.js:10845
+     105.0 ms   0.6%  compile core-dist(pr541)/chunk-CD3JVUSG.js:7747
+     103.3 ms   0.6%  acceptTransientStep core-dist(pr541)/chunk-CD3JVUSG.js:12408
+      80.8 ms   0.5%  stamp core-dist(pr541)/chunk-CD3JVUSG.js:1029
+      79.3 ms   0.5%  newtonRaphson core-dist(pr541)/chunk-CD3JVUSG.js:11150
+      61.0 ms   0.4%  analyzePattern core-dist(pr541)/chunk-CD3JVUSG.js:10405
+      59.5 ms   0.3%  amdOrdering core-dist(pr541)/chunk-CD3JVUSG.js:10187
+      58.0 ms   0.3%  clear core-dist(pr541)/chunk-CD3JVUSG.js:11117
+
+Top inclusive time
+   17099.0 ms 100.0%  (root)
+   14361.8 ms  84.0%  simulate core-dist(pr541)/chunk-CD3JVUSG.js:15761
+   13835.8 ms  80.9%  solveTransient core-dist(pr541)/chunk-CD3JVUSG.js:12681
+   12668.2 ms  74.1%  advance core-dist(pr541)/chunk-CD3JVUSG.js:12160
+    7070.9 ms  41.4%  attemptStep core-dist(pr541)/chunk-CD3JVUSG.js:11741
+    4547.8 ms  26.6%  buildCompanionSystem core-dist(pr541)/chunk-CD3JVUSG.js:11561
+    3778.5 ms  22.1%  buildStep core-dist(pr541)/chunk-CD3JVUSG.js:12471
+    2509.5 ms  14.7%  stamp core-dist(pr541)/chunk-CD3JVUSG.js:763
+    2469.6 ms  14.4%  (garbage collector)
+    2023.8 ms  11.8%  stampG core-dist(pr541)/chunk-CD3JVUSG.js:11035
+    1412.0 ms   8.3%  stampPrevB core-dist(pr541)/chunk-CD3JVUSG.js:12371
+    1054.3 ms   6.2%  save core-dist(pr541)/chunk-CD3JVUSG.js:12706
+    1048.1 ms   6.1%  appendOrdered core-dist(pr541)/chunk-CD3JVUSG.js:12698
+     772.2 ms   4.5%  factorize core-dist(pr541)/chunk-CD3JVUSG.js:10497
+     766.0 ms   4.5%  solveLinearized core-dist(pr541)/chunk-CD3JVUSG.js:11833
+     723.6 ms   4.2%  stampDynamic core-dist(pr541)/chunk-CD3JVUSG.js:1031
+     310.6 ms   1.8%  stampC core-dist(pr541)/chunk-CD3JVUSG.js:11041
+     278.9 ms   1.6%  solveDCOperatingPoint core-dist(pr541)/chunk-CD3JVUSG.js:11366
+     278.9 ms   1.6%  transientInitialSolution core-dist(pr541)/chunk-CD3JVUSG.js:16049
+     268.4 ms   1.6%  newtonRaphson core-dist(pr541)/chunk-CD3JVUSG.js:11150
