@@ -92,12 +92,12 @@ ngspice supports them.
 | `G` | `0` when present; omitted once by `convtwoinch` (ngspice default `0`) | REQUIRED for zero/default only | Implement `G=0` and the omitted default. Reject non-zero `G` explicitly; RG and general shunt loss are not exercised. |
 | `C` | `0.468e-12`, `3.65e-12`, `3.65000000746e-12`, `7.25000000373e-12` | REQUIRED | Positive shunt capacitance per unit length. |
 | `LEN` | `0.1`, `0.125`, `0.2`, `0.25`, `0.5`, `1`, `2.0`, `16`, `20`, `24` | REQUIRED | Positive line length. |
-| `REL` | `1`, `1.2`, `1.8`, `10` | REQUIRED | Breakpoint-control value. Values above 2 intentionally eliminate LTRA breakpoints in ngspice; do not silently treat them as a generic tolerance. |
-| `STEPLIMIT` | flag present on the ngspice fixture, `ltra_1`, `ltra_2`, and dormant LC helpers | REQUIRED | Enforce the LTRA delay-derived timestep limit (ngspice describes the explicit flag as `0.8 * delay`). |
-| `NOCONTROL` | flag present on all LC helpers and the three reachable `ltra_3` RLC models | REQUIRED | Disable LTRA convolution-error timestep control. If the bounded implementation has no such controller, acceptance must be explicit and tested as equivalent, not silently dropped. |
-| `QUADINTERP` | flag present on all dormant LC helpers | REQUIRED | Select quadratic delayed-signal interpolation. The models are dormant at runtime, but their unchanged cards must be recognised and validated. |
-| `COMPACTREL` | `1.0e-3` | REQUIRED | History-compaction relative tolerance. It is behaviorally inactive unless history compaction is enabled, but must be parsed, range-checked, retained, and tested as such. |
-| `COMPACTABS` | `1.0e-14` | REQUIRED | History-compaction absolute tolerance, with the same explicit inactive-without-compaction treatment as `COMPACTREL`. |
+| `REL` | `1`, `1.2`, `1.8`, `10` | REQUIRED | Breakpoint-control value. Values above 2 intentionally eliminate LTRA breakpoints in ngspice; do not silently treat them as a generic tolerance. Since #520 it is validated but behaviorally inert: the LTRAaccept breakpoints it steers are not ported (see below). |
+| `STEPLIMIT` | flag present on the ngspice fixture, `ltra_1`, `ltra_2`, and dormant LC helpers | REQUIRED | Enforce the LTRA delay-derived timestep limit. ngspice-47 `ltratrun.c` bounds the step by the full delay (not the documented `0.8 * delay`) and applies it by default, flag or not; #520 does the same. |
+| `NOCONTROL` | flag present on all LC helpers and the three reachable `ltra_3` RLC models | REQUIRED | Disable LTRA convolution-error timestep control. It is the ngspice-47 default when neither `FULLCONTROL` nor `HALFCONTROL` is given; both of those stay unsupported, so every accepted model runs without LTE control, exactly like ngspice. |
+| `QUADINTERP` | flag present on all dormant LC helpers | REQUIRED | Select quadratic delayed-signal interpolation. It is also the ngspice-47 default without `TRYTOCOMPACT`; #520 interpolates the delayed port waves quadratically (linearly at the first history interval), keeping an out-of-range quadratic value as ngspice does. |
+| `COMPACTREL` | `1.0e-3` | REQUIRED | Straight-line relative tolerance (ngspice `LTRAstLineReltol`, default RELTOL). History compaction needs the unsupported `TRYTOCOMPACT` option, but the tolerance also sets the RLC `maxSafeStep` bound in `ltratemp.c`, and #520 uses it there. |
+| `COMPACTABS` | `1.0e-14` | REQUIRED | Straight-line absolute tolerance (ngspice `LTRAstLineAbstol`, default ABSTOL), used for `maxSafeStep` like `COMPACTREL`. |
 | `NOPRINT` | flag present on `ltra_1`'s dormant `llfifth` model | REQUIRED | Preserve the legacy request not to emit LTRA debug output. spice-ts emits none, so this is an idempotent, testable behavior rather than an ignored token. |
 | `ABS` | not present | EXPLICIT-UNSUPPORTED | Recognise and reject; absolute breakpoint control is outside this fixture-bounded slice. |
 | `NOSTEPLIMIT` | not present | EXPLICIT-UNSUPPORTED | Recognise and reject; do not alias it to `STEPLIMIT`. |
@@ -188,3 +188,38 @@ a narrow edit to `parser/index.ts`; the current hooks explicitly reject both
 the model and the device. If "do not touch parser directives" is interpreted as
 forbidding even the existing `.MODEL` LTRA dispatch branch, that is a hard
 blocker and a separate integration owner must provide the hook first.
+
+## Issue #520: ngspice convolution model
+
+Issue [#520](https://github.com/mfiumara/spice-ts/issues/520) replaced the
+fixed 8-section RLC ladder with a port of the ngspice-47 LTRA device
+(`src/spicelib/devices/ltra`, G=0 LC and RLC cases):
+
+- `packages/core/src/devices/ltra-model.ts`: `ltratemp.c` derived values
+  (Z0, TD, attenuation, impulse-response integrals, `maxSafeStep`) and the
+  `ltramisc.c` numerics (Numerical Recipes Bessel approximations,
+  `LTRArlcCoeffsSetup`, quadratic/linear interpolation, straight-line check).
+- `packages/core/src/devices/lossy-transmission-line.ts`: the `ltraload.c`
+  DC and transient stamps, the convolution excitations evaluated once per
+  trial time from the accepted history, the `LTRAtrunc` step bound
+  (`min(TD, maxSafeStep)`), and the accepted-timepoint history of
+  `LTRAaccept`.
+- `packages/core/src/circuit.ts`: O descriptors compile to one device per
+  instance with two branches (`Oname:1`, `Oname:2`), sharing coefficient
+  work per model. `.ac`, `.noise`, `.pz` and `.disto` with an O element are
+  rejected explicitly, because the LTRA small-signal response is not a
+  polynomial in s.
+
+Not ported, with the reason:
+
+- `LTRAaccept` breakpoints (one delay after a slope change of an outgoing
+  wave, steered by `REL`). The transient driver collects breakpoints once at
+  the start and has no hook for breakpoints created during the run. An
+  approximation through the truncation bound was measured and did not reduce
+  the benchmark error, so it was dropped.
+- `FULLCONTROL`/`HALFCONTROL` LTE control, `TRYTOCOMPACT` history compaction,
+  the RC and RG special cases, and non-zero `G`: no benchmark deck uses them.
+  They stay rejected.
+
+`benchmarks/ltra/receipt.json` is regenerated by `pnpm build && pnpm exec
+tsx benchmarks/ltra/compare.ts --output benchmarks/ltra/receipt.json`.
