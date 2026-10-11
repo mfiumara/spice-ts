@@ -1,18 +1,76 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { spawn } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { appendFile, cp, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { describe, it } from 'node:test';
 import { resolve } from 'node:path';
 import {
   matchedPointEnvelope,
+  preflightAggregateInputs,
   runBoundedSpiceTs,
   SPICE_TS_TIMEOUT_MS,
   validateAggregateAccounting,
   verifyCommittedArtifacts,
+  writeAggregateArtifacts,
 } from './aggregate-report.js';
 import { runNativeSpiceTs } from './corpus/classic/report.js';
 
 const JSON_PATH = resolve('benchmarks/aggregate-report.json');
 const MARKDOWN_PATH = resolve('benchmarks/AGGREGATE_PARITY.md');
+const SCRIPT_PATH = resolve('benchmarks/aggregate-report.ts');
+const TSX_PATH = resolve('node_modules/.bin/tsx');
+const CORPORA = ['ngspice', 'classic', 'xyce', 'corpus-d', 'corpus-e'];
+const FAIL_FAST_LIMIT_MS = 30_000;
+
+/** Copies the aggregate inputs and committed artifacts into an isolated repository-shaped root. */
+async function isolatedRoot(): Promise<string> {
+  const root = await mkdtemp(resolve(tmpdir(), 'spice-ts-aggregate-test-'));
+  await Promise.all(CORPORA.map(corpus => cp(
+    resolve(`benchmarks/corpus/${corpus}`),
+    resolve(root, `benchmarks/corpus/${corpus}`),
+    { recursive: true },
+  )));
+  await Promise.all(['SOURCES.md', 'aggregate-report.json', 'AGGREGATE_PARITY.md'].map(name => cp(
+    resolve('benchmarks', name),
+    resolve(root, 'benchmarks', name),
+  )));
+  return root;
+}
+
+async function treeDigest(directory: string): Promise<string> {
+  const hash = createHash('sha256');
+  const visit = async (path: string): Promise<void> => {
+    const entries = (await readdir(path, { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name));
+    for (const entry of entries) {
+      const child = resolve(path, entry.name);
+      hash.update(child);
+      if (entry.isDirectory()) await visit(child);
+      else hash.update(await readFile(child));
+    }
+  };
+  await visit(directory);
+  return hash.digest('hex');
+}
+
+interface CheckRun { code: number | null; elapsedMs: number; output: string }
+
+function runCheck(cwd: string): Promise<CheckRun> {
+  return new Promise(done => {
+    const started = Date.now();
+    const child = spawn(TSX_PATH, [SCRIPT_PATH, '--check'], { cwd, detached: true });
+    let output = '';
+    child.stdout.on('data', chunk => { output += chunk; });
+    child.stderr.on('data', chunk => { output += chunk; });
+    // Stop only this run's own process group if it does not fail fast.
+    const timer = setTimeout(() => process.kill(-(child.pid as number), 'SIGTERM'), FAIL_FAST_LIMIT_MS);
+    child.on('exit', code => {
+      clearTimeout(timer);
+      done({ code, elapsedMs: Date.now() - started, output });
+    });
+  });
+}
 
 async function committedArtifacts(): Promise<{ json: string; markdown: string }> {
   const [json, markdown] = await Promise.all([
@@ -206,3 +264,115 @@ describe('aggregate report artifact verification', () => {
     );
   });
 });
+
+describe('aggregate report fail-fast preflight and concurrency', () => {
+  it('rejects a changed source catalogue before any fixture runs, naming the file, both hashes, and the refresh command', async () => {
+    const root = await isolatedRoot();
+    try {
+      // The committed report records the pinned provenance (validateAggregateAccounting enforces equality).
+      const PINNED_SOURCES = JSON.parse((await committedArtifacts()).json).provenance.sourcesSha256;
+      await appendFile(resolve(root, 'benchmarks/SOURCES.md'), '\nstale provenance probe\n');
+      const actual = createHash('sha256').update(await readFile(resolve(root, 'benchmarks/SOURCES.md'))).digest('hex');
+
+      await assert.rejects(preflightAggregateInputs(root), (error: Error) => {
+        assert.match(error.message, /benchmarks\/SOURCES\.md/);
+        assert.match(error.message, new RegExp(`pinned ${PINNED_SOURCES}`));
+        assert.match(error.message, new RegExp(`actual ${actual}`));
+        assert.match(error.message, /pnpm exec tsx benchmarks\/aggregate-report\.ts/);
+        return true;
+      });
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects a tampered fixture by corpus, id, and path before any fixture runs', async () => {
+    const root = await isolatedRoot();
+    try {
+      const manifest = JSON.parse(await readFile(resolve(root, 'benchmarks/corpus/xyce/manifest.json'), 'utf8'));
+      const circuit = manifest.circuits[3];
+      await appendFile(resolve(root, circuit.localPath), '* tampered\n');
+
+      await assert.rejects(
+        preflightAggregateInputs(root),
+        new RegExp(`xyce/${circuit.id}: fixture SHA-256 mismatch for ${circuit.localPath.replaceAll('.', '\\.')}`),
+      );
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it('fails --check on stale provenance in under 30 s', async () => {
+    const root = await isolatedRoot();
+    try {
+      await appendFile(resolve(root, 'benchmarks/SOURCES.md'), '\nstale provenance probe\n');
+      const run = await runCheck(root);
+
+      assert.equal(run.code, 1, run.output);
+      assert.ok(run.elapsedMs < FAIL_FAST_LIMIT_MS, `took ${run.elapsedMs} ms`);
+      assert.match(run.output, /aggregate provenance is stale: benchmarks\/SOURCES\.md/);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it('runs two concurrent --check invocations without interference or writes', async () => {
+    const root = await isolatedRoot();
+    try {
+      await appendFile(resolve(root, 'benchmarks/SOURCES.md'), '\nstale provenance probe\n');
+      const before = await treeDigest(root);
+      const [first, second] = await Promise.all([runCheck(root), runCheck(root)]);
+
+      for (const run of [first, second]) {
+        assert.equal(run.code, 1, run.output);
+        assert.match(run.output, /aggregate provenance is stale: benchmarks\/SOURCES\.md/);
+      }
+      assert.equal(await treeDigest(root), before);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it('publishes generated artifacts atomically through per-run temporary files', async () => {
+    const directory = await mkdtemp(resolve(tmpdir(), 'spice-ts-aggregate-write-'));
+    try {
+      const jsonPath = resolve(directory, 'aggregate-report.json');
+      const markdownPath = resolve(directory, 'AGGREGATE_PARITY.md');
+      await writeFile(jsonPath, 'old json');
+      const payloads = Array.from({ length: 8 }, (_, index) => ({
+        json: `${JSON.stringify({ run: index, padding: 'x'.repeat(2_000_000) })}\n`,
+        markdown: `# run ${index}\n${'y'.repeat(200_000)}\n`,
+      }));
+      const complete = new Set(['old json', ...payloads.map(payload => payload.json)]);
+      const torn: number[] = [];
+      let writing = true;
+      const reader = (async () => {
+        while (writing) {
+          const seen = await readFile(jsonPath, 'utf8');
+          if (!complete.has(seen)) torn.push(seen.length);
+        }
+      })();
+
+      for (let round = 0; round < 5; round += 1) {
+        await Promise.all(payloads.map(payload => writeAggregateArtifacts(
+          { jsonPath, markdownPath },
+          payload.json,
+          payload.markdown,
+        )));
+      }
+      writing = false;
+      await reader;
+
+      assert.deepEqual(torn, [], 'a concurrent reader observed a partially written report');
+      assert.ok(payloads.some(payload => payload.json === readFileSyncText(jsonPath)));
+      assert.ok(payloads.some(payload => payload.markdown === readFileSyncText(markdownPath)));
+      assert.deepEqual((await readdir(directory)).sort(), ['AGGREGATE_PARITY.md', 'aggregate-report.json']);
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+});
+
+function readFileSyncText(path: string): string {
+  return readFileSync(path, 'utf8');
+}

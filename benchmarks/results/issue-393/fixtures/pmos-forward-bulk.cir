@@ -1,0 +1,9 @@
+MOS1 PMOS forward bulk junctions DC - issue 393
+VB b 0 DC -0.75
+RB b bi 100
+VD d 0 DC -0.2
+VG g 0 DC 0
+M1 d g 0 bi PFET
+.MODEL PFET PMOS(LEVEL=1 KP=0.5M VTO=-2 IS=1e-14)
+.DC VB -1.2 2 0.05
+.END

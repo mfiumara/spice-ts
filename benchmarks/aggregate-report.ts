@@ -5,10 +5,16 @@
  * Usage:
  *   pnpm exec tsx benchmarks/aggregate-report.ts
  *   pnpm exec tsx benchmarks/aggregate-report.ts --check
+ *
+ * Both modes validate fixture hashes and pinned provenance before running any engine, so a stale
+ * benchmarks/SOURCES.md or fixture tree fails in seconds. Runs are concurrency-safe: --check never
+ * writes, each engine execution uses its own temporary directory, and generation publishes via
+ * per-run temporary files plus atomic rename. Stop a run with `kill <pid>` (the PID is printed at
+ * start); never pattern-kill other lanes' runs.
  */
 import { spawnSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
-import { mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { createHash, randomUUID } from 'node:crypto';
+import { mkdtemp, readdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { arch, cpus, platform, release, tmpdir } from 'node:os';
 import { basename, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -259,21 +265,84 @@ async function filesBelow(directory: string): Promise<string[]> {
   return paths.flat().sort();
 }
 
-async function provenance(): Promise<AggregateReport['provenance']> {
+async function provenance(root: string): Promise<AggregateReport['provenance']> {
   const fixtureFiles = (await Promise.all(
-    CORPORA.map(corpus => filesBelow(resolve(`benchmarks/corpus/${corpus}`))),
+    CORPORA.map(corpus => filesBelow(resolve(root, `benchmarks/corpus/${corpus}`))),
   )).flat().sort();
   const fixtureTree = createHash('sha256');
   for (const path of fixtureFiles) {
-    fixtureTree.update(relative(resolve('.'), path));
+    fixtureTree.update(relative(root, path));
     fixtureTree.update('\0');
     fixtureTree.update(await readFile(path));
     fixtureTree.update('\0');
   }
   return {
     fixtureTreeSha256: fixtureTree.digest('hex'),
-    sourcesSha256: sha256(await readFile(resolve('benchmarks/SOURCES.md'))),
+    sourcesSha256: sha256(await readFile(resolve(root, 'benchmarks/SOURCES.md'))),
   };
+}
+
+async function readManifest(root: string, corpus: CorpusId): Promise<CorpusManifest> {
+  return JSON.parse(
+    await readFile(resolve(root, `benchmarks/corpus/${corpus}/manifest.json`), 'utf8'),
+  ) as CorpusManifest;
+}
+
+const REFRESH_GUIDANCE = 'If the change is intended, refresh with `pnpm exec tsx benchmarks/aggregate-report.ts`, '
+  + 'update the pinned hashes in benchmarks/aggregate-report.ts, and commit the regenerated '
+  + 'benchmarks/aggregate-report.json and benchmarks/AGGREGATE_PARITY.md.';
+
+/**
+ * Validates every aggregate input without running an engine, so stale provenance fails in
+ * seconds instead of after all fixtures. Read-only: safe to run concurrently.
+ */
+export async function preflightAggregateInputs(root = resolve('.')): Promise<AggregateReport['provenance']> {
+  for (const corpus of CORPORA) {
+    const manifest = await readManifest(root, corpus);
+    if (manifest.circuits.length !== FIXTURES_PER_CORPUS) {
+      throw new Error(`${corpus}: expected ${FIXTURES_PER_CORPUS} fixtures, found ${manifest.circuits.length}`);
+    }
+    for (const circuit of manifest.circuits) {
+      const digest = sha256(await readFile(resolve(root, circuit.localPath)));
+      if (digest !== circuit.sha256) {
+        throw new Error(
+          `${corpus}/${circuit.id}: fixture SHA-256 mismatch for ${circuit.localPath} (manifest ${circuit.sha256}, actual ${digest})`,
+        );
+      }
+    }
+  }
+
+  const actual = await provenance(root);
+  const stale = [
+    ['benchmarks/SOURCES.md', SOURCES_SHA256, actual.sourcesSha256],
+    [`aggregate fixture tree (benchmarks/corpus/{${CORPORA.join(',')}})`, FIXTURE_TREE_SHA256, actual.fixtureTreeSha256],
+  ].filter(([, pinned, current]) => pinned !== current);
+  if (stale.length > 0) {
+    const details = stale.map(([input, pinned, current]) => `${input} SHA-256 pinned ${pinned}, actual ${current}`);
+    throw new Error(`aggregate provenance is stale: ${details.join('; ')}. ${REFRESH_GUIDANCE}`);
+  }
+  return actual;
+}
+
+/**
+ * Publishes generated artifacts through per-run temporary files and atomic renames, so a
+ * concurrent reader (for example another lane's --check) never observes a torn file.
+ */
+export async function writeAggregateArtifacts(
+  paths: { jsonPath: string; markdownPath: string },
+  json: string,
+  md: string,
+): Promise<void> {
+  const runId = `${process.pid}.${randomUUID()}`;
+  await Promise.all([[paths.jsonPath, json], [paths.markdownPath, md]].map(async ([path, content]) => {
+    const temporary = `${path}.${runId}.tmp`;
+    try {
+      await writeFile(temporary, content);
+      await rename(temporary, path);
+    } finally {
+      await rm(temporary, { force: true });
+    }
+  }));
 }
 
 function commandVersion(command: string, args: string[], pattern?: RegExp): string {
@@ -573,13 +642,12 @@ export function validateAggregateAccounting(report: AggregateReport): void {
 }
 
 export async function buildAggregateReport(): Promise<AggregateReport> {
+  const inputProvenance = await preflightAggregateInputs();
   const fixtures: FixtureReceipt[] = [];
   const corpusSources: AggregateReport['corpusSources'] = [];
 
   for (const corpus of CORPORA) {
-    const manifest = JSON.parse(
-      await readFile(resolve(`benchmarks/corpus/${corpus}/manifest.json`), 'utf8'),
-    ) as CorpusManifest;
+    const manifest = await readManifest(resolve('.'), corpus);
     if (manifest.circuits.length !== FIXTURES_PER_CORPUS) {
       throw new Error(`${corpus}: expected ${FIXTURES_PER_CORPUS} fixtures, found ${manifest.circuits.length}`);
     }
@@ -611,7 +679,7 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
   const corpusFixtures = Object.fromEntries(CORPORA.map(corpus => [corpus, fixtures.filter(fixture => fixture.corpus === corpus).length])) as Record<CorpusId, number>;
   const base: Omit<AggregateReport, 'outcomeSha256'> = {
     schemaVersion: SCHEMA,
-    provenance: await provenance(),
+    provenance: inputProvenance,
     corpusSources,
     environment: { platform: platform(), release: release(), arch: arch(), cpu: cpus()[0]?.model ?? 'unknown', node: process.version },
     tools: {
@@ -757,18 +825,21 @@ export function verifyCommittedArtifacts(
 }
 
 async function main(): Promise<void> {
+  const check = process.argv.includes('--check');
+  // Each run is isolated (read-only inputs, per-engine temporary directories, atomic writes),
+  // so concurrent runs are safe. Stop a run by its own PID, never by a global pattern match.
+  process.stderr.write(`aggregate${check ? ' --check' : ''}: pid ${process.pid}; to stop only this run: kill ${process.pid}\n`);
   const report = await buildAggregateReport();
   const json = stableReport(report);
   const md = markdown(report);
-  if (process.argv.includes('--check')) {
+  if (check) {
     const [committedJson, committedMarkdown] = await Promise.all([
       readFile(JSON_PATH, 'utf8'),
       readFile(MARKDOWN_PATH, 'utf8'),
     ]);
     verifyCommittedArtifacts(report, committedJson, committedMarkdown);
   } else {
-    await writeFile(JSON_PATH, json);
-    await writeFile(MARKDOWN_PATH, md);
+    await writeAggregateArtifacts({ jsonPath: JSON_PATH, markdownPath: MARKDOWN_PATH }, json, md);
   }
   process.stderr.write(`aggregate: ${report.totals.fixtures} fixtures; outcome ${report.outcomeSha256}; compared ${report.totals.comparedAnalyses} analyses\n`);
 }

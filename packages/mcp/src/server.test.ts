@@ -367,8 +367,9 @@ describe('bounded protocol-v1 tools', () => {
       startSettled = true;
       return started;
     });
-    await Promise.resolve();
-    await Promise.resolve();
+    // Preflight parses directives with the async core parser; yield one macrotask
+    // (the injected simulation is still pending) instead of counting microtasks.
+    await new Promise<void>(resolve => setImmediate(resolve));
     const settledBeforeSimulationCompletion = startSettled;
     expect(settledBeforeSimulationCompletion).toBe(true);
     const started = await startedPromise;

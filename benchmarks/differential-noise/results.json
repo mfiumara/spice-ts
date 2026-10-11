@@ -13,7 +13,7 @@
   },
   "versions": {
     "reference": "ngspice-47",
-    "spiceTsBaseRevision": "9bf735acb6390dcd93d42fb5b3abc3167578e0ac",
+    "spiceTsBaseRevision": "b3e534e868a4247ec847d751546dbd504717f8f4",
     "spiceTsWorkingTreeDirty": true,
     "node": "v22.23.1"
   },
@@ -28,8 +28,8 @@
     "spiceTs": "success"
   },
   "runtimeMilliseconds": {
-    "ngspiceProcess": 10.491874999999993,
-    "spiceTsInProcess": 2.806166000000019,
+    "ngspiceProcess": 19.769292000000007,
+    "spiceTsInProcess": 8.917374999999993,
     "caveat": "Different process boundaries; reported honestly, not a speed claim."
   },
   "matchedPointCount": 7,
@@ -63,22 +63,17 @@
     {
       "form": "current output",
       "status": "explicitly rejected",
-      "error": "Parse error at line 3: Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop'\n  .noise i ( V1 ) V1 dec 3 100 10k"
-    },
-    {
-      "form": "current-source referral",
-      "status": "explicitly rejected",
-      "error": ".noise input source 'I1' is not an independent voltage source"
+      "error": "Parse error at line 4: Unsupported .noise form; expected '.noise v(node) source {lin|dec|oct} points start stop [points_per_summary]'\n  .noise i ( V1 ) V1 dec 3 100 10k"
     },
     {
       "form": "stepped noise",
       "status": "explicitly rejected",
-      "error": "Parse error at line 4: .step cannot be combined with .noise\n  .step param R1 list 1k 2k"
+      "error": "Parse error at line 5: .step cannot be combined with .noise\n  .step param R1 list 1k 2k"
     },
     {
       "form": "temperature card",
       "status": "explicitly rejected",
-      "error": "Parse error at line 4: Unsupported dot command: '.temp'\n  .temp 50"
+      "error": "Parse error at line 5: Unsupported dot command: '.temp'\n  .temp 50"
     },
     {
       "form": "differential diode noise",
@@ -107,7 +102,7 @@
     }
   ],
   "exclusions": [
-    "Current-valued noise outputs and current-source input referral remain unsupported.",
+    "Current-valued noise outputs remain unsupported; current-source input referral is covered by benchmarks/current-source-noise (#314).",
     "Differential output with diode, BJT, JFET, MOS1, BSIM3, or broader noisy device forms remains unsupported.",
     "Stepped noise and temperature cards remain unsupported."
   ],
