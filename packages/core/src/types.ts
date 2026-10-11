@@ -7,7 +7,7 @@ export type NodeName = string;
 export const GROUND_NODE = '0';
 
 /** Supported analysis command types. */
-export type AnalysisType = 'op' | 'dc' | 'tran' | 'ac' | 'noise' | 'tf' | 'pz' | 'sens' | 'disto';
+export type AnalysisType = 'op' | 'dc' | 'tran' | 'ac' | 'noise' | 'sp' | 'tf' | 'pz' | 'sens' | 'disto';
 
 /** DC operating point analysis (`.op`). */
 export interface DCAnalysis {
@@ -88,6 +88,24 @@ export interface NoiseAnalysis {
   stopFreq: number;
   /** Optional interval between per-generator summary points in classic SPICE output. */
   pointsPerSummary?: number;
+}
+
+/**
+ * S-parameter analysis over the circuit's RF ports
+ * (`.sp {dec|oct|lin} points fstart fstop [donoise]`, ngspice-47 span.c).
+ */
+export interface SParameterAnalysis {
+  type: 'sp';
+  /** Frequency sweep spacing. */
+  variation: 'dec' | 'oct' | 'lin';
+  /** Number of points per decade/octave, or total points for a linear sweep. */
+  points: number;
+  /** Start frequency in Hz. */
+  startFreq: number;
+  /** Stop frequency in Hz. */
+  stopFreq: number;
+  /** `donoise = 1`: also compute the port noise-current correlation matrix Cy (and NF/SOpt/NFmin/Rn for two ports). */
+  noise: boolean;
 }
 
 /** Bounded distortion analysis (`.disto dec ... [f2overf1]`). */
@@ -171,6 +189,7 @@ export type AnalysisCommand = DCAnalysis | DCSweepAnalysis | TransientAnalysis |
 export type AnalysisDirective =
   | AnalysisCommand
   | NoiseAnalysis
+  | SParameterAnalysis
   | DistortionAnalysis
   | TransferFunctionAnalysis
   | SensitivityAnalysis;
@@ -364,6 +383,11 @@ export interface ModelParams {
   type: string;
   /** Key-value parameter map (e.g., `{ BF: 100, IS: 1e-14 }`) */
   params: Record<string, number>;
+  /**
+   * Raw `VERSION=` string of the card (e.g. `'3.3.0'`). ngspice declares the BSIM version as a
+   * string parameter and selects the BSIM implementation by its prefix, so it is kept verbatim.
+   */
+  version?: string;
 }
 
 /** DC source waveform. Constant value. */
@@ -468,6 +492,34 @@ export interface DistortionExcitation {
 export interface SourceDistortionTerms {
   distortionF1?: DistortionExcitation;
   distortionF2?: DistortionExcitation;
+}
+
+/**
+ * ngspice-47 RF port on an independent voltage source
+ * (`V1 in 0 dc 0 ac 1 portnum 1 z0 50 [pwr P] [freq F]`, RFSPICE vsrc).
+ *
+ * A port puts its reference impedance `z0` in series with the source through
+ * an internal node `<name>.res` (ngspice `<name>#res`) in every analysis, and
+ * makes the source one of the ports of an `.sp` analysis.
+ */
+export interface RFPort {
+  /** `portnum`: 1-based port index; a circuit's ports are numbered 1..N. */
+  number: number;
+  /** `z0`: reference impedance in ohms (default 50). */
+  z0: number;
+  /**
+   * Present when `pwr` or `freq` is given. ngspice then evaluates the source as
+   * `sqrt(4*pwr*z0) * cos(2*pi*freq*t)` (defaults 1 mW, 1 GHz) everywhere except
+   * a DC operating point of a source with an explicit DC value.
+   */
+  power?: {
+    /** `pwr`: available power in watts. */
+    watts: number;
+    /** `freq`: frequency in Hz. */
+    frequency: number;
+    /** Explicit DC value, used for `.op`, `.dc` and the small-signal operating point. */
+    dc?: number;
+  };
 }
 
 /** Union of all source waveform types. Discriminated on the `type` field. */

@@ -38,29 +38,109 @@
   "totals": {
     "fixtures": 336,
     "ngspice": {
-      "success": 293,
-      "failed": 31,
+      "success": 306,
+      "failed": 18,
       "unsupported": 12
     },
     "spiceTs": {
-      "success": 59,
-      "failed": 14,
-      "unsupported": 263
+      "success": 32,
+      "failed": 8,
+      "unsupported": 296
     },
     "outcomes": {
-      "matched": 25,
-      "mismatch": 13,
-      "not-compared": 21,
-      "spice-ts-loss": 234,
+      "matched": 11,
+      "mismatch": 10,
+      "not-compared": 11,
+      "spice-ts-loss": 274,
       "ngspice-failed": 0,
-      "both-failed": 43
+      "both-failed": 30
     }
   },
   "gapBuckets": [
     {
+      "bucket": "device: XSPICE A-element code models",
+      "fixtures": 72,
+      "ngspiceSuccess": 60,
+      "ids": [
+        "examples-digital-auto-bridge-shared-line-cir",
+        "examples-digital-auto-bridge-vcc-cir",
+        "examples-digital-digital-devices-xspice-c4-cir",
+        "examples-noise-resdiv-gain-cir",
+        "examples-numparam-strings-cir",
+        "examples-various-integrate1-cir",
+        "examples-xspice-d-process-checks-cir",
+        "examples-xspice-delay-analog-delay1-cir",
+        "examples-xspice-ghdl-pwm-cir",
+        "examples-xspice-icarus-verilog-delay-cir",
+        "examples-xspice-icarus-verilog-pwm-cir",
+        "examples-xspice-noise-noise-gain-cir",
+        "examples-xspice-noise-ota-noise-test1-cir",
+        "examples-xspice-original-examples-analog-models1-ac-deck",
+        "examples-xspice-original-examples-analog-models1-dc-deck",
+        "examples-xspice-original-examples-analog-models1-swept-dc-deck",
+        "examples-xspice-original-examples-analog-models1-transient-deck",
+        "examples-xspice-original-examples-analog-models2-ac-deck",
+        "examples-xspice-original-examples-analog-models2-dc-deck",
+        "examples-xspice-original-examples-analog-models2-swept-dc-deck",
+        "examples-xspice-original-examples-analog-models2-transient-deck",
+        "examples-xspice-original-examples-analog-models3-ac-deck",
+        "examples-xspice-original-examples-analog-models3-dc-deck",
+        "examples-xspice-original-examples-analog-models3-swept-dc-deck",
+        "examples-xspice-original-examples-analog-models3-transient-deck",
+        "examples-xspice-original-examples-analog-models4-ac-deck",
+        "examples-xspice-original-examples-analog-models4-dc-deck",
+        "examples-xspice-original-examples-analog-models4-swept-dc-deck",
+        "examples-xspice-original-examples-analog-models4-transient-deck",
+        "examples-xspice-original-examples-bad-io-type-deck",
+        "examples-xspice-original-examples-bad-io-deck",
+        "examples-xspice-original-examples-bad-name-deck",
+        "examples-xspice-original-examples-bad-param-type-deck",
+        "examples-xspice-original-examples-bad-param-deck",
+        "examples-xspice-original-examples-digital-invert-deck",
+        "examples-xspice-original-examples-digital-models-deck",
+        "examples-xspice-original-examples-digital-models1-deck",
+        "examples-xspice-original-examples-digital-models2-deck",
+        "examples-xspice-original-examples-digital-models3-deck",
+        "examples-xspice-original-examples-digital-models4-deck",
+        "examples-xspice-original-examples-dot-model-ref-deck",
+        "examples-xspice-original-examples-hybrid-models1-dc-deck",
+        "examples-xspice-original-examples-hybrid-models1-transient-deck",
+        "examples-xspice-original-examples-initial-conditions-deck",
+        "examples-xspice-original-examples-io-ordering-deck",
+        "examples-xspice-original-examples-io-types-deck",
+        "examples-xspice-original-examples-long-names-deck",
+        "examples-xspice-original-examples-mixed-case-deck",
+        "examples-xspice-original-examples-mixed-io-size-deck",
+        "examples-xspice-original-examples-mixed-mode-deck",
+        "examples-xspice-original-examples-mixed-ref-deck",
+        "examples-xspice-original-examples-param-defaults-deck",
+        "examples-xspice-original-examples-param-types-deck",
+        "examples-xspice-original-examples-parsing-deck",
+        "examples-xspice-original-examples-polarity-deck",
+        "examples-xspice-original-examples-suffixes-deck",
+        "examples-xspice-original-examples-user-defined-nodes-deck",
+        "examples-xspice-pwm-osc-fmcw-dosc-cir",
+        "examples-xspice-pwm-osc-pwm-sin-cir",
+        "examples-xspice-see-seegen-cm1-cir",
+        "examples-xspice-transmission-lines-cpline-tran-cir",
+        "examples-xspice-transmission-lines-mlin-tran-cir",
+        "examples-xspice-transmission-lines-mlin-cir",
+        "examples-xspice-various-analog-models1-transient-sp",
+        "examples-xspice-various-astate-pulse-cir",
+        "examples-xspice-various-astate-cir",
+        "examples-xspice-various-pwlts1-cir",
+        "examples-xspice-various-x-fer-cir",
+        "examples-xspice-various-xspice-c2-cir",
+        "examples-xspice-various-xspice-c3-cir",
+        "examples-xspice-verilator-delay-cir",
+        "examples-xspice-verilator-pwm-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/487"
+    },
+    {
       "bucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)",
-      "fixtures": 62,
-      "ngspiceSuccess": 58,
+      "fixtures": 56,
+      "ngspiceSuccess": 52,
       "ids": [
         "examples-control-structs-foreach-bjt-ft-sp",
         "examples-control-structs-if-batchmode-cir",
@@ -75,16 +155,13 @@
         "examples-mos-ro-17-4-cir",
         "examples-noise-baker-252-gain-cir",
         "examples-p-to-n-examples-switch-oscillators-cir",
-        "examples-plot-inv-chain-pyplot-cir",
         "examples-rf-hbosc-examples-hb-osc-cir",
         "examples-rf-pss-colpitt-osc-pss-ctrl-cir",
         "examples-rf-pss-compl-cross-quad-osc-pss-ctrl-cir",
         "examples-rf-pss-ring-osc-pss-ctrl-cir",
         "examples-rf-pss-vackar-osc-pss-ctrl-cir",
-        "examples-rf-pss-vdp-osc-pss-ctrl-cir",
         "examples-tclspice-tcl-testbench2-example-cir",
         "examples-transient-noise-shot-ng-cir",
-        "examples-transmissionlines-cpl-ibm1a-sp",
         "examples-transmissionlines-ltra1-4-line-sp",
         "examples-transmissionlines-ltra7-4-line-sp",
         "examples-various-atanh-sp",
@@ -92,19 +169,18 @@
         "examples-various-bjtnoise-cir",
         "examples-various-cutout1-cir",
         "examples-various-diode-ac-par-sp",
-        "examples-various-fft-leakage-cir",
         "examples-various-gain-stage-cir",
-        "examples-various-integrate1-cir",
         "examples-various-param-sweep-cir",
-        "examples-various-roessler-attractor-cir",
         "examples-vdmos-100w-wingspread-sp",
         "examples-vdmos-100w-sp",
         "examples-vdmos-ixtp6n100d2-cap-sp",
         "examples-vdmos-mtriode-nch-sp",
         "examples-vdmos-theta-nch-sp",
         "examples-vdmos-vdmos-dio-sp",
+        "examples-xspice-d-lut-mult4bit-spi",
         "examples-xspice-various-vswitch-test-lin-cir",
         "examples-xspice-various-vswitch-test-log-cir",
+        "tests-regression-func-func-1-cir",
         "tests-regression-lib-processing-scope-1-cir",
         "tests-regression-lib-processing-scope-2-cir",
         "tests-regression-lib-processing-scope-3-cir",
@@ -112,124 +188,44 @@
         "tests-regression-misc-bugs-1-cir",
         "tests-regression-misc-bugs-2-cir",
         "tests-regression-model-binning-1-cir",
-        "tests-regression-model-instance-defaults-cir",
         "tests-regression-model-special-names-1-cir",
+        "tests-regression-parser-bxpressn-1-cir",
         "tests-regression-parser-xpressn-1-cir",
         "tests-regression-parser-xpressn-3-cir",
-        "tests-regression-pz-ac-resistance-cir",
         "tests-regression-sens-sens-ac-1-cir",
         "tests-regression-sens-sens-ac-2-cir",
         "tests-regression-sens-sens-dc-1-cir",
         "tests-regression-sens-sens-dc-2-cir",
         "tests-regression-subckt-processing-global-1-cir",
-        "tests-regression-subckt-processing-model-scope-5-cir",
-        "tests-regression-temper-temper-res-1-cir"
+        "tests-regression-subckt-processing-model-scope-5-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/488"
     },
     {
-      "bucket": "parse: other unsupported syntax",
-      "fixtures": 60,
-      "ngspiceSuccess": 55,
-      "ids": [
-        "examples-digital-auto-bridge-shared-line-cir",
-        "examples-digital-auto-bridge-vcc-cir",
-        "examples-digital-digital-devices-xspice-c4-cir",
-        "examples-osdi-hicuml0-dff-y-ecl-vbic-sp",
-        "examples-osdi-hicuml0-vbic-out-sp",
-        "examples-probe-cntrl-sources-cir",
-        "examples-soa-diode-soa-sh-cir",
-        "examples-vbic-dff-y-ecl-sp",
-        "examples-vdmos-ixtp6n100d2-n-weak-inv-sp",
-        "examples-vdmos-self-heating-sp",
-        "examples-vdmos-soa-chk-sp",
-        "examples-vdmos-vdmos-out-sp",
-        "examples-vdmos-vdmosp-out-mtr-sp",
-        "examples-xspice-delay-analog-delay1-cir",
-        "examples-xspice-ghdl-pwm-cir",
-        "examples-xspice-icarus-verilog-delay-cir",
-        "examples-xspice-icarus-verilog-pwm-cir",
-        "examples-xspice-noise-ota-noise-test1-cir",
-        "examples-xspice-original-examples-analog-models2-ac-deck",
-        "examples-xspice-original-examples-analog-models2-dc-deck",
-        "examples-xspice-original-examples-analog-models2-swept-dc-deck",
-        "examples-xspice-original-examples-analog-models2-transient-deck",
-        "examples-xspice-original-examples-analog-models3-ac-deck",
-        "examples-xspice-original-examples-analog-models3-dc-deck",
-        "examples-xspice-original-examples-analog-models3-swept-dc-deck",
-        "examples-xspice-original-examples-analog-models3-transient-deck",
-        "examples-xspice-original-examples-analog-models4-ac-deck",
-        "examples-xspice-original-examples-analog-models4-dc-deck",
-        "examples-xspice-original-examples-analog-models4-swept-dc-deck",
-        "examples-xspice-original-examples-analog-models4-transient-deck",
-        "examples-xspice-original-examples-bad-io-type-deck",
-        "examples-xspice-original-examples-bad-param-type-deck",
-        "examples-xspice-original-examples-digital-invert-deck",
-        "examples-xspice-original-examples-digital-models-deck",
-        "examples-xspice-original-examples-digital-models1-deck",
-        "examples-xspice-original-examples-digital-models2-deck",
-        "examples-xspice-original-examples-digital-models3-deck",
-        "examples-xspice-original-examples-digital-models4-deck",
-        "examples-xspice-original-examples-io-types-deck",
-        "examples-xspice-original-examples-mixed-io-size-deck",
-        "examples-xspice-original-examples-mixed-mode-deck",
-        "examples-xspice-original-examples-mixed-ref-deck",
-        "examples-xspice-original-examples-supply-ramping-deck",
-        "examples-xspice-original-examples-user-defined-nodes-deck",
-        "examples-xspice-pwm-osc-pwm-sin-cir",
-        "examples-xspice-see-seegen-cm1-cir",
-        "examples-xspice-transmission-lines-cpline-tran-cir",
-        "examples-xspice-transmission-lines-mlin-tran-cir",
-        "examples-xspice-transmission-lines-mlin-cir",
-        "examples-xspice-various-astate-pulse-cir",
-        "examples-xspice-various-astate-cir",
-        "examples-xspice-various-pwlts1-cir",
-        "examples-xspice-various-x-fer-cir",
-        "examples-xspice-various-xspice-c3-cir",
-        "examples-xspice-verilator-delay-cir",
-        "examples-xspice-verilator-pwm-cir",
-        "tests-bsim1-test-cir",
-        "tests-bsim2-test-cir",
-        "tests-regression-parser-bxpressn-1-cir",
-        "tests-vbic-noise-scale-test-cir"
-      ],
-      "issue": null
-    },
-    {
       "bucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)",
-      "fixtures": 37,
-      "ngspiceSuccess": 26,
+      "fixtures": 27,
+      "ngspiceSuccess": 27,
       "ids": [
-        "examples-cider-bjt-astable-cir",
         "examples-cider-bjt-colposc-cir",
         "examples-cider-bjt-ecp-cir",
         "examples-cider-bjt-invchain-cir",
         "examples-cider-bjt-meclgate-cir",
-        "examples-cider-bjt-rtlinv-cir",
         "examples-cider-bjt-vco-cir",
         "examples-cider-diode-diode-cir",
         "examples-cider-diode-diotran-cir",
-        "examples-cider-jfet-jfet-cir",
         "examples-cider-mos-bootinv-cir",
-        "examples-cider-mos-charge-cir",
         "examples-cider-mos-cmosinv-cir",
         "examples-cider-mos-nmosinv-cir",
-        "examples-cider-mos-pass-cir",
         "examples-cider-mos-ringosc-cir",
         "examples-cider-parallel-ringosc-2u-cir",
         "examples-cider-resistor-gaasres-cir",
         "examples-cider-resistor-sires-cir",
-        "examples-cider-serial-astable-cir",
-        "examples-cider-serial-charge-cir",
         "examples-cider-serial-colposc-cir",
         "examples-cider-serial-dbridge-cir",
         "examples-cider-serial-invchain-cir",
         "examples-cider-serial-meclgate-cir",
         "examples-cider-serial-nmosinv-cir",
-        "examples-cider-serial-pass-cir",
         "examples-cider-serial-pullup-cir",
-        "examples-cider-serial-recovery-cir",
-        "examples-cider-serial-rtlinv-cir",
         "examples-cider-serial-vco-cir",
         "examples-cider-surfmob-cd4007n-200402idvg-net",
         "examples-cider-surfmob-cdxy-net",
@@ -241,34 +237,103 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/497"
     },
     {
+      "bucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)",
+      "fixtures": 18,
+      "ngspiceSuccess": 18,
+      "ids": [
+        "examples-cider-bjt-astable-cir",
+        "examples-cider-bjt-rtlinv-cir",
+        "examples-cider-jfet-jfet-cir",
+        "examples-cider-mos-charge-cir",
+        "examples-cider-mos-pass-cir",
+        "examples-cider-serial-astable-cir",
+        "examples-cider-serial-charge-cir",
+        "examples-cider-serial-pass-cir",
+        "examples-cider-serial-recovery-cir",
+        "examples-cider-serial-rtlinv-cir",
+        "examples-digital-compare-adder-bip-cir",
+        "examples-digital-compare-adder-mos-cir",
+        "examples-monte-carlo-rand-numb-test-cir",
+        "examples-mos-adder-mos-cir",
+        "examples-plot-inv-chain-pyplot-cir",
+        "examples-vdmos-soa-chk-sp",
+        "examples-xspice-original-examples-supply-ramping-deck",
+        "examples-xspice-various-ro-nand-digi-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/494"
+    },
+    {
+      "bucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)",
+      "fixtures": 16,
+      "ngspiceSuccess": 16,
+      "ids": [
+        "examples-transmissionlines-cpl-ibm1-sp",
+        "examples-transmissionlines-cpl-ibm1a-sp",
+        "examples-transmissionlines-cpl-ibm2-sp",
+        "examples-transmissionlines-cpl-ibm3-sp",
+        "examples-transmissionlines-cpl1-4-line-sp",
+        "examples-transmissionlines-cpl2-2-line-sp",
+        "examples-transmissionlines-cpl3-4-line-sp",
+        "examples-transmissionlines-cpl4-txl-2-line-sp",
+        "examples-transmissionlines-txl1-1-line-sp",
+        "examples-transmissionlines-txl2-3-line-sp",
+        "examples-transmissionlines-txl3-1-line-sp",
+        "examples-transmissionlines-txl4-1-line-sp",
+        "tests-transmission-cpl-ibm2-cir",
+        "tests-transmission-cpl3-4-line-cir",
+        "tests-transmission-txl1-1-line-cir",
+        "tests-transmission-txl2-3-line-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/491"
+    },
+    {
       "bucket": "expression: quoted/brace expressions in values (TEMPER, functions)",
       "fixtures": 13,
-      "ngspiceSuccess": 11,
+      "ngspiceSuccess": 12,
       "ids": [
         "examples-numparam-vector-param-cir",
         "examples-various-3d-loop-sp",
         "examples-various-alterparam-sp",
         "examples-various-dc-loop-sp",
+        "examples-various-tmp-noise-cir",
         "examples-various-todo-temper-3-cir",
-        "examples-vdmos-dcdc-sp",
-        "tests-regression-func-func-1-cir",
         "tests-regression-misc-asrc-tc-2-cir",
         "tests-regression-misc-log-functions-1-cir",
         "tests-regression-parser-minus-minus-cir",
         "tests-regression-parser-xpressn-2-cir",
         "tests-regression-temper-temper-1-cir",
-        "tests-regression-temper-temper-2-cir"
+        "tests-regression-temper-temper-2-cir",
+        "tests-regression-temper-temper-3-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/493"
     },
     {
+      "bucket": "expression: B-source V= and expression functions/operators",
+      "fixtures": 12,
+      "ngspiceSuccess": 9,
+      "ids": [
+        "examples-ddt-ddt-test1-cir",
+        "examples-ddt-ddt-test2-cir",
+        "examples-ddt-ddt-test3-cir",
+        "examples-p-to-n-examples-logic-cir",
+        "examples-rf-pss-vdp-osc-pss-ctrl-cir",
+        "examples-various-fft-leakage-cir",
+        "examples-various-roessler-attractor-cir",
+        "examples-various-tmp-noise-2-cir",
+        "examples-vdmos-dcdc-sp",
+        "examples-xspice-ghdl-mc-cir",
+        "examples-xspice-see-set1-cir",
+        "tests-regression-misc-asrc-tc-1-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/495"
+    },
+    {
       "bucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)",
-      "fixtures": 11,
-      "ngspiceSuccess": 11,
+      "fixtures": 10,
+      "ngspiceSuccess": 10,
       "ids": [
         "examples-loops-instance-loop-cir",
         "examples-loops-loop-instance-cir",
-        "examples-loops-loop-model-cir",
         "examples-loops-loop-param-cir",
         "examples-measure-func-cap-sp",
         "examples-memristor-memristor-x-sp",
@@ -281,37 +346,53 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/496"
     },
     {
-      "bucket": "model: VERSION= strings on BSIM model cards",
+      "bucket": "device: R-card forms (r=, ac=, noisy=, resistor models)",
       "fixtures": 9,
       "ngspiceSuccess": 9,
       "ids": [
-        "examples-digital-compare-adder-mos-cir",
-        "examples-mos-adder-mos-cir",
-        "examples-mos-nmos-out-bsim330-plainwrite-sp",
-        "examples-mos-nmos-pmos-bsim482-sp",
-        "examples-mos-nmos-pmos-drainresistor-sp",
-        "examples-mos-nmos-pmos-plotting-sp",
-        "examples-mos-ro-meas-cir",
-        "examples-snapshot-adder-mos-circ-cir",
-        "examples-tclspice-tcl-testbench4-example-cir"
+        "examples-loops-loop-model-cir",
+        "examples-monte-carlo-opwien-sp",
+        "examples-noise-bipolar-noise-cir",
+        "examples-noise-resdiv-cir",
+        "tests-regression-model-instance-defaults-cir",
+        "tests-regression-pz-ac-resistance-cir",
+        "tests-regression-temper-temper-res-1-cir",
+        "tests-resistance-res-array-cir",
+        "tests-resistance-res-partition-cir"
       ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/503"
+      "issue": "https://github.com/mfiumara/spice-ts/issues/498"
     },
     {
-      "bucket": "model: VDMOS power MOSFET",
+      "bucket": "directive: .temp / .options temp",
       "fixtures": 8,
-      "ngspiceSuccess": 3,
+      "ngspiceSuccess": 7,
       "ids": [
-        "examples-transmissionlines-urc-tm-sub-cir",
-        "examples-various-transformers1-cir",
-        "examples-xspice-d-lut-mult4bit-spi",
-        "examples-xspice-original-examples-bad-name-deck",
-        "examples-xspice-original-examples-initial-conditions-deck",
-        "examples-xspice-original-examples-param-defaults-deck",
-        "examples-xspice-original-examples-param-types-deck",
-        "examples-xspice-original-examples-suffixes-deck"
+        "examples-mos-nmos-out-bsim330-plainwrite-sp",
+        "examples-mos-nmos-pmos-drainresistor-sp",
+        "examples-mos-nmos-pmos-plotting-sp",
+        "examples-soa-diode-soa-simple-cir",
+        "examples-vbic-vbic99-dc-sp",
+        "tests-regression-misc-resume-1-cir",
+        "tests-regression-misc-test-noise-2-cir",
+        "tests-regression-misc-test-noise-3-cir"
       ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/506"
+      "issue": "https://github.com/mfiumara/spice-ts/issues/459"
+    },
+    {
+      "bucket": "parse: other unsupported syntax",
+      "fixtures": 8,
+      "ngspiceSuccess": 8,
+      "ids": [
+        "examples-osdi-hicuml0-dff-y-ecl-vbic-sp",
+        "examples-osdi-hicuml0-vbic-out-sp",
+        "examples-probe-cntrl-sources-cir",
+        "examples-soa-diode-soa-sh-cir",
+        "examples-vbic-dff-y-ecl-sp",
+        "examples-vdmos-ixtp6n100d2-n-weak-inv-sp",
+        "examples-vdmos-self-heating-sp",
+        "tests-vbic-noise-scale-test-cir"
+      ],
+      "issue": null
     },
     {
       "bucket": "source: RF port sources (portnum/z0)",
@@ -330,21 +411,6 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/499"
     },
     {
-      "bucket": "directive: .temp / .options temp",
-      "fixtures": 7,
-      "ngspiceSuccess": 6,
-      "ids": [
-        "examples-soa-diode-soa-simple-cir",
-        "examples-various-tmp-noise-2-cir",
-        "examples-vbic-vbic99-dc-sp",
-        "tests-regression-misc-asrc-tc-1-cir",
-        "tests-regression-misc-resume-1-cir",
-        "tests-regression-misc-test-noise-2-cir",
-        "tests-regression-misc-test-noise-3-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/459"
-    },
-    {
       "bucket": "model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card)",
       "fixtures": 7,
       "ngspiceSuccess": 7,
@@ -360,19 +426,6 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/500"
     },
     {
-      "bucket": "device: XSPICE A-element code models",
-      "fixtures": 5,
-      "ngspiceSuccess": 4,
-      "ids": [
-        "examples-numparam-strings-cir",
-        "examples-xspice-d-process-checks-cir",
-        "examples-xspice-original-examples-hybrid-models1-dc-deck",
-        "examples-xspice-original-examples-hybrid-models1-transient-deck",
-        "examples-xspice-pwm-osc-fmcw-dosc-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/487"
-    },
-    {
       "bucket": "source: TRNOISE/EXTERNAL waveforms",
       "fixtures": 5,
       "ngspiceSuccess": 4,
@@ -386,33 +439,9 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/501"
     },
     {
-      "bucket": "control: analysis commands inside .control (tran/dc/op/ac/...)",
-      "fixtures": 4,
-      "ngspiceSuccess": 4,
-      "ids": [
-        "examples-noise-bipolar-noise-cir",
-        "examples-noise-resdiv-gain-cir",
-        "examples-noise-resdiv-cir",
-        "examples-xspice-noise-noise-gain-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/489"
-    },
-    {
-      "bucket": "convergence",
-      "fixtures": 4,
-      "ngspiceSuccess": 2,
-      "ids": [
-        "examples-transmissionlines-cpl3-4-line-sp",
-        "tests-mesa-mesa-12-cir",
-        "tests-mesa-mesa12-cir",
-        "tests-transmission-cpl3-4-line-cir"
-      ],
-      "issue": null
-    },
-    {
       "bucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)",
       "fixtures": 4,
-      "ngspiceSuccess": 1,
+      "ngspiceSuccess": 2,
       "ids": [
         "examples-cider-diode-pd1-cir",
         "examples-cider-diode-pindiode-cir",
@@ -434,16 +463,16 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/502"
     },
     {
-      "bucket": "timeout: spice-ts exceeded the 120 s bound",
+      "bucket": "model: VERSION= strings on BSIM model cards",
       "fixtures": 4,
       "ngspiceSuccess": 4,
       "ids": [
-        "examples-digital-compare-adder-bip-cir",
-        "examples-transmissionlines-cpl-ibm1-sp",
-        "examples-transmissionlines-cpl1-4-line-sp",
-        "examples-vdmos-ro-11-vdmos-sp"
+        "examples-mos-nmos-pmos-bsim482-sp",
+        "examples-mos-ro-meas-cir",
+        "examples-snapshot-adder-mos-circ-cir",
+        "examples-tclspice-tcl-testbench4-example-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/503"
     },
     {
       "bucket": "analysis: .pz beyond ideal R, L, C",
@@ -468,26 +497,15 @@
       "issue": null
     },
     {
-      "bucket": "device: R-card forms (r=, ac=, noisy=, resistor models)",
+      "bucket": "convergence",
       "fixtures": 3,
-      "ngspiceSuccess": 3,
+      "ngspiceSuccess": 1,
       "ids": [
-        "examples-monte-carlo-opwien-sp",
-        "examples-various-tmp-noise-cir",
-        "tests-regression-temper-temper-3-cir"
+        "examples-vdmos-crss-coss-ciss-sp",
+        "tests-mesa-mesa-12-cir",
+        "tests-mesa-mesa12-cir"
       ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/498"
-    },
-    {
-      "bucket": "device: S/W-element switches",
-      "fixtures": 3,
-      "ngspiceSuccess": 2,
-      "ids": [
-        "examples-probe-switches-manual-p92-cir",
-        "examples-transient-noise-noi-sc-tr-cir",
-        "examples-xspice-ghdl-mc-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/507"
+      "issue": null
     },
     {
       "bucket": "directive: .measure",
@@ -501,35 +519,53 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/505"
     },
     {
-      "bucket": "execution: other failure",
+      "bucket": "model: VDMOS power MOSFET",
       "fixtures": 3,
+      "ngspiceSuccess": 3,
+      "ids": [
+        "examples-vdmos-vdmos-out-ir-mtr-sp",
+        "examples-vdmos-vdmos-out-sp",
+        "examples-vdmos-vdmosp-out-mtr-sp"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/506"
+    },
+    {
+      "bucket": "device: S/W-element switches",
+      "fixtures": 2,
+      "ngspiceSuccess": 2,
+      "ids": [
+        "examples-probe-switches-manual-p92-cir",
+        "examples-transient-noise-noi-sc-tr-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/507"
+    },
+    {
+      "bucket": "execution: other failure",
+      "fixtures": 2,
       "ngspiceSuccess": 2,
       "ids": [
         "examples-vbic-vbic99-tran-sp",
-        "examples-xspice-original-examples-bad-io-deck",
         "tests-regression-misc-empty-1-cir"
       ],
       "issue": null
     },
     {
-      "bucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)",
-      "fixtures": 2,
-      "ngspiceSuccess": 2,
+      "bucket": "device: K-element",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
       "ids": [
-        "examples-monte-carlo-rand-numb-test-cir",
-        "examples-xspice-various-ro-nand-digi-cir"
+        "examples-various-transformers1-cir"
       ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/494"
+      "issue": null
     },
     {
-      "bucket": "expression: B-source V= and expression functions/operators",
-      "fixtures": 2,
-      "ngspiceSuccess": 0,
+      "bucket": "device: U-element",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
       "ids": [
-        "examples-ddt-ddt-test2-cir",
-        "examples-p-to-n-examples-logic-cir"
+        "examples-transmissionlines-urc-tm-sub-cir"
       ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/495"
+      "issue": null
     },
     {
       "bucket": "model: string-valued model parameters (MFG= and similar)",
@@ -539,15 +575,6 @@
         "examples-soa-bjt-soa-cir"
       ],
       "issue": null
-    },
-    {
-      "bucket": "source: parenthesised and extended waveform syntax",
-      "fixtures": 1,
-      "ngspiceSuccess": 1,
-      "ids": [
-        "examples-xspice-see-set1-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/492"
     },
     {
       "bucket": "syntax: µ (micro sign) scale suffix",
@@ -578,14 +605,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node=61 loc=3.0 re"
+        "firstErrorLine": "Parse error at line 14: Unsupported .options field: 'bypass' .option acct bypass=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-bjt-colposc-cir",
@@ -605,7 +632,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 16: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node=61 loc=3.0 re"
+        "firstErrorLine": "Parse error at line 16: Cannot parse number: 'sg' .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -624,20 +651,21 @@
       "unmappedAnalyses": [],
       "sameNameAs": [],
       "ngspice": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
+        "status": "success",
+        "analyses": [
+          "dc:51"
+        ]
       },
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON E"
+        "firstErrorLine": "Parse error at line 14: Cannot parse number: 'direct' .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since, we are only simulating half of a device, we double the unit width * 1.0 um emitt"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "both-failed",
+      "outcome": "spice-ts-loss",
       "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
@@ -658,7 +686,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 21: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node=61 loc=3.0 re"
+        "firstErrorLine": "Parse error at line 21: Cannot parse number: 'sg' .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -685,7 +713,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 52: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node=10 loc=0.9 x."
+        "firstErrorLine": "Parse error at line 52: Cannot parse number: 'sg' .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node=10 loc=0.9 x.mesh node=20 loc=1.1 x.mesh node=30 loc=1.4 x.mesh node=40 loc=1.6 x.mesh node=61 loc=3.0 region num=1 material=1 mate"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -714,14 +742,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node=61 loc=3.0 re"
+        "firstErrorLine": "Parse error at line 9: Unsupported .options field: 'bypass' .option acct bypass=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-bjt-vco-cir",
@@ -741,7 +769,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 26: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node=61 loc=3.0 re"
+        "firstErrorLine": "Parse error at line 26: Cannot parse number: 'sg' .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -772,7 +800,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: .model 'M_PN' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model M_PN numd level=1 *************************************** *** One"
+        "firstErrorLine": "Parse error at line 13: Cannot parse number: 'ct' .model M_PN numd level=1 *************************************** *** One-Dimensional Numerical Diode *** *************************************** options defa=1p x.mesh loc=0.0 n=1 x.mesh loc"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -799,7 +827,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: .model 'M_PN' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL M_PN numd level=1 *************************************** *** One"
+        "firstErrorLine": "Parse error at line 11: Cannot parse number: 'ct' .MODEL M_PN numd level=1 *************************************** *** One-Dimensional Numerical Diode *** *************************************** options defa=1p x.mesh loc=0.0 n=1 x.mesh loc"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -845,9 +873,10 @@
       "unmappedAnalyses": [],
       "sameNameAs": [],
       "ngspice": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
+        "status": "success",
+        "analyses": [
+          "tran:335"
+        ]
       },
       "spiceTs": {
         "status": "unsupported",
@@ -858,7 +887,7 @@
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "both-failed",
+      "outcome": "spice-ts-loss",
       "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
     },
     {
@@ -879,14 +908,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 8: .model 'M_NJF' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL M_NJF NBJT LEVEL=2 options jfet defw=10.0um output dc.debug phin "
+        "firstErrorLine": "Parse error at line 30: Unsupported .options field: 'bypass' .option acct bypass=1 temp=27"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-mos-bootinv-cir",
@@ -906,7 +935,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: .model 'M_NMOS' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model M_NMOS numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x.mesh l=0.7 n="
+        "firstErrorLine": "Parse error at line 14: Cannot parse number: 'sg' .model M_NMOS numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x.mesh l=0.7 n=5 x.mesh l=1.0 n=7 x.mesh l=1.2 n=11 x.mesh l=3.2 n=21 x.mesh l=3.4 n=25 x.mesh l=3.7 n=27 x.mesh l=3.8 n=28 x.mesh l=4.4"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -933,14 +962,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: .model 'mmod' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model mmod numos x.mesh n=1 l=0 x.mesh n=3 l=0.4 x.mesh n=7 l=0.6 x.me"
+        "firstErrorLine": "Parse error at line 14: Unsupported .options field: 'bypass' .options acct bypass=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-mos-cmosinv-cir",
@@ -960,7 +989,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 26: .model 'M_NMOS' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model M_NMOS numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x.mesh l=0.7 n="
+        "firstErrorLine": "Parse error at line 26: Cannot parse number: 'sg' .model M_NMOS numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x.mesh l=0.7 n=5 x.mesh l=1.0 n=7 x.mesh l=1.2 n=11 x.mesh l=3.2 n=21 x.mesh l=3.4 n=25 x.mesh l=3.7 n=27 x.mesh l=3.8 n=28 x.mesh l=4.4"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -987,7 +1016,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: .model 'mmod' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model mmod numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x.mesh l=0.7 n=5 x."
+        "firstErrorLine": "Parse error at line 10: Cannot parse number: 'sg' .model mmod numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x.mesh l=0.7 n=5 x.mesh l=1.0 n=7 x.mesh l=1.2 n=11 x.mesh l=3.2 n=21 x.mesh l=3.4 n=25 x.mesh l=3.7 n=27 x.mesh l=3.8 n=28 x.mesh l=4.4 n"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1014,14 +1043,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: .model 'mmod' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model mmod numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x.mesh l=0.7 n=5 x."
+        "firstErrorLine": "Parse error at line 15: Unsupported .options field: 'bypass' .option acct bypass=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-mos-ringosc-cir",
@@ -1033,20 +1062,21 @@
       "unmappedAnalyses": [],
       "sameNameAs": [],
       "ngspice": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
+        "status": "success",
+        "analyses": [
+          "tran:1417"
+        ]
       },
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 33: .model 'M_NMOS' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model M_NMOS numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x.mesh l=0.7 n="
+        "firstErrorLine": "Parse error at line 33: Cannot parse number: 'sg' .model M_NMOS numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x.mesh l=0.7 n=5 x.mesh l=1.0 n=7 x.mesh l=1.2 n=11 x.mesh l=3.2 n=21 x.mesh l=3.4 n=25 x.mesh l=3.7 n=27 x.mesh l=3.8 n=28 x.mesh l=4.4"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "both-failed",
+      "outcome": "spice-ts-loss",
       "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
@@ -1059,20 +1089,21 @@
       "unmappedAnalyses": [],
       "sameNameAs": [],
       "ngspice": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
+        "status": "success",
+        "analyses": [
+          "tran:530"
+        ]
       },
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 33: .model 'M_NMOS' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL M_NMOS NUMOS X.MESH L=0.0 N=1 X.MESH L=0.6 N=4 X.MESH L=0.7 N="
+        "firstErrorLine": "Parse error at line 33: Cannot parse number: 'SG' .MODEL M_NMOS NUMOS X.MESH L=0.0 N=1 X.MESH L=0.6 N=4 X.MESH L=0.7 N=5 X.MESH L=1.0 N=7 X.MESH L=1.2 N=11 X.MESH L=3.2 N=21 X.MESH L=3.4 N=25 X.MESH L=3.7 N=27 X.MESH L=3.8 N=28 X.MESH L=4.4"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "both-failed",
+      "outcome": "spice-ts-loss",
       "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
@@ -1093,7 +1124,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: .model 'M_RES' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL M_RES numd level=1 options resistor defa=1p x.mesh loc=0.0 num=1"
+        "firstErrorLine": "Parse error at line 14: Cannot parse number: 'direct' .MODEL M_RES numd level=1 options resistor defa=1p x.mesh loc=0.0 num=1 x.mesh loc=1.0 num=101 domain num=1 material=1 material num=1 gaas doping unif n.type conc=2.5e16 models fieldmob "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1120,7 +1151,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: .model 'M_RES' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL M_RES numd level=1 options resistor defa=1p x.mesh loc=0.0 num=1"
+        "firstErrorLine": "Parse error at line 10: Cannot parse number: 'direct' .MODEL M_RES numd level=1 options resistor defa=1p x.mesh loc=0.0 num=1 x.mesh loc=1.0 num=101 domain num=1 material=1 material num=1 silicon doping unif n.type conc=2.5e16 models bgn sr"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1147,14 +1178,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE=61 LOC=3.0 RE"
+        "firstErrorLine": "Parse error at line 14: Unsupported .options field: 'bypass' .OPTION ACCT BYPASS=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-serial-charge-cir",
@@ -1174,14 +1205,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: .model 'MMOD' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL MMOD NUMOS X.MESH N=1 L=0 X.MESH N=3 L=0.4 X.MESH N=7 L=0.6 X.ME"
+        "firstErrorLine": "Parse error at line 14: Unsupported .options field: 'bypass' .OPTIONS ACCT BYPASS=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-serial-colposc-cir",
@@ -1201,7 +1232,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 16: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE=61 LOC=3.0 RE"
+        "firstErrorLine": "Parse error at line 16: Cannot parse number: 'SG' .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING U"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1228,7 +1259,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: .model 'M_PN' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL M_PN NUMD LEVEL=1 *************************************** *** ONE"
+        "firstErrorLine": "Parse error at line 11: Cannot parse number: 'CT' .MODEL M_PN NUMD LEVEL=1 *************************************** *** ONE-DIMENSIONAL NUMERICAL DIODE *** *************************************** OPTIONS DEFA=1P X.MESH LOC=0.0 N=1 X.MESH LOC"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1255,7 +1286,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 21: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE=61 LOC=3.0 RE"
+        "firstErrorLine": "Parse error at line 21: Cannot parse number: 'SG' .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING U"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1282,7 +1313,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 52: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE=10 LOC=0.9 X."
+        "firstErrorLine": "Parse error at line 52: Cannot parse number: 'SG' .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE=10 LOC=0.9 X.MESH NODE=20 LOC=1.1 X.MESH NODE=30 LOC=1.4 X.MESH NODE=40 LOC=1.6 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATE"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1309,7 +1340,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: .model 'MMOD' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL MMOD NUMOS X.MESH L=0.0 N=1 X.MESH L=0.6 N=4 X.MESH L=0.7 N=5 X."
+        "firstErrorLine": "Parse error at line 10: Cannot parse number: 'SG' .MODEL MMOD NUMOS X.MESH L=0.0 N=1 X.MESH L=0.6 N=4 X.MESH L=0.7 N=5 X.MESH L=1.0 N=7 X.MESH L=1.2 N=11 X.MESH L=3.2 N=21 X.MESH L=3.4 N=25 X.MESH L=3.7 N=27 X.MESH L=3.8 N=28 X.MESH L=4.4 N"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1336,14 +1367,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: .model 'MMOD' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL MMOD NUMOS X.MESH L=0.0 N=1 X.MESH L=0.6 N=4 X.MESH L=0.7 N=5 X."
+        "firstErrorLine": "Parse error at line 15: Unsupported .options field: 'bypass' .OPTION ACCT BYPASS=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-serial-pullup-cir",
@@ -1355,20 +1386,21 @@
       "unmappedAnalyses": [],
       "sameNameAs": [],
       "ngspice": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
+        "status": "success",
+        "analyses": [
+          "tran:127"
+        ]
       },
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 23: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL M_NPN NBJT LEVEL=2 TITLE TWO-DIMENSIONAL NUMERICAL POLYSILICON E"
+        "firstErrorLine": "Parse error at line 23: Cannot parse number: 'DIRECT' .MODEL M_NPN NBJT LEVEL=2 TITLE TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR OPTIONS DEFW=2.0U OUTPUT STATISTICS X.MESH W=2.0 H.E=0.02 H.M=0.5 R=2.0 X.MESH W=0.5 H.S="
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "both-failed",
+      "outcome": "spice-ts-loss",
       "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
@@ -1381,21 +1413,22 @@
       "unmappedAnalyses": [],
       "sameNameAs": [],
       "ngspice": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
+        "status": "success",
+        "analyses": [
+          "tran:172"
+        ]
       },
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: .model 'M_PIN' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL M_PIN NUMD LEVEL=2 OPTIONS DEFW=100U X.MESH N=1 L=0.0 X.MESH N=2 "
+        "firstErrorLine": "Parse error at line 36: Unsupported .options field: 'bypass' .OPTION ACCT BYPASS=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "both-failed",
-      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-serial-rtlinv-cir",
@@ -1417,14 +1450,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE=61 LOC=3.0 RE"
+        "firstErrorLine": "Parse error at line 9: Unsupported .options field: 'bypass' .OPTION ACCT BYPASS=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-serial-vco-cir",
@@ -1444,7 +1477,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 26: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE=61 LOC=3.0 RE"
+        "firstErrorLine": "Parse error at line 26: Cannot parse number: 'SG' .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING U"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1463,20 +1496,21 @@
       "unmappedAnalyses": [],
       "sameNameAs": [],
       "ngspice": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
+        "status": "success",
+        "analyses": [
+          "dc:21"
+        ]
       },
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: .model 'CD4007UBENUMOSN' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model CD4007UBENUMOSN numos x.mesh (location = -64.0000e-3) "
+        "firstErrorLine": "Parse error at line 7: Cannot parse number: 'sg' .model CD4007UBENUMOSN numos x.mesh (location = -64.0000e-3) (node = 1) x.mesh (location = -48.0000e-3) (node = 2) x.mesh (location = -32.0000e-3) (node = 3) x.mesh (location = -16.0000e-3) ("
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "both-failed",
+      "outcome": "spice-ts-loss",
       "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
@@ -1489,20 +1523,21 @@
       "unmappedAnalyses": [],
       "sameNameAs": [],
       "ngspice": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
+        "status": "success",
+        "analyses": [
+          "dc:21"
+        ]
       },
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: .model 'CD4007UBENUMOSN' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model CD4007UBENUMOSN numos y.mesh (location = -64.0000e-3) "
+        "firstErrorLine": "Parse error at line 7: Cannot parse number: 'sg' .model CD4007UBENUMOSN numos y.mesh (location = -64.0000e-3) (node = 1) y.mesh (location = -48.0000e-3) (node = 2) y.mesh (location = -32.0000e-3) (node = 3) y.mesh (location = -16.0000e-3) ("
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "both-failed",
+      "outcome": "spice-ts-loss",
       "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
@@ -1515,20 +1550,21 @@
       "unmappedAnalyses": [],
       "sameNameAs": [],
       "ngspice": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
+        "status": "success",
+        "analyses": [
+          "tran:20"
+        ]
       },
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 25: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON E"
+        "firstErrorLine": "Parse error at line 25: Cannot parse number: 'direct' .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since, we are only simulating half of a device, we double the unit width * 1.0 um emitt"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "both-failed",
+      "outcome": "spice-ts-loss",
       "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
@@ -1541,20 +1577,21 @@
       "unmappedAnalyses": [],
       "sameNameAs": [],
       "ngspice": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
+        "status": "success",
+        "analyses": [
+          "tran:19"
+        ]
       },
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 25: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON E"
+        "firstErrorLine": "Parse error at line 25: Cannot parse number: 'direct' .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since, we are only simulating half of a device, we double the unit width * 1.0 um emitt"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "both-failed",
+      "outcome": "spice-ts-loss",
       "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
@@ -1567,20 +1604,21 @@
       "unmappedAnalyses": [],
       "sameNameAs": [],
       "ngspice": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
+        "status": "success",
+        "analyses": [
+          "tran:120"
+        ]
       },
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: .model 'M_NPNS' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL M_NPNS nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON"
+        "firstErrorLine": "Parse error at line 18: Cannot parse number: 'direct' .MODEL M_NPNS nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since half the device is simulated, double the unit width to get * 1.0 um emitter. Use"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "both-failed",
+      "outcome": "spice-ts-loss",
       "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
@@ -1593,20 +1631,21 @@
       "unmappedAnalyses": [],
       "sameNameAs": [],
       "ngspice": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
+        "status": "success",
+        "analyses": [
+          "tran:121"
+        ]
       },
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: .model 'M_NPNS' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL M_NPNS nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON"
+        "firstErrorLine": "Parse error at line 18: Cannot parse number: 'direct' .MODEL M_NPNS nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since half the device is simulated, double the unit width to get * 1.0 um emitter. Use"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "both-failed",
+      "outcome": "spice-ts-loss",
       "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
@@ -1783,17 +1822,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:8041"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 5: Unsupported behavioral source form: only 'I=<expression>' is supported B2 2 0 v = ddt(V(1))"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 4,
-      "worstNormalizedError": 2000000000000,
-      "worstSignal": "tran v(2)",
-      "outcome": "mismatch",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "expression: B-source V= and expression functions/operators"
     },
     {
       "id": "examples-ddt-ddt-test2-cir",
@@ -1812,7 +1850,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: Unsupported behavioral expression function 'border' B3 3 0 v = border(v(1))"
+        "firstErrorLine": "Parse error at line 5: Unsupported behavioral source form: only 'I=<expression>' is supported B2 2 0 v = ddt(V(1))"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1837,17 +1875,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:30307"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 7: Unsupported behavioral source form: only 'I=<expression>' is supported B2 22 0 v = ddt(V(2))/1000"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 5,
-      "worstNormalizedError": 3.21,
-      "worstSignal": "tran v(22)",
-      "outcome": "mismatch",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "expression: B-source V= and expression functions/operators"
     },
     {
       "id": "examples-digital-auto-bridge-shared-line-cir",
@@ -1866,14 +1903,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 8: XSPICE code model 'd_inverter' (.model 'invert') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model invert d_inverter"
+        "firstErrorLine": "Parse error at line 7: Unsupported device card: 'A' Ainv ctl not_ctl invert"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-digital-auto-bridge-vcc-cir",
@@ -1892,14 +1929,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: XSPICE code model 'd_buffer' (.model 'buf') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model buf d_buffer"
+        "firstErrorLine": "Parse error at line 1: Unsupported device card: 'A' abuf in out buf"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-digital-compare-adder-bip-cir",
@@ -1917,16 +1954,16 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
+        "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "spice-ts exceeded the 120000 ms aggregate execution bound"
+        "firstErrorLine": "Parse error at line 67: Unsupported .options field: 'noinit' .option noinit acct"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "timeout: spice-ts exceeded the 120 s bound"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-digital-compare-adder-mos-cir",
@@ -1946,14 +1983,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 61: Cannot parse number: '3.3.0' .model n1 nmos level=49 version=3.3.0"
+        "firstErrorLine": "Parse error at line 55: Unsupported .options field: 'noinit' .option noinit acct"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: VERSION= strings on BSIM model cards"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-digital-digital-devices-xspice-c4-cir",
@@ -1972,14 +2009,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 20: XSPICE code model 'adc_bridge' (.model 'atod') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model atod adc_bridge"
+        "firstErrorLine": "Parse error at line 19: Unsupported device card: 'A' abridge1 [1] [enable] atod"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-loops-instance-loop-cir",
@@ -2050,14 +2087,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: Unsupported dot command: '.csparam' .csparam start=1k"
+        "firstErrorLine": "Parse error at line 6: Cannot parse number: 'rmod' R2 n2 n1 rmod"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)"
+      "gapBucket": "device: R-card forms (r=, ac=, noisy=, resistor models)"
     },
     {
       "id": "examples-loops-loop-param-cir",
@@ -2470,13 +2507,13 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:243689"
+          "tran:244049"
         ]
       },
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 21: Unsupported resistor parameters: 'R='res' (quoted or brace expression resistor values are not supported) R2 4 6 R='res + 0.033 * res*V ( r2 ) '"
+        "firstErrorLine": "Parse error at line 21: Cannot parse number: 'R='res' R2 4 6 R = 'res + 0.033 * res*V(r2)'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -2502,7 +2539,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 16: Unsupported .options field: 'seed' .option seed = 55"
+        "firstErrorLine": "Parse error at line 8: Unsupported .options field: 'seedinfo' .option seedinfo"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -2529,14 +2566,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 61: Cannot parse number: '3.3.0' .model n1 nmos level=49 version=3.3.0"
+        "firstErrorLine": "Parse error at line 55: Unsupported .options field: 'noinit' .option noinit acct"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: VERSION= strings on BSIM model cards"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-mos-nmos-out-bsim330-plainwrite-sp",
@@ -2555,14 +2592,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 19: Cannot parse number: '3.3.0' .model n1 nmos level=49 version=3.3.0 tox=3.5n nch=2.4e17 nsub=5e16 vth0=0.15"
+        "firstErrorLine": "Parse error at line 16: Unsupported .options field: 'temp' .options Temp=27.0"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: VERSION= strings on BSIM model cards"
+      "gapBucket": "directive: .temp / .options temp"
     },
     {
       "id": "examples-mos-nmos-pmos-bsim482-sp",
@@ -2607,14 +2644,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 20: Cannot parse number: '3.3.0' .model n1 nmos level=49 version=3.3.0 tox=3.5n nch=2.4e17 nsub=5e16 vth0=0.15"
+        "firstErrorLine": "Parse error at line 17: Unsupported .options field: 'temp' .options Temp=27.0"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: VERSION= strings on BSIM model cards"
+      "gapBucket": "directive: .temp / .options temp"
     },
     {
       "id": "examples-mos-nmos-pmos-plotting-sp",
@@ -2633,14 +2670,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 20: Cannot parse number: '3.3.0' .model n1 nmos level=49 version=3.3.0 tox=3.5n nch=2.4e17 nsub=5e16 vth0=0.15"
+        "firstErrorLine": "Parse error at line 17: Unsupported .options field: 'temp' .options Temp=27.0"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: VERSION= strings on BSIM model cards"
+      "gapBucket": "directive: .temp / .options temp"
     },
     {
       "id": "examples-mos-ro-17-4-cir",
@@ -2738,14 +2775,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: Unsupported .control command 'noise': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot"
+        "firstErrorLine": "Parse error at line 6: Cannot parse number: 'r=1k' r1 1 2 r=1k"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "device: R-card forms (r=, ac=, noisy=, resistor models)"
     },
     {
       "id": "examples-noise-resdiv-gain-cir",
@@ -2764,14 +2801,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 22: Unsupported .control command 'noise': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot"
+        "firstErrorLine": "Parse error at line 14: Unsupported device card: 'A' a1 2 3 amp"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-noise-resdiv-cir",
@@ -2790,14 +2827,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 20: Unsupported .control command 'noise': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot"
+        "firstErrorLine": "Parse error at line 12: Unsupported resistor parameters: 'NOISY' R12 12 0 10k noisy=0"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "device: R-card forms (r=, ac=, noisy=, resistor models)"
     },
     {
       "id": "examples-numparam-strings-cir",
@@ -2816,7 +2853,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: XSPICE code model 'd_lut' (.model 'l_and') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model l_and d_lut table_values=and"
+        "firstErrorLine": "Parse error at line 6: Cannot parse number: 'and' .model l_and d_lut table_values=and"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -2895,7 +2932,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Unsupported bounded VBIC DC model parameter: 'NF'"
+        "firstErrorLine": "Unsupported bounded VBIC DC model parameter: 'TNOM'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -2921,7 +2958,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Unsupported bounded VBIC DC model parameter: 'NF'"
+        "firstErrorLine": "Unsupported bounded VBIC DC model parameter: 'TNOM'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -2947,7 +2984,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: Unsupported behavioral expression operator '~' B1 1 0 V=~(~v(9)&v(8)) + 0.5"
+        "firstErrorLine": "Parse error at line 7: Unsupported behavioral source form: only 'I=<expression>' is supported B1 1 0 V=~(~v(9)&v(8)) + 0.5"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -3027,14 +3064,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 24: Unsupported .control command 'pyplot': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplo"
+        "firstErrorLine": "Parse error at line 20: Unsupported .options field: 'noinit' .option noinit"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-probe-cntrl-sources-cir",
@@ -3081,7 +3118,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:566"
+          "tran:565"
         ]
       },
       "comparedAnalyses": 1,
@@ -3302,14 +3339,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 25: Unsupported .control command 'meas': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot'"
+        "firstErrorLine": "Parse error at line 5: Unsupported behavioral expression operator '^' Ba gib 0 I=-1e-2*v(gib,0)+1e-2*v(gib,0)^3"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "expression: B-source V= and expression functions/operators"
     },
     {
       "id": "examples-rf-sp-file-cir",
@@ -3693,9 +3730,9 @@
       "unmappedAnalyses": [],
       "sameNameAs": [],
       "ngspice": {
-        "status": "failed",
+        "status": "success",
         "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3706,7 +3743,7 @@
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "both-failed",
+      "outcome": "spice-ts-loss",
       "gapBucket": "device: S/W-element switches"
     },
     {
@@ -3748,7 +3785,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:3007"
+          "tran:3066"
         ]
       },
       "spiceTs": {
@@ -3832,16 +3869,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "failed",
+        "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "spice-ts exceeded the 120000 ms aggregate execution bound"
+        "firstErrorLine": "Parse error at line 25: Unsupported device card: 'P' p1 1 2 3 4 5 6 0 7 8 9 10 11 12 0 pline"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "timeout: spice-ts exceeded the 120 s bound"
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "examples-transmissionlines-cpl-ibm1a-sp",
@@ -3860,14 +3897,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 80: Unsupported .control command 'repeat': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplo"
+        "firstErrorLine": "Parse error at line 25: Unsupported device card: 'P' p1 1 2 3 4 5 6 0 7 8 9 10 11 12 0 pline"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "examples-transmissionlines-cpl-ibm2-sp",
@@ -3884,17 +3921,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:1207"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 5: Unsupported device card: 'P' p1 V1 V2 0 V3 V4 0 cpl1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "not-compared",
-      "gapBucket": null
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "examples-transmissionlines-cpl-ibm3-sp",
@@ -3911,17 +3947,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:13385"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 8: Unsupported device card: 'P' P2 1 7 0 2 8 0 PLINE"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "not-compared",
-      "gapBucket": null
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "examples-transmissionlines-cpl1-4-line-sp",
@@ -3938,16 +3973,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "failed",
+        "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "spice-ts exceeded the 120000 ms aggregate execution bound"
+        "firstErrorLine": "Parse error at line 30: Unsupported device card: 'P' P1 5 6 7 8 0 9 10 11 12 0 pline"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "timeout: spice-ts exceeded the 120 s bound"
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "examples-transmissionlines-cpl2-2-line-sp",
@@ -3964,17 +3999,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:2770"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 16: Unsupported device card: 'P' P1 648 748 0 651 751 0 PLINE"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "not-compared",
-      "gapBucket": null
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "examples-transmissionlines-cpl3-4-line-sp",
@@ -3991,16 +4025,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "failed",
+        "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Timestep too small at t=3.049500659843922e-8: dt=1.9335714962913457e-16"
+        "firstErrorLine": "Parse error at line 12: Unsupported device card: 'P' P1 2 3 4 5 0 6 7 8 9 0 LOSSYMODE"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "convergence"
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "examples-transmissionlines-cpl4-txl-2-line-sp",
@@ -4017,17 +4051,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:12224"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 1: Unsupported device card: 'Y' y1 1 0 5 0 yconvtwoinch"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "not-compared",
-      "gapBucket": null
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "examples-transmissionlines-ltra1-1-line-sp",
@@ -4046,7 +4079,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:611"
+          "tran:599"
         ]
       },
       "comparedAnalyses": 0,
@@ -4099,7 +4132,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:721"
+          "tran:705"
         ]
       },
       "comparedAnalyses": 0,
@@ -4126,7 +4159,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:2131"
+          "tran:2169"
         ]
       },
       "comparedAnalyses": 0,
@@ -4153,7 +4186,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:2396"
+          "tran:2517"
         ]
       },
       "comparedAnalyses": 0,
@@ -4180,7 +4213,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:1029"
+          "tran:1023"
         ]
       },
       "comparedAnalyses": 0,
@@ -4207,7 +4240,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:3084"
+          "tran:3141"
         ]
       },
       "comparedAnalyses": 0,
@@ -4258,17 +4291,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:686"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 6: Unsupported device card: 'Y' y1 2 0 3 0 ymod"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "not-compared",
-      "gapBucket": null
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "examples-transmissionlines-txl2-3-line-sp",
@@ -4285,17 +4317,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:984"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 12: Unsupported device card: 'Y' y1 2 0 3 0 ymod"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "not-compared",
-      "gapBucket": null
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "examples-transmissionlines-txl3-1-line-sp",
@@ -4312,17 +4343,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:2510"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 20: Unsupported device card: 'Y' y2 2 0 3 0 ymod1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "not-compared",
-      "gapBucket": null
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "examples-transmissionlines-txl4-1-line-sp",
@@ -4339,17 +4369,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:614"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 42: Unsupported device card: 'Y' y1 2 0 3 0 yline"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "not-compared",
-      "gapBucket": null
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "examples-transmissionlines-urc-tm-sub-cir",
@@ -4368,14 +4397,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 5: .model 'URCMOD' has unsupported type 'URC' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model URCMOD URC CPERL=100p RPERL=100k FMAX=10G"
+        "firstErrorLine": "Parse error at line 1: Unsupported device card: 'U' U1 in out gnd1 URCMOD L =20m"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: VDMOS power MOSFET"
+      "gapBucket": "device: U-element"
     },
     {
       "id": "examples-various-3d-loop-sp",
@@ -4606,14 +4635,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: Unsupported .control command 'set': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot', "
+        "firstErrorLine": "Parse error at line 5: Unsupported behavioral source form: only 'I=<expression>' is supported BVAC IN 0 V = sin( 6.283185307179586*V(VFreq)*V(VTime))"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "expression: B-source V= and expression functions/operators"
     },
     {
       "id": "examples-various-gain-stage-cir",
@@ -4659,14 +4688,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 30: Unsupported .control command 'let': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot',"
+        "firstErrorLine": "Parse error at line 18: Unsupported device card: 'A' aint in out int_in"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-various-mtimeavg-test-cir",
@@ -4738,14 +4767,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: Unsupported .control command 'set': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot',"
+        "firstErrorLine": "Parse error at line 9: Unsupported behavioral expression token 'a' B2 y 0 i=-(V(x) + a * v(y))"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "expression: B-source V= and expression functions/operators"
     },
     {
       "id": "examples-various-tmp-noise-2-cir",
@@ -4765,14 +4794,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: Unsupported dot command: '.temp' .temp 127.0"
+        "firstErrorLine": "Parse error at line 6: Unsupported behavioral expression token 'tc1' b2 2 0 i=v(1) tc1=0.001"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: .temp / .options temp"
+      "gapBucket": "expression: B-source V= and expression functions/operators"
     },
     {
       "id": "examples-various-tmp-noise-cir",
@@ -4793,14 +4822,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: Unsupported resistor parameters: ''1k*v' (quoted or brace expression resistor values are not supported) R20 20 0 '1k*v ( 200 ) ' tc1=0.001"
+        "firstErrorLine": "Parse error at line 10: Cannot parse number: ''1k*v' R20 20 0 '1k*v(200)' tc1=0.001"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: R-card forms (r=, ac=, noisy=, resistor models)"
+      "gapBucket": "expression: quoted/brace expressions in values (TEMPER, functions)"
     },
     {
       "id": "examples-various-todo-temper-3-cir",
@@ -4846,14 +4875,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 45: .model 'primary1' has unsupported type 'LCOUPLE' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model primary1 lcouple(num_turns=120)"
+        "firstErrorLine": "Parse error at line 5: Unsupported device card: 'K' K1 L1 L2 0.98"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: VDMOS power MOSFET"
+      "gapBucket": "device: K-element"
     },
     {
       "id": "examples-various-v-i-sources-am-ffm-cir",
@@ -4899,7 +4928,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Unsupported bounded VBIC DC model parameter: 'NF'"
+        "firstErrorLine": "Unsupported bounded VBIC DC model parameter: 'TNOM'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5032,17 +5061,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:25017"
-        ]
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Singular matrix: zero pivot at matrix column 1 (nodes: 2)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "not-compared",
-      "gapBucket": null
+      "outcome": "spice-ts-loss",
+      "gapBucket": "convergence"
     },
     {
       "id": "examples-vdmos-dcdc-sp",
@@ -5061,14 +5089,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: Cannot parse number: '' R4 out2 OUT R = (time<12ms ? 100 : time<20ms ? 50 : 200)"
+        "firstErrorLine": "Parse error at line 9: Unsupported behavioral source form: only 'I=<expression>' is supported B1 err 0 V = max(0,min(5,V(ref,x)*10k))"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "expression: quoted/brace expressions in values (TEMPER, functions)"
+      "gapBucket": "expression: B-source V= and expression functions/operators"
     },
     {
       "id": "examples-vdmos-inv-vdmos-sp",
@@ -5089,7 +5117,7 @@
         "status": "success",
         "analyses": [
           "dc:101",
-          "tran:1864"
+          "tran:1105"
         ]
       },
       "comparedAnalyses": 0,
@@ -5193,16 +5221,17 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "spice-ts exceeded the 120000 ms aggregate execution bound"
+        "status": "success",
+        "analyses": [
+          "tran:100001"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "timeout: spice-ts exceeded the 120 s bound"
+      "comparedAnalyses": 1,
+      "comparedSignals": 11,
+      "worstNormalizedError": 3.19,
+      "worstSignal": "tran i(vdd)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "examples-vdmos-self-heating-sp",
@@ -5247,14 +5276,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 36: Unsupported repeated 'dc' analysis in .control: spice-ts returns one result per analysis type, so each of op/dc/tran/ac may be requested once per deck (dot card or control command) dc vd2 -1 210 1 vg2 5 25 5"
+        "firstErrorLine": "Parse error at line 31: Unsupported .options field: 'warn' .options warn=1 maxwarns=6"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-vdmos-theta-nch-sp",
@@ -5325,17 +5354,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "dc:805"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 10: Cannot parse number: 'VISHAY' .MODEL SQ7002K VDMOS(KP=0.46 RS=0.8751 RG=150 VTO=1.8 rds=50Meg LAMBDA=60m CGDMAX=20p CGDMIN=2p CGS=17p TT=500n a=0.47 IS=3.25n N=1.744 RB=0.118608 m=0.348 Vj=0.23 Cjo=14pF mtriode=1 Vds"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 8,
-      "worstNormalizedError": 0.0000834,
-      "worstSignal": "dc i(vs)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "model: VDMOS power MOSFET"
     },
     {
       "id": "examples-vdmos-vdmos-out-sp",
@@ -5354,14 +5382,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: Unsupported repeated 'dc' analysis in .control: spice-ts returns one result per analysis type, so each of op/dc/tran/ac may be requested once per deck (dot card or control command) dc vg 2 7 0.05 vd 0.5 2.5 0.5"
+        "firstErrorLine": "Parse error at line 5: Cannot parse number: 'International_Rectifier' .model IRFZ48Z VDMOS (Rg = 1.77 Vto=4 Rd=1.85m Rs=0.0m Rb=3.75m Kp=25 Cgdmax=2.1n Cgdmin=0.05n Cgs=1.8n Cjo=0.55n Is=2.5p tt=20n ksubthres=0.1 mfg=International_Rectifier"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "model: VDMOS power MOSFET"
     },
     {
       "id": "examples-vdmos-vdmosp-out-mtr-sp",
@@ -5380,14 +5408,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 21: Unsupported repeated 'dc' analysis in .control: spice-ts returns one result per analysis type, so each of op/dc/tran/ac may be requested once per deck (dot card or control command) dc vg 0 -4 -0.05 vd -1 -12 -2"
+        "firstErrorLine": "Parse error at line 4: Cannot parse number: 'International_Rectifier' .model IRF7233 VDMOS(pchan Rg=3 Rd=8m Rs=6m Vto=-1 Kp=70 Cgdmax=2n Cgdmin=.25n Cgs=3.3n Cjo=.98n Is=98p Rb=10m mfg=International_Rectifier Vds=-12 Ron=20m Qg=49n)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "model: VDMOS power MOSFET"
     },
     {
       "id": "examples-vdmos-vdmosp-out-sp",
@@ -5412,9 +5440,9 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 6,
-      "worstNormalizedError": 1.48e-8,
+      "worstNormalizedError": 5.05e+242,
       "worstSignal": "dc i(vs)",
-      "outcome": "matched",
+      "outcome": "mismatch",
       "gapBucket": null
     },
     {
@@ -5462,14 +5490,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 24: .model 'todig_3v' has unsupported type 'ADC_BRIDGE' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .MODEL todig_3v adc_bridge(in_high=0.7 in_low=0.3 rise_delay=1"
+        "firstErrorLine": "Parse error at line 107: Unsupported .control command 'linearize': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asci"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: VDMOS power MOSFET"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-xspice-d-process-checks-cir",
@@ -5488,7 +5516,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 8: XSPICE code model 'd_osc' (.model 'd_osc1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model d_osc1 d_osc (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[1.0e6 1.0e6 4.0e6 4.0e6] rise_"
+        "firstErrorLine": "Parse error at line 8: Cannot parse number: '[-1.0' .model d_osc1 d_osc (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[1.0e6 1.0e6 4.0e6 4.0e6] rise_delay=1.0e-6 fall_delay=2.0e-6)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5514,14 +5542,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: XSPICE code model 'delay' (.model 'newdelay') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model newdelay delay(delay=400u)"
+        "firstErrorLine": "Parse error at line 5: Unsupported device card: 'A' a1 in1 out1 cntrl1 newdelay"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-ghdl-mc-cir",
@@ -5540,14 +5568,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 19: Unsupported device card: 'S' Striac mt1 0 drive 0 triac off"
+        "firstErrorLine": "Parse error at line 9: Unsupported behavioral source form: only 'I=<expression>' is supported Bcross cross 0 V=(V(live) > -2 && V(live) < 2) ? 5 : 0"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: S/W-element switches"
+      "gapBucket": "expression: B-source V= and expression functions/operators"
     },
     {
       "id": "examples-xspice-ghdl-pwm-cir",
@@ -5566,14 +5594,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model pwm_sin d_cosim simulation=\"./pwm\" sim_args = [ \"pwm\" ]"
+        "firstErrorLine": "Parse error at line 3: Unsupported device card: 'A' adut null [ out ] pwm_sin"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-icarus-verilog-delay-cir",
@@ -5592,14 +5620,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'ring') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model ring d_cosim simulation=\"ivlng\" sim_args = [ \"delay\" ]"
+        "firstErrorLine": "Parse error at line 3: Unsupported device card: 'A' adut null [ d4 d3 d2 d1 d0 ] ring"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-icarus-verilog-pwm-cir",
@@ -5618,14 +5646,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model pwm_sin d_cosim simulation=\"ivlng\" sim_args = [ \"pwm\" ]"
+        "firstErrorLine": "Parse error at line 3: Unsupported device card: 'A' adut null [ out ] pwm_sin"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-noise-noise-gain-cir",
@@ -5644,14 +5672,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: Unsupported .control command 'noise': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot"
+        "firstErrorLine": "Parse error at line 3: Unsupported device card: 'A' a1 in1 out1 amp1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-noise-ota-noise-test1-cir",
@@ -5670,14 +5698,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: XSPICE code model 'ota' (.model 'newota') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model newota ota (gm=1m rout=1e12 rin=1Meg en=31n enk=100 in_noise=20p ink=2k incm=0 incmk=2k "
+        "firstErrorLine": "Parse error at line 3: Unsupported device card: 'A' aota inn 0 out newota"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models1-ac-deck",
@@ -5695,17 +5723,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "ac:21"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 18: Unsupported device card: 'A' a1 1 10 gain1"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 13,
-      "worstNormalizedError": 2.49e-16,
-      "worstSignal": "ac i(v1)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models1-dc-deck",
@@ -5723,17 +5750,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "op:1"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 13: Unsupported device card: 'A' a1 1 10 gain1"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 10,
-      "worstNormalizedError": 7.01e-15,
-      "worstSignal": "op v(50)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models1-swept-dc-deck",
@@ -5751,17 +5777,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "dc:100"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 13: Unsupported device card: 'A' a1 1 10 gain1"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 10,
-      "worstNormalizedError": 0.0001,
-      "worstSignal": "dc v(30)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models1-transient-deck",
@@ -5779,17 +5804,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:232"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 14: Unsupported device card: 'A' a1 1 10 gain1"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 10,
-      "worstNormalizedError": 0.122,
-      "worstSignal": "tran v(40)",
-      "outcome": "mismatch",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models2-ac-deck",
@@ -5809,14 +5833,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 27: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model filter1 s_xfer (in_offset=0.0 gain=1.0 num_coeff=[1.0] den_coeff=[1.0 1.414214 1.0]"
+        "firstErrorLine": "Parse error at line 14: Unsupported device card: 'A' a1 1 10 int1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models2-dc-deck",
@@ -5836,14 +5860,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 27: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model filter1 s_xfer (in_offset=0.0 gain=1.0 num_coeff=[1.0] den_coeff=[1.0 1.425625 1.51"
+        "firstErrorLine": "Parse error at line 14: Unsupported device card: 'A' a1 1 10 int1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models2-swept-dc-deck",
@@ -5863,14 +5887,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 25: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model filter1 s_xfer (in_offset=0.0 gain=1.0 num_coeff=[1.0] den_coeff=[1.0 1.414214 1.0]"
+        "firstErrorLine": "Parse error at line 12: Unsupported device card: 'A' a1 1 10 int1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models2-transient-deck",
@@ -5890,14 +5914,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 29: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model filter1 s_xfer (in_offset=0.0 gain=1.0 num_coeff=[1.0] den_coeff=[1.0 1.414214 1.0]"
+        "firstErrorLine": "Parse error at line 16: Unsupported device card: 'A' a1 1 10 int1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models3-ac-deck",
@@ -5917,14 +5941,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 20: XSPICE code model 'hyst' (.model 'hyst1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model hyst1 hyst (in_low=0.0 in_high=1.0 hyst=0.1 out_lower_limit=0.0 out_upper_limit=1.0 inp"
+        "firstErrorLine": "Parse error at line 19: Unsupported device card: 'A' a1 1 10 hyst1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models3-dc-deck",
@@ -5944,14 +5968,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: XSPICE code model 'hyst' (.model 'hyst1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model hyst1 hyst (in_low=0.0 in_high=1.0 hyst=0.1 out_lower_limit=0.0 out_upper_limit=1.0 inp"
+        "firstErrorLine": "Parse error at line 17: Unsupported device card: 'A' a1 1 10 hyst1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models3-swept-dc-deck",
@@ -5971,14 +5995,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: XSPICE code model 'hyst' (.model 'hyst1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model hyst1 hyst (in_low=0.0 in_high=1.0 hyst=0.1 out_lower_limit=0.0 out_upper_limit=1.0 inp"
+        "firstErrorLine": "Parse error at line 17: Unsupported device card: 'A' a1 1 10 hyst1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models3-transient-deck",
@@ -5998,14 +6022,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 19: XSPICE code model 'hyst' (.model 'hyst1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model hyst1 hyst (in_low=0.0 in_high=1.0 hyst=0.1 out_lower_limit=0.0 out_upper_limit=1.0 inp"
+        "firstErrorLine": "Parse error at line 18: Unsupported device card: 'A' a1 1 10 hyst1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models4-ac-deck",
@@ -6025,14 +6049,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 21: XSPICE code model 'sine' (.model 'sine1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model sine1 sine (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[1.0 1.0 100.0 100.0] out_low=-1.0"
+        "firstErrorLine": "Parse error at line 20: Unsupported device card: 'A' a1 1 10 sine1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models4-dc-deck",
@@ -6052,14 +6076,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: XSPICE code model 'sine' (.model 'sine1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model sine1 sine (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[1.0 1.0 100.0 100.0] out_low=-1.0"
+        "firstErrorLine": "Parse error at line 16: Unsupported device card: 'A' a1 1 10 sine1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models4-swept-dc-deck",
@@ -6079,14 +6103,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: XSPICE code model 'sine' (.model 'sine1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model sine1 sine (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[1.0 1.0 100.0 100.0] out_low=-1.0"
+        "firstErrorLine": "Parse error at line 16: Unsupported device card: 'A' a1 1 10 sine1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-analog-models4-transient-deck",
@@ -6106,14 +6130,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 20: XSPICE code model 'sine' (.model 'sine1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model sine1 sine (cntl_array=[-1.0 0.0 10.0 20.0] freq_array=[500 500 2000 2000] out_low=-1.0"
+        "firstErrorLine": "Parse error at line 19: Unsupported device card: 'A' a1 2 10 sine1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-arbitrary-phase-deck",
@@ -6160,14 +6184,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 22: XSPICE code model 'dac_bridge' (.model 'dac') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model dac dac_bridge"
+        "firstErrorLine": "Parse error at line 15: Unsupported device card: 'A' a1 1 %d 2 gain_block"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-bad-io-deck",
@@ -6184,16 +6208,16 @@
         "firstErrorLine": "Error on line 12 or its substitute:"
       },
       "spiceTs": {
-        "status": "failed",
+        "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "XSPICE instance 'a1': Too many connections -- expecting model name but encountered other tokens."
+        "firstErrorLine": "Parse error at line 12: Unsupported device card: 'A' a1 1 2 3 gain_block"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "execution: other failure"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-bad-name-deck",
@@ -6212,14 +6236,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: .model 'gain_block' has unsupported type 'THIS_MODEL_DOESNT_EXIST' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model gain_block this_model_doesnt_exist (gain"
+        "firstErrorLine": "Parse error at line 12: Unsupported device card: 'A' a1 1 2 gain_block"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "model: VDMOS power MOSFET"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-bad-param-type-deck",
@@ -6238,14 +6262,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: MIF-ERROR - model: gain_block - Bad real value .model gain_block gain (gain=false)"
+        "firstErrorLine": "Parse error at line 12: Unsupported device card: 'A' a1 1 2 gain_block"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-bad-param-deck",
@@ -6263,17 +6287,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:138"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 12: Unsupported device card: 'A' a1 1 2 gain_block"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 3,
-      "worstNormalizedError": 0.00049,
-      "worstSignal": "tran v(2)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-digital-invert-deck",
@@ -6293,14 +6316,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: XSPICE code model 'adc_bridge' (.model 'adc') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model adc adc_bridge"
+        "firstErrorLine": "Parse error at line 8: Unsupported device card: 'A' a1 [1] [2] adc"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-digital-models-deck",
@@ -6320,14 +6343,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: XSPICE code model 'adc_bridge' (.model 'atod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model atod1 adc_bridge (in_low=0.25 in_high=0.75 rise_delay=1e-9 fall_delay=1e-9)"
+        "firstErrorLine": "Parse error at line 13: Unsupported device card: 'A' a1 [1] [2] atod1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-digital-models1-deck",
@@ -6347,14 +6370,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: XSPICE code model 'adc_bridge' (.model 'adc_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model adc_bridge1 adc_bridge (in_low=0.1 in_high=0.9 rise_delay=1.0e-12 fall_dela"
+        "firstErrorLine": "Parse error at line 16: Unsupported device card: 'A' aconverter [200 100] [2 1] adc_bridge1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-digital-models2-deck",
@@ -6374,14 +6397,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 33: XSPICE code model 'adc_bridge' (.model 'adc_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model adc_bridge1 adc_bridge (in_low=0.1 in_high=0.9 rise_delay=1.0e-12 fall_dela"
+        "firstErrorLine": "Parse error at line 32: Unsupported device card: 'A' aconverter [100 200 300 400 500] [1 2 3 4 5] adc_bridge1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-digital-models3-deck",
@@ -6401,14 +6424,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 41: XSPICE code model 'adc_bridge' (.model 'adc_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model adc_bridge1 adc_bridge (in_low=0.1 in_high=0.9 rise_delay=1.0e-12 fall_dela"
+        "firstErrorLine": "Parse error at line 40: Unsupported device card: 'A' aconverter [100 200 300 400 500] [1 2 3 4 5] adc_bridge1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-digital-models4-deck",
@@ -6428,14 +6451,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 51: XSPICE code model 'adc_bridge' (.model 'adc_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model adc_bridge1 adc_bridge (in_low=0.1 in_high=0.9 rise_delay=1.0e-12 fall_dela"
+        "firstErrorLine": "Parse error at line 50: Unsupported device card: 'A' aconverter [100 200 300 400 500 600] [1 2 3 4 5 6] adc_bridge1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-dot-model-ref-deck",
@@ -6453,17 +6476,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:374"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 11: Unsupported device card: 'A' a1 1 2 gain_block"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 4,
-      "worstNormalizedError": 0.000493,
-      "worstSignal": "tran v(1)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-hybrid-models1-dc-deck",
@@ -6483,7 +6505,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: XSPICE code model 'd_osc' (.model 'd_osc1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model d_osc1 d_osc (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[100 100 1000 1000] duty_cycle"
+        "firstErrorLine": "Parse error at line 13: Unsupported device card: 'A' a1 1 10 d_osc1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6510,7 +6532,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 16: XSPICE code model 'd_osc' (.model 'd_osc1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model d_osc1 d_osc (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[1.0 1.0 8.0 8.0] duty_cycle=0"
+        "firstErrorLine": "Parse error at line 15: Unsupported device card: 'A' a1 1 10 d_osc1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6536,14 +6558,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 12: .model 'cap' has unsupported type 'CAPACITOR' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model cap capacitor (c=1000uf ic=1)"
+        "firstErrorLine": "Parse error at line 11: Unsupported device card: 'A' a1 1 0 cap"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "model: VDMOS power MOSFET"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-io-ordering-deck",
@@ -6561,17 +6583,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:138"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 13: Unsupported device card: 'A' a1 1 2 gain_block"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 3,
-      "worstNormalizedError": 0.00049,
-      "worstSignal": "tran v(2)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-io-types-deck",
@@ -6591,14 +6612,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: XSPICE code model 'adc_bridge' (.model 'node_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model node_bridge1 adc_bridge"
+        "firstErrorLine": "Parse error at line 12: Unsupported device card: 'A' abridge1 [1] [enable] node_bridge1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-long-names-deck",
@@ -6616,17 +6637,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:266"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 13: Unsupported device card: 'A' a1_123456789_123456789_1234 1 out_123456789_123456789_1234 gain_block_123456789_123456789_1234"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 3,
-      "worstNormalizedError": 0.00196,
-      "worstSignal": "tran i(v1_123456789_123456789_1234)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-mixed-case-deck",
@@ -6644,17 +6664,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:138"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 11: Unsupported device card: 'A' A1 1 2 GaIn_BlOcK"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 3,
-      "worstNormalizedError": 0.00049,
-      "worstSignal": "tran v(2)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-mixed-io-size-deck",
@@ -6674,14 +6693,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 15: XSPICE code model 'adc_bridge' (.model 'atod') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model atod adc_bridge"
+        "firstErrorLine": "Parse error at line 14: Unsupported device card: 'A' abridge1 [1] [enable] atod"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-mixed-mode-deck",
@@ -6701,14 +6720,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 20: XSPICE code model 'adc_bridge' (.model 'atod') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model atod adc_bridge"
+        "firstErrorLine": "Parse error at line 19: Unsupported device card: 'A' abridge1 [1] [enable] atod"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-mixed-ref-deck",
@@ -6728,14 +6747,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 33: XSPICE code model 'adc_bridge' (.model 'adc') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model adc adc_bridge"
+        "firstErrorLine": "Parse error at line 18: Unsupported device card: 'A' a1 %v 1 %i 10 times10"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-param-defaults-deck",
@@ -6754,14 +6773,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: .model 'mod' has unsupported type 'PRINT_PARAM_TYPES' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model mod print_param_types"
+        "firstErrorLine": "Parse error at line 13: Unsupported device card: 'A' a1 [1 2] mod"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "model: VDMOS power MOSFET"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-param-types-deck",
@@ -6780,14 +6799,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: .model 'mod' has unsupported type 'PRINT_PARAM_TYPES' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model mod print_param_types integer=2 real=3.0 complex=<4.0"
+        "firstErrorLine": "Parse error at line 12: Unsupported device card: 'A' a1 [1 2] mod"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "model: VDMOS power MOSFET"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-parsing-deck",
@@ -6805,17 +6824,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:138"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 12: Unsupported device card: 'A' a1 1 2 gain_block"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 3,
-      "worstNormalizedError": 0.00049,
-      "worstSignal": "tran v(2)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-polarity-deck",
@@ -6833,17 +6851,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:142"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 13: Unsupported device card: 'A' a1 %v 1 %v 10 times10"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 6,
-      "worstNormalizedError": 0.00049,
-      "worstSignal": "tran i(v1)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-spice3-deck",
@@ -6863,13 +6880,13 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:208"
+          "tran:204"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 7,
-      "worstNormalizedError": 0.0000226,
-      "worstSignal": "tran i(vin)",
+      "worstNormalizedError": 0.000493,
+      "worstSignal": "tran v(1)",
       "outcome": "matched",
       "gapBucket": null
     },
@@ -6890,14 +6907,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 15: .model 'mod' has unsupported type 'PRINT_PARAM_TYPES' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL) .model mod print_param_types integer=2k real=3.0u complex=< "
+        "firstErrorLine": "Parse error at line 14: Unsupported device card: 'A' a1 [1 2] mod"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "model: VDMOS power MOSFET"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-supply-ramping-deck",
@@ -6917,14 +6934,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: XSPICE code model 'capacitoric' (.model 'cap') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model cap capacitoric (c=1000uf ic=1)"
+        "firstErrorLine": "Parse error at line 11: Unsupported .options field: 'ramptime' .option ramptime=0.2"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-xspice-original-examples-user-defined-nodes-deck",
@@ -6944,14 +6961,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: XSPICE code model 'adc_bridge' (.model 'node_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model node_bridge1 adc_bridge"
+        "firstErrorLine": "Parse error at line 12: Unsupported device card: 'A' abridge1 [1] [enable] node_bridge1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-pwm-osc-fmcw-dosc-cir",
@@ -6971,7 +6988,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: XSPICE code model 'd_osc' (.model 'var_clock') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model var_clock d_osc(cntl_array = [-2 -1 1 2] freq_array = [1e3 1e3 10e3 10e3] duty_cyc"
+        "firstErrorLine": "Parse error at line 9: Unsupported device card: 'A' aosc1 ain1 dout1 var_clock"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6997,14 +7014,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: XSPICE code model 'd_pwm' (.model 'pwm') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model pwm d_pwm( frequency = 1.2Meg cntl_array = [-1 -0.99 0.99 1] dc_array = [0.01 0.01 0.99 0"
+        "firstErrorLine": "Parse error at line 5: Unsupported device card: 'A' apwm in dout pwm"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-see-repeat-loop-seegen-net",
@@ -7050,14 +7067,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: XSPICE code model 'seegen' (.model 'seemod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model seemod1 seegen (tdelay = 5n tperiod=4.5n)"
+        "firstErrorLine": "Parse error at line 3: Unsupported device card: 'A' aseegen1 NULL mon [%id ( n1 p1 ) %id ( n2 p2 ) %id ( n3 p3 ) ] seemod1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-see-set1-cir",
@@ -7076,14 +7093,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: Unsupported source waveform 'EXP' Iset 2 0 EXP(0 -2.5m 'deltat' 'alpha' 'deltat' 'beta')"
+        "firstErrorLine": "Parse error at line 5: Unsupported behavioral expression function 'ternary_fcn' Bset1 1 0 I = ternary_fcn(TIME < 'deltat', 0, 2.5m * (exp(-(TIME-'deltat')/'alpha')-exp(-(TIME-'deltat')/'beta')))"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "gapBucket": "expression: B-source V= and expression functions/operators"
     },
     {
       "id": "examples-xspice-table-table-generator-q-2d-sp",
@@ -7154,14 +7171,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 12: XSPICE code model 'cpline' (.model 'CPLINE1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .MODEL CPLINE1 CPLINE(ze=100 zo=50 l=100e-3 ere=1 ero=1 ao=0 ae=0)"
+        "firstErrorLine": "Parse error at line 11: Unsupported device card: 'A' A1 %hd ( p1 0 ) %hd ( p2 0 ) %hd ( p3 0 ) %hd ( p4 0 ) %vd ( p1 0 ) %vd ( p2 0 ) %vd ( p3 0 ) %vd ( p4 0 ) CPLINE1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-transmission-lines-cpmline-ac-cir",
@@ -7206,14 +7223,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: XSPICE code model 'mlin' (.model 'MLIN1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .MODEL MLIN1 MLIN(w=1e-3 l=50e-3 er=9.8 h=1e-3 t=35e-6 tand=1e-3 rho=0.022e-6 d=0.15e-6 model="
+        "firstErrorLine": "Parse error at line 10: Unsupported device card: 'A' A1 %hd ( in 0 ) %hd ( out 0 ) %vd ( in 0 ) %vd ( out 0 ) MLIN1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-transmission-lines-mlin-cir",
@@ -7233,14 +7250,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: XSPICE code model 'mlin' (.model 'MLIN1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .MODEL MLIN1 MLIN(w=1e-3 l=10e-3 er=9.8 h=1e-3 t=35e-6 tand=1e-3 rho=0.022e-6 d=0.15e-6 model=0"
+        "firstErrorLine": "Parse error at line 6: Unsupported device card: 'A' A1 %hd ( in 0 ) %hd ( out 0 ) %vd ( in 0 ) %vd ( out 0 ) MLIN1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-various-analog-models1-transient-sp",
@@ -7257,17 +7274,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:232"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 17: Unsupported device card: 'A' a1 1 10 gain1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "not-compared",
-      "gapBucket": null
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-various-astate-pulse-cir",
@@ -7286,14 +7302,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: XSPICE code model 'astate' (.model 'newstate3') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model newstate3 astate(astate_no=3)"
+        "firstErrorLine": "Parse error at line 10: Unsupported device card: 'A' astate3 %i ( iin ) %i ( iout ) newstate3"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-various-astate-cir",
@@ -7312,14 +7328,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: XSPICE code model 'astate' (.model 'newstate') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model newstate astate(astate_no=2)"
+        "firstErrorLine": "Parse error at line 10: Unsupported device card: 'A' astate1 in out newstate"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-various-pwlts1-cir",
@@ -7338,14 +7354,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: XSPICE code model 'pwlts' (.model 'pwlts1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model pwlts1 pwlts(x_array=[0 0.1 0.2 0.8 0.9 1 1.1] y_array=[0.1 0.1 1 1 0 0 0.2] input_do"
+        "firstErrorLine": "Parse error at line 4: Unsupported device card: 'A' a6 3 pwlts1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-various-ro-nand-digi-cir",
@@ -7364,7 +7380,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 3: Unsupported .options field: 'NOMOD' .OPTIONS NOACCT NOINIT NOMOD NOPAGE METHOD=gear XTRTOL=7"
+        "firstErrorLine": "Parse error at line 3: Unsupported .options field: 'NOINIT' .OPTIONS NOACCT NOINIT NOMOD NOPAGE METHOD=gear XTRTOL=7"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7472,14 +7488,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: XSPICE code model 's_xfer' (.model 'cheby1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model cheby1 s_xfer(num_coeff=[1] den_coeff=[1 1.09773 1.10251] int_ic=[0 0] denormalized_f"
+        "firstErrorLine": "Parse error at line 6: Unsupported device card: 'A' a12 node1 node2 cheby1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-various-xspice-c1-cir",
@@ -7499,13 +7515,13 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:208"
+          "tran:204"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 7,
-      "worstNormalizedError": 0.0000226,
-      "worstSignal": "tran i(vin)",
+      "worstNormalizedError": 0.000493,
+      "worstSignal": "tran v(1)",
       "outcome": "matched",
       "gapBucket": null
     },
@@ -7525,17 +7541,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:271"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 10: Unsupported device card: 'A' aamp in aout gain_block"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 5,
-      "worstNormalizedError": 0.000492,
-      "worstSignal": "tran v(1)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-various-xspice-c3-cir",
@@ -7555,14 +7570,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 20: XSPICE code model 'adc_bridge' (.model 'atod') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model atod adc_bridge"
+        "firstErrorLine": "Parse error at line 19: Unsupported device card: 'A' abridge1 [1] [enable] atod"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-verilator-delay-cir",
@@ -7581,14 +7596,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 5: XSPICE code model 'd_cosim' (.model 'ring') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model ring d_cosim simulation=\"./delay\""
+        "firstErrorLine": "Parse error at line 4: Unsupported device card: 'A' adut null [ d4 d3 d2 d1 d0 ] ring"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-verilator-pwm-cir",
@@ -7607,14 +7622,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model pwm_sin d_cosim simulation=\"./pwm\""
+        "firstErrorLine": "Parse error at line 3: Unsupported device card: 'A' adut null [ out ] pwm_sin"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "tests-bsim1-test-cir",
@@ -7632,16 +7647,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'MN1' (model 'NMOS') uses unsupported model LEVEL=4 (supported MOSFET levels: 1, 6, 8, 49)"
+        "status": "success",
+        "analyses": [
+          "dc:501"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "comparedAnalyses": 1,
+      "comparedSignals": 24,
+      "worstNormalizedError": 0.628,
+      "worstSignal": "dc i(v1)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "tests-bsim2-test-cir",
@@ -7659,16 +7675,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'MN1' (model 'NMOS') uses unsupported model LEVEL=5 (supported MOSFET levels: 1, 6, 8, 49)"
+        "status": "success",
+        "analyses": [
+          "dc:501"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "comparedAnalyses": 1,
+      "comparedSignals": 24,
+      "worstNormalizedError": 0.738,
+      "worstSignal": "dc i(v1)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "tests-general-diffpair-cir",
@@ -7717,12 +7734,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:84"
+          "tran:80"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 270,
-      "worstNormalizedError": 0.0677,
+      "worstNormalizedError": 0.0701,
       "worstSignal": "tran v(x1.x1.x1.x7.8)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -7747,13 +7764,13 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:155"
+          "tran:152"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 13,
-      "worstNormalizedError": 0.227,
-      "worstSignal": "tran i(vdd)",
+      "worstNormalizedError": 0.714,
+      "worstSignal": "tran v(8)",
       "outcome": "mismatch",
       "gapBucket": null
     },
@@ -7783,7 +7800,7 @@
         "analyses": [
           "ac:101",
           "dc:101",
-          "tran:883"
+          "tran:863"
         ]
       },
       "comparedAnalyses": 3,
@@ -7816,12 +7833,12 @@
         "status": "success",
         "analyses": [
           "dc:101",
-          "tran:209"
+          "tran:203"
         ]
       },
       "comparedAnalyses": 2,
       "comparedSignals": 16,
-      "worstNormalizedError": 0.0527,
+      "worstNormalizedError": 0.0526,
       "worstSignal": "tran v(2)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -7961,7 +7978,7 @@
       },
       "comparedAnalyses": 2,
       "comparedSignals": 12,
-      "worstNormalizedError": 1.8e-15,
+      "worstNormalizedError": 1.73e-15,
       "worstSignal": "dc i(vgs)",
       "outcome": "matched",
       "gapBucket": null
@@ -8346,14 +8363,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 36: Unknown function 'bar2' b1004_t n1004_t 0 v = 'bar2(17.0)'"
+        "firstErrorLine": "Parse error at line 103: Unexpected character '$' at position 0 set n_test = \"n{$n}_t\""
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "expression: quoted/brace expressions in values (TEMPER, functions)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "tests-regression-lib-processing-scope-1-cir",
@@ -8477,14 +8494,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: Unsupported dot command: '.temp' .temp 127.0"
+        "firstErrorLine": "Parse error at line 5: Unsupported behavioral expression token 'tc1' b2 2 0 i=v(1) tc1=0.001"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: .temp / .options temp"
+      "gapBucket": "expression: B-source V= and expression functions/operators"
     },
     {
       "id": "tests-regression-misc-asrc-tc-2-cir",
@@ -8792,14 +8809,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 12: Unsupported .control command 'if': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot', "
+        "firstErrorLine": "Parse error at line 4: Cannot parse number: 'myres' r1 1 0 myres"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "device: R-card forms (r=, ac=, noisy=, resistor models)"
     },
     {
       "id": "tests-regression-model-special-names-1-cir",
@@ -8844,14 +8861,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 12: Expected ')' in expression b1004_t n1004_t 0 v = '(1?2:3)+100'"
+        "firstErrorLine": "Parse error at line 534: Unexpected character '$' at position 0 set n_test = \"n{$n}_t\""
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "tests-regression-parser-minus-minus-cir",
@@ -8976,14 +8993,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: Unsupported .control command 'let': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot',"
+        "firstErrorLine": "Parse error at line 7: Unsupported resistor parameters: 'AC' R1 1 2 1k ac=4k"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "device: R-card forms (r=, ac=, noisy=, resistor models)"
     },
     {
       "id": "tests-regression-sens-sens-ac-1-cir",
@@ -9210,14 +9227,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: Unsupported resistor parameters: 'r='1000' (quoted or brace expression model values are not supported) .model rtest r r='1000 + temper'"
+        "firstErrorLine": "Parse error at line 6: Cannot parse number: ''1000' .model rtest r r='1000 + temper'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: R-card forms (r=, ac=, noisy=, resistor models)"
+      "gapBucket": "expression: quoted/brace expressions in values (TEMPER, functions)"
     },
     {
       "id": "tests-regression-temper-temper-res-1-cir",
@@ -9236,14 +9253,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 20: Unsupported .control command 'let': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot',"
+        "firstErrorLine": "Parse error at line 13: Cannot parse number: 'rtest' r2 2 0 rtest"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "device: R-card forms (r=, ac=, noisy=, resistor models)"
     },
     {
       "id": "tests-resistance-res-array-cir",
@@ -9265,19 +9282,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "ac:201",
-          "op:1",
-          "tran:80"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 9: Unsupported resistor parameters: 'AC' R2 3 0 10K ac=5K"
       },
-      "comparedAnalyses": 3,
-      "comparedSignals": 36,
-      "worstNormalizedError": 0.0253,
-      "worstSignal": "tran i(vr4)",
-      "outcome": "mismatch",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: R-card forms (r=, ac=, noisy=, resistor models)"
     },
     {
       "id": "tests-resistance-res-partition-cir",
@@ -9297,18 +9311,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "ac:41",
-          "op:1"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 5: Unsupported resistor parameters: 'AC' r2 2 0 5K ac=15k"
       },
-      "comparedAnalyses": 2,
-      "comparedSignals": 6,
-      "worstNormalizedError": 1.22e-16,
-      "worstSignal": "ac i(vin)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: R-card forms (r=, ac=, noisy=, resistor models)"
     },
     {
       "id": "tests-resistance-res-simple-cir",
@@ -9328,7 +9340,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:58"
+          "tran:51"
         ]
       },
       "comparedAnalyses": 1,
@@ -9383,17 +9395,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:1207"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 5: Unsupported device card: 'P' p1 V1 V2 0 V3 V4 0 cpl1"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 6,
-      "worstNormalizedError": 0.155,
-      "worstSignal": "tran v(v4)",
-      "outcome": "mismatch",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "tests-transmission-cpl3-4-line-cir",
@@ -9411,16 +9422,16 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
+        "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Timestep too small at t=3.049500659843922e-8: dt=1.9335714962913457e-16"
+        "firstErrorLine": "Parse error at line 12: Unsupported device card: 'P' P1 2 3 4 5 0 6 7 8 9 0 LOSSYMODE"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "convergence"
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "tests-transmission-ltra2-2-line-cir",
@@ -9440,12 +9451,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:721"
+          "tran:705"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 8,
-      "worstNormalizedError": 0.974,
+      "worstNormalizedError": 1,
       "worstSignal": "tran i(vs)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -9466,17 +9477,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:686"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 6: Unsupported device card: 'Y' y1 2 0 3 0 ymod"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 6,
-      "worstNormalizedError": 0.973,
-      "worstSignal": "tran i(vs)",
-      "outcome": "mismatch",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "tests-transmission-txl2-3-line-cir",
@@ -9494,17 +9504,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:984"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 12: Unsupported device card: 'Y' y1 2 0 3 0 ymod"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 9,
-      "worstNormalizedError": 0.0904,
-      "worstSignal": "tran v(6)",
-      "outcome": "mismatch",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "tests-vbic-diffamp-cir",
@@ -9589,5 +9598,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "826976caef3e5b44929d7e57a5433653746212f17768aed6fb5e0a68cf277ee8"
+  "outcomeSha256": "f9f294c59c514e91f63134d66941e898d115c4cdf2ef05e24197e746f770b5a3"
 }

@@ -1,0 +1,174 @@
+{
+  "ngspice": "ngspice-47 : Circuit level simulation program",
+  "generatedBy": "benchmarks/switches-507/compare.ts",
+  "results": [
+    {
+      "fixture": "switches-manual-p92.cir",
+      "sha256": "93417fb9b2aed529530fdedc3e008ffe09bae7230fc16d6bb50a2dfd4fe44270",
+      "kind": "tran",
+      "points": {
+        "ngspice": 2514,
+        "spiceTs": 2625
+      },
+      "perVector": {
+        "v(1)": {
+          "maxAbsAtNgspicePointsV": 5.551e-16,
+          "maxAbsAtSpiceTsPointsOverPeak": 2.758e-16
+        },
+        "v(10)": {
+          "maxAbsAtNgspicePointsV": 2e-16,
+          "maxAbsAtSpiceTsPointsOverPeak": 0.8648
+        },
+        "v(2)": {
+          "maxAbsAtNgspicePointsV": 4.996e-16,
+          "maxAbsAtSpiceTsPointsOverPeak": 2.498e-16
+        },
+        "v(20)": {
+          "maxAbsAtNgspicePointsV": 2e-16,
+          "maxAbsAtSpiceTsPointsOverPeak": 0.6149
+        },
+        "v(30)": {
+          "maxAbsAtNgspicePointsV": 2e-16,
+          "maxAbsAtSpiceTsPointsOverPeak": 0.5324
+        },
+        "v(40)": {
+          "maxAbsAtNgspicePointsV": 1.818e-10,
+          "maxAbsAtSpiceTsPointsOverPeak": 0.7077
+        }
+      }
+    },
+    {
+      "fixture": "hysteresis.cir",
+      "sha256": "f4ed9adabeb3c1855355bf4fd720408e48a56e3c32593d0125052942f5436d0a",
+      "kind": "tran",
+      "points": {
+        "ngspice": 1013,
+        "spiceTs": 1144
+      },
+      "perVector": {
+        "v(c)": {
+          "maxAbsAtNgspicePointsV": 4e-9,
+          "maxAbsAtSpiceTsPointsOverPeak": 2e-9
+        },
+        "v(o1)": {
+          "maxAbsAtNgspicePointsV": 2e-16,
+          "maxAbsAtSpiceTsPointsOverPeak": 0.7399
+        },
+        "v(o2)": {
+          "maxAbsAtNgspicePointsV": 1.98e-10,
+          "maxAbsAtSpiceTsPointsOverPeak": 0.7393
+        },
+        "v(o3)": {
+          "maxAbsAtNgspicePointsV": 0.07208,
+          "maxAbsAtSpiceTsPointsOverPeak": 0.3171
+        }
+      }
+    },
+    {
+      "fixture": "ac-closed.cir",
+      "sha256": "63fceb1c01f7417a78ec1e8b800567da09cb7033ded5b14e7ca4da7dde282046",
+      "kind": "ac",
+      "perVector": {
+        "vm(o)": {
+          "ngspice": [
+            0.999000999
+          ],
+          "spiceTs": [
+            0.9990009990009989
+          ],
+          "maxRelErr": 9.999e-13
+        }
+      }
+    },
+    {
+      "fixture": "ac-window.cir",
+      "sha256": "6a7af7dabf46e42734d225f56a3d5d419b1c351b9b85dac40368f80451d79f36",
+      "kind": "ac",
+      "perVector": {
+        "vm(o)": {
+          "ngspice": [
+            0.998003992
+          ],
+          "spiceTs": [
+            0.9980039920159681
+          ],
+          "maxRelErr": 1.6e-11
+        }
+      }
+    },
+    {
+      "fixture": "ac-csw.cir",
+      "sha256": "126fe841f8f1a3ee25cf687d47bba2e856fc60a40a1ec67113f51a226623c685",
+      "kind": "ac",
+      "perVector": {
+        "vm(o)": {
+          "ngspice": [
+            0.999000999
+          ],
+          "spiceTs": [
+            0.9990009990009989
+          ],
+          "maxRelErr": 9.999e-13
+        }
+      }
+    },
+    {
+      "fixture": "noise-sw.cir",
+      "sha256": "0e653064360278933a19c4cfed533e8f2d5ce9d6d7b7d5bb863a8d1b20615b83",
+      "kind": "noise",
+      "perVector": {
+        "onoise_spectrum": {
+          "ngspice": [
+            2.87889442e-9,
+            2.87889442e-9
+          ],
+          "spiceTs": [
+            2.878895e-9,
+            2.878895e-9
+          ],
+          "maxRelErr": 1.729e-7
+        },
+        "inoise_spectrum": {
+          "ngspice": [
+            5.75778883e-9,
+            5.75778883e-9
+          ],
+          "spiceTs": [
+            5.75779e-9,
+            5.75779e-9
+          ],
+          "maxRelErr": 1.746e-7
+        }
+      }
+    },
+    {
+      "fixture": "noise-csw.cir",
+      "sha256": "1ee6cc623a7e73bd8292fd1a9dfb73bea2e358c2b71a2ac9493049c972af716b",
+      "kind": "noise",
+      "perVector": {
+        "onoise_spectrum": {
+          "ngspice": [
+            3.52591117e-9,
+            3.52591117e-9
+          ],
+          "spiceTs": [
+            3.525912e-9,
+            3.525912e-9
+          ],
+          "maxRelErr": 1.746e-7
+        },
+        "inoise_spectrum": {
+          "ngspice": [
+            4.7012149e-9,
+            4.7012149e-9
+          ],
+          "spiceTs": [
+            4.701216e-9,
+            4.701216e-9
+          ],
+          "maxRelErr": 1.732e-7
+        }
+      }
+    }
+  ]
+}

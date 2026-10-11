@@ -76,15 +76,15 @@ V1 a 0 1
 R1 a 0 1k
 .op
 .end
-`, async () => '.model swmod sw vt=1 vh=0.1 ron=1 roff=1meg\n')).rejects.toMatchObject({
+`, async () => '.model urcmod urc k=2 fmax=1g\n')).rejects.toMatchObject({
       code: 'UNSUPPORTED_MODEL_TYPE',
-      modelName: 'swmod',
-      modelType: 'SW',
+      modelName: 'urcmod',
+      modelType: 'URC',
     });
   });
 
   it.each([
-    'SW', 'CSW', 'PJF', 'PHFET', 'PMF', 'URC', 'TRANSLINE',
+    'PJF', 'PHFET', 'PMF', 'URC', 'TRANSLINE',
     'NCH', 'PCH', 'DI', 'HIGH_SW', 'LOW_SW', 'NIGBT', 'BOGUS',
   ])('rejects .model type %s that no spice-ts device implements', type => {
     const error = parseFailure(`unsupported ${type}

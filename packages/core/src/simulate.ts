@@ -8,6 +8,7 @@ import { solveDCOperatingPoint } from './analysis/dc.js';
 import { isSavedTransientPoint, runnableTransient, solveTransient } from './analysis/transient.js';
 import { buildACRHS, solveAC } from './analysis/ac.js';
 import { assertNoiseDevicesSupported, solveNoise } from './analysis/noise.js';
+import { solveSParameters } from './analysis/s-parameter.js';
 import { solveTransferFunction } from './analysis/transfer-function.js';
 import { solvePoleZero } from './analysis/pole-zero.js';
 import { solveSensitivity } from './analysis/sensitivity.js';
@@ -184,6 +185,14 @@ export async function simulate(
         result.noise = solveNoise(compiled, analysis, opts, dcAsm.solution);
         break;
       }
+      case 'sp': {
+        const opts = resolveOptions(options);
+        const { assembler: dcAsm } = solveDCOperatingPoint(
+          compiled, opts, undefined, convergence, 'operating-point', guard,
+        );
+        result.sParameters = solveSParameters(compiled, analysis, opts, dcAsm.solution, guard);
+        break;
+      }
       case 'disto': {
         assertDistortionSupported(compiled, analysis);
         const opts = resolveOptions(options);
@@ -268,8 +277,10 @@ export async function* simulateStream(
   const warnings: SimulationWarning[] = [];
   validateCircuit(compiled, warnings);
 
-  if (compiled.analyses.some(analysis => analysis.type === 'disto')) {
-    throw new UnsupportedStreamAnalysisError('disto');
+  for (const type of ['disto', 'sp'] as const) {
+    if (compiled.analyses.some(analysis => analysis.type === type)) {
+      throw new UnsupportedStreamAnalysisError(type);
+    }
   }
 
   if (compiled.steps.length > 0) {
@@ -422,6 +433,9 @@ function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[
   }
   if (compiled.steps.length > 0 && compiled.analyses.some(analysis => analysis.type === 'disto')) {
     throw new InvalidCircuitError('.step cannot be combined with .disto');
+  }
+  if (compiled.steps.length > 0 && compiled.analyses.some(analysis => analysis.type === 'sp')) {
+    throw new InvalidCircuitError('.step cannot be combined with .sp');
   }
   for (const device of compiled.devices) {
     for (const message of device.modelWarnings ?? []) {

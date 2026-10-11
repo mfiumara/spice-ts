@@ -46,9 +46,10 @@ export async function preprocessLines(
   await collectStatements(netlist, resolver, new Set(), [], 0, definitions, statements, guard, lineOffset);
   // ngspice collects every top-level `.param` before substituting, so a
   // parameter may be used before its definition and the last definition wins.
-  const params = createParamScope(definitions);
+  const temperatureSweep = statements.find(isTemperatureSweep);
+  const scopes = createParamScopes(definitions, temperatureSweep, circuitTemperature(statements));
   return statements.map(statement => statement.substitute
-    ? substituteStatement(statement, params)
+    ? substituteStatement(statement, scopes)
     : statement.text).join('\n');
 }
 
@@ -56,38 +57,120 @@ interface ParamDefinition {
   expression: string;
   line: number;
   context: string;
+  /** A `"..."` string/vector value, which spice-ts cannot evaluate to a number. */
+  stringValue?: boolean;
 }
 
 interface PendingStatement {
   text: string;
   substitute: boolean;
   line: number;
+  /** A line inside a top-level `.control` block. */
+  control?: boolean;
+}
+
+/**
+ * Variable records for the expression evaluator. `numparam` also defines
+ * TEMPER for `{...}`/`'...'` expressions; `params` holds only `.param` names
+ * and is used for B-cards, whose ASRC expressions evaluate `temper` themselves.
+ */
+interface ParamScopes {
+  params: Record<string, number>;
+  numparam: Record<string, number>;
+}
+
+/** ngspice's default circuit temperature in Celsius. */
+const DEFAULT_CIRCUIT_TEMPERATURE_CELSIUS = 27;
+const TEMPER = 'TEMPER';
+
+const OPTIONS_CARD = /^\s*\.opt(?:ion|ions)?(?:\s|$)/i;
+const OPTIONS_TEMP_FIELD = /(?:^|\s)temp\s*=\s*([^\s=]+)/gi;
+
+/**
+ * Circuit temperature that TEMPER reads: the last `TEMP=` field of the
+ * top-level `.options` cards (as the parser applies them), else 27 C. `.temp`
+ * cards are rejected by the parser. An unparsable value is left to the
+ * `.options` parser to report.
+ */
+function circuitTemperature(statements: PendingStatement[]): number {
+  let temperature = DEFAULT_CIRCUIT_TEMPERATURE_CELSIUS;
+  for (const statement of statements) {
+    if (statement.control || !OPTIONS_CARD.test(statement.text)) continue;
+    const text = statement.text.slice(0, commentStart(statement.text));
+    for (const match of text.matchAll(OPTIONS_TEMP_FIELD)) {
+      try {
+        temperature = parseNumber(match[1]);
+      } catch {
+        // reported by the .options parser
+      }
+    }
+  }
+  return temperature;
+}
+
+/** `.step [lin|dec|oct] [param] temp ...` or `.dc temp ...`; control blocks sweep with `dc temp ...`. */
+const TEMPERATURE_SWEEP = /^\s*(?:\.step\s+(?:(?:lin|dec|oct)\s+)?(?:param\s+)?temp\b|\.dc\s+temp\b)/i;
+const CONTROL_TEMPERATURE_SWEEP = /^\s*dc\s+temp\b/i;
+
+function isTemperatureSweep(statement: PendingStatement): boolean {
+  return (statement.control ? CONTROL_TEMPERATURE_SWEEP : TEMPERATURE_SWEEP).test(statement.text);
 }
 
 /**
  * Lazily evaluates `.param` definitions on first use, in dependency order.
- * Returned as a variable record so the expression evaluator can look names up.
+ * Returned as variable records so the expression evaluator can look names up.
  */
-function createParamScope(definitions: Map<string, ParamDefinition>): Record<string, number> {
+function createParamScopes(
+  definitions: Map<string, ParamDefinition>,
+  temperatureSweep: PendingStatement | undefined,
+  temperature: number,
+): ParamScopes {
   const values = new Map<string, number>();
   const resolving: string[] = [];
   const isParam = (key: string | symbol): key is string => typeof key === 'string' && definitions.has(key);
-  const scope: Record<string, number> = new Proxy({}, {
+  const params: Record<string, number> = new Proxy({}, {
     has: (_target, key) => isParam(key),
     get: (_target, key) => (isParam(key) ? resolve(key) : undefined),
   });
+  const isTemper = (key: string | symbol) => key === TEMPER && !definitions.has(TEMPER);
+  const numparam: Record<string, number> = new Proxy({}, {
+    has: (_target, key) => isParam(key) || isTemper(key),
+    get: (_target, key) => {
+      if (isTemper(key)) return temper();
+      return isParam(key) ? resolve(key) : undefined;
+    },
+  });
+
+  function temper(): number {
+    if (temperatureSweep !== undefined) {
+      throw new Error(
+        'TEMPER-dependent expressions are not supported with a temperature sweep '
+        + `(.step TEMP or dc TEMP, line ${temperatureSweep.line}): spice-ts evaluates parameter `
+        + `expressions once, at the ${temperature} C circuit temperature`,
+      );
+    }
+    return temperature;
+  }
 
   function resolve(name: string): number {
     const known = values.get(name);
     if (known !== undefined) return known;
     const definition = definitions.get(name)!;
+    if (definition.stringValue) {
+      throw new ParseError(
+        `String-valued .param '${name}' is not supported: spice-ts parameters are numbers `
+        + '(ngspice string and vector parameters are not implemented)',
+        definition.line,
+        definition.context,
+      );
+    }
     if (resolving.includes(name)) {
       const cycle = [...resolving.slice(resolving.indexOf(name)), name].join(' -> ');
       throw new ParseError(`Circular .param dependency: ${cycle}`, definition.line, definition.context);
     }
     resolving.push(name);
     try {
-      const value = evaluateParamExpression(definition, scope);
+      const value = evaluateParamExpression(definition, numparam);
       values.set(name, value);
       return value;
     } finally {
@@ -95,7 +178,7 @@ function createParamScope(definitions: Map<string, ParamDefinition>): Record<str
     }
   }
 
-  return scope;
+  return { params, numparam };
 }
 
 function evaluateParamExpression(definition: ParamDefinition, scope: Record<string, number>): number {
@@ -113,15 +196,87 @@ function evaluateParamExpression(definition: ParamDefinition, scope: Record<stri
   }
 }
 
-function substituteStatement(statement: PendingStatement, params: Record<string, number>): string {
+function substituteStatement(statement: PendingStatement, scopes: ParamScopes): string {
   const preserveOutputFunctions = /^\.PRINT(?:\s|$)/i.test(statement.text.trim());
   try {
-    const substituted = substituteExpressions(statement.text, params, preserveOutputFunctions);
-    return /^\s*b/i.test(substituted) ? substituteBehavioralParameters(substituted, params) : substituted;
+    const behavioralResistor = behavioralResistorAsBSource(statement.text);
+    const text = behavioralResistor ?? statement.text;
+    if (/^\s*b/i.test(text)) {
+      // B-cards: `'...'`, `{...}` and bare `.param` names are substituted by
+      // the B-card front end; `temper` stays a live ASRC variable.
+      const substituted = substituteExpressions(text, scopes.params, preserveOutputFunctions);
+      return substituteBehavioralParameters(substituted, scopes.params);
+    }
+    return substituteExpressions(quotedExpressionsAsBraces(text), scopes.numparam, preserveOutputFunctions);
   } catch (error) {
     if (error instanceof ParseError) throw error;
     throw toParseError(error, statement.line, statement.text.trim());
   }
+}
+
+/** Start of an end-of-line comment (`;`, `$` or `//`), as the tokenizer strips them. */
+function commentStart(line: string): number {
+  const starts = [line.indexOf(';'), line.indexOf('$'), line.indexOf('//')].filter(index => index >= 0);
+  return starts.length === 0 ? line.length : Math.min(...starts);
+}
+
+/**
+ * ngspice numparam treats a single-quoted value as a brace expression:
+ * `v1 1 0 '2--3'` is `v1 1 0 {2--3}`. Comments after the card are left alone.
+ */
+function quotedExpressionsAsBraces(line: string): string {
+  if (!line.includes("'") || /^\s*\.title\b/i.test(line)) return line;
+  const end = commentStart(line);
+  return line.slice(0, end).replace(/'([^']*)'/g, '{$1}') + line.slice(end);
+}
+
+/**
+ * Subcircuit bodies are expanded later by the circuit builder, whose tokenizer
+ * splits on whitespace and evaluates only `{expr}` tokens. Rewrite `'expr'` as
+ * `{expr}` and drop the whitespace inside brace expressions so each stays one
+ * token (`R1 in out 'rint1 * 2'` -> `R1 in out {rint1*2}`). B-cards, comments
+ * and dot commands other than `.param`/`.model` are left unchanged.
+ */
+function compactSubcircuitExpressions(line: string): string {
+  const trimmed = line.trim();
+  if (trimmed === '' || trimmed.startsWith('*') || /^b/i.test(trimmed)) return line;
+  if (trimmed.startsWith('.') && !/^\.(?:param|model)\b/i.test(trimmed)) return line;
+  if (!line.includes("'") && !line.includes('{')) return line;
+  const end = commentStart(line);
+  const compact = (expression: string) => `{${expression.replace(/\s+/g, '')}}`;
+  return line.slice(0, end)
+    .replace(/'([^']*)'/g, (_match, expression: string) => compact(expression))
+    .replace(/\{([^{}]*)\}/g, (_match, expression: string) => compact(expression))
+    + line.slice(end);
+}
+
+const BEHAVIORAL_RESISTOR = /^\s*(r\S*)\s+(\S+)\s+(\S+)\s+(?:r\s*=\s*)?(?:\{([^{}]*)\}|'([^']*)')\s*(.*)$/i;
+const NODE_DEPENDENCE = /\b[vi]\s*\(/i;
+const BEHAVIORAL_RESISTOR_PARAMETER = /^(tc1|tc2)=(\S+)$/i;
+
+/**
+ * ngspice (inpcom.c) turns a resistor whose value expression reads node
+ * voltages or branch currents into an ASRC:
+ * `Rxxx n1 n2 R={expr} tc1=a` -> `bRxxx n1 n2 i = v(n1, n2)/(expr) tc1=a reciproctc=1`.
+ * Returns the B-card, or undefined when the line is not such a resistor.
+ */
+function behavioralResistorAsBSource(line: string): string | undefined {
+  const card = BEHAVIORAL_RESISTOR.exec(line.slice(0, commentStart(line)));
+  if (!card) return undefined;
+  const [, name, positive, negative, braced, quoted, rest] = card;
+  const expression = (braced ?? quoted).trim();
+  if (!NODE_DEPENDENCE.test(expression)) return undefined;
+  const parameters = rest.replace(/\s*=\s*/g, '=').trim().split(/\s+/).filter(Boolean);
+  for (const parameter of parameters) {
+    if (!BEHAVIORAL_RESISTOR_PARAMETER.test(parameter)) {
+      throw new Error(
+        `Unsupported parameter '${parameter}' on behavioral resistor '${name}': a resistor whose value `
+        + 'depends on v() or i() is simulated as an ngspice B-source, which carries only tc1= and tc2=',
+      );
+    }
+  }
+  const coefficients = parameters.map(parameter => ` ${parameter}`).join('');
+  return `b${name} ${positive} ${negative} i = v(${positive}, ${negative})/(${expression})${coefficients} reciproctc=1`;
 }
 
 function toParseError(error: unknown, line: number, context: string): ParseError {
@@ -148,6 +303,7 @@ async function collectStatements(
 
   const lines = netlist.split('\n');
   let inSubckt = 0;
+  let inControl = false;
 
   for (const [index, line] of lines.entries()) {
     guard?.checkpoint('parse:line');
@@ -174,8 +330,21 @@ async function collectStatements(
       continue;
     }
 
-    // Inside a subcircuit — pass through without processing
+    // Inside a subcircuit — expressions are evaluated per instance later
     if (inSubckt > 0) {
+      statements.push({ text: compactSubcircuitExpressions(line), substitute: false, line: lineNumber });
+      continue;
+    }
+
+    // ngspice control language is not numparam input: `{$var}` and quotes
+    // belong to the control interpreter.
+    if (inControl) {
+      if (upper.startsWith('.ENDC')) inControl = false;
+      statements.push({ text: line, substitute: false, line: lineNumber, control: true });
+      continue;
+    }
+    if (upper === '.CONTROL' || upper.startsWith('.CONTROL ')) {
+      inControl = true;
       passThrough();
       continue;
     }
@@ -183,14 +352,18 @@ async function collectStatements(
     // .param at top level
     if (upper.startsWith('.PARAM ')) {
       const paramContent = trimmed.slice(7).trim();
-      const assignments = paramContent.matchAll(/([A-Za-z_]\w*)\s*=\s*(\{[^}]+\}|\S+)/g);
+      const assignments = paramContent.matchAll(/([A-Za-z_]\w*)\s*=\s*(\{[^}]+\}|'[^']*'|"[^"]*"|\S+)/g);
       for (const assignment of assignments) {
         const name = assignment[1].toUpperCase();
-        let valStr = assignment[2];
-        if (valStr.startsWith('{') && valStr.endsWith('}')) {
-          valStr = valStr.slice(1, -1);
-        }
-        definitions.set(name, { expression: valStr, line: lineNumber, context: trimmed });
+        const value = assignment[2];
+        const delimited = value.length >= 2
+          && ((value.startsWith('{') && value.endsWith('}')) || (value.startsWith("'") && value.endsWith("'")));
+        definitions.set(name, {
+          expression: delimited ? value.slice(1, -1) : value,
+          line: lineNumber,
+          context: trimmed,
+          ...(value.startsWith('"') ? { stringValue: true } : {}),
+        });
       }
       continue;
     }

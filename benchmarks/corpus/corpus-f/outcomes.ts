@@ -132,6 +132,8 @@ export const GAP_ISSUES: Record<string, string> = {
   "source: TRNOISE/EXTERNAL waveforms": 'https://github.com/mfiumara/spice-ts/issues/501',
   "directive: .global": 'https://github.com/mfiumara/spice-ts/issues/502',
   "model: VERSION= strings on BSIM model cards": 'https://github.com/mfiumara/spice-ts/issues/503',
+  "model: BSIM3 revisions other than 3.3 (VERSION=3.0/3.1/3.2.x)": 'https://github.com/mfiumara/spice-ts/issues/594',
+  "model: BSIM4 (LEVEL=14/54)": 'https://github.com/mfiumara/spice-ts/issues/3',
   "analysis: .pz beyond ideal R, L, C": 'https://github.com/mfiumara/spice-ts/issues/504',
   "directive: .measure": 'https://github.com/mfiumara/spice-ts/issues/505',
   "model: VDMOS power MOSFET": 'https://github.com/mfiumara/spice-ts/issues/506',
@@ -258,10 +260,10 @@ function producedAnalyses(execution: EngineExecution): string[] {
 }
 
 /** Runs one fixture through both engines and reduces it to its published outcome. */
-export async function runFixture(circuit: CorpusFCircuit): Promise<FixtureOutcome> {
+export async function runFixture(circuit: CorpusFCircuit, reference = runNgspice): Promise<FixtureOutcome> {
   const input = await readFile(resolve(circuit.localPath));
   if (sha256(input) !== circuit.sha256) throw new Error(`${circuit.id}: fixture SHA-256 mismatch`);
-  const ngspice = await runNgspice(input, circuit);
+  const ngspice = await reference(input, circuit);
   const spiceTs = { execution: await runBoundedSimulate(input, asClassic(circuit)) };
   const spiceTsStatus: EngineStatus = spiceTs.execution.status;
   const comparisons = ngspice.status === 'success' && spiceTsStatus === 'success'
