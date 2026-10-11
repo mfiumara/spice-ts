@@ -110,6 +110,7 @@ function flattenWaveform(wf: Partial<SourceWaveform> & { dc?: number } | undefin
           fall: typed.fall as number,
           width: typed.width as number,
           period: typed.period as number,
+          ...(typed.pulses !== undefined ? { pulses: typed.pulses as number } : {}),
         };
       }
       case 'pwl': {
