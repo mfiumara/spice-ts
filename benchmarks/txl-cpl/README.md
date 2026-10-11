@@ -51,28 +51,32 @@ ngspice-47 is the Homebrew build on macOS arm64. Both simulators use their
 default step control on the deck's own `.tran` card. Runtimes are wall clock,
 and ngspice's includes process start.
 
-The 11 `examples/` decks start their analysis from `.control` (`tran ...`).
-spice-ts does not run those decks unchanged yet (#489, owned separately). The
-script moves that `tran` command to a `.tran` card and feeds the same netlist
-to both simulators.
+Unchanged decks in spice-ts, on main with #489:
+- 12 of the 15 parse and simulate.
+- `cpl3_4_line` (both copies) fails with a typed `TimestepTooSmallError`; see the losses below.
+- `cpl_ibm1a.sp` stops on its `.control repeat` loop with a typed
+  `ParseError`. That is control-language scope, not a line-model gap.
+
+For the waveform comparison, decks that run `tran` from `.control` have that
+command moved to a `.tran` card. The same netlist then goes to both simulators.
 
 | Fixture | Lines | spice-ts vs ngspice (worst max err / swing) | ngspice self-spread (default vs TMAX=tstep/10) | spice-ts vs ngspice at TMAX=tstep/10 | points ng / ts | runtime ng / ts |
 |---|---|---|---|---|---|---|
-| tests/transmission/txl1_1_line.cir | TXL | **0.95%** | 1.21% | | 492 / 669 | 38 ms / 7 ms |
-| tests/transmission/txl2_3_line.cir | 3x TXL | **1.47%** | | | 493 / 1005 | 72 ms / 28 ms |
-| tests/transmission/cpl_ibm2.cir | CPL 2 | **0.11%** | 0.12% | | 217 / 1168 | 155 ms / 42 ms |
+| tests/transmission/txl1_1_line.cir | TXL | **0.95%** | 1.21% | | 492 / 669 | 97 ms / 99 ms |
+| tests/transmission/txl2_3_line.cir | 3x TXL | **1.47%** | | | 493 / 1005 | 28 ms / 159 ms |
+| tests/transmission/cpl_ibm2.cir | CPL 2 | **0.11%** | 0.12% | | 217 / 1168 | 28 ms / 149 ms |
 | tests/transmission/cpl3_4_line.cir | CPL 4 | **LOSS: `TimestepTooSmallError` at t=37.6 ns** | 9.98% | | | |
-| examples/.../txl1_1_line.sp | TXL | 0.95% | 1.21% | | 492 / 669 | 78 ms / 12 ms |
-| examples/.../txl2_3_line.sp | 3x TXL | 1.47% | | | 493 / 1005 | 65 ms / 40 ms |
-| examples/.../txl3_1_line.sp | TXL, BJT drivers | 8.58% | 5.63% | 3.32% | 263 / 2641 | 191 ms / 1.5 s |
-| examples/.../txl4_1_line.sp | TXL | 5.22% | 11.62% | | 148 / 606 | 86 ms / 0.5 s |
-| examples/.../cpl_ibm2.sp | CPL 2 | 0.11% | 0.12% | | 217 / 1168 | 92 ms / 25 ms |
-| examples/.../cpl2_2_line.sp | CPL 2, MOS drivers | 8.49% | 8.71% | 4.24% | 96 / 2221 | 53 ms / 0.2 s |
-| examples/.../cpl_ibm3.sp | CPL 2 + CPL 4 + TXL | 15.45% | 13.48% | 1.36% | 124 / 13165 | 47 ms / 3.8 s |
-| examples/.../cpl1_4_line.sp | CPL 4, MOS drivers | **LOSS: 16.70%** | 4.19% | 15.07% | 978 / 7011 | 121 ms / 1.6 s |
+| examples/.../txl1_1_line.sp | TXL | 0.95% | 1.21% | | 492 / 669 | 28 ms / 10 ms |
+| examples/.../txl2_3_line.sp | 3x TXL | 1.47% | | | 493 / 1005 | 79 ms / 44 ms |
+| examples/.../txl3_1_line.sp | TXL, BJT drivers | 8.58% | 5.63% | 3.32% | 263 / 2641 | 62 ms / 0.9 s |
+| examples/.../txl4_1_line.sp | TXL | 5.22% | 11.62% | | 148 / 606 | 66 ms / 0.3 s |
+| examples/.../cpl_ibm2.sp | CPL 2 | 0.11% | 0.12% | | 217 / 1168 | 25 ms / 59 ms |
+| examples/.../cpl2_2_line.sp | CPL 2, MOS drivers | 8.49% | 8.71% | 4.24% | 96 / 2221 | 21 ms / 97 ms |
+| examples/.../cpl_ibm3.sp | CPL 2 + CPL 4 + TXL | 15.45% | 13.48% | 1.36% | 124 / 13165 | 69 ms / 2.4 s |
+| examples/.../cpl1_4_line.sp | CPL 4, MOS drivers | **LOSS: 16.70%** | 4.19% | 15.07% | 978 / 7011 | 75 ms / 1.1 s |
 | examples/.../cpl3_4_line.sp | CPL 4 | **LOSS: `TimestepTooSmallError` at t=37.6 ns** | 9.98% | | | |
-| examples/.../cpl_ibm1.sp | CPL 6, ECL (BJT) | **LOSS: 50.4%, 450x slower** | 5.57% | | 392 / 29551 | 0.15 s / 69 s |
-| examples/.../cpl_ibm1a.sp | CPL 6, ECL (BJT) | **LOSS: 50.4%, 600x slower** (first `tran` only) | | | 392 / 29551 | 0.11 s / 66 s |
+| examples/.../cpl_ibm1.sp | CPL 6, ECL (BJT) | **LOSS: 50.4%, ~220x slower** | 5.57% | | 392 / 29551 | 0.14 s / 30 s |
+| examples/.../cpl_ibm1a.sp | CPL 6, ECL (BJT) | **LOSS: 50.4%, ~390x slower** (first `tran` only) | | | 392 / 29551 | 0.11 s / 45 s |
 
 The ngspice self-spread column runs ngspice against itself, on the same deck,
 with only TMAX changed. On these edge-dominated digital decks, timestep
@@ -104,8 +108,7 @@ lines drive gates that feed back into the lines.
    - After the shortest modal delay (167 ps) the transient collapses to
      sub-picosecond steps: 10.6k steps under 0.1 ps and 29.5k points total,
      against ngspice's 392.
-   - The waveform is 50% of swing off, and the run takes 69 s.
+   - The waveform is 50% of swing off, and the run takes 30-70 s on an M-series Mac.
    - The root cause in the load/step interaction is not identified yet.
 3. `cpl1_4_line.sp` stays 15% off even at matched TMAX.
-4. The 11 `examples/` decks still stop on `.control tran` in spice-ts until #489
-   lands. They no longer fail on the Y/P card.
+4. `cpl_ibm1a.sp` needs `.control repeat` (control language, outside #491).

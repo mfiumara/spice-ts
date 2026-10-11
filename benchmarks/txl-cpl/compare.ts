@@ -6,11 +6,12 @@
  * usage: pnpm exec tsx benchmarks/txl-cpl/compare.ts <deck> [<deck> ...]
  *
  * The vectors compared are the deck's own `plot` / `.print` v(...) vectors.
- * Example decks run their analysis from a `.control` block (`tran ...`),
- * which spice-ts does not interpret yet (#489). For those, the block is
- * removed and its first `tran` command becomes a `.tran` card; that one
- * transformed netlist is fed to both simulators, so they still see identical
- * circuits. ngspice gets an appended `.control run / wrdata` block only.
+ * Example decks run their analysis from a `.control` block (`tran ...`,
+ * sometimes with `repeat` loops). To export ngspice vectors with one
+ * `wrdata`, the block is removed and its first `tran` command becomes a
+ * `.tran` card. That one transformed netlist is fed to both simulators, so
+ * they still see identical circuits. ngspice gets an appended
+ * `.control run / wrdata` block only.
  * spice-ts is linearly interpolated onto every ngspice timepoint.
  * Prints one JSON line per deck.
  */
