@@ -166,8 +166,8 @@ describe('aggregate report artifact verification', () => {
     assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 906);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 31.65338535154384);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 8.272157976952819);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 350697351664.8823);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 6918151585.579732);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 318874896057.84845);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 6401850478.823812);
   });
 
   it('commits runtime sums derived from all 100 engine receipts', async () => {
