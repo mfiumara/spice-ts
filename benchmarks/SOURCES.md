@@ -150,6 +150,18 @@ Reproduce with `pnpm --filter @spice-ts/wasm bench:rlc-tran`. The JSON receipt r
 
 Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-393/compare.ts --label after`, then `pnpm exec tsx benchmarks/results/issue-393/summarize.ts`. The receipts record ngspice-47, the measured revision, fixture hashes, engine status, and per-signal max/RMS absolute and relative errors for these fixtures and for every corpus fixture that runs through the level-1 MOSFET class.
 
+## NHFET level-5 inverse-operation fixture
+
+- Source: project-authored reference circuit for [issue #448](https://github.com/mfiumara/spice-ts/issues/448), issue revision as of 2026-10-11. The model card values are copied from the ngspice `tests/hfet/inverter.cir` fixture already listed in the ngspice corpus.
+- Licence: MIT, under the repository [licence](../LICENSE).
+- Adaptation: none. `benchmarks/results/issue-448/verify.ts` supplies the exact committed bytes to spice-ts and ngspice-47 with no engine-specific values, tolerances, or rewrites.
+
+| Fixture | SHA-256 | Coverage |
+|---|---|---|
+| `benchmarks/results/issue-448/hfet-reverse-iv.cir` | `38d9bc0d182253cb483e26d1883b0c64ae8285443f910ada2132457d647c5f9a` | Single NHFET level-5 device, nested DC sweep of VDS through inverse operation (VDS < 0) at three gate biases. |
+
+Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-448/verify.ts --check`. The receipt also records a diagnostic, electrically identical reordering of the unchanged ngspice `hfet-inverter` fixture; it is never substituted for the identical-netlist comparison (see `benchmarks/results/issue-448/README.md`).
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |

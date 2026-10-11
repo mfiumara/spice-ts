@@ -29,6 +29,38 @@ describe('NHFET level-5 inverter', () => {
   });
 });
 
+describe('NHFET level-5 inverse operation (#448)', () => {
+  it('matches ngspice-47 drain current for VDS < 0 on the identical single-device netlist', async () => {
+    const netlist = readFileSync(new URL(
+      '../../../benchmarks/results/issue-448/hfet-reverse-iv.cir',
+      import.meta.url,
+    ), 'utf8');
+    const result = await simulate(netlist);
+    const sweep = result.dcSweep!;
+    const vd = sweep.sweepValues;
+    const vg = sweep.secondarySweepValues!;
+    const current = sweep.current('vd');
+    // ngspice-47 `.print dc i(vd)` for the VG = 0 segment, where gate leakage
+    // is below 1e-10 A so the channel current dominates.
+    const ngspice: Array<[number, number]> = [
+      [-1.0, 5.357198e-4],
+      [-0.75, 4.984853e-4],
+      [-0.5, 4.550054e-4],
+      [-0.25, 3.609389e-4],
+      [1.0, -4.106820e-4],
+    ];
+    for (const [bias, expected] of ngspice) {
+      const index = vd.findIndex((value, point) => (
+        Math.abs(value - bias) < 1e-12 && Math.abs(vg[point]) < 1e-12
+      ));
+      expect(index).toBeGreaterThanOrEqual(0);
+      const actual = current[index];
+      // ngspice-47 default RELTOL bounds the reference's own convergence error.
+      expect(Math.abs(actual - expected)).toBeLessThan(1e-3 * Math.abs(expected));
+    }
+  });
+});
+
 const hfetSubcircuit = [
   '.subckt hcell d g s',
   'z1 d g s a l=1u w=10u',
