@@ -13,7 +13,7 @@ import { Inductor } from './devices/inductor.js';
 import { MutualInductor } from './devices/mutual-inductor.js';
 import { Diode, diodeZeroBiasCapacitance } from './devices/diode.js';
 import { BJT } from './devices/bjt.js';
-import { VBIC, resolveVBICParams } from './devices/vbic.js';
+import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
 import { JFET, resolveNJFETParams } from './devices/jfet.js';
 import { HFET1 } from './devices/hfet1.js';
@@ -1152,15 +1152,14 @@ export class Circuit {
     if (hasBoundedVBIC) {
       const unsupportedStep = this._steps.find(step => step.param.toUpperCase() === 'TEMP');
       if (unsupportedStep) {
-        throw new Error("Unsupported bounded VBIC step: 'TEMP'");
+        throw new InvalidCircuitError("Unsupported bounded VBIC step: 'TEMP'");
       }
+      // Bounded VBIC linearizes at the operating point (.ac/.pz) but has no
+      // transient charge integration, noise sources, or distortion terms.
       const unsupported = this._analyses.find(analysis =>
-        analysis.type !== 'op' && analysis.type !== 'dc');
+        analysis.type !== 'op' && analysis.type !== 'dc' && analysis.type !== 'ac');
       if (unsupported) {
-        throw new Error(`Unsupported bounded VBIC analysis: '${unsupported.type}'`);
-      }
-      if (this._poleZeroAnalyses.length > 0) {
-        throw new Error("Unsupported bounded VBIC analysis: 'pz'");
+        throw new InvalidCircuitError(`Unsupported bounded VBIC analysis: '${unsupported.type}'`);
       }
     }
 
@@ -1611,6 +1610,9 @@ export class Circuit {
                 emitterInternal,
                 internalNodeName(desc.name, 'bp'),
                 substrateInternal,
+                ...(vbicNodeCount(params) > 7
+                  ? [internalNodeName(desc.name, 'xf1'), internalNodeName(desc.name, 'xf2')]
+                  : []),
               ],
             });
             continue;
