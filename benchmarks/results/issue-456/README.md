@@ -18,7 +18,7 @@ ngspice integrates each device charge with `NIintegrate`. The history is the acc
 | MOSFET levels 1-3 (this class) | q = C·v for the constant CGDO·W, CGSO·W, CBD, CBS that spice-ts models |
 | BSIM3v3 (bounded) | capacitance-only model: Meyer-style averaged increment (DEVqmeyer) for Cgd, Cgs, Cgb, Cbd, Cbs |
 
-Not covered: MOS6 (level 6) is in PR #455, which has not merged, so it stays on the generic path. Diode behaviour from #452 is unchanged, and there is no sidewall work (#450).
+Not covered: MOS6 (level 6, `mos6.ts` from PR #455). #455 merged while this change was being measured, and this branch is rebased on top of it, but MOS6 still stamps its averaged Meyer and bulk-junction C(v) through the generic path. The before/after numbers below were measured on 2c11c9f, before #455, so the MOS6 rows reflect the old MOS6 handling. Moving MOS6 onto `TransientChargeState` is remaining scope. Diode behaviour from #452 is unchanged, and there is no sidewall work (#450).
 
 The BJT charges are functions of the clamped junction voltage (`limitForwardJunctionVoltage`, a static clamp, not iterate-relative like pnjlim). Their companion therefore applies the chain rule through the clamp. Without it, a converged point kept a residual `2C/dt·(v − v*)`, and trapezoidal integration turned that into persistent ringing. During development this rang 420 times on an internal BJT base in `classic/lossy-line-24-inch` and tripled its point count (3112 → 9615). With the chain rule: 3146 points.
 
