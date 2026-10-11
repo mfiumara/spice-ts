@@ -56,14 +56,18 @@ describe('aggregate report artifact verification', () => {
         ['spiceTs', 'classic/diode-distortion', 'failed', 'unsupported'],
         ['spiceTs', 'ngspice/vbic-fo', 'unsupported', 'success'],
         ['spiceTs', 'ngspice/vbic-common-emitter-ac', 'success', 'unsupported'],
+        ['spiceTs', 'ngspice/hfet-inverter', 'unsupported', 'success'],
+        ['spiceTs', 'classic/bjt-noise', 'unsupported', 'success'],
+        ['spiceTs', 'classic/resistor-noise', 'unsupported', 'success'],
+        ['spiceTs', 'xyce/inductor-transient', 'failed', 'success'],
       ],
     );
     assert.deepEqual(report.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
-    assert.deepEqual(report.totals.spiceTs, { success: 55, failed: 1, unsupported: 44 });
-    assert.equal(report.totals.comparedAnalyses, 57);
-    assert.equal(report.totals.comparedFixtures, 43);
+    assert.deepEqual(report.totals.spiceTs, { success: 59, failed: 0, unsupported: 41 });
+    assert.equal(report.totals.comparedAnalyses, 63);
+    assert.equal(report.totals.comparedFixtures, 47);
     const inductor = report.fixtures.find((fixture: { key: string }) => fixture.key === 'xyce/inductor-transient');
-    assert.match(inductor.spiceTs.error, /exceeded the 120000 ms aggregate execution bound/);
+    assert.equal(inductor.spiceTs.status, 'success');
     assert.ok(inductor.gapIssues.includes('https://github.com/mfiumara/spice-ts/issues/366'));
     const distortion = report.fixtures.find((fixture: { key: string }) => fixture.key === 'classic/diode-distortion');
     assert.equal(distortion.spiceTs.error, 'no spice-ts result for analyses: disto');
@@ -79,7 +83,7 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.provenance, {
-      fixtureTreeSha256: '01b19fe5baf170d91aa5bd72c3ffb3891ed2f2c45cca5adfee8288552a7e14f1',
+      fixtureTreeSha256: '00365c397b0ee279767f8167a9d3ee121bf186421cb684af30ef5e1bd44d83d7',
       sourcesSha256: '49379991e8f1f84c1289f78d50608fc7b6d1b3d3a8bcaed67320e5202213f2e5',
     });
   });
@@ -89,8 +93,8 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
-    assert.equal(report.matchedPointEnvelope.comparedSignals, 877);
-    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 848);
+    assert.equal(report.matchedPointEnvelope.comparedSignals, 894);
+    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 865);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 154.02408984579006);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 66.59015057379884);
     assert.equal(report.matchedPointEnvelope.maximumRelativeError, 45497356677842.63);

@@ -29,7 +29,7 @@ const FIXTURES_PER_CORPUS = 20;
 const TOTAL_FIXTURES = CORPORA.length * FIXTURES_PER_CORPUS;
 const JSON_PATH = resolve('benchmarks/aggregate-report.json');
 const MARKDOWN_PATH = resolve('benchmarks/AGGREGATE_PARITY.md');
-const FIXTURE_TREE_SHA256 = '01b19fe5baf170d91aa5bd72c3ffb3891ed2f2c45cca5adfee8288552a7e14f1';
+const FIXTURE_TREE_SHA256 = '00365c397b0ee279767f8167a9d3ee121bf186421cb684af30ef5e1bd44d83d7';
 const SOURCES_SHA256 = '49379991e8f1f84c1289f78d50608fc7b6d1b3d3a8bcaed67320e5202213f2e5';
 
 type CorpusId = typeof CORPORA[number];
@@ -188,15 +188,41 @@ const PREVIOUS_REPORT: AggregateReport['comparisonToPrevious'] = {
       explanation: 'Accepted grounded-substrate BJT model resolution (#382, PR #392) makes Q1 use its LEVEL=4 VBIC .model instead of silently running a default level-1 NPN, and bounded VBIC support (#361) rejects .ac and .pz. The previous success was not a VBIC simulation; its AC and pole-zero comparisons (including the 1169140310571.719 pole envelope) are removed, and the fixture is now a published unsupported loss.',
       gapIssues: ['https://github.com/mfiumara/spice-ts/issues/5', 'https://github.com/mfiumara/spice-ts/issues/75', 'https://github.com/mfiumara/spice-ts/issues/382'],
     },
+    {
+      engine: 'spiceTs',
+      fixture: 'ngspice/hfet-inverter',
+      from: 'unsupported',
+      to: 'success',
+      explanation: 'Accepted bounded NHFET level-5 support (#339, PR #360) accepts the Z cards, so the unchanged transient completes and adds one comparison. Published losses: v(4) absolute max 2.272 V (RMS 1.611 V) and v(3) 2.231 V (RMS 1.239 V); i(vdd) absolute max 0.00372 A.',
+      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/76', 'https://github.com/mfiumara/spice-ts/issues/339'],
+    },
+    ...['classic/bjt-noise', 'classic/resistor-noise'].map(fixture => ({
+      engine: 'spiceTs' as const,
+      fixture,
+      from: 'unsupported' as const,
+      to: 'success' as const,
+      explanation: 'Accepted classic-corpus .noise mapping (#380, PR #383) compares the noise spectra and integrated totals spice-ts already produced, adding two noise analyses. Worst relative max is 4.9e-4 (bjt-noise onoise) and 1.7e-7 (resistor-noise). The change is in the harness, not the simulator.',
+      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/75', 'https://github.com/mfiumara/spice-ts/issues/380'],
+    })),
+    {
+      engine: 'spiceTs',
+      fixture: 'xyce/inductor-transient',
+      from: 'failed',
+      to: 'success',
+      explanation: 'Accepted inductor-ringing step-loop termination (#366, PR #377) lets the unchanged transient finish inside the 120000 ms bound and adds one comparison. Published loss: v(1) and v(2) absolute max 31.65 V (RMS 8.27 V, relative max about 1.0), while i(l1) agrees to 2.4e-14 A.',
+      gapIssues: ['https://github.com/mfiumara/spice-ts/issues/366'],
+    },
   ],
   metricTransitions: [
-    'Totals: ngspice unchanged at 52/9/39 success/failed/unsupported; spice-ts 55/2/43 to 55/1/44. Comparable coverage changes from 58 analyses across 43 fixtures to 57 across 43: ngspice/vbic-fo adds one DC analysis and ngspice/vbic-common-emitter-ac removes its AC and PZ analyses. Signals change from 878 to 877 absolute; relative stays 848. Samples change from 9,182,709 to 9,183,703 absolute and from 9,147,783 to 9,149,436 relative; excluded zero references change from 34,926 to 34,267.',
+    'Totals: ngspice unchanged at 52/9/39 success/failed/unsupported; spice-ts 55/2/43 to 59/0/41. Comparable coverage changes from 58 analyses across 43 fixtures to 63 across 47: ngspice/vbic-fo, ngspice/hfet-inverter and xyce/inductor-transient add one analysis each, classic/bjt-noise and classic/resistor-noise add two each, and ngspice/vbic-common-emitter-ac removes its AC and PZ analyses. Signals change from 878 to 894 absolute and from 848 to 865 relative. Samples change from 9,182,709 to 9,189,895 absolute and from 9,147,783 to 9,155,140 relative; excluded zero references change from 34,926 to 34,755.',
     'Nested DC sweeps are now aligned per segment (#384, PR #394). Worst per-signal absolute max: ngspice/jfet-vds-vgs 3 V v(1) to 3.10e-6 A i(vd); xyce/njfet-2109-dc 1.875 V v(2) to 1.47e-6 A; xyce/nmos-level1-dc 18 V v(4) to 0.000682 V v(2); xyce/pnp-dc 2 V v(4) to 0.00119 V v(3). The old values were harness artifacts, not simulator errors.',
     'Grounded-substrate BJT model resolution (#382, PR #392) changes three corpus-e fixtures. Gains: bjt-rtl-inverter-chain worst DC abs max 4.71 to 1.86 V and OP 0.194 to 0.119 V; bjt-diffpair-current-source worst AC abs max 90.1 to 83.9 V. Published losses: bjt-diffpair-transient and bjt-diffpair-current-source OP v(4)/v(5) abs 1.107 to 1.148 V and supply currents i(vcc)/i(vee) rel about 0.086 to 0.089 in OP and TRAN; bjt-diffpair-current-source AC v(3) abs max 0.0859 to 0.0997 V and TRAN v(4) rel max 68.1 to 348.7 (rel RMS 9.54 to 35.3) and v(5) rel max 43.8 to 97.5; bjt-rtl-inverter-chain DC i(vin) rel max 78.2 to 157.9 (rel RMS 17.9 to 35.1), TRAN i(vcc) abs max 0.00437 to 0.00457 A and v(2) rel max 1.13 to 1.21. Transient grids change from 198 to 191, 111 to 107 and 170 to 156 points.',
     'PULSE zero TR/TF now defaults to TSTEP like ngspice (#375, PR #379). xyce/rlc-transient worst absolute max falls from 10 V v(1) to 0.000752 V v(2) on 1018 instead of 1002 points; classic/mos-memory-cell from 22496.7 A i(vwb) to 9.91 V v(8) on 144 instead of 158 points (v(8) remains a 9.9 V loss); ngspice/ltra-line-transient from 2.499 V v(168) to 0.416 V v(3) on 665 instead of 685 points. Published losses: ltra-line-transient v(3) abs RMS +5.2% (0.04522 to 0.04755 V); mos-memory-cell i(vw) abs RMS +4.7%; classic/lossy-line-aluminium (3968 to 3969 points) raises abs RMS on 89 of 261 signals by at most 0.1% on non-negligible signals and v(x1.x1.x1.x1.x1.x1.x1.x1.4) rel max 2314.5 to 7220.6 at an unchanged 0.2614 V abs max. classic/lossy-line-24-inch and classic/coupled-lossy-lines change only at rounding level.',
     'Worst per-signal envelope: absolute max falls from 1169140310571.719 to 154.02408984579006 and absolute RMS from 1169140310571.719 to 66.59015057379884, now from classic/rca3040-wideband-amplifier AC v(15), only because the ngspice/vbic-common-emitter-ac pole comparison is no longer made. That is a coverage change, not an accuracy gain. Relative max 45497356677842.63 and RMS 872317191517.6284 from classic/coupled-lossy-lines v(5) are unchanged. No tolerance changed.',
     'Diode CJO aliasing (#365, PR #390) changed no aggregate outcome: the deterministic projection was identical before and after merging it.',
-    'The runtime sums in the totals above are single samples on a shared, heavily loaded host; the spice-ts sum includes the 120000 ms xyce/inductor-transient bound. They are not comparable with the previous 77150.906 / 270491.926 ms sample and support no speed claim.',
+    'Transient step-control change from inductor-ringing termination (#366, PR #377), the only transient-engine change merged in the final window (none of these netlists has a diode, HFET or .noise card, so #405, #360 and #383 cannot affect them): xyce/rlc-transient worsens, with abs max 0.000752 to 0.00213 V on v(2) and 0.000251 to 0.000711 A on i(l1), abs RMS up on all 5 signals, 1018 to 1037 points. This is a published loss. ngspice/mos6-inverter-transient and classic/mos6-inverter-chain (3760 to 3777 points) lower abs RMS on 30 and raise it on 14 of 44 signals, with worst abs max 5.0044 V on v(43) essentially unchanged. ngspice/mos6-simple-inverter-transient (3438 to 3451 points) and corpus-e/mos1-inverter-sweep TRAN (111 to 113 points) change abs RMS by about 1% or less.',
+    'Diode VJ/FC depletion-capacitance parity (#388, PR #405) changed no compared diode fixture metric in this run.',
+    'The runtime sums in the totals above are single samples on a shared, heavily loaded host. No spice-ts run hit the 120000 ms bound in this run. They are not comparable with the previous 77150.906 / 270491.926 ms sample and support no speed claim.',
   ],
 };
 
