@@ -53,13 +53,13 @@ describe('model types through the Circuit API (#544)', () => {
     const c = new Circuit();
     c.addSubcircuit({
       name: 'cell', ports: ['a'], params: {},
-      body: ['r1 a 0 1k', '.model sw1 sw vt=1'],
+      body: ['r1 a 0 1k', '.model urc1 urc k=2'],
     });
     c.addVoltageSource('v1', 'in', '0', { type: 'dc', value: 1 });
     c.addSubcircuitInstance('x1', ['in'], 'cell');
     c.addAnalysis('op');
     await expect(simulate(c)).rejects.toMatchObject({
-      code: 'UNSUPPORTED_MODEL_TYPE', modelName: 'sw1', modelType: 'SW',
+      code: 'UNSUPPORTED_MODEL_TYPE', modelName: 'urc1', modelType: 'URC',
     });
   });
 
@@ -109,6 +109,8 @@ describe('model/device-kind mismatch (#544)', () => {
     ['R', 'D', 'v1 a 0 1\nr1 a 0 1k d1\n.model d1 d', 'r1'],
     ['C', 'L', 'v1 a 0 1\nr1 a b 1k\nc1 b 0 1p l1\n.model l1 l', 'c1'],
     ['L', 'C', 'v1 a 0 1\nr1 a b 1k\nl1 b 0 1u c1\n.model c1 c', 'l1'],
+    ['S', 'CSW', 'vc c 0 1\nr1 c o 1k\ns1 o 0 c 0 w1\n.model w1 csw', 's1'],
+    ['W', 'SW', 'vc c 0 1\nr1 c o 1k\nw1 o 0 vc s1\n.model s1 sw', 'w1'],
   ];
 
   it.each(cases)('%s instance on a %s model raises MODEL_TYPE_MISMATCH', async (kind, type, body, device) => {

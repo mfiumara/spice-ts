@@ -31,6 +31,8 @@ export const DEVICE_MODEL_TYPES: Readonly<Record<string, readonly string[]>> = {
   J: ['NJF'],
   M: ['NMOS', 'PMOS', 'VDMOS', 'VDMOSN', 'VDMOSP'],
   Z: ['NHFET', 'NMF'],
+  S: ['SW'],
+  W: ['CSW'],
 };
 
 /**

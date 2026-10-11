@@ -1806,11 +1806,6 @@ export class Circuit {
         case 'W': {
           const type = desc.type === 'S' ? 'SW' : 'CSW';
           const model = this.requireModel(desc.type === 'S' ? 'Switch' : 'Current switch', desc);
-          if (model.type !== type) {
-            throw new InvalidCircuitError(
-              `${desc.type}-element '${desc.name}' needs a ${type} model, but '${desc.modelName}' is type '${model.type}'`,
-            );
-          }
           const { model: switchModel, warnings } = resolveSwitchModel(
             type, model.params, this._simulationOptions.gmin ?? DEVICE_GMIN,
           );
