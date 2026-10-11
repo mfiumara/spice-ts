@@ -11,18 +11,6 @@ import {
   type ProtocolExecutionGuard,
 } from '../protocol/execution-guard.js';
 
-/**
- * GMIN stepping schedule for DC operating point. Starts from an easy problem
- * (large artificial conductance) and homotopes down to the user-configured
- * gmin, reusing each converged iterate as the initial guess for the next
- * lower gmin. Mirrors ngspice `CKTop` / `dynamic_gmin` from cktop.c.
- *
- * GMIN stepping is a *DC-OP* technique — never a transient-step technique.
- * Committing GMIN-distorted solutions as real transient output samples
- * breaks LC tanks and switching converters (issues #42, #43, #45).
- */
-const DC_GMIN_SCHEDULE = [1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11] as const;
-
 type DCSourceMode = 'operating-point' | 'transient';
 
 export function solveDCOperatingPoint(
@@ -110,6 +98,26 @@ export function solveDCOperatingPoint(
   };
 }
 
+/** ngspice defaults: `itl2` (CKTdcTrcvMaxIter), `gminfactor` (CKTgminFactor), device CKTgmin. */
+const DC_TRCV_MAX_ITER = 50;
+const GMIN_FACTOR = 10;
+const DEVICE_GMIN = 1e-12;
+/** ngspice-47 NIiter raises any iteration limit below 100 to 100 ("some convergence issues get resolved by increasing max iter"). */
+const NIITER_MIN_ITER = 100;
+const HOMOTOPY_STEP_MAX_ITER = Math.max(DC_TRCV_MAX_ITER, NIITER_MIN_ITER);
+
+/**
+ * Dynamic GMIN stepping, ported from ngspice `dynamic_gmin` (cktop.c, Alan
+ * Gillespie). Restarts from an all-zero node vector, adds a diagonal shunt to
+ * every node starting at 1e-3 S and lowers it by an adaptive factor: the
+ * factor grows after cheap steps, shrinks after expensive ones, and a failed
+ * step retreats to the last converged iterate with a smaller factor. The
+ * final solve uses the user-configured `gmin` (ngspice `CKTgshunt`).
+ *
+ * GMIN stepping is a *DC-OP* technique — never a transient-step technique.
+ * Committing GMIN-distorted solutions as real transient output samples
+ * breaks LC tanks and switching converters (issues #42, #43, #45).
+ */
 function gminStepping(
   assembler: MNAAssembler,
   devices: CompiledCircuit['devices'],
@@ -118,21 +126,43 @@ function gminStepping(
   convergence: ConvergenceTelemetry,
   guard?: ProtocolExecutionGuard,
 ): boolean {
-  // Ramp gmin from large (easy to solve) down to the user target, warm-
-  // starting each solve from the previous converged iterate.
-  for (const gmin of DC_GMIN_SCHEDULE) {
-    if (gmin <= options.gmin) break;
+  const numNodes = assembler.numNodes;
+  assembler.solution.fill(0, 0, numNodes);
+  const lastGood = new Float64Array(assembler.solution);
+  const gtarget = Math.max(DEVICE_GMIN, options.gmin);
+  let factor = GMIN_FACTOR;
+  let oldGmin = 1e-2;
+  let diagGmin = oldGmin / factor;
+
+  for (;;) {
     convergence.dc.gminStepAttempts++;
+    let iters: number;
     try {
-      newtonRaphson(
-        assembler, devices, { ...options, gmin }, options.maxIterations, nodeNames, convergence.dc, guard,
+      iters = newtonRaphson(
+        assembler, devices, { ...options, gmin: diagGmin }, HOMOTOPY_STEP_MAX_ITER, nodeNames, convergence.dc, guard,
       );
     } catch (error) {
       if (error instanceof ProtocolExecutionError) throw error;
       convergence.dc.gminStepFailures++;
-      return false;
+      if (factor < 1.00005) return false;
+      factor = Math.sqrt(Math.sqrt(factor));
+      diagGmin = oldGmin / factor;
+      assembler.solution.set(lastGood);
+      continue;
+    }
+    if (diagGmin <= gtarget) break;
+    lastGood.set(assembler.solution);
+    if (iters <= DC_TRCV_MAX_ITER / 4) factor = Math.min(factor * Math.sqrt(factor), GMIN_FACTOR);
+    if (iters > (3 * DC_TRCV_MAX_ITER) / 4) factor = Math.max(Math.sqrt(factor), 1.00005);
+    oldGmin = diagGmin;
+    if (diagGmin < factor * gtarget) {
+      factor = diagGmin / gtarget;
+      diagGmin = gtarget;
+    } else {
+      diagGmin /= factor;
     }
   }
+
   // Final solve at the user-configured gmin — this is the committed answer.
   convergence.dc.gminStepAttempts++;
   try {
