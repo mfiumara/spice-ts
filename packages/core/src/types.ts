@@ -349,6 +349,11 @@ export interface ModelParams {
   type: string;
   /** Key-value parameter map (e.g., `{ BF: 100, IS: 1e-14 }`) */
   params: Record<string, number>;
+  /**
+   * Raw `VERSION=` string of the card (e.g. `'3.3.0'`). ngspice declares the BSIM version as a
+   * string parameter and selects the BSIM implementation by its prefix, so it is kept verbatim.
+   */
+  version?: string;
 }
 
 /** DC source waveform. Constant value. */

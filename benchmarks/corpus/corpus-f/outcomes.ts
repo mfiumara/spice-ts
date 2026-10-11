@@ -132,6 +132,8 @@ export const GAP_ISSUES: Record<string, string> = {
   "source: TRNOISE/EXTERNAL waveforms": 'https://github.com/mfiumara/spice-ts/issues/501',
   "directive: .global": 'https://github.com/mfiumara/spice-ts/issues/502',
   "model: VERSION= strings on BSIM model cards": 'https://github.com/mfiumara/spice-ts/issues/503',
+  "model: BSIM3 revisions other than 3.3 (VERSION=3.0/3.1/3.2.x)": 'https://github.com/mfiumara/spice-ts/issues/594',
+  "model: BSIM4 (LEVEL=14/54)": 'https://github.com/mfiumara/spice-ts/issues/3',
   "analysis: .pz beyond ideal R, L, C": 'https://github.com/mfiumara/spice-ts/issues/504',
   "directive: .measure": 'https://github.com/mfiumara/spice-ts/issues/505',
   "model: VDMOS power MOSFET": 'https://github.com/mfiumara/spice-ts/issues/506',
