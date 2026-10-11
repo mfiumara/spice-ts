@@ -127,6 +127,100 @@ describe('BJT Ebers-Moll', () => {
     expect(result.dc!.current('vee1') / -9.74973e-3).toBeCloseTo(1, 4);
   });
 
+  // #538/#539: corpus-f bip_subsmod (examples/osdi/hicuml0/bip_subsmod.sp)
+  // with its `.control dc` lowered to `.dc vb 0.2 1.4 0.01` and the subckt
+  // flattened. ngspice-47 `wrdata i(vc) i(vb) i(vs)` on the identical deck.
+  const BIP_SUBSMOD = `bip_subsmod Gummel test
+    VB B 0 0.5
+    VC C 0 1.0
+    VS S 0 0.0
+    Q1 C B 0 S hic0_full
+    .model hic0_full npn
+    .dc vb 0.2 1.4 0.01
+    .end
+  `;
+  const BIP_SUBSMOD_NGSPICE: readonly (readonly [number, number, number])[] = [
+    // [vb, i(vc), i(vb)]
+    [0.8, -2.708299613286e-3, -2.708299672076e-5],
+    [0.9, -1.293551714657e-1, -1.293551715447e-3],
+    [1.0, -6.178326914043e+0, -6.178326914144e-2],
+    [1.4, -3.215283250829e+7, -3.215283250830e+5],
+  ];
+
+  it('evaluates the converged junction law above vcrit (bip_subsmod, #538)', async () => {
+    const result = await simulate(BIP_SUBSMOD);
+    const sweep = result.dcSweep!;
+    const vb = Array.from(sweep.sweepValues);
+    for (const [bias, collector, base] of BIP_SUBSMOD_NGSPICE) {
+      const index = vb.findIndex(value => Math.abs(value - bias) < 1e-9);
+      expect(index).toBeGreaterThanOrEqual(0);
+      expect(sweep.current('VC')[index] / collector).toBeCloseTo(1, 6);
+      expect(sweep.current('VB')[index] / base).toBeCloseTo(1, 6);
+    }
+  });
+
+  it('carries the substrate junction gmin current of a vertical npn (bip_subsmod, #539)', async () => {
+    const result = await simulate(BIP_SUBSMOD);
+    // ngspice-47: i(vs) = 1.000000e-12 A (CKTgmin * Vcs) at every sweep point.
+    for (const value of result.dcSweep!.current('VS')) {
+      expect(value / 1e-12).toBeCloseTo(1, 6);
+    }
+  });
+
+  // corpus-f probe-i-dev (examples/probe/probe-i-dev.cir), the lateral pnp leg
+  // `X1 c1 b1 e1 s1 pbip` flattened. ngspice-47 `op; print i(vss1)`:
+  // i(vss1) = -8.34046068405e-13 A (CKTgmin * (v(s1) - v(b1))).
+  it('carries the substrate junction gmin current of a lateral pnp (probe-i-dev, #539)', async () => {
+    const result = await simulate(`probe-i-dev pnp leg
+      Vcc1 11 0 -1
+      RC1 11 c1 100
+      vbb1 12 0 -1
+      RB1 12 b1 300
+      vee1 e1 0 0
+      vss1 s1 0 0
+      Q1 c1 b1 e1 s1 pbipmod
+      .model pbipmod pnp
+      .op
+      .end
+    `);
+    expect(result.dc!.current('vss1') / -8.34046068405e-13).toBeCloseTo(1, 6);
+    expect(result.dc!.voltage('b1') / -8.34046068405e-1).toBeCloseTo(1, 6);
+    expect(result.dc!.current('vee1') / -9.74973288565e-3).toBeCloseTo(1, 6);
+  });
+
+  it('stamps the ISS/NS substrate diode between the substrate and the collector', async () => {
+    // ngspice-47 `op; print i(vs)`: forward-biased substrate (VS = 0.6 V,
+    // vertical npn, collector grounded), ISS = 1e-15, NS = 1.2.
+    const result = await simulate(`substrate diode
+      VB b 0 0
+      VS s 0 0.6
+      Q1 0 b 0 s qsub
+      .model qsub npn ISS=1e-15 NS=1.2
+      .op
+      .end
+    `);
+    // ngspice-47 i(vs) = -2.48563003922e-07.
+    expect(result.dc!.current('VS') / -2.48563003922e-7).toBeCloseTo(1, 6);
+  });
+
+  it('uses the ngspice reverse substrate law below -3*NS*Vt and scales ISS by AREA', async () => {
+    const deck = (bias: number, area: string): string => `reverse substrate diode
+      VB b 0 0
+      VS s 0 ${bias}
+      Q1 0 b 0 s qsub ${area}
+      .model qsub npn ISS=1e-6
+      .op
+      .end
+    `;
+    // ngspice-47 `op; print i(vs)` on the identical decks: the reverse law
+    // -ISS*(1 + (3*Vt/(e*vsub))^3) at -0.1 V, and the exponential at -0.05 V
+    // with AREA = 2.
+    const reverse = await simulate(deck(-0.1, ''));
+    expect(reverse.dc!.current('VS') / 9.767398924221e-7).toBeCloseTo(1, 6);
+    const scaled = await simulate(deck(-0.05, '2'));
+    expect(scaled.dc!.current('VS') / 1.710608096510e-6).toBeCloseTo(1, 6);
+  });
+
   it('rejects unsupported Gummel-Poon model parameters explicitly', () => {
     expect(() => parse(`unsupported BJT parameter
       Q1 c b 0 QGP
