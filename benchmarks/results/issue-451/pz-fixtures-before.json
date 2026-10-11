@@ -1,0 +1,203 @@
+[
+  {
+    "key": "ngspice/vbic-common-emitter-ac",
+    "localPath": "benchmarks/corpus/ngspice/fixtures/tests/vbic/CEamp.cir",
+    "sha256": "088d1ebede86588ff8b823ba45219006bfeec34939af69e10c176e23d8a020ab",
+    "ngspice": {
+      "status": "success",
+      "counts": {
+        "poles": 7,
+        "zeros": 6
+      }
+    },
+    "spiceTs": {
+      "status": "success",
+      "counts": {
+        "poles": 3,
+        "zeros": 1
+      }
+    },
+    "comparisons": [
+      {
+        "analysis": "ac",
+        "signals": {
+          "i(vcc)": {
+            "max": 7.363529266660746e-8,
+            "relMax": 1.6190931095986222e-7
+          },
+          "i(vmeas)": {
+            "max": 0.000004630516849217327,
+            "relMax": 1.0751810045018762e-7
+          },
+          "v(1)": {
+            "max": 0.00018391271691357928,
+            "relMax": 1.6776746723280057e-7
+          },
+          "v(2)": {
+            "max": 0.00007364821306272488,
+            "relMax": 1.0751824877096412e-7
+          },
+          "v(3)": {
+            "max": 1.0317812581679068e-9,
+            "relMax": null
+          },
+          "v(4)": {
+            "max": 0.00007364821154438375,
+            "relMax": 1.0751810090733276e-7
+          }
+        }
+      },
+      {
+        "analysis": "pz",
+        "signals": {
+          "v(pole(1))": {
+            "max": 1143866306323.989,
+            "relMax": 0.9783823944799271
+          },
+          "v(pole(2))": {
+            "max": 541165275506.06055,
+            "relMax": 0.9980533295801028
+          },
+          "v(pole(3))": {
+            "max": 86524057643.3095,
+            "relMax": 0.9999998197767744
+          },
+          "v(zero(1))": {
+            "max": 1251172988128.5068,
+            "relMax": 0.9474983414857449
+          }
+        }
+      }
+    ]
+  },
+  {
+    "key": "classic/pole-zero-four-stage",
+    "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/pz2.cir",
+    "sha256": "c21a9628a46581ad9e163632d992422afafeaa15443787e00153dbd7331d3b73",
+    "ngspice": {
+      "status": "success",
+      "counts": {
+        "poles": 4,
+        "zeros": 0
+      }
+    },
+    "spiceTs": {
+      "status": "success",
+      "counts": {
+        "poles": 4,
+        "zeros": 0
+      }
+    },
+    "comparisons": [
+      {
+        "analysis": "pz",
+        "signals": {
+          "v(pole(1))": {
+            "max": 0.012948989868164062,
+            "relMax": 1.2701015246491562e-11
+          },
+          "v(pole(2))": {
+            "max": 0.008797526359558105,
+            "relMax": 1.0603306582055131e-11
+          },
+          "v(pole(3))": {
+            "max": 0.000002428889274597168,
+            "relMax": 2.807297867763155e-14
+          },
+          "v(pole(4))": {
+            "max": 0,
+            "relMax": 0
+          }
+        }
+      }
+    ]
+  },
+  {
+    "key": "classic/pole-zero-three-stage",
+    "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/pzt.cir",
+    "sha256": "1c50c0623b02d991eb04a1523d1aa50914e88c0ea53a64438daeec97ec359a18",
+    "ngspice": {
+      "status": "success",
+      "counts": {
+        "poles": 3,
+        "zeros": 0
+      }
+    },
+    "spiceTs": {
+      "status": "success",
+      "counts": {
+        "poles": 3,
+        "zeros": 0
+      }
+    },
+    "comparisons": [
+      {
+        "analysis": "pz",
+        "signals": {
+          "v(pole(1))": {
+            "max": 0.003436875423908293,
+            "relMax": 0.0001718437711953833
+          },
+          "v(pole(2))": {
+            "max": 0.0020047854658180706,
+            "relMax": 0.00010023927329088524
+          },
+          "v(pole(3))": {
+            "max": 0.004811665618611016,
+            "relMax": 0.00024058328093050694
+          }
+        }
+      }
+    ]
+  },
+  {
+    "key": "classic/high-pass-pole-zero",
+    "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/simplepz.cir",
+    "sha256": "750846efbf93b9ae9f93e477922589439b859648de15b7508d2ea8e39da23720",
+    "ngspice": {
+      "status": "success",
+      "counts": {
+        "poles": 1,
+        "zeros": 1
+      }
+    },
+    "spiceTs": {
+      "status": "success",
+      "counts": {
+        "poles": 1,
+        "zeros": 1
+      }
+    },
+    "comparisons": [
+      {
+        "analysis": "pz",
+        "signals": {
+          "v(pole(1))": {
+            "max": 5.960464477539063e-8,
+            "relMax": 1.1920928955078126e-16
+          },
+          "v(zero(1))": {
+            "max": 0,
+            "relMax": null
+          }
+        }
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/passive-pole-zero-ac",
+    "localPath": "benchmarks/corpus/corpus-d/fixtures/tests/pz1/pz1.ckt",
+    "sha256": "3a597bfe073b0d0219444b15559e6390a2aabe9ca8f1b9246db626efd8dda94c",
+    "ngspice": {
+      "status": "failed",
+      "counts": null,
+      "error": "Error in netlist line no. 3, new internal line no. 2: Undefined parameter [idc] Error in netlist line no. 3, new internal line no. 2: Cannot compute substitute ERROR: fatal error in ngspice, exit(1) Note: No compatibility mode selected! Circuit: ** pz test"
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "counts": null,
+      "error": "Parse error at line 2: Cannot parse number: 'type=idc' IN 0 1 type=idc idc=1.00 iac=1"
+    },
+    "comparisons": []
+  }
+]

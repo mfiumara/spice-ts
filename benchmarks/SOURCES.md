@@ -168,6 +168,30 @@ Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/
 |---|---|---|---|---|
 | Passive RLC and active four-stage `.pz` | Berkeley SPICE3f5 [`simplepz.cir`](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/simplepz.cir) and [`pz2.cir`](https://github.com/obernin/spice/blob/3d9360bef370b432e473edb0c4333707d545a55f/examples/pz2.cir), pinned mirror revision `3d9360bef370b432e473edb0c4333707d545a55f` | Berkeley SPICE grant retained at `benchmarks/corpus/classic/COPYRIGHT.txt`; redistribution is allowed with that notice | `passive-rlc.cir` preserves `simplepz.cir` and adds one 1 uH shunt inductor so the bounded fixture exercises R, L, and C dynamics. `active-four-stage.cir` changes only the source card from ngspice's implicit `iin 1 0 ac` zero bias to explicit `iin 1 0 dc 0`; its topology, values, and `.pz` command are unchanged. The committed local bytes are supplied identically to both engines. | `benchmarks/pole-zero/{passive-rlc,active-four-stage}.cir`; compare with `pnpm exec tsx benchmarks/pole-zero/compare.ts` using ngspice-47. |
 
+## `.pz` eigenvalue root-finder stress netlists
+
+- Source: project-authored reference circuits for [issue #451](https://github.com/mfiumara/spice-ts/issues/451), issue revision as of 2026-10-11. `four_pz.cir` and `three_pz.cir` keep the topology and values of the Berkeley SPICE3f5 `pz2.cir`/`pzt.cir` examples already listed under the classic corpus (notice retained at `benchmarks/corpus/classic/COPYRIGHT.txt`), with `cur pol` changed to `cur pz`.
+- Licence: MIT, under the repository [licence](../LICENSE), apart from the SPICE3f5-derived values above, which stay under the Berkeley SPICE grant.
+- Adaptation: none. `benchmarks/results/issue-451/stress.ts` supplies the exact committed bytes to spice-ts and ngspice-47 with no engine-specific values, tolerances, or rewrites.
+
+| Fixture | SHA-256 | Coverage |
+|---|---|---|
+| `benchmarks/results/issue-451/stress/bandpass.cir` | `1a421435e73d4c1c78d840c8deef3c2cd547023115c9ef12f6164e53cb96b672` | Series LC bandpass; one zero at DC. |
+| `benchmarks/results/issue-451/stress/feedback.cir` | `e85252f5ee8022ef32614d43d42024a66f9e1d24e14211398c8c62fe9244a576` | VCVS (gain 1e5) inverting amplifier with feedback capacitor. |
+| `benchmarks/results/issue-451/stress/floatcap.cir` | `e339a5e127fbb42b4504d186f78c15546aa6a5f9aa5cf769ab1312baa673e6f0` | Capacitor loop through three nodes. |
+| `benchmarks/results/issue-451/stress/four_pz.cir` | `06e0956b0d5fc49bc3af0816a1e952d56a7f38e7ef61969d34741cc42b196af5` | SPICE3f5 `pz2.cir` four-stage gm cascade with `.pz ... cur pz` (four zeros at DC). |
+| `benchmarks/results/issue-451/stress/mixed.cir` | `94cbd594261fbf546e0dea1a9b2c78abb64fb6167860fdb504de1827663189b9` | 1 H inductor next to 1-10 pF capacitors (mixed-unit storage matrix). |
+| `benchmarks/results/issue-451/stress/opamp2.cir` | `e9428906371fedad96c491ecb8d3cef3cebc6bfed1a9fe609022b7c03b1280dd` | Two-stage gm amplifier with Miller capacitor in closed loop (right-half-plane poles). |
+| `benchmarks/results/issue-451/stress/osc.cir` | `ed6a3ff7e11e67ae41787a71a94f91c100917bd1603bb80fe8cbe8bde71a0c13` | Two lightly damped LC sections (two complex pole pairs, ngspice ordering). |
+| `benchmarks/results/issue-451/stress/rcladder.cir` | `060dacb9f87d0e36ed70df20f65687a06da58f2c271a6495f54918558f1ef45f` | Four-section RC ladder across six decades, relative degree 4 (no finite zeros). |
+| `benchmarks/results/issue-451/stress/rd3.cir` | `f9973ce588e56459f83cc8e77306147bdd9aea2eddc8042fdee5b0754e800b12` | RLC network with finite complex right-half-plane zeros and a 1 fF bridging capacitor. |
+| `benchmarks/results/issue-451/stress/reldeg2.cir` | `6c253346d52db775d5b6ef3a70497eb75ae7e818f1d467c239342df824141499` | RLC lowpass, relative degree 2. |
+| `benchmarks/results/issue-451/stress/spread.cir` | `cfaf6effaf8d3deefe995c09561f951ad2a5f94429cdab9cb601c4877a967649` | RC ladder with time constants from 1 s to 1e-18 s (published loss). |
+| `benchmarks/results/issue-451/stress/three_pz.cir` | `06150402769e65e62c5b7a057b89bf20a2a3a9559a70c4c87bd8e67c984e0cf5` | SPICE3f5 `pzt.cir` three-stage cascade with `.pz ... cur pz` (triple pole). |
+| `benchmarks/results/issue-451/stress/vloop.cir` | `0d5ba09f3c90db6f0cbd71e6c7453464c23ea4d34e3dbed03f47f6467ec64f1d` | Capacitor across a voltage source next to an RC network (non-dynamic storage mode). |
+
+Reproduce with `pnpm exec tsx benchmarks/results/issue-451/stress.ts` and `pnpm exec tsx benchmarks/results/issue-451/measure.ts` (the latter after `pnpm -C packages/core build`). See `benchmarks/results/issue-451/README.md` for the before/after receipts, including losses.
+
 ## Bounded sensitivity parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |

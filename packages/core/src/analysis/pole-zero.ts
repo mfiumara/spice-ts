@@ -11,6 +11,14 @@ import type {
   ResolvedOptions,
 } from '../types.js';
 import { solveDCOperatingPoint } from './dc.js';
+import {
+  deflateZeroEigenvalues,
+  EigenConvergenceError,
+  equilibratedRangeFactor,
+  irreducibleBlocks,
+  multiply,
+  realEigenvalues,
+} from './real-eigen.js';
 
 interface Complex {
   real: number;
@@ -49,15 +57,7 @@ export function solvePoleZero(
     );
   }
 
-  let timeConstantMatrix: number[][];
-  try {
-    timeConstantMatrix = solveMatrix(conductance, storage);
-  } catch {
-    throw new InvalidCircuitError('.pz requires a nonsingular DC small-signal matrix');
-  }
-
-  const timeScale = spectralScale(timeConstantMatrix, dynamicOrder);
-  if (dynamicOrder === 0 || timeScale === 0) {
+  if (dynamicOrder === 0) {
     return new PoleZeroResult(
       analysis.inputPositive,
       analysis.inputNegative,
@@ -68,8 +68,26 @@ export function solvePoleZero(
     );
   }
 
-  const normalized = timeConstantMatrix.map(row => row.map(value => value / timeScale));
-  const denominator = determinantPolynomial(normalized, dynamicOrder);
+  // Natural frequencies: finite roots of det(G + sC), i.e. s = -1/μ for the
+  // nonzero eigenvalues μ of G⁻¹C (shifted when G is singular).
+  const naturalRoots = pencilRootsOrThrow(
+    conductance,
+    storage,
+    maximumAbsolute(conductance) / maximumAbsolute(storage),
+    '.pz requires a nonsingular DC small-signal matrix',
+  );
+  if (naturalRoots.length === 0) {
+    return new PoleZeroResult(
+      analysis.inputPositive,
+      analysis.inputNegative,
+      analysis.outputPositive,
+      analysis.outputNegative,
+      [],
+      [],
+    );
+  }
+  const shiftScale = geometricMeanMagnitude(naturalRoots);
+
   const input = new Float64Array(compiled.nodeCount + compiled.branchCount);
   if (inputPositive >= 0) input[inputPositive] -= 1;
   if (inputNegative >= 0) input[inputNegative] += 1;
@@ -78,39 +96,20 @@ export function solvePoleZero(
   if (outputNegative >= 0) output[outputNegative] -= 1;
 
   // For voltage input ngspice finds the roots of V(input)/I(input).
-  // Those roots are the denominator roots of V(output)/V(input), without
+  // Those roots are the zeros of the driving-point transfer, without
   // cancelling roots shared with the output numerator.
-  let polePolynomial = denominator;
+  let poleRoots = naturalRoots;
   if (analysis.inputType === 'vol') {
     const inputVoltage = new Float64Array(input.length);
     inputVoltage[inputPositive] = 1;
-    polePolynomial = transferNumerator(
-      conductance,
-      storage,
-      input,
-      inputVoltage,
-      denominator,
-      timeScale,
-    );
+    poleRoots = transferZeros(conductance, storage, input, inputVoltage, shiftScale);
   }
-  const poleRoots = polynomialRoots([...polePolynomial].reverse());
-  const poles = orderedValues(
-    poleRoots.map(root => divideComplexByReal(root, timeScale)),
-  );
+  const poles = orderedValues(poleRoots);
 
   let zeros: PoleZeroValue[] = [];
   if (analysis.mode === 'pz') {
-    const numerator = transferNumerator(
-      conductance,
-      storage,
-      input,
-      output,
-      denominator,
-      timeScale,
-    );
-    const zeroRoots = polynomialRoots([...numerator].reverse());
     zeros = orderedValues(
-      zeroRoots.map(root => divideComplexByReal(root, timeScale)),
+      transferZeros(conductance, storage, input, output, shiftScale),
       maximumMagnitude(poles),
     );
   }
@@ -174,10 +173,12 @@ function sparseToDense(matrix: MNAAssembler['G']): number[][] {
   return dense;
 }
 
-function solveMatrix(matrix: number[][], right: number[][]): number[][] {
+/** Solves `matrix · X = right` column by column for an n × k right-hand side. */
+function solveColumns(matrix: number[][], right: number[][]): number[][] {
   const size = matrix.length;
-  const result = Array.from({ length: size }, () => Array(size).fill(0) as number[]);
-  for (let column = 0; column < size; column++) {
+  const columns = right[0]?.length ?? 0;
+  const result = Array.from({ length: size }, () => Array(columns).fill(0) as number[]);
+  for (let column = 0; column < columns; column++) {
     const rhs = right.map(row => row[column]);
     const solution = solveReal(matrix, rhs);
     for (let row = 0; row < size; row++) result[row][column] = solution[row];
@@ -241,233 +242,121 @@ function matrixRank(matrix: number[][]): number {
   return rank;
 }
 
-function spectralScale(matrix: number[][], degree: number): number {
-  let power = identity(matrix.length);
-  let scale = 0;
-  for (let exponent = 1; exponent <= degree; exponent++) {
-    power = multiplyMatrices(power, matrix);
-    const trace = Math.abs(power.reduce((sum, row, index) => sum + row[index], 0));
-    if (trace > 0) scale = Math.max(scale, Math.pow(trace, 1 / exponent));
-  }
-  return scale;
-}
-
-/** Coefficients, ascending in y, of det(I + y * matrix). */
-function determinantPolynomial(matrix: number[][], degree: number): number[] {
-  const coefficients = [1];
-  let power = identity(matrix.length);
-  const traces = [0];
-  for (let exponent = 1; exponent <= degree; exponent++) {
-    power = multiplyMatrices(power, matrix);
-    traces.push(power.reduce((sum, row, index) => sum + row[index], 0));
-    let coefficient = 0;
-    for (let index = 1; index <= exponent; index++) {
-      coefficient += (index % 2 === 1 ? 1 : -1)
-        * coefficients[exponent - index]
-        * traces[index];
-    }
-    coefficients.push(coefficient / exponent);
-  }
-  return coefficients;
-}
-
-function identity(size: number): number[][] {
-  return Array.from(
-    { length: size },
-    (_, row) => Array.from({ length: size }, (_unused, column) => row === column ? 1 : 0),
-  );
-}
-
-function multiplyMatrices(left: number[][], right: number[][]): number[][] {
-  const size = left.length;
-  const product = Array.from({ length: size }, () => Array(size).fill(0) as number[]);
-  for (let row = 0; row < size; row++) {
-    for (let inner = 0; inner < size; inner++) {
-      if (left[row][inner] === 0) continue;
-      for (let column = 0; column < size; column++) {
-        product[row][column] += left[row][inner] * right[inner][column];
-      }
-    }
-  }
-  return product;
-}
-
-function transferNumerator(
+/**
+ * Zeros of `output · (G + sC)⁻¹ · input`: the finite roots of the bordered pencil
+ * `[[G, input], [outputᵀ, 0]] + s [[C, 0], [0, 0]]`, without cancelling roots that
+ * are shared with the poles.
+ */
+function transferZeros(
   conductance: number[][],
   storage: number[][],
   input: Float64Array,
   output: Float64Array,
-  denominator: number[],
-  timeScale: number,
-): number[] {
-  const sampleCount = denominator.length;
-  const radius = 0.61;
-  const phaseOffset = Math.PI / sampleCount;
-  const samples: Complex[] = [];
-
-  for (let sample = 0; sample < sampleCount; sample++) {
-    const angle = phaseOffset + 2 * Math.PI * sample / sampleCount;
-    const y = fromPolar(radius, angle);
-    const s = divideComplexByReal(y, timeScale);
-    const system = conductance.map((row, rowIndex) => row.map((value, column) => add(
-      { real: value, imaginary: 0 },
-      multiply(s, { real: storage[rowIndex][column], imaginary: 0 }),
-    )));
-    const response = solveComplex(system, [...input].map(value => ({ real: value, imaginary: 0 })));
-    let transfer = { real: 0, imaginary: 0 };
-    for (let index = 0; index < output.length; index++) {
-      transfer = add(transfer, scaleComplex(response[index], output[index]));
-    }
-    samples.push(multiply(transfer, evaluateRealPolynomial(denominator, y)));
-  }
-
-  const coefficients: number[] = [];
-  for (let degree = 0; degree < sampleCount; degree++) {
-    let value = { real: 0, imaginary: 0 };
-    for (let sample = 0; sample < sampleCount; sample++) {
-      const angle = phaseOffset + 2 * Math.PI * sample / sampleCount;
-      value = add(value, multiply(samples[sample], fromPolar(1, -degree * angle)));
-    }
-    coefficients.push(value.real / sampleCount / Math.pow(radius, degree));
-  }
-
-  const maximum = Math.max(...coefficients.map(Math.abs), 0);
-  if (maximum === 0) throw new InvalidCircuitError('.pz transfer is identically zero');
-  while (coefficients.length > 1
-    && Math.abs(coefficients[coefficients.length - 1]) <= maximum * 1e-10) {
-    coefficients.pop();
-  }
-  for (let index = 0; index < coefficients.length; index++) {
-    if (Math.abs(coefficients[index]) <= maximum * 1e-12) coefficients[index] = 0;
-  }
-  return coefficients;
+  shiftScale: number,
+): Complex[] {
+  const size = conductance.length;
+  const borderedConductance = conductance.map((row, index) => [...row, input[index]]);
+  borderedConductance.push([...output, 0]);
+  const borderedStorage = storage.map(row => [...row, 0]);
+  borderedStorage.push(Array(size + 1).fill(0) as number[]);
+  return pencilRootsOrThrow(
+    borderedConductance,
+    borderedStorage,
+    shiftScale,
+    '.pz transfer is identically zero',
+  );
 }
 
-function solveComplex(matrix: Complex[][], rhs: Complex[]): Complex[] {
-  const size = matrix.length;
-  const augmented = matrix.map((row, index) => [...row.map(value => ({ ...value })), { ...rhs[index] }]);
-  for (let column = 0; column < size; column++) {
-    let pivot = column;
-    for (let row = column + 1; row < size; row++) {
-      if (magnitude(augmented[row][column]) > magnitude(augmented[pivot][column])) pivot = row;
+class SingularPencilError extends Error {}
+
+function pencilRootsOrThrow(
+  conductance: number[][],
+  storage: number[][],
+  shiftScale: number,
+  singularMessage: string,
+): Complex[] {
+  try {
+    return pencilRoots(conductance, storage, shiftScale);
+  } catch (error) {
+    if (error instanceof SingularPencilError) throw new InvalidCircuitError(singularMessage);
+    if (error instanceof EigenConvergenceError) {
+      throw new InvalidCircuitError('.pz eigenvalue iteration did not converge');
     }
-    if (magnitude(augmented[pivot][column]) <= Number.EPSILON) {
-      throw new InvalidCircuitError('.pz encountered a singular interpolation point');
+    throw error;
+  }
+}
+
+/**
+ * Shift factors (multiples of the pencil's frequency scale) tried in order. The
+ * unshifted pencil is preferred; the irrational factors only serve to avoid landing
+ * on a root when `A` is singular, i.e. when the pencil has a root at s = 0.
+ */
+const SHIFT_FACTORS = [0, 0.7236067977499789, -1.3819660112501051, 2.23606797749979, -0.4472135954999579];
+
+/**
+ * Finite roots s of det(A + sB) for real square A, B.
+ *
+ * With a shift σ, `M = R (A + σB)⁻¹ Q` where `B = Q R` is a rank-revealing
+ * factorization, so M is rank(B) × rank(B) and carries every finite root as an
+ * eigenvalue μ = 1/(σ - s). Infinite roots are the zero eigenvalues of M and roots
+ * at s = 0 are the zero eigenvalues of `K = I - σM` (eigenvalue κ = s/(s - σ)).
+ * Both are removed by rank decisions (`deflateZeroEigenvalues`), so their Jordan
+ * chains never leak spurious roots and roots at the origin stay exact.
+ */
+function pencilRoots(a: number[][], b: number[][], shiftScale: number): Complex[] {
+  const range = equilibratedRangeFactor(b);
+  if (range.rank === 0) return [];
+  const scale = Number.isFinite(shiftScale) && shiftScale > 0 ? shiftScale : 1;
+
+  for (const factor of SHIFT_FACTORS) {
+    const shift = factor * scale;
+    const shifted = shift === 0
+      ? a
+      : a.map((row, rowIndex) => row.map((value, column) => value + shift * b[rowIndex][column]));
+    let solved: number[][];
+    try {
+      solved = solveColumns(shifted, range.left);
+    } catch {
+      continue;
     }
-    [augmented[column], augmented[pivot]] = [augmented[pivot], augmented[column]];
-    for (let row = column + 1; row < size; row++) {
-      const factor = divide(augmented[row][column], augmented[column][column]);
-      for (let index = column; index <= size; index++) {
-        augmented[row][index] = subtract(
-          augmented[row][index],
-          multiply(factor, augmented[column][index]),
-        );
+    if (!solved.every(row => row.every(Number.isFinite))) continue;
+    const reduced = multiply(range.right, solved);
+    const roots: Complex[] = [];
+    for (const block of irreducibleBlocks(reduced)) {
+      const finite = deflateZeroEigenvalues(
+        block.map(row => block.map(column => reduced[row][column])),
+      ).matrix;
+      if (shift === 0) {
+        roots.push(...realEigenvalues(finite).map(negativeReciprocal));
+        continue;
       }
+      const complement = finite.map((row, rowIndex) => row.map((value, column) =>
+        (rowIndex === column ? 1 : 0) - shift * value));
+      const { matrix: remaining, removed } = deflateZeroEigenvalues(complement);
+      roots.push(...realEigenvalues(remaining).map(kappa => fromComplement(kappa, shift)));
+      for (let index = 0; index < removed; index++) roots.push({ real: 0, imaginary: 0 });
     }
+    return roots;
   }
-  const solution = Array.from({ length: size }, () => ({ real: 0, imaginary: 0 }));
-  for (let row = size - 1; row >= 0; row--) {
-    let value = augmented[row][size];
-    for (let column = row + 1; column < size; column++) {
-      value = subtract(value, multiply(augmented[row][column], solution[column]));
-    }
-    solution[row] = divide(value, augmented[row][row]);
-  }
-  return solution;
+  throw new SingularPencilError();
 }
 
-/** Roots of a polynomial whose coefficients are ordered from highest degree to constant. */
-function polynomialRoots(input: number[]): Complex[] {
-  let realCoefficients = [...input];
-  const maximum = Math.max(...realCoefficients.map(Math.abs), 0);
-  while (realCoefficients.length > 1 && Math.abs(realCoefficients[0]) <= maximum * 1e-12) {
-    realCoefficients.shift();
-  }
-  const degree = realCoefficients.length - 1;
-  if (degree <= 0) return [];
-
-  const leading = realCoefficients[0];
-  const original = realCoefficients.map(value => ({ real: value / leading, imaginary: 0 }));
-  let deflated = original.map(value => ({ ...value }));
-  const roots: Complex[] = [];
-
-  for (let order = degree; order >= 1; order--) {
-    let root: Complex | null = null;
-    for (let attempt = 0; attempt < 12 && root === null; attempt++) {
-      let candidate = fromPolar(
-        attempt === 0 ? 0 : 1 + attempt / 3,
-        2 * Math.PI * (attempt + 0.37) / 12,
-      );
-      for (let iteration = 0; iteration < 200; iteration++) {
-        const { value, first, second } = polynomialDerivatives(deflated, candidate);
-        if (magnitude(value) <= 1e-13) {
-          root = candidate;
-          break;
-        }
-        const g = divide(first, value);
-        const h = subtract(multiply(g, g), divide(second, value));
-        const radical = squareRoot(scaleComplex(
-          subtract(scaleComplex(h, order), multiply(g, g)),
-          order - 1,
-        ));
-        const plus = add(g, radical);
-        const minus = subtract(g, radical);
-        const denominator = magnitude(plus) >= magnitude(minus) ? plus : minus;
-        if (magnitude(denominator) === 0) break;
-        const delta = divide({ real: order, imaginary: 0 }, denominator);
-        candidate = subtract(candidate, delta);
-        if (magnitude(delta) <= 1e-12 * Math.max(1, magnitude(candidate))) {
-          root = candidate;
-          break;
-        }
-      }
-    }
-    if (root === null) {
-      throw new InvalidCircuitError('.pz polynomial root iteration did not converge');
-    }
-    if (Math.abs(root.imaginary) <= 1e-10 * Math.max(1, Math.abs(root.real))) {
-      root = { real: root.real, imaginary: 0 };
-    }
-    roots.push(root);
-    deflated = syntheticDeflate(deflated, root);
-  }
-
-  return roots.map(root => newtonPolish(original, root));
+/** s = -1/μ. */
+function negativeReciprocal(value: Complex): Complex {
+  if (value.imaginary === 0) return { real: -1 / value.real, imaginary: 0 };
+  const squared = value.real * value.real + value.imaginary * value.imaginary;
+  return { real: -value.real / squared, imaginary: value.imaginary / squared };
 }
 
-function polynomialDerivatives(
-  coefficients: Complex[],
-  value: Complex,
-): { value: Complex; first: Complex; second: Complex } {
-  let polynomial = coefficients[0];
-  let first = { real: 0, imaginary: 0 };
-  let second = { real: 0, imaginary: 0 };
-  for (let index = 1; index < coefficients.length; index++) {
-    second = add(multiply(second, value), scaleComplex(first, 2));
-    first = add(multiply(first, value), polynomial);
-    polynomial = add(multiply(polynomial, value), coefficients[index]);
-  }
-  return { value: polynomial, first, second };
-}
-
-function syntheticDeflate(coefficients: Complex[], root: Complex): Complex[] {
-  const result = [{ ...coefficients[0] }];
-  for (let index = 1; index < coefficients.length - 1; index++) {
-    result.push(add(coefficients[index], multiply(root, result[index - 1])));
-  }
-  return result;
-}
-
-function newtonPolish(coefficients: Complex[], initial: Complex): Complex {
-  let root = initial;
-  for (let iteration = 0; iteration < 20; iteration++) {
-    const { value, first } = polynomialDerivatives(coefficients, root);
-    if (magnitude(first) === 0) break;
-    const delta = divide(value, first);
-    root = subtract(root, delta);
-    if (magnitude(delta) <= 1e-13 * Math.max(1, magnitude(root))) break;
-  }
-  return root;
+/** s = σκ / (κ - 1), the inverse of κ = s / (s - σ). */
+function fromComplement(kappa: Complex, shift: number): Complex {
+  const denominatorReal = kappa.real - 1;
+  if (kappa.imaginary === 0) return { real: shift * kappa.real / denominatorReal, imaginary: 0 };
+  const squared = denominatorReal * denominatorReal + kappa.imaginary * kappa.imaginary;
+  return {
+    real: shift * (kappa.real * denominatorReal + kappa.imaginary * kappa.imaginary) / squared,
+    imaginary: shift * (kappa.imaginary * denominatorReal - kappa.real * kappa.imaginary) / squared,
+  };
 }
 
 function orderedValues(values: Complex[], zeroScale = maximumMagnitude(values)): PoleZeroValue[] {
@@ -477,64 +366,27 @@ function orderedValues(values: Complex[], zeroScale = maximumMagnitude(values)):
       real: Math.abs(value.real) <= threshold ? 0 : value.real,
       imaginary: Math.abs(value.imaginary) <= threshold ? 0 : value.imaginary,
     }))
-    .sort((left, right) => left.real - right.real || left.imaginary - right.imaginary);
+    // ngspice-47 order: ascending real part, positive imaginary part first in a pair.
+    .sort((left, right) => left.real - right.real || right.imaginary - left.imaginary);
 }
 
 function maximumMagnitude(values: readonly Complex[]): number {
   return Math.max(...values.map(magnitude), 0);
 }
 
-function evaluateRealPolynomial(coefficients: number[], value: Complex): Complex {
-  let result = { real: 0, imaginary: 0 };
-  for (let index = coefficients.length - 1; index >= 0; index--) {
-    result = add(multiply(result, value), { real: coefficients[index], imaginary: 0 });
-  }
-  return result;
+function maximumAbsolute(matrix: number[][]): number {
+  let maximum = 0;
+  for (const row of matrix) for (const value of row) maximum = Math.max(maximum, Math.abs(value));
+  return maximum;
 }
 
-function add(left: Complex, right: Complex): Complex {
-  return { real: left.real + right.real, imaginary: left.imaginary + right.imaginary };
-}
-
-function subtract(left: Complex, right: Complex): Complex {
-  return { real: left.real - right.real, imaginary: left.imaginary - right.imaginary };
-}
-
-function multiply(left: Complex, right: Complex): Complex {
-  return {
-    real: left.real * right.real - left.imaginary * right.imaginary,
-    imaginary: left.real * right.imaginary + left.imaginary * right.real,
-  };
-}
-
-function divide(left: Complex, right: Complex): Complex {
-  const denominator = right.real * right.real + right.imaginary * right.imaginary;
-  return {
-    real: (left.real * right.real + left.imaginary * right.imaginary) / denominator,
-    imaginary: (left.imaginary * right.real - left.real * right.imaginary) / denominator,
-  };
-}
-
-function scaleComplex(value: Complex, factor: number): Complex {
-  return { real: value.real * factor, imaginary: value.imaginary * factor };
-}
-
-function divideComplexByReal(value: Complex, divisor: number): Complex {
-  return { real: value.real / divisor, imaginary: value.imaginary / divisor };
+/** Geometric mean of the nonzero root magnitudes (the shift scale for zeros). */
+function geometricMeanMagnitude(values: readonly Complex[]): number {
+  const logs = values.map(magnitude).filter(value => value > 0).map(Math.log);
+  if (logs.length === 0) return 1;
+  return Math.exp(logs.reduce((sum, value) => sum + value, 0) / logs.length);
 }
 
 function magnitude(value: Complex): number {
   return Math.hypot(value.real, value.imaginary);
-}
-
-function squareRoot(value: Complex): Complex {
-  const absolute = magnitude(value);
-  const real = Math.sqrt(Math.max(0, (absolute + value.real) / 2));
-  const imaginaryMagnitude = Math.sqrt(Math.max(0, (absolute - value.real) / 2));
-  const imaginary = value.imaginary < 0 ? -imaginaryMagnitude : imaginaryMagnitude;
-  return { real, imaginary };
-}
-
-function fromPolar(radius: number, angle: number): Complex {
-  return { real: radius * Math.cos(angle), imaginary: radius * Math.sin(angle) };
 }

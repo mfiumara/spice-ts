@@ -1,0 +1,15 @@
+two pole opamp closed loop
+rs 1 0 1k
+ri 1 2 10k
+g1 0 3 0 2 1m
+r3 3 0 100meg
+c3 3 0 10p
+g2 0 4 3 0 10m
+r4 4 0 10k
+c4 4 0 1p
+cc 3 4 3p
+rf 2 4 100k
+cin 2 0 2p
+.pz 1 0 4 0 cur pz
+.print pz all
+.end
