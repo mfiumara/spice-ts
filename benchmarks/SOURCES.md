@@ -213,6 +213,12 @@ Reproduce with `pnpm -C packages/core build && node benchmarks/results/issue-462
 
 The corpus comparisons for #468 are reproduced with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-468/verify.ts --output <file>` (see `benchmarks/results/issue-468/README.md`).
 
+## VBIC `.OPTIONS TEMP` reference values
+
+- Source: the ngspice corpus A fixture `vbic-temperature` (`tests/vbic/temp.cir`, BSD-3-Clause, listed above) for [issue #459](https://github.com/mfiumara/spice-ts/issues/459).
+- Unchanged-fixture comparison: the aggregate report runs the committed bytes through both engines. `packages/core/src/options-temp.test.ts` also pins seven ngspice-47 `.print` points of the same bytes (SHA-256 `5dfd5fb1e620eac69af1eed64463aac62efd23dee169f2a3773d1091088f31e7`).
+- Adaptation, unit test only: a second case adds `TNOM=150` to the fixture's `.MODEL` card in memory to check the TNOM-relative mapping, and pins two ngspice-47 points of that deck. ngspice-47 values were written with `set filetype=ascii` and `write` from a `.control` block appended to a scratch copy; the committed fixture is never modified and the adapted deck is never used in the aggregate.
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
