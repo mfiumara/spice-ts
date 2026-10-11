@@ -1,5 +1,5 @@
 import type {
-  ConvergenceTelemetry, ResolvedOptions, SimulationOptions, TransientAnalysis,
+  ConvergenceTelemetry, ResolvedOptions, SimulationOptions, TransientAnalysis, TransientStep,
 } from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
 import { TransientResult } from '../results.js';
@@ -25,8 +25,18 @@ export function runnableTransient(
 }
 
 /**
+ * Whether an accepted timepoint is part of the `.tran` output. Integration
+ * always starts at t = 0; like ngspice dctran.c (`CKTtime >= CKTinitTime`),
+ * only points at or after TSTART are saved.
+ */
+export function isSavedTransientPoint(analysis: TransientAnalysis, time: number): boolean {
+  return time >= (analysis.startTime ?? 0);
+}
+
+/**
  * One-shot transient analysis. Consumes a {@link TransientSim} internally
- * and accumulates every timestep into a {@link TransientResult}.
+ * and accumulates every saved timestep (t >= TSTART) into a
+ * {@link TransientResult}.
  */
 export function solveTransient(
   compiled: CompiledCircuit,
@@ -46,26 +56,27 @@ export function solveTransient(
     guard,
   });
 
-  const timePoints: number[] = [0];
+  const timePoints: number[] = [];
   const voltageArrays = new Map<string, number[]>();
   const currentArrays = new Map<string, number[]>();
   for (const name of nodeNames) voltageArrays.set(name, []);
   for (const name of branchNames) currentArrays.set(name, []);
 
-  // Seed with the DC operating point at t=0
-  guard?.recordResultPoint();
-  const initialStep = driver.peekInitialStep();
-  for (const [name, v] of initialStep.voltages) voltageArrays.get(name)!.push(v);
-  for (const [name, i] of initialStep.currents) currentArrays.get(name)!.push(i);
+  const save = (step: TransientStep): void => {
+    guard?.recordResultPoint();
+    timePoints.push(step.time);
+    for (const [name, v] of step.voltages) voltageArrays.get(name)!.push(v);
+    for (const [name, i] of step.currents) currentArrays.get(name)!.push(i);
+  };
 
   try {
+    // Seed with the DC operating point at t=0
+    const initialStep = driver.peekInitialStep();
+    if (isSavedTransientPoint(analysis, initialStep.time)) save(initialStep);
     while (!driver.isDone) {
       guard?.checkpoint('solve:transient-step');
-      guard?.recordResultPoint();
       const step = driver.advance();
-      timePoints.push(step.time);
-      for (const [name, v] of step.voltages) voltageArrays.get(name)!.push(v);
-      for (const [name, i] of step.currents) currentArrays.get(name)!.push(i);
+      if (isSavedTransientPoint(analysis, step.time)) save(step);
     }
   } finally {
     driver.dispose();
