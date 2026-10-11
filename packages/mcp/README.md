@@ -21,6 +21,8 @@ Build the workspace, then configure an MCP client to execute:
 
     node /absolute/path/to/spice-ts/packages/mcp/dist/stdio.js
 
+The package's scripts do not rebuild `@spice-ts/core` or `@spice-ts/protocol`; they rely on the workspace build order (`pnpm build` at the root builds dependencies first). To build only this package plus its workspace dependencies, use `pnpm --filter @spice-ts/mcp... build`.
+
 For the executable bounded-agent workflow:
 
     pnpm -C packages/mcp build

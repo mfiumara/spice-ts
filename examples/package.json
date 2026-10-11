@@ -11,7 +11,10 @@
     "test:agent-workflows": "node --test agent-workflows/issue-63/workflow.test.mjs"
   },
   "dependencies": {
-    "@spice-ts/core": "workspace:*"
+    "@spice-ts/circuit-json": "workspace:*",
+    "@spice-ts/core": "workspace:*",
+    "@spice-ts/mcp": "workspace:*",
+    "@spice-ts/protocol": "workspace:*"
   },
   "devDependencies": {
     "ajv": "^8.17.1",
