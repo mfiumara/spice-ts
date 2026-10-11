@@ -11,17 +11,20 @@
  *   expr     → ('+' | '-')? term (('+' | '-') term)*   (leading sign = 0 ± term)
  *   term     → exp (('*' | '/' | '%') exp)*
  *   exp      → unary (('**' | '^') unary)*             (left-associative, |base|)
- *   unary    → ('-' | '+' | '!') unary | call          (after an operator)
- *   call     → IDENT '(' ternary (',' ternary)* ')' | primary
- *   primary  → NUMBER | IDENT | '(' ternary ')'
+ *   unary    → '-' unary | '!' unary | call            (after an operator)
+ *   call     → IDENT '(' formula (',' formula)* ')' | primary
+ *   primary  → NUMBER | IDENT | '(' formula ')'
  *
  * Comparisons and logical operators yield 1 or 0, as in ngspice.
  *
- * Known divergence: after an operator, ngspice-47 only folds a minus into a
- * following number literal (`3*-2^2` = (-2)^2*3 = 12, matched here). Before a
- * name, function or parenthesis it reports "wrongly determined negation"
- * (`3*-x`) or moves the sign to the next literal (`3*-x^2` = 3*x^-2); spice-ts
- * negates the operand instead (`3*-x` = -6, `3*-x^2` = 12).
+ * A minus directly after another operator follows ngspice-47 formula()
+ * (xpressn.c): it does not negate the operand that follows but sets a pending
+ * `negate` flag that the next number literal of the same (sub-)formula
+ * consumes. So `3*-2^2` = (-2)^2*3 = 12, `3*-x^2` = 3*x^-2 and `3*-x*2` =
+ * 3*x*-2, while `3*-x` (no literal left in its formula) fails with ngspice's
+ * "wrongly determined negation". Parentheses and function arguments are
+ * separate formulas with their own flag. A `+` after an operator, or a sign
+ * after `!`, is ngspice's "Misplaced operator".
  */
 
 // SI suffix exponents — case-sensitive for m (milli) vs M (mega)
@@ -78,7 +81,7 @@ const FUNCTIONS: Record<string, (...args: number[]) => number> = {
 
 export function evaluateExpression(input: string, vars: Record<string, number>): number {
   const parser = new ExprParser(input.trim(), vars);
-  const result = parser.parseTernary();
+  const result = parser.parseFormula();
   parser.skipWhitespace();
   if (parser.pos < parser.src.length) {
     throw new Error(`Unexpected character '${parser.src[parser.pos]}' at position ${parser.pos} in expression: ${input}`);
@@ -90,13 +93,31 @@ const truth = (value: boolean): number => (value ? 1 : 0);
 
 class ExprParser {
   pos = 0;
+  /** ngspice formula() `negate`: a minus after an operator awaiting a number literal. */
+  private negatePending = false;
 
   constructor(
     public readonly src: string,
     private readonly vars: Record<string, number>,
   ) {}
 
-  parseTernary(): number {
+  /**
+   * One ngspice (sub-)formula: the whole expression, a parenthesised group or
+   * a function argument. Each has its own pending negation, which must be
+   * consumed by a number literal before the formula ends.
+   */
+  parseFormula(): number {
+    const outer = this.negatePending;
+    this.negatePending = false;
+    const value = this.parseTernary();
+    if (this.negatePending) {
+      throw new Error(`Problem with formula eval -- wrongly determined negation in expression: ${this.src}`);
+    }
+    this.negatePending = outer;
+    return value;
+  }
+
+  private parseTernary(): number {
     const condition = this.parseOr();
     if (!this.accept('?')) return condition;
     const whenTrue = this.parseTernary();
@@ -191,19 +212,23 @@ class ExprParser {
     return i < 0 || this.src[i] === '(' || this.src[i] === ',';
   }
 
-  private parseUnary(): number {
+  private parseUnary(afterNot = false): number {
+    // Only reached after a binary operator, a pending negation or `!`; a sign
+    // at the start of a formula is handled by parseExpr.
     this.skipWhitespace();
-    if (this.src[this.pos] === '-') {
-      this.pos++;
-      return -this.parseUnary();
+    const ch = this.src[this.pos];
+    if (ch === '+' || (ch === '-' && afterNot)) {
+      throw new Error(`Misplaced operator '${ch}' at position ${this.pos} in expression: ${this.src}`);
     }
-    if (this.src[this.pos] === '+') {
+    if (ch === '-') {
+      // ngspice-47 formula(): `negate = 1`, consumed by the next number literal.
       this.pos++;
+      this.negatePending = true;
       return this.parseUnary();
     }
-    if (this.src[this.pos] === '!' && this.src[this.pos + 1] !== '=') {
+    if (ch === '!' && this.src[this.pos + 1] !== '=') {
       this.pos++;
-      return truth(this.parseUnary() === 0);
+      return truth(this.parseUnary(true) === 0);
     }
     return this.parseCall();
   }
@@ -220,11 +245,11 @@ class ExprParser {
         const fn = FUNCTIONS[name.toLowerCase()];
         if (!fn) throw new Error(`Unknown function '${name}'`);
         this.pos = peek + 1;
-        const args: number[] = [this.parseTernary()];
+        const args: number[] = [this.parseFormula()];
         this.skipWhitespace();
         while (this.src[this.pos] === ',') {
           this.pos++;
-          args.push(this.parseTernary());
+          args.push(this.parseFormula());
           this.skipWhitespace();
         }
         if (this.src[this.pos] !== ')') {
@@ -242,7 +267,7 @@ class ExprParser {
 
     if (this.src[this.pos] === '(') {
       this.pos++;
-      const val = this.parseTernary();
+      const val = this.parseFormula();
       this.skipWhitespace();
       if (this.src[this.pos] !== ')') {
         throw new Error(`Expected ')' in expression`);
@@ -251,33 +276,11 @@ class ExprParser {
       return val;
     }
 
-    const numMatch = this.src.slice(this.pos).match(/^(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/);
-    if (numMatch) {
-      this.pos += numMatch[0].length;
-      const numStr = numMatch[0];
-      // Check for SI suffix immediately after the number (no space)
-      // Case-sensitive: m = milli, M = mega; MEG/meg = mega
-      const suffixMatch = this.src.slice(this.pos).match(/^([Mm][Ee][Gg]|[TtGgKkMmUuNnPpFf])/);
-      if (suffixMatch) {
-        const suffix = suffixMatch[0];
-        const afterSuffix = this.pos + suffix.length;
-        // Check for embedded fractional digits (e.g., 3k3 = 3.3k = 3300)
-        const fracMatch = this.src.slice(afterSuffix).match(/^(\d+)/);
-        let fullNumStr = numStr;
-        let endPos = afterSuffix;
-        if (fracMatch && !numStr.includes('.') && !numMatch[2]) {
-          fullNumStr = numStr + '.' + fracMatch[1];
-          endPos = afterSuffix + fracMatch[1].length;
-        }
-        // Only consume if not followed by alphanumeric (not part of an identifier)
-        const nextChar = this.src[endPos];
-        if (!nextChar || !/[a-zA-Z0-9_]/.test(nextChar)) {
-          const exp = suffix.length === 3 ? 'e6' : SI_EXPONENTS[suffix];
-          this.pos = endPos;
-          return Number(fullNumStr + exp);
-        }
-      }
-      return Number(numStr);
+    const literal = this.parseNumberLiteral();
+    if (literal !== undefined) {
+      if (!this.negatePending) return literal;
+      this.negatePending = false;
+      return -literal;
     }
 
     const varMatch = this.src.slice(this.pos).match(/^([a-zA-Z_]\w*)/);
@@ -291,6 +294,37 @@ class ExprParser {
     }
 
     throw new Error(`Unexpected character '${this.src[this.pos] ?? 'EOF'}' at position ${this.pos}`);
+  }
+
+  /** A number literal with optional SI suffix at the cursor, or undefined. */
+  private parseNumberLiteral(): number | undefined {
+    const numMatch = this.src.slice(this.pos).match(/^(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/);
+    if (!numMatch) return undefined;
+    this.pos += numMatch[0].length;
+    const numStr = numMatch[0];
+    // Check for SI suffix immediately after the number (no space)
+    // Case-sensitive: m = milli, M = mega; MEG/meg = mega
+    const suffixMatch = this.src.slice(this.pos).match(/^([Mm][Ee][Gg]|[TtGgKkMmUuNnPpFf])/);
+    if (suffixMatch) {
+      const suffix = suffixMatch[0];
+      const afterSuffix = this.pos + suffix.length;
+      // Check for embedded fractional digits (e.g., 3k3 = 3.3k = 3300)
+      const fracMatch = this.src.slice(afterSuffix).match(/^(\d+)/);
+      let fullNumStr = numStr;
+      let endPos = afterSuffix;
+      if (fracMatch && !numStr.includes('.') && !numMatch[2]) {
+        fullNumStr = numStr + '.' + fracMatch[1];
+        endPos = afterSuffix + fracMatch[1].length;
+      }
+      // Only consume if not followed by alphanumeric (not part of an identifier)
+      const nextChar = this.src[endPos];
+      if (!nextChar || !/[a-zA-Z0-9_]/.test(nextChar)) {
+        const exp = suffix.length === 3 ? 'e6' : SI_EXPONENTS[suffix];
+        this.pos = endPos;
+        return Number(fullNumStr + exp);
+      }
+    }
+    return Number(numStr);
   }
 
   private peekIs(token: string): boolean {

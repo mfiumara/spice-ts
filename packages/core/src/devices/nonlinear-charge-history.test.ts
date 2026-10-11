@@ -20,6 +20,19 @@ function interpolate(time: number, times: ArrayLike<number>, values: ArrayLike<n
   return values[index - 1] + (values[index] - values[index - 1]) * (time - start) / (end - start);
 }
 
+/** Times at which `values` crosses `level`, linearly interpolated. */
+function edges(times: ArrayLike<number>, values: ArrayLike<number>, level: number): number[] {
+  const out: number[] = [];
+  for (let index = 1; index < times.length; index++) {
+    const before = values[index - 1] - level;
+    const after = values[index] - level;
+    if (before * after < 0) {
+      out.push(times[index - 1] + (times[index] - times[index - 1]) * before / (before - after));
+    }
+  }
+  return out;
+}
+
 async function maxDeviation(
   netlist: string,
   signal: string,
@@ -78,7 +91,10 @@ const JFET_FORWARD_REFERENCE: ReadonlyArray<readonly [number, number]> = [
 ].map((value, index) => [index * 1e-9, value] as const);
 
 // BSIM3v3 (capacitance-only, Meyer averaged charge increment) inverter chain:
-// the same circuit as the bsim3.bench chain, three stages.
+// the same circuit as the bsim3.bench chain, three stages. The junction
+// areas/perimeters are the values spice-ts used to default implicitly
+// (W*0.5um, W+1um) before #589 adopted ngspice's AD=AS=PD=PS=0 defaults, so
+// the circuit (and its junction capacitances) is unchanged by that switch.
 function bsim3InverterChain(tran: string, options = ''): string {
   const lines = [
     '* BSIM3v3 CMOS inverter chain - 3 stages',
@@ -89,8 +105,8 @@ function bsim3InverterChain(tran: string, options = ''): string {
   ];
   for (let stage = 1; stage <= 3; stage++) {
     const input = stage === 1 ? 'in' : `inv${stage - 1}`;
-    lines.push(`MP${stage} inv${stage} ${input} vdd vdd PMOD W=2u L=0.18u`);
-    lines.push(`MN${stage} inv${stage} ${input} 0 0 NMOD W=1u L=0.18u`);
+    lines.push(`MP${stage} inv${stage} ${input} vdd vdd PMOD W=2u L=0.18u AD=1p AS=1p PD=3u PS=3u`);
+    lines.push(`MN${stage} inv${stage} ${input} 0 0 NMOD W=1u L=0.18u AD=0.5p AS=0.5p PD=2u PS=2u`);
   }
   if (options) lines.push(options);
   lines.push(tran, '.end');
@@ -140,8 +156,27 @@ describe('nonlinear device charge integration matches ngspice-47 (#456)', () => 
     const time = converged.transient!.time;
     const values = converged.transient!.voltage('inv3');
     const reference = Array.from(time, (t, index) => [t, values[index]] as const);
-    // Before #456 (C(v)*dv/dt companion): 200 mV; after: 10.0 mV.
-    expect(await maxDeviation(bsim3InverterChain('.tran 50p 10n'), 'inv3', reference)).toBeLessThan(3e-2);
+    // Default RELTOL at TMAX=5 ps, so the check is on the charge integration,
+    // not on the timestep control. Before #456 (C(v)*dv/dt companion, default
+    // TMAX): 200 mV; after: 10.0 mV; with the #589 b3ld.c DC core: 10.9 mV.
+    // At TMAX=5 ps after #638: 19.2 mV.
+    expect(await maxDeviation(bsim3InverterChain('.tran 50p 10n 0 5p'), 'inv3', reference)).toBeLessThan(3e-2);
+
+    // Default tolerances and TMAX. Since #638 the BSIM3 nodes are sized by
+    // charge truncation alone, as in ngspice-47 (no node-voltage LTE). Both
+    // engines then take TMAX-bound steps: ngspice-47 222 accepted, spice-ts 218
+    // (588 with node-voltage LTE). Each engine's 0.9 V edges against its own
+    // converged run: ngspice-47 1.0 / 2.8 ps (max |dv| 248 mV), spice-ts
+    // 5.6 / 11.0 ps (max |dv| 458 mV; 0.2 / 0.1 ps and 10.9 mV with node LTE).
+    // The gap at equal step count is the Meyer capacitance model against
+    // ngspice's charge-based capMod (#626), published as a loss.
+    const coarse = await simulate(bsim3InverterChain('.tran 50p 10n'));
+    const coarseEdges = edges(coarse.transient!.time, coarse.transient!.voltage('inv3'), 0.9);
+    const convergedEdges = edges(time, values, 0.9);
+    expect(coarseEdges).toHaveLength(convergedEdges.length);
+    coarseEdges.forEach((edge, index) => {
+      expect(Math.abs(edge - convergedEdges[index])).toBeLessThan(15e-12);
+    });
   });
 
   it('replays the identical JFET trajectory after a transient reset', async () => {

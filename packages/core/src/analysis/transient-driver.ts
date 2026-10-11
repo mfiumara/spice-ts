@@ -18,6 +18,7 @@ import {
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { Inductor } from '../devices/inductor.js';
 import { maxTimestepOption } from './max-timestep.js';
+import { chargeTruncatedNodes } from './transient-node-truncation.js';
 import type { DeviceModel, TransientBreakpointSink } from '../devices/device.js';
 
 /**
@@ -256,7 +257,9 @@ class TransientSimImpl implements TransientSim {
     this.chargeCurrentDevices = compiled.devices.filter(device => (
       device.integratesTransientCharge && device.stampAcceptedChargeCurrent !== undefined
     ));
-    this.lteExemptNodes = new Uint8Array(compiled.nodeCount);
+    // Nodes fully covered by device charge truncation (ngspice CKTtrunc) get
+    // no node-voltage LTE, which ngspice-47 does not have (#638).
+    this.lteExemptNodes = chargeTruncatedNodes(compiled.nodeCount, compiled.devices);
     for (const device of compiled.devices) {
       for (const node of device.algebraicNodes ?? []) this.lteExemptNodes[node] = 1;
     }
