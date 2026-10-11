@@ -135,6 +135,9 @@ jobs:
       - name: Run accuracy check
         run: npx tsx benchmarks/accuracy.ts --ci
 
+      - name: Smoke differential-noise comparison script
+        run: pnpm exec tsx --test benchmarks/differential-noise/compare.test.ts
+
       - name: Upload accuracy results
         if: always()
         uses: actions/upload-artifact@v4
