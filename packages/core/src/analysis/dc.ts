@@ -41,48 +41,26 @@ export function solveDCOperatingPoint(
     assembler.solution.set(createNodeStateSolution(compiled, 'guess'));
   }
 
-  // Source ramping: gradually ramp source voltages to help NR convergence
-  // for circuits with many nonlinear devices (e.g., CMOS inverter chains).
+  // ngspice-47 CKTop order: plain Newton from the initial guess first; only
+  // when that fails, gmin stepping, then source stepping. A circuit with more
+  // than one DC solution (latches, ECL stages) settles on whichever solution
+  // the first successful homotopy reaches, so ramping sources up front picks
+  // a different operating point than ngspice (#622).
   const hasNonlinear = devices.some(d => d.isNonlinear);
-  if (hasNonlinear) {
-    const rampSteps = [0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
-    for (const scale of rampSteps) {
-      convergence.dc.sourceStepAttempts++;
-      const savedSolution = new Float64Array(assembler.solution);
-      assembler.sourceScale = scale;
-      try {
-        newtonRaphson(
-          assembler, devices, options, options.maxIterations, nodeNames, convergence.dc, guard,
-        );
-      } catch (error) {
-        if (error instanceof ProtocolExecutionError) throw error;
-        convergence.dc.sourceStepFailures++;
-        // Restore last good solution so divergence doesn't cascade
-        assembler.solution.set(savedSolution);
-      }
-    }
-    assembler.sourceScale = 1.0;
-  }
-
+  const initialGuess = new Float64Array(assembler.solution);
   try {
     newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames, convergence.dc, guard);
   } catch (err) {
     if (err instanceof ProtocolExecutionError) throw err;
-    if (!hasNonlinear) {
-      if (err instanceof ConvergenceError) {
-        convergence.dc.failure = err.kind;
-        err.convergence = snapshotConvergenceTelemetry(convergence);
-      }
-      throw err;
-    }
-    // Fallback: GMIN stepping homotopies, in ngspice-47 CKTop order. Dynamic
-    // gmin steps a diagonal shunt on every node; if that fails, true gmin
-    // steps the device junction gmin. Each solves at elevated gmin levels,
-    // handing each converged iterate off as the initial guess for the next
-    // lower gmin, then finishes at the nominal gmin.
-    const savedSolution = new Float64Array(assembler.solution);
-    if (!gminSteppingHomotopy(assembler, devices, options, nodeNames, convergence, guard)) {
-      assembler.solution.set(savedSolution);
+    // Fallbacks: gmin stepping homotopies (dynamic, then true gmin), then
+    // source stepping, as ngspice-47 CKTop runs them.
+    if (
+      !hasNonlinear
+      || !(
+        gminSteppingHomotopy(assembler, devices, options, nodeNames, convergence, guard)
+        || sourceStepping(assembler, devices, options, nodeNames, convergence, initialGuess, guard)
+      )
+    ) {
       if (err instanceof ConvergenceError) {
         convergence.dc.failure = err.kind;
         err.convergence = snapshotConvergenceTelemetry(convergence);
@@ -124,6 +102,45 @@ export function gminSteppingHomotopy(
 ): boolean {
   return dynamicGminStepping(assembler, devices, options, nodeNames, convergence, guard)
     || trueGminStepping(assembler, devices, options, nodeNames, convergence, guard);
+}
+
+/** Source scales of the source-stepping fallback, ending at full sources. */
+const SOURCE_STEPS = [0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+
+/**
+ * Source stepping, the last CKTop fallback (ngspice runs it only after both
+ * gmin homotopies fail). Restarts from the initial guess and ramps every
+ * independent source up through {@link SOURCE_STEPS}, handing each iterate to
+ * the next scale; a failed step falls back to the last good iterate. Returns
+ * whether the final solve at full sources converged.
+ */
+function sourceStepping(
+  assembler: MNAAssembler,
+  devices: CompiledCircuit['devices'],
+  options: ResolvedOptions,
+  nodeNames: string[],
+  convergence: ConvergenceTelemetry,
+  initialGuess: Float64Array,
+  guard?: ProtocolExecutionGuard,
+): boolean {
+  assembler.solution.set(initialGuess);
+  try {
+    for (const scale of SOURCE_STEPS) {
+      convergence.dc.sourceStepAttempts++;
+      const lastGood = new Float64Array(assembler.solution);
+      assembler.sourceScale = scale;
+      try {
+        newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames, convergence.dc, guard);
+      } catch (error) {
+        if (error instanceof ProtocolExecutionError) throw error;
+        convergence.dc.sourceStepFailures++;
+        assembler.solution.set(lastGood);
+      }
+    }
+  } finally {
+    assembler.sourceScale = 1;
+  }
+  return finalGminSolve(assembler, devices, options, nodeNames, convergence, guard);
 }
 
 /** ngspice defaults: `itl2` (CKTdcTrcvMaxIter), `gminfactor` (CKTgminFactor). */
