@@ -115,7 +115,12 @@ describe('corpus-E BJT Schmitt transient convergence (#139)', () => {
     const postRecoveryGaps = transient.time
       .slice(edgeEnd + 1, edgeEnd + 9)
       .map((time, index) => time - transient.time[edgeEnd + index]!);
-    expect(Math.max(...postRecoveryGaps.slice(0, 3))).toBeLessThan(1e-12);
+    // After the Backward-Euler recovery step LTE regrows dt from a picosecond
+    // scale. Before #482 the raw-RHS trapezoidal history of cload paired the
+    // new BJT Jacobian with the old solution, and the step after recovery fell
+    // into a 0.24/0.49/0.98 ps grow-fail-cut cycle (3129 points, 1037 Newton
+    // retries) instead.
+    expect(Math.min(...postRecoveryGaps)).toBeGreaterThan(1e-12);
     expect(postRecoveryGaps.some((gap, index) => (
       index > 0 && gap > postRecoveryGaps[index - 1]!
       && gap <= postRecoveryGaps[index - 1]! * 2.01
@@ -132,9 +137,11 @@ describe('corpus-E BJT Schmitt transient convergence (#139)', () => {
     ))).toBe(true);
     // spice-ts regression pins for the recovery step (no ngspice reference:
     // ngspice-47 rejects the fixture's `off=1` card). The pre-edge sample
-    // reflects the Early factor using the true reverse VBC (#385).
-    expect(v6[edgeStart - 1]).toBeCloseTo(-1.0124, 3);
-    expect(v7[edgeStart - 1]).toBeCloseTo(-1.8095, 3);
+    // reflects the Early factor using the true reverse VBC (#385). The same
+    // deck converged (RELTOL=1e-7, TMAX=10 ps) gives v6=-1.0125, v7=-1.8101
+    // at that time; the raw-RHS history (#482) had v7 0.6 mV high at -1.8095.
+    expect(v6[edgeStart - 1]).toBeCloseTo(-1.0125, 3);
+    expect(v7[edgeStart - 1]).toBeCloseTo(-1.8101, 3);
     expect(v6[edgeStart]).toBeCloseTo(-0.0461, 3);
     expect(v7[edgeStart]).toBeCloseTo(-0.8945, 3);
 
