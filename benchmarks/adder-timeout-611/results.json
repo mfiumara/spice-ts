@@ -8,9 +8,11 @@
     "os": "macOS 27.0.1",
     "node": "v22.23.1",
     "ngspice": "ngspice-47 (Homebrew)",
-    "hostLoad": "NOT quiet: shared host, 1-min load average 28-38 on 18 cores during the runs (uptime at start 37.90 29.53 36.60; at end 27.93 36.26 39.39). Every engine run was wrapped in spice-heavy (max 2 heavy runs machine-wide). Wall times are upper bounds; step and iteration counts do not depend on load."
+    "hostLoad": "NOT quiet: shared host, 1-min load 19.5-41.0 (uptime samples below). Every engine run wrapped in spice-heavy (max 2 heavy runs machine-wide). Step and iteration counts do not depend on load; wall time, and so whether adder_bip reaches 6.4 us inside the 120 s bound, does (spice-ts-review measured 98.1 s at load 7-24).",
+    "uptimeAtRunStart": "21:59  up 6 days,  3:28, 2 users, load averages: 19.51 44.22 37.97",
+    "uptimeAtRunEnd": "22:09  up 6 days,  3:38, 2 users, load averages: 37.32 36.18 34.45"
   },
-  "spiceTsTree": "local measurement-only merge 3d4d3c68 (not pushed) = origin/main 8013a231 + PR #600 head 7eace8f6aad6543c51d2b2f7f175416e021faf88 (.option noinit/acct) + PR #605 head 51aaf22a323d3ca9963632589cfed40f903c8383 (BSIM3 reverse mode, type*VTH0). Without #600 both decks stop at ParseError: Unsupported .options field: 'noinit'. With #600 but without #605 adder_mos fails its DC operating point (nr-divergence after source and gmin stepping).",
+  "spiceTsTree": "PR #618 branch wt/adder-timeout-611 merged with origin/main 7c66aab9 (contains #600 as 098da449 and #605 as 3f26f107); packages/core/dist built from it. Simulator code identical to main 7c66aab9.",
   "decks": {
     "adder_bip.cir": {
       "sha256": "fd53a062fea047adf6b465a754521a1fcd8b2db74a025ff1f93689695495aa42",
@@ -30,34 +32,34 @@
       "acceptedTimepoints": 27380,
       "rejectedTimepoints": 8268,
       "transientIterations": 152072,
-      "transientAnalysisSeconds": 12.8241,
-      "loadSeconds": 6.36072,
-      "factorSeconds": 3.08074,
-      "solveSeconds": 1.60328,
-      "truncSeconds": 0.789805,
-      "wallSecondsIncludingSpiceHeavyQueue": 12.97
+      "transientAnalysisSeconds": 8.94279,
+      "loadSeconds": 4.41146,
+      "factorSeconds": 2.12979,
+      "solveSeconds": 1.14956,
+      "truncSeconds": 0.53747,
+      "wallSecondsIncludingSpiceHeavyQueue": 140.59
     },
     "adder_bip_body (single run)": {
       "acceptedTimepoints": 13690,
       "rejectedTimepoints": 4134,
       "transientIterations": 76036,
-      "transientAnalysisSeconds": 6.35936,
-      "loadSeconds": 3.11688,
-      "factorSeconds": 1.50594,
-      "solveSeconds": 0.779999,
-      "truncSeconds": 0.390601,
-      "wallSecondsIncludingSpiceHeavyQueue": 6.52
+      "transientAnalysisSeconds": 4.61317,
+      "loadSeconds": 2.25731,
+      "factorSeconds": 1.09677,
+      "solveSeconds": 0.595561,
+      "truncSeconds": 0.282536,
+      "wallSecondsIncludingSpiceHeavyQueue": 4.7
     },
     "adder_mos_body (single run)": {
       "acceptedTimepoints": 18073,
       "rejectedTimepoints": 2429,
       "transientIterations": 67718,
-      "transientAnalysisSeconds": 5.65989,
-      "loadSeconds": 4.74008,
-      "factorSeconds": 0.201731,
-      "solveSeconds": 0.106595,
-      "truncSeconds": 0.245652,
-      "wallSecondsIncludingSpiceHeavyQueue": 5.82
+      "transientAnalysisSeconds": 4.35802,
+      "loadSeconds": 3.72163,
+      "factorSeconds": 0.147199,
+      "solveSeconds": 0.076683,
+      "truncSeconds": 0.176168,
+      "wallSecondsIncludingSpiceHeavyQueue": 4.44
     }
   },
   "spiceTs": {
@@ -68,40 +70,40 @@
         "budgetMs": 120000,
         "experiment": null,
         "limiter": {
-          "attempts": 64138,
-          "nodeLteRejects": 10770,
+          "attempts": 70011,
+          "nodeLteRejects": 11793,
           "chargeRejects": 0,
-          "bothReject": 20,
-          "acceptedNodeLteLimited": 52428,
+          "bothReject": 21,
+          "acceptedNodeLteLimited": 57207,
           "acceptedChargeLimited": 2,
-          "acceptedOther": 918
+          "acceptedOther": 988
         },
         "completed": false,
         "error": null,
         "stopTime": 0.0000064,
-        "setupMs": 169,
+        "setupMs": 132,
         "final": {
-          "wallMs": 120043,
-          "simTime": 0.0000032091761193295238,
-          "acceptedSteps": 53348,
-          "rejectedSteps": 10790,
+          "wallMs": 120000,
+          "simTime": 0.0000034710025781952256,
+          "acceptedSteps": 58197,
+          "rejectedSteps": 11814,
           "nrRetries": 0,
-          "lteRetries": 10790,
-          "newtonIterations": 171925
+          "lteRetries": 11814,
+          "newtonIterations": 187731
         },
-        "fractionOfStopTime": 0.5014337686452381,
-        "newtonIterationsPerAttempt": 2.6805481929589323,
-        "newtonIterationsPerAcceptedStep": 3.2227075054360053,
+        "fractionOfStopTime": 0.542344152843004,
+        "newtonIterationsPerAttempt": 2.6814500578480525,
+        "newtonIterationsPerAcceptedStep": 3.225784834269808,
         "minimumAcceptedTimestep": 2.2591040823915836e-14,
         "dcNewtonIterations": 267,
         "dtHistogram": {
           "1e-14": 6,
-          "1e-13": 126,
-          "1e-12": 2799,
-          "1e-11": 41334,
-          "1e-10": 9083
+          "1e-13": 132,
+          "1e-12": 3072,
+          "1e-11": 45292,
+          "1e-10": 9695
         },
-        "msPerNewtonIteration": 0.6982
+        "msPerNewtonIteration": 0.6392
       },
       "experimentNoNodeLte": {
         "fixture": "adder_bip.cir",
@@ -120,9 +122,9 @@
         "completed": true,
         "error": null,
         "stopTime": 0.0000064,
-        "setupMs": 111,
+        "setupMs": 226,
         "final": {
-          "wallMs": 34362,
+          "wallMs": 51138,
           "simTime": 0.0000064,
           "acceptedSteps": 14024,
           "rejectedSteps": 4026,
@@ -143,106 +145,207 @@
           "1e-10": 11772,
           "1e-9": 263
         },
-        "msPerNewtonIteration": 0.3834
+        "msPerNewtonIteration": 0.5706
       },
       "profile30s": {
-        "busyMs": 30383,
+        "busyMs": 30338,
         "split": {
           "device-eval": {
-            "ms": 15273,
-            "shareOfBusy": 0.503
+            "ms": 14855,
+            "shareOfBusy": 0.49
           },
           "assembly": {
-            "ms": 5953,
-            "shareOfBusy": 0.196
+            "ms": 6004,
+            "shareOfBusy": 0.198
           },
           "factor/solve": {
-            "ms": 5071,
-            "shareOfBusy": 0.167
-          },
-          "analysis (driver, NR loop, LTE)": {
-            "ms": 1981,
-            "shareOfBusy": 0.065
+            "ms": 4925,
+            "shareOfBusy": 0.162
           },
           "gc": {
-            "ms": 1651,
-            "shareOfBusy": 0.054
+            "ms": 2138,
+            "shareOfBusy": 0.07
           },
-          "runtime/other": {
-            "ms": 419,
-            "shareOfBusy": 0.014
+          "analysis (driver, NR loop, LTE)": {
+            "ms": 1995,
+            "shareOfBusy": 0.066
           },
           "idle/program": {
-            "ms": 322,
+            "ms": 555,
             "shareOfBusy": null
           },
+          "runtime/other": {
+            "ms": 395,
+            "shareOfBusy": 0.013
+          },
           "core other": {
-            "ms": 35,
+            "ms": 26,
             "shareOfBusy": 0.001
           }
         },
         "top": [
           {
             "name": "factorize solver/gilbert-peierls.ts",
-            "ms": 4959,
-            "shareOfBusy": 0.163
+            "ms": 4781,
+            "shareOfBusy": 0.158
           },
           {
             "name": "(anonymous) mna/assembler.ts",
-            "ms": 3841,
-            "shareOfBusy": 0.126
+            "ms": 3634,
+            "shareOfBusy": 0.12
           },
           {
             "name": "__name devices/bjt.ts",
-            "ms": 3341,
-            "shareOfBusy": 0.11
+            "ms": 3258,
+            "shareOfBusy": 0.107
           },
           {
             "name": "set TextDecoder ",
-            "ms": 2893,
-            "shareOfBusy": 0.095
+            "ms": 2672,
+            "shareOfBusy": 0.088
           },
           {
             "name": "(garbage collector) ",
-            "ms": 1651,
-            "shareOfBusy": 0.054
+            "ms": 2138,
+            "shareOfBusy": 0.07
           },
           {
             "name": "evaluateCharges devices/bjt.ts",
-            "ms": 1565,
-            "shareOfBusy": 0.051
-          },
-          {
-            "name": "stamp devices/bjt.ts",
-            "ms": 1239,
-            "shareOfBusy": 0.041
-          },
-          {
-            "name": "depletionCharge devices/charge-state.ts",
-            "ms": 1139,
-            "shareOfBusy": 0.037
+            "ms": 1703,
+            "shareOfBusy": 0.056
           },
           {
             "name": "stampStaticDevices mna/linear-stamp.ts",
-            "ms": 1133,
+            "ms": 1417,
+            "shareOfBusy": 0.047
+          },
+          {
+            "name": "stamp devices/bjt.ts",
+            "ms": 1302,
+            "shareOfBusy": 0.043
+          },
+          {
+            "name": "depletionCharge devices/charge-state.ts",
+            "ms": 1134,
             "shareOfBusy": 0.037
           },
           {
             "name": "stampTransientCharge devices/bjt.ts",
-            "ms": 1091,
+            "ms": 1097,
             "shareOfBusy": 0.036
           },
           {
-            "name": "abruptJunctionCharge devices/charge-state.ts",
-            "ms": 888,
-            "shareOfBusy": 0.029
+            "name": "buildCompanionSystem mna/companion.ts",
+            "ms": 841,
+            "shareOfBusy": 0.028
           },
           {
-            "name": "buildCompanionSystem mna/companion.ts",
-            "ms": 871,
-            "shareOfBusy": 0.029
+            "name": "abruptJunctionCharge devices/charge-state.ts",
+            "ms": 792,
+            "shareOfBusy": 0.026
           }
         ]
+      },
+      "diagnosticWithoutBudget": {
+        "uptimeAtStart": "22:10  up 6 days,  3:39, 2 users, load averages: 32.60 35.19 34.12",
+        "uptimeAtEnd": "22:14  up 6 days,  3:42, 2 users, load averages: 41.02 31.53 32.28",
+        "run": {
+          "fixture": "adder_bip.cir",
+          "sha256": "fd53a062fea047adf6b465a754521a1fcd8b2db74a025ff1f93689695495aa42",
+          "budgetMs": 900000,
+          "experiment": null,
+          "limiter": {
+            "attempts": 127852,
+            "nodeLteRejects": 21493,
+            "chargeRejects": 0,
+            "bothReject": 41,
+            "acceptedNodeLteLimited": 104473,
+            "acceptedChargeLimited": 4,
+            "acceptedOther": 1841
+          },
+          "completed": true,
+          "error": null,
+          "stopTime": 0.0000064,
+          "setupMs": 148,
+          "final": {
+            "wallMs": 222648,
+            "simTime": 0.0000064,
+            "acceptedSteps": 106318,
+            "rejectedSteps": 21534,
+            "nrRetries": 0,
+            "lteRetries": 21534,
+            "newtonIterations": 342670
+          },
+          "fractionOfStopTime": 1,
+          "newtonIterationsPerAttempt": 2.6802083659230984,
+          "newtonIterationsPerAcceptedStep": 3.223066649109276,
+          "minimumAcceptedTimestep": 2.2591040823915836e-14,
+          "dcNewtonIterations": 267,
+          "dtHistogram": {
+            "1e-14": 6,
+            "1e-13": 243,
+            "1e-12": 5561,
+            "1e-11": 82390,
+            "1e-10": 18118
+          },
+          "msPerNewtonIteration": 0.6497
+        },
+        "parityVsNgspice47": {
+          "spiceTsPoints": 106319,
+          "ngspicePoints": 13690,
+          "spiceTsEnd": 0.0000064,
+          "threshold": 0.01,
+          "worst": {
+            "signal": "v(10)",
+            "absoluteMax": 0.08658102698889958,
+            "ngspicePeak": 3.577659425216711,
+            "normalized": 0.02420046647778808,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          "signals": [
+            {
+              "signal": "v(9)",
+              "absoluteMax": 0.07513023346973292,
+              "ngspicePeak": 3.425383487367174,
+              "normalized": 0.02193337877257057,
+              "match": false,
+              "oppositeLevelFraction": 0
+            },
+            {
+              "signal": "v(10)",
+              "absoluteMax": 0.08658102698889958,
+              "ngspicePeak": 3.577659425216711,
+              "normalized": 0.02420046647778808,
+              "match": false,
+              "oppositeLevelFraction": 0
+            },
+            {
+              "signal": "v(11)",
+              "absoluteMax": 0.058555789675302616,
+              "ngspicePeak": 3.624645947929459,
+              "normalized": 0.016154899131252252,
+              "match": false,
+              "oppositeLevelFraction": 0
+            },
+            {
+              "signal": "v(12)",
+              "absoluteMax": 0.05521705649282202,
+              "ngspicePeak": 3.627859027776103,
+              "normalized": 0.015220287246572083,
+              "match": false,
+              "oppositeLevelFraction": 0
+            },
+            {
+              "signal": "v(13)",
+              "absoluteMax": 0.03763396357045276,
+              "ngspicePeak": 3.61138835195509,
+              "normalized": 0.010420912929532749,
+              "match": false,
+              "oppositeLevelFraction": 0
+            }
+          ]
+        }
       }
     },
     "adder_mos_body": {
@@ -252,41 +355,41 @@
         "budgetMs": 120000,
         "experiment": null,
         "limiter": {
-          "attempts": 97783,
-          "nodeLteRejects": 18792,
+          "attempts": 106317,
+          "nodeLteRejects": 20391,
           "chargeRejects": 0,
           "bothReject": 0,
-          "acceptedNodeLteLimited": 72687,
+          "acceptedNodeLteLimited": 79091,
           "acceptedChargeLimited": 0,
-          "acceptedOther": 6304
+          "acceptedOther": 6835
         },
         "completed": false,
         "error": null,
         "stopTime": 0.0000064,
-        "setupMs": 470,
+        "setupMs": 226,
         "final": {
-          "wallMs": 120000,
-          "simTime": 0.000002736732784942209,
-          "acceptedSteps": 78991,
-          "rejectedSteps": 19283,
-          "nrRetries": 491,
-          "lteRetries": 18792,
-          "newtonIterations": 293311
+          "wallMs": 120001,
+          "simTime": 0.000003003647817941647,
+          "acceptedSteps": 85926,
+          "rejectedSteps": 20909,
+          "nrRetries": 518,
+          "lteRetries": 20391,
+          "newtonIterations": 318153
         },
-        "fractionOfStopTime": 0.42761449764722015,
-        "newtonIterationsPerAttempt": 2.9846246209577303,
-        "newtonIterationsPerAcceptedStep": 3.71322049347394,
+        "fractionOfStopTime": 0.46931997155338234,
+        "newtonIterationsPerAttempt": 2.977984742827725,
+        "newtonIterationsPerAcceptedStep": 3.7026394804832066,
         "minimumAcceptedTimestep": 1.1910278502108487e-15,
         "dcNewtonIterations": 1575,
         "dtHistogram": {
           "1e-15": 310,
-          "1e-14": 610,
-          "1e-13": 25931,
-          "1e-12": 27809,
-          "1e-11": 19308,
-          "1e-10": 5023
+          "1e-14": 631,
+          "1e-13": 27916,
+          "1e-12": 30337,
+          "1e-11": 21219,
+          "1e-10": 5513
         },
-        "msPerNewtonIteration": 0.4091
+        "msPerNewtonIteration": 0.3772
       },
       "experimentNoNodeLte": {
         "fixture": "adder_mos_body.cir",
@@ -305,9 +408,9 @@
         "completed": true,
         "error": null,
         "stopTime": 0.0000064,
-        "setupMs": 160,
+        "setupMs": 317,
         "final": {
-          "wallMs": 16403,
+          "wallMs": 28577,
           "simTime": 0.0000064,
           "acceptedSteps": 17369,
           "rejectedSteps": 1060,
@@ -326,104 +429,104 @@
           "1e-11": 2245,
           "1e-10": 14739
         },
-        "msPerNewtonIteration": 0.2407
+        "msPerNewtonIteration": 0.4194
       },
       "profile30s": {
-        "busyMs": 30235,
+        "busyMs": 30405,
         "split": {
           "device-eval": {
-            "ms": 17961,
-            "shareOfBusy": 0.594
+            "ms": 17263,
+            "shareOfBusy": 0.568
           },
           "assembly": {
-            "ms": 8796,
-            "shareOfBusy": 0.291
-          },
-          "factor/solve": {
-            "ms": 1552,
-            "shareOfBusy": 0.051
-          },
-          "analysis (driver, NR loop, LTE)": {
-            "ms": 1097,
-            "shareOfBusy": 0.036
+            "ms": 7433,
+            "shareOfBusy": 0.244
           },
           "gc": {
-            "ms": 578,
-            "shareOfBusy": 0.019
+            "ms": 2086,
+            "shareOfBusy": 0.069
+          },
+          "analysis (driver, NR loop, LTE)": {
+            "ms": 1613,
+            "shareOfBusy": 0.053
+          },
+          "factor/solve": {
+            "ms": 1600,
+            "shareOfBusy": 0.053
           },
           "runtime/other": {
-            "ms": 246,
-            "shareOfBusy": 0.008
+            "ms": 398,
+            "shareOfBusy": 0.013
           },
           "idle/program": {
-            "ms": 48,
+            "ms": 384,
             "shareOfBusy": null
           },
           "core other": {
-            "ms": 4,
+            "ms": 11,
             "shareOfBusy": 0
           }
         },
         "top": [
           {
             "name": "evalIds devices/bsim3v3-dc.ts",
-            "ms": 7269,
-            "shareOfBusy": 0.24
+            "ms": 6337,
+            "shareOfBusy": 0.208
           },
           {
             "name": "(anonymous) mna/assembler.ts",
-            "ms": 6762,
-            "shareOfBusy": 0.224
+            "ms": 5588,
+            "shareOfBusy": 0.184
           },
           {
             "name": "stampTransientCharge devices/bsim3v3.ts",
-            "ms": 3475,
-            "shareOfBusy": 0.115
+            "ms": 3181,
+            "shareOfBusy": 0.105
+          },
+          {
+            "name": "(garbage collector) ",
+            "ms": 2086,
+            "shareOfBusy": 0.069
           },
           {
             "name": "acceptTransientStep devices/bsim3v3.ts",
-            "ms": 1638,
-            "shareOfBusy": 0.054
+            "ms": 1817,
+            "shareOfBusy": 0.06
           },
           {
             "name": "stamp devices/bsim3v3.ts",
-            "ms": 1620,
-            "shareOfBusy": 0.054
+            "ms": 1734,
+            "shareOfBusy": 0.057
           },
           {
             "name": "factorize solver/gilbert-peierls.ts",
-            "ms": 1491,
-            "shareOfBusy": 0.049
-          },
-          {
-            "name": "chargeTruncation devices/charge-state.ts",
-            "ms": 1201,
-            "shareOfBusy": 0.04
+            "ms": 1457,
+            "shareOfBusy": 0.048
           },
           {
             "name": "buildCompanionSystem mna/companion.ts",
-            "ms": 1196,
+            "ms": 1210,
             "shareOfBusy": 0.04
           },
           {
-            "name": "junctionCap devices/bsim3v3-cap.ts",
-            "ms": 981,
-            "shareOfBusy": 0.032
-          },
-          {
             "name": "evaluateCap devices/bsim3v3-cap.ts",
-            "ms": 972,
-            "shareOfBusy": 0.032
-          },
-          {
-            "name": "stampStaticDevices mna/linear-stamp.ts",
-            "ms": 774,
-            "shareOfBusy": 0.026
+            "ms": 1114,
+            "shareOfBusy": 0.037
           },
           {
             "name": "evaluateCapacitances devices/bsim3v3.ts",
-            "ms": 707,
-            "shareOfBusy": 0.023
+            "ms": 1109,
+            "shareOfBusy": 0.036
+          },
+          {
+            "name": "junctionCap devices/bsim3v3-cap.ts",
+            "ms": 1048,
+            "shareOfBusy": 0.034
+          },
+          {
+            "name": "chargeTruncation devices/charge-state.ts",
+            "ms": 806,
+            "shareOfBusy": 0.027
           }
         ]
       }
@@ -432,9 +535,9 @@
   "parityVsNgspice47": {
     "adder_bip": {
       "baselineWindowUntilBound": {
-        "spiceTsPoints": 53349,
+        "spiceTsPoints": 58198,
         "ngspicePoints": 13690,
-        "spiceTsEnd": 0.0000032091761193295238,
+        "spiceTsEnd": 0.0000034710025781952256,
         "threshold": 0.01,
         "worst": {
           "signal": "v(10)",
@@ -546,9 +649,9 @@
     },
     "adder_mos_body": {
       "baselineWindowUntilBound": {
-        "spiceTsPoints": 78992,
+        "spiceTsPoints": 85927,
         "ngspicePoints": 18073,
-        "spiceTsEnd": 0.000002736732784942209,
+        "spiceTsEnd": 0.000003003647817941647,
         "threshold": 0.01,
         "worst": {
           "signal": "v(10)",
@@ -556,7 +659,7 @@
           "ngspicePeak": 3.407593858117898,
           "normalized": 1.002837793890634,
           "match": false,
-          "oppositeLevelFraction": 0.16731166150670795
+          "oppositeLevelFraction": 0.16476134354743666
         },
         "signals": [
           {
@@ -565,7 +668,7 @@
             "ngspicePeak": 3.400342712603436,
             "normalized": 0.9990067803930719,
             "match": false,
-            "oppositeLevelFraction": 0.23581011351909184
+            "oppositeLevelFraction": 0.236652916912198
           },
           {
             "signal": "v(10)",
@@ -573,7 +676,7 @@
             "ngspicePeak": 3.407593858117898,
             "normalized": 1.002837793890634,
             "match": false,
-            "oppositeLevelFraction": 0.16731166150670795
+            "oppositeLevelFraction": 0.16476134354743666
           },
           {
             "signal": "v(11)",
@@ -581,7 +684,7 @@
             "ngspicePeak": 3.467834007672367,
             "normalized": 0.9888020364346468,
             "match": false,
-            "oppositeLevelFraction": 0.0968782249742002
+            "oppositeLevelFraction": 0.09251620506776664
           },
           {
             "signal": "v(12)",
@@ -589,7 +692,7 @@
             "ngspicePeak": 3.448264484790065,
             "normalized": 0.9868603529777596,
             "match": false,
-            "oppositeLevelFraction": 0.049277605779153764
+            "oppositeLevelFraction": 0.045020624631703005
           },
           {
             "signal": "v(13)",
@@ -597,7 +700,7 @@
             "ngspicePeak": 3.399745516696902,
             "normalized": 0.9931565706757104,
             "match": false,
-            "oppositeLevelFraction": 0.010319917440660475
+            "oppositeLevelFraction": 0.009428403064230996
           }
         ]
       },

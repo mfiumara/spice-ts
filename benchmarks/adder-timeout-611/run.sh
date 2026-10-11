@@ -16,6 +16,8 @@ PROFILE_MS=${PROFILE_MS:-30000}
 HEAVY=${HEAVY:-spice-heavy}
 mkdir -p "$OUT"
 cd "$ROOT"
+# Wall times, and whether adder_bip finishes inside the bound, depend on host load.
+uptime > "$OUT/load.start"
 
 # Decks. adder_bip: the corpus-f fixture bytes. adder_mos: its .control block
 # (pre_set/unset/save, which spice-ts rejects before simulating) is removed and
@@ -46,6 +48,13 @@ measure adder_bip baseline --diagnose
 measure adder_mos_body baseline --diagnose
 measure adder_bip no-node-lte --experiment no-node-lte
 measure adder_mos_body no-node-lte --experiment no-node-lte
+# Opt-in (FULL_BIP_MS, e.g. 900000): diagnostic-only adder_bip run past the 120 s
+# bound, to record whether and when it completes at the current host load.
+if [ -n "${FULL_BIP_MS:-}" ]; then
+  uptime > "$OUT/full.load.start"
+  BUDGET_MS=$FULL_BIP_MS measure adder_bip full --diagnose
+  uptime > "$OUT/full.load.end"
+fi
 
 # CPU profiles of the baseline (source build, so frames carry file URLs).
 for deck in adder_bip adder_mos_body; do
@@ -59,10 +68,17 @@ for deck in adder_bip adder_mos_body; do
   rm -rf "$OUT/prof-$deck"
 done
 
+# No `|| true`: a failing comparison must stop the run (set -e) instead of
+# leaving an empty JSON for summarize.mts to trip over.
 for deck in adder_bip adder_mos_body; do
   for label in baseline no-node-lte; do
     pnpm exec tsx benchmarks/adder-timeout-611/compare.ts "$OUT/$deck.$label.wave.json" "$OUT/$deck.raw" \
-      > "$OUT/$deck.$label.compare.json" || true
+      > "$OUT/$deck.$label.compare.json"
   done
 done
+if [ -n "${FULL_BIP_MS:-}" ]; then
+  pnpm exec tsx benchmarks/adder-timeout-611/compare.ts "$OUT/adder_bip.full.wave.json" "$OUT/adder_bip.raw" \
+    > "$OUT/adder_bip.full.compare.json"
+fi
+uptime > "$OUT/load.end"
 echo "done: $OUT"

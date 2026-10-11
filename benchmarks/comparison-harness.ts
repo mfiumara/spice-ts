@@ -136,6 +136,17 @@ function difference(a: ComplexValue, b: ComplexValue): number {
   return Math.hypot(a.re - b.re, a.im - b.im);
 }
 
+// Loop reduction instead of Math.max(...values): a spread of ~100k+ values
+// overflows the call stack with RangeError (#611). NaN propagates like Math.max.
+function maxOf(values: number[]): number {
+  let max = -Infinity;
+  for (const value of values) {
+    if (Number.isNaN(value)) return Number.NaN;
+    if (value > max) max = value;
+  }
+  return max;
+}
+
 function rms(values: number[]): number {
   return Math.sqrt(values.reduce((sum, value) => sum + value * value, 0) / values.length);
 }
@@ -319,11 +330,11 @@ export function alignAndMeasure(
       status: 'compared',
       sampleCount: absoluteErrors.length,
       absoluteError: {
-        max: absoluteErrors.length > 0 ? Math.max(...absoluteErrors) : 0,
+        max: absoluteErrors.length > 0 ? maxOf(absoluteErrors) : 0,
         rms: absoluteErrors.length > 0 ? rms(absoluteErrors) : 0,
       },
       relativeError: {
-        max: relativeErrors.length > 0 ? Math.max(...relativeErrors) : null,
+        max: relativeErrors.length > 0 ? maxOf(relativeErrors) : null,
         rms: relativeErrors.length > 0 ? rms(relativeErrors) : null,
         sampleCount: relativeErrors.length,
         excludedZeroReferences,

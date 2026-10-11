@@ -4,7 +4,7 @@
  * Machine/host-load/tree facts come from environment variables set by the operator
  * (see README); nothing is inferred.
  */
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import { basename, resolve } from 'node:path';
 
 const out = process.argv[2];
@@ -53,6 +53,18 @@ async function profile(name: string) {
   return { busyMs, split, top: top.slice(0, 12) };
 }
 
+// Optional diagnostic-only run of adder_bip without the 120 s budget (README,
+// "Load dependence"); the 120 s gate itself is unchanged.
+async function optional<T>(name: string, read: (name: string) => Promise<T>): Promise<T | null> {
+  try {
+    await access(resolve(out, name));
+  } catch {
+    return null;
+  }
+  return read(name);
+}
+const loadLine = async (name: string) => optional(name, async file => (await readFile(resolve(out, file), 'utf8')).trim());
+
 const decks = Object.fromEntries((await readFile(resolve(out, 'decks.sha256'), 'utf8')).trim().split('\n')
   .map(line => line.split(/\s+/)).map(([hash, path]) => [basename(path), hash]));
 
@@ -64,6 +76,8 @@ const result = {
     node: process.version,
     ngspice: process.env.NGSPICE_VERSION ?? null,
     hostLoad: process.env.HOST_LOAD ?? null,
+    uptimeAtRunStart: await loadLine('load.start'),
+    uptimeAtRunEnd: await loadLine('load.end'),
   },
   spiceTsTree: process.env.SPICE_TS_TREE ?? null,
   decks: {
@@ -84,6 +98,12 @@ const result = {
       baseline: await run('adder_bip.baseline.json'),
       experimentNoNodeLte: await run('adder_bip.no-node-lte.json'),
       profile30s: await profile('adder_bip.profile-split.json'),
+      diagnosticWithoutBudget: await optional('adder_bip.full.json', async name => ({
+        uptimeAtStart: await loadLine('full.load.start'),
+        uptimeAtEnd: await loadLine('full.load.end'),
+        run: await run(name),
+        parityVsNgspice47: await optional('adder_bip.full.compare.json', compare),
+      })),
     },
     adder_mos_body: {
       baseline: await run('adder_mos_body.baseline.json'),
