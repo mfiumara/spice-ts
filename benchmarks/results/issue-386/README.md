@@ -1,14 +1,15 @@
 # Issue 386 aggregate parity refresh receipt
 
-This receipt covers the 100-fixture aggregate run on `main` after these merges since the previous aggregate (PR #325): #367 (bounded nonlinear diode distortion, #363), #379 (PULSE zero TR/TF defaults to TSTEP, #375), #361 (bounded VBIC FO DC, #352), #390 (diode CJO alias, #365), #394 (per-segment nested DC alignment, #384), #392 (grounded-substrate BJT `.model` resolution, #382), #405 (diode VJ/FC, #388), #383 (classic `.noise` harness mapping, #380), #360 (NHFET level-5, #339), #377 (inductor-ringing termination, #366), #387 (`.control`/`.endc` contract, #381), #417 (MOS1 bulk-junction currents, #393), #400 (BJT charge storage and Early gm, #385), #397 (`.ac` sweep point counts), #425 (transient Newton limiting on nonlinear nodes, #376), #421 (B-source `I=` and NMF level-2 MESFET, #340) #431 (diode VT = kT/q and ngspice-47 model aliases, #402/#404), #436 (case-insensitive `.model` names, #427), #437 (ngspice pnjlim diode limiting, #430), #439 (ngspice dynamic gmin stepping for DC OP, #428) and #435 (forward `.param` references and typed `.tran`/`.ac` ParseErrors, #422/#423). #371, #372, #373, #378, #395, #396, #398, #399, #416, #418, #419, #420, #424, #433 and #434 touch WASM, docs, receipts, refactors, protocol options, MCP preflight, benchmark tooling, CI test robustness, tokenizer performance, `simulate()` `maxTimestep` handling (#433, no aggregate fixture sets it) and the numeric-wasm `.ac` grid (#434) only; the bisection below confirms neither changes the aggregate outcome. It makes no M1 completion, parity, speed, or superiority claim.
+This receipt covers the 100-fixture aggregate run on `main` after these merges since the previous aggregate (PR #325): #367 (bounded nonlinear diode distortion, #363), #379 (PULSE zero TR/TF defaults to TSTEP, #375), #361 (bounded VBIC FO DC, #352), #390 (diode CJO alias, #365), #394 (per-segment nested DC alignment, #384), #392 (grounded-substrate BJT `.model` resolution, #382), #405 (diode VJ/FC, #388), #383 (classic `.noise` harness mapping, #380), #360 (NHFET level-5, #339), #377 (inductor-ringing termination, #366), #387 (`.control`/`.endc` contract, #381), #417 (MOS1 bulk-junction currents, #393), #400 (BJT charge storage and Early gm, #385), #397 (`.ac` sweep point counts), #425 (transient Newton limiting on nonlinear nodes, #376), #421 (B-source `I=` and NMF level-2 MESFET, #340) #431 (diode VT = kT/q and ngspice-47 model aliases, #402/#404), #436 (case-insensitive `.model` names, #427), #437 (ngspice pnjlim diode limiting, #430), #439 (ngspice dynamic gmin stepping for DC OP, #428), #435 (forward `.param` references and typed `.tran`/`.ac` ParseErrors, #422/#423), #440 (`.tran` TSTART output omission, #432), #443 (unresolved device `.model` references raise `InvalidCircuitError`, #414) and #442 (exact pnjlim in the transient Newton loop, #441). #371, #372, #373, #378, #395, #396, #398, #399, #416, #418, #419, #420, #424, #433 and #434 touch WASM, docs, receipts, refactors, protocol options, MCP preflight, benchmark tooling, CI test robustness, tokenizer performance, `simulate()` `maxTimestep` handling (#433, no aggregate fixture sets it) and the numeric-wasm `.ac` grid (#434) only; the bisection below confirms neither changes the aggregate outcome. It makes no M1 completion, parity, speed, or superiority claim.
 
 ## Inputs and tools
 
-- Base: `origin/main` at `4fed83d` (#435), merged into this branch. The first revision of this PR ran on `bc99922` (#387, outcome `44261d03…`). Review rejected it as stale after #417 and #400 merged. This revision then regenerated three times as `main` moved:
+- Base: `origin/main` at `3f3e2ca` (#442), merged into this branch. The first revision of this PR ran on `bc99922` (#387, outcome `44261d03…`). Review rejected it as stale after #417 and #400 merged. This revision then regenerated three times as `main` moved:
   - on `60f49b2` (#400), outcome `c06be5be…`;
   - on `26a163a` (#421), outcome `ce28427e…`;
   - on `3b2d9ac`, after #431 and #424, outcome `2a6f337a…`. Review rejected that head (`f84aa9b`) as stale after #434, #436, #433, #437, #439 and #435 merged;
-  - on `4fed83d`, after those six merges.
+  - on `4fed83d`, after those six merges, outcome `9f6e3faa…`. Review found that head (`b7a0732`) stale after #440, #443 and #442 merged;
+  - on `3f3e2ca`, after those three merges.
 
   The sections below give every change between those runs.
 - Previous aggregate: issue #321, PR #325, head `ad7ba71b65848053afa7bc64ba22fd989ef89ca4`, deterministic outcome `68aa8e2e7b78b82f801da84cf5c88c489634d203f44bca5df9345a1946deddb9`.
@@ -18,11 +19,11 @@ This receipt covers the 100-fixture aggregate run on `main` after these merges s
 
 ## Result
 
-- Deterministic outcome SHA-256: `9f6e3faa5a997b4f3eddd1a05d4e474a750f376ba4ee808d10d26ad8cfbcfe97`.
+- Deterministic outcome SHA-256: `d119e0343adfd6db22c395a1685b147ac336114f90bc86ade5a4e07ca68c986b`.
 - ngspice-47: 52 success, 9 failed, 39 unsupported (unchanged).
 - spice-ts: 61 success, 1 failed, 38 unsupported (was 55/2/43).
 - Comparable results: 65 analyses across 49 fixtures (was 58/43); 935 absolute and 906 relative signals (was 878/848).
-- Worst per-signal envelope: absolute max `31.65338535154384` and RMS `8.272157976952819` (`xyce/inductor-transient` TRAN `v(1)`, the #366 loss), down from `1169140310571.719`. Two things cause the drop. First, the `ngspice/vbic-common-emitter-ac` pole comparison is no longer made (#392), which is a coverage change and not an accuracy gain; that alone leaves `classic/rca3040-wideband-amplifier` AC `v(15)` at `154.02408984579006` as the worst. Second, #400 lowers that `v(15)` error to 1.024. Relative max `349781933131.4126` and RMS `6858037632.217204` (was `45497356677842.63` / `872317191517.6284`; `318874896057.84845` / `6401850478.823812` before #437) still come from `classic/coupled-lossy-lines` `v(5)`, whose absolute max falls from 1.42 to 0.432 V. The relative metric still divides by near-zero ngspice samples there.
+- Worst per-signal envelope: absolute max `31.65338535154384` and RMS `8.272157976952819` (`xyce/inductor-transient` TRAN `v(1)`, the #366 loss), down from `1169140310571.719`. Two things cause the drop. First, the `ngspice/vbic-common-emitter-ac` pole comparison is no longer made (#392), which is a coverage change and not an accuracy gain; that alone leaves `classic/rca3040-wideband-amplifier` AC `v(15)` at `154.02408984579006` as the worst. Second, #400 lowers that `v(15)` error to 1.024. Relative max `321200769453.2656` and RMS `6432928954.616146` (was `45497356677842.63` / `872317191517.6284`; `318874896057.84845` / `6401850478.823812` before #437; `349781933131.4126` / `6858037632.217204` before #442) still come from `classic/coupled-lossy-lines` `v(5)`, whose absolute max falls from 1.42 to 0.431 V. The relative metric still divides by near-zero ngspice samples there.
 
 ## Status transitions (all spice-ts)
 
@@ -34,7 +35,7 @@ This receipt covers the 100-fixture aggregate run on `main` after these merges s
 - `xyce/inductor-transient`: failed → success (#377 ends the non-terminating run). Published loss: `v(1)`/`v(2)` abs max 31.65 V (RMS 8.27 V, rel max ≈1.0). `i(l1)` agrees to 2.4e-14 A.
 - `ngspice/probe-ac`: unsupported → success (#387 accepts the `.control` block). 15 of 16 AC points align (1 excluded out of range), and the worst abs max is 4.4e-16 V.
 - `classic/bjt-mixer-distortion`: unsupported → **failed**. This is a published status loss. The cause is not a simulator regression. Before #400, spice-ts rejected the netlist at parse time with `Unsupported bounded BJT model parameter: 'CJS'`. #400 accepts `CJS`, so the netlist now parses fully. Upstream `mixdisto.cir` comments out both `.disto` lines (`*disto dec 20 1.0e3 1.0e8`), so the netlist has no analysis command. `simulate()` throws `No analysis command specified`, and the harness counts that as failed because the message doesn't match its unsupported pattern. ngspice also fails on the same bytes: it exits 0 with no raw analysis data. Neither engine gives a comparable result, and the manifest already records both expected failures. No separate issue was opened, because the behaviour is correct for a netlist with no analysis.
-- `ngspice/mesa-oscillator`: unsupported → success. #421 accepts the B-source `I=` expressions and the NMF level-2 MESFET `Z` cards, so the unchanged transient completes and adds one comparison of 37 signals. 2041 points align and 3266 are excluded as out of range. 3219 of the excluded points fall before `TSTART` = 1 ns (`.tran 1p 5n 1n 20p`): spice-ts emits them and ngspice omits them. Filed as #432. Published loss: worst abs max 0.178 V on `v(6)` (RMS 0.0244 V), relative max up to 0.86 on `v(8)`.
+- `ngspice/mesa-oscillator`: unsupported → success. #421 accepts the B-source `I=` expressions and the NMF level-2 MESFET `Z` cards, so the unchanged transient completes and adds one comparison of 37 signals. 2041 points align and 47 are excluded as out of range. Before #440, 3266 points were excluded, and 3219 of them fell before `TSTART` = 1 ns (`.tran 1p 5n 1n 20p`): spice-ts emitted them and ngspice omits them. Filed as #432 and fixed by #440 (below), which changes only the grid, not the metrics. Published loss: worst abs max 0.178 V on `v(6)` (RMS 0.0244 V), relative max up to 0.86 on `v(8)`.
 
 ## Comparison transitions (published, losses included)
 
@@ -105,12 +106,13 @@ Losses (published at the `60f49b2` run; the `mos1-inverter-sweep` and `mos6-simp
 - Relative-only moves at small absolute error: `corpus-e/bjt-diffpair-transient` TRAN `v(1)` rel max 0.039 → 1.0 (0.0012 V abs); `corpus-e/bjt-rtl-inverter-chain` OP `i(vin)` rel 0.22 → 1.0 (4.6e-12 A abs); `classic/lossy-line-24-inch` `v(3)` rel max 84.5 → 2533; `classic/rca3040-wideband-amplifier` TRAN `v(31)` rel max 518 → 4387 while its abs max falls 0.0387 → 0.0105 V.
 - `ngspice/ltra-line-transient`, `classic/bsim1-device-sweep`, `classic/bsim2-device-sweep`, `xyce/nmos-level1-dc` and `xyce/pmos-level1-dc` change only at rounding level.
 
-Matched samples: absolute 9,182,709 → 9,485,000; relative 9,147,783 → 9,449,285; excluded zero references 34,926 → 35,715. For comparison:
+Matched samples: absolute 9,182,709 → 9,484,017; relative 9,147,783 → 9,448,424; excluded zero references 34,926 → 35,593. For comparison:
 
 - `bc99922` run: 9,189,955 / 9,155,200 / 34,755
 - `60f49b2` run: 9,412,848 / 9,377,027 / 35,821
 - `26a163a` run: 9,488,365 / 9,452,544 / 35,821
 - `3b2d9ac` run: 9,488,031 / 9,452,220 / 35,811
+- `4fed83d` run: 9,485,000 / 9,449,285 / 35,715
 
 The growth comes from the denser BJT/MOS transient grids and the 75,517 `mesa-oscillator` samples.
 
@@ -177,30 +179,63 @@ Engine totals stay 52/9/39 (ngspice) and 61/1/38 (spice-ts) at every step. Cover
 
 #435 (forward `.param`, typed ParseErrors, #422/#423): no outcome change. The unsupported rows `corpus-e/opamp-open-loop-ac` and `corpus-e/vcvs-operating-point` used to leak a `TypeError` (`Cannot read properties of undefined (reading 'toLowerCase'/'trim')`). They now report `.ac requires '.ac {dec|oct|lin} points fstart fstop'`. The error text is not part of the deterministic projection.
 
+### Three merges after the `4fed83d` run (bisected)
+
+Same method as the previous window: one full 100-fixture run per main commit, each with that commit's `packages/core` and this branch's `benchmarks/` (identical between `b7a0732` and the merge, since #440, #443 and #442 touch only `packages/core`). As a control, a rerun on `4fed83d` reproduced the committed outcome `9f6e3faa…` exactly. These runs use the `b7a0732` ledger text, so their outcomes compare with each other and with `9f6e3faa…`. The final committed outcome `d119e034…` also covers the edited ledger text; its per-fixture statuses and metrics are identical to the `3f3e2ca` run.
+
+| Main commit | PR | Outcome | Aggregate change |
+|---|---|---|---|
+| `4fed83d` | #435 (control) | `9f6e3faa…` | reproduced |
+| `bfcc66a` | #440 `.tran` TSTART omission | `bf06ceb6…` | 1 grid, no metric |
+| `9b21238` | #443 unresolved `.model` error | `bf06ceb6…` | none |
+| `3f3e2ca` | #442 transient pnjlim | `75345f18…` | 3 analyses, relative envelope |
+
+Engine totals stay 52/9/39 (ngspice) and 61/1/38 (spice-ts) at every step. Coverage stays at 65 analyses across 49 fixtures and 935/906 signals.
+
+#440 (`.tran` TSTART output omission, #432). Only `ngspice/mesa-oscillator` changes. spice-ts now emits 2088 instead of 5307 transient points, and the points excluded as out of range fall from 3266 to 47 against ngspice's 201. The same 2041 points align, so all 37 signal metrics are bit-identical. The 0.178 V `v(6)` loss (RMS 0.0244 V) and the 0.86 `v(8)` relative max remain published losses; #440 fixes the grid, not the waveform.
+
+#443 (unresolved device `.model` references raise `InvalidCircuitError`, #414): no outcome change. No fixture references an undefined model, and no spice-ts status or error text changes (I compared the error strings of every non-success row between the two runs).
+
+#442 (exact pnjlim in the transient Newton loop, #441). Only the three diode-bearing lossy-line fixtures change:
+
+| Fixture | Points | Worst abs max before | After |
+|---|---|---|---|
+| `classic/coupled-lossy-lines` | 3810 → 3779 | 0.929 V `v(x3.3)` | 0.870 V `v(x3.1)` |
+| `classic/lossy-line-24-inch` | 3123 → 3107 | 1.1255 V `v(2)` | 1.1291 V `v(2)` |
+| `classic/lossy-line-aluminium` | 3968 → 3970 | 1.3472 V `v(3)` | 1.3472 V `v(3)` |
+
+- Gains:
+  - `coupled-lossy-lines`: `v(x3.3)` 0.929 → 0.835 V (abs RMS 0.180 → 0.156 V) and `v(x3.1)` 0.882 → 0.870 V. `v(5)` rel max 3.498e11 → 3.212e11 (rel RMS 6.858e9 → 6.433e9), which lowers the relative envelope. Rel max also falls on `v(x3.3)` 766 → 138, `v(x3.1)` 764 → 132 and `v(4)` 1236 → 274.
+  - `lossy-line-aluminium`: abs RMS falls on 149 and rises on 111 of 261 signals, by at most 0.23% on signals above 0.01 V RMS. Worst abs max is unchanged.
+- Losses (published):
+  - `coupled-lossy-lines`: abs RMS rises on 27 and falls on 15 of 47 signals. `v(x3.2)` 0.450 → 0.476 V (RMS 0.0888 → 0.0912 V), `v(4)` 0.4945 → 0.4964 V, and `v(5)` abs RMS 0.1205 → 0.1211 V.
+  - `lossy-line-24-inch`: abs RMS rises on all 3 signals. `v(2)` 1.1255 → 1.1291 V (rel max 10.4 → 15.6), and `v(3)` rel max 170 → 450 at an unchanged 1.1222 V abs max.
+- Matched samples: absolute 9,485,000 → 9,484,017; relative 9,449,285 → 9,448,424; excluded zero references 35,715 → 35,593.
+
 The ngspice error strings in the unsupported and failed rows differ between runs only in their resource-usage footers (elapsed time, free DRAM). Those footers are not part of the projection either.
 
 Runtime sums are single samples on a loaded shared host and support no speed claim.
 
 ## Commands
 
-All on the merge with `origin/main` `4fed83d`:
+All on the merge with `origin/main` `3f3e2ca`:
 
 ```text
-git merge origin/main (60f49b2, 26a163a, 3b2d9ac, 4fed83d)  clean merges
+git merge origin/main (60f49b2, 26a163a, 3b2d9ac, 4fed83d, 3f3e2ca)  clean merges
 pnpm install --frozen-lockfile                              PASS (lockfile unchanged)
 pnpm build                                                  PASS
-pnpm exec tsx benchmarks/aggregate-report.ts                PASS, outcome f7955f05… (pre-edit ledger), 9f6e3faa… (final)
-pnpm exec tsx benchmarks/aggregate-report.ts --check        PASS, 100 fixtures, 65 analyses, outcome 9f6e3faa…
+pnpm exec tsx benchmarks/aggregate-report.ts                PASS, outcome 75345f18… (pre-edit ledger, bisect run), d119e034… (final)
+pnpm exec tsx benchmarks/aggregate-report.ts --check        PASS, 100 fixtures, 65 analyses, outcome d119e034…
 pnpm exec tsx --test benchmarks/aggregate-report.test.ts    PASS 18/18
 pnpm lint                                                   PASS
-pnpm test                                                   PASS (core 1361/1361; 17/8/56/209/64/20 in the other packages; node tests 1/1/3/4/21)
+pnpm test                                                   PASS (core 1381/1381; 17/8/56/209/64/20 in the other packages; node tests 1/1/3/4/21)
 pnpm bench:accuracy                                         PASS, 7 ✓, retained BJT CE bias warning 2.61%
 git diff --check                                            PASS
 ```
 
-Bisection, one full aggregate per main commit, run in scratch worktrees with `benchmarks/` checked out from this merge: `3b2d9ac` gave `2a6f337a…` (identical to the committed previous head), `4cff97c` and `47ff626` gave `5b5bbcdb…`, `015d833` gave `4a4fcc16…`, and `bd4a525` gave `f7955f05…`. The merge with `4fed83d` also gave `f7955f05…` before the ledger edit.
+Bisection, one full aggregate per main commit, run in scratch worktrees with `benchmarks/` checked out from this merge: `3b2d9ac` gave `2a6f337a…` (identical to the committed previous head), `4cff97c` and `47ff626` gave `5b5bbcdb…`, `015d833` gave `4a4fcc16…`, and `bd4a525` gave `f7955f05…`. The merge with `4fed83d` also gave `f7955f05…` before the ledger edit. For the latest window: `4fed83d` gave `9f6e3faa…` (identical to the committed `b7a0732` projection), `bfcc66a` and `9b21238` gave `bf06ceb6…`, and `3f3e2ca` gave `75345f18…`. The final generation on the merge with `3f3e2ca`, with the edited ledger, has the same per-fixture statuses and metrics as the `3f3e2ca` run.
 
-Every base had two generations and a `--check`. On each base they gave identical per-fixture statuses and metrics. Only runtimes differed, and so did the ledger text, which is edited between generations. The final `--check` reproduced the committed projection `9f6e3faa…` exactly.
+Every base had two generations and a `--check`. On each base they gave identical per-fixture statuses and metrics. Only runtimes differed, and so did the ledger text, which is edited between generations. The final `--check` reproduced the committed projection `d119e034…` exactly.
 
 ## TDD receipt
 
@@ -211,5 +246,7 @@ RED:
 - On `26a163a`, I added the mesa-oscillator transition, 61/1/38, 65/49, 935/906 and the #432 link. The test failed 17/18 again against the stale artifacts.
 - On `3b2d9ac`, the only pinned value that moved was the relative envelope. I updated it after a first generation, so that step had no separate RED run. `--check` is the gate for the regenerated outcome.
 - On `4fed83d`, review rejected `f84aa9b` as stale. The ledger test now also requires three things: a #436/#437/#439 ledger entry, a #427 gap scope that says it was closed by PR #436, and `mos1-inverter-sweep` TRAN `i(vdd)` below 1e-4 A. It also rejects the stale "worst DC/TRAN abs max still about 4.35 V" text, and the relative envelope moves to `349781933131.4126` / `6858037632.217204`. Against the regenerated artifacts with the old ledger, the test failed 17/18.
+
+- On `3f3e2ca`, the supervisor found `b7a0732` stale after #440, #443 and #442. The ledger test now also requires a #440/#443/#442 ledger entry, a #432 gap scope that says it was closed by PR #440, the post-#440 `mesa-oscillator` TRAN grid (2088 spice-ts points, 47 excluded), and no stale "3219 of those are before TSTART" text; the relative envelope moves to `321200769453.2656` / `6432928954.616146`. Against the `b7a0732` artifacts, the test failed 16/18.
 
 GREEN: 18/18 after regenerating from the same 100 fixture bytes, and `--check` passes.

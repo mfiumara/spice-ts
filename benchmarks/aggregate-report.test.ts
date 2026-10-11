@@ -147,6 +147,12 @@ describe('aggregate report artifact verification', () => {
     const mesa = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/mesa-oscillator');
     assert.equal(mesa.spiceTs.status, 'success');
     assert.ok(mesa.gapIssues.includes('https://github.com/mfiumara/spice-ts/issues/432'));
+    const tstart = report.gapIssues.find((issue: { url: string }) => issue.url === 'https://github.com/mfiumara/spice-ts/issues/432');
+    assert.match(tstart.scope, /closed by PR #440/);
+    const mesaTran = mesa.comparisons.find((comparison: { analysis: string }) => comparison.analysis === 'tran');
+    assert.deepEqual(mesaTran.metrics.grid, { spiceTsPoints: 2088, ngspicePoints: 201, alignedPoints: 2041, excludedOutOfRange: 47 });
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #440') && text.includes('PR #443') && text.includes('PR #442')));
+    assert.ok(!report.comparisonToPrevious.statusTransitions.some((transition: { explanation: string }) => /3219 of those are before TSTART/.test(transition.explanation)));
     assert.deepEqual(report.comparisonToPrevious.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
     assert.deepEqual(report.comparisonToPrevious.totals.spiceTs, { success: 55, failed: 2, unsupported: 43 });
     assert.equal(report.comparisonToPrevious.totals.comparedAnalyses, 58);
@@ -172,8 +178,8 @@ describe('aggregate report artifact verification', () => {
     assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 906);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 31.65338535154384);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 8.272157976952819);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 349781933131.4126);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 6858037632.217204);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 321200769453.2656);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 6432928954.616146);
   });
 
   it('commits runtime sums derived from all 100 engine receipts', async () => {
