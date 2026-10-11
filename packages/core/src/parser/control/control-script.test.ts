@@ -102,8 +102,59 @@ describe('control-language vector expressions', () => {
     expect(evaluate('log10(100)').re[0]).toBe(2);
     // ngspice-47: "argument out of range for log" / "for log10"; ln(-1) likewise.
     expect(() => evaluate('log(-1)')).toThrow('argument out of range for log');
-    expect(() => evaluate('ln(-1)')).toThrow('argument out of range for ln');
+    expect(() => evaluate('ln(-1)')).toThrow(/argument out of range for log$/);
     expect(() => evaluate('log10(-1)')).toThrow('argument out of range for log10');
+  });
+
+  /*
+   * #606. ngspice-47 src/maths/cmaths/cmath1.c: cx_log/cx_log10 rcheck(x >= 0)
+   * and return -log(HUGE) / -log10(HUGE) for a zero magnitude (HUGE is FLT_MAX
+   * on the reference build); the complex branch's imaginary part is
+   * atan2(im, re) for log10 too, not divided by ln 10. cx_db rcheck(x > 0), so
+   * db(0) is an error. Values printed by `ngspice -b` 47 for
+   * `let c = <expr>` / `print c` (deck in PR for #606).
+   */
+  it('clamps ln/log/log10 of zero like ngspice-47 cx_log/cx_log10 (#606)', () => {
+    for (const text of ['ln(0)', 'log(0)']) {
+      // ngspice-47: c = -8.87228e+01
+      expect(evaluate(text).re[0], text).toBe(-Math.log(3.4028234663852886e38));
+      expect(evaluate(text).re[0], text).toBeCloseTo(-88.7228, 4);
+      expect(evaluate(text).im, text).toBeUndefined();
+    }
+    // ngspice-47: c = -3.85318e+01
+    expect(evaluate('log10(0)').re[0]).toBe(-Math.log10(3.4028234663852886e38));
+    expect(evaluate('log10(0)').re[0]).toBeCloseTo(-38.5318, 4);
+    // ngspice-47: ln(vector(3)) prints -88.7228 0 0.693147; log10 -38.5318 0 0.30103.
+    expect(Array.from(evaluate('ln(vector(3))').re)).toEqual([-Math.log(3.4028234663852886e38), 0, Math.log(2)]);
+    expect(Array.from(evaluate('log10(vector(3))').re)).toEqual([-Math.log10(3.4028234663852886e38), 0, Math.log10(2)]);
+    // ngspice-47: ln(0,0) -> -8.87228e+01,0.000000e+00; log10(0,0) -> -3.85318e+01,0.000000e+00.
+    const lnZero = evaluate('ln(0,0)');
+    expect([lnZero.re[0], lnZero.im![0]]).toEqual([-Math.log(3.4028234663852886e38), 0]);
+    const log10Zero = evaluate('log10(0,0)');
+    expect([log10Zero.re[0], log10Zero.im![0]]).toEqual([-Math.log10(3.4028234663852886e38), 0]);
+    // ngspice-47: ln(1e-300) -> -6.90776e+02, log10(1e-300) -> -3.00000e+02 (no clamp above zero).
+    expect(evaluate('ln(1e-300)').re[0]).toBe(Math.log(1e-300));
+    expect(evaluate('log10(1e-300)').re[0]).toBe(Math.log10(1e-300));
+  });
+
+  it('log10 of a complex argument keeps atan2 as its imaginary part like ngspice-47 cx_log10 (#606)', () => {
+    // ngspice-47: ln(-1,0) and log10(-1,0) both print 0.000000e+00,3.141593e+00.
+    const ln = evaluate('ln(-1,0)');
+    expect([ln.re[0], ln.im![0]]).toEqual([0, Math.PI]);
+    const log10 = evaluate('log10(-1,0)');
+    expect([log10.re[0], log10.im![0]]).toEqual([0, Math.PI]);
+    const tenJ = evaluate('log10(0,10)');
+    expect([tenJ.re[0], tenJ.im![0]]).toEqual([1, Math.PI / 2]);
+  });
+
+  it('rejects db() of a zero or negative real and of a zero magnitude like ngspice-47 cx_db (#606)', () => {
+    // ngspice-47: "Error: argument out of range for db" for each of these.
+    for (const text of ['db(0)', 'db(-2)', 'db(vector(3))', 'db(0,0)']) {
+      expect(() => evaluate(text), text).toThrow(/argument out of range for db$/);
+    }
+    // ngspice-47: db(2) and db(-2,0) both print 6.0206 (complex uses the magnitude).
+    expect(evaluate('db(2)').re[0]).toBe(20 * Math.log10(2));
+    expect(evaluate('db(-2,0)').re[0]).toBe(20 * Math.log10(2));
   });
 
   it('% is the integer modulo of floor(|a|) and floor(|b|) (ngspice-47 cx_mod)', () => {

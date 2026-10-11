@@ -438,9 +438,6 @@ const subtract = (a: Complex, b: Complex): Complex => ({ re: a.re - b.re, im: a.
 
 const COMPLEX_FUNCTIONS: Record<string, (value: Complex) => Complex> = {
   exp: complexExp,
-  ln: complexLog,
-  log: complexLog,
-  log10: value => divide(complexLog(value), { re: Math.LN10, im: 0 }),
   sqrt: complexSqrt,
   sin: value => ({ re: Math.sin(value.re) * Math.cosh(value.im), im: Math.cos(value.re) * Math.sinh(value.im) }),
   cos: value => ({ re: Math.cos(value.re) * Math.cosh(value.im), im: -Math.sin(value.re) * Math.sinh(value.im) }),
@@ -460,10 +457,40 @@ const COMPLEX_FUNCTIONS: Record<string, (value: Complex) => Complex> = {
 };
 
 const REAL_FUNCTIONS: Record<string, (value: number) => number> = {
-  exp: Math.exp, ln: Math.log, log: Math.log, log10: Math.log10, sqrt: Math.sqrt,
+  exp: Math.exp, sqrt: Math.sqrt,
   sin: Math.sin, cos: Math.cos, tan: Math.tan, sinh: Math.sinh, cosh: Math.cosh, tanh: Math.tanh,
   atan: Math.atan, asin: Math.asin, acos: Math.acos, asinh: Math.asinh, acosh: Math.acosh, atanh: Math.atanh,
 };
+
+/**
+ * ngspice-47 cx_log / cx_log10 (src/maths/cmaths/cmath1.c). A negative real
+ * argument is an error named after the C function ("log" for ln too); a zero
+ * real value or complex magnitude returns -log(HUGE), HUGE being FLT_MAX on the
+ * reference build (ln(0) prints -88.7228, log10(0) -38.5318). The complex
+ * branch takes atan2(im, re) as the imaginary part for log10 as well.
+ */
+const FLT_MAX = 3.4028234663852886e38;
+interface Logarithm { readonly errorName: string; readonly real: (value: number) => number }
+const LOGARITHMS: Record<string, Logarithm> = {
+  ln: { errorName: 'log', real: Math.log },
+  log: { errorName: 'log', real: Math.log },
+  log10: { errorName: 'log10', real: Math.log10 },
+};
+
+function evaluateLogarithm(arg: ControlVector, { errorName, real }: Logarithm): ControlVector {
+  const clamped = (value: number): number => (value === 0 ? -real(FLT_MAX) : real(value));
+  if (!isComplex(arg)) {
+    return mapReal(arg, value => {
+      if (!(value >= 0)) throw new ExpressionError(`argument out of range for ${errorName}`);
+      return clamped(value);
+    });
+  }
+  return mapComplex(arg, value => {
+    const magnitude = Math.hypot(value.re, value.im);
+    if (magnitude === 0) return { re: clamped(0), im: 0 };
+    return { re: real(magnitude), im: Math.atan2(value.im, value.re) };
+  });
+}
 
 /** Functions of ngspice's front end that spice-ts deliberately does not evaluate. */
 const UNSUPPORTED_FUNCTIONS = new Set([
@@ -520,12 +547,10 @@ function evaluateCall(node: Extract<ExpressionNode, { kind: 'call' }>, env: Expr
     throw new ExpressionError(`unknown function '${node.name}' with ${node.args.length} arguments`);
   }
   const arg = evaluateVectorExpression(node.args[0], env);
+  const logarithm = LOGARITHMS[node.name];
+  if (logarithm) return evaluateLogarithm(arg, logarithm);
   const complexFunction = COMPLEX_FUNCTIONS[node.name];
   if (complexFunction) {
-    if (!isComplex(arg) && ['log', 'ln', 'log10'].includes(node.name)
-      && Array.from(arg.re).some(value => value < 0)) {
-      throw new ExpressionError(`argument out of range for ${node.name}`);
-    }
     const real = REAL_FUNCTIONS[node.name];
     if (!isComplex(arg) && Array.from(arg.re).every(value => !Number.isNaN(real(value)))) {
       return mapReal(arg, real);
@@ -544,7 +569,11 @@ function evaluateCall(node: Extract<ExpressionNode, { kind: 'call' }>, env: Expr
         Math.atan2(arg.im ? arg.im[index] : 0, value) * factor), arg.scale);
     }
     case 'db':
-      return realVector('result', Array.from(magnitudes(arg), value => 20 * Math.log10(value)), arg.scale);
+      // ngspice-47 cx_db: rcheck(x > 0) on the real value or the magnitude.
+      return realVector('result', Array.from(isComplex(arg) ? magnitudes(arg) : arg.re, value => {
+        if (!(value > 0)) throw new ExpressionError('argument out of range for db');
+        return 20 * Math.log10(value);
+      }), arg.scale);
     case 'real':
     case 're':
       return realVector('result', arg.re, arg.scale);
