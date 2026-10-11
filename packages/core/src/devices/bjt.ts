@@ -20,7 +20,21 @@ export interface BJTParams {
   IKF: number;
   ISE: number;
   NE: number;
+  /** Reverse Early voltage and knee current (bjtload.c q1 and q2). */
+  VAR: number;
+  IKR: number;
+  /** B-C leakage saturation current and emission coefficient (bjtload.c cbcn). */
+  ISC: number;
+  NC: number;
+  /** High-current roll-off exponent (bjtload.c sqarg = arg^NKF). */
+  NKF: number;
   RB: number;
+  /**
+   * Minimum base resistance and the base current where the resistance falls
+   * half-way to it (bjtload.c gx). RBM defaults to RB (bjttemp.c).
+   */
+  RBM: number;
+  IRB: number;
   RC: number;
   RE: number;
   KF: number;
@@ -58,6 +72,12 @@ export interface BJTParams {
 /** ngspice model-card aliases resolved to their canonical parameter. */
 const MODEL_PARAMETER_ALIASES: Readonly<Record<string, string>> = {
   VA: 'VAF',
+  IK: 'IKF',
+  VB: 'VAR',
+  C2: 'ISE',
+  C4: 'ISC',
+  NK: 'NKF',
+  TREF: 'TNOM',
   PE: 'VJE',
   ME: 'MJE',
   PC: 'VJC',
@@ -73,18 +93,13 @@ const CHARGE_STORAGE_PARAMETERS = [
   'TR', 'CJS', 'VJS', 'MJS', 'FC', 'SUBS',
 ] as const;
 
-const SUPPORTED_MODEL_PARAMETERS = new Set([
-  'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'IKF', 'ISE', 'NE', 'RB', 'RC', 'RE',
-  'KF', 'AF', 'ISS', 'NS', 'TNOM', 'EG', 'XTI', 'XTB',
-  ...CHARGE_STORAGE_PARAMETERS, ...Object.keys(MODEL_PARAMETER_ALIASES),
-]);
-
 /**
  * bjttemp.c fields whose temperature laws are not implemented (TLEV/TLEVC != 0
- * and the per-parameter coefficients). They only act away from TNOM, where
- * they are rejected rather than ignored (#374).
+ * and the per-parameter coefficients, with the TRB/TRC/TRE aliases). They only
+ * act away from TNOM, where they are rejected rather than ignored (#374).
  */
 const UNSUPPORTED_TEMPERATURE_PARAMETERS = [
+  'TRB', 'TRC', 'TRE',
   'TLEV', 'TLEVC', 'TRE1', 'TRE2', 'TRC1', 'TRC2', 'TRB1', 'TRB2', 'TRM1', 'TRM2',
   'TBF1', 'TBF2', 'TBR1', 'TBR2', 'TIKF1', 'TIKF2', 'TIKR1', 'TIKR2', 'TIRB1', 'TIRB2',
   'TNC1', 'TNC2', 'TNE1', 'TNE2', 'TNF1', 'TNF2', 'TNR1', 'TNR2', 'TNS1', 'TNS2',
@@ -92,6 +107,28 @@ const UNSUPPORTED_TEMPERATURE_PARAMETERS = [
   'TMJE1', 'TMJE2', 'TMJC1', 'TMJC2', 'TMJS1', 'TMJS2', 'TIS1', 'TIS2', 'TISE1', 'TISE2',
   'TISC1', 'TISC2', 'TISS1', 'TISS2', 'CTE', 'CTC', 'CTS', 'TVJE', 'TVJC', 'TVJS',
 ] as const;
+
+/**
+ * ngspice-47 bjt.c model fields with no effect on these cards: the Kull
+ * quasi-saturation inputs only act with RCO (which is rejected), and the
+ * bjtsoachk.c safe-operating-area limits only print warnings.
+ */
+const INERT_MODEL_PARAMETERS = [
+  'QCO', 'VO', 'GAMMA', 'QUASIMOD', 'VG', 'CN', 'D',
+  'VBE_MAX', 'VBC_MAX', 'VCE_MAX', 'PD_MAX', 'IC_MAX', 'IB_MAX', 'TE_MAX', 'RTH0',
+] as const;
+
+/**
+ * Every Gummel-Poon model parameter spice-ts accepts. Anything else on the
+ * card (RCO quasi-saturation, the IBE/IBC split saturation currents, unknown
+ * names) is rejected whatever else the card sets (#633).
+ */
+const SUPPORTED_MODEL_PARAMETERS = new Set<string>([
+  'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'IKF', 'ISE', 'NE', 'VAR', 'IKR', 'ISC', 'NC',
+  'NKF', 'RB', 'RBM', 'IRB', 'RC', 'RE', 'KF', 'AF', 'ISS', 'NS', 'TNOM', 'EG', 'XTI', 'XTB',
+  ...CHARGE_STORAGE_PARAMETERS, ...Object.keys(MODEL_PARAMETER_ALIASES),
+  ...UNSUPPORTED_TEMPERATURE_PARAMETERS, ...INERT_MODEL_PARAMETERS,
+]);
 
 // ngspice-47 bjttemp.c: vt = BJTtemp * CONSTKoverQ, with const.h CONSTboltz and
 // CHARGE (#525; the old 0.02585 V offset Vbe by ~3e-4 V). The device keeps it
@@ -141,6 +178,70 @@ interface BJTDCPoint {
   gmReverse: number;
   gpi: number;
   gmu: number;
+  /** Normalised base charge (bjtload.c qb), for the base resistance gx. */
+  qb: number;
+}
+
+interface BaseCharge {
+  qb: number;
+  dqbdve: number;
+  dqbdvc: number;
+}
+
+/**
+ * ngspice-47 bjtload.c normalised base charge and its derivatives (polarity
+ * domain): q1 = 1/(1 - vbc/VAF - vbe/VAR), q2 = cbe/IKF + cbc/IKR and
+ * qb = q1*(1 + (1 + 4*q2)^NKF)/2, with qb = q1 when both knee currents are
+ * omitted (the Ebers-Moll transport model once VAF and VAR are too). An
+ * omitted (infinite) VAF, VAR, IKF or IKR has a zero inverse, as in
+ * bjttemp.c. Writes into `out` so the stamp hot path does not allocate.
+ */
+function baseCharge(
+  out: BaseCharge, params: BJTParams, vBE: number, vBC: number,
+  cbe: number, gbe: number, cbc: number, gbc: number,
+): BaseCharge {
+  const inverseEarlyF = Number.isFinite(params.VAF) ? 1 / params.VAF : 0;
+  const inverseEarlyR = Number.isFinite(params.VAR) ? 1 / params.VAR : 0;
+  const inverseRollOffF = Number.isFinite(params.IKF) ? 1 / params.IKF : 0;
+  const inverseRollOffR = Number.isFinite(params.IKR) ? 1 / params.IKR : 0;
+  const q1 = 1 / (1 - inverseEarlyF * vBC - inverseEarlyR * vBE);
+  if (inverseRollOffF === 0 && inverseRollOffR === 0) {
+    out.qb = q1;
+    out.dqbdve = q1 * q1 * inverseEarlyR;
+    out.dqbdvc = q1 * q1 * inverseEarlyF;
+    return out;
+  }
+  const arg = Math.max(0, 1 + 4 * (inverseRollOffF * cbe + inverseRollOffR * cbc));
+  const { NKF } = params;
+  // bjtsetup.c: NKF given as 0.5 is the same law as the default square root.
+  const squareRoot = NKF === 0.5;
+  const sqarg = arg === 0 ? 1 : squareRoot ? Math.sqrt(arg) : Math.pow(arg, NKF);
+  const qb = q1 * (1 + sqarg) / 2;
+  // slope = d(sqarg)/d(q2) / 2 = 2*NKF*sqarg/arg (1/sqarg for the square root).
+  const slope = squareRoot ? 1 / sqarg : 2 * sqarg * NKF / arg;
+  out.qb = qb;
+  out.dqbdve = q1 * (qb * inverseEarlyR + inverseRollOffF * gbe * slope);
+  out.dqbdvc = q1 * (qb * inverseEarlyF + inverseRollOffR * gbc * slope);
+  return out;
+}
+
+/**
+ * ngspice-47 bjtload.c base-resistance conductance gx from the base current cb
+ * and qb: 1/(RBM + (RB - RBM)/qb), or with IRB the current-crowding law
+ * 1/(RBM + 3*(RB - RBM)*(tan z - z)/(z*tan^2 z)). Like ngspice it is not
+ * differentiated: the Newton iteration sees it as a linear conductance.
+ */
+function baseResistanceConductance(params: BJTParams, cb: number, qb: number): number {
+  const { RB, RBM, IRB } = params;
+  const rbpi = RB - RBM;
+  let resistance = RBM + rbpi / qb;
+  if (IRB !== 0) {
+    const ratio = Math.max(cb / IRB, 1e-9);
+    const z = (-1 + Math.sqrt(1 + 14.59025 * ratio)) / 2.4317 / Math.sqrt(ratio);
+    const tangent = Math.tan(z);
+    resistance = RBM + 3 * rbpi * (tangent - z) / z / tangent / tangent;
+  }
+  return resistance !== 0 ? 1 / resistance : 0;
 }
 
 /**
@@ -215,30 +316,39 @@ export function resolveBJTParams(
   for (const [name, value] of Object.entries(supplied)) {
     params[MODEL_PARAMETER_ALIASES[name] ?? name] = value;
   }
-  const boundedForwardActive = params.VAF !== undefined || params.IKF !== undefined
-    || params.ISE !== undefined || params.NE !== undefined;
-  if (boundedForwardActive) {
-    for (const name of Object.keys(supplied)) {
-      if (name !== 'polarity' && !SUPPORTED_MODEL_PARAMETERS.has(name)) {
-        throw new Error(`Unsupported bounded BJT model parameter: '${name}'`);
-      }
+  for (const name of Object.keys(supplied)) {
+    if (name !== 'polarity' && !SUPPORTED_MODEL_PARAMETERS.has(name)) {
+      throw new Error(`Unsupported bounded BJT model parameter: '${name}'`);
     }
   }
 
   const polarity = params.polarity ?? 1;
+  // ngspice-47 bjtsetup.c: BJTsatCur defaults to 1e-16 A (not the 1e-14 of the diode).
+  const saturationCurrent = params.IS ?? 1e-16;
+  // bjtsetup.c: an ISE or ISC above 1e-4 is read as a multiple of IS.
+  const leakageCurrent = (value: number | undefined) =>
+    value === undefined ? 0 : value > 1e-4 ? saturationCurrent * value : value;
+  const baseResistance = params.RB ?? 0;
   const resolved: BJTParams = {
     LEVEL: params.LEVEL ?? 1,
     BF: params.BF ?? 100,
     BR: params.BR ?? 1,
-    // ngspice-47 bjtsetup.c: BJTsatCur defaults to 1e-16 A (not the 1e-14 of the diode).
-    IS: params.IS ?? 1e-16,
+    IS: saturationCurrent,
     NF: params.NF ?? 1,
     NR: params.NR ?? 1,
     VAF: params.VAF ?? Infinity,
     IKF: params.IKF ?? Infinity,
-    ISE: params.ISE ?? 0,
+    ISE: leakageCurrent(params.ISE),
     NE: params.NE ?? 1.5,
-    RB: params.RB ?? 0,
+    VAR: params.VAR ?? Infinity,
+    IKR: params.IKR ?? Infinity,
+    ISC: leakageCurrent(params.ISC),
+    NC: params.NC ?? 2,
+    // bjtsetup.c: NKF defaults to 0.5 (the square root) and is capped at 1.
+    NKF: Math.min(params.NKF ?? 0.5, 1),
+    RB: baseResistance,
+    RBM: params.RBM ?? baseResistance,
+    IRB: params.IRB ?? 0,
     RC: params.RC ?? 0,
     RE: params.RE ?? 0,
     KF: params.KF ?? 0,
@@ -280,6 +390,15 @@ export function resolveBJTParams(
     || resolved.RE < 0 || !Number.isFinite(resolved.RE)) {
     throw new Error('Invalid bounded BJT model parameter value');
   }
+  if (!(resolved.VAR > 0) || !(resolved.IKR > 0) || !(resolved.ISC >= 0)
+    || !Number.isFinite(resolved.ISC) || !(resolved.NC > 0) || !Number.isFinite(resolved.NC)
+    || !(resolved.NKF > 0)) {
+    throw new Error('Invalid bounded BJT model parameter value: expected VAR, IKR, NC, NKF > 0 and ISC >= 0');
+  }
+  if (!(resolved.RBM >= 0) || !Number.isFinite(resolved.RBM)
+    || !(resolved.IRB >= 0) || !Number.isFinite(resolved.IRB)) {
+    throw new Error('Invalid bounded BJT base-resistance parameter: expected finite RBM >= 0 and IRB >= 0');
+  }
   if (!(resolved.ISS >= 0) || !Number.isFinite(resolved.ISS)
     || !(resolved.NS > 0) || !Number.isFinite(resolved.NS)) {
     throw new Error('Invalid bounded BJT substrate parameter: expected finite ISS >= 0 and NS > 0');
@@ -292,6 +411,19 @@ export function resolveBJTParams(
   }
   validateChargeStorage(resolved, params.PTF ?? 0);
   return resolved;
+}
+
+/**
+ * ngspice-47 bjtload.c base resistance gx = 1/(RBM + (RB - RBM)/qb), or the
+ * IRB law, between the base and base-prime nodes. It only differs from a
+ * fixed RB when RB > 0 (with RB = 0 bjtsetup.c merges the two nodes) and
+ * RBM != RB (rbpi = RB - RBM = 0 leaves gx = 1/RBM = 1/RB whatever IRB is).
+ * Such a device stamps gx itself, on a fifth (external base) node. Accepts
+ * resolved parameters or the raw model card (RBM defaulting to RB).
+ */
+export function hasBiasDependentBaseResistance(params: { RB?: number; RBM?: number }): boolean {
+  const baseResistance = params.RB ?? 0;
+  return baseResistance > 0 && (params.RBM ?? baseResistance) !== baseResistance;
 }
 
 /** Gummel-Poon instance geometry: ngspice-47 bjt.c `area`, `areab`, `areac` and `m`. */
@@ -350,11 +482,15 @@ export function scaleBJTInstance(
     ISE: params.ISE * scale,
     ISS: params.ISS * scale,
     IKF: params.IKF * scale,
+    IKR: params.IKR * scale,
+    ISC: params.ISC * collectorScale,
+    IRB: params.IRB * scale,
     ITF: params.ITF * scale,
     CJE: params.CJE * scale,
     CJC: params.CJC * collectorScale,
     CJS: params.CJS * substrateScale,
     RB: params.RB / scale,
+    RBM: params.RBM / scale,
     RC: params.RC / scale,
     RE: params.RE / scale,
     KF: params.KF * Math.pow(multiplier, 1 - params.AF),
@@ -423,8 +559,15 @@ export class BJT implements DeviceModel {
   };
   private readonly junction: JunctionPoint = { current: 0, conductance: 0 };
   private readonly dcPoint: BJTDCPoint = {
-    collectorCurrent: 0, baseCurrent: 0, gmForward: 0, gmReverse: 0, gpi: 0, gmu: 0,
+    collectorCurrent: 0, baseCurrent: 0, gmForward: 0, gmReverse: 0, gpi: 0, gmu: 0, qb: 1,
   };
+  private readonly charge: BaseCharge = { qb: 1, dqbdve: 0, dqbdvc: 0 };
+  /**
+   * Bias-dependent base resistance (RBM != RB, see
+   * {@link hasBiasDependentBaseResistance}): the device stamps gx itself
+   * between the external base (5th node) and the base-prime node (2nd node).
+   */
+  private readonly stampsBaseResistance: boolean;
 
   constructor(
     readonly name: string,
@@ -440,6 +583,12 @@ export class BJT implements DeviceModel {
     this.params = { ...this.nominal };
     this.baseCollectorSatCur = this.nominal.IS * this.baseCollectorArea;
     this.applyTemperature();
+    this.stampsBaseResistance = hasBiasDependentBaseResistance(this.nominal);
+    if (this.stampsBaseResistance !== (nodes[4] !== undefined)) {
+      throw new Error(
+        `BJT '${name}' needs ${this.stampsBaseResistance ? 'an' : 'no'} external base node for its base resistance`,
+      );
+    }
     const { CJE, CJC, CJS, TF, TR } = this.params;
     this.integratesTransientCharge = CJE > 0 || CJC > 0 || CJS > 0 || TF > 0 || TR > 0;
     if (this.integratesTransientCharge) {
@@ -460,10 +609,11 @@ export class BJT implements DeviceModel {
    * ngspice-47 bjttemp.c (TLEV = TLEVC = 0) at the device temperature:
    * IS and ISS scale by exp(factlog), factlog = (T/TNOM - 1)*EG/vt +
    * XTI*ln(T/TNOM); BF and BR by bfactor = (T/TNOM)^XTB; ISE by
-   * exp(factlog/NE)/bfactor; the B-E, B-C and substrate junction potentials
-   * and capacitances by the REFTEMP-mapped band-gap law. VAF, IKF, the
-   * transit times and the resistances have no law without their T*
-   * coefficients. At T = TNOM every factor is exactly 1.
+   * exp(factlog/NE)/bfactor and ISC by exp(factlog/NC)/bfactor; the B-E, B-C
+   * and substrate junction potentials and capacitances by the REFTEMP-mapped
+   * band-gap law. VAF, VAR, IKF, IKR, IRB, the transit times and the
+   * resistances have no law without their T* coefficients. At T = TNOM every
+   * factor is exactly 1.
    */
   private applyTemperature(): void {
     assertNoUnsupportedTemperatureParameters(
@@ -487,6 +637,7 @@ export class BJT implements DeviceModel {
     this.baseCollectorSatCur = params.IS * this.baseCollectorArea;
     params.ISS = nominal.ISS * Math.exp(factlog);
     params.ISE = nominal.ISE * Math.exp(factlog / nominal.NE) / bfactor;
+    params.ISC = nominal.ISC * Math.exp(factlog / nominal.NC) / bfactor;
     params.BF = nominal.BF * bfactor;
     params.BR = nominal.BR * bfactor;
     const junction = (potential: number, capacitance: number, grading: number) =>
@@ -608,14 +759,14 @@ export class BJT implements DeviceModel {
 
   /**
    * ngspice-47 bjtload.c DC evaluation at the polarity-domain junction
-   * voltages: cbe from tSatCur and cbc from BCtSatCur, the B-E leakage cben from ISE/NE, and
-   * CKTgmin*vbe in cben and CKTgmin*vbc in cbcn, so the gmin current flows at
-   * convergence as in ngspice, not only in the Jacobian (#551). With VAF and
-   * IKF omitted qb = 1, which is the Ebers-Moll transport model. Writes into a
-   * reused object.
+   * voltages: cbe from tSatCur and cbc from BCtSatCur, the B-E leakage cben
+   * from ISE/NE and the B-C leakage cbcn from ISC/NC, CKTgmin*vbe in cben and
+   * CKTgmin*vbc in cbcn, so the gmin current flows at convergence as in
+   * ngspice, not only in the Jacobian (#551), and the base charge qb of
+   * {@link baseCharge}. Writes into a reused object.
    */
   private evaluateDC(vBE: number, vBC: number): BJTDCPoint {
-    const { BF, BR, IS, NF, NR, VAF, IKF, ISE, NE } = this.params;
+    const { BF, BR, IS, NF, NR, ISE, NE, ISC, NC } = this.params;
     const { current: cbe, conductance: gbe } = junctionLaw(this.junction, vBE, IS, NF * this.vt);
     const { current: cbc, conductance: gbc } = junctionLaw(
       this.junction, vBC, this.baseCollectorSatCur, NR * this.vt,
@@ -627,25 +778,15 @@ export class BJT implements DeviceModel {
       cben += leakage.current;
       gben += leakage.conductance;
     }
-    // ISC/NC are not supported, so cbcn is the gmin term alone.
-    const cbcn = GMIN * vBC;
-    const gbcn = GMIN;
-
-    const inverseEarly = Number.isFinite(VAF) ? 1 / VAF : 0;
-    const q1 = 1 / (1 - inverseEarly * vBC);
-    let qb: number;
-    let dqbdve: number;
-    if (!Number.isFinite(IKF)) {
-      qb = q1;
-      dqbdve = 0;
-    } else {
-      const arg = Math.max(0, 1 + 4 * cbe / IKF);
-      const sqarg = arg !== 0 ? Math.sqrt(arg) : 1;
-      qb = q1 * (1 + sqarg) / 2;
-      dqbdve = q1 * gbe / (IKF * sqarg);
+    let cbcn = GMIN * vBC;
+    let gbcn = GMIN;
+    if (ISC !== 0) {
+      const leakage = junctionLaw(this.junction, vBC, ISC, NC * this.vt);
+      cbcn += leakage.current;
+      gbcn += leakage.conductance;
     }
-    const dqbdvc = q1 * qb * inverseEarly;
 
+    const { qb, dqbdve, dqbdvc } = baseCharge(this.charge, this.params, vBE, vBC, cbe, gbe, cbc, gbc);
     const transport = cbe - cbc;
     const go = (gbc + transport * dqbdvc / qb) / qb;
     const gm = (gbe - transport * dqbdve / qb) / qb - go;
@@ -656,6 +797,7 @@ export class BJT implements DeviceModel {
     point.gmu = gbc / BR + gbcn;
     point.gmForward = gm + go;
     point.gmReverse = point.gmu + go;
+    point.qb = qb;
     return point;
   }
 
@@ -767,6 +909,11 @@ export class BJT implements DeviceModel {
       ctx.stampB(nE, -polarity * IE_eq_internal);
     }
 
+    if (this.stampsBaseResistance) {
+      // bjtload.c gx between the external base and base prime (polarity-free).
+      const gx = baseResistanceConductance(this.params, IB, dc.qb);
+      stampConductance(ctx, this.nodes[4], nB, gx);
+    }
     this.stampSubstrateJunction(ctx);
   }
 
@@ -819,7 +966,7 @@ export class BJT implements DeviceModel {
    */
   private evaluateCharges(ctx: StampContext): BJTChargePoint {
     const {
-      IS, NF, NR, VAF, IKF, polarity,
+      IS, NF, NR, polarity,
       CJE, VJE, MJE, TF, XTF, VTF, ITF, CJC, VJC, MJC, TR, CJS, VJS, MJS, FC, SUBS,
     } = this.params;
     const [nC, nB, nE] = this.nodes;
@@ -849,13 +996,13 @@ export class BJT implements DeviceModel {
       let diffusionCurrent = forwardCurrent;
       let diffusionConductance = forwardConductance;
       if (vBE > 0) {
-        const qEarly = Number.isFinite(VAF) ? 1 / (1 - vBC / VAF) : 1;
-        const sqarg = Number.isFinite(IKF)
-          ? Math.sqrt(Math.max(0, 1 + 4 * forwardCurrent / IKF))
-          : 1;
-        const qB = qEarly * (1 + sqarg) / 2;
-        const dqBdVBE = Number.isFinite(IKF) ? qEarly * forwardConductance / (IKF * sqarg) : 0;
-        const dqBdVBC = Number.isFinite(VAF) ? qEarly * qB / VAF : 0;
+        // bjtload.c reuses the DC base charge qb and its derivatives.
+        const {
+          qb: qB, dqbdve: dqBdVBE, dqbdvc: dqBdVBC,
+        } = baseCharge(
+          this.charge, this.params, vBE, vBC,
+          forwardCurrent, forwardConductance, reverseCurrent, reverseConductance,
+        );
         const inverseVtf = VTF !== 0 ? 1 / (1.44 * VTF) : 0;
         let argtf = 0;
         let arg2 = 0;
@@ -931,6 +1078,16 @@ interface BJTChargePoint {
 const BASE_EMITTER = 0;
 const BASE_COLLECTOR = 1;
 const SUBSTRATE = 2;
+
+function stampConductance(ctx: StampContext, a: number, b: number, conductance: number): void {
+  if (conductance === 0) return;
+  if (a >= 0) ctx.stampG(a, a, conductance);
+  if (b >= 0) ctx.stampG(b, b, conductance);
+  if (a >= 0 && b >= 0) {
+    ctx.stampG(a, b, -conductance);
+    ctx.stampG(b, a, -conductance);
+  }
+}
 
 function stampCapacitance(ctx: StampContext, a: number, b: number, capacitance: number): void {
   if (capacitance === 0) return;
