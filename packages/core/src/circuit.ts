@@ -596,6 +596,8 @@ export class Circuit {
   /** XSPICE code model cards, keyed by upper-case model name like {@link ModelTable}. */
   private _xspiceModels = new Map<string, XspiceModelCard>();
   private _subcircuits = new Map<string, SubcktDefinition>();
+  /** `.global` node names, keyed upper-case, valued with their first spelling. */
+  private _globalNodes = new Map<string, string>();
   private _simulationOptions: SimulationOptions = {};
   private _temperature: number | undefined;
   private _initialConditions: NodeInitialState[] = [];
@@ -1301,6 +1303,26 @@ export class Circuit {
   }
 
   /**
+   * Declare `.global` nodes. Inside every subcircuit body these names bind to
+   * the top-level net of the same name instead of an instance-local node, and
+   * take precedence over a subcircuit port of the same name (ngspice
+   * `gettrans`). Repeated declarations accumulate; ground (`0`) is always
+   * global and is not recorded.
+   */
+  addGlobalNodes(names: readonly string[]): void {
+    for (const name of names) {
+      if (name === GROUND_NODE) continue;
+      const key = name.toUpperCase();
+      if (!this._globalNodes.has(key)) this._globalNodes.set(key, name);
+    }
+  }
+
+  /** Declared `.global` node names, in declaration order. */
+  get globalNodes(): string[] {
+    return [...this._globalNodes.values()];
+  }
+
+  /**
    * Instantiate a subcircuit (X-element).
    *
    * The subcircuit must have been previously registered via {@link addSubcircuit}.
@@ -1624,6 +1646,7 @@ export class Circuit {
       lines.push(model.raw);
     }
 
+    if (this._globalNodes.size > 0) lines.push(`.global ${this.globalNodes.join(' ')}`);
     for (const subckt of this._subcircuits.values()) {
       const params = formatParams(subckt.params);
       const header = `.subckt ${subckt.name} ${subckt.ports.join(' ')}${params ? ` ${params}` : ''}`;
@@ -1670,7 +1693,8 @@ export class Circuit {
    */
   compile(guard?: ProtocolExecutionGuard): CompiledCircuit {
     // Pre-expand subcircuit instances into flat device descriptors
-    const flatDescriptors = this.expandAllSubcircuits(guard);
+    const globalNodes = this.collectGlobalNodes(guard);
+    const flatDescriptors = this.expandAllSubcircuits(globalNodes, guard);
     this.assertDeviceModelTypes(flatDescriptors);
     const expandedDescriptors = withRFPortNodes(this.expandPassiveParasitics(
       this.expandLossyTransmissionLines(flatDescriptors),
@@ -1748,10 +1772,13 @@ export class Circuit {
       ],
     );
 
-    // Collect all nodes from expanded descriptors
+    // Only flattened device nodes belong in the matrix. In particular, a
+    // .global name can override a formal port and leave its actual node unused.
+    const canonicalNode = (name: string): string => globalNodes.get(name.toUpperCase()) ?? name;
+    this.nodeSet.clear();
     for (const desc of expandedDescriptors) {
       for (const n of desc.nodes) {
-        this.nodeSet.add(n);
+        this.nodeSet.add(canonicalNode(n));
       }
     }
 
@@ -1766,7 +1793,7 @@ export class Circuit {
 
     const resolveNode = (name: string): number => {
       if (name === GROUND_NODE) return -1;
-      return nodeIndexMap.get(name)!;
+      return nodeIndexMap.get(canonicalNode(name))!;
     };
 
     const resolveWaveform = (wf?: Partial<SourceWaveform> & { dc?: number }): SourceWaveform => {
@@ -2183,11 +2210,39 @@ export class Circuit {
     }
   }
 
-  /**
-   * Expand all subcircuit instances (type 'X') in the descriptor list
-   * into flat device descriptors. Non-X descriptors pass through unchanged.
-   */
-  private expandAllSubcircuits(guard?: ProtocolExecutionGuard): DeviceDescriptor[] {
+  /** Collect top-level and reachable subcircuit `.global` declarations. */
+  private collectGlobalNodes(guard?: ProtocolExecutionGuard): Map<string, string> {
+    const globals = new Map(this._globalNodes);
+    // ngspice removes unused definitions before collecting globals. Discover
+    // the reachable definitions first, so declarations are independent of
+    // instance order and take effect before any parent port is mapped.
+    const pending = this.descriptors.filter(desc => desc.type === 'X').map(desc => desc.modelName!);
+    const visited = new Set<string>();
+    while (pending.length > 0) {
+      guard?.checkpoint('compile:device');
+      const name = pending.pop()!.toUpperCase();
+      if (visited.has(name)) continue;
+      visited.add(name);
+      const def = this._subcircuits.get(name);
+      if (!def) continue; // Expansion reports the undefined-subcircuit error.
+      for (const { tokens } of tokenizeNetlist(def.body.join('\n'))) {
+        if (tokens[0]?.toUpperCase() === '.GLOBAL') {
+          for (const node of tokens.slice(1)) {
+            const key = node.toUpperCase();
+            if (node !== GROUND_NODE && !globals.has(key)) globals.set(key, node);
+          }
+        } else if (tokens[0]?.[0].toUpperCase() === 'X') {
+          let index = tokens.length - 1;
+          while (index > 1 && tokens[index].includes('=')) index--;
+          pending.push(tokens[index]);
+        }
+      }
+    }
+    return globals;
+  }
+
+  /** Expand X instances; non-X descriptors pass through unchanged. */
+  private expandAllSubcircuits(globalNodes: ReadonlyMap<string, string>, guard?: ProtocolExecutionGuard): DeviceDescriptor[] {
     const result: DeviceDescriptor[] = [];
     for (const desc of this.descriptors) {
       guard?.checkpoint('compile:device');
@@ -2198,6 +2253,7 @@ export class Circuit {
           desc.modelName!,
           desc.params ?? {},
           new Set<string>(),
+          globalNodes,
           guard,
           1,
         );
@@ -2633,6 +2689,7 @@ export class Circuit {
     subcktName: string,
     instanceParams: Record<string, number>,
     visited: Set<string>,
+    globalNodes: ReadonlyMap<string, string>,
     guard?: ProtocolExecutionGuard,
     depth = 1,
   ): DeviceDescriptor[] {
@@ -2670,6 +2727,9 @@ export class Circuit {
     const mapNode = (bodyNode: string): string => {
       if (bodyNode === GROUND_NODE) return GROUND_NODE;
       const upper = bodyNode.toUpperCase();
+      // A .global node is the top-level net, even when it names a port.
+      const globalNode = globalNodes.get(upper);
+      if (globalNode !== undefined) return globalNode;
       // If it's a port, map to the connected node
       if (portMap.has(upper)) return portMap.get(upper)!;
       // Otherwise it's an internal node — prefix with instance name
@@ -2984,6 +3044,7 @@ export class Circuit {
             nestedSubcktName,
             nestedParams,
             newVisited,
+            globalNodes,
             guard,
             depth + 1,
           );

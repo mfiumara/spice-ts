@@ -1,0 +1,109 @@
+[
+  {
+    "id": "examples-measure-inv-meas-tran-auto-sp",
+    "sourcePath": "examples/measure/inv-meas-tran-auto.sp",
+    "sha256": "81503daf5d7721cb2786ba794fb3f968035ce107dab0c94fc1e57234fc187a5d",
+    "analyses": [
+      "tran"
+    ],
+    "unmappedAnalyses": [],
+    "sameNameAs": [],
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:1"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 30: Unsupported .options field: 'autostop' .option autostop"
+    },
+    "comparedAnalyses": 0,
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss",
+    "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
+  },
+  {
+    "id": "examples-measure-inv-meas-tran-control-sp",
+    "sourcePath": "examples/measure/inv-meas-tran-control.sp",
+    "sha256": "feab0f409f0f99ded643e968583cac9d2ebf66b04dc9ad397e8e5b38a8beae22",
+    "analyses": [
+      "tran"
+    ],
+    "unmappedAnalyses": [],
+    "sameNameAs": [],
+    "ngspice": {
+      "status": "success",
+      "analyses": [],
+      "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 31: Unsupported .options field: 'scale' .option scale = 1e-6"
+    },
+    "comparedAnalyses": 0,
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss",
+    "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
+  },
+  {
+    "id": "examples-measure-inv-meas-tran-sp",
+    "sourcePath": "examples/measure/inv-meas-tran.sp",
+    "sha256": "670c9d44446ca91fef555c546342e553a3adc2b6ba490e28258764b6aaa3ddb9",
+    "analyses": [
+      "tran"
+    ],
+    "unmappedAnalyses": [],
+    "sameNameAs": [],
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:4104"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 31: Unsupported .options field: 'scale' .option scale = 1e-6"
+    },
+    "comparedAnalyses": 0,
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss",
+    "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
+  },
+  {
+    "id": "examples-measure-rc-meas-ac-sp",
+    "sourcePath": "examples/measure/rc-meas-ac.sp",
+    "sha256": "896eb7c9cf78f0a3b5635842ac9e4b42312f9928e0eb4d9a60a49f00e4b8068c",
+    "analyses": [
+      "ac"
+    ],
+    "unmappedAnalyses": [],
+    "sameNameAs": [],
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "ac:41"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 27: Unsupported dot command: '.meas' .meas ac vout_at FIND v ( out ) AT=1MEG"
+    },
+    "comparedAnalyses": 0,
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss",
+    "gapBucket": "directive: .measure"
+  }
+]

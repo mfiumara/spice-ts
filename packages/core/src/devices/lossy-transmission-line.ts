@@ -50,8 +50,9 @@ function growTo(array: Float64Array, size: number): Float64Array {
 /**
  * ngspice-47 LTRA lossy transmission line (O element) for the G=0 LC and RLC
  * cases: the exact convolution formulation of ltraload.c over the accepted
- * timepoint history, with quadratic interpolation of the delayed port waves
- * the LTRAtrunc step limits (delay and maxSafeStep) and the LTRAaccept
+ * timepoint history, with quadratic interpolation of the delayed port waves,
+ * the ltratrun.c LTRAtrunc step limits (STEPLIMIT/NOSTEPLIMIT delay bound,
+ * maxSafeStep unless TRUNCDONTCUT; no FULLCONTROL/HALFCONTROL), and the LTRAaccept
  * breakpoints one delay after a slope change of an outgoing wave. Branch
  * currents are positive into each port.
  */
@@ -189,10 +190,55 @@ export class LossyTransmissionLine implements DeviceModel {
     }
   }
 
-  truncateTransientStep(): number {
-    // ltratrun.c: STEPLIMIT (the ngspice default) bounds the step by the
-    // delay; the RLC impulse-response integration bounds it by maxSafeStep.
-    return Math.min(this.model.delay, this.model.maxSafeStep);
+  /**
+   * ngspice-47 ltratrun.c LTRAtrunc for the LC and RLC cases, evaluated at
+   * the converged trial solution in `ctx` against the accepted history.
+   */
+  truncateTransientStep(ctx: StampContext): number {
+    const model = this.model;
+    let step = Infinity;
+    if (model.stepLimit) {
+      // ltratrun.c:37-39: STEPLIMIT (the ltraset.c default) bounds every
+      // step by the delay.
+      step = model.delay;
+    } else if (this.count >= 2 && this.slopeChangesAtTrial(ctx)) {
+      // ltratrun.c:75-93 (NOSTEPLIMIT): the incoming wave changed slope at
+      // the last accepted point, so the next step must not pass one delay.
+      step = model.delay;
+    }
+    // ltratrun.c:125-128: the piecewise-linear impulse-response integration.
+    if (model.specialCase === 'RLC' && !model.truncDontCut) {
+      step = Math.min(step, model.maxSafeStep);
+    }
+    // ltratrun.c:129-186 (FULLCONTROL/HALFCONTROL) is rejected at model
+    // resolution; NOCONTROL, the ltraset.c default, adds no bound.
+    return step;
+  }
+
+  /**
+   * ltratrun.c:41-78: whether the incoming wave of either port,
+   * (v * Y0 + i) * attenuation, changes slope between the last accepted
+   * interval and the trial interval by more than REL/ABS.
+   */
+  private slopeChangesAtTrial(ctx: StampContext): boolean {
+    const model = this.model;
+    const [p1, n1, p2, n2] = this.nodes;
+    const voltage = (positive: number, negative: number): number =>
+      (positive >= 0 ? ctx.getVoltage(positive) : 0) - (negative >= 0 ? ctx.getVoltage(negative) : 0);
+    const last = this.count - 1;
+    const t = this.timePoints;
+    const changes = (trialV: number, trialI: number, v: Float64Array, i: Float64Array): boolean => {
+      const wave = (vk: number, ik: number): number => (vk * model.admittance + ik) * model.attenuation;
+      const w1 = wave(trialV, trialI);
+      const w2 = wave(v[last], i[last]);
+      const w3 = wave(v[last - 1], i[last - 1]);
+      const d1 = (w1 - w2) / (ctx.time - t[last]);
+      const d2 = (w2 - w3) / (t[last] - t[last - 1]);
+      return Math.abs(d1 - d2)
+        >= model.breakpointReltol * Math.max(Math.abs(d1), Math.abs(d2)) + model.breakpointAbstol;
+    };
+    return changes(voltage(p2, n2), ctx.getCurrent(this.branch2), this.v2, this.i2)
+      || changes(voltage(p1, n1), ctx.getCurrent(this.branch1), this.v1, this.i1);
   }
 
   resetTransient(): void {
