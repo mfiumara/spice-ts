@@ -66,7 +66,9 @@ const SUPPORTED_MODEL_PARAMETERS = new Set([
   'KF', 'AF', ...CHARGE_STORAGE_PARAMETERS, ...Object.keys(MODEL_PARAMETER_ALIASES),
 ]);
 
-const VT = 0.02585; // Thermal voltage at 300K
+// ngspice-47 bjttemp.c: vt = BJTtemp * CONSTKoverQ, with const.h CONSTboltz and
+// CHARGE at the default 300.15 K (#525; the old 0.02585 V offset Vbe by ~3e-4 V).
+const VT = 1.38064852e-23 / 1.6021766208e-19 * 300.15;
 const GMIN = 1e-12;
 
 function limitJunctionVoltage(vd: number, vt: number, IS: number): number {
@@ -156,7 +158,8 @@ export function resolveBJTParams(
     LEVEL: params.LEVEL ?? 1,
     BF: params.BF ?? 100,
     BR: params.BR ?? 1,
-    IS: params.IS ?? 1e-14,
+    // ngspice-47 bjtsetup.c: BJTsatCur defaults to 1e-16 A (not the 1e-14 of the diode).
+    IS: params.IS ?? 1e-16,
     NF: params.NF ?? 1,
     NR: params.NR ?? 1,
     VAF: params.VAF ?? Infinity,

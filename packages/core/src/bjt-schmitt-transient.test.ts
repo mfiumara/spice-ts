@@ -140,10 +140,12 @@ describe('corpus-E BJT Schmitt transient convergence (#139)', () => {
     // reflects the Early factor using the true reverse VBC (#385). The same
     // deck converged (RELTOL=1e-7, TMAX=10 ps) gives v6=-1.0125, v7=-1.8101
     // at that time; the raw-RHS history (#482) had v7 0.6 mV high at -1.8095.
+    // The mid-jump v7 sample moved from -0.8945 to -0.8950 when the BJT
+    // thermal voltage became ngspice's kT/q at 300.15 K (#525).
     expect(v6[edgeStart - 1]).toBeCloseTo(-1.0125, 3);
     expect(v7[edgeStart - 1]).toBeCloseTo(-1.8101, 3);
     expect(v6[edgeStart]).toBeCloseTo(-0.0461, 3);
-    expect(v7[edgeStart]).toBeCloseTo(-0.8945, 3);
+    expect(v7[edgeStart]).toBeCloseTo(-0.8950, 3);
 
     const telemetry = first.convergence!.transient;
     expect(telemetry.acceptedSteps).toBeLessThan(4_000);
