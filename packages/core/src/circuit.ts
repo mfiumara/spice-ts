@@ -17,7 +17,18 @@ import { VBIC, resolveVBICParams } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
 import { JFET, resolveNJFETParams } from './devices/jfet.js';
 import { HFET1 } from './devices/hfet1.js';
-import { resolveHFET1Instance, resolveHFET1Model } from './devices/hfet1-model.js';
+import { resolveHFET1Instance } from './devices/hfet1-model.js';
+import { MESA } from './devices/mesa.js';
+import { MESA_JUNCTION_GMIN, resolveMESAInstance } from './devices/mesa-model.js';
+import { resolveZModel } from './devices/z-device.js';
+import { BehavioralCurrentSource } from './devices/behavioral-current-source.js';
+import {
+  compileBehavioralExpression,
+  formatBehavioralExpression,
+  mapBehavioralNodes,
+  parseBehavioralSourceCard,
+  type BehavioralExpression,
+} from './parser/behavioral-expression.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
 import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
@@ -31,7 +42,7 @@ import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
-import { parseHFET1Instance } from './parser/hfet1-parser.js';
+import { parseZInstance } from './parser/z-device-parser.js';
 import { parseLtraModelCard } from './parser/transmission-line-parser.js';
 import {
   parseDiodeInstanceParams,
@@ -100,6 +111,18 @@ interface DeviceDescriptor {
   ic?: number;
   coupledA?: string;
   coupledB?: string;
+  /** B-card `I=` expression; node references are already circuit node names. */
+  expression?: BehavioralExpression;
+}
+
+function behavioralDescriptor(
+  name: string,
+  nPlus: string,
+  nMinus: string,
+  expression: BehavioralExpression,
+): DeviceDescriptor {
+  const controls = compileBehavioralExpression(expression).nodes;
+  return { type: 'B', name, nodes: [nPlus, nMinus, ...controls], expression };
 }
 
 function formatNumber(value: number): string {
@@ -222,6 +245,8 @@ function formatDevice(desc: DeviceDescriptor): string {
     case 'F':
     case 'H':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.controlSource ?? ''} ${formatNumber(desc.value ?? 0)}`.trim();
+    case 'B':
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} I=${formatBehavioralExpression(desc.expression!)}`;
     case 'X':
       return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail}`.trim();
     default:
@@ -598,6 +623,52 @@ export class Circuit {
     this.nodeSet.add(nOutP);
     this.nodeSet.add(nOutN);
     this.descriptors.push({ type: 'F', name, nodes: [nOutP, nOutN], value: gain, controlSource });
+  }
+
+  /**
+   * Add an ngspice B-source with an `I=` expression (current flows from
+   * `nPlus` through the source to `nMinus`).
+   *
+   * @param name - Device name (e.g., `'B1'`)
+   * @param nPlus - Positive node
+   * @param nMinus - Negative node
+   * @param expression - Parsed behavioral current expression
+   */
+  addBehavioralCurrentSource(
+    name: string,
+    nPlus: string,
+    nMinus: string,
+    expression: BehavioralExpression,
+  ): void {
+    const descriptor = behavioralDescriptor(name, nPlus, nMinus, expression);
+    for (const node of descriptor.nodes) this.nodeSet.add(node);
+    this.descriptors.push(descriptor);
+  }
+
+  /**
+   * Add a Z-card device (NHFET level 5 or NMF level 2, chosen by its model).
+   *
+   * @param name - Device name (e.g., `'Z1'`)
+   * @param nodeDrain - Drain node
+   * @param nodeGate - Gate node
+   * @param nodeSource - Source node
+   * @param modelName - Name of an `NHFET` or `NMF` model
+   * @param instanceParams - `L`/`W` instance parameters
+   */
+  addZDevice(
+    name: string,
+    nodeDrain: string,
+    nodeGate: string,
+    nodeSource: string,
+    modelName: string,
+    instanceParams: Record<string, number> = {},
+  ): void {
+    this.nodeSet.add(nodeDrain);
+    this.nodeSet.add(nodeGate);
+    this.nodeSet.add(nodeSource);
+    this.descriptors.push({
+      type: 'Z', name, nodes: [nodeDrain, nodeGate, nodeSource], modelName, params: instanceParams,
+    });
   }
 
   /**
@@ -1039,6 +1110,19 @@ export class Circuit {
     ) {
       throw new InvalidCircuitError("Unsupported bounded HFET step: 'TEMP'");
     }
+    const hasNMF = expandedDescriptors.some(desc =>
+      desc.type === 'Z' && this._models.get(desc.modelName!)?.type === 'NMF');
+    if (hasNMF) {
+      const unsupported = this._poleZeroAnalyses.length > 0
+        ? 'pz'
+        : this._analyses.find(analysis =>
+          analysis.type !== 'op' && analysis.type !== 'dc' && analysis.type !== 'tran')?.type;
+      if (unsupported) {
+        throw new InvalidCircuitError(
+          `NMF level-2 MESFET supports only .op, .dc and .tran analyses; '.${unsupported}' is unsupported`,
+        );
+      }
+    }
 
     const hasBoundedVBIC = expandedDescriptors.some(desc =>
       desc.type === 'Q' && this._models.get(desc.modelName!)?.params.LEVEL === 4);
@@ -1230,12 +1314,31 @@ export class Circuit {
         case 'Z': {
           const modelName = desc.modelName!;
           const model = this._models.get(modelName);
-          if (!model) throw new Error(`HFET '${desc.name}' references unknown model '${modelName}'`);
-          devices.push(new HFET1(
+          if (!model) throw new Error(`Z-card '${desc.name}' references unknown model '${modelName}'`);
+          const resolved = resolveZModel(model);
+          if (resolved.kind === 'hfet') {
+            devices.push(new HFET1(
+              desc.name,
+              nodeIndices,
+              resolved.model,
+              resolveHFET1Instance(desc.params),
+            ));
+          } else {
+            devices.push(new MESA(
+              desc.name,
+              nodeIndices,
+              resolved.model,
+              resolveMESAInstance(desc.params),
+              this._simulationOptions.gmin ?? MESA_JUNCTION_GMIN,
+            ));
+          }
+          break;
+        }
+        case 'B': {
+          devices.push(new BehavioralCurrentSource(
             desc.name,
             nodeIndices,
-            resolveHFET1Model(model),
-            resolveHFET1Instance(desc.params),
+            compileBehavioralExpression(desc.expression!),
           ));
           break;
         }
@@ -1549,9 +1652,11 @@ export class Circuit {
       if (desc.type === 'Z') {
         const modelName = desc.modelName!;
         const model = this._models.get(modelName);
-        if (!model) throw new Error(`HFET '${desc.name}' references unknown model '${modelName}'`);
-        const params = resolveHFET1Model(model);
-        resolveHFET1Instance(desc.params);
+        if (!model) throw new Error(`Z-card '${desc.name}' references unknown model '${modelName}'`);
+        const resolved = resolveZModel(model);
+        if (resolved.kind === 'hfet') resolveHFET1Instance(desc.params);
+        else resolveMESAInstance(desc.params);
+        const params = resolved.model;
         let [drain, gate, source] = desc.nodes;
         if (params.RD > 0) {
           const drainPrime = internalNodeName(desc.name, 'rd');
@@ -1896,7 +2001,7 @@ export class Circuit {
         }
         case 'Z': {
           const evaluatedTokens = tokens.map(t => evalToken(t));
-          const parsed = parseHFET1Instance(evaluatedTokens, lineNumber, raw);
+          const parsed = parseZInstance(evaluatedTokens, lineNumber, raw);
           result.push({
             type: 'Z',
             name: devName,
@@ -1945,6 +2050,16 @@ export class Circuit {
             nodes: [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3]), mapNode(tokens[4])],
             value: parseNumber(valStr),
           });
+          break;
+        }
+        case 'B': {
+          const card = parseBehavioralSourceCard(raw, lineNumber);
+          result.push(behavioralDescriptor(
+            devName,
+            mapNode(card.nodes[0]),
+            mapNode(card.nodes[1]),
+            mapBehavioralNodes(card.expression, mapNode),
+          ));
           break;
         }
         case 'H': {

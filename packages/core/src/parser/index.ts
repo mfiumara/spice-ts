@@ -15,6 +15,8 @@ import {
 } from './transmission-line-parser.js';
 import { preprocess } from './preprocessor.js';
 import { validateControlCommand } from './control-block.js';
+import { parseBehavioralSourceCard } from './behavioral-expression.js';
+import { parseZInstance } from './z-device-parser.js';
 import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
@@ -192,7 +194,7 @@ function parseNetlist(
         if (first === '.STEP') hasStepAnalysis = true;
         parseDotCommand(circuit, tokens, lineNumber, raw);
       } else {
-        parseDevice(circuit, tokens, lineNumber);
+        parseDevice(circuit, tokens, lineNumber, raw);
       }
     } catch (e) {
       if (e instanceof ParseError) throw e;
@@ -793,7 +795,7 @@ function parseXyceTimeintOptions(tokens: string[]): SimulationOptions {
   return options;
 }
 
-function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): void {
+function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw: string): void {
   const name = tokens[0];
   const type = name[0].toUpperCase();
 
@@ -936,6 +938,16 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number): vo
     case 'F': {
       const gain = parseNumber(tokens[4]);
       circuit.addCCCS(name, tokens[1], tokens[2], tokens[3], gain);
+      break;
+    }
+    case 'B': {
+      const card = parseBehavioralSourceCard(raw, lineNumber);
+      circuit.addBehavioralCurrentSource(card.name, card.nodes[0], card.nodes[1], card.expression);
+      break;
+    }
+    case 'Z': {
+      const instance = parseZInstance(tokens, lineNumber, raw);
+      circuit.addZDevice(name, ...instance.nodes, instance.modelName, instance.params);
       break;
     }
     default:
