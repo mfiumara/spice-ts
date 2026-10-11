@@ -1,0 +1,45 @@
+resistor-mesh-op-50000-before.cpuprofile: 1634 samples, 13588.4 ms sampled
+
+Top self time
+    7418.1 ms  54.6%  factorize core-dist(pr541)/chunk-CD3JVUSG.js:10497
+    2005.9 ms  14.8%  (garbage collector)
+    1078.0 ms   7.9%  amdOrdering core-dist(pr541)/chunk-CD3JVUSG.js:10187
+     365.7 ms   2.7%  compile core-dist(pr541)/chunk-CD3JVUSG.js:7747
+     335.1 ms   2.5%  newtonRaphson core-dist(pr541)/chunk-CD3JVUSG.js:11150
+     252.1 ms   1.9%  analyzePattern core-dist(pr541)/chunk-CD3JVUSG.js:10405
+     189.2 ms   1.4%  collectStatements core-dist(pr541)/chunk-CD3JVUSG.js:8790
+     188.4 ms   1.4%  lockTopology core-dist(pr541)/chunk-CD3JVUSG.js:10845
+     124.3 ms   0.9%  tokenizeLine core-dist(pr541)/chunk-CD3JVUSG.js:5333
+     118.6 ms   0.9%  addResistor core-dist(pr541)/chunk-CD3JVUSG.js:7165
+     109.8 ms   0.8%  parseNetlist core-dist(pr541)/chunk-CD3JVUSG.js:9040
+      97.6 ms   0.7%  stampG core-dist(pr541)/chunk-CD3JVUSG.js:11035
+      93.3 ms   0.7%  tokenizeNetlist core-dist(pr541)/chunk-CD3JVUSG.js:5303
+      90.4 ms   0.7%  preprocessLines core-dist(pr541)/chunk-CD3JVUSG.js:8731
+      77.5 ms   0.6%  resolveNode core-dist(pr541)/chunk-CD3JVUSG.js:7787
+      73.3 ms   0.5%  solveDCOperatingPoint core-dist(pr541)/chunk-CD3JVUSG.js:11366
+      71.0 ms   0.5%  simulate core-dist(pr541)/chunk-CD3JVUSG.js:15761
+      69.7 ms   0.5%  parseNumber core-dist(pr541)/chunk-CD3JVUSG.js:5281
+      64.1 ms   0.5%  (program)
+      51.3 ms   0.4%  (anonymous) core-dist(pr541)/chunk-CD3JVUSG.js:7764
+
+Top inclusive time
+   13588.4 ms 100.0%  (root)
+   10650.7 ms  78.4%  simulate core-dist(pr541)/chunk-CD3JVUSG.js:15761
+    9753.8 ms  71.8%  solveDCOperatingPoint core-dist(pr541)/chunk-CD3JVUSG.js:11366
+    9673.0 ms  71.2%  newtonRaphson core-dist(pr541)/chunk-CD3JVUSG.js:11150
+    7466.8 ms  54.9%  factorize core-dist(pr541)/chunk-CD3JVUSG.js:10497
+    2005.9 ms  14.8%  (garbage collector)
+    1343.3 ms   9.9%  getSparseSolver core-dist(pr541)/chunk-CD3JVUSG.js:10972
+    1335.4 ms   9.8%  analyzePattern core-dist(pr541)/chunk-CD3JVUSG.js:10405
+    1083.3 ms   8.0%  amdOrdering core-dist(pr541)/chunk-CD3JVUSG.js:10187
+     878.8 ms   6.5%  parseAsync core-dist(pr541)/chunk-CD3JVUSG.js:9182
+     605.2 ms   4.5%  parseNetlist core-dist(pr541)/chunk-CD3JVUSG.js:9040
+     605.2 ms   4.5%  parse core-dist(pr541)/chunk-CD3JVUSG.js:9034
+     544.4 ms   4.0%  compile core-dist(pr541)/chunk-CD3JVUSG.js:7747
+     361.0 ms   2.7%  (anonymous) benchmarks/performance/profile-scaling-m2.mjs:1
+     337.2 ms   2.5%  preprocessLines core-dist(pr541)/chunk-CD3JVUSG.js:8731
+     261.2 ms   1.9%  tokenizeNetlist core-dist(pr541)/chunk-CD3JVUSG.js:5303
+     246.3 ms   1.8%  evaluate
+     246.3 ms   1.8%  run node:internal/modules/esm/module_job:332
+     245.9 ms   1.8%  lockTopology core-dist(pr541)/chunk-CD3JVUSG.js:10845
+     234.2 ms   1.7%  parseDevice core-dist(pr541)/chunk-CD3JVUSG.js:9700

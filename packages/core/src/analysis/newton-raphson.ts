@@ -35,6 +35,7 @@ export function newtonRaphson(
   let mosfets: MOSFET[] | null = null;
   let otherDevices: DeviceModel[] | null = null;
   const selfLimiting = devices.filter(device => device.limitedLastStamp !== undefined);
+  const convergenceTested = devices.filter(device => device.convergenceTest !== undefined);
 
   for (let iter = 0; iter < maxIter; iter++) {
     guard?.checkpoint('solve:newton-iteration');
@@ -87,6 +88,7 @@ export function newtonRaphson(
     if (
       isConverged(assembler.solution, assembler.prevSolution, assembler.numNodes, options)
       && !selfLimiting.some(device => device.limitedLastStamp!())
+      && convergenceTested.every(device => device.convergenceTest!(assembler.solution, options))
     ) {
       if (telemetry) {
         telemetry.newtonIterations += iter + 1;

@@ -298,7 +298,7 @@ function buildParams(
     case 'M': {
       const model = desc.modelName ? models.get(desc.modelName) : undefined;
       const channelType = model
-        ? (model.type.toUpperCase().startsWith('P') ? 'p' : 'n')
+        ? (/^(P|VDMOSP$)/.test(model.type.toUpperCase()) ? 'p' : 'n')
         : 'n';
       const result: Record<string, number | string | boolean> = {
         modelName: desc.modelName ?? '',

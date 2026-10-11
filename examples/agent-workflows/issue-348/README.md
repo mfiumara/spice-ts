@@ -19,6 +19,10 @@ Run the packed consumer directly with:
 node examples/agent-workflows/issue-348/packed-consumer.mjs
 ```
 
+CI runs the focused test through `pnpm -C examples test` (`test:agent-workflows`), so any change to the stream, result or metadata fails until `expected-output.json` is regenerated with an explanation.
+
+The AC sweep `.ac lin 2 10 100` produces two points (10 Hz, 100 Hz) in spice-ts. ngspice-47 produces one point for `lin 2`; that divergence is tracked in #555, and this snapshot changes if it is resolved toward ngspice. The transient grid (58 points for `.tran 1u 2u`; ngspice-47 takes 59) follows the ngspice-style first step from #545; the remaining step-grid divergence after t=0 is tracked in #561.
+
 `packed-consumer.mjs` packs `@spice-ts/core`, `@spice-ts/protocol`, and `@spice-ts/mcp`, installs the tarballs in a temporary external project, copies only `workflow.mjs`, and runs from that external directory. The focused test compares stdout byte-for-byte with `expected-output.json`.
 
 The circuit is authored demonstration data. It is not benchmark or parity evidence, and this example makes no simulator-accuracy or performance claim.

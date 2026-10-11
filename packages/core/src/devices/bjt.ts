@@ -77,15 +77,46 @@ const GMIN = 1e-12;
 const MAX_EXP_ARG = 709;
 
 /**
- * Reverse floor of the Ebers-Moll junctions. Forward bias is never clamped:
- * ngspice-47 bjtload.c limits a junction only relative to the previous Newton
- * iterate (DEVpnjlim), which {@link BJT.limitNewtonStep} does, so a converged
- * point is evaluated on the true exponential above vcrit (#538). Below -40*Vt
- * the junction current is -IS to within IS*exp(-40), so the floor does not
- * move a converged solution.
+ * ngspice-47 bjtload.c junction law (polarity domain) for cbe, cbc and cben:
+ * csat*(exp(v/vtn) - 1) at and above -3*vtn, and the reverse law
+ * -csat*(1 + (3*vtn/(e*v))^3) below it (#551). Forward bias is never clamped:
+ * ngspice limits a junction only relative to the previous Newton iterate
+ * (DEVpnjlim), which {@link BJT.limitNewtonStep} does (#538). Writes into
+ * `out` so the stamp hot path does not allocate.
  */
-function floorReverseJunctionVoltage(vd: number, vt: number): number {
-  return Math.max(vd, -40 * vt);
+function junctionLaw(
+  out: JunctionPoint, voltage: number, saturationCurrent: number, thermalVoltage: number,
+): JunctionPoint {
+  if (voltage >= -3 * thermalVoltage) {
+    const exponential = Math.exp(voltage / thermalVoltage);
+    out.current = saturationCurrent * (exponential - 1);
+    out.conductance = saturationCurrent * exponential / thermalVoltage;
+  } else {
+    const ratio = 3 * thermalVoltage / (voltage * Math.E);
+    const cube = ratio * ratio * ratio;
+    out.current = -saturationCurrent * (1 + cube);
+    out.conductance = saturationCurrent * 3 * cube / voltage;
+  }
+  return out;
+}
+
+interface JunctionPoint {
+  current: number;
+  conductance: number;
+}
+
+/**
+ * ngspice-47 bjtload.c DC currents and their linearisation (polarity domain):
+ * collector current cc and base current cb as functions of (vbe, vbc), with
+ * dcc/dvbe = gmForward, dcc/dvbc = -gmReverse, dcb/dvbe = gpi, dcb/dvbc = gmu.
+ */
+interface BJTDCPoint {
+  collectorCurrent: number;
+  baseCurrent: number;
+  gmForward: number;
+  gmReverse: number;
+  gpi: number;
+  gmu: number;
 }
 
 /**
@@ -321,6 +352,10 @@ export class BJT implements DeviceModel {
     nodeVBE: 0, nodeVBC: 0, vSub: 0, substrateNode: -1,
     qBE: 0, capBE: 0, crossCapacitance: 0, qBC: 0, capBC: 0, qSub: 0, capSub: 0,
   };
+  private readonly junction: JunctionPoint = { current: 0, conductance: 0 };
+  private readonly dcPoint: BJTDCPoint = {
+    collectorCurrent: 0, baseCurrent: 0, gmForward: 0, gmReverse: 0, gpi: 0, gmu: 0,
+  };
 
   constructor(
     readonly name: string,
@@ -441,18 +476,55 @@ export class BJT implements DeviceModel {
     return this.nodes[3] ?? -1;
   }
 
-  /** Whether the bounded Gummel-Poon base charge (VAF/IKF/ISE) is active. */
-  private usesBaseCharge(): boolean {
-    const { VAF, IKF, ISE } = this.params;
-    return Number.isFinite(VAF) || Number.isFinite(IKF) || ISE !== 0;
-  }
-
   /**
-   * The Ebers-Moll path keeps its historical reverse floor; the base-charge
-   * path needs the true reverse bias for the Early factor and its gm.
+   * ngspice-47 bjtload.c DC evaluation at the polarity-domain junction
+   * voltages: cbe/cbc from the IS law, the B-E leakage cben from ISE/NE, and
+   * CKTgmin*vbe in cben and CKTgmin*vbc in cbcn, so the gmin current flows at
+   * convergence as in ngspice, not only in the Jacobian (#551). With VAF and
+   * IKF omitted qb = 1, which is the Ebers-Moll transport model. Writes into a
+   * reused object.
    */
-  private limitBaseCollectorVoltage(vBC: number): number {
-    return this.usesBaseCharge() ? vBC : floorReverseJunctionVoltage(vBC, this.params.NR * VT);
+  private evaluateDC(vBE: number, vBC: number): BJTDCPoint {
+    const { BF, BR, IS, NF, NR, VAF, IKF, ISE, NE } = this.params;
+    const { current: cbe, conductance: gbe } = junctionLaw(this.junction, vBE, IS, NF * VT);
+    const { current: cbc, conductance: gbc } = junctionLaw(this.junction, vBC, IS, NR * VT);
+    let cben = GMIN * vBE;
+    let gben = GMIN;
+    if (ISE !== 0) {
+      const leakage = junctionLaw(this.junction, vBE, ISE, NE * VT);
+      cben += leakage.current;
+      gben += leakage.conductance;
+    }
+    // ISC/NC are not supported, so cbcn is the gmin term alone.
+    const cbcn = GMIN * vBC;
+    const gbcn = GMIN;
+
+    const inverseEarly = Number.isFinite(VAF) ? 1 / VAF : 0;
+    const q1 = 1 / (1 - inverseEarly * vBC);
+    let qb: number;
+    let dqbdve: number;
+    if (!Number.isFinite(IKF)) {
+      qb = q1;
+      dqbdve = 0;
+    } else {
+      const arg = Math.max(0, 1 + 4 * cbe / IKF);
+      const sqarg = arg !== 0 ? Math.sqrt(arg) : 1;
+      qb = q1 * (1 + sqarg) / 2;
+      dqbdve = q1 * gbe / (IKF * sqarg);
+    }
+    const dqbdvc = q1 * qb * inverseEarly;
+
+    const transport = cbe - cbc;
+    const go = (gbc + transport * dqbdvc / qb) / qb;
+    const gm = (gbe - transport * dqbdve / qb) / qb - go;
+    const point = this.dcPoint;
+    point.collectorCurrent = transport / qb - cbc / BR - cbcn;
+    point.baseCurrent = cbe / BF + cben + cbc / BR + cbcn;
+    point.gpi = gbe / BF + gben;
+    point.gmu = gbc / BR + gbcn;
+    point.gmForward = gm + go;
+    point.gmReverse = point.gmu + go;
+    return point;
   }
 
   noiseOperatingPoint(solution: Float64Array): {
@@ -462,34 +534,13 @@ export class BJT implements DeviceModel {
     collectorCurrent: number;
     baseCurrent: number;
   } {
-    const { BF, BR, IS, NF, NR, VAF, IKF, ISE, NE, polarity } = this.params;
+    const { polarity } = this.params;
     const [collectorNode, baseNode, emitterNode] = this.nodes;
     const voltage = (node: number): number => node >= 0 ? solution[node] : 0;
-    const vBE = floorReverseJunctionVoltage(
+    const { collectorCurrent, baseCurrent } = this.evaluateDC(
       polarity * (voltage(baseNode) - voltage(emitterNode)),
-      NF * VT,
-    );
-    const vBC = this.limitBaseCollectorVoltage(
       polarity * (voltage(baseNode) - voltage(collectorNode)),
     );
-    const forwardCurrent = IS * (Math.exp(vBE / (NF * VT)) - 1);
-    const reverseCurrent = IS * (Math.exp(vBC / (NR * VT)) - 1);
-
-    let collectorCurrent: number;
-    let baseCurrent: number;
-    if (!this.usesBaseCharge()) {
-      collectorCurrent = forwardCurrent - reverseCurrent * (1 + 1 / BR);
-      baseCurrent = forwardCurrent / BF + reverseCurrent / BR;
-    } else {
-      const qEarly = Number.isFinite(VAF) ? 1 / (1 - vBC / VAF) : 1;
-      const highCurrent = Number.isFinite(IKF) ? forwardCurrent / IKF : 0;
-      const qB = 0.5 * qEarly
-        * (1 + Math.sqrt(Math.max(1 + 4 * highCurrent, Number.EPSILON)));
-      const leakage = ISE * (Math.exp(vBE / (NE * VT)) - 1);
-      collectorCurrent = (forwardCurrent - reverseCurrent) / qB - reverseCurrent / BR;
-      baseCurrent = forwardCurrent / BF + reverseCurrent / BR + leakage;
-    }
-
     return {
       collectorNode,
       baseNode,
@@ -500,7 +551,7 @@ export class BJT implements DeviceModel {
   }
 
   stamp(ctx: StampContext): void {
-    const { BF, BR, IS, NF, NR, VAF, IKF, ISE, NE, polarity } = this.params;
+    const { polarity } = this.params;
     const [nC, nB, nE] = this.nodes;
 
     // Get node voltages
@@ -508,61 +559,18 @@ export class BJT implements DeviceModel {
     const vB = nB >= 0 ? ctx.getVoltage(nB) : 0;
     const vE = nE >= 0 ? ctx.getVoltage(nE) : 0;
 
-    // Junction voltages (polarity flips for PNP)
-    const vBE_raw = polarity * (vB - vE);
-    const vBC_raw = polarity * (vB - vC);
-
-    const vtF = NF * VT;
-    const vtR = NR * VT;
-
-    // Junction voltages: only the Ebers-Moll reverse floor; Newton steps are
+    // Junction voltages (polarity flips for PNP). No clamp: Newton steps are
     // limited relative to the previous iterate in limitNewtonStep (#538).
-    const vBE = floorReverseJunctionVoltage(vBE_raw, vtF);
-    const vBC = this.limitBaseCollectorVoltage(vBC_raw);
+    const vBE = polarity * (vB - vE);
+    const vBC = polarity * (vB - vC);
 
-    // Forward and reverse junction currents.
-    const expBE = Math.exp(vBE / vtF);
-    const expBC = Math.exp(vBC / vtR);
-    const IF = IS * (expBE - 1);
-    const IR = IS * (expBC - 1);
-    const gF = (IS / vtF) * expBE + GMIN;
-    const gR = (IS / vtR) * expBC + GMIN;
-
-    let IC: number;
-    let IB: number;
-    let gm_f: number;
-    let gm_r: number;
-    let go_be: number;
-    const go_bc = gR / BR;
-    if (!this.usesBaseCharge()) {
-      // Keep the established level-1 arithmetic byte-for-byte equivalent;
-      // nonlinear transient acceptance can be sensitive to operation order.
-      IC = IF - IR * (1 + 1 / BR);
-      IB = IF / BF + IR / BR;
-      gm_f = gF;
-      gm_r = gR * (1 + 1 / BR);
-      go_be = gF / BF;
-    } else {
-      // Bounded forward-active Gummel-Poon base charge.
-      const qEarly = Number.isFinite(VAF) ? 1 / (1 - vBC / VAF) : 1;
-      const highCurrent = Number.isFinite(IKF) ? IF / IKF : 0;
-      const root = Math.sqrt(Math.max(1 + 4 * highCurrent, Number.EPSILON));
-      const qB = 0.5 * qEarly * (1 + root);
-      const dqBdVBE = Number.isFinite(IKF) ? qEarly * gF / (IKF * root) : 0;
-      const dqBdVBC = Number.isFinite(VAF) ? qB * qEarly / VAF : 0;
-      const transport = (IF - IR) / qB;
-      const dTransportVBE = (gF * qB - (IF - IR) * dqBdVBE) / (qB * qB);
-      const dTransportVBC = (-gR * qB - (IF - IR) * dqBdVBC) / (qB * qB);
-      const leakageExp = Math.exp(vBE / (NE * VT));
-      const leakage = ISE * (leakageExp - 1);
-      const leakageG = ISE * leakageExp / (NE * VT);
-
-      IC = transport - IR / BR;
-      IB = IF / BF + IR / BR + leakage;
-      gm_f = dTransportVBE;
-      gm_r = -(dTransportVBC - gR / BR);
-      go_be = gF / BF + leakageG;
-    }
+    const dc = this.evaluateDC(vBE, vBC);
+    const IC = dc.collectorCurrent;
+    const IB = dc.baseCurrent;
+    const gm_f = dc.gmForward;
+    const gm_r = dc.gmReverse;
+    const go_be = dc.gpi;
+    const go_bc = dc.gmu;
 
     // Equivalent currents for Newton-Raphson companion model
     // For IC: IC_eq = IC - gm_f * vBE + gm_r * vBC
@@ -691,11 +699,14 @@ export class BJT implements DeviceModel {
     const vBE = polarity * (voltage(nB) - voltage(nE));
     const vBC = polarity * (voltage(nB) - voltage(nC));
 
-    const expBE = Math.exp(vBE / vtF);
-    const expBC = Math.exp(vBC / vtR);
-    const forwardCurrent = IS * (expBE - 1);
-    const forwardConductance = IS * expBE / vtF;
-    const reverseConductance = IS * expBC / vtR;
+    // ngspice bjtload.c builds the diffusion charges from cbe/gbe and cbc/gbc
+    // (the junction law without gmin, reverse law included).
+    const forward = junctionLaw(this.junction, vBE, IS, vtF);
+    const forwardCurrent = forward.current;
+    const forwardConductance = forward.conductance;
+    const reverse = junctionLaw(this.junction, vBC, IS, vtR);
+    const reverseCurrent = reverse.current;
+    const reverseConductance = reverse.conductance;
 
     const point = this.chargePoint;
     const depletionBE = depletionCharge(vBE, CJE, VJE, MJE, FC);
@@ -761,7 +772,7 @@ export class BJT implements DeviceModel {
     point.qBE = qBE;
     point.capBE = capBE;
     point.crossCapacitance = crossCapacitance;
-    point.qBC = TR * IS * (expBC - 1) + depletionBC.charge;
+    point.qBC = TR * reverseCurrent + depletionBC.charge;
     point.capBC = TR * reverseConductance + depletionBC.capacitance;
     point.qSub = qSub;
     point.capSub = capSub;

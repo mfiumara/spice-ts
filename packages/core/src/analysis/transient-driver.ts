@@ -170,6 +170,8 @@ class TransientSimImpl implements TransientSim {
   private readonly useDampedInductiveRecovery: boolean;
   /** Devices with an ngspice DEVtrunc charge truncation-error hook. */
   private readonly truncatingDevices: readonly DeviceModel[];
+  /** Nodes a device sets algebraically (no truncation error in ngspice); skipped by the node LTE. */
+  private readonly lteExemptNodes: Uint8Array;
 
   private time = 0;
   private dt: number;
@@ -221,6 +223,10 @@ class TransientSimImpl implements TransientSim {
     this.useDampedInductiveRecovery = compiled.devices.some(device => device instanceof Inductor)
       && compiled.devices.some(device => device.isNonlinear);
     this.truncatingDevices = compiled.devices.filter(device => device.truncateTransientStep !== undefined);
+    this.lteExemptNodes = new Uint8Array(compiled.nodeCount);
+    for (const device of compiled.devices) {
+      for (const node of device.algebraicNodes ?? []) this.lteExemptNodes[node] = 1;
+    }
     this.dt = Math.min(config.timestep, config.maxTimestep);
     this.prevDt = this.dt;
     this.prevPrevDt = this.dt;
@@ -251,6 +257,15 @@ class TransientSimImpl implements TransientSim {
   }
 
   advance(): TransientStep {
+    return this.buildStep(this.advanceSolution());
+  }
+
+  /**
+   * Advance one accepted timepoint and return its solution vector without
+   * building the name-keyed {@link TransientStep} Maps. Internal fast path for
+   * `solveTransient`; the returned array is only valid until the next call.
+   */
+  advanceSolution(): Float64Array {
     if (this.disposed) throw new InvalidCircuitError('TransientSim has been disposed');
 
     const prevSol = new Float64Array(this.assembler.solution);
@@ -433,7 +448,7 @@ class TransientSimImpl implements TransientSim {
       const dtBase = this.justCrossedBreakpoint ? actualDt : Math.min(actualDt * growFactor, chargeBound);
       this.dt = Math.min(dtBase, this.config.maxTimestep, remaining);
 
-      return this.buildStep(sol);
+      return sol;
     }
   }
 
@@ -479,6 +494,11 @@ class TransientSimImpl implements TransientSim {
   /** Returns the current state at t=0 (or whatever the current simTime is) as a TransientStep. */
   peekInitialStep(): TransientStep {
     return this.buildStep(this.assembler.solution);
+  }
+
+  /** The solution vector at the current simTime (valid until the next advance). */
+  currentSolution(): Float64Array {
+    return this.assembler.solution;
   }
 
   /** Test-only accessor; returns the remaining breakpoints in order. */
@@ -591,6 +611,7 @@ class TransientSimImpl implements TransientSim {
     const divider = method === 'trapezoidal' || method === 'gear2' ? 3 : 2;
     const { nodeCount } = this.compiled;
     for (let i = 0; i < nodeCount; i++) {
+      if (this.lteExemptNodes[i] === 1) continue;
       const slope = (previous[i] - this.secondPrevSol[i]) / this.prevDt;
       const predicted = previous[i] + dt * slope;
       const error = Math.abs(current[i] - predicted) / divider;
@@ -659,7 +680,11 @@ export function createDriverFromCompiled(
     convergence?: ConvergenceTelemetry;
     guard?: ProtocolExecutionGuard;
   },
-): TransientSim & { peekInitialStep(): TransientStep } {
+): TransientSim & {
+  peekInitialStep(): TransientStep;
+  currentSolution(): Float64Array;
+  advanceSolution(): Float64Array;
+} {
   const impl = new TransientSimImpl(compiled, options, {
     stopTime: config.stopTime,
     timestep: config.timestep,

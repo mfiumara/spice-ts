@@ -16,19 +16,25 @@ import { BJT } from './devices/bjt.js';
 import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
 import { MOS6, resolveMOS6Model } from './devices/mos6.js';
+import { VDMOS } from './devices/vdmos.js';
+import { isVdmosModelType, resolveVdmosModel } from './devices/vdmos-model.js';
 import { JFET, resolveNJFETParams } from './devices/jfet.js';
 import { HFET1 } from './devices/hfet1.js';
 import { resolveHFET1Instance } from './devices/hfet1-model.js';
 import { MESA } from './devices/mesa.js';
 import { MESA_JUNCTION_GMIN, resolveMESAInstance } from './devices/mesa-model.js';
 import { resolveZModel } from './devices/z-device.js';
-import { BehavioralCurrentSource } from './devices/behavioral-current-source.js';
+import { BehavioralCurrentSource, BehavioralVoltageSource } from './devices/behavioral-source.js';
 import {
+  behavioralControlNodes,
   compileBehavioralExpression,
   formatBehavioralExpression,
   mapBehavioralNodes,
   parseBehavioralSourceCard,
+  substituteBehavioralParameters,
   type BehavioralExpression,
+  type BehavioralInstanceParams,
+  type BehavioralSourceKind,
 } from './parser/behavioral-expression.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
 import { VCCS } from './devices/vccs.js';
@@ -38,7 +44,15 @@ import { CCVS } from './devices/ccvs.js';
 import { TransmissionLine } from './devices/transmission-line.js';
 import { resolveLtraModel } from './devices/ltra-model.js';
 import { LossyTransmissionLine, LtraModelState } from './devices/lossy-transmission-line.js';
-import { GROUND_NODE } from './types.js';
+import {
+  assertXspiceAnalyses,
+  bindXspiceSources,
+  createXspiceDevice,
+  prepareXspiceInstance,
+  type PreparedXspiceInstance,
+} from './devices/xspice/compile.js';
+import type { XspiceInstanceCard, XspiceModelCard } from './parser/xspice-parser.js';
+import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
@@ -46,7 +60,13 @@ import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-pars
 import { parsePassiveElement } from './parser/passive-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
 import { parseBJTInstance, type BJTInstanceParams } from './parser/bjt-parser.js';
-import { parseLtraModelCard } from './parser/transmission-line-parser.js';
+import {
+  formatCplModelCard,
+  parseCplLines,
+  parseTransmissionLineModelCard,
+  parseTxlLine,
+} from './parser/transmission-line-parser.js';
+import { createSwecLine, swecLineBranchNames } from './devices/swec-line-factory.js';
 import {
   parseDiodeInstanceParams,
   type DiodeInstanceParams,
@@ -117,18 +137,34 @@ interface DeviceDescriptor {
   ic?: number;
   coupledA?: string;
   coupledB?: string;
-  /** B-card `I=` expression; node references are already circuit node names. */
+  /** B-card `I=`/`V=` expression; node references are already circuit node names. */
   expression?: BehavioralExpression;
+  /** B-card source form and ASRC instance parameters. */
+  behavioral?: { kind: BehavioralSourceKind; params: BehavioralInstanceParams };
+  /** XSPICE A-card; its nodes are known once the model's port table is applied at compile. */
+  xspice?: XspiceInstanceCard;
 }
 
 function behavioralDescriptor(
   name: string,
   nPlus: string,
   nMinus: string,
+  kind: BehavioralSourceKind,
   expression: BehavioralExpression,
+  params: BehavioralInstanceParams = {},
 ): DeviceDescriptor {
-  const controls = compileBehavioralExpression(expression).nodes;
-  return { type: 'B', name, nodes: [nPlus, nMinus, ...controls], expression };
+  const controls = behavioralControlNodes(expression);
+  return {
+    type: 'B', name, nodes: [nPlus, nMinus, ...controls], expression, behavioral: { kind, params },
+  };
+}
+
+function formatBehavioralSource(desc: DeviceDescriptor): string {
+  const { kind, params } = desc.behavioral!;
+  const assignment = `${kind === 'voltage' ? 'V' : 'I'}=${formatBehavioralExpression(desc.expression!)}`;
+  const instance = Object.entries(params)
+    .map(([key, value]) => `${key}=${typeof value === 'boolean' ? Number(value) : formatNumber(value)}`);
+  return [desc.name, desc.nodes[0], desc.nodes[1], assignment, ...instance].join(' ');
 }
 
 function formatNumber(value: number): string {
@@ -143,6 +179,7 @@ function formatParams(params?: Record<string, number>): string {
 }
 
 function formatModel(model: ModelParams): string {
+  if (model.type === 'CPL') return formatCplModelCard(model);
   const params = formatParams(model.params);
   return params
     ? `.model ${model.name} ${model.type} (${params})`
@@ -234,6 +271,13 @@ function formatDevice(desc: DeviceDescriptor): string {
       return `${desc.name} ${desc.nodes.join(' ')} Z0=${formatNumber(desc.value ?? 0)} TD=${formatNumber(desc.params?.TD ?? 0)}`;
     case 'O':
       return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}`.trim();
+    case 'Y':
+    case 'P': {
+      const lines = desc.nodes.length / 2;
+      const length = desc.params?.LEN === undefined ? '' : ` len=${formatNumber(desc.params.LEN)}`;
+      return `${desc.name} ${desc.nodes.slice(0, lines).join(' ')} 0 ${desc.nodes.slice(lines).join(' ')} 0 `
+        + `${desc.modelName ?? ''}${length}`;
+    }
     case 'V':
     case 'I':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatWaveform(desc.waveform)}`;
@@ -253,9 +297,11 @@ function formatDevice(desc: DeviceDescriptor): string {
     case 'H':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.controlSource ?? ''} ${formatNumber(desc.value ?? 0)}`.trim();
     case 'B':
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} I=${formatBehavioralExpression(desc.expression!)}`;
+      return formatBehavioralSource(desc);
     case 'X':
       return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail}`.trim();
+    case 'A':
+      return desc.xspice!.raw;
     default:
       return `${desc.name} ${desc.nodes.join(' ')}`;
   }
@@ -317,6 +363,21 @@ function bjtInstanceDescriptorParams(
 /** ngspice-47 BJT/VBIC instance scale: AREA * M (both default to 1). */
 function bjtInstanceScale(params: Record<string, number> | undefined): number {
   return (params?.AREA ?? 1) * (params?.M ?? 1);
+}
+
+/** VDMOS instance parameters (vdmos.c): M, TEMP and DTEMP are supported. */
+function vdmosInstanceParams(desc: DeviceDescriptor): { M?: number; TEMP?: number; DTEMP?: number } {
+  const { M, TEMP, DTEMP, ...rest } = desc.params ?? {};
+  const unsupported = Object.keys(rest);
+  if (unsupported.length > 0) {
+    throw new InvalidCircuitError(
+      `VDMOS '${desc.name}' has unsupported instance parameters: ${unsupported.join(', ')}`,
+    );
+  }
+  if (M !== undefined && !(M > 0)) {
+    throw new InvalidCircuitError(`VDMOS '${desc.name}' multiplier M must be positive`);
+  }
+  return { M, TEMP, DTEMP };
 }
 
 function isPositiveFinite(value: number | undefined): value is number {
@@ -384,6 +445,8 @@ export class Circuit {
   private _poleZeroAnalyses: PoleZeroAnalysis[] = [];
   private _steps: StepAnalysis[] = [];
   private _models: Map<string, ModelParams> = new ModelTable();
+  /** XSPICE code model cards, keyed by upper-case model name like {@link ModelTable}. */
+  private _xspiceModels = new Map<string, XspiceModelCard>();
   private _subcircuits = new Map<string, SubcktDefinition>();
   private _simulationOptions: SimulationOptions = {};
   private _initialConditions: NodeInitialState[] = [];
@@ -424,8 +487,10 @@ export class Circuit {
     return this.descriptors.reduce((count, descriptor) =>
       count + (descriptor.type === 'T'
         ? 2
-        : descriptor.type === 'V' || descriptor.type === 'L'
-          || descriptor.type === 'E' || descriptor.type === 'H' ? 1 : 0), 0);
+        : descriptor.type === 'Y' || descriptor.type === 'P'
+          ? descriptor.nodes.length
+          : descriptor.type === 'V' || descriptor.type === 'L'
+            || descriptor.type === 'E' || descriptor.type === 'H' ? 1 : 0), 0);
   }
 
   getNodeIndex(name: string): number {
@@ -572,6 +637,29 @@ export class Circuit {
   }
 
   /**
+   * Add an ngspice SWEC lossy line: a Y-element (TXL, one conductor) or a
+   * P-element (CPL, `inputs.length` coupled conductors). All conductors are
+   * referenced to ground, as in ngspice, which ignores the reference nodes.
+   */
+  addLossyLines(
+    name: string,
+    card: 'Y' | 'P',
+    inputs: string[],
+    outputs: string[],
+    modelName: string,
+    length?: number,
+  ): void {
+    for (const node of [...inputs, ...outputs]) this.nodeSet.add(node);
+    this.descriptors.push({
+      type: card,
+      name,
+      nodes: [...inputs, ...outputs],
+      modelName,
+      ...(length === undefined ? {} : { params: { LEN: length } }),
+    });
+  }
+
+  /**
    * Add a voltage source to the circuit.
    *
    * @param name - Device name (e.g., `'V1'`)
@@ -685,10 +773,53 @@ export class Circuit {
     nPlus: string,
     nMinus: string,
     expression: BehavioralExpression,
+    params: BehavioralInstanceParams = {},
   ): void {
-    const descriptor = behavioralDescriptor(name, nPlus, nMinus, expression);
+    this.addBehavioralSource(behavioralDescriptor(name, nPlus, nMinus, 'current', expression, params));
+  }
+
+  /**
+   * Add an ngspice B-source with a `V=` expression: V(nPlus) - V(nMinus)
+   * follows the expression, with a branch current like a `V` source.
+   *
+   * @param name - Device name (e.g., `'B1'`)
+   * @param nPlus - Positive node
+   * @param nMinus - Negative node
+   * @param expression - Parsed behavioral voltage expression
+   * @param params - ASRC instance parameters (`tc1`, `tc2`, `temp`, `dtemp`, `reciproctc`)
+   */
+  addBehavioralVoltageSource(
+    name: string,
+    nPlus: string,
+    nMinus: string,
+    expression: BehavioralExpression,
+    params: BehavioralInstanceParams = {},
+  ): void {
+    this.addBehavioralSource(behavioralDescriptor(name, nPlus, nMinus, 'voltage', expression, params));
+  }
+
+  private addBehavioralSource(descriptor: DeviceDescriptor): void {
     for (const node of descriptor.nodes) this.nodeSet.add(node);
     this.descriptors.push(descriptor);
+  }
+
+  /**
+   * Add an XSPICE A-element. Its connections are read against the port table
+   * of its code model when the circuit is compiled, as ngspice does.
+   *
+   * @param card - Parsed A-card (see `parseXspiceInstance`)
+   */
+  addXspiceInstance(card: XspiceInstanceCard): void {
+    this.descriptors.push({ type: 'A', name: card.name, nodes: [], modelName: card.modelName, xspice: card });
+  }
+
+  /**
+   * Add a `.model` card of an implemented XSPICE code model.
+   *
+   * @param model - Parsed card (see `parseXspiceModelCard`)
+   */
+  addXspiceModel(model: XspiceModelCard): void {
+    this._xspiceModels.set(model.name.toUpperCase(), model);
   }
 
   /**
@@ -1123,6 +1254,9 @@ export class Circuit {
     for (const model of this._models.values()) {
       lines.push(formatModel(model));
     }
+    for (const model of this._xspiceModels.values()) {
+      lines.push(model.raw);
+    }
 
     for (const subckt of this._subcircuits.values()) {
       const params = formatParams(subckt.params);
@@ -1194,6 +1328,21 @@ export class Circuit {
       }
     }
 
+    const hasSwecLines = expandedDescriptors.some(desc => desc.type === 'Y' || desc.type === 'P');
+    if (hasSwecLines) {
+      // ngspice-47 TXL/CPL only define DC (series-resistance) and transient
+      // behaviour; their AC load reuses the transient load.
+      const unsupported = this._poleZeroAnalyses.length > 0
+        ? 'pz'
+        : this._analyses.find(analysis =>
+          analysis.type !== 'op' && analysis.type !== 'dc' && analysis.type !== 'tran')?.type;
+      if (unsupported) {
+        throw new InvalidCircuitError(
+          `TXL/CPL lossy lines (Y and P elements) support only .op, .dc and .tran analyses; '.${unsupported}' is unsupported`,
+        );
+      }
+    }
+
     const hasBoundedVBIC = expandedDescriptors.some(desc =>
       desc.type === 'Q' && this._models.get(desc.modelName!)?.params.LEVEL === 4);
     if (hasBoundedVBIC) {
@@ -1209,6 +1358,27 @@ export class Circuit {
         throw new InvalidCircuitError(`Unsupported bounded VBIC analysis: '${unsupported.type}'`);
       }
     }
+
+    // XSPICE A instances: their nodes follow from the code model's port table.
+    const xspiceInstances = new Map<DeviceDescriptor, PreparedXspiceInstance>();
+    for (const desc of expandedDescriptors) {
+      if (desc.type !== 'A') continue;
+      const prepared = prepareXspiceInstance(
+        desc.xspice!,
+        this._xspiceModels.get(desc.modelName!.toUpperCase()),
+        this._models.has(desc.modelName!),
+        GROUND_NODE,
+      );
+      desc.nodes = [...prepared.nodes];
+      xspiceInstances.set(desc, prepared);
+    }
+    assertXspiceAnalyses(
+      [...xspiceInstances.values()],
+      [
+        ...this._analyses.map(analysis => analysis.type),
+        ...(this._poleZeroAnalyses.length > 0 ? ['pz'] : []),
+      ],
+    );
 
     // Collect all nodes from expanded descriptors
     for (const desc of expandedDescriptors) {
@@ -1348,6 +1518,20 @@ export class Circuit {
           devices.push(new LossyTransmissionLine(desc.name, nodeIndices, firstBranch, secondBranch, state));
           break;
         }
+        case 'Y':
+        case 'P': {
+          const lines = desc.nodes.length / 2;
+          const names = swecLineBranchNames(desc.name, desc.type, lines);
+          const branches = names.map(() => branchIndex++);
+          branchNames.push(...names);
+          devices.push(createSwecLine(
+            { name: desc.name, card: desc.type, nodes: nodeIndices, length: desc.params?.LEN },
+            this._models.get(desc.modelName ?? ''),
+            desc.modelName ?? '',
+            branches,
+          ));
+          break;
+        }
         case 'D': {
           const modelParams = desc.modelName ? this.requireModel('Diode', desc).params : {};
           const { RS: seriesResistanceOverride, ...instanceParams } = desc.params ?? {};
@@ -1414,15 +1598,27 @@ export class Circuit {
           break;
         }
         case 'B': {
-          devices.push(new BehavioralCurrentSource(
-            desc.name,
-            nodeIndices,
-            compileBehavioralExpression(desc.expression!),
-          ));
+          const compiledExpression = compileBehavioralExpression(desc.expression!);
+          const { kind, params } = desc.behavioral!;
+          if (kind === 'voltage') {
+            const bi = branchIndex++;
+            branchNames.push(desc.name);
+            devices.push(new BehavioralVoltageSource(desc.name, nodeIndices, bi, compiledExpression, params));
+          } else {
+            devices.push(new BehavioralCurrentSource(desc.name, nodeIndices, compiledExpression, params));
+          }
           break;
         }
         case 'M': {
           const model = this.requireModel('MOSFET', desc);
+          if (isVdmosModelType(model.type)) {
+            // Nodes were expanded to [D, G, S, D', G', S', B'] by expandPassiveParasitics.
+            const { model: vdmosModel, warnings } = resolveVdmosModel(model);
+            devices.push(new VDMOS(
+              desc.name, nodeIndices, vdmosModel, vdmosInstanceParams(desc), warnings,
+            ));
+            break;
+          }
           const modelParams = model.params;
           const polarity = model.type === 'PMOS' ? -1 : 1;
           const level = modelParams.LEVEL ?? 1;
@@ -1505,6 +1701,13 @@ export class Circuit {
           devices.push(new CCVS(desc.name, nodeIndices, ctrlDev.branches[0], bi, desc.value!));
           break;
         }
+        case 'A': {
+          devices.push(createXspiceDevice(xspiceInstances.get(desc)!, resolveNode, branchName => {
+            branchNames.push(branchName);
+            return branchIndex++;
+          }));
+          break;
+        }
         default:
           throw new Error(`Device type '${desc.type}' not yet implemented`);
       }
@@ -1514,13 +1717,21 @@ export class Circuit {
       }
     }
 
+    bindXspiceSources(devices, deviceMap);
+
     return {
       devices, nodeCount, branchCount: branchNames.length,
       nodeNames, nodeIndexMap, branchNames,
       analyses: this._analyses, poleZeroAnalyses: this._poleZeroAnalyses, models: this._models,
       subcircuits: this._subcircuits,
       steps: this._steps,
-      simulationOptions: { ...this._simulationOptions },
+      simulationOptions: {
+        ...this._simulationOptions,
+        // ngspice cktdojob.c: with 'A' devices present, trtol above 1 is reduced to 1.
+        ...(xspiceInstances.size > 0 && (this._simulationOptions.trtol ?? DEFAULT_OPTIONS.trtol) > 1
+          ? { trtol: 1 }
+          : {}),
+      },
       initialConditions: this._initialConditions.map(state => ({ ...state })),
       nodeSets: this._nodeSets.map(state => ({ ...state })),
     };
@@ -1767,6 +1978,14 @@ export class Circuit {
         continue;
       }
 
+      if (desc.type === 'M') {
+        const model = this._models.get(desc.modelName ?? '');
+        if (model && isVdmosModelType(model.type)) {
+          result.push(this.expandVdmosDescriptor(desc, model));
+          continue;
+        }
+      }
+
       if (desc.type === 'Z') {
         const modelName = desc.modelName!;
         const model = this._models.get(modelName);
@@ -1798,6 +2017,35 @@ export class Circuit {
     }
 
     return result;
+  }
+
+  /**
+   * Give a VDMOS instance its inner nodes (vdmosset.c): D'/G'/S' behind
+   * RD/RG/RS and the body diode anode B' behind RB, each equal to the external
+   * node when its resistance is zero. The resistors are stamped by the device,
+   * because quasi saturation makes RD bias dependent.
+   */
+  private expandVdmosDescriptor(desc: DeviceDescriptor, model: ModelParams): DeviceDescriptor {
+    if (desc.nodes.length !== 3) {
+      throw new InvalidCircuitError(
+        `VDMOS '${desc.name}' has ${desc.nodes.length} terminals; only the 3-terminal (D G S) form is supported`
+        + ' (the 5-terminal thermal form needs the self-heating network, which is not implemented)',
+      );
+    }
+    const { model: resolved } = resolveVdmosModel(model);
+    const [drain, gate, source] = desc.nodes;
+    const inner = (resistance: number, terminal: string, suffix: string) =>
+      (resistance > 0 ? internalNodeName(desc.name, suffix) : terminal);
+    return {
+      ...desc,
+      nodes: [
+        drain, gate, source,
+        inner(resolved.rd, drain, 'drain'),
+        inner(resolved.rg, gate, 'gate'),
+        inner(resolved.rs, source, 'source'),
+        inner(resolved.diode.rb, source, 'body_diode'),
+      ],
+    };
   }
 
   private expandCapacitorDescriptor(
@@ -2002,9 +2250,8 @@ export class Circuit {
 
       // Handle .model inside subcircuit — register locally AND globally
       if (first === '.MODEL') {
-        const modelParams = tokens[2]?.toUpperCase() === 'LTRA'
-          ? parseLtraModelCard(tokens, 0)
-          : parseModelCard(tokens, 0);
+        const modelParams = parseTransmissionLineModelCard(tokens, 0)
+          ?? parseModelCard(tokens, 0);
         // Register in the circuit's global model map so compile() can find it
         this._models.set(modelParams.name, modelParams);
         continue;
@@ -2111,6 +2358,23 @@ export class Circuit {
           });
           break;
         }
+        case 'Y':
+        case 'P': {
+          const parsed = devType === 'Y'
+            ? (() => {
+              const line = parseTxlLine(tokens, lineNumber);
+              return { inputs: [line.input], outputs: [line.output], modelName: line.modelName, length: line.length };
+            })()
+            : parseCplLines(tokens, lineNumber);
+          result.push({
+            type: devType,
+            name: devName,
+            nodes: [...parsed.inputs.map(mapNode), ...parsed.outputs.map(mapNode)],
+            modelName: parsed.modelName,
+            ...(parsed.length === undefined ? {} : { params: { LEN: parsed.length } }),
+          });
+          break;
+        }
         case 'D': {
           const modelName = tokens[3];
           const evaluatedTokens = tokens.map(t => evalToken(t));
@@ -2191,12 +2455,15 @@ export class Circuit {
           break;
         }
         case 'B': {
-          const card = parseBehavioralSourceCard(raw, lineNumber);
+          // ngspice's numparam front end substitutes parameters into B expressions.
+          const card = parseBehavioralSourceCard(substituteBehavioralParameters(raw, localParams), lineNumber);
           result.push(behavioralDescriptor(
             devName,
             mapNode(card.nodes[0]),
             mapNode(card.nodes[1]),
+            card.kind,
             mapBehavioralNodes(card.expression, mapNode),
+            card.params,
           ));
           break;
         }

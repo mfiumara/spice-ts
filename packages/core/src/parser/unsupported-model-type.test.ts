@@ -7,6 +7,7 @@ import { parse, parseAsync, UnsupportedModelTypeError } from './index.js';
 // stored and then ignored, so `.model p1 vdmos ...` + `m1 d g s p1` simulated
 // with no model at all (9e75 A where ngspice-47 reports 14.44 A). Like #414 for
 // unresolved model names, an unsupported model type is now a typed error.
+// VDMOS itself is implemented since #506; PJF stands in as the unsupported type.
 
 function parseFailure(netlist: string): unknown {
   try {
@@ -17,9 +18,9 @@ function parseFailure(netlist: string): unknown {
   throw new Error('expected parse() to throw');
 }
 
-const VDMOS_DECK = `VDMOS p channel output
-m1 d g s p1
-.model p1 vdmos pchan vto=-1.2 is=10n kp=2 bv=-12 rb=1k
+const PJF_DECK = `P-channel JFET output
+j1 d g s p1
+.model p1 pjf vto=-1.2 beta=1e-4
 vd d 0 -5
 vg g 0 -5
 vs s 0 0
@@ -28,26 +29,26 @@ vs s 0 0
 `;
 
 describe('unsupported .model types (#509)', () => {
-  it('rejects a VDMOS .model with a typed UNSUPPORTED_MODEL_TYPE error', () => {
-    const error = parseFailure(VDMOS_DECK);
+  it('rejects a PJF .model with a typed UNSUPPORTED_MODEL_TYPE error', () => {
+    const error = parseFailure(PJF_DECK);
     expect(error).toBeInstanceOf(UnsupportedModelTypeError);
     expect(error).toBeInstanceOf(ParseError);
     expect(error).toMatchObject({
       name: 'UnsupportedModelTypeError',
       code: 'UNSUPPORTED_MODEL_TYPE',
       modelName: 'p1',
-      modelType: 'VDMOS',
+      modelType: 'PJF',
       line: 3,
-      context: '.model p1 vdmos pchan vto=-1.2 is=10n kp=2 bv=-12 rb=1k',
+      context: '.model p1 pjf vto=-1.2 beta=1e-4',
     });
-    expect((error as Error).message).toContain(".model 'p1' has unsupported type 'VDMOS'");
+    expect((error as Error).message).toContain(".model 'p1' has unsupported type 'PJF'");
   });
 
-  it('reports the unsupported VDMOS model through simulate() instead of a numeric result', async () => {
-    await expect(simulate(VDMOS_DECK)).rejects.toMatchObject({
+  it('reports the unsupported PJF model through simulate() instead of a numeric result', async () => {
+    await expect(simulate(PJF_DECK)).rejects.toMatchObject({
       code: 'UNSUPPORTED_MODEL_TYPE',
       modelName: 'p1',
-      modelType: 'VDMOS',
+      modelType: 'PJF',
       line: 3,
     });
   });
@@ -56,8 +57,8 @@ describe('unsupported .model types (#509)', () => {
     const error = parseFailure(`inverter
 vdd 1 0 5
 .subckt inv out in vdd vss
-mp1 out in vdd p1
-.model  P1  vdmos cgdmin=0.2p pchan
+jp1 out in vdd p1
+.model  P1  pjf vto=-1
 .ends
 xinv 3 2 1 0 inv
 Vin 2 0 DC 0
@@ -65,7 +66,7 @@ Vin 2 0 DC 0
 .end
 `);
     expect(error).toBeInstanceOf(UnsupportedModelTypeError);
-    expect(error).toMatchObject({ modelName: 'P1', modelType: 'VDMOS', line: 5 });
+    expect(error).toMatchObject({ modelName: 'P1', modelType: 'PJF', line: 5 });
   });
 
   it('rejects an unsupported model type pulled in by parseAsync() includes', async () => {
@@ -83,7 +84,7 @@ R1 a 0 1k
   });
 
   it.each([
-    'VDMOS', 'SW', 'CSW', 'R', 'PJF', 'PHFET', 'PMF', 'URC', 'TRANSLINE',
+    'SW', 'CSW', 'R', 'PJF', 'PHFET', 'PMF', 'URC', 'TRANSLINE',
     'NCH', 'PCH', 'DI', 'HIGH_SW', 'LOW_SW', 'NIGBT', 'BOGUS',
   ])('rejects .model type %s that no spice-ts device implements', type => {
     const error = parseFailure(`unsupported ${type}

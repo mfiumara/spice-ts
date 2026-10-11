@@ -434,6 +434,12 @@ At ingestion on ngspice-47, 13 circuits produce raw analysis data and 7 fail on 
 |---|---|---|---|---|
 | 14 minimal decks, one per parenthesised/extended source form | Source cards copied verbatim from ngspice examples at [`3ef069fb`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/): `cider/diode/{diode,diotran,pd1,pindiode}.cir`, `cider/mos/bootinv.cir`, `cider/serial/recovery.cir`, `cider/surfmob/Tbicmpd1.cir`, `xspice/original-examples/{arbitrary_phase,digital_models1,hybrid_models1_transient}.deck` (corpus-f batch 1, #484). One NP-truncation deck is project-authored. | ngspice examples are BSD-3-Clause; the project-authored deck and the added RC loads are MIT, as is this repository. | Each deck is the verbatim source card plus a linear RC load and the analysis line, so both engines can run it without CIDER/XSPICE devices. Both engines read the same text. ngspice also receives a `.control` block that only runs the deck and writes the vectors. | `benchmarks/source-waveform-syntax/compare.ts` writes `report.json`; the README there records every residual. |
 
+## XSPICE analog code models, issue #487
+
+| Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
+|---|---|---|---|---|
+| Unit-test cards in `packages/core/src/devices/xspice/xspice.test.ts` | The `analog_models1_dc` cards are copied from ngspice [`examples/xspice/original-examples/analog_models1_dc.deck`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/xspice/original-examples/analog_models1_dc.deck) at `3ef069fb` (corpus-f batch 1, #484). The limit, port-type, swept-DC, AC and transient cards are project-authored. | ngspice examples are BSD-3-Clause; the project-authored cards are MIT, as is this repository. | The copied cards keep their values. The `.op` line and resistor loads are unchanged; only the title and comment lines are dropped. Reference values come from ngspice-47 running the same cards with a `.control` print/meas block. | `pnpm --filter @spice-ts/core exec vitest run src/devices/xspice/xspice.test.ts`. The corpus-f deck outcomes and every loss are in `benchmarks/xspice/README.md`. No corpus fixture is added by this change: the decks come from #529. |
+
 ## Chua & Lin circuit, issue #48
 
 - Fixture: `benchmarks/circuits/chua-issue-48.cir`
