@@ -37,7 +37,7 @@ The unit tests pin the IEEE values (`packages/core/src/devices/swec-lines.test.t
 
 ## Transient waveforms: corpus-f decks (#484)
 
-Fixtures: the 15 corpus-f P/Y decks from ngspice `3ef069fb1f04177a153f342a32d941fc20ff047e`
+Fixtures: the 16 corpus-f P/Y decks from ngspice `3ef069fb1f04177a153f342a32d941fc20ff047e`
 (BSD-3-Clause), as committed on branch `wt/corpus-f-batch1-484` @ `5014ae0b`
 under `benchmarks/corpus/corpus-f/fixtures/`. Reproduce with:
 
@@ -51,8 +51,14 @@ ngspice-47 is the Homebrew build on macOS arm64. Both simulators use their
 default step control on the deck's own `.tran` card. Runtimes are wall clock,
 and ngspice's includes process start.
 
+Issue #491 lists 15 decks. Corpus-f has a 16th deck with Y/P instances:
+`examples/TransmissionLines/cpl4_txl_2_line.sp`, with three TXL `y` lines and
+one CPL `p2` line. #484 bucketed it differently, so it was missing from the
+#491 list. It is included below. Before this PR it stopped with a typed
+`ParseError: Unsupported device card: 'Y'`.
+
 Unchanged decks in spice-ts, on main with #489:
-- 12 of the 15 parse and simulate.
+- 13 of the 16 parse and simulate.
 - `cpl3_4_line` (both copies) fails with a typed `TimestepTooSmallError`; see the losses below.
 - `cpl_ibm1a.sp` stops on its `.control repeat` loop with a typed
   `ParseError`. That is control-language scope, not a line-model gap.
@@ -77,6 +83,7 @@ command moved to a `.tran` card. The same netlist then goes to both simulators.
 | examples/.../cpl3_4_line.sp | CPL 4 | **LOSS: `TimestepTooSmallError` at t=37.6 ns** | 9.98% | | | |
 | examples/.../cpl_ibm1.sp | CPL 6, ECL (BJT) | **LOSS: 50.4%, ~220x slower** | 5.57% | | 392 / 29551 | 0.14 s / 30 s |
 | examples/.../cpl_ibm1a.sp | CPL 6, ECL (BJT) | **LOSS: 50.4%, ~390x slower** (first `tran` only) | | | 392 / 29551 | 0.11 s / 45 s |
+| examples/.../cpl4_txl_2_line.sp | 3x TXL + CPL 2, BJT driver, diode load | **LOSS: 27.63%, ~65-125x slower** | 26.89% | 3.41% | 285 / 12748 | 0.10-0.18 s / 11-17 s |
 
 The ngspice self-spread column runs ngspice against itself, on the same deck,
 with only TMAX changed. On these edge-dominated digital decks, timestep
@@ -112,3 +119,28 @@ lines drive gates that feed back into the lines.
    - The root cause in the load/step interaction is not identified yet.
 3. `cpl1_4_line.sp` stays 15% off even at matched TMAX.
 4. `cpl_ibm1a.sp` needs `.control repeat` (control language, outside #491).
+5. `cpl4_txl_2_line.sp` (3 TXL lines + a 2-line CPL, BJT driver, diode
+   receiver). Follow-up: #549.
+   - This PR turns a typed `ParseError` into a waveform, with no warning, that
+     is 27.6% of swing off at the deck's own `tran 0.1ns 60ns 0 0.35N`:
+     v(4) is off by 1.24 V on a 6.41 V swing, v(2) by 0.98 V on 4.56 V, and
+     v(5) by 0.54 V on 1.97 V.
+   - ngspice is not converged on this deck either. With TMAX=0.01n it moves
+     26.9% of swing away from its own default run (285 vs 6026 points).
+   - With both simulators at TMAX=0.01n, the gap closes to 3.41% (v(4) 0.17 V
+     on 6.38 V). That points to step placement rather than the line model,
+     but the default-step result is still published as a loss.
+   - Runtime is a loss by itself. At the default step, spice-ts takes 12748
+     points and 11-17 s against ngspice's 285 points and 0.10-0.18 s, about
+     65-125x slower (three runs on M-series Macs under varying load). At
+     TMAX=0.01n it is 13-18 s vs 0.6-1.1 s.
+
+   Reproduce, with the fixture taken from `wt/corpus-f-batch1-484`:
+
+   ```sh
+   git show origin/wt/corpus-f-batch1-484:benchmarks/corpus/corpus-f/fixtures/examples/TransmissionLines/cpl4_txl_2_line.sp > /tmp/cpl4_txl_2_line.sp
+   pnpm exec tsx benchmarks/txl-cpl/compare.ts /tmp/cpl4_txl_2_line.sp
+   # matched TMAX: the same deck with its .control tran changed to TMAX=0.01n
+   sed 's/^tran 0.1ns 60ns 0 0.35N/tran 0.1ns 60ns 0 0.01n/' /tmp/cpl4_txl_2_line.sp > /tmp/cpl4_tmax.sp
+   pnpm exec tsx benchmarks/txl-cpl/compare.ts /tmp/cpl4_tmax.sp
+   ```
