@@ -1,13 +1,15 @@
-# Issue #459: `.OPTIONS TEMP` and the aggregate refresh after #470, #537, #542 and #541
+# Issue #459: `.OPTIONS TEMP` and the aggregate refresh after #470, #537, #542, #541, #546, #545, #550 and #552
 
 Host: Apple M5 Pro, darwin arm64, Node v22, ngspice-47 (shared host, load average above 200, so
 runtimes are diagnostic only). Every row is one full 100-fixture `benchmarks/aggregate-report.ts`
-run. Rows 1-3 ran in throwaway worktrees (`git worktree add --detach <main commit>`) with only the
+run. Rows 1-7 and 9 ran in throwaway worktrees (`git worktree add --detach <main commit>`) with only the
 `SOURCES_SHA256` pin in `benchmarks/aggregate-report.ts` set to that commit's `benchmarks/SOURCES.md`
-(`33b51481`), using `--check` against the committed #470 artifact. `--check` then fails only on the
-pin, and its error lists the fixtures whose deterministic projection differs. Row 4 is a generation
-run on the same 5589ab1 worktree, so its outcome hash can be quoted. Rows 5 and 6 are this branch.
-Nothing from the bisect worktrees is committed.
+(`33b51481` for rows 1-7, where #537 was the last SOURCES.md change on main; row 9 kept the `d4a0994d` pin that #552 committed). Rows 1-3 used `--check`
+against the committed #470 artifact: it then fails only on the pin, and its error lists the
+fixtures whose deterministic projection differs. Rows 4-7 and 9 are generation runs, compared per fixture
+with a throwaway script (statuses, grids and every per-signal metric; error text excluded, as in the
+deterministic projection). Rows 8, 10 and final are this branch. Nothing from the bisect
+worktrees is committed.
 
 | Run | Main commit | PR | Outcome | spice-ts S/F/U | Analyses / fixtures | Change vs previous row |
 |---|---|---|---|---|---|---|
@@ -16,10 +18,22 @@ Nothing from the bisect worktrees is committed.
 | 2 | `327aa28` | #542 typed UnsupportedModelTypeError | `--check`: "differing fixtures: none" | 63/1/36 | 70 / 51 | spice-ts error text of corpus-d/pwm-switch only (stays unsupported; error text is outside the projection) |
 | 3 | `5589ab1` | #541 LU factor reuse | `--check`: "differing fixtures: none" | 63/1/36 | 70 / 51 | outcome-neutral |
 | 4 | `5589ab1` (generation) | — | `c703b84a` | 63/1/36 | 70 / 51 | per-fixture metrics, grids and statuses identical to row 0 |
-| 5 | `5589ab1` + #459 (pin `c00b9106`, before ledger edit) | #459 `.OPTIONS TEMP` | `ea68964e` | 64/1/35 | 71 / 52 | only ngspice/vbic-temperature: unsupported → success |
-| final | this branch, regenerated ledger (pin `c00b9106`) | — | `6dc28693` | 64/1/35 | 71 / 52 | ledger text only; `--check` passes |
+| 5 | `21eea3e` | #546 mcp lifecycle scripts | `c703b84a` | 63/1/36 | 70 / 51 | outcome-neutral (reproduces row 4 exactly) |
+| 6 | `7b8a1ba` | #545 ngspice first transient step at t = 0 | `b682fde3` | 63/1/36 | 70 / 51 | 25 transient analyses; **losses** mos-amp v(5) 5.255 → 5.300 V, schmitt v(6) 0.7573 → 0.7638 V, relative RMS envelope 201300.6 → 203361.3 (hfet i(vdd)); gains coupled-lossy-lines 0.927 → 0.828 V, rca3040 TRAN 0.256 → 0.230 V |
+| 7 | `2a8112c` | #550 GP BJT junction limiting + substrate junction | `75420c0c` | 63/1/36 | 70 / 51 | 24 analyses on 14 BJT fixtures; coupled-lossy-lines RMS down on 38 of 47 but **loss** worst v(x3.3) 0.8275 → 0.8435 V; lossy-line-24-inch 0.498 → 0.456 V; **loss** bjt-noise onoise_total rel 1.23e-7 → 1.91e-7 |
+| 8 | `2a8112c` + #459 (pin `c00b9106`, before ledger edit) | #459 `.OPTIONS TEMP` | `e5d648fa` | 64/1/35 | 71 / 52 | only ngspice/vbic-temperature: unsupported → success (superseded by rows 9-10) |
+| 9 | `2812371` (its own pin `d4a0994d`) | #552 MOS1 body effect, signed VTO, LD; typed UnsupportedModelLevelError | `3c88e414` | 59/1/40 | 66 / 47 | **coverage loss**: mos-amplifier pair (LEVEL=2), bsim1 (LEVEL=4), bsim2 (LEVEL=5) success → unsupported (follow-up #565); mos-memory-cell 1.906 → 0.248 V gain |
+| 10 | `2812371` + #459 (pin `2ce09abb`, before ledger edit) | #459 `.OPTIONS TEMP` | `d3b4fb48` | 60/1/39 | 67 / 48 | only ngspice/vbic-temperature: unsupported → success |
+| final | this branch on `2812371`, regenerated ledger | — | see `AGGREGATE_PARITY.md` | 60/1/39 | 67 / 48 | ledger text only; `--check` passes |
 
-ngspice stays at 52/9/39 throughout.
+ngspice stays at 52/9/39 throughout. The full gain and loss lists for rows 6, 7 and 9 are in the
+`metricTransitions` ledger of `benchmarks/aggregate-report.ts` (rendered in `AGGREGATE_PARITY.md`).
+Row 9 used the pin that #552 itself committed. The four fixtures it rejects keep stale `spiceTs`
+reasons in their corpus manifests; updating those would change the fixture-tree pin, so it is left
+for a follow-up, as #552 noted.
+
+An earlier pass of this branch on main 5589ab1 (pushed as `0f381ea`, outcome `6dc28693`, `--check`
+exit 0) went stale when #546, #545 and #550 merged, and row 8 went stale when #552 merged. Rows 5-10 replace them.
 
 ## ngspice/vbic-temperature (unchanged `tests/vbic/temp.cir`, TEMP = 150 C)
 
@@ -32,14 +46,14 @@ One DC analysis, 101 of 101 points aligned, 6 signals:
 | i(vb) | 1.6704e-7 A | 3.7293e-8 A | 3.428e-4 |
 | v(1), v(q1_b), v(q1_c) | 0 | 0 | 0 |
 
-These are losses against ngspice-47 and are published as such. The same bounded VBIC on the same
-deck at 27 C differs by up to 2.67e-6 A on i(vc), so the residual is the existing bounded-model gap
-(#76), not the temperature mapping.
+These are losses against ngspice-47 and are published as such. An independent rerun outside the
+harness (ngspice-47 `wrdata` with 12 digits against `simulate()` on the same bytes) gives the same
+maxima. The same deck with TEMP=27 differs by up to 2.669e-6 A on i(vc) and 5.65e-7 A on i(vb), so
+the residual at 150 C is the existing bounded-model gap (#76), not the temperature mapping.
 
-Totals move from 969 to 975 absolute and 933 to 939 relative signals, and from 9,427,074 to
-9,427,680 absolute and 9,400,650 to 9,401,256 relative samples. Both envelopes are unchanged
-(absolute 7853.15771484375 on vbic-common-emitter-ac pole(1), relative 1075904.729730855 on
-ngspice/mos6-inverter-transient). No fixture, tolerance or harness logic changed.
+On top of main 2812371, #459 moves totals from 873 to 879 absolute and from 841 to 847 relative
+signals, and from 9,388,320 to 9,388,926 absolute and from 9,364,374 to 9,364,980 relative samples.
+#459 changes neither envelope. No fixture, tolerance or harness logic changed.
 
 ## Reproduce
 
