@@ -9,6 +9,7 @@ import { Resistor } from './devices/resistor.js';
 import { resolveResistor } from './devices/resistor-model.js';
 import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
+import { TransientNoiseContext } from './devices/transient-noise.js';
 import { Capacitor } from './devices/capacitor.js';
 import { Inductor } from './devices/inductor.js';
 import { MutualInductor } from './devices/mutual-inductor.js';
@@ -61,7 +62,9 @@ import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
-import { extractRFPort, parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
+import {
+  extractRFPort, parseSourceWaveform, parseInstanceParams, transientNoiseWaveform, transientRandomWaveform,
+} from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
 import { parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
@@ -194,6 +197,22 @@ function alterSourceWaveform(
     descriptor.waveform = pulse as SourceDescriptorWaveform;
     return undefined;
   }
+  if (key === 'TRNOISE' || key === 'TRRANDOM') {
+    // ngspice-47 vsrcpar.c/isrcpar.c: the new coefficients replace the source
+    // function and re-initialise its noise state; DC and AC terms are kept.
+    let noise: SourceDescriptorWaveform;
+    try {
+      noise = key === 'TRNOISE' ? transientNoiseWaveform(values) : transientRandomWaveform(values);
+    } catch (error) {
+      return (error as Error).message;
+    }
+    const dc = waveform.type === 'dc' ? waveform.value : waveform.dc;
+    const ac = waveform.type === 'ac'
+      ? { magnitude: waveform.magnitude ?? 1, phase: waveform.phase ?? 0 }
+      : waveform.ac;
+    descriptor.waveform = { ...noise, ...(dc !== undefined ? { dc } : {}), ...(ac ? { ac } : {}) };
+    return undefined;
+  }
   if (values.length !== 1) return `parameter needs one value, got ${values.length}`;
   const [value] = values;
   if (key === undefined || key === 'DC') {
@@ -223,6 +242,13 @@ function sourceParameter(waveform: SourceDescriptorWaveform | undefined, key: st
   if (key === 'DC') return [sourceDc(source)];
   if (key === 'PULSE' && source.type === 'pulse') {
     return PULSE_FIELDS.map(field => (source as Record<string, number>)[field]);
+  }
+  if (key === 'TRNOISE' && source.type === 'trnoise') {
+    return [source.amplitude, source.ts, source.alpha, source.oneOverFAmplitude,
+      source.rtsAmplitude, source.rtsCaptureTime, source.rtsEmissionTime].map(value => value ?? 0);
+  }
+  if (key === 'TRRANDOM' && source.type === 'trrandom') {
+    return [source.distribution, source.ts, source.td, source.param1 ?? 1, source.param2].map(value => value ?? 0);
   }
   if (key === 'AC' || key === 'ACMAG') {
     return [source.type === 'ac' ? (source as { magnitude: number }).magnitude : source.ac?.magnitude ?? 0];
@@ -364,6 +390,17 @@ function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string 
           .map(formatNumber)
           .join(' ')})`;
         break;
+      case 'trnoise':
+        base = `TRNOISE(${[
+          wf.amplitude ?? 0, wf.ts ?? 0, wf.alpha ?? 0, wf.oneOverFAmplitude ?? 0,
+          wf.rtsAmplitude ?? 0, wf.rtsCaptureTime ?? 0, wf.rtsEmissionTime ?? 0,
+        ].map(formatNumber).join(' ')})`;
+        break;
+      case 'trrandom':
+        base = `TRRANDOM(${[
+          wf.distribution ?? 0, wf.ts ?? 0, wf.td ?? 0, wf.param1 ?? 1, wf.param2 ?? 0,
+        ].map(formatNumber).join(' ')})`;
+        break;
       default:
         base = 'DC 0';
     }
@@ -502,11 +539,12 @@ function formatStep(step: StepAnalysis): string {
 function bjtInstanceDescriptorParams(
   instance: BJTInstanceParams | undefined,
 ): Record<string, number> | undefined {
-  if (!instance || (instance.AREA === undefined && instance.M === undefined)) return undefined;
-  return {
-    ...(instance.AREA !== undefined ? { AREA: instance.AREA } : {}),
-    ...(instance.M !== undefined ? { M: instance.M } : {}),
-  };
+  if (!instance) return undefined;
+  const params: Record<string, number> = {};
+  for (const name of ['AREA', 'AREAB', 'AREAC', 'M'] as const) {
+    if (instance[name] !== undefined) params[name] = instance[name];
+  }
+  return Object.keys(params).length > 0 ? params : undefined;
 }
 
 /** ngspice-47 BJT/VBIC instance scale: AREA * M (both default to 1). */
@@ -1227,8 +1265,8 @@ export class Circuit {
    *   ground as in ngspice.
    * @param nodeThermal - Optional thermal node. Self-heating is not
    *   implemented, so compilation rejects it with an InvalidCircuitError.
-   * @param instanceParams - Optional instance scaling (`AREA`, multiplier
-   *   `M`); the device is scaled by AREA*M as in ngspice-47.
+   * @param instanceParams - Optional instance scaling (`AREA`, base/collector
+   *   areas `AREAB`/`AREAC`, multiplier `M`), as in ngspice-47.
    */
   addBJT(
     name: string,
@@ -1820,6 +1858,8 @@ export class Circuit {
 
     const devices: DeviceModel[] = [];
     const deviceMap = new Map<string, DeviceModel>();
+    // One random stream per compiled circuit for its TRNOISE/TRRANDOM sources (ngspice has one per process).
+    const noiseContext = new TransientNoiseContext(this._simulationOptions.seed);
     const pendingCurrentSwitches: { device: CurrentSwitch; controlSource: string }[] = [];
     const ltraStates = new Map<string, LtraModelState>();
 
@@ -1846,11 +1886,13 @@ export class Circuit {
         case 'V': {
           const bi = branchIndex++;
           branchNames.push(desc.name);
-          devices.push(new VoltageSource(desc.name, nodeIndices, bi, resolveWaveform(desc.waveform), desc.port));
+          devices.push(new VoltageSource(
+            desc.name, nodeIndices, bi, resolveWaveform(desc.waveform), desc.port, noiseContext,
+          ));
           break;
         }
         case 'I':
-          devices.push(new CurrentSource(desc.name, nodeIndices, resolveWaveform(desc.waveform)));
+          devices.push(new CurrentSource(desc.name, nodeIndices, resolveWaveform(desc.waveform), noiseContext));
           break;
         case 'C': {
           const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
@@ -1957,6 +1999,13 @@ export class Circuit {
           const modelParams = model.params;
           const polarity = model.type === 'PNP' ? -1 : 1;
           if (modelParams.LEVEL === 4) {
+            // ngspice-47 vbic.c has no areab/areac instance parameters.
+            const geometry = ['AREAB', 'AREAC'].filter(name => desc.params?.[name] !== undefined);
+            if (geometry.length > 0) {
+              throw new InvalidCircuitError(
+                `VBIC '${desc.name}' does not accept instance parameters: ${geometry.join(', ')}`,
+              );
+            }
             devices.push(new VBIC(desc.name, nodeIndices, modelParams, polarity, bjtInstanceScale(desc.params)));
           } else {
             devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }, desc.params));
