@@ -40,7 +40,15 @@ import { CCVS } from './devices/ccvs.js';
 import { TransmissionLine } from './devices/transmission-line.js';
 import { resolveLtraModel } from './devices/ltra-model.js';
 import { LossyTransmissionLine, LtraModelState } from './devices/lossy-transmission-line.js';
-import { GROUND_NODE } from './types.js';
+import {
+  assertXspiceAnalyses,
+  bindXspiceSources,
+  createXspiceDevice,
+  prepareXspiceInstance,
+  type PreparedXspiceInstance,
+} from './devices/xspice/compile.js';
+import type { XspiceInstanceCard, XspiceModelCard } from './parser/xspice-parser.js';
+import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
@@ -121,6 +129,8 @@ interface DeviceDescriptor {
   coupledB?: string;
   /** B-card `I=` expression; node references are already circuit node names. */
   expression?: BehavioralExpression;
+  /** XSPICE A-card; its nodes are known once the model's port table is applied at compile. */
+  xspice?: XspiceInstanceCard;
 }
 
 function behavioralDescriptor(
@@ -258,6 +268,8 @@ function formatDevice(desc: DeviceDescriptor): string {
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} I=${formatBehavioralExpression(desc.expression!)}`;
     case 'X':
       return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail}`.trim();
+    case 'A':
+      return desc.xspice!.raw;
     default:
       return `${desc.name} ${desc.nodes.join(' ')}`;
   }
@@ -401,6 +413,8 @@ export class Circuit {
   private _poleZeroAnalyses: PoleZeroAnalysis[] = [];
   private _steps: StepAnalysis[] = [];
   private _models: Map<string, ModelParams> = new ModelTable();
+  /** XSPICE code model cards, keyed by upper-case model name like {@link ModelTable}. */
+  private _xspiceModels = new Map<string, XspiceModelCard>();
   private _subcircuits = new Map<string, SubcktDefinition>();
   private _simulationOptions: SimulationOptions = {};
   private _initialConditions: NodeInitialState[] = [];
@@ -706,6 +720,25 @@ export class Circuit {
     const descriptor = behavioralDescriptor(name, nPlus, nMinus, expression);
     for (const node of descriptor.nodes) this.nodeSet.add(node);
     this.descriptors.push(descriptor);
+  }
+
+  /**
+   * Add an XSPICE A-element. Its connections are read against the port table
+   * of its code model when the circuit is compiled, as ngspice does.
+   *
+   * @param card - Parsed A-card (see `parseXspiceInstance`)
+   */
+  addXspiceInstance(card: XspiceInstanceCard): void {
+    this.descriptors.push({ type: 'A', name: card.name, nodes: [], modelName: card.modelName, xspice: card });
+  }
+
+  /**
+   * Add a `.model` card of an implemented XSPICE code model.
+   *
+   * @param model - Parsed card (see `parseXspiceModelCard`)
+   */
+  addXspiceModel(model: XspiceModelCard): void {
+    this._xspiceModels.set(model.name.toUpperCase(), model);
   }
 
   /**
@@ -1140,6 +1173,9 @@ export class Circuit {
     for (const model of this._models.values()) {
       lines.push(formatModel(model));
     }
+    for (const model of this._xspiceModels.values()) {
+      lines.push(model.raw);
+    }
 
     for (const subckt of this._subcircuits.values()) {
       const params = formatParams(subckt.params);
@@ -1226,6 +1262,27 @@ export class Circuit {
         throw new InvalidCircuitError(`Unsupported bounded VBIC analysis: '${unsupported.type}'`);
       }
     }
+
+    // XSPICE A instances: their nodes follow from the code model's port table.
+    const xspiceInstances = new Map<DeviceDescriptor, PreparedXspiceInstance>();
+    for (const desc of expandedDescriptors) {
+      if (desc.type !== 'A') continue;
+      const prepared = prepareXspiceInstance(
+        desc.xspice!,
+        this._xspiceModels.get(desc.modelName!.toUpperCase()),
+        this._models.has(desc.modelName!),
+        GROUND_NODE,
+      );
+      desc.nodes = [...prepared.nodes];
+      xspiceInstances.set(desc, prepared);
+    }
+    assertXspiceAnalyses(
+      [...xspiceInstances.values()],
+      [
+        ...this._analyses.map(analysis => analysis.type),
+        ...(this._poleZeroAnalyses.length > 0 ? ['pz'] : []),
+      ],
+    );
 
     // Collect all nodes from expanded descriptors
     for (const desc of expandedDescriptors) {
@@ -1530,6 +1587,13 @@ export class Circuit {
           devices.push(new CCVS(desc.name, nodeIndices, ctrlDev.branches[0], bi, desc.value!));
           break;
         }
+        case 'A': {
+          devices.push(createXspiceDevice(xspiceInstances.get(desc)!, resolveNode, branchName => {
+            branchNames.push(branchName);
+            return branchIndex++;
+          }));
+          break;
+        }
         default:
           throw new Error(`Device type '${desc.type}' not yet implemented`);
       }
@@ -1539,13 +1603,21 @@ export class Circuit {
       }
     }
 
+    bindXspiceSources(devices, deviceMap);
+
     return {
       devices, nodeCount, branchCount: branchNames.length,
       nodeNames, nodeIndexMap, branchNames,
       analyses: this._analyses, poleZeroAnalyses: this._poleZeroAnalyses, models: this._models,
       subcircuits: this._subcircuits,
       steps: this._steps,
-      simulationOptions: { ...this._simulationOptions },
+      simulationOptions: {
+        ...this._simulationOptions,
+        // ngspice cktdojob.c: with 'A' devices present, trtol above 1 is reduced to 1.
+        ...(xspiceInstances.size > 0 && (this._simulationOptions.trtol ?? DEFAULT_OPTIONS.trtol) > 1
+          ? { trtol: 1 }
+          : {}),
+      },
       initialConditions: this._initialConditions.map(state => ({ ...state })),
       nodeSets: this._nodeSets.map(state => ({ ...state })),
     };
