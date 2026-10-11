@@ -40,19 +40,41 @@ export class BSIM3v3 implements DeviceModel {
         (merged as unknown as Record<string, number>)[upper] = modelParams[key];
       }
     }
+    // The evaluators work in the NMOS convention. ngspice BSIM3 uses
+    // `type * vth0` (b3ld.c), so a PMOS card's VTH0=-0.5 is a +0.5 V
+    // enhancement threshold there. The built-in default is already the
+    // NMOS-convention magnitude, so only a card-supplied value is flipped.
+    if (Object.keys(modelParams).some((key) => key.toUpperCase() === 'VTH0')) {
+      merged.VTH0 *= polarity;
+    }
     this.params = merged;
     this.derived = computeDerived(this.params, instanceParams);
   }
 
   stamp(ctx: StampContext): void {
-    const [nD, nG, nS, nB] = this.nodes;
+    const [pD, nG, pS, nB] = this.nodes;
     const pol = this.polarity;
 
     // Terminal voltages
-    const vD = nD >= 0 ? ctx.getVoltage(nD) : 0;
     const vG = nG >= 0 ? ctx.getVoltage(nG) : 0;
-    const vS = nS >= 0 ? ctx.getVoltage(nS) : 0;
     const vB = nB >= 0 ? ctx.getVoltage(nB) : 0;
+    let nD = pD;
+    let nS = pS;
+    let vD = nD >= 0 ? ctx.getVoltage(nD) : 0;
+    let vS = nS >= 0 ? ctx.getVoltage(nS) : 0;
+
+    // ngspice BSIM3load reverse mode (BSIM3mode = -1): when Vds < 0 in the
+    // NMOS convention the device is evaluated with drain and source
+    // interchanged (Vgd, Vsd, Vbd), and the current flows from the physical
+    // source to the physical drain. The stamp below is written in terms of
+    // the effective drain/source nodes, so swapping them is sufficient.
+    if (pol * (vD - vS) < 0) {
+      nD = pS;
+      nS = pD;
+      const v = vD;
+      vD = vS;
+      vS = v;
+    }
 
     // Internal voltages in NMOS convention
     const Vgs = pol * (vG - vS);

@@ -1,0 +1,11 @@
+ac source open via ccvs path
+iin 1 0 ac 1
+r1 1 0 1k
+c1 1 0 1n
+vs 1 2 0 ac 1
+r2 2 0 2k
+c2 2 0 1n
+r3 1 3 1k
+c3 3 0 1n
+.pz 1 0 3 0 cur pz
+.end

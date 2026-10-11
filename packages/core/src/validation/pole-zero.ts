@@ -1,18 +1,23 @@
 import { InvalidCircuitError } from '../errors.js';
 import type { PoleZeroAnalysis } from '../types.js';
 
-export const BOUNDED_POLE_ZERO_FORM = '.pz input 0 output 0 {cur|vol} {pol|pz}';
+export const POLE_ZERO_FORM = '.pz in+ in- out+ out- {cur|vol} {pol|zer|pz}';
 
-/** Enforce the deliberately bounded pole-zero analysis supported by the native solver. */
+/** Enforce the ngspice-47 `.pz` directive shape supported by the native solver. */
 export function assertSupportedPoleZero(analysis: PoleZeroAnalysis): void {
+  const nodes = [
+    analysis.inputPositive,
+    analysis.inputNegative,
+    analysis.outputPositive,
+    analysis.outputNegative,
+  ];
   if (
-    analysis.inputNegative !== '0'
-    || analysis.outputNegative !== '0'
+    !nodes.every(node => typeof node === 'string' && node.length > 0)
     || (analysis.inputType !== 'cur' && analysis.inputType !== 'vol')
-    || (analysis.mode !== 'pol' && analysis.mode !== 'pz')
+    || (analysis.mode !== 'pol' && analysis.mode !== 'zer' && analysis.mode !== 'pz')
   ) {
     throw new InvalidCircuitError(
-      `Unsupported .pz form; expected '${BOUNDED_POLE_ZERO_FORM}'`,
+      `Unsupported .pz form; expected '${POLE_ZERO_FORM}'`,
     );
   }
 }
