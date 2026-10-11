@@ -76,6 +76,10 @@ import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
 /** MOSFET model levels with a spice-ts implementation: MOS1, MOS6 and BSIM3v3 (8/49). */
 const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 6, 8, 49];
+/** ngspice's default circuit temperature (and TNOM) in degrees Celsius. */
+const NOMINAL_TEMPERATURE_C = 27;
+/** ngspice CONSTCtoK. */
+const CELSIUS_TO_KELVIN = 273.15;
 
 /**
  * The compiled representation of a circuit, ready for numerical simulation.
@@ -417,6 +421,7 @@ export class Circuit {
   private _xspiceModels = new Map<string, XspiceModelCard>();
   private _subcircuits = new Map<string, SubcktDefinition>();
   private _simulationOptions: SimulationOptions = {};
+  private _temperature: number | undefined;
   private _initialConditions: NodeInitialState[] = [];
   private _nodeSets: NodeInitialState[] = [];
   private nodeSet = new Set<string>();
@@ -435,6 +440,27 @@ export class Circuit {
 
   setSimulationOptions(options: SimulationOptions): void {
     this._simulationOptions = { ...this._simulationOptions, ...options };
+  }
+
+  /**
+   * Circuit temperature in degrees Celsius set by `.options TEMP=`, or
+   * `undefined` for ngspice's default of 27 C.
+   */
+  get temperature(): number | undefined {
+    return this._temperature;
+  }
+
+  /**
+   * Set the circuit temperature in degrees Celsius (ngspice `.options TEMP=`).
+   * Devices without an instance temperature are evaluated at it. A value other
+   * than 27 C is rejected at compile time for devices whose temperature model
+   * does not yet follow ngspice.
+   */
+  setTemperature(celsius: number): void {
+    if (!Number.isFinite(celsius) || celsius <= -CELSIUS_TO_KELVIN) {
+      throw new InvalidCircuitError(`Invalid circuit temperature: ${celsius} C`);
+    }
+    this._temperature = celsius;
   }
 
   get initialConditions(): readonly NodeInitialState[] {
@@ -1168,6 +1194,7 @@ export class Circuit {
       const value = this._simulationOptions[key];
       return value === undefined ? [] : [`${name}=${format(value)}`];
     });
+    if (this._temperature !== undefined) serializedOptions.push(`temp=${this._temperature}`);
     if (serializedOptions.length > 0) lines.push(`.options ${serializedOptions.join(' ')}`);
 
     for (const model of this._models.values()) {
@@ -1605,6 +1632,10 @@ export class Circuit {
 
     bindXspiceSources(devices, deviceMap);
 
+    if (this._temperature !== undefined && this._temperature !== NOMINAL_TEMPERATURE_C) {
+      this.applyCircuitTemperature(this._temperature, expandedDescriptors, devices);
+    }
+
     return {
       devices, nodeCount, branchCount: branchNames.length,
       nodeNames, nodeIndexMap, branchNames,
@@ -1621,6 +1652,47 @@ export class Circuit {
       initialConditions: this._initialConditions.map(state => ({ ...state })),
       nodeSets: this._nodeSets.map(state => ({ ...state })),
     };
+  }
+
+  /**
+   * Evaluate the compiled devices at a non-nominal `.options TEMP` like ngspice.
+   * Only devices whose temperature model follows ngspice-47 are accepted:
+   * resistors (TC1/TC2 around TNOM) and the bounded VBIC (vbictemp.c mapping).
+   * Every other temperature-dependent element is rejected instead of silently
+   * running at 27 C.
+   */
+  private applyCircuitTemperature(
+    temperature: number,
+    descriptors: DeviceDescriptor[],
+    devices: DeviceModel[],
+  ): void {
+    const unsupported = (subject: string): InvalidCircuitError => new InvalidCircuitError(
+      `.options TEMP=${temperature} is unsupported for ${subject}: `
+      + `only resistors and bounded VBIC devices follow the ngspice temperature model`,
+    );
+    const noise = this._analyses.find(analysis => analysis.type === 'noise');
+    if (noise) throw unsupported("'.noise' (noise sources are evaluated at 27 C)");
+
+    for (const desc of descriptors) {
+      if (desc.type === 'R' && (desc.params?.TEMP !== undefined || desc.params?.DTEMP !== undefined)) {
+        throw unsupported(`resistor '${desc.name}' with an instance TEMP/DTEMP`);
+      }
+      if (desc.type === 'C' || desc.type === 'L') {
+        const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
+        const params = { ...model?.params, ...desc.params };
+        if (params.TEMP === undefined && ((params.TC1 ?? 0) !== 0 || (params.TC2 ?? 0) !== 0)) {
+          throw unsupported(`temperature-coefficient ${desc.type === 'C' ? 'capacitor' : 'inductor'} '${desc.name}'`);
+        }
+      }
+    }
+
+    for (const device of devices) {
+      if (device instanceof Resistor || device instanceof VBIC) {
+        device.setTemperature(temperature);
+      } else if (device.isNonlinear && !(device instanceof BehavioralCurrentSource)) {
+        throw unsupported(`device '${device.name}'`);
+      }
+    }
   }
 
   /**
