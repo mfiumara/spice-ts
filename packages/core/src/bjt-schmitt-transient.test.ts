@@ -9,6 +9,37 @@ const fixtureBytes = readFileSync(
 const fixture = fixtureBytes.toString('utf8');
 const fixtureSha256 = createHash('sha256').update(fixtureBytes).digest('hex');
 
+/**
+ * The fixture's qstd model with every charge-storage parameter zeroed. Without
+ * stored charge the regenerative transition is a discontinuous jump that only
+ * the implicit-breakpoint recovery path (#139/#147) can step across, so this
+ * derived deck keeps that path covered now that the byte-identical fixture
+ * stores charge (#385) and switches smoothly.
+ */
+function chargeFreeVariant(netlist: string): string {
+  const chargeParameters = ['tf=0.12ns', 'tr=5ns', 'cje=0.4pf', 'cjc=0.5pf', 'ccs=1pf'];
+  let derived = netlist;
+  for (const parameter of chargeParameters) {
+    expect(derived).toContain(parameter);
+    derived = derived.replace(parameter, `${parameter.split('=')[0]}=0`);
+  }
+  return derived;
+}
+
+/** Times at which a waveform crosses `level`, linearly interpolated. */
+function crossings(time: number[], values: number[], level: number): number[] {
+  const result: number[] = [];
+  for (let index = 1; index < values.length; index++) {
+    const before = values[index - 1]! - level;
+    const after = values[index]! - level;
+    if ((before < 0) !== (after < 0)) {
+      const t0 = time[index - 1]!;
+      result.push(t0 + (time[index]! - t0) * before / (before - after));
+    }
+  }
+  return result;
+}
+
 describe('corpus-E BJT Schmitt transient convergence (#139)', () => {
   it('completes the byte-identical public fixture deterministically with bounded waveforms', { timeout: 30_000 }, async () => {
     expect(fixtureSha256).toBe('ec6efed82593b525b1661173b3a11dbec4880449968389ff86424051d42274b5');
@@ -28,6 +59,46 @@ describe('corpus-E BJT Schmitt transient convergence (#139)', () => {
       expect(Math.min(...values)).toBeGreaterThan(-6);
       expect(Math.max(...values)).toBeLessThan(1);
     }
+
+    const v6 = transient.voltage('6');
+    const edgeStart = v6.findIndex((value, index) => index > 0 && v6[index - 1]! < -0.9 && value >= -0.9);
+    const edgeEnd = v6.findIndex((value, index) => index > edgeStart && value >= -0.1);
+    expect(edgeStart).toBeGreaterThan(0);
+    expect(edgeEnd).toBeGreaterThan(edgeStart);
+    const edgeGaps = transient.time
+      .slice(edgeStart, edgeEnd + 1)
+      .map((time, index) => time - transient.time[edgeStart + index - 1]!);
+    expect(Math.max(...edgeGaps)).toBeLessThanOrEqual(5e-9);
+
+    const telemetry = first.convergence!.transient;
+    expect(telemetry.acceptedSteps).toBe(transient.time.length - 1);
+    expect(telemetry.rejectedSteps).toBe(telemetry.nrRetries + telemetry.lteRetries);
+    expect(telemetry.acceptedSteps).toBeLessThan(4_000);
+    expect(telemetry.rejectedSteps).toBeLessThan(1_500);
+    expect(telemetry.minimumAcceptedTimestep).toBeGreaterThan(0);
+    expect(telemetry.failure).toBeNull();
+  });
+
+  it('switches when ngspice-47 does once the qstd charge storage is stamped (#385)', { timeout: 30_000 }, async () => {
+    // ngspice-47 rejects this fixture's `off=1` card. Its reference uses the
+    // same deck with `off` and `.tran 20ns 1000ns 0 0.2ns` (fine TMAX so its
+    // own edge timing is resolved): v(6) crosses -0.5 V rising at 304.10 ns
+    // and falling at 784.30 ns. Charge-free switching lands 12 ns early.
+    const transient = (await simulate(fixture)).transient!;
+    const [rising, falling, ...rest] = crossings(transient.time, transient.voltage('6'), -0.5);
+
+    expect(rest).toEqual([]);
+    expect(Math.abs(rising! - 304.10e-9)).toBeLessThan(1e-9);
+    expect(Math.abs(falling! - 784.30e-9)).toBeLessThan(1e-9);
+  });
+
+  it('recovers across the charge-free regenerative jump with a bounded Backward-Euler step', { timeout: 30_000 }, async () => {
+    const first = await simulate(chargeFreeVariant(fixture));
+    const second = await simulate(chargeFreeVariant(fixture));
+    const transient = first.transient!;
+
+    expect(transient.time.at(-1)).toBeCloseTo(1e-6, 12);
+    expect(second.transient!.time).toEqual(transient.time);
 
     const v6 = transient.voltage('6');
     const v7 = transient.voltage('7');
@@ -59,19 +130,17 @@ describe('corpus-E BJT Schmitt transient convergence (#139)', () => {
       || (sample.v6 > regenerativeSamples[index - 1]!.v6
         && sample.v7 > regenerativeSamples[index - 1]!.v7)
     ))).toBe(true);
-    // Q1 uses the fixture's qstd model like Q2-Q4 (#382); ngspice-47 rejects
-    // this fixture's `off=1` card, so these are spice-ts regression pins only.
-    expect(v6[edgeStart - 1]).toBeCloseTo(-1.0128, 3);
-    expect(v7[edgeStart - 1]).toBeCloseTo(-1.8103, 3);
+    // spice-ts regression pins for the recovery step (no ngspice reference:
+    // ngspice-47 rejects the fixture's `off=1` card). The pre-edge sample
+    // reflects the Early factor using the true reverse VBC (#385).
+    expect(v6[edgeStart - 1]).toBeCloseTo(-1.0124, 3);
+    expect(v7[edgeStart - 1]).toBeCloseTo(-1.8095, 3);
     expect(v6[edgeStart]).toBeCloseTo(-0.0461, 3);
     expect(v7[edgeStart]).toBeCloseTo(-0.8945, 3);
 
     const telemetry = first.convergence!.transient;
-    expect(telemetry.acceptedSteps).toBe(transient.time.length - 1);
-    expect(telemetry.rejectedSteps).toBe(telemetry.nrRetries + telemetry.lteRetries);
     expect(telemetry.acceptedSteps).toBeLessThan(4_000);
     expect(telemetry.rejectedSteps).toBeLessThan(1_500);
-    expect(telemetry.minimumAcceptedTimestep).toBeGreaterThan(0);
     expect(telemetry.failure).toBeNull();
   });
 });

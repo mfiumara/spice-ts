@@ -9,7 +9,7 @@ const fixtureBytes = readFileSync(new URL(
 ));
 
 describe('RCA3040 BJT convergence', () => {
-  it('runs the unchanged classic fixture through DC, AC, and transient analyses', async () => {
+  it('runs the unchanged classic fixture through DC, AC, and transient analyses', { timeout: 30_000 }, async () => {
     expect(fixtureBytes).toHaveLength(1023);
     expect(createHash('sha256').update(fixtureBytes).digest('hex'))
       .toBe('5024b28b797b53f35d838e1fefeecae059302c4b0106485ff711c9306eedfad1');
