@@ -5,7 +5,7 @@ import type { ConvergenceTelemetry, SimulationOptions, SimulationWarning, Transi
 import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, SimulatorBackend } from './types.js';
 import { resolveOptions, withNetlistOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
-import { runnableTransient, solveTransient } from './analysis/transient.js';
+import { isSavedTransientPoint, runnableTransient, solveTransient } from './analysis/transient.js';
 import { buildACRHS, solveAC } from './analysis/ac.js';
 import { assertNoiseDevicesSupported, solveNoise } from './analysis/noise.js';
 import { solveTransferFunction } from './analysis/transfer-function.js';
@@ -509,9 +509,11 @@ function* streamTransient(
   });
 
   try {
-    yield driver.peekInitialStep();
+    const initialStep = driver.peekInitialStep();
+    if (isSavedTransientPoint(analysis, initialStep.time)) yield initialStep;
     while (!driver.isDone) {
-      yield driver.advance();
+      const step = driver.advance();
+      if (isSavedTransientPoint(analysis, step.time)) yield step;
     }
   } finally {
     driver.dispose();
