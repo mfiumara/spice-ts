@@ -46,7 +46,7 @@ export function newtonRaphson(
       // Fast path: batch-stamp MOSFETs with direct array writes
       MOSFET.batchStamp(
         mosfets, assembler.gValues, assembler.b, assembler.solution,
-        assembler.stampIndex,
+        assembler.stampIndex, assembler.deviceGmin,
       );
       for (const device of otherDevices!) device.stamp(ctx);
     } else {

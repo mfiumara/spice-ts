@@ -1,7 +1,7 @@
 import { SparseMatrix } from '../solver/sparse-matrix.js';
 import type { CscMatrix } from '../solver/csc-matrix.js';
 import { createSparseSolver, type SparseSolver } from '../solver/sparse-solver.js';
-import type { StampContext } from '../devices/device.js';
+import { DEVICE_GMIN, type StampContext } from '../devices/device.js';
 import type { MatrixVariableIdentity } from '../errors.js';
 
 export function createMatrixVariableIdentities(
@@ -30,6 +30,8 @@ export class MNAAssembler {
   public time = 0;
   public dt = 0;
   public sourceScale = 1;
+  /** Device junction gmin (ngspice CKTgmin) handed to devices through the stamp context. */
+  public deviceGmin = DEVICE_GMIN;
 
   // Fast-path typed-array stamping infrastructure
   private _fastPath = false;
@@ -297,11 +299,13 @@ export class MNAAssembler {
           numNodes: this.numNodes,
           sourceScale: 1,
           useDcSourceValue: this.options.useDcSourceValue ?? false,
+          gmin: DEVICE_GMIN,
         };
       }
       this._cachedFastCtx.time = this.time;
       this._cachedFastCtx.dt = this.dt;
       this._cachedFastCtx.sourceScale = this.sourceScale;
+      this._cachedFastCtx.gmin = this.deviceGmin;
       return this._cachedFastCtx;
     }
 
@@ -323,6 +327,7 @@ export class MNAAssembler {
       numNodes: this.numNodes,
       sourceScale: this.sourceScale,
       useDcSourceValue: this.options.useDcSourceValue ?? false,
+      gmin: this.deviceGmin,
     };
   }
 
