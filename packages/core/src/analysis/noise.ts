@@ -136,7 +136,10 @@ export function solveNoise(
   const assembler = new MNAAssembler(nodeCount, branchCount);
   assembler.solution.set(dcSolution);
   const ctx = assembler.getStampContext();
-  for (const device of devices) device.stamp(ctx);
+  for (const device of devices) {
+    if (device.stampSmallSignal) device.stampSmallSignal(ctx);
+    else device.stamp(ctx);
+  }
   for (const device of devices) device.stampDynamic?.(ctx);
   for (let i = 0; i < nodeCount; i++) assembler.G.add(i, i, options.gmin);
 
@@ -161,18 +164,24 @@ export function solveNoise(
   }
 
   const resistorSources = devices
-    .filter((device): device is Resistor => device instanceof Resistor)
+    .filter((device): device is Resistor => device instanceof Resistor && device.noisy)
     .map(resistor => {
       if (!(resistor.resistance > 0) || !Number.isFinite(resistor.resistance)) {
         throw new InvalidCircuitError(
           `.noise requires a positive finite resistance for '${resistor.name}'`,
         );
       }
+      if (resistor.flickerCoefficient !== 0) {
+        throw new InvalidCircuitError(
+          `.noise does not support resistor flicker noise (model KF) for '${resistor.name}'`,
+        );
+      }
+      // ngspice resnoise.c: thermal noise uses the DC conductance RESconduct even with ac=.
       return {
         positive: resistor.nodes[0],
         negative: resistor.nodes[1],
         currentPowerDensity: (_frequency: number) =>
-          4 * BOLTZMANN_CONSTANT * DEFAULT_TEMPERATURE_KELVIN / resistor.resistance,
+          4 * BOLTZMANN_CONSTANT * DEFAULT_TEMPERATURE_KELVIN * resistor.conductance,
       };
     });
   const mosfetSources = devices

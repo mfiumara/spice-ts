@@ -213,6 +213,12 @@ Reproduce with `pnpm -C packages/core build && node benchmarks/results/issue-462
 
 The corpus comparisons for #468 are reproduced with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-468/verify.ts --output <file>` (see `benchmarks/results/issue-468/README.md`).
 
+## VBIC `.OPTIONS TEMP` reference values
+
+- Source: the ngspice corpus A fixture `vbic-temperature` (`tests/vbic/temp.cir`, BSD-3-Clause, listed above) for [issue #459](https://github.com/mfiumara/spice-ts/issues/459).
+- Unchanged-fixture comparison: the aggregate report runs the committed bytes through both engines. `packages/core/src/options-temp.test.ts` also pins seven ngspice-47 `.print` points of the same bytes (SHA-256 `5dfd5fb1e620eac69af1eed64463aac62efd23dee169f2a3773d1091088f31e7`).
+- Adaptation, unit test only: a second case adds `TNOM=150` to the fixture's `.MODEL` card in memory to check the TNOM-relative mapping, and pins two ngspice-47 points of that deck. ngspice-47 values were written with `set filetype=ascii` and `write` from a `.control` block appended to a scratch copy; the committed fixture is never modified and the adapted deck is never used in the aggregate.
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
@@ -433,6 +439,12 @@ At ingestion on ngspice-47, 13 circuits produce raw analysis data and 7 fail on 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
 |---|---|---|---|---|
 | 14 minimal decks, one per parenthesised/extended source form | Source cards copied verbatim from ngspice examples at [`3ef069fb`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/): `cider/diode/{diode,diotran,pd1,pindiode}.cir`, `cider/mos/bootinv.cir`, `cider/serial/recovery.cir`, `cider/surfmob/Tbicmpd1.cir`, `xspice/original-examples/{arbitrary_phase,digital_models1,hybrid_models1_transient}.deck` (corpus-f batch 1, #484). One NP-truncation deck is project-authored. | ngspice examples are BSD-3-Clause; the project-authored deck and the added RC loads are MIT, as is this repository. | Each deck is the verbatim source card plus a linear RC load and the analysis line, so both engines can run it without CIDER/XSPICE devices. Both engines read the same text. ngspice also receives a `.control` block that only runs the deck and writes the vectors. | `benchmarks/source-waveform-syntax/compare.ts` writes `report.json`; the README there records every residual. |
+
+## Resistor card forms, issue #498
+
+| Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
+|---|---|---|---|---|
+| `res_array.cir`, `res_partition.cir` (byte-identical) and 8 card-level decks from `loops/loop-model.cir`, `noise/resdiv.cir`, `noise/bipolar-noise.cir`, `regression/model/instance-defaults.cir`, `regression/pz/ac-resistance.cir`, `regression/temper/temper-res-1.cir` | ngspice tree [`3ef069fb`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/) `examples/` and `tests/` (corpus-f batch 1, #484). | BSD-3-Clause (ngspice); the added analysis cards are MIT, as is this repository. | `fixtures/res_array.cir` and `fixtures/res_partition.cir` are committed unmodified (SHA-256 in `report.json`). The other decks copy the resistor, source and model cards verbatim and replace the fixture's `.control` analysis with equivalent dot analysis cards; both engines read the same text except `temper-res-1` (`.dc temp` in ngspice, `.step TEMP` in spice-ts) and `ac-resistance-pz` (input source removed for both). | `pnpm exec tsx benchmarks/resistor-forms/compare.ts` writes `benchmarks/resistor-forms/report.json`; the README there records every residual and loss. |
 
 ## XSPICE analog code models, issue #487
 

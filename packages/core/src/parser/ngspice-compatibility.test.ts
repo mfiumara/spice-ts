@@ -34,6 +34,7 @@ const supportedFixtures: Fixture[] = [
   { feature: 'bounded single-tone linear distortion analysis', netlist: 'V1 in 0 DC 0 DISTOF1 1 DISTOF2 0\nR1 in out 1k\nC1 out 0 1n\n.disto dec 10 1k 1Meg' },
   { feature: 'solver-backed .options', netlist: '.options reltol=1e-4 itl1=50 method=trap\n.op' },
   { feature: 'output-only directives', netlist: '.save v(out)\n.print tran v(out)\n.plot v(out)\n.op' },
+  { feature: 'B-source V= and I= expressions', netlist: 'V1 in 0 1\nB1 out 0 V=V(in)^2 > 0.5 ? 1 : 0\nB2 out 0 I=max(V(in),0) tc1=1m\n.op' },
   { feature: 'bounded lossless transmission line', netlist: 'T1 in 0 out 0 Z0=50 TD=1n\n.tran 1n 10n' },
 ];
 
@@ -47,7 +48,8 @@ const unsupportedFixtures: Fixture[] = [
   { feature: 'control-language commands', netlist: '.control\nlet x = 1\n.endc' },
   { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
   { feature: 'measurements', netlist: '.measure tran peak MAX v(out)\n.op' },
-  { feature: 'behavioral source', netlist: 'B1 out 0 V=V(in)*2\n.op' },
+  { feature: 'PSPICE logic behavioral source', netlist: 'B1 out 0 V=~V(in)\n.op' },
+  { feature: 'branch-current behavioral source', netlist: 'V1 in 0 1\nB1 out 0 V=I(V1)*2\n.op' },
   { feature: 'switch', netlist: 'S1 out 0 ctrl 0 SMOD\n.op' },
 ];
 
@@ -92,7 +94,7 @@ describe('ngspice parser compatibility fixtures', () => {
   });
 
   it('rejects unsupported resistor parameters continued onto the card', () => {
-    expect(() => parse('R1 in out 1k\n+ TC=0')).toThrow('Unsupported resistor parameters');
+    expect(() => parse('R1 in out 1k\n+ DTEMP=5')).toThrow('Unsupported resistor parameters');
   });
 
   it('accepts .include, .lib, and top-level .param through parseAsync', async () => {

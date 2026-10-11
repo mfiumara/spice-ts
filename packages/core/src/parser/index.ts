@@ -3,6 +3,7 @@ import { ParseError } from '../errors.js';
 import { tokenizeNetlist, parseNumber } from './tokenizer.js';
 import { parseModelCard } from './model-parser.js';
 import { assertSupportedModelType } from './model-type.js';
+import { assertSupportedResistorModel, parseResistorElement } from './resistor-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
@@ -26,6 +27,7 @@ import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 export { parseSourceWaveform } from './waveform-parser.js';
 export { SUPPORTED_MODEL_TYPES, UnsupportedModelTypeError } from './model-type.js';
+export { UnsupportedResistorParameterError } from './resistor-parser.js';
 
 /**
  * Parse a standard SPICE deck into a {@link Circuit} object.
@@ -112,7 +114,10 @@ function parseNetlist(
         } else {
           // Subcircuit bodies are compiled later; reject unsupported model types now,
           // while the source line is still known.
-          if (first === '.MODEL') assertSupportedModelType(tokens, lineNumber, raw);
+          if (first === '.MODEL') {
+            assertSupportedModelType(tokens, lineNumber, raw);
+            assertSupportedResistorModel(tokens, lineNumber, raw);
+          }
           subcktCollector.body.push(raw);
         }
         continue;
@@ -521,6 +526,7 @@ function parseDotCommand(
         break;
       }
       assertSupportedModelType(tokens, lineNumber, context);
+      assertSupportedResistorModel(tokens, lineNumber, context);
       const model = parseTransmissionLineModelCard(tokens, lineNumber)
         ?? parseModelCard(tokens, lineNumber);
       circuit.addModel(model);
@@ -528,9 +534,13 @@ function parseDotCommand(
     }
     case '.OPT':
     case '.OPTION':
-    case '.OPTIONS':
-      circuit.setSimulationOptions(parseSimulationOptions(tokens.slice(1), lineNumber, context));
+    case '.OPTIONS': {
+      const optionTokens = tokens.slice(1);
+      const temperature = takeCircuitTemperatureOption(optionTokens, lineNumber, context);
+      circuit.setSimulationOptions(parseSimulationOptions(optionTokens, lineNumber, context));
+      if (temperature !== undefined) circuit.setTemperature(temperature);
       break;
+    }
     case '.LIST':
       requireGnucapOutputDirective(tokens.length === 1, '.list', lineNumber, context);
       break;
@@ -656,6 +666,35 @@ function stripGnucapTraceSuffix(
     throw new ParseError(`Unsupported ${analysis} trace arguments`, lineNumber, context);
   }
   return args.slice(0, traceIndex);
+}
+
+/**
+ * Remove an ngspice `TEMP=<celsius>` field from `.options` tokens (in place) and
+ * return its value. As in ngspice, it sets the circuit temperature that every
+ * device without an instance TEMP is evaluated at (default 27 C).
+ */
+function takeCircuitTemperatureOption(
+  tokens: string[],
+  lineNumber: number,
+  context: string,
+): number | undefined {
+  if (tokens[0]?.toLowerCase() === 'timeint') return undefined;
+  let temperature: number | undefined;
+  for (let index = tokens.length - 1; index >= 0; index -= 1) {
+    const token = tokens[index];
+    const separator = token.indexOf('=');
+    const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
+    if (name !== 'temp') continue;
+    const rawValue = separator < 0 ? '' : token.slice(separator + 1);
+    const value = rawValue === '' ? Number.NaN : parseNumber(rawValue);
+    if (!Number.isFinite(value) || value <= -273.15) {
+      throw new ParseError(`Invalid .options temp value: '${rawValue}'`, lineNumber, context);
+    }
+    // The last TEMP field wins, as with every other repeated .options field.
+    temperature ??= value;
+    tokens.splice(index, 1);
+  }
+  return temperature;
 }
 
 function parseSimulationOptions(
@@ -841,18 +880,8 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
 
   switch (type) {
     case 'R': {
-      const params = parseInstanceParams(tokens, 4);
-      const unsupported = Object.keys(params).filter(
-        parameter => !['TC1', 'TC2', 'TNOM'].includes(parameter),
-      );
-      if (unsupported.length > 0) {
-        throw new ParseError(
-          `Unsupported resistor parameters: '${unsupported.join(' ')}'`,
-          lineNumber, tokens.join(' '),
-        );
-      }
-      const value = parseNumber(tokens[3]);
-      circuit.addResistor(name, tokens[1], tokens[2], value, params);
+      const parsed = parseResistorElement(tokens, lineNumber, tokens.join(' '));
+      circuit.addResistor(name, tokens[1], tokens[2], parsed.value, parsed.params, parsed.modelName);
       break;
     }
     case 'C': {
@@ -995,7 +1024,11 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
     }
     case 'B': {
       const card = parseBehavioralSourceCard(raw, lineNumber);
-      circuit.addBehavioralCurrentSource(card.name, card.nodes[0], card.nodes[1], card.expression);
+      if (card.kind === 'voltage') {
+        circuit.addBehavioralVoltageSource(card.name, card.nodes[0], card.nodes[1], card.expression, card.params);
+      } else {
+        circuit.addBehavioralCurrentSource(card.name, card.nodes[0], card.nodes[1], card.expression, card.params);
+      }
       break;
     }
     case 'Z': {

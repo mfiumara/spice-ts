@@ -6,6 +6,7 @@ import type {
 import type { CircuitIR } from './ir/types.js';
 import { buildIR } from './ir/builder.js';
 import { Resistor } from './devices/resistor.js';
+import { resolveResistor } from './devices/resistor-model.js';
 import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
 import { Capacitor } from './devices/capacitor.js';
@@ -24,13 +25,17 @@ import { resolveHFET1Instance } from './devices/hfet1-model.js';
 import { MESA } from './devices/mesa.js';
 import { MESA_JUNCTION_GMIN, resolveMESAInstance } from './devices/mesa-model.js';
 import { resolveZModel } from './devices/z-device.js';
-import { BehavioralCurrentSource } from './devices/behavioral-current-source.js';
+import { BehavioralCurrentSource, BehavioralSource, BehavioralVoltageSource } from './devices/behavioral-source.js';
 import {
+  behavioralControlNodes,
   compileBehavioralExpression,
   formatBehavioralExpression,
   mapBehavioralNodes,
   parseBehavioralSourceCard,
+  substituteBehavioralParameters,
   type BehavioralExpression,
+  type BehavioralInstanceParams,
+  type BehavioralSourceKind,
 } from './parser/behavioral-expression.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
 import { VCCS } from './devices/vccs.js';
@@ -52,8 +57,10 @@ import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
+import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
 import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
+import { parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
 import { parseBJTInstance, type BJTInstanceParams } from './parser/bjt-parser.js';
 import {
@@ -82,6 +89,10 @@ import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
 /** MOSFET model levels with a spice-ts implementation: MOS1, MOS6 and BSIM3v3 (8/49). */
 const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 6, 8, 49];
+/** ngspice's default circuit temperature (and TNOM) in degrees Celsius. */
+const NOMINAL_TEMPERATURE_C = 27;
+/** ngspice CONSTCtoK. */
+const CELSIUS_TO_KELVIN = 273.15;
 
 /**
  * The compiled representation of a circuit, ready for numerical simulation.
@@ -133,8 +144,10 @@ interface DeviceDescriptor {
   ic?: number;
   coupledA?: string;
   coupledB?: string;
-  /** B-card `I=` expression; node references are already circuit node names. */
+  /** B-card `I=`/`V=` expression; node references are already circuit node names. */
   expression?: BehavioralExpression;
+  /** B-card source form and ASRC instance parameters. */
+  behavioral?: { kind: BehavioralSourceKind; params: BehavioralInstanceParams };
   /** XSPICE A-card; its nodes are known once the model's port table is applied at compile. */
   xspice?: XspiceInstanceCard;
 }
@@ -143,10 +156,22 @@ function behavioralDescriptor(
   name: string,
   nPlus: string,
   nMinus: string,
+  kind: BehavioralSourceKind,
   expression: BehavioralExpression,
+  params: BehavioralInstanceParams = {},
 ): DeviceDescriptor {
-  const controls = compileBehavioralExpression(expression).nodes;
-  return { type: 'B', name, nodes: [nPlus, nMinus, ...controls], expression };
+  const controls = behavioralControlNodes(expression);
+  return {
+    type: 'B', name, nodes: [nPlus, nMinus, ...controls], expression, behavioral: { kind, params },
+  };
+}
+
+function formatBehavioralSource(desc: DeviceDescriptor): string {
+  const { kind, params } = desc.behavioral!;
+  const assignment = `${kind === 'voltage' ? 'V' : 'I'}=${formatBehavioralExpression(desc.expression!)}`;
+  const instance = Object.entries(params)
+    .map(([key, value]) => `${key}=${typeof value === 'boolean' ? Number(value) : formatNumber(value)}`);
+  return [desc.name, desc.nodes[0], desc.nodes[1], assignment, ...instance].join(' ');
 }
 
 function formatNumber(value: number): string {
@@ -238,8 +263,16 @@ function formatDevice(desc: DeviceDescriptor): string {
   const tail = params ? ` ${params}` : '';
 
   switch (desc.type) {
-    case 'R':
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatNumber(desc.value ?? 0)}${tail}`;
+    case 'R': {
+      const valueAndModel = [
+        desc.value !== undefined ? formatNumber(desc.value) : undefined,
+        desc.modelName,
+      ].filter(Boolean).join(' ');
+      // A keyword-only card (no value, no model) round-trips as written: ngspice
+      // resolves it to the 1 mOhm default (#574), not to the '0' placeholder.
+      const resistance = valueAndModel || (tail ? '' : '0');
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]}${resistance ? ` ${resistance}` : ''}${tail}`;
+    }
     case 'C':
     case 'L': {
       const value = desc.value !== undefined ? formatNumber(desc.value) : undefined;
@@ -279,7 +312,7 @@ function formatDevice(desc: DeviceDescriptor): string {
     case 'H':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.controlSource ?? ''} ${formatNumber(desc.value ?? 0)}`.trim();
     case 'B':
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} I=${formatBehavioralExpression(desc.expression!)}`;
+      return formatBehavioralSource(desc);
     case 'X':
       return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail}`.trim();
     case 'A':
@@ -431,6 +464,7 @@ export class Circuit {
   private _xspiceModels = new Map<string, XspiceModelCard>();
   private _subcircuits = new Map<string, SubcktDefinition>();
   private _simulationOptions: SimulationOptions = {};
+  private _temperature: number | undefined;
   private _initialConditions: NodeInitialState[] = [];
   private _nodeSets: NodeInitialState[] = [];
   private nodeSet = new Set<string>();
@@ -449,6 +483,27 @@ export class Circuit {
 
   setSimulationOptions(options: SimulationOptions): void {
     this._simulationOptions = { ...this._simulationOptions, ...options };
+  }
+
+  /**
+   * Circuit temperature in degrees Celsius set by `.options TEMP=`, or
+   * `undefined` for ngspice's default of 27 C.
+   */
+  get temperature(): number | undefined {
+    return this._temperature;
+  }
+
+  /**
+   * Set the circuit temperature in degrees Celsius (ngspice `.options TEMP=`).
+   * Devices without an instance temperature are evaluated at it. A value other
+   * than 27 C is rejected at compile time for devices whose temperature model
+   * does not yet follow ngspice.
+   */
+  setTemperature(celsius: number): void {
+    if (!Number.isFinite(celsius) || celsius <= -CELSIUS_TO_KELVIN) {
+      throw new InvalidCircuitError(`Invalid circuit temperature: ${celsius} C`);
+    }
+    this._temperature = celsius;
   }
 
   get initialConditions(): readonly NodeInitialState[] {
@@ -487,20 +542,24 @@ export class Circuit {
    * @param name - Device name (e.g., `'R1'`)
    * @param nodePos - Positive terminal node
    * @param nodeNeg - Negative terminal node
-   * @param resistance - Resistance value in ohms
+   * @param resistance - Resistance value in ohms. Omit when using a `.model R` card value.
+   * @param instanceParams - ngspice instance parameters (e.g. `{ TC1: 1e-3, AC: 4e3, M: 2, NOISY: 0 }`)
+   * @param modelName - Optional name of a `.model R` card
    */
   addResistor(
     name: string,
     nodePos: string,
     nodeNeg: string,
-    resistance: number,
-    temperatureCoefficients?: Record<string, number>,
+    resistance?: number,
+    instanceParams?: Record<string, number>,
+    modelName?: string,
   ): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
     this.descriptors.push({
       type: 'R', name, nodes: [nodePos, nodeNeg], value: resistance,
-      params: temperatureCoefficients,
+      params: instanceParams,
+      modelName,
     });
   }
 
@@ -755,8 +814,32 @@ export class Circuit {
     nPlus: string,
     nMinus: string,
     expression: BehavioralExpression,
+    params: BehavioralInstanceParams = {},
   ): void {
-    const descriptor = behavioralDescriptor(name, nPlus, nMinus, expression);
+    this.addBehavioralSource(behavioralDescriptor(name, nPlus, nMinus, 'current', expression, params));
+  }
+
+  /**
+   * Add an ngspice B-source with a `V=` expression: V(nPlus) - V(nMinus)
+   * follows the expression, with a branch current like a `V` source.
+   *
+   * @param name - Device name (e.g., `'B1'`)
+   * @param nPlus - Positive node
+   * @param nMinus - Negative node
+   * @param expression - Parsed behavioral voltage expression
+   * @param params - ASRC instance parameters (`tc1`, `tc2`, `temp`, `dtemp`, `reciproctc`)
+   */
+  addBehavioralVoltageSource(
+    name: string,
+    nPlus: string,
+    nMinus: string,
+    expression: BehavioralExpression,
+    params: BehavioralInstanceParams = {},
+  ): void {
+    this.addBehavioralSource(behavioralDescriptor(name, nPlus, nMinus, 'voltage', expression, params));
+  }
+
+  private addBehavioralSource(descriptor: DeviceDescriptor): void {
     for (const node of descriptor.nodes) this.nodeSet.add(node);
     this.descriptors.push(descriptor);
   }
@@ -949,9 +1032,16 @@ export class Circuit {
    * Register a device model parameter card (`.model`).
    *
    * @param params - Model parameters including name, type (e.g., `'NPN'`, `'NMOS'`), and parameter values
+   * @throws UnsupportedCircuitModelTypeError if no spice-ts device implements the model type
    */
   addModel(params: ModelParams): void {
-    this._models.set(params.name, params);
+    this.registerModel(params);
+  }
+
+  /** Store a model with its type upper-cased, rejecting unsupported types (#544). */
+  private registerModel(params: ModelParams): void {
+    const type = normalizeModelType(params.name, params.type);
+    this._models.set(params.name, type === params.type ? params : { ...params, type });
   }
 
   /**
@@ -1207,6 +1297,7 @@ export class Circuit {
       const value = this._simulationOptions[key];
       return value === undefined ? [] : [`${name}=${format(value)}`];
     });
+    if (this._temperature !== undefined) serializedOptions.push(`temp=${this._temperature}`);
     if (serializedOptions.length > 0) lines.push(`.options ${serializedOptions.join(' ')}`);
 
     for (const model of this._models.values()) {
@@ -1262,8 +1353,10 @@ export class Circuit {
    */
   compile(guard?: ProtocolExecutionGuard): CompiledCircuit {
     // Pre-expand subcircuit instances into flat device descriptors
+    const flatDescriptors = this.expandAllSubcircuits(guard);
+    this.assertDeviceModelTypes(flatDescriptors);
     const expandedDescriptors = this.expandPassiveParasitics(
-      this.expandLossyTransmissionLines(this.expandAllSubcircuits(guard)),
+      this.expandLossyTransmissionLines(flatDescriptors),
     );
     guard?.maximum('maxComponents', expandedDescriptors.length, 'compile');
     if (
@@ -1391,19 +1484,17 @@ export class Circuit {
 
       switch (desc.type) {
         case 'R': {
+          const model = desc.modelName ? this.requireModel('Resistor', desc) : undefined;
+          const resolved = resolveResistor(desc.name, desc.value, model, desc.params);
           // A zero-ohm resistor is an ideal voltage constraint, not infinite
           // conductance. Give it an MNA branch so its equation and current are
           // represented exactly. Stepped resistors also use branch form because
           // their value may cross zero without changing matrix topology.
-          const usesBranch = desc.value === 0 || this._steps.some(step =>
+          const usesBranch = resolved.resistance === 0 || this._steps.some(step =>
             step.param === desc.name || step.param.toUpperCase() === 'TEMP');
           const bi = usesBranch ? branchIndex++ : undefined;
           if (bi !== undefined) branchNames.push(desc.name);
-          devices.push(new Resistor(desc.name, nodeIndices, desc.value!, bi, {
-            tc1: desc.params?.TC1,
-            tc2: desc.params?.TC2,
-            tnom: desc.params?.TNOM,
-          }));
+          devices.push(new Resistor(desc.name, nodeIndices, resolved.resistance, bi, resolved.parameters));
           break;
         }
         case 'V': {
@@ -1556,11 +1647,15 @@ export class Circuit {
           break;
         }
         case 'B': {
-          devices.push(new BehavioralCurrentSource(
-            desc.name,
-            nodeIndices,
-            compileBehavioralExpression(desc.expression!),
-          ));
+          const compiledExpression = compileBehavioralExpression(desc.expression!);
+          const { kind, params } = desc.behavioral!;
+          if (kind === 'voltage') {
+            const bi = branchIndex++;
+            branchNames.push(desc.name);
+            devices.push(new BehavioralVoltageSource(desc.name, nodeIndices, bi, compiledExpression, params));
+          } else {
+            devices.push(new BehavioralCurrentSource(desc.name, nodeIndices, compiledExpression, params));
+          }
           break;
         }
         case 'M': {
@@ -1673,6 +1768,10 @@ export class Circuit {
 
     bindXspiceSources(devices, deviceMap);
 
+    if (this._temperature !== undefined && this._temperature !== NOMINAL_TEMPERATURE_C) {
+      this.applyCircuitTemperature(this._temperature, expandedDescriptors, devices);
+    }
+
     return {
       devices, nodeCount, branchCount: branchNames.length,
       nodeNames, nodeIndexMap, branchNames,
@@ -1689,6 +1788,48 @@ export class Circuit {
       initialConditions: this._initialConditions.map(state => ({ ...state })),
       nodeSets: this._nodeSets.map(state => ({ ...state })),
     };
+  }
+
+  /**
+   * Evaluate the compiled devices at a non-nominal `.options TEMP` like ngspice.
+   * Only devices whose temperature model follows ngspice-47 are accepted:
+   * resistors (TC1/TC2 around TNOM), the bounded VBIC (vbictemp.c mapping) and
+   * B sources (asrctemp.c tc1/tc2 and `temper`).
+   * Every other temperature-dependent element is rejected instead of silently
+   * running at 27 C.
+   */
+  private applyCircuitTemperature(
+    temperature: number,
+    descriptors: DeviceDescriptor[],
+    devices: DeviceModel[],
+  ): void {
+    const unsupported = (subject: string): InvalidCircuitError => new InvalidCircuitError(
+      `.options TEMP=${temperature} is unsupported for ${subject}: `
+      + `only resistors, bounded VBIC devices and B sources follow the ngspice temperature model`,
+    );
+    const noise = this._analyses.find(analysis => analysis.type === 'noise');
+    if (noise) throw unsupported("'.noise' (noise sources are evaluated at 27 C)");
+
+    for (const desc of descriptors) {
+      if (desc.type === 'R' && (desc.params?.TEMP !== undefined || desc.params?.DTEMP !== undefined)) {
+        throw unsupported(`resistor '${desc.name}' with an instance TEMP/DTEMP`);
+      }
+      if (desc.type === 'C' || desc.type === 'L') {
+        const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
+        const params = { ...model?.params, ...desc.params };
+        if (params.TEMP === undefined && ((params.TC1 ?? 0) !== 0 || (params.TC2 ?? 0) !== 0)) {
+          throw unsupported(`temperature-coefficient ${desc.type === 'C' ? 'capacitor' : 'inductor'} '${desc.name}'`);
+        }
+      }
+    }
+
+    for (const device of devices) {
+      if (device instanceof Resistor || device instanceof VBIC || device instanceof BehavioralSource) {
+        device.setTemperature(temperature);
+      } else if (device.isNonlinear) {
+        throw unsupported(`device '${device.name}'`);
+      }
+    }
   }
 
   /**
@@ -2114,6 +2255,19 @@ export class Circuit {
    * it is undefined. ngspice refuses such instances ("Unable to find definition
    * of model"); falling back to defaults would silently simulate a different device.
    */
+  /**
+   * Reject instances whose model belongs to another device kind (e.g. an M
+   * card naming an NPN model), before any device-specific expansion (#544).
+   * Unknown model names are left to the per-device resolution paths.
+   */
+  private assertDeviceModelTypes(descriptors: readonly DeviceDescriptor[]): void {
+    for (const desc of descriptors) {
+      if (!desc.modelName) continue;
+      const model = this._models.get(desc.modelName);
+      if (model) assertDeviceModelType(desc.type, desc.name, desc.modelName, model.type);
+    }
+  }
+
   private requireModel(kind: string, desc: DeviceDescriptor): ModelParams {
     const model = this._models.get(desc.modelName ?? '');
     if (!model) {
@@ -2207,7 +2361,7 @@ export class Circuit {
         const modelParams = parseTransmissionLineModelCard(tokens, 0)
           ?? parseModelCard(tokens, 0);
         // Register in the circuit's global model map so compile() can find it
-        this._models.set(modelParams.name, modelParams);
+        this.registerModel(modelParams);
         continue;
       }
 
@@ -2238,11 +2392,14 @@ export class Circuit {
 
       switch (devType) {
         case 'R': {
-          const valStr = evalToken(tokens[3]);
+          const evaluatedTokens = tokens.map(t => evalToken(t));
+          const parsed = parseResistorElement(evaluatedTokens, lineNumber, raw);
           result.push({
             type: 'R', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
-            value: parseNumber(valStr),
+            value: parsed.value,
+            modelName: parsed.modelName,
+            params: parsed.params,
           });
           break;
         }
@@ -2409,12 +2566,15 @@ export class Circuit {
           break;
         }
         case 'B': {
-          const card = parseBehavioralSourceCard(raw, lineNumber);
+          // ngspice's numparam front end substitutes parameters into B expressions.
+          const card = parseBehavioralSourceCard(substituteBehavioralParameters(raw, localParams), lineNumber);
           result.push(behavioralDescriptor(
             devName,
             mapNode(card.nodes[0]),
             mapNode(card.nodes[1]),
+            card.kind,
             mapBehavioralNodes(card.expression, mapNode),
+            card.params,
           ));
           break;
         }

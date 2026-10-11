@@ -194,3 +194,59 @@ export class UnsupportedModelLevelError extends InvalidCircuitError {
     this.name = 'UnsupportedModelLevelError';
   }
 }
+
+/**
+ * Thrown when a model registered through the Circuit API, a subcircuit body
+ * or the JSON protocol declares a `.model` type that no spice-ts device
+ * implements. The netlist parser raises the {@link ParseError} subclass
+ * `UnsupportedModelTypeError` (same `code`) for the same condition, with a
+ * line number.
+ */
+export class UnsupportedCircuitModelTypeError extends InvalidCircuitError {
+  /** Stable machine-readable error code. */
+  readonly code = 'UNSUPPORTED_MODEL_TYPE';
+
+  constructor(
+    /** Model name */
+    public readonly modelName: string,
+    /** Upper-cased model type */
+    public readonly modelType: string,
+    /** Model types spice-ts implements */
+    public readonly supportedTypes: readonly string[],
+  ) {
+    super(
+      `.model '${modelName}' has unsupported type '${modelType}'`
+        + ` (supported: ${supportedTypes.join(', ')})`,
+    );
+    this.name = 'UnsupportedCircuitModelTypeError';
+  }
+}
+
+/**
+ * Thrown when an instance references a model whose type belongs to another
+ * device kind, e.g. a MOSFET (`M`) card naming an `NPN` model. ngspice rejects
+ * these; simulating them would silently run the wrong device equations.
+ */
+export class ModelTypeMismatchError extends InvalidCircuitError {
+  /** Stable machine-readable error code. */
+  readonly code = 'MODEL_TYPE_MISMATCH';
+
+  constructor(
+    /** Instance name, e.g. `M1` */
+    public readonly deviceName: string,
+    /** SPICE instance letter, e.g. `M` */
+    public readonly deviceKind: string,
+    /** Referenced model name */
+    public readonly modelName: string,
+    /** Upper-cased type of the referenced model */
+    public readonly modelType: string,
+    /** Model types this device kind accepts */
+    public readonly expectedTypes: readonly string[],
+  ) {
+    super(
+      `${deviceKind} instance '${deviceName}' references model '${modelName}' of type '${modelType}'`
+        + ` (expected: ${expectedTypes.join(', ')})`,
+    );
+    this.name = 'ModelTypeMismatchError';
+  }
+}

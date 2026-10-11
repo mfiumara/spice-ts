@@ -1,25 +1,66 @@
 import type { DeviceModel, StampContext } from './device.js';
 
+/** ngspice-47 resistor instance parameters beyond the nominal resistance. */
+export interface ResistorParameters {
+  /** First-order temperature coefficient (1/°C). */
+  tc1?: number;
+  /** Second-order temperature coefficient (1/°C²). */
+  tc2?: number;
+  /** Exponential temperature coefficient; when given the factor is `1.01^(tce*dT)`. */
+  tce?: number;
+  /** Nominal temperature in °C (default 27). */
+  tnom?: number;
+  /** Parallel multiplier `M` (default 1). */
+  multiplier?: number;
+  /** Instance `SCALE` factor (default 1). */
+  scale?: number;
+  /** Nominal AC resistance (`ac=`), used by AC, noise and pole-zero analyses. */
+  acResistance?: number;
+  /** `noisy=0` makes the resistor noiseless in `.noise` (default true). */
+  noisy?: boolean;
+  /** `.model R` flicker-noise coefficient KF (not simulated). */
+  flickerCoefficient?: number;
+  /** ngspice-47 warnings from resolving the resistance, surfaced as `'model'` warnings. */
+  warnings?: readonly string[];
+}
+
 export class Resistor implements DeviceModel {
   readonly branches: number[];
   readonly isNonlinear = false;
+  /** Effective DC resistance after temperature, `SCALE` and `M`. */
+  resistance = 0;
+  /** Effective DC conductance, ngspice RESconduct = M / (R * factor * SCALE). */
+  conductance = 0;
+  /** Effective AC conductance (ngspice RESacConduct) when `ac=` is given. */
+  acConductance: number | undefined;
   private nominalResistance: number;
   private temperature = 27;
+  readonly modelWarnings?: readonly string[];
 
   constructor(
     readonly name: string,
     readonly nodes: number[],
-    public resistance: number,
+    resistance: number,
     readonly branchIndex?: number,
-    private readonly temperatureCoefficients: {
-      tc1?: number;
-      tc2?: number;
-      tnom?: number;
-    } = {},
+    private readonly parameters: ResistorParameters = {},
   ) {
     this.branches = branchIndex === undefined ? [] : [branchIndex];
     this.nominalResistance = resistance;
+    if (parameters.warnings?.length) this.modelWarnings = parameters.warnings;
     this.applyTemperature();
+  }
+
+  /** False when the instance sets `noisy=0`. */
+  get noisy(): boolean {
+    return this.parameters.noisy ?? true;
+  }
+
+  get flickerCoefficient(): number {
+    return this.parameters.flickerCoefficient ?? 0;
+  }
+
+  get hasAcResistance(): boolean {
+    return this.parameters.acResistance !== undefined;
   }
 
   setParameter(value: number): void {
@@ -40,15 +81,34 @@ export class Resistor implements DeviceModel {
     return this.temperature;
   }
 
+  // ngspice-47 restemp.c RESupdate_conduct.
   private applyTemperature(): void {
-    const delta = this.temperature - (this.temperatureCoefficients.tnom ?? 27);
-    const factor = 1
-      + (this.temperatureCoefficients.tc1 ?? 0) * delta
-      + (this.temperatureCoefficients.tc2 ?? 0) * delta * delta;
-    this.resistance = this.nominalResistance * factor;
+    const { tc1 = 0, tc2 = 0, tce, tnom = 27, multiplier = 1, scale = 1, acResistance } = this.parameters;
+    const delta = this.temperature - tnom;
+    const factor = tce !== undefined
+      ? Math.pow(1.01, tce * delta)
+      : ((tc2 * delta) + tc1) * delta + 1;
+    this.resistance = this.nominalResistance * factor * scale / multiplier;
+    this.conductance = multiplier / (this.nominalResistance * factor * scale);
+    this.acConductance = acResistance === undefined
+      ? undefined
+      : multiplier / (acResistance * factor * scale);
   }
 
   stamp(ctx: StampContext): void {
+    this.stampWith(ctx, this.resistance, this.conductance);
+  }
+
+  /** AC, noise and pole-zero stamp: ngspice RESacload/RESpzLoad use the AC conductance. */
+  stampSmallSignal(ctx: StampContext): void {
+    if (this.acConductance === undefined) {
+      this.stamp(ctx);
+      return;
+    }
+    this.stampWith(ctx, 1 / this.acConductance, this.acConductance);
+  }
+
+  private stampWith(ctx: StampContext, resistance: number, g: number): void {
     const [n1, n2] = this.nodes;
 
     if (this.branchIndex !== undefined) {
@@ -60,11 +120,9 @@ export class Resistor implements DeviceModel {
       if (n2 >= 0) ctx.stampG(n2, bi, -1);
       if (n1 >= 0) ctx.stampG(bi, n1, 1);
       if (n2 >= 0) ctx.stampG(bi, n2, -1);
-      ctx.stampG(bi, bi, -this.resistance);
+      ctx.stampG(bi, bi, -resistance);
       return;
     }
-
-    const g = 1 / this.resistance;
 
     if (n1 >= 0) ctx.stampG(n1, n1, g);
     if (n2 >= 0) ctx.stampG(n2, n2, g);
