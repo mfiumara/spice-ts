@@ -43,15 +43,15 @@
       "unsupported": 12
     },
     "spiceTs": {
-      "success": 98,
-      "failed": 23,
-      "unsupported": 215
+      "success": 101,
+      "failed": 22,
+      "unsupported": 213
     },
     "outcomes": {
       "matched": 32,
-      "mismatch": 13,
+      "mismatch": 16,
       "not-compared": 53,
-      "spice-ts-loss": 208,
+      "spice-ts-loss": 205,
       "ngspice-failed": 0,
       "both-failed": 30
     }
@@ -185,8 +185,8 @@
     },
     {
       "bucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)",
-      "fixtures": 28,
-      "ngspiceSuccess": 24,
+      "fixtures": 31,
+      "ngspiceSuccess": 27,
       "ids": [
         "examples-control-structs-new-check-4-sp",
         "examples-digital-compare-adder-mos-cir",
@@ -205,6 +205,8 @@
         "examples-rf-pss-ring-osc-pss-ctrl-cir",
         "examples-rf-pss-vackar-osc-pss-ctrl-cir",
         "examples-rf-pss-vdp-osc-pss-ctrl-cir",
+        "examples-transient-noise-noi-sc-tr-cir",
+        "examples-transient-noise-noise-vnoi-cir",
         "examples-transient-noise-shot-ng-cir",
         "examples-various-3d-loop-sp",
         "examples-various-alterparam-sp",
@@ -212,6 +214,7 @@
         "examples-various-dc-loop-sp",
         "examples-various-fft-leakage-cir",
         "examples-various-integrate1-cir",
+        "examples-various-mtimeavg-test-cir",
         "examples-vdmos-100w-wingspread-sp",
         "examples-vdmos-100w-sp",
         "examples-xspice-table-table-generator-q-2d-sp",
@@ -324,20 +327,6 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/489"
     },
     {
-      "bucket": "source: TRNOISE/EXTERNAL waveforms",
-      "fixtures": 6,
-      "ngspiceSuccess": 5,
-      "ids": [
-        "examples-shared-t-cir",
-        "examples-transient-noise-noi-sc-tr-cir",
-        "examples-transient-noise-noise-vnoi-cir",
-        "examples-transient-noise-rts-1-cir",
-        "examples-transient-noise-simple-noise-cir",
-        "examples-various-mtimeavg-test-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/501"
-    },
-    {
       "bucket": "device: XSPICE A-element code models",
       "fixtures": 5,
       "ngspiceSuccess": 4,
@@ -419,17 +408,6 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/3"
     },
     {
-      "bucket": "timeout: spice-ts exceeded the 120 s bound",
-      "fixtures": 3,
-      "ngspiceSuccess": 3,
-      "ids": [
-        "examples-digital-compare-adder-bip-cir",
-        "examples-snapshot-adder-mos-circ-cir",
-        "examples-transmissionlines-cpl-ibm1a-sp"
-      ],
-      "issue": null
-    },
-    {
       "bucket": "directive: .measure",
       "fixtures": 2,
       "ngspiceSuccess": 2,
@@ -470,6 +448,16 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/492"
     },
     {
+      "bucket": "timeout: spice-ts exceeded the 120 s bound",
+      "fixtures": 2,
+      "ngspiceSuccess": 2,
+      "ids": [
+        "examples-digital-compare-adder-bip-cir",
+        "examples-transmissionlines-cpl-ibm1a-sp"
+      ],
+      "issue": null
+    },
+    {
       "bucket": "model: string-valued model parameters (MFG= and similar)",
       "fixtures": 1,
       "ngspiceSuccess": 0,
@@ -477,6 +465,15 @@
         "examples-soa-bjt-soa-cir"
       ],
       "issue": null
+    },
+    {
+      "bucket": "source: TRNOISE/EXTERNAL waveforms",
+      "fixtures": 1,
+      "ngspiceSuccess": 0,
+      "ids": [
+        "examples-shared-t-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/501"
     },
     {
       "bucket": "syntax: µ (micro sign) scale suffix",
@@ -2413,7 +2410,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:243840"
+          "tran:243317"
         ]
       },
       "spiceTs": {
@@ -3436,7 +3433,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: Unsupported source waveform 'EXTERNAL' vext ctl 0 0 external"
+        "firstErrorLine": "Parse error at line 14: Unsupported source waveform 'EXTERNAL': ngspice-47 accepts EXTERNAL only in its shared-library build, where the host supplies the value through a callback; the ngspice executable rejects it as an unknown parameter ve"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -3461,16 +3458,17 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "spice-ts exceeded the 120000 ms aggregate execution bound"
+        "status": "success",
+        "analyses": [
+          "tran:2123"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "timeout: spice-ts exceeded the 120 s bound"
+      "comparedAnalyses": 1,
+      "comparedSignals": 90,
+      "worstNormalizedError": 1.54,
+      "worstSignal": "tran v(x1.x2.x1.x8.net.1)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "examples-soa-bjt-soa-cir",
@@ -3650,14 +3648,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: Unsupported source waveform 'TRNOISE' vin 1 0 dc 0 trnoise 0.1m 0.2n 1 0.1m"
+        "firstErrorLine": "Parse error at line 41: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: TRNOISE/EXTERNAL waveforms"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-transient-noise-noise-vnoi-cir",
@@ -3677,14 +3675,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 5: Unsupported source waveform 'TRNOISE' VNOI1 1 0 DC 0 TRNOISE(0n 1n 1.7 1n)"
+        "firstErrorLine": "Parse error at line 21: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: TRNOISE/EXTERNAL waveforms"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-transient-noise-rts-1-cir",
@@ -3698,20 +3696,21 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:3024"
+          "tran:3116"
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 4: Unsupported source waveform 'TRNOISE' VRTS2 13 12 DC 0 trnoise(0 0 0 0 5m 18u 30u)"
+        "status": "success",
+        "analyses": [
+          "tran:6575"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "source: TRNOISE/EXTERNAL waveforms"
+      "comparedAnalyses": 1,
+      "comparedSignals": 10,
+      "worstNormalizedError": 1.55,
+      "worstSignal": "tran v(9)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "examples-transient-noise-shot-ng-cir",
@@ -3756,16 +3755,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 3: Unsupported source waveform 'TRNOISE' i1 1 2 DC 0 TRNOISE(0.05 8p 0 1.0 0.001)"
+        "status": "success",
+        "analyses": [
+          "tran:223853"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "source: TRNOISE/EXTERNAL waveforms"
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 4.71,
+      "worstSignal": "tran v(3)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "examples-transmissionlines-cpl-ibm1-sp",
@@ -4641,14 +4641,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 5: Unsupported source waveform 'TRNOISE' VNoiw 1 0 DC 0 TRNOISE(20n 0.5n 0 0)"
+        "firstErrorLine": "Parse error at line 12: Unsupported .control command 'let': vector function 'mtimeavg()' is not evaluated by spice-ts let filtered5n = mtimeavg(V(1))"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: TRNOISE/EXTERNAL waveforms"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-various-param-sweep-cir",
@@ -9573,5 +9573,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "e07901d45bc1575083ebdf4a8b78bc4f134d9f6260e13bd9fdb579f15ed2c007"
+  "outcomeSha256": "bca8f348770b9c4cf883697be243829447171e5f892dc0a78cbbe70e5c1005df"
 }

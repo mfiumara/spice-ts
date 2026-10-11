@@ -2,7 +2,7 @@
   "schemaVersion": "spice-ts-corpus-f-triage/v1",
   "issue": "https://github.com/mfiumara/spice-ts/issues/511",
   "measuredOn": {
-    "spiceTsCommit": "c317324fde94608d0aea7b1662feac4243a94034",
+    "spiceTsCommit": "4bdbe0c2db7aacbdaf8862c2133c15ed8c3b7cfc",
     "ngspice": "ngspice-47",
     "metric": "corpus-f published metric (lib.ts normalizedSignalErrors, MATCH_THRESHOLD 0.01), unchanged",
     "tool": "pnpm exec tsx benchmarks/corpus/corpus-f/triage-detail.ts <fixture-id> [--tmax s] [--deck variant] [--reference-tmax s [--candidate ngspice]]",
@@ -25,7 +25,7 @@
       "id": "bsim3-adder-supply-current",
       "kind": "simulator",
       "issue": "https://github.com/mfiumara/spice-ts/issues/626",
-      "summary": "BSIM3 (level 8, version 3.3.0, default parameters) 4-bit NAND adder. Before #624, supply and source currents were 10-40x ngspice-47 at its own points. Since the #624 b3ld.c DC-core port, spice-ts exceeds the 120 s bound. Not root-caused; tracked in #626."
+      "summary": "BSIM3 (level 8, version 3.3.0, default parameters) 4-bit NAND adder. Before #624, supply and source currents were 10-40x ngspice-47. Between #624 and #648 it exceeded the 120 s bound. Since #648 it completes again with internal NAND nodes up to 1.54 off. Not root-caused; tracked in #626."
     },
     {
       "id": "reference-grid-artefact",
@@ -50,6 +50,12 @@
       "kind": "fixed",
       "issue": "https://github.com/mfiumara/spice-ts/issues/509",
       "summary": "The .model VDMOS card was silently dropped. #542 made unsupported model types a typed error and #562 (#506) added the ngspice-47 VDMOS model; both VDMOS decks now match."
+    },
+    {
+      "id": "stochastic-sources",
+      "kind": "metric",
+      "issue": "https://github.com/mfiumara/spice-ts/issues/655",
+      "summary": "TRNOISE/TRRANDOM decks compare two independent random realisations: ngspice-47 reseeds every run, while spice-ts is deterministic. The sample-wise max error is meaningless and not reproducible."
     }
   ],
   "fixtures": [
@@ -121,14 +127,14 @@
       "issueTable": { "outcome": "mismatch", "worst": 0.0439, "signal": "tran v(emit)" },
       "current": { "outcome": "matched", "worst": 2.26e-05, "signal": "tran i(vin)" },
       "rootCauses": [],
-      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and c317324f give 0.0000226 after #531 initial-condition handling."
+      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and 4bdbe0c2 give 0.0000226 after #531 initial-condition handling."
     },
     {
       "id": "examples-xspice-original-examples-spice3-deck",
       "issueTable": { "outcome": "mismatch", "worst": 0.0439, "signal": "tran v(emit)" },
       "current": { "outcome": "matched", "worst": 2.26e-05, "signal": "tran i(vin)" },
       "rootCauses": [],
-      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and c317324f give 0.0000226 after #531 initial-condition handling."
+      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and 4bdbe0c2 give 0.0000226 after #531 initial-condition handling."
     },
     {
       "id": "examples-probe-mos-test-cir",
@@ -147,9 +153,23 @@
     {
       "id": "examples-snapshot-adder-mos-circ-cir",
       "issueTable": null,
-      "current": { "outcome": "spice-ts-loss", "worst": null, "signal": null },
+      "current": { "outcome": "mismatch", "worst": 1.54, "signal": "tran v(x1.x2.x1.x8.net.1)" },
       "rootCauses": ["bsim3-adder-supply-current"],
-      "evidence": "spice-ts-loss at bf2e4169 (dotted VERSION=3.3.0 rejected); runnable since #599. On main 68b64909 it completed in about 45 s as a mismatch: 81/90 signals over 1%. i(vcc) near t=8.95 ns was spice-ts -11.6 mA vs ngspice -25 uA (ngspice peak 275 uA), 40.6 at ngspice points, and input source currents were 7-8.7. That was a real device-level loss, not a grid artefact. On c317324f, after the #624 BSIM3 DC-core port, spice-ts exceeds the 120 s bound (2m02s wall on a lightly loaded host), so it is published as spice-ts-loss. Tracked in #626, root cause not established."
+      "evidence": "spice-ts-loss at bf2e4169 (dotted VERSION=3.3.0 rejected); runnable since #599. On 68b64909 it was a mismatch of 42: i(vcc) near 8.95 ns spice-ts -11.6 mA vs ngspice -25 uA, 40.6 at ngspice points. On c317324f, after #624, it exceeded the 120 s bound. On 4bdbe0c2, after #648, it completes again: 81/90 signals over 1%, worst v(x1.x2.x1.x8.net.1) 1.54 (spice-ts 2.94 V vs ngspice 0.20 V near 0.985 us), 1.44 at ngspice points. This is a real device-level loss, tracked in #626, root cause not established."
+    },
+    {
+      "id": "examples-transient-noise-simple-noise-cir",
+      "issueTable": null,
+      "current": { "outcome": "mismatch", "worst": 4.71, "signal": "tran v(3)" },
+      "rootCauses": ["stochastic-sources"],
+      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. A triage-detail rerun gave 3.75 against the published 4.71. The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
+    },
+    {
+      "id": "examples-transient-noise-rts-1-cir",
+      "issueTable": null,
+      "current": { "outcome": "mismatch", "worst": 1.55, "signal": "tran v(9)" },
+      "rootCauses": ["stochastic-sources"],
+      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. A triage-detail rerun gave 1.45 against the published 1.55. The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
     }
   ],
   "deferredMismatches": {

@@ -6,11 +6,11 @@ Every deck below is byte-identical to ngspice `3ef069fb1f04177a153f342a32d941fc2
 
 ## Totals
 
-- Fixtures: 336. Outcome SHA-256: `e07901d45bc1575083ebdf4a8b78bc4f134d9f6260e13bd9fdb579f15ed2c007`.
+- Fixtures: 336. Outcome SHA-256: `bca8f348770b9c4cf883697be243829447171e5f892dc0a78cbbe70e5c1005df`.
 - ngspice (ngspice-47): 306 success, 18 failed, 12 unsupported.
-- spice-ts (0.3.0): 98 success, 23 failed, 215 unsupported.
-- Outcomes: matched 32, mismatch 13, not-compared 53, spice-ts-loss 208, ngspice-failed 0, both-failed 30.
-- Of the 306 decks ngspice runs successfully, spice-ts matches 32, mismatches 13, produces no comparable result for 53 and fails 208. For 155 of those ngspice successes the deck runs its analyses from `.control` (or its control block ends with `quit`), so `ngspice -r` exports no vectors: they cannot be compared even when spice-ts runs them (harness follow-up https://github.com/mfiumara/spice-ts/issues/528).
+- spice-ts (0.3.0): 101 success, 22 failed, 213 unsupported.
+- Outcomes: matched 32, mismatch 16, not-compared 53, spice-ts-loss 205, ngspice-failed 0, both-failed 30.
+- Of the 306 decks ngspice runs successfully, spice-ts matches 32, mismatches 16, produces no comparable result for 53 and fails 205. For 155 of those ngspice successes the deck runs its analyses from `.control` (or its control block ends with `quit`), so `ngspice -r` exports no vectors: they cannot be compared even when spice-ts runs them (harness follow-up https://github.com/mfiumara/spice-ts/issues/528).
 
 ## Method
 
@@ -31,7 +31,8 @@ Every deck below is byte-identical to ngspice `3ef069fb1f04177a153f342a32d941fc2
 - https://github.com/mfiumara/spice-ts/issues/528: the ngspice harness exports no vectors for decks that run analyses from .control or quit inside it.
 - https://github.com/mfiumara/spice-ts/issues/590: closed by #601: MOS1 depletion junction capacitance (tests/general/mosmem.cir now matches; #511 triage in TRIAGE-511.md).
 - https://github.com/mfiumara/spice-ts/issues/591: closed by #601: MOS1 Meyer gate capacitance from TOX; residual i(vs) mismatch is grid discretisation per #627/#629, routed to #592.
-- https://github.com/mfiumara/spice-ts/issues/626: BSIM3 4-bit NAND adder (examples/snapshot/adder_mos_circ.cir): i(vcc) ~40x ngspice-47 before #624, exceeds the 120 s bound since; root cause not established (#511 triage).
+- https://github.com/mfiumara/spice-ts/issues/626: BSIM3 4-bit NAND adder (examples/snapshot/adder_mos_circ.cir): internal-node mismatch 1.54 after #624/#648; root cause not established (#511 triage).
+- https://github.com/mfiumara/spice-ts/issues/655: TRNOISE/TRRANDOM decks compare independent random realisations; ngspice-47 reseeds each run, so these values are not reproducible (transient-noise simple-noise, rts-1).
 - https://github.com/mfiumara/spice-ts/issues/592: metric: ngspice's coarse default-step output is scored as spice-ts error (rca3040, rtlinv, mos-test, fourbitadder, switches-manual-p92, ltra2_2_line/txl1_1_line i(vs); #511 triage).
 - https://github.com/mfiumara/spice-ts/issues/593: metric: zero/near-zero ngspice peaks turn fV-uV residuals into mismatches (rca3040 AC v(2), fourbitadder; #511 triage).
 
@@ -43,14 +44,13 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 |---|---|---|---|
 | parse: other unsupported syntax | 73 | 68 | none filed |
 | model: CIDER numerical device models (NUMD/NUMOS/NBJT) | 37 | 37 | https://github.com/mfiumara/spice-ts/issues/497 |
-| control: ngspice control-language scripting (set/let/save/foreach/meas/...) | 28 | 24 | https://github.com/mfiumara/spice-ts/issues/488 |
+| control: ngspice control-language scripting (set/let/save/foreach/meas/...) | 31 | 27 | https://github.com/mfiumara/spice-ts/issues/488 |
 | execution: other failure | 16 | 14 | none filed |
 | model: VDMOS power MOSFET | 10 | 5 | https://github.com/mfiumara/spice-ts/issues/506 |
 | directive: .temp / .options temp | 9 | 8 | https://github.com/mfiumara/spice-ts/issues/459 |
 | expression: quoted/brace expressions in values (TEMPER, functions) | 8 | 7 | https://github.com/mfiumara/spice-ts/issues/493 |
 | model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card) | 7 | 7 | https://github.com/mfiumara/spice-ts/issues/500 |
 | control: analysis commands inside .control (tran/dc/op/ac/...) | 6 | 6 | https://github.com/mfiumara/spice-ts/issues/489 |
-| source: TRNOISE/EXTERNAL waveforms | 6 | 5 | https://github.com/mfiumara/spice-ts/issues/501 |
 | device: XSPICE A-element code models | 5 | 4 | https://github.com/mfiumara/spice-ts/issues/487 |
 | convergence | 4 | 2 | none filed |
 | device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP) | 4 | 2 | https://github.com/mfiumara/spice-ts/issues/490 |
@@ -58,12 +58,13 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo) | 3 | 3 | https://github.com/mfiumara/spice-ts/issues/494 |
 | harness: analysis result not produced or not mapped | 3 | 3 | none filed |
 | model: BSIM4 (LEVEL=14/54) | 3 | 3 | https://github.com/mfiumara/spice-ts/issues/3 |
-| timeout: spice-ts exceeded the 120 s bound | 3 | 3 | none filed |
 | directive: .measure | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/505 |
 | expression: B-source V= and expression functions/operators | 2 | 0 | https://github.com/mfiumara/spice-ts/issues/495 |
 | model: BSIM3 revisions other than 3.3 (VERSION=3.0/3.1/3.2.x) | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/594 |
 | source: parenthesised and extended waveform syntax | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/492 |
+| timeout: spice-ts exceeded the 120 s bound | 2 | 2 | none filed |
 | model: string-valued model parameters (MFG= and similar) | 1 | 0 | none: ngspice also fails every fixture in this bucket |
+| source: TRNOISE/EXTERNAL waveforms | 1 | 0 | https://github.com/mfiumara/spice-ts/issues/501 |
 | syntax: µ (micro sign) scale suffix | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/508 |
 
 ## Every fixture
@@ -179,19 +180,19 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [examples/rf/sp/sp3.cir](fixtures/examples/rf/sp/sp3.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 14: Unsupported .control command 'sp': S-parameter analysis is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, compose, strc |
 | [examples/rf/sp/sp4.cir](fixtures/examples/rf/sp/sp4.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: fixture declares no runnable analysis |
 | [examples/rf/sp/Tschebyschef-LP.cir](fixtures/examples/rf/sp/Tschebyschef-LP.cir) | success | failed | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Control script error at line 15: no such vector 's_1_1' in plot 'sp1' let S11db = db(s_1_1) |
-| [examples/shared/t.cir](fixtures/examples/shared/t.cir) | unsupported | unsupported | both-failed |  |  | ngspice: Error on line 14 or its substitute: / spice-ts: Parse error at line 14: Unsupported source waveform 'EXTERNAL' vext ctl 0 0 external |
-| [examples/snapshot/adder_mos_circ.cir](fixtures/examples/snapshot/adder_mos_circ.cir) | success | failed | spice-ts-loss |  |  | spice-ts: spice-ts exceeded the 120000 ms aggregate execution bound |
+| [examples/shared/t.cir](fixtures/examples/shared/t.cir) | unsupported | unsupported | both-failed |  |  | ngspice: Error on line 14 or its substitute: / spice-ts: Parse error at line 14: Unsupported source waveform 'EXTERNAL': ngspice-47 accepts EXTERNAL only in its shared-library build, where the host supplies the value through a callback; the ngspice executable rejects it as an unknown parameter ve |
+| [examples/snapshot/adder_mos_circ.cir](fixtures/examples/snapshot/adder_mos_circ.cir) | success | success | mismatch | 1.54 | tran v(x1.x2.x1.x8.net.1) |  |
 | [examples/soa/bjt-soa.cir](fixtures/examples/soa/bjt-soa.cir) | unsupported | unsupported | both-failed |  |  | ngspice: Error in netlist line no. 9, new internal line no. 11: / spice-ts: Parse error at line 11: Cannot parse number: 'SIEMENS' .MODEL MPSA92 PNP(IS=9.53E-14 ISE=8.37E-13 ISC=9.99E-11 XTI=3.00 BF=9.80E1 BR=4.78 IKF=3.49E-2 IKR=1.00 XTB=1.5 VAF=2.60E2 VAR=1.40E2 VJE=3.00E-1 VJC=3.00E-1 RE=1.00E-2 RC=1.00E-2 RB=2. |
 | [examples/soa/diode-soa-sh.cir](fixtures/examples/soa/diode-soa-sh.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 11: Unsupported diode thermal node 'tj' (model 'dmod'): diode self-heating is not implemented D1 1 0 tj dmod thermal |
 | [examples/soa/diode-soa-simple.cir](fixtures/examples/soa/diode-soa-simple.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 5: Unsupported dot command: '.temp' .temp 100 |
 | [examples/tclspice/tcl-testbench2/example.cir](fixtures/examples/tclspice/tcl-testbench2/example.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'MNA0' (model 'Nmod') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3) |
 | [examples/tclspice/tcl-testbench4/example.cir](fixtures/examples/tclspice/tcl-testbench4/example.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'MNA0' (model 'Nmod') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3) |
 | [examples/tclspice/tcl/diffpair.cir](fixtures/examples/tclspice/tcl/diffpair.cir) † | failed | unsupported | both-failed |  |  | ngspice: no raw analysis data produced / spice-ts: Parse error at line 27: Unsupported .sens form; expected '.sens v(node)' or '.sens v(node) ac dec points start stop' .sens v ( 5 4 ) |
-| [examples/transient-noise/noi-sc-tr.cir](fixtures/examples/transient-noise/noi-sc-tr.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 11: Unsupported source waveform 'TRNOISE' vin 1 0 dc 0 trnoise 0.1m 0.2n 1 0.1m |
-| [examples/transient-noise/noise_vnoi.cir](fixtures/examples/transient-noise/noise_vnoi.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 5: Unsupported source waveform 'TRNOISE' VNOI1 1 0 DC 0 TRNOISE(0n 1n 1.7 1n) |
-| [examples/transient-noise/rts-1.cir](fixtures/examples/transient-noise/rts-1.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 4: Unsupported source waveform 'TRNOISE' VRTS2 13 12 DC 0 trnoise(0 0 0 0 5m 18u 30u) |
+| [examples/transient-noise/noi-sc-tr.cir](fixtures/examples/transient-noise/noi-sc-tr.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 41: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option,  |
+| [examples/transient-noise/noise_vnoi.cir](fixtures/examples/transient-noise/noise_vnoi.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 21: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option,  |
+| [examples/transient-noise/rts-1.cir](fixtures/examples/transient-noise/rts-1.cir) | success | success | mismatch | 1.55 | tran v(9) |  |
 | [examples/transient-noise/shot_ng.cir](fixtures/examples/transient-noise/shot_ng.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 24: Unsupported .control command 'meas': control-language measurements are not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, c |
-| [examples/transient-noise/simple-noise.cir](fixtures/examples/transient-noise/simple-noise.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 3: Unsupported source waveform 'TRNOISE' i1 1 2 DC 0 TRNOISE(0.05 8p 0 1.0 0.001) |
+| [examples/transient-noise/simple-noise.cir](fixtures/examples/transient-noise/simple-noise.cir) | success | success | mismatch | 4.71 | tran v(3) |  |
 | [examples/TransmissionLines/cpl_ibm1.sp](fixtures/examples/TransmissionLines/cpl_ibm1.sp) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
 | [examples/TransmissionLines/cpl_ibm1a.sp](fixtures/examples/TransmissionLines/cpl_ibm1a.sp) | success | failed | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: spice-ts exceeded the 120000 ms aggregate execution bound |
 | [examples/TransmissionLines/cpl_ibm2.sp](fixtures/examples/TransmissionLines/cpl_ibm2.sp) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
@@ -224,7 +225,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [examples/various/FFT_Leakage.cir](fixtures/examples/various/FFT_Leakage.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 10: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option,  |
 | [examples/various/gain_stage.cir](fixtures/examples/various/gain_stage.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: MOSFET 'M1' (model 'N1') uses unsupported model LEVEL=14 (supported MOSFET levels: 1, 6, 8, 49) |
 | [examples/various/integrate1.cir](fixtures/examples/various/integrate1.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 41: Unsupported .control command 'meas': control-language measurements are not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, c |
-| [examples/various/mtimeavg_test.cir](fixtures/examples/various/mtimeavg_test.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 5: Unsupported source waveform 'TRNOISE' VNoiw 1 0 DC 0 TRNOISE(20n 0.5n 0 0) |
+| [examples/various/mtimeavg_test.cir](fixtures/examples/various/mtimeavg_test.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 12: Unsupported .control command 'let': vector function 'mtimeavg()' is not evaluated by spice-ts let filtered5n = mtimeavg(V(1)) |
 | [examples/various/param_sweep.cir](fixtures/examples/various/param_sweep.cir) | success | success | matched | 1.49e-16 | dc i(vdd) |  |
 | [examples/various/roessler-attractor.cir](fixtures/examples/various/roessler-attractor.cir) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
 | [examples/various/tmp-noise-2.cir](fixtures/examples/various/tmp-noise-2.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 11: Unsupported dot command: '.temp' .temp 127.0 |
@@ -411,13 +412,13 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 
 This supplement supersedes the historical batch-1 rows above for every `.control` deck. The original `outcomes.json` is deliberately unchanged.
 
-Measured with core tree `8d5859b29185f36ce2b1c5928365c48d53545354` (`git rev-parse HEAD:packages/core`), ngspice-47, Node v22.23.1, darwin/arm64, Apple M5 Pro.
+Measured with core tree `22f6f37515a7145a2e4a7b4d9d62fe96e32b8a60` (`git rev-parse HEAD:packages/core`), ngspice-47, Node v22.23.1, darwin/arm64, Apple M5 Pro.
 `pnpm build && pnpm exec tsx benchmarks/corpus/corpus-f/control-vectors.ts > control-receipt.json` regenerates this section and prints the full receipt. Add `--check` to rerun without changing files; `--jobs N` controls parallelism.
 
 Every reference comes only from `ngspice -b wrapper.cir`. In a fresh temporary directory, the wrapper runs `source fixture.cir`, then `setplot <type>1` and `write <type>.raw all` for each declared analysis type. `fixture.cir` is a byte-identical copy, verified against the manifest. No rewritten decks or `-r` reference fallback.
 Scoring reuses `runFixture`, `compareExecutions` and `normalizedSignalErrors` with MATCH_THRESHOLD = 0.01. There is no per-circuit tuning. Only the first plot of each type is compared, matching the existing adapter; repeated analyses are not independently scored. A failed `setplot` cannot be mistaken for the requested analysis. Decks that quit before export remain unscored, not matches.
 
-All 207 control decks: matched 13, mismatch 36, not-compared 13, spice-ts-loss 127, ngspice-failed 1, both-failed 17.
+All 207 control decks: matched 13, mismatch 38, not-compared 13, spice-ts-loss 125, ngspice-failed 1, both-failed 17.
 Bucket “loss” includes numerical mismatches and typed-unsupported/failed spice-ts executions with an ngspice reference. “No reference” and “not compared” are explicitly unscored. Worst error/signal is — where no comparison exists. #511 tracks untriaged numerical losses; #528 tracks reference/export limitations. Links do not affect scoring.
 
 | Fixture | Bucket | Outcome | Worst normalized error | Worst signal | Tracking issue | Diagnostic |
@@ -495,11 +496,11 @@ Bucket “loss” includes numerical mismatches and typed-unsupported/failed spi
 | [examples/soa/diode-soa-sh.cir](fixtures/examples/soa/diode-soa-sh.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/511 | Parse error at line 11: Unsupported diode thermal node 'tj' (model 'dmod'): diode self-heating is not implemented D1 1 0 tj dmod thermal |
 | [examples/soa/diode-soa-simple.cir](fixtures/examples/soa/diode-soa-simple.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/459 | Parse error at line 5: Unsupported dot command: '.temp' .temp 100 |
 | [examples/tclspice/tcl-testbench2/example.cir](fixtures/examples/tclspice/tcl-testbench2/example.cir) | no reference | both-failed | — | — | https://github.com/mfiumara/spice-ts/issues/528 | Error: no such plot named tran1 / MOSFET 'MNA0' (model 'Nmod') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3) |
-| [examples/transient-noise/noi-sc-tr.cir](fixtures/examples/transient-noise/noi-sc-tr.cir) | no reference | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/501 | source/write wrapper exported no reference vectors (e.g. quit before export) / Parse error at line 11: Unsupported source waveform 'TRNOISE' vin 1 0 dc 0 trnoise 0.1m 0.2n 1 0.1m |
-| [examples/transient-noise/noise_vnoi.cir](fixtures/examples/transient-noise/noise_vnoi.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/501 | Parse error at line 5: Unsupported source waveform 'TRNOISE' VNOI1 1 0 DC 0 TRNOISE(0n 1n 1.7 1n) |
-| [examples/transient-noise/rts-1.cir](fixtures/examples/transient-noise/rts-1.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/501 | Parse error at line 4: Unsupported source waveform 'TRNOISE' VRTS2 13 12 DC 0 trnoise(0 0 0 0 5m 18u 30u) |
+| [examples/transient-noise/noi-sc-tr.cir](fixtures/examples/transient-noise/noi-sc-tr.cir) | no reference | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/488 | source/write wrapper exported no reference vectors (e.g. quit before export) / Parse error at line 41: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option,  |
+| [examples/transient-noise/noise_vnoi.cir](fixtures/examples/transient-noise/noise_vnoi.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/488 | Parse error at line 21: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option,  |
+| [examples/transient-noise/rts-1.cir](fixtures/examples/transient-noise/rts-1.cir) | loss | mismatch | 1.79 | tran v(9) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/transient-noise/shot_ng.cir](fixtures/examples/transient-noise/shot_ng.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/488 | Parse error at line 24: Unsupported .control command 'meas': control-language measurements are not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, c |
-| [examples/transient-noise/simple-noise.cir](fixtures/examples/transient-noise/simple-noise.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/501 | Parse error at line 3: Unsupported source waveform 'TRNOISE' i1 1 2 DC 0 TRNOISE(0.05 8p 0 1.0 0.001) |
+| [examples/transient-noise/simple-noise.cir](fixtures/examples/transient-noise/simple-noise.cir) | loss | mismatch | 6.37 | tran v(3) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/TransmissionLines/cpl_ibm1.sp](fixtures/examples/TransmissionLines/cpl_ibm1.sp) | loss | mismatch | 1.52 | tran v(x6.5) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/TransmissionLines/cpl_ibm1a.sp](fixtures/examples/TransmissionLines/cpl_ibm1a.sp) | no reference | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/511 | source/write wrapper exported no reference vectors (e.g. quit before export) / spice-ts exceeded the 120000 ms aggregate execution bound |
 | [examples/TransmissionLines/cpl_ibm2.sp](fixtures/examples/TransmissionLines/cpl_ibm2.sp) | loss | mismatch | 0.155 | tran v(v4) | https://github.com/mfiumara/spice-ts/issues/511 | — |
@@ -532,7 +533,7 @@ Bucket “loss” includes numerical mismatches and typed-unsupported/failed spi
 | [examples/various/FFT_Leakage.cir](fixtures/examples/various/FFT_Leakage.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/488 | Parse error at line 10: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option,  |
 | [examples/various/gain_stage.cir](fixtures/examples/various/gain_stage.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/3 | MOSFET 'M1' (model 'N1') uses unsupported model LEVEL=14 (supported MOSFET levels: 1, 6, 8, 49) |
 | [examples/various/integrate1.cir](fixtures/examples/various/integrate1.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/488 | Parse error at line 41: Unsupported .control command 'meas': control-language measurements are not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, c |
-| [examples/various/mtimeavg_test.cir](fixtures/examples/various/mtimeavg_test.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/501 | Parse error at line 5: Unsupported source waveform 'TRNOISE' VNoiw 1 0 DC 0 TRNOISE(20n 0.5n 0 0) |
+| [examples/various/mtimeavg_test.cir](fixtures/examples/various/mtimeavg_test.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/488 | Parse error at line 12: Unsupported .control command 'let': vector function 'mtimeavg()' is not evaluated by spice-ts let filtered5n = mtimeavg(V(1)) |
 | [examples/various/param_sweep.cir](fixtures/examples/various/param_sweep.cir) | loss | mismatch | 0.736 | dc v(2) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/various/roessler-attractor.cir](fixtures/examples/various/roessler-attractor.cir) | loss | mismatch | 0.985 | tran v(z) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/various/tmp-noise-2.cir](fixtures/examples/various/tmp-noise-2.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/459 | Parse error at line 11: Unsupported dot command: '.temp' .temp 127.0 |

@@ -2,9 +2,9 @@
 
 Hand-written companion to the generated [README.md](README.md). Machine-readable version: [triage-511.json](triage-511.json). `triage-511.test.ts` checks it against the committed `outcomes.json`, so it fails when an outcome changes and this file is not updated.
 
-Scope: all ten rows of the #511 table, the two other mismatches present in the imported report, and the two decks exposed by the refreshes up to main `c317324f` (switches-manual-p92, a mismatch; adder_mos_circ, a mismatch until #624 and a timeout since). The seven newly runnable mismatches found by the first refresh on `bf2e4169` remain published losses. They are explicitly deferred to [#597](https://github.com/mfiumara/spice-ts/issues/597), not claimed as root-caused here. No fixture, tolerance, threshold or metric was changed. Current measurements (the "Now" column and `outcomes.json`) use ngspice-47 and the simulator at main `c317324f`; `packages/` on this branch is byte-identical to it. They use the published corpus-f metric with the published corpus-f metric (worst over signals of max|spice-ts - ngspice| / max(peak|ngspice|, 1e-12), ngspice interpolated onto spice-ts points with breakpoint alignment). Values attributed to `bf2e4169` are historical and appear only where they explain an issue. Diagnostic variants are labelled separately.
+Scope: all ten rows of the #511 table, the two other mismatches present in the imported report, and the two decks exposed by the refreshes up to main `4bdbe0c2` (switches-manual-p92; adder_mos_circ; the two #640 transient-noise decks). The seven newly runnable mismatches found by the first refresh on `bf2e4169` remain published losses. They are explicitly deferred to [#597](https://github.com/mfiumara/spice-ts/issues/597), not claimed as root-caused here. No fixture, tolerance, threshold or metric was changed. Current measurements (the "Now" column and `outcomes.json`) use ngspice-47 and the simulator at main `4bdbe0c2`; `packages/` on this branch is byte-identical to it. They use the published corpus-f metric with the published corpus-f metric (worst over signals of max|spice-ts - ngspice| / max(peak|ngspice|, 1e-12), ngspice interpolated onto spice-ts points with breakpoint alignment). Values attributed to `bf2e4169` are historical and appear only where they explain an issue. Diagnostic variants are labelled separately.
 
-This triage covers the batch-1 `outcomes.json` table only. The "Control-vector supplement (#521)" in README.md is generated separately by `control-vectors.ts`. It was refreshed on the same tree (all 207 control decks: 13 matched, 36 mismatched, 13 not compared, 127 spice-ts losses, 1 ngspice-only failure, 17 both-engine failures) but is not triaged here. Its mismatches remain linked to #511 or their gap issues.
+This triage covers the batch-1 `outcomes.json` table only. The "Control-vector supplement (#521)" in README.md is generated separately by `control-vectors.ts`. It was refreshed on the same tree (all 207 control decks: 13 matched, 38 mismatched (two of them the stochastic #640 noise decks, 6.37 and 1.79 in this run, #655), 13 not compared, 125 spice-ts losses, 1 ngspice-only failure, 17 both-engine failures) but is not triaged here. Its mismatches remain linked to #511 or their gap issues.
 
 ## Tool
 
@@ -26,7 +26,8 @@ pnpm exec tsx benchmarks/corpus/corpus-f/triage-detail.ts tests-general-rtlinv-c
 |---|---|---|---|
 | MOS1 bulk-junction capacitance was constant CBD/CBS; CJ/CJSW/MJ/PB depletion C(V) ignored | fixed (#601) | https://github.com/mfiumara/spice-ts/issues/590 | mosmem (now matched) |
 | MOS1 had no Meyer intrinsic gate capacitance from TOX | fixed (#601) | https://github.com/mfiumara/spice-ts/issues/591 | ltra2_2_line (improved; the residual is a grid effect per #627/#629 → #592) |
-| BSIM3 4-bit NAND adder: supply current 10-40x ngspice before #624, exceeds the 120 s bound since | simulator, not root-caused | https://github.com/mfiumara/spice-ts/issues/626 | adder_mos_circ |
+| BSIM3 4-bit NAND adder: supply current 10-40x ngspice before #624, timeout after #624, internal-node mismatch 1.54 since #648 | simulator, not root-caused | https://github.com/mfiumara/spice-ts/issues/626 | adder_mos_circ |
+| TRNOISE/TRRANDOM decks compare independent random realisations (ngspice reseeds every run) | metric | https://github.com/mfiumara/spice-ts/issues/655 | transient-noise simple-noise, rts-1 |
 | Transient metric scores ngspice's coarse default-step output as spice-ts error | metric | https://github.com/mfiumara/spice-ts/issues/592 | rca3040, rtlinv, mos-test, fourbitadder, switches-manual-p92, ltra2_2_line (secondary signals) |
 | Zero or near-zero ngspice peaks turn fV-µV residuals into mismatches | metric | https://github.com/mfiumara/spice-ts/issues/593 | rca3040 (AC v(2)), fourbitadder |
 | BSIM1/BSIM2 (LEVEL 4/5) not implemented; typed error since #552 | model gap | https://github.com/mfiumara/spice-ts/issues/565 | bsim1, bsim2 |
@@ -45,11 +46,12 @@ pnpm exec tsx benchmarks/corpus/corpus-f/triage-detail.ts tests-general-rtlinv-c
 | tests/bsim1/test.cir | 0.628 | spice-ts-loss | LEVEL=4, as bsim2 → #565. |
 | tests/general/rtlinv.cir | 0.432 | mismatch, 0.0527 | At ngspice points: 0.0013. All 16 signals ≤ 8.5e-4 with both engines at TMAX 20 ps. Against the fine-step reference, spice-ts default transient error is 5.24e-4 and ngspice default is 0.0017; DC remains 8.43e-4 → #592. |
 | tests/general/rca3040.cir | 0.148 | mismatch, 0.0511 | Tran worst is v(1), the SIN source node itself (108 ngspice points over ten 50 MHz cycles); at ngspice points 0.0021. Against the fine-step reference (TMAX 10 ps), spice-ts tran is ≤ 0.0010 on its grid and ngspice default is 0.031 on its grid → #592. What remains is AC v(2), a node held by `vcc` with no AC value: spice-ts 4.84e-14 V vs ngspice exactly 0, divided by the 1e-12 floor = 0.0484 → #593. |
-| examples/xspice/various/xspice_c1.cir | 0.0439 | matched, 2.26e-5 | Imported report was already matched at 4.93e-4. Fresh runs (`bf2e4169`, `c317324f`) include #531 initial-condition semantics. |
+| examples/xspice/various/xspice_c1.cir | 0.0439 | matched, 2.26e-5 | Imported report was already matched at 4.93e-4. Fresh runs (`bf2e4169`, `4bdbe0c2`) include #531 initial-condition semantics. |
 | examples/xspice/original-examples/spice3.deck | 0.0439 | matched, 2.26e-5 | Same circuit and transition as xspice_c1. |
 | examples/probe/mos-test.cir | (not in table) | mismatch, 0.176 | The inverter has no capacitance (default MOS1, no TOX/CJ, lambda 0, equal KP), so v(out) jumps vertically at vin = 2.5 V. Interpolating ngspice's 135-point grid across the jump gives 0.176. spice-ts's 3.64 V at vin = 2.33 V is the analytic value. At ngspice points: 0.0023 → #592. |
 | examples/probe/switches-manual-p92.cir | (not in table) | mismatch, 0.865 | Runnable since #579 (S/W switches); `spice-ts-loss` at `bf2e4169`. Ideal switches make v(10)/v(20)/v(30)/v(40) jump between consecutive output points. ngspice's default output brackets each edge with points 2 µs apart, for example v(10) crossing 0.5 V between 1.19856 and 1.20056 ms. spice-ts puts the edge inside that interval (1.20029 ms), so interpolating ngspice's chord gives 0.865 (spice-ts 1 vs ngspice 0.135 at t = 1.2 ms). At ngspice points: 2.7e-20. With both engines at TMAX 0.1 µs, the crossing times agree within 1e-8 s, but the metric still reports 1.0 at a vertical edge → #592. The other 8 signals agree to ≤ 5.4e-16. |
-| examples/snapshot/adder_mos_circ.cir | (not in table) | spice-ts-loss (timeout) | Runnable since #599 (dotted BSIM3 `version=3.3.0`); `spice-ts-loss` at `bf2e4169`. On main `68b64909` it completed (about 45 s) as a mismatch of 42: 81/90 signals over 1%, i(vcc) near 8.95 ns spice-ts −11.6 mA vs ngspice −25 µA (275 µA peak), 40.6 at ngspice points. That was a real device-level loss, not a grid artefact. After #624 (BSIM3 b3ld.c DC core) spice-ts exceeds the 120 s bound (2m02s wall on a lightly loaded host); ngspice-47 completes. → #626, root cause not established. |
+| examples/snapshot/adder_mos_circ.cir | (not in table) | mismatch, 1.54 | Runnable since #599 (dotted BSIM3 `version=3.3.0`); `spice-ts-loss` at `bf2e4169`. On `68b64909` it was a mismatch of 42: i(vcc) −11.6 mA vs −25 µA near 8.95 ns, 40.6 at ngspice points. On `c317324f` (#624) it exceeded the 120 s bound. On `4bdbe0c2` (#648) it completes again: 81/90 signals over 1%, worst internal NAND node v(x1.x2.x1.x8.net.1) 1.54 (2.94 V vs 0.20 V near 0.985 µs), 1.44 at ngspice points. This is a real device-level loss → #626, root cause not established. |
+| examples/transient-noise/simple-noise.cir, rts-1.cir | (not in table) | mismatch, 4.71 / 1.55 | Runnable since #640. Random sources: spice-ts is deterministic and ngspice-47 reseeds each run, so a rerun gave 3.75 / 1.45. The sample-wise value is not reproducible and is not a parity measure → #655. It stays a published loss. |
 
 ## What this does not claim
 
@@ -76,9 +78,9 @@ All 35 outcome-class transitions are accounted for below. Changes within an outc
 
 The seven newly runnable mismatches have a separate follow-up in #597. This table attributes which feature made a deck runnable; it does not establish the remaining mismatch's root cause. `not-compared` is not a parity win.
 
-### Second refresh on main `c317324f`
+### Second refresh on main `4bdbe0c2`
 
-Review of the first version of this PR found that the published report was stale against main: #579 had made switches-manual-p92 runnable as a 0.865 mismatch. `outcomes.json` and README.md were regenerated again on the merge of this branch with main `c317324f` (`spice-heavy pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --jobs 4`). Result: 32 matched, 13 mismatched, 53 not compared, 208 spice-ts losses and 30 both-engine failures (outcome SHA-256 `e07901d4…`). Compared with the `bf2e4169` regeneration, all 38 outcome-class transitions are listed below. They come from merged implementations, not from this PR.
+Review of the first version of this PR found that the published report was stale against main: #579 had made switches-manual-p92 runnable as a 0.865 mismatch. `outcomes.json` and README.md were regenerated again on the merge of this branch with main `4bdbe0c2` (`spice-heavy pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --jobs 4`). Result: 32 matched, 16 mismatched, 53 not compared, 205 spice-ts losses and 30 both-engine failures (outcome SHA-256 `bca8f348…`). The two transient-noise rows are stochastic, so this digest is not reproducible bit-for-bit until #655 is resolved. Compared with the `bf2e4169` regeneration, all 41 outcome-class transitions are listed below. They come from merged implementations, not from this PR.
 
 | Prior implementation | Class transitions | Count |
 |---|---|---:|
@@ -90,16 +92,16 @@ Review of the first version of this PR found that the published report was stale
 | #584 .control interpreter | loss → matched (control-structs/if-batchmode, various/param-sweep) | 2 |
 | #616 numparam .func/.if | loss → not-compared (regression/misc/if-elseif, parser/xpressn-3; `.control` decks, #528) | 2 |
 | #603 .global | loss → not-compared (regression/subckt-processing/global-1; `.control` deck, #528) | 1 |
+| #599 BSIM3 version strings (values later moved by #624/#648) | loss → mismatch (adder_mos_circ, 1.54 now, → #626) | 1 |
+| #640 TRNOISE/TRRANDOM | loss → mismatch (transient-noise simple-noise, rts-1; stochastic, → #655) | 2 |
 
-adder_mos_circ is `spice-ts-loss` at both ends, but not for the same reason. #599 made it run (mismatch 42 on `7c66aab9`…`68b64909`), and after #624 it times out at the 120 s bound (#626).
-
-Intermediate full regenerations on main `7c66aab9` (before #584), `e58322ea` (before #616/#623), `0f255516` (before #603/#628/#629/#639) and `68b64909` (before #631/#632/#624) gave the same 14 mismatches with identical values, so the mismatch values are reproducible across five full runs. On `c317324f` the only change is adder_mos_circ: mismatch → timeout (#624). #623 and #628 (LTRA step rules), #629 (test only), #639 (temperature laws), #631 (numparam minus) and #632 (MOS1 batch stamping) changed no corpus-f outcome. Changes within an outcome class: ltra2_2_line 0.974 → 0.374 and txl1_1_line 0.973 → 0.371 (#601), txl2_3_line 0.0904 → 0.0864.
+Intermediate full regenerations on main `7c66aab9` (before #584), `e58322ea` (before #616/#623), `0f255516` (before #603/#628/#629/#639) and `68b64909` (before #631/#632/#624) gave the same 14 mismatches with identical values, so the mismatch values are reproducible across five full runs. On `c317324f` the only change was adder_mos_circ: mismatch → timeout (#624). On `4bdbe0c2`, adder_mos_circ completes again (#648, mismatch 1.54) and the #640 noise decks are new stochastic mismatches. #645 and #644 changed no corpus-f outcome. #623 and #628 (LTRA step rules), #629 (test only), #639 (temperature laws), #631 (numparam minus) and #632 (MOS1 batch stamping) changed no corpus-f outcome. Changes within an outcome class: ltra2_2_line 0.974 → 0.374 and txl1_1_line 0.973 → 0.371 (#601), txl2_3_line 0.0904 → 0.0864.
 
 The separate 100-fixture aggregate is not changed by this PR. Its provenance pin and artifacts were refreshed on main by #613 (#598). An earlier version of this file wrongly said this PR did that.
 
 ## RED and GREEN mean different things on a triage card
 
-This PR changes no simulator code; `packages/` is identical to main `c317324f`. Run:
+This PR changes no simulator code; `packages/` is identical to main `4bdbe0c2`. Run:
 
 ```sh
 CORPUS_F_REQUIRE_PARITY=1 pnpm exec tsx --test benchmarks/corpus/corpus-f/triage-511.test.ts
