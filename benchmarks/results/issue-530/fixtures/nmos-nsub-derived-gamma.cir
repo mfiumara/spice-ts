@@ -1,0 +1,10 @@
+* issue 530: GAMMA and PHI derived from TOX and NSUB (mos1temp.c), source follower with body effect
+VDD vdd 0 DC 5
+VIN in 0 DC 0 PULSE(0 5 1u 1u 1u 3u 10u)
+M1 vdd in out 0 NSUB W=20u L=2u
+RS out 0 20k
+.model NSUB NMOS (LEVEL=1 TOX=50n NSUB=5e15 UO=600 LAMBDA=0.01)
+.op
+.dc VIN 0 5 0.05
+.tran 20n 10u
+.end

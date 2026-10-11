@@ -61,8 +61,11 @@ import {
   type ResolvedCapacitorModel,
   type ResolvedInductorModel,
 } from './devices/passive-model.js';
-import { CycleError, InvalidCircuitError, ParseError } from './errors.js';
+import { CycleError, InvalidCircuitError, ParseError, UnsupportedModelLevelError } from './errors.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
+
+/** MOSFET model levels with a spice-ts implementation: MOS1, MOS6 and BSIM3v3 (8/49). */
+const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 6, 8, 49];
 
 /**
  * The compiled representation of a circuit, ready for numerical simulation.
@@ -793,6 +796,7 @@ export class Circuit {
    * Add a MOSFET to the circuit.
    *
    * Supports Level 1 (Shichman-Hodges), Level 6 (Sakurai-Newton) and Level 49/8 (BSIM3v3) models.
+   * Any other `LEVEL` raises {@link UnsupportedModelLevelError} at compile time.
    *
    * @param name - Device name (e.g., `'M1'`)
    * @param nodeDrain - Drain node
@@ -1451,10 +1455,8 @@ export class Circuit {
               resolveMOS6Model(desc.modelName!, modelParams, polarity),
               desc.params ?? {},
             ));
-          } else {
-            // Level 1 — existing behavior
-            // Preserve the bulk terminal for analyses that must reject body-effect
-            // forms explicitly. The bounded Level-1 DC stamp still uses D/G/S only.
+          } else if (level === 1) {
+            // Level 1 (ngspice mos1); bulk defaults to source.
             const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];
             const nodeIdxs = [
               resolveNode(desc.nodes[0]),
@@ -1463,6 +1465,9 @@ export class Circuit {
               resolveNode(bulkNode),
             ];
             devices.push(new MOSFET(desc.name, nodeIdxs, { ...modelParams, ...desc.params, polarity }));
+          } else {
+            // #530: never evaluate an unimplemented level (MOS2/3, BSIM1/2, ...) with Level-1 equations.
+            throw new UnsupportedModelLevelError(desc.name, desc.modelName, level, SUPPORTED_MOSFET_LEVELS);
           }
           break;
         }

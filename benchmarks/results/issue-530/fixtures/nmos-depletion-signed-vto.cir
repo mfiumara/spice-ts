@@ -1,0 +1,7 @@
+* issue 530: NMOS depletion device (VTO<0) conducts at vgs=0
+M1 d g 0 0 NDEP W=10u L=2u
+VD d 0 DC 2
+VG g 0 DC 0
+.model NDEP NMOS (LEVEL=1 VTO=-1 KP=50u)
+.dc VG -2 2 0.05
+.end
