@@ -235,4 +235,105 @@ describe('MNAAssembler', () => {
     expect(solvers.map(solver => solver.analyzeCalls)).toEqual([1, 1]);
     expect(asm.topologyNnz).toBe(4);
   });
+
+  describe('stamp-sequence slot cache', () => {
+    const lockedLadder = (): MNAAssembler => {
+      const asm = new MNAAssembler(3, 0);
+      const ctx = asm.getStampContext();
+      for (let i = 0; i < 3; i++) ctx.stampG(i, i, 0);
+      ctx.stampG(0, 1, 0); ctx.stampG(1, 0, 0);
+      ctx.stampG(1, 2, 0); ctx.stampG(2, 1, 0);
+      ctx.stampC(2, 2, 0);
+      asm.lockTopology();
+      return asm;
+    };
+    const valueAt = (asm: MNAAssembler, row: number, col: number): number =>
+      asm.gValues[asm.stampIndex(row, col)];
+
+    it('adds every stamp at its exact position when a pass changes its sequence', () => {
+      const asm = lockedLadder();
+      asm.clear();
+      let ctx = asm.getStampContext();
+      ctx.stampG(0, 0, 1); ctx.stampG(0, 1, 2); ctx.stampG(1, 1, 3); ctx.stampC(2, 2, 4);
+
+      // Same pass kind, different (row, col) at every cached position, plus a
+      // longer sequence than the one remembered.
+      asm.clear();
+      ctx = asm.getStampContext();
+      ctx.stampG(1, 1, 10); ctx.stampG(0, 0, 20); ctx.stampC(2, 2, 30);
+      ctx.stampG(2, 1, 40); ctx.stampG(1, 2, 50); ctx.stampG(1, 1, 60);
+
+      expect(valueAt(asm, 0, 0)).toBe(20);
+      expect(valueAt(asm, 1, 1)).toBe(70);
+      expect(valueAt(asm, 2, 1)).toBe(40);
+      expect(valueAt(asm, 1, 2)).toBe(50);
+      expect(valueAt(asm, 0, 1)).toBe(0);
+      expect(asm.cValues[asm.stampIndex(2, 2)]).toBe(30);
+
+      // Repeating the first sequence again lands on its original positions.
+      asm.clear();
+      ctx = asm.getStampContext();
+      ctx.stampG(0, 0, 1); ctx.stampG(0, 1, 2); ctx.stampG(1, 1, 3); ctx.stampC(2, 2, 4);
+      expect(valueAt(asm, 0, 0)).toBe(1);
+      expect(valueAt(asm, 0, 1)).toBe(2);
+      expect(valueAt(asm, 1, 1)).toBe(3);
+      expect(valueAt(asm, 1, 2)).toBe(0);
+      expect(asm.cValues[asm.stampIndex(2, 2)]).toBe(4);
+    });
+
+    it('keeps separate pass kinds independent and restarts each pass at its first stamp', () => {
+      const asm = lockedLadder();
+      for (let repeat = 0; repeat < 3; repeat++) {
+        asm.clear();
+        const companion = asm.getStampContext();
+        companion.stampG(0, 0, 1); companion.stampG(1, 2, 2);
+        expect(valueAt(asm, 0, 0)).toBe(1);
+        expect(valueAt(asm, 1, 2)).toBe(2);
+
+        asm.clear();
+        const history = asm.getStampContext(1);
+        history.stampG(2, 1, 3); history.stampG(0, 0, 4);
+        expect(valueAt(asm, 2, 1)).toBe(3);
+        expect(valueAt(asm, 0, 0)).toBe(4);
+        expect(valueAt(asm, 1, 2)).toBe(0);
+      }
+    });
+
+    it('stays exact when a caller keeps stamping through one context', () => {
+      const asm = lockedLadder();
+      asm.clear();
+      const ctx = asm.getStampContext();
+      const rounds = 5_000; // 10k stamps: past the per-pass cache bound
+      for (let round = 0; round < rounds; round++) {
+        ctx.stampG(0, 0, 1);
+        ctx.stampG(round % 3, round % 3, 1);
+      }
+      expect(valueAt(asm, 0, 0) + valueAt(asm, 1, 1) + valueAt(asm, 2, 2)).toBe(2 * rounds);
+      expect(valueAt(asm, 1, 1)).toBe(1_667);
+    });
+
+    it('rejects a position outside the locked topology even after it was cached', () => {
+      const asm = lockedLadder();
+      asm.clear();
+      asm.getStampContext().stampG(0, 1, 1);
+      asm.clear();
+      expect(() => asm.getStampContext().stampG(0, 2, 1)).toThrow(/locked topology/);
+    });
+
+    it('forgets cached slots when the topology is invalidated', () => {
+      const asm = lockedLadder();
+      asm.clear();
+      asm.getStampContext().stampG(1, 1, 1);
+      asm.invalidateTopology();
+      const ctx = asm.getStampContext();
+      ctx.stampG(0, 0, 0); ctx.stampG(1, 1, 0); ctx.stampG(0, 2, 0);
+      asm.lockTopology();
+      asm.clear();
+      const locked = asm.getStampContext();
+      locked.stampG(1, 1, 5); locked.stampG(0, 2, 6);
+      expect(valueAt(asm, 1, 1)).toBe(5);
+      expect(valueAt(asm, 0, 2)).toBe(6);
+      expect(asm.topologyNnz).toBe(3);
+    });
+  });
 });

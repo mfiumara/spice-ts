@@ -63,6 +63,9 @@ const START_BREAK_GAP_FRACTION = 0.1;
 /** Keep implicit-breakpoint recovery local while still crossing a vanished branch. */
 const IMPLICIT_BREAK_DT_CUT = 5;
 
+/** Assembler stamp-pass kind of the trapezoidal history restamp (stampPrevB). */
+const HISTORY_STAMP_PASS = 1;
+
 /** Switch away from trapezoidal integration after a sustained NR retry cycle. */
 const MAX_TRAP_NR_RETRIES = 1_024;
 
@@ -492,7 +495,9 @@ class TransientSimImpl implements TransientSim {
   private stampPrevB(): void {
     if (this.integrationMethod !== 'trapezoidal') return;
     this.assembler.clear();
-    const ctx = this.assembler.getStampContext();
+    // A separate stamp-pass kind: this restamp's device sequence differs from
+    // the companion build's, so they keep separate slot caches.
+    const ctx = this.assembler.getStampContext(HISTORY_STAMP_PASS);
     for (const d of this.compiled.devices) d.stamp(ctx);
     // Charge currents accepted at x(n) belong to the static side of the KCL
     // that defines the trapezoidal history of the linear reactive elements.

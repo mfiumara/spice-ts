@@ -1,0 +1,35 @@
+.TRAN 0.5N 150N: points spice-ts 912, ngspice 315
+  v(5) max 7.517e-2 rms 1.027e-2
+  v(4) max 6.515e-2 rms 1.586e-2
+  v(xndinv3.14) max 3.261e-1 rms 2.470e-2
+  v(xndinv4.14) max 3.239e-1 rms 2.942e-2
+  i(vin) max 3.564e-5 rms 1.528e-6
+  i(vdd) max 4.348e-5 rms 1.124e-5
+.TRAN 0.5N 150N .OPTIONS RELTOL=1e-4: points spice-ts 1833, ngspice 379
+  v(5) max 1.627e-2 rms 2.304e-3
+  v(4) max 1.013e-2 rms 2.337e-3
+  v(xndinv3.14) max 1.288e-1 rms 8.126e-3
+  v(xndinv4.14) max 1.175e-1 rms 7.568e-3
+  i(vin) max 2.447e-5 rms 8.218e-7
+  i(vdd) max 1.707e-5 rms 3.861e-6
+.TRAN 0.5N 150N .OPTIONS RELTOL=1e-5: points spice-ts 3678, ngspice 630
+  v(5) max 1.529e-2 rms 2.262e-3
+  v(4) max 1.031e-2 rms 2.317e-3
+  v(xndinv3.14) max 3.374e-2 rms 2.692e-3
+  v(xndinv4.14) max 4.505e-2 rms 3.718e-3
+  i(vin) max 6.253e-6 rms 2.571e-7
+  i(vdd) max 7.954e-6 rms 2.063e-6
+.TRAN 0.5N 150N 0 50P: points spice-ts 3144, ngspice 3008
+  v(5) max 2.196e-2 rms 2.816e-3
+  v(4) max 1.703e-2 rms 2.214e-3
+  v(xndinv3.14) max 4.694e-2 rms 2.446e-3
+  v(xndinv4.14) max 6.287e-2 rms 3.427e-3
+  i(vin) max 2.194e-5 rms 5.159e-7
+  i(vdd) max 1.171e-5 rms 6.270e-6
+.TRAN 0.5N 150N 0 10P: points spice-ts 15018, ngspice 15010
+  v(5) max 5.961e-3 rms 8.059e-4
+  v(4) max 4.714e-3 rms 6.343e-4
+  v(xndinv3.14) max 1.169e-2 rms 5.916e-4
+  v(xndinv4.14) max 1.634e-2 rms 7.999e-4
+  i(vin) max 3.838e-5 rms 3.730e-7
+  i(vdd) max 1.950e-5 rms 4.725e-6

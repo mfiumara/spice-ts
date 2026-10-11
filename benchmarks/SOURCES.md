@@ -176,6 +176,26 @@ Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/
 
 Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-456/verify.ts --output <file>` (see `benchmarks/results/issue-456/README.md`).
 
+## MOS1 inverter-chain `.op` scaling decks (issue #462)
+
+- Source: project-authored, generated reference circuits for [issue #428](https://github.com/mfiumara/spice-ts/issues/428) and [issue #462](https://github.com/mfiumara/spice-ts/issues/462): an N-stage level-1 CMOS inverter chain with a 10 fF load per stage. The `issue-428` variant (lambda=0.02, W_p=2u) is the #426 scaling-fixture deck with `.op`; the `true-gmin` variant (lambda=0.005, W_p=1u) at 6000 stages is a CI-sized deck on which ngspice-47 also falls back to true gmin stepping (at 5000 stages its dynamic gmin stepping still completes).
+- Licence: MIT, under the repository [licence](../LICENSE).
+- Adaptation: none. `benchmarks/results/issue-462/measure.mjs` and `packages/core/src/mos1-inverter-chain-op.test.ts` generate the same deck text; the script writes it once and supplies those bytes to both ngspice-47 and spice-ts. Each receipt records the deck SHA-256.
+
+Reproduce with `pnpm -C packages/core build && node benchmarks/results/issue-462/measure.mjs --stages 40000` (see `benchmarks/results/issue-462/README.md`).
+
+## MOS6 charge-integration fixture
+
+- Source: project-authored reference circuit for [issue #468](https://github.com/mfiumara/spice-ts/issues/468), issue revision as of 2026-10-11. The model card reuses the `N10L5` level-6 parameters of the ngspice `tests/mos6/simpleinv.cir` fixture, adding `IS=1e-18` and instance junction areas/perimeters.
+- Licence: MIT, under the repository [licence](../LICENSE).
+- Adaptation: none. The committed bytes are run unchanged by ngspice-47 and spice-ts.
+
+| Fixture | SHA-256 | Coverage |
+|---|---|---|
+| `benchmarks/results/issue-468/ngspice/mos6-bulk-junction.cir` | `fa2a0dee6b790db2ac4deef8c77184f3bd84406cd1f91a59eb7632a4d4fabd53` | NMOS level-6 bulk driven through 100k to 0.71 V, past FC·PB = 0.5 V, with bottom and sidewall junction caps (MOS6 qbs/qbd charges including the f2/f3/f4 continuation). Reference for `mos6.test.ts`. |
+
+The corpus comparisons for #468 are reproduced with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-468/verify.ts --output <file>` (see `benchmarks/results/issue-468/README.md`).
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
