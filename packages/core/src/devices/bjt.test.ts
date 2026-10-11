@@ -234,8 +234,9 @@ describe('BJT Ebers-Moll', () => {
   });
 
   it('rejects unsupported BJT model types explicitly', () => {
-    expect(() => parse('title\nQ1 c b 0 QBAD\n.model QBAD VBIC BF=100\n.op').compile())
-      .toThrow("Unsupported BJT model type: 'VBIC'");
+    // #509: unsupported model types are rejected when the .model card is parsed.
+    expect(() => parse('title\nQ1 c b 0 QBAD\n.model QBAD VBIC BF=100\n.op'))
+      .toThrow(expect.objectContaining({ code: 'UNSUPPORTED_MODEL_TYPE', modelName: 'QBAD', modelType: 'VBIC' }));
   });
 
   it('runs the unchanged bounded VBIC forward-output DC fixture', async () => {
