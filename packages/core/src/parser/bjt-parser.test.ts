@@ -111,7 +111,9 @@ describe('BJT Q-card parser', () => {
   });
 
   it.each([
-    ['Q1 c b e QMOD AREAB=2', "Unsupported BJT instance parameter: 'AREAB=2'"],
+    ['Q1 c b e QMOD DTEMP=2', "Unsupported BJT instance parameter: 'DTEMP=2'"],
+    ['Q1 c b e QMOD AREAB=0', 'BJT AREAB must be a finite number greater than zero'],
+    ['Q1 c b e QMOD AREAC=1 AREAC=2', "Duplicate BJT instance parameter: 'AREAC'"],
     ['Q1 c b e QMOD IC=0.6', "Unsupported BJT instance parameter: 'IC=0.6'"],
     ['Q1 c b e QMOD TEMP=50', "Unsupported BJT instance parameter: 'TEMP=50'"],
     ['Q1 c b e QMOD AREA=0', 'BJT AREA must be a finite number greater than zero'],
@@ -132,9 +134,10 @@ describe('BJT Q-card parser', () => {
     expect((error as Error).message).toContain(message);
   });
 
-  // ngspice-47 gives the identical .op for both decks below (v(2)=0.72178980512
-  // vs 0.72178980516, v(3)=4.3084990403 vs 4.3084990605): instance AREA/M is
-  // exactly the model with IS/ISE/IKF scaled and RB/RC/RE divided by AREA*M.
+  // Instance AREA/M is exactly the model with IS/ISE/IKF scaled and RB/RC/RE
+  // divided by AREA*M once AREAB=1: bjttemp.c BCtSatCur = tSatCur*AREAB, and
+  // AREAB defaults to AREA (IS*AREA^2*M, #641). ngspice-47 .op on the AREAB=1
+  // instance deck: v(2)=7.217898051124e-01, v(3)=4.308499040406e+00.
   it('scales a Gummel-Poon instance by AREA*M exactly like the equivalent scaled model', async () => {
     const model = 'BF=100 IS=1e-15 VAF=50 IKF=10m ISE=1e-14 NE=1.5 RB=20 RC=5 RE=2';
     const scaled = 'BF=100 IS=6e-15 VAF=50 IKF=60m ISE=6e-14 NE=1.5 RB=3.3333333333333335 RC=0.8333333333333334 RE=0.3333333333333333';
@@ -147,11 +150,13 @@ describe('BJT Q-card parser', () => {
       .model QMOD NPN(${params})
       .op
       .end`;
-    const instance = await simulate(deck('Q1 3 2 0 QMOD AREA=3 M=2', model));
+    const instance = await simulate(deck('Q1 3 2 0 QMOD AREA=3 AREAB=1 M=2', model));
     const reference = await simulate(deck('Q1 3 2 0 QMOD', scaled));
     for (const node of ['2', '3']) {
       expect(instance.dc!.voltage(node)).toBeCloseTo(reference.dc!.voltage(node), 12);
     }
+    expect(instance.dc!.voltage('2')).toBeCloseTo(7.217898051124e-01, 8);
+    expect(instance.dc!.voltage('3')).toBeCloseTo(4.308499040406e+00, 7);
   });
 
   it('matches ngspice-47 for a VBIC card with area= and m= (#490)', async () => {
@@ -211,6 +216,24 @@ describe('BJT Q-card parser', () => {
     `).compile()).toThrow(
       "Unsupported VBIC thermal node on 'q1': self-heating (5-terminal instance) is not implemented",
     );
+  });
+
+  it('round-trips AREAB and AREAC through toNetlist()', () => {
+    const netlist = parse(`round trip
+      Q1 c b e QMOD AREA=2 AREAB=3 AREAC=0.5
+      .model QMOD NPN(BF=100)
+      .op
+    `).toNetlist();
+    expect(netlist).toContain('Q1 c b e QMOD AREA=2 AREAB=3 AREAC=0.5');
+    expect(parse(netlist).toNetlist()).toBe(netlist);
+  });
+
+  it('rejects AREAB/AREAC on a VBIC instance, which ngspice-47 vbic.c does not accept', () => {
+    expect(() => parse(`vbic areab
+      Q1 c b e VMOD AREA=2 AREAB=3
+      .model VMOD NPN LEVEL=4 IS=1e-16
+      .op
+    `).compile()).toThrow("VBIC 'Q1' does not accept instance parameters: AREAB");
   });
 
   it('round-trips AREA and M through toNetlist()', () => {
