@@ -114,6 +114,12 @@ export class BSIM3v3 implements DeviceModel {
       vbd = pnjlim(vbd, this.lastVbd, CONST_VT0, this.model.vcrit);
       vbs = vbd + vds;
     }
+    // Known divergence from b3ld.c (tracked in #638, no behaviour change here):
+    // the pnjlim reference is updated on every stamp() call, not once per
+    // accepted Newton iterate, and a limited junction step does not raise
+    // non-convergence the way ngspice's `Check -> CKTnoncon++` does. DC parity
+    // is unaffected (bsim3v3-ngspice-parity.test.ts); revisit with the
+    // adder_mos_circ transient investigation.
     this.lastVbs = vbs;
     this.lastVbd = vbd;
 

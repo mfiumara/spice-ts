@@ -80,18 +80,26 @@ SRAM end state at 10 ns: q = 4.5807703e-9 V and qb = 1.799999987991 V in spice-t
 
 ## corpus-f BSIM3 decks
 
-No corpus-f BSIM3 fixture becomes a comparable match with this PR. These are the child runs (`outcomes.ts --corpus-f-fixture-child <id>`) on this branch, which has main `e58322ea` with the #584 control interpreter merged in:
+No corpus-f BSIM3 fixture becomes a comparable match with this PR, and one fixture gets worse. These are the child runs (`outcomes.ts --corpus-f-fixture-child <id>`) on this branch, which has main `e58322ea` with the #584 control interpreter merged in:
+
+- **Published loss: #589 regresses `examples/snapshot/adder_mos_circ.cir` from a completed mismatch to a timeout.** On main `e58322ea` spice-ts completes the deck (tran, 38165 points, about 33 s wall time) and the outcome is `mismatch`, worst normalized error 42 on `tran i(vcc)` (tracked in #626). On this branch at `c4c7a3a9` spice-ts fails with "exceeded the 120000 ms aggregate execution bound" after about 166 s wall time, so the outcome becomes `spice-ts-loss` (timeout). The deck uses all-default BSIM3 cards. Forcing the new Newton step limiting off locally still times out, so the suspects are the ngspice-default AD=AS=PD=PS=0 (no junction capacitance under the Meyer model) and the stiffer, now faithful currents. The timeout is tracked in #638. Receipt, run on both trees through `spice-heavy`:
+
+      spice-heavy pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --corpus-f-fixture-child examples-snapshot-adder-mos-circ-cir
+      # main e58322ea (outcome, spice-ts status, worst normalized error, signal, vectors, error)
+      mismatch success 42 tran i(vcc) ['tran:38165'] None
+      # this branch c4c7a3a9
+      spice-ts-loss failed None None [] spice-ts exceeded the 120000 ms aggregate execution bound
 
 - `examples/mos/nmos_pmos_drainresistor.sp` and `nmos_pmos_plotting.sp` now run to success in spice-ts. They are still `not-compared` because the harness gets no ngspice vectors from their `.control` analyses (#528).
 - Five stop in the control language before the device matters: `pre_set` (both adder_mos), `goto` (MC_ring), the `v(/22)` vector name (BSIM330_plainwrite) and `pyplot` (inv-chain-pyplot).
 - Both `tcl-testbench` decks are VERSION 3.2.2, which ngspice routes to BSIM3v32 and spice-ts rejects (#503).
-- `examples/snapshot/adder_mos_circ.cir` still exceeds the 120 s execution bound (#611/#604).
 - `nmos_pmos_BSIM482.sp` is BSIM4 and was not run.
 
 `AGGREGATE_PARITY.md` and the corpus-f `outcomes.json` are not touched here.
 
 ## Published losses / remaining scope
 
+- Speed: `examples/snapshot/adder_mos_circ.cir` goes from a completed corpus-f mismatch (#626) to a 120 s timeout with this PR (#638, details above).
 - Capacitances: there is no capMod 0-3 charge model and no NQS. They remain the Meyer approximation (SRAM residual above).
 - Extrinsic resistance: RSH with NRD/NRS (internal drain/source nodes) and the ACM models (`acm>0`) are not implemented. A card with RSH > 0 is still simulated without the series resistors.
 - Temperature: TEMP != 27 C is still rejected for BSIM3 at compile time. TNOM != 27 C is supported.
