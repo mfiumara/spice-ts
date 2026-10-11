@@ -116,7 +116,7 @@ describe('AC Small-Signal Analysis', () => {
     const result = await simulate(`
       V1 in 0 AC 1 0
       C1 in 0 1u ESR=1 ESL=1u RLEAK=1e12
-      .ac lin 2 ${fLow} ${fRes}
+      .ac lin 3 ${fLow} ${fRes}
       .end
     `);
 
@@ -124,7 +124,7 @@ describe('AC Small-Signal Analysis', () => {
     const sourceCurrent = result.ac!.current('V1');
 
     expect(sourceCurrent[0].magnitude).toBeCloseTo(1e-3, 2);
-    expect(sourceCurrent[1].magnitude).toBeCloseTo(1, 1);
+    expect(sourceCurrent[2].magnitude).toBeCloseTo(1, 1);
   });
 
   it('keeps DC source bias when AC excitation is also declared', async () => {
@@ -157,6 +157,43 @@ describe('AC frequency grid (ngspice-47 parity)', () => {
     expect(frequencies).toHaveLength(count);
     expect(frequencies[0]).toBeCloseTo(first, 6);
     expect(frequencies[count - 1]).toBeCloseTo(last, 5);
+  });
+
+  // ngspice-47 acan.c only steps a LIN sweep when `N - 1 > 1`; `lin 2` falls into the
+  // one-point branch (#555). Grids from ngspice-47 `print length(frequency) frequency`.
+  it.each<[string, number[]]>([
+    ['lin 1 10 100', [10]],
+    ['lin 2 10 100', [10]],
+    ['lin 2 10 10', [10]],
+    ['lin 3 10 100', [10, 55, 100]],
+    ['lin 4 10 100', [10, 40, 70, 100]],
+    ['dec 3 10 1k', [10, 21.54435, 46.41589, 100, 215.4435, 464.1589, 1000]],
+    ['dec 1 10 50', [10]],
+    ['oct 2 10 100', [10, 14.14214, 20, 28.28427, 40, 56.56854, 80]],
+    ['oct 1 10 15', [10]],
+  ])('.ac %s matches the ngspice-47 grid %j', async (sweep, expected) => {
+    const frequencies = (await simulate(deck(sweep))).ac!.frequencies;
+    expect(frequencies).toHaveLength(expected.length);
+    frequencies.forEach((f, i) => expect(f / expected[i]).toBeCloseTo(1, 6));
+  });
+
+  it('counts .ac lin 2 as one point under a maxResultPoints limit of 1', async () => {
+    const result = await simulateProtocolV1({
+      apiVersion: '1',
+      input: { format: 'spice', source: 'V1 a 0 AC 1\nR1 a 0 1k\n.ac lin 2 10 100' },
+      options: { limits: { maxResultPoints: 1 } },
+    });
+    const ac = result.analyses[0];
+    if (ac?.type !== 'ac') throw new Error('expected AC result');
+    expect(ac.frequencyHz).toEqual([10]);
+  });
+
+  // noisean.c has no such guard: `.noise ... lin 2` keeps both endpoints in ngspice-47.
+  it('.noise lin 2 keeps both endpoints like ngspice-47', async () => {
+    const noise = (await simulate(
+      'title\nV1 a 0 AC 1\nR1 a b 1k\nC1 b 0 1u\n.noise v(b) V1 lin 2 10 100\n.end',
+    )).noise!;
+    expect(noise.frequencies).toEqual([10, 100]);
   });
 
   // ngspice-47 `.ac` DEC sweeps spanning at least one decade keep floor(decades*N) intervals and
