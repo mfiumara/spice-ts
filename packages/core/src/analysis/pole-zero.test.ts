@@ -85,14 +85,13 @@ describe('.pz analysis', () => {
     expect(result.poleZero!.zeros).toEqual([]);
   });
 
-  it('rejects non-passive devices in the voltage-input slice', async () => {
-    await expect(simulate(`unsupported voltage-input device
+  it('rejects a voltage input shorted by a DC voltage source, as ngspice-47 does', async () => {
+    // ngspice-47: "The input signal is shorted on the way to the output".
+    await expect(simulate(`input shorted by a dc source
 V1 in 0 0
 R1 in out 1k
 C1 out 0 1n
-.pz in 0 out 0 vol pz`)).rejects.toThrow(
-      '.pz vol supports only ideal R, L, C devices; found V1 (VoltageSource)',
-    );
+.pz in 0 out 0 vol pz`)).rejects.toThrow('.pz transfer is identically zero');
   });
 
   it('matches ngspice 47 for the active four-stage small-signal fixture', async () => {
@@ -119,14 +118,10 @@ C1 out 0 1n
   });
 
   it.each([
-    '.pz in ref out 0 cur pz',
-    '.pz in 0 out ref cur pz',
-    '.pz in ref out 0 vol pz',
-    '.pz in 0 out ref vol pz',
-    '.pz in 0 out 0 cur zer',
-    '.pz in 0 out 0 vol zer',
     '.pz in 0 out 0 cur',
-  ])('rejects .pz forms outside the bounded slice: %s', directive => {
+    '.pz in 0 out 0 amp pz',
+    '.pz in 0 out 0 cur both',
+  ])('rejects malformed .pz forms: %s', directive => {
     expect(() => parse(`unsupported pz form\n${directive}`)).toThrow(ParseError);
   });
 
@@ -153,27 +148,27 @@ ${devices}
     );
   });
 
-  it('rejects a programmatic .pz with a non-ground input reference', () => {
+  it('accepts a programmatic .pz with differential input and output references', () => {
     const circuit = new Circuit();
 
     expect(() => circuit.addAnalysis('pz', {
       inputPositive: 'in',
       inputNegative: 'ref',
       outputPositive: 'out',
-      outputNegative: '0',
+      outputNegative: 'oref',
       inputType: 'cur',
-      mode: 'pz',
-    })).toThrow(InvalidCircuitError);
+      mode: 'zer',
+    })).not.toThrow();
   });
 
-  it('rejects a programmatic .pz with a non-ground output reference', () => {
+  it('rejects a programmatic .pz with an empty terminal name', () => {
     const circuit = new Circuit();
 
     expect(() => circuit.addAnalysis('pz', {
       inputPositive: 'in',
-      inputNegative: '0',
+      inputNegative: '',
       outputPositive: 'out',
-      outputNegative: 'ref',
+      outputNegative: '0',
       inputType: 'cur',
       mode: 'pz',
     })).toThrow(InvalidCircuitError);
