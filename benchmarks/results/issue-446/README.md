@@ -34,7 +34,7 @@ Method: every one of the 100 aggregate fixtures was run on base and on head thro
 | pole(3) | 8.65241e+10 |
 | zero(1) | 1.25117e+12 |
 
-spice-ts returns 3 poles and 1 zero. ngspice returns 7 poles and 5 zeros. The cause is the general trace/Laguerre root-finder in `analysis/pole-zero.ts`, which cannot handle this 8-decade spread. The VBIC linearization is not the problem. To check that, I exported the head G/C matrices at the operating point and solved them independently with numpy: `eig(G⁻¹C)` gives exactly ngspice's 7 finite poles (-1.861979e4, -1.054838e9, -5.920059e10, -7.246192e10 ± 4.728303e10j, -5.422208e11, -1.169140e12), and the bordered pencil gives ngspice's 5 zeros plus one extra at -6.475462e10.
+spice-ts returns 3 poles and 1 zero. ngspice returns 7 poles and 6 zeros. The cause is the general trace/Laguerre root-finder in `analysis/pole-zero.ts`, which cannot handle this 8-decade spread. The VBIC linearization is not the problem. To check that, I exported the head G/C matrices at the operating point and solved them independently with numpy: `eig(G⁻¹C)` gives exactly ngspice's 7 finite poles (-1.861979e4, -1.054838e9, -5.920059e10, -7.246192e10 ± 4.728303e10j, -5.422208e11, -1.169140e12), and the bordered pencil gives all 6 of ngspice's zeros, including the real zero at -6.475462e10. `ngspice -b CEamp.cir` prints zero(1)…zero(6) as -1.32050e12, -2.99053e11, -8.81718e10 ± 1.565009e11j, -6.47546e10, 9.447173e10.
 
 ## Solver bug found on the way
 

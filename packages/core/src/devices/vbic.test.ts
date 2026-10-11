@@ -33,6 +33,7 @@ const NGSPICE_POLES = [
 const NGSPICE_ZEROS = [
   { real: -8.81718e10, imaginary: 1.565009e11 },
   { real: -8.81718e10, imaginary: -1.565009e11 },
+  { real: -6.47546e10, imaginary: 0 },
   { real: 9.447173e10, imaginary: 0 },
   { real: -2.99053e11, imaginary: 0 },
   { real: -1.32050e12, imaginary: 0 },
