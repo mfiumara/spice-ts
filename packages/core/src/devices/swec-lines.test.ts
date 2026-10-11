@@ -25,7 +25,7 @@ import { computeCplCoefficients, CplLines, cplMatricesFromUpperTriangles, type C
 type Reference = ReadonlyArray<readonly number[]>;
 
 // Measured spice-ts max |err| on the sampled points (volts), bounds just above:
-// txl1 0.0179 / 0.0368 of a 5.27 V swing; cpl_ibm2 6.1e-4 of 0.69 V;
+// txl1 0.0179 / 0.0362 of a 5.27 V swing; cpl_ibm2 6.1e-4 of 0.69 V;
 // 4-line 0.0492 of 4.18 V; lossless/shunt-G TXL 0.0031 of 0.67 V;
 // complex-pole + short TXL 0.0029 of 0.67 V. The residual is time-step placement: spice-ts
 // takes its own LTE-controlled steps, ngspice's are not reproduced. Before the

@@ -57,7 +57,7 @@ one CPL `p2` line. #484 bucketed it differently, so it was missing from the
 #491 list. It is included below. Before this PR it stopped with a typed
 `ParseError: Unsupported device card: 'Y'`.
 
-Unchanged decks in spice-ts, on main with #489, #545 and #550:
+Unchanged decks in spice-ts, on main with #489, #545, #550 and #552:
 - 12 of the 16 parse and simulate.
 - `cpl3_4_line` (both copies) and `cpl1_4_line.sp` fail with a typed `TimestepTooSmallError`; see the losses below.
 - `cpl_ibm1a.sp` stops on its `.control repeat` loop with a typed
@@ -67,24 +67,24 @@ For the waveform comparison, decks that run `tran` from `.control` have that
 command moved to a `.tran` card. The same netlist then goes to both simulators.
 
 The spice-ts column, points and runtimes were re-measured after merging main
-(ngspice first transient step, #545) into this branch. The last two accuracy
+(ngspice first transient step #545, MOS level-1 #552) into this branch. The last two accuracy
 columns were measured before that merge (PR head `584e331`) and were not re-run.
 The before/after table further down shows what the merge changed.
 
 | Fixture | Lines | spice-ts vs ngspice (worst max err / swing) | ngspice self-spread (default vs TMAX=tstep/10) | spice-ts vs ngspice at TMAX=tstep/10 (pre-#545) | points ng / ts | runtime ng / ts |
 |---|---|---|---|---|---|---|
-| tests/transmission/txl1_1_line.cir | TXL | **0.95%** | 1.21% | | 492 / 674 | 81 ms / 104 ms |
-| tests/transmission/txl2_3_line.cir | 3x TXL | **1.46%** | | | 493 / 1017 | 83 ms / 175 ms |
+| tests/transmission/txl1_1_line.cir | TXL | **0.91%** | 1.21% | | 492 / 686 | 107 ms / 101 ms |
+| tests/transmission/txl2_3_line.cir | 3x TXL | **1.48%** | | | 493 / 984 | 87 ms / 363 ms |
 | tests/transmission/cpl_ibm2.cir | CPL 2 | **0.09%** | 0.12% | | 217 / 1207 | 114 ms / 325 ms |
 | tests/transmission/cpl3_4_line.cir | CPL 4 | **LOSS: `TimestepTooSmallError` at t=30.5 ns** | 9.98% | | | |
-| examples/.../txl1_1_line.sp | TXL | 0.95% | 1.21% | | 492 / 674 | 43 ms / 164 ms |
-| examples/.../txl2_3_line.sp | 3x TXL | 1.46% | | | 493 / 1017 | 58 ms / 187 ms |
+| examples/.../txl1_1_line.sp | TXL | 0.91% | 1.21% | | 492 / 686 | 95 ms / 233 ms |
+| examples/.../txl2_3_line.sp | 3x TXL | 1.48% | | | 493 / 984 | 37 ms / 176 ms |
 | examples/.../txl3_1_line.sp | TXL, BJT drivers | 8.82% | 5.63% | 3.32% | 263 / 2475 | 124 ms / 3.0 s |
 | examples/.../txl4_1_line.sp | TXL | 5.13% | 11.62% | | 148 / 616 | 185 ms / 1.5 s |
 | examples/.../cpl_ibm2.sp | CPL 2 | 0.09% | 0.12% | | 217 / 1207 | 116 ms / 0.4 s |
-| examples/.../cpl2_2_line.sp | CPL 2, MOS drivers | 8.06% | 8.71% | 4.24% | 96 / 3368 | 26 ms / 0.3 s |
+| examples/.../cpl2_2_line.sp | CPL 2, MOS drivers | 8.16% | 8.71% | 4.24% | 96 / 2770 | 80 ms / 0.9 s |
 | examples/.../cpl_ibm3.sp | CPL 2 + CPL 4 + TXL | 15.40% | 13.48% | 1.36% | 124 / 13385 | 67 ms / 6.6 s |
-| examples/.../cpl1_4_line.sp | CPL 4, MOS drivers | **LOSS: `TimestepTooSmallError` at t=47.1 ns** (16.70% before #545) | 4.19% | 15.07% | | |
+| examples/.../cpl1_4_line.sp | CPL 4, MOS drivers | **LOSS: `TimestepTooSmallError` at t=46.3 ns** (16.70% before #545) | 4.19% | 15.07% | | |
 | examples/.../cpl3_4_line.sp | CPL 4 | **LOSS: `TimestepTooSmallError` at t=30.5 ns** | 9.98% | | | |
 | examples/.../cpl_ibm1.sp | CPL 6, ECL (BJT) | **LOSS: 43.6%, ~220x slower** | 5.57% | | 392 / 27128 | 0.16 s / 34 s |
 | examples/.../cpl_ibm1a.sp | CPL 6, ECL (BJT) | **LOSS: 43.6%, ~380x slower** (first `tran` only) | | | 392 / 27128 | 0.10 s / 37 s |
@@ -99,21 +99,23 @@ default-step difference is step placement, not the line model.
 
 ### Effect of merging the ngspice first transient step (#545)
 
-Same machine, same fixtures, back to back. Before = PR head `584e331`, after =
-the merge of `origin/main` @ `2a8112c` into this branch. Worst max err / swing.
+Same machine, same fixtures. Before = PR head `584e331`, after = this branch
+with `origin/main` @ `2812371` merged in (#545 first step, #550 Gummel-Poon,
+#552 MOS level 1). #552 alone moved only the MOS-driven decks (txl1/txl2,
+cpl2_2, cpl1_4 failure time) by at most 0.1 point. Worst max err / swing.
 
 | Fixture | before | after |
 |---|---|---|
-| cpl1_4_line.sp | 16.70% | **`TimestepTooSmallError` at 47.1 ns** |
+| cpl1_4_line.sp | 16.70% | **`TimestepTooSmallError` at 46.3 ns** |
 | cpl3_4_line (both) | `TimestepTooSmallError` at 37.6 ns | `TimestepTooSmallError` at 30.5 ns |
 | cpl_ibm1 / cpl_ibm1a | 50.39% | 43.62% |
 | cpl4_txl_2_line.sp | 27.63% | 26.87% |
-| cpl2_2_line.sp | 8.49% | 8.06% |
+| cpl2_2_line.sp | 8.49% | 8.16% |
 | txl3_1_line.sp | 8.58% | 8.82% |
 | txl4_1_line.sp | 5.22% | 5.13% |
 | cpl_ibm2 (both) | 0.11% | 0.09% |
 | cpl_ibm3.sp | 15.45% | 15.40% |
-| txl1_1_line / txl2_3_line (both) | 0.95% / 1.47% | 0.95% / 1.46% |
+| txl1_1_line / txl2_3_line (both) | 0.95% / 1.47% | 0.91% / 1.48% |
 
 The unit-test errors on the sampled ngspice points also moved
 (`packages/core/src/devices/swec-lines.test.ts`): cpl_ibm2 4.3e-4 -> 6.1e-4 V,
@@ -149,7 +151,7 @@ the far ends of the lines drive gates that feed back into the lines.
    - The waveform is 44% of swing off (50% before #545), and the run takes
      30-70 s on an M-series Mac.
    - The root cause in the load/step interaction is not identified yet.
-3. `cpl1_4_line.sp`: since #545 it stops at 47.1 ns with a typed
+3. `cpl1_4_line.sp`: since #545 it stops at 46.3 ns with a typed
    `TimestepTooSmallError` (dt=3.1e-16). Before #545 it ran and was 16.7% off
    (15% off even at matched TMAX). Tracked in #561.
 4. `cpl_ibm1a.sp` needs `.control repeat` (control language, outside #491).
