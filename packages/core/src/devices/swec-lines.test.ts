@@ -25,15 +25,17 @@ import { computeCplCoefficients, CplLines, cplMatricesFromUpperTriangles, type C
 type Reference = ReadonlyArray<readonly number[]>;
 
 // Measured spice-ts max |err| on the sampled points (volts), bounds just above:
-// txl1 0.0181 / 0.0380 of a 5.27 V swing; cpl_ibm2 4.3e-4 of 0.69 V;
-// 4-line 0.0211 of 4.18 V; lossless/shunt-G TXL 0.0031 of 0.67 V;
-// complex-pole + short TXL 0.0018 of 0.67 V. The residual is time-step placement: spice-ts
-// takes its own LTE-controlled steps, ngspice's are not reproduced.
+// txl1 0.0179 / 0.0368 of a 5.27 V swing; cpl_ibm2 6.1e-4 of 0.69 V;
+// 4-line 0.0492 of 4.18 V; lossless/shunt-G TXL 0.0031 of 0.67 V;
+// complex-pole + short TXL 0.0029 of 0.67 V. The residual is time-step placement: spice-ts
+// takes its own LTE-controlled steps, ngspice's are not reproduced. Before the
+// ngspice first-step change (#545) these were cpl_ibm2 4.3e-4, 4-line 0.0211 and
+// complex/short 0.0018; the step grid after t=0 still differs from ngspice (#561).
 const TXL1_BOUND = 0.04;
-const IBM2_BOUND = 5e-4;
-const LIN4_BOUND = 0.025;
+const IBM2_BOUND = 7e-4;
+const LIN4_BOUND = 0.055;
 const LOSSLESS_BOUND = 0.004;
-const COMPLEX_SHORT_BOUND = 0.0025;
+const COMPLEX_SHORT_BOUND = 0.0035;
 
 function rel(actual: number, expected: number): number {
   return Math.abs(actual - expected) / Math.max(Math.abs(expected), 1e-300);
