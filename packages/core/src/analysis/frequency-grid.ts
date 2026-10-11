@@ -28,16 +28,17 @@ function logStep(sweep: FrequencySweep, kind: FrequencySweepKind): LogStep {
 }
 
 /**
- * Number of points in an ngspice `.ac`/`.noise`/`.sens` sweep: LIN is N total points; DEC/OCT
- * step by the analysis' ratio (see {@link FrequencySweepKind}); `.ac`/`.noise` keep every point
- * up to stop plus ngspice's `ratio * stop * reltol` tolerance.
+ * Number of points in an ngspice `.ac`/`.noise`/`.sens` sweep: LIN is N total points, except
+ * that `.ac` (acan.c) only steps when `N - 1 > 1`, so `.ac lin 2` is the single start point;
+ * DEC/OCT step by the analysis' ratio (see {@link FrequencySweepKind}); `.ac`/`.noise` keep
+ * every point up to stop plus ngspice's `ratio * stop * reltol` tolerance.
  */
 export function frequencyPointCount(
   sweep: FrequencySweep,
   relativeTolerance: number,
   kind: FrequencySweepKind,
 ): number {
-  if (sweep.variation === 'lin') return sweep.points;
+  if (sweep.variation === 'lin') return kind === 'ac' && sweep.points === 2 ? 1 : sweep.points;
   if (kind === 'sens') return sensitivityPointCount(sweep);
   const { base, steps } = logStep(sweep, kind);
   const tolerance = Math.pow(base, 1 / steps) * sweep.stopFreq * relativeTolerance;
