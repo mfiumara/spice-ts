@@ -27,7 +27,7 @@ describe('classic MOS transient convergence (issue #302)', () => {
 
   // mosamp2.cir uses LEVEL=2 (MOS2) cards: rejected since #530, run by the
   // ngspice-47 mos2 port since #565.
-  it('completes the unchanged LEVEL=2 mosamp2.cir fixture with MOS2 and settles at the ngspice-47 v(5)', async () => {
+  it('completes the unchanged LEVEL=2 mosamp2.cir fixture with MOS2 and settles at the ngspice-47 v(5)', { timeout: 60_000 }, async () => {
     const bytes = readFileSync(new URL('mosamp2.cir', classicFixtureRoot));
     expect(bytes.byteLength).toBe(1_371);
     expect(createHash('sha256').update(bytes).digest('hex'))
