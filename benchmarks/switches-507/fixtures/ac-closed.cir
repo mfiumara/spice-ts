@@ -1,0 +1,8 @@
+ac after an operating point that closes the switch
+vc c 0 2
+vin in 0 dc 0 ac 1
+r1 in o 1k
+s1 o 0 c 0 sw1
+.model sw1 sw vt=1 ron=1k roff=1meg
+.ac lin 1 1k 1k
+.end

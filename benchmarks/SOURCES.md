@@ -446,6 +446,12 @@ At ingestion on ngspice-47, 13 circuits produce raw analysis data and 7 fail on 
 |---|---|---|---|---|
 | `res_array.cir`, `res_partition.cir` (byte-identical) and 8 card-level decks from `loops/loop-model.cir`, `noise/resdiv.cir`, `noise/bipolar-noise.cir`, `regression/model/instance-defaults.cir`, `regression/pz/ac-resistance.cir`, `regression/temper/temper-res-1.cir` | ngspice tree [`3ef069fb`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/) `examples/` and `tests/` (corpus-f batch 1, #484). | BSD-3-Clause (ngspice); the added analysis cards are MIT, as is this repository. | `fixtures/res_array.cir` and `fixtures/res_partition.cir` are committed unmodified (SHA-256 in `report.json`). The other decks copy the resistor, source and model cards verbatim and replace the fixture's `.control` analysis with equivalent dot analysis cards; both engines read the same text except `temper-res-1` (`.dc temp` in ngspice, `.step TEMP` in spice-ts) and `ac-resistance-pz` (input source removed for both). | `pnpm exec tsx benchmarks/resistor-forms/compare.ts` writes `benchmarks/resistor-forms/report.json`; the README there records every residual and loss. |
 
+## S/W switches, issue #507
+
+| Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
+|---|---|---|---|---|
+| `switches-manual-p92.cir` (byte-identical, CRLF) and 6 project-authored decks: `hysteresis.cir`, `ac-closed.cir`, `ac-window.cir`, `ac-csw.cir`, `noise-sw.cir`, `noise-csw.cir` | ngspice [`examples/probe/switches-manual-p92.cir`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/probe/switches-manual-p92.cir) at `3ef069fb` (corpus-f batch 1, #484). The other decks are project-authored. | ngspice examples are BSD-3-Clause; the project-authored decks are MIT, as is this repository. | `fixtures/switches-manual-p92.cir` is committed unmodified (SHA-256 `93417fb9…44270`, also in `report.json`). Both engines read the deck with its `.control` block removed; ngspice also receives a `.control` block that only runs the deck and writes the vectors. | `pnpm exec tsx benchmarks/switches-507/compare.ts` writes `benchmarks/switches-507/report.json`; the README there records every residual and loss. |
+
 ## XSPICE analog code models, issue #487
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |

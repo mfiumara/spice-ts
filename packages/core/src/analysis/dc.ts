@@ -33,6 +33,8 @@ export function solveDCOperatingPoint(
     useDcSourceValue: sourceMode === 'operating-point',
   });
 
+  for (const device of devices) device.beginOperatingPoint?.();
+
   if (initialSolution) {
     assembler.solution.set(initialSolution);
   } else {

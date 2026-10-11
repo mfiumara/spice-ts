@@ -41,6 +41,7 @@ import { BSIM3v3 } from './devices/bsim3v3.js';
 import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
 import { CCCS } from './devices/cccs.js';
+import { CurrentSwitch, resolveSwitchModel, VoltageSwitch } from './devices/switch.js';
 import { CCVS } from './devices/ccvs.js';
 import { TransmissionLine } from './devices/transmission-line.js';
 import { resolveLtraModel } from './devices/ltra-model.js';
@@ -62,6 +63,8 @@ import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-pars
 import { parsePassiveElement } from './parser/passive-parser.js';
 import { parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
+import { parseSwitchInstance } from './parser/switch-parser.js';
+import { DEVICE_GMIN } from './devices/device.js';
 import { parseBJTInstance, type BJTInstanceParams } from './parser/bjt-parser.js';
 import {
   formatCplModelCard,
@@ -314,6 +317,10 @@ function formatDevice(desc: DeviceDescriptor): string {
     case 'F':
     case 'H':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.controlSource ?? ''} ${formatNumber(desc.value ?? 0)}`.trim();
+    case 'S':
+      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''} ${desc.params?.ON ? 'ON' : 'OFF'}`;
+    case 'W':
+      return `${desc.name} ${desc.nodes.join(' ')} ${desc.controlSource ?? ''} ${desc.modelName ?? ''} ${desc.params?.ON ? 'ON' : 'OFF'}`;
     case 'B':
       return formatBehavioralSource(desc);
     case 'X':
@@ -801,6 +808,50 @@ export class Circuit {
     this.nodeSet.add(nOutP);
     this.nodeSet.add(nOutN);
     this.descriptors.push({ type: 'F', name, nodes: [nOutP, nOutN], value: gain, controlSource });
+  }
+
+  /**
+   * Add an ngspice voltage-controlled switch (S-element, `.model SW`).
+   *
+   * @param name - Device name (e.g., `'S1'`)
+   * @param nodePos - Positive switch node
+   * @param nodeNeg - Negative switch node
+   * @param nCtrlP - Positive control node
+   * @param nCtrlN - Negative control node
+   * @param modelName - Name of a `.model ... SW` card
+   * @param initiallyOn - Instance `ON` flag (default `OFF`)
+   */
+  addVoltageSwitch(
+    name: string, nodePos: string, nodeNeg: string, nCtrlP: string, nCtrlN: string,
+    modelName: string, initiallyOn = false,
+  ): void {
+    for (const node of [nodePos, nodeNeg, nCtrlP, nCtrlN]) this.nodeSet.add(node);
+    this.descriptors.push({
+      type: 'S', name, nodes: [nodePos, nodeNeg, nCtrlP, nCtrlN], modelName,
+      ...(initiallyOn ? { params: { ON: 1 } } : {}),
+    });
+  }
+
+  /**
+   * Add an ngspice current-controlled switch (W-element, `.model CSW`).
+   *
+   * @param name - Device name (e.g., `'W1'`)
+   * @param nodePos - Positive switch node
+   * @param nodeNeg - Negative switch node
+   * @param controlSource - Voltage source whose current controls the switch
+   * @param modelName - Name of a `.model ... CSW` card
+   * @param initiallyOn - Instance `ON` flag (default `OFF`)
+   */
+  addCurrentSwitch(
+    name: string, nodePos: string, nodeNeg: string, controlSource: string,
+    modelName: string, initiallyOn = false,
+  ): void {
+    this.nodeSet.add(nodePos);
+    this.nodeSet.add(nodeNeg);
+    this.descriptors.push({
+      type: 'W', name, nodes: [nodePos, nodeNeg], modelName, controlSource,
+      ...(initiallyOn ? { params: { ON: 1 } } : {}),
+    });
   }
 
   /**
@@ -1478,6 +1529,7 @@ export class Circuit {
 
     const devices: DeviceModel[] = [];
     const deviceMap = new Map<string, DeviceModel>();
+    const pendingCurrentSwitches: { device: CurrentSwitch; controlSource: string }[] = [];
     const ltraStates = new Map<string, LtraModelState>();
 
     for (const desc of expandedDescriptors) {
@@ -1753,6 +1805,24 @@ export class Circuit {
           devices.push(new CCVS(desc.name, nodeIndices, ctrlDev.branches[0], bi, desc.value!));
           break;
         }
+        case 'S':
+        case 'W': {
+          const type = desc.type === 'S' ? 'SW' : 'CSW';
+          const model = this.requireModel(desc.type === 'S' ? 'Switch' : 'Current switch', desc);
+          const { model: switchModel, warnings } = resolveSwitchModel(
+            type, model.params, this._simulationOptions.gmin ?? DEVICE_GMIN,
+          );
+          const initiallyOn = desc.params?.ON === 1;
+          if (desc.type === 'S') {
+            devices.push(new VoltageSwitch(desc.name, nodeIndices, switchModel, initiallyOn, warnings));
+          } else {
+            // The controlling source may be declared after the switch; bind its branch below.
+            const device = new CurrentSwitch(desc.name, nodeIndices, -1, switchModel, initiallyOn, warnings);
+            pendingCurrentSwitches.push({ device, controlSource: desc.controlSource! });
+            devices.push(device);
+          }
+          break;
+        }
         case 'A': {
           devices.push(createXspiceDevice(xspiceInstances.get(desc)!, resolveNode, branchName => {
             branchNames.push(branchName);
@@ -1770,6 +1840,15 @@ export class Circuit {
     }
 
     bindXspiceSources(devices, deviceMap);
+    for (const { device, controlSource } of pendingCurrentSwitches) {
+      const control = deviceMap.get(controlSource);
+      if (!control || !(control instanceof VoltageSource)) {
+        throw new InvalidCircuitError(
+          `W-element '${device.name}' references unknown or non-voltage-source control '${controlSource}'`,
+        );
+      }
+      device.bindControlBranch(control.branches[0]);
+    }
 
     if (this._temperature !== undefined && this._temperature !== NOMINAL_TEMPERATURE_C) {
       this.applyCircuitTemperature(this._temperature, expandedDescriptors, devices);
@@ -2598,6 +2677,19 @@ export class Circuit {
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             controlSource: `${instanceName}.${tokens[3]}`,
             value: parseNumber(valStr),
+          });
+          break;
+        }
+        case 'S':
+        case 'W': {
+          const instance = parseSwitchInstance(tokens, lineNumber);
+          result.push({
+            type: devType, name: devName,
+            nodes: instance.nodes.map(mapNode),
+            modelName: instance.modelName,
+            ...(instance.controlSource === undefined
+              ? {} : { controlSource: `${instanceName}.${instance.controlSource}` }),
+            ...(instance.initiallyOn ? { params: { ON: 1 } } : {}),
           });
           break;
         }

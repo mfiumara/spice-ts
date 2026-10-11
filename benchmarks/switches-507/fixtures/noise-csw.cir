@@ -1,0 +1,13 @@
+switch noise
+vc c 0 2
+vin in 0 dc 0 ac 1
+r1 in o 1k
+s1 o 0 c 0 sw1
+.model sw1 sw vt=1 ron=1 roff=1k
+i2 0 c2 2m
+vm c2 0 0
+r2 in o2 1k
+w2 o2 0 vm wmod
+.model wmod csw it=1m ih=0.5m ron=1 roff=3k
+.noise v(o2) vin lin 2 1k 2k
+.end

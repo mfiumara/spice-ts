@@ -1,0 +1,17 @@
+switch hysteresis unit deck
+v1 c 0 PWL(0 0 1m 2 2m 0)
+vdd vdd 0 DC 2
+r1 vdd o1 10k
+s1 o1 0 c 0 swp OFF
+r2 vdd o2 10k
+s2 o2 0 c 0 swn ON
+i3 0 ic PWL(0 0 1m 2m 2m 0)
+vm ic 0 0
+r3 vdd o3 10k
+w3 o3 0 vm cswp OFF
+c3 o3 0 1n
+.model swp sw vt=1 vh=0.2 ron=1 roff=10k
+.model swn sw vt=1 vh=-0.2 ron=10 roff=1meg
+.model cswp csw it=1m ih=0.2m ron=1k roff=10k
+.tran 2u 2m
+.end
