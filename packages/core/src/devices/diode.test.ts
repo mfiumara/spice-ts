@@ -38,11 +38,35 @@ describe('Diode', () => {
   });
 
   it.each([
+    // ngspice-47 TCV law: BV(T) = 7.255 - 0.00013 * (T - 27).
+    [-55, 7.26566],
+    [25, 7.25526],
+    [72, 7.24915],
+  ])('applies TBV1 as ngspice TCV to breakdown at %s C', (temperature, breakdownVoltage) => {
+    const diode = new Diode('D1', [0, -1], {
+      IS: 1e-14,
+      N: 1,
+      BV: 7.255,
+      IBV: 1e-3,
+      TBV1: 0.00013,
+      TNOM: 27,
+    });
+
+    diode.setTemperature(temperature);
+
+    expect(diode.noiseOperatingPoint(new Float64Array([-breakdownVoltage])).current)
+      .toBeCloseTo(-1e-3, 6);
+    expect(diode.params.BV).toBe(7.255);
+    expect(diode.getTemperature()).toBe(temperature);
+  });
+
+  it.each([
     [-55, 7.175222569],
     [25, 7.253112249],
     [72, 7.29670718125],
-  ])('applies TBV1 and TBV2 to breakdown at %s C', (temperature, breakdownVoltage) => {
+  ])('applies the LEVEL=2 PSpice TBV1/TBV2 law at %s C', (temperature, breakdownVoltage) => {
     const diode = new Diode('D1', [0, -1], {
+      LEVEL: 2,
       IS: 1e-14,
       N: 1,
       BV: 7.255,
@@ -56,8 +80,18 @@ describe('Diode', () => {
 
     expect(diode.noiseOperatingPoint(new Float64Array([-breakdownVoltage])).current)
       .toBeCloseTo(-1e-3, 6);
-    expect(diode.params.BV).toBe(7.255);
-    expect(diode.getTemperature()).toBe(temperature);
+  });
+
+  it.each([
+    ['NBV=1.5', "'NBV'"],
+    ['NZ=1.5', "'NBV' (written as 'NZ')"],
+    ['TCV=0.01', "'TCV'"],
+  ])('rejects %s under the LEVEL=2 PSpice breakdown law', (field, message) => {
+    expect(() => parse(`level-2 diode
+      D1 out 0 DMOD
+      .model DMOD D(LEVEL=2 BV=7.255 IBV=1m ${field})
+      .op
+    `).compile()).toThrow(`Unsupported bounded diode breakdown-temperature model parameter: ${message}`);
   });
 
   it('includes series resistance in the reverse-breakdown load line', () => {
@@ -78,7 +112,7 @@ describe('Diode', () => {
     circuit.addModel({
       name: 'DZR',
       type: 'D',
-      params: { BV: 7.255, IBV: 1e-3, TBV1: 0.00013, TBV2: -5e-8 },
+      params: { BV: 7.255, IBV: 1e-3, TBV1: 0.00013 },
     });
     circuit.addDiode('D1', 'out', '0', 'DZR');
     const compiled = circuit.compile();
@@ -99,12 +133,12 @@ describe('Diode', () => {
     expect(diode.params.BV).toBe(7.255);
   });
 
-  it.each(['NBV', 'IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2'])(
+  it.each(['IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2', 'TBV2'])(
     'rejects unsupported level-2 breakdown field %s explicitly',
     (parameter) => {
       expect(() => parse(`unsupported diode level-2 field
         D1 out 0 DMOD
-        .model DMOD D(BV=7.255 IBV=1m TBV1=0.00013 TBV2=-5e-8 ${parameter}=1)
+        .model DMOD D(BV=7.255 IBV=1m TBV1=0.00013 ${parameter}=1)
         .op
       `).compile()).toThrow(
         `Unsupported bounded diode breakdown-temperature model parameter: '${parameter}'`,

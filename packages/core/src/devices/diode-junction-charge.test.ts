@@ -74,18 +74,20 @@ describe('diode junction charge integration matches ngspice-47 (#403)', () => {
 });
 
 describe('negligible junction charge leaves the transient endpoint unchanged (#389)', () => {
-  // Level-1 adaptation of Xyce DIODE/Level2_Temp_Dep_Breakdown.cir, identical
-  // to benchmarks/results/issue-403/ngspice/l1_{cjo,nocjo}_27.cir.
+  // Level-1 adaptation of Xyce DIODE/Level2_Temp_Dep_Breakdown.cir, matching
+  // benchmarks/results/issue-403/ngspice/l1_{cjo,nocjo}_27.cir except for the
+  // PSpice `tbv2`, which ngspice-47 ignores and spice-ts rejects (#429).
   const deck = (cjo: string) => `diode breakdown
 .tran 1m 1 0 100m
 VIN 1 0 pulse ( 7.5 10 1m 1 1 3 6)
 R1  1 2 1k
 DZR 0 2 DZR
 .MODEL DZR D(IS=1E-14 RS=0 N=1 TT=0 ${cjo} VJ=1 M=.5 EG=1.11 XTI=3 KF=0 AF=1 FC=.5
-+ BV=7.255 IBV=.001 tbv1=0.00013 tbv2=-5e-8)
++ BV=7.255 IBV=.001 tbv1=0.00013)
 .end
 `;
-  // ngspice-47 v(2) at t = 1 s, with and without CJO=1P (identical).
+  // ngspice-47 v(2) at t = 1 s, with and without CJO=1P (identical), and
+  // unchanged when tbv2 is dropped from the ngspice deck.
   const NGSPICE_ENDPOINT = 7.280849981115;
 
   it('matches ngspice with CJO=1P as closely as without it', async () => {
