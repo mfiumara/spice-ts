@@ -54,10 +54,12 @@ describe('BJT Ebers-Moll', () => {
     const collectorSupply = result.dcSweep!.current('VCE');
     const baseSupply = result.dcSweep!.current('VBE');
     expect(collectorSupply).toHaveLength(3);
-    expect(collectorSupply[0]).toBeCloseTo(-0.0007282049836704018, 12);
+    // ngspice-47 on the identical deck: i(vce) = -7.20006e-04, -8.34565e-04;
+    // i(vbe) = -3.52294e-05 (VT = kT/q at 300.15 K, #525).
+    expect(collectorSupply[0]).toBeCloseTo(-0.0007200057759178837, 12);
     // Closed-form model value IF/qB at VCE = 9 V (true reverse VBC = -8.28 V).
-    expect(collectorSupply[2]).toBeCloseTo(-0.0008440689428858987, 12);
-    expect(baseSupply[0]).toBeCloseTo(-0.00003567532735368342, 12);
+    expect(collectorSupply[2]).toBeCloseTo(-0.000834565167471881, 12);
+    expect(baseSupply[0]).toBeCloseTo(-0.0000352293518893033, 12);
     expect(result.convergence!.dc).toMatchObject({
       acceptedSolves: 3,
       rejectedSolves: 0,
@@ -76,6 +78,53 @@ describe('BJT Ebers-Moll', () => {
     expect(bjt).toMatchObject({
       params: { LEVEL: 1, IS: 1e-14, BF: 80, BR: 2, NF: 1.1, NR: 1.2, VAF: Infinity, IKF: Infinity, ISE: 0, NE: 1.5 },
     });
+  });
+
+  // #519: ngspice-47 bjtsetup.c defaults IS to 1e-16 A.
+  it('defaults IS to the ngspice-47 value of 1e-16 for a bare model card', () => {
+    const compiled = parse(`bare npn
+      VC c 0 1
+      Q1 c b 0 QBARE
+      .model QBARE NPN
+      .op
+    `).compile();
+    const bjt = compiled.devices.find(device => device.name === 'Q1');
+    expect(bjt).toMatchObject({ params: { IS: 1e-16 } });
+  });
+
+  // ngspice-47 `op; print i(vc) i(vb)` on the identical deck:
+  // i(vc) = -2.70830e-03, i(vb) = -2.70830e-05.
+  it('matches the ngspice-47 operating point of a default npn (#519)', async () => {
+    const result = await simulate(`default npn op
+      VB b 0 0.8
+      VC c 0 1.0
+      Q1 c b 0 m
+      .model m npn
+      .op
+      .end
+    `);
+    expect(result.dc!.current('VC') / -2.70830e-3).toBeCloseTo(1, 4);
+    expect(result.dc!.current('VB') / -2.70830e-5).toBeCloseTo(1, 4);
+  });
+
+  // ngspice-47 `op` on the identical deck (the probe-i-dev X1 pnp leg):
+  // v(c1) = -8.03447e-02, v(b1) = -8.34046e-01, i(vee1) = -9.74973e-03.
+  it('matches the ngspice-47 operating point of a default 4-terminal pnp (#519)', async () => {
+    const result = await simulate(`default pnp op
+      Vcc1 11 0 -1
+      RC1 11 c1 100
+      vbb1 12 0 -1
+      RB1 12 b1 300
+      vee1 e1 0 0
+      vss1 s1 0 0
+      Q1 c1 b1 e1 s1 pbipmod
+      .model pbipmod pnp
+      .op
+      .end
+    `);
+    expect(result.dc!.voltage('c1') / -8.03447e-2).toBeCloseTo(1, 4);
+    expect(result.dc!.voltage('b1') / -8.34046e-1).toBeCloseTo(1, 4);
+    expect(result.dc!.current('vee1') / -9.74973e-3).toBeCloseTo(1, 4);
   });
 
   it('rejects unsupported Gummel-Poon model parameters explicitly', () => {
@@ -165,7 +214,8 @@ describe('BJT Ebers-Moll', () => {
     const solution = new Float64Array(compiled.nodeCount + compiled.branchCount);
     solution[compiled.nodeNames.indexOf('c')] = 9;
     solution[compiled.nodeNames.indexOf('b')] = 0.72;
-    const forward = 1e-15 * (Math.exp(0.72 / 0.02585) - 1);
+    const vt = 1.38064852e-23 / 1.6021766208e-19 * 300.15;
+    const forward = 1e-15 * (Math.exp(0.72 / vt) - 1);
     expect(bjt.noiseOperatingPoint(solution).collectorCurrent)
       .toBeCloseTo(forward * (1 + 8.28 / 50), 12);
   });

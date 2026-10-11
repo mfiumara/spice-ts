@@ -201,10 +201,12 @@ class TransientSimImpl implements TransientSim {
     // A nonlinear device that stores no charge (e.g. a diode without CJO, CJSW
     // or TT) is static: the raw-RHS history would pair the new Newton
     // conductance with the old operating point and misintegrate its current.
+    // Source breakpoints do not change this (#482): ngspice NIintegrate keeps
+    // the accepted capacitor current across PULSE/PWL corners too, and the
+    // first step after a breakpoint drops the history (Backward Euler) anyway.
     this.useStaticCurrentHistory = !compiled.devices.some(device => (
       (device.isNonlinear && device.stampDynamic !== undefined
         && device.storesCharge !== false && !device.integratesTransientCharge)
-      || (config.stopTime !== undefined && (device.getBreakpoints?.(config.stopTime) ?? []).some(time => time > 0))
     ));
     this.useDampedInductiveRecovery = compiled.devices.some(device => device instanceof Inductor)
       && compiled.devices.some(device => device.isNonlinear);

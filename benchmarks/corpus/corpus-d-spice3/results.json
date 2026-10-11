@@ -1,0 +1,446 @@
+{
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0",
+    "platform": "darwin-arm64"
+  },
+  "results": [
+    {
+      "id": "ohms-law-op",
+      "translation": "translated",
+      "inputSha256": "929c6907b65478f47a00c9305f71887573bca7c8e7d77e5ad784b75a0091becd",
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "op"
+        ]
+      },
+      "spiceTsVsNgspice": [
+        {
+          "analysis": "op",
+          "signals": 2,
+          "points": 1,
+          "worstSignal": "i(v1)",
+          "worstAbsMax": 0
+        }
+      ],
+      "ngspiceVsAhkab": [
+        {
+          "analysis": "op",
+          "signals": 2,
+          "points": 1,
+          "worstSignal": "i(v1)",
+          "worstAbsMax": 0
+        }
+      ],
+      "spiceTsVsAhkab": [
+        {
+          "analysis": "op",
+          "signals": 2,
+          "points": 1,
+          "worstSignal": "i(v1)",
+          "worstAbsMax": 0
+        }
+      ]
+    },
+    {
+      "id": "diode-operating-point",
+      "translation": "translated",
+      "inputSha256": "82b7ecf61de8a619b8bfb024485a050ba95daf7913c9c2b07046fcd676b832a5",
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "error": "Parse error at line 15: Unsupported dot command: '.temp' .temp 26.85"
+      },
+      "spiceTsVsNgspice": [],
+      "ngspiceVsAhkab": [
+        {
+          "analysis": "op",
+          "signals": 3,
+          "points": 1,
+          "worstSignal": "v(2)",
+          "worstAbsMax": 9.767580322339597e-7
+        }
+      ],
+      "spiceTsVsAhkab": []
+    },
+    {
+      "id": "ekv-bias-sweep",
+      "translation": "unsupported-translation",
+      "reasons": [
+        "MOSFET instances need an ahkab MOS model (EKV or square-law), neither of which is a SPICE3 model",
+        "EKV MOSFET model (.model ekv ...) has no SPICE3/ngspice equivalent",
+        "ahkab keyed .dc sweep translation is not implemented (every corpus-d .dc deck also uses the EKV model)"
+      ]
+    },
+    {
+      "id": "downscaling-current-mirror",
+      "translation": "unsupported-translation",
+      "reasons": [
+        "MOSFET instances need an ahkab MOS model (EKV or square-law), neither of which is a SPICE3 model",
+        "EKV MOSFET model (.model ekv ...) has no SPICE3/ngspice equivalent",
+        "ahkab keyed .dc sweep translation is not implemented (every corpus-d .dc deck also uses the EKV model)"
+      ]
+    },
+    {
+      "id": "transresistance-ac",
+      "translation": "unsupported-translation",
+      "reasons": [
+        ".ac: ahkab LOG sweep of 1000 points from 7957.747 to 79577.471 Hz is 998.999994548 points/decade; SPICE3 .ac dec needs an integer, so the frequency grid cannot be reproduced",
+        "ahkab .symbolic (symbolic small-signal analysis) has no SPICE3 equivalent"
+      ]
+    },
+    {
+      "id": "passive-pole-zero-ac",
+      "translation": "unsupported-translation",
+      "reasons": [
+        "ahkab .pz (circuit poles plus zeros from a named source to an output) is not translated: equivalence with SPICE3 .pz on a node-pair port has not been established",
+        ".ac: ahkab LOG sweep of 100 points from 0.1 to 10 Hz is 49.5000000000 points/decade; SPICE3 .ac dec needs an integer, so the frequency grid cannot be reproduced"
+      ]
+    },
+    {
+      "id": "resistor-voltage-ac",
+      "translation": "unsupported-translation",
+      "reasons": [
+        ".ac: ahkab LOG sweep of 10 points from 1 to 100 Hz is 4.50000000000 points/decade; SPICE3 .ac dec needs an integer, so the frequency grid cannot be reproduced",
+        "ahkab .symbolic (symbolic small-signal analysis) has no SPICE3 equivalent"
+      ]
+    },
+    {
+      "id": "series-resonance-ac",
+      "translation": "unsupported-translation",
+      "reasons": [
+        ".ac: ahkab LOG sweep of 100 points from 1 to 10000 Hz is 24.7500000000 points/decade; SPICE3 .ac dec needs an integer, so the frequency grid cannot be reproduced",
+        "ahkab .symbolic (symbolic small-signal analysis) has no SPICE3 equivalent"
+      ]
+    },
+    {
+      "id": "am-source-transient",
+      "translation": "translated",
+      "inputSha256": "94319e32d2449f8c6537097218375f98bb25593d70f814e32ba6335a832eb0f5",
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "error": "Parse error at line 9: Unsupported source waveform 'AM' V1 1 0 DC 0 AM(0 10 10 100 1K 1M)"
+      },
+      "spiceTsVsNgspice": [],
+      "ngspiceVsAhkab": [
+        {
+          "analysis": "tran",
+          "signals": 5,
+          "points": 2006,
+          "worstSignal": "v(1)",
+          "worstAbsMax": 0.008962446792274648
+        }
+      ],
+      "spiceTsVsAhkab": []
+    },
+    {
+      "id": "fft-source-transient",
+      "translation": "unsupported-translation",
+      "reasons": [
+        "vs: ahkab source without vdc= has no defined SPICE3 DC value",
+        "ahkab .fft (np-point FFT of a transient result) has no exact SPICE3 equivalent; .four computes 9 harmonics of a given fundamental, a different output"
+      ]
+    },
+    {
+      "id": "coupled-transformer-transient",
+      "translation": "unsupported-translation",
+      "reasons": [
+        "ahkab .pss (periodic steady state by shooting/brute force) has no SPICE3 equivalent",
+        ".plot: unsupported ahkab plot .PLOT PSS V(2) V(3)"
+      ]
+    },
+    {
+      "id": "rlc-trapezoidal-transient",
+      "translation": "translated",
+      "inputSha256": "6e3658511e56952e3139cbbcb317066e99c5c38a57ebe2ac7fb3883235a8f39f",
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op",
+          "tran"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "op",
+          "tran"
+        ]
+      },
+      "spiceTsVsNgspice": [
+        {
+          "analysis": "op",
+          "signals": 4,
+          "points": 1,
+          "worstSignal": "i(l1)",
+          "worstAbsMax": 0
+        },
+        {
+          "analysis": "tran",
+          "signals": 4,
+          "points": 2278,
+          "worstSignal": "v(2)",
+          "worstAbsMax": 0.6313849479933995
+        }
+      ],
+      "ngspiceVsAhkab": [
+        {
+          "analysis": "op",
+          "signals": 4,
+          "points": 1,
+          "worstSignal": "i(l1)",
+          "worstAbsMax": 0
+        },
+        {
+          "analysis": "tran",
+          "signals": 4,
+          "points": 369,
+          "worstSignal": "v(2)",
+          "worstAbsMax": 0.6264400283734417
+        }
+      ],
+      "spiceTsVsAhkab": [
+        {
+          "analysis": "op",
+          "signals": 4,
+          "points": 1,
+          "worstSignal": "i(l1)",
+          "worstAbsMax": 0
+        },
+        {
+          "analysis": "tran",
+          "signals": 4,
+          "points": 2275,
+          "worstSignal": "v(2)",
+          "worstAbsMax": 0.015321569549555575
+        }
+      ]
+    },
+    {
+      "id": "diode-voltage-doubler",
+      "translation": "translated",
+      "inputSha256": "187b4daafcbdfc77187723c17bfc0d08c350e326834fde3db8e4f9b88b2e4eee",
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op",
+          "tran"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "error": "Parse error at line 20: Unsupported dot command: '.temp' .temp 26.85"
+      },
+      "spiceTsVsNgspice": [],
+      "ngspiceVsAhkab": [
+        {
+          "analysis": "op",
+          "signals": 4,
+          "points": 1,
+          "worstSignal": "v(2)",
+          "worstAbsMax": 2.461530485876506e-16
+        },
+        {
+          "analysis": "tran",
+          "signals": 4,
+          "points": 514,
+          "worstSignal": "v(1)",
+          "worstAbsMax": 0.0150710928906852
+        }
+      ],
+      "spiceTsVsAhkab": []
+    },
+    {
+      "id": "ekv-ring-oscillator",
+      "translation": "unsupported-translation",
+      "reasons": [
+        "ahkab named-port subcircuit instances (name=/port=node) translation is not implemented",
+        "ahkab named-port subcircuit syntax translation is not implemented",
+        "MOSFET instances need an ahkab MOS model (EKV or square-law), neither of which is a SPICE3 model",
+        "EKV MOSFET model (.model ekv ...) has no SPICE3/ngspice equivalent",
+        "ahkab named .ic sets (used through uic=3/ic_label) have no SPICE3 equivalent",
+        ".tran: ahkab uic=3/ic_label (named .ic set) has no SPICE3 equivalent"
+      ]
+    },
+    {
+      "id": "cockcroft-walton-x8",
+      "translation": "translated",
+      "inputSha256": "12a73d8d764c30e6a080b5ba6c9ac33faf232f81d29fb736520eda85cf313346",
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op",
+          "tran"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "error": "Parse error at line 31: Unsupported dot command: '.temp' .temp 26.85"
+      },
+      "spiceTsVsNgspice": [],
+      "ngspiceVsAhkab": [
+        {
+          "analysis": "op",
+          "signals": 10,
+          "points": 1,
+          "worstSignal": "v(8)",
+          "worstAbsMax": 9.850183862205278e-16
+        },
+        {
+          "analysis": "tran",
+          "signals": 10,
+          "points": 5013,
+          "worstSignal": "v(7)",
+          "worstAbsMax": 0.019550615604217114
+        }
+      ],
+      "spiceTsVsAhkab": []
+    },
+    {
+      "id": "pwm-switch",
+      "translation": "unsupported-translation",
+      "reasons": [
+        "ahkab switch model is a tanh-smoothed resistor whose VON/VOFF are converted to VT and VH=VT*1e-3; SPICE3 SW is an abrupt hysteretic switch without VON/VOFF, so any mapping would approximate",
+        "voltage-controlled switch instances use the ahkab switch model (see the model reason)",
+        ".op: ahkab option guess=0 has no SPICE3 equivalent",
+        ".tran: ahkab uic=2 (OP then element-IC override) has no SPICE3 equivalent unless the OP and all ICs are zero"
+      ]
+    },
+    {
+      "id": "rlc-gear3",
+      "translation": "translated",
+      "inputSha256": "f1cf4a492e86e4a672ef6215fc629f37f2d15d9afc41ae11d457c1cfeacfafe7",
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op",
+          "tran"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "error": "Parse error at line 16: Unsupported .options field: 'maxord' .options method=gear maxord=3"
+      },
+      "spiceTsVsNgspice": [],
+      "ngspiceVsAhkab": [
+        {
+          "analysis": "op",
+          "signals": 4,
+          "points": 1,
+          "worstSignal": "i(l1)",
+          "worstAbsMax": 0
+        },
+        {
+          "analysis": "tran",
+          "signals": 4,
+          "points": 578,
+          "worstSignal": "v(2)",
+          "worstAbsMax": 0.6024507881791776
+        }
+      ],
+      "spiceTsVsAhkab": []
+    },
+    {
+      "id": "rlc-gear5",
+      "translation": "translated",
+      "inputSha256": "0dca87a93c1d3a3b52ec81eb29d77e99eddb0ada3c5fdc105ce853c630234fce",
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op",
+          "tran"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "error": "Parse error at line 16: Unsupported .options field: 'maxord' .options method=gear maxord=5"
+      },
+      "spiceTsVsNgspice": [],
+      "ngspiceVsAhkab": [
+        {
+          "analysis": "op",
+          "signals": 4,
+          "points": 1,
+          "worstSignal": "i(l1)",
+          "worstAbsMax": 0
+        },
+        {
+          "analysis": "tran",
+          "signals": 4,
+          "points": 578,
+          "worstSignal": "v(2)",
+          "worstAbsMax": 0.5405897223248926
+        }
+      ],
+      "spiceTsVsAhkab": []
+    },
+    {
+      "id": "rlc-gear6",
+      "translation": "translated",
+      "inputSha256": "ac0383d1482fd8db8fc3082de921d07b6985654ad1528275c00fb0b9d4c606a6",
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op",
+          "tran"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "error": "Parse error at line 16: Unsupported .options field: 'maxord' .options method=gear maxord=6"
+      },
+      "spiceTsVsNgspice": [],
+      "ngspiceVsAhkab": [
+        {
+          "analysis": "op",
+          "signals": 4,
+          "points": 1,
+          "worstSignal": "i(l1)",
+          "worstAbsMax": 0
+        },
+        {
+          "analysis": "tran",
+          "signals": 4,
+          "points": 578,
+          "worstSignal": "v(2)",
+          "worstAbsMax": 0.5274187673735474
+        }
+      ],
+      "spiceTsVsAhkab": []
+    },
+    {
+      "id": "colpitts-oscillator",
+      "translation": "unsupported-translation",
+      "reasons": [
+        "MOSFET instances need an ahkab MOS model (EKV or square-law), neither of which is a SPICE3 model",
+        "EKV MOSFET model (.model ekv ...) has no SPICE3/ngspice equivalent",
+        ".tran: ahkab uic=2 (OP then element-IC override) has no SPICE3 equivalent unless the OP and all ICs are zero"
+      ]
+    }
+  ]
+}

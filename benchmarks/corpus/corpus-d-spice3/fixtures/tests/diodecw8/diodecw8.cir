@@ -1,0 +1,33 @@
+* Cockcroft-Walton x8 multiplier
+* SPICE3/ngspice translation of ahkab tests/diodecw8/diodecw8.ckt (https://github.com/ahkab/ahkab @ 1e8939194b689909b8184ce7eba478b485ff9e3a).
+* ahkab is free software under GPL-2.0-only; see LICENSE-NOTICE.md and COPYING.txt in this directory.
+* Modified 2026-10-11 by benchmarks/translate/ahkab-to-spice3.ts (spice-ts). Line 1 is the upstream title. Changes:
+*  - ahkab `type=vdc vdc=X` written as SPICE3 `DC X`
+*  - ahkab `type=sin` written as SPICE3 SIN(vo va freq td theta) (same formula, phase fixed at 0 in ahkab netlists)
+*  - ahkab `.model diode <name>` (type before name) written as SPICE3 `.model <name> D`; the ahkab diode defaults IS=1e-14, N=1, RS=0, CJ0=0, TT=0, BV=inf, IBV=1e-3, EG=1.11, XTI=3 equal the SPICE3 defaults (ahkab VJ=0.7 vs SPICE3 1 V only enters through CJ0=0)
+*  - ahkab `.tran` uic=0 (start from x=0, no OP) written as SPICE3 `UIC` (no element ICs present, so both start from the zero state)
+*  - added `.temp 26.85` and `.options tnom=26.85`: ahkab simulates and specifies diode parameters at 300 K, SPICE3 defaults to 27 C (300.15 K)
+D1 7 8 d
+C1 8 6 1000p
+D2 6 7 d
+C2 5 7 1000p
+D3 5 6 d
+C3 4 6 1000p
+D4 4 5 d
+C4 3 5 1000p
+D5 3 4 d
+C5 2 4 1000p
+D6 2 3 d
+D7 1 2 d
+C6 1 3 1000p
+C7 2 0 1000p
+C8 99 1 1000p
+D8 0 1 d
+V1 99 0 DC 0 SIN(0 5 1k 0 0)
+.model d D
+.op
+.tran 0.01m 50m UIC
+.plot tran v(8) v(6) v(4) v(2)
+.temp 26.85
+.options tnom=26.85
+.end

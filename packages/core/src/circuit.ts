@@ -36,7 +36,8 @@ import { VCVS } from './devices/vcvs.js';
 import { CCCS } from './devices/cccs.js';
 import { CCVS } from './devices/ccvs.js';
 import { TransmissionLine } from './devices/transmission-line.js';
-import { expandLtraLadder, resolveLtraModel } from './devices/ltra-model.js';
+import { resolveLtraModel } from './devices/ltra-model.js';
+import { LossyTransmissionLine, LtraModelState } from './devices/lossy-transmission-line.js';
 import { GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
@@ -44,7 +45,7 @@ import { parseModelCard } from './parser/model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
-import { parseBJTInstance } from './parser/bjt-parser.js';
+import { parseBJTInstance, type BJTInstanceParams } from './parser/bjt-parser.js';
 import { parseLtraModelCard } from './parser/transmission-line-parser.js';
 import {
   parseDiodeInstanceParams,
@@ -169,6 +170,7 @@ function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string 
           wf.fall ?? 1e-12,
           wf.width ?? Infinity,
           wf.period ?? Infinity,
+          ...(wf.pulses !== undefined ? [wf.pulses] : []),
         ].map(formatNumber).join(' ')})`;
         break;
       case 'sin':
@@ -235,7 +237,7 @@ function formatDevice(desc: DeviceDescriptor): string {
     case 'D':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.modelName ?? ''}${tail}`.trim();
     case 'Q':
-      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}`.trim();
+      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail}`.trim();
     case 'J':
     case 'Z':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.nodes[2]} ${desc.modelName ?? ''}`.trim();
@@ -296,6 +298,22 @@ function formatStep(step: StepAnalysis): string {
     return `.step ${step.param} ${formatNumber(step.start ?? 0)} ${formatNumber(step.stop ?? 0)} ${formatNumber(step.increment ?? 0)}`;
   }
   return `.step ${step.sweepMode.toUpperCase()} ${step.param} ${formatNumber(step.start ?? 0)} ${formatNumber(step.stop ?? 0)} ${step.points ?? 0}`;
+}
+
+/** Descriptor params for a BJT instance; undefined when the card gave no scaling. */
+function bjtInstanceDescriptorParams(
+  instance: BJTInstanceParams | undefined,
+): Record<string, number> | undefined {
+  if (!instance || (instance.AREA === undefined && instance.M === undefined)) return undefined;
+  return {
+    ...(instance.AREA !== undefined ? { AREA: instance.AREA } : {}),
+    ...(instance.M !== undefined ? { M: instance.M } : {}),
+  };
+}
+
+/** ngspice-47 BJT/VBIC instance scale: AREA * M (both default to 1). */
+function bjtInstanceScale(params: Record<string, number> | undefined): number {
+  return (params?.AREA ?? 1) * (params?.M ?? 1);
 }
 
 function isPositiveFinite(value: number | undefined): value is number {
@@ -736,6 +754,8 @@ export class Circuit {
    *   Gummel-Poon BJT has no substrate junction, so it ignores the node.
    * @param nodeThermal - Optional thermal node. Self-heating is not
    *   implemented, so compilation rejects it with an InvalidCircuitError.
+   * @param instanceParams - Optional instance scaling (`AREA`, multiplier
+   *   `M`); the device is scaled by AREA*M as in ngspice-47.
    */
   addBJT(
     name: string,
@@ -745,6 +765,7 @@ export class Circuit {
     modelName: string,
     nodeSubstrate?: string,
     nodeThermal?: string,
+    instanceParams?: BJTInstanceParams,
   ): void {
     this.nodeSet.add(nodeCollector);
     this.nodeSet.add(nodeBase);
@@ -754,7 +775,8 @@ export class Circuit {
     const nodes = [nodeCollector, nodeBase, nodeEmitter];
     if (nodeSubstrate !== undefined || nodeThermal !== undefined) nodes.push(nodeSubstrate ?? GROUND_NODE);
     if (nodeThermal !== undefined) nodes.push(nodeThermal);
-    this.descriptors.push({ type: 'Q', name, nodes, modelName });
+    const params = bjtInstanceDescriptorParams(instanceParams);
+    this.descriptors.push({ type: 'Q', name, nodes, modelName, ...(params ? { params } : {}) });
   }
 
   /** Add a bounded level-1 N-channel junction field-effect transistor. */
@@ -1228,6 +1250,7 @@ export class Circuit {
 
     const devices: DeviceModel[] = [];
     const deviceMap = new Map<string, DeviceModel>();
+    const ltraStates = new Map<string, LtraModelState>();
 
     for (const desc of expandedDescriptors) {
       guard?.checkpoint('compile:device');
@@ -1305,6 +1328,22 @@ export class Circuit {
           ));
           break;
         }
+        case 'O': {
+          const firstBranch = branchIndex++;
+          const secondBranch = branchIndex++;
+          branchNames.push(`${desc.name}:1`, `${desc.name}:2`);
+          const modelName = desc.modelName!;
+          let state = ltraStates.get(modelName);
+          if (!state) {
+            state = new LtraModelState(resolveLtraModel(this._models.get(modelName)!, {
+              reltol: this._simulationOptions.reltol ?? 1e-3,
+              abstol: this._simulationOptions.abstol ?? 1e-12,
+            }));
+            ltraStates.set(modelName, state);
+          }
+          devices.push(new LossyTransmissionLine(desc.name, nodeIndices, firstBranch, secondBranch, state));
+          break;
+        }
         case 'D': {
           const modelParams = desc.modelName ? this.requireModel('Diode', desc).params : {};
           const { RS: seriesResistanceOverride, ...instanceParams } = desc.params ?? {};
@@ -1326,7 +1365,7 @@ export class Circuit {
           const model = this._models.get(modelName);
           if (!model && modelName !== '0') this.requireModel('BJT', desc);
           if (!model) {
-            devices.push(new BJT(desc.name, nodeIndices, { polarity: 1 }));
+            devices.push(new BJT(desc.name, nodeIndices, { polarity: 1 }, desc.params));
             break;
           }
           if (model.type !== 'NPN' && model.type !== 'PNP') {
@@ -1335,9 +1374,9 @@ export class Circuit {
           const modelParams = model.params;
           const polarity = model.type === 'PNP' ? -1 : 1;
           if (modelParams.LEVEL === 4) {
-            devices.push(new VBIC(desc.name, nodeIndices, modelParams, polarity));
+            devices.push(new VBIC(desc.name, nodeIndices, modelParams, polarity, bjtInstanceScale(desc.params)));
           } else {
-            devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }));
+            devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }, desc.params));
           }
           break;
         }
@@ -1509,28 +1548,35 @@ export class Circuit {
     return result;
   }
 
+  /**
+   * Validate O/LTRA instances after subcircuit expansion. Model lookup happens
+   * here, not at parse time, because O cards in uncalled subcircuits may name
+   * undefined models.
+   */
   private expandLossyTransmissionLines(descriptors: DeviceDescriptor[]): DeviceDescriptor[] {
-    const result: DeviceDescriptor[] = [];
+    let hasLossyLine = false;
     for (const desc of descriptors) {
-      if (desc.type !== 'O') {
-        result.push(desc);
-        continue;
-      }
-      const [input, inputReference, output, outputReference] = desc.nodes;
+      if (desc.type !== 'O') continue;
+      hasLossyLine = true;
+      const [, inputReference, , outputReference] = desc.nodes;
       if (inputReference.toUpperCase() !== outputReference.toUpperCase()) {
         throw new Error(`Unsupported LTRA '${desc.name}': both ports must use a common reference node`);
       }
       const model = this._models.get(desc.modelName!);
       if (!model) throw new InvalidCircuitError(`LTRA '${desc.name}' references unknown model '${desc.modelName}'`);
-      result.push(...expandLtraLadder(
-        desc.name,
-        input,
-        output,
-        inputReference,
-        resolveLtraModel(model),
-      ));
+      resolveLtraModel(model);
     }
-    return result;
+    if (hasLossyLine) {
+      // The LTRA small-signal response is not a polynomial in s, which the
+      // G + sC frequency-domain assembly cannot represent.
+      const unsupported = this._poleZeroAnalyses.length > 0
+        ? 'pz'
+        : this._analyses.find(analysis => !['op', 'dc', 'tran', 'tf'].includes(analysis.type))?.type;
+      if (unsupported) {
+        throw new InvalidCircuitError(`LTRA lossy lines support only .op, .dc, .tf and .tran analyses; '.${unsupported}' is unsupported`);
+      }
+    }
+    return descriptors;
   }
 
   private expandPassiveParasitics(descriptors: DeviceDescriptor[]): DeviceDescriptor[] {
@@ -1608,6 +1654,9 @@ export class Circuit {
         // The substrate is a stamped terminal only for VBIC; the bounded
         // Gummel-Poon BJT has no substrate junction, so the node is dropped.
         const terminals = isVBIC ? desc.nodes : desc.nodes.slice(0, 3);
+        // ngspice-47 scales every series conductance by AREA*M (bjttemp.c
+        // area, bjtload.c m; vbicload.c SCALE), i.e. divides the resistance.
+        const instanceScale = bjtInstanceScale(desc.params);
         if (model?.type === 'NPN' || model?.type === 'PNP') {
           if (model.params.LEVEL === 4) {
             const polarity = model.type === 'PNP' ? -1 : 1;
@@ -1623,28 +1672,28 @@ export class Circuit {
               collectorExternal = internalNodeName(desc.name, 'cx');
               result.push({
                 type: 'R', name: `${desc.name}.RCX`, nodes: [collector, collectorExternal],
-                value: params.RCX,
+                value: params.RCX / instanceScale,
               });
             }
             if (params.RBX > 0) {
               baseExternal = internalNodeName(desc.name, 'bx');
               result.push({
                 type: 'R', name: `${desc.name}.RBX`, nodes: [base, baseExternal],
-                value: params.RBX,
+                value: params.RBX / instanceScale,
               });
             }
             if (params.RE > 0) {
               emitterInternal = internalNodeName(desc.name, 'ei');
               result.push({
                 type: 'R', name: `${desc.name}.RE`, nodes: [emitter, emitterInternal],
-                value: params.RE,
+                value: params.RE / instanceScale,
               });
             }
             if (params.RS > 0) {
               substrateInternal = internalNodeName(desc.name, 'si');
               result.push({
                 type: 'R', name: `${desc.name}.RS`, nodes: [substrate, substrateInternal],
-                value: params.RS,
+                value: params.RS / instanceScale,
               });
             }
             result.push({
@@ -1673,7 +1722,7 @@ export class Circuit {
             const internal = internalNodeName(desc.name, parameter.toLowerCase());
             result.push({
               type: 'R', name: `${desc.name}.${parameter}`, nodes: [terminal, internal],
-              value: resistance,
+              value: resistance / instanceScale,
             });
             if (parameter === 'RC') collector = internal;
             else if (parameter === 'RB') base = internal;
@@ -2069,14 +2118,17 @@ export class Circuit {
           break;
         }
         case 'Q': {
-          const instance = parseBJTInstance(tokens, lineNumber);
+          // AREA/M may be {params}; node and model tokens are never braced.
+          const instance = parseBJTInstance(tokens.map(t => evalToken(t)), lineNumber);
           const nodes = [instance.collector, instance.base, instance.emitter];
           if (instance.substrate !== undefined) nodes.push(instance.substrate);
           if (instance.thermal !== undefined) nodes.push(instance.thermal);
+          const params = bjtInstanceDescriptorParams(instance.params);
           result.push({
             type: 'Q', name: devName,
             nodes: nodes.map(mapNode),
             modelName: instance.modelName,
+            ...(params ? { params } : {}),
           });
           break;
         }
