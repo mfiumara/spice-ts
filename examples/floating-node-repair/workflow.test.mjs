@@ -8,11 +8,14 @@ const workflow = fileURLToPath(new URL('./workflow.mjs', import.meta.url));
 const server = fileURLToPath(new URL('../../packages/mcp/dist/stdio.js', import.meta.url));
 const expected = readFileSync(new URL('./expected-output.json', import.meta.url), 'utf8');
 
-test('repairs a floating node and keeps solve-only singularity distinct', () => {
+// Hang guard only (#411): the workflow has no wall-clock deadline.
+const HANG_GUARD_MS = 120_000;
+
+test('repairs a floating node and keeps solve-only singularity distinct', { timeout: HANG_GUARD_MS }, () => {
   const output = execFileSync(process.execPath, [workflow, '--server', server], {
     cwd: fileURLToPath(new URL('.', import.meta.url)),
     encoding: 'utf8',
-    timeout: 10_000,
+    timeout: HANG_GUARD_MS,
   });
 
   assert.equal(output, expected);

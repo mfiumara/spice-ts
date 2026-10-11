@@ -1,0 +1,121 @@
+{
+  "workflow": "circuit-json-transient-threshold-cancellation",
+  "conversion": {
+    "lossy": true,
+    "diagnostics": [
+      {
+        "severity": "info",
+        "code": "LAYOUT_ONLY",
+        "path": "/0"
+      },
+      {
+        "severity": "info",
+        "code": "LAYOUT_ONLY",
+        "path": "/13"
+      }
+    ]
+  },
+  "requestInputSha256": "ee4503f1e578a6ab8f717f47e2ba2a3e9e92be63b83c52979a5932eebaedb603",
+  "threshold": {
+    "node": "out",
+    "thresholdV": 0.2,
+    "pointIndex": 26,
+    "timeS": 2.448845444600801e-7,
+    "voltageV": 0.21684558867608208
+  },
+  "cancelled": {
+    "status": "cancelled",
+    "events": [],
+    "nextCursor": null,
+    "terminal": {
+      "apiVersion": "1",
+      "ok": false,
+      "requestId": "job-1",
+      "error": {
+        "code": "CANCELLED",
+        "message": "The simulation job was cancelled",
+        "retryable": true,
+        "phase": "solve",
+        "details": {}
+      },
+      "diagnostics": [],
+      "partial": {
+        "status": "partial",
+        "analyses": [
+          {
+            "analysis": "tran",
+            "analysisIndex": 0,
+            "emittedPointCount": 27,
+            "complete": false
+          }
+        ],
+        "partialEventSha256": "b697e144da13b4b79e0a1d3ad9bb8578fb0db32b55c43b4c3fe19069314b2830"
+      }
+    }
+  },
+  "schemaChecks": [
+    {
+      "name": "observed cancelled read data",
+      "schema": "simulation-read-data.schema.json",
+      "valid": true
+    },
+    {
+      "name": "observed cancelled terminal",
+      "schema": "stream-terminal.schema.json",
+      "valid": true
+    },
+    {
+      "name": "partial metadata with inputSha256 only",
+      "schema": "partial-run-metadata.schema.json",
+      "valid": true
+    },
+    {
+      "name": "terminal with inputSha256-only partial metadata",
+      "schema": "stream-terminal.schema.json",
+      "valid": true
+    },
+    {
+      "name": "partial metadata with resultSha256",
+      "schema": "partial-run-metadata.schema.json",
+      "valid": false,
+      "errors": [
+        {
+          "instancePath": "",
+          "keyword": "additionalProperties",
+          "params": {
+            "additionalProperty": "resultSha256"
+          }
+        }
+      ]
+    },
+    {
+      "name": "terminal with resultSha256 in partial metadata",
+      "schema": "stream-terminal.schema.json",
+      "valid": false
+    },
+    {
+      "name": "partial data with resultSha256",
+      "schema": "partial-simulation-result.schema.json",
+      "valid": false,
+      "errors": [
+        {
+          "instancePath": "",
+          "keyword": "additionalProperties",
+          "params": {
+            "additionalProperty": "resultSha256"
+          }
+        }
+      ]
+    },
+    {
+      "name": "terminal with resultSha256 in partial data",
+      "schema": "stream-terminal.schema.json",
+      "valid": false
+    },
+    {
+      "name": "@spice-ts/protocol fixtures/negative-v1.json#/partialWithResultHash",
+      "schema": "stream-terminal.schema.json",
+      "valid": false
+    }
+  ]
+}
