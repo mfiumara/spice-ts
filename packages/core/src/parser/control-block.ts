@@ -1,97 +1,83 @@
-import { ParseError } from '../errors.js';
+import { tokenizeNetlist } from './tokenizer.js';
+import type { ControlScript } from './control/script.js';
 
 /**
  * ngspice `.control` … `.endc` contract.
  *
- * spice-ts does not interpret the ngspice control language. It accepts a bounded
- * subset of commands whose effect it reproduces exactly:
+ * A deck's control blocks are parsed into a {@link ControlScript}. Scripts made
+ * only of straight-line analysis commands are lowered onto dot cards here; every
+ * other script is executed by the control-language interpreter when the deck is
+ * simulated (`parser/control/interpreter.ts`).
  *
- * - The analysis commands `op`, `dc`, `tran` and `ac` (#489). They take the same
- *   arguments as the dot cards and are mapped onto the same analyses, so a deck
- *   that runs `tran 1n 1u` from `.control` behaves like one with `.tran 1n 1u`.
- *   A simulation result holds one vector set per analysis type, so a type may be
- *   requested only once per deck (dot card or control command); a repeat is
- *   rejected rather than silently overwriting the earlier vectors.
- * - Bare `run`, which executes the deck's dot-card analyses (which `simulate()`
- *   always does).
- * - Output-only commands: they format, display, report or exit after
- *   already-computed vectors and cannot change any simulated value. spice-ts
- *   returns every computed vector through its result API, so these are
- *   recognized and not executed. `set` counts as output-only only for the
- *   plot-styling variables matched by {@link PLOT_STYLE_SETTING}.
- *
- * Every other command (`let`, other `set` variables, `alter`, `meas`,
- * `linearize`, `fft`, `reset`, other analyses, control flow, circuit
- * management, file output, …) could add, change or derive results, so it is
- * rejected with a structured {@link ParseError} naming the command instead of
- * being silently dropped.
+ * Lowering (#489): the analysis commands `op`, `dc`, `tran` and `ac` take the
+ * same arguments as the dot cards and are mapped onto the same analyses, so a
+ * deck that runs `tran 1n 1u` from `.control` behaves like one with
+ * `.tran 1n 1u`. Bare `run`, output-only commands and plot-styling `set`
+ * variables (`colorN`, `xbrushwidth`, `xgridwidth`) do not change any result.
+ * A script is lowered only when each analysis type appears once across the
+ * control commands and the dot cards, so one result field holds one analysis.
  */
-const OUTPUT_ONLY_CONTROL_COMMANDS = new Set([
-  'ASCIIPLOT', 'DISPLAY', 'ECHO', 'EXIT', 'LISTING', 'PLOT', 'PRINT', 'QUIT', 'RUSAGE', 'SETTYPE',
+const LOWERED_OUTPUT_COMMANDS = new Set([
+  'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit', 'rusage', 'settype',
 ]);
 
-/** Control analysis commands and the dot card each one maps onto. */
-const CONTROL_ANALYSIS_COMMANDS = new Map([
-  ['OP', '.OP'], ['DC', '.DC'], ['TRAN', '.TRAN'], ['AC', '.AC'],
+const LOWERED_ANALYSIS_COMMANDS = new Map([
+  ['op', '.OP'], ['dc', '.DC'], ['tran', '.TRAN'], ['ac', '.AC'],
 ]);
 
 /** `set` arguments that only style plots (`set color0=white`, `set xbrushwidth=3`). */
 const PLOT_STYLE_SETTING = /^(?:color\d+|xbrushwidth|xgridwidth)=\S+$/i;
 
-const CONTROL_CONTRACT =
-  "only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables "
-  + "'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands "
-  + `${[...OUTPUT_ONLY_CONTROL_COMMANDS].map(command => `'${command.toLowerCase()}'`).join(', ')} `
-  + 'are accepted; spice-ts does not interpret ngspice control-language commands that could change results';
-
-/** How spice-ts handles one accepted `.control` command. */
-export type ControlCommand =
-  | { kind: 'ignored' }
-  /** An analysis command, rewritten as the tokens of its equivalent dot card. */
-  | { kind: 'analysis'; analysisType: 'op' | 'dc' | 'tran' | 'ac'; dotCardTokens: string[] };
+/** One lowered control analysis: the tokens of its equivalent dot card. */
+export interface LoweredControlAnalysis {
+  analysisType: 'op' | 'dc' | 'tran' | 'ac';
+  dotCardTokens: string[];
+  lineNumber: number;
+  context: string;
+}
 
 /**
- * Classify one command line inside a `.control` block.
+ * Lower a straight-line control script onto dot-card analyses, or return null
+ * when the script needs the interpreter.
  *
- * @throws {@link ParseError} naming the command when it is outside the accepted subset
+ * @param dotAnalysisTypes - Analysis types the deck's dot cards already request
  */
-export function classifyControlCommand(tokens: string[], lineNumber: number, context: string): ControlCommand {
-  const command = tokens[0].toUpperCase();
-  const dotCard = CONTROL_ANALYSIS_COMMANDS.get(command);
-  if (dotCard !== undefined) {
-    return {
-      kind: 'analysis',
-      analysisType: command.toLowerCase() as 'op' | 'dc' | 'tran' | 'ac',
-      dotCardTokens: [dotCard, ...tokens.slice(1)],
-    };
+export function lowerControlScript(
+  script: ControlScript,
+  dotAnalysisTypes: ReadonlySet<string>,
+): LoweredControlAnalysis[] | null {
+  const lowered: LoweredControlAnalysis[] = [];
+  const types = new Set(dotAnalysisTypes);
+  for (const statement of script.statements) {
+    if (statement.kind !== 'command') return null;
+    const { name, line } = statement;
+    if (/[$`{]/.test(line.text)) return null;
+    const dotCard = LOWERED_ANALYSIS_COMMANDS.get(name);
+    if (dotCard !== undefined) {
+      if (types.has(name)) return null;
+      types.add(name);
+      const tokens = tokenizeNetlist(line.text)[0]?.tokens ?? [];
+      lowered.push({
+        analysisType: name as LoweredControlAnalysis['analysisType'],
+        dotCardTokens: [dotCard, ...tokens.slice(1)],
+        lineNumber: line.lineNumber,
+        context: line.text,
+      });
+      continue;
+    }
+    if (name === 'run' && line.text.trim().toLowerCase() === 'run') continue;
+    if (name === 'set' && isPlotStyleSetting(line.text.slice(3))) continue;
+    if (LOWERED_OUTPUT_COMMANDS.has(name)) continue;
+    return null;
   }
-  if (command === 'RUN' && tokens.length === 1) return { kind: 'ignored' };
-  if (command === 'SET' && isPlotStyleSetting(tokens.slice(1))) return { kind: 'ignored' };
-  if (OUTPUT_ONLY_CONTROL_COMMANDS.has(command)) return { kind: 'ignored' };
-  throw new ParseError(
-    `Unsupported .control command '${tokens[0]}': ${CONTROL_CONTRACT}`,
-    lineNumber,
-    context,
-  );
+  return lowered;
 }
 
 /**
  * True when a `set` line only styles plots: it has at least one assignment and
- * every assignment is a plot-styling variable. Each assignment is classified on
- * its own, so one result-affecting variable (`set color0=white ngbehavior=ps`)
- * makes the whole line unsupported instead of being dropped with the rest.
+ * every assignment is a plot-styling variable.
  */
-function isPlotStyleSetting(args: string[]): boolean {
-  const assignments = args.join(' ').replace(/\s*=\s*/g, '=').trim().split(/\s+/).filter(Boolean);
+function isPlotStyleSetting(args: string): boolean {
+  const assignments = args.replace(/\s*=\s*/g, '=').trim().split(/\s+/).filter(Boolean);
   return assignments.length > 0 && assignments.every(assignment => PLOT_STYLE_SETTING.test(assignment));
-}
-
-/** Structured error for a control analysis whose type the deck already requests. */
-export function repeatedControlAnalysisError(analysisType: string, lineNumber: number, context: string): ParseError {
-  return new ParseError(
-    `Unsupported repeated '${analysisType}' analysis in .control: spice-ts returns one result per analysis type, `
-    + 'so each of op/dc/tran/ac may be requested once per deck (dot card or control command)',
-    lineNumber,
-    context,
-  );
 }

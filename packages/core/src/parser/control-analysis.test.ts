@@ -125,27 +125,31 @@ plot v(t)
     expect(error.message).toContain('.tran requires TSTEP and TSTOP');
   });
 
-  it('rejects a repeated analysis type because results hold one vector set per type (examples/vdmos/IXTP6N100D2-n-weak-inv.sp)', () => {
-    const error = parseError(`Two sweeps
+  it('runs a repeated analysis type through the interpreter, one plot per run (examples/vdmos/IXTP6N100D2-n-weak-inv.sp)', async () => {
+    const netlist = `Two sweeps
 ${rc}
 .control
 dc  v1 -3.1 -2.1 0.01
 plot vs#branch
 dc  v1 0 60 0.1
-.endc`);
-    expect(error.line).toBe(8);
-    expect(error.message).toContain("Unsupported repeated 'dc' analysis in .control");
+.endc`;
+    // Not lowered onto dot cards: the interpreter runs both sweeps in order.
+    expect(parse(netlist).analyses).toEqual([]);
+    const result = await simulate(netlist);
+    expect(result.control!.runs.map(run => run.plot)).toEqual(['dc1', 'dc2']);
+    expect(result.control!.runs[0].result.dcSweep!.sweepValues).toHaveLength(101);
+    // The top-level field holds the latest run of the type, like ngspice's current plot.
+    expect(result.dcSweep!.sweepValues).toHaveLength(601);
 
-    const dotThenControl = parseError(`Dot then control\n${rc}\n.tran 1u 1m\n.control\ntran 1u 2m\n.endc`);
-    expect(dotThenControl.message).toContain("Unsupported repeated 'tran' analysis in .control");
-
-    const controlThenDot = parseError(`Control then dot\n${rc}\n.control\nop\n.endc\n.op`);
-    expect(controlThenDot.message).toContain("Unsupported repeated 'op' analysis in .control");
+    // A dot card plus a control command of the same type: the control run, then
+    // ngspice's own run of the deck's dot cards after the script.
+    const dotThenControl = await simulate(`Dot then control\n${rc}\n.tran 1u 1m\n.control\ntran 1u 2m\n.endc`);
+    expect(dotThenControl.control!.runs.map(run => run.plot)).toEqual(['tran1']);
+    expect(dotThenControl.control!.runs[0].result.transient!.time.at(-1)).toBeCloseTo(2e-3, 12);
+    expect(dotThenControl.transient!.time.at(-1)).toBeCloseTo(1e-3, 12);
   });
 
   it.each([
-    // examples/vdmos/IXTH80N20L-IXTH48P20P-quasisat.sp
-    ['dc v1 -1 100 0.05\naltermod mn1 rq=0', 'altermod'],
     // examples/measure/mos-meas-dc-control.sp
     ['dc v1 0 3.5 0.05\nmeas dc is_max max i(vs)', 'meas'],
     // examples/rf/pss/vackar_osc_pss_ctrl.cir
@@ -153,23 +157,24 @@ dc  v1 0 60 0.1
     ['tran 10n 20u\nfft v(4)', 'fft'],
     ['tran 10n 20u\nreset', 'reset'],
     ['pss 1.8e6 20e-6 4 1024 10 50 5e-3 uic', 'pss'],
-    // examples/various/gain_stage.cir
-    ['ac dec 10 100 1000Meg\nlet flen = length(frequency)', 'let'],
     // examples/vdmos/100W.sp
-    ['op\nnoise V(out) Vin dec 10 10 100K', 'noise'],
     ['op\nfourier 1K V(out)', 'fourier'],
-    // set commands other than plot styling can change simulation behaviour
-    ['set temp = 50\nop', 'set'],
-    ['set ngbehavior=ps\nop', 'set'],
-    // each assignment on a set line is classified separately (#516 review)
-    ['set color0=white ngbehavior=ps\nop', 'set'],
-    ['set xbrushwidth=3 num_threads=4\nop', 'set'],
-    ['set color0 = white temp = 50\nop', 'set'],
-    ['set ngbehavior=ps color0=white\nop', 'set'],
-    ['set color0=white noaskquit\nop', 'set'],
-  ])('still rejects result-affecting command after an analysis: %s', (control, command) => {
+  ])('rejects a command spice-ts does not execute at parse time: %s', (control, command) => {
     const error = parseError(`Unsupported\n${rc}\n.control\n${control}\n.endc`);
     expect(error.message).toContain(`Unsupported .control command '${command}'`);
+  });
+
+  it.each([
+    // examples/vdmos/IXTH80N20L-IXTH48P20P-quasisat.sp (no such model in this stand-in circuit)
+    ['dc v1 -1 100 0.05\naltermod mn1 rq=0', 'altermod'],
+    // result-affecting front-end variables are rejected, one assignment at a time (#516 review)
+    ['set ngbehavior=ps\nop', 'set'],
+    ['set color0=white ngbehavior=ps\nop', 'set'],
+    ['set ngbehavior=ps color0=white\nop', 'set'],
+    ['set sqrnoise\nop', 'set'],
+  ])('rejects a result-affecting form when the script runs: %s', async (control, command) => {
+    await expect(simulate(`Unsupported\n${rc}\n.control\n${control}\n.endc`))
+      .rejects.toThrow(`Unsupported .control command '${command}'`);
   });
 
   it.each<string>([
