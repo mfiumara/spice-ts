@@ -1,0 +1,45 @@
+resistor-mesh-op-1000-before.cpuprofile: 48 samples, 336.3 ms sampled
+
+Top self time
+      82.5 ms  24.5%  (garbage collector)
+      41.4 ms  12.3%  (program)
+      27.8 ms   8.3%  factorize core-dist(pr541)/chunk-CD3JVUSG.js:10497
+      26.7 ms   7.9%  amdOrdering core-dist(pr541)/chunk-CD3JVUSG.js:10187
+      25.4 ms   7.6%  read
+      13.8 ms   4.1%  getPackageScopeConfig
+      13.7 ms   4.1%  open
+      13.3 ms   3.9%  newtonRaphson core-dist(pr541)/chunk-CD3JVUSG.js:11150
+      12.9 ms   3.8%  detectModuleFormat node:internal/modules/esm/get_format:36
+      12.8 ms   3.8%  growLookup core-dist(pr541)/chunk-CD3JVUSG.js:10863
+      11.8 ms   3.5%  Resistor core-dist(pr541)/chunk-CD3JVUSG.js:725
+      11.0 ms   3.3%  compileSourceTextModule node:internal/modules/esm/utils:344
+       8.8 ms   2.6%  analyzePattern core-dist(pr541)/chunk-CD3JVUSG.js:10405
+       6.5 ms   1.9%  compileForInternalLoader node:internal/bootstrap/realm:385
+       5.6 ms   1.7%  validateCircuit2 core-dist(pr541)/chunk-CD3JVUSG.js:16027
+       4.6 ms   1.4%  recordSlot core-dist(pr541)/chunk-CD3JVUSG.js:11091
+       4.0 ms   1.2%  (idle)
+       3.5 ms   1.1%  collectStatements core-dist(pr541)/chunk-CD3JVUSG.js:8790
+       3.2 ms   1.0%  tokenizeNetlist core-dist(pr541)/chunk-CD3JVUSG.js:5303
+       3.0 ms   0.9%  addResistor core-dist(pr541)/chunk-CD3JVUSG.js:7165
+
+Top inclusive time
+     336.3 ms 100.0%  (root)
+     119.0 ms  35.4%  simulate core-dist(pr541)/chunk-CD3JVUSG.js:15761
+      98.1 ms  29.2%  newtonRaphson core-dist(pr541)/chunk-CD3JVUSG.js:11150
+      98.1 ms  29.2%  solveDCOperatingPoint core-dist(pr541)/chunk-CD3JVUSG.js:11366
+      82.5 ms  24.5%  (garbage collector)
+      76.8 ms  22.8%  getModuleJobForImport node:internal/modules/esm/loader:319
+      63.0 ms  18.7%  loadAndTranslate node:internal/modules/esm/loader:608
+      63.0 ms  18.7%  #createModuleJob node:internal/modules/esm/loader:632
+      63.0 ms  18.7%  #getJobFromResolveResult node:internal/modules/esm/loader:347
+      52.0 ms  15.4%  defaultLoadSync node:internal/modules/esm/load:136
+      52.0 ms  15.4%  load node:internal/modules/esm/loader:821
+      41.4 ms  12.3%  (program)
+      39.1 ms  11.6%  readFileSync node:fs:433
+      39.1 ms  11.6%  getSourceSync node:internal/modules/esm/load:36
+      37.9 ms  11.3%  getSparseSolver core-dist(pr541)/chunk-CD3JVUSG.js:10972
+      35.5 ms  10.5%  analyzePattern core-dist(pr541)/chunk-CD3JVUSG.js:10405
+      27.8 ms   8.3%  factorize core-dist(pr541)/chunk-CD3JVUSG.js:10497
+      26.7 ms   7.9%  amdOrdering core-dist(pr541)/chunk-CD3JVUSG.js:10187
+      26.6 ms   7.9%  getFileProtocolModuleFormat node:internal/modules/esm/get_format:111
+      25.4 ms   7.6%  read

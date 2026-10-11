@@ -202,3 +202,7 @@ The profiles are committed under `benchmarks/performance/results/profiles/`, at 
 - **Mesh OP:** in `resistor-mesh-op-10000.cpuprofile` (243 samples, 0.73 s), `factorize` is still the largest frame at 54.4% self, then `amdOrdering` 11.2%. On this topology the LU is no longer a scaling outlier.
 
 The raw JSON and CPU profiles are the evidence of record. Rounded values here are rendered by `scaling-m2-report.mjs` and are summaries only.
+
+## Follow-up: transient result recording ([#548](https://github.com/mfiumara/spice-ts/issues/548))
+
+After the LU-factor reuse of #486/PR #541, the RC ladder's top self-time frame at 10k and 50k nodes was `buildStep`: every accepted step built two name-keyed Maps of all node voltages and branch currents, and `solveTransient` then walked them (28-33% self with `appendOrdered`). `solveTransient` now records each point straight from the solution vector; `simulateStream` and `createTransientSim` still return `TransientStep` Maps. Results are bit-identical (waveform hashes, 100/100 aggregate corpus digests, `accuracy.ts --ci`). Paired concurrent A/B, CPU time, 9 rounds: RC ladder 1.08x / 1.30x / 1.41x faster at 1k / 10k / 50k, MOS1 chain 1.03x / 1.05x at 1k / 10k, mesh OP (control, untouched path) 0.99x. spice-ts is still slower than ngspice-47 KLU on every deck except the 1k mesh wall time (startup only). The measurement ran on a heavily loaded shared machine; profiles, the A/B JSONL, the ngspice table and its caveats are in `benchmarks/results/issue-548/README.md`.

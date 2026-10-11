@@ -1,5 +1,5 @@
 import type {
-  ConvergenceTelemetry, ResolvedOptions, SimulationOptions, TransientAnalysis, TransientStep,
+  ConvergenceTelemetry, ResolvedOptions, SimulationOptions, TransientAnalysis,
 } from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
 import { TransientResult } from '../results.js';
@@ -62,39 +62,34 @@ export function solveTransient(
   for (const name of nodeNames) voltageArrays.set(name, []);
   for (const name of branchNames) currentArrays.set(name, []);
 
-  // The driver builds each step's maps in nodeNames/branchNames order, so the
-  // k-th entry normally belongs to the k-th array; a name mismatch falls back
-  // to the keyed lookup. This avoids one Map lookup per variable per point.
-  const voltageColumns = nodeNames.map(name => voltageArrays.get(name)!);
-  const currentColumns = branchNames.map(name => currentArrays.get(name)!);
-  const appendOrdered = (
-    entries: Map<string, number>,
-    names: readonly string[],
-    columns: number[][],
-    arrays: Map<string, number[]>,
-  ): void => {
-    let k = 0;
-    for (const [name, value] of entries) {
-      if (k < names.length && names[k] === name) columns[k].push(value);
-      else arrays.get(name)!.push(value);
-      k++;
-    }
-  };
-  const save = (step: TransientStep): void => {
+  // Record each saved point straight from the solution vector (#548). The
+  // driver's TransientStep Maps (`advance()`) cost two Map inserts per
+  // variable per step; on large linear decks that was the top self-time
+  // frame. The column plan below reproduces those Maps' semantics exactly:
+  // one column per distinct name, in first-occurrence order, holding the
+  // solution entry of the name's last occurrence (Map.set overwrites).
+  const nodeSlots = new Map<string, number>();
+  for (const name of nodeNames) nodeSlots.set(name, compiled.nodeIndexMap.get(name)!);
+  const branchSlots = new Map<string, number>();
+  branchNames.forEach((name, i) => branchSlots.set(name, compiled.nodeCount + i));
+  const columns: number[][] = [];
+  const slots: number[] = [];
+  for (const [name, slot] of nodeSlots) { columns.push(voltageArrays.get(name)!); slots.push(slot); }
+  for (const [name, slot] of branchSlots) { columns.push(currentArrays.get(name)!); slots.push(slot); }
+  const columnCount = columns.length;
+  const save = (time: number, solution: Float64Array): void => {
     guard?.recordResultPoint();
-    timePoints.push(step.time);
-    appendOrdered(step.voltages, nodeNames, voltageColumns, voltageArrays);
-    appendOrdered(step.currents, branchNames, currentColumns, currentArrays);
+    timePoints.push(time);
+    for (let k = 0; k < columnCount; k++) columns[k].push(solution[slots[k]]);
   };
 
   try {
     // Seed with the DC operating point at t=0
-    const initialStep = driver.peekInitialStep();
-    if (isSavedTransientPoint(analysis, initialStep.time)) save(initialStep);
+    if (isSavedTransientPoint(analysis, driver.simTime)) save(driver.simTime, driver.currentSolution());
     while (!driver.isDone) {
       guard?.checkpoint('solve:transient-step');
-      const step = driver.advance();
-      if (isSavedTransientPoint(analysis, step.time)) save(step);
+      const solution = driver.advanceSolution();
+      if (isSavedTransientPoint(analysis, driver.simTime)) save(driver.simTime, solution);
     }
   } finally {
     driver.dispose();

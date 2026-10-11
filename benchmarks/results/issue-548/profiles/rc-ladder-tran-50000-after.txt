@@ -1,0 +1,45 @@
+rc-ladder-tran-50000-after.cpuprofile: 4880 samples, 38163.4 ms sampled
+
+Top self time
+    7172.3 ms  18.8%  stampG core-dist(change)/chunk-5LJ64ZMW.js:11035
+    6564.4 ms  17.2%  buildCompanionSystem core-dist(change)/chunk-5LJ64ZMW.js:11561
+    5333.5 ms  14.0%  (garbage collector)
+    3138.5 ms   8.2%  factorize core-dist(change)/chunk-5LJ64ZMW.js:10497
+    2818.9 ms   7.4%  attemptStep core-dist(change)/chunk-5LJ64ZMW.js:11741
+    2565.8 ms   6.7%  save core-dist(change)/chunk-5LJ64ZMW.js:12723
+    2149.2 ms   5.6%  stamp core-dist(change)/chunk-5LJ64ZMW.js:763
+    1460.5 ms   3.8%  stampPrevB core-dist(change)/chunk-5LJ64ZMW.js:12383
+    1449.7 ms   3.8%  stampC core-dist(change)/chunk-5LJ64ZMW.js:11041
+     861.7 ms   2.3%  stampDynamic core-dist(change)/chunk-5LJ64ZMW.js:1031
+     547.3 ms   1.4%  advanceSolution core-dist(change)/chunk-5LJ64ZMW.js:12168
+     397.1 ms   1.0%  lockTopology core-dist(change)/chunk-5LJ64ZMW.js:10845
+     306.0 ms   0.8%  compile core-dist(change)/chunk-5LJ64ZMW.js:7747
+     286.0 ms   0.7%  stamp core-dist(change)/chunk-5LJ64ZMW.js:1029
+     276.6 ms   0.7%  acceptTransientStep core-dist(change)/chunk-5LJ64ZMW.js:12420
+     221.1 ms   0.6%  amdOrdering core-dist(change)/chunk-5LJ64ZMW.js:10187
+     209.7 ms   0.5%  solveTransient core-dist(change)/chunk-5LJ64ZMW.js:12693
+     172.9 ms   0.5%  clear core-dist(change)/chunk-5LJ64ZMW.js:11117
+     142.0 ms   0.4%  collectStatements core-dist(change)/chunk-5LJ64ZMW.js:8790
+     141.9 ms   0.4%  analyzePattern core-dist(change)/chunk-5LJ64ZMW.js:10405
+
+Top inclusive time
+   38163.4 ms 100.0%  (root)
+   32140.9 ms  84.2%  simulate core-dist(change)/chunk-5LJ64ZMW.js:15776
+   30661.2 ms  80.3%  solveTransient core-dist(change)/chunk-5LJ64ZMW.js:12693
+   27737.7 ms  72.7%  advanceSolution core-dist(change)/chunk-5LJ64ZMW.js:12168
+   22833.6 ms  59.8%  attemptStep core-dist(change)/chunk-5LJ64ZMW.js:11741
+   15926.5 ms  41.7%  buildCompanionSystem core-dist(change)/chunk-5LJ64ZMW.js:11561
+    8938.4 ms  23.4%  stamp core-dist(change)/chunk-5LJ64ZMW.js:763
+    7233.3 ms  19.0%  stampG core-dist(change)/chunk-5LJ64ZMW.js:11035
+    5333.5 ms  14.0%  (garbage collector)
+    3880.8 ms  10.2%  stampPrevB core-dist(change)/chunk-5LJ64ZMW.js:12383
+    3307.7 ms   8.7%  solveLinearized core-dist(change)/chunk-5LJ64ZMW.js:11833
+    3208.6 ms   8.4%  factorize core-dist(change)/chunk-5LJ64ZMW.js:10497
+    2565.8 ms   6.7%  save core-dist(change)/chunk-5LJ64ZMW.js:12723
+    2236.8 ms   5.9%  stampDynamic core-dist(change)/chunk-5LJ64ZMW.js:1031
+    1451.7 ms   3.8%  stampC core-dist(change)/chunk-5LJ64ZMW.js:11041
+     698.8 ms   1.8%  transientInitialSolution core-dist(change)/chunk-5LJ64ZMW.js:16064
+     691.2 ms   1.8%  solveDCOperatingPoint core-dist(change)/chunk-5LJ64ZMW.js:11366
+     662.9 ms   1.7%  newtonRaphson core-dist(change)/chunk-5LJ64ZMW.js:11150
+     628.8 ms   1.6%  parseAsync core-dist(change)/chunk-5LJ64ZMW.js:9182
+     525.5 ms   1.4%  compile core-dist(change)/chunk-5LJ64ZMW.js:7747

@@ -1,0 +1,45 @@
+rc-ladder-tran-1000-before.cpuprofile: 213 samples, 1435.8 ms sampled
+
+Top self time
+     182.1 ms  12.7%  buildCompanionSystem core-dist(pr541)/chunk-CD3JVUSG.js:11561
+     169.4 ms  11.8%  (garbage collector)
+     168.1 ms  11.7%  stampG core-dist(pr541)/chunk-CD3JVUSG.js:11035
+     155.0 ms  10.8%  attemptStep core-dist(pr541)/chunk-CD3JVUSG.js:11741
+      84.8 ms   5.9%  buildStep core-dist(pr541)/chunk-CD3JVUSG.js:12471
+      81.1 ms   5.6%  stamp core-dist(pr541)/chunk-CD3JVUSG.js:763
+      78.2 ms   5.4%  stampPrevB core-dist(pr541)/chunk-CD3JVUSG.js:12371
+      76.2 ms   5.3%  factorize core-dist(pr541)/chunk-CD3JVUSG.js:10497
+      68.7 ms   4.8%  appendOrdered core-dist(pr541)/chunk-CD3JVUSG.js:12698
+      40.3 ms   2.8%  advance core-dist(pr541)/chunk-CD3JVUSG.js:12160
+      26.3 ms   1.8%  (idle)
+      22.6 ms   1.6%  (program)
+      22.0 ms   1.5%  detectModuleFormat node:internal/modules/esm/get_format:36
+      18.5 ms   1.3%  compileSourceTextModule node:internal/modules/esm/utils:344
+      15.4 ms   1.1%  lockTopology core-dist(pr541)/chunk-CD3JVUSG.js:10845
+      15.0 ms   1.0%  analyzePattern core-dist(pr541)/chunk-CD3JVUSG.js:10405
+      14.3 ms   1.0%  solveLinearized core-dist(pr541)/chunk-CD3JVUSG.js:11833
+      14.1 ms   1.0%  compile core-dist(pr541)/chunk-CD3JVUSG.js:7747
+      13.3 ms   0.9%  stamp core-dist(pr541)/chunk-CD3JVUSG.js:1029
+      12.6 ms   0.9%  TransientSimImpl core-dist(pr541)/chunk-CD3JVUSG.js:12124
+
+Top inclusive time
+    1435.8 ms 100.0%  (root)
+    1132.3 ms  78.9%  simulate core-dist(pr541)/chunk-CD3JVUSG.js:15761
+    1052.0 ms  73.3%  solveTransient core-dist(pr541)/chunk-CD3JVUSG.js:12681
+     963.0 ms  67.1%  advance core-dist(pr541)/chunk-CD3JVUSG.js:12160
+     663.1 ms  46.2%  attemptStep core-dist(pr541)/chunk-CD3JVUSG.js:11741
+     378.6 ms  26.4%  buildCompanionSystem core-dist(pr541)/chunk-CD3JVUSG.js:11561
+     237.5 ms  16.5%  stamp core-dist(pr541)/chunk-CD3JVUSG.js:763
+     171.4 ms  11.9%  stampG core-dist(pr541)/chunk-CD3JVUSG.js:11035
+     169.4 ms  11.8%  (garbage collector)
+     161.5 ms  11.2%  stampPrevB core-dist(pr541)/chunk-CD3JVUSG.js:12371
+      98.6 ms   6.9%  solveLinearized core-dist(pr541)/chunk-CD3JVUSG.js:11833
+      84.8 ms   5.9%  buildStep core-dist(pr541)/chunk-CD3JVUSG.js:12471
+      82.1 ms   5.7%  factorize core-dist(pr541)/chunk-CD3JVUSG.js:10497
+      68.7 ms   4.8%  appendOrdered core-dist(pr541)/chunk-CD3JVUSG.js:12698
+      68.7 ms   4.8%  save core-dist(pr541)/chunk-CD3JVUSG.js:12706
+      44.6 ms   3.1%  loadAndTranslate node:internal/modules/esm/loader:608
+      44.6 ms   3.1%  #createModuleJob node:internal/modules/esm/loader:632
+      44.6 ms   3.1%  #getJobFromResolveResult node:internal/modules/esm/loader:347
+      44.6 ms   3.1%  getModuleJobForImport node:internal/modules/esm/loader:319
+      36.1 ms   2.5%  parseAsync core-dist(pr541)/chunk-CD3JVUSG.js:9182
