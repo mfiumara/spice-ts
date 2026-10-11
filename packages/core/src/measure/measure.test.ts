@@ -196,6 +196,39 @@ describe('simulate() evaluates .meas cards', () => {
   });
 });
 
+describe('control-language meas', () => {
+  it('runs ngspice-47 com_meas: arithmetic operands become vexprint vectors, single-valued vectors become numbers, results become vectors', async () => {
+    const result = await simulate([
+      'control meas',
+      'v1 1 0 pwl(0 0 1m 1 2m 0)',
+      'v2 2 0 pwl(0 0.2 2m 0.2)',
+      'r1 1 0 1k',
+      'r2 2 0 1k',
+      '.tran 10u 2m',
+      '.control',
+      'run',
+      'meas tran top MAX v(1)',
+      'let half = top / 2',
+      'meas tran t1 WHEN v(1) = half',
+      'meas tran t2 WHEN v(1)=v(2) CROSS=LAST',
+      'meas tran t3 TRIG v(1) VAL=top-0.75 RISE=1 TARG v(1) VAL=half FALL=1',
+      'meas tran bad TRIG v(1) VAL= RISE=1',
+      'meas tran',
+      'echo $&t1',
+      '.endc',
+    ].join('\n'));
+    expect(result.control?.measurements.map(m => [m.name, m.status, m.value, m.error])).toEqual([
+      ['top', 'ok', 1, undefined],
+      ['t1', 'ok', expect.closeTo(0.5e-3, 12), undefined],
+      ['t2', 'ok', expect.closeTo(1.8e-3, 12), undefined],
+      ['t3', 'ok', expect.closeTo(1.25e-3, 12), undefined],
+      ['bad', 'failed', undefined, 'measure  bad  trig(TRIG) : bad syntax, cannot evaluate right hand side of val=rise'],
+      ['', 'failed', undefined, 'unspecified output var name'],
+    ]);
+    expect(result.control?.output).toEqual(['0.0005']);
+  });
+});
+
 describe('unsupported .meas forms raise UnsupportedMeasureError', () => {
   it.each([
     ['.meas sp', '.sp lin 10 1 1k\n.meas sp x max s_1_1', /S-parameter/],

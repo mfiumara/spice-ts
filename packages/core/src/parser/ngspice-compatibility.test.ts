@@ -48,7 +48,6 @@ const unsupportedFixtures: Fixture[] = [
   { feature: 'AM source waveform', netlist: 'V1 in 0 AM(1 1 1k 10k)\n.tran 1u 1m' },
   { feature: 'trnoise source waveform', netlist: 'V1 in 0 TRNOISE(1 1n)\n.tran 1n 10n' },
   { feature: 'external source waveform', netlist: 'V1 in 0 EXTERNAL\n.tran 1n 10n' },
-  { feature: 'control-language measurements', netlist: '.control\nmeas tran peak max v(out)\n.endc' },
   { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
   { feature: 'PSPICE logic behavioral source', netlist: 'B1 out 0 V=~V(in)\n.op' },
   { feature: 'branch-current behavioral source', netlist: 'V1 in 0 1\nB1 out 0 V=I(V1)*2\n.op' },

@@ -487,4 +487,6 @@ export interface ControlScriptResult {
   output: string[];
   /** True when the script ended with `quit`/`exit` status 0, so the deck's own analyses were not run afterwards. */
   quit: boolean;
+  /** Every `meas` command the script ran, in order (failed ones with ngspice's reason). */
+  measurements: MeasurementResult[];
 }

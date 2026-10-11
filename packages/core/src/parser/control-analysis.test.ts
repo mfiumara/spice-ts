@@ -150,8 +150,6 @@ dc  v1 0 60 0.1
   });
 
   it.each([
-    // examples/measure/mos-meas-dc-control.sp
-    ['dc v1 0 3.5 0.05\nmeas dc is_max max i(vs)', 'meas'],
     // examples/rf/pss/vackar_osc_pss_ctrl.cir
     ['tran 10n 20u\nlinearize v(4)', 'linearize'],
     ['tran 10n 20u\nfft v(4)', 'fft'],

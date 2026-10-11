@@ -290,7 +290,7 @@ ${control}
 
   it.each([
     ['alterparam r = 2k', 'alterparam'],
-    ['meas ac gain max vm(2)', 'meas'],
+    ['measure ac gain max vm(2)', 'measure'],
     ['remcirc', 'remcirc'],
     ['fft v(2)', 'fft'],
     ['linearize v(2)', 'linearize'],
