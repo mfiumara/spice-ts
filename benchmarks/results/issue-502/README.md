@@ -1,6 +1,6 @@
 # Issue #502: global nodes
 
-Base: `bf2e4169` (main after #586). ngspice-47; Node v22.23.1; macOS arm64. Exact machine metadata and single-sample timings are in [the probe report](../../global-nodes/report.json). No speed claim is made.
+Probe and before/after base: `bf2e4169` (main after #586); merged with main `3f26f107` and #613 afterwards. ngspice-47; Node v22.23.1; macOS arm64. Exact machine metadata and single-sample timings are in [the probe report](../../global-nodes/report.json). No speed claim is made.
 
 ## Implemented semantics
 
@@ -38,25 +38,11 @@ The six original MIT-licensed netlists and all OP vectors are embedded in [repor
 
 26 signals across six OP analyses match exactly. The nested and colliding-port outputs are 5 V in both engines; a declaration only in an unused definition leaves the outputs at 0 V in both. These are semantic regression probes, not replacements for the four unsupported corpus decks.
 
-## Full report refresh (including unrelated baseline drift and losses)
+## Committed reports
 
-The full `outcomes.ts` run completed all 336 fixtures, exit 0. Its committed predecessor was generated before several simulator features already present on this branch's base. The complete [corpus-f-delta.json](corpus-f-delta.json) records 171 changed rows, ignoring run-to-run analysis point counts. Do not attribute these broad changes to `.global`: this card's four targeted before/after runs above remain four losses.
+This PR does not refresh corpus-f `outcomes.json`/`README.md`; they stay as on main. A full corpus-f refresh would mix in unrelated baseline drift and host-load timeouts, so the scoped before/after runs above are the evidence for this change.
 
-| Corpus-f count | Committed predecessor | Full current run |
-|---|---:|---:|
-| ngspice success / failed / unsupported | 306 / 18 / 12 | 300 / 24 / 12 |
-| spice-ts success / failed / unsupported | 32 / 8 / 296 | 60 / 12 / 264 |
-| Matched / mismatch / not-compared | 11 / 10 / 11 | 26 / 13 / 21 |
-| spice-ts-loss / ngspice-failed / both-failed | 274 / 0 / 30 | 240 / 0 / 36 |
-| `.global` bucket | 4 | 0 |
-| Options bucket | 18 | 19 |
-| Measure bucket | 3 | 4 |
-
-The scoped `.global` contribution to the options bucket is +3; unrelated CIDER model errors move two other rows away from that bucket. All six lost ngspice successes are retained 600 s timeouts on CIDER decks (`pindiode`, `ringosc`, `cd4007n-200402idvg`, `cdxy`, `tbicmpu1`, `tbicmpu1xy`) under shared-host load. The full output preserves mismatches, unsupported cases, timeouts and changed error messages; the lower loss total is not a claim that this change fixed 34 decks.
-
-The full 100-fixture aggregate run also completed, exit 0. [aggregate-delta.json](aggregate-delta.json) records the sole per-fixture change after excluding runtime/error text: `ngspice/jimi-fuzz` hits the unchanged 120000 ms spice-ts bound. spice-ts success / failed / unsupported moves 60 / 1 / 39 to 59 / 2 / 39, compared fixtures 48 to 47 and analyses 67 to 65. ngspice remains 52 / 9 / 39. Every numerical metric, grid, signal list and status of the other 99 fixtures is unchanged. The aggregate has no `.global` decks and no parity gain is claimed. The timeout is published rather than discarded; it also removes that fixture's large errors from the numerical envelope, which is not an accuracy improvement.
-
-The aggregate tree pin was already stale on the base because #529 changed `corpus/classic/report.ts`, which is included in the tree digest. Both the actual tracked-tree hash and the source catalogue hash are refreshed. After execution, only the explanatory aggregate note and its digest were updated to describe this run; `verifyCommittedArtifacts` verified JSON accounting, deterministic digest and Markdown rendering without changing any fixture outcomes or metrics.
+The aggregate (100 fixtures, no `.global` decks) was regenerated on this branch merged with main 3f26f107 and the #613 aggregate refresh (head ccbad2d2), because the new SOURCES.md section moves the source pin from `a0fc235c` to `0511bf14`. Against the #613 run (outcome `d0a5c915`), every per-fixture status, analysis, grid, point count, signal list and metric is unchanged: ngspice 52/9/39, spice-ts 60/1/39, 67 analyses across 48 fixtures. No spice-ts run hit the 120000 ms bound. Only runtimes, ngspice error text (memory figures), the pin and the ledger entry differ. `aggregate-report.ts --check` exits 0.
 
 ## Reproduction
 
@@ -65,9 +51,8 @@ pnpm install --frozen-lockfile
 pnpm build
 pnpm lint
 pnpm test
+pnpm exec tsx benchmarks/aggregate-report.ts --check
 pnpm exec tsx benchmarks/global-nodes/compare.ts
-pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts
-pnpm exec tsx benchmarks/aggregate-report.ts
 ```
 
 To rerun a single affected fixture, use `pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --corpus-f-fixture-child <id>` with the IDs in `before.json`/`after.json`.

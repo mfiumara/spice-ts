@@ -155,6 +155,9 @@ describe('aggregate report artifact verification', () => {
       && text.includes('PR #587') && text.includes('PR #585') && text.includes('PR #599') && text.includes('PR #580')
       && text.includes('13b4675c to d5327777') && text.includes('outcome-neutral together')
       && text.includes('PR #601') && text.includes('worst 0.248 V v(3) to 1.40e-3 V v(4)') && text.includes('PR #610') && text.includes('PR #605') && text.includes('e9d9663c to a0fc235c') && text.includes('v(2) abs max 0.0768 to 0.0836 V')));
+    // #502 .global is outcome-neutral; only the SOURCES.md pin moves (#603).
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('#502') && text.includes('PR #603')
+      && text.includes('a0fc235c to 0511bf14') && text.includes('outcome-neutral')));
     const vbicAc = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/vbic-common-emitter-ac');
     assert.equal(vbicAc.spiceTs.status, 'success');
     assert.deepEqual(vbicAc.comparisons.map((comparison: { analysis: string }) => comparison.analysis), ['ac', 'pz']);
