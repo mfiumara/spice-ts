@@ -135,6 +135,7 @@ function protocolAnalysis(analysis: AnalysisDirective): AnalysisCommand {
     case 'ac':
       return analysis;
     case 'noise':
+    case 'sp':
     case 'disto':
     case 'tf':
     case 'sens':
@@ -350,6 +351,7 @@ function estimatedAnalysisPoints(analysis: AnalysisDirective, reltol: number): n
     case 'tran': return finiteLinearPoints(analysis.startTime ?? 0, analysis.stopTime, analysis.timestep);
     case 'ac': return frequencyPointCount(analysis, reltol, 'ac');
     case 'noise':
+    case 'sp':
     case 'disto':
     case 'tf': return 0;
     case 'sens': {
