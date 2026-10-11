@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/prof-before/resistor-mesh-op-10000.cpuprofile: 207 samples, 622.5 ms sampled
+
+Top self time
+     201.3 ms  32.3%  factorize packages/core/dist/chunk-JYXEBWTO.js:15688
+      75.4 ms  12.1%  amdOrdering packages/core/dist/chunk-JYXEBWTO.js:15378
+      40.0 ms   6.4%  (garbage collector)
+      31.8 ms   5.1%  compile packages/core/dist/chunk-JYXEBWTO.js:12513
+      26.6 ms   4.3%  lockTopology packages/core/dist/chunk-JYXEBWTO.js:16036
+      25.9 ms   4.2%  analyzePattern packages/core/dist/chunk-JYXEBWTO.js:15596
+      17.8 ms   2.9%  newtonRaphson packages/core/dist/chunk-JYXEBWTO.js:16341
+      15.0 ms   2.4%  (program)
+      14.9 ms   2.4%  parseDevice packages/core/dist/chunk-JYXEBWTO.js:14877
+      14.8 ms   2.4%  compileSourceTextModule node:internal/modules/esm/utils:344
+      12.3 ms   2.0%  collectStatements packages/core/dist/chunk-JYXEBWTO.js:13696
+      10.5 ms   1.7%  stampG packages/core/dist/chunk-JYXEBWTO.js:16226
+
+Top inclusive time
+     622.5 ms 100.0%  (root)
+     479.2 ms  77.0%  simulate packages/core/dist/chunk-JYXEBWTO.js:20972
+     412.5 ms  66.3%  solveDCOperatingPoint packages/core/dist/chunk-JYXEBWTO.js:16557
+     403.5 ms  64.8%  newtonRaphson packages/core/dist/chunk-JYXEBWTO.js:16341
+     208.8 ms  33.5%  factorize packages/core/dist/chunk-JYXEBWTO.js:15688
+     102.6 ms  16.5%  getSparseSolver packages/core/dist/chunk-JYXEBWTO.js:16163
+     101.3 ms  16.3%  analyzePattern packages/core/dist/chunk-JYXEBWTO.js:15596
+      75.4 ms  12.1%  amdOrdering packages/core/dist/chunk-JYXEBWTO.js:15378
+      61.4 ms   9.9%  parseAsync packages/core/dist/chunk-JYXEBWTO.js:14354
+      45.8 ms   7.4%  parse packages/core/dist/chunk-JYXEBWTO.js:14192
+      44.9 ms   7.2%  parseNetlist packages/core/dist/chunk-JYXEBWTO.js:14198
+      41.5 ms   6.7%  compile packages/core/dist/chunk-JYXEBWTO.js:12513

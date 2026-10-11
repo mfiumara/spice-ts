@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/prof-after/cmos-inverter-chain-tran-1000.cpuprofile: 1066 samples, 5811.7 ms sampled
+
+Top self time
+     757.0 ms  13.0%  (garbage collector)
+     701.2 ms  12.1%  batchStamp packages/core/dist/chunk-WJ3AL4KF.js:3609
+     638.4 ms  11.0%  stamp packages/core/dist/chunk-WJ3AL4KF.js:3447
+     621.5 ms  10.7%  factorize packages/core/dist/chunk-WJ3AL4KF.js:15688
+     591.2 ms  10.2%  evaluateBulkJunctions packages/core/dist/chunk-WJ3AL4KF.js:3339
+     562.0 ms   9.7%  stampG packages/core/dist/chunk-WJ3AL4KF.js:16226
+     401.3 ms   6.9%  stampStaticDevices packages/core/dist/chunk-WJ3AL4KF.js:16398
+     152.4 ms   2.6%  limitNewtonStep packages/core/dist/chunk-WJ3AL4KF.js:3400
+     141.5 ms   2.4%  stampB packages/core/dist/chunk-WJ3AL4KF.js:16229
+     136.8 ms   2.4%  getVoltage packages/core/dist/chunk-WJ3AL4KF.js:16235
+     126.8 ms   2.2%  attemptStep packages/core/dist/chunk-WJ3AL4KF.js:17066
+     102.8 ms   1.8%  buildCompanionSystem packages/core/dist/chunk-WJ3AL4KF.js:16890
+
+Top inclusive time
+    5811.7 ms 100.0%  (root)
+    4980.4 ms  85.7%  simulate packages/core/dist/chunk-WJ3AL4KF.js:21110
+    3608.2 ms  62.1%  solveTransient packages/core/dist/chunk-WJ3AL4KF.js:18026
+    3575.5 ms  61.5%  advanceSolution packages/core/dist/chunk-WJ3AL4KF.js:17503
+    2147.3 ms  36.9%  stampStaticDevices packages/core/dist/chunk-WJ3AL4KF.js:16398
+    2086.9 ms  35.9%  attemptStep packages/core/dist/chunk-WJ3AL4KF.js:17066
+    1568.2 ms  27.0%  stamp packages/core/dist/chunk-WJ3AL4KF.js:3447
+    1406.2 ms  24.2%  stampPrevB packages/core/dist/chunk-WJ3AL4KF.js:17718
+    1319.6 ms  22.7%  solveDCOperatingPoint packages/core/dist/chunk-WJ3AL4KF.js:16688
+    1319.6 ms  22.7%  transientInitialSolution packages/core/dist/chunk-WJ3AL4KF.js:21398
+    1299.8 ms  22.4%  newtonRaphson packages/core/dist/chunk-WJ3AL4KF.js:16472
+    1288.4 ms  22.2%  buildCompanionSystem packages/core/dist/chunk-WJ3AL4KF.js:16890

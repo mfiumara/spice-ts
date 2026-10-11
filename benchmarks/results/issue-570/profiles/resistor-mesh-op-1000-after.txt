@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/prof-after/resistor-mesh-op-1000.cpuprofile: 54 samples, 271.5 ms sampled
+
+Top self time
+      81.3 ms  30.0%  (garbage collector)
+      39.5 ms  14.6%  (idle)
+      26.4 ms   9.7%  remove packages/core/dist/chunk-WJ3AL4KF.js:15452
+      21.6 ms   8.0%  compileSourceTextModule node:internal/modules/esm/utils:344
+      20.7 ms   7.6%  (program)
+      16.2 ms   6.0%  factorize packages/core/dist/chunk-WJ3AL4KF.js:15688
+      10.5 ms   3.9%  amdOrdering packages/core/dist/chunk-WJ3AL4KF.js:15378
+       7.5 ms   2.7%  analyzePattern packages/core/dist/chunk-WJ3AL4KF.js:15596
+       5.0 ms   1.8%  Resistor packages/core/dist/chunk-WJ3AL4KF.js:744
+       5.0 ms   1.8%  solveDCOperatingPoint packages/core/dist/chunk-WJ3AL4KF.js:16688
+       4.9 ms   1.8%  applyDeviceStepLimits packages/core/dist/chunk-WJ3AL4KF.js:16460
+       4.8 ms   1.8%  RegExp: [()]|[^\s(),]+
+
+Top inclusive time
+     271.5 ms 100.0%  (root)
+      91.6 ms  33.7%  simulate packages/core/dist/chunk-WJ3AL4KF.js:21110
+      84.2 ms  31.0%  solveDCOperatingPoint packages/core/dist/chunk-WJ3AL4KF.js:16688
+      81.3 ms  30.0%  (garbage collector)
+      79.2 ms  29.2%  newtonRaphson packages/core/dist/chunk-WJ3AL4KF.js:16472
+      44.3 ms  16.3%  analyzePattern packages/core/dist/chunk-WJ3AL4KF.js:15596
+      44.3 ms  16.3%  getSparseSolver packages/core/dist/chunk-WJ3AL4KF.js:16163
+      39.5 ms  14.6%  (idle)
+      36.8 ms  13.6%  amdOrdering packages/core/dist/chunk-WJ3AL4KF.js:15378
+      26.4 ms   9.7%  remove packages/core/dist/chunk-WJ3AL4KF.js:15452
+      21.6 ms   8.0%  compileSourceTextModule node:internal/modules/esm/utils:344
+      21.6 ms   8.0%  moduleStrategy node:internal/modules/esm/translators:102

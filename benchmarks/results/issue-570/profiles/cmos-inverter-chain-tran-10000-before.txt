@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/prof-before/cmos-inverter-chain-tran-10000.cpuprofile: 5631 samples, 33036.0 ms sampled
+
+Top self time
+    6332.4 ms  19.2%  batchStamp packages/core/dist/chunk-JYXEBWTO.js:3609
+    3965.6 ms  12.0%  stampG packages/core/dist/chunk-JYXEBWTO.js:16226
+    3343.6 ms  10.1%  stamp packages/core/dist/chunk-JYXEBWTO.js:3447
+    3154.5 ms   9.5%  evaluateBulkJunctions packages/core/dist/chunk-JYXEBWTO.js:3339
+    2633.1 ms   8.0%  buildCompanionSystem packages/core/dist/chunk-JYXEBWTO.js:16752
+    2406.9 ms   7.3%  factorize packages/core/dist/chunk-JYXEBWTO.js:15688
+    1809.0 ms   5.5%  (garbage collector)
+    1308.2 ms   4.0%  limitNewtonStep packages/core/dist/chunk-JYXEBWTO.js:3400
+    1149.6 ms   3.5%  stampDynamic packages/core/dist/chunk-JYXEBWTO.js:1061
+     975.1 ms   3.0%  stampPrevB packages/core/dist/chunk-JYXEBWTO.js:17578
+     932.4 ms   2.8%  stampB packages/core/dist/chunk-JYXEBWTO.js:16229
+     839.1 ms   2.5%  attemptStep packages/core/dist/chunk-JYXEBWTO.js:16932
+
+Top inclusive time
+   33036.0 ms 100.0%  (root)
+   31086.2 ms  94.1%  simulate packages/core/dist/chunk-JYXEBWTO.js:20972
+   23465.0 ms  71.0%  solveTransient packages/core/dist/chunk-JYXEBWTO.js:17888
+   23177.3 ms  70.2%  advanceSolution packages/core/dist/chunk-JYXEBWTO.js:17363
+   15140.5 ms  45.8%  attemptStep packages/core/dist/chunk-JYXEBWTO.js:16932
+   12077.7 ms  36.6%  buildCompanionSystem packages/core/dist/chunk-JYXEBWTO.js:16752
+    9880.5 ms  29.9%  stamp packages/core/dist/chunk-JYXEBWTO.js:3447
+    7983.5 ms  24.2%  batchStamp packages/core/dist/chunk-JYXEBWTO.js:3609
+    7508.4 ms  22.7%  solveDCOperatingPoint packages/core/dist/chunk-JYXEBWTO.js:16557
+    7508.4 ms  22.7%  transientInitialSolution packages/core/dist/chunk-JYXEBWTO.js:21260
+    7471.0 ms  22.6%  newtonRaphson packages/core/dist/chunk-JYXEBWTO.js:16341
+    7316.1 ms  22.1%  stampPrevB packages/core/dist/chunk-JYXEBWTO.js:17578

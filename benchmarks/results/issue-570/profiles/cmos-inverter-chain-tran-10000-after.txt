@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/prof-after/cmos-inverter-chain-tran-10000.cpuprofile: 11231 samples, 51986.2 ms sampled
+
+Top self time
+   10520.6 ms  20.2%  batchStamp packages/core/dist/chunk-WJ3AL4KF.js:3609
+    6786.1 ms  13.1%  stampG packages/core/dist/chunk-WJ3AL4KF.js:16226
+    5981.6 ms  11.5%  evaluateBulkJunctions packages/core/dist/chunk-WJ3AL4KF.js:3339
+    5833.3 ms  11.2%  stamp packages/core/dist/chunk-WJ3AL4KF.js:3447
+    4196.5 ms   8.1%  factorize packages/core/dist/chunk-WJ3AL4KF.js:15688
+    3727.7 ms   7.2%  (garbage collector)
+    2423.1 ms   4.7%  stampStaticDevices packages/core/dist/chunk-WJ3AL4KF.js:16398
+    1626.8 ms   3.1%  limitNewtonStep packages/core/dist/chunk-WJ3AL4KF.js:3400
+    1252.0 ms   2.4%  stampDynamicDevices packages/core/dist/chunk-WJ3AL4KF.js:16428
+    1227.0 ms   2.4%  getVoltage packages/core/dist/chunk-WJ3AL4KF.js:16235
+    1113.3 ms   2.1%  stampB packages/core/dist/chunk-WJ3AL4KF.js:16229
+     991.2 ms   1.9%  buildCompanionSystem packages/core/dist/chunk-WJ3AL4KF.js:16890
+
+Top inclusive time
+   51986.2 ms 100.0%  (root)
+   48053.5 ms  92.4%  simulate packages/core/dist/chunk-WJ3AL4KF.js:21110
+   35348.2 ms  68.0%  solveTransient packages/core/dist/chunk-WJ3AL4KF.js:18026
+   34912.7 ms  67.2%  advanceSolution packages/core/dist/chunk-WJ3AL4KF.js:17503
+   21657.2 ms  41.7%  attemptStep packages/core/dist/chunk-WJ3AL4KF.js:17066
+   19882.8 ms  38.2%  stampStaticDevices packages/core/dist/chunk-WJ3AL4KF.js:16398
+   16871.4 ms  32.5%  buildCompanionSystem packages/core/dist/chunk-WJ3AL4KF.js:16890
+   16559.7 ms  31.9%  stamp packages/core/dist/chunk-WJ3AL4KF.js:3447
+   14407.1 ms  27.7%  batchStamp packages/core/dist/chunk-WJ3AL4KF.js:3609
+   12520.2 ms  24.1%  solveDCOperatingPoint packages/core/dist/chunk-WJ3AL4KF.js:16688
+   12520.2 ms  24.1%  transientInitialSolution packages/core/dist/chunk-WJ3AL4KF.js:21398
+   12451.3 ms  24.0%  newtonRaphson packages/core/dist/chunk-WJ3AL4KF.js:16472

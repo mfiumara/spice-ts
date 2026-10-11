@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/prof-after/rc-ladder-tran-10000.cpuprofile: 698 samples, 3356.7 ms sampled
+
+Top self time
+     546.4 ms  16.3%  attemptStep packages/core/dist/chunk-WJ3AL4KF.js:17066
+     479.6 ms  14.3%  buildCompanionSystem packages/core/dist/chunk-WJ3AL4KF.js:16890
+     450.8 ms  13.4%  (garbage collector)
+     450.1 ms  13.4%  factorize packages/core/dist/chunk-WJ3AL4KF.js:15688
+     162.3 ms   4.8%  save packages/core/dist/chunk-WJ3AL4KF.js:18056
+     146.3 ms   4.4%  stampPrevB packages/core/dist/chunk-WJ3AL4KF.js:17718
+     137.5 ms   4.1%  stampStaticDevices packages/core/dist/chunk-WJ3AL4KF.js:16398
+      88.8 ms   2.6%  amdOrdering packages/core/dist/chunk-WJ3AL4KF.js:15378
+      74.5 ms   2.2%  compile packages/core/dist/chunk-WJ3AL4KF.js:12513
+      69.7 ms   2.1%  lockTopology packages/core/dist/chunk-WJ3AL4KF.js:16036
+      64.6 ms   1.9%  analyzePattern packages/core/dist/chunk-WJ3AL4KF.js:15596
+      55.6 ms   1.7%  checkLTE packages/core/dist/chunk-WJ3AL4KF.js:17772
+
+Top inclusive time
+    3356.7 ms 100.0%  (root)
+    2751.4 ms  82.0%  simulate packages/core/dist/chunk-WJ3AL4KF.js:21110
+    2444.6 ms  72.8%  solveTransient packages/core/dist/chunk-WJ3AL4KF.js:18026
+    2219.5 ms  66.1%  advanceSolution packages/core/dist/chunk-WJ3AL4KF.js:17503
+    1955.3 ms  58.3%  attemptStep packages/core/dist/chunk-WJ3AL4KF.js:17066
+     730.3 ms  21.8%  buildCompanionSystem packages/core/dist/chunk-WJ3AL4KF.js:16890
+     529.8 ms  15.8%  solveLinearized packages/core/dist/chunk-WJ3AL4KF.js:17158
+     494.8 ms  14.7%  factorize packages/core/dist/chunk-WJ3AL4KF.js:15688
+     450.8 ms  13.4%  (garbage collector)
+     248.6 ms   7.4%  stampStaticDevices packages/core/dist/chunk-WJ3AL4KF.js:16398
+     192.3 ms   5.7%  stampPrevB packages/core/dist/chunk-WJ3AL4KF.js:17718
+     162.3 ms   4.8%  save packages/core/dist/chunk-WJ3AL4KF.js:18056
