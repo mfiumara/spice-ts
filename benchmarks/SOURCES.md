@@ -176,6 +176,14 @@ Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/
 
 Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-456/verify.ts --output <file>` (see `benchmarks/results/issue-456/README.md`).
 
+## MOS1 inverter-chain `.op` scaling decks (issue #462)
+
+- Source: project-authored, generated reference circuits for [issue #428](https://github.com/mfiumara/spice-ts/issues/428) and [issue #462](https://github.com/mfiumara/spice-ts/issues/462): an N-stage level-1 CMOS inverter chain with a 10 fF load per stage. The `issue-428` variant (lambda=0.02, W_p=2u) is the #426 scaling-fixture deck with `.op`; the `true-gmin` variant (lambda=0.005, W_p=1u) at 6000 stages is a CI-sized deck on which ngspice-47 also falls back to true gmin stepping (at 5000 stages its dynamic gmin stepping still completes).
+- Licence: MIT, under the repository [licence](../LICENSE).
+- Adaptation: none. `benchmarks/results/issue-462/measure.mjs` and `packages/core/src/mos1-inverter-chain-op.test.ts` generate the same deck text; the script writes it once and supplies those bytes to both ngspice-47 and spice-ts. Each receipt records the deck SHA-256.
+
+Reproduce with `pnpm -C packages/core build && node benchmarks/results/issue-462/measure.mjs --stages 40000` (see `benchmarks/results/issue-462/README.md`).
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
