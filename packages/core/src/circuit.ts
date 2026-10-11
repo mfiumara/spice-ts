@@ -46,7 +46,13 @@ import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-pars
 import { parsePassiveElement } from './parser/passive-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
 import { parseBJTInstance, type BJTInstanceParams } from './parser/bjt-parser.js';
-import { parseLtraModelCard } from './parser/transmission-line-parser.js';
+import {
+  formatCplModelCard,
+  parseCplLines,
+  parseTransmissionLineModelCard,
+  parseTxlLine,
+} from './parser/transmission-line-parser.js';
+import { createSwecLine, swecLineBranchNames } from './devices/swec-line-factory.js';
 import {
   parseDiodeInstanceParams,
   type DiodeInstanceParams,
@@ -140,6 +146,7 @@ function formatParams(params?: Record<string, number>): string {
 }
 
 function formatModel(model: ModelParams): string {
+  if (model.type === 'CPL') return formatCplModelCard(model);
   const params = formatParams(model.params);
   return params
     ? `.model ${model.name} ${model.type} (${params})`
@@ -231,6 +238,13 @@ function formatDevice(desc: DeviceDescriptor): string {
       return `${desc.name} ${desc.nodes.join(' ')} Z0=${formatNumber(desc.value ?? 0)} TD=${formatNumber(desc.params?.TD ?? 0)}`;
     case 'O':
       return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}`.trim();
+    case 'Y':
+    case 'P': {
+      const lines = desc.nodes.length / 2;
+      const length = desc.params?.LEN === undefined ? '' : ` len=${formatNumber(desc.params.LEN)}`;
+      return `${desc.name} ${desc.nodes.slice(0, lines).join(' ')} 0 ${desc.nodes.slice(lines).join(' ')} 0 `
+        + `${desc.modelName ?? ''}${length}`;
+    }
     case 'V':
     case 'I':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatWaveform(desc.waveform)}`;
@@ -421,8 +435,10 @@ export class Circuit {
     return this.descriptors.reduce((count, descriptor) =>
       count + (descriptor.type === 'T'
         ? 2
-        : descriptor.type === 'V' || descriptor.type === 'L'
-          || descriptor.type === 'E' || descriptor.type === 'H' ? 1 : 0), 0);
+        : descriptor.type === 'Y' || descriptor.type === 'P'
+          ? descriptor.nodes.length
+          : descriptor.type === 'V' || descriptor.type === 'L'
+            || descriptor.type === 'E' || descriptor.type === 'H' ? 1 : 0), 0);
   }
 
   getNodeIndex(name: string): number {
@@ -565,6 +581,29 @@ export class Circuit {
       name,
       nodes: [port1Positive, port1Negative, port2Positive, port2Negative],
       modelName,
+    });
+  }
+
+  /**
+   * Add an ngspice SWEC lossy line: a Y-element (TXL, one conductor) or a
+   * P-element (CPL, `inputs.length` coupled conductors). All conductors are
+   * referenced to ground, as in ngspice, which ignores the reference nodes.
+   */
+  addLossyLines(
+    name: string,
+    card: 'Y' | 'P',
+    inputs: string[],
+    outputs: string[],
+    modelName: string,
+    length?: number,
+  ): void {
+    for (const node of [...inputs, ...outputs]) this.nodeSet.add(node);
+    this.descriptors.push({
+      type: card,
+      name,
+      nodes: [...inputs, ...outputs],
+      modelName,
+      ...(length === undefined ? {} : { params: { LEN: length } }),
     });
   }
 
@@ -1190,6 +1229,21 @@ export class Circuit {
       }
     }
 
+    const hasSwecLines = expandedDescriptors.some(desc => desc.type === 'Y' || desc.type === 'P');
+    if (hasSwecLines) {
+      // ngspice-47 TXL/CPL only define DC (series-resistance) and transient
+      // behaviour; their AC load reuses the transient load.
+      const unsupported = this._poleZeroAnalyses.length > 0
+        ? 'pz'
+        : this._analyses.find(analysis =>
+          analysis.type !== 'op' && analysis.type !== 'dc' && analysis.type !== 'tran')?.type;
+      if (unsupported) {
+        throw new InvalidCircuitError(
+          `TXL/CPL lossy lines (Y and P elements) support only .op, .dc and .tran analyses; '.${unsupported}' is unsupported`,
+        );
+      }
+    }
+
     const hasBoundedVBIC = expandedDescriptors.some(desc =>
       desc.type === 'Q' && this._models.get(desc.modelName!)?.params.LEVEL === 4);
     if (hasBoundedVBIC) {
@@ -1342,6 +1396,20 @@ export class Circuit {
             ltraStates.set(modelName, state);
           }
           devices.push(new LossyTransmissionLine(desc.name, nodeIndices, firstBranch, secondBranch, state));
+          break;
+        }
+        case 'Y':
+        case 'P': {
+          const lines = desc.nodes.length / 2;
+          const names = swecLineBranchNames(desc.name, desc.type, lines);
+          const branches = names.map(() => branchIndex++);
+          branchNames.push(...names);
+          devices.push(createSwecLine(
+            { name: desc.name, card: desc.type, nodes: nodeIndices, length: desc.params?.LEN },
+            this._models.get(desc.modelName ?? ''),
+            desc.modelName ?? '',
+            branches,
+          ));
           break;
         }
         case 'D': {
@@ -1997,9 +2065,8 @@ export class Circuit {
 
       // Handle .model inside subcircuit — register locally AND globally
       if (first === '.MODEL') {
-        const modelParams = tokens[2]?.toUpperCase() === 'LTRA'
-          ? parseLtraModelCard(tokens, 0)
-          : parseModelCard(tokens, 0);
+        const modelParams = parseTransmissionLineModelCard(tokens, 0)
+          ?? parseModelCard(tokens, 0);
         // Register in the circuit's global model map so compile() can find it
         this._models.set(modelParams.name, modelParams);
         continue;
@@ -2103,6 +2170,23 @@ export class Circuit {
             name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3]), mapNode(tokens[4])],
             modelName: tokens[5],
+          });
+          break;
+        }
+        case 'Y':
+        case 'P': {
+          const parsed = devType === 'Y'
+            ? (() => {
+              const line = parseTxlLine(tokens, lineNumber);
+              return { inputs: [line.input], outputs: [line.output], modelName: line.modelName, length: line.length };
+            })()
+            : parseCplLines(tokens, lineNumber);
+          result.push({
+            type: devType,
+            name: devName,
+            nodes: [...parsed.inputs.map(mapNode), ...parsed.outputs.map(mapNode)],
+            modelName: parsed.modelName,
+            ...(parsed.length === undefined ? {} : { params: { LEN: parsed.length } }),
           });
           break;
         }
