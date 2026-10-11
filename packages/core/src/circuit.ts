@@ -169,6 +169,7 @@ function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string 
           wf.fall ?? 1e-12,
           wf.width ?? Infinity,
           wf.period ?? Infinity,
+          ...(wf.pulses !== undefined ? [wf.pulses] : []),
         ].map(formatNumber).join(' ')})`;
         break;
       case 'sin':
