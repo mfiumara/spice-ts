@@ -1,0 +1,10 @@
+mixed units L and C
+r1 1 0 50
+l1 1 2 1
+c1 2 0 1p
+r2 2 0 1meg
+c2 1 3 10p
+r3 3 0 1k
+.pz 1 0 3 0 cur pz
+.print pz all
+.end
