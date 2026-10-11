@@ -14,6 +14,7 @@ export const SUPPORTED_MODEL_TYPES: ReadonlySet<string> = new Set([
   'NHFET', 'NMF',
   'R', 'C', 'L',
   'LTRA', 'TXL', 'CPL',
+  'SW', 'CSW',
 ]);
 
 /**
@@ -59,7 +60,7 @@ export function assertDeviceModelType(
 
 /**
  * Thrown when a `.model` card declares a type that no spice-ts device
- * implements (for example `SW`, `CSW` or `PJF`).
+ * implements (for example `PJF` or `URC`).
  */
 export class UnsupportedModelTypeError extends ParseError {
   /** Stable machine-readable error code. */

@@ -197,6 +197,12 @@ export interface DeviceModel {
    * truncation error on them, so the transient node-voltage LTE skips them.
    */
   readonly algebraicNodes?: readonly number[];
+  /**
+   * Start a DC operating point solve (ngspice MODEINITJCT): a device with
+   * state chosen at the start of the operating point (e.g. a switch's ON/OFF
+   * flag) re-initialises it here.
+   */
+  beginOperatingPoint?(): void;
   /** Receive the transient TSTEP used by SPICE waveform defaults (e.g. zero PULSE TR/TF). */
   setTransientTimestep?(timestep: number): void;
   /** Clear device-owned transient history before restarting at t=0. */

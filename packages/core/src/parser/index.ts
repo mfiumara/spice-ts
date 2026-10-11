@@ -21,6 +21,7 @@ import { preprocess, preprocessLines } from './preprocessor.js';
 import { classifyControlCommand, repeatedControlAnalysisError } from './control-block.js';
 import { parseBehavioralSourceCard } from './behavioral-expression.js';
 import { parseZInstance } from './z-device-parser.js';
+import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
 import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -1039,6 +1040,20 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
     case 'A':
       circuit.addXspiceInstance(parseXspiceInstance(raw, lineNumber));
       break;
+    case 'S':
+    case 'W': {
+      const instance = parseSwitchInstance(tokens, lineNumber);
+      if (instance.controlSource === undefined) {
+        const [nodePos, nodeNeg, nCtrlP, nCtrlN] = instance.nodes;
+        circuit.addVoltageSwitch(name, nodePos, nodeNeg, nCtrlP, nCtrlN, instance.modelName, instance.initiallyOn);
+      } else {
+        const [nodePos, nodeNeg] = instance.nodes;
+        circuit.addCurrentSwitch(
+          name, nodePos, nodeNeg, instance.controlSource, instance.modelName, instance.initiallyOn,
+        );
+      }
+      break;
+    }
     default:
       throw new ParseError(`Unsupported device card: '${type}'`, lineNumber, tokens.join(' '));
   }
