@@ -14,7 +14,7 @@ import { Capacitor } from './devices/capacitor.js';
 import { Inductor } from './devices/inductor.js';
 import { MutualInductor } from './devices/mutual-inductor.js';
 import { Diode, diodeZeroBiasCapacitance } from './devices/diode.js';
-import { BJT } from './devices/bjt.js';
+import { BJT, hasBiasDependentBaseResistance } from './devices/bjt.js';
 import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
 import { MOS6, resolveMOS6Model } from './devices/mos6.js';
@@ -2481,12 +2481,20 @@ export class Circuit {
             continue;
           }
           let [collector, base, emitter] = terminals;
+          // ngspice-47 bjtload.c: with RBM != RB the base resistance depends on
+          // the bias, so the device stamps it on a fifth (external base) node.
+          const variableBaseResistance = hasBiasDependentBaseResistance(model.params);
+          const externalBase = base;
           for (const [parameter, terminal] of [
             ['RC', collector], ['RB', base], ['RE', emitter],
           ] as const) {
             const resistance = model.params[parameter];
             if (!isPositiveFinite(resistance)) continue;
             const internal = internalNodeName(desc.name, parameter.toLowerCase());
+            if (parameter === 'RB' && variableBaseResistance) {
+              base = internal;
+              continue;
+            }
             result.push({
               type: 'R', name: `${desc.name}.${parameter}`, nodes: [terminal, internal],
               value: resistance / instanceScale,
@@ -2495,7 +2503,12 @@ export class Circuit {
             else if (parameter === 'RB') base = internal;
             else emitter = internal;
           }
-          result.push({ ...desc, nodes: [collector, base, emitter, ...terminals.slice(3)] });
+          result.push({
+            ...desc,
+            nodes: variableBaseResistance && base !== externalBase
+              ? [collector, base, emitter, terminals[3] ?? GROUND_NODE, externalBase]
+              : [collector, base, emitter, ...terminals.slice(3)],
+          });
         } else {
           result.push({ ...desc, nodes: terminals });
         }
