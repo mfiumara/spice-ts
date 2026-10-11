@@ -230,13 +230,13 @@ describe('BJT Ebers-Moll', () => {
     `).compile()).toThrow('Unsupported bounded VBIC polarity: only NPN LEVEL=4 is supported');
   });
 
-  it('rejects AC analysis outside the bounded VBIC DC subset', () => {
-    expect(() => parse(`unsupported VBIC AC analysis
+  it('accepts AC analysis in the bounded VBIC small-signal subset', () => {
+    expect(() => parse(`bounded VBIC AC analysis
       VBE b 0 DC 0.7 AC 1
       Q1 c b 0 QVBIC
       .model QVBIC NPN(LEVEL=4)
       .ac dec 10 1 1meg
-    `).compile()).toThrow("Unsupported bounded VBIC analysis: 'ac'");
+    `).compile()).not.toThrow();
   });
 
   it('rejects transient analysis outside the bounded VBIC DC subset', () => {
@@ -248,13 +248,13 @@ describe('BJT Ebers-Moll', () => {
     `).compile()).toThrow("Unsupported bounded VBIC analysis: 'tran'");
   });
 
-  it('rejects pole-zero analysis outside the bounded VBIC DC subset', () => {
-    expect(() => parse(`unsupported VBIC pole-zero analysis
+  it('accepts pole-zero analysis in the bounded VBIC small-signal subset', () => {
+    expect(() => parse(`bounded VBIC pole-zero analysis
       VIN b 0 0.7
       Q1 c b 0 QVBIC
       .model QVBIC NPN(LEVEL=4)
       .pz b 0 c 0 cur pz
-    `).compile()).toThrow("Unsupported bounded VBIC analysis: 'pz'");
+    `).compile()).not.toThrow();
   });
 
   it('rejects TEMP stepping outside the nominal-temperature bounded VBIC subset', async () => {

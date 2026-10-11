@@ -1,0 +1,141 @@
+{
+  "fixture": "ngspice/vbic-common-emitter-ac",
+  "baseCommit": "9b212389602a3909911fd43242a510a693e43860",
+  "ngspice": "ngspice-47",
+  "fixturesWithAnyChange": [
+    "ngspice/vbic-fo",
+    "ngspice/vbic-common-emitter-ac"
+  ],
+  "statusTotals": {
+    "base": {
+      "success": 61,
+      "failed": 1,
+      "unsupported": 38
+    },
+    "head": {
+      "success": 62,
+      "failed": 1,
+      "unsupported": 37
+    }
+  },
+  "before": {
+    "key": "ngspice/vbic-common-emitter-ac",
+    "analyses": [
+      "ac",
+      "pz"
+    ],
+    "ngspice": "success",
+    "spiceTs": "unsupported",
+    "spiceTsError": "Unsupported bounded VBIC analysis: 'ac'",
+    "comparisons": []
+  },
+  "after": {
+    "key": "ngspice/vbic-common-emitter-ac",
+    "analyses": [
+      "ac",
+      "pz"
+    ],
+    "ngspice": "success",
+    "spiceTs": "success",
+    "comparisons": [
+      {
+        "analysis": "ac",
+        "grid": {
+          "spiceTsPoints": 501,
+          "ngspicePoints": 501
+        },
+        "signals": {
+          "i(vcc)": {
+            "status": "compared",
+            "sampleCount": 500,
+            "absoluteError": {
+              "max": 7.363527857341728e-08,
+              "rms": 1.5543528697328313e-08
+            }
+          },
+          "i(vmeas)": {
+            "status": "compared",
+            "sampleCount": 500,
+            "absoluteError": {
+              "max": 4.6305161741547745e-06,
+              "rms": 3.5964563658885064e-06
+            }
+          },
+          "v(1)": {
+            "status": "compared",
+            "sampleCount": 500,
+            "absoluteError": {
+              "max": 0.00018391268212544648,
+              "rms": 0.00014321272042547536
+            }
+          },
+          "v(2)": {
+            "status": "compared",
+            "sampleCount": 500,
+            "absoluteError": {
+              "max": 7.364819507479713e-05,
+              "rms": 1.5530305209831745e-05
+            }
+          },
+          "v(3)": {
+            "status": "compared",
+            "sampleCount": 500,
+            "absoluteError": {
+              "max": 1.138468598741519e-09,
+              "rms": 2.4147526275669153e-10
+            }
+          },
+          "v(4)": {
+            "status": "compared",
+            "sampleCount": 500,
+            "absoluteError": {
+              "max": 7.364819505358455e-05,
+              "rms": 1.553030532351971e-05
+            }
+          }
+        }
+      },
+      {
+        "analysis": "pz",
+        "grid": {
+          "spiceTsPoints": 1,
+          "ngspicePoints": 1
+        },
+        "signals": {
+          "v(pole(1))": {
+            "status": "compared",
+            "sampleCount": 1,
+            "absoluteError": {
+              "max": 1143866306323.989,
+              "rms": 1143866306323.989
+            }
+          },
+          "v(pole(2))": {
+            "status": "compared",
+            "sampleCount": 1,
+            "absoluteError": {
+              "max": 541165275506.0606,
+              "rms": 541165275506.0606
+            }
+          },
+          "v(pole(3))": {
+            "status": "compared",
+            "sampleCount": 1,
+            "absoluteError": {
+              "max": 86524057643.3095,
+              "rms": 86524057643.3095
+            }
+          },
+          "v(zero(1))": {
+            "status": "compared",
+            "sampleCount": 1,
+            "absoluteError": {
+              "max": 1251172988794.0981,
+              "rms": 1251172988794.0981
+            }
+          }
+        }
+      }
+    ]
+  }
+}
