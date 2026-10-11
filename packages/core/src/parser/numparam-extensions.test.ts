@@ -154,14 +154,19 @@ describe('numparam .csparam', () => {
 });
 
 describe('numparam .if/.elseif/.else/.endif', () => {
-  it('evaluates conditions against .param values defined before the .if', async () => {
+  it('selects the branch whose condition holds', async () => {
     const out = await preprocess('.param a = 2\n.if (a > 1)\nR1 1 0 1\n.else\nR1 1 0 2\n.endif');
     expect(out.split('\n').map(line => line.trim())).toEqual(['', '', 'R1 1 0 1', '', '', '']);
   });
 
-  it('takes .param definitions only from the selected branch', async () => {
-    const out = await preprocess('.if (0)\n.param r = 1\n.else\n.param r = 2\n.endif\nR1 1 0 {r}');
-    expect(out.split('\n')[5]).toBe('R1 1 0 2');
+  it('blanks the unselected branches and keeps the line count', async () => {
+    const out = await preprocess('.if (0)\nR1 1 0 1\n.else\nR1 1 0 2\n.endif\nR2 2 0 {r}\n.param r = 3');
+    expect(out.split('\n').map(line => line.trim())).toEqual(['', '', '', 'R1 1 0 2', '', 'R2 2 0 3', '']);
+  });
+
+  it('does not substitute or expand cards of an unselected branch', async () => {
+    const out = await preprocess(".func f(a) 'a'\n.if (0)\nR1 1 0 {missing}\nR2 1 0 {f(1,2)}\n.endif\nR3 1 0 1");
+    expect(out.split('\n')[5]).toBe('R3 1 0 1');
   });
 
   it('rejects an unterminated .if', async () => {
@@ -179,5 +184,79 @@ describe('numparam .if/.elseif/.else/.endif', () => {
     const error = await preprocessError('.subckt s a b\n.if (1)\nR1 a b 1\n.endif\n.ends');
     expect(error.message).toContain('.if inside .subckt');
     expect(error.line).toBe(2);
+  });
+});
+
+/**
+ * ngspice-47 resolves every `.param` and `.func` card deck-wide (last
+ * definition wins) before it selects `.if` branches: parameter and function
+ * cards are not conditional, even inside an unselected branch, and
+ * subcircuit definitions and `.include` files inside a branch are always
+ * read. Only the other cards of a branch (elements, `.model`, ...) are gated.
+ * Every condition is evaluated, including those of unselected branches.
+ *
+ * Each deck is run verbatim in ngspice-47 with `.control op; print v(1)
+ * i(v1) .endc` appended; `v1` and `iV1` are the values ngspice printed
+ * (6 significant digits).
+ */
+const IF_PROBES: { name: string; deck: string; v1: number; iV1: number }[] = [
+  // B: forward reference — .param after the .if that reads it.
+  { name: 'B', deck: '.if (q > 1)\nV1 1 0 1\n.else\nV1 1 0 2\n.endif\n.param q = 2\nR1 1 0 1k', v1: 1, iV1: -1e-3 },
+  // D: redefinition after the .if wins.
+  { name: 'D', deck: '.param q = 0\n.if (q > 1)\nV1 1 0 1\n.else\nV1 1 0 2\n.endif\n.param q = 2\nR1 1 0 1k', v1: 1, iV1: -1e-3 },
+  // G: the condition and R1 read the same (last) value of q.
+  { name: 'G', deck: '.param q = 0\n.if (q > 1)\nV1 1 0 1\n.else\nV1 1 0 2\n.endif\n.param q = 2\nR1 1 0 {q*1k}', v1: 1, iV1: -5e-4 },
+  // F: a .param inside an unselected branch still applies.
+  { name: 'F', deck: '.param q = 0\n.if (0)\n.param q = 5\n.endif\n.if (q > 1)\nV1 1 0 1\n.else\nV1 1 0 2\n.endif\nR1 1 0 1k', v1: 1, iV1: -1e-3 },
+  // Last definition wins even when it comes after the .if and selects the other branch.
+  { name: 'P1', deck: '.param q = 2\n.if (q > 1)\nV1 1 0 1\n.else\nV1 1 0 2\n.endif\n.param q = 0\nR1 1 0 {q*1k+1k}', v1: 2, iV1: -2e-3 },
+  { name: 'P2', deck: '.param r = 1\n.if (0)\n.param r = 3\n.endif\nV1 1 0 1\nR1 1 0 {r*1k}', v1: 1, iV1: -3.33333e-4 },
+  { name: 'P4', deck: '.if (1)\n.param r = 1\n.else\n.param r = 2\n.endif\nV1 1 0 1\nR1 1 0 {r*1k}', v1: 1, iV1: -5e-4 },
+  { name: 'P5', deck: '.if (0)\n.param r = 3\n.endif\nV1 1 0 1\nR1 1 0 {r*1k}', v1: 1, iV1: -3.33333e-4 },
+  { name: 'P7', deck: '.if (1)\n.param r = 1\n.endif\n.if (0)\n.param r = 4\n.endif\nV1 1 0 1\nR1 1 0 {r*1k}', v1: 1, iV1: -2.5e-4 },
+  // A dependent parameter is evaluated from the deck-wide values.
+  { name: 'P10', deck: '.param a = 2\n.param b = {a*2}\n.if (b > 3)\nV1 1 0 1\n.else\nV1 1 0 2\n.endif\n.param a = 1\nR1 1 0 {b*1k}', v1: 2, iV1: -1e-3 },
+  { name: 'P19', deck: '.param a = {b+1}\n.if (a > 2)\nV1 1 0 1\n.else\nV1 1 0 2\n.endif\n.param b = 2\nR1 1 0 1k', v1: 1, iV1: -1e-3 },
+  // .func cards are deck-wide too: the last definition wins regardless of branch.
+  { name: 'P6', deck: '.if (0)\n.func f(x) {3*x}\n.else\n.func f(x) {2*x}\n.endif\nV1 1 0 1\nR1 1 0 {f(1k)}', v1: 1, iV1: -5e-4 },
+  { name: 'P11', deck: '.if (1)\n.func f(x) {3*x}\n.else\n.func f(x) {2*x}\n.endif\nV1 1 0 1\nR1 1 0 {f(1k)}', v1: 1, iV1: -5e-4 },
+  // A subcircuit defined inside an unselected branch is still defined.
+  { name: 'P12', deck: '.if (0)\n.subckt s a b\nR a b 4k\n.ends\n.endif\nV1 1 0 1\nX1 1 0 s', v1: 1, iV1: -2.5e-4 },
+  // .model cards are gated like elements.
+  { name: 'P14', deck: '.if (1)\n.model dm d(is=1e-14)\n.else\n.model dm d(is=1e-6)\n.endif\nV1 1 0 1\nR1 1 2 1k\nD1 2 0 dm', v1: 1, iV1: -3.70559e-4 },
+  { name: 'P14b', deck: '.if (0)\n.model dm d(is=1e-14)\n.else\n.model dm d(is=1e-6)\n.endif\nV1 1 0 1\nR1 1 2 1k\nD1 2 0 dm', v1: 1, iV1: -8.26237e-4 },
+];
+
+describe('numparam .if with deck-wide .param/.func semantics (ngspice-47)', () => {
+  for (const probe of IF_PROBES) {
+    it(`probe ${probe.name} matches ngspice-47`, async () => {
+      const op = (await simulate(`* probe ${probe.name}\n${probe.deck}\n.op\n.end`)).dc!;
+      expect(op.voltage('1'), 'v(1)').toBeCloseTo(probe.v1, 9);
+      // ngspice prints 6 significant digits.
+      expect(op.current('V1') / probe.iV1, 'i(V1)').toBeCloseTo(1, 5);
+    });
+  }
+
+  it('reads an .include inside an unselected branch for its .param cards (P17)', async () => {
+    const files: Record<string, string> = { 'inc_q.inc': '.param r = 7\n' };
+    const deck = '* probe P17\n.if (0)\n.include inc_q.inc\n.endif\nV1 1 0 1\nR1 1 0 {r*1k}\n.op\n.end';
+    const op = (await simulate(deck, { resolveInclude: async path => files[path] })).dc!;
+    // ngspice-47: i(v1) = -1.42857e-04
+    expect(op.current('V1') / -1.42857e-4).toBeCloseTo(1, 5);
+  });
+
+  it('gates the element cards of an included file by the enclosing branch', async () => {
+    const files: Record<string, string> = { 'r.inc': 'R1 1 0 1k\n' };
+    const out = await preprocess('.if (0)\n.include r.inc\n.endif\nR2 1 0 2k', async path => files[path]);
+    expect(out.split('\n').map(line => line.trim()).filter(Boolean)).toEqual(['R2 1 0 2k']);
+  });
+
+  it('rejects an undefined name in a condition of an unselected branch, as ngspice does (P18/P20)', async () => {
+    const nested = await preprocessError('.if (0)\n.if (zz > 1)\nR1 1 0 3\n.endif\n.endif');
+    expect(nested.message).toContain("Undefined parameter 'zz'");
+    expect(nested.line).toBe(2);
+    const elseif = await preprocessError('.if (1)\nR1 1 0 1\n.elseif (zz > 1)\nR1 1 0 3\n.endif');
+    expect(elseif.message).toContain("Undefined parameter 'zz'");
+    expect(elseif.line).toBe(3);
   });
 });
