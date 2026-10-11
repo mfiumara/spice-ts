@@ -1,0 +1,37 @@
+# voltage source test
+* SPICE3 (ngspice-dialect) translation of Gnucap tests/d_vcvs.1.ckt at gnucap/gnucap@5acb027125d6ea7c546badd03e026d8781c6a400.
+* Original: Gnucap regression tests, GPL-3.0-or-later (see LICENSE-NOTICE.MakeList and COPYING.txt here).
+* Modified 2026-10-11 by benchmarks/translate/gnucap-to-spice3.ts (spice-ts issue #524); changes:
+*   - duplicate instance name `r3` (Gnucap keeps both elements; SPICE3 rejects the second) renamed to `r3_2` on `r3 4 0 1k`
+*   - commented out `.list` (Gnucap `.list` only echoes the netlist to the console)
+*   - commented out `.print op v(1) v(2) v(3) v(4)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)
+*   - commented out `.print op vo(e1) vin(e1) i(e1) p(e1) pd(e1) ps(e1)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)
+*   - commented out `.print op vo(v1) vin(v1) i(v1) p(v1) pd(v1) ps(v1)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)
+*   - `.ac 1k`: Gnucap single-frequency shorthand written as `.ac lin 1 1k 1k`
+*   - commented out `.print ac vo(e1) vin(e1) i(e1) p(e1) pd(e1) ps(e1)` (no SPICE3-expressible probe)
+*   - `.ac 1k`: Gnucap single-frequency shorthand written as `.ac lin 1 1k 1k`
+*   - `.print ac vo(v1) vin(v1) i(v1) p(v1) pd(v1) ps(v1)`: Gnucap-only probes vo(v1) vin(v1) p(v1) pd(v1) ps(v1) dropped (no SPICE3 output-variable syntax)
+*   - `.ac 1k`: Gnucap single-frequency shorthand written as `.ac lin 1 1k 1k`
+* The first line above is the unchanged original title line.
+v1 1 0 1 ac 1
+r1 1 2 1k
+r2 2 0 1k
+e1 3 0 2 0 4.
+r3 3 0 1k
+g1 4 0 2 0 4.
+r3_2 4 0 1k
+*gnucap-only: .list
+*gnucap-only: .print op v(1) v(2) v(3) v(4)
+.op
+*gnucap-only: .print op vo(e1) vin(e1) i(e1) p(e1) pd(e1) ps(e1)
+.op
+*gnucap-only: .print op vo(v1) vin(v1) i(v1) p(v1) pd(v1) ps(v1)
+.op
+.print ac v(1) v(2) v(3) v(4)
+.ac lin 1 1k 1k
+*gnucap-only: .print ac vo(e1) vin(e1) i(e1) p(e1) pd(e1) ps(e1)
+.ac lin 1 1k 1k
+.print ac i(v1)
+.ac lin 1 1k 1k
+*>.status notime
+.end

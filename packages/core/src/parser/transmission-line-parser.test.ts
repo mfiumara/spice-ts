@@ -29,9 +29,8 @@ describe('lossless transmission-line parser', () => {
       '.tran 1n 10n',
     ].join('\n')).compile();
 
-    expect(compiled.devices.map(device => device.name)).toEqual(expect.arrayContaining([
-      'O1.C0', 'O1.R1', 'O1.L1', 'O1.C8',
-    ]));
+    expect(compiled.devices.map(device => device.name)).toEqual(['O1']);
+    expect(compiled.branchNames).toEqual(['O1:1', 'O1:2']);
   });
 
   it.each([
