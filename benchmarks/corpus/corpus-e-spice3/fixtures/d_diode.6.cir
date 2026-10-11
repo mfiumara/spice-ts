@@ -1,0 +1,25 @@
+simple diode test
+* SPICE3 (ngspice-dialect) translation of Gnucap tests/d_diode.6.ckt at gnucap/gnucap@5acb027125d6ea7c546badd03e026d8781c6a400.
+* Original: Gnucap regression tests, GPL-3.0-or-later (see LICENSE-NOTICE.MakeList and COPYING.txt here).
+* Modified 2026-10-11 by benchmarks/translate/gnucap-to-spice3.ts (spice-ts issue #524); changes:
+*   - commented out `.list` (Gnucap `.list` only echoes the netlist to the console)
+*   - commented out `.print op v(1) v(2) i(v1) i(r1) id(d1) vd(d1) req(d1) cap(d1) z(d1) zraw(d1) y(d1) z(2)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)
+*   - `.print dc v(1) v(2) i(v1) i(r1) id(d1) vd(d1) req(d1) cap(d1) z(d1) zraw(d1) y(d1) z(2) iter(0)`: Gnucap-only probes i(r1) id(d1) vd(d1) req(d1) cap(d1) z(d1) zraw(d1) y(d1) z(2) iter(0) dropped (no SPICE3 output-variable syntax)
+*   - commented out `.stat notime` (Gnucap `.stat` only prints solver statistics)
+*   - commented out `.stat notime` (Gnucap `.stat` only prints solver statistics)
+* The first line above is the unchanged original title line.
+V1   1  0  10.
+R1   1  2  100.K
+D1   2  0  ddd   m=2. 
+.model  ddd  d  ( is= 10.f  rs= 0.  n= 1.  tt= 0.  cjo= 1.p  vj= 1.  m= 0.5 
++ eg= 1.11  xti= 3.  kf= 0.  af= 1.  fc= 0.5 )
+*gnucap-only: .list
+*gnucap-only: .print op v(1) v(2) i(v1) i(r1) id(d1) vd(d1) req(d1) cap(d1) z(d1) zraw(d1) y(d1) z(2)
+.op
+.print dc v(1) v(2) i(v1)
+.dc v1 -10 10 2
+*gnucap-only: .stat notime
+.dc v1 9.999 10.001 .001
+.op
+*gnucap-only: .stat notime
+.end

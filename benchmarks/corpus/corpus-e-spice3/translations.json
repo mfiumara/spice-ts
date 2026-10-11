@@ -1,0 +1,308 @@
+{
+  "translator": "benchmarks/translate/gnucap-to-spice3.ts",
+  "translationDate": "2026-10-11",
+  "sourceRevision": "5acb027125d6ea7c546badd03e026d8781c6a400",
+  "fixtures": [
+    {
+      "id": "cccs-mixed-analysis",
+      "category": "op-dc",
+      "sourcePath": "tests/d_cccs.1.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_cccs.1.ckt",
+      "originalSha256": "87e7a7e164e9cdac5891b12fd038c06945043f5455a79fb31d26c97bc0463e05",
+      "status": "translated",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/d_cccs.1.cir",
+      "sha256": "65800d08f5aef33b8c2c583961be898ba33a99591a0cefe783b6528d2cb4807a",
+      "analyses": [
+        "op",
+        "tran",
+        "ac"
+      ],
+      "changes": [
+        "commented out `.list` (Gnucap `.list` only echoes the netlist to the console)",
+        "commented out `.width out=132` (Gnucap `.width` only sets the console output width)",
+        "commented out `.print op v(1) v(2) v(3) v(4) v(5) v(6) v(7) f(f2) f(f7)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)",
+        "`.print tran v(1) v(2) v(3) v(4) v(5) v(6) v(7) f(f2) f(f7)`: Gnucap-only probes f(f2) f(f7) dropped (no SPICE3 output-variable syntax)",
+        "`.print ac v(1) v(2) v(3) v(4) v(5) v(6) v(7) f(f2) f(f7)`: Gnucap-only probes f(f2) f(f7) dropped (no SPICE3 output-variable syntax)",
+        "commented out `.status notime` (Gnucap `.status` only prints solver statistics)"
+      ]
+    },
+    {
+      "id": "vcvs-operating-point",
+      "category": "op-dc",
+      "sourcePath": "tests/d_vcvs.1.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_vcvs.1.ckt",
+      "originalSha256": "cd4c6c8b18a27254b06859424268763a7f5b4a39a648981fc27d6a18b91e2cd1",
+      "status": "translated",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/d_vcvs.1.cir",
+      "sha256": "00d220af322f4cfb9ffe032617ee46c0295d1ad336a488b177e2e712553e7b73",
+      "analyses": [
+        "op",
+        "ac"
+      ],
+      "changes": [
+        "duplicate instance name `r3` (Gnucap keeps both elements; SPICE3 rejects the second) renamed to `r3_2` on `r3 4 0 1k`",
+        "commented out `.list` (Gnucap `.list` only echoes the netlist to the console)",
+        "commented out `.print op v(1) v(2) v(3) v(4)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)",
+        "commented out `.print op vo(e1) vin(e1) i(e1) p(e1) pd(e1) ps(e1)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)",
+        "commented out `.print op vo(v1) vin(v1) i(v1) p(v1) pd(v1) ps(v1)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)",
+        "`.ac 1k`: Gnucap single-frequency shorthand written as `.ac lin 1 1k 1k`",
+        "commented out `.print ac vo(e1) vin(e1) i(e1) p(e1) pd(e1) ps(e1)` (no SPICE3-expressible probe)",
+        "`.ac 1k`: Gnucap single-frequency shorthand written as `.ac lin 1 1k 1k`",
+        "`.print ac vo(v1) vin(v1) i(v1) p(v1) pd(v1) ps(v1)`: Gnucap-only probes vo(v1) vin(v1) p(v1) pd(v1) ps(v1) dropped (no SPICE3 output-variable syntax)",
+        "`.ac 1k`: Gnucap single-frequency shorthand written as `.ac lin 1 1k 1k`"
+      ]
+    },
+    {
+      "id": "transmission-line-ac",
+      "category": "ac",
+      "sourcePath": "tests/d_trln.ac.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_trln.ac.ckt",
+      "originalSha256": "99cc373d602fad9ecd4ea0e8f14d9eba9322b0083ae02c7631091dcbece7828b",
+      "status": "unsupported-translation",
+      "reasons": [
+        "`V1 1 0 gen(1)`: Gnucap `gen()` generator source has no SPICE3 equivalent",
+        "`.param rs=50`: Gnucap bare-name parameter references in element values are not SPICE3 syntax",
+        "`.ac 0 40meg 2meg`: Gnucap start/stop/step AC sweep form has no exact SPICE3 spelling",
+        "`.param rs=.1`: Gnucap re-assigns a parameter between analyses; a SPICE3 deck has one parameter value per run",
+        "`.ac`: bare Gnucap `.ac` repeats the previous sweep, linearised about whatever bias the preceding command left (a changed .param or the last DC-sweep point); a SPICE3 `.ac` needs its own arguments and always re-solves its own operating point",
+        "`.param rs=25.`: Gnucap re-assigns a parameter between analyses; a SPICE3 deck has one parameter value per run",
+        "`.ac`: bare Gnucap `.ac` repeats the previous sweep, linearised about whatever bias the preceding command left (a changed .param or the last DC-sweep point); a SPICE3 `.ac` needs its own arguments and always re-solves its own operating point",
+        "`.param rs= 100`: Gnucap re-assigns a parameter between analyses; a SPICE3 deck has one parameter value per run",
+        "`.ac`: bare Gnucap `.ac` repeats the previous sweep, linearised about whatever bias the preceding command left (a changed .param or the last DC-sweep point); a SPICE3 `.ac` needs its own arguments and always re-solves its own operating point"
+      ]
+    },
+    {
+      "id": "mutual-inductance-ac",
+      "category": "ac",
+      "sourcePath": "tests/d_coil.1.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_coil.1.ckt",
+      "originalSha256": "45bf5fdc96b7985a744455ff7c3222478665e3db487bbcfedc5c7efa8297fc3c",
+      "status": "translated",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/d_coil.1.cir",
+      "sha256": "1f7c99b465dfa2a0222a5fde013bcca0806847f9578b06d2693b877a467c256c",
+      "analyses": [
+        "ac",
+        "tran"
+      ],
+      "changes": [
+        "removed Gnucap-only option `nopage` (console paging; no SPICE3 equivalent, no circuit meaning)",
+        "commented out `.list` (Gnucap `.list` only echoes the netlist to the console)",
+        "commented out `.width out=132` (Gnucap `.width` only sets the console output width)",
+        "commented out `.list` (Gnucap `.list` only echoes the netlist to the console)",
+        "commented out `.status notime` (Gnucap `.status` only prints solver statistics)"
+      ]
+    },
+    {
+      "id": "bjt-diffpair-ac",
+      "category": "ac",
+      "sourcePath": "tests/d_bjt-diffpair-tf.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-diffpair-tf.ckt",
+      "originalSha256": "f8cde99b71d9978c5216dffbc9dfc036c8bdf7b37f1c9949fa9835e6eb741213",
+      "status": "translated",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/d_bjt-diffpair-tf.cir",
+      "sha256": "4d4ec35915c2140cb5308ce4ff6cbe0f28e8b6be5fd69a95ec8b9a0a40213f20",
+      "analyses": [
+        "dc",
+        "tran",
+        "op",
+        "ac"
+      ],
+      "changes": [
+        "`.plot dc v(4)(-4,12) v(5)(-4,12)`: `.plot` written as `.print` (line-printer plot is console formatting only); plot ranges (-4,12) (-4,12) removed",
+        "`.plot tran v(10) v(5)`: `.plot` written as `.print` (line-printer plot is console formatting only)",
+        "`.plot ac vm(5)`: `.plot` written as `.print` (line-printer plot is console formatting only)",
+        "`.plot ac vp(5)`: `.plot` written as `.print` (line-printer plot is console formatting only)",
+        "commented out `.status notime` (Gnucap `.status` only prints solver statistics)"
+      ]
+    },
+    {
+      "id": "opamp-open-loop-ac",
+      "category": "ac",
+      "sourcePath": "tests/opamp-ol.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/opamp-ol.ckt",
+      "originalSha256": "92e47652dbecdbd2c971cce3c047fc0b8e4a0406a7d2c953dffce299c60b183c",
+      "status": "unsupported-translation",
+      "reasons": [
+        "`.ac`: bare Gnucap `.ac` repeats the previous sweep, linearised about whatever bias the preceding command left (a changed .param or the last DC-sweep point); a SPICE3 `.ac` needs its own arguments and always re-solves its own operating point",
+        "`.dc`: bare Gnucap `.dc` repeats the previous sweep; SPICE3 has no equivalent"
+      ]
+    },
+    {
+      "id": "capacitor-step-transient",
+      "category": "tran",
+      "sourcePath": "tests/d_cap.1.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_cap.1.ckt",
+      "originalSha256": "2c0864497272439baa44213381271915107ccd9f8c47354df2e4b9c3028a1608",
+      "status": "translated",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/d_cap.1.cir",
+      "sha256": "cca6e79eb0b8c45df1ecff3bac46c8cd860f07d40bf88b165fed0e0526529817",
+      "analyses": [
+        "tran"
+      ],
+      "changes": [
+        "`v1 1 0 dc pulse(0 1 0 .01 .01 1k 1k) ac 1`: Gnucap `dc <function>` written as the bare SPICE3 function",
+        "commented out `.list` (Gnucap `.list` only echoes the netlist to the console)",
+        "commented out `.status notime` (Gnucap `.status` only prints solver statistics)"
+      ]
+    },
+    {
+      "id": "capacitor-initial-condition",
+      "category": "tran",
+      "sourcePath": "tests/d_cap.ic1.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_cap.ic1.ckt",
+      "originalSha256": "65199506e3a8b9bd05b3842cc9ef180308d0d02ba2e9857e89f7f1f8c32c3c84",
+      "status": "translated",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/d_cap.ic1.cir",
+      "sha256": "e4ff0bbe53f44c1f86792982c37c3f6856518639ab6978633479864b6d954823",
+      "analyses": [
+        "tran"
+      ],
+      "changes": [
+        "commented out `.list` (Gnucap `.list` only echoes the netlist to the console)"
+      ]
+    },
+    {
+      "id": "lc-oscillator-transient",
+      "category": "tran",
+      "sourcePath": "tests/oscillator.1.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/oscillator.1.ckt",
+      "originalSha256": "020684099d172ec7cc2a6fe3d57792ef51b3d9162f41f83ed486704062d6d702",
+      "status": "translated",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/oscillator.1.cir",
+      "sha256": "2926b46a55e9fac3bc576d3810e688e59b3ec8b449b3c88b68f5a789f9781807",
+      "analyses": [
+        "tran"
+      ],
+      "changes": [
+        "`i1 1 0 pwl 0 5 .1 0`: Gnucap unparenthesised `pwl` arguments wrapped in parentheses",
+        "commented out `.width out=80` (Gnucap `.width` only sets the console output width)",
+        "`.plot tran v(1)`: `.plot` written as `.print` (line-printer plot is console formatting only)",
+        "commented out `.status notime` (Gnucap `.status` only prints solver statistics)"
+      ]
+    },
+    {
+      "id": "bjt-schmitt-trigger",
+      "category": "nonlinear",
+      "sourcePath": "tests/d_bjt-schmitt-nobypass.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_bjt-schmitt-nobypass.ckt",
+      "originalSha256": "ec6efed82593b525b1661173b3a11dbec4880449968389ff86424051d42274b5",
+      "status": "translated",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/d_bjt-schmitt-nobypass.cir",
+      "sha256": "6974ee6972fe6cb3ea40f36bac0ea2dd6f051f99d9598e770eb86a76630298d6",
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "changes": [
+        "`q1 3 2 4 0 qstd off=1`: Gnucap `off=1` written as the SPICE3 `off` flag",
+        "`.plot tran v(3) v(5) v(6) v(1)`: `.plot` written as `.print` (line-printer plot is console formatting only)"
+      ]
+    },
+    {
+      "id": "diode-temperature-sweep",
+      "category": "nonlinear",
+      "sourcePath": "tests/d_diode.6.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_diode.6.ckt",
+      "originalSha256": "d2d7df0b8050008df98e6a8410433c6ef346d9851371c2032edaeb0c9c43dd48",
+      "status": "translated",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/d_diode.6.cir",
+      "sha256": "208068d2573391e75c75987d0c19f87f988073c80e9bd991ec35fdf78fa12274",
+      "analyses": [
+        "op",
+        "dc"
+      ],
+      "changes": [
+        "commented out `.list` (Gnucap `.list` only echoes the netlist to the console)",
+        "commented out `.print op v(1) v(2) i(v1) i(r1) id(d1) vd(d1) req(d1) cap(d1) z(d1) zraw(d1) y(d1) z(2)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)",
+        "`.print dc v(1) v(2) i(v1) i(r1) id(d1) vd(d1) req(d1) cap(d1) z(d1) zraw(d1) y(d1) z(2) iter(0)`: Gnucap-only probes i(r1) id(d1) vd(d1) req(d1) cap(d1) z(d1) zraw(d1) y(d1) z(2) iter(0) dropped (no SPICE3 output-variable syntax)",
+        "commented out `.stat notime` (Gnucap `.stat` only prints solver statistics)",
+        "commented out `.stat notime` (Gnucap `.stat` only prints solver statistics)"
+      ]
+    },
+    {
+      "id": "mos1-nand-transient",
+      "category": "nonlinear",
+      "sourcePath": "tests/d_mos1.nand1.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_mos1.nand1.ckt",
+      "originalSha256": "183f57f24707d2597f83396a777896e336a17a4ec8a13027f89c5029440d8300",
+      "status": "translated",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/d_mos1.nand1.cir",
+      "sha256": "57de959ed069f9436f2dffdbc6fc975458996e3dca131774b40b7d41b18e5ef6",
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "changes": [
+        "commented out `.print op v(nodes) z(5) iter(0)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)",
+        "`.op trace iter`: removed Gnucap `trace iter` console-trace option",
+        "commented out `.print op Cgs(Mp1.XI10) Cgd(Mp1.XI10) Cgb(Mp1.XI10)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)",
+        "commented out `.print op Cgs(Mp2.XI10) Cgd(Mp2.XI10) Cgb(Mp2.XI10)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)",
+        "commented out `.print op Cgs(Mn1.XI10) Cgd(Mn1.XI10) Cgb(Mn1.XI10)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)",
+        "commented out `.print op Cgs(Mn2.XI10) Cgd(Mn2.XI10) Cgb(Mn2.XI10)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)",
+        "`.print tran v(2) v(4) v(5) iter(0)`: Gnucap-only probes iter(0) dropped (no SPICE3 output-variable syntax)",
+        "`.tran 0.1n 10n trace all`: removed Gnucap console-trace option `trace all`",
+        "commented out `.stat notime` (Gnucap `.stat` only prints solver statistics)"
+      ]
+    },
+    {
+      "id": "dual-lc-uic-rejection",
+      "category": "convergence",
+      "sourcePath": "tests/oscillator.7.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/oscillator.7.ckt",
+      "originalSha256": "f1f6a53ef0bb2d41988b1ec4fb022abea8830cd8a847aa3b693d96fe7e66e36d",
+      "status": "translated",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/oscillator.7.cir",
+      "sha256": "0d9459725ec0fbfc07cddbd7999b0f193fc1e187d8b7586ad090cc3f1832e515",
+      "analyses": [
+        "tran"
+      ],
+      "changes": [
+        "commented out `.width out=80` (Gnucap `.width` only sets the console output width)",
+        "`.print tran v(1) v(2) iter(0) control(0)`: Gnucap-only probes iter(0) control(0) dropped (no SPICE3 output-variable syntax)",
+        "`.tran .1 100 0 uic trace rejected`: removed Gnucap console-trace option `trace rejected`",
+        "commented out `.status notime` (Gnucap `.status` only prints solver statistics)",
+        "`.tran .1 100 0 uic trace rejected`: removed Gnucap console-trace option `trace rejected`",
+        "commented out `.status notime` (Gnucap `.status` only prints solver statistics)"
+      ]
+    },
+    {
+      "id": "opamp-voltage-follower",
+      "category": "convergence",
+      "sourcePath": "tests/opamp-vf.1.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/opamp-vf.1.ckt",
+      "originalSha256": "923e0da63d9fbeca5cb94d049af3f85036f5b1a1af38a0701dbed8c258ff1ebd",
+      "status": "translated",
+      "localPath": "benchmarks/corpus/corpus-e-spice3/fixtures/opamp-vf.1.cir",
+      "sha256": "6143822b25059460879ad47f082ac2f6c01dcef98dcb91544b71bc70025a24e6",
+      "analyses": [
+        "op",
+        "ac",
+        "dc",
+        "tran"
+      ],
+      "changes": [
+        "commented out `.width out=80` (Gnucap `.width` only sets the console output width)",
+        "removed Gnucap-only option `dampstrategy=11` (Gnucap Newton damping strategy; no SPICE3 equivalent, no circuit meaning)",
+        "removed Gnucap-only option `trsteporder=1` (Gnucap transient step-size predictor order; no SPICE3 equivalent, no circuit meaning)",
+        "commented out bare `.options` (Gnucap prints the option table; no settings change)",
+        "commented out `.print op iter(0) v(1 3 4 5 6 7 8 9)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)",
+        "`.plot ac vdb(6) (-90,30) vp(6) (-180,180)`: `.plot` written as `.print` (line-printer plot is console formatting only); plot ranges (-90,30) (-180,180) removed",
+        "`.plot dc v(6) (-4,4)`: `.plot` written as `.print` (line-printer plot is console formatting only); plot ranges (-4,4) removed",
+        "`.plot tran v(6) (-4,4)`: `.plot` written as `.print` (line-printer plot is console formatting only); plot ranges (-4,4) removed",
+        "commented out `.stat notime` (Gnucap `.stat` only prints solver statistics)"
+      ]
+    },
+    {
+      "id": "mos7-nand-no-bypass",
+      "category": "convergence",
+      "sourcePath": "tests/d_mos7.nand1.nobypass.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-e/fixtures/tests/d_mos7.nand1.nobypass.ckt",
+      "originalSha256": "81a387433d50c7d280d2b80d2463f3a9d42fc6ea969ef783333b16eaca046868",
+      "status": "unsupported-translation",
+      "reasons": [
+        "`.model nmos nmos level=7 vth0=0.7`: Gnucap MOS level=7 is its own BSIM3v3 port; SPICE3/ngspice has no level 7, and substituting ngspice BSIM3 (level=8) is an unverified model change",
+        "`.model pmos pmos level=7 vth0=-0.7`: Gnucap MOS level=7 is its own BSIM3v3 port; SPICE3/ngspice has no level 7, and substituting ngspice BSIM3 (level=8) is an unverified model change"
+      ]
+    }
+  ]
+}

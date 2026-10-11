@@ -1,0 +1,12 @@
+' cap with initial condition, ignored because I didn't say "uic"
+* SPICE3 (ngspice-dialect) translation of Gnucap tests/d_cap.ic1.ckt at gnucap/gnucap@5acb027125d6ea7c546badd03e026d8781c6a400.
+* Original: Gnucap regression tests, GPL-3.0-or-later (see LICENSE-NOTICE.MakeList and COPYING.txt here).
+* Modified 2026-10-11 by benchmarks/translate/gnucap-to-spice3.ts (spice-ts issue #524); changes:
+*   - commented out `.list` (Gnucap `.list` only echoes the netlist to the console)
+* The first line above is the unchanged original title line.
+c1 1 0 1 ic=3
+r1 1 0 1
+*gnucap-only: .list
+.print tran v(1)
+.tran 1 10 0
+.end

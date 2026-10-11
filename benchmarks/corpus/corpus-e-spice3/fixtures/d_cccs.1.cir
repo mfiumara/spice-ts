@@ -1,0 +1,36 @@
+# cccs test, with element probes (forces full eval)
+* SPICE3 (ngspice-dialect) translation of Gnucap tests/d_cccs.1.ckt at gnucap/gnucap@5acb027125d6ea7c546badd03e026d8781c6a400.
+* Original: Gnucap regression tests, GPL-3.0-or-later (see LICENSE-NOTICE.MakeList and COPYING.txt here).
+* Modified 2026-10-11 by benchmarks/translate/gnucap-to-spice3.ts (spice-ts issue #524); changes:
+*   - commented out `.list` (Gnucap `.list` only echoes the netlist to the console)
+*   - commented out `.width out=132` (Gnucap `.width` only sets the console output width)
+*   - commented out `.print op v(1) v(2) v(3) v(4) v(5) v(6) v(7) f(f2) f(f7)` (SPICE3 has no `.print op`; the raw file still holds every node voltage and source current)
+*   - `.print tran v(1) v(2) v(3) v(4) v(5) v(6) v(7) f(f2) f(f7)`: Gnucap-only probes f(f2) f(f7) dropped (no SPICE3 output-variable syntax)
+*   - `.print ac v(1) v(2) v(3) v(4) v(5) v(6) v(7) f(f2) f(f7)`: Gnucap-only probes f(f2) f(f7) dropped (no SPICE3 output-variable syntax)
+*   - commented out `.status notime` (Gnucap `.status` only prints solver statistics)
+* The first line above is the unchanged original title line.
+i1 1 0 dc 11 ac 11
+ri1 1 0 10
+e1 2 0 1 0 8
+re1 2 0 10
+* sense the voltage source (0 volts)
+i2 3 0 dc 11 ac 11
+ri2 4 0 10
+v2 3 4 0
+f2 5 0 v2 8
+rf2 5 0 10
+* sense a live voltage source
+v7 6 0 dc 11 ac 11
+rv7 6 0 10
+f7 7 0 v7 8
+rf7 7 0 10
+*gnucap-only: .list
+*gnucap-only: .width out=132
+*gnucap-only: .print op v(1) v(2) v(3) v(4) v(5) v(6) v(7) f(f2) f(f7)
+.op
+.print tran v(1) v(2) v(3) v(4) v(5) v(6) v(7)
+.tran .05 .1 0
+.print ac v(1) v(2) v(3) v(4) v(5) v(6) v(7)
+.ac oct 1 1k 2k
+*gnucap-only: .status notime
+.end
