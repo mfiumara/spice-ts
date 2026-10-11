@@ -140,6 +140,9 @@ describe('aggregate report artifact verification', () => {
       assert.ok(signal.relativeError.max < 1e-6, `${name} relative max ${signal.relativeError.max}`);
     }
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #466') && text.includes('PR #463') && text.includes('PR #471')));
+    // VBIC substrate terminal (#453, PR #473): the PZ abs envelope moves to pole(1) at 7175.3, with every pole and zero closer to ngspice.
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #476') && text.includes('PR #473') && text.includes('PR #481') && text.includes('7175.34033203125')));
+    assert.equal(vbicAc.comparisons[1].metrics.signals['v(pole(1))'].absoluteError.max, report.matchedPointEnvelope.maximumAbsoluteError);
     for (const key of ['ngspice/mos6-inverter-transient', 'ngspice/mos6-simple-inverter-transient', 'classic/mos6-inverter-chain']) {
       const mos6 = report.fixtures.find((fixture: { key: string }) => fixture.key === key);
       const worst = Math.max(...Object.values(mos6.comparisons[0].metrics.signals as Record<string, { absoluteError: { max: number } }>).map(signal => signal.absoluteError.max));
@@ -194,7 +197,7 @@ describe('aggregate report artifact verification', () => {
 
     assert.deepEqual(report.provenance, {
       fixtureTreeSha256: '13b4675cfb97766fc7caed79d023ca514840880d17cb924c0e70561ff8b82e00',
-      sourcesSha256: 'b88cb2bbace737f87667934aaf2d54ce135c6a727419752fd39eaf2bc8a4de7a',
+      sourcesSha256: '53cd510ca559ac9409c40e543c8a1da5c7cbe5bc5fa80338f5086bce701e0228',
     });
   });
 
@@ -205,8 +208,8 @@ describe('aggregate report artifact verification', () => {
     assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
     assert.equal(report.matchedPointEnvelope.comparedSignals, 969);
     assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 933);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 13716.60302734375);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 13716.60302734375);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 7175.34033203125);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 7175.34033203125);
     assert.equal(report.matchedPointEnvelope.maximumRelativeError, 248284946174.52246);
     assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 5233588211.050267);
   });
