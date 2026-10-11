@@ -88,6 +88,9 @@ describe('MCP point preflight reuses core parsing and estimates (#408)', () => {
     ['decade AC sweep', '.ac dec 10 1 1meg'],
     ['nested DC sweep', '.dc V1 0 1 1m V2 0 1 0.1'],
     ['several analyses', '.op\n.tran 1u 1m\n.ac oct 3 1k 1meg'],
+    ['stretched multi-decade AC sweep', '.ac dec 10 1 5k'],
+    ['AC sweep whose stop tolerance follows netlist reltol', '.options reltol=1e-4\n.ac dec 10 1 9.99'],
+    ['AC sensitivity sweep', '.sens v(b) ac dec 10 1 9.98'],
   ])('rejects %s with the same point count core computes', async (_name, analyses) => {
     const request: SimulationRequestV1 = {
       ...spice(`V1 a 0 1\nV2 b 0 1\nR1 a b 1k\nR2 b 0 1k\n${analyses}`),

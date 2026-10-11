@@ -277,17 +277,20 @@ function enforcePointLimit(
   reltol: number,
   step?: StepAnalysis,
 ): void {
-  guard.maximum('maxResultPoints', estimateProtocolResultPointsV1(analyses, step), 'validation');
+  guard.maximum('maxResultPoints', estimateProtocolResultPointsV1(analyses, step, reltol), 'validation');
 }
 
 /**
  * Result points a protocol run of `analyses` is estimated to produce before
  * solving, multiplied by the sweep count of the optional `.step` directive.
- * This is the count the `maxResultPoints` validation check compares.
+ * This is the count the `maxResultPoints` validation check compares. `reltol`
+ * is the run's resolved relative tolerance, which sets ngspice's `.ac` DEC/OCT
+ * stop tolerance.
  */
 export function estimateProtocolResultPointsV1(
   analyses: readonly AnalysisDirective[],
   step?: StepAnalysis,
+  reltol: number = DEFAULT_OPTIONS.reltol,
 ): number {
   const analysisPoints = analyses.reduce(
     (total, analysis) => total + estimatedAnalysisPoints(analysis, reltol),

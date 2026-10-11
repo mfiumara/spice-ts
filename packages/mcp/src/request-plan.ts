@@ -32,8 +32,8 @@ export async function requestPlan(request: SimulationRequestV1): Promise<Request
   return { analyses: [...circuit.analyses], netlistOptions: circuit.simulationOptions };
 }
 
-export function estimatedResultPoints(plan: RequestPlan): number {
-  return estimateProtocolResultPointsV1(plan.analyses);
+export function estimatedResultPoints(request: SimulationRequestV1, plan: RequestPlan): number {
+  return estimateProtocolResultPointsV1(plan.analyses, undefined, resolvedOptions(request, plan).reltol);
 }
 
 /**
