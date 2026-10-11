@@ -156,24 +156,14 @@ class StdioClient {
     this.notify('notifications/initialized', {});
   }
 
+  // No wall-clock deadline: a loaded machine only makes the server slower.
+  // A dead server rejects every pending call through the exit handler, and a
+  // hung one is the caller's to bound (the test harness does).
   call(method, params) {
     const id = this.nextId++;
     const message = { jsonrpc: '2.0', id, method, params };
     return new Promise((resolvePromise, rejectPromise) => {
-      const timeout = setTimeout(() => {
-        this.pending.delete(id);
-        rejectPromise(new Error(`Timed out waiting for ${method}: ${this.stderr}`));
-      }, 5_000);
-      this.pending.set(id, {
-        resolve: value => {
-          clearTimeout(timeout);
-          resolvePromise(value);
-        },
-        reject: error => {
-          clearTimeout(timeout);
-          rejectPromise(error);
-        },
-      });
+      this.pending.set(id, { resolve: resolvePromise, reject: rejectPromise });
       this.write(message);
     });
   }

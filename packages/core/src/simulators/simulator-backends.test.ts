@@ -1,10 +1,23 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { Circuit } from '../circuit.js';
 import { DCResult } from '../results.js';
 import { createSimulator, simulate, simulateStepStream, simulateStream } from '../simulate.js';
 import type { SimulatorAdapter } from '../types.js';
 
+// Every ngspice-wasm analysis instantiates a fresh eecircuit-engine WASM module
+// (about 0.2 s on an idle machine, several seconds on a loaded runner), so a
+// fixed 5 s per-test default fails tests that run several analyses or steps.
+// Budget each test by the instantiations it performs, not by wall-clock luck.
+const NGSPICE_WASM_INSTANCE_BUDGET_MS = 10_000;
+const ngspiceWasmTimeout = (instances: number) => instances * NGSPICE_WASM_INSTANCE_BUDGET_MS;
+
 describe('swappable simulator backends', () => {
+  // Load the optional engine once up front so its one-time import cost is not
+  // charged to whichever ngspice-wasm test happens to run first.
+  beforeAll(async () => {
+    await import('eecircuit-engine');
+  }, ngspiceWasmTimeout(1));
+
   it('routes simulate() through a custom adapter', async () => {
     const adapter: SimulatorAdapter = {
       name: 'test-adapter',
@@ -35,7 +48,7 @@ describe('swappable simulator backends', () => {
     expect(result.dc!.voltage('2')).toBeCloseTo(10 / 3, 6);
   });
 
-  it('runs a DC operating point through ngspice WASM', async () => {
+  it('runs a DC operating point through ngspice WASM', { timeout: ngspiceWasmTimeout(1) }, async () => {
     const result = await simulate(`
       V1 1 0 DC 5
       R1 1 2 1k
@@ -49,7 +62,7 @@ describe('swappable simulator backends', () => {
     expect(result.dc!.current('V1')).toBeCloseTo(-1 / 600, 6);
   });
 
-  it('runs a programmatic Circuit through ngspice WASM', async () => {
+  it('runs a programmatic Circuit through ngspice WASM', { timeout: ngspiceWasmTimeout(1) }, async () => {
     const ckt = new Circuit();
     ckt.addVoltageSource('V1', 'in', '0', { dc: 3 });
     ckt.addResistor('R1', 'in', 'out', 1000);
@@ -61,7 +74,7 @@ describe('swappable simulator backends', () => {
     expect(result.dc!.voltage('out')).toBeCloseTo(2, 6);
   });
 
-  it('preprocesses includes before running ngspice WASM', async () => {
+  it('preprocesses includes before running ngspice WASM', { timeout: ngspiceWasmTimeout(1) }, async () => {
     const result = await simulate(`
       .include 'divider.inc'
       V1 1 0 DC 6
@@ -78,7 +91,7 @@ describe('swappable simulator backends', () => {
     expect(result.dc!.voltage('2')).toBeCloseTo(4, 6);
   });
 
-  it('maps ngspice WASM DC sweep, transient, and AC result shapes', async () => {
+  it('maps ngspice WASM DC sweep, transient, and AC result shapes', { timeout: ngspiceWasmTimeout(3) }, async () => {
     const dc = await simulate(`
       V1 in 0 DC 0
       R1 in 0 1k
@@ -112,7 +125,7 @@ describe('swappable simulator backends', () => {
     expect(ac.ac!.voltage('in')[0].magnitude).toBeCloseTo(1, 6);
   });
 
-  it('streams result points from external backends', async () => {
+  it('streams result points from external backends', { timeout: ngspiceWasmTimeout(1) }, async () => {
     const points = [];
     for await (const point of simulateStream(`
       V1 in 0 PULSE(0 1 0 1n 1n 5u 10u)
@@ -128,7 +141,7 @@ describe('swappable simulator backends', () => {
     expect('time' in points[0]).toBe(true);
   });
 
-  it('maps ngspice WASM .step result sets', async () => {
+  it('maps ngspice WASM .step result sets', { timeout: ngspiceWasmTimeout(2) }, async () => {
     const result = await simulate(`
       V1 1 0 DC 10
       R1 1 2 1k
@@ -147,7 +160,7 @@ describe('swappable simulator backends', () => {
     expect(result.steps![1].dc!.voltage('2')).toBeCloseTo(8, 6);
   });
 
-  it('streams ngspice WASM .step points with metadata', async () => {
+  it('streams ngspice WASM .step points with metadata', { timeout: ngspiceWasmTimeout(2) }, async () => {
     const events = [];
     for await (const event of simulateStepStream(`
       V1 in 0 AC 1

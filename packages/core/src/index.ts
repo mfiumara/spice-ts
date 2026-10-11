@@ -14,6 +14,8 @@ export type {
 } from './protocol/execution-guard.js';
 export { preflightTopology, TopologyPreflightError } from './validation/topology-preflight.js';
 export type { TopologyFailureKind, TopologySourcePath } from './validation/topology-preflight.js';
+export { frequencyGrid, frequencyPointCount } from './analysis/frequency-grid.js';
+export type { FrequencySweepKind } from './analysis/frequency-grid.js';
 export { createTransientSim } from './analysis/transient-driver.js';
 export type { TransientSim, TransientSimOptions } from './analysis/transient-driver.js';
 export { WasmNgspiceSimulator } from './simulators/ngspice-wasm.js';
