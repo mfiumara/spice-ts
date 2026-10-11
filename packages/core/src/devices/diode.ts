@@ -151,6 +151,20 @@ export class Diode implements DeviceModel {
   private temperature = 27;
   /** Limited junction voltage of the last stamp (ngspice CKTstate0 DIOvoltage). */
   private previousJunctionVoltage: number | undefined;
+  /** Junction voltage of the last accepted transient timepoint (CKTstate1). */
+  private acceptedJunctionVoltage: number | undefined;
+  /** Junction voltage of the last undamped transient Newton solve, if unused. */
+  private newtonJunctionVoltage: number | undefined;
+  /** Whether the last stamp limited the junction (ngspice noncon). */
+  private limited = false;
+  /**
+   * The junction is limited whenever the stamped junction is the terminal
+   * pair: no RS, or RS expanded into a separate resistor. The two-terminal RS
+   * fallback solves its internal junction exactly and needs no limiting.
+   */
+  readonly limitsOwnJunctions: boolean;
+  /** stampDynamic is a no-op without junction capacitance or transit time. */
+  readonly storesCharge: boolean;
 
   constructor(
     readonly name: string,
@@ -197,6 +211,43 @@ export class Diode implements DeviceModel {
       AF: params.AF ?? 1,
       IKF: (params.IKF ?? 0) >= MIN_KNEE_CURRENT ? params.IKF! * effectiveArea : 0,
     };
+    this.limitsOwnJunctions = this.params.RS === 0;
+    this.storesCharge = Boolean(this.params.CJ0 || this.params.CJSW || this.params.TT);
+  }
+
+  beginTransientNewton(): void {
+    // ngspice MODEINITPRED copies CKTstate1 into CKTstate0, so a new or
+    // retried timepoint limits against the accepted junction voltage.
+    if (this.acceptedJunctionVoltage !== undefined) {
+      this.previousJunctionVoltage = this.acceptedJunctionVoltage;
+    }
+    this.newtonJunctionVoltage = undefined;
+  }
+
+  observeTransientNewton(solution: Float64Array): void {
+    this.newtonJunctionVoltage = this.terminalVoltage(solution);
+  }
+
+  private terminalVoltage(solution: Float64Array): number {
+    const [nA, nK] = this.nodes;
+    return (nA >= 0 ? solution[nA] : 0) - (nK >= 0 ? solution[nK] : 0);
+  }
+
+  limitedLastStamp(): boolean {
+    return this.limited;
+  }
+
+  acceptTransientStep(ctx: StampContext): void {
+    const [nA, nK] = this.nodes;
+    this.acceptedJunctionVoltage = (nA >= 0 ? ctx.getVoltage(nA) : 0)
+      - (nK >= 0 ? ctx.getVoltage(nK) : 0);
+    this.newtonJunctionVoltage = undefined;
+  }
+
+  resetTransient(): void {
+    this.acceptedJunctionVoltage = undefined;
+    this.newtonJunctionVoltage = undefined;
+    this.limited = false;
   }
 
   setTemperature(value: number): void {
@@ -321,20 +372,19 @@ export class Diode implements DeviceModel {
     const junction = this.junction();
     let vd = vA - vK;
 
-    if (this.params.RS === 0 && ctx.dt === 0) {
-      // DC: ngspice dioload.c limits the junction relative to the previous
-      // Newton iterate (CKTstate0 DIOvoltage) and stores the limited value
-      // back. Limiting only shapes iterates: once a step is within 2*Vte it is
-      // the identity, so the converged point is on the exact diode law (#430).
-      vd = limitJunctionStep(vd, this.previousJunctionVoltage ?? 0, junction);
+    this.limited = false;
+    if (this.limitsOwnJunctions) {
+      if (this.newtonJunctionVoltage !== undefined) vd = this.newtonJunctionVoltage;
+      this.newtonJunctionVoltage = undefined;
+      // ngspice dioload.c limits the junction relative to the previous Newton
+      // iterate (CKTstate0 DIOvoltage) and stores the limited value back, in
+      // DC and transient alike. Limiting only shapes iterates: once a step is
+      // within 2*Vte it is the identity, so the converged point is on the
+      // exact diode law (#430). A limited iterate is not converged (noncon).
+      const limited = limitJunctionStep(vd, this.previousJunctionVoltage ?? 0, junction);
+      this.limited = limited !== vd;
+      vd = limited;
       this.previousJunctionVoltage = vd;
-    } else if (this.params.RS === 0 && !this.hasExternalSeriesResistance) {
-      // Transient Newton also damps nonlinear-terminal node voltages
-      // (transient-step.ts), so the node can lag a limited junction and the
-      // iterate-relative limit ratchets away from it. Keep the previous
-      // stateless compression (and no limit behind an expanded RS) there until
-      // the transient loop stops damping those nodes.
-      vd = limitVoltage(vd, junction);
     }
 
     const { current: id, conductance, linearizationVoltage } = diodeCurrent(
@@ -604,42 +654,6 @@ function pnjlim(
     return Math.max(voltage, minimum);
   }
   return voltage;
-}
-
-/**
- * Stateless junction compression above vcrit, used only by transient Newton.
- * Its fixed point is not the diode law above vcrit (#430), so the DC path uses
- * {@link limitJunctionStep} instead.
- */
-function limitVoltage(
-  voltage: number,
-  { thermalVoltage, saturationCurrent, breakdown }: Junction,
-): number {
-  if (breakdown) {
-    const knee = breakdownKneeVoltage(breakdown, saturationCurrent);
-    if (voltage < -knee) {
-      return -knee - limitForwardVoltage(
-        -(voltage + knee),
-        breakdown.thermalVoltage,
-        saturationCurrent,
-      );
-    }
-  }
-  return limitForwardVoltage(voltage, thermalVoltage, saturationCurrent);
-}
-
-function limitForwardVoltage(
-  voltage: number,
-  thermalVoltage: number,
-  saturationCurrent: number,
-): number {
-  const criticalVoltage = thermalVoltage
-    * Math.log(thermalVoltage / (Math.sqrt(2) * saturationCurrent));
-  if (voltage > criticalVoltage) {
-    return criticalVoltage
-      + thermalVoltage * Math.log(1 + (voltage - criticalVoltage) / thermalVoltage);
-  }
-  return Math.max(voltage, -40 * thermalVoltage);
 }
 
 function safeExponential(exponent: number): number {
