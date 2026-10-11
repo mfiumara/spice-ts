@@ -10,9 +10,11 @@ import { parseBJTInstance } from './bjt-parser.js';
 import { parsePoleZero } from './pole-zero-parser.js';
 import { parseSensitivity } from './sensitivity-parser.js';
 import {
+  parseCplLines,
   parseLossyTransmissionLine,
-  parseLtraModelCard,
   parseTransmissionLine,
+  parseTransmissionLineModelCard,
+  parseTxlLine,
 } from './transmission-line-parser.js';
 import { preprocess, preprocessLines } from './preprocessor.js';
 import { classifyControlCommand, repeatedControlAnalysisError } from './control-block.js';
@@ -519,9 +521,8 @@ function parseDotCommand(
         break;
       }
       assertSupportedModelType(tokens, lineNumber, context);
-      const model = tokens[2]?.toUpperCase() === 'LTRA'
-        ? parseLtraModelCard(tokens, lineNumber)
-        : parseModelCard(tokens, lineNumber);
+      const model = parseTransmissionLineModelCard(tokens, lineNumber)
+        ?? parseModelCard(tokens, lineNumber);
       circuit.addModel(model);
       break;
     }
@@ -886,6 +887,16 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
         tokens[1], tokens[2], tokens[3], tokens[4],
         modelName,
       );
+      break;
+    }
+    case 'Y': {
+      const { input, output, modelName, length } = parseTxlLine(tokens, lineNumber);
+      circuit.addLossyLines(name, 'Y', [input], [output], modelName, length);
+      break;
+    }
+    case 'P': {
+      const { inputs, outputs, modelName, length } = parseCplLines(tokens, lineNumber);
+      circuit.addLossyLines(name, 'P', inputs, outputs, modelName, length);
       break;
     }
     case 'V': {

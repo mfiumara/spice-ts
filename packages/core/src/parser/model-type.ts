@@ -13,7 +13,7 @@ export const SUPPORTED_MODEL_TYPES: ReadonlySet<string> = new Set([
   'VDMOS', 'VDMOSN', 'VDMOSP',
   'NHFET', 'NMF',
   'C', 'L',
-  'LTRA',
+  'LTRA', 'TXL', 'CPL',
 ]);
 
 /**
