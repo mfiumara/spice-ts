@@ -27,6 +27,7 @@ them by per-fixture metrics, not by hash.
 | 16 | `9ba80af` + `cc21aec` | #485 MNA stamp slot cache | `5a57e79a` | 63/1/36 | 70 / 51 | outcome reproduces run 15 exactly: outcome-neutral |
 | 17 | `1e8d9f8` (this branch, pin `cdd28c98`) | #478 MOS6 TransientChargeState | `e669374c` (before ledger edit) | 63/1/36 | 70 / 51 | only the 3 MOS6 fixtures: simpleinv v(11) 0.2215 → 0.1057 V, i(vin)/i(vdd) RMS down 71x/915x; mos6inv currents down but worst voltage 0.2798 → 0.3261 V, abs max worse on 39 of 44 (#479) |
 | 18 | `96a9039` (this branch, pin `cdd28c98` unchanged) | #483 charge LTE + PULSE omitted-parameter breakpoints | `662cd15d` (before ledger edit) | 63/1/36 | 70 / 51 | 12 transients: bjt-rtl v(3) 0.5997 → 0.2940 V; mos-amp v(6) 4.805 → 4.784 V; rel envelope 2.483e11 → 2.313e11; rc-transient v(2) 6.9e-4 → 1.67e-3 V loss; mesa unchanged |
+| 19 | `6ce5b1b` (this branch, pin `cdd28c98` unchanged) | #512 VBIC per-junction pnjlim + DC-sweep gmin fallback | `84761ba1` (before ledger edit) | 63/1/36 | 70 / 51 | only the 2 VBIC fixtures: PZ abs error down on 12 of 13; **loss** pole(1) 7175.34 → 7853.16 raises the abs envelope; **loss** AC v(3) 9.11e-10 → 1.20e-9 V; vbic-fo at rounding level |
 | final | this branch, regenerated ledger | — | see AGGREGATE_PARITY.md | 63/1/36 | 70 / 51 | `--check` passes |
 
 ngspice stays at 52/9/39 throughout. Run 5 reproducing run 4's metrics
@@ -41,11 +42,15 @@ merge. Rows 15 and 16 ran in throwaway worktrees (main commit + `cc21aec`,
 `git merge --no-commit`) with only the SOURCES.md pin set to that commit's
 catalogue (`7c3bae20`); row 17 is the merged branch with the pin at `cdd28c98`,
 before the ledger text was edited. Row 18 is the branch after merging main
-`96a9039` (SOURCES.md unchanged), before the ledger text was edited. Nothing
-from the bisect patches is committed.
+`96a9039` (SOURCES.md unchanged), before the ledger text was edited. Row 19 is
+the branch after merging main `6ce5b1b` (SOURCES.md unchanged), before the
+ledger text was edited; it reproduces the reviewer's independent `84761ba1`
+regeneration. Nothing from the bisect patches is committed.
 
 ## Notable moves (abs max / abs RMS)
 
+- #512 gains: vbic-common-emitter-ac PZ abs error down on 12 of 13 poles/zeros (pole(2) 4757.49 → 4755.42, pole(3)/(4) 69.489 → 68.593, zero(1) 7022.01 → 7021.92); AC abs max/RMS down on 5 of 6 signals (i(vmeas) 2.872996e-6 → 2.872988e-6 A); vbic-fo i(vc) at rounding level.
+- #512 losses: vbic-common-emitter-ac PZ pole(1) 7175.34033203125 → 7853.15771484375 (relative 6.14e-9 → 6.72e-9), which raises the absolute max/RMS envelope; AC v(3) 9.11e-10 → 1.20e-9 V (RMS 2.228e-10 → 2.284e-10 V); AC i(vcc) rel max 1.06306e-7 → 1.06320e-7; vbic-fo i(v1)/i(vb) abs RMS +6e-19 A.
 - #483 gains: corpus-e/bjt-rtl-inverter-chain v(3) 0.5997 → 0.2940 V, v(2) 0.214 → 0.119 V (removes the #463 loss); mos-amplifier v(6) 4.805 → 4.784 V; coupled-lossy-lines 0.866 → 0.845 V and v(5) rel max 2.483e11 → 2.313e11 (relative envelope); lossy-line-24-inch v(2) 1.135 → 1.115 V; schmitt-trigger RMS down on 8 of 10. mesa-oscillator unchanged.
 - #483 losses: rc-transient (ngspice and classic) v(2)/i(vin) 6.89e-4 → 1.67e-3 at matched points (closed-form error improves per PR #483); bjt-rtl v(5) 0.243 → 0.282 V; mos-amplifier v(5) 4.494 → 4.571 V; lossy-line-24-inch v(3) 1.104 → 1.122 V; coupled-lossy-lines RMS up on 12 of 47; mos-memory-cell RMS up on 8 of 13; rtl-inverter-chain RMS up on 4 of 8.
 - #474 and #485: no per-fixture metric, grid or status change (rows 15-16).

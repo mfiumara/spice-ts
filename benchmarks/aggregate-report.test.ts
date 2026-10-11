@@ -147,6 +147,10 @@ describe('aggregate report artifact verification', () => {
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #474') && text.includes('PR #485') && text.includes('PR #478') && text.includes('#479')));
     // Charge LTE and PULSE breakpoints (#469, PR #483): bjt-rtl v(3) loss gone, rc-transient matched-point loss published.
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #483') && text.includes('231274507458.05075') && text.includes('rc-transient')));
+    // VBIC per-junction pnjlim (#472, PR #512): pole(1) envelope loss 7175.3 -> 7853.2 and AC v(3) loss published next to the PZ gains.
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #512') && text.includes('7175.34033203125 to 7853.15771484375') && text.includes('v(3) abs max 9.11e-10 to 1.20e-9')));
+    assert.equal(vbicAc.comparisons[1].metrics.signals['v(pole(1))'].absoluteError.max, 7853.15771484375);
+    assert.equal(vbicAc.comparisons[0].metrics.signals['v(3)'].absoluteError.max, 1.1984493472929842e-9);
     const mos6Worst: Record<string, number> = {
       'ngspice/mos6-inverter-transient': 0.3261166904115491,
       'ngspice/mos6-simple-inverter-transient': 0.10566947866046283,
@@ -217,8 +221,8 @@ describe('aggregate report artifact verification', () => {
     assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
     assert.equal(report.matchedPointEnvelope.comparedSignals, 969);
     assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 933);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 7175.34033203125);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 7175.34033203125);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 7853.15771484375);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 7853.15771484375);
     assert.equal(report.matchedPointEnvelope.maximumRelativeError, 231274507458.05075);
     assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 4829584075.03667);
   });
