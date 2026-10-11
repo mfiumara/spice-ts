@@ -32,6 +32,11 @@ them by per-fixture metrics, not by hash.
 | 21 | `dc4557f` + `c8018ec` | #523 parenthesised source waveforms + PULSE NP | `9d03bb26` (metrics identical to run 20) | 63/1/36 | 70 / 51 | SOURCES.md pin `cdd28c98` → `8fa511b0` only; no corpus deck uses the new syntax |
 | 22 | `a8c90e8` (this branch, pin `8fa511b0`) | #522 static trap history under breakpoints | `7d0e100c` (before ledger edit) | 63/1/36 | 70 / 51 | 12 transients: mesa 0.358 → 0.290 V; mos6inv 0.3261 → 0.2921 V; **loss** coupled-lossy-lines v(5) rel max 2.313e11 → 5.358e11 (rel envelope); **loss** lossy-line-24-inch v(2) 1.115 → 1.414 V; **loss** mos-amp v(6) 4.784 → 4.806 V |
 | 23 | `7a0a486` (this branch, pin `8fa511b0` unchanged) | #527 BJT AREA=/M= + diode thermal-node form | `c6f33703` (same as the a8c90e8 branch head with its ledger) | 63/1/36 | 70 / 51 | outcome-neutral |
+| 24 | `5967c02` + `0eeb242` | #534 MOS1-3 ngspice-47 defaults (TOX/NSUB-derived KP/VTO) | `3fa89735` | 63/1/36 | 70 / 51 | only mos-amplifier (2 rows): RMS down on 9 of 24 (v(12) 1.170 → 0.093 V); **loss** worst 4.806 V v(6) → 5.255 V v(5), RMS up on 12 of 24 |
+| 25 | `e029152` + `0eeb242` | #536 ngspice-47 LTRA convolution | `546f7478` | 63/1/36 | 70 / 51 | 3 LTRA transients: ltra-line v(3) 0.413 → 0.088 V; lossy-line-24-inch 1.414 → 0.494 V; coupled-lossy-lines v(5) rel max 5.358e11 → 1.902e5 (rel envelope → 1.076e6, mos6inv); **loss** coupled v(x1.21) 0.0136 → 0.0141 V |
+| 26 | `d8a5d41` + `0eeb242` | #516 .control analysis commands | `546f7478` | 63/1/36 | 70 / 51 | outcome-neutral (reproduces run 25) |
+| 27 | `5aa704d` + `0eeb242` | #540 BJT IS=1e-16 + kT/q | `0c36526c` | 63/1/36 | 70 / 51 | 23 analyses on 14 fixtures: BJT DC/OP errors down 10x-1e6x (rtl-inverter DC 1.80 → 0.0035 V); **loss** rca3040 AC v(14) 1.017 → 1.775 V (rel max down); **loss** coupled-lossy-lines 0.816 → 0.927 V; **loss** lossy-line-24-inch v(3) 0.494 → 0.512 V |
+| 28 | `fbbbe85` (this branch, pin `2552da00`) | #535 + #533 SPICE3 translation corpora | `d72e5968` (before ledger edit) | 63/1/36 | 70 / 51 | metrics identical to run 27; SOURCES.md pin `8fa511b0` → `2552da00` (#533) only |
 | final | this branch, regenerated ledger | — | see AGGREGATE_PARITY.md | 63/1/36 | 70 / 51 | `--check` passes |
 
 ngspice stays at 52/9/39 throughout. Run 5 reproducing run 4's metrics
@@ -52,10 +57,17 @@ ledger text was edited; it reproduces the reviewer's independent `84761ba1`
 regeneration. Rows 20 and 21 ran in throwaway worktrees (main commit +
 `c8018ec`, `git merge --no-commit`); row 21 had only the SOURCES.md pin set to
 `8fa511b0`. Row 22 is this branch after merging main `a8c90e8`, before the
-ledger text was edited. Nothing from the bisect patches is committed.
+ledger text was edited. Rows 24-27 ran in throwaway worktrees (main commit +
+`0eeb242`, `git merge --no-commit`, SOURCES.md unchanged at `8fa511b0`); row 28
+is this branch after merging main `fbbbe85` with only the pin updated, before
+the ledger text was edited. Nothing from the bisect patches is committed.
 
 ## Notable moves (abs max / abs RMS)
 
+- #534: mos-amplifier (442 → 435 points) RMS down on 9 of 24 (v(12) 1.170 → 0.093 V, v(4) 1.270 → 0.767 V); **losses** worst 4.806 V v(6) → 5.255 V v(5) (new non-PZ worst, RMS 2.345 → 2.897 V), v(1) 1.837 → 2.379 V, RMS up on 12 of 24.
+- #536 gains: ltra-line-transient v(3) 0.413 → 0.088 V; lossy-line-24-inch v(2) 1.414 → 0.368 V; coupled-lossy-lines RMS down on 39 of 47, v(5) rel max 5.358e11 → 1.902e5, removing the #522 relative envelope loss. Losses: ltra i(vs) RMS 5.52e-7 → 5.60e-7 A; coupled v(x1.21) 0.0136 → 0.0141 V.
+- #516, #535 and #533: no per-fixture metric, grid or status change (rows 26, 28).
+- #540 gains: rca3040 DC 0.238 → 0.064 V and TRAN 0.339 → 0.256 V; rtl-inverter-chain DC 1.803 → 0.0035 V, TRAN 0.285 → 0.088 V; bjt-diffpair rows OP 0.119 V → ~5e-7 V; diffpair-current-source AC 0.517 V → 2.7e-5 V; xyce/npn-dc 0.119 V → 5.4e-4 V; bjt-noise rel 4.9e-4 → 1.2e-7. Losses: rca3040 AC v(14) 1.017 → 1.775 V (rel max 0.0285 → 0.0220); coupled-lossy-lines 0.816 → 0.927 V, RMS up on 34 of 47; lossy-line-24-inch v(3) 0.494 → 0.512 V; jimi-fuzz TRAN v(11) 3.656 → 3.662 V.
 - #515, #523 and #527: no per-fixture metric, grid or status change (rows 20, 21, 23).
 - #522 gains: mesa-oscillator (3861 → 1348 points) worst 0.358 V v(4) → 0.290 V v(8), abs max/RMS down on 36 of 37; mos6-inverter-transient / mos6-inverter-chain worst 0.3261 → 0.2921 V, abs RMS down on 42 of 44 (v(43) 0.0724 → 0.0110 V); schmitt-trigger rows (3227 → 204 points) v(6) 0.770 → 0.758 V, RMS down on 7 of 10; lossy-line-aluminium RMS down on 260 of 261; mos1-inverter-sweep TRAN v(5) 0.0475 → 0.0045 V; mos-amplifier v(5) 4.571 → 4.521 V.
 - #522 losses: coupled-lossy-lines (3917 → 5972 points) worst 0.845 → 0.865 V, abs max up on 29 / RMS up on 32 of 47, v(5) rel max 2.313e11 → 5.358e11 (relative envelope); lossy-line-24-inch v(2) 1.115 → 1.414 V, v(3) 1.122 → 1.210 V; mos-amplifier v(6) 4.784 → 4.806 V (new non-PZ worst), RMS up on 12 of 24; ltra-line v(2) RMS 0.0719 → 0.0816 V; mos6inv v(xndinv4.14) rel max 20.5 → 126.

@@ -10,8 +10,8 @@
   "provenance": {
     "source": "benchmarks/corpus/ngspice/manifest.json",
     "license": "BSD-3-Clause",
-    "sourcesSha256": "8fa511b0f5c82222d61a8269f8f2b22e55625c5961664288abce37bb5d0db8bc",
-    "sourcesRepin": "Re-pinned from b6540a74 to the benchmarks/SOURCES.md of main ef8c5d4 (53cd510c), then to that of main 1e8d9f8 (cdd28c98), then to that of main dc4557f (8fa511b0), by #467 (PR #470). The manifest, fixture-set and per-fixture hashes below are unchanged and still verified; no fixture outcome was re-run.",
+    "sourcesSha256": "2552da006e53a7d8e7d9c887a81b7d491bb52f3dab8ef21f76546d27d19962c0",
+    "sourcesRepin": "Re-pinned from b6540a74 to the benchmarks/SOURCES.md of main ef8c5d4 (53cd510c), then to that of main 1e8d9f8 (cdd28c98), then to that of main dc4557f (8fa511b0), then to that of main fbbbe85 (2552da00), by #467 (PR #470). The manifest, fixture-set and per-fixture hashes below are unchanged and still verified; no fixture outcome was re-run.",
     "manifestSha256": "38a7b34cfbf14f840fa9f84bfeaf31a5696a19c4152accde8647b9c00ac63389",
     "fixtureSetSha256": "78af5f10679e0842efbbb74815fb5d9403e7e9059fb3617524c66b04e13a26b3"
   },

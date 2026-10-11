@@ -153,6 +153,10 @@ describe('aggregate report artifact verification', () => {
     assert.equal(vbicAc.comparisons[0].metrics.signals['v(3)'].absoluteError.max, 1.1984493472929842e-9);
     // Static trapezoidal history under breakpoints (#482, PR #522): mesa and mos6inv gain, coupled-lossy-lines relative envelope loss published.
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #515') && text.includes('PR #523') && text.includes('PR #522') && text.includes('231274507458.05075 to 535751686335.6694') && text.includes('PR #527')));
+    // MOS1-3 defaults (#534), LTRA convolution (#536) and BJT IS/VT (#540): the #522 relative envelope loss is gone, mos-amp v(5) and rca3040 AC losses published.
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #534') && text.includes('PR #536') && text.includes('PR #516') && text.includes('PR #540') && text.includes('PR #535') && text.includes('PR #533') && text.includes('535751686335.6694 to 190231.44') && text.includes('4.806 V v(6) to 5.255 V v(5)') && text.includes('AC v(14) abs max 1.017 to 1.775 V')));
+    const mosAmp = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/mos-amplifier-transient');
+    assert.equal(mosAmp.comparisons[0].metrics.signals['v(5)'].absoluteError.max, 5.254603580027675);
     const mos6Worst: Record<string, number> = {
       'ngspice/mos6-inverter-transient': 0.29206718514420427,
       'ngspice/mos6-simple-inverter-transient': 0.10566947866046283,
@@ -213,7 +217,7 @@ describe('aggregate report artifact verification', () => {
 
     assert.deepEqual(report.provenance, {
       fixtureTreeSha256: '13b4675cfb97766fc7caed79d023ca514840880d17cb924c0e70561ff8b82e00',
-      sourcesSha256: '8fa511b0f5c82222d61a8269f8f2b22e55625c5961664288abce37bb5d0db8bc',
+      sourcesSha256: '2552da006e53a7d8e7d9c887a81b7d491bb52f3dab8ef21f76546d27d19962c0',
     });
   });
 
@@ -226,8 +230,8 @@ describe('aggregate report artifact verification', () => {
     assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 933);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 7853.15771484375);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 7853.15771484375);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 535751686335.6694);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 7807328392.665471);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 1075904.729730855);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 201300.57592313777);
   });
 
   it('commits runtime sums derived from all 100 engine receipts', async () => {
