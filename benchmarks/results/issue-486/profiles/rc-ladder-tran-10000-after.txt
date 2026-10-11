@@ -1,0 +1,45 @@
+rc-ladder-tran-10000-after.cpuprofile: 976 samples, 4064.1 ms sampled
+
+Top self time
+     668.3 ms  16.4%  stampG packages/core/dist/chunk-2QFKAOTH.js:10876
+     625.0 ms  15.4%  buildStep packages/core/dist/chunk-2QFKAOTH.js:12272
+     570.8 ms  14.0%  buildCompanionSystem packages/core/dist/chunk-2QFKAOTH.js:11398
+     346.2 ms   8.5%  (garbage collector)
+     318.7 ms   7.8%  attemptStep packages/core/dist/chunk-2QFKAOTH.js:11578
+     294.8 ms   7.3%  factorize packages/core/dist/chunk-2QFKAOTH.js:10338
+     200.0 ms   4.9%  stampPrevB packages/core/dist/chunk-2QFKAOTH.js:12198
+     171.4 ms   4.2%  stamp packages/core/dist/chunk-2QFKAOTH.js:761
+     152.3 ms   3.7%  appendOrdered packages/core/dist/chunk-2QFKAOTH.js:12487
+      97.8 ms   2.4%  advance packages/core/dist/chunk-2QFKAOTH.js:11990
+      89.2 ms   2.2%  stampC packages/core/dist/chunk-2QFKAOTH.js:10882
+      69.5 ms   1.7%  stampDynamic packages/core/dist/chunk-2QFKAOTH.js:1028
+      32.0 ms   0.8%  amdOrdering packages/core/dist/chunk-2QFKAOTH.js:10028
+      30.2 ms   0.7%  compile packages/core/dist/chunk-2QFKAOTH.js:7589
+      27.0 ms   0.7%  lockTopology packages/core/dist/chunk-2QFKAOTH.js:10686
+      25.5 ms   0.6%  solveTransient packages/core/dist/chunk-2QFKAOTH.js:12470
+      23.5 ms   0.6%  analyzePattern packages/core/dist/chunk-2QFKAOTH.js:10246
+      21.5 ms   0.5%  newtonRaphson packages/core/dist/chunk-2QFKAOTH.js:10991
+      21.2 ms   0.5%  acceptTransientStep packages/core/dist/chunk-2QFKAOTH.js:12235
+      19.7 ms   0.5%  slotOf packages/core/dist/chunk-2QFKAOTH.js:10924
+
+Top inclusive time
+    4064.1 ms 100.0%  (root)
+    3642.6 ms  89.6%  simulate packages/core/dist/chunk-2QFKAOTH.js:15550
+    3468.7 ms  85.3%  solveTransient packages/core/dist/chunk-2QFKAOTH.js:12470
+    3273.4 ms  80.5%  advance packages/core/dist/chunk-2QFKAOTH.js:11990
+    2119.2 ms  52.1%  attemptStep packages/core/dist/chunk-2QFKAOTH.js:11578
+    1410.7 ms  34.7%  buildCompanionSystem packages/core/dist/chunk-2QFKAOTH.js:11398
+     812.4 ms  20.0%  stamp packages/core/dist/chunk-2QFKAOTH.js:761
+     696.5 ms  17.1%  stampG packages/core/dist/chunk-2QFKAOTH.js:10876
+     625.0 ms  15.4%  buildStep packages/core/dist/chunk-2QFKAOTH.js:12272
+     384.0 ms   9.4%  stampPrevB packages/core/dist/chunk-2QFKAOTH.js:12198
+     346.2 ms   8.5%  (garbage collector)
+     315.5 ms   7.8%  solveLinearized packages/core/dist/chunk-2QFKAOTH.js:11670
+     299.8 ms   7.4%  factorize packages/core/dist/chunk-2QFKAOTH.js:10338
+     152.3 ms   3.7%  appendOrdered packages/core/dist/chunk-2QFKAOTH.js:12487
+     152.3 ms   3.7%  save packages/core/dist/chunk-2QFKAOTH.js:12495
+     135.4 ms   3.3%  stampDynamic packages/core/dist/chunk-2QFKAOTH.js:1028
+      89.2 ms   2.2%  stampC packages/core/dist/chunk-2QFKAOTH.js:10882
+      84.0 ms   2.1%  solveDCOperatingPoint packages/core/dist/chunk-2QFKAOTH.js:11206
+      84.0 ms   2.1%  transientInitialSolution packages/core/dist/chunk-2QFKAOTH.js:15838
+      75.3 ms   1.9%  newtonRaphson packages/core/dist/chunk-2QFKAOTH.js:10991

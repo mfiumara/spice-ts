@@ -1,0 +1,45 @@
+cmos-inverter-chain-tran-10000-after.cpuprofile: 11108 samples, 46283.3 ms sampled
+
+Top self time
+   12745.8 ms  27.5%  batchStamp packages/core/dist/chunk-2QFKAOTH.js:3310
+    4491.8 ms   9.7%  stamp packages/core/dist/chunk-2QFKAOTH.js:3135
+    4400.1 ms   9.5%  buildCompanionSystem packages/core/dist/chunk-2QFKAOTH.js:11398
+    4338.0 ms   9.4%  factorize packages/core/dist/chunk-2QFKAOTH.js:10338
+    3901.2 ms   8.4%  stampG packages/core/dist/chunk-2QFKAOTH.js:10876
+    2768.8 ms   6.0%  stampDynamic packages/core/dist/chunk-2QFKAOTH.js:1028
+    2233.4 ms   4.8%  (garbage collector)
+    1912.2 ms   4.1%  buildStep packages/core/dist/chunk-2QFKAOTH.js:12272
+    1448.0 ms   3.1%  attemptStep packages/core/dist/chunk-2QFKAOTH.js:11578
+    1191.8 ms   2.6%  limitNewtonStep packages/core/dist/chunk-2QFKAOTH.js:3076
+    1115.6 ms   2.4%  stampPrevB packages/core/dist/chunk-2QFKAOTH.js:12198
+     980.7 ms   2.1%  getVoltage packages/core/dist/chunk-2QFKAOTH.js:10885
+     895.8 ms   1.9%  stampB packages/core/dist/chunk-2QFKAOTH.js:10879
+     717.8 ms   1.6%  newtonRaphson packages/core/dist/chunk-2QFKAOTH.js:10991
+     564.3 ms   1.2%  appendOrdered packages/core/dist/chunk-2QFKAOTH.js:12487
+     521.3 ms   1.1%  sortInt32Prefix packages/core/dist/chunk-2QFKAOTH.js:10565
+     449.6 ms   1.0%  bulkJunction packages/core/dist/chunk-2QFKAOTH.js:2921
+     254.8 ms   0.6%  stampC packages/core/dist/chunk-2QFKAOTH.js:10882
+     158.5 ms   0.3%  applyDeviceStepLimits packages/core/dist/chunk-2QFKAOTH.js:10979
+     132.7 ms   0.3%  acceptTransientStep packages/core/dist/chunk-2QFKAOTH.js:3252
+
+Top inclusive time
+   46283.3 ms 100.0%  (root)
+   43933.3 ms  94.9%  simulate packages/core/dist/chunk-2QFKAOTH.js:15550
+   36931.6 ms  79.8%  solveTransient packages/core/dist/chunk-2QFKAOTH.js:12470
+   36282.4 ms  78.4%  advance packages/core/dist/chunk-2QFKAOTH.js:11990
+   26341.3 ms  56.9%  attemptStep packages/core/dist/chunk-2QFKAOTH.js:11578
+   20569.3 ms  44.4%  buildCompanionSystem packages/core/dist/chunk-2QFKAOTH.js:11398
+   13140.3 ms  28.4%  batchStamp packages/core/dist/chunk-2QFKAOTH.js:3310
+    9614.0 ms  20.8%  stamp packages/core/dist/chunk-2QFKAOTH.js:3135
+    7711.9 ms  16.7%  stampPrevB packages/core/dist/chunk-2QFKAOTH.js:12198
+    6886.3 ms  14.9%  transientInitialSolution packages/core/dist/chunk-2QFKAOTH.js:15838
+    6884.4 ms  14.9%  solveDCOperatingPoint packages/core/dist/chunk-2QFKAOTH.js:11206
+    6867.0 ms  14.8%  newtonRaphson packages/core/dist/chunk-2QFKAOTH.js:10991
+    4915.9 ms  10.6%  factorize packages/core/dist/chunk-2QFKAOTH.js:10338
+    4189.1 ms   9.1%  solveLinearized packages/core/dist/chunk-2QFKAOTH.js:11670
+    3902.9 ms   8.4%  stampG packages/core/dist/chunk-2QFKAOTH.js:10876
+    3445.1 ms   7.4%  dynamicGminStepping packages/core/dist/chunk-2QFKAOTH.js:11281
+    3410.2 ms   7.4%  (anonymous) packages/core/dist/chunk-2QFKAOTH.js:11287
+    3410.2 ms   7.4%  stepGmin packages/core/dist/chunk-2QFKAOTH.js:11325
+    3021.2 ms   6.5%  stampDynamic packages/core/dist/chunk-2QFKAOTH.js:1028
+    2233.4 ms   4.8%  (garbage collector)

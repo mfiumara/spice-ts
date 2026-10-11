@@ -1,0 +1,45 @@
+rc-ladder-tran-10000-before.cpuprofile: 390 samples, 1605.3 ms sampled
+
+Top self time
+     314.8 ms  19.6%  factorize packages/core/dist/chunk-TDZVEW3N.js:10303
+     229.7 ms  14.3%  buildCompanionSystem packages/core/dist/chunk-TDZVEW3N.js:11360
+     210.8 ms  13.1%  stampG packages/core/dist/chunk-TDZVEW3N.js:10838
+     181.5 ms  11.3%  buildStep packages/core/dist/chunk-TDZVEW3N.js:12234
+     161.7 ms  10.1%  (garbage collector)
+      96.6 ms   6.0%  attemptStep packages/core/dist/chunk-TDZVEW3N.js:11540
+      50.2 ms   3.1%  appendOrdered packages/core/dist/chunk-TDZVEW3N.js:12449
+      43.9 ms   2.7%  stamp packages/core/dist/chunk-TDZVEW3N.js:761
+      42.4 ms   2.6%  stampPrevB packages/core/dist/chunk-TDZVEW3N.js:12160
+      40.1 ms   2.5%  stampC packages/core/dist/chunk-TDZVEW3N.js:10844
+      34.6 ms   2.2%  advance packages/core/dist/chunk-TDZVEW3N.js:11952
+      30.4 ms   1.9%  stampDynamic packages/core/dist/chunk-TDZVEW3N.js:1028
+      19.2 ms   1.2%  lockTopology packages/core/dist/chunk-TDZVEW3N.js:10648
+      13.8 ms   0.9%  newtonRaphson packages/core/dist/chunk-TDZVEW3N.js:10953
+      10.0 ms   0.6%  collectStatements packages/core/dist/chunk-TDZVEW3N.js:8632
+      10.0 ms   0.6%  firstParam packages/core/dist/chunk-TDZVEW3N.js:285
+       8.8 ms   0.5%  compile packages/core/dist/chunk-TDZVEW3N.js:7589
+       7.3 ms   0.5%  amdOrdering packages/core/dist/chunk-TDZVEW3N.js:10028
+       6.8 ms   0.4%  tokenizeNetlist packages/core/dist/chunk-TDZVEW3N.js:5152
+       6.5 ms   0.4%  compileSourceTextModule node:internal/modules/esm/utils:344
+
+Top inclusive time
+    1605.3 ms 100.0%  (root)
+    1399.1 ms  87.2%  simulate packages/core/dist/chunk-TDZVEW3N.js:15512
+    1320.0 ms  82.2%  solveTransient packages/core/dist/chunk-TDZVEW3N.js:12432
+    1263.4 ms  78.7%  advance packages/core/dist/chunk-TDZVEW3N.js:11952
+     928.7 ms  57.8%  attemptStep packages/core/dist/chunk-TDZVEW3N.js:11540
+     494.0 ms  30.8%  buildCompanionSystem packages/core/dist/chunk-TDZVEW3N.js:11360
+     320.0 ms  19.9%  solveLinearized packages/core/dist/chunk-TDZVEW3N.js:11632
+     314.8 ms  19.6%  factorize packages/core/dist/chunk-TDZVEW3N.js:10303
+     245.0 ms  15.3%  stamp packages/core/dist/chunk-TDZVEW3N.js:761
+     215.7 ms  13.4%  stampG packages/core/dist/chunk-TDZVEW3N.js:10838
+     181.5 ms  11.3%  buildStep packages/core/dist/chunk-TDZVEW3N.js:12234
+     161.7 ms  10.1%  (garbage collector)
+     114.9 ms   7.2%  stampPrevB packages/core/dist/chunk-TDZVEW3N.js:12160
+      60.4 ms   3.8%  stampDynamic packages/core/dist/chunk-TDZVEW3N.js:1028
+      50.2 ms   3.1%  appendOrdered packages/core/dist/chunk-TDZVEW3N.js:12449
+      50.2 ms   3.1%  save packages/core/dist/chunk-TDZVEW3N.js:12457
+      45.3 ms   2.8%  solveDCOperatingPoint packages/core/dist/chunk-TDZVEW3N.js:11168
+      45.3 ms   2.8%  transientInitialSolution packages/core/dist/chunk-TDZVEW3N.js:15800
+      40.3 ms   2.5%  newtonRaphson packages/core/dist/chunk-TDZVEW3N.js:10953
+      40.1 ms   2.5%  stampC packages/core/dist/chunk-TDZVEW3N.js:10844

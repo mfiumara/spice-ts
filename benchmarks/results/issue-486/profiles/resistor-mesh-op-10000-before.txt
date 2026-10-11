@@ -1,0 +1,45 @@
+resistor-mesh-op-10000-before.cpuprofile: 128 samples, 417.1 ms sampled
+
+Top self time
+     209.0 ms  50.1%  factorize packages/core/dist/chunk-TDZVEW3N.js:10303
+      36.9 ms   8.9%  amdOrdering packages/core/dist/chunk-TDZVEW3N.js:10028
+      25.8 ms   6.2%  (garbage collector)
+      21.5 ms   5.2%  compile packages/core/dist/chunk-TDZVEW3N.js:7589
+      13.0 ms   3.1%  analyzePattern packages/core/dist/chunk-TDZVEW3N.js:10241
+      11.7 ms   2.8%  lockTopology packages/core/dist/chunk-TDZVEW3N.js:10648
+       9.4 ms   2.3%  parseNetlist packages/core/dist/chunk-TDZVEW3N.js:8882
+       8.9 ms   2.1%  stamp packages/core/dist/chunk-TDZVEW3N.js:761
+       8.8 ms   2.1%  addPosition packages/core/dist/chunk-TDZVEW3N.js:10690
+       6.4 ms   1.5%  tokenizeLine packages/core/dist/chunk-TDZVEW3N.js:5182
+       6.0 ms   1.4%  parseDevice packages/core/dist/chunk-TDZVEW3N.js:9541
+       5.3 ms   1.3%  (program)
+       5.1 ms   1.2%  open
+       5.0 ms   1.2%  compileSourceTextModule node:internal/modules/esm/utils:344
+       5.0 ms   1.2%  substituteStatement packages/core/dist/chunk-TDZVEW3N.js:8619
+       5.0 ms   1.2%  collectStatements packages/core/dist/chunk-TDZVEW3N.js:8632
+       5.0 ms   1.2%  resolveNode packages/core/dist/chunk-TDZVEW3N.js:7629
+       5.0 ms   1.2%  createWritableStdioStream node:internal/bootstrap/switches/is_main_thread:50
+       4.7 ms   1.1%  newtonRaphson packages/core/dist/chunk-TDZVEW3N.js:10953
+       4.0 ms   1.0%  addResistor packages/core/dist/chunk-TDZVEW3N.js:7008
+
+Top inclusive time
+     417.1 ms 100.0%  (root)
+     336.5 ms  80.7%  simulate packages/core/dist/chunk-TDZVEW3N.js:15512
+     302.1 ms  72.4%  newtonRaphson packages/core/dist/chunk-TDZVEW3N.js:10953
+     302.1 ms  72.4%  solveDCOperatingPoint packages/core/dist/chunk-TDZVEW3N.js:11168
+     211.1 ms  50.6%  factorize packages/core/dist/chunk-TDZVEW3N.js:10303
+      49.9 ms  12.0%  analyzePattern packages/core/dist/chunk-TDZVEW3N.js:10241
+      49.9 ms  12.0%  getSparseSolver packages/core/dist/chunk-TDZVEW3N.js:10775
+      36.9 ms   8.9%  amdOrdering packages/core/dist/chunk-TDZVEW3N.js:10028
+      33.7 ms   8.1%  parseAsync packages/core/dist/chunk-TDZVEW3N.js:9024
+      29.1 ms   7.0%  compile packages/core/dist/chunk-TDZVEW3N.js:7589
+      28.7 ms   6.9%  parseNetlist packages/core/dist/chunk-TDZVEW3N.js:8882
+      28.7 ms   6.9%  parse packages/core/dist/chunk-TDZVEW3N.js:8876
+      25.8 ms   6.2%  (garbage collector)
+      20.5 ms   4.9%  lockTopology packages/core/dist/chunk-TDZVEW3N.js:10648
+      12.5 ms   3.0%  stamp packages/core/dist/chunk-TDZVEW3N.js:761
+      10.1 ms   2.4%  loadAndTranslate node:internal/modules/esm/loader:608
+      10.1 ms   2.4%  #createModuleJob node:internal/modules/esm/loader:632
+      10.1 ms   2.4%  #getJobFromResolveResult node:internal/modules/esm/loader:347
+      10.1 ms   2.4%  getModuleJobForImport node:internal/modules/esm/loader:319
+      10.0 ms   2.4%  parseDevice packages/core/dist/chunk-TDZVEW3N.js:9541
