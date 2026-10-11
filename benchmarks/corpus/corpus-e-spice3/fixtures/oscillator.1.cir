@@ -1,0 +1,18 @@
+*oscillator, .159 Hz.
+* SPICE3 (ngspice-dialect) translation of Gnucap tests/oscillator.1.ckt at gnucap/gnucap@5acb027125d6ea7c546badd03e026d8781c6a400.
+* Original: Gnucap regression tests, GPL-3.0-or-later (see LICENSE-NOTICE.MakeList and COPYING.txt here).
+* Modified 2026-10-11 by benchmarks/translate/gnucap-to-spice3.ts (spice-ts issue #524); changes:
+*   - `i1 1 0 pwl 0 5 .1 0`: Gnucap unparenthesised `pwl` arguments wrapped in parentheses
+*   - commented out `.width out=80` (Gnucap `.width` only sets the console output width)
+*   - `.plot tran v(1)`: `.plot` written as `.print` (line-printer plot is console formatting only)
+*   - commented out `.status notime` (Gnucap `.status` only prints solver statistics)
+* The first line above is the unchanged original title line.
+C1 1 0 1
+L1 1 0 1
+i1 1 0 pwl(0 5 .1 0)
+
+*gnucap-only: .width out=80
+.print tran v(1)
+.tran .5 100 0
+*gnucap-only: .status notime
+.end

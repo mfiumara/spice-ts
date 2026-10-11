@@ -12,7 +12,9 @@ const netlist = [
   'a1 in out buf',
   'r1 in out 1k',
   '.ends',
-  '.model buf d_buffer',
+  // No `.model buf d_buffer` card: since #509 an unsupported model type is
+  // rejected on its own (see parser/unsupported-model-type.test.ts), and this
+  // guard is about the unsupported A card inside the subcircuit body.
   'v1 1 0 dc 1',
   'x1 1 2 digital',
   'r2 2 0 1k',

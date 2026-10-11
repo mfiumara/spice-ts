@@ -2,6 +2,7 @@ import { Circuit } from '../circuit.js';
 import { ParseError } from '../errors.js';
 import { tokenizeNetlist, parseNumber } from './tokenizer.js';
 import { parseModelCard } from './model-parser.js';
+import { assertSupportedModelType } from './model-type.js';
 import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
@@ -23,6 +24,7 @@ import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../t
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 export { parseSourceWaveform } from './waveform-parser.js';
+export { SUPPORTED_MODEL_TYPES, UnsupportedModelTypeError } from './model-type.js';
 
 /**
  * Parse a standard SPICE deck into a {@link Circuit} object.
@@ -107,6 +109,9 @@ function parseNetlist(
             subcktCollector = null;
           }
         } else {
+          // Subcircuit bodies are compiled later; reject unsupported model types now,
+          // while the source line is still known.
+          if (first === '.MODEL') assertSupportedModelType(tokens, lineNumber, raw);
           subcktCollector.body.push(raw);
         }
         continue;
@@ -510,6 +515,7 @@ function parseDotCommand(
       break;
     }
     case '.MODEL': {
+      assertSupportedModelType(tokens, lineNumber, context);
       const model = parseTransmissionLineModelCard(tokens, lineNumber)
         ?? parseModelCard(tokens, lineNumber);
       circuit.addModel(model);

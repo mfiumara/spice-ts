@@ -67,6 +67,12 @@ export class GilbertPeierlsSolver implements SparseSolver {
   private factorized = false;
   private variables: readonly MatrixVariableIdentity[] = [];
 
+  // Inputs of the current factors, for skipping an identical refactorization.
+  private factoredValues: Float64Array | null = null;
+  private factoredColPtr: Int32Array | null = null;
+  private factoredRowIdx: Int32Array | null = null;
+  private numericCount = 0;
+
   private readonly pivotThreshold = 0.1;
 
   constructor(options: GilbertPeierlsOptions = {}) {
@@ -123,6 +129,39 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
     this.analyzed = true;
     this.factorized = false;
+    this.factoredColPtr = null;
+    this.factoredRowIdx = null;
+  }
+
+  /** Numeric factorizations performed, excluding skipped identical ones. Diagnostics only. */
+  get numericFactorizations(): number {
+    return this.numericCount;
+  }
+
+  /**
+   * True when A is bit-identical (signed zeros included) to the matrix the
+   * current factors were computed from, on the same structure arrays.
+   */
+  private matchesFactoredInput(A: CscMatrix): boolean {
+    const prev = this.factoredValues;
+    if (!this.factorized || prev === null) return false;
+    if (A.colPtr !== this.factoredColPtr || A.rowIdx !== this.factoredRowIdx) return false;
+    const values = A.values;
+    const nnz = A.colPtr[this.n];
+    for (let p = 0; p < nnz; p++) {
+      const v = values[p];
+      if (v !== prev[p] || (v === 0 && 1 / v !== 1 / prev[p])) return false;
+    }
+    return true;
+  }
+
+  private recordFactoredInput(A: CscMatrix): void {
+    const nnz = A.colPtr[this.n];
+    let prev = this.factoredValues;
+    if (prev === null || prev.length < nnz) prev = this.factoredValues = new Float64Array(nnz);
+    prev.set(A.values.subarray(0, nnz));
+    this.factoredColPtr = A.colPtr;
+    this.factoredRowIdx = A.rowIdx;
   }
 
   isPatternAnalyzed(): boolean {
@@ -155,6 +194,11 @@ export class GilbertPeierlsSolver implements SparseSolver {
     if (!this.analyzed) {
       throw new Error('Must call analyzePattern before factorize');
     }
+
+    // The factorization is a deterministic function of A, so bit-identical
+    // input (a linear circuit at a repeated timestep, or the final Newton
+    // iterations of a converged OP) yields bit-identical factors. Keep them.
+    if (this.matchesFactoredInput(A)) return;
 
     const n = this.n;
     const perm = this.perm;
@@ -383,6 +427,8 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
     this.workspaceDirty = false;
     this.factorized = true;
+    this.numericCount++;
+    this.recordFactoredInput(A);
   }
 
   private growLFactors(required: number): void {

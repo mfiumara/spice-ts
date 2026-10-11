@@ -30,7 +30,7 @@
     "build": "tsup",
     "test": "vitest run && pnpm test:packed-consumer",
     "test:coverage": "vitest run && pnpm test:packed-consumer",
-    "test:packed-consumer": "pnpm -C ../core build && pnpm build && node scripts/packed-consumer.mjs",
+    "test:packed-consumer": "pnpm build && node scripts/packed-consumer.mjs",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

@@ -98,8 +98,11 @@ describe('Xyce primitive parser compatibility', () => {
   });
 
   for (const [id, path, points] of [
-    ['capacitor-rc-oscillator', 'CAPACITOR/rc_osc.cir', 1780],
-    ['diode-transient', 'DIODE/diode.cir', 101],
+    // The t=0 breakpoint always starts with ngspice's first step,
+    // MIN(TSTOP/100, TSTEP)/10/10 at order 1 (issue #532), and regrows from
+    // there: 1780 -> 1814 and 101 -> 108 points.
+    ['capacitor-rc-oscillator', 'CAPACITOR/rc_osc.cir', 1814],
+    ['diode-transient', 'DIODE/diode.cir', 108],
     // Zero PULSE TR/TF use TSTEP (ngspice semantics, issue #375), adding the
     // 10 ms ramp corner at t=0.01 and its post-breakpoint steps (1018). The
     // t=0 corner then starts with ngspice's order-1 first step (1e-4, issue

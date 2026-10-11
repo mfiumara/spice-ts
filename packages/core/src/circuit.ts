@@ -788,9 +788,9 @@ export class Circuit {
    * @param nodeBase - Base node
    * @param nodeEmitter - Emitter node
    * @param modelName - Name of a `.model NPN` or `.model PNP` card
-   * @param nodeSubstrate - Optional substrate node. Bounded VBIC (LEVEL=4)
-   *   stamps it; omitted, it is ground as in ngspice. The bounded
-   *   Gummel-Poon BJT has no substrate junction, so it ignores the node.
+   * @param nodeSubstrate - Optional substrate node. VBIC (LEVEL=4) and the
+   *   Gummel-Poon BJT stamp their substrate junction to it; omitted, it is
+   *   ground as in ngspice.
    * @param nodeThermal - Optional thermal node. Self-heating is not
    *   implemented, so compilation rejects it with an InvalidCircuitError.
    * @param instanceParams - Optional instance scaling (`AREA`, multiplier
@@ -1719,9 +1719,9 @@ export class Circuit {
             ? `Unsupported VBIC thermal node on '${desc.name}': self-heating (5-terminal instance) is not implemented`
             : `BJT '${desc.name}' has a thermal node, but only VBIC (LEVEL=4) instances accept a fifth terminal`);
         }
-        // The substrate is a stamped terminal only for VBIC; the bounded
-        // Gummel-Poon BJT has no substrate junction, so the node is dropped.
-        const terminals = isVBIC ? desc.nodes : desc.nodes.slice(0, 3);
+        // VBIC and the Gummel-Poon BJT both stamp the substrate terminal
+        // (ngspice bjtload.c substrate junction); omitted, it is ground.
+        const terminals = isVBIC ? desc.nodes : desc.nodes.slice(0, 4);
         // ngspice-47 scales every series conductance by AREA*M (bjttemp.c
         // area, bjtload.c m; vbicload.c SCALE), i.e. divides the resistance.
         const instanceScale = bjtInstanceScale(desc.params);
@@ -1796,7 +1796,7 @@ export class Circuit {
             else if (parameter === 'RB') base = internal;
             else emitter = internal;
           }
-          result.push({ ...desc, nodes: [collector, base, emitter] });
+          result.push({ ...desc, nodes: [collector, base, emitter, ...terminals.slice(3)] });
         } else {
           result.push({ ...desc, nodes: terminals });
         }
