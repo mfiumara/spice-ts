@@ -1,0 +1,347 @@
+{
+  "schemaVersion": "spice-ts-issue-448/v1",
+  "issueUrl": "https://github.com/mfiumara/spice-ts/issues/448",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "node": "v22.23.1"
+  },
+  "input": {
+    "localPath": "benchmarks/corpus/ngspice/fixtures/tests/hfet/inverter.cir",
+    "bytes": 613,
+    "sha256": "3fa93266e9036443173bf9416eb67e8ff4c2c24aeefc6ef687f355d8548239e1",
+    "identicalForBothEngines": true,
+    "diagnosticReorderedSha256": "e1efd9042c104bc56ec3ab98fa160d30490375e3d63b4cc1dd095b0c48fe9af9",
+    "diagnosticReordering": "inside .subckt inv, 'z2 3 2 0   adrv l=1u w=10u' is moved above 'z1 1 3 3   aload l=1u w=10u'; no other byte changes",
+    "ivLocalPath": "benchmarks/results/issue-448/hfet-reverse-iv.cir",
+    "ivSha256": "38d9bc0d182253cb483e26d1883b0c64ae8285443f910ada2132457d647c5f9a"
+  },
+  "policy": {
+    "fixtureAdaptation": "none for the published comparison; the reordered netlist is diagnostic only",
+    "perCircuitToleranceTuning": false,
+    "comparisonGrid": "spice-ts",
+    "interpolation": "linear"
+  },
+  "identicalFixture": {
+    "note": "Published aggregate comparison: unchanged fixture bytes on both engines.",
+    "spiceTsPoints": 593,
+    "ngspicePoints": 324,
+    "signals": [
+      "i(vdd)",
+      "i(vin)",
+      "v(1)",
+      "v(2)",
+      "v(3)",
+      "v(4)"
+    ],
+    "metrics": {
+      "grid": {
+        "spiceTsPoints": 593,
+        "ngspicePoints": 324,
+        "alignedPoints": 593,
+        "excludedOutOfRange": 0
+      },
+      "signals": {
+        "i(vdd)": {
+          "status": "compared",
+          "sampleCount": 593,
+          "absoluteError": {
+            "max": 0.003719643542315661,
+            "rms": 0.0010019123400805403
+          },
+          "relativeError": {
+            "max": 435999.21957106737,
+            "rms": 176715.95861826837,
+            "sampleCount": 593,
+            "excludedZeroReferences": 0
+          }
+        },
+        "i(vin)": {
+          "status": "compared",
+          "sampleCount": 593,
+          "absoluteError": {
+            "max": 0.001559285779849211,
+            "rms": 0.00021423507355425105
+          },
+          "relativeError": {
+            "max": 3208.0530102469606,
+            "rms": 162.75303037266445,
+            "sampleCount": 593,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(1)": {
+          "status": "compared",
+          "sampleCount": 593,
+          "absoluteError": {
+            "max": 0,
+            "rms": 0
+          },
+          "relativeError": {
+            "max": 0,
+            "rms": 0,
+            "sampleCount": 593,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(2)": {
+          "status": "compared",
+          "sampleCount": 593,
+          "absoluteError": {
+            "max": 3.9745984281580604e-14,
+            "rms": 3.1810101437961402e-15
+          },
+          "relativeError": {
+            "max": 4.9012381416544065e-14,
+            "rms": 4.348337314338981e-15,
+            "sampleCount": 489,
+            "excludedZeroReferences": 104
+          }
+        },
+        "v(3)": {
+          "status": "compared",
+          "sampleCount": 593,
+          "absoluteError": {
+            "max": 2.2311729017830095,
+            "rms": 1.2338795347550189
+          },
+          "relativeError": {
+            "max": 5452.261137456817,
+            "rms": 321.8626262749031,
+            "sampleCount": 593,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(4)": {
+          "status": "compared",
+          "sampleCount": 593,
+          "absoluteError": {
+            "max": 2.27226147762552,
+            "rms": 1.6148261660862682
+          },
+          "relativeError": {
+            "max": 8.347864372188546,
+            "rms": 5.913503687144772,
+            "sampleCount": 593,
+            "excludedZeroReferences": 0
+          }
+        }
+      }
+    }
+  },
+  "ngspiceInstanceOrderSensitivity": {
+    "note": "ngspice-47 operating point (t=0) for two electrically identical netlists that differ only in Z-card order.",
+    "identicalFixture": {
+      "v(3)": -0.2754497983604133,
+      "v(4)": -0.275538625599022,
+      "i(vdd)": 1.320081453407932e-9
+    },
+    "reorderedFixture": {
+      "v(3)": 1.955692577954798,
+      "v(4)": 0.2063418947325354,
+      "i(vdd)": -0.0005754539555714635
+    },
+    "spiceTs": {
+      "v(3)": 1.9556926946386826,
+      "v(4)": 0.20634186446788466,
+      "i(vdd)": -0.0005754537533702348
+    }
+  },
+  "spiceTsInstanceOrderInvariance": {
+    "note": "spice-ts on the reordered netlist measured against spice-ts on the identical fixture.",
+    "maxAbsoluteError": 0.011248516572770262
+  },
+  "diagnosticReorderedComparison": {
+    "note": "spice-ts on the identical fixture versus ngspice-47 on the reordered fixture. Diagnostic only; not an aggregate result.",
+    "spiceTsPoints": 593,
+    "ngspicePoints": 323,
+    "signals": [
+      "i(vdd)",
+      "i(vin)",
+      "v(1)",
+      "v(2)",
+      "v(3)",
+      "v(4)"
+    ],
+    "metrics": {
+      "grid": {
+        "spiceTsPoints": 593,
+        "ngspicePoints": 323,
+        "alignedPoints": 593,
+        "excludedOutOfRange": 0
+      },
+      "signals": {
+        "i(vdd)": {
+          "status": "compared",
+          "sampleCount": 593,
+          "absoluteError": {
+            "max": 0.00023029689138932352,
+            "rms": 0.00004202505956325197
+          },
+          "relativeError": {
+            "max": 0.3182924463642417,
+            "rms": 0.05475212559505676,
+            "sampleCount": 593,
+            "excludedZeroReferences": 0
+          }
+        },
+        "i(vin)": {
+          "status": "compared",
+          "sampleCount": 593,
+          "absoluteError": {
+            "max": 0.00043942046340691987,
+            "rms": 0.00005115764425003678
+          },
+          "relativeError": {
+            "max": 25.201158885303943,
+            "rms": 1.320372085058114,
+            "sampleCount": 593,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(1)": {
+          "status": "compared",
+          "sampleCount": 593,
+          "absoluteError": {
+            "max": 0,
+            "rms": 0
+          },
+          "relativeError": {
+            "max": 0,
+            "rms": 0,
+            "sampleCount": 593,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(2)": {
+          "status": "compared",
+          "sampleCount": 593,
+          "absoluteError": {
+            "max": 3.863576125695545e-14,
+            "rms": 3.2304823368462047e-15
+          },
+          "relativeError": {
+            "max": 5.779892307014647e-14,
+            "rms": 5.4934764766728775e-15,
+            "sampleCount": 489,
+            "excludedZeroReferences": 104
+          }
+        },
+        "v(3)": {
+          "status": "compared",
+          "sampleCount": 593,
+          "absoluteError": {
+            "max": 0.05040129804416282,
+            "rms": 0.01591887430049575
+          },
+          "relativeError": {
+            "max": 0.12023774934845123,
+            "rms": 0.04062720791886795,
+            "sampleCount": 593,
+            "excludedZeroReferences": 0
+          }
+        },
+        "v(4)": {
+          "status": "compared",
+          "sampleCount": 593,
+          "absoluteError": {
+            "max": 1.0382403024742455,
+            "rms": 0.23516848788818784
+          },
+          "relativeError": {
+            "max": 0.8572377410375404,
+            "rms": 0.21939526257903263,
+            "sampleCount": 593,
+            "excludedZeroReferences": 0
+          }
+        }
+      }
+    }
+  },
+  "singleDeviceInverseIv": {
+    "note": "Identical single-device DC sweep on both engines; VDS < 0 exercises HFET1 inverse operation.",
+    "spiceTsPoints": 63,
+    "ngspicePoints": 63,
+    "signals": [
+      "i(vd)",
+      "i(vg)",
+      "v(d)",
+      "v(g)"
+    ],
+    "metrics": {
+      "grid": {
+        "spiceTsPoints": 63,
+        "ngspicePoints": 63,
+        "alignedPoints": 63,
+        "excludedOutOfRange": 0
+      },
+      "signals": {
+        "i(vd)": {
+          "status": "compared",
+          "sampleCount": 63,
+          "absoluteError": {
+            "max": 0.0000010661811193539775,
+            "rms": 2.108106653228278e-7
+          },
+          "relativeError": {
+            "max": 0.0006276264713700779,
+            "rms": 0.00022410339596485356,
+            "sampleCount": 62,
+            "excludedZeroReferences": 1
+          }
+        },
+        "i(vg)": {
+          "status": "compared",
+          "sampleCount": 63,
+          "absoluteError": {
+            "max": 3.636268809989029e-7,
+            "rms": 4.7254279601916614e-8
+          },
+          "relativeError": {
+            "max": 0.009275267100270592,
+            "rms": 0.0013349016989992661,
+            "sampleCount": 62,
+            "excludedZeroReferences": 1
+          }
+        },
+        "v(d)": {
+          "status": "compared",
+          "sampleCount": 63,
+          "absoluteError": {
+            "max": 0,
+            "rms": 0
+          },
+          "relativeError": {
+            "max": 0,
+            "rms": 0,
+            "sampleCount": 60,
+            "excludedZeroReferences": 3
+          }
+        },
+        "v(g)": {
+          "status": "compared",
+          "sampleCount": 63,
+          "absoluteError": {
+            "max": 0,
+            "rms": 0
+          },
+          "relativeError": {
+            "max": 0,
+            "rms": 0,
+            "sampleCount": 42,
+            "excludedZeroReferences": 21
+          }
+        }
+      }
+    }
+  },
+  "rootCause": [
+    "ngspice-47 hfetload.c declares `int inverse=FALSE;` once per HFETAload call and only ever sets it to TRUE. After the first instance in load order with vds<0, every later HFET1 instance in that Newton iteration negates its drain current, swaps Cgs/Cgd and uses a negated vds in the companion current, even when its own vds>0.",
+    "In the identical fixture ngspice-47 loads the adrv drivers before the aload loads (models and instances are evaluated in reverse creation order). A driver with its drain below ground sets the flag, the loads inherit it, and the resulting operating point has v(3)=v(4)~-0.275 V with i(vdd)~1.3 nA although each depletion load has VGS=0 and VDS~2.27 V. Moving the driver line above the load line (electrically identical) gives v(3)=1.9557 V, which spice-ts reproduces on either order.",
+    "hfetload.c also calls hfeta(..., vds>0?vgs:vgd, vds, ...) after already negating vds, so inverse operation is always evaluated at the external VGS. This per-device behaviour is order independent; spice-ts previously evaluated inverse operation at VGD and now reproduces ngspice-47 (single-device sweep above)."
+  ],
+  "losses": [
+    "The identical-fixture comparison remains a parity loss because the ngspice-47 reference depends on Z-card order through the sticky inverse flag; spice-ts does not emulate that order-dependent state.",
+    "Against the reordered fixture the operating point and DC transfer agree, but the v(4) rising edge near 1.07-1.09 ns lags ngspice-47 by roughly 15 ps (see diagnosticReorderedComparison). The DC transfer curve matches to below 1 uV, so the residual is in transient charge integration, not in the HFET DC equations.",
+    "spice-ts exposes internal RD/RS node signals that ngspice .print all does not; they are excluded from comparisons."
+  ]
+}

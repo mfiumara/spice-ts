@@ -43,6 +43,20 @@ describe('ngspice HFET1 model', () => {
     expect(point.capGD).toBeCloseTo(5.42055e-16, 19);
   });
 
+  it('evaluates inverse operation at the external VGS like ngspice-47 HFETAload (#448)', () => {
+    // hfetload.c negates vds before calling hfeta(..., vds>0 ? vgs : vgd, ...),
+    // so inverse operation always uses VGS with |VDS|; only the current sign
+    // and the Cgs/Cgd assignment mirror.
+    const model = resolveHFET1Model(fixtureModel);
+    const instance = resolveHFET1Instance({ L: 1e-6, W: 10e-6 });
+    const forward = evaluateHFET1(0.6, 1.5, model, instance);
+    const inverse = evaluateHFET1(0.6, -1.5, model, instance);
+
+    expect(inverse.drainCurrent).toBe(-forward.drainCurrent);
+    expect(inverse.capGS).toBe(forward.capGD);
+    expect(inverse.capGD).toBe(forward.capGS);
+  });
+
   it('adds only gate-resistance leakage when junction saturation currents are zero', () => {
     const model = resolveHFET1Model({
       ...fixtureModel,
