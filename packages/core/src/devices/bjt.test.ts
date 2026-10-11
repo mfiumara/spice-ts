@@ -54,16 +54,16 @@ describe('BJT Ebers-Moll', () => {
     const collectorSupply = result.dcSweep!.current('VCE');
     const baseSupply = result.dcSweep!.current('VBE');
     expect(collectorSupply).toHaveLength(3);
-    // ngspice-47 on the identical deck: i(vce) = -7.20005777197881e-04,
-    // -8.34565184751882e-04; i(vbe) = -3.52293523293051e-05 (VT = kT/q at
-    // 300.15 K, #525). i(vce) includes the substrate junction gmin current
-    // gmin*Vcs = 1e-12 A (#539); the remaining ~3e-13 A is ngspice's
-    // gmin*vbc in the B-C leakage, which spice-ts stamps only in the Jacobian.
-    expect(collectorSupply[0]).toBeCloseTo(-0.0007200057769178837, 12);
-    // Closed-form model value IF/qB at VCE = 9 V (true reverse VBC = -8.28 V)
-    // plus gmin*Vcs = 9e-12 A.
-    expect(collectorSupply[2]).toBeCloseTo(-0.000834565176471881, 12);
-    expect(baseSupply[0]).toBeCloseTo(-0.0000352293518893033, 12);
+    // ngspice-47 `set numdgt=15; dc VCE 1 9 4; print i(vce) i(vbe)` on the
+    // identical deck (VT = kT/q at 300.15 K, #525). i(vce) includes the
+    // substrate junction gmin current gmin*Vcs (#539) and bjtload.c's
+    // CKTgmin*vbc in cbcn; i(vbe) includes CKTgmin*vbe in cben (#551).
+    const ngspiceCollector = [-7.20005777197881e-4, -7.77285480974884e-4, -8.34565184751882e-4];
+    const ngspiceBase = [-3.52293523293051e-5, -3.52293483293032e-5, -3.52293443293015e-5];
+    for (let index = 0; index < 3; index++) {
+      expect(collectorSupply[index]).toBeCloseTo(ngspiceCollector[index], 16);
+      expect(baseSupply[index]).toBeCloseTo(ngspiceBase[index], 16);
+    }
     expect(result.convergence!.dc).toMatchObject({
       acceptedSolves: 3,
       rejectedSolves: 0,
@@ -161,6 +161,62 @@ describe('BJT Ebers-Moll', () => {
       expect(sweep.current('VC')[index] / collector).toBeCloseTo(1, 6);
       expect(sweep.current('VB')[index] / base).toBeCloseTo(1, 6);
     }
+  });
+
+  // #551: at low bias the base current is dominated by bjtload.c's
+  // CKTgmin*vbe (cben) and CKTgmin*vbc (cbcn). ngspice-47
+  // `set numdgt=15; dc vb 0.2 0.4 0.1; print i(vc) i(vb)` on the identical deck.
+  it('carries the ngspice CKTgmin junction currents at low bias (bip_subsmod, #551)', async () => {
+    const result = await simulate(BIP_SUBSMOD);
+    const sweep = result.dcSweep!;
+    const vb = Array.from(sweep.sweepValues);
+    const ngspice: readonly (readonly [number, number, number])[] = [
+      [0.2, -2.02822567119215e-12, 5.978197386542089e-13],
+      [0.3, -1.25959537376908e-11, 2.911424557060440e-13],
+      [0.4, -5.22013360002248e-10, -5.00403161100634e-12],
+    ];
+    for (const [bias, collector, base] of ngspice) {
+      const index = vb.findIndex(value => Math.abs(value - bias) < 1e-9);
+      expect(index).toBeGreaterThanOrEqual(0);
+      expect(sweep.current('VC')[index] / collector).toBeCloseTo(1, 6);
+      expect(sweep.current('VB')[index] / base).toBeCloseTo(1, 6);
+    }
+  });
+
+  // #551: ngspice-47 bjtload.c uses -csat*(1 + (3*vtn/(e*v))^3) below -3*vtn
+  // for cbe, cbc, cben and cbcn. vbe = -0.2 V is below -3*NF*Vt and -3*NE*Vt.
+  // ngspice-47 `set numdgt=15; op; print i(vb) i(vc)` on the identical decks.
+  it.each<[string, string, number, number]>([
+    ['Gummel-Poon', 'BF=50 BR=2 IS=1e-6 ISE=1e-6 NE=2 VAF=20', -2.23845703336357e-5, 7.090205111754373e-5],
+    ['Ebers-Moll', 'BF=50 BR=2 IS=1e-6', -2.33613101260578e-5, 7.114084910066944e-5],
+  ])('uses the ngspice reverse junction law below -3*N*Vt (%s, #551)', async (_, card, base, collector) => {
+    const result = await simulate(`reverse law
+      VB b 0 -0.2
+      VC c 0 -0.3
+      Q1 c b 0 QR
+      .model QR NPN(${card})
+      .op
+      .end
+    `);
+    expect(result.dc!.current('VB') / base).toBeCloseTo(1, 9);
+    expect(result.dc!.current('VC') / collector).toBeCloseTo(1, 9);
+  });
+
+  // #525: ngspice-47 `set numdgt=15; op; print v(2) v(3)` on the identical
+  // deck: v(2) = 7.215942859257866e-01, v(3) = 4.215942830698228e+00.
+  it('matches the ngspice-47 kT/q operating point within 1e-5 V (#525)', async () => {
+    const result = await simulate(`issue 525
+      VCC 1 0 5
+      VB 4 0 0.8
+      RB 4 2 1k
+      RC 1 3 100
+      Q1 3 2 0 QMOD
+      .model QMOD NPN(BF=100 IS=6e-15)
+      .op
+      .end
+    `);
+    expect(Math.abs(result.dc!.voltage('2') - 7.215942859257866e-1)).toBeLessThan(1e-9);
+    expect(Math.abs(result.dc!.voltage('3') - 4.215942830698228)).toBeLessThan(1e-7);
   });
 
   it('carries the substrate junction gmin current of a vertical npn (bip_subsmod, #539)', async () => {
@@ -314,8 +370,9 @@ describe('BJT Ebers-Moll', () => {
     solution[compiled.nodeNames.indexOf('b')] = 0.72;
     const vt = 1.38064852e-23 / 1.6021766208e-19 * 300.15;
     const forward = 1e-15 * (Math.exp(0.72 / vt) - 1);
+    // ngspice-47 bjtload.c cc includes -cbcn = -CKTgmin*vbc = +1e-12*8.28 A (#551).
     expect(bjt.noiseOperatingPoint(solution).collectorCurrent)
-      .toBeCloseTo(forward * (1 + 8.28 / 50), 12);
+      .toBeCloseTo(forward * (1 + 8.28 / 50) + 1e-12 * 8.28, 12);
   });
 
   it.each([
