@@ -43,15 +43,15 @@
       "unsupported": 12
     },
     "spiceTs": {
-      "success": 32,
-      "failed": 8,
+      "success": 35,
+      "failed": 5,
       "unsupported": 296
     },
     "outcomes": {
-      "matched": 11,
+      "matched": 14,
       "mismatch": 10,
       "not-compared": 11,
-      "spice-ts-loss": 274,
+      "spice-ts-loss": 271,
       "ngspice-failed": 0,
       "both-failed": 30
     }
@@ -473,17 +473,6 @@
         "examples-tclspice-tcl-testbench4-example-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/503"
-    },
-    {
-      "bucket": "analysis: .pz beyond ideal R, L, C",
-      "fixtures": 3,
-      "ngspiceSuccess": 3,
-      "ids": [
-        "tests-polezero-filt-bridge-t-cir",
-        "tests-polezero-filt-multistage-cir",
-        "tests-polezero-filt-rc-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/504"
     },
     {
       "bucket": "analysis: .sens forms",
@@ -8191,16 +8180,18 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": ".pz vol supports only ideal R, L, C devices; found V1 (VoltageSource)"
+        "status": "success",
+        "analyses": [
+          "op:1",
+          "pz:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "analysis: .pz beyond ideal R, L, C"
+      "comparedAnalyses": 2,
+      "comparedSignals": 8,
+      "worstNormalizedError": 7.28e-9,
+      "worstSignal": "pz v(zero(1))",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "tests-polezero-filt-multistage-cir",
@@ -8218,16 +8209,17 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": ".pz vol supports only ideal R, L, C devices; found v1 (VoltageSource)"
+        "status": "success",
+        "analyses": [
+          "pz:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "analysis: .pz beyond ideal R, L, C"
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 7.45e-16,
+      "worstSignal": "pz v(pole(3))",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "tests-polezero-filt-rc-cir",
@@ -8245,16 +8237,17 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": ".pz vol supports only ideal R, L, C devices; found v1 (VoltageSource)"
+        "status": "success",
+        "analyses": [
+          "pz:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "analysis: .pz beyond ideal R, L, C"
+      "comparedAnalyses": 1,
+      "comparedSignals": 1,
+      "worstNormalizedError": 0,
+      "worstSignal": "pz v(pole(1))",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "tests-polezero-pz2-cir",
@@ -9598,5 +9591,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "f9f294c59c514e91f63134d66941e898d115c4cdf2ef05e24197e746f770b5a3"
+  "outcomeSha256": "dc2cf07f454b6d10bc8b7dda4c91cd32d33facb11e4dba62434067e5f444bfc2"
 }

@@ -1174,7 +1174,7 @@ export class Circuit {
   addAnalysis(type: 'tf', params:
     | { outputNode: string; inputSource: string }
     | { outputSource: string; inputSource: string }): void;
-  addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur' | 'vol'; mode: 'pol' | 'pz' }): void;
+  addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur' | 'vol'; mode: 'pol' | 'zer' | 'pz' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'dc' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'ac'; variation: 'dec'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
@@ -1317,7 +1317,7 @@ export class Circuit {
           outputPositive: params!.outputPositive as string,
           outputNegative: params!.outputNegative as string,
           inputType: params!.inputType as 'cur' | 'vol',
-          mode: params!.mode as 'pol' | 'pz',
+          mode: params!.mode as PoleZeroAnalysis['mode'],
         };
         assertSupportedPoleZero(analysis);
         this._poleZeroAnalyses.push(analysis);
@@ -1416,6 +1416,8 @@ export class Circuit {
     const lines: string[] = ['* spice-ts generated netlist'];
 
     const optionNames: Array<[keyof SimulationOptions, string, (value: unknown) => string]> = [
+      ['bypass', 'bypass', String],
+      ['rampTime', 'ramptime', String],
       ['abstol', 'abstol', String],
       ['vntol', 'vntol', String],
       ['reltol', 'reltol', String],

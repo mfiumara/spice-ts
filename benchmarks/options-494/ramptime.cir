@@ -1,0 +1,15 @@
+ngspice-47 release-build ramptime and diagnostic options
+* Project-authored MIT regression for issue #494.
+.options noinit seedinfo warn=1 maxwarns=6 ramptime=0.731m
+Vdc vd 0 10
+Rdc vd 0 1k
+Idc 0 id 1m
+Rid id 0 1k
+Vp vp 0 PWL(0 0 0.4m 2 2m 2)
+Rp vp 0 1k
+Vrc in 0 1
+Rrc in out 1k
+Crc out 0 1u
+.ic v(out)=0.25
+.tran 0.1m 2m
+.end

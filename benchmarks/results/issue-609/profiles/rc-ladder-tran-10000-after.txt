@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/609/prof-after/rc-ladder-tran-10000.cpuprofile: 508 samples, 1766.0 ms sampled
+
+Top self time
+     276.5 ms  15.7%  factorize packages/core/dist/chunk-AQKNVZEZ.js:17725
+     240.3 ms  13.6%  attemptStep packages/core/dist/chunk-AQKNVZEZ.js:19201
+     186.8 ms  10.6%  buildCompanionSystem packages/core/dist/chunk-AQKNVZEZ.js:19025
+     143.2 ms   8.1%  stampStaticDevices packages/core/dist/chunk-AQKNVZEZ.js:18503
+     139.9 ms   7.9%  (garbage collector)
+      63.5 ms   3.6%  flush packages/core/dist/chunk-AQKNVZEZ.js:20229
+      49.5 ms   2.8%  stampPrevB packages/core/dist/chunk-AQKNVZEZ.js:19889
+      47.2 ms   2.7%  amdOrdering packages/core/dist/chunk-AQKNVZEZ.js:17409
+      46.1 ms   2.6%  stampDynamicDevices packages/core/dist/chunk-AQKNVZEZ.js:18533
+      37.4 ms   2.1%  checkLTE packages/core/dist/chunk-AQKNVZEZ.js:19943
+      35.3 ms   2.0%  advanceSolution packages/core/dist/chunk-AQKNVZEZ.js:19661
+      34.3 ms   1.9%  lockTopology packages/core/dist/chunk-AQKNVZEZ.js:18141
+
+Top inclusive time
+    1766.0 ms 100.0%  (root)
+    1504.4 ms  85.2%  simulate packages/core/dist/chunk-AQKNVZEZ.js:23617
+    1267.7 ms  71.8%  solveTransient packages/core/dist/chunk-AQKNVZEZ.js:20254
+    1136.2 ms  64.3%  advanceSolution packages/core/dist/chunk-AQKNVZEZ.js:19661
+     959.4 ms  54.3%  attemptStep packages/core/dist/chunk-AQKNVZEZ.js:19201
+     390.1 ms  22.1%  buildCompanionSystem packages/core/dist/chunk-AQKNVZEZ.js:19025
+     280.7 ms  15.9%  factorize packages/core/dist/chunk-AQKNVZEZ.js:17725
+     274.5 ms  15.5%  solveLinearized packages/core/dist/chunk-AQKNVZEZ.js:19293
+     208.6 ms  11.8%  stampStaticDevices packages/core/dist/chunk-AQKNVZEZ.js:18503
+     147.8 ms   8.4%  transientInitialSolution packages/core/dist/chunk-AQKNVZEZ.js:23923
+     145.8 ms   8.3%  solveDCOperatingPoint packages/core/dist/chunk-AQKNVZEZ.js:18821
+     142.0 ms   8.0%  newtonRaphson packages/core/dist/chunk-AQKNVZEZ.js:18577
