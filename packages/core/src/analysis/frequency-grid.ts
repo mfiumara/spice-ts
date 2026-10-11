@@ -5,9 +5,10 @@ type FrequencySweep = Pick<ACAnalysis, 'variation' | 'points' | 'startFreq' | 's
 /**
  * Which ngspice analysis owns the sweep. ngspice-47 `.ac` (acan.c) stretches DEC sweeps that
  * span at least one decade so the last point lands on stop; `.noise` (noisean.c) always steps
- * by 10^(1/N).
+ * by 10^(1/N) up to stop plus a reltol tolerance; `.sens` (cktsens.c `count_steps`) also steps
+ * by 10^(1/N) but counts `(int)(N * log10(stop/start) + 1.01)` points.
  */
-export type FrequencySweepKind = 'ac' | 'noise';
+export type FrequencySweepKind = 'ac' | 'noise' | 'sens';
 
 /** A log sweep advances by `base^(1/steps)` per point: point i is `start * base^(i/steps)`. */
 interface LogStep {
@@ -27,9 +28,9 @@ function logStep(sweep: FrequencySweep, kind: FrequencySweepKind): LogStep {
 }
 
 /**
- * Number of points in an ngspice `.ac`/`.noise` sweep: LIN is N total points; DEC/OCT step by
- * the analysis' ratio (see {@link FrequencySweepKind}) and keep every point up to stop plus
- * ngspice's `ratio * stop * reltol` tolerance.
+ * Number of points in an ngspice `.ac`/`.noise`/`.sens` sweep: LIN is N total points; DEC/OCT
+ * step by the analysis' ratio (see {@link FrequencySweepKind}); `.ac`/`.noise` keep every point
+ * up to stop plus ngspice's `ratio * stop * reltol` tolerance.
  */
 export function frequencyPointCount(
   sweep: FrequencySweep,
@@ -37,13 +38,26 @@ export function frequencyPointCount(
   kind: FrequencySweepKind,
 ): number {
   if (sweep.variation === 'lin') return sweep.points;
+  if (kind === 'sens') return sensitivityPointCount(sweep);
   const { base, steps } = logStep(sweep, kind);
   const tolerance = Math.pow(base, 1 / steps) * sweep.stopFreq * relativeTolerance;
   const span = Math.log((sweep.stopFreq + tolerance) / sweep.startFreq) / Math.log(base);
   return Number.isFinite(span) ? Math.max(0, Math.floor(span * steps + 1e-12)) + 1 : 0;
 }
 
-/** Frequencies of an ngspice `.ac`/`.noise` sweep; see {@link frequencyPointCount}. */
+/**
+ * cktsens.c `count_steps`: a non-increasing sweep spans one base period (decade/octave) from
+ * start, and the count truncates `N * periods + 1.01`, so it may include one point past stop.
+ */
+function sensitivityPointCount(sweep: FrequencySweep): number {
+  const base = sweep.variation === 'oct' ? 2 : 10;
+  const stop = sweep.stopFreq > sweep.startFreq ? sweep.stopFreq : base * sweep.startFreq;
+  const periods = Math.log(stop / sweep.startFreq) / Math.log(base);
+  const count = Math.trunc(sweep.points * periods + 1.01);
+  return Number.isFinite(count) ? Math.max(1, count) : 0;
+}
+
+/** Frequencies of an ngspice `.ac`/`.noise`/`.sens` sweep; see {@link frequencyPointCount}. */
 export function frequencyGrid(
   sweep: FrequencySweep,
   relativeTolerance: number,

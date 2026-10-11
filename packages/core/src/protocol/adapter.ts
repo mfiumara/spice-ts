@@ -333,7 +333,7 @@ function estimatedAnalysisPoints(analysis: AnalysisDirective, reltol: number): n
     case 'tf': return 0;
     case 'sens': {
       if (analysis.mode === 'dc') return 1;
-      return frequencyPointCount(analysis, reltol, 'ac');
+      return frequencyPointCount(analysis, reltol, 'sens');
     }
   }
 }

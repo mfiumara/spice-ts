@@ -16,13 +16,13 @@ import {
   type SensitivityEntry,
 } from '../results.js';
 import type {
-  ACAnalysis,
   ConvergenceTelemetry,
   ResolvedOptions,
   SensitivityAnalysis,
 } from '../types.js';
-import { solveAC } from './ac.js';
+import { buildACRHS, createLinearizedFrequencySystem } from './ac.js';
 import { solveDCOperatingPoint } from './dc.js';
+import { frequencyGrid } from './frequency-grid.js';
 
 interface ParameterTarget {
   device: string;
@@ -56,27 +56,17 @@ export function solveSensitivity(
     return new SensitivityResult(analysis.outputNode, 'dc', [], entries);
   }
 
-  const acAnalysis: ACAnalysis = {
-    type: 'ac',
-    variation: analysis.variation,
-    points: analysis.points,
-    startFreq: analysis.startFreq,
-    stopFreq: analysis.stopFreq,
-  };
-  const baseline = solveACAtOutput(
-    compiled, acAnalysis, options, outputIndex, convergence,
-  );
+  // ngspice `.sens ac` steps its own grid (cktsens.c), not the stretched `.ac` grid.
+  const frequencies = frequencyGrid(analysis, options.reltol, 'sens');
   const entries = targets.map(target => ({
     device: target.device,
     parameter: target.parameter,
     ac: differentiateComplex(target, value => {
       target.set(value);
-      return solveACAtOutput(compiled, acAnalysis, options, outputIndex, convergence).values;
+      return solveACAtOutput(compiled, frequencies, options, outputIndex, convergence);
     }),
   }));
-  return new SensitivityResult(
-    analysis.outputNode, 'ac', baseline.frequencies, entries,
-  );
+  return new SensitivityResult(analysis.outputNode, 'ac', frequencies, entries);
 }
 
 function assertSingleACExcitation(compiled: CompiledCircuit): void {
@@ -235,24 +225,18 @@ function perturbation(value: number): number {
 
 function solveACAtOutput(
   compiled: CompiledCircuit,
-  analysis: ACAnalysis,
+  frequencies: readonly number[],
   options: ResolvedOptions,
   outputIndex: number,
   convergence?: ConvergenceTelemetry,
-): { frequencies: number[]; values: ComplexSensitivityValue[] } {
+): ComplexSensitivityValue[] {
   const dc = solveDCOperatingPoint(compiled, options, undefined, convergence).assembler.solution;
-  const result = solveAC(compiled, analysis, options, dc);
-  const phasors = result.voltage(compiled.nodeNames[outputIndex]);
-  return {
-    frequencies: result.frequencies,
-    values: phasors.map(({ magnitude, phase }) => {
-      const radians = phase * Math.PI / 180;
-      return {
-        real: magnitude * Math.cos(radians),
-        imaginary: magnitude * Math.sin(radians),
-      };
-    }),
-  };
+  const system = createLinearizedFrequencySystem(compiled, options, dc);
+  const rhs = buildACRHS(compiled);
+  return frequencies.map(frequency => {
+    const { real, imaginary } = system.solve(2 * Math.PI * frequency, rhs);
+    return { real: real[outputIndex], imaginary: imaginary[outputIndex] };
+  });
 }
 
 function findOutputIndex(compiled: CompiledCircuit, name: string): number {
