@@ -3,6 +3,8 @@ import { parse } from '../parser/index.js';
 import { MNAAssembler } from '../mna/assembler.js';
 import { resolveOptions } from '../types.js';
 import { attemptStep } from './transient-step.js';
+import { SingularMatrixError } from '../errors.js';
+import type { SparseSolver } from '../solver/sparse-solver.js';
 
 function buildRCContext() {
   const ckt = parse(`
@@ -128,5 +130,69 @@ R2 2 0 10
       // Tight limit should take more NR iterations to converge
       expect(tight.iterations).toBeGreaterThanOrEqual(loose.iterations);
     }
+  });
+});
+
+describe('attemptStep linear-solve failures (issue #444 review)', () => {
+  // ngspice dctran treats E_SINGULAR from NIiter as non-convergence and cuts
+  // the timestep; a singular or non-finite solve must not abort the transient.
+  function contextWithSolver(solver: SparseSolver) {
+    const { compiled, options } = buildRCContext();
+    const assembler = new MNAAssembler(compiled.nodeCount, compiled.branchCount, {
+      solverFactory: () => solver,
+    });
+    return { compiled, options, assembler };
+  }
+
+  function stubSolver(overrides: Partial<SparseSolver>): SparseSolver {
+    let analyzed = false;
+    return {
+      analyzePattern: () => { analyzed = true; },
+      factorize: () => {},
+      solve: b => b,
+      isPatternAnalyzed: () => analyzed,
+      ...overrides,
+    };
+  }
+
+  const attempt = (prevSolution: Float64Array) => ({
+    dt: 1e-6, time: 1e-6, prevSolution, prevB: undefined, gmin: 1e-12, voltageLimit: 3.5,
+  });
+
+  it('fails the NR attempt instead of throwing when factorization is singular', () => {
+    const { compiled, options, assembler } = contextWithSolver(stubSolver({
+      factorize: () => { throw SingularMatrixError.atPivot(1); },
+    }));
+    const result = attemptStep({ compiled, assembler, options }, attempt(new Float64Array(assembler.solution)));
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.reason).toBe('nr-divergence');
+      expect(result.iterations).toBe(1);
+    }
+  });
+
+  it('fails the NR attempt instead of throwing when the solve is singular', () => {
+    const { compiled, options, assembler } = contextWithSolver(stubSolver({
+      solve: () => { throw SingularMatrixError.atPivot(0); },
+    }));
+    const result = attemptStep({ compiled, assembler, options }, attempt(new Float64Array(assembler.solution)));
+    expect(result.ok).toBe(false);
+  });
+
+  it('fails the NR attempt when the solve returns a non-finite iterate', () => {
+    const { compiled, options, assembler } = contextWithSolver(stubSolver({
+      solve: b => { b.fill(Number.NaN); return b; },
+    }));
+    const result = attemptStep({ compiled, assembler, options }, attempt(new Float64Array(assembler.solution)));
+    expect(result.ok).toBe(false);
+    expect(Array.from(assembler.solution).every(Number.isFinite)).toBe(true);
+  });
+
+  it('still propagates unrelated solver errors', () => {
+    const { compiled, options, assembler } = contextWithSolver(stubSolver({
+      factorize: () => { throw new RangeError('bug'); },
+    }));
+    expect(() => attemptStep({ compiled, assembler, options }, attempt(new Float64Array(assembler.solution))))
+      .toThrow(RangeError);
   });
 });
