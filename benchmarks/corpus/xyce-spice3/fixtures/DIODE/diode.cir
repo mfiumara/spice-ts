@@ -1,0 +1,61 @@
+Diode Circuit Netlist
+* [xyce-to-spice3] SPICE3/ngspice-dialect translation of a Xyce Regression Suite netlist.
+* [xyce-to-spice3] Upstream: https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE/diode.cir
+* [xyce-to-spice3] Verbatim original: benchmarks/corpus/xyce/fixtures/DIODE/diode.cir (sha256 334e2dde43335851dc96f76ba5e78ef3e0b1de142cca073b3c70f83937637d8c)
+* [xyce-to-spice3] Copyright 2019 National Technology & Engineering Solutions of Sandia, LLC (NTESS).
+* [xyce-to-spice3] Licensed GPL-3.0-or-later; see benchmarks/corpus/xyce-spice3/LICENSE-NOTICE.md and COPYING.txt.
+* [xyce-to-spice3] Modified 2026-10-11 by benchmarks/translate/xyce-to-spice3.ts v1:
+* [xyce-to-spice3]   - .tran print step 0 -> 1e-5 s ((TSTOP - TSTART)/50)
+* [xyce-to-spice3]   - removed Xyce `.options timeint reltol=1.0e-4` (no SPICE3 TIMEINT package; both engines use default tolerances)
+* [xyce-to-spice3]   - .print brace expressions -> referenced output variables (I(VMON) V(3))
+* [xyce-to-spice3] Topology, element values and models are unchanged; only the lines listed above changed.
+********************************************************************************
+* Tier No.:  2
+* Directory/Circuit Name: DIODE/DIODE.cir
+* Description:  Simple diode circuit to test the validity of the diode model.
+* Input:  VIN
+* Output: V(3), I(VMON)
+* Analysis:
+*
+* Note: This analysis is approximate, hence this is  Tier 2 test, not Tier 1.
+*
+* A diode is forward biased with a 5V input source, VIN.   With a 100fA 
+* saturation current, Is,  the diode current, I(VMON) or Id,  and voltage, Vd,  
+* are determined by the following equations:
+*
+*      (1) Id=Is[exp(Vd/Vt) - 1]
+*      (2) Vin=Id*R + Vd = Is[EXP(Vd/Vt)-1]*R + Vd
+*      where,
+*      Vt=25.86mV, R=2K, Is=100fA, Vin=5V
+*
+* The diode voltage can be calculated by finding the value of Vd that 
+* makes equation (2) true.  The diode current can be found by solving (1)  
+* after Vd is found.  Therefore,
+* 
+*      Vd=0.6158V  and Id=2.19mA
+*
+* Following the initial biasing the diode is run through a couple 
+* of cycles of reverse biasing to test the response over a variety 
+* of conditions.  In the reverse biasing of 1V the current should 
+* be: Is+gmin which gives an apparent resistance of 
+* 1/(1.e-13 + 1.e-12) = 9.09e+11, which is the last value tabulated.
+*
+*******************************************************************************
+*
+* NOTE:  The simulation in xyce results are:
+*	 Vd = .616V and Id=2.19mA
+*        This difference is currently being addressed (01/01)
+*
+************************************************************************* 
+VIN 1 0 PULSE ( 5 -1 0.05ms 100ns 100ns 0.1ms 0.2ms )
+R1 1 2 2K
+D1 3 0 DMOD
+VMON 2 3 0
+.MODEL DMOD D (IS=100FA)
+* [xyce-to-spice3] original: .TRAN 0 0.5ms
+.TRAN 1e-5 0.5ms
+* [xyce-to-spice3] original: .options timeint reltol=1.0e-4
+* [xyce-to-spice3] original: .PRINT TRAN I(VMON) V(3) {V(3)/I(VMON)}
+.PRINT TRAN I(VMON) V(3)
+*
+.END

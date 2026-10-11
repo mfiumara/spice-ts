@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "name": "Xyce Regression Suite primitive-device tests (SPICE3 translations of the ngspice-rejected fixtures)",
+    "repository": "https://github.com/Xyce/Xyce_Regression",
+    "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+    "license": "GPL-3.0-or-later",
+    "licenseUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/README.md#copyright-and-license",
+    "licenseNoticeSourceUrl": "https://raw.githubusercontent.com/Xyce/Xyce_Regression/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/README.md",
+    "licenseNoticeLocalPath": "benchmarks/corpus/xyce-spice3/LICENSE-NOTICE.md",
+    "licenseNoticeSha256": "82ff6df7bddcdf639483d261949a02a5f43da85d579f1242b05c3aa0c430f7cb",
+    "licenseTextUrl": "https://www.gnu.org/licenses/gpl-3.0.txt",
+    "licenseTextLocalPath": "benchmarks/corpus/xyce-spice3/COPYING.txt",
+    "licenseTextSha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+    "redistributionDecision": "Allowed under GPL-3.0-or-later as modified versions. The upstream copyright and licence notice and the complete GPLv3 text are retained byte-for-byte; every translated deck states the upstream file, the modifications and their date in its header.",
+    "mechanicalAdaptation": "Purely syntactic Xyce -> SPICE3 translation by the deterministic translator, applied to the verbatim, hash-pinned originals in benchmarks/corpus/xyce (which stay unchanged). Rules: tran-zero-tstep: Xyce `.tran 0 TSTOP [TSTART [TMAX]]` (zero print step: output at every accepted step) -> `.tran TSTEP TSTOP ...` with TSTEP = (TSTOP - TSTART)/50. SPICE3/ngspice require TSTEP > 0. ngspice caps its default maximum step at MIN(TSTEP, (TSTOP - TSTART)/50) and its first step at MIN(TSTOP/100, TSTEP)/10, so (TSTOP - TSTART)/50 is the smallest TSTEP whose ngspice output is identical to any larger TSTEP (ngspice-47 raw data verified byte-identical for 1x, 10x and 50x on the translated decks, different at 0.5x); with a rawfile ngspice writes every accepted step, like Xyce with a zero print step. timeint-tolerances-removed: Xyce `.options timeint` lines whose fields are only RELTOL, ABSTOL and METHOD=7/TRAP are commented out. TIMEINT is a Xyce option package (time-integrator tolerances that are separate from the Newton tolerances); SPICE3 has no equivalent package, and METHOD=7 is trapezoidal, the SPICE3 default. Both engines therefore run at their default tolerances. Any other TIMEINT field (e.g. NEWLTE) selects a Xyce-only algorithm and makes the fixture unsupported-translation. step-source-to-nested-dc: Xyce `.step <V|I source> START STOP STEP` in a deck with exactly one single-source `.dc` sweep -> the second (outer) sweep of a SPICE3 nested `.dc`. Xyce runs the inner `.dc` once per stepped source value, which is the SPICE3 nested-sweep order; Xyce_Regression itself uses this form in NJFET_DC/njfet-2109.cir. Other `.step` forms are unsupported. capacitor-ic-to-dot-ic: Capacitor instance `IC=V` on a capacitor with one terminal at ground, in a `.tran` without UIC -> the instance line is kept and `.ic v(<node>)=V` is added. Xyce always applies device initial conditions, enforcing them in the transient operating point exactly like `.IC` (Xyce 6.10 release notes, bug 1040-SON; xyce-users \"Xyce always uses initial conditions you specify, with or without UIC\"); SPICE3 ignores instance IC= without UIC but enforces `.ic` node voltages in the operating point. A capacitor with neither terminal grounded, or an inductor IC=, has no SPICE3 node-voltage equivalent and is unsupported. print-brace-expressions: Brace expressions in `.print` (Xyce-only syntax) are replaced by the output variables (V(...)/I(...)) they reference, without duplicates. The compared signals are the engines' full node-voltage/branch-current vectors, which already contain those variables; ngspice ignores `.print` when a rawfile is written. Every changed line is kept as a comment in the translated deck. Fixtures with a construct that has no exact SPICE3 equivalent are marked unsupported-translation and not translated.",
+    "derivedFrom": "benchmarks/corpus/xyce",
+    "translator": "benchmarks/translate/xyce-to-spice3.ts",
+    "translatorVersion": 1,
+    "modificationDate": "2026-10-11"
+  },
+  "circuits": [
+    {
+      "id": "capacitor-rc-transient",
+      "category": "capacitor",
+      "analyses": [
+        "tran"
+      ],
+      "localPath": "benchmarks/corpus/xyce-spice3/fixtures/CAPACITOR/capacitor.cir",
+      "sha256": "a3a53887ee21de16937a4099bb31dba088925ac367092d886cf63de9154cbefb",
+      "original": {
+        "corpus": "xyce",
+        "sourcePath": "Netlists/CAPACITOR/capacitor.cir",
+        "upstreamUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CAPACITOR/capacitor.cir",
+        "localPath": "benchmarks/corpus/xyce/fixtures/CAPACITOR/capacitor.cir",
+        "sha256": "38b0d8271d4cef0f783be9a5ba0bc391c6d164fbe0dba9027e93927f0656e90b",
+        "ngspiceRejection": "ngspice rejects Xyce's zero-print-step .tran form."
+      },
+      "translation": {
+        "status": "translated",
+        "rules": [
+          "tran-zero-tstep",
+          "timeint-tolerances-removed",
+          "capacitor-ic-to-dot-ic"
+        ],
+        "changes": [
+          "c1 IC=1 -> added `.ic v(1)=1` (Xyce applies device IC= without UIC)",
+          ".tran print step 0 -> 1e-4 s ((TSTOP - TSTART)/50)",
+          "removed Xyce `.options timeint reltol=1e-6 abstol=1e-6` (no SPICE3 TIMEINT package; both engines use default tolerances)"
+        ]
+      }
+    },
+    {
+      "id": "capacitor-rc-transient-newlte",
+      "category": "capacitor",
+      "analyses": [
+        "tran"
+      ],
+      "original": {
+        "corpus": "xyce",
+        "sourcePath": "Netlists/CAPACITOR/capacitor3.cir",
+        "upstreamUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CAPACITOR/capacitor3.cir",
+        "localPath": "benchmarks/corpus/xyce/fixtures/CAPACITOR/capacitor3.cir",
+        "sha256": "628f4953ca83a0e8840e100ea4671c778afe47bdcad0f52c09f5053c023c5194",
+        "ngspiceRejection": "ngspice rejects Xyce's zero-print-step .tran form."
+      },
+      "translation": {
+        "status": "unsupported-translation",
+        "reasons": [
+          "Xyce `.options timeint newlte=2` selects a Xyce time-integrator algorithm with no SPICE3 equivalent."
+        ]
+      }
+    },
+    {
+      "id": "capacitor-rc-oscillator",
+      "category": "capacitor",
+      "analyses": [
+        "tran"
+      ],
+      "localPath": "benchmarks/corpus/xyce-spice3/fixtures/CAPACITOR/rc_osc.cir",
+      "sha256": "e2f9235d08edfd564d0bb3865b248517b4046fd884cc830c846576debffc296e",
+      "original": {
+        "corpus": "xyce",
+        "sourcePath": "Netlists/CAPACITOR/rc_osc.cir",
+        "upstreamUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/CAPACITOR/rc_osc.cir",
+        "localPath": "benchmarks/corpus/xyce/fixtures/CAPACITOR/rc_osc.cir",
+        "sha256": "add8ca9d2654398a4c394bc9232809677b479fe35172c66bbb8e2ad9bf9410a4",
+        "ngspiceRejection": "ngspice rejects Xyce's zero-print-step .tran form."
+      },
+      "translation": {
+        "status": "translated",
+        "rules": [
+          "tran-zero-tstep",
+          "timeint-tolerances-removed",
+          "print-brace-expressions"
+        ],
+        "changes": [
+          ".tran print step 0 -> 4e-6 s ((TSTOP - TSTART)/50)",
+          ".print brace expressions -> referenced output variables (v(2))",
+          "removed Xyce `.options timeint reltol=1.0e-4 abstol=1e-4 method=7` (no SPICE3 TIMEINT package; both engines use default tolerances)"
+        ]
+      }
+    },
+    {
+      "id": "diode-level2-temperature-breakdown",
+      "category": "diode",
+      "analyses": [
+        "tran"
+      ],
+      "original": {
+        "corpus": "xyce",
+        "sourcePath": "Netlists/DIODE/Level2_Temp_Dep_Breakdown.cir",
+        "upstreamUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE/Level2_Temp_Dep_Breakdown.cir",
+        "localPath": "benchmarks/corpus/xyce/fixtures/DIODE/Level2_Temp_Dep_Breakdown.cir",
+        "sha256": "9c52a577a2f0b0a7419160b6cd340894ed41ebc403023a3b3f1d809d171bee0e",
+        "ngspiceRejection": "ngspice rejects Xyce's zero-print-step .tran form."
+      },
+      "translation": {
+        "status": "unsupported-translation",
+        "reasons": [
+          "Diode model DZR is Xyce LEVEL=2 (PSpice-compatible diode equations). SPICE3 has no level-2 diode (ngspice-47: \"Diode model level 2 is not supported\"), and substituting the level-1 diode would change the model equations.",
+          "Xyce `.step TEMP list -55 25 72`: SPICE3 batch mode has no parameter-stepping command, and this form is not a single source stepped over a single-source .dc sweep."
+        ]
+      }
+    },
+    {
+      "id": "diode-zener-5229",
+      "category": "diode",
+      "analyses": [
+        "dc"
+      ],
+      "original": {
+        "corpus": "xyce",
+        "sourcePath": "Netlists/DIODE/Zener_5229.cir",
+        "upstreamUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE/Zener_5229.cir",
+        "localPath": "benchmarks/corpus/xyce/fixtures/DIODE/Zener_5229.cir",
+        "sha256": "aefc2180e4bb6a5b39e3f4105546f3c5ba22af3b74f003d2d4d3c55f45938e9e",
+        "ngspiceRejection": "ngspice reports the fixture's PSpice level-2 diode model unsupported."
+      },
+      "translation": {
+        "status": "unsupported-translation",
+        "reasons": [
+          "Diode model DFOR is Xyce LEVEL=2 (PSpice-compatible diode equations). SPICE3 has no level-2 diode (ngspice-47: \"Diode model level 2 is not supported\"), and substituting the level-1 diode would change the model equations.",
+          "Xyce `.options DEVICE` package: no translation rule is implemented."
+        ]
+      }
+    },
+    {
+      "id": "diode-transient",
+      "category": "diode",
+      "analyses": [
+        "tran"
+      ],
+      "localPath": "benchmarks/corpus/xyce-spice3/fixtures/DIODE/diode.cir",
+      "sha256": "f6c02a9ba84410b30eff3304ac83da87237c3d5f00bc9e56549f3f4fea6c36c6",
+      "original": {
+        "corpus": "xyce",
+        "sourcePath": "Netlists/DIODE/diode.cir",
+        "upstreamUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/DIODE/diode.cir",
+        "localPath": "benchmarks/corpus/xyce/fixtures/DIODE/diode.cir",
+        "sha256": "334e2dde43335851dc96f76ba5e78ef3e0b1de142cca073b3c70f83937637d8c",
+        "ngspiceRejection": "ngspice rejects Xyce's zero-print-step .tran form."
+      },
+      "translation": {
+        "status": "translated",
+        "rules": [
+          "tran-zero-tstep",
+          "timeint-tolerances-removed",
+          "print-brace-expressions"
+        ],
+        "changes": [
+          ".tran print step 0 -> 1e-5 s ((TSTOP - TSTART)/50)",
+          "removed Xyce `.options timeint reltol=1.0e-4` (no SPICE3 TIMEINT package; both engines use default tolerances)",
+          ".print brace expressions -> referenced output variables (I(VMON) V(3))"
+        ]
+      }
+    },
+    {
+      "id": "njfet-stepped-dc",
+      "category": "jfet",
+      "analyses": [
+        "dc"
+      ],
+      "localPath": "benchmarks/corpus/xyce-spice3/fixtures/NJFET_DC/njfet.cir",
+      "sha256": "22bf4233f938e3fb56889ce570a2ad8ae6631c96b65203e171814dea0e6ac9b2",
+      "original": {
+        "corpus": "xyce",
+        "sourcePath": "Netlists/NJFET_DC/njfet.cir",
+        "upstreamUrl": "https://github.com/Xyce/Xyce_Regression/blob/7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2/Netlists/NJFET_DC/njfet.cir",
+        "localPath": "benchmarks/corpus/xyce/fixtures/NJFET_DC/njfet.cir",
+        "sha256": "295e3d4208ea2d839acf4724473b921ef1706976b254912b6e8455508c65b412",
+        "ngspiceRejection": "Batch ngspice rejects the fixture's Xyce .STEP command."
+      },
+      "translation": {
+        "status": "translated",
+        "rules": [
+          "step-source-to-nested-dc"
+        ],
+        "changes": [
+          "`.Step Vgs 0 -1.875 -0.625` -> outer sweep of the nested .dc",
+          "`.DC VDS 0 15 1` -> `.DC VDS 0 15 1 Vgs 0 -1.875 -0.625`"
+        ]
+      }
+    }
+  ]
+}
