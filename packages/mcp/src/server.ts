@@ -770,7 +770,17 @@ function toolRequest(args: unknown): SimulationRequestV1 {
   if (isRecord(request.options) && request.options.backend !== undefined && request.options.backend !== 'spice-ts-js') {
     throw apiError('BACKEND_UNAVAILABLE', 'The requested simulation backend is unavailable', 'validation', {});
   }
+  if (isRecord(request.options) && !validMaxTimestep(request.options.maxTimestep)) {
+    throw apiError('INVALID_REQUEST', "'maxTimestep' must be a positive finite number or 0 (unset)", 'validation', {
+      option: 'maxTimestep',
+    });
+  }
   return request as unknown as SimulationRequestV1;
+}
+
+/** Core's rule for `maxTimestep`: unset, 0 (unset, as in ngspice), or positive and finite. */
+function validMaxTimestep(value: unknown): boolean {
+  return value === undefined || (typeof value === 'number' && Number.isFinite(value) && value >= 0);
 }
 
 function boundedRequest(request: SimulationRequestV1, limits: McpLimits): SimulationRequestV1 {

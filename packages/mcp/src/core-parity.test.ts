@@ -28,6 +28,47 @@ describe('MCP resolvedOptions match what core actually runs (#407)', () => {
     expect(largestTransientStep(result)).toBeLessThanOrEqual(resolvedOptions.maxTimestep * (1 + 1e-9));
   });
 
+  it('reports a requested maxTimestep that core applies when .tran has no TMAX (#415)', async () => {
+    const request = { ...spice(`${RC_PULSE}\n.tran 1u 20u`), options: { maxTimestep: 1e-8 } };
+    const { resolvedOptions, result } = await streamedRun(request);
+
+    expect(resolvedOptions.maxTimestep).toBeCloseTo(1e-8, 15);
+    expect(largestTransientStep(result)).toBeLessThanOrEqual(resolvedOptions.maxTimestep * (1 + 1e-9));
+  });
+
+  it('reports .tran TMAX over a requested maxTimestep (#415)', async () => {
+    const request = { ...spice(`${RC_PULSE}\n.tran 1u 20u 0 0.1u`), options: { maxTimestep: 1e-8 } };
+    const { resolvedOptions, result } = await streamedRun(request);
+
+    expect(resolvedOptions.maxTimestep).toBeCloseTo(0.1e-6, 15);
+    expect(largestTransientStep(result)).toBeCloseTo(0.1e-6, 12);
+  });
+
+  it('reports the default cap for a requested maxTimestep of 0, which core treats as unset (#415)', async () => {
+    const request = { ...spice(`${RC_PULSE}\n.tran 1u 20u`), options: { maxTimestep: 0 } };
+    const { resolvedOptions, result } = await streamedRun(request);
+
+    expect(resolvedOptions.maxTimestep).toBeCloseTo(0.4e-6, 15);
+    expect(resolvedOptions.maxTimestep).toBeCloseTo(largestTransientStep(result), 15);
+  });
+
+  it.each(['spice_simulate', 'spice_simulation_start'])(
+    '%s rejects a negative maxTimestep as INVALID_REQUEST before running (#415)',
+    async (tool) => {
+      const simulate = vi.fn();
+      const request = { ...spice(`${RC_PULSE}\n.tran 1u 20u`), options: { maxTimestep: -1e-7 } };
+      const response = await createToolExecutor({ simulate })(tool, { request });
+
+      expect(simulate).not.toHaveBeenCalled();
+      expect(response).toMatchObject({
+        isError: true,
+        structuredContent: {
+          error: { code: 'INVALID_REQUEST', phase: 'validation', details: { option: 'maxTimestep' } },
+        },
+      });
+    },
+  );
+
   it('reports the largest cap across several transient analyses', async () => {
     const request = spice(`${RC_PULSE}\n.tran 1u 20u\n.tran 1u 10u 0 0.1u`);
     const { resolvedOptions } = await streamedRun(request);

@@ -46,6 +46,7 @@ import {
 } from './execution-guard.js';
 import { directedLinearPointCount } from '../analysis/directed-linear-grid.js';
 import { frequencyPointCount } from '../analysis/frequency-grid.js';
+import { isValidMaxTimestepOption } from '../analysis/max-timestep.js';
 
 const MAX_DETAIL_NAMES = 32;
 const API_ERROR_CODES = new Set<SpiceApiErrorV1['code']>([
@@ -364,6 +365,15 @@ function coreOptions(options?: SimulationOptionsV1): SimulationOptions {
   const backend = options?.backend ?? 'spice-ts-js';
   if (backend === 'spice-ts-wasm') {
     throw new InvalidCircuitError("Protocol backend 'spice-ts-wasm' is not available");
+  }
+  if (!isValidMaxTimestepOption(options?.maxTimestep)) {
+    throw new ProtocolExecutionError({
+      code: 'INVALID_REQUEST',
+      message: "'maxTimestep' must be a positive finite number or 0 (unset)",
+      retryable: false,
+      phase: 'validation',
+      details: { option: 'maxTimestep' },
+    });
   }
   return {
     simulator: backend === 'spice-ts-js' ? 'spice-ts' : 'ngspice-wasm',
