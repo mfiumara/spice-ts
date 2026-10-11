@@ -179,33 +179,6 @@ function reciprocalOrZero(value: number): number {
   return value > 0 ? 1 / value : 0;
 }
 
-function junctionStepScale(
-  proposedVoltage: number,
-  previousVoltage: number,
-  saturationCurrent: number,
-): number {
-  const delta = proposedVoltage - previousVoltage;
-  if (delta === 0) return 1;
-  const criticalVoltage = VT * Math.log(VT / (Math.sqrt(2) * saturationCurrent));
-  let limited = proposedVoltage;
-  if (proposedVoltage > criticalVoltage && Math.abs(delta) > 2 * VT) {
-    if (previousVoltage > 0) {
-      const argument = 1 + delta / VT;
-      limited = argument > 0
-        ? previousVoltage + VT * Math.log(argument)
-        : criticalVoltage;
-    } else {
-      limited = VT * Math.log(proposedVoltage / VT);
-    }
-  } else if (proposedVoltage < 0) {
-    const minimum = previousVoltage > 0
-      ? -previousVoltage - 1
-      : 2 * previousVoltage - 1;
-    limited = Math.max(proposedVoltage, minimum);
-  }
-  return Math.min(1, Math.max(0, (limited - previousVoltage) / delta));
-}
-
 function diode(voltage: Dual, current: number, ideality: number): Dual {
   return scale(sub(exp(scale(voltage, 1 / (ideality * VT))), c(1, voltage.derivative.length)), current);
 }
@@ -231,6 +204,7 @@ function depletionCharge(voltage: Dual, potential: number, grading: number): Dua
   );
 }
 
+/** Per local node; derivatives are with respect to the {@link BRANCHES} voltages. */
 interface Evaluation {
   /** Static currents leaving each device node. */
   residual: Dual[];
@@ -250,25 +224,59 @@ const XF1 = 7;
 const XF2 = 8;
 
 /**
+ * Branch-voltage order of the model evaluation (ngspice vbicload.c): the six
+ * pn junctions that DEVpnjlim limits, the three internal resistor branches,
+ * then the excess-phase node voltages when TD > 0. ngspice treats these as
+ * independent variables: each junction is limited on its own, so a limited
+ * linearization point need not be a consistent set of node voltages.
+ */
+const BRANCHES: readonly (readonly [positive: number, negative: number])[] = [
+  [BI, EI], // Vbei
+  [BX, EI], // Vbex
+  [BI, CI], // Vbci
+  [BI, CX], // Vbcx
+  [BX, BP], // Vbep
+  [SI, BP], // Vbcp
+  [CX, CI], // Vrci
+  [BX, BI], // Vrbi
+  [BP, CX], // Vrbp
+];
+const JUNCTION_COUNT = 6;
+const NO_NODE = -1;
+const EXCESS_PHASE_BRANCHES: readonly (readonly [number, number])[] = [[XF1, NO_NODE], [XF2, NO_NODE]];
+
+/** ngspice-47 devsup.c DEVpnjlim. */
+function pnjlim(voltage: number, previous: number, criticalVoltage: number): number {
+  if (voltage > criticalVoltage && Math.abs(voltage - previous) > 2 * VT) {
+    if (previous > 0) {
+      const ratio = (voltage - previous) / VT;
+      return ratio > 0
+        ? previous + VT * (2 + Math.log(ratio - 2))
+        : previous - VT * (2 + Math.log(2 - ratio));
+    }
+    return VT * Math.log(voltage / VT);
+  }
+  if (voltage < 0) {
+    const minimum = previous > 0 ? -previous - 1 : 2 * previous - 1;
+    return Math.max(voltage, minimum);
+  }
+  return voltage;
+}
+
+/**
  * Evaluate the isothermal VBIC 1.2 currents and charges at nominal temperature.
  * Charges follow ngspice vbic_4T_et_cf_fj with AJE/AJC/AJS <= 0, WBE = WSP = 1,
  * QTF = VTF = CBEO = CBCO = CCSO = 0. With TD > 0 the forward transport current
  * passes through ngspice's second-order excess-phase network (nodes xf1/xf2).
  */
-function evaluate(voltages: number[], params: VBICParams): Evaluation {
+function evaluate(voltages: readonly number[], params: VBICParams): Evaluation {
   const size = voltages.length;
-  const excessPhase = size > XF2;
-  const v = voltages.map((value, index) => Dual.variable(value, size, index));
-  const [cx, ci, bx, bi, ei, bp, si] = v;
-  const vbei = sub(bi, ei);
-  const vbex = sub(bx, ei);
-  const vbci = sub(bi, ci);
-  const vbcx = sub(bi, cx);
-  const vbep = sub(bx, bp);
-  const vbcp = sub(si, bp);
-  const vrci = sub(cx, ci);
-  const vrbi = sub(bx, bi);
-  const vrbp = sub(bp, cx);
+  const nodeCount = size === BRANCHES.length ? XF1 : XF2 + 1;
+  const excessPhase = nodeCount > XF2;
+  const b = voltages.map((value, index) => Dual.variable(value, size, index));
+  const [vbei, vbex, vbci, vbcx, vbep, vbcp, vrci, vrbi, vrbp] = b;
+  const xf1 = b[BRANCHES.length];
+  const xf2 = b[BRANCHES.length + 1];
 
   const ifi = diode(vbei, params.IS, 1);
   const iri = diode(vbci, params.IS, 1);
@@ -317,7 +325,7 @@ function evaluate(voltages: number[], params: VBICParams): Evaluation {
   const irbp = scale(mul(vrbp, qbp), 1 / params.RBP);
 
   // ngspice: Iciei = Itxf - Itzr, with Itxf = V(xf2) when excess phase is on.
-  const iciei = excessPhase ? sub(v[XF2], itzr) : transport;
+  const iciei = excessPhase ? sub(xf2, itzr) : transport;
 
   // Forward transit time with ITF/XTF bias dependence (QTF = VTF = 0).
   const forwardPositive = ifi.value > 0 ? 1 : 0;
@@ -336,8 +344,8 @@ function evaluate(voltages: number[], params: VBICParams): Evaluation {
   const qbep = add(scale(depletionCharge(vbep, PC, MC), params.CJEP), scale(ifp, params.TR));
   const qbcp = params.CJCP > 0 ? scale(depletionCharge(vbcp, PS, MS), params.CJCP) : c(0, size);
 
-  const residual = Array.from({ length: size }, () => c(0, size));
-  const charge = Array.from({ length: size }, () => c(0, size));
+  const residual = Array.from({ length: nodeCount }, () => c(0, size));
+  const charge = Array.from({ length: nodeCount }, () => c(0, size));
   const branch = (from: number, to: number, current: Dual): void => {
     residual[from] = add(residual[from], current);
     residual[to] = sub(residual[to], current);
@@ -365,10 +373,10 @@ function evaluate(voltages: number[], params: VBICParams): Evaluation {
   store(BX, BP, qbep);
   store(SI, BP, qbcp);
   if (excessPhase) {
-    residual[XF1] = sub(v[XF2], itzf);
-    residual[XF2] = sub(v[XF2], v[XF1]);
-    charge[XF1] = scale(v[XF1], params.TD);
-    charge[XF2] = scale(v[XF2], params.TD / 3);
+    residual[XF1] = sub(xf2, itzf);
+    residual[XF2] = sub(xf2, xf1);
+    charge[XF1] = scale(xf1, params.TD);
+    charge[XF2] = scale(xf2, params.TD / 3);
   }
   return { residual, charge };
 }
@@ -383,6 +391,14 @@ export class VBIC implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
   readonly params: VBICParams;
+  /** Local (positive, negative) node pair of each evaluation branch voltage. */
+  private readonly branchTerminals: readonly (readonly [number, number])[];
+  /** ngspice vbictemp.c tVcrit, from IS: shared by all six junctions. */
+  private readonly criticalVoltage: number;
+  /** Junction voltages linearized at the last load (ngspice CKTstate0). */
+  private junctions: Float64Array | undefined;
+  /** Whether the last stamp limited a junction (ngspice CKTnoncon). */
+  private limited = false;
 
   constructor(
     readonly name: string,
@@ -395,49 +411,80 @@ export class VBIC implements DeviceModel {
     if (nodes.length !== expected) {
       throw new InvalidCircuitError(`Bounded VBIC device requires ${expected} internal nodes`);
     }
+    this.branchTerminals = expected > XF1 ? [...BRANCHES, ...EXCESS_PHASE_BRANCHES] : BRANCHES;
+    this.criticalVoltage = VT * Math.log(VT / (Math.SQRT2 * this.params.IS));
   }
 
-  limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {
-    const [cx, ci, bx, bi, ei, bp, si] = this.nodes;
-    const voltage = (solution: Float64Array, node: number): number =>
-      node >= 0 ? solution[node] : 0;
-    const junction = (solution: Float64Array, positive: number, negative: number): number =>
-      voltage(solution, positive) - voltage(solution, negative);
-    const scale = (positive: number, negative: number, current: number): number =>
-      junctionStepScale(
-        junction(candidate, positive, negative),
-        junction(previous, positive, negative),
-        Math.max(current, Number.MIN_VALUE),
-      );
-
-    return Math.min(
-      scale(bi, ei, this.params.IS),
-      scale(bx, ei, this.params.IBEI + this.params.IBEN),
-      scale(bi, ci, this.params.IS),
-      scale(bi, cx, this.params.IBCI + this.params.IBCN),
-      scale(bx, bp, this.params.ISP),
-      scale(si, bp, this.params.ISP),
-    );
+  /** Branch voltages of the evaluation, in {@link BRANCHES} order. */
+  private branchVoltages(ctx: StampContext): number[] {
+    const voltage = (local: number): number => {
+      const node = local === NO_NODE ? -1 : this.nodes[local];
+      return node >= 0 ? ctx.getVoltage(node) : 0;
+    };
+    return this.branchTerminals.map(([positive, negative]) => voltage(positive) - voltage(negative));
   }
 
-  private evaluateAt(ctx: StampContext): { voltages: number[]; evaluation: Evaluation } {
-    const voltages = this.nodes.map(node => node >= 0 ? ctx.getVoltage(node) : 0);
-    return { voltages, evaluation: evaluate(voltages, this.params) };
+  /** Map branch-voltage derivatives onto the device's local node columns. */
+  private nodeJacobian(quantity: Dual): Float64Array {
+    const jacobian = new Float64Array(this.nodes.length);
+    this.branchTerminals.forEach(([positive, negative], index) => {
+      const derivative = quantity.derivative[index];
+      jacobian[positive] += derivative;
+      if (negative !== NO_NODE) jacobian[negative] -= derivative;
+    });
+    return jacobian;
+  }
+
+  /**
+   * ngspice vbicload.c: the first load of an operating point (MODEINITJCT)
+   * starts the junctions at tVcrit; every later load limits each junction
+   * voltage on its own with DEVpnjlim against the voltage linearized at the
+   * previous load (CKTstate0), and reports a limited iterate as unconverged.
+   */
+  private limitJunctions(voltages: number[]): void {
+    const previous = this.junctions;
+    if (previous === undefined) {
+      const vcrit = this.criticalVoltage;
+      voltages.fill(0);
+      voltages[0] = vcrit; // Vbei
+      voltages[1] = vcrit; // Vbex
+      voltages[2] = -vcrit; // Vbci
+      voltages[5] = -vcrit; // Vbcp = Vbc - Vbe
+      this.junctions = Float64Array.from(voltages.slice(0, JUNCTION_COUNT));
+      this.limited = true;
+      return;
+    }
+    this.limited = false;
+    for (let index = 0; index < JUNCTION_COUNT; index += 1) {
+      const limited = pnjlim(voltages[index], previous[index], this.criticalVoltage);
+      if (limited !== voltages[index]) this.limited = true;
+      voltages[index] = limited;
+      previous[index] = limited;
+    }
+  }
+
+  limitedLastStamp(): boolean {
+    return this.limited;
   }
 
   stamp(ctx: StampContext): void {
-    const { voltages, evaluation: { residual } } = this.evaluateAt(ctx);
+    const voltages = this.branchVoltages(ctx);
+    this.limitJunctions(voltages);
+    const { residual } = evaluate(voltages, this.params);
     for (let row = 0; row < this.nodes.length; row += 1) {
       const matrixRow = this.nodes[row];
       if (matrixRow < 0) continue;
+      // Linearize about the limited branch voltages: I(v) ~ I(vl) + dI/dv (v - vl).
       let rhs = -residual[row].value;
+      for (let index = 0; index < voltages.length; index += 1) {
+        rhs += residual[row].derivative[index] * voltages[index];
+      }
+      const jacobian = this.nodeJacobian(residual[row]);
       for (let column = 0; column < this.nodes.length; column += 1) {
-        const derivative = residual[row].derivative[column];
-        rhs += derivative * voltages[column];
         const matrixColumn = this.nodes[column];
         // Stamp zero derivatives too so the first assembly pass locks the full
         // nonlinear Jacobian pattern used by later Newton iterations.
-        if (matrixColumn >= 0) ctx.stampG(matrixRow, matrixColumn, derivative);
+        if (matrixColumn >= 0) ctx.stampG(matrixRow, matrixColumn, jacobian[column]);
       }
       ctx.stampB(matrixRow, rhs);
     }
@@ -449,13 +496,14 @@ export class VBIC implements DeviceModel {
    * linearized AC and pole-zero analyses reach this: transient stays rejected.
    */
   stampDynamic(ctx: StampContext): void {
-    const { evaluation: { charge } } = this.evaluateAt(ctx);
+    const { charge } = evaluate(this.branchVoltages(ctx), this.params);
     for (let row = 0; row < this.nodes.length; row += 1) {
       const matrixRow = this.nodes[row];
       if (matrixRow < 0) continue;
+      const jacobian = this.nodeJacobian(charge[row]);
       for (let column = 0; column < this.nodes.length; column += 1) {
         const matrixColumn = this.nodes[column];
-        const capacitance = charge[row].derivative[column];
+        const capacitance = jacobian[column];
         if (matrixColumn >= 0 && capacitance !== 0) ctx.stampC(matrixRow, matrixColumn, capacitance);
       }
     }

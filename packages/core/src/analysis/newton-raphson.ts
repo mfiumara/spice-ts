@@ -34,6 +34,7 @@ export function newtonRaphson(
   // Pre-classify devices for batch stamping (built lazily after first iteration)
   let mosfets: MOSFET[] | null = null;
   let otherDevices: DeviceModel[] | null = null;
+  const selfLimiting = devices.filter(device => device.limitedLastStamp !== undefined);
 
   for (let iter = 0; iter < maxIter; iter++) {
     guard?.checkpoint('solve:newton-iteration');
@@ -81,7 +82,12 @@ export function newtonRaphson(
     applyDeviceStepLimits(devices, assembler.prevSolution, x);
     assembler.solution.set(x);
 
-    if (isConverged(assembler.solution, assembler.prevSolution, assembler.numNodes, options)) {
+    // ngspice CKTnoncon: an iterate a device had to limit was linearised at a
+    // junction voltage the solution does not have, so it is not converged.
+    if (
+      isConverged(assembler.solution, assembler.prevSolution, assembler.numNodes, options)
+      && !selfLimiting.some(device => device.limitedLastStamp!())
+    ) {
       if (telemetry) {
         telemetry.newtonIterations += iter + 1;
         telemetry.acceptedSolves++;
