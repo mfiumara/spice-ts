@@ -1,62 +1,115 @@
 import { ParseError } from '../errors.js';
+import { evaluateExpression } from './expression.js';
 import { parseNumber } from './tokenizer.js';
 
 /**
- * Bounded ngspice B-source (`ASRC`) expression support.
+ * ngspice-47 B-source (`ASRC`) expressions: parse tree, evaluation and
+ * derivatives, ported from `inpptree-parser.y`, `inpptree.c`, `ifeval.c` and
+ * `ptfuncs.c`.
  *
- * Supported: numbers with SPICE scale factors, `v(node)`, `v(node1,node2)`,
- * unary `+`/`-`, binary `+ - * /`, parentheses, and the functions listed in
- * {@link BEHAVIORAL_FUNCTIONS}, evaluated like ngspice `ptfuncs.c`.
- * Everything else (branch currents, `time`, parameters, powers, comparisons,
- * ternaries, `V=` sources, instance parameters) is rejected explicitly.
+ * Supported: numbers with SPICE scale factors, the constants `pi` and `e`,
+ * `time`, `temper`, `v(node)`, `v(node1,node2)`, unary `+ - !`, binary
+ * `+ - * / ^ **`, comparisons `== != <> < <= > >=`, `&&`, `||`, the ternary
+ * `c ? a : b` / `ternary_fcn(c, a, b)`, and every function listed in
+ * {@link BEHAVIORAL_FUNCTIONS}. `.param` names, `{expr}` and `'expr'` are
+ * substituted before parsing, as ngspice's numparam front end does (see
+ * {@link substituteBehavioralParameters}). Branch currents `i(...)`, `hertz`,
+ * `pwl(...)` and the PSPICE logic operators `~ & |` are rejected explicitly.
  */
 export type BehavioralFunction =
-  | 'tanh' | 'exp' | 'sinh' | 'cosh' | 'atan' | 'sin' | 'cos' | 'abs';
+  | 'abs' | 'acos' | 'acosh' | 'asin' | 'asinh' | 'atan' | 'atanh'
+  | 'cos' | 'cosh' | 'exp' | 'ln' | 'log' | 'log10' | 'sgn' | 'sin' | 'sinh'
+  | 'sqrt' | 'tan' | 'tanh' | 'u' | 'uramp' | 'ceil' | 'floor' | 'nint' | 'u2'
+  | 'eq0' | 'ne0' | 'gt0' | 'lt0' | 'ge0' | 'le0'
+  | 'pow' | 'pwr' | 'min' | 'max' | 'ddt';
+
+export type BehavioralBinaryOperator = '+' | '-' | '*' | '/' | '^';
+export type BehavioralComparison = '==' | '!=' | '<' | '<=' | '>' | '>=';
+export type BehavioralVariable = 'time' | 'temper';
 
 export type BehavioralExpression =
   | { kind: 'number'; value: number }
   | { kind: 'voltage'; positive: string; negative?: string }
+  | { kind: 'variable'; name: BehavioralVariable }
   | { kind: 'negate'; operand: BehavioralExpression }
-  | { kind: 'binary'; op: '+' | '-' | '*' | '/'; left: BehavioralExpression; right: BehavioralExpression }
-  | { kind: 'call'; name: BehavioralFunction; argument: BehavioralExpression };
+  | { kind: 'not'; operand: BehavioralExpression }
+  | { kind: 'binary'; op: BehavioralBinaryOperator; left: BehavioralExpression; right: BehavioralExpression }
+  | { kind: 'compare'; op: BehavioralComparison; left: BehavioralExpression; right: BehavioralExpression }
+  | { kind: 'logical'; op: '&&' | '||'; left: BehavioralExpression; right: BehavioralExpression }
+  | {
+      kind: 'ternary';
+      condition: BehavioralExpression;
+      whenTrue: BehavioralExpression;
+      whenFalse: BehavioralExpression;
+    }
+  | { kind: 'call'; name: BehavioralFunction; args: BehavioralExpression[] };
+
+const BINARY_FUNCTIONS: readonly BehavioralFunction[] = ['pow', 'pwr', 'min', 'max'];
 
 export const BEHAVIORAL_FUNCTIONS: readonly BehavioralFunction[] = [
-  'tanh', 'exp', 'sinh', 'cosh', 'atan', 'sin', 'cos', 'abs',
+  'abs', 'acos', 'acosh', 'asin', 'asinh', 'atan', 'atanh',
+  'cos', 'cosh', 'exp', 'ln', 'log', 'log10', 'sgn', 'sin', 'sinh',
+  'sqrt', 'tan', 'tanh', 'u', 'uramp', 'ceil', 'floor', 'nint', 'u2',
+  'eq0', 'ne0', 'gt0', 'lt0', 'ge0', 'le0',
+  ...BINARY_FUNCTIONS, 'ddt',
 ];
+
+/** ASRC instance parameters (ngspice `asrc.c`); temperatures in Celsius. */
+export interface BehavioralInstanceParams {
+  tc1?: number;
+  tc2?: number;
+  /** Instance temperature; replaces the circuit temperature and `dtemp`. */
+  temp?: number;
+  dtemp?: number;
+  /** ngspice `reciproctc=1`: divide by the temperature factor instead. */
+  reciproctc?: boolean;
+}
+
+export type BehavioralSourceKind = 'current' | 'voltage';
 
 export interface BehavioralSourceCard {
   name: string;
   nodes: [string, string];
+  kind: BehavioralSourceKind;
   expression: BehavioralExpression;
+  params: BehavioralInstanceParams;
 }
 
 const GROUND = '0';
 const NUMBER = /^(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?[a-zA-Z]*/;
 const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*/;
+const IDENTIFIER_CHAR = /[A-Za-z0-9_]/;
 const NODE_NAME = /^[^\s(),]+/;
 const B_CARD = /^(\S+)\s+([^\s(),=]+)\s+([^\s(),=]+)\s*(.*)$/;
-const CURRENT_ASSIGNMENT = /^i\s*=\s*([\s\S]+)$/i;
+const B_CARD_HEAD = /^(\s*[bB]\S*\s+[^\s(),=]+\s+[^\s(),=]+\s*)([iIvV]\s*=)([\s\S]*)$/;
+const ASSIGNMENT = /^([iv])\s*=\s*([\s\S]+)$/i;
+const INSTANCE_PARAMETER = /^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(\S+)\s*/;
+const INSTANCE_PARAMETERS = new Set(['tc1', 'tc2', 'temp', 'dtemp', 'reciproctc']);
 
 class ExpressionError extends Error {}
 
 export function parseBehavioralSourceCard(raw: string, lineNumber: number): BehavioralSourceCard {
   const card = B_CARD.exec(raw.trim());
   if (!card || card[4] === '') {
-    throw new ParseError('B-card requires two nodes and an I= expression', lineNumber, raw);
+    throw new ParseError('B-card requires two nodes and an I= or V= expression', lineNumber, raw);
   }
-  const assignment = CURRENT_ASSIGNMENT.exec(card[4]);
+  const assignment = ASSIGNMENT.exec(card[4]);
   if (!assignment) {
     throw new ParseError(
-      "Unsupported behavioral source form: only 'I=<expression>' is supported",
+      "Unsupported behavioral source form: expected 'I=<expression>' or 'V=<expression>'",
       lineNumber,
       raw,
     );
   }
   try {
+    const parser = new Parser(assignment[2]);
+    const expression = parser.parseExpression();
     return {
       name: card[1],
       nodes: [card[2], card[3]],
-      expression: parseBehavioralExpression(assignment[1]),
+      kind: assignment[1].toLowerCase() === 'v' ? 'voltage' : 'current',
+      expression,
+      params: parseInstanceParameters(parser.rest()),
     };
   } catch (error) {
     if (error instanceof ExpressionError) throw new ParseError(error.message, lineNumber, raw);
@@ -64,19 +117,107 @@ export function parseBehavioralSourceCard(raw: string, lineNumber: number): Beha
   }
 }
 
+/** ngspice's lexer stops at `tc1=`, `tc2=`, `temp=`, `dtemp=` and `reciproctc=`. */
+function parseInstanceParameters(text: string): BehavioralInstanceParams {
+  const params: BehavioralInstanceParams = {};
+  let rest = text;
+  while (rest !== '') {
+    const match = INSTANCE_PARAMETER.exec(rest);
+    if (!match) throw unexpectedTail(rest);
+    const name = match[1].toLowerCase();
+    if (!INSTANCE_PARAMETERS.has(name)) {
+      throw new ExpressionError(`Unsupported behavioral source parameter '${match[1]}'`);
+    }
+    let value: number;
+    try {
+      value = parseNumber(match[2]);
+    } catch {
+      throw new ExpressionError(`Behavioral source parameter '${match[1]}' needs a number, got '${match[2]}'`);
+    }
+    if (name === 'reciproctc') params.reciproctc = value === 1;
+    else params[name as 'tc1' | 'tc2' | 'temp' | 'dtemp'] = value;
+    rest = rest.slice(match[0].length);
+  }
+  return params;
+}
+
+function unexpectedTail(rest: string): ExpressionError {
+  const token = IDENTIFIER.exec(rest);
+  if (token) return new ExpressionError(`Unsupported behavioral expression token '${token[0]}'`);
+  if (rest[0] === ')') return new ExpressionError("Unbalanced ')' in behavioral expression");
+  return new ExpressionError(`Unsupported behavioral expression operator '${rest[0]}'`);
+}
+
 export function parseBehavioralExpression(text: string): BehavioralExpression {
   const parser = new Parser(text);
-  const expression = parser.parseSum();
-  parser.expectEnd();
+  const expression = parser.parseExpression();
+  const rest = parser.rest();
+  if (rest !== '') throw unexpectedTail(rest);
   return expression;
 }
 
+/**
+ * Recursive-descent form of the ngspice bison grammar. Precedence, lowest
+ * first: `?:` (right), `||`, `&&`, `== !=`, `< <= > >=`, `+ -`, `* /`, unary
+ * `- + !`, `^` (left). Unary minus binds looser than `^`: `-a^2` is `-(a^2)`.
+ */
 class Parser {
   private position = 0;
 
   constructor(private readonly source: string) {}
 
-  parseSum(): BehavioralExpression {
+  /** Unparsed remainder (instance parameters such as `tc1=`). */
+  rest(): string {
+    return this.source.slice(this.position).trim();
+  }
+
+  parseExpression(): BehavioralExpression {
+    const condition = this.parseOr();
+    if (!this.accept('?')) return condition;
+    const whenTrue = this.parseExpression();
+    this.expect(':');
+    const whenFalse = this.parseExpression();
+    return { kind: 'ternary', condition, whenTrue, whenFalse };
+  }
+
+  private parseOr(): BehavioralExpression {
+    let left = this.parseAnd();
+    while (this.accept('||')) left = { kind: 'logical', op: '||', left, right: this.parseAnd() };
+    return left;
+  }
+
+  private parseAnd(): BehavioralExpression {
+    let left = this.parseEquality();
+    while (this.accept('&&')) left = { kind: 'logical', op: '&&', left, right: this.parseEquality() };
+    return left;
+  }
+
+  private parseEquality(): BehavioralExpression {
+    let left = this.parseRelational();
+    for (;;) {
+      let op: BehavioralComparison;
+      if (this.accept('==')) op = '==';
+      else if (this.accept('!=') || this.accept('<>')) op = '!=';
+      else return left;
+      left = { kind: 'compare', op, left, right: this.parseRelational() };
+    }
+  }
+
+  private parseRelational(): BehavioralExpression {
+    let left = this.parseSum();
+    for (;;) {
+      let op: BehavioralComparison;
+      if (this.peekText('<>')) return left;
+      if (this.accept('<=')) op = '<=';
+      else if (this.accept('>=')) op = '>=';
+      else if (this.accept('<')) op = '<';
+      else if (this.accept('>')) op = '>';
+      else return left;
+      left = { kind: 'compare', op, left, right: this.parseSum() };
+    }
+  }
+
+  private parseSum(): BehavioralExpression {
     let left = this.parseProduct();
     for (;;) {
       const op = this.peek();
@@ -90,23 +231,35 @@ class Parser {
     let left = this.parseUnary();
     for (;;) {
       const op = this.peek();
-      if (op !== '*' && op !== '/') return left;
+      if ((op !== '*' || this.peekText('**')) && op !== '/') return left;
       this.position++;
       left = { kind: 'binary', op, left, right: this.parseUnary() };
     }
   }
 
-  private parseUnary(): BehavioralExpression {
+  private startsUnary(): boolean {
     const op = this.peek();
-    if (op === '-') {
-      this.position++;
-      return { kind: 'negate', operand: this.parseUnary() };
+    return op === '-' || op === '+' || (op === '!' && !this.peekText('!='));
+  }
+
+  private parseUnary(): BehavioralExpression {
+    if (!this.startsUnary()) return this.parsePower();
+    const op = this.source[this.position++];
+    const operand = this.parseUnary();
+    if (op === '-') return { kind: 'negate', operand };
+    if (op === '!') return { kind: 'not', operand };
+    return operand;
+  }
+
+  private parsePower(): BehavioralExpression {
+    let left = this.parsePrimary();
+    while (this.accept('^') || this.accept('**')) {
+      // bison shifts a unary operator after '^' (`a^-b` is `a^(-b)`), while a
+      // plain operand keeps '^' left-associative.
+      const right = this.startsUnary() ? this.parseUnary() : this.parsePrimary();
+      left = { kind: 'binary', op: '^', left, right };
     }
-    if (op === '+') {
-      this.position++;
-      return this.parseUnary();
-    }
-    return this.parsePrimary();
+    return left;
   }
 
   private parsePrimary(): BehavioralExpression {
@@ -114,7 +267,7 @@ class Parser {
     if (next === undefined) throw new ExpressionError('Unexpected end of behavioral expression');
     if (next === '(') {
       this.position++;
-      const inner = this.parseSum();
+      const inner = this.parseExpression();
       this.expect(')');
       return inner;
     }
@@ -125,22 +278,47 @@ class Parser {
       return { kind: 'number', value: parseNumber(number[0]) };
     }
     const identifier = IDENTIFIER.exec(rest);
-    if (identifier) {
-      this.position += identifier[0].length;
-      const name = identifier[0].toLowerCase();
-      if (this.peek() !== '(') {
-        throw new ExpressionError(`Unsupported behavioral expression token '${identifier[0]}'`);
-      }
-      this.position++;
-      if (name === 'v') return this.parseVoltage();
-      if (!(BEHAVIORAL_FUNCTIONS as readonly string[]).includes(name)) {
-        throw new ExpressionError(`Unsupported behavioral expression function '${identifier[0]}'`);
-      }
-      const argument = this.parseSum();
-      this.expect(')');
-      return { kind: 'call', name: name as BehavioralFunction, argument };
+    if (!identifier) throw new ExpressionError(`Unsupported behavioral expression operator '${next}'`);
+    this.position += identifier[0].length;
+    const name = identifier[0].toLowerCase();
+    if (!this.accept('(')) return this.parseName(identifier[0], name);
+    if (name === 'v') return this.parseVoltage();
+    if (name === 'i') {
+      throw new ExpressionError('Unsupported behavioral expression: branch current i(...) references');
     }
-    throw new ExpressionError(`Unsupported behavioral expression operator '${next}'`);
+    return this.parseCall(identifier[0], name);
+  }
+
+  private parseName(original: string, name: string): BehavioralExpression {
+    switch (name) {
+      case 'time':
+      case 'temper':
+        return { kind: 'variable', name };
+      case 'pi':
+        return { kind: 'number', value: Math.PI };
+      case 'e':
+        return { kind: 'number', value: Math.E };
+      default:
+        throw new ExpressionError(`Unsupported behavioral expression token '${original}'`);
+    }
+  }
+
+  private parseCall(original: string, name: string): BehavioralExpression {
+    const args = [this.parseExpression()];
+    while (this.accept(',')) args.push(this.parseExpression());
+    this.expect(')');
+    if (name === 'ternary_fcn') {
+      if (args.length !== 3) throw new ExpressionError('ternary_fcn() takes three arguments');
+      return { kind: 'ternary', condition: args[0], whenTrue: args[1], whenFalse: args[2] };
+    }
+    if (!(BEHAVIORAL_FUNCTIONS as readonly string[]).includes(name)) {
+      throw new ExpressionError(`Unsupported behavioral expression function '${original}'`);
+    }
+    const binary = BINARY_FUNCTIONS.includes(name as BehavioralFunction);
+    if (args.length !== (binary ? 2 : 1)) {
+      throw new ExpressionError(`${name}() takes ${binary ? 'two arguments' : 'one argument'}`);
+    }
+    return { kind: 'call', name: name as BehavioralFunction, args };
   }
 
   private parseVoltage(): BehavioralExpression {
@@ -151,15 +329,8 @@ class Parser {
       if (!node) throw new ExpressionError('v() takes one or two node names');
       nodes.push(node[0]);
       this.position += node[0].length;
-      const separator = this.peek();
-      if (separator === ',') {
-        this.position++;
-        continue;
-      }
-      if (separator === ')') {
-        this.position++;
-        break;
-      }
+      if (this.accept(',')) continue;
+      if (this.accept(')')) break;
       throw new ExpressionError('v() takes one or two node names');
     }
     if (nodes.length > 2) throw new ExpressionError('v() takes one or two node names');
@@ -168,18 +339,19 @@ class Parser {
       : { kind: 'voltage', positive: nodes[0], negative: nodes[1] };
   }
 
-  expectEnd(): void {
-    const next = this.peek();
-    if (next === undefined) return;
-    const token = /^[A-Za-z_][A-Za-z0-9_]*/.exec(this.source.slice(this.position));
-    if (token) throw new ExpressionError(`Unsupported behavioral expression token '${token[0]}'`);
-    if (next === ')') throw new ExpressionError("Unbalanced ')' in behavioral expression");
-    throw new ExpressionError(`Unsupported behavioral expression operator '${next}'`);
+  private accept(text: string): boolean {
+    if (!this.peekText(text)) return false;
+    this.position += text.length;
+    return true;
+  }
+
+  private peekText(text: string): boolean {
+    this.skipWhitespace();
+    return this.source.startsWith(text, this.position);
   }
 
   private expect(char: string): void {
-    if (this.peek() !== char) throw new ExpressionError(`Expected '${char}' in behavioral expression`);
-    this.position++;
+    if (!this.accept(char)) throw new ExpressionError(`Expected '${char}' in behavioral expression`);
   }
 
   private peek(): string | undefined {
@@ -194,49 +366,172 @@ class Parser {
   }
 }
 
+/**
+ * ngspice's numparam front end for a B-card: replace `{expr}` and `'expr'`
+ * with their values and every bare `.param` name with its value (negative
+ * values parenthesised so they keep their precedence). Function names,
+ * `v()`/`i()` node lists and `name=` instance parameters are left alone.
+ * `params` is keyed by upper-case name. Other cards are returned unchanged.
+ */
+export function substituteBehavioralParameters(raw: string, params: Record<string, number>): string {
+  const card = B_CARD_HEAD.exec(raw);
+  if (!card) return raw;
+  const body = card[3];
+  const format = (value: number) => (value < 0 ? `(${value})` : String(value));
+  let out = card[1] + card[2];
+  let i = 0;
+  while (i < body.length) {
+    const char = body[i];
+    if (char === '{' || char === "'") {
+      const close = body.indexOf(char === '{' ? '}' : "'", i + 1);
+      if (close < 0) throw new Error(`Unterminated ${char} expression in B-card`);
+      out += format(evaluateExpression(body.slice(i + 1, close), params));
+      i = close + 1;
+      continue;
+    }
+    const rest = body.slice(i);
+    const startsToken = !IDENTIFIER_CHAR.test(body[i - 1] ?? '');
+    const number = startsToken ? NUMBER.exec(rest) : null;
+    const identifier = startsToken && !number ? IDENTIFIER.exec(rest) : null;
+    if (number) {
+      out += number[0];
+      i += number[0].length;
+    } else if (identifier) {
+      const after = body.slice(i + identifier[0].length);
+      if (/^[iv]$/i.test(identifier[0]) && /^\s*\(/.test(after)) {
+        const close = body.indexOf(')', i);
+        const end = close < 0 ? body.length : close + 1;
+        out += body.slice(i, end);
+        i = end;
+        continue;
+      }
+      const key = identifier[0].toUpperCase();
+      out += !/^\s*[(=]/.test(after) && key in params ? format(params[key]) : identifier[0];
+      i += identifier[0].length;
+    } else {
+      out += char;
+      i++;
+    }
+  }
+  return out;
+}
+
 /** Rename every node referenced by `v()` (ground stays ground). */
 export function mapBehavioralNodes(
   expression: BehavioralExpression,
   mapNode: (node: string) => string,
 ): BehavioralExpression {
   const map = (node: string) => (node === GROUND ? GROUND : mapNode(node));
+  const recurse = (node: BehavioralExpression) => mapBehavioralNodes(node, mapNode);
   switch (expression.kind) {
     case 'number':
+    case 'variable':
       return expression;
     case 'voltage':
       return expression.negative === undefined
         ? { kind: 'voltage', positive: map(expression.positive) }
         : { kind: 'voltage', positive: map(expression.positive), negative: map(expression.negative) };
     case 'negate':
-      return { kind: 'negate', operand: mapBehavioralNodes(expression.operand, mapNode) };
+    case 'not':
+      return { ...expression, operand: recurse(expression.operand) };
     case 'binary':
+      return { ...expression, left: recurse(expression.left), right: recurse(expression.right) };
+    case 'compare':
+      return { ...expression, left: recurse(expression.left), right: recurse(expression.right) };
+    case 'logical':
+      return { ...expression, left: recurse(expression.left), right: recurse(expression.right) };
+    case 'ternary':
       return {
-        ...expression,
-        left: mapBehavioralNodes(expression.left, mapNode),
-        right: mapBehavioralNodes(expression.right, mapNode),
+        kind: 'ternary',
+        condition: recurse(expression.condition),
+        whenTrue: recurse(expression.whenTrue),
+        whenFalse: recurse(expression.whenFalse),
       };
     case 'call':
-      return { ...expression, argument: mapBehavioralNodes(expression.argument, mapNode) };
+      return { ...expression, args: expression.args.map(recurse) };
   }
 }
 
 /** Render an expression back to ngspice syntax (used by netlist serialisation). */
 export function formatBehavioralExpression(expression: BehavioralExpression): string {
+  const format = formatBehavioralExpression;
   switch (expression.kind) {
     case 'number':
-      return String(expression.value);
+      return expression.value < 0 ? `(${expression.value})` : String(expression.value);
+    case 'variable':
+      return expression.name;
     case 'voltage':
       return expression.negative === undefined
         ? `v(${expression.positive})`
         : `v(${expression.positive},${expression.negative})`;
     case 'negate':
-      return `(-${formatBehavioralExpression(expression.operand)})`;
+      return `(-${format(expression.operand)})`;
+    case 'not':
+      return `(!${format(expression.operand)})`;
     case 'binary':
-      return `(${formatBehavioralExpression(expression.left)}${expression.op}${formatBehavioralExpression(expression.right)})`;
+    case 'compare':
+    case 'logical':
+      return `(${format(expression.left)}${expression.op}${format(expression.right)})`;
+    case 'ternary':
+      return `(${format(expression.condition)}?${format(expression.whenTrue)}:${format(expression.whenFalse)})`;
     case 'call':
-      return `${expression.name}(${formatBehavioralExpression(expression.argument)})`;
+      return `${expression.name}(${expression.args.map(format).join(',')})`;
   }
 }
+
+/** Distinct non-ground `v()` nodes of an expression, in first-reference order. */
+export function behavioralControlNodes(expression: BehavioralExpression): string[] {
+  const nodes: string[] = [];
+  const add = (node: string | undefined) => {
+    if (node !== undefined && node !== GROUND && !nodes.includes(node)) nodes.push(node);
+  };
+  const visit = (node: BehavioralExpression): void => {
+    switch (node.kind) {
+      case 'voltage':
+        add(node.positive);
+        add(node.negative);
+        return;
+      case 'negate':
+      case 'not':
+        visit(node.operand);
+        return;
+      case 'binary':
+      case 'compare':
+      case 'logical':
+        visit(node.left);
+        visit(node.right);
+        return;
+      case 'ternary':
+        visit(node.condition);
+        visit(node.whenTrue);
+        visit(node.whenFalse);
+        return;
+      case 'call':
+        node.args.forEach(visit);
+        return;
+      case 'number':
+      case 'variable':
+        return;
+    }
+  };
+  visit(expression);
+  return nodes;
+}
+
+/** Simulator state a B-source expression reads besides node voltages. */
+export interface BehavioralEnvironment {
+  /** Simulation time in seconds (0 outside transient analysis). */
+  time: number;
+  /** True during the Newton iterations of a transient timepoint (ngspice MODETRAN). */
+  transient: boolean;
+  /** Circuit temperature in Celsius (`temper`). */
+  temperature: number;
+}
+
+const DEFAULT_ENVIRONMENT: BehavioralEnvironment = { time: 0, transient: false, temperature: 27 };
+
+/** A B-source expression evaluated out of range (ngspice `E_PARMVAL`, which aborts the analysis). */
+export class BehavioralRangeError extends Error {}
 
 export interface CompiledBehavioralExpression {
   /** Distinct non-ground controlling nodes, in first-reference order. */
@@ -245,63 +540,201 @@ export interface CompiledBehavioralExpression {
    * Evaluate at the given node voltages (indexed like {@link nodes}); writes
    * d(value)/d(node voltage) into `gradient` and returns the value.
    */
-  evaluate(voltages: ArrayLike<number>, gradient: Float64Array): number;
+  evaluate(voltages: ArrayLike<number>, gradient: Float64Array, environment?: BehavioralEnvironment): number;
 }
 
-type Evaluator = (voltages: ArrayLike<number>, gradient: Float64Array) => number;
+type Evaluator = (voltages: ArrayLike<number>, gradient: Float64Array, environment: BehavioralEnvironment) => number;
 
 // ngspice ifeval.c: PTfudge_factor = gmin * 1e-20 with the default gmin.
 const DIVIDE_FUDGE = 1e-12 * 1e-20;
 const EXP_LIMIT_ARGUMENT = 227.9559242;
 const TWO_PI = 2 * Math.PI;
 
-function modulus(value: number): number {
-  return value - Math.trunc(value / TWO_PI) * TWO_PI;
+/** ngspice MODULUS(NUM, LIMIT): NUM - (int)(NUM / LIMIT) * LIMIT. */
+function modulus(value: number, limit: number): number {
+  return value - Math.trunc(value / limit) * limit;
+}
+
+/** ngspice PTeval reports E_PARMVAL when a node evaluates to HUGE (HUGE_VAL, +inf). */
+function checked(value: number, what: string, ...args: number[]): number {
+  if (value === Infinity) {
+    throw new BehavioralRangeError(`Behavioral expression: ${args.join(', ')} out of range for ${what}`);
+  }
+  return value;
+}
+
+/** ngspice PTdivide. */
+function ptDivide(a: number, b: number): number {
+  const d = b >= 0 ? b + DIVIDE_FUDGE : b - DIVIDE_FUDGE;
+  return d === 0 ? Infinity : a / d;
+}
+
+const ulpView = new DataView(new ArrayBuffer(16));
+
+/** ngspice AlmostEqualUlps(nearbyint(x), x, 10). */
+function almostInteger(value: number): boolean {
+  const rounded = roundHalfEven(value);
+  if (rounded === value) return true;
+  if (!Number.isFinite(value)) return false;
+  ulpView.setFloat64(0, rounded);
+  ulpView.setFloat64(8, value);
+  const a = ulpView.getBigInt64(0);
+  const b = ulpView.getBigInt64(8);
+  if ((a < 0n) !== (b < 0n)) return false;
+  return (a > b ? a - b : b - a) <= 10n;
+}
+
+/** C round(): halves away from zero. */
+function roundAway(value: number): number {
+  return Math.sign(value) * Math.round(Math.abs(value));
+}
+
+/** ngspice PTpower (`pow()` and the derivative trees). */
+function ptPower(a: number, b: number): number {
+  if (a === 0) return 0;
+  if (a > 0) return Math.pow(a, b);
+  return almostInteger(b) ? Math.pow(a, roundAway(b)) : 0;
+}
+
+/** ngspice PTpowerH (the `^` operator in the default compatibility mode). */
+function ptPowerH(a: number, b: number): number {
+  if (a >= 0) return Math.pow(a, b);
+  return almostInteger(b) ? Math.pow(a, roundAway(b)) : 0;
+}
+
+/** ngspice PTpwr (`pwr()`): sign-preserving power. */
+function ptPwr(a: number, b: number): number {
+  return a < 0 ? -Math.pow(-a, b) : Math.pow(a, b);
+}
+
+/** ngspice PTlog / PTlog10: -1e99 at 0, HUGE below. */
+function ptLog(x: number, log: (x: number) => number): number {
+  if (x < 0) return Infinity;
+  if (x === 0) return -1e99;
+  return log(x);
+}
+
+/** ngspice PTsqrt: HUGE below 0. */
+function ptSqrt(x: number): number {
+  return x < 0 ? Infinity : Math.sqrt(x);
 }
 
 function ptExp(value: number): number {
   return value > EXP_LIMIT_ARGUMENT ? 1e99 : Math.exp(value);
 }
 
-function functionValue(name: BehavioralFunction, x: number): [number, number] {
+/** C nearbyint() in the default rounding mode: halves to even. */
+function roundHalfEven(x: number): number {
+  const floor = Math.floor(x);
+  const fraction = x - floor;
+  if (fraction < 0.5) return floor;
+  if (fraction > 0.5) return floor + 1;
+  return floor % 2 === 0 ? floor : floor + 1;
+}
+
+const sgn = (x: number) => (x > 0 ? 1 : x < 0 ? -1 : 0);
+const ustep = (x: number) => (x < 0 ? 0 : x > 0 ? 1 : 0.5);
+
+/** Square root inside a derivative tree, with PTsqrt's range check. */
+const derivativeSqrt = (x: number) => checked(ptSqrt(x), 'sqrt', x);
+
+/** ptfuncs.c value and the inpptree.c PTdifferentiate slope of a one-argument function. */
+function unaryFunction(name: BehavioralFunction, x: number): [value: number, slope: number] {
   switch (name) {
-    case 'tanh': {
-      const value = Math.tanh(x);
-      return [value, 1 - value * value];
-    }
+    case 'abs': return [Math.abs(x), sgn(x)];
+    case 'acos': return [Math.acos(x), ptDivide(-1, derivativeSqrt(1 - ptPowerH(x, 2)))];
+    case 'acosh': return [Math.acosh(x), ptDivide(1, derivativeSqrt(ptPowerH(x, 2) - 1))];
+    case 'asin': return [Math.asin(x), ptDivide(1, derivativeSqrt(1 - ptPowerH(x, 2)))];
+    case 'asinh': return [Math.asinh(x), ptDivide(1, derivativeSqrt(ptPowerH(x, 2) + 1))];
+    case 'atan': return [Math.atan(x), ptDivide(1, ptPowerH(x, 2) + 1)];
+    case 'atanh': return [Math.atanh(x), ptDivide(1, 1 - ptPowerH(x, 2))];
+    case 'cos': return [Math.cos(modulus(x, TWO_PI)), -Math.sin(modulus(x, TWO_PI))];
+    case 'cosh': return [Math.cosh(x), Math.sinh(x)];
     case 'exp': {
       const value = ptExp(x);
       return [value, value];
     }
-    case 'sinh':
-      return [Math.sinh(x), Math.cosh(x)];
-    case 'cosh':
-      return [Math.cosh(x), Math.sinh(x)];
-    case 'atan':
-      return [Math.atan(x), 1 / (1 + x * x)];
-    case 'sin':
-      return [Math.sin(modulus(x)), Math.cos(modulus(x))];
-    case 'cos':
-      return [Math.cos(modulus(x)), -Math.sin(modulus(x))];
-    case 'abs':
-      return [Math.abs(x), x > 0 ? 1 : x < 0 ? -1 : 0];
+    case 'ln':
+    case 'log': return [ptLog(x, Math.log), ptDivide(1, x)];
+    case 'log10': return [ptLog(x, Math.log10), ptDivide(Math.LOG10E, x)];
+    case 'sgn': return [sgn(x), 0];
+    case 'sin': return [Math.sin(modulus(x, TWO_PI)), Math.cos(modulus(x, TWO_PI))];
+    case 'sinh': return [Math.sinh(x), Math.cosh(x)];
+    case 'sqrt': return [ptSqrt(x), ptDivide(1, 2 * derivativeSqrt(x))];
+    case 'tan': {
+      const value = Math.tan(modulus(x, Math.PI));
+      return [value, 1 + ptPowerH(value, 2)];
+    }
+    case 'tanh': {
+      const value = Math.tanh(x);
+      return [value, 1 - ptPowerH(value, 2)];
+    }
+    case 'u': return [ustep(x), 0];
+    case 'uramp': return [x < 0 ? 0 : x, ustep(x)];
+    case 'ceil': return [Math.ceil(x), 0];
+    case 'floor': return [Math.floor(x), 0];
+    case 'nint': return [roundHalfEven(x), 0];
+    case 'u2': return [x <= 0 ? 0 : x <= 1 ? x : 1, ustep(x) - ustep(x - 1)];
+    case 'eq0': return [x === 0 ? 1 : 0, 0];
+    case 'ne0': return [x !== 0 ? 1 : 0, 0];
+    case 'gt0': return [x > 0 ? 1 : 0, 0];
+    case 'lt0': return [x < 0 ? 1 : 0, 0];
+    case 'ge0': return [x >= 0 ? 1 : 0, 0];
+    case 'le0': return [x <= 0 ? 1 : 0, 0];
+    default: throw new Error(`internal: ${name}() is not a one-argument function`);
   }
 }
 
-function divisor(value: number): number {
-  return value >= 0 ? value + DIVIDE_FUDGE : value - DIVIDE_FUDGE;
+/** ngspice rewrites `a OP b` as OP0(a - b) (eq0, ne0, gt0, lt0, ge0, le0). */
+function compare(op: BehavioralComparison, difference: number): number {
+  switch (op) {
+    case '==': return difference === 0 ? 1 : 0;
+    case '!=': return difference !== 0 ? 1 : 0;
+    case '<': return difference < 0 ? 1 : 0;
+    case '<=': return difference <= 0 ? 1 : 0;
+    case '>': return difference > 0 ? 1 : 0;
+    case '>=': return difference >= 0 ? 1 : 0;
+  }
 }
 
+/**
+ * Compile an expression into an evaluator returning its value and the
+ * ngspice `PTdifferentiate` derivative with respect to each control node.
+ * Each compiled expression owns its `ddt()` history: compile once per device
+ * instance.
+ */
 export function compileBehavioralExpression(expression: BehavioralExpression): CompiledBehavioralExpression {
-  const nodes: string[] = [];
-  const slot = (node: string): number => {
-    if (node === GROUND) return -1;
-    let index = nodes.indexOf(node);
-    if (index < 0) {
-      index = nodes.length;
-      nodes.push(node);
+  const nodes = behavioralControlNodes(expression);
+  const size = nodes.length;
+
+  /**
+   * d(base^exponent) as ngspice builds it for `^` and `pow()`: a literal
+   * exponent c gives c*pwr(a, c-1)*da (ngspice-47 keeps the sign of a here),
+   * a literal base gives pow(a,b)*db*log|a|, otherwise
+   * pow(a,b)*(b*da/a + db*log|a|).
+   */
+  const powerGradient = (
+    gradient: Float64Array,
+    baseGradient: Float64Array,
+    a: number,
+    b: number,
+    literalExponent: boolean,
+    literalBase: boolean,
+  ): void => {
+    if (literalExponent) {
+      const slope = b * ptPwr(a, b - 1);
+      for (let i = 0; i < size; i++) gradient[i] = slope * baseGradient[i];
+      return;
     }
-    return index;
+    const power = ptPower(a, b);
+    const logAbs = ptLog(Math.abs(a), Math.log);
+    if (literalBase) {
+      for (let i = 0; i < size; i++) gradient[i] = power * (gradient[i] * logAbs);
+      return;
+    }
+    for (let i = 0; i < size; i++) {
+      gradient[i] = power * (b * ptDivide(baseGradient[i], a) + gradient[i] * logAbs);
+    }
   };
 
   const build = (node: BehavioralExpression): Evaluator => {
@@ -313,9 +746,18 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
           return value;
         };
       }
+      case 'variable': {
+        const time = node.name === 'time';
+        return (_voltages, gradient, environment) => {
+          gradient.fill(0);
+          return time ? environment.time : environment.temperature;
+        };
+      }
       case 'voltage': {
-        const positive = slot(node.positive);
-        const negative = node.negative === undefined ? -1 : slot(node.negative);
+        const positive = node.positive === GROUND ? -1 : nodes.indexOf(node.positive);
+        const negative = node.negative === undefined || node.negative === GROUND
+          ? -1
+          : nodes.indexOf(node.negative);
         return (voltages, gradient) => {
           gradient.fill(0);
           let value = 0;
@@ -332,59 +774,208 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
       }
       case 'negate': {
         const operand = build(node.operand);
-        return (voltages, gradient) => {
-          const value = operand(voltages, gradient);
-          for (let i = 0; i < gradient.length; i++) gradient[i] = -gradient[i];
+        return (voltages, gradient, environment) => {
+          const value = operand(voltages, gradient, environment);
+          for (let i = 0; i < size; i++) gradient[i] = -gradient[i];
           return -value;
         };
       }
-      case 'call': {
-        const argument = build(node.argument);
-        const { name } = node;
-        return (voltages, gradient) => {
-          const [value, slope] = functionValue(name, argument(voltages, gradient));
-          for (let i = 0; i < gradient.length; i++) gradient[i] *= slope;
-          return value;
+      case 'not': {
+        const operand = build(node.operand);
+        return (voltages, gradient, environment) => {
+          const value = operand(voltages, gradient, environment);
+          gradient.fill(0);
+          return value === 0 ? 1 : 0;
         };
       }
-      case 'binary': {
+      case 'compare': {
         const left = build(node.left);
         const right = build(node.right);
         const { op } = node;
-        return (voltages, gradient) => {
-          const a = left(voltages, gradient);
-          const leftGradient = gradient.slice();
-          const b = right(voltages, gradient);
-          switch (op) {
-            case '+':
-              for (let i = 0; i < gradient.length; i++) gradient[i] += leftGradient[i];
-              return a + b;
-            case '-':
-              for (let i = 0; i < gradient.length; i++) gradient[i] = leftGradient[i] - gradient[i];
-              return a - b;
-            case '*':
-              for (let i = 0; i < gradient.length; i++) {
-                gradient[i] = leftGradient[i] * b + a * gradient[i];
-              }
-              return a * b;
-            case '/': {
-              const d = divisor(b);
-              for (let i = 0; i < gradient.length; i++) {
-                gradient[i] = (leftGradient[i] * d - a * gradient[i]) / (d * d);
-              }
-              return a / d;
-            }
-          }
+        return (voltages, gradient, environment) => {
+          const a = left(voltages, gradient, environment);
+          const b = right(voltages, gradient, environment);
+          gradient.fill(0);
+          return compare(op, a - b);
         };
       }
+      case 'logical': {
+        // ngspice: a && b -> eq0(eq0(a) + eq0(b)), a || b -> ne0(ne0(a) + ne0(b));
+        // both operands are always evaluated.
+        const left = build(node.left);
+        const right = build(node.right);
+        const and = node.op === '&&';
+        return (voltages, gradient, environment) => {
+          const a = left(voltages, gradient, environment) !== 0;
+          const b = right(voltages, gradient, environment) !== 0;
+          gradient.fill(0);
+          return (and ? a && b : a || b) ? 1 : 0;
+        };
+      }
+      case 'ternary': {
+        // Only the selected branch is evaluated (ifeval.c PT_TERN), which
+        // matters for ddt() histories inside the branches.
+        const condition = build(node.condition);
+        const whenTrue = build(node.whenTrue);
+        const whenFalse = build(node.whenFalse);
+        return (voltages, gradient, environment) => {
+          const selected = condition(voltages, gradient, environment) !== 0 ? whenTrue : whenFalse;
+          return selected(voltages, gradient, environment);
+        };
+      }
+      case 'call':
+        if (node.name === 'ddt') return buildDdt(node.args[0]);
+        return node.args.length === 2
+          ? buildBinaryFunction(node.name, node.args[0], node.args[1])
+          : buildUnaryFunction(node.name, node.args[0]);
+      case 'binary':
+        return buildBinary(node.op, node.left, node.right);
     }
+  };
+
+  const buildUnaryFunction = (name: BehavioralFunction, argumentNode: BehavioralExpression): Evaluator => {
+    const argument = build(argumentNode);
+    return (voltages, gradient, environment) => {
+      const x = argument(voltages, gradient, environment);
+      const [value, slope] = unaryFunction(name, x);
+      checked(value, name, x);
+      for (let i = 0; i < size; i++) gradient[i] *= slope;
+      return value;
+    };
+  };
+
+  /**
+   * ngspice PTddt: the backward difference of the argument values seen at
+   * the first evaluation of each new transient time, lagged one timepoint;
+   * 0 at time 0 and outside transient analysis, with a zero derivative.
+   */
+  const buildDdt = (argumentNode: BehavioralExpression): Evaluator => {
+    const argument = build(argumentNode);
+    // ngspice ddtdata vals: [t0, v0, t1, v1, t2, v2, slope].
+    const vals = new Float64Array(7);
+    let count = 0;
+    return (voltages, gradient, environment) => {
+      const arg = argument(voltages, gradient, environment);
+      gradient.fill(0);
+      const { time } = environment;
+      if (time === 0) {
+        // Each run starts from a clean history (ngspice keeps it across runs).
+        vals.fill(0);
+        count = 0;
+        vals[3] = arg;
+        return 0;
+      }
+      if (!environment.transient) return 0;
+      if (time > vals[0]) {
+        vals[4] = vals[2];
+        vals[5] = vals[3];
+        vals[2] = vals[0];
+        vals[3] = vals[1];
+        vals[0] = time;
+        vals[1] = arg;
+        if (count > 1) {
+          vals[6] = (vals[1] - vals[3]) / (vals[2] - vals[4]);
+        } else {
+          vals[6] = 0;
+          vals[3] = arg;
+        }
+        count++;
+      }
+      return vals[6];
+    };
+  };
+
+  const buildBinaryFunction = (
+    name: BehavioralFunction,
+    leftNode: BehavioralExpression,
+    rightNode: BehavioralExpression,
+  ): Evaluator => {
+    const left = build(leftNode);
+    const right = build(rightNode);
+    const leftGradient = new Float64Array(size);
+    const literalExponent = rightNode.kind === 'number';
+    const literalBase = leftNode.kind === 'number';
+    return (voltages, gradient, environment) => {
+      const a = left(voltages, leftGradient, environment);
+      const b = right(voltages, gradient, environment);
+      switch (name) {
+        case 'min':
+        case 'max': {
+          // PTmin/PTmax; derivative (lt0|gt0)(a - b) ? da : db.
+          const value = name === 'min' ? (a > b ? b : a) : (a > b ? a : b);
+          if (name === 'min' ? a - b < 0 : a - b > 0) gradient.set(leftGradient);
+          return value;
+        }
+        case 'pow': {
+          const value = checked(ptPower(a, b), name, a, b);
+          powerGradient(gradient, leftGradient, a, b, literalExponent, literalBase);
+          return value;
+        }
+        case 'pwr': {
+          // d pwr(a,c) = c*pow(a, c-1)*da; otherwise pwr(a,b)*(b*da/a + db*log|a|).
+          const value = checked(ptPwr(a, b), name, a, b);
+          if (literalExponent) {
+            const slope = b * ptPower(a, b - 1);
+            for (let i = 0; i < size; i++) gradient[i] = slope * leftGradient[i];
+          } else {
+            const logAbs = ptLog(Math.abs(a), Math.log);
+            for (let i = 0; i < size; i++) {
+              gradient[i] = value * (b * ptDivide(leftGradient[i], a) + gradient[i] * logAbs);
+            }
+          }
+          return value;
+        }
+        default:
+          throw new Error(`internal: ${name}() is not a two-argument function`);
+      }
+    };
+  };
+
+  const buildBinary = (
+    op: BehavioralBinaryOperator,
+    leftNode: BehavioralExpression,
+    rightNode: BehavioralExpression,
+  ): Evaluator => {
+    const left = build(leftNode);
+    const right = build(rightNode);
+    const leftGradient = new Float64Array(size);
+    const literalExponent = rightNode.kind === 'number';
+    const literalBase = leftNode.kind === 'number';
+    return (voltages, gradient, environment) => {
+      const a = left(voltages, leftGradient, environment);
+      const b = right(voltages, gradient, environment);
+      switch (op) {
+        case '+':
+          for (let i = 0; i < size; i++) gradient[i] += leftGradient[i];
+          return checked(a + b, op, a, b);
+        case '-':
+          for (let i = 0; i < size; i++) gradient[i] = leftGradient[i] - gradient[i];
+          return checked(a - b, op, a, b);
+        case '*':
+          for (let i = 0; i < size; i++) gradient[i] = leftGradient[i] * b + a * gradient[i];
+          return checked(a * b, op, a, b);
+        case '/': {
+          // d(a/b) = (da*b - a*db) / b^2, with PTdivide's fudge on b^2.
+          const denominator = ptPowerH(b, 2);
+          for (let i = 0; i < size; i++) {
+            gradient[i] = ptDivide(leftGradient[i] * b - a * gradient[i], denominator);
+          }
+          return checked(ptDivide(a, b), op, a, b);
+        }
+        case '^': {
+          const value = checked(ptPowerH(a, b), op, a, b);
+          powerGradient(gradient, leftGradient, a, b, literalExponent, literalBase);
+          return value;
+        }
+      }
+    };
   };
 
   const root = build(expression);
   return {
     nodes,
-    evaluate(voltages, gradient) {
-      return root(voltages, gradient);
+    evaluate(voltages, gradient, environment = DEFAULT_ENVIRONMENT) {
+      return root(voltages, gradient, environment);
     },
   };
 }
