@@ -26,21 +26,108 @@ export interface DiodeParams {
   TT?: number;
   KF?: number;
   AF?: number;
+  /** Forward knee current (high injection); ngspice alias IK. */
+  IKF?: number;
 }
 
-const VT = 0.02585;
+/**
+ * ngspice-47 dio.c model-parameter aliases. Every name in a group sets the same
+ * ngspice field; the first name is the spice-ts canonical one.
+ */
+const DIODE_ALIAS_GROUPS: ReadonlyArray<{
+  names: readonly string[];
+  description: string;
+}> = [
+  { names: ['IS', 'JS'], description: 'saturation current' },
+  { names: ['JSW', 'ISW'], description: 'sidewall saturation current' },
+  { names: ['TNOM', 'TREF'], description: 'parameter measurement temperature' },
+  { names: ['TRS1', 'TRS'], description: 'first-order RS temperature coefficient' },
+  { names: ['CJO', 'CJ0', 'CJ'], description: 'zero-bias junction capacitance' },
+  { names: ['VJ', 'PB'], description: 'junction potential' },
+  { names: ['M', 'MJ'], description: 'grading coefficient' },
+  { names: ['CJSW', 'CJP'], description: 'sidewall junction capacitance' },
+  { names: ['VJSW', 'PHP'], description: 'sidewall junction potential' },
+  { names: ['IKF', 'IK'], description: 'forward knee current' },
+  { names: ['NBV', 'NZ'], description: 'breakdown emission coefficient' },
+  { names: ['BV', 'VB', 'VRB', 'VAR'], description: 'reverse breakdown voltage' },
+  { names: ['IBV', 'IB'], description: 'reverse breakdown current' },
+];
+
+const DIODE_CANONICAL_NAMES: ReadonlyMap<string, string> = new Map(
+  DIODE_ALIAS_GROUPS.flatMap(({ names }) => names.map(field => [field, names[0]] as const)),
+);
+
+export type DiodeModelAlias =
+  | 'JS' | 'ISW' | 'TREF' | 'TRS' | 'CJ' | 'PB' | 'MJ' | 'IK' | 'NZ'
+  | 'VB' | 'VRB' | 'VAR' | 'IB';
+
+/** Diode model fields as written in a netlist, canonical names or ngspice aliases. */
+export type DiodeModelInput = Partial<DiodeParams> & Partial<Record<DiodeModelAlias, number>>;
+
+// ngspice-47 const.h: CONSTboltz, CHARGE, CONSTCtoK.
+const BOLTZMANN = 1.38064852e-23;
+const ELEMENTARY_CHARGE = 1.6021766208e-19;
 const KELVIN_OFFSET = 273.15;
-const K_OVER_Q = 8.617333262e-5;
-const DISTORTION_VT = (1.38064852e-23 / 1.6021766208e-19) * (27 + KELVIN_OFFSET);
+const K_OVER_Q = BOLTZMANN / ELEMENTARY_CHARGE;
 const GMIN = 1e-12;
+/** ngspice CKTepsmin: smaller IKF values disable the knee (diosetup.c). */
+const MIN_KNEE_CURRENT = 1e-28;
+/** ngspice dioload.c applies the knee only above this junction current. */
+const KNEE_CURRENT_THRESHOLD = 1e-18;
 const UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS = new Set([
   'NBV', 'IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2',
+  // ngspice-47 TCV (with alias TBV1) lowers BV by TCV*dT, unlike the bounded
+  // TBV1/TBV2 law below, so it is rejected instead of being mapped.
+  'TCV',
 ]);
+
+/** Thermal voltage kT/q at a temperature in Celsius, as ngspice computes it. */
+function thermalVoltageAt(temperatureCelsius: number): number {
+  return K_OVER_Q * (temperatureCelsius + KELVIN_OFFSET);
+}
+
+/**
+ * Map ngspice diode model aliases onto canonical spice-ts names. ngspice keeps
+ * the last value written to a shared field, which depends on netlist order that
+ * the model card no longer carries, so conflicting values are rejected.
+ */
+export function canonicalDiodeModelParams(
+  name: string,
+  params: Readonly<DiodeModelInput>,
+): Partial<DiodeParams> {
+  const values = params as Readonly<Record<string, number | undefined>>;
+  const canonical: Record<string, number> = {};
+  for (const { names, description } of DIODE_ALIAS_GROUPS) {
+    const supplied = names.filter(field => values[field] !== undefined);
+    const conflict = supplied.find(field => values[field] !== values[supplied[0]]);
+    if (conflict !== undefined) {
+      throw new InvalidCircuitError(
+        `Diode '${name}' sets both ${supplied[0]}=${values[supplied[0]]} and `
+          + `${conflict}=${values[conflict]}; they are aliases of the same `
+          + `${description}, so supply only one`,
+      );
+    }
+    if (supplied.length > 0) canonical[names[0]] = values[supplied[0]]!;
+  }
+  for (const [field, value] of Object.entries(values)) {
+    if (value !== undefined && !DIODE_CANONICAL_NAMES.has(field)) canonical[field] = value;
+  }
+  return canonical as Partial<DiodeParams>;
+}
 
 interface BreakdownParams {
   voltage: number;
   current: number;
   thermalVoltage: number;
+}
+
+/** Temperature-resolved junction law shared by the DC, AC and noise paths. */
+interface Junction {
+  thermalVoltage: number;
+  saturationCurrent: number;
+  breakdown?: BreakdownParams;
+  /** Area-scaled forward knee current; 0 disables high injection. */
+  kneeCurrent: number;
 }
 
 export interface DiodeDistortionCoefficients {
@@ -62,23 +149,25 @@ export class Diode implements DeviceModel {
   readonly params: DiodeParams;
   readonly suppliedParams: Readonly<Partial<DiodeParams>>;
   private temperature = 27;
-  private distortionMode = false;
 
   constructor(
     readonly name: string,
     readonly nodes: number[],
-    params: Partial<DiodeParams>,
+    modelParams: DiodeModelInput,
     private readonly hasExternalSeriesResistance = false,
     readonly instanceParams: DiodeInstanceParams = {},
   ) {
-    this.suppliedParams = { ...params };
-    for (const name of Object.keys(params)) {
-      if (UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS.has(name)) {
+    for (const field of Object.keys(modelParams)) {
+      const canonicalField = DIODE_CANONICAL_NAMES.get(field) ?? field;
+      if (UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS.has(canonicalField)) {
+        const written = canonicalField === field ? '' : ` (written as '${field}')`;
         throw new Error(
-          `Unsupported bounded diode breakdown-temperature model parameter: '${name}'`,
+          `Unsupported bounded diode breakdown-temperature model parameter: '${canonicalField}'${written}`,
         );
       }
     }
+    const params = canonicalDiodeModelParams(name, modelParams);
+    this.suppliedParams = params;
     const effectiveArea = (instanceParams.AREA ?? 1) * (instanceParams.M ?? 1);
     const effectivePerimeter = (instanceParams.PJ ?? 0) * (instanceParams.M ?? 1);
     this.params = {
@@ -92,11 +181,11 @@ export class Diode implements DeviceModel {
       TNOM: params.TNOM ?? 27,
       RS: (params.RS ?? 0) / effectiveArea,
       JSW: params.JSW ?? 0,
-      CJ0: (diodeZeroBiasCapacitance(name, params) ?? 0) * effectiveArea,
-      CJSW: (params.CJSW ?? params.CJP ?? 0) * effectivePerimeter,
+      CJ0: (params.CJO ?? 0) * effectiveArea,
+      CJSW: (params.CJSW ?? 0) * effectivePerimeter,
       // ngspice diosetup.c defaults: VJ = VJSW = 1 V, FC = FCS = 0.5.
       VJ: params.VJ ?? 1,
-      VJSW: params.VJSW ?? params.PHP ?? 1,
+      VJSW: params.VJSW ?? 1,
       M: params.M ?? 0.5,
       MJSW: params.MJSW ?? 0.33,
       FC: params.FC ?? 0.5,
@@ -104,6 +193,7 @@ export class Diode implements DeviceModel {
       TT: params.TT ?? 0,
       KF: params.KF ?? 0,
       AF: params.AF ?? 1,
+      IKF: (params.IKF ?? 0) >= MIN_KNEE_CURRENT ? params.IKF! * effectiveArea : 0,
     };
   }
 
@@ -115,8 +205,19 @@ export class Diode implements DeviceModel {
     return this.temperature;
   }
 
-  setDistortionMode(enabled: boolean): void {
-    this.distortionMode = enabled;
+  /**
+   * Kept for the `.disto` driver. The thermal voltage is kT/q in every mode now,
+   * so distortion no longer needs a different junction law.
+   */
+  setDistortionMode(_enabled: boolean): void {}
+
+  private junction(): Junction {
+    return {
+      thermalVoltage: this.params.N * thermalVoltageAt(this.temperature),
+      saturationCurrent: this.params.IS,
+      breakdown: this.breakdownParams(),
+      kneeCurrent: this.params.IKF!,
+    };
   }
 
   /** Reject diode fields outside the bounded `.disto` slice (no solution needed). */
@@ -147,7 +248,7 @@ export class Diode implements DeviceModel {
     const [nA, nK] = this.nodes;
     const voltage = (nA >= 0 ? solution[nA] : 0) - (nK >= 0 ? solution[nK] : 0);
     const { IS, N, TT, CJ0: distortionCapacitance } = this.params;
-    const thermalVoltage = N * DISTORTION_VT;
+    const thermalVoltage = N * thermalVoltageAt(this.temperature);
     const conductance = (IS / thermalVoltage) * safeExponential(voltage / thermalVoltage);
     const current2 = conductance / (2 * thermalVoltage);
     const current3 = conductance / (6 * thermalVoltage * thermalVoltage);
@@ -166,7 +267,7 @@ export class Diode implements DeviceModel {
     if (!distortionCapacitance && !TT) return;
     const [nA, nK] = this.nodes;
     const voltage = (nA >= 0 ? ctx.getVoltage(nA) : 0) - (nK >= 0 ? ctx.getVoltage(nK) : 0);
-    const thermalVoltage = N * DISTORTION_VT;
+    const thermalVoltage = N * thermalVoltageAt(this.temperature);
     const conductance = (IS / thermalVoltage) * safeExponential(voltage / thermalVoltage);
     const { VJ, M, FC } = this.params;
     const capacitance = depletionChargeTaylor(voltage, distortionCapacitance!, VJ!, M!, FC!)
@@ -188,7 +289,7 @@ export class Diode implements DeviceModel {
     return {
       voltage: BV * (1 + TBV1 * delta + TBV2 * delta * delta),
       current: IBV,
-      thermalVoltage: K_OVER_Q * (this.temperature + KELVIN_OFFSET),
+      thermalVoltage: thermalVoltageAt(this.temperature),
     };
   }
 
@@ -201,13 +302,11 @@ export class Diode implements DeviceModel {
   } {
     const [nA, nK] = this.nodes;
     const terminalVoltage = (nA >= 0 ? solution[nA] : 0) - (nK >= 0 ? solution[nK] : 0);
-    const { IS, N, RS, KF, AF } = this.params;
+    const { RS, KF, AF } = this.params;
     const { current } = diodeCurrent(
       terminalVoltage,
-      N * VT,
-      IS,
+      this.junction(),
       RS,
-      this.breakdownParams(),
       !this.hasExternalSeriesResistance,
     );
     return {
@@ -224,15 +323,10 @@ export class Diode implements DeviceModel {
     const vK = nK >= 0 ? ctx.getVoltage(nK) : 0;
     const vd = vA - vK;
 
-    const { IS, N, RS } = this.params;
-    const vt = N * (this.distortionMode ? DISTORTION_VT : VT);
-
     const { current: id, conductance, linearizationVoltage } = diodeCurrent(
       vd,
-      vt,
-      IS,
-      RS,
-      this.breakdownParams(),
+      this.junction(),
+      this.params.RS,
       !this.hasExternalSeriesResistance,
     );
     const gd = conductance + GMIN;
@@ -252,19 +346,19 @@ export class Diode implements DeviceModel {
   }
 
   stampDynamic(ctx: StampContext): void {
-    const { CJ0, CJSW, VJ, VJSW, M, MJSW, FC, FCS, TT, IS, N, RS } = this.params;
+    const { CJ0, CJSW, VJ, VJSW, M, MJSW, FC, FCS, TT, RS } = this.params;
     if (!CJ0 && !CJSW && !TT) return;
 
     const [nA, nK] = this.nodes;
     const vA = nA >= 0 ? ctx.getVoltage(nA) : 0;
     const vK = nK >= 0 ? ctx.getVoltage(nK) : 0;
     const terminalVoltage = vA - vK;
-    const vt = N * VT;
+    const junction = this.junction();
 
     // RS separates the external terminal from the charge-storing junction. The
     // two-terminal reduction therefore needs dVj/dVt as well as dQ/dVj.
     const operatingPoint = RS > 0
-      ? diodeCurrent(terminalVoltage, vt, IS, RS, this.breakdownParams())
+      ? diodeCurrent(terminalVoltage, junction, RS)
       : undefined;
     const junctionVoltage = operatingPoint?.junctionVoltage ?? terminalVoltage;
     const junctionVoltageGain = operatingPoint
@@ -275,8 +369,14 @@ export class Diode implements DeviceModel {
     cj += depletionChargeTaylor(junctionVoltage, CJSW!, VJSW!, MJSW!, FCS!).capacitance;
 
     if (TT) {
+      const { thermalVoltage: vt, saturationCurrent, kneeCurrent } = junction;
+      const exponential = Math.exp(Math.min(terminalVoltage / vt, 40));
       const junctionConductance = operatingPoint?.junctionConductance
-        ?? (IS / vt) * Math.exp(Math.min(terminalVoltage / vt, 40));
+        ?? applyForwardKnee(
+          saturationCurrent * (exponential - 1),
+          (saturationCurrent / vt) * exponential,
+          kneeCurrent,
+        ).conductance;
       cj += TT * junctionConductance;
     }
 
@@ -295,22 +395,15 @@ export class Diode implements DeviceModel {
 }
 
 /**
- * Resolve the zero-bias junction capacitance. ngspice accepts both CJO (letter)
- * and CJ0 (digit) for the same model field; conflicting values are rejected
- * rather than silently picking one.
+ * Resolve the zero-bias junction capacitance. ngspice accepts CJO, CJ0 and CJ
+ * for the same model field; conflicting values are rejected rather than
+ * silently picking one.
  */
 export function diodeZeroBiasCapacitance(
   name: string,
-  params: Readonly<Partial<DiodeParams>>,
+  params: Readonly<DiodeModelInput>,
 ): number | undefined {
-  const { CJ0, CJO } = params;
-  if (CJ0 !== undefined && CJO !== undefined && CJ0 !== CJO) {
-    throw new InvalidCircuitError(
-      `Diode '${name}' sets both CJO=${CJO} and CJ0=${CJ0}; they are aliases of the same `
-        + 'zero-bias junction capacitance, so supply only one',
-    );
-  }
-  return CJ0 ?? CJO;
+  return canonicalDiodeModelParams(name, params).CJO;
 }
 
 /**
@@ -353,10 +446,8 @@ function depletionChargeTaylor(
 
 function diodeCurrent(
   terminalVoltage: number,
-  thermalVoltage: number,
-  saturationCurrent: number,
+  junction: Junction,
   seriesResistance: number,
-  breakdown?: BreakdownParams,
   limitJunctionVoltage = true,
 ): {
   current: number;
@@ -365,20 +456,16 @@ function diodeCurrent(
   junctionVoltage: number;
   linearizationVoltage: number;
 } {
+  const { thermalVoltage, saturationCurrent, breakdown } = junction;
   if (seriesResistance === 0) {
     const limitedVoltage = limitJunctionVoltage
       ? limitVoltage(terminalVoltage, thermalVoltage, saturationCurrent, breakdown)
       : terminalVoltage;
-    const junction = junctionCurrent(
-      limitedVoltage,
-      thermalVoltage,
-      saturationCurrent,
-      breakdown,
-    );
+    const { current, conductance } = junctionCurrent(limitedVoltage, junction);
     return {
-      current: junction.current,
-      conductance: junction.conductance,
-      junctionConductance: junction.conductance,
+      current,
+      conductance,
+      junctionConductance: conductance,
       junctionVoltage: limitedVoltage,
       linearizationVoltage: limitedVoltage,
     };
@@ -393,28 +480,18 @@ function diodeCurrent(
   }
 
   for (let iteration = 0; iteration < 12; iteration++) {
-    const junction = junctionCurrent(
-      junctionVoltage,
-      thermalVoltage,
-      saturationCurrent,
-      breakdown,
-    );
-    const correction = (junctionVoltage + seriesResistance * junction.current - terminalVoltage)
-      / (1 + seriesResistance * junction.conductance);
+    const { current, conductance } = junctionCurrent(junctionVoltage, junction);
+    const correction = (junctionVoltage + seriesResistance * current - terminalVoltage)
+      / (1 + seriesResistance * conductance);
     junctionVoltage -= correction;
     if (Math.abs(correction) <= 1e-12) break;
   }
 
-  const junction = junctionCurrent(
-    junctionVoltage,
-    thermalVoltage,
-    saturationCurrent,
-    breakdown,
-  );
+  const { current, conductance } = junctionCurrent(junctionVoltage, junction);
   return {
-    current: junction.current,
-    conductance: junction.conductance / (1 + seriesResistance * junction.conductance),
-    junctionConductance: junction.conductance,
+    current,
+    conductance: conductance / (1 + seriesResistance * conductance),
+    junctionConductance: conductance,
     junctionVoltage,
     linearizationVoltage: terminalVoltage,
   };
@@ -422,9 +499,7 @@ function diodeCurrent(
 
 function junctionCurrent(
   voltage: number,
-  thermalVoltage: number,
-  saturationCurrent: number,
-  breakdown?: BreakdownParams,
+  { thermalVoltage, saturationCurrent, breakdown, kneeCurrent }: Junction,
 ): { current: number; conductance: number } {
   if (breakdown) {
     const knee = breakdownKneeVoltage(breakdown, saturationCurrent);
@@ -437,9 +512,25 @@ function junctionCurrent(
     }
   }
   const exponential = safeExponential(voltage / thermalVoltage);
+  return applyForwardKnee(
+    saturationCurrent * (exponential - 1),
+    (saturationCurrent / thermalVoltage) * exponential,
+    kneeCurrent,
+  );
+}
+
+/** High-injection roll-off above the forward knee current IKF (ngspice dioload.c). */
+function applyForwardKnee(
+  current: number,
+  conductance: number,
+  kneeCurrent: number,
+): { current: number; conductance: number } {
+  if (kneeCurrent <= 0 || current <= KNEE_CURRENT_THRESHOLD) return { current, conductance };
+  const root = Math.sqrt(current / kneeCurrent);
   return {
-    current: saturationCurrent * (exponential - 1),
-    conductance: (saturationCurrent / thermalVoltage) * exponential,
+    current: current / (1 + root),
+    conductance: ((1 + root) * conductance - current * conductance / (2 * root * kneeCurrent))
+      / (1 + 2 * root + current / kneeCurrent),
   };
 }
 
