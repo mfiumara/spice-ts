@@ -101,25 +101,37 @@ describe('triage-detail --tmax rewrite', () => {
   });
 });
 
-// This is a triage card, not a simulator fix. The opt-in parity assertion must stay RED
-// until the linked device fixes land. Normal tests verify the documented losses honestly.
+// This is a triage card, not a simulator fix. mosmem was fixed by #601 (#590) and is now a
+// regression guard. The ltra2_2_line i(vs) residual (#627) is still a loss: the opt-in parity
+// assertion must stay RED until it is fixed, and the normal test verifies the documented loss.
 const ngspiceVersion = spawnSync('ngspice', ['--version'], { encoding: 'utf8' });
-describe('unchanged-deck MOS1 losses (#590, #591)', { skip: !/ngspice-47\b/.test(ngspiceVersion.stdout ?? '') }, () => {
-  for (const id of ['tests-general-mosmem-cir', 'tests-transmission-ltra2-2-line-cir']) {
-    it(id, async () => {
-      const manifest = JSON.parse(await readFile(resolve(ROOT, 'manifest.json'), 'utf8')) as CorpusFManifest;
-      const fixture = manifest.circuits.find(candidate => candidate.id === id);
-      assert.ok(fixture);
-      const result = await runFixture(fixture);
-      assert.equal(result.ngspice.status, 'success');
-      assert.equal(result.spiceTs.status, 'success');
-      assert.ok(result.worstNormalizedError !== null);
-      if (process.env.CORPUS_F_REQUIRE_PARITY === '1') {
-        assert.ok(result.worstNormalizedError <= MATCH_THRESHOLD, `${id}: ${result.worstNormalizedError} > ${MATCH_THRESHOLD}`);
-      } else {
-        assert.equal(result.outcome, 'mismatch');
-        assert.ok(result.worstNormalizedError > MATCH_THRESHOLD, 'loss resolved; update the triage and linked issue');
-      }
-    });
+describe('unchanged-deck MOS1 triage rows (#590 fixed, #627 open)', { skip: !/ngspice-47\b/.test(ngspiceVersion.stdout ?? '') }, () => {
+  async function run(id: string) {
+    const manifest = JSON.parse(await readFile(resolve(ROOT, 'manifest.json'), 'utf8')) as CorpusFManifest;
+    const fixture = manifest.circuits.find(candidate => candidate.id === id);
+    if (!fixture) throw new Error(`${id} is not a corpus-f fixture`);
+    const result = await runFixture(fixture);
+    assert.equal(result.ngspice.status, 'success');
+    assert.equal(result.spiceTs.status, 'success');
+    const worst = result.worstNormalizedError;
+    if (worst === null) throw new Error(`${id}: no compared signals`);
+    return { result, worst };
   }
+
+  it('tests-general-mosmem-cir matches after #601 (#590)', async () => {
+    const { result, worst } = await run('tests-general-mosmem-cir');
+    assert.equal(result.outcome, 'matched');
+    assert.ok(worst <= MATCH_THRESHOLD, `${worst} > ${MATCH_THRESHOLD}`);
+  });
+
+  it('tests-transmission-ltra2-2-line-cir', async () => {
+    const id = 'tests-transmission-ltra2-2-line-cir';
+    const { result, worst } = await run(id);
+    if (process.env.CORPUS_F_REQUIRE_PARITY === '1') {
+      assert.ok(worst <= MATCH_THRESHOLD, `${id}: ${worst} > ${MATCH_THRESHOLD}`);
+    } else {
+      assert.equal(result.outcome, 'mismatch');
+      assert.ok(worst > MATCH_THRESHOLD, 'loss resolved; update the triage and linked issue');
+    }
+  });
 });

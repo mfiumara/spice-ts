@@ -31,6 +31,7 @@ import {
 import type { CorpusFCircuit, CorpusFManifest } from './ingest.js';
 import {
   classifyNgspiceFailure,
+  CONTROL_SECTION,
   CORPUS_ROOT,
   type EngineStatus,
   firstNgspiceErrorLine,
@@ -150,9 +151,11 @@ export const FOLLOW_UP_ISSUES: ReadonlyArray<{ url: string; scope: string }> = [
   { url: 'https://github.com/mfiumara/spice-ts/issues/510', scope: 'parse() rejects .param decks that simulate() accepts; the shared corpus adapter reports parse()\'s error (corpus-f calls simulate() only)' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/511', scope: 'triage of the 10 ngspice-successful decks that exceed the 1% parity threshold' },
   { url: HARNESS_ISSUE, scope: 'the ngspice harness exports no vectors for decks that run analyses from .control or quit inside it' },
-  { url: 'https://github.com/mfiumara/spice-ts/issues/590', scope: 'MOS1 bulk-junction capacitance is constant CBD/CBS; CJ/CJSW/MJ/PB depletion C(V) silently ignored (tests/general/mosmem.cir; #511 triage in TRIAGE-511.md)' },
-  { url: 'https://github.com/mfiumara/spice-ts/issues/591', scope: 'MOS1 has no Meyer intrinsic gate capacitance from TOX (tests/transmission/ltra2_2_line.cir i(vs); #511 triage)' },
-  { url: 'https://github.com/mfiumara/spice-ts/issues/592', scope: 'metric: ngspice\'s coarse default-step output is scored as spice-ts error (rca3040, rtlinv, mos-test, fourbitadder; #511 triage)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/590', scope: 'closed by #601: MOS1 depletion junction capacitance (tests/general/mosmem.cir now matches; #511 triage in TRIAGE-511.md)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/591', scope: 'closed by #601: MOS1 Meyer gate capacitance from TOX; residual i(vs) mismatch tracked in #627' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/626', scope: 'BSIM3 4-bit NAND adder (examples/snapshot/adder_mos_circ.cir) completes but i(vcc) is ~40x ngspice-47; root cause not established (#511 triage)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/627', scope: 'MOS1 gate-drive current i(vs) still ~0.37 off after #601 (ltra2_2_line, txl1_1_line; #511 triage)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/592', scope: 'metric: ngspice\'s coarse default-step output is scored as spice-ts error (rca3040, rtlinv, mos-test, fourbitadder, switches-manual-p92; #511 triage)' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/593', scope: 'metric: zero/near-zero ngspice peaks turn fV-uV residuals into mismatches (rca3040 AC v(2), fourbitadder; #511 triage)' },
 ];
 
@@ -513,12 +516,25 @@ export function relabel(report: CorpusFReport): CorpusFReport {
   return { ...base, outcomeSha256: outcomeDigest(base) };
 }
 
+/**
+ * Rewrites the batch-1 part of README.md and keeps the control-vector supplement (#521), which
+ * control-vectors.ts measures separately, instead of silently dropping it.
+ */
+export function mergeReadme(existing: string, batch: string): string {
+  const supplement = existing.split(CONTROL_SECTION)[1];
+  return supplement === undefined ? batch : `${batch.trimEnd()}\n${CONTROL_SECTION}${supplement}`;
+}
+
+async function writeReadme(report: CorpusFReport): Promise<void> {
+  await writeFile(MARKDOWN_PATH, mergeReadme(await readFile(MARKDOWN_PATH, 'utf8'), renderMarkdown(report)));
+}
+
 async function main(): Promise<void> {
   const argv = process.argv.slice(2);
   if (argv.includes('--relabel')) {
     const report = relabel(JSON.parse(await readFile(JSON_PATH, 'utf8')) as CorpusFReport);
     await writeFile(JSON_PATH, stableReport(report));
-    await writeFile(MARKDOWN_PATH, renderMarkdown(report));
+    await writeReadme(report);
     process.stderr.write(`corpus-f --relabel: outcome ${report.outcomeSha256}\n`);
     return;
   }
@@ -540,12 +556,12 @@ async function main(): Promise<void> {
       await writeFile(regenerated, stableReport(report));
       throw new Error(`corpus-f outcome differs: committed ${committed.outcomeSha256}, regenerated ${report.outcomeSha256} (written to ${regenerated}); fixtures: ${differing.join(', ') || 'none (report-level fields differ)'}`);
     }
-    if (await readFile(MARKDOWN_PATH, 'utf8') !== renderMarkdown(committed)) {
+    if ((await readFile(MARKDOWN_PATH, 'utf8')).split(CONTROL_SECTION)[0].trimEnd() !== renderMarkdown(committed).trimEnd()) {
       throw new Error('corpus-f README.md differs from the committed report.json');
     }
   } else {
     await writeFile(JSON_PATH, stableReport(report));
-    await writeFile(MARKDOWN_PATH, renderMarkdown(report));
+    await writeReadme(report);
   }
   process.stderr.write(`corpus-f: ${report.totals.fixtures} fixtures; outcome ${report.outcomeSha256}; ${JSON.stringify(report.totals.outcomes)}\n`);
 }

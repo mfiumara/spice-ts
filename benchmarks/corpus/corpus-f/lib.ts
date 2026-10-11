@@ -20,6 +20,9 @@ export const MATCH_THRESHOLD = 0.01;
 /** Floor for the normalising peak so that an all-zero reference signal does not divide by zero. */
 export const PEAK_FLOOR = 1e-12;
 
+/** README heading of the control-vector supplement (#521), owned by control-vectors.ts; outcomes.ts keeps it intact. */
+export const CONTROL_SECTION = '\n## Control-vector supplement (#521)\n';
+
 export function sourceUrl(sourcePath: string, revision = NGSPICE_REVISION): string {
   return `https://sourceforge.net/p/ngspice/ngspice/ci/${revision}/tree/${sourcePath}`;
 }

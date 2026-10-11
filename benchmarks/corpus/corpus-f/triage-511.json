@@ -2,7 +2,7 @@
   "schemaVersion": "spice-ts-corpus-f-triage/v1",
   "issue": "https://github.com/mfiumara/spice-ts/issues/511",
   "measuredOn": {
-    "spiceTsCommit": "bf2e4169d8c903d7e35f5de6886d5aaa127d9cf8",
+    "spiceTsCommit": "e58322eaa5a3e31cbf49b421211256a301f9193b",
     "ngspice": "ngspice-47",
     "metric": "corpus-f published metric (lib.ts normalizedSignalErrors, MATCH_THRESHOLD 0.01), unchanged",
     "tool": "pnpm exec tsx benchmarks/corpus/corpus-f/triage-detail.ts <fixture-id> [--tmax s] [--deck variant] [--reference-tmax s [--candidate ngspice]]",
@@ -11,15 +11,27 @@
   "rootCauses": [
     {
       "id": "mos1-junction-capacitance",
-      "kind": "simulator",
+      "kind": "fixed",
       "issue": "https://github.com/mfiumara/spice-ts/issues/590",
-      "summary": "MOS1 treats CBD/CBS as constant capacitors and silently ignores CJ/CJSW/MJ/MJSW/PB/FC; ngspice-47 uses voltage-dependent depletion capacitance."
+      "summary": "MOS1 treated CBD/CBS as constant capacitors and ignored CJ/CJSW/MJ/MJSW/PB/FC. Fixed by #601 (depletion junction charge); mosmem now matches."
     },
     {
       "id": "mos1-meyer-gate-capacitance",
-      "kind": "simulator",
+      "kind": "fixed",
       "issue": "https://github.com/mfiumara/spice-ts/issues/591",
-      "summary": "MOS1 has no Meyer intrinsic gate capacitance from TOX; only constant CGSO/CGDO overlaps are stamped."
+      "summary": "MOS1 had no Meyer intrinsic gate capacitance from TOX. Fixed by #601 (Meyer gate charges); ltra2_2_line i(vs) improved from 0.974 to 0.374 but did not reach parity."
+    },
+    {
+      "id": "mos1-gate-current-residual",
+      "kind": "simulator",
+      "issue": "https://github.com/mfiumara/spice-ts/issues/627",
+      "summary": "After #601 the MOS1 gate-drive current spike i(vs) is still 0.374 off (0.151 at ngspice points, 0.029 with both engines at TMAX 10 ps). Not root-caused."
+    },
+    {
+      "id": "bsim3-adder-supply-current",
+      "kind": "simulator",
+      "issue": "https://github.com/mfiumara/spice-ts/issues/626",
+      "summary": "BSIM3 (level 8, version 3.3.0, default parameters) 4-bit NAND adder: supply and source currents are 10-40x ngspice-47 at its own points. Not root-caused; possibly #589."
     },
     {
       "id": "reference-grid-artefact",
@@ -50,7 +62,7 @@
     {
       "id": "examples-vdmos-vdmosp-out-sp",
       "issueTable": { "outcome": "mismatch", "worst": 5.05e+242, "signal": "dc i(vs)" },
-      "current": { "outcome": "matched", "worst": 1.48e-8, "signal": "dc i(vs)" },
+      "current": { "outcome": "matched", "worst": 1.48e-08, "signal": "dc i(vs)" },
       "rootCauses": ["vdmos-model-drop-fixed"],
       "evidence": "6 dc signals compared, worst 1.48e-8 (abs 2.14e-7 A on a 14.4 A peak)."
     },
@@ -71,9 +83,9 @@
     {
       "id": "tests-transmission-ltra2-2-line-cir",
       "issueTable": { "outcome": "mismatch", "worst": 1, "signal": "tran i(vs)" },
-      "current": { "outcome": "mismatch", "worst": 0.974, "signal": "tran i(vs)" },
-      "rootCauses": ["mos1-meyer-gate-capacitance", "reference-grid-artefact"],
-      "evidence": "i(vs) gate-drive current: spice-ts 0, ngspice peak 2.5 uA (1.0 at ngspice points, 1.0 with both engines at TMAX 10 ps). Removing TOX=18000N from both model cards (diagnostic variant) makes i(vs) agree. Other signals (v(3) 0.0413, i(vdd) 0.0362, v(2) 0.0165) are <= 0.0074 at ngspice points and <= 0.0034 at TMAX 10 ps."
+      "current": { "outcome": "mismatch", "worst": 0.374, "signal": "tran i(vs)" },
+      "rootCauses": ["mos1-meyer-gate-capacitance", "mos1-gate-current-residual", "reference-grid-artefact"],
+      "evidence": "At bf2e4169 i(vs) was 0 in spice-ts vs a 2.5 uA ngspice peak (0.974); removing TOX=18000N from both cards made it agree, which led to #591. Since #601: 0.374 (near t=16.1 ns spice-ts -42.5 nA vs ngspice -2.4 uA), 0.151 at ngspice points, and 0.029 with both engines at TMAX 10 ps. That residual is tracked in #627. Other signals (v(3) 0.0414, i(vdd) 0.0361, v(2) 0.0137) are <= 0.0071 at ngspice points and <= 0.0033 at TMAX 10 ps."
     },
     {
       "id": "tests-bsim2-test-cir",
@@ -85,9 +97,9 @@
     {
       "id": "tests-general-mosmem-cir",
       "issueTable": { "outcome": "mismatch", "worst": 0.714, "signal": "tran v(8)" },
-      "current": { "outcome": "mismatch", "worst": 0.227, "signal": "tran i(vdd)" },
+      "current": { "outcome": "matched", "worst": 0.0025, "signal": "tran v(4)" },
       "rootCauses": ["mos1-junction-capacitance"],
-      "evidence": "9/13 signals over 1%: i(vdd) 0.227, v(6) 0.103, i(vw) 0.0994, v(3) 0.0618, v(8) 0.0311. Unchanged with both engines at TMAX 0.1 ns. Adding mj=0 to the model card (both engines; makes ngspice CBD/CBS constant) brings all 13 signals to <= 3.95e-4. Identical errors on classic/mos-memory-cell."
+      "evidence": "At bf2e4169: 9/13 signals over 1% (i(vdd) 0.227, v(6) 0.103, i(vw) 0.0994, v(3) 0.0618, v(8) 0.0311), unchanged at TMAX 0.1 ns. Adding mj=0 to both cards brought all 13 signals to <= 3.95e-4, which led to #590. After #601 the unchanged deck matches: 0/13 signals over 1%, worst v(4) 0.0025, i(vdd) 0.00205."
     },
     {
       "id": "tests-bsim1-test-cir",
@@ -113,16 +125,16 @@
     {
       "id": "examples-xspice-various-xspice-c1-cir",
       "issueTable": { "outcome": "mismatch", "worst": 0.0439, "signal": "tran v(emit)" },
-      "current": { "outcome": "matched", "worst": 0.0000226, "signal": "tran i(vin)" },
+      "current": { "outcome": "matched", "worst": 2.26e-05, "signal": "tran i(vin)" },
       "rootCauses": [],
-      "evidence": "Already matched in the imported outcomes.json (0.000493); fresh bf2e4169 run gives 0.0000226 after #531 initial-condition handling."
+      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and e58322ea give 0.0000226 after #531 initial-condition handling."
     },
     {
       "id": "examples-xspice-original-examples-spice3-deck",
       "issueTable": { "outcome": "mismatch", "worst": 0.0439, "signal": "tran v(emit)" },
-      "current": { "outcome": "matched", "worst": 0.0000226, "signal": "tran i(vin)" },
+      "current": { "outcome": "matched", "worst": 2.26e-05, "signal": "tran i(vin)" },
       "rootCauses": [],
-      "evidence": "Already matched in the imported outcomes.json (0.000493); fresh bf2e4169 run gives 0.0000226 after #531 initial-condition handling."
+      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and e58322ea give 0.0000226 after #531 initial-condition handling."
     },
     {
       "id": "examples-probe-mos-test-cir",
@@ -130,6 +142,20 @@
       "current": { "outcome": "mismatch", "worst": 0.176, "signal": "tran v(out)" },
       "rootCauses": ["reference-grid-artefact"],
       "evidence": "Capacitance-free inverter (default MOS1, no TOX/CJ, lambda 0, equal KP): v(out) jumps vertically at vin = 2.5 V (t = 5 ns); interpolating ngspice's 135-point grid across it gives 0.176 (spice-ts 3.64 V is the analytic value at vin = 2.33 V). At ngspice points: 0.0023; spice-ts default vs fine-step ngspice (TMAX 0.1 ns): 0.0030 at reference points."
+    },
+    {
+      "id": "examples-probe-switches-manual-p92-cir",
+      "issueTable": null,
+      "current": { "outcome": "mismatch", "worst": 0.865, "signal": "tran v(10)" },
+      "rootCauses": ["reference-grid-artefact"],
+      "evidence": "spice-ts-loss (unsupported S card) at bf2e4169; runnable since #579. Ideal S/W switches make v(10), v(20), v(30), v(40) jump between consecutive output points. ngspice-47's default output on the unchanged deck has 2 us between the points that bracket every edge, and spice-ts places each edge inside that interval: v(10) crosses 0.5 V at 1.20029/3.20006 ms (spice-ts) and at 1.19856-1.20056/3.19900-3.20100 ms (ngspice). Interpolating that 2 us chord gives 0.865 (abs 0.865 V, spice-ts 1 vs ngspice 0.135 at t=1.2 ms). At ngspice points: 2.7e-20. With both engines at TMAX 0.1 us, crossing times agree within 1e-8 s, but the metric still reports 1.0 because the edge is vertical. Its max over a step edge is set by sub-step timing, not by the waveform. 8/13 signals agree to <= 5.4e-16. Recorded under #592 (metric); not counted as a match."
+    },
+    {
+      "id": "examples-snapshot-adder-mos-circ-cir",
+      "issueTable": null,
+      "current": { "outcome": "mismatch", "worst": 42, "signal": "tran i(vcc)" },
+      "rootCauses": ["bsim3-adder-supply-current"],
+      "evidence": "spice-ts-loss at bf2e4169 (dotted VERSION=3.3.0 rejected); runnable since #599. 81/90 signals over 1%. i(vcc) near t=8.95 ns: spice-ts -11.6 mA vs ngspice -25 uA (ngspice peak 275 uA), 40.6 at ngspice points. Input source currents are 7-8.7 (about 117 uA vs 13-15 uA peaks). This is a real device-level loss, not a grid artefact. Filed as #626, root cause not established."
     }
   ],
   "deferredMismatches": {

@@ -19,7 +19,7 @@ import {
   outcome,
   thirdPartyNotice,
 } from './lib.js';
-import { outcomeDigest, renderMarkdown, summarize, type CorpusFReport } from './outcomes.js';
+import { mergeReadme, outcomeDigest, renderMarkdown, summarize, type CorpusFReport } from './outcomes.js';
 import { CONTROL_SECTION, controlWrapperDeck, hasControlBlock, runControlReference } from './control-vectors.js';
 
 const ROOT = 'benchmarks/corpus/corpus-f';
@@ -213,6 +213,13 @@ describe('corpus-f committed artifacts', () => {
     assert.deepEqual(report.gapBuckets, gapBuckets);
     const readme = await readFile(resolve(ROOT, 'README.md'), 'utf8');
     assert.equal(readme.split(CONTROL_SECTION)[0].trimEnd(), renderMarkdown(report).trimEnd());
+  });
+  it('regenerating the batch-1 README keeps the control-vector supplement', async () => {
+    const readme = await readFile(resolve(ROOT, 'README.md'), 'utf8');
+    const report = JSON.parse(await readFile(resolve(ROOT, 'outcomes.json'), 'utf8')) as CorpusFReport;
+    assert.equal(mergeReadme(readme, renderMarkdown(report)), readme);
+    assert.equal(mergeReadme('# old batch\n', '# new batch\n'), '# new batch\n');
+    assert.equal(mergeReadme(`# old\n${CONTROL_SECTION}rows\n`, '# new\n'), `# new\n${CONTROL_SECTION}rows\n`);
   });
   it('lists every control deck exactly once in the supplemental table', async () => {
     const readme = await readFile(resolve(ROOT, 'README.md'), 'utf8');
