@@ -1,6 +1,6 @@
 import type { DiodeInstanceParams } from '../parser/diode-parser.js';
-import { InvalidCircuitError } from '../errors.js';
-import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import { InvalidCircuitError, UnsupportedModelParameterError } from '../errors.js';
+import { DEVICE_GMIN, type ChargeIntegration, type DeviceModel, type StampContext } from './device.js';
 import { assertNoUnsupportedTemperatureParameters, temperatureJunction } from './junction-temperature.js';
 
 export interface DiodeParams {
@@ -47,8 +47,12 @@ export interface DiodeParams {
   TT?: number;
   KF?: number;
   AF?: number;
-  /** Forward knee current (high injection); ngspice alias IK. */
+  /** Forward knee current (high injection) of the bottom junction; ngspice alias IK. */
   IKF?: number;
+  /** Reverse knee current of the bottom junction (ngspice IKR), scaled by AREA*M. */
+  IKR?: number;
+  /** Forward knee current of the sidewall junction (ngspice IKP), scaled by PJ*M. */
+  IKP?: number;
   /** Activation energy (eV) of the IS temperature law; ngspice default 1.11. */
   EG?: number;
   /** Saturation-current temperature exponent; ngspice default 3. */
@@ -114,9 +118,17 @@ const BOLTZMANN = 1.38064852e-23;
 const ELEMENTARY_CHARGE = 1.6021766208e-19;
 const KELVIN_OFFSET = 273.15;
 const K_OVER_Q = BOLTZMANN / ELEMENTARY_CHARGE;
-const GMIN = 1e-12;
-/** ngspice CKTepsmin: smaller IKF values disable the knee (diosetup.c). */
+const GMIN = DEVICE_GMIN;
+/** ngspice CKTepsmin: smaller IKF/IKR/IKP values disable the knee (diosetup.c). */
 const MIN_KNEE_CURRENT = 1e-28;
+/**
+ * dio.c model fields spice-ts does not implement. They change the ngspice
+ * result, so they are rejected rather than ignored (#643).
+ */
+const UNSUPPORTED_MODEL_PARAMETERS: ReadonlyMap<string, string> = new Map([
+  ['RSW', 'ngspice-47 gives the sidewall its own series resistance and internal node '
+    + '(DIOresistSWGiven), which spice-ts does not model'],
+]);
 /** ngspice dioload.c applies the knee only above this junction current. */
 const KNEE_CURRENT_THRESHOLD = 1e-18;
 const UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS = new Set([
@@ -178,11 +190,13 @@ interface BreakdownParams {
   junctionThermalVoltage: number;
 }
 
-/** Sidewall current with its own emission coefficient (ngspice vtesw, csatsw). */
+/** Sidewall current csatsw (ngspice cdsw), present when JSW is given. */
 interface SidewallJunction {
-  /** NS*kT/q. */
+  /** NS*kT/q with its own characteristic, N*kT/q when it shares the bottom one. */
   thermalVoltage: number;
   saturationCurrent: number;
+  /** NS is given (ngspice DIOswEmissionCoeffGiven): the sidewall has its own law. */
+  ownCharacteristic: boolean;
 }
 
 /** Temperature-resolved junction law shared by the DC, AC and noise paths. */
@@ -193,15 +207,16 @@ interface Junction {
    * sets the critical voltage and the breakdown knee.
    */
   saturationCurrent: number;
-  /**
-   * Saturation current of the N characteristic: the total when the sidewall
-   * shares it, the bottom alone when {@link sidewall} is separate.
-   */
+  /** Area saturation current of the bottom junction (ngspice csat). */
   bottomSaturationCurrent: number;
   sidewall?: SidewallJunction;
   breakdown?: BreakdownParams;
-  /** Area-scaled forward knee current; 0 disables high injection. */
+  /** Area-scaled forward knee current IKF of the bottom junction; 0 disables it. */
   kneeCurrent: number;
+  /** Area-scaled reverse knee current IKR of the bottom junction; 0 disables it. */
+  reverseKneeCurrent: number;
+  /** Perimeter-scaled forward knee current IKP of the sidewall; 0 disables it. */
+  sidewallKneeCurrent: number;
 }
 
 export interface DiodeDistortionCoefficients {
@@ -228,8 +243,8 @@ export class Diode implements DeviceModel {
   private readonly nominal: DiodeNominalParams;
   /**
    * The sidewall has its own NS characteristic (ngspice DIOsatSWCurGiven &&
-   * DIOswEmissionCoeffGiven). NS = N is the merged characteristic exactly, so
-   * it keeps the merged path.
+   * DIOswEmissionCoeffGiven). It differs from the shared characteristic in
+   * breakdown even when NS = N, so it follows the ngspice flag exactly.
    */
   private readonly separateSidewall: boolean;
   /** Temperature-resolved area and sidewall saturation currents (DIOtSatCur, DIOtSatSWCur). */
@@ -293,6 +308,11 @@ export class Diode implements DeviceModel {
       }
     }
     const params = canonicalDiodeModelParams(name, modelParams);
+    for (const [field, reason] of UNSUPPORTED_MODEL_PARAMETERS) {
+      if ((params as Record<string, number | undefined>)[field] !== undefined) {
+        throw new UnsupportedModelParameterError(name, field, reason);
+      }
+    }
     const warnings: string[] = [];
     if (!pspiceBreakdownLaw && params.TBV2 !== undefined) {
       // ngspice-47 dio.c has no tbv2 (only tbv1, an alias of tcv, at dio.c:121),
@@ -334,7 +354,11 @@ export class Diode implements DeviceModel {
       TT: params.TT ?? 0,
       KF: params.KF ?? 0,
       AF: params.AF ?? 1,
+      // ngspice-47 diosetup.c:110-129, 362-364: knees below CKTepsmin are
+      // disabled; IKF and IKR scale with AREA*M, IKP with PJ*M.
       IKF: (params.IKF ?? 0) >= MIN_KNEE_CURRENT ? params.IKF! * effectiveArea : 0,
+      IKR: (params.IKR ?? 0) >= MIN_KNEE_CURRENT ? params.IKR! * effectiveArea : 0,
+      IKP: (params.IKP ?? 0) >= MIN_KNEE_CURRENT ? params.IKP! * effectivePerimeter : 0,
       EG: params.EG ?? 1.11,
       XTI: params.XTI ?? 3,
     };
@@ -346,8 +370,7 @@ export class Diode implements DeviceModel {
       VJ: this.params.VJ!,
       VJSW: this.params.VJSW!,
     };
-    this.separateSidewall = params.NS !== undefined && params.JSW !== undefined
-      && params.NS !== this.params.N;
+    this.separateSidewall = params.NS !== undefined && params.JSW !== undefined;
     this.applyTemperature();
     this.limitsOwnJunctions = this.params.RS === 0;
     this.storesCharge = Boolean(this.params.CJ0 || this.params.CJSW || this.params.TT);
@@ -493,15 +516,22 @@ export class Diode implements DeviceModel {
 
   private junction(): Junction {
     const vt = thermalVoltageAt(this.temperature);
+    const ownCharacteristic = this.separateSidewall;
     return {
       thermalVoltage: this.params.N * vt,
       saturationCurrent: this.params.IS,
-      bottomSaturationCurrent: this.separateSidewall ? this.bottomSaturationCurrent : this.params.IS,
-      sidewall: this.separateSidewall
-        ? { thermalVoltage: this.params.NS! * vt, saturationCurrent: this.sidewallSaturationCurrent }
+      bottomSaturationCurrent: this.bottomSaturationCurrent,
+      sidewall: this.suppliedParams.JSW !== undefined
+        ? {
+          thermalVoltage: (ownCharacteristic ? this.params.NS! : this.params.N) * vt,
+          saturationCurrent: this.sidewallSaturationCurrent,
+          ownCharacteristic,
+        }
         : undefined,
       breakdown: this.breakdownParams(),
       kneeCurrent: this.params.IKF!,
+      reverseKneeCurrent: this.params.IKR!,
+      sidewallKneeCurrent: this.params.IKP!,
     };
   }
 
@@ -595,9 +625,10 @@ export class Diode implements DeviceModel {
     const [nA, nK] = this.nodes;
     const terminalVoltage = (nA >= 0 ? solution[nA] : 0) - (nK >= 0 ? solution[nK] : 0);
     const { RS, KF, AF } = this.params;
-    const { current } = diodeCurrent(terminalVoltage, this.junction(), RS);
+    const { current, junctionVoltage } = diodeCurrent(terminalVoltage, this.junction(), RS);
     return {
-      current,
+      // dionoise.c takes the shot noise from DIOcurrent, cdb + cdsw + GMIN*vd.
+      current: current + GMIN * junctionVoltage,
       flickerCoefficient: KF!,
       flickerExponent: AF!,
       parallelMultiplier: this.instanceParams.M ?? 1,
@@ -635,10 +666,12 @@ export class Diode implements DeviceModel {
       junction,
       this.params.RS,
     );
-    const gd = conductance + GMIN;
+    const gmin = ctx.gmin ?? GMIN;
+    // ngspice dioload.c: cd = cdb + cdsw + CKTgmin*vd, gd = gdb + gdsw + CKTgmin.
+    const gd = conductance + gmin;
 
     // Newton-Raphson companion: I = gd * Vd + Ieq
-    const ieq = id - gd * linearizationVoltage;
+    const ieq = id + gmin * linearizationVoltage - gd * linearizationVoltage;
 
     if (nA >= 0) ctx.stampG(nA, nA, gd);
     if (nK >= 0) ctx.stampG(nK, nK, gd);
@@ -675,16 +708,10 @@ export class Diode implements DeviceModel {
     cj += depletionChargeTaylor(junctionVoltage, CJSW!, VJSW!, MJSW!, FCS!).capacitance;
 
     if (TT) {
-      const { thermalVoltage: vt, bottomSaturationCurrent, kneeCurrent, sidewall } = junction;
-      const exponential = Math.exp(Math.min(terminalVoltage / vt, 40));
+      // ngspice: diffcap = TT*gd, with gd including GMIN.
       const junctionConductance = operatingPoint?.junctionConductance
-        ?? applyForwardKnee(
-          bottomSaturationCurrent * (exponential - 1),
-          (bottomSaturationCurrent / vt) * exponential,
-          kneeCurrent,
-        ).conductance
-          + (sidewall ? sidewallCurrent(terminalVoltage, sidewall, junction).conductance : 0);
-      cj += TT * junctionConductance;
+        ?? junctionCurrent(terminalVoltage, junction).conductance;
+      cj += TT * (junctionConductance + GMIN);
     }
 
     // A two-terminal fallback can only represent the low-frequency reduction.
@@ -952,53 +979,71 @@ function diodeCurrent(
   };
 }
 
+/**
+ * Junction current as ngspice-47 dioload.c computes it without RSW: the
+ * bottom current cdb and, when JSW is given, the sidewall current cdsw, each
+ * with its own knee (IKF/IKR on cdb, IKP on cdsw). The caller adds GMIN*vd.
+ */
 function junctionCurrent(
   voltage: number,
   junction: Junction,
 ): { current: number; conductance: number } {
   const bottom = bottomCurrent(voltage, junction);
   if (!junction.sidewall) return bottom;
-  // ngspice dioload.c (no RSW): cd = cdb + cdsw, gd = gdb + gdsw.
-  const sidewall = sidewallCurrent(voltage, junction.sidewall, junction);
+  const sidewall = applyForwardKnee(
+    sidewallCurrent(voltage, junction.sidewall, junction),
+    junction.sidewallKneeCurrent,
+  );
   return {
     current: bottom.current + sidewall.current,
     conductance: bottom.conductance + sidewall.conductance,
   };
 }
 
-/** Current of the N characteristic, with breakdown and the IKF knee (ngspice cdb). */
+/**
+ * Bottom current cdb of the N characteristic: the exponential law at and above
+ * -3*N*vt with the IKF knee, below it the reverse law and, beyond the
+ * breakdown knee, the breakdown law, both with the IKR knee.
+ */
 function bottomCurrent(
   voltage: number,
-  { thermalVoltage, saturationCurrent, bottomSaturationCurrent, breakdown, kneeCurrent }: Junction,
+  junction: Junction,
 ): { current: number; conductance: number } {
-  if (breakdown) {
-    const knee = breakdownKneeVoltage(breakdown, saturationCurrent);
-    if (voltage < -knee) {
-      const exponential = safeExponential(-(knee + voltage) / breakdown.thermalVoltage);
-      return {
-        current: -bottomSaturationCurrent * exponential,
-        conductance: bottomSaturationCurrent * exponential / breakdown.thermalVoltage,
-      };
-    }
-  }
-  const exponential = safeExponential(voltage / thermalVoltage);
-  return applyForwardKnee(
-    bottomSaturationCurrent * (exponential - 1),
-    (bottomSaturationCurrent / thermalVoltage) * exponential,
-    kneeCurrent,
+  const { thermalVoltage, bottomSaturationCurrent, kneeCurrent, reverseKneeCurrent } = junction;
+  const current = pnJunctionCurrent(voltage, thermalVoltage, bottomSaturationCurrent, junction, voltage);
+  return voltage >= -3 * thermalVoltage
+    ? applyForwardKnee(current, kneeCurrent)
+    : applyReverseKnee(current, reverseKneeCurrent);
+}
+
+/**
+ * Sidewall current cdsw. With NS given it has its own NS characteristic and
+ * breaks down at vd. Without NS it shares the N characteristic, and dioload.c
+ * evaluates its breakdown law at vdsw, which stays 0 without RSW, so the
+ * sidewall carries only csatsw*exp(-BVknee/(NBV*vt)) in breakdown.
+ */
+function sidewallCurrent(
+  voltage: number,
+  { thermalVoltage, saturationCurrent, ownCharacteristic }: SidewallJunction,
+  junction: Junction,
+): { current: number; conductance: number } {
+  return pnJunctionCurrent(
+    voltage, thermalVoltage, saturationCurrent, junction, ownCharacteristic ? voltage : 0,
   );
 }
 
 /**
- * Sidewall current with its own emission coefficient, as ngspice-47 dioload.c
- * computes cdsw when NS is given (no RSW): the exponential law at and above
- * -3*NS*vt, the reverse law -csatsw*(1 + (3*NS*vt/(vd*e))^3) below it, and the
- * breakdown law beyond the breakdown knee. The IKF knee does not apply.
+ * ngspice-47 dioload.c pn law for one junction component: csat*(exp(vd/vte)-1)
+ * at and above -3*vte, the reverse law -csat*(1 + (3*vte/(vd*e))^3) below it
+ * while vd >= -BVknee (or without BV), and the breakdown law
+ * -csat*exp(-(BVknee + vbreak)/(NBV*vt)) beyond the knee.
  */
-function sidewallCurrent(
+function pnJunctionCurrent(
   voltage: number,
-  { thermalVoltage, saturationCurrent }: SidewallJunction,
+  thermalVoltage: number,
+  saturationCurrent: number,
   { saturationCurrent: totalSaturationCurrent, breakdown }: Junction,
+  breakdownVoltage: number,
 ): { current: number; conductance: number } {
   if (voltage >= -3 * thermalVoltage) {
     const exponential = safeExponential(voltage / thermalVoltage);
@@ -1007,7 +1052,7 @@ function sidewallCurrent(
       conductance: saturationCurrent * exponential / thermalVoltage,
     };
   }
-  // dioload.c: the reverse law applies when `!BVgiven || vdsw >= -tBrkdwnV`.
+  // dioload.c: the reverse law applies when `!BVgiven || vd >= -tBrkdwnV`.
   const knee = breakdown ? breakdownKneeVoltage(breakdown, totalSaturationCurrent) : 0;
   if (!breakdown || voltage >= -knee) {
     const root = 3 * thermalVoltage / (voltage * Math.E);
@@ -1017,17 +1062,16 @@ function sidewallCurrent(
       conductance: saturationCurrent * 3 * cube / voltage,
     };
   }
-  const exponential = safeExponential(-(knee + voltage) / breakdown.thermalVoltage);
+  const exponential = safeExponential(-(knee + breakdownVoltage) / breakdown.thermalVoltage);
   return {
     current: -saturationCurrent * exponential,
     conductance: saturationCurrent * exponential / breakdown.thermalVoltage,
   };
 }
 
-/** High-injection roll-off above the forward knee current IKF (ngspice dioload.c). */
+/** High-injection roll-off above a forward knee current, IKF or IKP (ngspice dioload.c). */
 function applyForwardKnee(
-  current: number,
-  conductance: number,
+  { current, conductance }: { current: number; conductance: number },
   kneeCurrent: number,
 ): { current: number; conductance: number } {
   if (kneeCurrent <= 0 || current <= KNEE_CURRENT_THRESHOLD) return { current, conductance };
@@ -1036,6 +1080,20 @@ function applyForwardKnee(
     current: current / (1 + root),
     conductance: ((1 + root) * conductance - current * conductance / (2 * root * kneeCurrent))
       / (1 + 2 * root + current / kneeCurrent),
+  };
+}
+
+/** Reverse roll-off below the reverse knee current IKR (ngspice dioload.c "limit reverse"). */
+function applyReverseKnee(
+  { current, conductance }: { current: number; conductance: number },
+  kneeCurrent: number,
+): { current: number; conductance: number } {
+  if (kneeCurrent <= 0 || current >= -KNEE_CURRENT_THRESHOLD) return { current, conductance };
+  const root = Math.sqrt(-current / kneeCurrent);
+  return {
+    current: current / (1 + root),
+    conductance: ((1 + root) * conductance + current * conductance / (2 * root * kneeCurrent))
+      / (1 + 2 * root - current / kneeCurrent),
   };
 }
 

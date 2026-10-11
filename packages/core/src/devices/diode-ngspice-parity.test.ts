@@ -85,7 +85,8 @@ describe('diode thermal voltage is kT/q like ngspice (#402)', () => {
     const diode = new Diode('D1', [0, -1], { IS: 1e-14, TNOM: 50 });
     diode.setTemperature(50);
     const { current } = diode.noiseOperatingPoint(new Float64Array([voltage]));
-    const expected = 1e-14 * Math.expm1(voltage / thermalVoltage(50));
+    // dionoise.c reads DIOcurrent, which includes CKTgmin*vd (#643).
+    const expected = 1e-14 * Math.expm1(voltage / thermalVoltage(50)) + 1e-12 * voltage;
     expect(Math.abs(current - expected) / expected).toBeLessThan(1e-12);
     // Within ngspice's own Newton residual of the source current.
     expect(Math.abs(current - 4.25435381255e-3) / 4.25435381255e-3).toBeLessThan(5e-4);
