@@ -36,6 +36,24 @@ export class BreakpointQueue {
     return Math.abs(time - next) <= this.tolerance;
   }
 
+  /**
+   * Add a breakpoint created during the run (ngspice CKTsetBreak). A time at
+   * or within tolerance after `now` is dropped; of two breakpoints within
+   * tolerance the earlier one is kept.
+   */
+  insert(time: number, now: number): void {
+    if (!Number.isFinite(time) || time - now <= this.tolerance) return;
+    const times = this.times;
+    let index = this.head;
+    while (index < times.length && times[index] <= time) index++;
+    if (index < times.length && times[index] - time <= this.tolerance) {
+      times[index] = time;
+      return;
+    }
+    if (index > this.head && time - times[index - 1] <= this.tolerance) return;
+    times.splice(index, 0, time);
+  }
+
   /** Test-only — returns the remaining breakpoints in order. */
   remaining(): readonly number[] {
     return this.times.slice(this.head);

@@ -54,8 +54,12 @@ export interface TokenizeNetlistOptions {
 }
 
 // After '=' normalization a token is a single parenthesis or a maximal run of
-// characters other than whitespace, parentheses and commas.
-const LINE_TOKEN = /[()]|[^\s(),]+/g;
+// characters other than whitespace, parentheses and commas. A balanced,
+// whitespace-free `{...}` expression is kept whole, parentheses and commas
+// included, so a compacted subcircuit value such as `r={(3)*scale}` (from
+// `.func` expansion) or `{max(a,b)}` stays one token for per-instance
+// evaluation (#496).
+const LINE_TOKEN = /[()]|(?:[^\s(),{]+|\{[^{}\s]*\}|\{)+/g;
 const SPACES_AROUND_EQUALS = /\s*=\s*/g;
 
 export function tokenizeNetlist(

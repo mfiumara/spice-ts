@@ -1,4 +1,5 @@
 import { evaluateExpression } from './expression.js';
+import { conditionExpression, expandUserFunctions, parseFuncCard, type FunctionScope, type UserFunction } from './numparam.js';
 import { substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber } from './tokenizer.js';
 import { CycleError, ParseError } from '../errors.js';
@@ -41,16 +42,206 @@ export async function preprocessLines(
   guard: ProtocolExecutionGuard | undefined,
   lineOffset: number,
 ): Promise<string> {
-  const definitions = new Map<string, ParamDefinition>();
-  const statements: PendingStatement[] = [];
-  await collectStatements(netlist, resolver, new Set(), [], 0, definitions, statements, guard, lineOffset);
+  const state = newCollectState();
+  const { definitions, statements } = state;
+  await collectStatements(netlist, resolver, new Set(), [], 0, state, guard, lineOffset);
+  const unterminated = state.openBlocks[0];
+  if (unterminated !== undefined) {
+    const block = state.blocks[unterminated];
+    throw new ParseError("Unterminated .if block: missing .endif", block.line, block.context);
+  }
+  // ngspice-47 reads every `.param`/`.func` card deck-wide (last definition
+  // wins, even inside an unselected branch) before choosing `.if` branches;
+  // only the other cards of a branch are gated.
+  const selected = selectBranches(state);
+  for (const statement of statements) {
+    if (guardSelected(statement.guard, selected)) continue;
+    statement.text = '';
+    statement.substitute = false;
+    statement.control = false;
+  }
+  expandFunctionCalls(state);
   // ngspice collects every top-level `.param` before substituting, so a
   // parameter may be used before its definition and the last definition wins.
   const temperatureSweep = statements.find(isTemperatureSweep);
-  const scopes = createParamScopes(definitions, temperatureSweep, circuitTemperature(statements));
+  const scopes = createParamScopes(
+    definitions, temperatureSweep, circuitTemperature(statements), state.functionScopes[0].functions,
+  );
+  // `.csparam` only feeds ngspice's control language; evaluate it so a bad
+  // expression is still reported at its card.
+  for (const { definition, guard } of state.csparams) {
+    if (guardSelected(guard, selected)) {
+      evaluateParamExpression(definition, scopes.numparam, state.functionScopes[0].functions);
+    }
+  }
   return statements.map(statement => statement.substitute
     ? substituteStatement(statement, scopes)
     : statement.text).join('\n');
+}
+
+/** One `.if`/`.elseif`/`.else` branch; `condition` is absent for `.else`. */
+interface ConditionalBranch {
+  condition?: string;
+  keyword: string;
+  line: number;
+  context: string;
+}
+
+/** A `.if ... .endif` block; branch selection is deferred until every card is read. */
+interface ConditionalBlock {
+  line: number;
+  context: string;
+  branches: ConditionalBranch[];
+  seenElse: boolean;
+}
+
+/** A statement sits in branch `branch` of block `block` (outermost first). */
+interface BranchGuard {
+  block: number;
+  branch: number;
+}
+
+interface FunctionScopeFrame {
+  parent: number;
+  functions: Map<string, UserFunction>;
+}
+
+/** Preprocessor state shared across `.include`/`.lib` files. */
+interface CollectState {
+  definitions: Map<string, ParamDefinition>;
+  statements: PendingStatement[];
+  csparams: { definition: ParamDefinition; guard?: BranchGuard[] }[];
+  blocks: ConditionalBlock[];
+  /** Indices into `blocks` of the open `.if` blocks, outermost first. */
+  openBlocks: number[];
+  /** Index 0 is the top level; each `.subckt` opens a nested scope. */
+  functionScopes: FunctionScopeFrame[];
+  scopeStack: number[];
+}
+
+function newCollectState(): CollectState {
+  return {
+    definitions: new Map(),
+    statements: [],
+    csparams: [],
+    blocks: [],
+    openBlocks: [],
+    functionScopes: [{ parent: -1, functions: new Map() }],
+    scopeStack: [0],
+  };
+}
+
+const CONDITIONAL_CARD = /^\.(elseif|else|endif|if)(?![\w])/i;
+const FUNC_DIRECTIVE = /^\.func(?![\w])/i;
+const CSPARAM_DIRECTIVE = /^\.csparam(?![\w])/i;
+const PARAM_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*(\{[^}]+\}|'[^']*'|"[^"]*"|\S+)/g;
+
+function paramDefinition(value: string, line: number, context: string): ParamDefinition {
+  const delimited = value.length >= 2
+    && ((value.startsWith('{') && value.endsWith('}')) || (value.startsWith("'") && value.endsWith("'")));
+  return {
+    expression: delimited ? value.slice(1, -1) : value,
+    line,
+    context,
+    ...(value.startsWith('"') ? { stringValue: true } : {}),
+  };
+}
+
+function currentScope(state: CollectState): number {
+  return state.scopeStack[state.scopeStack.length - 1];
+}
+
+function currentGuard(state: CollectState): BranchGuard[] | undefined {
+  if (state.openBlocks.length === 0) return undefined;
+  return state.openBlocks.map(block => ({ block, branch: state.blocks[block].branches.length - 1 }));
+}
+
+/**
+ * Record a top-level `.if`/`.elseif`/`.else`/`.endif` card. Branches are
+ * selected only after the whole deck is read (`selectBranches`), because
+ * ngspice-47 resolves `.param` and `.func` cards deck-wide first.
+ */
+function recordConditional(state: CollectState, keyword: string, trimmed: string, line: number): void {
+  const open = state.openBlocks;
+  const block = open.length > 0 ? state.blocks[open[open.length - 1]] : undefined;
+  const branch = (): ConditionalBranch => {
+    const condition = trimmed.slice(0, commentStart(trimmed)).slice(keyword.length + 1);
+    if (condition.trim() === '') throw new ParseError(`.${keyword} requires a condition`, line, trimmed);
+    return { condition, keyword, line, context: trimmed };
+  };
+  if (keyword === 'if') {
+    state.blocks.push({ line, context: trimmed, branches: [branch()], seenElse: false });
+    open.push(state.blocks.length - 1);
+    return;
+  }
+  if (!block) throw new ParseError(`'.${keyword}' without a matching '.if'`, line, trimmed);
+  if (keyword === 'endif') {
+    open.pop();
+    return;
+  }
+  if (block.seenElse) throw new ParseError(`'.${keyword}' after '.else'`, line, trimmed);
+  if (keyword === 'else') {
+    block.seenElse = true;
+    block.branches.push({ keyword, line, context: trimmed });
+    return;
+  }
+  block.branches.push(branch());
+}
+
+/**
+ * Select one branch per `.if` block (-1: none). As in ngspice-47, every
+ * condition is evaluated, including those in unselected branches, against
+ * the deck-wide `.param` set and top-level `.func` definitions.
+ */
+function selectBranches(state: CollectState): number[] {
+  if (state.blocks.length === 0) return [];
+  const functions = state.functionScopes[0].functions;
+  // TEMPER in a condition reads the `.options TEMP` cards outside any `.if`.
+  const unconditional = state.statements.filter(statement => statement.guard === undefined);
+  const scopes = createParamScopes(state.definitions, undefined, circuitTemperature(unconditional), functions);
+  return state.blocks.map(block => {
+    let selected = -1;
+    for (const [index, branch] of block.branches.entries()) {
+      let taken = true;
+      if (branch.condition !== undefined) {
+        try {
+          const expression = expandUserFunctions(conditionExpression(branch.condition), functions);
+          taken = evaluateExpression(expression, scopes.numparam) !== 0;
+        } catch (error) {
+          if (error instanceof ParseError) throw error;
+          throw toParseError(error, branch.line, branch.context);
+        }
+      }
+      if (taken && selected === -1) selected = index;
+    }
+    return selected;
+  });
+}
+
+function guardSelected(guard: BranchGuard[] | undefined, selected: number[]): boolean {
+  return guard === undefined || guard.every(({ block, branch }) => selected[block] === branch);
+}
+
+/**
+ * Expand `.func` calls in every netlist card, each with the functions visible
+ * in its subcircuit scope (inner definitions shadow outer ones).
+ */
+function expandFunctionCalls(state: CollectState): void {
+  const visible = state.functionScopes.map((_scope, index) => {
+    const chain: Map<string, UserFunction>[] = [];
+    for (let at = index; at >= 0; at = state.functionScopes[at].parent) chain.unshift(state.functionScopes[at].functions);
+    return new Map(chain.flatMap(functions => [...functions]));
+  });
+  if (visible.every(functions => functions.size === 0)) return;
+  for (const statement of state.statements) {
+    if (statement.control || statement.text.trim().startsWith('*')) continue;
+    const functions = visible[statement.scope ?? 0];
+    try {
+      statement.text = expandUserFunctions(statement.text, functions);
+    } catch (error) {
+      throw toParseError(error, statement.line, statement.text.trim());
+    }
+  }
 }
 
 interface ParamDefinition {
@@ -67,6 +258,10 @@ interface PendingStatement {
   line: number;
   /** A line inside a top-level `.control` block. */
   control?: boolean;
+  /** `.func` scope (index into CollectState.functionScopes); 0 / absent is the top level. */
+  scope?: number;
+  /** Enclosing `.if` branches; absent outside any `.if` block. */
+  guard?: BranchGuard[];
 }
 
 /**
@@ -124,6 +319,7 @@ function createParamScopes(
   definitions: Map<string, ParamDefinition>,
   temperatureSweep: PendingStatement | undefined,
   temperature: number,
+  functions: FunctionScope = new Map(),
 ): ParamScopes {
   const values = new Map<string, number>();
   const resolving: string[] = [];
@@ -170,7 +366,7 @@ function createParamScopes(
     }
     resolving.push(name);
     try {
-      const value = evaluateParamExpression(definition, numparam);
+      const value = evaluateParamExpression(definition, numparam, functions);
       values.set(name, value);
       return value;
     } finally {
@@ -181,9 +377,13 @@ function createParamScopes(
   return { params, numparam };
 }
 
-function evaluateParamExpression(definition: ParamDefinition, scope: Record<string, number>): number {
+function evaluateParamExpression(
+  definition: ParamDefinition,
+  scope: Record<string, number>,
+  functions: FunctionScope = new Map(),
+): number {
   try {
-    return evaluateExpression(definition.expression, scope);
+    return evaluateExpression(expandUserFunctions(definition.expression, functions), scope);
   } catch (error) {
     if (error instanceof ParseError) throw error;
     // A bare SPICE number (e.g. `1meg`) is not an expression; anything else
@@ -291,8 +491,7 @@ async function collectStatements(
   visited: Set<string>,
   chain: string[],
   depth: number,
-  definitions: Map<string, ParamDefinition>,
-  statements: PendingStatement[],
+  state: CollectState,
   guard?: ProtocolExecutionGuard,
   lineOffset = 0,
 ): Promise<void> {
@@ -301,6 +500,7 @@ async function collectStatements(
     throw new ParseError(`Include depth limit exceeded (${MAX_DEPTH})`, 0, '');
   }
 
+  const { definitions, statements } = state;
   const lines = netlist.split('\n');
   let inSubckt = 0;
   let inControl = false;
@@ -310,7 +510,10 @@ async function collectStatements(
     const lineNumber = index + 1 + lineOffset;
     const trimmed = line.trim();
     const upper = trimmed.toUpperCase();
-    const passThrough = () => statements.push({ text: line, substitute: false, line: lineNumber });
+    const scope = currentScope(state);
+    const passThrough = () => statements.push({ text: line, substitute: false, line: lineNumber, scope });
+    // Consumed numparam cards and unselected `.if` branches keep their line, blank.
+    const blank = () => statements.push({ text: '', substitute: false, line: lineNumber });
 
     // Comments are metadata, not expression-bearing netlist statements.
     if (trimmed.startsWith('*')) {
@@ -318,21 +521,53 @@ async function collectStatements(
       continue;
     }
 
+    const conditional = inControl ? null : CONDITIONAL_CARD.exec(trimmed);
+    if (conditional) {
+      if (inSubckt > 0) {
+        throw new ParseError(
+          '.if inside .subckt is not supported: spice-ts evaluates .if/.elseif/.else/.endif only at the top level',
+          lineNumber, trimmed,
+        );
+      }
+      recordConditional(state, conditional[1].toLowerCase(), trimmed, lineNumber);
+      blank();
+      continue;
+    }
+    // Cards other than `.param`/`.func`, `.include`/`.lib` and subcircuit
+    // definitions are kept only if their enclosing `.if` branches are selected.
+    const branchGuard = currentGuard(state);
+    const guarded = branchGuard ? { guard: branchGuard } : {};
+
     // Track .subckt nesting — don't evaluate params inside subcircuits
+    // (ngspice-47 keeps a subcircuit defined inside an unselected branch).
     if (upper.startsWith('.SUBCKT ')) {
       inSubckt++;
       passThrough();
+      state.functionScopes.push({ parent: scope, functions: new Map() });
+      state.scopeStack.push(state.functionScopes.length - 1);
       continue;
     }
     if (upper.startsWith('.ENDS')) {
       inSubckt--;
       passThrough();
+      if (state.scopeStack.length > 1) state.scopeStack.pop();
+      continue;
+    }
+
+    if (!inControl && FUNC_DIRECTIVE.test(trimmed)) {
+      try {
+        const fn = parseFuncCard(trimmed.slice(0, commentStart(trimmed)));
+        state.functionScopes[scope].functions.set(fn.name.toLowerCase(), fn);
+      } catch (error) {
+        throw toParseError(error, lineNumber, trimmed);
+      }
+      blank();
       continue;
     }
 
     // Inside a subcircuit — expressions are evaluated per instance later
     if (inSubckt > 0) {
-      statements.push({ text: compactSubcircuitExpressions(line), substitute: false, line: lineNumber });
+      statements.push({ text: compactSubcircuitExpressions(line), substitute: false, line: lineNumber, scope });
       continue;
     }
 
@@ -340,31 +575,36 @@ async function collectStatements(
     // belong to the control interpreter.
     if (inControl) {
       if (upper.startsWith('.ENDC')) inControl = false;
-      statements.push({ text: line, substitute: false, line: lineNumber, control: true });
+      statements.push({ text: line, substitute: false, line: lineNumber, control: true, ...guarded });
       continue;
     }
     if (upper === '.CONTROL' || upper.startsWith('.CONTROL ')) {
       inControl = true;
-      passThrough();
+      statements.push({ text: line, substitute: false, line: lineNumber, scope, ...guarded });
       continue;
     }
 
     // .param at top level
     if (upper.startsWith('.PARAM ')) {
-      const paramContent = trimmed.slice(7).trim();
-      const assignments = paramContent.matchAll(/([A-Za-z_]\w*)\s*=\s*(\{[^}]+\}|'[^']*'|"[^"]*"|\S+)/g);
-      for (const assignment of assignments) {
-        const name = assignment[1].toUpperCase();
-        const value = assignment[2];
-        const delimited = value.length >= 2
-          && ((value.startsWith('{') && value.endsWith('}')) || (value.startsWith("'") && value.endsWith("'")));
-        definitions.set(name, {
-          expression: delimited ? value.slice(1, -1) : value,
-          line: lineNumber,
-          context: trimmed,
-          ...(value.startsWith('"') ? { stringValue: true } : {}),
-        });
+      for (const assignment of trimmed.slice(7).trim().matchAll(PARAM_ASSIGNMENT)) {
+        definitions.set(assignment[1].toUpperCase(), paramDefinition(assignment[2], lineNumber, trimmed));
       }
+      blank();
+      continue;
+    }
+
+    // .csparam: numparam values handed to the control language
+    if (CSPARAM_DIRECTIVE.test(trimmed)) {
+      const content = trimmed.slice(0, commentStart(trimmed)).slice('.csparam'.length);
+      const assignments = [...content.matchAll(PARAM_ASSIGNMENT)];
+      if (assignments.length === 0) {
+        throw new ParseError("Malformed .csparam card: expected 'name = expression'", lineNumber, trimmed);
+      }
+      for (const assignment of assignments) {
+        const definition = paramDefinition(assignment[2], lineNumber, trimmed);
+        if (!definition.stringValue) state.csparams.push({ definition, ...guarded });
+      }
+      blank();
       continue;
     }
 
@@ -387,7 +627,7 @@ async function collectStatements(
       visited.add(path);
       const content = await resolver(path);
       await collectStatements(
-        content, resolver, visited, [...chain, path], depth + 1, definitions, statements, guard,
+        content, resolver, visited, [...chain, path], depth + 1, state, guard,
       );
       visited.delete(path);
       continue;
@@ -417,7 +657,7 @@ async function collectStatements(
         const content = await resolver(filePath);
         const extracted = extractLibSection(content, section);
         await collectStatements(
-          extracted, resolver, visited, [...chain, visitKey], depth + 1, definitions, statements, guard,
+          extracted, resolver, visited, [...chain, visitKey], depth + 1, state, guard,
         );
         visited.delete(visitKey);
         continue;
@@ -430,7 +670,7 @@ async function collectStatements(
       continue;
     }
 
-    statements.push({ text: line, substitute: true, line: lineNumber });
+    statements.push({ text: line, substitute: true, line: lineNumber, ...guarded });
   }
 }
 
