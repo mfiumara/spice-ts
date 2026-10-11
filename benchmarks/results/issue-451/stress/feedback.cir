@@ -1,0 +1,12 @@
+vcvs feedback amp
+r1 1 0 1k
+rin 1 2 10k
+rf 2 3 100k
+cf 2 3 10p
+e1 3 0 0 2 1e5
+cl 3 0 1n
+rl 3 0 1k
+c2 2 0 1p
+.pz 1 0 3 0 cur pz
+.print pz all
+.end

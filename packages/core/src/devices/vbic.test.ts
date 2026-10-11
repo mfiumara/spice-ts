@@ -42,8 +42,14 @@ const NGSPICE_ZEROS = [
 type Root = { real: number; imaginary: number };
 
 function sortRoots(roots: readonly Root[]): Root[] {
-  return [...roots].sort((a, b) =>
-    Math.hypot(a.real, a.imaginary) - Math.hypot(b.real, b.imaginary) || b.imaginary - a.imaginary);
+  // Conjugates tie on magnitude; ngspice prints their halves with different
+  // rounding, so magnitudes within 1e-6 relative count as a tie.
+  return [...roots].sort((a, b) => {
+    const left = Math.hypot(a.real, a.imaginary);
+    const right = Math.hypot(b.real, b.imaginary);
+    if (Math.abs(left - right) > 1e-6 * Math.max(left, right)) return left - right;
+    return b.imaginary - a.imaginary;
+  });
 }
 
 function expectRootsNear(actual: readonly Root[], expected: readonly Root[]): void {
@@ -76,17 +82,14 @@ describe('bounded VBIC small-signal AC and pole-zero (ngspice vbicacld/vbicpzld)
       expect(Math.abs(phase - reference.phase)).toBeLessThan(1e-4);
     }
 
-    // The VBIC small-signal G/C pencil reproduces all seven ngspice poles and
-    // its zeros (independent eig(G⁻¹C) check, recorded in #446). The bounded
-    // trace/Laguerre .pz root-finder still drops the high-frequency roots of
-    // this 8-decade spread (#451), so only the dominant pole is pinned here.
+    // Dominant pole to 1e-4; the full pole/zero set is pinned below (#451).
     const poleZero = result.poleZero!;
     const dominant = sortRoots(poleZero.poles)[0];
     expect(Math.abs(dominant.real / NGSPICE_POLES[0].real - 1)).toBeLessThan(1e-4);
     expect(dominant.imaginary).toBe(0);
   });
 
-  it.fails('matches every ngspice-47 pole and zero of vbic-common-emitter-ac (#451)', async () => {
+  it('matches every ngspice-47 pole and zero of vbic-common-emitter-ac (#451)', async () => {
     const result = await simulate(fixture.toString('utf8'));
     const poleZero = result.poleZero!;
     expectRootsNear(poleZero.poles, NGSPICE_POLES);

@@ -1,0 +1,13 @@
+relative degree with finite zeros
+r1 1 0 1k
+c1 1 2 1n
+r2 2 0 10k
+l1 2 3 1m
+c2 3 0 100p
+r3 3 4 100
+c3 4 0 1u
+r4 4 0 1meg
+c5 1 4 1f
+.pz 1 0 4 0 cur pz
+.print pz all
+.end

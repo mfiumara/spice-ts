@@ -52,10 +52,11 @@ describe('.pz analysis', () => {
     });
     expect(result.poleZero!.poles).toHaveLength(2);
     expect(result.poleZero!.zeros).toHaveLength(2);
-    expect(result.poleZero!.poles).toEqual([
-      { real: -499999999.99999994, imaginary: -499999999.99999994 },
-      { real: -499999999.99999994, imaginary: 499999999.99999994 },
-    ]);
+    // ngspice-47 prints pole(1) = -5e8 + 5e8j, pole(2) = -5e8 - 5e8j.
+    const [first, second] = result.poleZero!.poles;
+    expect(relativeError(first.real, -5e8)).toBeLessThan(1e-12);
+    expect(relativeError(first.imaginary, 5e8)).toBeLessThan(1e-12);
+    expect(second).toEqual({ real: first.real, imaginary: -first.imaginary });
     expect(result.poleZero!.zeros).toEqual([
       { real: 0, imaginary: 0 },
       { real: 0, imaginary: 0 },
@@ -212,6 +213,128 @@ ${devices}
 
     expect(() => circuit.addStep('R1', { values: [1000, 2000] }))
       .toThrow(InvalidCircuitError);
+  });
+});
+
+// Stress circuits for the eigenvalue root-finder (#451). Expected values are
+// `ngspice -b` (ngspice-47) output on the identical netlist, printed to 6-7
+// significant digits, in ngspice's order.
+type Root = { real: number; imaginary: number };
+const root = (real: number, imaginary = 0): Root => ({ real, imaginary });
+
+function expectNgspiceRoots(actual: readonly Root[], expected: readonly Root[]): void {
+  expect(actual).toHaveLength(expected.length);
+  expected.forEach((value, index) => {
+    const scale = Math.hypot(value.real, value.imaginary);
+    const distance = Math.hypot(actual[index].real - value.real, actual[index].imaginary - value.imaginary);
+    if (scale === 0) expect(actual[index]).toEqual({ real: 0, imaginary: 0 });
+    // 1e-5 relative: just above ngspice's 6-significant-digit print rounding.
+    else expect(distance / scale).toBeLessThan(1e-5);
+  });
+}
+
+const CASCADE_FOUR = `four-stage cascade, current-input pole-zero
+iin 1 0 ac
+r1 1 0 1.019524e+9
+l1 1 0 1H
+gm2 2 0 1 0 1
+r2 2 0 8.296965e+08
+l2 2 0 1H
+gm3 3 0 2 0 1
+r3 3 0 8.652054e+07
+l3 3 0 1H
+gm4 4 0 3 0 1
+r4 4 0 1.060594e+07
+l4 4 0 1H
+.pz 1 0 4 0 cur pz
+.end`;
+
+describe('.pz eigenvalue root-finder against ngspice-47 (#451)', () => {
+  it('keeps every pole of a unilateral cascade and its four exact zeros at the origin', async () => {
+    const { poleZero } = await simulate(CASCADE_FOUR);
+    expectNgspiceRoots(poleZero!.poles, [root(-1.01952e9), root(-8.29696e8), root(-8.65205e7), root(-1.06059e7)]);
+    expectNgspiceRoots(poleZero!.zeros, [root(0), root(0), root(0), root(0)]);
+  });
+
+  it('resolves a triple pole exactly', async () => {
+    const { poleZero } = await simulate(`three-stage cascade with a triple pole
+iin 1 0 ac
+r1 1 0 1
+l1 1 0 0.05H
+gm2 2 0 1 0 1
+r2 2 0 1
+l2 2 0 0.05H
+gm3 3 0 2 0 1
+r3 3 0 1
+l3 3 0 0.05H
+.pz 1 0 3 0 cur pz
+.end`);
+    expectNgspiceRoots(poleZero!.poles, [root(-20), root(-20), root(-20)]);
+    expectNgspiceRoots(poleZero!.zeros, [root(0), root(0), root(0)]);
+  });
+
+  it('returns no spurious zeros for a relative-degree-4 RC ladder spanning six decades', async () => {
+    const { poleZero } = await simulate(`rc ladder wide spread
+r1 1 2 1k
+c1 2 0 1u
+r2 2 3 10k
+c2 3 0 1n
+r3 3 4 100k
+c3 4 0 1p
+r4 4 5 1meg
+c4 5 0 10f
+r0 1 0 1k
+.pz 1 0 5 0 cur pz
+.end`);
+    expectNgspiceRoots(poleZero!.poles, [root(-1.0111e8), root(-9.90033e6), root(-99998.6), root(-499.497)]);
+    expect(poleZero!.zeros).toEqual([]);
+  });
+
+  it('handles henries next to picofarads and lists conjugate pairs like ngspice', async () => {
+    const { poleZero } = await simulate(`mixed units L and C
+r1 1 0 50
+l1 1 2 1
+c1 2 0 1p
+r2 2 0 1meg
+c2 1 3 10p
+r3 3 0 1k
+.pz 1 0 3 0 cur pz
+.end`);
+    expectNgspiceRoots(poleZero!.poles, [root(-9.52381e7), root(-5.00025e5, 8.660399e5), root(-5.00025e5, -8.66040e5)]);
+    expectNgspiceRoots(poleZero!.zeros, [root(-5e5, 8.660254e5), root(-5e5, -8.66025e5), root(0)]);
+  });
+
+  it('orders two complex pole pairs like ngspice', async () => {
+    const { poleZero } = await simulate(`two complex pairs
+r1 1 0 1k
+l1 1 2 1m
+c1 2 0 1n
+r2 2 3 10
+l2 3 4 10u
+c2 4 0 10p
+r3 4 0 1k
+.pz 1 0 4 0 cur pz
+.end`);
+    expectNgspiceRoots(poleZero!.poles, [
+      root(-5.00049e7, 8.718076e7), root(-5.00049e7, -8.71808e7),
+      root(-995051, 999889.3), root(-995051, -999889),
+    ]);
+    expect(poleZero!.zeros).toEqual([]);
+  });
+
+  it('drops the non-dynamic mode of a capacitor across a voltage source', async () => {
+    const { poleZero } = await simulate(`cap across vsource plus rc
+v1 4 0 0
+c0 4 0 1n
+r1 1 0 1k
+r2 1 2 1k
+c1 2 0 1n
+r3 2 4 1k
+c2 1 2 2n
+.pz 1 0 2 0 cur pz
+.end`);
+    expectNgspiceRoots(poleZero!.poles, [root(-2.36603e6), root(-633975)]);
+    expectNgspiceRoots(poleZero!.zeros, [root(-5e5)]);
   });
 });
 

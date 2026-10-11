@@ -1,0 +1,13 @@
+rc ladder wide spread
+r1 1 2 1k
+c1 2 0 1u
+r2 2 3 10k
+c2 3 0 1n
+r3 3 4 100k
+c3 4 0 1p
+r4 4 5 1meg
+c4 5 0 10f
+r0 1 0 1k
+.pz 1 0 5 0 cur pz
+.print pz all
+.end
