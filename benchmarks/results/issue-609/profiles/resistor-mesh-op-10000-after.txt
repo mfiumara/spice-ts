@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/609/prof-after/resistor-mesh-op-10000.cpuprofile: 227 samples, 696.4 ms sampled
+
+Top self time
+     202.2 ms  29.0%  factorize packages/core/dist/chunk-AQKNVZEZ.js:17725
+      96.0 ms  13.8%  amdOrdering packages/core/dist/chunk-AQKNVZEZ.js:17409
+      56.6 ms   8.1%  (garbage collector)
+      33.3 ms   4.8%  newtonRaphson packages/core/dist/chunk-AQKNVZEZ.js:18577
+      28.0 ms   4.0%  lockTopology packages/core/dist/chunk-AQKNVZEZ.js:18141
+      24.8 ms   3.6%  resolveResistor packages/core/dist/chunk-AQKNVZEZ.js:839
+      21.9 ms   3.1%  compile packages/core/dist/chunk-AQKNVZEZ.js:14295
+      21.2 ms   3.0%  addPosition packages/core/dist/chunk-AQKNVZEZ.js:18183
+      14.3 ms   2.1%  analyzePattern packages/core/dist/chunk-AQKNVZEZ.js:17629
+      13.8 ms   2.0%  add packages/core/dist/chunk-AQKNVZEZ.js:17348
+      11.8 ms   1.7%  compileSourceTextModule node:internal/modules/esm/utils:344
+       9.8 ms   1.4%  addResistor packages/core/dist/chunk-AQKNVZEZ.js:13588
+
+Top inclusive time
+     696.4 ms 100.0%  (root)
+     537.5 ms  77.2%  simulate packages/core/dist/chunk-AQKNVZEZ.js:23617
+     459.8 ms  66.0%  solveDCOperatingPoint packages/core/dist/chunk-AQKNVZEZ.js:18821
+     457.2 ms  65.6%  newtonRaphson packages/core/dist/chunk-AQKNVZEZ.js:18577
+     202.6 ms  29.1%  factorize packages/core/dist/chunk-AQKNVZEZ.js:17725
+     120.1 ms  17.3%  analyzePattern packages/core/dist/chunk-AQKNVZEZ.js:17629
+     120.1 ms  17.3%  getSparseSolver packages/core/dist/chunk-AQKNVZEZ.js:18268
+      96.0 ms  13.8%  amdOrdering packages/core/dist/chunk-AQKNVZEZ.js:17409
+      63.3 ms   9.1%  compile packages/core/dist/chunk-AQKNVZEZ.js:14295
+      56.6 ms   8.1%  (garbage collector)
+      54.5 ms   7.8%  lockTopology packages/core/dist/chunk-AQKNVZEZ.js:18141
+      53.2 ms   7.6%  parseAsync packages/core/dist/chunk-AQKNVZEZ.js:16309

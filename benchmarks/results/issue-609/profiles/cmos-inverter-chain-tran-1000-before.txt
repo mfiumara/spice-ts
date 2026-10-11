@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/609/prof-before/cmos-inverter-chain-tran-1000.cpuprofile: 460 samples, 1856.5 ms sampled
+
+Top self time
+     335.3 ms  18.1%  stamp packages/core/dist/chunk-ZLHT5X54.js:4763
+     239.1 ms  12.9%  factorize packages/core/dist/chunk-ZLHT5X54.js:17725
+     231.7 ms  12.5%  batchStamp packages/core/dist/chunk-ZLHT5X54.js:4965
+     159.8 ms   8.6%  stampG packages/core/dist/chunk-ZLHT5X54.js:18331
+     143.4 ms   7.7%  (garbage collector)
+     130.5 ms   7.0%  evaluateBulkJunctions packages/core/dist/chunk-ZLHT5X54.js:4655
+      75.2 ms   4.1%  buildCompanionSystem packages/core/dist/chunk-ZLHT5X54.js:19025
+      60.4 ms   3.3%  stampB packages/core/dist/chunk-ZLHT5X54.js:18334
+      60.2 ms   3.2%  stampStaticDevices packages/core/dist/chunk-ZLHT5X54.js:18503
+      45.7 ms   2.5%  attemptStep packages/core/dist/chunk-ZLHT5X54.js:19201
+      32.9 ms   1.8%  solveLinearized packages/core/dist/chunk-ZLHT5X54.js:19293
+      27.9 ms   1.5%  newtonRaphson packages/core/dist/chunk-ZLHT5X54.js:18577
+
+Top inclusive time
+    1856.5 ms 100.0%  (root)
+    1678.6 ms  90.4%  simulate packages/core/dist/chunk-ZLHT5X54.js:23562
+    1261.1 ms  67.9%  solveTransient packages/core/dist/chunk-ZLHT5X54.js:20200
+    1235.9 ms  66.6%  advanceSolution packages/core/dist/chunk-ZLHT5X54.js:19661
+     768.8 ms  41.4%  attemptStep packages/core/dist/chunk-ZLHT5X54.js:19201
+     668.1 ms  36.0%  stampStaticDevices packages/core/dist/chunk-ZLHT5X54.js:18503
+     574.7 ms  31.0%  stamp packages/core/dist/chunk-ZLHT5X54.js:4763
+     468.7 ms  25.2%  buildCompanionSystem packages/core/dist/chunk-ZLHT5X54.js:19025
+     440.4 ms  23.7%  stampPrevB packages/core/dist/chunk-ZLHT5X54.js:19889
+     389.8 ms  21.0%  solveDCOperatingPoint packages/core/dist/chunk-ZLHT5X54.js:18821
+     389.8 ms  21.0%  transientInitialSolution packages/core/dist/chunk-ZLHT5X54.js:23868
+     384.8 ms  20.7%  newtonRaphson packages/core/dist/chunk-ZLHT5X54.js:18577
