@@ -204,8 +204,8 @@
         ]
       },
       "runtimeMs": {
-        "ngspiceProcess": 59.0008329999996,
-        "spiceTsAdapter": 1037.6512500000003
+        "ngspiceProcess": 102.91083300000003,
+        "spiceTsAdapter": 382.7890420000001
       },
       "comparisons": [
         {
@@ -617,8 +617,8 @@
         ]
       },
       "runtimeMs": {
-        "ngspiceProcess": 90.56874999999991,
-        "spiceTsAdapter": 8.02737500000012
+        "ngspiceProcess": 37.57470900000021,
+        "spiceTsAdapter": 4.912499999999909
       },
       "comparisons": [
         {
