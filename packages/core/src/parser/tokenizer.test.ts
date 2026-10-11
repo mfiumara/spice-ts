@@ -113,7 +113,8 @@ describe('tokenizeNetlist', () => {
 // Behavior pins for issue #369 (tokenizer/number-parse performance). These
 // were written against the pre-optimization implementation and must keep
 // passing unchanged; the reference copies below are that implementation
-// verbatim, used as a differential oracle.
+// verbatim, used as a differential oracle. Deliberate semantic changes since:
+// #496 keeps whitespace-free `{...}` groups whole (see referenceTokenizeNetlist).
 // ---------------------------------------------------------------------------
 
 const REFERENCE_SI_SUFFIX_MAP: Record<string, string> = {
@@ -166,12 +167,18 @@ function referenceTokenizeNetlist(
     mergedLines.push({ text: trimmed, lineNumber: i + 1 });
   }
   for (const { text, lineNumber } of mergedLines) {
+    // #496: a whitespace-free `{...}` group keeps its parentheses and commas
+    // (stashed here, restored after splitting). Placeholders use U+E000, which
+    // the fuzz fragments never contain.
+    const groups: string[] = [];
     const normalized = text
       .replace(/\s*=\s*/g, '=')
+      .replace(/\{[^{}\s]*\}/g, group => `\ue000${groups.push(group) - 1}\ue000`)
       .replace(/\(/g, ' ( ')
       .replace(/\)/g, ' ) ')
       .replace(/,/g, ' ');
-    const tokens = normalized.split(/\s+/).filter(t => t.length > 0);
+    const tokens = normalized.split(/\s+/).filter(t => t.length > 0)
+      .map(token => token.replace(/\ue000(\d+)\ue000/g, (_match, index: string) => groups[Number(index)]));
     result.push({ raw: text, lineNumber, tokens });
   }
   return result;
@@ -300,10 +307,17 @@ describe('tokenizeNetlist behavior pins (#369)', () => {
     expect(tokenizeNetlist('X1 ((a)),,b')[0].tokens).toEqual(['X1', '(', '(', 'a', ')', ')', 'b']);
   });
 
-  it('leaves braces inside whitespace-delimited tokens', () => {
+  it('splits brace expressions that contain whitespace', () => {
     expect(tokenizeNetlist('R1 a b {rval * 2}')[0].tokens).toEqual(['R1', 'a', 'b', '{rval', '*', '2}']);
     expect(tokenizeNetlist('.param x = {a + b}')[0].tokens).toEqual(['.param', 'x={a', '+', 'b}']);
-    expect(tokenizeNetlist('R1 a b {f(1,2)}')[0].tokens).toEqual(['R1', 'a', 'b', '{f', '(', '1', '2', ')', '}']);
+  });
+
+  it('keeps a whitespace-free brace expression with parentheses and commas whole (#496)', () => {
+    expect(tokenizeNetlist('R1 a b {f(1,2)}')[0].tokens).toEqual(['R1', 'a', 'b', '{f(1,2)}']);
+    expect(tokenizeNetlist('R1 a b r={((3)*scale)} m=2')[0].tokens).toEqual(['R1', 'a', 'b', 'r={((3)*scale)}', 'm=2']);
+    expect(tokenizeNetlist('C1 a b {max(x,y)}x(1)')[0].tokens).toEqual(['C1', 'a', 'b', '{max(x,y)}x', '(', '1', ')']);
+    expect(tokenizeNetlist('R1 a b {f(1, 2)}')[0].tokens).toEqual(['R1', 'a', 'b', '{f', '(', '1', '2', ')', '}']);
+    expect(tokenizeNetlist('R1 a b {open(1)')[0].tokens).toEqual(['R1', 'a', 'b', '{open', '(', '1', ')']);
   });
 
   it('strips full-line and end-of-line comments with the earliest delimiter winning', () => {

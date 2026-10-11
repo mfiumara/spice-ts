@@ -1,4 +1,5 @@
 import { evaluateExpression } from './expression.js';
+import { conditionExpression, expandUserFunctions, parseFuncCard, type FunctionScope, type UserFunction } from './numparam.js';
 import { substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber } from './tokenizer.js';
 import { CycleError, ParseError } from '../errors.js';
@@ -41,16 +42,158 @@ export async function preprocessLines(
   guard: ProtocolExecutionGuard | undefined,
   lineOffset: number,
 ): Promise<string> {
-  const definitions = new Map<string, ParamDefinition>();
-  const statements: PendingStatement[] = [];
-  await collectStatements(netlist, resolver, new Set(), [], 0, definitions, statements, guard, lineOffset);
+  const state = newCollectState();
+  const { definitions, statements } = state;
+  await collectStatements(netlist, resolver, new Set(), [], 0, state, guard, lineOffset);
+  const unterminated = state.conditionals[0];
+  if (unterminated) {
+    throw new ParseError("Unterminated .if block: missing .endif", unterminated.line, unterminated.context);
+  }
+  expandFunctionCalls(state);
   // ngspice collects every top-level `.param` before substituting, so a
   // parameter may be used before its definition and the last definition wins.
   const temperatureSweep = statements.find(isTemperatureSweep);
-  const scopes = createParamScopes(definitions, temperatureSweep, circuitTemperature(statements));
+  const scopes = createParamScopes(
+    definitions, temperatureSweep, circuitTemperature(statements), state.functionScopes[0].functions,
+  );
+  // `.csparam` only feeds ngspice's control language; evaluate it so a bad
+  // expression is still reported at its card.
+  for (const definition of state.csparams) {
+    evaluateParamExpression(definition, scopes.numparam, state.functionScopes[0].functions);
+  }
   return statements.map(statement => statement.substitute
     ? substituteStatement(statement, scopes)
     : statement.text).join('\n');
+}
+
+interface ConditionalFrame {
+  line: number;
+  context: string;
+  /** Lines of the current branch are kept (this branch and every enclosing one selected). */
+  active: boolean;
+  enclosingActive: boolean;
+  /** A branch of this block has been selected already. */
+  taken: boolean;
+  seenElse: boolean;
+}
+
+interface FunctionScopeFrame {
+  parent: number;
+  functions: Map<string, UserFunction>;
+}
+
+/** Preprocessor state shared across `.include`/`.lib` files. */
+interface CollectState {
+  definitions: Map<string, ParamDefinition>;
+  statements: PendingStatement[];
+  csparams: ParamDefinition[];
+  conditionals: ConditionalFrame[];
+  /** Index 0 is the top level; each `.subckt` opens a nested scope. */
+  functionScopes: FunctionScopeFrame[];
+  scopeStack: number[];
+}
+
+function newCollectState(): CollectState {
+  return {
+    definitions: new Map(),
+    statements: [],
+    csparams: [],
+    conditionals: [],
+    functionScopes: [{ parent: -1, functions: new Map() }],
+    scopeStack: [0],
+  };
+}
+
+const CONDITIONAL_CARD = /^\.(elseif|else|endif|if)(?![\w])/i;
+const FUNC_DIRECTIVE = /^\.func(?![\w])/i;
+const CSPARAM_DIRECTIVE = /^\.csparam(?![\w])/i;
+const PARAM_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*(\{[^}]+\}|'[^']*'|"[^"]*"|\S+)/g;
+
+function paramDefinition(value: string, line: number, context: string): ParamDefinition {
+  const delimited = value.length >= 2
+    && ((value.startsWith('{') && value.endsWith('}')) || (value.startsWith("'") && value.endsWith("'")));
+  return {
+    expression: delimited ? value.slice(1, -1) : value,
+    line,
+    context,
+    ...(value.startsWith('"') ? { stringValue: true } : {}),
+  };
+}
+
+function currentScope(state: CollectState): number {
+  return state.scopeStack[state.scopeStack.length - 1];
+}
+
+function conditionallyActive(state: CollectState): boolean {
+  const frame = state.conditionals[state.conditionals.length - 1];
+  return frame === undefined || frame.active;
+}
+
+/**
+ * Apply a top-level `.if`/`.elseif`/`.else`/`.endif` card. Conditions are
+ * evaluated when the card is read, against the `.param` cards of the
+ * selected branches read so far, as ngspice numparam does.
+ */
+function applyConditional(state: CollectState, keyword: string, trimmed: string, line: number): void {
+  const frames = state.conditionals;
+  const frame = frames[frames.length - 1];
+  const evaluate = (): boolean => {
+    const condition = trimmed.slice(0, commentStart(trimmed)).slice(keyword.length + 1);
+    if (condition.trim() === '') throw new ParseError(`.${keyword} requires a condition`, line, trimmed);
+    const scopes = createParamScopes(
+      state.definitions, undefined, circuitTemperature(state.statements), state.functionScopes[0].functions,
+    );
+    try {
+      const expression = expandUserFunctions(conditionExpression(condition), state.functionScopes[0].functions);
+      return evaluateExpression(expression, scopes.numparam) !== 0;
+    } catch (error) {
+      if (error instanceof ParseError) throw error;
+      throw toParseError(error, line, trimmed);
+    }
+  };
+  if (keyword === 'if') {
+    const enclosingActive = conditionallyActive(state);
+    const selected = enclosingActive && evaluate();
+    frames.push({ line, context: trimmed, active: selected, enclosingActive, taken: selected, seenElse: false });
+    return;
+  }
+  if (!frame) throw new ParseError(`'.${keyword}' without a matching '.if'`, line, trimmed);
+  if (keyword === 'endif') {
+    frames.pop();
+    return;
+  }
+  if (frame.seenElse) throw new ParseError(`'.${keyword}' after '.else'`, line, trimmed);
+  if (keyword === 'else') {
+    frame.active = frame.enclosingActive && !frame.taken;
+    frame.taken = true;
+    frame.seenElse = true;
+    return;
+  }
+  const selected = frame.enclosingActive && !frame.taken && evaluate();
+  frame.active = selected;
+  frame.taken ||= selected;
+}
+
+/**
+ * Expand `.func` calls in every netlist card, each with the functions visible
+ * in its subcircuit scope (inner definitions shadow outer ones).
+ */
+function expandFunctionCalls(state: CollectState): void {
+  const visible = state.functionScopes.map((_scope, index) => {
+    const chain: Map<string, UserFunction>[] = [];
+    for (let at = index; at >= 0; at = state.functionScopes[at].parent) chain.unshift(state.functionScopes[at].functions);
+    return new Map(chain.flatMap(functions => [...functions]));
+  });
+  if (visible.every(functions => functions.size === 0)) return;
+  for (const statement of state.statements) {
+    if (statement.control || statement.text.trim().startsWith('*')) continue;
+    const functions = visible[statement.scope ?? 0];
+    try {
+      statement.text = expandUserFunctions(statement.text, functions);
+    } catch (error) {
+      throw toParseError(error, statement.line, statement.text.trim());
+    }
+  }
 }
 
 interface ParamDefinition {
@@ -67,6 +210,8 @@ interface PendingStatement {
   line: number;
   /** A line inside a top-level `.control` block. */
   control?: boolean;
+  /** `.func` scope (index into CollectState.functionScopes); 0 / absent is the top level. */
+  scope?: number;
 }
 
 /**
@@ -124,6 +269,7 @@ function createParamScopes(
   definitions: Map<string, ParamDefinition>,
   temperatureSweep: PendingStatement | undefined,
   temperature: number,
+  functions: FunctionScope = new Map(),
 ): ParamScopes {
   const values = new Map<string, number>();
   const resolving: string[] = [];
@@ -170,7 +316,7 @@ function createParamScopes(
     }
     resolving.push(name);
     try {
-      const value = evaluateParamExpression(definition, numparam);
+      const value = evaluateParamExpression(definition, numparam, functions);
       values.set(name, value);
       return value;
     } finally {
@@ -181,9 +327,13 @@ function createParamScopes(
   return { params, numparam };
 }
 
-function evaluateParamExpression(definition: ParamDefinition, scope: Record<string, number>): number {
+function evaluateParamExpression(
+  definition: ParamDefinition,
+  scope: Record<string, number>,
+  functions: FunctionScope = new Map(),
+): number {
   try {
-    return evaluateExpression(definition.expression, scope);
+    return evaluateExpression(expandUserFunctions(definition.expression, functions), scope);
   } catch (error) {
     if (error instanceof ParseError) throw error;
     // A bare SPICE number (e.g. `1meg`) is not an expression; anything else
@@ -291,8 +441,7 @@ async function collectStatements(
   visited: Set<string>,
   chain: string[],
   depth: number,
-  definitions: Map<string, ParamDefinition>,
-  statements: PendingStatement[],
+  state: CollectState,
   guard?: ProtocolExecutionGuard,
   lineOffset = 0,
 ): Promise<void> {
@@ -301,6 +450,7 @@ async function collectStatements(
     throw new ParseError(`Include depth limit exceeded (${MAX_DEPTH})`, 0, '');
   }
 
+  const { definitions, statements } = state;
   const lines = netlist.split('\n');
   let inSubckt = 0;
   let inControl = false;
@@ -310,7 +460,10 @@ async function collectStatements(
     const lineNumber = index + 1 + lineOffset;
     const trimmed = line.trim();
     const upper = trimmed.toUpperCase();
-    const passThrough = () => statements.push({ text: line, substitute: false, line: lineNumber });
+    const scope = currentScope(state);
+    const passThrough = () => statements.push({ text: line, substitute: false, line: lineNumber, scope });
+    // Consumed numparam cards and unselected `.if` branches keep their line, blank.
+    const blank = () => statements.push({ text: '', substitute: false, line: lineNumber });
 
     // Comments are metadata, not expression-bearing netlist statements.
     if (trimmed.startsWith('*')) {
@@ -318,21 +471,52 @@ async function collectStatements(
       continue;
     }
 
+    const conditional = inControl ? null : CONDITIONAL_CARD.exec(trimmed);
+    if (conditional) {
+      if (inSubckt > 0) {
+        throw new ParseError(
+          '.if inside .subckt is not supported: spice-ts evaluates .if/.elseif/.else/.endif only at the top level',
+          lineNumber, trimmed,
+        );
+      }
+      applyConditional(state, conditional[1].toLowerCase(), trimmed, lineNumber);
+      blank();
+      continue;
+    }
+    if (!conditionallyActive(state)) {
+      blank();
+      continue;
+    }
+
     // Track .subckt nesting — don't evaluate params inside subcircuits
     if (upper.startsWith('.SUBCKT ')) {
       inSubckt++;
       passThrough();
+      state.functionScopes.push({ parent: scope, functions: new Map() });
+      state.scopeStack.push(state.functionScopes.length - 1);
       continue;
     }
     if (upper.startsWith('.ENDS')) {
       inSubckt--;
       passThrough();
+      if (state.scopeStack.length > 1) state.scopeStack.pop();
+      continue;
+    }
+
+    if (!inControl && FUNC_DIRECTIVE.test(trimmed)) {
+      try {
+        const fn = parseFuncCard(trimmed.slice(0, commentStart(trimmed)));
+        state.functionScopes[scope].functions.set(fn.name.toLowerCase(), fn);
+      } catch (error) {
+        throw toParseError(error, lineNumber, trimmed);
+      }
+      blank();
       continue;
     }
 
     // Inside a subcircuit — expressions are evaluated per instance later
     if (inSubckt > 0) {
-      statements.push({ text: compactSubcircuitExpressions(line), substitute: false, line: lineNumber });
+      statements.push({ text: compactSubcircuitExpressions(line), substitute: false, line: lineNumber, scope });
       continue;
     }
 
@@ -351,20 +535,25 @@ async function collectStatements(
 
     // .param at top level
     if (upper.startsWith('.PARAM ')) {
-      const paramContent = trimmed.slice(7).trim();
-      const assignments = paramContent.matchAll(/([A-Za-z_]\w*)\s*=\s*(\{[^}]+\}|'[^']*'|"[^"]*"|\S+)/g);
-      for (const assignment of assignments) {
-        const name = assignment[1].toUpperCase();
-        const value = assignment[2];
-        const delimited = value.length >= 2
-          && ((value.startsWith('{') && value.endsWith('}')) || (value.startsWith("'") && value.endsWith("'")));
-        definitions.set(name, {
-          expression: delimited ? value.slice(1, -1) : value,
-          line: lineNumber,
-          context: trimmed,
-          ...(value.startsWith('"') ? { stringValue: true } : {}),
-        });
+      for (const assignment of trimmed.slice(7).trim().matchAll(PARAM_ASSIGNMENT)) {
+        definitions.set(assignment[1].toUpperCase(), paramDefinition(assignment[2], lineNumber, trimmed));
       }
+      blank();
+      continue;
+    }
+
+    // .csparam: numparam values handed to the control language
+    if (CSPARAM_DIRECTIVE.test(trimmed)) {
+      const content = trimmed.slice(0, commentStart(trimmed)).slice('.csparam'.length);
+      const assignments = [...content.matchAll(PARAM_ASSIGNMENT)];
+      if (assignments.length === 0) {
+        throw new ParseError("Malformed .csparam card: expected 'name = expression'", lineNumber, trimmed);
+      }
+      for (const assignment of assignments) {
+        const definition = paramDefinition(assignment[2], lineNumber, trimmed);
+        if (!definition.stringValue) state.csparams.push(definition);
+      }
+      blank();
       continue;
     }
 
@@ -387,7 +576,7 @@ async function collectStatements(
       visited.add(path);
       const content = await resolver(path);
       await collectStatements(
-        content, resolver, visited, [...chain, path], depth + 1, definitions, statements, guard,
+        content, resolver, visited, [...chain, path], depth + 1, state, guard,
       );
       visited.delete(path);
       continue;
@@ -417,7 +606,7 @@ async function collectStatements(
         const content = await resolver(filePath);
         const extracted = extractLibSection(content, section);
         await collectStatements(
-          extracted, resolver, visited, [...chain, visitKey], depth + 1, definitions, statements, guard,
+          extracted, resolver, visited, [...chain, visitKey], depth + 1, state, guard,
         );
         visited.delete(visitKey);
         continue;
