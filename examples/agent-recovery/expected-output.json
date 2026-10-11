@@ -10,7 +10,10 @@
   "tools": [
     "spice_capabilities",
     "spice_validate",
-    "spice_simulate"
+    "spice_simulate",
+    "spice_simulation_start",
+    "spice_simulation_read",
+    "spice_simulation_cancel"
   ],
   "capabilities": {
     "protocolVersion": "1",
