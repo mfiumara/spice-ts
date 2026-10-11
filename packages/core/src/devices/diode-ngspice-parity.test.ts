@@ -339,7 +339,8 @@ describe('diode TBV1 is ngspice-47 TCV: BV(T) = BV - TCV*(T-TNOM) (#429)', () =>
   it('keeps the PSpice TBV1 law under LEVEL=2, which ngspice-47 rejects', async () => {
     // ngspice-47 stops with "Diode model level 2 is not supported", so LEVEL=2
     // keeps the #319 PSpice/Xyce law: BV(T) = 5*(1 + 0.01*45) = 7.25 V.
-    const level2 = await breakdownDeck('LEVEL=2 IS=1e-14 BV=5 IBV=1m TBV1=0.01 TNOM=-18', {
+    // EG=0 XTI=0 hold IS at its TNOM value (#374), isolating the BV law.
+    const level2 = await breakdownDeck('LEVEL=2 IS=1e-14 BV=5 IBV=1m TBV1=0.01 TNOM=-18 EG=0 XTI=0', {
       source: -10,
       resistance: '1k',
     });

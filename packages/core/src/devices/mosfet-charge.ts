@@ -1,6 +1,8 @@
 import { InvalidCircuitError } from '../errors.js';
 
-/** MOS1 mos1temp.c/mos1load.c depletion charge at TEMP=TNOM=27 C.
+/** MOS1 mos1temp.c/mos1load.c depletion charge. The caller passes the
+ * zero-bias capacitances and junction potential already mapped to the device
+ * temperature (MOS1tCbd/tCbs/tCj/tCjsw and MOS1tBulkPot).
  * CBD/CBS override the bottom CJ*area only; the sidewall contribution remains.
  * Above FC*PB the capacitance continues linearly (charge quadratically).
  */
