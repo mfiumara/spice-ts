@@ -200,7 +200,8 @@ describe('DC Sweep via simulate()', () => {
     expect([...text.sweepValues]).toEqual([...programmatic.sweepValues]);
     expect([...text.secondarySweepValues!]).toEqual([...programmatic.secondarySweepValues!]);
     expect(text.sweepValues[0]).toBe(0);
-    expect(text.sweepValues[100]).toBe(5);
+    // ngspice-47 accumulates `+= 0.05`, ending 1e-14 short of 5 (#654).
+    expect(text.sweepValues[100]).toBe(4.99999999999999);
     expect(text.sweepValues[101]).toBe(0);
     expect(text.secondarySweepValues![0]).toBeCloseTo(0.7, 15);
     expect(text.secondarySweepValues![100]).toBeCloseTo(0.7, 15);
@@ -226,7 +227,7 @@ describe('DC Sweep via simulate()', () => {
     expect([...sweep.secondarySweepValues!]).not.toContain(1.2);
   });
 
-  it('does not expose a rounded endpoint beyond the directed stop', async () => {
+  it('keeps the accumulated endpoint ngspice-47 keeps within its 1e3*DBL_EPSILON stop tolerance', async () => {
     const result = await simulate(`
       V1 out 0 DC 0
       R1 out 0 1k
@@ -234,6 +235,7 @@ describe('DC Sweep via simulate()', () => {
       .end
     `);
 
-    expect([...result.dcSweep!.sweepValues]).toEqual([0, 0.1, 0.2, 0.3]);
+    // dctrcurv.c: 0.1 + 0.1 + 0.1 overshoots 0.3 by 5.6e-17, well within the stop tolerance.
+    expect([...result.dcSweep!.sweepValues]).toEqual([0, 0.1, 0.2, 0.30000000000000004]);
   });
 });
