@@ -1,4 +1,8 @@
-import type { ChargeIntegration, StampContext } from './device.js';
+import type { ChargeIntegration, ChargeTruncation, StampContext } from './device.js';
+
+/** ngspice cktterr.c error coefficients, indexed by integration order - 1. */
+const TRAP_COEFFICIENTS = [0.5, 0.08333333333];
+const GEAR_COEFFICIENTS = [0.5, 0.2222222222];
 
 /**
  * Accepted transient state of a device's nonlinear charges, integrated as
@@ -16,11 +20,19 @@ import type { ChargeIntegration, StampContext } from './device.js';
 export class TransientChargeState {
   private readonly acceptedCharge: Float64Array;
   private readonly previousCharge: Float64Array;
+  /** q(n-2): the extra point TRAP/Gear-2 truncation error needs (ngspice CKTstate3). */
+  private readonly olderCharge: Float64Array;
   private readonly acceptedCurrent: Float64Array;
   private readonly acceptedVoltage: Float64Array;
   private readonly acceptedCapacitance: Float64Array;
   private hasAccepted = false;
   private hasPrevious = false;
+  /** Accepted timepoints held in the charge history, capped at 3 (q(n), q(n-1), q(n-2)). */
+  private historyLength = 0;
+  /** Set while {@link truncationTimestep} evaluates the trial charges. */
+  private truncation: ChargeTruncation | undefined;
+  private truncationIndices: readonly number[] | undefined;
+  private truncationBound = Infinity;
   /** Integration rule of the most recent charge stamp, committed on acceptance. */
   private pending: ChargeIntegration | undefined;
   private method: ChargeIntegration['method'] = 'euler';
@@ -32,6 +44,7 @@ export class TransientChargeState {
   constructor(readonly size: number) {
     this.acceptedCharge = new Float64Array(size);
     this.previousCharge = new Float64Array(size);
+    this.olderCharge = new Float64Array(size);
     this.acceptedCurrent = new Float64Array(size);
     this.acceptedVoltage = new Float64Array(size);
     this.acceptedCapacitance = new Float64Array(size);
@@ -88,12 +101,19 @@ export class TransientChargeState {
    * CKTstate1 with a zero capacitor current at MODEINITTRAN.
    */
   accept(index: number, charge: number, voltage = 0, capacitance = 0): void {
+    if (this.truncation !== undefined) {
+      if (this.truncationIndices === undefined || this.truncationIndices.includes(index)) {
+        this.truncationBound = Math.min(this.truncationBound, this.chargeTruncation(index, charge, this.truncation));
+      }
+      return;
+    }
     const integration = this.pending;
     let current = 0;
     if (integration !== undefined && this.hasAccepted) {
       this.select(integration);
       current = this.current(index, charge);
     }
+    this.olderCharge[index] = this.previousCharge[index];
     this.previousCharge[index] = this.acceptedCharge[index];
     this.acceptedCharge[index] = charge;
     this.acceptedCurrent[index] = current;
@@ -103,6 +123,8 @@ export class TransientChargeState {
 
   /** Finish an accepted timepoint after every charge was {@link accept}ed. */
   commit(): void {
+    if (this.truncation !== undefined) return;
+    this.historyLength = Math.min(this.historyLength + 1, 3);
     this.hasPrevious = this.hasAccepted && this.pending !== undefined;
     this.hasAccepted = true;
     this.pending = undefined;
@@ -112,12 +134,74 @@ export class TransientChargeState {
   reset(): void {
     this.hasAccepted = false;
     this.hasPrevious = false;
+    this.historyLength = 0;
     this.pending = undefined;
     this.acceptedCharge.fill(0);
     this.previousCharge.fill(0);
+    this.olderCharge.fill(0);
     this.acceptedCurrent.fill(0);
     this.acceptedVoltage.fill(0);
     this.acceptedCapacitance.fill(0);
+  }
+
+  /**
+   * ngspice DEVtrunc: the largest next timestep the local truncation error of
+   * these charges allows (ngspice cktterr.c CKTterr, minimised over charges).
+   * `evaluate` must compute the charges at the converged trial solution and
+   * pass each to {@link accept} (then {@link commit}), exactly as on
+   * acceptance; while it runs those calls only measure the error and leave the
+   * accepted history untouched. `indices` restricts the estimate to the
+   * charges ngspice truncates for this device (e.g. MOS1 gate charges only).
+   * Returns Infinity when no rule is pending or the history is too short.
+   */
+  truncationTimestep(
+    truncation: ChargeTruncation,
+    evaluate: () => void,
+    indices?: readonly number[],
+  ): number {
+    const integration = this.pending;
+    if (integration === undefined || !this.hasAccepted) return Infinity;
+    this.select(integration);
+    // Order 1 needs q(n+1), q(n), q(n-1); order 2 one point more (CKTstates[0..order+1]).
+    if (this.historyLength < this.order() + 1) return Infinity;
+    this.truncation = truncation;
+    this.truncationIndices = indices;
+    this.truncationBound = Infinity;
+    try {
+      evaluate();
+    } finally {
+      this.truncation = undefined;
+      this.truncationIndices = undefined;
+    }
+    return this.truncationBound;
+  }
+
+  /** Integration order of the active rule. */
+  private order(): 1 | 2 {
+    return this.method === 'euler' ? 1 : 2;
+  }
+
+  /** ngspice CKTterr for one charge at trial value `charge`. */
+  private chargeTruncation(index: number, charge: number, truncation: ChargeTruncation): number {
+    const { deltas, reltol, abstol, chgtol, trtol } = truncation;
+    const order = this.order();
+    const delta = deltas[0];
+    const current = this.current(index, charge);
+    const previous = this.acceptedCharge[index];
+    const currentTolerance = abstol + reltol * Math.max(Math.abs(current), Math.abs(this.acceptedCurrent[index]));
+    const chargeTolerance = reltol * Math.max(Math.abs(charge), Math.abs(previous), chgtol) / delta;
+    const tolerance = Math.max(currentTolerance, chargeTolerance);
+    // Divided differences of q over t(n+1), t(n), ..., t(n-order).
+    const diff = [charge, previous, this.previousCharge[index], this.olderCharge[index]];
+    const span = [deltas[0], deltas[1], deltas[2]];
+    for (let j: number = order; ; j--) {
+      for (let i = 0; i <= j; i++) diff[i] = (diff[i] - diff[i + 1]) / span[i];
+      if (j === 0) break;
+      for (let i = 0; i < j; i++) span[i] = span[i + 1] + deltas[i];
+    }
+    const factor = (this.method === 'gear2' ? GEAR_COEFFICIENTS : TRAP_COEFFICIENTS)[order - 1];
+    const bound = trtol * tolerance / Math.max(abstol, factor * Math.abs(diff[0]));
+    return order === 2 ? Math.sqrt(bound) : bound;
   }
 
   private select({ method, dt, prevDt }: ChargeIntegration): void {

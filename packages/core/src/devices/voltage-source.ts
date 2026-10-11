@@ -111,13 +111,19 @@ export class VoltageSource implements DeviceModel {
  * Period offsets are computed as `delay + n * period` rather than an additive
  * accumulator so that breakpoints at high `n` land exactly on their analytic
  * values (no FP drift).
+ *
+ * A PULSE without a usable PER (omitted, so `Infinity`, or <= 0) is a single
+ * pulse, exactly as {@link evaluatePulse} evaluates it; its corners are still
+ * breakpoints. (`0 * Infinity` is NaN, which used to drop every corner of an
+ * omitted-PER pulse, #469.)
  */
 export function pulseBreakpoints(p: PulseSource, stopTime: number): number[] {
   const { delay, rise, width, fall, period } = p;
   const result: number[] = [];
-  if (period <= 0) return result; // invalid period → no breakpoints
-  for (let n = 0; delay + n * period < stopTime; n++) {
-    const periodStart = delay + n * period;
+  const periodic = Number.isFinite(period) && period > 0;
+  for (let n = 0; n === 0 || periodic; n++) {
+    const periodStart = n === 0 ? delay : delay + n * period;
+    if (!(periodStart < stopTime)) break;
     const corners = [
       periodStart,                       // rising-edge start
       periodStart + rise,                // rising-edge end

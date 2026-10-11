@@ -51,6 +51,24 @@ export interface ChargeIntegration {
   readonly prevDt?: number;
 }
 
+/**
+ * Inputs of the ngspice charge truncation-error estimate (cktterr.c CKTterr)
+ * for one converged trial timepoint.
+ */
+export interface ChargeTruncation {
+  /**
+   * Step history, newest first (ngspice CKTdeltaOld): the trial step
+   * t(n+1) - t(n), then t(n) - t(n-1) and t(n-1) - t(n-2).
+   */
+  readonly deltas: readonly [number, number, number];
+  readonly reltol: number;
+  /** Current tolerance (A). */
+  readonly abstol: number;
+  /** Charge tolerance (C). */
+  readonly chgtol: number;
+  readonly trtol: number;
+}
+
 /** A frequency-independent contribution to the complex AC right-hand side. */
 export type ACRHSContribution =
   | {
@@ -120,6 +138,12 @@ export interface DeviceModel {
   stampAC?(ctx: StampContext, omega: number): void;
   /** Commit state from a transient timepoint after NR and LTE acceptance. */
   acceptTransientStep?(ctx: StampContext): void;
+  /**
+   * ngspice DEVtrunc: the largest next timestep the truncation error of the
+   * device's integrated charges allows, evaluated at the converged but not yet
+   * accepted solution in `ctx`. Must not change accepted state.
+   */
+  truncateTransientStep?(ctx: StampContext, truncation: ChargeTruncation): number;
   /**
    * True when the device limits every junction voltage it reads relative to
    * its previous Newton iterate (ngspice DEVpnjlim). Transient Newton leaves

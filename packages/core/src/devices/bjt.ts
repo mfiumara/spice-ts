@@ -1,4 +1,6 @@
-import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import type {
+  ChargeIntegration, ChargeTruncation, DeviceModel, StampContext,
+} from './device.js';
 import {
   depletionCharge, stampChargeBranch, stampChargeCurrent, TransientChargeState,
 } from './charge-state.js';
@@ -335,6 +337,11 @@ export class BJT implements DeviceModel {
 
   resetTransient(): void {
     this.charges.reset();
+  }
+
+  /** ngspice BJTtrunc: qbe, qbc and qsub. */
+  truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
+    return this.charges.truncationTimestep(truncation, () => this.acceptTransientStep(ctx));
   }
 
   limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {

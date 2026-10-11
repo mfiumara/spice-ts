@@ -1,5 +1,5 @@
 import {
-  DEVICE_GMIN, type ChargeIntegration, type DeviceModel, type StampContext,
+  DEVICE_GMIN, type ChargeIntegration, type ChargeTruncation, type DeviceModel, type StampContext,
 } from './device.js';
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 
@@ -118,6 +118,8 @@ const SLOT_DB = 10;
 
 /** Terminal indices (D, G, S, B) of the G-D, G-S, B-D and B-S capacitances. */
 const CHARGE_BRANCHES: ReadonlyArray<readonly [number, number]> = [[1, 0], [1, 2], [3, 0], [3, 2]];
+/** {@link CHARGE_BRANCHES} indices of the gate charges (G-D, G-S). */
+const MOS_GATE_CHARGES: readonly number[] = [0, 1];
 
 function branchVoltage(ctx: StampContext, positive: number, negative: number): number {
   return (positive >= 0 ? ctx.getVoltage(positive) : 0)
@@ -450,6 +452,11 @@ export class MOSFET implements DeviceModel {
 
   resetTransient(): void {
     this.charges.reset();
+  }
+
+  /** ngspice MOS1/2/3trunc: the gate charges qgd and qgs only, not the bulk junctions. */
+  truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
+    return this.charges.truncationTimestep(truncation, () => this.acceptTransientStep(ctx), MOS_GATE_CHARGES);
   }
 
   stampAC(ctx: StampContext, _omega: number): void {
