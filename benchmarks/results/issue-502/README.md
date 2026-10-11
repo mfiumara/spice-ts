@@ -42,7 +42,18 @@ The six original MIT-licensed netlists and all OP vectors are embedded in [repor
 
 This PR does not refresh corpus-f `outcomes.json`/`README.md`; they stay as on main. A full corpus-f refresh would mix in unrelated baseline drift and host-load timeouts, so the scoped before/after runs above are the evidence for this change.
 
-The aggregate (100 fixtures, no `.global` decks) was regenerated on this branch merged with main 3f26f107 and the #613 aggregate refresh (head ccbad2d2), because the new SOURCES.md section moves the source pin from `a0fc235c` to `0511bf14`. Against the #613 run (outcome `d0a5c915`), every per-fixture status, analysis, grid, point count, signal list and metric is unchanged: ngspice 52/9/39, spice-ts 60/1/39, 67 analyses across 48 fixtures. No spice-ts run hit the 120000 ms bound. Only runtimes, ngspice error text (memory figures), the pin and the ledger entry differ. `aggregate-report.ts --check` exits 0.
+The aggregate (100 fixtures, no `.global` decks) was regenerated on this branch merged with main e58322ea, because the new SOURCES.md section moves the source pin from `391461fe` (main's actual catalogue; main itself still pins the stale `a0fc235c`) to `98991942`. Every merge between the #613 refresh (outcome `d0a5c915`) and e58322ea was bisected with one full 100-fixture run on that main commit, each with only its SOURCES.md pin corrected in a throwaway worktree:
+
+| Main commit | Change | Fixture-level outcome vs the #613 run |
+|---|---|---|
+| `098da449` | #494 options (PR #600) | identical (outcome `dc5fd4bf`) |
+| `7c66aab9` | #504 `.pz` with sources (PR #614) | identical (outcome `dc5fd4bf`) |
+| `f5e9c5b0` | #609 chunked transient buffer (PR #617) | identical (outcome `dc5fd4bf`) |
+| `98d2d5d2` | #596 VDMOS test pin (PR #620) | identical (outcome `dc5fd4bf`) |
+| `e58322ea` | #488 control interpreter (PR #584) | only ngspice/ac-zero-frequency: spice-ts unsupported → success; ngspice still fails, so no comparison is added |
+| this branch | #502 `.global` (PR #603) | identical to the `e58322ea` run |
+
+So #502 is outcome-neutral, and so are #614 and #617 on their own. ngspice 52/9/39, spice-ts 61/1/38 (the +1 is #584), 67 analyses across 48 fixtures, 879/847 signals, every envelope unchanged. No spice-ts run hit the 120000 ms bound. Only runtimes, ngspice error text (memory figures), the pin, the new status transition and the ledger entry differ. `aggregate-report.ts --check` exits 0.
 
 ## Reproduction
 

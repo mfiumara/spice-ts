@@ -1,0 +1,9 @@
+ngspice-47 bypass request on a nonlinear diode sweep
+* Project-authored MIT regression for issue #494.
+.options bypass=1
+V1 in 0 1
+R1 in out 1k
+D1 out 0 dm
+.model dm d (is=1e-14 n=1)
+.dc V1 0 1 0.05
+.end

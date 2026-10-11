@@ -27,6 +27,7 @@ const supportedFixtures: Fixture[] = [
   { feature: 'initial conditions', netlist: 'R1 out 0 1k\nC1 out 0 1p\n.ic V(out)=1\n.tran 1n 10n uic' },
   { feature: 'initial guesses', netlist: 'V1 out 0 1\n.nodeset V(out)=0\n.op' },
   { feature: '.ac', netlist: 'V1 in 0 AC 1\nR1 in 0 1k\n.ac dec 10 1 1Meg' },
+  { feature: 'differential pole-zero analysis', netlist: 'R1 in ref 1k\n.pz in ref out 0 vol pz' },
   { feature: 'LIN/DEC/OCT .noise slice', netlist: 'V1 in 0 AC 1\nR1 in out 1k\nR2 out 0 1k\n.noise V(out) V1 dec 10 1 1Meg' },
   { feature: 'bounded differential resistor-noise output', netlist: 'V1 in 0 AC 1\nR1 in out 1k\nR2 ref 0 1k\n.noise V(out,ref) V1 dec 10 1 1Meg' },
   { feature: 'bounded transfer-function analysis', netlist: 'V1 in 0 1\nR1 in out 1k\nR2 out 0 1k\n.tf V(out) V1' },
@@ -37,6 +38,7 @@ const supportedFixtures: Fixture[] = [
   { feature: 'B-source V= and I= expressions', netlist: 'V1 in 0 1\nB1 out 0 V=V(in)^2 > 0.5 ? 1 : 0\nB2 out 0 I=max(V(in),0) tc1=1m\n.op' },
   { feature: 'S/W switches', netlist: '.model SMOD SW(VT=1 VH=0.1)\n.model WMOD CSW IT=1m\nV1 c 0 1\nS1 out 0 c 0 SMOD ON\nW1 out 0 V1 WMOD\n.op' },
   { feature: 'bounded lossless transmission line', netlist: 'T1 in 0 out 0 Z0=50 TD=1n\n.tran 1n 10n' },
+  { feature: 'ngspice control-language scripting', netlist: 'V1 in 0 1\nR1 in 0 1k\n.control\nlet x = 1\nop\n.endc' },
 ];
 
 const unsupportedFixtures: Fixture[] = [
@@ -45,8 +47,7 @@ const unsupportedFixtures: Fixture[] = [
   { feature: 'AM source waveform', netlist: 'V1 in 0 AM(1 1 1k 10k)\n.tran 1u 1m' },
   { feature: 'trnoise source waveform', netlist: 'V1 in 0 TRNOISE(1 1n)\n.tran 1n 10n' },
   { feature: 'external source waveform', netlist: 'V1 in 0 EXTERNAL\n.tran 1n 10n' },
-  { feature: 'differential pole-zero analysis', netlist: '.pz in ref out 0 vol pz' },
-  { feature: 'control-language commands', netlist: '.control\nlet x = 1\n.endc' },
+  { feature: 'control-language measurements', netlist: '.control\nmeas tran peak max v(out)\n.endc' },
   { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
   { feature: 'measurements', netlist: '.measure tran peak MAX v(out)\n.op' },
   { feature: 'PSPICE logic behavioral source', netlist: 'B1 out 0 V=~V(in)\n.op' },

@@ -1,6 +1,11 @@
 import { Circuit } from './circuit.js';
 import type { CompiledCircuit } from './circuit.js';
-import { parse, parseAsync } from './parser/index.js';
+import { parse, parseAsync, parseControlAnalysisCard, parseControlOptions } from './parser/index.js';
+import type { AnalysisDirective, PoleZeroAnalysis } from './types.js';
+import type { ControlScript } from './parser/control/script.js';
+import type { ControlSourceLine } from './parser/control/source.js';
+import { runControlScript, type ControlHost, type ControlHostRun } from './parser/control/interpreter.js';
+import { ControlScriptError, UnsupportedControlCommandError } from './parser/control/errors.js';
 import type { ConvergenceTelemetry, SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
 import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, SimulatorBackend } from './types.js';
 import { resolveOptions, withNetlistOptions } from './types.js';
@@ -115,10 +120,19 @@ export async function simulate(
   } else {
     circuit = input;
   }
+  if (circuit.controlScript) {
+    return simulateControlScript(circuit, circuit.controlScript, options, guard);
+  }
   const compiled = circuit.compile(guard);
   options = withNetlistOptions(compiled.simulationOptions, options);
   const warnings: SimulationWarning[] = [];
   const convergence = createConvergenceTelemetry();
+  if (options.bypass) {
+    warnings.push({
+      type: 'option',
+      message: 'bypass: native solver always evaluates nonlinear devices; ngspice evaluation reuse is not implemented. Iteration counts and tolerance-level results may differ.',
+    });
+  }
 
   validateCircuit(compiled, warnings);
 
@@ -136,6 +150,17 @@ export async function simulate(
     return { steps: stepResults, warnings, convergence };
   }
 
+  return solveCompiledAnalyses(compiled, options, warnings, convergence, guard);
+}
+
+/** Solve every analysis of a compiled circuit into one result. */
+function solveCompiledAnalyses(
+  compiled: CompiledCircuit,
+  options: SimulationOptions,
+  warnings: SimulationWarning[],
+  convergence: ConvergenceTelemetry,
+  guard?: ProtocolExecutionGuard,
+): SimulationResult {
   const result: SimulationResult = { warnings, convergence };
 
   for (const analysis of compiled.analyses) {
@@ -229,6 +254,111 @@ export async function simulate(
   return result;
 }
 
+/** Analysis result fields a control-script run contributes to the top-level result. */
+const ANALYSIS_RESULT_FIELDS = [
+  'dc', 'dcSweep', 'transient', 'ac', 'noise', 'distortion', 'transferFunction', 'poleZero', 'sensitivity',
+] as const;
+
+/**
+ * Run a deck through its ngspice `.control` script.
+ *
+ * Mirrors ngspice batch mode: the script runs first (analysis commands, `run`,
+ * `alter`/`altermod`, ...), then, unless it ended with `quit`, the deck's own
+ * dot-card analyses run once more with every alteration applied. Each top-level
+ * field holds the latest run of its analysis type; `result.control.runs` keeps
+ * every script run.
+ */
+function simulateControlScript(
+  circuit: Circuit,
+  script: ControlScript,
+  options: SimulationOptions | undefined,
+  guard?: ProtocolExecutionGuard,
+): SimulationResult {
+  const warnings: SimulationWarning[] = [];
+  const convergence = createConvergenceTelemetry();
+  const deckAnalyses = [...circuit.analyses];
+  const deckPoleZero = [...circuit.poleZeroAnalyses];
+
+  const solve = (analyses: AnalysisDirective[], poleZero: PoleZeroAnalysis[]): SimulationResult => {
+    const savedAnalyses = circuit.analyses.splice(0, circuit.analyses.length, ...analyses);
+    const savedPoleZero = circuit.poleZeroAnalyses.splice(0, circuit.poleZeroAnalyses.length, ...poleZero);
+    let compiled: CompiledCircuit;
+    try {
+      compiled = circuit.compile(guard);
+    } finally {
+      circuit.analyses.splice(0, circuit.analyses.length, ...savedAnalyses);
+      circuit.poleZeroAnalyses.splice(0, circuit.poleZeroAnalyses.length, ...savedPoleZero);
+    }
+    // The compiled circuit shares the circuit's analysis arrays, which were just restored.
+    compiled = { ...compiled, analyses: [...analyses], poleZeroAnalyses: [...poleZero] };
+    validateCircuit(compiled, warnings);
+    const resolved = withNetlistOptions(compiled.simulationOptions, options);
+    return solveCompiledAnalyses(compiled, resolved, warnings, convergence, guard);
+  };
+
+  const runDeck = (): ControlHostRun[] => [
+    ...deckAnalyses.map(directive => ({ directive, result: solve([directive], []) })),
+    ...deckPoleZero.map(analysis => ({ directive: { type: 'pz' as const }, result: solve([], [analysis]) })),
+  ];
+
+  const unsupported = (command: string, reason: string, line: ControlSourceLine): UnsupportedControlCommandError =>
+    new UnsupportedControlCommandError(command, reason, line.lineNumber, line.text);
+
+  const host: ControlHost = {
+    runAnalysis(tokens, line) {
+      const directive = parseControlAnalysisCard(tokens, line.lineNumber, line.text);
+      return { directive, result: solve([directive], []) };
+    },
+    runDeck(line) {
+      if (deckAnalyses.length === 0 && deckPoleZero.length === 0) {
+        throw new ControlScriptError('run: the deck has no analysis cards', line.lineNumber, line.text);
+      }
+      return runDeck();
+    },
+    alterInstance(device, parameter, values, line) {
+      const reason = circuit.alterInstance(device, parameter, values);
+      if (reason !== undefined) throw unsupported('alter', reason, line);
+    },
+    alterModel(model, parameter, value, line) {
+      const reason = circuit.alterModel(model, parameter, value);
+      if (reason !== undefined) throw unsupported('altermod', reason, line);
+    },
+    parameterVector: (device, parameter) => circuit.parameterVector(device, parameter),
+    setOptions(tokens, line) {
+      circuit.setSimulationOptions(parseControlOptions(tokens, line.lineNumber, line.text));
+    },
+  };
+
+  const restore = circuit.snapshotControlState();
+  let outcome: ReturnType<typeof runControlScript>;
+  let finalRuns: ControlHostRun[];
+  try {
+    outcome = runControlScript(script, host);
+    finalRuns = outcome.quit ? [] : runDeck();
+  } finally {
+    // Restore even on script/solver errors and non-zero quit statuses.
+    restore();
+  }
+  const result: SimulationResult = {
+    warnings,
+    convergence,
+    control: { runs: outcome.runs, output: outcome.output, quit: outcome.quit },
+  };
+  for (const { result: run } of [...outcome.runs, ...finalRuns]) {
+    for (const field of ANALYSIS_RESULT_FIELDS) {
+      if (run[field] !== undefined) Object.assign(result, { [field]: run[field] });
+    }
+  }
+  const seen = new Set<string>();
+  result.warnings = warnings.filter(warning => {
+    const key = `${warning.type}:${warning.message}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  return result;
+}
+
 /**
  * Stream simulation results one timestep or frequency point at a time.
  *
@@ -266,6 +396,7 @@ export async function* simulateStream(
   } else {
     circuit = input;
   }
+  if (circuit.controlScript) throw new UnsupportedStreamAnalysisError('control');
   const compiled = circuit.compile();
   options = withNetlistOptions(compiled.simulationOptions, options);
   const warnings: SimulationWarning[] = [];
@@ -337,6 +468,7 @@ export async function* simulateStepStream(
   } else {
     circuit = input;
   }
+  if (circuit.controlScript) throw new UnsupportedStreamAnalysisError('control');
   const compiled = circuit.compile();
   options = withNetlistOptions(compiled.simulationOptions, options);
   const warnings: SimulationWarning[] = [];

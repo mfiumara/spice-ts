@@ -55,6 +55,7 @@ import {
   type PreparedXspiceInstance,
 } from './devices/xspice/compile.js';
 import type { XspiceInstanceCard, XspiceModelCard } from './parser/xspice-parser.js';
+import type { ControlScript } from './parser/control/script.js';
 import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
@@ -161,6 +162,71 @@ interface DeviceDescriptor {
   xspice?: XspiceInstanceCard;
   /** RF port of a V source (`portnum`/`z0`/`pwr`/`freq`). */
   port?: RFPort;
+}
+
+/** PULSE coefficients in ngspice `@vsrc[pulse]` order. */
+const PULSE_FIELDS = ['v1', 'v2', 'delay', 'rise', 'fall', 'width', 'period'] as const;
+
+type SourceDescriptorWaveform = Partial<SourceWaveform> & { dc?: number };
+
+/** DC value of a source waveform as written on its card. */
+function sourceDc(waveform: SourceDescriptorWaveform): number {
+  return waveform.type === 'dc' ? (waveform as { value: number }).value : waveform.dc ?? 0;
+}
+
+/**
+ * Apply ngspice `alter` to an independent source, producing the waveform the
+ * parser builds for the edited card (`DC x AC y` is an `ac`-typed waveform).
+ */
+function alterSourceWaveform(
+  descriptor: DeviceDescriptor,
+  key: string | undefined,
+  values: number[],
+): string | undefined {
+  const waveform: SourceDescriptorWaveform = descriptor.waveform ?? { type: 'dc', value: 0 };
+  if (key === 'PULSE') {
+    if (waveform.type !== 'pulse' || values.length !== PULSE_FIELDS.length) {
+      return `pulse of '${descriptor.name}' can be altered only on a PULSE source with ${PULSE_FIELDS.length} values`;
+    }
+    const pulse: Record<string, unknown> = { ...waveform };
+    PULSE_FIELDS.forEach((field, index) => { pulse[field] = values[index]; });
+    descriptor.waveform = pulse as SourceDescriptorWaveform;
+    return undefined;
+  }
+  if (values.length !== 1) return `parameter needs one value, got ${values.length}`;
+  const [value] = values;
+  if (key === undefined || key === 'DC') {
+    descriptor.waveform = waveform.type === 'dc'
+      ? { ...waveform, value } as SourceDescriptorWaveform
+      : { ...waveform, dc: value };
+    return undefined;
+  }
+  if (key === 'AC' || key === 'ACMAG' || key === 'ACPHASE') {
+    const field = key === 'ACPHASE' ? 'phase' : 'magnitude';
+    if (waveform.type === 'dc') {
+      descriptor.waveform = { type: 'ac', dc: sourceDc(waveform), magnitude: 0, phase: 0, [field]: value };
+    } else if (waveform.type === 'ac') {
+      descriptor.waveform = { ...waveform, [field]: value };
+    } else {
+      const ac = waveform.ac ?? { magnitude: 0, phase: 0 };
+      descriptor.waveform = { ...waveform, ac: { ...ac, [field]: value } };
+    }
+    return undefined;
+  }
+  return `parameter '${key.toLowerCase()}' of source '${descriptor.name}' cannot be altered`;
+}
+
+/** ngspice `@vsrc[param]` readout of a source input parameter, when spice-ts holds it. */
+function sourceParameter(waveform: SourceDescriptorWaveform | undefined, key: string): number[] | undefined {
+  const source: SourceDescriptorWaveform = waveform ?? { type: 'dc', value: 0 };
+  if (key === 'DC') return [sourceDc(source)];
+  if (key === 'PULSE' && source.type === 'pulse') {
+    return PULSE_FIELDS.map(field => (source as Record<string, number>)[field]);
+  }
+  if (key === 'AC' || key === 'ACMAG') {
+    return [source.type === 'ac' ? (source as { magnitude: number }).magnitude : source.ac?.magnitude ?? 0];
+  }
+  return undefined;
 }
 
 function behavioralDescriptor(
@@ -537,6 +603,7 @@ export class Circuit {
   private _initialConditions: NodeInitialState[] = [];
   private _nodeSets: NodeInitialState[] = [];
   private nodeSet = new Set<string>();
+  private _controlScript?: ControlScript;
 
   get analyses(): AnalysisDirective[] {
     return this._analyses;
@@ -573,6 +640,121 @@ export class Circuit {
       throw new InvalidCircuitError(`Invalid circuit temperature: ${celsius} C`);
     }
     this._temperature = celsius;
+  }
+
+  /**
+   * @internal The deck's ngspice `.control` script when it needs the
+   * control-language interpreter (set by the netlist parser).
+   */
+  get controlScript(): ControlScript | undefined {
+    return this._controlScript;
+  }
+
+  /** @internal */
+  setControlScript(script: ControlScript | undefined): void {
+    this._controlScript = script;
+  }
+
+  /**
+   * @internal Capture everything a `.control` script can change (`alter`,
+   * `altermod`, `option`) and return a function that puts it back, so running
+   * a script never leaves the caller's Circuit edited.
+   *
+   * `alterInstance`/`alterModel`/`setSimulationOptions` replace the affected
+   * fields with new objects rather than mutating them, so saving the field
+   * references is a complete snapshot.
+   */
+  snapshotControlState(): () => void {
+    const descriptors = this.descriptors.map(descriptor => ({
+      descriptor, value: descriptor.value, waveform: descriptor.waveform, params: descriptor.params,
+    }));
+    const models = Array.from(this._models.values(), model => ({ model, params: model.params }));
+    const simulationOptions = this._simulationOptions;
+    const temperature = this._temperature;
+    return () => {
+      for (const { descriptor, value, waveform, params } of descriptors) {
+        descriptor.value = value;
+        descriptor.waveform = waveform;
+        descriptor.params = params;
+      }
+      for (const { model, params } of models) model.params = params;
+      this._simulationOptions = simulationOptions;
+      this._temperature = temperature;
+    };
+  }
+
+  /**
+   * @internal ngspice `alter`: change an input parameter of a top-level
+   * device, with the same effect as editing its card. `parameter` undefined
+   * selects the primary value (resistance, capacitance, inductance, source DC).
+   *
+   * @returns undefined on success, or why the change is not supported
+   */
+  alterInstance(name: string, parameter: string | undefined, values: number[]): string | undefined {
+    const descriptor = this.descriptors.find(candidate => candidate.name.toUpperCase() === name.toUpperCase());
+    if (!descriptor) {
+      return name.includes('.')
+        ? `device '${name}' is inside a subcircuit; only top-level devices can be altered`
+        : `no device named '${name}'`;
+    }
+    const key = parameter?.toUpperCase();
+    const single = (): number | string => (values.length === 1 ? values[0] : `parameter needs one value, got ${values.length}`);
+    const primary: Record<string, string[]> = { R: ['R', 'RESISTANCE'], C: ['C', 'CAPACITANCE'], L: ['L', 'INDUCTANCE'] };
+    if (descriptor.type in primary) {
+      if (key !== undefined && !primary[descriptor.type].includes(key)) {
+        return `parameter '${parameter}' of ${descriptor.type} device '${name}' cannot be altered`;
+      }
+      const value = single();
+      if (typeof value === 'string') return value;
+      descriptor.value = value;
+      return undefined;
+    }
+    if (descriptor.type === 'V' || descriptor.type === 'I') {
+      return alterSourceWaveform(descriptor, key, values);
+    }
+    if (['M', 'Q', 'D', 'J'].includes(descriptor.type) && key !== undefined) {
+      const params = descriptor.params ?? {};
+      if (!(key in params) && !(descriptor.type === 'M' && (key === 'W' || key === 'L'))) {
+        return `parameter '${parameter}' of ${descriptor.type} device '${name}' cannot be altered`;
+      }
+      const value = single();
+      if (typeof value === 'string') return value;
+      descriptor.params = { ...params, [key]: value };
+      return undefined;
+    }
+    return `${descriptor.type} device '${name}'${parameter ? ` parameter '${parameter}'` : ''} cannot be altered`;
+  }
+
+  /**
+   * @internal ngspice `altermod`: set a `.model` parameter, with the same effect
+   * as writing it on the model card.
+   *
+   * @returns undefined on success, or why the change is not supported
+   */
+  alterModel(name: string, parameter: string, value: number): string | undefined {
+    const model = this._models.get(name);
+    if (!model) return `no top-level .model named '${name}'`;
+    model.params = { ...model.params, [parameter.toUpperCase()]: value };
+    return undefined;
+  }
+
+  /**
+   * @internal ngspice `@name[parameter]` readout of an input parameter of a
+   * top-level device or `.model`, or undefined when spice-ts cannot report it
+   * (operating-point quantities, internal parameters, subcircuit devices).
+   */
+  parameterVector(name: string, parameter: string): number[] | undefined {
+    const key = parameter.toUpperCase();
+    const descriptor = this.descriptors.find(candidate => candidate.name.toUpperCase() === name.toUpperCase());
+    if (descriptor) {
+      const primary: Record<string, string[]> = { R: ['R', 'RESISTANCE'], C: ['C', 'CAPACITANCE'], L: ['L', 'INDUCTANCE'] };
+      if (primary[descriptor.type]?.includes(key)) return descriptor.value === undefined ? undefined : [descriptor.value];
+      if (descriptor.type === 'V' || descriptor.type === 'I') return sourceParameter(descriptor.waveform, key);
+      const value = descriptor.params?.[key];
+      return value === undefined ? undefined : [value];
+    }
+    const value = this._models.get(name)?.params[key];
+    return value === undefined ? undefined : [value];
   }
 
   get initialConditions(): readonly NodeInitialState[] {
@@ -1196,7 +1378,7 @@ export class Circuit {
   addAnalysis(type: 'tf', params:
     | { outputNode: string; inputSource: string }
     | { outputSource: string; inputSource: string }): void;
-  addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur' | 'vol'; mode: 'pol' | 'pz' }): void;
+  addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur' | 'vol'; mode: 'pol' | 'zer' | 'pz' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'dc' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'ac'; variation: 'dec'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
@@ -1339,7 +1521,7 @@ export class Circuit {
           outputPositive: params!.outputPositive as string,
           outputNegative: params!.outputNegative as string,
           inputType: params!.inputType as 'cur' | 'vol',
-          mode: params!.mode as 'pol' | 'pz',
+          mode: params!.mode as PoleZeroAnalysis['mode'],
         };
         assertSupportedPoleZero(analysis);
         this._poleZeroAnalyses.push(analysis);
@@ -1438,6 +1620,8 @@ export class Circuit {
     const lines: string[] = ['* spice-ts generated netlist'];
 
     const optionNames: Array<[keyof SimulationOptions, string, (value: unknown) => string]> = [
+      ['bypass', 'bypass', String],
+      ['rampTime', 'ramptime', String],
       ['abstol', 'abstol', String],
       ['vntol', 'vntol', String],
       ['reltol', 'reltol', String],
