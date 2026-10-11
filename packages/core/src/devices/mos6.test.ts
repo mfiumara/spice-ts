@@ -92,6 +92,41 @@ M1 d g 0 b N6X L=2u W=10u
     }
   });
 
+  // Issue #468 / #461: the Meyer gate and bulk-junction charges used to go
+  // through the generic C(v) trapezoidal history (C at the new iterate applied
+  // to the old voltages). With VIN pinning the gate, that injected an error
+  // into the trapezoidal current recurrence that never decayed: i(vin) flipped
+  // by ±16.6 uA every step (ngspice-47: a smooth -0.6 .. -1.2 uA). The charges
+  // are now integrated with NIintegrate state as mos6load.c does.
+  it('integrates the gate charge so i(vin) matches ngspice-47 without trapezoidal ringing', async () => {
+    const result = await simulate(SIMPLE_INVERTER);
+    const transient = result.transient!;
+    const current = transient.current('VIN');
+    // ngspice-47 i(vin) on the identical deck (`linearize`d, numdgt=15) every
+    // 7.5 ns, skipping the 60 ns and 67.5 ns points on the switching edge
+    // where both engines carry timestep error.
+    const reference: Array<[number, number]> = [
+      [7.5e-9, -6.22383930e-7], [15e-9, -6.41782346e-7], [22.5e-9, -7.67481646e-7],
+      [30e-9, -8.26781472e-7], [37.5e-9, -8.84801386e-7], [45e-9, -9.73339503e-7],
+      [52.5e-9, -1.17388163e-6], [75e-9, -8.47557230e-7], [82.5e-9, -8.05869409e-7],
+      [90e-9, -7.81456473e-7], [97.5e-9, -7.63068767e-7], [105e-9, -7.47945343e-7],
+      [112.5e-9, -7.34401514e-7], [120e-9, -7.21134035e-7], [127.5e-9, -7.06297323e-7],
+      [135e-9, -6.86906037e-7], [142.5e-9, -6.76591932e-7], [150e-9, -6.84324616e-7],
+    ];
+    for (const [time, expected] of reference) {
+      const actual = interpolate(transient.time, current, time);
+      // 10 nA is ~1.3 % of the gate current; main was off by up to 16.6 uA.
+      expect(Math.abs(actual - expected), `i(vin) at ${time * 1e9} ns`).toBeLessThan(10e-9);
+    }
+    // Undamped trapezoidal ringing reverses the slope at nearly every point
+    // (586 of 590 on main). ngspice-47 reverses on 70 of its 308 points.
+    let reversals = 0;
+    for (let index = 2; index < current.length; index++) {
+      if ((current[index] - current[index - 1]) * (current[index - 1] - current[index - 2]) < 0) reversals++;
+    }
+    expect(reversals).toBeLessThan(0.3 * current.length);
+  });
+
   it('rejects unsupported level-6 series resistances instead of ignoring them', async () => {
     await expect(simulate(`MOS6 RD
 VD d 0 5
