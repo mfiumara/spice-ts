@@ -17,6 +17,7 @@ import {
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { Inductor } from '../devices/inductor.js';
 import { maxTimestepOption } from './max-timestep.js';
+import type { DeviceModel } from '../devices/device.js';
 
 /**
  * Smallest allowed timestep (femtosecond). Must be small enough that LTE can
@@ -62,6 +63,12 @@ const START_BREAK_GAP_FRACTION = 0.1;
 
 /** Keep implicit-breakpoint recovery local while still crossing a vanished branch. */
 const IMPLICIT_BREAK_DT_CUT = 5;
+
+/**
+ * A trial step whose charge truncation bound falls below this fraction of the
+ * step is rejected (ngspice dctran.c: `newdelta > .9 * CKTdelta` accepts).
+ */
+const CHARGE_LTE_ACCEPT_FRACTION = 0.9;
 
 /** Assembler stamp-pass kind of the trapezoidal history restamp (stampPrevB). */
 const HISTORY_STAMP_PASS = 1;
@@ -151,6 +158,8 @@ class TransientSimImpl implements TransientSim {
   private convergenceTelemetry: ConvergenceTelemetry;
   private readonly useStaticCurrentHistory: boolean;
   private readonly useDampedInductiveRecovery: boolean;
+  /** Devices with an ngspice DEVtrunc charge truncation-error hook. */
+  private readonly truncatingDevices: readonly DeviceModel[];
 
   private time = 0;
   private dt: number;
@@ -158,6 +167,8 @@ class TransientSimImpl implements TransientSim {
   private historyWorkspace: Float64Array | undefined;
   private secondPrevSol: Float64Array | undefined;
   private prevDt: number;
+  /** Accepted step before {@link prevDt} (ngspice CKTdeltaOld[2]). */
+  private prevPrevDt: number;
   private integrationMethod: IntegrationMethod;
   private trapNrRetries = 0;
   private lteRejectCount = 0;
@@ -197,8 +208,10 @@ class TransientSimImpl implements TransientSim {
     ));
     this.useDampedInductiveRecovery = compiled.devices.some(device => device instanceof Inductor)
       && compiled.devices.some(device => device.isNonlinear);
+    this.truncatingDevices = compiled.devices.filter(device => device.truncateTransientStep !== undefined);
     this.dt = Math.min(config.timestep, config.maxTimestep);
     this.prevDt = this.dt;
+    this.prevPrevDt = this.dt;
     this.integrationMethod = options.integrationMethod;
 
     this.assembler = this.createAssembler();
@@ -337,9 +350,10 @@ class TransientSimImpl implements TransientSim {
       const sol = result.solution;
       const lteVerified = this.lteChecked(actualDt);
       const lteRatio = this.checkLTE(sol, prevSol, actualDt);
-      if (lteRatio > 1) {
-        const factor = Math.max(0.25, 0.9 / Math.sqrt(lteRatio));
-        this.dt = Math.max(actualDt * factor, MIN_TIMESTEP);
+      const chargeBound = this.chargeTruncationTimestep(actualDt);
+      if (lteRatio > 1 || chargeBound < CHARGE_LTE_ACCEPT_FRACTION * actualDt) {
+        const factor = lteRatio > 1 ? Math.max(0.25, 0.9 / Math.sqrt(lteRatio)) : 1;
+        this.dt = Math.max(Math.min(actualDt * factor, chargeBound), MIN_TIMESTEP);
         this.assembler.solution.set(prevSol);
         this.lteRejectCount++;
         this.progress.lteRejected();
@@ -358,6 +372,7 @@ class TransientSimImpl implements TransientSim {
         this.stampPrevB();
       }
       this.secondPrevSol = prevSol;
+      this.prevPrevDt = this.prevDt;
       this.prevDt = actualDt;
       this.time = nextTime;
       this.orderOnePending = false;
@@ -402,7 +417,8 @@ class TransientSimImpl implements TransientSim {
       // the /POST_BREAK_DT_CUT at the top of the next iteration starts from the
       // raw step size, not an already-doubled value. The next advance() will cut
       // this.dt by POST_BREAK_DT_CUT and let LTE regrow from there.
-      const dtBase = this.justCrossedBreakpoint ? actualDt : actualDt * growFactor;
+      // ngspice CKTtrunc: the next step is at most the charge truncation bound.
+      const dtBase = this.justCrossedBreakpoint ? actualDt : Math.min(actualDt * growFactor, chargeBound);
       this.dt = Math.min(dtBase, this.config.maxTimestep, remaining);
 
       return this.buildStep(sol);
@@ -425,6 +441,7 @@ class TransientSimImpl implements TransientSim {
     this.time = 0;
     this.dt = Math.min(this.config.timestep, this.config.maxTimestep);
     this.prevDt = this.dt;
+    this.prevPrevDt = this.dt;
     this.integrationMethod = this.options.integrationMethod;
     this.trapNrRetries = 0;
     this.prevB = undefined;
@@ -572,6 +589,33 @@ class TransientSimImpl implements TransientSim {
       }
     }
     return maxRatio;
+  }
+
+  /**
+   * ngspice CKTtrunc over the devices that integrate their own charges: the
+   * smallest next timestep CKTterr allows on any device charge at the
+   * converged trial solution held by the assembler. Infinity when no device
+   * bounds the step. Gated like the voltage LTE so the reject-bypass and the
+   * femtosecond floor still terminate stiff shrink loops.
+   */
+  private chargeTruncationTimestep(dt: number): number {
+    if (
+      this.truncatingDevices.length === 0
+      || dt <= MIN_LTE_TIMESTEP
+      || this.lteRejectCount >= MAX_LTE_REJECTS_BEFORE_BYPASS
+    ) {
+      return Infinity;
+    }
+    const ctx = this.assembler.getStampContext();
+    const { reltol, abstol, chgtol, trtol } = this.options;
+    const truncation = {
+      deltas: [dt, this.prevDt, this.prevPrevDt] as const, reltol, abstol, chgtol, trtol,
+    };
+    let bound = Infinity;
+    for (const device of this.truncatingDevices) {
+      bound = Math.min(bound, device.truncateTransientStep!(ctx, truncation));
+    }
+    return bound;
   }
 
   private buildStep(solution: Float64Array): TransientStep {

@@ -1,4 +1,6 @@
-import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import type {
+  ChargeIntegration, ChargeTruncation, DeviceModel, StampContext,
+} from './device.js';
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 
 export interface JFETParams {
@@ -167,6 +169,11 @@ export class JFET implements DeviceModel {
 
   resetTransient(): void {
     this.charges.reset();
+  }
+
+  /** ngspice JFETtrunc: qgs and qgd. */
+  truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
+    return this.charges.truncationTimestep(truncation, () => this.acceptTransientStep(ctx));
   }
 
   private stampGateCharge(
