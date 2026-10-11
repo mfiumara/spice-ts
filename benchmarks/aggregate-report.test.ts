@@ -131,6 +131,15 @@ describe('aggregate report artifact verification', () => {
     assert.equal(vbicAc.spiceTs.status, 'success');
     assert.deepEqual(vbicAc.comparisons.map((comparison: { analysis: string }) => comparison.analysis), ['ac', 'pz']);
     assert.ok(vbicAc.comparisons[0].metrics.signals['i(vmeas)'].relativeError.max < 1e-6);
+    // Pencil-eigenvalue .pz (#451, PR #466): the same 7 poles and 6 zeros as ngspice, each within 1e-6 relative.
+    const vbicPz = Object.entries(vbicAc.comparisons[1].metrics.signals as Record<string, { status: string; relativeError: { max: number } }>);
+    assert.equal(vbicPz.filter(([name]) => name.startsWith('v(pole(')).length, 7);
+    assert.equal(vbicPz.filter(([name]) => name.startsWith('v(zero(')).length, 6);
+    for (const [name, signal] of vbicPz) {
+      assert.equal(signal.status, 'compared', name);
+      assert.ok(signal.relativeError.max < 1e-6, `${name} relative max ${signal.relativeError.max}`);
+    }
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #466') && text.includes('PR #463') && text.includes('PR #471')));
     for (const key of ['ngspice/mos6-inverter-transient', 'ngspice/mos6-simple-inverter-transient', 'classic/mos6-inverter-chain']) {
       const mos6 = report.fixtures.find((fixture: { key: string }) => fixture.key === key);
       const worst = Math.max(...Object.values(mos6.comparisons[0].metrics.signals as Record<string, { absoluteError: { max: number } }>).map(signal => signal.absoluteError.max));
@@ -170,7 +179,7 @@ describe('aggregate report artifact verification', () => {
     const tstart = report.gapIssues.find((issue: { url: string }) => issue.url === 'https://github.com/mfiumara/spice-ts/issues/432');
     assert.match(tstart.scope, /closed by PR #440/);
     const mesaTran = mesa.comparisons.find((comparison: { analysis: string }) => comparison.analysis === 'tran');
-    assert.deepEqual(mesaTran.metrics.grid, { spiceTsPoints: 2089, ngspicePoints: 201, alignedPoints: 2042, excludedOutOfRange: 47 });
+    assert.deepEqual(mesaTran.metrics.grid, { spiceTsPoints: 3861, ngspicePoints: 201, alignedPoints: 3838, excludedOutOfRange: 23 });
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #440') && text.includes('PR #443') && text.includes('PR #442')));
     assert.ok(!report.comparisonToPrevious.statusTransitions.some((transition: { explanation: string }) => /3219 of those are before TSTART/.test(transition.explanation)));
     assert.deepEqual(report.comparisonToPrevious.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
@@ -185,7 +194,7 @@ describe('aggregate report artifact verification', () => {
 
     assert.deepEqual(report.provenance, {
       fixtureTreeSha256: '13b4675cfb97766fc7caed79d023ca514840880d17cb924c0e70561ff8b82e00',
-      sourcesSha256: '0a8b490f0334f800301b761eb8f15692cde9ea6d3b7ab234ec9537192aff6113',
+      sourcesSha256: 'b88cb2bbace737f87667934aaf2d54ce135c6a727419752fd39eaf2bc8a4de7a',
     });
   });
 
@@ -194,12 +203,12 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
-    assert.equal(report.matchedPointEnvelope.comparedSignals, 960);
-    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 924);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 1251172988128.5068);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 1251172988128.5068);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 321200768925.4484);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 6400132539.273393);
+    assert.equal(report.matchedPointEnvelope.comparedSignals, 969);
+    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 933);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 13716.60302734375);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 13716.60302734375);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 248284946174.52246);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 5233588211.050267);
   });
 
   it('commits runtime sums derived from all 100 engine receipts', async () => {
