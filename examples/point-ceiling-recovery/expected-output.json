@@ -66,7 +66,7 @@
     },
     "inputSha256": "a777b736347435f90a17d26ebdf290f112533472427cf70cb77f1a8dded930d8",
     "resultSha256": "f8699d1ee0618dac9da7f1e00afb80dc1bdfc2dee366ddf708d0a1553a12ca5d",
-    "stableTerminalSha256": "2d67cb2f3791c8857027218473d095bb26d8c5cda98822973466a49df5b8523f",
+    "stableTerminalSha256": "fe0550533eb457c0defa688bf0cd1c71f01c45ab7f9195817c7db242b7f361cb",
     "resultPointCount": 4,
     "sameCursorReplay": true,
     "deterministicSecondRun": true
@@ -140,7 +140,7 @@
         "reltol": 0.001,
         "maxIterations": 100,
         "maxTransientIterations": 50,
-        "maxTimestep": 1.7976931348623157e+308,
+        "maxTimestep": 0,
         "integrationMethod": "trapezoidal",
         "trtol": 7,
         "gmin": 0,

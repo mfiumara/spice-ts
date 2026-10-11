@@ -1,5 +1,7 @@
 export { simulate, simulateStream, simulateStepStream, createSimulator } from './simulate.js';
-export { simulateProtocolV1, validateProtocolV1, mapProtocolErrorV1 } from './protocol/adapter.js';
+export {
+  simulateProtocolV1, validateProtocolV1, mapProtocolErrorV1, estimateProtocolResultPointsV1,
+} from './protocol/adapter.js';
 export type { ProtocolValidationResultV1 } from './protocol/adapter.js';
 export { executeProtocolV1, protocolCapabilitiesV1 } from './protocol/envelopes.js';
 export type { ProtocolEnvelopeExecutionOptionsV1 } from './protocol/envelopes.js';

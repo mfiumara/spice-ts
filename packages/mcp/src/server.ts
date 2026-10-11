@@ -2,11 +2,9 @@ import { mapProtocolErrorV1, simulateProtocolV1, validateProtocolV1 } from '@spi
 import { commonSchemaV1, sha256CanonicalJson } from '@spice-ts/protocol';
 import type {
   AnalysisResultV1,
-  AnalysisV1,
   JsonObject,
   JsonValue,
   PartialAnalysisV1,
-  ResolvedOptionsV1,
   RunMetadataV1,
   SimulationEventV1,
   SimulationReadDataV1,
@@ -19,6 +17,8 @@ import type {
 import type { CallToolResult, Tool } from '@modelcontextprotocol/sdk/types.js';
 import { createRequire } from 'node:module';
 import { Worker } from 'node:worker_threads';
+import { estimatedResultPoints, requestPlan, resolvedOptions } from './request-plan.js';
+import type { RequestPlan } from './request-plan.js';
 
 export interface McpLimits {
   maxDocumentBytes: number;
@@ -297,7 +297,7 @@ async function executeToolWithStore(
 
     const request = toolRequest(args);
     const effective = effectiveLimits(request, limits);
-    enforceRequestBounds(request, effective);
+    const plan = await boundedRequestPlan(request, effective);
     throwIfCancelled(options.signal);
 
     if (name === 'spice_validate') {
@@ -312,7 +312,7 @@ async function executeToolWithStore(
 
     const bounded = boundedRequest(request, effective);
     if (name === 'spice_simulation_start') {
-      return success(streamStore.start(bounded, effective, options));
+      return success(streamStore.start(bounded, plan, effective, options));
     }
     const result = options.simulate
       ? await boundedCall(() => options.simulate!(bounded), effective.maxWallTimeMs, options.signal)
@@ -332,6 +332,7 @@ interface StreamReadArgs {
 
 interface StreamJob {
   request: SimulationRequestV1;
+  plan: RequestPlan;
   state:
     | { status: 'pending' }
     | { status: 'ready'; result: SimulationResultV1 }
@@ -374,7 +375,12 @@ class StreamStore {
     } as typeof capabilities;
   }
 
-  start(request: SimulationRequestV1, limits: McpLimits, options: ToolExecutionOptions): JsonObject {
+  start(
+    request: SimulationRequestV1,
+    plan: RequestPlan,
+    limits: McpLimits,
+    options: ToolExecutionOptions,
+  ): JsonObject {
     if (this.jobs.size >= MAX_RETAINED_STREAM_JOBS) {
       const completed = [...this.jobs].find(([, job]) => job.terminal !== undefined);
       if (completed) this.delete(completed[0], completed[1]);
@@ -389,6 +395,7 @@ class StreamStore {
     const cursor = streamCursor(jobId, 0);
     const job: StreamJob = {
       request,
+      plan,
       state: { status: 'pending' },
       controller: new AbortController(),
       cursorOffsets: new Map([[cursor, 0]]),
@@ -461,7 +468,7 @@ class StreamStore {
     } else {
       data = {
         status: 'complete', events, nextCursor: null,
-        terminal: successTerminal(args.jobId, job.request, job.state.result),
+        terminal: successTerminal(args.jobId, job.request, job.plan, job.state.result),
       };
       job.terminal = data;
     }
@@ -711,15 +718,16 @@ function partialAnalyses(events: SimulationEventV1[]): PartialAnalysisV1[] {
 function successTerminal(
   requestId: string,
   request: SimulationRequestV1,
+  plan: RequestPlan,
   result: SimulationResultV1,
 ): SuccessEnvelopeV1<SimulationResultV1> {
   return {
     apiVersion: '1', ok: true, requestId, data: result, diagnostics: [],
-    metadata: runMetadata(request, sha256CanonicalJson(result)),
+    metadata: runMetadata(request, plan, sha256CanonicalJson(result)),
   };
 }
 
-function runMetadata(request: SimulationRequestV1, resultSha256: string): RunMetadataV1 {
+function runMetadata(request: SimulationRequestV1, plan: RequestPlan, resultSha256: string): RunMetadataV1 {
   return {
     protocolVersion: '1',
     ...(request.input.format === 'spice-ts' ? { nativeSchemaVersion: '1.0' as const } : {}),
@@ -727,25 +735,12 @@ function runMetadata(request: SimulationRequestV1, resultSha256: string): RunMet
     engineBuildId: ENGINE_BUILD_ID,
     backend: 'spice-ts-js',
     backendVersion: PACKAGE_VERSION,
-    resolvedOptions: resolvedOptions(request),
+    resolvedOptions: resolvedOptions(request, plan),
     inputSha256: sha256CanonicalJson(request.input),
     resultSha256,
     runtime: { family: 'node', version: process.versions.node },
     architecture: process.arch,
     determinism: request.options?.determinism ?? 'strict',
-  };
-}
-
-function resolvedOptions(request: SimulationRequestV1): ResolvedOptionsV1 {
-  const options = request.options;
-  return {
-    backend: 'spice-ts-js', abstol: options?.abstol ?? 1e-12, vntol: options?.vntol ?? 1e-6,
-    reltol: options?.reltol ?? 1e-3, maxIterations: options?.maxIterations ?? 100,
-    maxTransientIterations: options?.maxTransientIterations ?? 50,
-    maxTimestep: options?.maxTimestep ?? Number.MAX_VALUE,
-    integrationMethod: options?.integrationMethod ?? 'trapezoidal', trtol: options?.trtol ?? 7,
-    gmin: options?.gmin ?? 0, determinism: options?.determinism ?? 'strict',
-    ...(options?.limits ? { limits: options.limits } : {}),
   };
 }
 
@@ -797,69 +792,14 @@ function boundedRequest(request: SimulationRequestV1, limits: McpLimits): Simula
   };
 }
 
-function enforceRequestBounds(request: SimulationRequestV1, limits: McpLimits): void {
+async function boundedRequestPlan(request: SimulationRequestV1, limits: McpLimits): Promise<RequestPlan> {
   const documentBytes = Buffer.byteLength(JSON.stringify(request.input));
   enforceMaximum('maxDocumentBytes', limits.maxDocumentBytes, documentBytes, 'validation');
 
-  const analyses = requestAnalyses(request);
-  enforceMaximum('maxAnalyses', limits.maxAnalyses, analyses.length, 'validation');
-  enforceMaximum('maxResultPoints', limits.maxResultPoints, estimatedPoints(analyses), 'validation');
-}
-
-function requestAnalyses(request: SimulationRequestV1): AnalysisV1[] {
-  if (request.input.format === 'spice-ts') return request.input.document.analyses;
-  if (request.input.format !== 'spice') return request.input.analyses;
-
-  const analyses: AnalysisV1[] = [];
-  for (const sourceLine of request.input.source.split(/\r?\n/)) {
-    const tokens = sourceLine.trim().split(/\s+/);
-    switch (tokens[0]?.toLowerCase()) {
-      case '.op': analyses.push({ type: 'op' }); break;
-      case '.dc': analyses.push({ type: 'dc', source: tokens[1] ?? '', start: numberToken(tokens[2]), stop: numberToken(tokens[3]), step: numberToken(tokens[4]) }); break;
-      case '.tran': analyses.push({ type: 'tran', timestep: numberToken(tokens[1]), stopTime: numberToken(tokens[2]), startTime: tokens[3] === undefined ? undefined : numberToken(tokens[3]) }); break;
-      case '.ac': analyses.push({ type: 'ac', variation: acVariation(tokens[1]), points: numberToken(tokens[2]), startFreq: numberToken(tokens[3]), stopFreq: numberToken(tokens[4]) }); break;
-    }
-  }
-  return analyses;
-}
-
-function numberToken(value: string | undefined): number {
-  if (value === undefined) return Number.NaN;
-  const match = /^([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?)([a-z]+)?$/i.exec(value);
-  if (!match) return Number.NaN;
-  const suffix = match[2]?.toLowerCase() ?? '';
-  const multiplier: Record<string, number> = {
-    '': 1, t: 1e12, g: 1e9, meg: 1e6, k: 1e3, m: 1e-3,
-    u: 1e-6, n: 1e-9, p: 1e-12, f: 1e-15,
-  };
-  const scale = multiplier[suffix];
-  return scale === undefined ? Number.NaN : Number(match[1]) * scale;
-}
-
-function acVariation(value: string | undefined): 'dec' | 'oct' | 'lin' {
-  const normalized = value?.toLowerCase();
-  return normalized === 'oct' || normalized === 'lin' ? normalized : 'dec';
-}
-
-function estimatedPoints(analyses: AnalysisV1[]): number {
-  return analyses.reduce((total, analysis) => {
-    switch (analysis.type) {
-      case 'op': return total + 1;
-      case 'dc': return total + linearPointCount(analysis.start, analysis.stop, analysis.step);
-      case 'tran': return total + linearPointCount(analysis.startTime ?? 0, analysis.stopTime, analysis.timestep);
-      case 'ac': {
-        if (analysis.variation === 'lin') return total + analysis.points;
-        const base = analysis.variation === 'dec' ? 10 : 2;
-        const intervals = Math.max(0, Math.log(analysis.stopFreq / analysis.startFreq) / Math.log(base));
-        return total + Math.floor(intervals * analysis.points + 1 + 1e-12);
-      }
-    }
-  }, 0);
-}
-
-function linearPointCount(start: number, stop: number, step: number): number {
-  if (!Number.isFinite(start) || !Number.isFinite(stop) || !Number.isFinite(step) || step === 0) return 0;
-  return Math.max(0, Math.floor(Math.abs((stop - start) / step) + 1 + 1e-12));
+  const plan = await requestPlan(request);
+  enforceMaximum('maxAnalyses', limits.maxAnalyses, plan.analyses.length, 'validation');
+  enforceMaximum('maxResultPoints', limits.maxResultPoints, estimatedResultPoints(plan), 'validation');
+  return plan;
 }
 
 function enforceResultBounds(result: SimulationResultV1, limits: McpLimits): void {
