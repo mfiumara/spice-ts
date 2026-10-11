@@ -16,6 +16,8 @@ import { BJT } from './devices/bjt.js';
 import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
 import { MOS6, resolveMOS6Model } from './devices/mos6.js';
+import { VDMOS } from './devices/vdmos.js';
+import { isVdmosModelType, resolveVdmosModel } from './devices/vdmos-model.js';
 import { JFET, resolveNJFETParams } from './devices/jfet.js';
 import { HFET1 } from './devices/hfet1.js';
 import { resolveHFET1Instance } from './devices/hfet1-model.js';
@@ -314,6 +316,21 @@ function bjtInstanceDescriptorParams(
 /** ngspice-47 BJT/VBIC instance scale: AREA * M (both default to 1). */
 function bjtInstanceScale(params: Record<string, number> | undefined): number {
   return (params?.AREA ?? 1) * (params?.M ?? 1);
+}
+
+/** VDMOS instance parameters (vdmos.c): M, TEMP and DTEMP are supported. */
+function vdmosInstanceParams(desc: DeviceDescriptor): { M?: number; TEMP?: number; DTEMP?: number } {
+  const { M, TEMP, DTEMP, ...rest } = desc.params ?? {};
+  const unsupported = Object.keys(rest);
+  if (unsupported.length > 0) {
+    throw new InvalidCircuitError(
+      `VDMOS '${desc.name}' has unsupported instance parameters: ${unsupported.join(', ')}`,
+    );
+  }
+  if (M !== undefined && !(M > 0)) {
+    throw new InvalidCircuitError(`VDMOS '${desc.name}' multiplier M must be positive`);
+  }
+  return { M, TEMP, DTEMP };
 }
 
 function isPositiveFinite(value: number | undefined): value is number {
@@ -1419,6 +1436,14 @@ export class Circuit {
         }
         case 'M': {
           const model = this.requireModel('MOSFET', desc);
+          if (isVdmosModelType(model.type)) {
+            // Nodes were expanded to [D, G, S, D', G', S', B'] by expandPassiveParasitics.
+            const { model: vdmosModel, warnings } = resolveVdmosModel(model);
+            devices.push(new VDMOS(
+              desc.name, nodeIndices, vdmosModel, vdmosInstanceParams(desc), warnings,
+            ));
+            break;
+          }
           const modelParams = model.params;
           const polarity = model.type === 'PMOS' ? -1 : 1;
           const level = modelParams.LEVEL ?? 1;
@@ -1762,6 +1787,14 @@ export class Circuit {
         continue;
       }
 
+      if (desc.type === 'M') {
+        const model = this._models.get(desc.modelName ?? '');
+        if (model && isVdmosModelType(model.type)) {
+          result.push(this.expandVdmosDescriptor(desc, model));
+          continue;
+        }
+      }
+
       if (desc.type === 'Z') {
         const modelName = desc.modelName!;
         const model = this._models.get(modelName);
@@ -1793,6 +1826,35 @@ export class Circuit {
     }
 
     return result;
+  }
+
+  /**
+   * Give a VDMOS instance its inner nodes (vdmosset.c): D'/G'/S' behind
+   * RD/RG/RS and the body diode anode B' behind RB, each equal to the external
+   * node when its resistance is zero. The resistors are stamped by the device,
+   * because quasi saturation makes RD bias dependent.
+   */
+  private expandVdmosDescriptor(desc: DeviceDescriptor, model: ModelParams): DeviceDescriptor {
+    if (desc.nodes.length !== 3) {
+      throw new InvalidCircuitError(
+        `VDMOS '${desc.name}' has ${desc.nodes.length} terminals; only the 3-terminal (D G S) form is supported`
+        + ' (the 5-terminal thermal form needs the self-heating network, which is not implemented)',
+      );
+    }
+    const { model: resolved } = resolveVdmosModel(model);
+    const [drain, gate, source] = desc.nodes;
+    const inner = (resistance: number, terminal: string, suffix: string) =>
+      (resistance > 0 ? internalNodeName(desc.name, suffix) : terminal);
+    return {
+      ...desc,
+      nodes: [
+        drain, gate, source,
+        inner(resolved.rd, drain, 'drain'),
+        inner(resolved.rg, gate, 'gate'),
+        inner(resolved.rs, source, 'source'),
+        inner(resolved.diode.rb, source, 'body_diode'),
+      ],
+    };
   }
 
   private expandCapacitorDescriptor(

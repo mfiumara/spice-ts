@@ -10,6 +10,7 @@ export const SUPPORTED_MODEL_TYPES: ReadonlySet<string> = new Set([
   'NPN', 'PNP',
   'NJF',
   'NMOS', 'PMOS',
+  'VDMOS', 'VDMOSN', 'VDMOSP',
   'NHFET', 'NMF',
   'C', 'L',
   'LTRA',
@@ -17,7 +18,7 @@ export const SUPPORTED_MODEL_TYPES: ReadonlySet<string> = new Set([
 
 /**
  * Thrown when a `.model` card declares a type that no spice-ts device
- * implements (for example `VDMOS`, `SW` or `PJF`).
+ * implements (for example `SW`, `CSW` or `PJF`).
  */
 export class UnsupportedModelTypeError extends ParseError {
   /** Stable machine-readable error code. */

@@ -38,7 +38,7 @@ Requires Node.js ≥ 20.
 - **DC sweep** — `.dc` transfer curves and I-V characteristics
 - **Transient analysis** — backward Euler and trapezoidal integration with adaptive timestep
 - **AC small-signal** — frequency sweep (dec/oct/lin) via complex LU solve
-- **Device models** — R, C, L, V, I, Diode (Shockley), BJT (Ebers-Moll NPN/PNP), MOSFET (Level 1 Shichman-Hodges NMOS/PMOS), BSIM3v3 (LEVEL=49)
+- **Device models** — R, C, L, V, I, Diode (Shockley), BJT (Ebers-Moll NPN/PNP), MOSFET (Level 1 Shichman-Hodges NMOS/PMOS), BSIM3v3 (LEVEL=49), VDMOS power MOSFET (ngspice `vdmos` nchan/pchan with body diode)
 - **Passive parasitics** — capacitor ESR/ESL/leakage and inductor DCR/core-loss/winding-capacitance expansion for AC and transient analysis
 - **Controlled sources** — VCVS (E), VCCS (G), CCVS (H), CCCS (F) with DC, AC, and subcircuit support
 - **Sparse solver** — Gilbert-Peierls LU with symbolic/numeric split, typed-array stamping, batch MOSFET evaluation. Competitive with ngspice-WASM on DC, AC, and nonlinear circuits
