@@ -314,8 +314,16 @@ function simulateControlScript(
     },
   };
 
-  const outcome = runControlScript(script, host);
-  const finalRuns = outcome.quit ? [] : runDeck();
+  const restore = circuit.snapshotControlState();
+  let outcome: ReturnType<typeof runControlScript>;
+  let finalRuns: ControlHostRun[];
+  try {
+    outcome = runControlScript(script, host);
+    finalRuns = outcome.quit ? [] : runDeck();
+  } finally {
+    // Restore even on script/solver errors and non-zero quit statuses.
+    restore();
+  }
   const result: SimulationResult = {
     warnings,
     convergence,

@@ -597,6 +597,34 @@ export class Circuit {
   }
 
   /**
+   * @internal Capture everything a `.control` script can change (`alter`,
+   * `altermod`, `option`) and return a function that puts it back, so running
+   * a script never leaves the caller's Circuit edited.
+   *
+   * `alterInstance`/`alterModel`/`setSimulationOptions` replace the affected
+   * fields with new objects rather than mutating them, so saving the field
+   * references is a complete snapshot.
+   */
+  snapshotControlState(): () => void {
+    const descriptors = this.descriptors.map(descriptor => ({
+      descriptor, value: descriptor.value, waveform: descriptor.waveform, params: descriptor.params,
+    }));
+    const models = Array.from(this._models.values(), model => ({ model, params: model.params }));
+    const simulationOptions = this._simulationOptions;
+    const temperature = this._temperature;
+    return () => {
+      for (const { descriptor, value, waveform, params } of descriptors) {
+        descriptor.value = value;
+        descriptor.waveform = waveform;
+        descriptor.params = params;
+      }
+      for (const { model, params } of models) model.params = params;
+      this._simulationOptions = simulationOptions;
+      this._temperature = temperature;
+    };
+  }
+
+  /**
    * @internal ngspice `alter`: change an input parameter of a top-level
    * device, with the same effect as editing its card. `parameter` undefined
    * selects the primary value (resistance, capacitance, inductance, source DC).

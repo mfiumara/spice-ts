@@ -75,8 +75,8 @@ describe('control-language vector expressions', () => {
     expect(Array.from(evaluate('(1 ? 1 : 1) eq 1').re)).toEqual([1]);
   });
 
-  it('applies ngspice math functions: log is base 10, nint rounds half to even (ngspice-47: nint(2.5) is 2)', () => {
-    expect(evaluate('log(1000)').re[0]).toBeCloseTo(3, 15);
+  it('applies ngspice math functions: log10 is base 10, nint rounds half to even (ngspice-47: nint(2.5) is 2)', () => {
+    expect(evaluate('log10(1000)').re[0]).toBeCloseTo(3, 15);
     expect(evaluate('ln(e)', { e: realVector('e', [Math.E]) }).re[0]).toBeCloseTo(1, 15);
     expect(Array.from(evaluate('nint(2.5)').re)).toEqual([2]);
     expect(Array.from(evaluate('nint(3.5)').re)).toEqual([4]);
@@ -88,6 +88,65 @@ describe('control-language vector expressions', () => {
     expect(evaluate('atanh(0.5)').re[0]).toBeCloseTo(Math.atanh(0.5), 15);
     expect(Array.from(evaluate('vecmax(abs(z))', { z: realVector('z', [-3, 2]) }).re)).toEqual([3]);
     expect(Array.from(evaluate('length(z)', { z: realVector('z', [-3, 2]) }).re)).toEqual([2]);
+  });
+
+  /*
+   * PR #584 review blockers. Every expected value below was printed by
+   * `ngspice -b benchmarks/control-language-488/probes.cir` (ngspice-47) as
+   * `echo <label> $&c` after `let c = <expression>`; see the README there.
+   */
+  it('log() is the natural logarithm (ngspice-47: log(100) prints 4.60517)', () => {
+    expect(evaluate('log(100)').re[0]).toBeCloseTo(4.60517, 5);
+    expect(evaluate('log(100)').re[0]).toBe(Math.log(100));
+    expect(evaluate('log(e)', { e: realVector('e', [Math.E]) }).re[0]).toBeCloseTo(1, 15);
+    expect(evaluate('log10(100)').re[0]).toBe(2);
+    // ngspice-47: "argument out of range for log" / "for log10"; ln(-1) likewise.
+    expect(() => evaluate('log(-1)')).toThrow('argument out of range for log');
+    expect(() => evaluate('ln(-1)')).toThrow('argument out of range for ln');
+    expect(() => evaluate('log10(-1)')).toThrow('argument out of range for log10');
+  });
+
+  it('% is the integer modulo of floor(|a|) and floor(|b|) (ngspice-47 cx_mod)', () => {
+    // ngspice-47: -7%3 -> 1, 7.5%2 -> 1, 5.9%2.9 -> 1, 7%-3 -> 1, -7.5%-2 -> 1, 7%4 -> 3.
+    for (const [text, expected] of [
+      ['-7%3', 1], ['7.5%2', 1], ['5.9%2.9', 1], ['7%-3', 1], ['-7.5%-2', 1], ['7 % 4', 3],
+    ] as const) {
+      expect(Array.from(evaluate(text).re), text).toEqual([expected]);
+    }
+    // ngspice-47: 5 % 0.5 -> "argument out of range for mod" (floor(0.5) is 0).
+    expect(() => evaluate('5 % 0.5')).toThrow('argument out of range for mod');
+  });
+
+  it('not/~ takes everything above the comparisons as its operand (ngspice-47 parse-bison.y precedence)', () => {
+    // ngspice-47 values; `~` sits between the comparisons and `,` in the grammar.
+    for (const [text, expected] of [
+      ['not 0 + 1', 0], ['not 1 - 1', 1], ['~0 + 1', 0], ['not 0 * 5', 1], ['not 1 > 0', 0],
+      ['not 0 & 0', 0], ['2 + not 0', 3], ['not 0 ^ 2', 1], ['- not 0 + 1', -0], ['not 0 < 2', 1],
+      ['not 0 = 0', 0], ['not 5 = 0', 1], ['not 0 | 0', 1], ['not 0 ? 7 : 9', 7], ['not 0 * 0 + 1', 0],
+      ['1 + not 0 * 0', 2], ['1 < not 0 + 1', 0], ['not not 0 + 1', 1], ['not 0 , 1', 0], ['(not 0) , 1', 1],
+    ] as const) {
+      expect(Array.from(evaluate(text).re), text).toEqual([expected]);
+    }
+  });
+
+  it('the comma binds tighter than comparisons and looser than + (ngspice-47 parse-bison.y)', () => {
+    const parts = (text: string): [number, number] => {
+      const value = evaluate(text);
+      return [value.re[0], value.im ? value.im[0] : 0];
+    };
+    // ngspice-47: `echo $&c $&d` with d = imag(c).
+    expect(parts('1 + 2 , 3')).toEqual([3, 3]);
+    expect(parts('2 , 3 + 1')).toEqual([2, 4]);
+    expect(parts('- 2 , 3')).toEqual([-2, 3]);
+    expect(parts('2 * 2 , 3')).toEqual([4, 3]);
+    expect(parts('2 , 3 * 2')).toEqual([2, 6]);
+    expect(evaluate('1 < 2 , 3').re[0]).toBe(1);
+    // A built-in function applied to a comma expression sees one complex argument: mag(3,4) -> 5.
+    expect(Array.from(evaluate('mag(3,4)').re)).toEqual([5]);
+  });
+
+  it('! is not a control-language operator (ngspice-47: RHS "!0 + 1" invalid)', () => {
+    expect(() => evaluate('!0 + 1')).toThrow("unexpected character '!'");
   });
 
   it('names an unevaluated function instead of guessing (deriv)', () => {
@@ -282,6 +341,88 @@ VG g 0 1.5
     const sourceEdited = await simulate(`edited\nV1 1 0 DC 2 AC 3\nR1 1 2 1k\nC1 2 0 1u\n.op\n.ac dec 2 10 1k`);
     expect(source.dc!.voltage('2')).toBe(sourceEdited.dc!.voltage('2'));
     expect(source.ac!.voltage('2')).toEqual(sourceEdited.ac!.voltage('2'));
+  });
+
+  it('leaves the caller\'s Circuit untouched: alter, altermod and option, parsed once, simulated twice', async () => {
+    const circuit = parse(`idempotent
+M1 d g 0 0 nch W=10u L=1u
+VD d 0 2
+VG g 0 1.5
+R1 d 0 1k
+V2 p 0 pulse(0 1 1n 1n 1n 5n 10n)
+R2 p 0 1k
+.model nch nmos level=1 vto=0.5 kp=100u
+.control
+op
+let i1 = -i(vd)
+let w = @m1[w]
+let vto = @nch[vto]
+let r = @r1[resistance]
+let v2 = @v2[pulse]
+let v2high = v2[1]
+echo first $&i1 $&w $&vto $&r $&v2high
+altermod nch vto = 0.7
+alter @m1[w] = 20u
+alter r1 2k
+alter vd dc = 3
+alter @v2[pulse] = [ 0 2 1n 1n 1n 5n 10n ]
+option gmin=1e-10
+op
+let i2 = -i(vd)
+echo second $&i2
+.endc`);
+    const snapshot = JSON.stringify([circuit.parameterVector('M1', 'W'), circuit.parameterVector('nch', 'VTO'),
+      circuit.parameterVector('R1', 'R'), circuit.parameterVector('VD', 'DC'), circuit.parameterVector('V2', 'PULSE'),
+      circuit.simulationOptions]);
+    const first = await simulate(circuit);
+    const second = await simulate(circuit);
+    expect(second.control!.output).toEqual(first.control!.output);
+    expect(second.dc!.current('VD')).toBe(first.dc!.current('VD'));
+    expect(first.control!.output[0].split(' ').slice(2)).toEqual(['1e-05', '0.5', '1000', '1']);
+    expect(JSON.stringify([circuit.parameterVector('M1', 'W'), circuit.parameterVector('nch', 'VTO'),
+      circuit.parameterVector('R1', 'R'), circuit.parameterVector('VD', 'DC'), circuit.parameterVector('V2', 'PULSE'),
+      circuit.simulationOptions])).toBe(snapshot);
+    // A plain simulation of the same deck without its script still sees the original cards.
+    const plain = await simulate(`plain
+M1 d g 0 0 nch W=10u L=1u
+VD d 0 2
+VG g 0 1.5
+R1 d 0 1k
+.model nch nmos level=1 vto=0.5 kp=100u
+.op`);
+    const firstRun = first.control!.runs[0].result;
+    expect(firstRun.dc!.current('VD')).toBe(plain.dc!.current('VD'));
+  });
+
+  it.each(['let bad = 1 / 0', 'quit 1'])('restores control edits after failure: %s', async ending => {
+    const circuit = parse(`restore after error
+V1 1 0 1
+R1 1 0 1k
+.control
+alter r1 2k
+option gmin=1e-10
+${ending}
+.endc`);
+    const options = circuit.simulationOptions;
+    await expect(simulate(circuit)).rejects.toThrow();
+    expect(circuit.parameterVector('R1', 'R')).toEqual([1000]);
+    expect(circuit.simulationOptions).toEqual(options);
+  });
+
+  it('keeps user function comma arguments and built-in complex operands distinct', async () => {
+    const result = await simulate(`functions
+V1 1 0 1
+R1 1 0 1k
+.control
+define f(x,y) x+y
+let a = f(1+2,3*4)
+let b = mag(3,4)
+let c = real(log(3,4))
+let d = imag(log(3,4))
+echo $&a $&b $&c $&d
+quit
+.endc`);
+    expect(result.control!.output).toEqual(['15 5 1.60944 0.927295']);
   });
 
   it('runs each foreach value through alter and an analysis (examples/control_structs/foreach_bjt_ft.sp control shape)', async () => {

@@ -1,0 +1,436 @@
+{
+  "head": "7c82f509cfc72ecf8436e6e7cfa6bb927d6cff82",
+  "trackedDiff": " packages/core/src/circuit.ts                       |  28 ++++\n .../core/src/parser/control/control-script.test.ts | 145 ++++++++++++++++++++-\n .../core/src/parser/control/vector-expression.ts   |  43 +++---\n packages/core/src/simulate.ts                      |  12 +-\n 4 files changed, 207 insertions(+), 21 deletions(-)\n",
+  "environment": {
+    "node": "v22.23.1",
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "ngspiceVersion": "******\n** ngspice-47 : Circuit level simulation program\n** Compiled with KLU Direct Linear Solver\n** The U. C. Berkeley CAD Group\n** Copyright 1985-1994, Regents of the University of California.\n** Copyright 2001-2026, The ngspice team.\n** Please get your ngspice manual from https://ngspice.sourceforge.io/docs.html\n** Please file your bug-reports at http://ngspice.sourceforge.net/bugrep.html\n******\n",
+  "hashes": {
+    "probes": "ba68b3b3e37707f675777db111ba807cf3e3d5b205ec2a86da869f7247eb40f1",
+    "invalid-probes": "55d596b763e420dbb13686796856053b0c8fdef1c92da0f6f5e45ecc003292cb",
+    "idempotence": "b1af808f31aa0484e5cd45b7e8d9a621cb56441cd6489438991bb3edabdb4d45"
+  },
+  "ngspice": {
+    "probes": {
+      "command": "ngspice -b benchmarks/control-language-488/probes.cir",
+      "exitCode": 0,
+      "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: control expression regression probes\n\nlog100 4.60517\nlog10_100 2\nmod_negative 1\nmod_fraction 1\nmod_both_fraction 1\nmod_negative_divisor 1\nmod_both_negative 1\nmod_positive 3\nnot_add 0\nnot_subtract 1\ntilde_add 0\nnot_multiply 1\nnot_gt 0\nnot_and 0\nadd_not 3\nnot_power 1\nminus_not -0\nnot_lt 1\nnot_eq_zero 0\nnot_eq_five 1\nnot_or 1\nnot_ternary 7\nnot_multiply_add 0\nadd_not_multiply 2\nlt_not_add 0\ndouble_not 1\nnot_comma 0\nparenthesized_not_comma 1 1\nadd_comma 3 3\ncomma_add 2 4\nminus_comma -2 3\nmultiply_comma 4 3\ncomma_multiply 2 6\nlt_comma 1\nmag_complex 5\nfunctions 15 5 1.60944 0.927295\nngspice-47 done\n",
+      "stderr": ""
+    },
+    "invalid-probes": {
+      "command": "ngspice -b benchmarks/control-language-488/invalid-probes.cir",
+      "exitCode": 0,
+      "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: control expression invalid input probes\n\nngspice-47 done\n",
+      "stderr": "Error: argument out of range for log\n  in term: log(-1)\n\nError: Can't evaluate \"log(-1)\"\nError: argument out of range for log\n  in term: ln(-1)\n\nError: Can't evaluate \"ln(-1)\"\nError: argument out of range for log10\n  in term: log10(-1)\n\nError: Can't evaluate \"log10(-1)\"\nError: argument out of range for mod\n  in term: 5 % 0.5\n\nError: Can't evaluate \"5 % 0.5\"\nWarning from checkvalid: vector !0 is not available or has zero length.\nError: RHS \"!0 + 1\" invalid\n"
+    },
+    "idempotence": {
+      "command": "ngspice -b benchmarks/control-language-488/idempotence.cir",
+      "exitCode": 0,
+      "stdout": "\nNote: No compatibility mode selected!\n\n\nCircuit: control state isolation probe\n\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\nfirst 1\nDoing analysis at TEMP = 27.000000 and TNOM = 27.000000\n\nUsing SPARSE 1.3 as Direct Linear Solver\n\nNo. of Data Rows : 1\nsecond 2\nngspice-47 done\n",
+      "stderr": ""
+    }
+  },
+  "probes": [
+    {
+      "expression": "log(100)",
+      "re": [
+        4.605170185988092
+      ],
+      "im": null
+    },
+    {
+      "expression": "log10(100)",
+      "re": [
+        2
+      ],
+      "im": null
+    },
+    {
+      "expression": "-7%3",
+      "re": [
+        1
+      ],
+      "im": null
+    },
+    {
+      "expression": "7.5%2",
+      "re": [
+        1
+      ],
+      "im": null
+    },
+    {
+      "expression": "5.9%2.9",
+      "re": [
+        1
+      ],
+      "im": null
+    },
+    {
+      "expression": "7%-3",
+      "re": [
+        1
+      ],
+      "im": null
+    },
+    {
+      "expression": "-7.5%-2",
+      "re": [
+        1
+      ],
+      "im": null
+    },
+    {
+      "expression": "7%4",
+      "re": [
+        3
+      ],
+      "im": null
+    },
+    {
+      "expression": "not 0 + 1",
+      "re": [
+        0
+      ],
+      "im": null
+    },
+    {
+      "expression": "not 1 - 1",
+      "re": [
+        1
+      ],
+      "im": null
+    },
+    {
+      "expression": "~0 + 1",
+      "re": [
+        0
+      ],
+      "im": null
+    },
+    {
+      "expression": "not 0 * 5",
+      "re": [
+        1
+      ],
+      "im": null
+    },
+    {
+      "expression": "not 1>0",
+      "re": [
+        0
+      ],
+      "im": null
+    },
+    {
+      "expression": "not 0 & 0",
+      "re": [
+        0
+      ],
+      "im": null
+    },
+    {
+      "expression": "2 + not 0",
+      "re": [
+        3
+      ],
+      "im": null
+    },
+    {
+      "expression": "not 0 ^ 2",
+      "re": [
+        1
+      ],
+      "im": null
+    },
+    {
+      "expression": "- not 0 + 1",
+      "re": [
+        0
+      ],
+      "im": null
+    },
+    {
+      "expression": "not 0<2",
+      "re": [
+        1
+      ],
+      "im": null
+    },
+    {
+      "expression": "not 0 = 0",
+      "re": [
+        0
+      ],
+      "im": null
+    },
+    {
+      "expression": "not 5 = 0",
+      "re": [
+        1
+      ],
+      "im": null
+    },
+    {
+      "expression": "not 0 | 0",
+      "re": [
+        1
+      ],
+      "im": null
+    },
+    {
+      "expression": "not 0 ? 7 : 9",
+      "re": [
+        7
+      ],
+      "im": null
+    },
+    {
+      "expression": "not 0 * 0 + 1",
+      "re": [
+        0
+      ],
+      "im": null
+    },
+    {
+      "expression": "1 + not 0 * 0",
+      "re": [
+        2
+      ],
+      "im": null
+    },
+    {
+      "expression": "1<not 0 + 1",
+      "re": [
+        0
+      ],
+      "im": null
+    },
+    {
+      "expression": "not not 0 + 1",
+      "re": [
+        1
+      ],
+      "im": null
+    },
+    {
+      "expression": "not 0 , 1",
+      "re": [
+        0
+      ],
+      "im": null
+    },
+    {
+      "expression": "(not 0) , 1",
+      "re": [
+        1
+      ],
+      "im": [
+        1
+      ]
+    },
+    {
+      "expression": "1 + 2 , 3",
+      "re": [
+        3
+      ],
+      "im": [
+        3
+      ]
+    },
+    {
+      "expression": "2 , 3 + 1",
+      "re": [
+        2
+      ],
+      "im": [
+        4
+      ]
+    },
+    {
+      "expression": "- 2 , 3",
+      "re": [
+        -2
+      ],
+      "im": [
+        3
+      ]
+    },
+    {
+      "expression": "2 * 2 , 3",
+      "re": [
+        4
+      ],
+      "im": [
+        3
+      ]
+    },
+    {
+      "expression": "2 , 3 * 2",
+      "re": [
+        2
+      ],
+      "im": [
+        6
+      ]
+    },
+    {
+      "expression": "1<2 , 3",
+      "re": [
+        1
+      ],
+      "im": null
+    },
+    {
+      "expression": "mag(3,4)",
+      "re": [
+        5
+      ],
+      "im": null
+    },
+    {
+      "expression": "real(log(3,4))",
+      "re": [
+        1.6094379124341003
+      ],
+      "im": null
+    }
+  ],
+  "fullScript": [
+    "log100 4.60517",
+    "log10_100 2",
+    "mod_negative 1",
+    "mod_fraction 1",
+    "mod_both_fraction 1",
+    "mod_negative_divisor 1",
+    "mod_both_negative 1",
+    "mod_positive 3",
+    "not_add 0",
+    "not_subtract 1",
+    "tilde_add 0",
+    "not_multiply 1",
+    "not_gt 0",
+    "not_and 0",
+    "add_not 3",
+    "not_power 1",
+    "minus_not -0",
+    "not_lt 1",
+    "not_eq_zero 0",
+    "not_eq_five 1",
+    "not_or 1",
+    "not_ternary 7",
+    "not_multiply_add 0",
+    "add_not_multiply 2",
+    "lt_not_add 0",
+    "double_not 1",
+    "not_comma 0",
+    "parenthesized_not_comma 1 1",
+    "add_comma 3 3",
+    "comma_add 2 4",
+    "minus_comma -2 3",
+    "multiply_comma 4 3",
+    "comma_multiply 2 6",
+    "lt_comma 1",
+    "mag_complex 5",
+    "functions 15 5 1.60944 0.927295"
+  ],
+  "idempotence": {
+    "first": [
+      "first 1",
+      "second 2"
+    ],
+    "second": [
+      "first 1",
+      "second 2"
+    ],
+    "identical": true
+  },
+  "corpus": [
+    {
+      "id": "examples-control-structs-if-batchmode-cir",
+      "sourcePath": "examples/control_structs/if-batchmode.cir",
+      "sha256": "21aae4f3a826d5fb4a7f6fd8fc6aeb7b3cf5ffeacf1e1936b21b654cd08ea30f",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:111"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:110"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 0.000976,
+      "worstSignal": "tran i(v0)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "examples-various-param-sweep-cir",
+      "sourcePath": "examples/various/param_sweep.cir",
+      "sha256": "7726958289ce2cb006d4c1dd07970aa89f53ca027e8d503d0e2096b20a6a029e",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:11"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:11"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.49e-16,
+      "worstSignal": "dc i(vdd)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "tests-regression-misc-bugs-1-cir",
+      "sourcePath": "tests/regression/misc/bugs-1.cir",
+      "sha256": "c4b6a75e406d9809691e3e03f0be007e2353101cf830ed2e8c1f5c4db93baa2a",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [],
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": ".control script exited with status 1 at line 65 ERROR, test failure, v(n1004_t) = 4 but should be -4 ERROR: 1 of 8 tests failed"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "execution: other failure"
+    }
+  ]
+}

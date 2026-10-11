@@ -3,6 +3,12 @@
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## Control-language regression probes (#488 / #584)
+
+- `benchmarks/control-language-488/{probes,invalid-probes,idempotence}.cir` are original spice-ts regression decks, distributed under the repository MIT licence.
+- Semantics are measured against ngspice-47 with byte-identical input. Commands, raw output and SHA-256 hashes are in the adjacent `before.json` and `after.json`; `compare.ts` reproduces the measurements.
+- The three corpus-f fixtures rerun by that script are unchanged upstream ngspice decks (BSD-3-Clause), with pinned URLs, hashes and licence evidence in `benchmarks/corpus/corpus-f/SOURCES.md`. No new third-party fixtures are copied.
+
 ## ngspice public corpus A
 
 - Repository: https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/

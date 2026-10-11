@@ -68,7 +68,7 @@ const WORD_OPERATORS: Record<string, string> = {
 };
 const SYMBOL_OPERATORS: [string, string][] = [
   ['>=', 'ge'], ['<=', 'le'], ['<>', 'ne'], ['><', 'ne'], ['!=', 'ne'], ['==', 'eq'],
-  ['=', 'eq'], ['>', 'gt'], ['<', 'lt'], ['&', 'and'], ['|', 'or'], ['~', 'not'], ['!', 'not'],
+  ['=', 'eq'], ['>', 'gt'], ['<', 'lt'], ['&', 'and'], ['|', 'or'], ['~', 'not'],
   ['+', '+'], ['-', '-'], ['*', '*'], ['/', '/'], ['%', '%'], ['^', '^'],
   ['(', '('], [')', ')'], ['[', '['], [']', ']'], [',', ','], ['?', '?'], [':', ':'],
 ];
@@ -170,11 +170,13 @@ function tokenize(text: string): Token[] {
 }
 
 const INFIX_POWER: Record<string, number> = {
-  ',': 1, '?': 2, or: 3, and: 4,
+  '?': 2, or: 3, and: 4,
   eq: 5, ne: 5, gt: 5, lt: 5, ge: 5, le: 5,
-  '+': 6, '-': 6, '*': 7, '/': 7, '%': 7, '^': 9, '[': 10,
+  ',': 7, '+': 8, '-': 8, '*': 9, '/': 9, '%': 9, '^': 11, '[': 12,
 };
-const PREFIX_POWER = 8;
+const PREFIX_POWER = 10;
+// ngspice parse-bison.y: comparisons < NOT < comma < arithmetic.
+const NOT_POWER = 6;
 
 /** Parse a control-language vector expression into a syntax tree. */
 export function parseVectorExpression(text: string): ExpressionNode {
@@ -205,11 +207,7 @@ export function parseVectorExpression(text: string): ExpressionNode {
           position++;
           const args: ExpressionNode[] = [];
           if (!isOp(peek(), ')')) {
-            for (;;) {
-              args.push(expression(INFIX_POWER[',']));
-              if (isOp(peek(), ',')) { position++; continue; }
-              break;
-            }
+            args.push(expression(0));
           }
           expect(')');
           return { kind: 'call', name: token.value.toLowerCase(), args };
@@ -223,7 +221,7 @@ export function parseVectorExpression(text: string): ExpressionNode {
           return inner;
         }
         if (token.value === '-' || token.value === '+' || token.value === 'not') {
-          return { kind: 'unary', op: token.value, arg: expression(PREFIX_POWER) };
+          return { kind: 'unary', op: token.value, arg: expression(token.value === 'not' ? NOT_POWER : PREFIX_POWER) };
         }
         throw new ExpressionError(`unexpected '${token.value}' in '${text}'`);
     }
@@ -287,7 +285,8 @@ export function evaluateVectorExpression(node: ExpressionNode, env: ExpressionEn
       const arg = evaluateVectorExpression(node.arg, env);
       if (node.op === '+') return arg;
       if (node.op === '-') return mapComplex(arg, value => ({ re: -value.re, im: -value.im }));
-      return mapReal(arg, value => (value === 0 ? 1 : 0), false);
+      return realVector('result', Array.from(arg.re, (value, index) =>
+        value === 0 && (!arg.im || arg.im[index] === 0) ? 1 : 0));
     }
     case 'binary':
       return binary(node.op, evaluateVectorExpression(node.left, env), evaluateVectorExpression(node.right, env));
@@ -382,8 +381,9 @@ function binary(op: BinaryOperator, left: ControlVector, right: ControlVector): 
     });
     case '%': return combine(left, right, (a, b) => {
       if (a.im !== 0 || b.im !== 0) throw new ExpressionError("operator '%' needs real operands");
-      if (b.re === 0) throw new ExpressionError('modulo by zero');
-      return { re: a.re % b.re, im: 0 };
+      const divisor = Math.floor(Math.abs(b.re));
+      if (divisor === 0) throw new ExpressionError('argument out of range for mod');
+      return { re: Math.floor(Math.abs(a.re)) % divisor, im: 0 };
     });
     case '^': return combine(left, right, power);
     case 'eq': return compare(left, right, (a, b) => a.re === b.re && a.im === b.im);
@@ -439,7 +439,7 @@ const subtract = (a: Complex, b: Complex): Complex => ({ re: a.re - b.re, im: a.
 const COMPLEX_FUNCTIONS: Record<string, (value: Complex) => Complex> = {
   exp: complexExp,
   ln: complexLog,
-  log: value => divide(complexLog(value), { re: Math.LN10, im: 0 }),
+  log: complexLog,
   log10: value => divide(complexLog(value), { re: Math.LN10, im: 0 }),
   sqrt: complexSqrt,
   sin: value => ({ re: Math.sin(value.re) * Math.cosh(value.im), im: Math.cos(value.re) * Math.sinh(value.im) }),
@@ -460,7 +460,7 @@ const COMPLEX_FUNCTIONS: Record<string, (value: Complex) => Complex> = {
 };
 
 const REAL_FUNCTIONS: Record<string, (value: number) => number> = {
-  exp: Math.exp, ln: Math.log, log: Math.log10, log10: Math.log10, sqrt: Math.sqrt,
+  exp: Math.exp, ln: Math.log, log: Math.log, log10: Math.log10, sqrt: Math.sqrt,
   sin: Math.sin, cos: Math.cos, tan: Math.tan, sinh: Math.sinh, cosh: Math.cosh, tanh: Math.tanh,
   atan: Math.atan, asin: Math.asin, acos: Math.acos, asinh: Math.asinh, acosh: Math.acosh, atanh: Math.atanh,
 };
@@ -499,10 +499,15 @@ function roundHalfEven(value: number): number {
 }
 
 function evaluateCall(node: Extract<ExpressionNode, { kind: 'call' }>, env: ExpressionEnvironment): ControlVector {
-  const user = env.userFunction(node.name, node.args.length);
+  // Built-ins consume the comma as complex construction; user-defined
+  // functions use its leaves as their argument list, like ngspice's front end.
+  const argumentsOf = (arg: ExpressionNode): ExpressionNode[] => arg.kind === 'comma'
+    ? [...argumentsOf(arg.left), ...argumentsOf(arg.right)] : [arg];
+  const userArgs = node.args.flatMap(argumentsOf);
+  const user = env.userFunction(node.name, userArgs.length);
   if (user) {
     const bound = new Map(user.params.map((param, index) =>
-      [param.toLowerCase(), evaluateVectorExpression(node.args[index], env)]));
+      [param.toLowerCase(), evaluateVectorExpression(userArgs[index], env)]));
     return evaluateVectorExpression(user.body, {
       ...env,
       lookup: name => bound.get(name.toLowerCase()) ?? env.lookup(name),
@@ -517,6 +522,10 @@ function evaluateCall(node: Extract<ExpressionNode, { kind: 'call' }>, env: Expr
   const arg = evaluateVectorExpression(node.args[0], env);
   const complexFunction = COMPLEX_FUNCTIONS[node.name];
   if (complexFunction) {
+    if (!isComplex(arg) && ['log', 'ln', 'log10'].includes(node.name)
+      && Array.from(arg.re).some(value => value < 0)) {
+      throw new ExpressionError(`argument out of range for ${node.name}`);
+    }
     const real = REAL_FUNCTIONS[node.name];
     if (!isComplex(arg) && Array.from(arg.re).every(value => !Number.isNaN(real(value)))) {
       return mapReal(arg, real);
