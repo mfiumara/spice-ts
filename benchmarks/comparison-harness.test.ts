@@ -52,6 +52,26 @@ describe('comparison metrics', () => {
     assert.deepEqual(signal.absoluteError, { max: 0, rms: 0 });
   });
 
+  it('measures waveforms with more than 200k points without exceeding the call-stack argument limit (#611)', () => {
+    // Math.max(...errors) throws RangeError once the spread is too large for the
+    // call stack; the completed adder_bip transient records 106k points.
+    const count = 250_001;
+    const grid = Array.from({ length: count }, (_, index) => index);
+    const reference = Array.from({ length: count }, (_, index) => 1 + (index % 7));
+    const actual = reference.map((value, index) => (index === count - 1 ? value + 0.5 : value));
+    const result = alignAndMeasure(
+      { grid, signals: { 'v(out)': real(actual) } },
+      { grid, signals: { 'v(out)': real(reference) } },
+      ['v(out)'],
+    );
+
+    const signal = result.signals['v(out)'];
+    if (!signal || signal.status !== 'compared') throw new Error('expected compared signal');
+    assert.equal(signal.sampleCount, count);
+    assert.equal(signal.absoluteError.max, 0.5);
+    assert.equal(signal.relativeError.max, 0.5 / reference[count - 1]);
+  });
+
   it('aligns a two-source nested DC sweep segment by segment instead of across repeated primary grids', () => {
     // `.dc V1 0 2 1 V2 0 10 10`: the primary grid restarts for every secondary value.
     const result = alignAndMeasure(

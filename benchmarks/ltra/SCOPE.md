@@ -92,7 +92,7 @@ ngspice supports them.
 | `G` | `0` when present; omitted once by `convtwoinch` (ngspice default `0`) | REQUIRED for zero/default only | Implement `G=0` and the omitted default. Reject non-zero `G` explicitly; RG and general shunt loss are not exercised. |
 | `C` | `0.468e-12`, `3.65e-12`, `3.65000000746e-12`, `7.25000000373e-12` | REQUIRED | Positive shunt capacitance per unit length. |
 | `LEN` | `0.1`, `0.125`, `0.2`, `0.25`, `0.5`, `1`, `2.0`, `16`, `20`, `24` | REQUIRED | Positive line length. |
-| `REL` | `1`, `1.2`, `1.8`, `10` | REQUIRED | Breakpoint-control value. Values above 2 intentionally eliminate LTRA breakpoints in ngspice; do not silently treat them as a generic tolerance. Since #520 it is validated but behaviorally inert: the LTRAaccept breakpoints it steers are not ported (see below). |
+| `REL` | `1`, `1.2`, `1.8`, `10` | REQUIRED | Breakpoint-control value. Values above 2 intentionally eliminate LTRA breakpoints in ngspice; do not silently treat them as a generic tolerance. Since #595 it steers the ported LTRAaccept breakpoints (see below). |
 | `STEPLIMIT` | flag present on the ngspice fixture, `ltra_1`, `ltra_2`, and dormant LC helpers | REQUIRED | Enforce the LTRA delay-derived timestep limit. ngspice-47 `ltratrun.c` bounds the step by the full delay (not the documented `0.8 * delay`) and applies it by default, flag or not; #520 does the same. |
 | `NOCONTROL` | flag present on all LC helpers and the three reachable `ltra_3` RLC models | REQUIRED | Disable LTRA convolution-error timestep control. It is the ngspice-47 default when neither `FULLCONTROL` nor `HALFCONTROL` is given; both of those stay unsupported, so every accepted model runs without LTE control, exactly like ngspice. |
 | `QUADINTERP` | flag present on all dormant LC helpers | REQUIRED | Select quadratic delayed-signal interpolation. It is also the ngspice-47 default without `TRYTOCOMPACT`; #520 interpolates the delayed port waves quadratically (linearly at the first history interval), keeping an out-of-range quadratic value as ngspice does. |
@@ -210,13 +210,18 @@ fixed 8-section RLC ladder with a port of the ngspice-47 LTRA device
   rejected explicitly, because the LTRA small-signal response is not a
   polynomial in s.
 
+Issue [#595](https://github.com/mfiumara/spice-ts/issues/595) ported the
+`ltraacct.c` breakpoints: after each accepted timepoint, when the slope of an
+outgoing wave `(v + Z0 i) * attenuation` changes by more than `REL`
+(relative) or the fixed `LTRAabstol = 1` (absolute), and the last three
+samples are not a steady value (the `CHECK` macro on circuit RELTOL/ABSTOL),
+the device schedules a breakpoint at the previous timepoint plus `TD`. Devices
+receive a breakpoint sink in `acceptTransientStep`, and the transient driver
+inserts those times into its breakpoint queue with `CKTsetBreak` semantics.
+`ABS` stays rejected, so `LTRAabstol` is always its ngspice default.
+
 Not ported, with the reason:
 
-- `LTRAaccept` breakpoints (one delay after a slope change of an outgoing
-  wave, steered by `REL`). The transient driver collects breakpoints once at
-  the start and has no hook for breakpoints created during the run. An
-  approximation through the truncation bound was measured and did not reduce
-  the benchmark error, so it was dropped.
 - `FULLCONTROL`/`HALFCONTROL` LTE control, `TRYTOCOMPACT` history compaction,
   the RC and RG special cases, and non-zero `G`: no benchmark deck uses them.
   They stay rejected.

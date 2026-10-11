@@ -1,4 +1,4 @@
-import type { DeviceModel, StampContext } from './device.js';
+import type { DeviceModel, StampContext, TransientBreakpointSink } from './device.js';
 import {
   linInterp,
   quadInterp,
@@ -51,13 +51,9 @@ function growTo(array: Float64Array, size: number): Float64Array {
  * ngspice-47 LTRA lossy transmission line (O element) for the G=0 LC and RLC
  * cases: the exact convolution formulation of ltraload.c over the accepted
  * timepoint history, with quadratic interpolation of the delayed port waves
- * and the LTRAtrunc step limits (delay and maxSafeStep). Branch currents are
- * positive into each port.
- *
- * Not ported: the LTRAaccept rule that schedules a breakpoint one delay after
- * a slope change of an outgoing wave. The transient driver has no hook for
- * breakpoints created during the run, and approximating it through the
- * truncation bound did not move the benchmark error (issue #520).
+ * the LTRAtrunc step limits (delay and maxSafeStep) and the LTRAaccept
+ * breakpoints one delay after a slope change of an outgoing wave. Branch
+ * currents are positive into each port.
  */
 export class LossyTransmissionLine implements DeviceModel {
   readonly branches: number[];
@@ -129,7 +125,7 @@ export class LossyTransmissionLine implements DeviceModel {
     if (p1 >= 0) ctx.stampG(b2, p1, 0);
   }
 
-  acceptTransientStep(ctx: StampContext): void {
+  acceptTransientStep(ctx: StampContext, breakpoints?: TransientBreakpointSink): void {
     const [p1, n1, p2, n2] = this.nodes;
     const voltage = (positive: number, negative: number): number =>
       (positive >= 0 ? ctx.getVoltage(positive) : 0) - (negative >= 0 ? ctx.getVoltage(negative) : 0);
@@ -154,6 +150,42 @@ export class LossyTransmissionLine implements DeviceModel {
       this.initCur1 = this.i1[0];
       this.initCur2 = this.i2[0];
       this.load = undefined;
+    } else if (breakpoints) {
+      this.scheduleBreakpoint(index, breakpoints);
+    }
+  }
+
+  /**
+   * ltraacct.c (non-NOTDEF branch): when the slope of an outgoing wave
+   * (v + Z0 i) * attenuation changes by more than REL relative (ABS absolute)
+   * and the last three samples are not a steady value, the previous point
+   * reaches the far port one delay later: set a breakpoint there.
+   */
+  private scheduleBreakpoint(index: number, breakpoints: TransientBreakpointSink): void {
+    const model = this.model;
+    const { impedance, attenuation } = model;
+    const t = this.timePoints;
+    const wave = (v: Float64Array, i: Float64Array, k: number): number => (v[k] + i[k] * impedance) * attenuation;
+    const first = index < 2;
+    const v1 = wave(this.v1, this.i1, index);
+    const v2 = wave(this.v1, this.i1, index - 1);
+    const v3 = first ? v2 : wave(this.v1, this.i1, index - 2);
+    const v4 = wave(this.v2, this.i2, index);
+    const v5 = wave(this.v2, this.i2, index - 1);
+    const v6 = first ? v5 : wave(this.v2, this.i2, index - 2);
+    const step = t[index] - t[index - 1];
+    const previousStep = first ? 0 : t[index - 1] - t[index - 2];
+    const d1 = (v1 - v2) / step;
+    const d2 = first ? 0 : (v2 - v3) / previousStep;
+    const d3 = (v4 - v5) / step;
+    const d4 = first ? 0 : (v5 - v6) / previousStep;
+    const { breakpointReltol: rel, breakpointAbstol: abs, circuitReltol, circuitAbstol } = model;
+    const changing = (a: number, b: number, c: number): boolean =>
+      Math.max(a, b, c) - Math.min(a, b, c) >= Math.abs(50 * (circuitReltol / 3 * (a + b + c) + circuitAbstol));
+    const bends = (da: number, db: number): boolean =>
+      Math.abs(da - db) >= rel * Math.max(Math.abs(da), Math.abs(db)) + abs;
+    if ((bends(d1, d2) && changing(v1, v2, v3)) || (bends(d3, d4) && changing(v4, v5, v6))) {
+      breakpoints.schedule(t[index - 1] + model.delay);
     }
   }
 

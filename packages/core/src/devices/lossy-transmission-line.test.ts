@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseTitleless as parse } from '../parser/index.js';
 import { simulate } from '../simulate.js';
+import { LossyTransmissionLine, LtraModelState } from './lossy-transmission-line.js';
 import { resolveLtraModel } from './ltra-model.js';
 
 const classicFixture = readFileSync(new URL(
@@ -126,6 +127,69 @@ RL b 0 50
     for (let index = 1; index < time.length; index++) {
       expect(time[index] - time[index - 1]).toBeLessThanOrEqual(bound * (1 + 1e-9));
     }
+  });
+
+  describe('LTRAaccept breakpoints (ngspice ltraacct.c)', () => {
+    /** One port-1 driven line: v1 follows `wave`, everything else stays at 0. */
+    function acceptSequence(rel: number | undefined, points: Array<[number, number]>): number[] {
+      const params: Record<string, number> = { R: 2, L: 250e-9, C: 100e-12, LEN: 1, G: 0 };
+      if (rel !== undefined) params.REL = rel;
+      const model = resolveLtraModel({ name: 'LMOD', type: 'LTRA', params });
+      const line = new LossyTransmissionLine('O1', [0, -1, 1, -1], 0, 1, new LtraModelState(model));
+      const scheduled: number[] = [];
+      const sink = { schedule: (time: number) => { scheduled.push(time); } };
+      for (const [time, voltage] of points) {
+        const ctx = {
+          time, dt: time === 0 ? 0 : 1e-12, numNodes: 2, sourceScale: 1, useDcSourceValue: false,
+          stampG: () => {}, stampB: () => {}, stampC: () => {},
+          getVoltage: (node: number) => (node === 0 ? voltage : 0),
+          getCurrent: () => 0,
+        };
+        line.acceptTransientStep(ctx, sink);
+      }
+      return scheduled;
+    }
+
+    const delay = Math.sqrt(250e-9 * 100e-12);
+
+    it('schedules a breakpoint one delay after the previous point when an outgoing wave changes slope sign', () => {
+      // Triangle peaking at 1 ns, then a second peak at 2 ns.
+      const scheduled = acceptSequence(undefined, [[0, 0], [0.5e-9, 0], [1e-9, 1], [1.5e-9, 0], [2e-9, 1], [2.5e-9, 1]]);
+      expect(scheduled).toHaveLength(2);
+      expect(scheduled[0]).toBeCloseTo(1e-9 + delay, 20);
+      expect(scheduled[1]).toBeCloseTo(1.5e-9 + delay, 20);
+    });
+
+    it('needs only a relative slope change of REL when REL < 1', () => {
+      // Flat to ramp at 1 ns: REL=1 (the default) ignores a same-sign change.
+      const points: Array<[number, number]> = [[0, 0], [0.5e-9, 0], [1e-9, 0], [1.5e-9, 0.5], [2e-9, 1]];
+      expect(acceptSequence(undefined, points)).toEqual([]);
+      const scheduled = acceptSequence(0.5, points);
+      expect(scheduled).toHaveLength(1);
+      expect(scheduled[0]).toBeCloseTo(1e-9 + delay, 20);
+    });
+
+    it('schedules nothing on a straight-line wave', () => {
+      expect(acceptSequence(1, [[0, 0], [1e-9, 1], [2e-9, 2], [3e-9, 3]])).toEqual([]);
+    });
+
+    it('sets no breakpoints when REL exceeds 2', () => {
+      expect(acceptSequence(10, [[0, 0], [0.5e-9, 0], [1e-9, 1], [1.5e-9, 0], [2e-9, 1], [2.5e-9, 1]])).toEqual([]);
+    });
+
+    it('lands accepted timepoints one delay after the source corners', async () => {
+      // REL=0.5: the 1 ns and 1.1 ns PULSE corners reach port 1 and
+      // reschedule one 5 ns delay later; REL=10 disables the rule.
+      const timesFor = async (rel: number): Promise<Float64Array | number[]> =>
+        (await simulate(parse(lineStep.replace('STEPLIMIT', `STEPLIMIT REL=${rel}`)))).transient!.time;
+      const hits = (time: Float64Array | number[], target: number): boolean =>
+        Array.from(time).some(t => Math.abs(t - target) < 1e-15);
+      const withRule = await timesFor(0.5);
+      expect(hits(withRule, 1e-9 + 5e-9)).toBe(true);
+      expect(hits(withRule, 1.1e-9 + 5e-9)).toBe(true);
+      const withoutRule = await timesFor(10);
+      expect(hits(withoutRule, 1.1e-9 + 5e-9)).toBe(false);
+    });
   });
 
   it('rejects small-signal analyses it cannot represent', async () => {
