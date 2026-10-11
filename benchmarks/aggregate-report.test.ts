@@ -145,6 +145,9 @@ describe('aggregate report artifact verification', () => {
       && text.includes('PR #550') && text.includes('v(x3.3) 0.8275 to 0.8435 V')));
     // #562 and #554 are outcome-neutral (#554 moves only the SOURCES.md pin).
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #562') && text.includes('reproduces outcome 3c88e414') && text.includes('PR #554') && text.includes('d4a0994d to fa95e5d0')));
+    // #564 losses published; #556, #543 and #557 are outcome-neutral.
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #564') && text.includes('onoise_total 9.83e-12 to 1.32e-11') && text.includes('v(x3.3) 0.8435 to 0.8457 V')
+      && text.includes('PR #556') && text.includes('PR #543') && text.includes('PR #557') && text.includes('PR #563')));
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.startsWith('.OPTIONS TEMP') && text.includes('#459') && text.includes('only ngspice/vbic-temperature')));
     const vbicAc = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/vbic-common-emitter-ac');
     assert.equal(vbicAc.spiceTs.status, 'success');

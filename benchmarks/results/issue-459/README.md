@@ -1,4 +1,4 @@
-# Issue #459: `.OPTIONS TEMP` and the aggregate refresh after #470, #537, #542, #541, #546, #545, #550, #552, #562 and #554
+# Issue #459: `.OPTIONS TEMP` and the aggregate refresh after #470, #537, #542, #541, #546, #545, #550, #552, #562, #554, #564, #556, #543, #557 and #563
 
 Host: Apple M5 Pro, darwin arm64, Node v22, ngspice-47 (shared host, load average above 200, so
 runtimes are diagnostic only). Every row is one full 100-fixture `benchmarks/aggregate-report.ts`
@@ -26,8 +26,14 @@ worktrees is committed.
 | 10 | `2812371` + #459 (pin `2ce09abb`, before ledger edit) | #459 `.OPTIONS TEMP` | `d3b4fb48` | 60/1/39 | 67 / 48 | only ngspice/vbic-temperature: unsupported → success (superseded by row 13) |
 | 11 | `a32f755` (pin `d4a0994d`, unchanged by #562) | #562 VDMOS power MOSFET | `3c88e414` | 59/1/40 | 66 / 47 | outcome-neutral (reproduces row 9 exactly) |
 | 12 | `0e1aeb4` (pin `fa95e5d0`, #554's SOURCES.md) | #554 XSPICE A elements | `8a19a9d7` | 59/1/40 | 66 / 47 | per-fixture metrics, grids and statuses identical to row 11; only the pin moves the hash (main 0e1aeb4 itself still pins `d4a0994d`, so `--check` fails there on the pin) |
-| 13 | `0e1aeb4` + #459 (pin `fd8b534c`, before ledger edit) | #459 `.OPTIONS TEMP` | `c9cb2850` | 60/1/39 | 67 / 48 | only ngspice/vbic-temperature: unsupported → success |
-| final | this branch on `0e1aeb4`, regenerated ledger | — | see `AGGREGATE_PARITY.md` | 60/1/39 | 67 / 48 | ledger text only; `--check` passes |
+| 13 | `0e1aeb4` + #459 (pin `fd8b534c`, before ledger edit) | #459 `.OPTIONS TEMP` | `c9cb2850` | 60/1/39 | 67 / 48 | only ngspice/vbic-temperature: unsupported → success (superseded by row 17) |
+| 14 | `a55f854` (pin `fa95e5d0`) | #564 GP BJT CKTgmin junction currents, reverse junction law | `d428d47d` | 59/1/40 | 66 / 47 | 24 analyses on 14 BJT fixtures; gains on diffpair/rtl OP (4.03e-7 → 1.04e-8 V); **losses** bjt-noise onoise_total 9.83e-12 → 1.32e-11, coupled v(x3.3) 0.8435 → 0.8457 V, lossy-24 v(3) 0.4559 → 0.4698 V, jimi-fuzz v(11) 3.6634 → 3.6641 V |
+| 15 | `1eafa79` (pin `fa95e5d0`) | #556 transient recording from the solution vector | `d428d47d` | 59/1/40 | 66 / 47 | outcome-neutral (reproduces row 14 exactly) |
+| 16 | `702faed` (pin `fa95e5d0`) | #543 TXL/CPL lossy lines | `d428d47d` | 59/1/40 | 66 / 47 | outcome-neutral (reproduces row 14 exactly) |
+| 17 | `54e1dcf` + #459 (pin `fd8b534c`, before ledger edit) | #557 (examples only) + #459 `.OPTIONS TEMP` | `6bf91eba` | 60/1/39 | 67 / 48 | only ngspice/vbic-temperature: unsupported → success, so #557 is outcome-neutral |
+| 18 | `0cd12dc` (pin `fa95e5d0`) | #563 B-source V= expressions, ASRC tc1/tc2 | `d428d47d` | 59/1/40 | 66 / 47 | outcome-neutral (reproduces row 14 exactly) |
+| 19 | `0cd12dc` + #459 (pin `fd8b534c`, before ledger edit; includes the B-source TEMP fix) | #459 `.OPTIONS TEMP` | `0ed001f5` | 60/1/39 | 67 / 48 | only ngspice/vbic-temperature: unsupported → success |
+| final | this branch on `0cd12dc`, regenerated ledger | — | see `AGGREGATE_PARITY.md` | 60/1/39 | 67 / 48 | ledger text only; `--check` passes |
 
 ngspice stays at 52/9/39 throughout. The full gain and loss lists for rows 6, 7 and 9 are in the
 `metricTransitions` ledger of `benchmarks/aggregate-report.ts` (rendered in `AGGREGATE_PARITY.md`).
@@ -38,7 +44,7 @@ for a follow-up, as #552 noted.
 An earlier pass of this branch on main 5589ab1 (pushed as `0f381ea`, outcome `6dc28693`, `--check`
 exit 0) went stale when #546, #545 and #550 merged, and row 8 went stale when #552 merged. Rows 5-10 replace them.
 The pass on main 2812371 (pushed as `ea541987`, outcome `4ed6d9d3`, `--check` exit 0) went stale when #562 and
-#554 merged; rows 11-13 replace it.
+#554 merged, and the pass on 0e1aeb4 (`5ad1ab90`, outcome `7f5da3cf`, `--check` exit 0, never pushed) went stale when #564, #556, #543 and #557 merged, and the pass on 54e1dcf (never pushed) when #563 merged; rows 11-19 replace them.
 
 ## ngspice/vbic-temperature (unchanged `tests/vbic/temp.cir`, TEMP = 150 C)
 
@@ -56,9 +62,19 @@ harness (ngspice-47 `wrdata` with 12 digits against `simulate()` on the same byt
 maxima. The same deck with TEMP=27 differs by up to 2.669e-6 A on i(vc) and 5.65e-7 A on i(vb), so
 the residual at 150 C is the existing bounded-model gap (#76), not the temperature mapping.
 
-On top of main 0e1aeb4 (per fixture identical to 2812371), #459 moves totals from 873 to 879 absolute and from 841 to 847 relative
-signals, and from 9,388,320 to 9,388,926 absolute and from 9,364,374 to 9,364,980 relative samples.
+On top of main 0cd12dc, #459 moves totals from 873 to 879 absolute and from 841 to 847 relative
+signals, and from 9,388,096 to 9,388,702 absolute and from 9,364,215 to 9,364,821 relative samples.
 #459 changes neither envelope. No fixture, tolerance or harness logic changed.
+
+## B sources at a non-nominal TEMP (after #563)
+
+#563 gave B sources the ngspice-47 asrctemp.c `tc1`/`tc2` factor and `temper`. On the rebase, the
+#459 TEMP gate would have rejected every B `V=` source and silently run B `I=` sources at 27 C.
+B sources now get the circuit temperature like resistors and VBIC. The unit test
+`applies TEMP to B-source tc1/tc2 and temper like ngspice-47 asrctemp.c` pins ngspice-47 `print`
+values for the same deck at TEMP=77: v(2) = 3, v(3) = 77, v(4) = 1.75. It failed before the fix
+with `InvalidCircuitError ... device 'B1'`. No aggregate deck combines a B source with `.OPTIONS TEMP`,
+so the aggregate outcome is unaffected (row 19).
 
 ## Reproduce
 
