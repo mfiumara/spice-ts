@@ -61,6 +61,16 @@ const POST_BREAK_DT_CUT = 10;
 /** First step after a t=0 breakpoint spans at most this fraction of the next gap (ngspice). */
 const START_BREAK_GAP_FRACTION = 0.1;
 
+/** ngspice dctran.c initial delta: MIN(TSTOP / 100, TSTEP) / 10. */
+const INITIAL_STEP_STOP_DIVISOR = 100;
+const INITIAL_STEP_DIVISOR = 10;
+
+/** ngspice dctran.c initial CKTsaveDelta: TSTOP / 50. */
+const SAVE_DELTA_STOP_DIVISOR = 50;
+
+/** ngspice dctran.c CKTdelmin = 1e-11 x CKTmaxStep; a breakpoint step stays above 2 x delmin. */
+const DELMIN_FRACTION = 1e-11;
+
 /** Keep implicit-breakpoint recovery local while still crossing a vanished branch. */
 const IMPLICIT_BREAK_DT_CUT = 5;
 
@@ -477,10 +487,12 @@ class TransientSimImpl implements TransientSim {
   }
 
   /**
-   * Collect breakpoints after t=0. A device kink at t=0 itself is handled as
-   * ngspice dctran.c handles its first breakpoint: integrate at order 1 with
-   * dt limited to 0.1 x the gap to the next breakpoint, then cut by
-   * POST_BREAK_DT_CUT, so the first-order step error stays local.
+   * Collect breakpoints after t=0 and size the first step. As in ngspice
+   * dctran.c, t=0 is always a breakpoint (#532): the first step starts at
+   * MIN(TSTOP/100, TSTEP)/10 capped by TMAX, is limited to 0.1 x MIN(TSTOP/50,
+   * gap to the next breakpoint), is cut by POST_BREAK_DT_CUT for the initial
+   * timepoint and integrates at order 1, so it cannot skip a large part of a
+   * source period and its first-order error stays local.
    */
   private collectBreakpoints(): BreakpointQueue {
     const stop = this.config.stopTime;
@@ -491,14 +503,12 @@ class TransientSimImpl implements TransientSim {
       if (d.getBreakpoints) times.push(...d.getBreakpoints(stop));
     }
     const queue = new BreakpointQueue(times, MIN_BREAK);
-    if (times.some(time => Math.abs(time) <= MIN_BREAK)) {
-      this.orderOnePending = true;
-      const firstGap = queue.peek() ?? stop;
-      this.dt = Math.max(
-        Math.min(this.dt, START_BREAK_GAP_FRACTION * firstGap) / POST_BREAK_DT_CUT,
-        MIN_TIMESTEP,
-      );
-    }
+    this.orderOnePending = true;
+    const { timestep, maxTimestep } = this.config;
+    const firstGap = queue.peek() ?? stop;
+    const initial = Math.min(Math.min(stop / INITIAL_STEP_STOP_DIVISOR, timestep) / INITIAL_STEP_DIVISOR, maxTimestep);
+    const limited = Math.min(initial, START_BREAK_GAP_FRACTION * Math.min(stop / SAVE_DELTA_STOP_DIVISOR, firstGap));
+    this.dt = Math.max(limited / POST_BREAK_DT_CUT, 2 * DELMIN_FRACTION * maxTimestep, MIN_TIMESTEP);
     return queue;
   }
 
