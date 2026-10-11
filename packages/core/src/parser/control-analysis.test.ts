@@ -161,8 +161,22 @@ dc  v1 0 60 0.1
     // set commands other than plot styling can change simulation behaviour
     ['set temp = 50\nop', 'set'],
     ['set ngbehavior=ps\nop', 'set'],
+    // each assignment on a set line is classified separately (#516 review)
+    ['set color0=white ngbehavior=ps\nop', 'set'],
+    ['set xbrushwidth=3 num_threads=4\nop', 'set'],
+    ['set color0 = white temp = 50\nop', 'set'],
+    ['set ngbehavior=ps color0=white\nop', 'set'],
+    ['set color0=white noaskquit\nop', 'set'],
   ])('still rejects result-affecting command after an analysis: %s', (control, command) => {
     const error = parseError(`Unsupported\n${rc}\n.control\n${control}\n.endc`);
     expect(error.message).toContain(`Unsupported .control command '${command}'`);
+  });
+
+  it.each<string>([
+    'set color0=white color1=black xbrushwidth=3',
+    'set color0 = white xgridwidth = 2',
+  ])('accepts a set line whose every assignment is plot styling: %s', (setLine) => {
+    expect(parse(`Plot styling\n${rc}\n.control\n${setLine}\nop\n.endc`).analyses)
+      .toEqual(parse(`t\n${rc}\n.op`).analyses);
   });
 });

@@ -75,8 +75,15 @@ export function classifyControlCommand(tokens: string[], lineNumber: number, con
   );
 }
 
+/**
+ * True when a `set` line only styles plots: it has at least one assignment and
+ * every assignment is a plot-styling variable. Each assignment is classified on
+ * its own, so one result-affecting variable (`set color0=white ngbehavior=ps`)
+ * makes the whole line unsupported instead of being dropped with the rest.
+ */
 function isPlotStyleSetting(args: string[]): boolean {
-  return PLOT_STYLE_SETTING.test(args.join(''));
+  const assignments = args.join(' ').replace(/\s*=\s*/g, '=').trim().split(/\s+/).filter(Boolean);
+  return assignments.length > 0 && assignments.every(assignment => PLOT_STYLE_SETTING.test(assignment));
 }
 
 /** Structured error for a control analysis whose type the deck already requests. */
