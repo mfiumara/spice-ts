@@ -54,6 +54,24 @@ R1 1 0 1k TC1=1e-3 TC2=1e-6
     expect(result.dc!.current('V1')).toBeCloseTo(-1 / resistance, 12);
   });
 
+  it('applies TEMP to B-source tc1/tc2 and temper like ngspice-47 asrctemp.c', async () => {
+    // ngspice-47 `print` on the same deck: v(2) = 3, v(3) = 77, v(4) = 1.75.
+    const result = await simulate(`asrc temp
+V1 1 0 1
+B1 2 0 V=2*v(1) tc1=0.01
+R1 2 0 1k
+B2 3 0 V=temper
+R2 3 0 1k
+B3 0 4 I=1m tc1=0.01 tc2=1e-4
+R3 4 0 1k
+.options TEMP=77
+.op`);
+
+    expect(result.dc!.voltage('2')).toBeCloseTo(3, 9);
+    expect(result.dc!.voltage('3')).toBeCloseTo(77, 9);
+    expect(result.dc!.voltage('4')).toBeCloseTo(1.75, 9);
+  });
+
   it('matches ngspice-47 on the unchanged tests/vbic/temp.cir fixture', async () => {
     const fixture = readFileSync(fixtureUrl);
     expect(createHash('sha256').update(fixture).digest('hex'))

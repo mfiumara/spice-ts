@@ -25,7 +25,7 @@ import { resolveHFET1Instance } from './devices/hfet1-model.js';
 import { MESA } from './devices/mesa.js';
 import { MESA_JUNCTION_GMIN, resolveMESAInstance } from './devices/mesa-model.js';
 import { resolveZModel } from './devices/z-device.js';
-import { BehavioralCurrentSource, BehavioralVoltageSource } from './devices/behavioral-source.js';
+import { BehavioralCurrentSource, BehavioralSource, BehavioralVoltageSource } from './devices/behavioral-source.js';
 import {
   behavioralControlNodes,
   compileBehavioralExpression,
@@ -1780,7 +1780,8 @@ export class Circuit {
   /**
    * Evaluate the compiled devices at a non-nominal `.options TEMP` like ngspice.
    * Only devices whose temperature model follows ngspice-47 are accepted:
-   * resistors (TC1/TC2 around TNOM) and the bounded VBIC (vbictemp.c mapping).
+   * resistors (TC1/TC2 around TNOM), the bounded VBIC (vbictemp.c mapping) and
+   * B sources (asrctemp.c tc1/tc2 and `temper`).
    * Every other temperature-dependent element is rejected instead of silently
    * running at 27 C.
    */
@@ -1791,7 +1792,7 @@ export class Circuit {
   ): void {
     const unsupported = (subject: string): InvalidCircuitError => new InvalidCircuitError(
       `.options TEMP=${temperature} is unsupported for ${subject}: `
-      + `only resistors and bounded VBIC devices follow the ngspice temperature model`,
+      + `only resistors, bounded VBIC devices and B sources follow the ngspice temperature model`,
     );
     const noise = this._analyses.find(analysis => analysis.type === 'noise');
     if (noise) throw unsupported("'.noise' (noise sources are evaluated at 27 C)");
@@ -1810,9 +1811,9 @@ export class Circuit {
     }
 
     for (const device of devices) {
-      if (device instanceof Resistor || device instanceof VBIC) {
+      if (device instanceof Resistor || device instanceof VBIC || device instanceof BehavioralSource) {
         device.setTemperature(temperature);
-      } else if (device.isNonlinear && !(device instanceof BehavioralCurrentSource)) {
+      } else if (device.isNonlinear) {
         throw unsupported(`device '${device.name}'`);
       }
     }
