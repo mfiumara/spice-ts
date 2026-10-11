@@ -23,9 +23,18 @@ importers:
 
   examples:
     dependencies:
+      '@spice-ts/circuit-json':
+        specifier: workspace:*
+        version: link:../packages/circuit-json
       '@spice-ts/core':
         specifier: workspace:*
         version: link:../packages/core
+      '@spice-ts/mcp':
+        specifier: workspace:*
+        version: link:../packages/mcp
+      '@spice-ts/protocol':
+        specifier: workspace:*
+        version: link:../packages/protocol
     devDependencies:
       ajv:
         specifier: ^8.17.1
