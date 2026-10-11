@@ -13,8 +13,9 @@ import { Inductor } from './devices/inductor.js';
 import { MutualInductor } from './devices/mutual-inductor.js';
 import { Diode, diodeZeroBiasCapacitance } from './devices/diode.js';
 import { BJT } from './devices/bjt.js';
-import { VBIC, resolveVBICParams } from './devices/vbic.js';
+import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
+import { MOS6, resolveMOS6Model } from './devices/mos6.js';
 import { JFET, resolveNJFETParams } from './devices/jfet.js';
 import { HFET1 } from './devices/hfet1.js';
 import { resolveHFET1Instance } from './devices/hfet1-model.js';
@@ -750,7 +751,7 @@ export class Circuit {
   /**
    * Add a MOSFET to the circuit.
    *
-   * Supports Level 1 (Shichman-Hodges) and Level 49/8 (BSIM3v3) models.
+   * Supports Level 1 (Shichman-Hodges), Level 6 (Sakurai-Newton) and Level 49/8 (BSIM3v3) models.
    *
    * @param name - Device name (e.g., `'M1'`)
    * @param nodeDrain - Drain node
@@ -1152,15 +1153,14 @@ export class Circuit {
     if (hasBoundedVBIC) {
       const unsupportedStep = this._steps.find(step => step.param.toUpperCase() === 'TEMP');
       if (unsupportedStep) {
-        throw new Error("Unsupported bounded VBIC step: 'TEMP'");
+        throw new InvalidCircuitError("Unsupported bounded VBIC step: 'TEMP'");
       }
+      // Bounded VBIC linearizes at the operating point (.ac/.pz) but has no
+      // transient charge integration, noise sources, or distortion terms.
       const unsupported = this._analyses.find(analysis =>
-        analysis.type !== 'op' && analysis.type !== 'dc');
+        analysis.type !== 'op' && analysis.type !== 'dc' && analysis.type !== 'ac');
       if (unsupported) {
-        throw new Error(`Unsupported bounded VBIC analysis: '${unsupported.type}'`);
-      }
-      if (this._poleZeroAnalyses.length > 0) {
-        throw new Error("Unsupported bounded VBIC analysis: 'pz'");
+        throw new InvalidCircuitError(`Unsupported bounded VBIC analysis: '${unsupported.type}'`);
       }
     }
 
@@ -1377,6 +1377,20 @@ export class Circuit {
               desc.name, nodeIdxs, modelParams,
               { W: desc.params?.W ?? 1e-6, L: desc.params?.L ?? 1e-6 },
               polarity,
+            ));
+          } else if (level === 6) {
+            // MOS6 (Sakurai-Newton n-th power law) — 4-terminal, bulk defaults to source.
+            const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];
+            const nodeIdxs = [
+              resolveNode(desc.nodes[0]),
+              resolveNode(desc.nodes[1]),
+              resolveNode(desc.nodes[2]),
+              resolveNode(bulkNode),
+            ];
+            devices.push(new MOS6(
+              desc.name, nodeIdxs,
+              resolveMOS6Model(desc.modelName!, modelParams, polarity),
+              desc.params ?? {},
             ));
           } else {
             // Level 1 — existing behavior
@@ -1611,6 +1625,9 @@ export class Circuit {
                 emitterInternal,
                 internalNodeName(desc.name, 'bp'),
                 substrateInternal,
+                ...(vbicNodeCount(params) > 7
+                  ? [internalNodeName(desc.name, 'xf1'), internalNodeName(desc.name, 'xf2')]
+                  : []),
               ],
             });
             continue;

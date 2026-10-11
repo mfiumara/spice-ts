@@ -32,6 +32,32 @@ describe('ComplexSparseSolver', () => {
     });
   });
 
+  it('applies updates to explicitly stamped zeros that fill in during elimination', () => {
+    // Column 2 holds an explicit structural zero at row 1. Eliminating column 0
+    // turns it into -0.5, so U[1,2] must still be formed (mirrors the real
+    // Gilbert-Peierls solver's fill-activation tracking).
+    const G = new SparseMatrix(3);
+    G.add(0, 0, 2); G.add(0, 2, 1);
+    G.add(1, 0, 1); G.add(1, 1, 2); G.touch(1, 2);
+    G.add(2, 1, 1); G.add(2, 2, 3);
+    const C = new SparseMatrix(3);
+    const gCsc = toCsc(G).csc;
+    const cCsc = toCsc(C).csc;
+
+    const solver = new ComplexSparseSolver();
+    solver.analyzePattern(gCsc, cCsc);
+    solver.factorize(gCsc, cCsc, 1);
+    const [xRe, xIm] = solver.solve(new Float64Array([1, 0, 0]), new Float64Array(3));
+
+    const dense = [[2, 0, 1], [1, 2, 0], [0, 1, 3]];
+    const b = [1, 0, 0];
+    for (let row = 0; row < 3; row++) {
+      const residual = dense[row].reduce((sum, value, column) => sum + value * xRe[column], 0) - b[row];
+      expect(Math.abs(residual)).toBeLessThan(1e-14);
+      expect(Math.abs(xIm[row])).toBeLessThan(1e-14);
+    }
+  });
+
   it('solves a 2x2 complex system', () => {
     // (G + jωC)x = b where G = [[2, 1], [1, 3]], C = [[1, 0], [0, 1]], ω = 1
     // So A = [[2+j, 1], [1, 3+j]]

@@ -3,6 +3,8 @@ import type { IntegrationMethod, ResolvedOptions } from '../types.js';
 import type { MNAAssembler } from '../mna/assembler.js';
 import type { DeviceModel } from '../devices/device.js';
 import { buildCompanionSystem } from '../mna/companion.js';
+import type { SparseSolver } from '../solver/sparse-solver.js';
+import { SingularMatrixError } from '../errors.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 /**
@@ -109,8 +111,22 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
 
     if (!assembler.isFastPath) assembler.lockTopology();
     const solver = assembler.getSparseSolver();
-    solver.factorize(assembler.getCscMatrix());
-    const x = solver.solve(new Float64Array(assembler.b));
+    const x = solveLinearized(solver, assembler);
+    if (x === undefined) {
+      // ngspice dctran treats any non-zero NIiter return, E_SINGULAR
+      // included, as non-convergence and cuts the timestep. A singular or
+      // non-finite linear solve mid-transient means this iterate diverged
+      // (or dt is too large), not that the circuit topology is invalid: the
+      // DC operating point already proved the matrix structurally solvable.
+      return {
+        ok: false,
+        reason: 'nr-divergence',
+        iterations: iter + 1,
+        lastSolution: new Float64Array(assembler.solution),
+        prevIterSolution,
+        oscillated,
+      };
+    }
 
     const prev = new Float64Array(assembler.solution);
 
@@ -165,6 +181,26 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
     prevIterSolution,
     oscillated,
   };
+}
+
+/**
+ * Factor and solve the linearised companion system. Returns `undefined` when
+ * the matrix is numerically singular or the solution is not finite, so the
+ * caller can fail the NR attempt and let the driver cut the timestep.
+ */
+function solveLinearized(solver: SparseSolver, assembler: MNAAssembler): Float64Array | undefined {
+  let x: Float64Array;
+  try {
+    solver.factorize(assembler.getCscMatrix());
+    x = solver.solve(new Float64Array(assembler.b));
+  } catch (error) {
+    if (error instanceof SingularMatrixError) return undefined;
+    throw error;
+  }
+  for (let i = 0; i < x.length; i++) {
+    if (!Number.isFinite(x[i])) return undefined;
+  }
+  return x;
 }
 
 interface TerminalNodes {

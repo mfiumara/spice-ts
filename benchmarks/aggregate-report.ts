@@ -19,7 +19,13 @@ import { arch, cpus, platform, release, tmpdir } from 'node:os';
 import { basename, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deserialize, serialize } from 'node:v8';
-import { alignAndMeasure, type ComparisonMetrics, type SampleSeries } from './comparison-harness.js';
+import {
+  alignAndMeasure,
+  sharedGridPoints,
+  type AlignmentOptions,
+  type ComparisonMetrics,
+  type SampleSeries,
+} from './comparison-harness.js';
 import {
   findMatchingAnalysis,
   runNativeNgspice,
@@ -78,8 +84,22 @@ interface FixtureReceipt {
   input: { bytes: number; sha256: string; identicalForBothEngines: true };
   ngspice: EngineReceipt;
   spiceTs: EngineReceipt;
-  comparisons: Array<{ analysis: ClassicAnalysisType; signals: string[]; metrics: ComparisonMetrics }>;
+  /** Reports generated before #445 carry no `linearMetrics`. */
+  comparisons: Array<Omit<ComparisonReceipt, 'linearMetrics'> & { linearMetrics?: ComparisonMetrics }>;
   gapIssues: string[];
+}
+
+export interface ComparisonReceipt {
+  analysis: ClassicAnalysisType;
+  signals: string[];
+  /** Primary metric (`policy.breakpointAlignment`): one-sided at shared transient breakpoints. */
+  metrics: ComparisonMetrics;
+  /**
+   * Secondary, pre-#445 metric: plain linear interpolation of ngspice everywhere. Published so
+   * that the breakpoint-aware primary metric hides no error. Identical to `metrics` for every
+   * non-transient analysis.
+   */
+  linearMetrics: ComparisonMetrics;
 }
 
 interface MatchedPointEnvelope {
@@ -117,6 +137,8 @@ export interface AggregateReport {
     perCircuitToleranceTuning: false;
     comparisonGrid: 'spice-ts';
     interpolation: 'linear';
+    /** Absent before #445. See `AlignmentOptions.breakpoints` in comparison-harness.ts. */
+    breakpointAlignment?: 'one-sided at time points shared by both transient grids; linear metric retained';
     timing: 'single wall-clock execution per engine and fixture; descriptive, not a speed claim';
     deterministicHashExcludes: ['environment', 'runtimeMs', 'error'];
   };
@@ -408,7 +430,12 @@ function commonSignals(left: SampleSeries, right: SampleSeries): string[] {
   return Object.keys(left.signals).filter(signal => right.signals[signal] !== undefined).sort();
 }
 
-function measureInChunks(spiceTs: SampleSeries, ngspice: SampleSeries, signals: string[]): ComparisonMetrics {
+function measureInChunks(
+  spiceTs: SampleSeries,
+  ngspice: SampleSeries,
+  signals: string[],
+  options: AlignmentOptions = {},
+): ComparisonMetrics {
   const chunkSize = 25_000;
   const chunks = Array.from({ length: Math.ceil(spiceTs.grid.length / chunkSize) }, (_, index) => {
     const start = index * chunkSize;
@@ -416,7 +443,7 @@ function measureInChunks(spiceTs: SampleSeries, ngspice: SampleSeries, signals: 
     return alignAndMeasure({
       grid: spiceTs.grid.slice(start, end),
       signals: Object.fromEntries(signals.map(signal => [signal, spiceTs.signals[signal].slice(start, end)])),
-    }, ngspice, signals);
+    }, ngspice, signals, options);
   });
   const comparedSignals: ComparisonMetrics['signals'] = {};
   for (const signal of signals) {
@@ -460,8 +487,13 @@ function measureInChunks(spiceTs: SampleSeries, ngspice: SampleSeries, signals: 
   };
 }
 
-function compare(left: EngineExecution, right: EngineExecution): FixtureReceipt['comparisons'] {
-  const comparisons: FixtureReceipt['comparisons'] = [];
+/**
+ * Matches every spice-ts analysis with its ngspice counterpart. For transients the primary
+ * metric does not interpolate ngspice across a breakpoint step it leaves unresolved (#445);
+ * the pre-#445 linear metric is retained alongside it.
+ */
+export function compareExecutions(left: EngineExecution, right: EngineExecution): ComparisonReceipt[] {
+  const comparisons: ComparisonReceipt[] = [];
   for (const spiceAnalysis of left.analyses) {
     const ngspiceAnalysis = findMatchingAnalysis(right.analyses, spiceAnalysis);
     if (!ngspiceAnalysis) continue;
@@ -470,7 +502,12 @@ function compare(left: EngineExecution, right: EngineExecution): FixtureReceipt[
     comparisons.push({
       analysis: spiceAnalysis.type,
       signals,
-      metrics: measureInChunks(spiceAnalysis.series, ngspiceAnalysis.series, signals),
+      metrics: measureInChunks(spiceAnalysis.series, ngspiceAnalysis.series, signals, {
+        breakpoints: spiceAnalysis.type === 'tran'
+          ? sharedGridPoints(spiceAnalysis.series.grid, ngspiceAnalysis.series.grid)
+          : undefined,
+      }),
+      linearMetrics: measureInChunks(spiceAnalysis.series, ngspiceAnalysis.series, signals),
     });
   }
   return comparisons.sort((a, b) => a.analysis.localeCompare(b.analysis));
@@ -695,7 +732,7 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
         input: { bytes: input.byteLength, sha256: digest, identicalForBothEngines: true },
         ngspice: receipt(ngspice.execution, circuit.ngspice, ngspice.runtimeMs, ['ngspice', '-b', '-r', '<raw>', '<identical-fixture>'], digest),
         spiceTs: receipt(spiceTs.execution, circuit.spiceTs, spiceTs.runtimeMs, ['@spice-ts/core', 'simulate', '<identical-fixture>'], digest),
-        comparisons: compare(spiceTs.execution, ngspice.execution),
+        comparisons: compareExecutions(spiceTs.execution, ngspice.execution),
         gapIssues: gapIssues(circuit),
       });
     }
@@ -724,6 +761,7 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
       perCircuitToleranceTuning: false,
       comparisonGrid: 'spice-ts',
       interpolation: 'linear',
+      breakpointAlignment: 'one-sided at time points shared by both transient grids; linear metric retained',
       timing: 'single wall-clock execution per engine and fixture; descriptive, not a speed claim',
       deterministicHashExcludes: ['environment', 'runtimeMs', 'error'],
     },
@@ -744,6 +782,29 @@ export async function buildAggregateReport(): Promise<AggregateReport> {
   const report = { ...base, outcomeSha256: deterministicDigest(base) };
   validateAggregateAccounting(report);
   return report;
+}
+
+const METHOD_ISSUE_URL = 'https://github.com/mfiumara/spice-ts/issues/445';
+
+/** Methodology text for the alignment the report was actually generated with. */
+export function comparisonMethodLines(policy: AggregateReport['policy']): string[] {
+  const base = '- Comparison method: errors are evaluated at the spice-ts output points with ngspice linearly '
+    + 'interpolated onto them; relative errors divide by that ngspice value.';
+  const artifact = 'At a source breakpoint both engines report the left limit, so a waveform that steps there '
+    + '(for example L·di/dt at a PWL corner) shows its right limit only at the next ngspice sample. Linear '
+    + 'interpolation across that interval invents values neither engine produced and charges them as error at '
+    + 'every spice-ts point inside it.';
+  if (policy.breakpointAlignment !== undefined) {
+    return [
+      base,
+      `- Breakpoint alignment ([#445](${METHOD_ISSUE_URL})): ${artifact} For transients, every time point present in both engines' grids is treated as a breakpoint. Inside an ngspice interval that opens at one, each spice-ts sample is compared with the nearer of the linear interpolation and the right-sided reconstruction from the next two ngspice samples. Every other sample, analysis, and tolerance is unchanged.`,
+      '- The pre-#445 plain-linear metric is still published for every comparison as `linearMetrics` in `benchmarks/aggregate-report.json`, so the change hides no loss. The envelope below uses the primary breakpoint-aligned metric.',
+    ];
+  }
+  return [
+    base,
+    `- Known artifact ([#445](${METHOD_ISSUE_URL})): ${artifact} The next regeneration compares one-sided across such intervals and keeps this plain-linear metric as a secondary column.`,
+  ];
 }
 
 function markdown(report: AggregateReport): string {
@@ -774,6 +835,7 @@ function markdown(report: AggregateReport): string {
     '',
     '- Both engines receive the exact same fixture bytes; each row records the common SHA-256.',
     '- No fixture adaptation and no per-circuit tolerance tuning.',
+    ...comparisonMethodLines(report.policy),
     `- Accounted fixtures: ${totals.fixtures} (${CORPORA.map(corpus => `${corpus}=${totals.corpusFixtures[corpus]}`).join(', ')}).`,
     `- ngspice: ${totals.ngspice.success} success, ${totals.ngspice.failed} failed, ${totals.ngspice.unsupported} unsupported.`,
     `- spice-ts: ${totals.spiceTs.success} success, ${totals.spiceTs.failed} failed, ${totals.spiceTs.unsupported} unsupported.`,

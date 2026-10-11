@@ -1,11 +1,26 @@
 import type { CscMatrix } from './csc-matrix.js';
 import type { SparseSolver } from './sparse-solver.js';
 import { SingularMatrixError, type MatrixVariableIdentity } from '../errors.js';
+import { amdOrdering } from './amd-ordering.js';
+
+/** Column ordering applied once per topology by {@link GilbertPeierlsSolver.analyzePattern}. */
+export type ColumnOrdering = 'amd' | 'natural';
+
+export interface GilbertPeierlsOptions {
+  /**
+   * Fill-reducing ordering. `'amd'` (default) permutes columns and preferred
+   * pivot rows symmetrically by an approximate minimum degree ordering of
+   * A + Aᵀ; `'natural'` keeps the MNA variable order.
+   */
+  ordering?: ColumnOrdering;
+}
 
 /**
  * Gilbert-Peierls sparse LU solver.
  *
- * Implements PA = LU factorization with threshold partial pivoting.
+ * Implements PAQ = LU factorization with a fill-reducing column ordering Q
+ * (approximate minimum degree on A + Aᵀ, computed once per topology) and
+ * threshold partial pivoting that prefers the symmetrically permuted diagonal.
  * The algorithm separates symbolic analysis (sparsity structure prediction)
  * from numeric factorization, allowing the symbolic phase to run once per
  * circuit topology while numeric factorization runs every Newton-Raphson step.
@@ -20,9 +35,14 @@ import { SingularMatrixError, type MatrixVariableIdentity } from '../errors.js';
  *   L is unit lower triangular (implicit 1s on diagonal), stored in CSC.
  *   U is upper triangular (including diagonal), stored in CSC.
  *   P is a row permutation vector from threshold partial pivoting.
+ *   Q is the column ordering: step k factorizes original column colPerm[k].
  */
 export class GilbertPeierlsSolver implements SparseSolver {
   private n = 0;
+  private readonly ordering: ColumnOrdering;
+
+  // colPerm[k] = j means original column j is factorized at step k
+  private colPerm!: Int32Array;
 
   // Pre-allocated L/U structure (CSC format)
   private lColPtr!: Int32Array;
@@ -49,12 +69,27 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
   private readonly pivotThreshold = 0.1;
 
+  constructor(options: GilbertPeierlsOptions = {}) {
+    this.ordering = options.ordering ?? 'amd';
+  }
+
   analyzePattern(A: CscMatrix, variables: readonly MatrixVariableIdentity[] = []): void {
     const n = A.size;
     this.n = n;
     this.variables = variables;
 
-    // Size the initial factors directly from A's structural lower/upper parts.
+    // The fill-reducing ordering depends only on the sparsity pattern, so it
+    // is computed here once per topology and reused by every factorize().
+    if (this.ordering === 'amd') {
+      this.colPerm = amdOrdering(A);
+    } else {
+      this.colPerm = new Int32Array(n);
+      for (let j = 0; j < n; j++) this.colPerm[j] = j;
+    }
+
+    // Size the initial factors from A's structural lower/upper parts in the
+    // natural order. The column ordering moves entries between L and U, and
+    // numeric fill adds more; the factor arrays grow on demand.
     // The previous fill predictor materialized one Set and multiple boxed arrays
     // per column, although numeric pivoting could still invalidate its estimate.
     // Dynamic growth already preserves correctness for fill beyond this bound.
@@ -95,6 +130,17 @@ export class GilbertPeierlsSolver implements SparseSolver {
   }
 
   /**
+   * Stored non-zeros of the last numeric factorization: strictly lower L plus
+   * U including its diagonal. Diagnostics only.
+   */
+  factorNonzeros(): number {
+    if (!this.factorized) {
+      throw new Error('Must call factorize before factorNonzeros');
+    }
+    return this.lColPtr[this.n] + this.uColPtr[this.n];
+  }
+
+  /**
    * Left-looking column-Crout factorization with threshold partial pivoting.
    *
    * The workspace vector is indexed by ORIGINAL row numbers throughout.
@@ -112,6 +158,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
     const n = this.n;
     const perm = this.perm;
+    const colPerm = this.colPerm;
     const workspace = this.workspace;
     const lColPtr = this.lColPtr;
     let lRows = this.lRows;
@@ -130,8 +177,9 @@ export class GilbertPeierlsSolver implements SparseSolver {
     if (this.workspaceDirty) workspace.fill(0);
     this.workspaceDirty = true;
 
-    // Initialize permutation and work arrays
-    for (let i = 0; i < n; i++) perm[i] = i;
+    // Initialize the row permutation to the column ordering so the natural
+    // pivot candidate at step j is the symmetrically permuted diagonal.
+    perm.set(colPerm);
     pinv.fill(-1);
     nonzeroFlag.fill(-1);
 
@@ -144,8 +192,9 @@ export class GilbertPeierlsSolver implements SparseSolver {
       lColPtr[j] = lp;
       uColPtr[j] = up;
 
-      // === Step 1: SCATTER column j of A into workspace (original row space) ===
-      for (let p = A.colPtr[j]; p < A.colPtr[j + 1]; p++) {
+      // === Step 1: SCATTER column colPerm[j] of A into workspace (original row space) ===
+      const col = colPerm[j];
+      for (let p = A.colPtr[col]; p < A.colPtr[col + 1]; p++) {
         const origRow = A.rowIdx[p];
         workspace[origRow] = A.values[p];
         if (nonzeroFlag[origRow] !== j) {
@@ -253,7 +302,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
       }
 
       if (maxVal < 1e-18) {
-        throw SingularMatrixError.atPivot(j, this.variables);
+        throw SingularMatrixError.atPivot(col, this.variables);
       }
 
       // Prefer the natural diagonal candidate (perm[j]) if sufficiently large
@@ -267,7 +316,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
       const pivotVal = workspace[chosenOrigRow];
       if (Math.abs(pivotVal) < 1e-18) {
-        throw SingularMatrixError.atPivot(j, this.variables);
+        throw SingularMatrixError.atPivot(col, this.variables);
       }
 
       // Record pivot assignment
@@ -369,6 +418,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
     const uColPtr = this.uColPtr;
     const uRows = this.uRows;
     const uValues = this.uValues;
+    const colPerm = this.colPerm;
     // Factorization leaves the dense column workspace unused. Reuse it for y
     // rather than retaining a second n-element vector for the solve phase.
     // Every entry is initialized below, and factorize() clears it before reuse.
@@ -388,18 +438,26 @@ export class GilbertPeierlsSolver implements SparseSolver {
       }
     }
 
-    // Backward substitution: Ux = y (using cached diagonal positions)
-    // The RHS is caller-owned scratch at every internal call site. Reusing it
-    // as x avoids allocating another n-element vector for every Newton solve.
+    // Backward substitution: Uz = y, then x = Qz (using cached diagonal positions).
+    // The RHS is caller-owned scratch at every internal call site and is no
+    // longer read once y = Pb is formed. Reusing it as x avoids allocating
+    // another n-element vector for every Newton solve.
     const x = b;
     for (let j = n - 1; j >= 0; j--) {
       // Numeric factorization appends each U diagonal after every off-diagonal
       // entry in its column, so the column end already identifies the pivot.
-      x[j] = y[j] / uValues[uColPtr[j + 1] - 1];
+      const zj = y[j] / uValues[uColPtr[j + 1] - 1];
+      // Finite factors can still yield an overflowing solution (a long chain
+      // of gain stages). Report it like a numeric zero pivot instead of
+      // handing Inf/NaN to Newton, whose step tests cannot reject NaN.
+      if (zj - zj !== 0) {
+        throw SingularMatrixError.atPivot(colPerm[j], this.variables);
+      }
+      x[colPerm[j]] = zj;
       for (let p = uColPtr[j]; p < uColPtr[j + 1]; p++) {
         const i = uRows[p];
         if (i < j) {
-          y[i] -= uValues[p] * x[j];
+          y[i] -= uValues[p] * zj;
         }
       }
     }
@@ -409,10 +467,16 @@ export class GilbertPeierlsSolver implements SparseSolver {
 }
 
 /**
- * Sort the first `count` elements of an Int32Array in ascending order (insertion sort).
- * Fast for small arrays which is the typical case in sparse factorization.
+ * Sort the first `count` elements of an Int32Array in ascending order.
+ * Insertion sort for the typical short column; typed-array sort once a dense
+ * row (e.g. a supply rail ordered last) makes the active set large and,
+ * under a fill-reducing ordering, unsorted.
  */
 function sortInt32Prefix(arr: Int32Array, count: number): void {
+  if (count > 32) {
+    arr.subarray(0, count).sort();
+    return;
+  }
   for (let i = 1; i < count; i++) {
     const val = arr[i];
     let j = i - 1;

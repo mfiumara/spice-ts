@@ -150,7 +150,8 @@ describe('PULSE with zero delay and zero rise (PR #377 review)', () => {
 
   it('starts the underdamped RLC at 0 and rings to the ngspice-47 overshoot', async () => {
     const { atZero, absMax, peak } = await compare(RLC_STEP, '3', NGSPICE_RLC_STEP);
-    expect(atZero).toBe(0);
+    // Math.abs: the sign of an exact zero depends on LU elimination order.
+    expect(Math.abs(atZero)).toBe(0);
     expect(Math.abs(peak - NGSPICE_RLC_PEAK)).toBeLessThan(1e-3);
     expect(absMax).toBeLessThan(5e-3);
   });

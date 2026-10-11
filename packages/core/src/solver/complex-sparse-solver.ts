@@ -47,6 +47,7 @@ export class ComplexSparseSolver {
   private nonzeroFlag!: Int32Array;
   private nonzeroList!: Int32Array;
   private activeK!: Int32Array;
+  private activeMark!: Int32Array;
 
   private analyzed = false;
   private factorized = false;
@@ -165,6 +166,7 @@ export class ComplexSparseSolver {
     this.nonzeroFlag = new Int32Array(n);
     this.nonzeroList = new Int32Array(n);
     this.activeK = new Int32Array(n);
+    this.activeMark = new Int32Array(n);
 
     this.analyzed = true;
     this.factorized = false;
@@ -199,12 +201,14 @@ export class ComplexSparseSolver {
     const nonzeroFlag = this.nonzeroFlag;
     const nonzeroList = this.nonzeroList;
     const activeK = this.activeK;
+    const activeMark = this.activeMark;
 
     // Initialize permutation and work arrays
     for (let i = 0; i < n; i++) perm[i] = i;
     pivotOrigRow.fill(-1);
     pinv.fill(-1);
     nonzeroFlag.fill(-1);
+    activeMark.fill(-1);
 
     let lp = 0;
     let up = 0;
@@ -242,6 +246,7 @@ export class ComplexSparseSolver {
         const k = pinv[origRow];
         if (k >= 0 && k < j && (wsRe[origRow] !== 0 || wsIm[origRow] !== 0)) {
           activeK[activeCount++] = k;
+          activeMark[k] = j;
         }
       }
       sortInt32Prefix(activeK, activeCount);
@@ -277,18 +282,26 @@ export class ComplexSparseSolver {
           if (nonzeroFlag[origI] !== j) {
             nonzeroFlag[origI] = j;
             nonzeroList[nonzeroCount++] = origI;
-            const k2 = pinv[origI];
-            if (k2 >= 0 && k2 < j && k2 > k) {
-              activeK[activeCount] = k2;
-              activeCount++;
-              for (let q = activeCount - 1; q > ki; q--) {
-                if (activeK[q] < activeK[q - 1]) {
-                  const tmp = activeK[q];
-                  activeK[q] = activeK[q - 1];
-                  activeK[q - 1] = tmp;
-                } else {
-                  break;
-                }
+          }
+
+          // An explicitly stamped (structural) zero is already in nonzeroList
+          // but only becomes active after this update. Track activation
+          // separately from structure, as GilbertPeierlsSolver does.
+          const k2 = pinv[origI];
+          if (
+            k2 > k && k2 < j && activeMark[k2] !== j
+            && (wsRe[origI] !== 0 || wsIm[origI] !== 0)
+          ) {
+            activeMark[k2] = j;
+            activeK[activeCount] = k2;
+            activeCount++;
+            for (let q = activeCount - 1; q > ki; q--) {
+              if (activeK[q] < activeK[q - 1]) {
+                const tmp = activeK[q];
+                activeK[q] = activeK[q - 1];
+                activeK[q - 1] = tmp;
+              } else {
+                break;
               }
             }
           }
