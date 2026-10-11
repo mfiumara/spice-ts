@@ -249,7 +249,7 @@ export function solveNoise(
     });
   const noiseSources = [...resistorSources, ...mosfetSources, ...bjtSources];
 
-  const frequencies = frequencyGrid(analysis, options.reltol);
+  const frequencies = frequencyGrid(analysis, options.reltol, 'noise');
   const hasIntegratedTotals = analysis.stopFreq > analysis.startFreq;
   const outputNoiseDensity: number[] = [];
   const inputNoiseDensity: number[] = [];

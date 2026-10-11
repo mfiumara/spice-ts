@@ -549,7 +549,7 @@ function* streamAC(
   const G = assembler.G;
   const C = assembler.C;
 
-  const frequencies = frequencyGrid(analysis, options.reltol);
+  const frequencies = frequencyGrid(analysis, options.reltol, 'ac');
 
   // Build n*n CSC for G and C
   const { csc: gCsc } = toCsc(G);

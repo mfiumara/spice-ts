@@ -327,13 +327,13 @@ function estimatedAnalysisPoints(analysis: AnalysisDirective, reltol: number): n
       return primaryPoints * secondaryPoints;
     }
     case 'tran': return finiteLinearPoints(analysis.startTime ?? 0, analysis.stopTime, analysis.timestep);
-    case 'ac': return frequencyPointCount(analysis, reltol);
+    case 'ac': return frequencyPointCount(analysis, reltol, 'ac');
     case 'noise':
     case 'disto':
     case 'tf': return 0;
     case 'sens': {
       if (analysis.mode === 'dc') return 1;
-      return frequencyPointCount(analysis, reltol);
+      return frequencyPointCount(analysis, reltol, 'ac');
     }
   }
 }

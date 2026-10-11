@@ -100,7 +100,7 @@ export function solveAC(
   const system = createLinearizedFrequencySystem(compiled, options, dcSolution);
 
   // Generate frequency points
-  const frequencies = frequencyGrid(analysis, options.reltol);
+  const frequencies = frequencyGrid(analysis, options.reltol, 'ac');
 
   // Sweep frequencies
   const voltageArrays = new Map<string, { magnitude: number; phase: number }[]>();
