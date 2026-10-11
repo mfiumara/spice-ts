@@ -1174,7 +1174,7 @@ export class Circuit {
   addAnalysis(type: 'tf', params:
     | { outputNode: string; inputSource: string }
     | { outputSource: string; inputSource: string }): void;
-  addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur' | 'vol'; mode: 'pol' | 'pz' }): void;
+  addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur' | 'vol'; mode: 'pol' | 'zer' | 'pz' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'dc' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'ac'; variation: 'dec'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
@@ -1317,7 +1317,7 @@ export class Circuit {
           outputPositive: params!.outputPositive as string,
           outputNegative: params!.outputNegative as string,
           inputType: params!.inputType as 'cur' | 'vol',
-          mode: params!.mode as 'pol' | 'pz',
+          mode: params!.mode as PoleZeroAnalysis['mode'],
         };
         assertSupportedPoleZero(analysis);
         this._poleZeroAnalyses.push(analysis);

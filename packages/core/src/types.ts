@@ -149,16 +149,16 @@ export interface PoleZeroAnalysis {
   type: 'pz';
   /** Positive input terminal. */
   inputPositive: string;
-  /** Negative input terminal; bounded to ground in this slice. */
+  /** Negative input terminal (`'0'` for ground). */
   inputNegative: string;
   /** Positive voltage-output terminal. */
   outputPositive: string;
-  /** Negative voltage-output terminal; bounded to ground in this slice. */
+  /** Negative voltage-output terminal (`'0'` for ground). */
   outputNegative: string;
-  /** Current or voltage input; voltage input is bounded to passive RLC circuits. */
+  /** Current or voltage input. */
   inputType: 'cur' | 'vol';
-  /** Compute poles only, or both poles and zeros. */
-  mode: 'pol' | 'pz';
+  /** Compute poles only, zeros only, or both poles and zeros. */
+  mode: 'pol' | 'zer' | 'pz';
 }
 
 /** Bounded single-node voltage sensitivity analysis. */
