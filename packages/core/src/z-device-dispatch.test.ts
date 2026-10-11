@@ -20,7 +20,11 @@ describe('Z-card model dispatch', () => {
   it('rejects Z-card models other than NHFET and NMF', async () => {
     await expect(simulate([
       'pmf', 'vd d 0 1', 'z1 d 0 0 p', '.model p pmf level=2', '.op', '.end',
-    ].join('\n'))).rejects.toThrow("Unsupported Z-card model type: 'PMF'");
+    ].join('\n'))).rejects.toMatchObject({
+      code: 'UNSUPPORTED_MODEL_TYPE',
+      modelName: 'p',
+      modelType: 'PMF',
+    });
   });
 
   it('rejects Z-card instance parameters other than L and W at parse time', async () => {
