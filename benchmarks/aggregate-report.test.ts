@@ -60,12 +60,13 @@ describe('aggregate report artifact verification', () => {
         ['spiceTs', 'classic/bjt-noise', 'unsupported', 'success'],
         ['spiceTs', 'classic/resistor-noise', 'unsupported', 'success'],
         ['spiceTs', 'xyce/inductor-transient', 'failed', 'success'],
+        ['spiceTs', 'ngspice/probe-ac', 'unsupported', 'success'],
       ],
     );
     assert.deepEqual(report.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
-    assert.deepEqual(report.totals.spiceTs, { success: 59, failed: 0, unsupported: 41 });
-    assert.equal(report.totals.comparedAnalyses, 63);
-    assert.equal(report.totals.comparedFixtures, 47);
+    assert.deepEqual(report.totals.spiceTs, { success: 60, failed: 0, unsupported: 40 });
+    assert.equal(report.totals.comparedAnalyses, 64);
+    assert.equal(report.totals.comparedFixtures, 48);
     const inductor = report.fixtures.find((fixture: { key: string }) => fixture.key === 'xyce/inductor-transient');
     assert.equal(inductor.spiceTs.status, 'success');
     assert.ok(inductor.gapIssues.includes('https://github.com/mfiumara/spice-ts/issues/366'));
@@ -93,8 +94,8 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
-    assert.equal(report.matchedPointEnvelope.comparedSignals, 894);
-    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 865);
+    assert.equal(report.matchedPointEnvelope.comparedSignals, 898);
+    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 869);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 154.02408984579006);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 66.59015057379884);
     assert.equal(report.matchedPointEnvelope.maximumRelativeError, 45497356677842.63);
