@@ -17,11 +17,14 @@ export const SUPPORTED_MODEL_TYPES: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * Model types each model-referencing semiconductor instance accepts, keyed by
- * SPICE instance letter (ngspice-47 rejects an instance whose model belongs to
- * another device kind). Every listed type is in {@link SUPPORTED_MODEL_TYPES}.
+ * Model types each model-referencing instance accepts, keyed by SPICE instance
+ * letter (ngspice-47 rejects an instance whose model belongs to another device
+ * kind). Every listed type is in {@link SUPPORTED_MODEL_TYPES}.
  */
 export const DEVICE_MODEL_TYPES: Readonly<Record<string, readonly string[]>> = {
+  R: ['R'],
+  C: ['C'],
+  L: ['L'],
   D: ['D'],
   Q: ['NPN', 'PNP'],
   J: ['NJF'],

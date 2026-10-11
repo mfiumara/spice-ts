@@ -106,6 +106,9 @@ describe('model/device-kind mismatch (#544)', () => {
     ['Q', 'D', 'vc c 0 5\nvb b 0 0.7\nq1 c b 0 d1\n.model d1 d', 'q1'],
     ['J', 'PMOS', 'vd d 0 5\nvg g 0 0\nj1 d g 0 mp\n.model mp pmos', 'j1'],
     ['Z', 'NPN', 'vd d 0 5\nvg g 0 0\nz1 d g 0 q1\n.model q1 npn', 'z1'],
+    ['R', 'D', 'v1 a 0 1\nr1 a 0 1k d1\n.model d1 d', 'r1'],
+    ['C', 'L', 'v1 a 0 1\nr1 a b 1k\nc1 b 0 1p l1\n.model l1 l', 'c1'],
+    ['L', 'C', 'v1 a 0 1\nr1 a b 1k\nl1 b 0 1u c1\n.model c1 c', 'l1'],
   ];
 
   it.each(cases)('%s instance on a %s model raises MODEL_TYPE_MISMATCH', async (kind, type, body, device) => {
