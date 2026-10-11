@@ -135,7 +135,7 @@ export async function createSpiceEngine(options: CreateSpiceEngineOptions): Prom
   const usesBundledManifest = options.manifest === undefined && options.manifestUrl === undefined;
   const manifest = options.manifest ?? await loadManifest(options.manifestUrl ?? defaultManifestUrl());
   validateManifest(manifest);
-  if (usesBundledManifest && (manifest.engineBuildId !== bundledWorker.engineBuildId
+  if (usesBundledManifest && (!bundledWorker || manifest.engineBuildId !== bundledWorker.engineBuildId
     || manifest.worker.sha256 !== bundledWorker.sha256
     || manifest.numericWasm?.engineBuildId !== bundledWorker.numericEngineBuildId
     || manifest.numericWasm?.sha256 !== bundledWorker.numericSha256

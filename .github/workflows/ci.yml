@@ -73,6 +73,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
 
+      - name: Check build leaves the tree clean
+        run: |
+          git status --porcelain
+          test -z "$(git status --porcelain)"
+
       - name: Run examples
         run: pnpm -C examples test
 
