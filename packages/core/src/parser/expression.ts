@@ -8,14 +8,20 @@
  *   and      → equality ('&&' equality)*
  *   equality → relation (('==' | '!=' | '<>') relation)*
  *   relation → expr (('<' | '<=' | '>' | '>=') expr)*
- *   expr     → term (('+' | '-') term)*
+ *   expr     → ('+' | '-')? term (('+' | '-') term)*   (leading sign = 0 ± term)
  *   term     → exp (('*' | '/' | '%') exp)*
- *   exp      → unary (('**' | '^') exp)?
- *   unary    → ('-' | '+' | '!') unary | call
+ *   exp      → unary (('**' | '^') unary)*             (left-associative, |base|)
+ *   unary    → ('-' | '+' | '!') unary | call          (after an operator)
  *   call     → IDENT '(' ternary (',' ternary)* ')' | primary
  *   primary  → NUMBER | IDENT | '(' ternary ')'
  *
  * Comparisons and logical operators yield 1 or 0, as in ngspice.
+ *
+ * Known divergence: after an operator, ngspice-47 only folds a minus into a
+ * following number literal (`3*-2^2` = (-2)^2*3 = 12, matched here). Before a
+ * name, function or parenthesis it reports "wrongly determined negation"
+ * (`3*-x`) or moves the sign to the next literal (`3*-x^2` = 3*x^-2); spice-ts
+ * negates the operand instead (`3*-x` = -6, `3*-x^2` = 12).
  */
 
 // SI suffix exponents — case-sensitive for m (milli) vs M (mega)
@@ -138,7 +144,12 @@ class ExprParser {
   }
 
   private parseExpr(): number {
-    let left = this.parseTerm();
+    // ngspice numparam has no prefix minus at the start of a (sub-)formula: a
+    // leading sign is the binary operator applied to an empty accumulator, so
+    // `-2^2` is `0 - 2^2` = -4 and `-3^2+1` is -8 (ngspice-47).
+    this.skipWhitespace();
+    const ch = this.src[this.pos];
+    let left = (ch === '+' || ch === '-') && this.atFormulaStart() ? 0 : this.parseTerm();
     while (this.pos < this.src.length) {
       this.skipWhitespace();
       const ch = this.src[this.pos];
@@ -163,11 +174,21 @@ class ExprParser {
   }
 
   private parseExp(): number {
-    const left = this.parseUnary();
-    if (this.accept('**') || this.accept('^')) {
-      return left ** this.parseExp(); // recursive = right-associative
+    // ngspice numparam accumulates `^`/`**` left to right like every other
+    // binary level: `2^3^2` is (2^3)^2 = 64 (ngspice-47). Its default power is
+    // pow(fabs(x), y), so `(-2)^3` is 8.
+    let left = this.parseUnary();
+    while (this.accept('**') || this.accept('^')) {
+      left = Math.abs(left) ** this.parseUnary();
     }
     return left;
+  }
+
+  /** True when only whitespace, '(' or ',' precede the cursor in this formula. */
+  private atFormulaStart(): boolean {
+    let i = this.pos - 1;
+    while (i >= 0 && (this.src[i] === ' ' || this.src[i] === '\t')) i--;
+    return i < 0 || this.src[i] === '(' || this.src[i] === ',';
   }
 
   private parseUnary(): number {
