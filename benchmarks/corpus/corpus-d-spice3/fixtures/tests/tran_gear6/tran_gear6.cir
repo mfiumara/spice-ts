@@ -1,0 +1,17 @@
+RC time delay circuit
+* SPICE3/ngspice translation of ahkab tests/tran_gear6/tran_gear6.ckt (https://github.com/ahkab/ahkab @ 1e8939194b689909b8184ce7eba478b485ff9e3a).
+* ahkab is free software under GPL-2.0-only; see LICENSE-NOTICE.md and COPYING.txt in this directory.
+* Modified 2026-10-11 by benchmarks/translate/ahkab-to-spice3.ts (spice-ts). Line 1 is the upstream title. Changes:
+*  - ahkab `type=vdc vdc=X` written as SPICE3 `DC X`
+*  - ahkab keyed `type=pulse v1= v2= td= tr= tf= pw= per=` written as positional SPICE3 PULSE(v1 v2 td tr tf pw per)
+*  - ahkab `method=gear6` written as `.options method=gear maxord=6`: SPICE3/ngspice Gear is variable-order up to MAXORD while ahkab GEAR6 is fixed-order. The circuit and the requested analysis are unchanged; the integration-error behaviour is not ahkab's
+*  - ahkab `.tran` uic=2 (OP, then element ICs) written as SPICE3 `UIC`: all sources are 0 in DC and at t=0 and all element ICs are 0, so both start from the zero state
+v1 1 0 DC 0 PULSE(0 1 0 1n 1n 1n 1000)
+c1 2 0 550p ic=0
+l1 1 2 22n ic=0
+r1 2 1 .3k
+.op
+.tran 10n 1u UIC
+.plot tran v(2) v(1)
+.options method=gear maxord=6
+.end

@@ -1,0 +1,510 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "name": "ahkab test-suite circuits (SPICE3/ngspice translation)",
+    "repository": "https://github.com/ahkab/ahkab",
+    "revision": "1e8939194b689909b8184ce7eba478b485ff9e3a",
+    "license": "GPL-2.0-only",
+    "licenseUrl": "https://github.com/ahkab/ahkab/blob/1e8939194b689909b8184ce7eba478b485ff9e3a/COPYING",
+    "licenseNoticeSourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/README.md",
+    "licenseNoticeLocalPath": "benchmarks/corpus/corpus-d-spice3/LICENSE-NOTICE.md",
+    "licenseNoticeSha256": "064b6a2dd3536d1699e32ffec05e3f960bd8eccda8e300109878bf2569915b2f",
+    "licenseTextSourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/COPYING",
+    "licenseTextLocalPath": "benchmarks/corpus/corpus-d-spice3/COPYING.txt",
+    "licenseTextSha256": "ee8a06e8bf69c8b547477f2a6652d330f4a4bc7d8a29d0b8b573b19abfc06e71",
+    "redistributionDecision": "Allowed under GPL-2.0-only. Translated decks are modified versions of the upstream test circuits: each carries a header naming the upstream file, the modification date and every change, and the upstream notice and complete GPLv2 text are distributed alongside. ahkab reference result files are copied byte-for-byte.",
+    "mechanicalAdaptation": "Deterministic syntactic translation by benchmarks/translate/ahkab-to-spice3.ts from the byte-identical corpus-d originals (which stay unchanged in benchmarks/corpus/corpus-d). Per translated deck: line 1 (the title) is kept verbatim and a comment header records the upstream file, licence, modification date and every change. Mappings: type=vdc/idc vdc=/idc= -> DC; vac=/iac= -> AC; keyed ahkab PULSE/SIN -> positional SPICE3 PULSE/SIN (same formulas); ahkab AM(sa oc fm fc td) -> ngspice AM(0 sa*oc sa fm fc td) (same waveform); `.model diode <name>` -> `.model <name> D` (ahkab diode defaults equal SPICE3 defaults); `.tran` uic=0 or uic=2 -> UIC only where both provably start from the zero state; method=trap -> .options method=trap; method=gearN -> .options method=gear maxord=N (variable- instead of fixed-order Gear, stated per deck); decks with diodes get `.temp 26.85` and `.options tnom=26.85` because ahkab evaluates devices at 300 K; inline `*` comments move to their own line; `.end` is added where missing. Anything else (EKV MOSFETs, the tanh-smoothed ahkab switch, .symbolic, .fft, .pss, ahkab .pz, AC log grids with non-integer points per decade, named .ic sets, named-port subcircuits) is not approximated: the fixture is marked unsupported-translation with the reasons.",
+    "translator": "benchmarks/translate/ahkab-to-spice3.ts",
+    "translationDate": "2026-10-11",
+    "originalCorpus": "benchmarks/corpus/corpus-d"
+  },
+  "circuits": [
+    {
+      "id": "ohms-law-op",
+      "category": "op-dc",
+      "sourcePath": "tests/ohms_law/ohms_law.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/ohms_law/ohms_law.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/ohms_law/ohms_law.ckt",
+      "originalSha256": "be2e9901695aab2a53c140f845bb0fe41d3c43eecd41cddca3ce6c4946b5bbd2",
+      "translation": {
+        "status": "translated",
+        "changes": [
+          "ahkab `type=vdc vdc=X` written as SPICE3 `DC X`",
+          "added the `.end` card SPICE3 requires"
+        ]
+      },
+      "analyses": [
+        "op"
+      ],
+      "localPath": "benchmarks/corpus/corpus-d-spice3/fixtures/tests/ohms_law/ohms_law.cir",
+      "sha256": "929c6907b65478f47a00c9305f71887573bca7c8e7d77e5ad784b75a0091becd",
+      "ahkabReferences": [
+        {
+          "analysis": "op",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/ohms_law/ohms_law-ref.op",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/ohms_law/ohms_law-ref.op",
+          "sha256": "04d495afc018c60df2aa923bc905d45ee962c907e22ba8b42b6bfedadb8cb262"
+        }
+      ]
+    },
+    {
+      "id": "diode-operating-point",
+      "category": "op-dc",
+      "sourcePath": "tests/diode_op/diode_op.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/diode_op/diode_op.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/diode_op/diode_op.ckt",
+      "originalSha256": "1c7dbbf5941ce07f6806803f1c22df8165acde82d5dd66f9a9076da009e19b8e",
+      "translation": {
+        "status": "translated",
+        "changes": [
+          "ahkab `type=vdc vdc=X` written as SPICE3 `DC X`",
+          "ahkab `.model diode <name>` (type before name) written as SPICE3 `.model <name> D`; the ahkab diode defaults IS=1e-14, N=1, RS=0, CJ0=0, TT=0, BV=inf, IBV=1e-3, EG=1.11, XTI=3 equal the SPICE3 defaults (ahkab VJ=0.7 vs SPICE3 1 V only enters through CJ0=0)",
+          "added `.temp 26.85` and `.options tnom=26.85`: ahkab simulates and specifies diode parameters at 300 K, SPICE3 defaults to 27 C (300.15 K)",
+          "added the `.end` card SPICE3 requires"
+        ]
+      },
+      "analyses": [
+        "op"
+      ],
+      "localPath": "benchmarks/corpus/corpus-d-spice3/fixtures/tests/diode_op/diode_op.cir",
+      "sha256": "82b7ecf61de8a619b8bfb024485a050ba95daf7913c9c2b07046fcd676b832a5",
+      "ahkabReferences": [
+        {
+          "analysis": "op",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/diode_op/diode_op-ref.op",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/diode_op/diode_op-ref.op",
+          "sha256": "515d6864593f2bdc60db16b1db85788ed7d9eefd3b539aff14b0f47abcd46baa"
+        }
+      ]
+    },
+    {
+      "id": "ekv-bias-sweep",
+      "category": "op-dc",
+      "sourcePath": "tests/ekv1/ekv1.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/ekv1/ekv1.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/ekv1/ekv1.ckt",
+      "originalSha256": "2d680251e499b4b857ea78280d8e8c0e2114eb0977d2b1b4f69ba234a08f0271",
+      "translation": {
+        "status": "unsupported-translation",
+        "reasons": [
+          "MOSFET instances need an ahkab MOS model (EKV or square-law), neither of which is a SPICE3 model",
+          "EKV MOSFET model (.model ekv ...) has no SPICE3/ngspice equivalent",
+          "ahkab keyed .dc sweep translation is not implemented (every corpus-d .dc deck also uses the EKV model)"
+        ]
+      }
+    },
+    {
+      "id": "downscaling-current-mirror",
+      "category": "op-dc",
+      "sourcePath": "tests/downscaling_cm/downscaling_cm.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/downscaling_cm/downscaling_cm.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/downscaling_cm/downscaling_cm.ckt",
+      "originalSha256": "09fa542dd664647c2deaef15f2d8bf07f7f3e30b40e7e6a9242673b62d28da1f",
+      "translation": {
+        "status": "unsupported-translation",
+        "reasons": [
+          "MOSFET instances need an ahkab MOS model (EKV or square-law), neither of which is a SPICE3 model",
+          "EKV MOSFET model (.model ekv ...) has no SPICE3/ngspice equivalent",
+          "ahkab keyed .dc sweep translation is not implemented (every corpus-d .dc deck also uses the EKV model)"
+        ]
+      }
+    },
+    {
+      "id": "transresistance-ac",
+      "category": "ac",
+      "sourcePath": "tests/hvsource/hvsource.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/hvsource/hvsource.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/hvsource/hvsource.ckt",
+      "originalSha256": "e9c675ae1029b278422be65104ef1c10925d3506b7432274c9dce4c8c49d0765",
+      "translation": {
+        "status": "unsupported-translation",
+        "reasons": [
+          ".ac: ahkab LOG sweep of 1000 points from 7957.747 to 79577.471 Hz is 998.999994548 points/decade; SPICE3 .ac dec needs an integer, so the frequency grid cannot be reproduced",
+          "ahkab .symbolic (symbolic small-signal analysis) has no SPICE3 equivalent"
+        ]
+      }
+    },
+    {
+      "id": "passive-pole-zero-ac",
+      "category": "ac",
+      "sourcePath": "tests/pz1/pz1.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/pz1/pz1.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/pz1/pz1.ckt",
+      "originalSha256": "3a597bfe073b0d0219444b15559e6390a2aabe9ca8f1b9246db626efd8dda94c",
+      "translation": {
+        "status": "unsupported-translation",
+        "reasons": [
+          "ahkab .pz (circuit poles plus zeros from a named source to an output) is not translated: equivalence with SPICE3 .pz on a node-pair port has not been established",
+          ".ac: ahkab LOG sweep of 100 points from 0.1 to 10 Hz is 49.5000000000 points/decade; SPICE3 .ac dec needs an integer, so the frequency grid cannot be reproduced"
+        ]
+      }
+    },
+    {
+      "id": "resistor-voltage-ac",
+      "category": "ac",
+      "sourcePath": "tests/rvtest2/rvtest2.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/rvtest2/rvtest2.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/rvtest2/rvtest2.ckt",
+      "originalSha256": "a632b37a296d71114ea1bb8185029e041c28f86defdc4e6e671dfbe55de3a6ed",
+      "translation": {
+        "status": "unsupported-translation",
+        "reasons": [
+          ".ac: ahkab LOG sweep of 10 points from 1 to 100 Hz is 4.50000000000 points/decade; SPICE3 .ac dec needs an integer, so the frequency grid cannot be reproduced",
+          "ahkab .symbolic (symbolic small-signal analysis) has no SPICE3 equivalent"
+        ]
+      }
+    },
+    {
+      "id": "series-resonance-ac",
+      "category": "ac",
+      "sourcePath": "tests/series_resonance/series_resonance.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/series_resonance/series_resonance.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/series_resonance/series_resonance.ckt",
+      "originalSha256": "6b687bc2f3cd7415af561f26e80669ce8df3e08be977958dbc6db1446f5f22d0",
+      "translation": {
+        "status": "unsupported-translation",
+        "reasons": [
+          ".ac: ahkab LOG sweep of 100 points from 1 to 10000 Hz is 24.7500000000 points/decade; SPICE3 .ac dec needs an integer, so the frequency grid cannot be reproduced",
+          "ahkab .symbolic (symbolic small-signal analysis) has no SPICE3 equivalent"
+        ]
+      }
+    },
+    {
+      "id": "am-source-transient",
+      "category": "tran",
+      "sourcePath": "tests/amckt/amckt.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/amckt/amckt.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/amckt/amckt.ckt",
+      "originalSha256": "e5027b8f925e83ac09ef477b77b7219b215dcb74e0e172c8369c3c777a7e5632",
+      "translation": {
+        "status": "translated",
+        "changes": [
+          "ahkab `type=vdc vdc=X` written as SPICE3 `DC X`",
+          "ahkab `type=am sa oc fm fc td` written as ngspice AM(0 sa*oc sa fm fc td) (identical waveform; AM is an ngspice extension, not SPICE3f5)",
+          "ahkab `type=idc idc=X` written as SPICE3 `DC X`",
+          "ahkab `.tran` uic=0 (start from x=0, no OP) written as SPICE3 `UIC` (no element ICs present, so both start from the zero state)"
+        ]
+      },
+      "analyses": [
+        "tran"
+      ],
+      "localPath": "benchmarks/corpus/corpus-d-spice3/fixtures/tests/amckt/amckt.cir",
+      "sha256": "94319e32d2449f8c6537097218375f98bb25593d70f814e32ba6335a832eb0f5",
+      "ahkabReferences": [
+        {
+          "analysis": "tran",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/amckt/amckt-ref.tran",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/amckt/amckt-ref.tran",
+          "sha256": "39edc256f02cf0cc1c398b3919316d6ce36930a3db45efdbbe8e4243d809639f"
+        }
+      ]
+    },
+    {
+      "id": "fft-source-transient",
+      "category": "tran",
+      "sourcePath": "tests/fft_ckt/fft_ckt.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/fft_ckt/fft_ckt.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/fft_ckt/fft_ckt.ckt",
+      "originalSha256": "04d2554f966d5ffd8cfd00f665575e02d11045790cf201bb596b610c0e2ff59b",
+      "translation": {
+        "status": "unsupported-translation",
+        "reasons": [
+          "vs: ahkab source without vdc= has no defined SPICE3 DC value",
+          "ahkab .fft (np-point FFT of a transient result) has no exact SPICE3 equivalent; .four computes 9 harmonics of a given fundamental, a different output"
+        ]
+      }
+    },
+    {
+      "id": "coupled-transformer-transient",
+      "category": "tran",
+      "sourcePath": "tests/transformer/transformer.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/transformer/transformer.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/transformer/transformer.ckt",
+      "originalSha256": "df9bf42844508fc38edffdc685e935ac90e10bde5fab0ee957ce68f5da6ba4a5",
+      "translation": {
+        "status": "unsupported-translation",
+        "reasons": [
+          "ahkab .pss (periodic steady state by shooting/brute force) has no SPICE3 equivalent",
+          ".plot: unsupported ahkab plot .PLOT PSS V(2) V(3)"
+        ]
+      }
+    },
+    {
+      "id": "rlc-trapezoidal-transient",
+      "category": "tran",
+      "sourcePath": "tests/tran_trap/tran_trap.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_trap/tran_trap.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/tran_trap/tran_trap.ckt",
+      "originalSha256": "8932d8cc9e536d8ad910c67d199536f39750dea7a0ff282d9ee81bc861145cc8",
+      "translation": {
+        "status": "translated",
+        "changes": [
+          "ahkab `type=vdc vdc=X` written as SPICE3 `DC X`",
+          "ahkab keyed `type=pulse v1= v2= td= tr= tf= pw= per=` written as positional SPICE3 PULSE(v1 v2 td tr tf pw per)",
+          "ahkab `method=trap` written as `.options method=trap`",
+          "ahkab `.tran` uic=2 (OP, then element ICs) written as SPICE3 `UIC`: all sources are 0 in DC and at t=0 and all element ICs are 0, so both start from the zero state"
+        ]
+      },
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "localPath": "benchmarks/corpus/corpus-d-spice3/fixtures/tests/tran_trap/tran_trap.cir",
+      "sha256": "6e3658511e56952e3139cbbcb317066e99c5c38a57ebe2ac7fb3883235a8f39f",
+      "ahkabReferences": [
+        {
+          "analysis": "op",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_trap/tran_trap-ref.op",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/tran_trap/tran_trap-ref.op",
+          "sha256": "51683e14666a9c6b1ad8baf12aec86dfb4d300b47ac3e29281293e87ff18b573"
+        },
+        {
+          "analysis": "tran",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_trap/tran_trap-ref.tran",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/tran_trap/tran_trap-ref.tran",
+          "sha256": "24c1a8ed6580210dd86a9f882a9a6e377223f524c034dcfeb7903ffad3f58c89"
+        }
+      ]
+    },
+    {
+      "id": "diode-voltage-doubler",
+      "category": "nonlinear",
+      "sourcePath": "tests/diode_mult/diode_mult.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/diode_mult/diode_mult.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/diode_mult/diode_mult.ckt",
+      "originalSha256": "de110e81dd425b8117efd6acd32d7d4311b854bf1236715f3233b1e12419da50",
+      "translation": {
+        "status": "translated",
+        "changes": [
+          "ahkab `type=vdc vdc=X` written as SPICE3 `DC X`",
+          "ahkab `type=sin` written as SPICE3 SIN(vo va freq td theta) (same formula, phase fixed at 0 in ahkab netlists)",
+          "ahkab `.model diode <name>` (type before name) written as SPICE3 `.model <name> D`; the ahkab diode defaults IS=1e-14, N=1, RS=0, CJ0=0, TT=0, BV=inf, IBV=1e-3, EG=1.11, XTI=3 equal the SPICE3 defaults (ahkab VJ=0.7 vs SPICE3 1 V only enters through CJ0=0)",
+          "ahkab `.tran` uic=0 (start from x=0, no OP) written as SPICE3 `UIC` (no element ICs present, so both start from the zero state)",
+          "added `.temp 26.85` and `.options tnom=26.85`: ahkab simulates and specifies diode parameters at 300 K, SPICE3 defaults to 27 C (300.15 K)",
+          "added the `.end` card SPICE3 requires"
+        ]
+      },
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "localPath": "benchmarks/corpus/corpus-d-spice3/fixtures/tests/diode_mult/diode_mult.cir",
+      "sha256": "187b4daafcbdfc77187723c17bfc0d08c350e326834fde3db8e4f9b88b2e4eee",
+      "ahkabReferences": [
+        {
+          "analysis": "op",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/diode_mult/diode_mult-ref.op",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/diode_mult/diode_mult-ref.op",
+          "sha256": "6b15ef0dccdf26e4a59e707428415114230c38ffbe0f078ec1db53f90614f013"
+        },
+        {
+          "analysis": "tran",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/diode_mult/diode_mult-ref.tran",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/diode_mult/diode_mult-ref.tran",
+          "sha256": "5fe12464ca29015847fb269073198f6a9515b6d509c26696a85af5775bccb3d5"
+        }
+      ]
+    },
+    {
+      "id": "ekv-ring-oscillator",
+      "category": "nonlinear",
+      "sourcePath": "tests/ring3/ring3.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/ring3/ring3.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/ring3/ring3.ckt",
+      "originalSha256": "300a3d7c7441224ce67bbed31f9ecd334e8dd79cf4bfbeca9e49dc673a09f9ef",
+      "translation": {
+        "status": "unsupported-translation",
+        "reasons": [
+          "ahkab named-port subcircuit instances (name=/port=node) translation is not implemented",
+          "ahkab named-port subcircuit syntax translation is not implemented",
+          "MOSFET instances need an ahkab MOS model (EKV or square-law), neither of which is a SPICE3 model",
+          "EKV MOSFET model (.model ekv ...) has no SPICE3/ngspice equivalent",
+          "ahkab named .ic sets (used through uic=3/ic_label) have no SPICE3 equivalent",
+          ".tran: ahkab uic=3/ic_label (named .ic set) has no SPICE3 equivalent"
+        ]
+      }
+    },
+    {
+      "id": "cockcroft-walton-x8",
+      "category": "nonlinear",
+      "sourcePath": "tests/diodecw8/diodecw8.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/diodecw8/diodecw8.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/diodecw8/diodecw8.ckt",
+      "originalSha256": "050a38d7396b25410446e79dd8106578825bcce223f4c2cb0bb6889fdb18727b",
+      "translation": {
+        "status": "translated",
+        "changes": [
+          "ahkab `type=vdc vdc=X` written as SPICE3 `DC X`",
+          "ahkab `type=sin` written as SPICE3 SIN(vo va freq td theta) (same formula, phase fixed at 0 in ahkab netlists)",
+          "ahkab `.model diode <name>` (type before name) written as SPICE3 `.model <name> D`; the ahkab diode defaults IS=1e-14, N=1, RS=0, CJ0=0, TT=0, BV=inf, IBV=1e-3, EG=1.11, XTI=3 equal the SPICE3 defaults (ahkab VJ=0.7 vs SPICE3 1 V only enters through CJ0=0)",
+          "ahkab `.tran` uic=0 (start from x=0, no OP) written as SPICE3 `UIC` (no element ICs present, so both start from the zero state)",
+          "added `.temp 26.85` and `.options tnom=26.85`: ahkab simulates and specifies diode parameters at 300 K, SPICE3 defaults to 27 C (300.15 K)"
+        ]
+      },
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "localPath": "benchmarks/corpus/corpus-d-spice3/fixtures/tests/diodecw8/diodecw8.cir",
+      "sha256": "12a73d8d764c30e6a080b5ba6c9ac33faf232f81d29fb736520eda85cf313346",
+      "ahkabReferences": [
+        {
+          "analysis": "op",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/diodecw8/diodecw8-ref.op",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/diodecw8/diodecw8-ref.op",
+          "sha256": "e4a83a5eb307cd55aaa988fc321c63035a4c3f9108055e1feaaf2d0a417fae79"
+        },
+        {
+          "analysis": "tran",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/diodecw8/diodecw8-ref.tran",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/diodecw8/diodecw8-ref.tran",
+          "sha256": "14adbd608502c4928b952bf782147cde988af956870d77fc7fce0e60092cd7cc"
+        }
+      ]
+    },
+    {
+      "id": "pwm-switch",
+      "category": "nonlinear",
+      "sourcePath": "tests/switch1/switch1.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/switch1/switch1.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/switch1/switch1.ckt",
+      "originalSha256": "e3d1544f41fef2361132c89b6a85776f3e2f32c7ec95b1321144c82cd6799ff5",
+      "translation": {
+        "status": "unsupported-translation",
+        "reasons": [
+          "ahkab switch model is a tanh-smoothed resistor whose VON/VOFF are converted to VT and VH=VT*1e-3; SPICE3 SW is an abrupt hysteretic switch without VON/VOFF, so any mapping would approximate",
+          "voltage-controlled switch instances use the ahkab switch model (see the model reason)",
+          ".op: ahkab option guess=0 has no SPICE3 equivalent",
+          ".tran: ahkab uic=2 (OP then element-IC override) has no SPICE3 equivalent unless the OP and all ICs are zero"
+        ]
+      }
+    },
+    {
+      "id": "rlc-gear3",
+      "category": "convergence",
+      "sourcePath": "tests/tran_gear3/tran_gear3.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear3/tran_gear3.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/tran_gear3/tran_gear3.ckt",
+      "originalSha256": "98fd4fd298a27da8d9286ec29a1af412b7fa7d9098809b8f0635dc42e9062219",
+      "translation": {
+        "status": "translated",
+        "changes": [
+          "ahkab `type=vdc vdc=X` written as SPICE3 `DC X`",
+          "ahkab keyed `type=pulse v1= v2= td= tr= tf= pw= per=` written as positional SPICE3 PULSE(v1 v2 td tr tf pw per)",
+          "ahkab `method=gear3` written as `.options method=gear maxord=3`: SPICE3/ngspice Gear is variable-order up to MAXORD while ahkab GEAR3 is fixed-order. The circuit and the requested analysis are unchanged; the integration-error behaviour is not ahkab's",
+          "ahkab `.tran` uic=2 (OP, then element ICs) written as SPICE3 `UIC`: all sources are 0 in DC and at t=0 and all element ICs are 0, so both start from the zero state"
+        ]
+      },
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "localPath": "benchmarks/corpus/corpus-d-spice3/fixtures/tests/tran_gear3/tran_gear3.cir",
+      "sha256": "f1cf4a492e86e4a672ef6215fc629f37f2d15d9afc41ae11d457c1cfeacfafe7",
+      "ahkabReferences": [
+        {
+          "analysis": "op",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear3/tran_gear3-ref.op",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/tran_gear3/tran_gear3-ref.op",
+          "sha256": "51683e14666a9c6b1ad8baf12aec86dfb4d300b47ac3e29281293e87ff18b573"
+        },
+        {
+          "analysis": "tran",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear3/tran_gear3-ref.tran",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/tran_gear3/tran_gear3-ref.tran",
+          "sha256": "c31517dae1d63d2159f0dbbc5b899619027aff8b83754b1f449b66227b3dd0e4"
+        }
+      ]
+    },
+    {
+      "id": "rlc-gear5",
+      "category": "convergence",
+      "sourcePath": "tests/tran_gear5/tran_gear5.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear5/tran_gear5.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/tran_gear5/tran_gear5.ckt",
+      "originalSha256": "ac0ae49a5c9868c6d783449b84514d69e9dc171354782d53785b1b2300a064a4",
+      "translation": {
+        "status": "translated",
+        "changes": [
+          "ahkab `type=vdc vdc=X` written as SPICE3 `DC X`",
+          "ahkab keyed `type=pulse v1= v2= td= tr= tf= pw= per=` written as positional SPICE3 PULSE(v1 v2 td tr tf pw per)",
+          "ahkab `method=gear5` written as `.options method=gear maxord=5`: SPICE3/ngspice Gear is variable-order up to MAXORD while ahkab GEAR5 is fixed-order. The circuit and the requested analysis are unchanged; the integration-error behaviour is not ahkab's",
+          "ahkab `.tran` uic=2 (OP, then element ICs) written as SPICE3 `UIC`: all sources are 0 in DC and at t=0 and all element ICs are 0, so both start from the zero state"
+        ]
+      },
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "localPath": "benchmarks/corpus/corpus-d-spice3/fixtures/tests/tran_gear5/tran_gear5.cir",
+      "sha256": "0dca87a93c1d3a3b52ec81eb29d77e99eddb0ada3c5fdc105ce853c630234fce",
+      "ahkabReferences": [
+        {
+          "analysis": "op",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear5/tran_gear5-ref.op",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/tran_gear5/tran_gear5-ref.op",
+          "sha256": "51683e14666a9c6b1ad8baf12aec86dfb4d300b47ac3e29281293e87ff18b573"
+        },
+        {
+          "analysis": "tran",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear5/tran_gear5-ref.tran",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/tran_gear5/tran_gear5-ref.tran",
+          "sha256": "90048a11be9db6bdd4fa939345506c33b831321c85213f5c0f6814d163f2f07a"
+        }
+      ]
+    },
+    {
+      "id": "rlc-gear6",
+      "category": "convergence",
+      "sourcePath": "tests/tran_gear6/tran_gear6.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear6/tran_gear6.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/tran_gear6/tran_gear6.ckt",
+      "originalSha256": "1974b92f58344b953e481e579f63a374d722ca3a90bff1d3b305d2c35fb3d5d6",
+      "translation": {
+        "status": "translated",
+        "changes": [
+          "ahkab `type=vdc vdc=X` written as SPICE3 `DC X`",
+          "ahkab keyed `type=pulse v1= v2= td= tr= tf= pw= per=` written as positional SPICE3 PULSE(v1 v2 td tr tf pw per)",
+          "ahkab `method=gear6` written as `.options method=gear maxord=6`: SPICE3/ngspice Gear is variable-order up to MAXORD while ahkab GEAR6 is fixed-order. The circuit and the requested analysis are unchanged; the integration-error behaviour is not ahkab's",
+          "ahkab `.tran` uic=2 (OP, then element ICs) written as SPICE3 `UIC`: all sources are 0 in DC and at t=0 and all element ICs are 0, so both start from the zero state"
+        ]
+      },
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "localPath": "benchmarks/corpus/corpus-d-spice3/fixtures/tests/tran_gear6/tran_gear6.cir",
+      "sha256": "ac0383d1482fd8db8fc3082de921d07b6985654ad1528275c00fb0b9d4c606a6",
+      "ahkabReferences": [
+        {
+          "analysis": "op",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear6/tran_gear6-ref.op",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/tran_gear6/tran_gear6-ref.op",
+          "sha256": "51683e14666a9c6b1ad8baf12aec86dfb4d300b47ac3e29281293e87ff18b573"
+        },
+        {
+          "analysis": "tran",
+          "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/tran_gear6/tran_gear6-ref.tran",
+          "localPath": "benchmarks/corpus/corpus-d-spice3/references/tests/tran_gear6/tran_gear6-ref.tran",
+          "sha256": "d8cb84c6ba032470f3340701f5ea6c4bc78d37315d2d30693d2cc5ed270c6177"
+        }
+      ]
+    },
+    {
+      "id": "colpitts-oscillator",
+      "category": "convergence",
+      "sourcePath": "tests/colpitts/colpitts.ckt",
+      "sourceUrl": "https://raw.githubusercontent.com/ahkab/ahkab/1e8939194b689909b8184ce7eba478b485ff9e3a/tests/colpitts/colpitts.ckt",
+      "originalLocalPath": "benchmarks/corpus/corpus-d/fixtures/tests/colpitts/colpitts.ckt",
+      "originalSha256": "02bc0b17610975b80bb01bf5b73e5a334ef39412d3c14cc39ba6f8e236f67d8c",
+      "translation": {
+        "status": "unsupported-translation",
+        "reasons": [
+          "MOSFET instances need an ahkab MOS model (EKV or square-law), neither of which is a SPICE3 model",
+          "EKV MOSFET model (.model ekv ...) has no SPICE3/ngspice equivalent",
+          ".tran: ahkab uic=2 (OP then element-IC override) has no SPICE3 equivalent unless the OP and all ICs are zero"
+        ]
+      }
+    }
+  ]
+}

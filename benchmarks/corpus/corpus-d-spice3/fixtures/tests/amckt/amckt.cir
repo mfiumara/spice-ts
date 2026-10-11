@@ -1,0 +1,17 @@
+* AM TEST
+* SPICE3/ngspice translation of ahkab tests/amckt/amckt.ckt (https://github.com/ahkab/ahkab @ 1e8939194b689909b8184ce7eba478b485ff9e3a).
+* ahkab is free software under GPL-2.0-only; see LICENSE-NOTICE.md and COPYING.txt in this directory.
+* Modified 2026-10-11 by benchmarks/translate/ahkab-to-spice3.ts (spice-ts). Line 1 is the upstream title. Changes:
+*  - ahkab `type=vdc vdc=X` written as SPICE3 `DC X`
+*  - ahkab `type=am sa oc fm fc td` written as ngspice AM(0 sa*oc sa fm fc td) (identical waveform; AM is an ngspice extension, not SPICE3f5)
+*  - ahkab `type=idc idc=X` written as SPICE3 `DC X`
+*  - ahkab `.tran` uic=0 (start from x=0, no OP) written as SPICE3 `UIC` (no element ICs present, so both start from the zero state)
+V1 1 0 DC 0 AM(0 10 10 100 1K 1M)
+R1 1 0 1
+V2 2 0 DC 0 AM(0 10 2.5 100 1K 1M)
+R2 2 0 1
+I3 3 0 DC 0 AM(0 10 10 1K 100 1M)
+R3 3 0 1
+.tran .01M 20M UIC
+*.plot TRAN v(1) v(2) v(3)
+.end

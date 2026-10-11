@@ -1,0 +1,11 @@
+OHM'S LAW
+* SPICE3/ngspice translation of ahkab tests/ohms_law/ohms_law.ckt (https://github.com/ahkab/ahkab @ 1e8939194b689909b8184ce7eba478b485ff9e3a).
+* ahkab is free software under GPL-2.0-only; see LICENSE-NOTICE.md and COPYING.txt in this directory.
+* Modified 2026-10-11 by benchmarks/translate/ahkab-to-spice3.ts (spice-ts). Line 1 is the upstream title. Changes:
+*  - ahkab `type=vdc vdc=X` written as SPICE3 `DC X`
+*  - added the `.end` card SPICE3 requires
+v1 supply 0 DC 5
+ra supply 0 100
+rb supply 0 1k
+.op
+.end
