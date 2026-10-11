@@ -1,0 +1,13 @@
+diode sidewall junction charge, default FC
+V1 in 0 PULSE(-2 1 0 2n 2n 20n 50n)
+R1 in out 1k
+D1 out 0 DM PJ=1
+.model DM D IS=1e-14 CJO=2p CJSW=8p MJSW=0.33 VJ=0.9
+.tran 0.1n 50n
+.control
+run
+set numdgt=12
+linearize
+print time v(out)
+.endc
+.end

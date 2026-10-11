@@ -72,10 +72,14 @@ describe('attemptStep', () => {
 describe('attemptStep NR adaptive damping', () => {
   it('reports oscillation in the step result when sign flips are detected', () => {
     // Build a diode with very sharp I-V curve so NR oscillates at the first step.
+    // The series resistor keeps a finite solution: a bare N=0.1 junction across
+    // 5 V has none (ngspice-47 reports NaN), and pnjlim now walks the junction
+    // towards the exact law instead of compressing it to a fixed ceiling.
     const ckt = parse(`
 V1 1 0 DC 5
+R1 1 2 1
 .model DSHARP D(IS=1e-18 N=0.1)
-D1 1 0 DSHARP
+D1 2 0 DSHARP
 .tran 1u 1m
 `);
     const compiled = ckt.compile();

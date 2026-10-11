@@ -1,6 +1,6 @@
 import type { DiodeInstanceParams } from '../parser/diode-parser.js';
 import { InvalidCircuitError } from '../errors.js';
-import type { DeviceModel, StampContext } from './device.js';
+import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
 
 export interface DiodeParams {
   IS: number;
@@ -146,11 +146,37 @@ interface ChargeTaylorCoefficients {
 export class Diode implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  readonly integratesTransientCharge: boolean;
   readonly params: DiodeParams;
   readonly suppliedParams: Readonly<Partial<DiodeParams>>;
   private temperature = 27;
   /** Limited junction voltage of the last stamp (ngspice CKTstate0 DIOvoltage). */
   private previousJunctionVoltage: number | undefined;
+  /** Junction voltage of the last accepted transient timepoint (CKTstate1). */
+  private acceptedJunctionVoltage: number | undefined;
+  /** Junction voltage of the last undamped transient Newton solve, if unused. */
+  private newtonJunctionVoltage: number | undefined;
+  /** Whether the last stamp limited the junction (ngspice noncon). */
+  private limited = false;
+  /**
+   * The junction is limited whenever the stamped junction is the terminal
+   * pair: no RS, or RS expanded into a separate resistor. The two-terminal RS
+   * fallback solves its internal junction exactly and needs no limiting.
+   */
+  readonly limitsOwnJunctions: boolean;
+  /** stampDynamic is a no-op without junction capacitance or transit time. */
+  readonly storesCharge: boolean;
+  /** Junction voltage the last `stamp` linearised at; the charge uses the same point. */
+  private stampedJunctionVoltage = 0;
+  /**
+   * Accepted junction charge history (ngspice DIOcapCharge in CKTstate1/2) and
+   * the charge current at the last accepted point (DIOcapCurrent).
+   */
+  private acceptedCharge: number | undefined;
+  private previousAcceptedCharge: number | undefined;
+  private acceptedChargeCurrent = 0;
+  /** Integration rule of the most recent charge stamp, committed on acceptance. */
+  private pendingIntegration: ChargeIntegration | undefined;
 
   constructor(
     readonly name: string,
@@ -197,6 +223,52 @@ export class Diode implements DeviceModel {
       AF: params.AF ?? 1,
       IKF: (params.IKF ?? 0) >= MIN_KNEE_CURRENT ? params.IKF! * effectiveArea : 0,
     };
+    this.limitsOwnJunctions = this.params.RS === 0;
+    this.storesCharge = Boolean(this.params.CJ0 || this.params.CJSW || this.params.TT);
+    // A two-terminal RS fallback cannot carry the internal junction charge, so
+    // it keeps the reduced C(v) stamp. Compiled circuits expand RS whenever the
+    // junction stores charge, leaving RS = 0 here.
+    this.integratesTransientCharge = this.limitsOwnJunctions && this.storesCharge;
+  }
+
+  beginTransientNewton(): void {
+    // ngspice MODEINITPRED copies CKTstate1 into CKTstate0, so a new or
+    // retried timepoint limits against the accepted junction voltage.
+    if (this.acceptedJunctionVoltage !== undefined) {
+      this.previousJunctionVoltage = this.acceptedJunctionVoltage;
+    }
+    this.newtonJunctionVoltage = undefined;
+  }
+
+  observeTransientNewton(solution: Float64Array): void {
+    this.newtonJunctionVoltage = this.terminalVoltage(solution);
+  }
+
+  private terminalVoltage(solution: Float64Array): number {
+    const [nA, nK] = this.nodes;
+    return (nA >= 0 ? solution[nA] : 0) - (nK >= 0 ? solution[nK] : 0);
+  }
+
+  limitedLastStamp(): boolean {
+    return this.limited;
+  }
+
+  acceptTransientStep(ctx: StampContext): void {
+    const [nA, nK] = this.nodes;
+    this.acceptedJunctionVoltage = (nA >= 0 ? ctx.getVoltage(nA) : 0)
+      - (nK >= 0 ? ctx.getVoltage(nK) : 0);
+    this.newtonJunctionVoltage = undefined;
+    if (this.integratesTransientCharge) this.acceptCharge(this.acceptedJunctionVoltage);
+  }
+
+  resetTransient(): void {
+    this.acceptedJunctionVoltage = undefined;
+    this.newtonJunctionVoltage = undefined;
+    this.limited = false;
+    this.acceptedCharge = undefined;
+    this.previousAcceptedCharge = undefined;
+    this.acceptedChargeCurrent = 0;
+    this.pendingIntegration = undefined;
   }
 
   setTemperature(value: number): void {
@@ -321,21 +393,21 @@ export class Diode implements DeviceModel {
     const junction = this.junction();
     let vd = vA - vK;
 
-    if (this.params.RS === 0 && ctx.dt === 0) {
-      // DC: ngspice dioload.c limits the junction relative to the previous
-      // Newton iterate (CKTstate0 DIOvoltage) and stores the limited value
-      // back. Limiting only shapes iterates: once a step is within 2*Vte it is
-      // the identity, so the converged point is on the exact diode law (#430).
-      vd = limitJunctionStep(vd, this.previousJunctionVoltage ?? 0, junction);
+    this.limited = false;
+    if (this.limitsOwnJunctions) {
+      if (this.newtonJunctionVoltage !== undefined) vd = this.newtonJunctionVoltage;
+      this.newtonJunctionVoltage = undefined;
+      // ngspice dioload.c limits the junction relative to the previous Newton
+      // iterate (CKTstate0 DIOvoltage) and stores the limited value back, in
+      // DC and transient alike. Limiting only shapes iterates: once a step is
+      // within 2*Vte it is the identity, so the converged point is on the
+      // exact diode law (#430). A limited iterate is not converged (noncon).
+      const limited = limitJunctionStep(vd, this.previousJunctionVoltage ?? 0, junction);
+      this.limited = limited !== vd;
+      vd = limited;
       this.previousJunctionVoltage = vd;
-    } else if (this.params.RS === 0 && !this.hasExternalSeriesResistance) {
-      // Transient Newton also damps nonlinear-terminal node voltages
-      // (transient-step.ts), so the node can lag a limited junction and the
-      // iterate-relative limit ratchets away from it. Keep the previous
-      // stateless compression (and no limit behind an expanded RS) there until
-      // the transient loop stops damping those nodes.
-      vd = limitVoltage(vd, junction);
     }
+    this.stampedJunctionVoltage = vd;
 
     const { current: id, conductance, linearizationVoltage } = diodeCurrent(
       vd,
@@ -405,6 +477,151 @@ export class Diode implements DeviceModel {
       ctx.stampC(nK, nA, -cj);
     }
   }
+
+  /**
+   * Transient junction charge companion, as ngspice dioload.c integrates
+   * DIOcapCharge with NIintegrate: the current is the integrated dQ/dt of the
+   * charge q(v), not C(v)*dv/dt, so the stored charge is conserved across a
+   * nonlinear swing (#403).
+   */
+  stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
+    const voltage = this.stampedJunctionVoltage;
+    const { charge, capacitance } = this.junctionCharge(voltage);
+    const { current, conductance } = this.integrateCharge(charge, capacitance, integration);
+    this.pendingIntegration = integration;
+
+    const [nA, nK] = this.nodes;
+    const ieq = current - conductance * voltage;
+    if (nA >= 0) ctx.stampG(nA, nA, conductance);
+    if (nK >= 0) ctx.stampG(nK, nK, conductance);
+    if (nA >= 0 && nK >= 0) {
+      ctx.stampG(nA, nK, -conductance);
+      ctx.stampG(nK, nA, -conductance);
+    }
+    if (nA >= 0) ctx.stampB(nA, -ieq);
+    if (nK >= 0) ctx.stampB(nK, ieq);
+  }
+
+  stampAcceptedChargeCurrent(ctx: StampContext): void {
+    const [nA, nK] = this.nodes;
+    if (nA >= 0) ctx.stampB(nA, -this.acceptedChargeCurrent);
+    if (nK >= 0) ctx.stampB(nK, this.acceptedChargeCurrent);
+  }
+
+  /** Commit the junction charge and its integrated current at an accepted timepoint. */
+  private acceptCharge(junctionVoltage: number): void {
+    const { charge, capacitance } = this.junctionCharge(junctionVoltage);
+    const integration = this.pendingIntegration;
+    this.pendingIntegration = undefined;
+    if (integration === undefined || this.acceptedCharge === undefined) {
+      // Initial operating point: the charge is at rest (ngspice copies
+      // CKTstate0 into CKTstate1 with a zero capacitor current at MODEINITTRAN).
+      this.acceptedCharge = charge;
+      this.previousAcceptedCharge = undefined;
+      this.acceptedChargeCurrent = 0;
+      return;
+    }
+    this.acceptedChargeCurrent = this.integrateCharge(charge, capacitance, integration).current;
+    this.previousAcceptedCharge = this.acceptedCharge;
+    this.acceptedCharge = charge;
+  }
+
+  /** Depletion (bottom + sidewall) plus diffusion charge and dQ/dV (ngspice dioload.c). */
+  private junctionCharge(voltage: number): { charge: number; capacitance: number } {
+    const { CJ0, CJSW, VJ, VJSW, M, MJSW, FC, FCS, TT } = this.params;
+    const bottom = depletionCharge(voltage, CJ0!, VJ!, M!, FC!);
+    // ngspice-47 offsets the sidewall charge above FCS*VJSW with the bottom
+    // junction's F1 (DIOtF1), which steps the charge at FCS*VJSW whenever the
+    // bottom and sidewall F1 differ. That step is not reproduced: the charge
+    // here is the integral of the (ngspice-identical) capacitance (#450).
+    const sidewall = depletionCharge(voltage, CJSW!, VJSW!, MJSW!, FCS!);
+    let charge = bottom.charge + sidewall.charge;
+    let capacitance = bottom.capacitance + sidewall.capacitance;
+    if (TT) {
+      // ngspice: diffcharge = TT*cd, diffcap = TT*gd, with cd and gd including GMIN.
+      const { current, conductance } = junctionCurrent(voltage, this.junction());
+      charge += TT * (current + GMIN * voltage);
+      capacitance += TT * (conductance + GMIN);
+    }
+    return { charge, capacitance };
+  }
+
+  /** ngspice NIintegrate for one charge: returns the capacitor current and its dI/dV. */
+  private integrateCharge(
+    charge: number,
+    capacitance: number,
+    { method, dt, prevDt }: ChargeIntegration,
+  ): { current: number; conductance: number } {
+    const previous = this.acceptedCharge ?? charge;
+    if (method === 'trapezoidal') {
+      const factor = 2 / dt;
+      return {
+        current: factor * (charge - previous) - this.acceptedChargeCurrent,
+        conductance: factor * capacitance,
+      };
+    }
+    if (method === 'gear2' && prevDt !== undefined && this.previousAcceptedCharge !== undefined) {
+      const alpha = prevDt / dt;
+      const a1 = (2 + alpha) / ((1 + alpha) * dt);
+      const a2 = (1 + alpha) / (alpha * dt);
+      const a3 = 1 / (alpha * (1 + alpha) * dt);
+      return {
+        current: a1 * charge - a2 * previous + a3 * this.previousAcceptedCharge,
+        conductance: a1 * capacitance,
+      };
+    }
+    return { current: (charge - previous) / dt, conductance: capacitance / dt };
+  }
+}
+
+/**
+ * Depletion charge and capacitance of one junction component, as ngspice
+ * dioload.c: Q = VJ*CJ0*(1 - (1-V/VJ)^(1-M))/(1-M) below FC*VJ, and the
+ * integral of the linear capacitance extension above it, so Q is C^1.
+ */
+function depletionCharge(
+  voltage: number,
+  zeroBiasCapacitance: number,
+  junctionPotential: number,
+  gradingCoefficient: number,
+  forwardCoefficient: number,
+): { charge: number; capacitance: number } {
+  if (!zeroBiasCapacitance) return { charge: 0, capacitance: 0 };
+  const { capacitance } = depletionChargeTaylor(
+    voltage, zeroBiasCapacitance, junctionPotential, gradingCoefficient, forwardCoefficient,
+  );
+  const threshold = forwardCoefficient * junctionPotential;
+  if (voltage < threshold) {
+    return {
+      charge: abruptJunctionCharge(voltage, zeroBiasCapacitance, junctionPotential, gradingCoefficient),
+      capacitance,
+    };
+  }
+  const continuation = Math.pow(1 - forwardCoefficient, 1 + gradingCoefficient);
+  const linear = 1 - forwardCoefficient * (1 + gradingCoefficient);
+  const extension = zeroBiasCapacitance / continuation * (
+    linear * (voltage - threshold)
+    + gradingCoefficient / (2 * junctionPotential) * (voltage * voltage - threshold * threshold)
+  );
+  return {
+    charge: abruptJunctionCharge(threshold, zeroBiasCapacitance, junctionPotential, gradingCoefficient)
+      + extension,
+    capacitance,
+  };
+}
+
+/** Charge stored between 0 and V on the abrupt-junction law CJ0/(1-V/VJ)^M. */
+function abruptJunctionCharge(
+  voltage: number,
+  zeroBiasCapacitance: number,
+  junctionPotential: number,
+  gradingCoefficient: number,
+): number {
+  const depletion = 1 - voltage / junctionPotential;
+  const exponent = 1 - gradingCoefficient;
+  return Math.abs(exponent) < 1e-12
+    ? -junctionPotential * zeroBiasCapacitance * Math.log(depletion)
+    : junctionPotential * zeroBiasCapacitance * (1 - Math.pow(depletion, exponent)) / exponent;
 }
 
 /**
@@ -604,42 +821,6 @@ function pnjlim(
     return Math.max(voltage, minimum);
   }
   return voltage;
-}
-
-/**
- * Stateless junction compression above vcrit, used only by transient Newton.
- * Its fixed point is not the diode law above vcrit (#430), so the DC path uses
- * {@link limitJunctionStep} instead.
- */
-function limitVoltage(
-  voltage: number,
-  { thermalVoltage, saturationCurrent, breakdown }: Junction,
-): number {
-  if (breakdown) {
-    const knee = breakdownKneeVoltage(breakdown, saturationCurrent);
-    if (voltage < -knee) {
-      return -knee - limitForwardVoltage(
-        -(voltage + knee),
-        breakdown.thermalVoltage,
-        saturationCurrent,
-      );
-    }
-  }
-  return limitForwardVoltage(voltage, thermalVoltage, saturationCurrent);
-}
-
-function limitForwardVoltage(
-  voltage: number,
-  thermalVoltage: number,
-  saturationCurrent: number,
-): number {
-  const criticalVoltage = thermalVoltage
-    * Math.log(thermalVoltage / (Math.sqrt(2) * saturationCurrent));
-  if (voltage > criticalVoltage) {
-    return criticalVoltage
-      + thermalVoltage * Math.log(1 + (voltage - criticalVoltage) / thermalVoltage);
-  }
-  return Math.max(voltage, -40 * thermalVoltage);
 }
 
 function safeExponential(exponent: number): number {

@@ -104,7 +104,12 @@ interface IntrinsicResult {
 
 function intrinsic(vGS: number, vDS: number, model: HFET1Model, instance: HFET1InstanceParams): IntrinsicResult {
   if (vDS < 0) {
-    const reverse = intrinsic(vGS - vDS, -vDS, model, instance);
+    // ngspice-47 hfetload.c negates vds for inverse operation and then calls
+    // hfeta(..., vds>0 ? vgs : vgd, vds, ...). The condition is evaluated
+    // after the negation, so the channel is still evaluated at the external
+    // VGS (not VGD) with |VDS|. Reproduce that exactly: only the current sign
+    // and the Cgs/Cgd assignment are mirrored.
+    const reverse = intrinsic(vGS, -vDS, model, instance);
     return { drainCurrent: -reverse.drainCurrent, capGS: reverse.capGD, capGD: reverse.capGS };
   }
 
@@ -239,7 +244,7 @@ export function evaluateHFET1(
   instance: HFET1InstanceParams,
 ): HFET1Evaluation {
   const result = intrinsic(vGS, vDS, model, instance);
-  const evaluationVGS = vDS < 0 ? vGS - vDS : vGS;
+  const evaluationVGS = vGS;
   const evaluationVDS = Math.abs(vDS);
   const hGS = 1e-6 * Math.max(1, Math.abs(evaluationVGS));
   const hDS = 1e-6 * Math.max(1, evaluationVDS);

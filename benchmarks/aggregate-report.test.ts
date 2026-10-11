@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import { describe, it } from 'node:test';
 import { resolve } from 'node:path';
 import {
+  comparisonMethodLines,
   matchedPointEnvelope,
   preflightAggregateInputs,
   runBoundedSpiceTs,
@@ -101,8 +102,8 @@ describe('aggregate report artifact verification', () => {
 
     assert.equal(report.comparisonToPrevious.issueUrl, 'https://github.com/mfiumara/spice-ts/issues/321');
     assert.equal(report.comparisonToPrevious.pullRequestUrl, 'https://github.com/mfiumara/spice-ts/pull/325');
-    assert.equal(report.comparisonToPrevious.headSha, 'e400d87c791dfa27f572a349777c8ebb9f2450d4');
-    assert.equal(report.comparisonToPrevious.outcomeSha256, '26be9f80744c077c0bdb98fa5c6c9cffc8615c2e2589383507abd59fd6fed41b');
+    assert.equal(report.comparisonToPrevious.headSha, 'ad7ba71b65848053afa7bc64ba22fd989ef89ca4');
+    assert.equal(report.comparisonToPrevious.outcomeSha256, '68aa8e2e7b78b82f801da84cf5c88c489634d203f44bca5df9345a1946deddb9');
     assert.deepEqual(
       report.comparisonToPrevious.statusTransitions.map((transition: Record<string, string>) => [
         transition.engine,
@@ -111,26 +112,52 @@ describe('aggregate report artifact verification', () => {
         transition.to,
       ]),
       [
-        ['spiceTs', 'ngspice/ltra-line-transient', 'unsupported', 'success'],
-        ['spiceTs', 'classic/lossy-line-24-inch', 'unsupported', 'success'],
-        ['spiceTs', 'classic/lossy-line-aluminium', 'unsupported', 'success'],
-        ['spiceTs', 'classic/coupled-lossy-lines', 'unsupported', 'success'],
-        ['spiceTs', 'ngspice/hfet-inverter', 'failed', 'unsupported'],
-        ['spiceTs', 'ngspice/mesa-oscillator', 'failed', 'unsupported'],
-        ['spiceTs', 'xyce/inductor-transient', 'unsupported', 'failed'],
+        ['spiceTs', 'classic/diode-distortion', 'failed', 'unsupported'],
+        ['spiceTs', 'ngspice/vbic-fo', 'unsupported', 'success'],
+        ['spiceTs', 'ngspice/vbic-common-emitter-ac', 'success', 'unsupported'],
+        ['spiceTs', 'ngspice/hfet-inverter', 'unsupported', 'success'],
+        ['spiceTs', 'classic/bjt-noise', 'unsupported', 'success'],
+        ['spiceTs', 'classic/resistor-noise', 'unsupported', 'success'],
+        ['spiceTs', 'xyce/inductor-transient', 'failed', 'success'],
+        ['spiceTs', 'ngspice/probe-ac', 'unsupported', 'success'],
+        ['spiceTs', 'classic/bjt-mixer-distortion', 'unsupported', 'failed'],
+        ['spiceTs', 'ngspice/mesa-oscillator', 'unsupported', 'success'],
       ],
     );
     assert.deepEqual(report.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
-    assert.deepEqual(report.totals.spiceTs, { success: 55, failed: 2, unsupported: 43 });
-    assert.equal(report.totals.comparedAnalyses, 58);
-    assert.equal(report.totals.comparedFixtures, 43);
+    assert.deepEqual(report.totals.spiceTs, { success: 61, failed: 1, unsupported: 38 });
+    assert.equal(report.totals.comparedAnalyses, 65);
+    assert.equal(report.totals.comparedFixtures, 49);
     const inductor = report.fixtures.find((fixture: { key: string }) => fixture.key === 'xyce/inductor-transient');
-    assert.match(inductor.spiceTs.error, /exceeded the 120000 ms aggregate execution bound/);
+    assert.equal(inductor.spiceTs.status, 'success');
     assert.ok(inductor.gapIssues.includes('https://github.com/mfiumara/spice-ts/issues/366'));
+    const distortion = report.fixtures.find((fixture: { key: string }) => fixture.key === 'classic/diode-distortion');
+    assert.equal(distortion.spiceTs.error, 'no spice-ts result for analyses: disto');
+    assert.ok(report.gapIssues.some((issue: { url: string }) => issue.url === 'https://github.com/mfiumara/spice-ts/issues/391'));
+    const mixer = report.fixtures.find((fixture: { key: string }) => fixture.key === 'classic/bjt-mixer-distortion');
+    assert.equal(mixer.spiceTs.error, 'No analysis command specified');
+    assert.equal(mixer.ngspice.status, 'failed');
+    const mos1Inverter = report.fixtures.find((fixture: { key: string }) => fixture.key === 'corpus-e/mos1-inverter-sweep');
+    assert.ok(mos1Inverter.gapIssues.includes('https://github.com/mfiumara/spice-ts/issues/427'));
+    const spike = report.gapIssues.find((issue: { url: string }) => issue.url === 'https://github.com/mfiumara/spice-ts/issues/427');
+    assert.match(spike.scope, /closed by PR #436/);
+    const mos1Tran = mos1Inverter.comparisons.find((comparison: { analysis: string }) => comparison.analysis === 'tran');
+    assert.ok(mos1Tran.metrics.signals['i(vdd)'].absoluteError.max < 1e-4);
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #436') && text.includes('PR #437') && text.includes('PR #439')));
+    assert.ok(!report.comparisonToPrevious.metricTransitions.some((text: string) => /worst DC\/TRAN abs max still about 4\.35 V/.test(text)));
+    const mesa = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/mesa-oscillator');
+    assert.equal(mesa.spiceTs.status, 'success');
+    assert.ok(mesa.gapIssues.includes('https://github.com/mfiumara/spice-ts/issues/432'));
+    const tstart = report.gapIssues.find((issue: { url: string }) => issue.url === 'https://github.com/mfiumara/spice-ts/issues/432');
+    assert.match(tstart.scope, /closed by PR #440/);
+    const mesaTran = mesa.comparisons.find((comparison: { analysis: string }) => comparison.analysis === 'tran');
+    assert.deepEqual(mesaTran.metrics.grid, { spiceTsPoints: 2088, ngspicePoints: 201, alignedPoints: 2041, excludedOutOfRange: 47 });
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #440') && text.includes('PR #443') && text.includes('PR #442')));
+    assert.ok(!report.comparisonToPrevious.statusTransitions.some((transition: { explanation: string }) => /3219 of those are before TSTART/.test(transition.explanation)));
     assert.deepEqual(report.comparisonToPrevious.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
-    assert.deepEqual(report.comparisonToPrevious.totals.spiceTs, { success: 51, failed: 3, unsupported: 46 });
-    assert.equal(report.comparisonToPrevious.totals.comparedAnalyses, 54);
-    assert.equal(report.comparisonToPrevious.totals.comparedFixtures, 39);
+    assert.deepEqual(report.comparisonToPrevious.totals.spiceTs, { success: 55, failed: 2, unsupported: 43 });
+    assert.equal(report.comparisonToPrevious.totals.comparedAnalyses, 58);
+    assert.equal(report.comparisonToPrevious.totals.comparedFixtures, 43);
   });
 
   it('locks the current aggregate corpus tree and unchanged source catalogue', async () => {
@@ -138,8 +165,8 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.provenance, {
-      fixtureTreeSha256: '01b19fe5baf170d91aa5bd72c3ffb3891ed2f2c45cca5adfee8288552a7e14f1',
-      sourcesSha256: 'f8cc57771ac07684b1bdebb43ad2ab572f048a9e67d5df98386dc9eb706a188f',
+      fixtureTreeSha256: '00365c397b0ee279767f8167a9d3ee121bf186421cb684af30ef5e1bd44d83d7',
+      sourcesSha256: '539de6042888ad113c1713b9912ac1ec327eddbc83a839774223626a4c868e03',
     });
   });
 
@@ -148,12 +175,12 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
-    assert.equal(report.matchedPointEnvelope.comparedSignals, 878);
-    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 848);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 1169140310571.719);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 1169140310571.719);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 45497356677842.63);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 872317191517.6284);
+    assert.equal(report.matchedPointEnvelope.comparedSignals, 935);
+    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 906);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 31.65338535154384);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 8.272157976952819);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 321200769453.2656);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 6432928954.616146);
   });
 
   it('commits runtime sums derived from all 100 engine receipts', async () => {
@@ -258,6 +285,20 @@ describe('aggregate report artifact verification', () => {
       () => verifyCommittedArtifacts(generated, json, markdown.replace('100-circuit', '101-circuit')),
       /Markdown/,
     );
+  });
+
+  it('describes the comparison grid the committed report was generated with (#445)', async () => {
+    const { json, markdown } = await committedArtifacts();
+    const policy = JSON.parse(json).policy;
+    for (const line of comparisonMethodLines(policy)) assert.ok(markdown.includes(line), line);
+
+    const current = comparisonMethodLines({
+      ...policy,
+      breakpointAlignment: 'one-sided at time points shared by both transient grids; linear metric retained',
+    }).join('\n');
+    assert.match(current, /Breakpoint alignment/);
+    assert.match(current, /linearMetrics/);
+    assert.match(current, /issues\/445/);
   });
 });
 

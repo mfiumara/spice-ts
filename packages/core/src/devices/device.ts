@@ -27,6 +27,18 @@ export interface StampContext {
   useDcSourceValue: boolean;
 }
 
+/**
+ * Integration rule for one transient step, after the order-1 bootstrap at
+ * starts, breakpoints and history resets has been applied.
+ */
+export interface ChargeIntegration {
+  readonly method: 'euler' | 'trapezoidal' | 'gear2';
+  /** Step being solved, t(n+1) - t(n). */
+  readonly dt: number;
+  /** Previous accepted step t(n) - t(n-1); required for `gear2`. */
+  readonly prevDt?: number;
+}
+
 /** A frequency-independent contribution to the complex AC right-hand side. */
 export type ACRHSContribution =
   | {
@@ -62,10 +74,60 @@ export interface DeviceModel {
   limitNewtonStep?(previous: Float64Array, candidate: Float64Array): number;
   /** Stamp dynamic (reactive) contributions for AC and transient analysis. */
   stampDynamic?(ctx: StampContext): void;
+  /**
+   * False when `stampDynamic` stamps nothing for this instance (e.g. a diode
+   * without CJO, CJSW or TT). Transient integration then treats the device
+   * as purely static and uses the exact accepted static-current history.
+   */
+  readonly storesCharge?: boolean;
+  /**
+   * True when the device integrates its own nonlinear charge in transient
+   * analysis (ngspice NIintegrate on q(v)) through {@link stampTransientCharge}
+   * instead of stamping C(v) via {@link stampDynamic}. `stampDynamic` is then
+   * still used for AC, noise and other small-signal analyses.
+   */
+  readonly integratesTransientCharge?: boolean;
+  /**
+   * Stamp the integrated charge companion (G and b) for one transient Newton
+   * iteration. Called after `stamp` with the same context.
+   */
+  stampTransientCharge?(ctx: StampContext, integration: ChargeIntegration): void;
+  /**
+   * Stamp the charge current accepted at the last committed timepoint as a
+   * constant current. Used to build the trapezoidal history of other
+   * reactive elements that share its nodes.
+   */
+  stampAcceptedChargeCurrent?(ctx: StampContext): void;
   /** Stamp AC small-signal contributions at angular frequency omega. */
   stampAC?(ctx: StampContext, omega: number): void;
   /** Commit state from a transient timepoint after NR and LTE acceptance. */
   acceptTransientStep?(ctx: StampContext): void;
+  /**
+   * True when the device limits every junction voltage it reads relative to
+   * its previous Newton iterate (ngspice DEVpnjlim). Transient Newton leaves
+   * the nodes of such devices undamped, because a damped node cannot follow
+   * the limited junction and the iterate-relative limit would ratchet away.
+   */
+  readonly limitsOwnJunctions?: boolean;
+  /**
+   * Start a transient Newton solve at a new or retried timepoint: limit the
+   * first iterate against the last accepted junction state (ngspice
+   * MODEINITPRED), not against an iterate of a rejected attempt.
+   */
+  beginTransientNewton?(): void;
+  /**
+   * Receive the undamped transient Newton solution. A self-limiting device
+   * limits its next junction voltage from this solve, not from the damped
+   * iterate: node damping may hold a terminal back, and limiting against that
+   * lagging node would ratchet the junction away from the Newton step.
+   */
+  observeTransientNewton?(solution: Float64Array): void;
+  /**
+   * Whether the last `stamp` limited a junction (ngspice CKTnoncon). Newton
+   * cannot be declared converged on an iterate that was limited, because the
+   * stamp then linearised a voltage the solution does not have.
+   */
+  limitedLastStamp?(): boolean;
   /** Receive the transient TSTEP used by SPICE waveform defaults (e.g. zero PULSE TR/TF). */
   setTransientTimestep?(timestep: number): void;
   /** Clear device-owned transient history before restarting at t=0. */
