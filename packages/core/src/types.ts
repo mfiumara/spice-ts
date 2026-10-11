@@ -192,7 +192,10 @@ export interface SimulationOptions {
   maxIterations?: number;
   /** Max Newton-Raphson iterations per transient step. Default: 50 */
   maxTransientIterations?: number;
-  /** Maximum timestep for transient. Default: stopTime/50 */
+  /**
+   * Maximum timestep for transient analyses without a `.tran` TMAX (TMAX wins,
+   * as in ngspice). Default: min(TSTEP, TSTOP/50).
+   */
   maxTimestep?: number;
   /** Integration method. Default: 'trapezoidal' */
   integrationMethod?: IntegrationMethod;

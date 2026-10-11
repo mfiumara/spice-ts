@@ -5,7 +5,7 @@ import type { ConvergenceTelemetry, SimulationOptions, SimulationWarning, Transi
 import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, SimulatorBackend } from './types.js';
 import { resolveOptions, withNetlistOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
-import { solveTransient } from './analysis/transient.js';
+import { runnableTransient, solveTransient } from './analysis/transient.js';
 import { buildACRHS, solveAC } from './analysis/ac.js';
 import { assertNoiseDevicesSupported, solveNoise } from './analysis/noise.js';
 import { solveTransferFunction } from './analysis/transfer-function.js';
@@ -157,7 +157,7 @@ export async function simulate(
         const opts = resolveOptions(options, analysis.stopTime);
         const seed = transientInitialSolution(compiled, analysis, opts, undefined, convergence, guard);
         result.transient = solveTransient(
-          compiled, runnableTransient(analysis), opts, seed, convergence, guard,
+          compiled, runnableTransient(analysis, options), opts, seed, convergence, guard,
         );
         break;
       }
@@ -278,7 +278,7 @@ export async function* simulateStream(
       case 'tran': {
         const opts = resolveOptions(options, analysis.stopTime);
         const seed = transientInitialSolution(compiled, analysis, opts);
-        yield* streamTransient(compiled, runnableTransient(analysis), opts, seed);
+        yield* streamTransient(compiled, runnableTransient(analysis, options), opts, seed);
         break;
       }
       case 'ac': {
@@ -340,7 +340,7 @@ export async function* simulateStepStream(
         case 'tran': {
           const opts = resolveOptions(options, analysis.stopTime);
           const seed = transientInitialSolution(compiled, analysis, opts);
-          for (const point of streamTransient(compiled, runnableTransient(analysis), opts, seed)) {
+          for (const point of streamTransient(compiled, runnableTransient(analysis, options), opts, seed)) {
             yield { stepIndex: 0, paramName: '', paramValue: 0, point };
           }
           break;
@@ -379,7 +379,7 @@ function* streamWithSteps(
             const opts = resolveOptions(options, analysis.stopTime);
             const seed = transientInitialSolution(compiled, analysis, opts, prevDCSolution);
             if (!analysis.useInitialConditions) prevDCSolution = new Float64Array(seed);
-            for (const point of streamTransient(compiled, runnableTransient(analysis), opts, seed)) {
+            for (const point of streamTransient(compiled, runnableTransient(analysis, options), opts, seed)) {
               yield { stepIndex, paramName: target.paramName, paramValue: value, point };
             }
             break;
@@ -399,14 +399,6 @@ function* streamWithSteps(
   } finally {
     target.restore();
   }
-}
-
-function runnableTransient(analysis: TransientAnalysis): TransientAnalysis {
-  if (analysis.timestep > 0) return analysis;
-  return {
-    ...analysis,
-    timestep: analysis.maxTimestep ?? analysis.stopTime / 50,
-  };
 }
 
 function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[]): void {

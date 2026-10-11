@@ -1,8 +1,25 @@
-import type { ConvergenceTelemetry, ResolvedOptions, TransientAnalysis } from '../types.js';
+import type {
+  ConvergenceTelemetry, ResolvedOptions, SimulationOptions, TransientAnalysis,
+} from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
 import { TransientResult } from '../results.js';
 import { createDriverFromCompiled } from './transient-driver.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
+
+/**
+ * The `.tran` analysis as the driver runs it. `.tran` TMAX is the step cap, as
+ * in ngspice; without one, a caller `maxTimestep` option replaces the default
+ * min(TSTEP, TSTOP/50) cap. A zero TSTEP runs at the cap, else TSTOP/50.
+ */
+export function runnableTransient(
+  analysis: TransientAnalysis,
+  options?: Pick<SimulationOptions, 'maxTimestep'>,
+): TransientAnalysis {
+  const maxTimestep = analysis.maxTimestep ?? options?.maxTimestep;
+  const capped = maxTimestep === undefined ? analysis : { ...analysis, maxTimestep };
+  if (capped.timestep > 0) return capped;
+  return { ...capped, timestep: maxTimestep ?? analysis.stopTime / 50 };
+}
 
 /**
  * One-shot transient analysis. Consumes a {@link TransientSim} internally
