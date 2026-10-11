@@ -250,7 +250,6 @@ R2 2 0 1k
 
   it.each([
     '.temp 27\n.op',
-    '.measure tran peak MAX v(out)\n.op',
     '.control\nfft v(1)\n.endc',
   ])('rejects unsupported semantic/control directives: %s', netlist => {
     expect(() => parse(netlist)).toThrow();

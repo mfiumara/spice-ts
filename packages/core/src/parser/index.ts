@@ -30,6 +30,9 @@ import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
 import type { AnalysisDirective, IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
+import { measureCard } from '../measure/dot-measure.js';
+import { addMeasureCard, measureCards } from '../measure/registry.js';
+import { UnsupportedMeasureError } from '../measure/errors.js';
 
 export { parseSourceWaveform } from './waveform-parser.js';
 export { SUPPORTED_MODEL_TYPES, UnsupportedModelTypeError } from './model-type.js';
@@ -652,6 +655,27 @@ function parseDotCommand(
       // spice-ts returns all computed vectors through its result API, so these
       // ngspice output-selection and formatting directives are metadata-only.
       break;
+    case '.MEAS':
+    case '.MEASURE': {
+      // Evaluated after the analyses run (ngspice do_measure); ngspice numbers
+      // the par() B-sources deck-wide.
+      const firstPar = measureCards(circuit).reduce((count, card) => count + card.parSources.length, 0);
+      const card = measureCard(context, lineNumber, firstPar);
+      for (const source of card.parSources) {
+        try {
+          const parsed = parseBehavioralSourceCard(source, lineNumber);
+          circuit.addBehavioralVoltageSource(parsed.name, parsed.nodes[0], parsed.nodes[1], parsed.expression, parsed.params);
+        } catch (error) {
+          throw new UnsupportedMeasureError(
+            `the par() operand needs the B-source '${source}', which spice-ts cannot build: ${(error as Error).message}`,
+            lineNumber,
+            context,
+          );
+        }
+      }
+      addMeasureCard(circuit, card);
+      break;
+    }
     case '.PROBE':
       if (tokens.length === 1) {
         throw new ParseError('Unsupported empty .probe output request', lineNumber, context);

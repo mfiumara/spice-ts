@@ -38,6 +38,7 @@ const supportedFixtures: Fixture[] = [
   { feature: 'B-source V= and I= expressions', netlist: 'V1 in 0 1\nB1 out 0 V=V(in)^2 > 0.5 ? 1 : 0\nB2 out 0 I=max(V(in),0) tc1=1m\n.op' },
   { feature: 'S/W switches', netlist: '.model SMOD SW(VT=1 VH=0.1)\n.model WMOD CSW IT=1m\nV1 c 0 1\nS1 out 0 c 0 SMOD ON\nW1 out 0 V1 WMOD\n.op' },
   { feature: 'bounded lossless transmission line', netlist: 'T1 in 0 out 0 Z0=50 TD=1n\n.tran 1n 10n' },
+  { feature: '.measure/.meas cards', netlist: 'V1 out 0 1\n.tran 1n 10n\n.measure tran peak MAX v(out)\n.meas tran t1 when v(out)=0.5' },
   { feature: 'ngspice control-language scripting', netlist: 'V1 in 0 1\nR1 in 0 1k\n.control\nlet x = 1\nop\n.endc' },
 ];
 
@@ -49,7 +50,6 @@ const unsupportedFixtures: Fixture[] = [
   { feature: 'external source waveform', netlist: 'V1 in 0 EXTERNAL\n.tran 1n 10n' },
   { feature: 'control-language measurements', netlist: '.control\nmeas tran peak max v(out)\n.endc' },
   { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
-  { feature: 'measurements', netlist: '.measure tran peak MAX v(out)\n.op' },
   { feature: 'PSPICE logic behavioral source', netlist: 'B1 out 0 V=~V(in)\n.op' },
   { feature: 'branch-current behavioral source', netlist: 'V1 in 0 1\nB1 out 0 V=I(V1)*2\n.op' },
 ];

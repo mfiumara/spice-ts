@@ -31,7 +31,7 @@ export {
 export type {
   SimulationResult, StepResult, PoleZeroValue, SensitivityEntry, ComplexSensitivityValue,
   ComplexDistortionValue, ComplexValue, DistortionOrder, DistortionIntermodulationProduct, DistortionProduct,
-  ControlScriptResult, ControlScriptRun,
+  ControlScriptResult, ControlScriptRun, MeasurementResult,
 } from './results.js';
 export type {
   SimulationOptions,
@@ -91,6 +91,7 @@ export { SUPPORTED_MODEL_TYPES, DEVICE_MODEL_TYPES, UnsupportedModelTypeError } 
 export type { ConvergenceFailureKind } from './errors.js';
 export { UnsupportedCodeModelError } from './parser/xspice-parser.js';
 export { UnsupportedResistorParameterError } from './parser/resistor-parser.js';
+export { UnsupportedMeasureError } from './measure/errors.js';
 export {
   UnsupportedControlCommandError, ControlScriptError, ControlScriptExitError,
 } from './parser/control/errors.js';
