@@ -3,7 +3,7 @@
   "reference": "ngspice-47",
   "core": "packages/core/dist/index.js",
   "node": "v22.23.1",
-  "generatedAt": "2026-10-11T20:10:57.375Z",
+  "generatedAt": "2026-10-11T20:26:14.218Z",
   "cases": [
     {
       "name": "issue-589-nmos",
@@ -274,6 +274,69 @@
         "terminalIvd": {
           "maxRelative": 62.39160260722296,
           "at": "VD=1.80: spice-ts -1.327148e-4 vs ngspice -2.093570e-6",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "corner-nmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 652318.669098049,
+          "at": "Vgs=0 Vds=-0.6 Vbs=-0.9: spice-ts 8.940606e-7 vs ngspice 1.370587e-12",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 0.7262700555569302,
+          "at": "VD=1.80: spice-ts -5.119750e-4 vs ngspice -1.870365e-3",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "corner2-nmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 4603817.987136948,
+          "at": "Vgs=0.3 Vds=1.8 Vbs=-0.9: spice-ts -1.469403e-5 vs ngspice -3.191704e-12",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 135.48785149079114,
+          "at": "VD=-0.40: spice-ts 4.858811e-4 vs ngspice 3.559885e-6",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "corner-pmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 306888536.3119354,
+          "at": "Vgs=1.8 Vds=-0.6 Vbs=0: spice-ts -3.068885e-4 vs ngspice -7.643414e-13",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 193243187.31588355,
+          "at": "VD=0.60: spice-ts -1.932432e-4 vs ngspice -6.000000e-13",
           "within1Percent": 1
         }
       }

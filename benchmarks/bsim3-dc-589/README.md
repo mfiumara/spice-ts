@@ -8,14 +8,14 @@ The capacitance model is **not** part of this change. It is still the bounded Me
 
 | File | What |
 | --- | --- |
-| `cards.ts` | The 13 cases: model card, instance line, provenance and NMOS-convention bias grid. |
+| `cards.ts` | The 16 cases: model card, instance line, provenance and NMOS-convention bias grid. |
 | `reference.ts` | Runs ngspice-47 on the identical decks and writes `ngspice-47-dc.json`. |
-| `ngspice-47-dc.json` | Reference: 910 operating points (`@m1[id|gm|gds|gmbs|vth]`, `i(vd)`) and 13 Id-Vds sweeps (`i(vd)`). |
+| `ngspice-47-dc.json` | Reference: 1120 operating points (`@m1[id|gm|gds|gmbs|vth]`, `i(vd)`) and 16 Id-Vds sweeps (`i(vd)`). |
 | `compare.ts` | Scores a spice-ts build against the reference (`--device` adds the b3ld.c outputs). |
-| `before.json` / `after.json` | `compare.ts` receipts for main `3f26f107` and for this branch. |
+| `before.json` / `after.json` | `compare.ts` receipts for main `e58322ea` and for this branch. |
 | `sram-582-before.json` / `sram-582-after.json` | `benchmarks/bsim3-reverse/compare.ts` receipts (the #582 SRAM and the orientation checks) for the same two trees. |
 
-Cases come from four sources. The #589 issue deck, the existing `bsim3-validation` cards and three stress cards are project-authored. The stress cards exercise mobMod 2 and 3, NGATE poly depletion, RDSW/PRWG/PRWB, A1/A2, PVAG, Isub (ALPHA0/BETA0), PSCBE, L/W/P binning with BINUNIT 1 and 2, TNOM != TEMP, GAMMA1-derived NCH/K1/K2, NCH > 1e20 and DELVTO. The BSIM3 cards from `examples/mos/nmos_out_BSIM330_plainwrite.sp`, `examples/Monte_Carlo/MC_ring.sp` and the all-defaults `examples/mos/adder_mos.cir` are read at run time from the corpus-f fixtures (provenance and licence: `benchmarks/corpus/corpus-f/SOURCES.md`). The fixtures are not modified.
+Cases come from four sources. The #589 issue deck, the existing `bsim3-validation` cards and three stress cards are project-authored. The stress cards exercise mobMod 2 and 3, NGATE poly depletion, RDSW/PRWG/PRWB, A1/A2, PVAG, Isub (ALPHA0/BETA0), PSCBE, L/W/P binning with BINUNIT 1 and 2, TNOM != TEMP, GAMMA1-derived NCH/K1/K2, NCH > 1e20 and DELVTO. Three corner cards drive every discontinuity guard in `b3ld.c`, the IJTH-linearised and zero-Is junction branches, K1 without K2, VFB without VTH0, deep subthreshold and M = 2. Together the cases cover all lines and branches of `bsim3v3-dc.ts`. The BSIM3 cards from `examples/mos/nmos_out_BSIM330_plainwrite.sp`, `examples/Monte_Carlo/MC_ring.sp` and the all-defaults `examples/mos/adder_mos.cir` are read at run time from the corpus-f fixtures (provenance and licence: `benchmarks/corpus/corpus-f/SOURCES.md`). The fixtures are not modified.
 
 ## Reproduce
 
@@ -25,7 +25,7 @@ Cases come from four sources. The #589 issue deck, the existing `bsim3-validatio
     pnpm exec tsx benchmarks/bsim3-dc-589/compare.ts --device --output benchmarks/bsim3-dc-589/after.json
     pnpm -C packages/core exec vitest run src/devices/bsim3v3-ngspice-parity.test.ts
 
-`before.json` was produced by copying `compare.ts` and `ngspice-47-dc.json` into a detached worktree of main `3f26f107` and running `compare.ts` (without `--device`, since the old evaluator has a different API) against that tree's build. `compare.ts` exits zero whenever it produced metrics; it does not gate on parity. The vitest file is the gate (1% of ngspice, as #589 requires).
+`before.json` was produced by copying `compare.ts` and `ngspice-47-dc.json` into a detached worktree of main `e58322ea` and running `compare.ts` (without `--device`, since the old evaluator has a different API) against that tree's build. `compare.ts` exits zero whenever it produced metrics; it does not gate on parity. The vitest file is the gate (1% of ngspice, as #589 requires).
 
 Relative error is `|spice-ts - ngspice| / max(|ngspice|, 1e-12)`. Operating points re-run the same deck through `simulate` with the sources set to the bias. The sweep is the deck's own `.dc VD` (Vgs = type × 1.2 V, Vbs = 0).
 
@@ -48,6 +48,9 @@ Worst relative error per case. `[n/N]` counts points within 1%.
 | stress-nmos | 20 [0/70] | 24 [1/25] | 6.7e-15 [70/70] | 1.1e-7 [25/25] | 3.8e-15 / 3.4e-15 / 3.2e-15 / 3.5e-15 |
 | stress-pmos | 5.4e6 [0/70] | 5.5 [1/25] | 3.2e-14 [70/70] | 1.4e-4 [25/25] | 2.6e-14 / 1.7e-14 / 2.5e-14 / 1.6e-14 |
 | gamma1-nmos | 2.3e7 [0/70] | 62 [1/25] | 1.3e-14 [70/70] | 6.8e-9 [25/25] | 1.4e-14 / 1.4e-14 / 1.6e-14 / 1.2e-14 |
+| corner-nmos | 6.5e5 [0/70] | 0.73 [1/25] | 1.8e-14 [70/70] | 9.3e-7 [25/25] | 1.1e-14 / 1.0e-14 / 1.7e-14 / 7.9e-14 |
+| corner2-nmos | 4.6e6 [0/70] | 140 [1/25] | 7.2e-14 [70/70] | 3.9e-8 [25/25] | 6.8e-14 / 2.8e-13 / 9.5e-13 / 1.4e-12 |
+| corner-pmos | 3.1e8 [0/70] | 1.9e8 [1/25] | 2.8e-14 [70/70] | 1.1e-15 [25/25] | 2.9e-14 / 9.6e-14 / 1.6e-15 / 6.8e-14 |
 
 The very large "before" ratios are subthreshold and off-state points, where the old model's current was orders of magnitude off a picoampere-scale reference. Operating points match to rounding because the sources fix every terminal voltage. Every sweep point is within 1%. The largest sweep residuals (up to 1.37e-4, stress-pmos) all fall on the PMOS sweeps at VD = -1.7 V, the first step after the start point. For issue-582-pmos (1.05e-4) the residual was checked and is on the ngspice side. ngspice's own `.op` at that bias gives 5.057206e-5 A, which is spice-ts's sweep value, while its `.dc` point is 5.056674e-5 A.
 
@@ -63,7 +66,7 @@ The issue deck (`.dc VD 0 1.8 0.6`, Vgs = 1.8 V):
 
 Absolute max / RMS error against ngspice-47: volts for the SRAM nodes, amperes for currents.
 
-| Fixture / signal | Before (main 3f26f107) | After |
+| Fixture / signal | Before (main 3f26f107) | After (on 3f26f107) |
 | --- | ---: | ---: |
 | SRAM q | 0.645187 / 0.099217 | 0.352937 / 0.027573 |
 | SRAM qb | 0.986685 / 0.171906 | 0.673988 / 0.065307 |
@@ -77,14 +80,15 @@ SRAM end state at 10 ns: q = 4.5807703e-9 V and qb = 1.799999987991 V in spice-t
 
 ## corpus-f BSIM3 decks
 
-None of the 11 corpus-f BSIM3 fixtures changes outcome with this PR. Each child run (`outcomes.ts --corpus-f-fixture-child <id>`) on this branch stops before the BSIM3 device matters:
+No corpus-f BSIM3 fixture becomes a comparable match with this PR. These are the child runs (`outcomes.ts --corpus-f-fixture-child <id>`) on this branch, which has main `e58322ea` with the #584 control interpreter merged in:
 
-- eight fail at parse on `.options noinit` or `.control set/let/save` (#494, #488);
-- `tcl-testbench4` uses VERSION=3.2.2, which ngspice routes to BSIM3v32 and spice-ts rejects (#503);
-- `nmos_pmos_BSIM482.sp` is BSIM4 (LEVEL=54);
-- `examples/snapshot/adder_mos_circ.cir` reaches simulation and exceeds the 120 s execution bound (adder timeouts: #611/#604).
+- `examples/mos/nmos_pmos_drainresistor.sp` and `nmos_pmos_plotting.sp` now run to success in spice-ts. They are still `not-compared` because the harness gets no ngspice vectors from their `.control` analyses (#528).
+- Five stop in the control language before the device matters: `pre_set` (both adder_mos), `goto` (MC_ring), the `v(/22)` vector name (BSIM330_plainwrite) and `pyplot` (inv-chain-pyplot).
+- Both `tcl-testbench` decks are VERSION 3.2.2, which ngspice routes to BSIM3v32 and spice-ts rejects (#503).
+- `examples/snapshot/adder_mos_circ.cir` still exceeds the 120 s execution bound (#611/#604).
+- `nmos_pmos_BSIM482.sp` is BSIM4 and was not run.
 
-The before run of that last deck was not repeated on this loaded host. `AGGREGATE_PARITY.md` and the corpus-f `outcomes.json` are not touched here.
+`AGGREGATE_PARITY.md` and the corpus-f `outcomes.json` are not touched here.
 
 ## Published losses / remaining scope
 

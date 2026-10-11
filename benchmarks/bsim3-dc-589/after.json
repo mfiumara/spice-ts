@@ -3,7 +3,7 @@
   "reference": "ngspice-47",
   "core": "packages/core/dist/index.js",
   "node": "v22.23.1",
-  "generatedAt": "2026-10-11T20:10:59.584Z",
+  "generatedAt": "2026-10-11T20:26:25.741Z",
   "cases": [
     {
       "name": "issue-589-nmos",
@@ -625,6 +625,150 @@
         "vth": {
           "maxRelative": 8.367226491965759e-16,
           "at": "Vgs=0 Vds=0.9 Vbs=0: spice-ts 1.061497e+0 vs ngspice 1.061497e+0",
+          "within1Percent": 70
+        }
+      }
+    },
+    {
+      "name": "corner-nmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 1.8270717650331226e-14,
+          "at": "Vgs=0 Vds=-0.6 Vbs=-0.9: spice-ts 1.370587e-12 vs ngspice 1.370587e-12",
+          "within1Percent": 70
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 9.348192178587363e-7,
+          "at": "VD=-0.00: spice-ts -4.254894e-19 vs ngspice 5.093298e-19",
+          "within1Percent": 25
+        }
+      },
+      "device": {
+        "id": {
+          "maxRelative": 1.073780248873653e-14,
+          "at": "Vgs=1 Vds=0.05 Vbs=-0.9: spice-ts 7.395306e-7 vs ngspice 7.395306e-7",
+          "within1Percent": 70
+        },
+        "gm": {
+          "maxRelative": 1.0234177171612299e-14,
+          "at": "Vgs=1 Vds=0.9 Vbs=-0.9: spice-ts 4.237574e-5 vs ngspice 4.237574e-5",
+          "within1Percent": 70
+        },
+        "gds": {
+          "maxRelative": 1.7048176820616893e-14,
+          "at": "Vgs=1 Vds=0.3 Vbs=-0.9: spice-ts 2.033966e-7 vs ngspice 2.033966e-7",
+          "within1Percent": 70
+        },
+        "gmbs": {
+          "maxRelative": 7.8584277278432e-14,
+          "at": "Vgs=1.4 Vds=0.9 Vbs=0: spice-ts 5.680352e-6 vs ngspice 5.680352e-6",
+          "within1Percent": 70
+        },
+        "vth": {
+          "maxRelative": 6.59471976019175e-16,
+          "at": "Vgs=0 Vds=1.8 Vbs=-0.9: spice-ts 1.010102e+0 vs ngspice 1.010102e+0",
+          "within1Percent": 70
+        }
+      }
+    },
+    {
+      "name": "corner2-nmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 7.186908790886979e-14,
+          "at": "Vgs=0.7 Vds=0.9 Vbs=-0.9: spice-ts -2.777023e-7 vs ngspice -2.777023e-7",
+          "within1Percent": 70
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 3.8885037637182615e-8,
+          "at": "VD=-0.00: spice-ts 5.645283e-20 vs ngspice 1.756780e-20",
+          "within1Percent": 25
+        }
+      },
+      "device": {
+        "id": {
+          "maxRelative": 6.843811863496834e-14,
+          "at": "Vgs=0.7 Vds=0.9 Vbs=-0.9: spice-ts 2.777005e-7 vs ngspice 2.777005e-7",
+          "within1Percent": 70
+        },
+        "gm": {
+          "maxRelative": 2.772637393695884e-13,
+          "at": "Vgs=1.8 Vds=1.8 Vbs=0: spice-ts 7.477044e-7 vs ngspice 7.477044e-7",
+          "within1Percent": 70
+        },
+        "gds": {
+          "maxRelative": 9.49961094438194e-13,
+          "at": "Vgs=1.8 Vds=1.8 Vbs=-0.9: spice-ts 3.435082e-6 vs ngspice 3.435082e-6",
+          "within1Percent": 70
+        },
+        "gmbs": {
+          "maxRelative": 1.3945815331405306e-12,
+          "at": "Vgs=1.4 Vds=0.05 Vbs=-0.9: spice-ts 1.737185e-8 vs ngspice 1.737185e-8",
+          "within1Percent": 70
+        },
+        "vth": {
+          "maxRelative": 2.2947949492407695e-16,
+          "at": "Vgs=0 Vds=-0.6 Vbs=0: spice-ts 4.838005e-1 vs ngspice 4.838005e-1",
+          "within1Percent": 70
+        }
+      }
+    },
+    {
+      "name": "corner-pmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 2.8070826451384484e-14,
+          "at": "Vgs=1.8 Vds=-0.6 Vbs=0: spice-ts -7.643414e-13 vs ngspice -7.643414e-13",
+          "within1Percent": 70
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 1.101536682199523e-15,
+          "at": "VD=-1.10: spice-ts 1.100000e-12 vs ngspice 1.100000e-12",
+          "within1Percent": 25
+        }
+      },
+      "device": {
+        "id": {
+          "maxRelative": 2.908056841006738e-14,
+          "at": "Vgs=1.8 Vds=-0.6 Vbs=0: spice-ts 1.643414e-13 vs ngspice 1.643414e-13",
+          "within1Percent": 70
+        },
+        "gm": {
+          "maxRelative": 9.587023910899658e-14,
+          "at": "Vgs=1.8 Vds=-0.6 Vbs=0: spice-ts 4.861747e-12 vs ngspice 4.861747e-12",
+          "within1Percent": 70
+        },
+        "gds": {
+          "maxRelative": 1.6234757429448423e-15,
+          "at": "Vgs=1.8 Vds=-0.6 Vbs=0: spice-ts 1.143781e-14 vs ngspice 1.143781e-14",
+          "within1Percent": 70
+        },
+        "gmbs": {
+          "maxRelative": 6.815758221109542e-14,
+          "at": "Vgs=1.8 Vds=-0.6 Vbs=0: spice-ts 7.623983e-13 vs ngspice 7.623983e-13",
+          "within1Percent": 70
+        },
+        "vth": {
+          "maxRelative": 2.944003435971854e-16,
+          "at": "Vgs=0.7 Vds=-0.6 Vbs=-0.9: spice-ts 3.016907e+0 vs ngspice 3.016907e+0",
           "within1Percent": 70
         }
       }

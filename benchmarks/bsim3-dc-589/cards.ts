@@ -59,6 +59,21 @@ const STRESS_PMOS = [
 ].join('\n');
 // gamma1 only (no NCH): b3temp.c derives npeak from gamma1.
 const GAMMA_NMOS = '.model MOD NMOS LEVEL=49 TOX=7n GAMMA1=0.6 VBM=-2.5 VTH0=0.6 U0=450 RDSW=150';
+// Corner cards: drive b3ld.c's discontinuity guards (dvt2/dvt2w/keta/pdiblcb/
+// etab/prwb/pvag/ua/nfactor/Abulk), the ijth-linearised and zero-Is junction
+// branches, K1 without K2, VFB without VTH0, deep subthreshold and M > 1.
+const CORNER_NMOS = [
+  '.model MOD NMOS LEVEL=49 TOX=4n NCH=2e17 VTH0=0.5 K1=0.6 DVT2=1 DVT2W=1 DVT0W=0.1 KETA=1.2',
+  '+ PDIBLCB=1.2 ETA0=0.05 ETAB=0.2 RDSW=400 PRWB=-2 PVAG=-2 UA=-3e-9 NFACTOR=-6 AGS=5',
+  '+ IJTH=1e-9 U0=400 VSAT=1e5',
+].join('\n');
+const CORNER_PMOS = '.model MOD PMOS LEVEL=49 TOX=6n VFB=1.5 K1=0.5 U0=120 JS=0 JSW=0 MOBMOD=3';
+// Abulk/Abulk0 < 0.1 (A0 < 0), PRWB clamp, Theta0 underflow (large DVT1),
+// Weff < 2e-8 (DWG), and VADIBL/VASCBE disabled (PDIBLC1=PDIBLC2=PSCBE2=0).
+const CORNER2_NMOS = [
+  '.model MOD NMOS LEVEL=49 TOX=4n VTH0=0.4 K1=0.5 A0=-8 RDSW=200 PRWB=-3 DVT1=60 DWG=4.5e-7',
+  '+ PDIBLC1=0 PDIBLC2=0 PSCBE2=0 U0=350',
+].join('\n');
 
 export const BSIM3_DC_CASES: readonly Bsim3DcCase[] = [
   { name: 'issue-589-nmos', type: 1, model: ISSUE_NMOS, instance: 'W=0.5u L=0.18u', source: 'issue #589 deck' },
@@ -74,6 +89,9 @@ export const BSIM3_DC_CASES: readonly Bsim3DcCase[] = [
   { name: 'stress-nmos', type: 1, model: STRESS_NMOS, instance: 'W=0.8u L=0.15u', source: 'project-authored stress card' },
   { name: 'stress-pmos', type: -1, model: STRESS_PMOS, instance: 'W=2u L=0.25u AD=1p AS=1p PD=4u PS=4u', source: 'project-authored stress card' },
   { name: 'gamma1-nmos', type: 1, model: GAMMA_NMOS, instance: 'W=1u L=0.5u DELVTO=0.02', source: 'project-authored gamma1 card' },
+  { name: 'corner-nmos', type: 1, model: CORNER_NMOS, instance: 'W=1u L=0.18u M=2', source: 'project-authored corner card' },
+  { name: 'corner2-nmos', type: 1, model: CORNER2_NMOS, instance: 'W=1u L=0.3u', source: 'project-authored corner card' },
+  { name: 'corner-pmos', type: -1, model: CORNER_PMOS, instance: 'W=2u L=0.5u AD=2p AS=2p', source: 'project-authored corner card' },
 ];
 
 /** NMOS-convention bias grid (V); PMOS cases apply type * value physically. */
