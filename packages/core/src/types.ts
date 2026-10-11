@@ -1,3 +1,5 @@
+import { InvalidCircuitError } from './errors.js';
+
 /** Node identifier — string name from netlist (e.g., '1', 'out', '0' for ground) */
 export type NodeName = string;
 
@@ -182,6 +184,10 @@ export type IntegrationMethod = 'euler' | 'trapezoidal' | 'gear2';
  * All fields are optional; SPICE-convention defaults are used when omitted.
  */
 export interface SimulationOptions {
+  /** ngspice nonlinear-device bypass request. Native solver always evaluates devices and warns when nonzero. */
+  bypass?: number;
+  /** ngspice-47 RAMPTIME breakpoint (s). Ordinary V/I sources do not ramp in the release build. Default: 0. */
+  rampTime?: number;
   /** Absolute current tolerance (A). Default: 1e-12 */
   abstol?: number;
   /** Absolute voltage tolerance (V). Default: 1e-6 */
@@ -266,6 +272,7 @@ export type SimulatorBackend = SimulatorBackendName | SimulatorAdapter;
 
 /** Resolved options with all defaults filled in */
 export interface ResolvedOptions {
+  rampTime: number;
   abstol: number;
   vntol: number;
   reltol: number;
@@ -279,6 +286,7 @@ export interface ResolvedOptions {
 }
 
 export const DEFAULT_OPTIONS: ResolvedOptions = {
+  rampTime: 0,
   abstol: 1e-12,
   vntol: 1e-6,
   reltol: 1e-3,
@@ -301,7 +309,14 @@ export function withNetlistOptions<T extends SimulationOptions>(netlist: Simulat
 }
 
 export function resolveOptions(opts?: SimulationOptions, stopTime?: number): ResolvedOptions {
+  if (opts?.rampTime !== undefined && (!Number.isFinite(opts.rampTime) || opts.rampTime < 0)) {
+    throw new InvalidCircuitError('SimulationOptions.rampTime must be a non-negative finite number');
+  }
+  if (opts?.bypass !== undefined && !Number.isInteger(opts.bypass)) {
+    throw new InvalidCircuitError('SimulationOptions.bypass must be an integer');
+  }
   return {
+    rampTime: opts?.rampTime ?? DEFAULT_OPTIONS.rampTime,
     abstol: opts?.abstol ?? DEFAULT_OPTIONS.abstol,
     vntol: opts?.vntol ?? DEFAULT_OPTIONS.vntol,
     reltol: opts?.reltol ?? DEFAULT_OPTIONS.reltol,

@@ -292,7 +292,7 @@ export async function parseTitlelessAsync(
 }
 
 const OUTPUT_ONLY_OPTION_FLAGS = new Set([
-  'nopage', 'acct', 'noacct', 'list', 'node', 'post', 'trans',
+  'nopage', 'acct', 'noacct', 'list', 'node', 'post', 'trans', 'noinit', 'seedinfo',
 ]);
 const BEHAVIOR_CHANGING_GNUCAP_OPTIONS = new Set([
   'cstray', 'dampstrategy', 'itermin', 'nobypass', 'noincmode', 'rstray', 'trsteporder',
@@ -729,6 +729,16 @@ function parseSimulationOptions(
     }
 
     const rawValue = token.slice(separator + 1);
+    if (name === 'warn' || name === 'maxwarns' || name === 'bypass') {
+      const value = parseNumber(rawValue);
+      if (!Number.isInteger(value)) {
+        throw new Error(`Invalid .options ${name} value: '${rawValue}'`);
+      }
+      // WARN/MAXWARNS only control ngspice's SOA diagnostics. BYPASS is
+      // retained for serialization and an explicit native-solver warning.
+      if (name === 'bypass') options.bypass = value;
+      continue;
+    }
     if (obsoleteNumericFields.has(name)) {
       const value = parseNumber(rawValue);
       if (!Number.isInteger(value) || value < 0) {
@@ -758,6 +768,7 @@ function parseSimulationOptions(
       itl4: 'maxTransientIterations',
       trtol: 'trtol',
       chgtol: 'chgtol',
+      ramptime: 'rampTime',
     };
     const target = mappings[name];
     if (!target) throw new ParseError(`Unsupported .options field: '${name}'`, lineNumber, context);

@@ -3,6 +3,17 @@
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## ngspice-47 option probes (#494)
+
+`benchmarks/options-494/{ramptime,bypass}.cir` are project-authored MIT fixtures for
+[issue #494](https://github.com/mfiumara/spice-ts/issues/494). They test the release-build
+RAMPTIME breakpoint with ordinary V/I sources and a held transient initial condition,
+and a nonlinear diode sweep with BYPASS requested. Both engines receive identical
+bytes; no per-circuit tolerance overrides. `benchmarks/options-494/compare.ts` records
+SHA-256, versions, machine, max/RMS errors and single-run timings in `report.json`.
+The affected corpus-f decks retain their existing upstream BSD-3-Clause provenance
+and are not edited. No ngspice source is redistributed by this option patch.
+
 ## ngspice public corpus A
 
 - Repository: https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/

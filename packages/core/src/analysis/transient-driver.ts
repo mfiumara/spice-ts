@@ -535,6 +535,10 @@ class TransientSimImpl implements TransientSim {
     this.orderOnePending = false;
     if (stop === undefined) return new BreakpointQueue([], MIN_BREAK);
     const times: number[] = [];
+    // ngspice-47 dctran.c inserts RAMPTIME even in non-XSPICE_EXP builds,
+    // where independent V/I sources are not ramped. capacitoric/inductoric
+    // code models that use the ramp factor remain explicitly unsupported.
+    if (this.options.rampTime > 0 && this.options.rampTime <= stop) times.push(this.options.rampTime);
     for (const d of this.compiled.devices) {
       if (d.getBreakpoints) times.push(...d.getBreakpoints(stop));
     }
