@@ -257,6 +257,15 @@ class TransientSimImpl implements TransientSim {
   }
 
   advance(): TransientStep {
+    return this.buildStep(this.advanceSolution());
+  }
+
+  /**
+   * Advance one accepted timepoint and return its solution vector without
+   * building the name-keyed {@link TransientStep} Maps. Internal fast path for
+   * `solveTransient`; the returned array is only valid until the next call.
+   */
+  advanceSolution(): Float64Array {
     if (this.disposed) throw new InvalidCircuitError('TransientSim has been disposed');
 
     const prevSol = new Float64Array(this.assembler.solution);
@@ -439,7 +448,7 @@ class TransientSimImpl implements TransientSim {
       const dtBase = this.justCrossedBreakpoint ? actualDt : Math.min(actualDt * growFactor, chargeBound);
       this.dt = Math.min(dtBase, this.config.maxTimestep, remaining);
 
-      return this.buildStep(sol);
+      return sol;
     }
   }
 
@@ -485,6 +494,11 @@ class TransientSimImpl implements TransientSim {
   /** Returns the current state at t=0 (or whatever the current simTime is) as a TransientStep. */
   peekInitialStep(): TransientStep {
     return this.buildStep(this.assembler.solution);
+  }
+
+  /** The solution vector at the current simTime (valid until the next advance). */
+  currentSolution(): Float64Array {
+    return this.assembler.solution;
   }
 
   /** Test-only accessor; returns the remaining breakpoints in order. */
@@ -666,7 +680,11 @@ export function createDriverFromCompiled(
     convergence?: ConvergenceTelemetry;
     guard?: ProtocolExecutionGuard;
   },
-): TransientSim & { peekInitialStep(): TransientStep } {
+): TransientSim & {
+  peekInitialStep(): TransientStep;
+  currentSolution(): Float64Array;
+  advanceSolution(): Float64Array;
+} {
   const impl = new TransientSimImpl(compiled, options, {
     stopTime: config.stopTime,
     timestep: config.timestep,

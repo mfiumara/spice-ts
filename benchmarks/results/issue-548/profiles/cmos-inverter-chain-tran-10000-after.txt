@@ -1,0 +1,45 @@
+cmos-inverter-chain-tran-10000-after.cpuprofile: 22043 samples, 234701.0 ms sampled
+
+Top self time
+   59658.9 ms  25.4%  batchStamp core-dist(change)/chunk-5LJ64ZMW.js:3449
+   24978.7 ms  10.6%  buildCompanionSystem core-dist(change)/chunk-5LJ64ZMW.js:11561
+   23407.6 ms  10.0%  stampDynamic core-dist(change)/chunk-5LJ64ZMW.js:1031
+   22632.3 ms   9.6%  stampG core-dist(change)/chunk-5LJ64ZMW.js:11035
+   19639.4 ms   8.4%  (garbage collector)
+   17847.5 ms   7.6%  stamp core-dist(change)/chunk-5LJ64ZMW.js:3270
+   17710.0 ms   7.5%  factorize core-dist(change)/chunk-5LJ64ZMW.js:10497
+    5722.8 ms   2.4%  stampPrevB core-dist(change)/chunk-5LJ64ZMW.js:12383
+    4956.3 ms   2.1%  limitNewtonStep core-dist(change)/chunk-5LJ64ZMW.js:3211
+    4429.0 ms   1.9%  stampC core-dist(change)/chunk-5LJ64ZMW.js:11041
+    4321.7 ms   1.8%  getVoltage core-dist(change)/chunk-5LJ64ZMW.js:11044
+    3831.0 ms   1.6%  stampB core-dist(change)/chunk-5LJ64ZMW.js:11038
+    3334.0 ms   1.4%  solveLinearized core-dist(change)/chunk-5LJ64ZMW.js:11833
+    3271.4 ms   1.4%  newtonRaphson core-dist(change)/chunk-5LJ64ZMW.js:11150
+    3004.0 ms   1.3%  sortInt32Prefix core-dist(change)/chunk-5LJ64ZMW.js:10724
+    2739.7 ms   1.2%  chargeTruncationTimestep core-dist(change)/chunk-5LJ64ZMW.js:12464
+    2644.0 ms   1.1%  attemptStep core-dist(change)/chunk-5LJ64ZMW.js:11741
+    2155.7 ms   0.9%  bulkJunction core-dist(change)/chunk-5LJ64ZMW.js:3055
+    1686.0 ms   0.7%  save core-dist(change)/chunk-5LJ64ZMW.js:12723
+     907.6 ms   0.4%  applyDeviceStepLimits core-dist(change)/chunk-5LJ64ZMW.js:11138
+
+Top inclusive time
+  234701.0 ms 100.0%  (root)
+  214586.4 ms  91.4%  simulate core-dist(change)/chunk-5LJ64ZMW.js:15776
+  180708.5 ms  77.0%  solveTransient core-dist(change)/chunk-5LJ64ZMW.js:12693
+  178696.2 ms  76.1%  advanceSolution core-dist(change)/chunk-5LJ64ZMW.js:12168
+  138213.6 ms  58.9%  attemptStep core-dist(change)/chunk-5LJ64ZMW.js:11741
+  114470.2 ms  48.8%  buildCompanionSystem core-dist(change)/chunk-5LJ64ZMW.js:11561
+   61769.4 ms  26.3%  batchStamp core-dist(change)/chunk-5LJ64ZMW.js:3449
+   45957.6 ms  19.6%  stamp core-dist(change)/chunk-5LJ64ZMW.js:3270
+   36405.9 ms  15.5%  stampPrevB core-dist(change)/chunk-5LJ64ZMW.js:12383
+   32956.5 ms  14.0%  solveDCOperatingPoint core-dist(change)/chunk-5LJ64ZMW.js:11366
+   32956.5 ms  14.0%  transientInitialSolution core-dist(change)/chunk-5LJ64ZMW.js:16064
+   32847.5 ms  14.0%  newtonRaphson core-dist(change)/chunk-5LJ64ZMW.js:11150
+   27409.1 ms  11.7%  stampDynamic core-dist(change)/chunk-5LJ64ZMW.js:1031
+   22638.0 ms   9.6%  stampG core-dist(change)/chunk-5LJ64ZMW.js:11035
+   20968.5 ms   8.9%  factorize core-dist(change)/chunk-5LJ64ZMW.js:10497
+   20691.6 ms   8.8%  solveLinearized core-dist(change)/chunk-5LJ64ZMW.js:11833
+   19639.4 ms   8.4%  (garbage collector)
+   13437.5 ms   5.7%  dynamicGminStepping core-dist(change)/chunk-5LJ64ZMW.js:11444
+   13437.5 ms   5.7%  gminSteppingHomotopy core-dist(change)/chunk-5LJ64ZMW.js:11437
+   13215.1 ms   5.6%  (anonymous) core-dist(change)/chunk-5LJ64ZMW.js:11450
