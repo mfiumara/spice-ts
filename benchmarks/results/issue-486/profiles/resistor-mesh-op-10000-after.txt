@@ -1,45 +1,45 @@
-resistor-mesh-op-10000-after.cpuprofile: 200 samples, 674.2 ms sampled
+resistor-mesh-op-10000-after.cpuprofile: 156 samples, 1147.3 ms sampled
 
 Top self time
-     211.0 ms  31.3%  factorize packages/core/dist/chunk-2QFKAOTH.js:10338
-      74.9 ms  11.1%  (garbage collector)
-      74.6 ms  11.1%  amdOrdering packages/core/dist/chunk-2QFKAOTH.js:10028
-      44.5 ms   6.6%  newtonRaphson packages/core/dist/chunk-2QFKAOTH.js:10991
-      35.2 ms   5.2%  (idle)
-      31.0 ms   4.6%  compile packages/core/dist/chunk-2QFKAOTH.js:7589
-      20.2 ms   3.0%  analyzePattern packages/core/dist/chunk-2QFKAOTH.js:10246
-      19.8 ms   2.9%  lockTopology packages/core/dist/chunk-2QFKAOTH.js:10686
-      10.8 ms   1.6%  stamp packages/core/dist/chunk-2QFKAOTH.js:761
-      10.0 ms   1.5%  add packages/core/dist/chunk-2QFKAOTH.js:9967
-       9.9 ms   1.5%  (program)
-       9.9 ms   1.5%  preprocessLines packages/core/dist/chunk-2QFKAOTH.js:8573
-       9.2 ms   1.4%  tokenizeNetlist packages/core/dist/chunk-2QFKAOTH.js:5152
-       8.5 ms   1.3%  compileSourceTextModule node:internal/modules/esm/utils:344
-       8.1 ms   1.2%  collectStatements packages/core/dist/chunk-2QFKAOTH.js:8632
-       6.9 ms   1.0%  parseNetlist packages/core/dist/chunk-2QFKAOTH.js:8882
-       6.4 ms   1.0%  addPosition packages/core/dist/chunk-2QFKAOTH.js:10728
-       5.8 ms   0.9%  addResistor packages/core/dist/chunk-2QFKAOTH.js:7008
-       5.2 ms   0.8%  set node:internal/modules/esm/module_map:74
-       5.0 ms   0.7%  getRow packages/core/dist/chunk-2QFKAOTH.js:10022
+     364.4 ms  31.8%  factorize core-dist(change)/chunk-CD3JVUSG.js:10497
+     196.1 ms  17.1%  amdOrdering core-dist(change)/chunk-CD3JVUSG.js:10187
+      92.0 ms   8.0%  (garbage collector)
+      77.7 ms   6.8%  compile core-dist(change)/chunk-CD3JVUSG.js:7747
+      56.2 ms   4.9%  parseNumber core-dist(change)/chunk-CD3JVUSG.js:5281
+      36.3 ms   3.2%  read
+      30.0 ms   2.6%  lockTopology core-dist(change)/chunk-CD3JVUSG.js:10845
+      27.6 ms   2.4%  internalModuleStat
+      24.3 ms   2.1%  growUFactors core-dist(change)/chunk-CD3JVUSG.js:10674
+      23.1 ms   2.0%  solve core-dist(change)/chunk-CD3JVUSG.js:10683
+      17.7 ms   1.5%  analyzePattern core-dist(change)/chunk-CD3JVUSG.js:10405
+      15.5 ms   1.3%  add core-dist(change)/chunk-CD3JVUSG.js:10126
+      14.6 ms   1.3%  tokenizeNetlist core-dist(change)/chunk-CD3JVUSG.js:5303
+      13.8 ms   1.2%  detectModuleFormat node:internal/modules/esm/get_format:36
+      12.4 ms   1.1%  newtonRaphson core-dist(change)/chunk-CD3JVUSG.js:11150
+      11.5 ms   1.0%  substituteExpressions core-dist(change)/chunk-CD3JVUSG.js:8907
+      10.7 ms   0.9%  parseNetlist core-dist(change)/chunk-CD3JVUSG.js:9040
+       9.9 ms   0.9%  tokenizeLine core-dist(change)/chunk-CD3JVUSG.js:5333
+       9.8 ms   0.8%  compileSourceTextModule node:internal/modules/esm/utils:344
+       9.0 ms   0.8%  expandLossyTransmissionLines core-dist(change)/chunk-CD3JVUSG.js:8083
 
 Top inclusive time
-     674.2 ms 100.0%  (root)
-     493.4 ms  73.2%  simulate packages/core/dist/chunk-2QFKAOTH.js:15550
-     428.9 ms  63.6%  solveDCOperatingPoint packages/core/dist/chunk-2QFKAOTH.js:11206
-     425.9 ms  63.2%  newtonRaphson packages/core/dist/chunk-2QFKAOTH.js:10991
-     217.4 ms  32.2%  factorize packages/core/dist/chunk-2QFKAOTH.js:10338
-      94.8 ms  14.1%  analyzePattern packages/core/dist/chunk-2QFKAOTH.js:10246
-      94.8 ms  14.1%  getSparseSolver packages/core/dist/chunk-2QFKAOTH.js:10813
-      74.9 ms  11.1%  (garbage collector)
-      74.6 ms  11.1%  amdOrdering packages/core/dist/chunk-2QFKAOTH.js:10028
-      52.7 ms   7.8%  parseAsync packages/core/dist/chunk-2QFKAOTH.js:9024
-      43.5 ms   6.5%  compile packages/core/dist/chunk-2QFKAOTH.js:7589
-      35.2 ms   5.2%  (idle)
-      34.7 ms   5.1%  parseNetlist packages/core/dist/chunk-2QFKAOTH.js:8882
-      34.7 ms   5.1%  parse packages/core/dist/chunk-2QFKAOTH.js:8876
-      34.2 ms   5.1%  lockTopology packages/core/dist/chunk-2QFKAOTH.js:10686
-      25.2 ms   3.7%  preprocessLines packages/core/dist/chunk-2QFKAOTH.js:8573
-      21.5 ms   3.2%  stamp packages/core/dist/chunk-2QFKAOTH.js:761
-      21.0 ms   3.1%  (anonymous) benchmarks/performance/profile-scaling-m2.mjs:1
-      15.9 ms   2.4%  getModuleJobForImport node:internal/modules/esm/loader:319
-      14.2 ms   2.1%  tokenizeNetlist packages/core/dist/chunk-2QFKAOTH.js:5152
+    1147.3 ms 100.0%  (root)
+     822.5 ms  71.7%  simulate core-dist(change)/chunk-CD3JVUSG.js:15761
+     718.8 ms  62.6%  newtonRaphson core-dist(change)/chunk-CD3JVUSG.js:11150
+     718.8 ms  62.6%  solveDCOperatingPoint core-dist(change)/chunk-CD3JVUSG.js:11366
+     396.2 ms  34.5%  factorize core-dist(change)/chunk-CD3JVUSG.js:10497
+     220.7 ms  19.2%  getSparseSolver core-dist(change)/chunk-CD3JVUSG.js:10972
+     213.8 ms  18.6%  analyzePattern core-dist(change)/chunk-CD3JVUSG.js:10405
+     196.1 ms  17.1%  amdOrdering core-dist(change)/chunk-CD3JVUSG.js:10187
+     109.0 ms   9.5%  parseAsync core-dist(change)/chunk-CD3JVUSG.js:9182
+     103.8 ms   9.1%  parseNetlist core-dist(change)/chunk-CD3JVUSG.js:9040
+     103.8 ms   9.1%  parse core-dist(change)/chunk-CD3JVUSG.js:9034
+      95.5 ms   8.3%  compile core-dist(change)/chunk-CD3JVUSG.js:7747
+      95.4 ms   8.3%  getModuleJobForImport node:internal/modules/esm/loader:319
+      92.0 ms   8.0%  (garbage collector)
+      68.7 ms   6.0%  parseDevice core-dist(change)/chunk-CD3JVUSG.js:9700
+      67.8 ms   5.9%  loadAndTranslate node:internal/modules/esm/loader:608
+      67.8 ms   5.9%  #createModuleJob node:internal/modules/esm/loader:632
+      67.8 ms   5.9%  #getJobFromResolveResult node:internal/modules/esm/loader:347
+      56.2 ms   4.9%  parseNumber core-dist(change)/chunk-CD3JVUSG.js:5281
+      50.1 ms   4.4%  defaultLoadSync node:internal/modules/esm/load:136
