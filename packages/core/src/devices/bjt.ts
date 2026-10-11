@@ -4,6 +4,10 @@ import type {
 import {
   depletionCharge, stampChargeBranch, stampChargeCurrent, TransientChargeState,
 } from './charge-state.js';
+import {
+  assertNoUnsupportedTemperatureParameters, CONSTCTOK, CONSTKOVERQ, NOMINAL_TEMPERATURE_C,
+  temperatureJunction,
+} from './junction-temperature.js';
 
 export interface BJTParams {
   LEVEL: number;
@@ -43,6 +47,11 @@ export interface BJTParams {
   /** Substrate junction saturation current and emission coefficient. */
   ISS: number;
   NS: number;
+  /** bjttemp.c temperature inputs: TNOM (C), EG (eV), XTI and the beta exponent XTB. */
+  TNOM: number;
+  EG: number;
+  XTI: number;
+  XTB: number;
   polarity: number; // 1 for NPN, -1 for PNP
 }
 
@@ -66,12 +75,27 @@ const CHARGE_STORAGE_PARAMETERS = [
 
 const SUPPORTED_MODEL_PARAMETERS = new Set([
   'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'IKF', 'ISE', 'NE', 'RB', 'RC', 'RE',
-  'KF', 'AF', 'ISS', 'NS', ...CHARGE_STORAGE_PARAMETERS, ...Object.keys(MODEL_PARAMETER_ALIASES),
+  'KF', 'AF', 'ISS', 'NS', 'TNOM', 'EG', 'XTI', 'XTB',
+  ...CHARGE_STORAGE_PARAMETERS, ...Object.keys(MODEL_PARAMETER_ALIASES),
 ]);
 
+/**
+ * bjttemp.c fields whose temperature laws are not implemented (TLEV/TLEVC != 0
+ * and the per-parameter coefficients). They only act away from TNOM, where
+ * they are rejected rather than ignored (#374).
+ */
+const UNSUPPORTED_TEMPERATURE_PARAMETERS = [
+  'TLEV', 'TLEVC', 'TRE1', 'TRE2', 'TRC1', 'TRC2', 'TRB1', 'TRB2', 'TRM1', 'TRM2',
+  'TBF1', 'TBF2', 'TBR1', 'TBR2', 'TIKF1', 'TIKF2', 'TIKR1', 'TIKR2', 'TIRB1', 'TIRB2',
+  'TNC1', 'TNC2', 'TNE1', 'TNE2', 'TNF1', 'TNF2', 'TNR1', 'TNR2', 'TNS1', 'TNS2',
+  'TVAF1', 'TVAF2', 'TVAR1', 'TVAR2', 'TITF1', 'TITF2', 'TTF1', 'TTF2', 'TTR1', 'TTR2',
+  'TMJE1', 'TMJE2', 'TMJC1', 'TMJC2', 'TMJS1', 'TMJS2', 'TIS1', 'TIS2', 'TISE1', 'TISE2',
+  'TISC1', 'TISC2', 'TISS1', 'TISS2', 'CTE', 'CTC', 'CTS', 'TVJE', 'TVJC', 'TVJS',
+] as const;
+
 // ngspice-47 bjttemp.c: vt = BJTtemp * CONSTKoverQ, with const.h CONSTboltz and
-// CHARGE at the default 300.15 K (#525; the old 0.02585 V offset Vbe by ~3e-4 V).
-const VT = 1.38064852e-23 / 1.6021766208e-19 * 300.15;
+// CHARGE (#525; the old 0.02585 V offset Vbe by ~3e-4 V). The device keeps it
+// per instance, at its temperature (#374).
 const GMIN = 1e-12;
 /** ngspice-47 MAX_EXP_ARG: bjtload.c caps the substrate exponent with it. */
 const MAX_EXP_ARG = 709;
@@ -239,6 +263,10 @@ export function resolveBJTParams(
     SUBS: params.SUBS ?? (polarity < 0 ? -1 : 1),
     ISS: params.ISS ?? 0,
     NS: params.NS ?? 1,
+    TNOM: params.TNOM ?? NOMINAL_TEMPERATURE_C,
+    EG: params.EG ?? 1.11,
+    XTI: params.XTI ?? 3,
+    XTB: params.XTB ?? 0,
     polarity,
   };
   if (resolved.LEVEL !== 1) {
@@ -337,6 +365,11 @@ export class BJT implements DeviceModel {
   readonly isNonlinear = true;
   readonly params: BJTParams;
   readonly suppliedParams: Readonly<Record<string, number>>;
+  /** Instance-scaled parameters at TNOM; {@link params} holds them at the device temperature. */
+  private readonly nominal: BJTParams;
+  private temperature = NOMINAL_TEMPERATURE_C;
+  /** Thermal voltage kT/q at the device temperature (bjttemp.c vt). */
+  private vt = CONSTKOVERQ * (NOMINAL_TEMPERATURE_C + CONSTCTOK);
   /**
    * Present only when the model stores charge, so charge-free BJTs keep the
    * transient driver's static-current history path unchanged.
@@ -364,12 +397,67 @@ export class BJT implements DeviceModel {
     instance?: { AREA?: number; M?: number },
   ) {
     this.suppliedParams = { ...params };
-    this.params = scaleBJTInstance(resolveBJTParams(params), instance);
+    this.nominal = scaleBJTInstance(resolveBJTParams(params), instance);
+    this.params = { ...this.nominal };
+    this.applyTemperature();
     const { CJE, CJC, CJS, TF, TR } = this.params;
     this.integratesTransientCharge = CJE > 0 || CJC > 0 || CJS > 0 || TF > 0 || TR > 0;
     if (this.integratesTransientCharge) {
       this.stampDynamic = ctx => this.stampChargeStorage(ctx);
     }
+  }
+
+  setTemperature(value: number): void {
+    this.temperature = value;
+    this.applyTemperature();
+  }
+
+  getTemperature(): number {
+    return this.temperature;
+  }
+
+  /**
+   * ngspice-47 bjttemp.c (TLEV = TLEVC = 0) at the device temperature:
+   * IS and ISS scale by exp(factlog), factlog = (T/TNOM - 1)*EG/vt +
+   * XTI*ln(T/TNOM); BF and BR by bfactor = (T/TNOM)^XTB; ISE by
+   * exp(factlog/NE)/bfactor; the B-E, B-C and substrate junction potentials
+   * and capacitances by the REFTEMP-mapped band-gap law. VAF, IKF, the
+   * transit times and the resistances have no law without their T*
+   * coefficients. At T = TNOM every factor is exactly 1.
+   */
+  private applyTemperature(): void {
+    assertNoUnsupportedTemperatureParameters(
+      this.name, this.suppliedParams, UNSUPPORTED_TEMPERATURE_PARAMETERS,
+      this.temperature, this.nominal.TNOM,
+    );
+    const nominal = this.nominal;
+    const params = this.params;
+    const kelvin = this.temperature + CONSTCTOK;
+    const nominalKelvin = nominal.TNOM + CONSTCTOK;
+    this.vt = CONSTKOVERQ * kelvin;
+    if (kelvin === nominalKelvin) {
+      Object.assign(params, nominal);
+      return;
+    }
+    const ratlog = Math.log(kelvin / nominalKelvin);
+    const factlog = (kelvin / nominalKelvin - 1) * nominal.EG / this.vt + nominal.XTI * ratlog;
+    const bfactor = Math.exp(ratlog * nominal.XTB);
+    params.IS = nominal.IS * Math.exp(factlog);
+    params.ISS = nominal.ISS * Math.exp(factlog);
+    params.ISE = nominal.ISE * Math.exp(factlog / nominal.NE) / bfactor;
+    params.BF = nominal.BF * bfactor;
+    params.BR = nominal.BR * bfactor;
+    const junction = (potential: number, capacitance: number, grading: number) =>
+      temperatureJunction(potential, capacitance, grading, kelvin, nominalKelvin);
+    const emitter = junction(nominal.VJE, nominal.CJE, nominal.MJE);
+    const collector = junction(nominal.VJC, nominal.CJC, nominal.MJC);
+    const substrate = junction(nominal.VJS, nominal.CJS, nominal.MJS);
+    params.VJE = emitter.potential;
+    params.CJE = emitter.capacitance;
+    params.VJC = collector.potential;
+    params.CJC = collector.capacitance;
+    params.VJS = substrate.potential;
+    params.CJS = substrate.capacitance;
   }
 
   stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
@@ -454,10 +542,10 @@ export class BJT implements DeviceModel {
 
     const scale = Math.min(
       junctionStepScale(
-        junction(candidate, nB, nE), junction(previous, nB, nE), NF * VT, IS,
+        junction(candidate, nB, nE), junction(previous, nB, nE), NF * this.vt, IS,
       ),
       junctionStepScale(
-        junction(candidate, nB, nC), junction(previous, nB, nC), NR * VT, IS,
+        junction(candidate, nB, nC), junction(previous, nB, nC), NR * this.vt, IS,
       ),
     );
     if (ISS === 0) return scale;
@@ -467,7 +555,7 @@ export class BJT implements DeviceModel {
     return Math.min(scale, junctionStepScale(
       SUBS * junction(candidate, substrate, substrateConnect),
       SUBS * junction(previous, substrate, substrateConnect),
-      NS * VT, ISS,
+      NS * this.vt, ISS,
     ));
   }
 
@@ -486,12 +574,12 @@ export class BJT implements DeviceModel {
    */
   private evaluateDC(vBE: number, vBC: number): BJTDCPoint {
     const { BF, BR, IS, NF, NR, VAF, IKF, ISE, NE } = this.params;
-    const { current: cbe, conductance: gbe } = junctionLaw(this.junction, vBE, IS, NF * VT);
-    const { current: cbc, conductance: gbc } = junctionLaw(this.junction, vBC, IS, NR * VT);
+    const { current: cbe, conductance: gbe } = junctionLaw(this.junction, vBE, IS, NF * this.vt);
+    const { current: cbc, conductance: gbc } = junctionLaw(this.junction, vBC, IS, NR * this.vt);
     let cben = GMIN * vBE;
     let gben = GMIN;
     if (ISE !== 0) {
-      const leakage = junctionLaw(this.junction, vBE, ISE, NE * VT);
+      const leakage = junctionLaw(this.junction, vBE, ISE, NE * this.vt);
       cben += leakage.current;
       gben += leakage.conductance;
     }
@@ -650,7 +738,7 @@ export class BJT implements DeviceModel {
     const voltage = (node: number): number => node >= 0 ? ctx.getVoltage(node) : 0;
     const sign = polarity * SUBS;
     const terminalVoltage = voltage(substrate) - voltage(substrateConnect);
-    const { current, conductance } = substrateJunction(sign * terminalVoltage, ISS, NS * VT);
+    const { current, conductance } = substrateJunction(sign * terminalVoltage, ISS, NS * this.vt);
     // Physical current from the substrate into the substrate-connect node.
     stampChargeBranch(ctx, substrate, substrateConnect, sign * current, conductance, terminalVoltage);
   }
@@ -692,8 +780,8 @@ export class BJT implements DeviceModel {
     } = this.params;
     const [nC, nB, nE] = this.nodes;
     const voltage = (node: number): number => node >= 0 ? ctx.getVoltage(node) : 0;
-    const vtF = NF * VT;
-    const vtR = NR * VT;
+    const vtF = NF * this.vt;
+    const vtR = NR * this.vt;
     // ngspice evaluates the charges at the junction voltages it linearises at;
     // depletion charge needs the true reverse bias.
     const vBE = polarity * (voltage(nB) - voltage(nE));
