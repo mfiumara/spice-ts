@@ -928,6 +928,28 @@ describe('bounded numeric WebAssembly backend', () => {
     }
   });
 
+  it('rejects oversized .ac sweeps with RESOURCE_LIMIT instead of an internal error', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const [sweep, observed] of [['lin 5000000000 1 10', 5_000_000_000], ['lin 30000000 1 10', 30_000_000]] as const) {
+        const result = await wasm.simulate(
+          request(`V1 in 0 AC 1\nR1 in out 1k\nC1 out 0 1u\n.ac ${sweep}`),
+          { requestId: `wasm-ac-limit-${sweep}` },
+        );
+        expect(result, sweep).toMatchObject({
+          ok: false,
+          error: {
+            code: 'RESOURCE_LIMIT',
+            phase: 'validation',
+            details: { limit: 'maxResultPoints', configured: NUMERIC_WASM_LIMITS.maxAcPoints, observed },
+          },
+        });
+      }
+    } finally {
+      await wasm.close();
+    }
+  });
+
   it('runs bounded passive RC transient analysis with canonical stream ordering and reset', async () => {
     const wasm = await engine('spice-ts-wasm');
     try {

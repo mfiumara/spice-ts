@@ -1,4 +1,4 @@
-import { CCCS, CCVS, frequencyGrid, parseTitleless, VCCS, VCVS, type CompiledCircuit, type StampContext } from '@spice-ts/core';
+import { CCCS, CCVS, frequencyGrid, frequencyPointCount, parseTitleless, VCCS, VCVS, type CompiledCircuit, type StampContext } from '@spice-ts/core';
 import type {
   JsonObject,
   SimulationRequestV1,
@@ -585,13 +585,15 @@ function prepare(request: SimulationRequestV1): PreparedNumeric {
     return { analysis, compiled, order, transient: compiledAnalysis };
   }
   if (compiledAnalysis?.type !== 'ac') unsupported('analysis', 'Exactly one .ac analysis is supported');
-  const frequenciesHz = frequencyGrid(compiledAnalysis, request.options?.reltol ?? DEFAULT_RELTOL, 'ac');
+  const reltol = request.options?.reltol ?? DEFAULT_RELTOL;
+  const pointCount = frequencyPointCount(compiledAnalysis, reltol, 'ac');
   const pointLimit = Math.min(
     NUMERIC_WASM_LIMITS.maxAcPoints,
     request.options?.limits?.maxResultPoints ?? Infinity,
   );
-  if (frequenciesHz.length > pointLimit) throw resourceLimit('maxResultPoints', pointLimit, frequenciesHz.length);
-  return { analysis, compiled, order, frequenciesHz };
+  // Check before materialising the grid: an oversized sweep must not allocate it first.
+  if (pointCount > pointLimit) throw resourceLimit('maxResultPoints', pointLimit, pointCount);
+  return { analysis, compiled, order, frequenciesHz: frequencyGrid(compiledAnalysis, reltol, 'ac') };
 }
 
 function validateCards(cards: string[], analysis: 'op' | 'dc' | 'tran' | 'ac'): void {
