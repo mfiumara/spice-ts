@@ -1,7 +1,11 @@
 import { InvalidCircuitError } from '../errors.js';
 import type { DeviceModel, StampContext } from './device.js';
+import {
+  resolveVBICTemperature, type VBICTemperatureState,
+} from './vbic-temperature.js';
 
-const VT = 1.380662e-23 * 300.15 / 1.602189e-19;
+/** ngspice default circuit temperature and VBIC TNOM in degrees Celsius. */
+const NOMINAL_TEMPERATURE_C = 27;
 const GMIN = 1e-12;
 const ACTIVE_PARAMETERS = [
   'IS', 'IBEI', 'IBEN', 'IBCI', 'IBCN', 'ISP',
@@ -17,21 +21,26 @@ const ACTIVE_PARAMETERS = [
 const DC_INERT_PARAMETERS = [
   'CJE', 'CJC', 'CJEP', 'CJCP', 'QCO', 'TF', 'TR', 'TD', 'ITF', 'XTF', 'RTH',
 ] as const;
+/** Temperature mapping inputs (ngspice vbictemp.c); TNOM defaults to 27 C. */
+const TEMPERATURE_PARAMETERS = ['TNOM'] as const;
 const SUPPORTED_PARAMETERS = new Set<string>([
-  'LEVEL', ...ACTIVE_PARAMETERS, ...DC_INERT_PARAMETERS,
+  'LEVEL', ...ACTIVE_PARAMETERS, ...DC_INERT_PARAMETERS, ...TEMPERATURE_PARAMETERS,
 ]);
-/** VBIC 1.2 defaults for parameters outside the bounded subset (ngspice vbicsetup.c). */
-const PE = 0.75;
+/**
+ * VBIC 1.2 grading coefficients outside the bounded subset (ngspice
+ * vbicsetup.c). The built-in potentials PE = PC = PS = 0.75 V are mapped to the
+ * device temperature in vbic-temperature.ts.
+ */
 const ME = 0.33;
-const PC = 0.75;
 const MC = 0.33;
-const PS = 0.75;
 const MS = 0.33;
 
 type ActiveParameter = typeof ACTIVE_PARAMETERS[number];
 type InertParameter = typeof DC_INERT_PARAMETERS[number];
+type TemperatureParameter = typeof TEMPERATURE_PARAMETERS[number];
 
-export interface VBICParams extends Record<ActiveParameter | InertParameter, number> {
+export interface VBICParams
+  extends Record<ActiveParameter | InertParameter | TemperatureParameter, number> {
   LEVEL: 4;
   polarity: 1 | -1;
 }
@@ -73,6 +82,7 @@ const DEFAULTS: VBICParams = {
   ITF: 0,
   XTF: 0,
   RTH: 0,
+  TNOM: NOMINAL_TEMPERATURE_C,
 };
 
 /** Resolve the bounded, isothermal VBIC 1.2 DC subset used by NPN LEVEL=4. */
@@ -92,7 +102,7 @@ export function resolveVBICParams(
     throw new InvalidCircuitError('Unsupported bounded VBIC polarity: only NPN LEVEL=4 is supported');
   }
   const resolved = { ...DEFAULTS, ...supplied, LEVEL: 4, polarity: 1 } as VBICParams;
-  for (const name of [...ACTIVE_PARAMETERS, ...DC_INERT_PARAMETERS]) {
+  for (const name of [...ACTIVE_PARAMETERS, ...DC_INERT_PARAMETERS, ...TEMPERATURE_PARAMETERS]) {
     if (!Number.isFinite(resolved[name])) {
       throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
     }
@@ -107,6 +117,7 @@ export function resolveVBICParams(
   for (const name of ['RCI', 'RBI', 'RBP', 'HRCF'] as const) {
     if (resolved[name] <= 0) throw new InvalidCircuitError(`Invalid bounded VBIC DC model parameter: '${name}'`);
   }
+  if (resolved.TNOM <= -273.15) throw new InvalidCircuitError("Invalid bounded VBIC DC model parameter: 'TNOM'");
   return resolved;
 }
 
@@ -179,8 +190,8 @@ function reciprocalOrZero(value: number): number {
   return value > 0 ? 1 / value : 0;
 }
 
-function diode(voltage: Dual, current: number, ideality: number): Dual {
-  return scale(sub(exp(scale(voltage, 1 / (ideality * VT))), c(1, voltage.derivative.length)), current);
+function diode(voltage: Dual, current: number, ideality: number, vt: number): Dual {
+  return scale(sub(exp(scale(voltage, 1 / (ideality * vt))), c(1, voltage.derivative.length)), current);
 }
 
 function depletionCharge(voltage: Dual, potential: number, grading: number): Dual {
@@ -245,16 +256,16 @@ const JUNCTION_COUNT = 6;
 const NO_NODE = -1;
 const EXCESS_PHASE_BRANCHES: readonly (readonly [number, number])[] = [[XF1, NO_NODE], [XF2, NO_NODE]];
 
-/** ngspice-47 devsup.c DEVpnjlim. */
-function pnjlim(voltage: number, previous: number, criticalVoltage: number): number {
-  if (voltage > criticalVoltage && Math.abs(voltage - previous) > 2 * VT) {
+/** ngspice-47 devsup.c DEVpnjlim; `vt` is kT/q at the device temperature. */
+function pnjlim(voltage: number, previous: number, vt: number, criticalVoltage: number): number {
+  if (voltage > criticalVoltage && Math.abs(voltage - previous) > 2 * vt) {
     if (previous > 0) {
-      const ratio = (voltage - previous) / VT;
+      const ratio = (voltage - previous) / vt;
       return ratio > 0
-        ? previous + VT * (2 + Math.log(ratio - 2))
-        : previous - VT * (2 + Math.log(2 - ratio));
+        ? previous + vt * (2 + Math.log(ratio - 2))
+        : previous - vt * (2 + Math.log(2 - ratio));
     }
-    return VT * Math.log(voltage / VT);
+    return vt * Math.log(voltage / vt);
   }
   if (voltage < 0) {
     const minimum = previous > 0 ? -previous - 1 : 2 * previous - 1;
@@ -264,22 +275,31 @@ function pnjlim(voltage: number, previous: number, criticalVoltage: number): num
 }
 
 /**
- * Evaluate the isothermal VBIC 1.2 currents and charges at nominal temperature.
+ * Evaluate the isothermal VBIC 1.2 currents and charges. `thermal` carries the
+ * ngspice vbictemp.c values at the device temperature (kT/q, saturation
+ * currents, GAMM, built-in potentials and zero-bias capacitances); every other
+ * parameter is temperature independent with ngspice's default exponents.
  * Charges follow ngspice vbic_4T_et_cf_fj with AJE/AJC/AJS <= 0, WBE = WSP = 1,
  * QTF = VTF = CBEO = CBCO = CCSO = 0. With TD > 0 the forward transport current
  * passes through ngspice's second-order excess-phase network (nodes xf1/xf2).
  */
-function evaluate(voltages: readonly number[], params: VBICParams, instanceScale: number): Evaluation {
+function evaluate(
+  voltages: readonly number[],
+  params: VBICParams,
+  thermal: VBICTemperatureState,
+  instanceScale: number,
+): Evaluation {
   const size = voltages.length;
   const nodeCount = size === BRANCHES.length ? XF1 : XF2 + 1;
   const excessPhase = nodeCount > XF2;
+  const { vt, PE, PC, PS } = thermal;
   const b = voltages.map((value, index) => Dual.variable(value, size, index));
   const [vbei, vbex, vbci, vbcx, vbep, vbcp, vrci, vrbi, vrbp] = b;
   const xf1 = b[BRANCHES.length];
   const xf2 = b[BRANCHES.length + 1];
 
-  const ifi = diode(vbei, params.IS, 1);
-  const iri = diode(vbci, params.IS, 1);
+  const ifi = diode(vbei, thermal.IS, 1, vt);
+  const iri = diode(vbci, thermal.IS, 1, vt);
   const qdbe = depletionCharge(vbei, PE, ME);
   const qdbc = depletionCharge(vbci, PC, MC);
   const q1z = add(c(1, size), add(
@@ -294,9 +314,9 @@ function evaluate(voltages: readonly number[], params: VBICParams, instanceScale
   const itzr = div(iri, qb);
   const transport = sub(itzf, itzr);
 
-  const ibe = add(diode(vbei, params.IBEI, 1), diode(vbei, params.IBEN, 2));
-  const ibex = scale(add(diode(vbex, params.IBEI, 1), diode(vbex, params.IBEN, 2)), 0);
-  const ibcj = add(diode(vbci, params.IBCI, 1), diode(vbci, params.IBCN, 2));
+  const ibe = add(diode(vbei, thermal.IBEI, 1, vt), diode(vbei, thermal.IBEN, 2, vt));
+  const ibex = scale(add(diode(vbex, thermal.IBEI, 1, vt), diode(vbex, thermal.IBEN, 2, vt)), 0);
+  const ibcj = add(diode(vbci, thermal.IBCI, 1, vt), diode(vbci, thermal.IBCN, 2, vt));
   const avalancheVoltage = scale(add(
     sqrt(add(mul(sub(c(PC, size), vbci), sub(c(PC, size), vbci)), c(0.01, size))),
     sub(c(PC, size), vbci),
@@ -307,15 +327,15 @@ function evaluate(voltages: readonly number[], params: VBICParams, instanceScale
   ), params.AVC1);
   const ibc = sub(ibcj, mul(sub(transport, ibcj), avalanche));
 
-  const ifp = diode(vbep, params.ISP, 1);
-  const irp = diode(vbcp, params.ISP, 1);
+  const ifp = diode(vbep, thermal.ISP, 1, vt);
+  const irp = diode(vbcp, thermal.ISP, 1, vt);
   const qbp = scale(add(c(1, size), sqrt(add(c(1, size), scale(ifp, 4 * reciprocalOrZero(params.IKP))))), 0.5);
   const iccp = div(sub(ifp, irp), qbp);
 
-  const kbci = sqrt(add(c(1, size), scale(exp(scale(vbci, 1 / VT)), params.GAMM)));
-  const kbcx = sqrt(add(c(1, size), scale(exp(scale(vbcx, 1 / VT)), params.GAMM)));
+  const kbci = sqrt(add(c(1, size), scale(exp(scale(vbci, 1 / vt)), thermal.GAMM)));
+  const kbcx = sqrt(add(c(1, size), scale(exp(scale(vbcx, 1 / vt)), thermal.GAMM)));
   const ratio = div(add(kbci, c(1, size)), add(kbcx, c(1, size)));
-  const iohm = scale(add(vrci, scale(sub(sub(kbci, kbcx), log(ratio)), VT)), 1 / params.RCI);
+  const iohm = scale(add(vrci, scale(sub(sub(kbci, kbcx), log(ratio)), vt)), 1 / params.RCI);
   const derf = div(
     scale(iohm, params.RCI * reciprocalOrZero(params.VO)),
     add(c(1, size), scale(sqrt(add(mul(vrci, vrci), c(0.01, size))), 0.5 * reciprocalOrZero(params.VO) / params.HRCF)),
@@ -338,11 +358,11 @@ function evaluate(voltages: readonly number[], params: VBICParams, instanceScale
     )),
     params.TF,
   );
-  const qbe = add(scale(qdbe, params.CJE), div(mul(tff, ifi), qb));
-  const qbc = add(add(scale(qdbc, params.CJC), scale(iri, params.TR)), scale(kbci, params.QCO));
+  const qbe = add(scale(qdbe, thermal.CJE), div(mul(tff, ifi), qb));
+  const qbc = add(add(scale(qdbc, thermal.CJC), scale(iri, params.TR)), scale(kbci, params.QCO));
   const qbcx = scale(kbcx, params.QCO);
-  const qbep = add(scale(depletionCharge(vbep, PC, MC), params.CJEP), scale(ifp, params.TR));
-  const qbcp = params.CJCP > 0 ? scale(depletionCharge(vbcp, PS, MS), params.CJCP) : c(0, size);
+  const qbep = add(scale(depletionCharge(vbep, PC, MC), thermal.CJEP), scale(ifp, params.TR));
+  const qbcp = thermal.CJCP > 0 ? scale(depletionCharge(vbcp, PS, MS), thermal.CJCP) : c(0, size);
 
   const residual = Array.from({ length: nodeCount }, () => c(0, size));
   const charge = Array.from({ length: nodeCount }, () => c(0, size));
@@ -391,15 +411,17 @@ export function vbicNodeCount(params: Pick<VBICParams, 'TD'>): number {
   return params.TD > 0 ? 9 : 7;
 }
 
-/** A bounded, nominal-temperature, four-terminal VBIC device (DC, AC, PZ). */
+/** A bounded four-terminal VBIC device (DC, AC, PZ) with ngspice temperature mapping. */
 export class VBIC implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
   readonly params: VBICParams;
   /** Local (positive, negative) node pair of each evaluation branch voltage. */
   private readonly branchTerminals: readonly (readonly [number, number])[];
-  /** ngspice vbictemp.c tVcrit, from IS: shared by all six junctions. */
-  private readonly criticalVoltage: number;
+  private temperature = NOMINAL_TEMPERATURE_C;
+  private thermal: VBICTemperatureState;
+  /** ngspice vbictemp.c tVcrit, from the temperature-mapped IS: shared by all six junctions. */
+  private criticalVoltage: number;
   /** Junction voltages linearized at the last load (ngspice CKTstate0). */
   private junctions: Float64Array | undefined;
   /** Whether the last stamp limited a junction (ngspice CKTnoncon). */
@@ -419,8 +441,25 @@ export class VBIC implements DeviceModel {
       throw new InvalidCircuitError(`Bounded VBIC device requires ${expected} internal nodes`);
     }
     this.branchTerminals = expected > XF1 ? [...BRANCHES, ...EXCESS_PHASE_BRANCHES] : BRANCHES;
-    // vbictemp.c: tVcrit from IS * area * m.
-    this.criticalVoltage = VT * Math.log(VT / (Math.SQRT2 * this.params.IS * instanceScale));
+    this.thermal = resolveVBICTemperature(this.params, this.temperature);
+    this.criticalVoltage = this.vcrit();
+  }
+
+  /** vbictemp.c: tVcrit = Vt * ln(Vt / (sqrt(2) * tIS * area * m)). */
+  private vcrit(): number {
+    const { vt, IS } = this.thermal;
+    return vt * Math.log(vt / (Math.SQRT2 * IS * this.instanceScale));
+  }
+
+  /** Evaluate at a circuit temperature in degrees Celsius (ngspice VBICtemp). */
+  setTemperature(value: number): void {
+    this.temperature = value;
+    this.thermal = resolveVBICTemperature(this.params, value);
+    this.criticalVoltage = this.vcrit();
+  }
+
+  getTemperature(): number {
+    return this.temperature;
   }
 
   /** Branch voltages of the evaluation, in {@link BRANCHES} order. */
@@ -464,7 +503,7 @@ export class VBIC implements DeviceModel {
     }
     this.limited = false;
     for (let index = 0; index < JUNCTION_COUNT; index += 1) {
-      const limited = pnjlim(voltages[index], previous[index], this.criticalVoltage);
+      const limited = pnjlim(voltages[index], previous[index], this.thermal.vt, this.criticalVoltage);
       if (limited !== voltages[index]) this.limited = true;
       voltages[index] = limited;
       previous[index] = limited;
@@ -478,7 +517,7 @@ export class VBIC implements DeviceModel {
   stamp(ctx: StampContext): void {
     const voltages = this.branchVoltages(ctx);
     this.limitJunctions(voltages);
-    const { residual } = evaluate(voltages, this.params, this.instanceScale);
+    const { residual } = evaluate(voltages, this.params, this.thermal, this.instanceScale);
     for (let row = 0; row < this.nodes.length; row += 1) {
       const matrixRow = this.nodes[row];
       if (matrixRow < 0) continue;
@@ -504,7 +543,7 @@ export class VBIC implements DeviceModel {
    * linearized AC and pole-zero analyses reach this: transient stays rejected.
    */
   stampDynamic(ctx: StampContext): void {
-    const { charge } = evaluate(this.branchVoltages(ctx), this.params, this.instanceScale);
+    const { charge } = evaluate(this.branchVoltages(ctx), this.params, this.thermal, this.instanceScale);
     for (let row = 0; row < this.nodes.length; row += 1) {
       const matrixRow = this.nodes[row];
       if (matrixRow < 0) continue;
