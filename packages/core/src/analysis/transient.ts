@@ -62,11 +62,29 @@ export function solveTransient(
   for (const name of nodeNames) voltageArrays.set(name, []);
   for (const name of branchNames) currentArrays.set(name, []);
 
+  // The driver builds each step's maps in nodeNames/branchNames order, so the
+  // k-th entry normally belongs to the k-th array; a name mismatch falls back
+  // to the keyed lookup. This avoids one Map lookup per variable per point.
+  const voltageColumns = nodeNames.map(name => voltageArrays.get(name)!);
+  const currentColumns = branchNames.map(name => currentArrays.get(name)!);
+  const appendOrdered = (
+    entries: Map<string, number>,
+    names: readonly string[],
+    columns: number[][],
+    arrays: Map<string, number[]>,
+  ): void => {
+    let k = 0;
+    for (const [name, value] of entries) {
+      if (k < names.length && names[k] === name) columns[k].push(value);
+      else arrays.get(name)!.push(value);
+      k++;
+    }
+  };
   const save = (step: TransientStep): void => {
     guard?.recordResultPoint();
     timePoints.push(step.time);
-    for (const [name, v] of step.voltages) voltageArrays.get(name)!.push(v);
-    for (const [name, i] of step.currents) currentArrays.get(name)!.push(i);
+    appendOrdered(step.voltages, nodeNames, voltageColumns, voltageArrays);
+    appendOrdered(step.currents, branchNames, currentColumns, currentArrays);
   };
 
   try {

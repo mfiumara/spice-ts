@@ -103,6 +103,19 @@ function fetlim(vnew: number, vold: number, vto: number): number {
   return vtemp;
 }
 
+// batchStamp value-slot layout over the unswapped D, G, S and bulk terminals.
+const SLOT_DG = 0;
+const SLOT_DD = 1;
+const SLOT_DS = 2;
+const SLOT_SG = 3;
+const SLOT_SD = 4;
+const SLOT_SS = 5;
+const SLOT_BB = 6;
+const SLOT_BS = 7;
+const SLOT_BD = 8;
+const SLOT_SB = 9;
+const SLOT_DB = 10;
+
 /** Terminal indices (D, G, S, B) of the G-D, G-S, B-D and B-S capacitances. */
 const CHARGE_BRANCHES: ReadonlyArray<readonly [number, number]> = [[1, 0], [1, 2], [3, 0], [3, 2]];
 
@@ -130,6 +143,9 @@ export class MOSFET implements DeviceModel {
   readonly integratesTransientCharge: boolean;
   readonly storesCharge: boolean;
   private readonly charges = new TransientChargeState(4);
+  /** {@link batchStamp} value slots and the topology lookup they belong to. */
+  private batchSlots: Int32Array | null = null;
+  private batchSlotKey: ((row: number, col: number) => number) | null = null;
 
   constructor(
     readonly name: string,
@@ -453,6 +469,26 @@ export class MOSFET implements DeviceModel {
   }
 
   /**
+   * Value slots of this instance's G entries for the locked topology behind
+   * `stampIndex`, in SLOT_* order (-1 where a terminal is ground). Resolved
+   * once per topology, like ngspice TSTALLOC matrix pointers.
+   */
+  private resolveBatchSlots(stampIndex: (row: number, col: number) => number): Int32Array {
+    const d = this.nodes[0];
+    const g = this.nodes[1];
+    const s = this.nodes[2];
+    const bulk = this.bulkNode;
+    const at = (row: number, col: number): number => (row >= 0 && col >= 0 ? stampIndex(row, col) : -1);
+    const slots = Int32Array.of(
+      at(d, g), at(d, d), at(d, s), at(s, g), at(s, d), at(s, s),
+      at(bulk, bulk), at(bulk, s), at(bulk, d), at(s, bulk), at(d, bulk),
+    );
+    this.batchSlots = slots;
+    this.batchSlotKey = stampIndex;
+    return slots;
+  }
+
+  /**
    * Batch-stamp multiple MOSFETs with direct typed-array writes,
    * bypassing StampContext closures for better performance on the fast path.
    */
@@ -466,6 +502,9 @@ export class MOSFET implements DeviceModel {
   ): void {
     for (let m = 0; m < mosfets.length; m++) {
       const mosfet = mosfets[m];
+      const slots = mosfet.batchSlotKey === stampIndex && mosfet.batchSlots !== null
+        ? mosfet.batchSlots
+        : mosfet.resolveBatchSlots(stampIndex);
       const { VTO, KP, LAMBDA, W, L, polarity } = mosfet.params;
       const WL = W / L;
 
@@ -482,13 +521,18 @@ export class MOSFET implements DeviceModel {
       let vGS = polarity * (vG - vS);
       let vDS = polarity * (vD - vS);
 
-      // Source-drain swap for negative vDS
+      // Source-drain swap for negative vDS. The value slots of the drain and
+      // source rows swap with the terminals.
+      let slotDG = slots[SLOT_DG], slotDD = slots[SLOT_DD], slotDS = slots[SLOT_DS];
+      let slotSG = slots[SLOT_SG], slotSD = slots[SLOT_SD], slotSS = slots[SLOT_SS];
       if (vDS < 0) {
         const tmp = nD;
         nD = nS;
         nS = tmp;
         vGS = vGS - vDS;
         vDS = -vDS;
+        slotDG = slots[SLOT_SG]; slotDD = slots[SLOT_SS]; slotDS = slots[SLOT_SD];
+        slotSG = slots[SLOT_DG]; slotSD = slots[SLOT_DS]; slotSS = slots[SLOT_DD];
       }
 
       const Vth = Math.abs(VTO);
@@ -524,17 +568,17 @@ export class MOSFET implements DeviceModel {
 
       // Stamp drain row — direct array writes using (possibly swapped) nD, nS
       if (nD >= 0) {
-        if (nG >= 0) gValues[stampIndex(nD, nG)] += gm;
-        if (nD >= 0) gValues[stampIndex(nD, nD)] += gds;
-        if (nS >= 0) gValues[stampIndex(nD, nS)] -= (gm + gds);
+        if (nG >= 0) gValues[slotDG] += gm;
+        if (nD >= 0) gValues[slotDD] += gds;
+        if (nS >= 0) gValues[slotDS] -= (gm + gds);
         b[nD] -= polarity * Ieq;
       }
 
       // Stamp source row
       if (nS >= 0) {
-        if (nG >= 0) gValues[stampIndex(nS, nG)] -= gm;
-        if (nD >= 0) gValues[stampIndex(nS, nD)] -= gds;
-        if (nS >= 0) gValues[stampIndex(nS, nS)] += (gm + gds);
+        if (nG >= 0) gValues[slotSG] -= gm;
+        if (nD >= 0) gValues[slotSD] -= gds;
+        if (nS >= 0) gValues[slotSS] += (gm + gds);
         b[nS] += polarity * Ieq;
       }
 
@@ -547,19 +591,19 @@ export class MOSFET implements DeviceModel {
       const ceqbs = polarity * junction[1];
       const ceqbd = polarity * junction[3];
       if (jB >= 0) {
-        gValues[stampIndex(jB, jB)] += gbs + gbd;
-        if (jS >= 0) gValues[stampIndex(jB, jS)] -= gbs;
-        if (jD >= 0) gValues[stampIndex(jB, jD)] -= gbd;
+        gValues[slots[SLOT_BB]] += gbs + gbd;
+        if (jS >= 0) gValues[slots[SLOT_BS]] -= gbs;
+        if (jD >= 0) gValues[slots[SLOT_BD]] -= gbd;
         b[jB] -= ceqbs + ceqbd;
       }
       if (jS >= 0) {
-        gValues[stampIndex(jS, jS)] += gbs;
-        if (jB >= 0) gValues[stampIndex(jS, jB)] -= gbs;
+        gValues[slots[SLOT_SS]] += gbs;
+        if (jB >= 0) gValues[slots[SLOT_SB]] -= gbs;
         b[jS] += ceqbs;
       }
       if (jD >= 0) {
-        gValues[stampIndex(jD, jD)] += gbd;
-        if (jB >= 0) gValues[stampIndex(jD, jB)] -= gbd;
+        gValues[slots[SLOT_DD]] += gbd;
+        if (jB >= 0) gValues[slots[SLOT_DB]] -= gbd;
         b[jD] += ceqbd;
       }
     }

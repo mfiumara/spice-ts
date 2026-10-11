@@ -101,6 +101,12 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
   let prevIterSolution = new Float64Array(assembler.solution);
   let prevDelta: Float64Array | undefined;
   let oscillated = false;
+  // At most two iterate/delta buffers per attempt, alternated between Newton
+  // iterations: iteration k writes one pair while the other still holds
+  // iteration k-1's values (prevIterSolution, prevDelta). Neither is written
+  // after this attempt returns, so a returned prevIterSolution stays intact.
+  const iterateBuffers: Float64Array<ArrayBuffer>[] = [];
+  const deltaBuffers: Float64Array<ArrayBuffer>[] = [];
 
   for (let iter = 0; iter < options.maxTransientIterations; iter++) {
     ctx.guard?.checkpoint('solve:newton-iteration');
@@ -128,10 +134,11 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
       };
     }
 
-    const prev = new Float64Array(assembler.solution);
+    const prev = iterateBuffers[iter & 1] ??= new Float64Array(assembler.solution.length);
+    prev.set(assembler.solution);
 
     // Compute raw deltas before damping so oscillation detection sees the actual iterate
-    const rawDelta = new Float64Array(nodeCount);
+    const rawDelta = deltaBuffers[iter & 1] ??= new Float64Array(nodeCount);
     for (let i = 0; i < nodeCount; i++) rawDelta[i] = x[i] - prev[i];
 
     if (prevDelta) {

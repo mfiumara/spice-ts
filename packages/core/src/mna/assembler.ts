@@ -20,6 +20,23 @@ export interface MNAAssemblerOptions {
   useDcSourceValue?: boolean;
 }
 
+/** Remembered (row, col) -> value-slot sequence of one stamp pass kind. */
+interface StampTrace {
+  rows: Int32Array;
+  cols: Int32Array;
+  slots: Int32Array;
+  length: number;
+}
+
+function createStampTrace(capacity: number): StampTrace {
+  return {
+    rows: new Int32Array(capacity),
+    cols: new Int32Array(capacity),
+    slots: new Int32Array(capacity),
+    length: 0,
+  };
+}
+
 export class MNAAssembler {
   public readonly G: SparseMatrix;
   public readonly C: SparseMatrix;
@@ -43,6 +60,19 @@ export class MNAAssembler {
   private _stampIndex: ((row: number, col: number) => number) | null = null;
   private _cachedFastCtx: StampContext | null = null;
   private _solver: SparseSolver | null = null;
+  /**
+   * Stamp-sequence slot caches, one per stamp pass kind (see
+   * {@link getStampContext}). Devices stamp the same (row, col) sequence on
+   * every Newton iteration, so the k-th stamp of a pass usually lands on the
+   * value slot it hit last time. The k-th entry remembers that position and
+   * its slot; a different (row, col) at k falls back to the exact
+   * {@link stampIndex} lookup and replaces the entry. The cache only selects
+   * where a value is added, never how, so results are bit-identical.
+   */
+  private _traces: StampTrace[] = [];
+  private _trace: StampTrace | null = null;
+  private _traceCursor = 0;
+  private _traceLimit = 0;
 
   constructor(
     public readonly numNodes: number,
@@ -226,6 +256,12 @@ export class MNAAssembler {
     this._cValues = cValues;
     this._stampIndex = stampIndex;
     this._diagIdx = diagIdx;
+    this._traces = [];
+    this._trace = null;
+    this._traceCursor = 0;
+    // Bound each pass cache: a caller that keeps stamping through one context
+    // without starting a new pass must not grow it without limit.
+    this._traceLimit = 16 * nnz + 4096;
     this._fastPath = true;
   }
 
@@ -259,6 +295,8 @@ export class MNAAssembler {
     this._diagIdx = null;
     this._stampIndex = null;
     this._cachedFastCtx = null;
+    this._traces = [];
+    this._trace = null;
     this._solver = null;
     this.G.clear();
     this.C.clear();
@@ -278,19 +316,32 @@ export class MNAAssembler {
     };
   }
 
-  getStampContext(): StampContext {
+  /**
+   * Context for one stamp pass. On the locked fast path every call starts a
+   * new pass of kind `pass` for the stamp-sequence slot cache: passes that
+   * stamp a different device sequence (for example the trapezoidal history
+   * restamp versus the companion build) should use distinct kinds so they do
+   * not evict each other. The kind only affects speed, never values.
+   */
+  getStampContext(pass = 0): StampContext {
     if (this._fastPath) {
+      let trace = this._traces[pass];
+      if (trace === undefined) {
+        trace = createStampTrace(Math.min(this._traceLimit, 4 * this.topologyNnz + 64));
+        this._traces[pass] = trace;
+      }
+      this._trace = trace;
+      this._traceCursor = 0;
       if (!this._cachedFastCtx) {
-        const stampIndex = this._stampIndex!;
         const gValues = this._gValues!;
         const cValues = this._cValues!;
         this._cachedFastCtx = {
           stampG: (row, col, value) => {
-            gValues[stampIndex(row, col)] += value;
+            gValues[this.slotOf(row, col)] += value;
           },
           stampB: (row, value) => { this.b[row] += value; },
           stampC: (row, col, value) => {
-            cValues[stampIndex(row, col)] += value;
+            cValues[this.slotOf(row, col)] += value;
           },
           getVoltage: (node) => this.solution[node],
           getCurrent: (branch) => this.solution[this.numNodes + branch],
@@ -329,6 +380,43 @@ export class MNAAssembler {
       useDcSourceValue: this.options.useDcSourceValue ?? false,
       gmin: this.deviceGmin,
     };
+  }
+
+  /** Value slot of (row, col) for the next stamp of the current pass. */
+  private slotOf(row: number, col: number): number {
+    const k = this._traceCursor++;
+    const trace = this._trace!;
+    if (k < trace.length && trace.rows[k] === row && trace.cols[k] === col) {
+      return trace.slots[k];
+    }
+    return this.recordSlot(trace, k, row, col);
+  }
+
+  private recordSlot(trace: StampTrace, k: number, row: number, col: number): number {
+    const slot = this._stampIndex!(row, col);
+    if (k < trace.length) {
+      trace.rows[k] = row;
+      trace.cols[k] = col;
+      trace.slots[k] = slot;
+    } else if (k === trace.length && k < this._traceLimit) {
+      if (k === trace.rows.length) {
+        const capacity = Math.min(this._traceLimit, 2 * k + 64);
+        const rows = new Int32Array(capacity);
+        const cols = new Int32Array(capacity);
+        const slots = new Int32Array(capacity);
+        rows.set(trace.rows);
+        cols.set(trace.cols);
+        slots.set(trace.slots);
+        trace.rows = rows;
+        trace.cols = cols;
+        trace.slots = slots;
+      }
+      trace.rows[k] = row;
+      trace.cols[k] = col;
+      trace.slots[k] = slot;
+      trace.length = k + 1;
+    }
+    return slot;
   }
 
   clear(): void {
