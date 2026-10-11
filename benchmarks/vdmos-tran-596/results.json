@@ -1,0 +1,264 @@
+{
+  "deck": "benchmarks/corpus/corpus-f/fixtures/examples/vdmos/inv_vdmos.sp (.control replaced by the .tran card)",
+  "fixtureTran": {
+    "points": {
+      "ngspice": 1050,
+      "spiceTs": 1864
+    },
+    "spiceTsVsNgspice": {
+      "i(vdd)": {
+        "normalized": 0.100199,
+        "absMax": 0.0297334,
+        "at": 9.21179e-7
+      },
+      "i(vss)": {
+        "normalized": 0.0998591,
+        "absMax": 0.029734,
+        "at": 9.21179e-7
+      },
+      "v(3)": {
+        "normalized": 0.0314997,
+        "absMax": 0.157502,
+        "at": 1.69521e-7
+      },
+      "i(vin)": {
+        "normalized": 0.029242,
+        "absMax": 0.0000297187,
+        "at": 4.6952e-7
+      }
+    }
+  },
+  "againstConvergedNgspice": {
+    "reference": ".tran 1n 340n 0 0.5p (680023 points), scored for t <= 340 ns",
+    "ngspiceFixtureTran": {
+      "i(vdd)": {
+        "normalized": 0.0483574,
+        "absMax": 0.0151616,
+        "at": 2.15e-8
+      },
+      "i(vss)": {
+        "normalized": 0.0482021,
+        "absMax": 0.0151619,
+        "at": 2.15e-8
+      },
+      "v(3)": {
+        "normalized": 0.00312961,
+        "absMax": 0.0156486,
+        "at": 1.745e-7
+      },
+      "i(vin)": {
+        "normalized": 0.00462081,
+        "absMax": 0.00000469763,
+        "at": 3.255e-7
+      }
+    },
+    "spiceTsFixtureTran": {
+      "i(vdd)": {
+        "normalized": 0.0124213,
+        "absMax": 0.00389449,
+        "at": 3.21425e-7
+      },
+      "i(vss)": {
+        "normalized": 0.0123814,
+        "absMax": 0.00389456,
+        "at": 3.21425e-7
+      },
+      "v(3)": {
+        "normalized": 0.00161945,
+        "absMax": 0.00809751,
+        "at": 2.41258e-8
+      },
+      "i(vin)": {
+        "normalized": 0.00121745,
+        "absMax": 0.00000123769,
+        "at": 2.75848e-8
+      }
+    },
+    "spiceTsTmax10p": {
+      "i(vdd)": {
+        "normalized": 0.00102189,
+        "absMax": 0.000320396,
+        "at": 2.16702e-8
+      },
+      "i(vss)": {
+        "normalized": 0.00101861,
+        "absMax": 0.000320402,
+        "at": 2.16702e-8
+      },
+      "v(3)": {
+        "normalized": 0.0000729113,
+        "absMax": 0.000364568,
+        "at": 2.75502e-8
+      },
+      "i(vin)": {
+        "normalized": 0.000107007,
+        "absMax": 1.08786e-7,
+        "at": 1.75694e-7
+      }
+    }
+  },
+  "ivddPeakRefinement": [
+    {
+      "tmax": "1n",
+      "points": {
+        "ngspice": 200,
+        "spiceTs": 409
+      },
+      "risingInputPeak": {
+        "ngspice": {
+          "value": -0.296741,
+          "at": 2.15e-8
+        },
+        "spiceTs": {
+          "value": -0.309247,
+          "at": 2.14466e-8
+        }
+      },
+      "fallingInputPeak": {
+        "ngspice": {
+          "value": -0.276473,
+          "at": 1.715e-7
+        },
+        "spiceTs": {
+          "value": -0.284638,
+          "at": 1.71451e-7
+        }
+      }
+    },
+    {
+      "tmax": "10p",
+      "points": {
+        "ngspice": 18017,
+        "spiceTs": 18036
+      },
+      "risingInputPeak": {
+        "ngspice": {
+          "value": -0.319233,
+          "at": 2.1405e-8
+        },
+        "spiceTs": {
+          "value": -0.313223,
+          "at": 2.14002e-8
+        }
+      },
+      "fallingInputPeak": {
+        "ngspice": {
+          "value": -0.293903,
+          "at": 1.71545e-7
+        },
+        "spiceTs": {
+          "value": -0.288737,
+          "at": 1.71534e-7
+        }
+      }
+    },
+    {
+      "tmax": "5p",
+      "points": {
+        "ngspice": 36017,
+        "spiceTs": 36025
+      },
+      "risingInputPeak": {
+        "ngspice": {
+          "value": -0.316222,
+          "at": 2.13975e-8
+        },
+        "spiceTs": {
+          "value": -0.313239,
+          "at": 2.1397e-8
+        }
+      },
+      "fallingInputPeak": {
+        "ngspice": {
+          "value": -0.291314,
+          "at": 1.71537e-7
+        },
+        "spiceTs": {
+          "value": -0.288743,
+          "at": 1.71537e-7
+        }
+      }
+    },
+    {
+      "tmax": "2p",
+      "points": {
+        "ngspice": 90017,
+        "spiceTs": 90024
+      },
+      "risingInputPeak": {
+        "ngspice": {
+          "value": -0.314426,
+          "at": 2.1397e-8
+        },
+        "spiceTs": {
+          "value": -0.313424,
+          "at": 2.13968e-8
+        }
+      },
+      "fallingInputPeak": {
+        "ngspice": {
+          "value": -0.289769,
+          "at": 1.71535e-7
+        },
+        "spiceTs": {
+          "value": -0.288901,
+          "at": 1.71536e-7
+        }
+      }
+    },
+    {
+      "tmax": "1p",
+      "points": {
+        "ngspice": 180017,
+        "spiceTs": 180022
+      },
+      "risingInputPeak": {
+        "ngspice": {
+          "value": -0.31383,
+          "at": 2.13965e-8
+        },
+        "spiceTs": {
+          "value": -0.313467,
+          "at": 2.13954e-8
+        }
+      },
+      "fallingInputPeak": {
+        "ngspice": {
+          "value": -0.289256,
+          "at": 1.71535e-7
+        },
+        "spiceTs": {
+          "value": -0.288944,
+          "at": 1.71535e-7
+        }
+      }
+    },
+    {
+      "tmax": "0.5p",
+      "points": {
+        "ngspice": 360017,
+        "spiceTs": 360022
+      },
+      "risingInputPeak": {
+        "ngspice": {
+          "value": -0.313532,
+          "at": 2.13958e-8
+        },
+        "spiceTs": {
+          "value": -0.313371,
+          "at": 2.13957e-8
+        }
+      },
+      "fallingInputPeak": {
+        "ngspice": {
+          "value": -0.288999,
+          "at": 1.71535e-7
+        },
+        "spiceTs": {
+          "value": -0.28886,
+          "at": 1.71535e-7
+        }
+      }
+    }
+  ]
+}

@@ -359,6 +359,16 @@ export class DCSweepResult {
     if (i === undefined) throw new Error(`Unknown branch: ${source}`);
     return i;
   }
+
+  /** Copy of all node voltage sweeps as a Map. */
+  get voltages(): Map<string, Float64Array> {
+    return new Map(this.voltageArrays);
+  }
+
+  /** Copy of all branch current sweeps as a Map. */
+  get currents(): Map<string, Float64Array> {
+    return new Map(this.currentArrays);
+  }
 }
 
 /**
@@ -411,8 +421,35 @@ export interface SimulationResult {
   sensitivity?: SensitivityResult;
   /** Parametric sweep results (from .step). When present, top-level result fields are empty. */
   steps?: StepResult[];
+  /**
+   * Execution record of an interpreted ngspice `.control` script. When present,
+   * each top-level analysis field holds the latest run of that analysis type:
+   * the deck's own dot-card run that ngspice performs after the script (unless
+   * the script ends with `quit`), otherwise the script's last run of that type.
+   */
+  control?: ControlScriptResult;
   /** Warnings collected during simulation */
   warnings: SimulationWarning[];
   /** Native-solver convergence counters. External adapters may omit them. */
   convergence?: ConvergenceTelemetry;
+}
+
+/** One analysis run by an ngspice `.control` script. */
+export interface ControlScriptRun {
+  /** ngspice plot name of the run, e.g. `tran1`, `dc3`, `noise2`. */
+  plot: string;
+  /** Analysis type: `op`, `dc`, `ac`, `tran`, `noise`, ... */
+  analysis: string;
+  /** Result fields of this one run. */
+  result: SimulationResult;
+}
+
+/** What an interpreted `.control` script did. */
+export interface ControlScriptResult {
+  /** Every analysis the script ran, in execution order. */
+  runs: ControlScriptRun[];
+  /** Lines the script printed with `echo`. */
+  output: string[];
+  /** True when the script ended with `quit`/`exit` status 0, so the deck's own analyses were not run afterwards. */
+  quit: boolean;
 }

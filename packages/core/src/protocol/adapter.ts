@@ -251,11 +251,15 @@ async function requestCircuit(
   switch (request.input.format) {
     case 'spice': {
       const files = request.input.virtualFiles ?? {};
-      return parseTitlelessAsync(request.input.source, async path => {
+      const circuit = await parseTitlelessAsync(request.input.source, async path => {
         const source = files[path];
         if (source === undefined) throw new ParseError(`Virtual include '${path}' was not provided`, 0, path);
         return source;
       }, guard);
+      // Interpreted ngspice control scripts run an open-ended analysis sequence
+      // that the protocol's per-analysis limits and result envelope cannot bound.
+      if (circuit.controlScript) throw new UnsupportedProtocolAnalysisError('.control script');
+      return circuit;
     }
     case 'spice-ts':
       return circuitFromDocument(request.input.document);
