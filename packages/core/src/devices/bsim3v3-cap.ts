@@ -26,12 +26,22 @@ export function evaluateCap(
 ): BSIM3v3CapResult {
   const CoxWL = d.Cox * d.Weff * d.Leff;
 
+  // Reverse mode (Vds < 0): the intrinsic channel charge is evaluated with
+  // drain and source interchanged and its gate-drain/gate-source split is
+  // swapped back onto the physical terminals, as ngspice BSIM3 does for
+  // BSIM3mode = -1. Overlap and junction capacitances stay on the physical
+  // terminals.
+  const reverse = Vds < 0;
+  const iVgs = reverse ? Vgs - Vds : Vgs;
+  const iVds = reverse ? -Vds : Vds;
+  const iVbs = reverse ? Vbs - Vds : Vbs;
+
   // ===== Approximate Vth for cap model (simplified, no SCE) =====
-  const sqrtPhiMinusVbs = Math.sqrt(Math.max(d.phi_s - Vbs, 0.01));
+  const sqrtPhiMinusVbs = Math.sqrt(Math.max(d.phi_s - iVbs, 0.01));
   const Vth = p.VTH0 + p.K1 * sqrtPhiMinusVbs - Math.abs(p.K1) * d.sqrtPhi;
 
   // Normalized gate overdrive
-  const Vov = Vgs - Vth;
+  const Vov = iVgs - Vth;
 
   // ===== Intrinsic gate capacitances (Meyer-like with smooth tanh transitions) =====
   let Cgc: number;   // Gate-channel capacitance (intrinsic)
@@ -57,9 +67,9 @@ export function evaluateCap(
     // Ward-Dutton charge partitioning:
     // Linear region: fDrain = 0.5 - x/3 where x = Vds/(2*Vov - Vds)
     // Saturation: fDrain = 0.4 (2/3 of Cgc to source)
-    if (Vds < Vov) {
+    if (iVds < Vov) {
       // Linear region
-      const x = Vds / (2 * Vov - Vds + 1e-20);
+      const x = iVds / (2 * Vov - iVds + 1e-20);
       fDrain = 0.5 - x / 3;
     } else {
       // Saturation
@@ -67,9 +77,11 @@ export function evaluateCap(
     }
   }
 
-  // Intrinsic caps from gate-channel + Ward-Dutton split
-  const Cgd_i = Cgc * fDrain;
-  const Cgs_i = Cgc * (1 - fDrain);
+  // Intrinsic caps from gate-channel + Ward-Dutton split (effective orientation)
+  const CgdEff = Cgc * fDrain;
+  const CgsEff = Cgc * (1 - fDrain);
+  const Cgd_i = reverse ? CgsEff : CgdEff;
+  const Cgs_i = reverse ? CgdEff : CgsEff;
 
   // ===== Overlap capacitances (bias-independent) =====
   const Cgd_ov = p.CGDO * d.Weff;

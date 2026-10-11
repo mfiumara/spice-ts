@@ -3,6 +3,13 @@
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## BSIM3 reverse-mode and SRAM diagnostics (#582)
+
+- Sources: project-authored `benchmarks/circuits/analog-blocks.ts` (the unchanged `sramCellTransient()` deck and its model cards), `benchmarks/circuits/bsim3-validation.ts` (unchanged PMOS Id-Vgs and NMOS Id-Vds generators), and minimal orientation/off-state probes in `benchmarks/bsim3-reverse/compare.ts`.
+- Canonical repository: https://github.com/mfiumara/spice-ts; SRAM reproduction: https://github.com/mfiumara/spice-ts/issues/582.
+- Licence: MIT, the repository licence. These are synthetic project fixtures, not foundry or vendor model cards; redistribution is allowed.
+- Both engines receive identical netlist bytes. Receipts include input SHA-256, tool versions, environment, runtime, and matched-point absolute/relative errors. No circuit-specific tolerance or parameter tuning is applied. Known losses remain, documented in `benchmarks/bsim3-reverse/README.md` and issue #589.
+
 ## ngspice public corpus A
 
 - Repository: https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/

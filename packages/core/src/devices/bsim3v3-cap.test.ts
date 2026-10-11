@@ -38,6 +38,18 @@ describe('evaluateCap', () => {
     expect(cRev.Cbs).toBeGreaterThan(0);
   });
 
+  it('reverse mode (Vds < 0) mirrors the intrinsic gate-drain/gate-source split (#582)', () => {
+    // Forward: G=1.8, D=0.5, S=0, B=0. Reverse: same physical bias with the
+    // drain/source roles exchanged (G-S'=1.3, D'-S'=-0.5, B-S'=-0.5).
+    const fwd = evaluateCap(model, derived, 1.8, 0.5, 0.0);
+    const rev = evaluateCap(model, derived, 1.3, -0.5, -0.5);
+    // With CGSO = CGDO and equal default AD/AS, the device is fully symmetric.
+    expect(rev.Cgd).toBeCloseTo(fwd.Cgs, 20);
+    expect(rev.Cgs).toBeCloseTo(fwd.Cgd, 20);
+    expect(rev.Cgb).toBeCloseTo(fwd.Cgb, 20);
+    expect(fwd.Cgs).toBeGreaterThan(fwd.Cgd);
+  });
+
   it('returns all required capacitance components', () => {
     const c = evaluateCap(model, derived, 1.0, 0.5, 0.0);
     expect(c).toHaveProperty('Cgg');
