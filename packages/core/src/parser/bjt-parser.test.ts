@@ -5,19 +5,22 @@ import { parse } from './index.js';
 
 describe('BJT Q-card parser', () => {
   it.each([
-    [['Q1', 'c', 'b', 'e', 'QMOD'], 'QMOD'],
-    [['Q1', 'c', 'b', 'e', 'QMOD', 'OFF'], 'QMOD'],
-    [['Q1', 'c', 'b', 'e', 'substrate', 'QMOD'], 'QMOD'],
-    [['Q1', 'c', 'b', 'e', 'substrate', 'QMOD', 'OFF'], 'QMOD'],
-    [['Q1', 'c', 'b', 'e', '0', 'QMOD'], 'QMOD'],
-    [['Q1', 'c', 'b', 'e', '0', 'QMOD', 'OFF'], 'QMOD'],
-    [['Q1', 'c', 'b', 'e', '0', 'QMOD', 'OFF=1'], 'QMOD'],
-  ])('resolves the bounded token shape %j', (tokens, modelName) => {
+    [['Q1', 'c', 'b', 'e', 'QMOD'], {}],
+    [['Q1', 'c', 'b', 'e', 'QMOD', 'OFF'], {}],
+    [['Q1', 'c', 'b', 'e', 'substrate', 'QMOD'], { substrate: 'substrate' }],
+    [['Q1', 'c', 'b', 'e', 'substrate', 'QMOD', 'OFF'], { substrate: 'substrate' }],
+    [['Q1', 'c', 'b', 'e', '0', 'QMOD'], { substrate: '0' }],
+    [['Q1', 'c', 'b', 'e', '0', 'QMOD', 'OFF'], { substrate: '0' }],
+    [['Q1', 'c', 'b', 'e', '0', 'QMOD', 'OFF=1'], { substrate: '0' }],
+    [['Q1', 'c', 'b', 'e', 's', 't', 'QMOD'], { substrate: 's', thermal: 't' }],
+    [['Q1', 'c', 'b', 'e', 's', 't', 'QMOD', 'OFF'], { substrate: 's', thermal: 't' }],
+  ])('resolves the bounded token shape %j', (tokens, extraTerminals) => {
     expect(parseBJTInstance(tokens, 1)).toEqual({
       collector: 'c',
       base: 'b',
       emitter: 'e',
-      modelName,
+      modelName: 'QMOD',
+      ...extraTerminals,
     });
   });
 

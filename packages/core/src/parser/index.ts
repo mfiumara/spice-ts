@@ -888,6 +888,8 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
         instance.base,
         instance.emitter,
         instance.modelName,
+        instance.substrate,
+        instance.thermal,
       );
       break;
     }
