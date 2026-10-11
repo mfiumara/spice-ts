@@ -1,0 +1,18 @@
+'c check
+* SPICE3 (ngspice-dialect) translation of Gnucap tests/d_cap.1.ckt at gnucap/gnucap@5acb027125d6ea7c546badd03e026d8781c6a400.
+* Original: Gnucap regression tests, GPL-3.0-or-later (see LICENSE-NOTICE.MakeList and COPYING.txt here).
+* Modified 2026-10-11 by benchmarks/translate/gnucap-to-spice3.ts (spice-ts issue #524); changes:
+*   - `v1 1 0 dc pulse(0 1 0 .01 .01 1k 1k) ac 1`: Gnucap `dc <function>` written as the bare SPICE3 function
+*   - commented out `.list` (Gnucap `.list` only echoes the netlist to the console)
+*   - commented out `.status notime` (Gnucap `.status` only prints solver statistics)
+* The first line above is the unchanged original title line.
+v1 1 0 pulse(0 1 0 .01 .01 1k 1k) ac 1
+r1 1 2 1
+c2 2 0 1
+*gnucap-only: .list
+.print tran v(1) v(2)
+*.tran .1 1 0
+.tran 1 10 0
+*.tran 10 100 0
+*gnucap-only: .status notime
+.end
