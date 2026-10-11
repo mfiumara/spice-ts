@@ -1,6 +1,6 @@
 import { evaluateExpression } from './expression.js';
 import { conditionExpression, expandUserFunctions, parseFuncCard, type FunctionScope, type UserFunction } from './numparam.js';
-import { substituteBehavioralParameters } from './behavioral-expression.js';
+import { NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber } from './tokenizer.js';
 import { CycleError, ParseError } from '../errors.js';
 import type { IncludeResolver } from '../types.js';
@@ -42,6 +42,27 @@ export async function preprocessLines(
   guard: ProtocolExecutionGuard | undefined,
   lineOffset: number,
 ): Promise<string> {
+  return (await preprocessDeck(netlist, resolver, guard, lineOffset)).text;
+}
+
+export interface PreprocessedDeck {
+  /** The netlist with top-level parameters substituted. */
+  text: string;
+  /**
+   * Top-level `.param` values (upper-case names) for subcircuit expansion,
+   * which evaluates subcircuit expressions per instance (ngspice numparam
+   * global scope). Parameters whose value cannot be evaluated are omitted;
+   * referencing one from a subcircuit reports it as undefined.
+   */
+  parameters: Record<string, number>;
+}
+
+export async function preprocessDeck(
+  netlist: string,
+  resolver: IncludeResolver | undefined,
+  guard: ProtocolExecutionGuard | undefined,
+  lineOffset: number,
+): Promise<PreprocessedDeck> {
   const state = newCollectState();
   const { definitions, statements } = state;
   await collectStatements(netlist, resolver, new Set(), [], 0, state, guard, lineOffset);
@@ -74,9 +95,18 @@ export async function preprocessLines(
       evaluateParamExpression(definition, scopes.numparam, state.functionScopes[0].functions);
     }
   }
-  return statements.map(statement => statement.substitute
+  const text = statements.map(statement => statement.substitute
     ? substituteStatement(statement, scopes)
     : statement.text).join('\n');
+  const parameters: Record<string, number> = {};
+  for (const name of definitions.keys()) {
+    try {
+      parameters[name] = scopes.numparam[name];
+    } catch {
+      // Unused by the top level, or reported there; see PreprocessedDeck.
+    }
+  }
+  return { text, parameters };
 }
 
 /** One `.if`/`.elseif`/`.else` branch; `condition` is absent for `.else`. */
@@ -404,7 +434,7 @@ function substituteStatement(statement: PendingStatement, scopes: ParamScopes): 
     if (/^\s*b/i.test(text)) {
       // B-cards: `'...'`, `{...}` and bare `.param` names are substituted by
       // the B-card front end; `temper` stays a live ASRC variable.
-      const substituted = substituteExpressions(text, scopes.params, preserveOutputFunctions);
+      const substituted = substituteExpressions(text, scopes.params, preserveOutputFunctions, true);
       return substituteBehavioralParameters(substituted, scopes.params);
     }
     return substituteExpressions(quotedExpressionsAsBraces(text), scopes.numparam, preserveOutputFunctions);
@@ -565,9 +595,16 @@ async function collectStatements(
       continue;
     }
 
-    // Inside a subcircuit — expressions are evaluated per instance later
+    // Inside a subcircuit — expressions are evaluated per instance later.
+    // A resistor whose value reads v()/i() becomes a B-source here too.
     if (inSubckt > 0) {
-      statements.push({ text: compactSubcircuitExpressions(line), substitute: false, line: lineNumber, scope });
+      let text: string;
+      try {
+        text = behavioralResistorAsBSource(line) ?? compactSubcircuitExpressions(line);
+      } catch (error) {
+        throw toParseError(error, lineNumber, trimmed);
+      }
+      statements.push({ text, substitute: false, line: lineNumber, scope });
       continue;
     }
 
@@ -675,13 +712,17 @@ async function collectStatements(
 }
 
 // Output vectors are evaluated after simulation, not as scalar parameters.
+// `keepNodeDependent` leaves B-card `{...}` that read v()/i() to the B-card
+// front end, which keeps them as ASRC sub-expressions.
 function substituteExpressions(
   line: string,
   params: Record<string, number>,
   preserveOutputFunctions = false,
+  keepNodeDependent = false,
 ): string {
   return line.replace(/\{([^}]+)\}/g, (match, expr: string) => {
     if (preserveOutputFunctions && isVoltageOrCurrentOutputExpression(expr)) return match;
+    if (keepNodeDependent && NODE_DEPENDENT_EXPRESSION.test(expr)) return match;
     const value = evaluateExpression(expr, params);
     return formatNumber(value);
   });

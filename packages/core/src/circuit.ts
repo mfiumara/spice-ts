@@ -63,6 +63,7 @@ import { parseModelCard } from './parser/model-parser.js';
 import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
 import { extractRFPort, parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
+import { locateSubcircuitCall } from './parser/subcircuit-syntax.js';
 import { parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
 import { parseSwitchInstance } from './parser/switch-parser.js';
@@ -260,6 +261,13 @@ function formatParams(params?: Record<string, number>): string {
   if (!params) return '';
   return Object.entries(params)
     .map(([key, value]) => `${key}=${formatNumber(value)}`)
+    .join(' ');
+}
+
+/** Subcircuit defaults; expression defaults are written as `{expr}`. */
+function formatSubcircuitParams(params: Record<string, number | string>): string {
+  return Object.entries(params)
+    .map(([key, value]) => `${key}=${typeof value === 'number' ? formatNumber(value) : `{${value}}`}`)
     .join(' ');
 }
 
@@ -599,6 +607,9 @@ export class Circuit {
   private _subcircuits = new Map<string, SubcktDefinition>();
   /** `.global` node names, keyed upper-case, valued with their first spelling. */
   private _globalNodes = new Map<string, string>();
+  /** Top-level `.param` values (upper-case names) visible inside subcircuits. */
+  private _parameters = new Map<string, number>();
+  private _parameterScope: Record<string, number> | undefined;
   private _simulationOptions: SimulationOptions = {};
   private _temperature: number | undefined;
   private _initialConditions: NodeInitialState[] = [];
@@ -1324,6 +1335,23 @@ export class Circuit {
   }
 
   /**
+   * Set top-level `.param` values. As in ngspice numparam, subcircuit
+   * expressions (default parameter values, `{...}` values and B-source
+   * expressions) see them unless a subcircuit parameter or a `.param` inside
+   * the subcircuit shadows the name. {@link parseAsync} records the deck's
+   * top-level parameters here. Names are case-insensitive; later values win.
+   */
+  setParameters(values: Readonly<Record<string, number>>): void {
+    for (const [name, value] of Object.entries(values)) this._parameters.set(name.toUpperCase(), value);
+    this._parameterScope = undefined;
+  }
+
+  /** Top-level `.param` values visible inside subcircuits, keyed upper-case. */
+  get parameters(): Record<string, number> {
+    return Object.fromEntries(this._parameters);
+  }
+
+  /**
    * Instantiate a subcircuit (X-element).
    *
    * The subcircuit must have been previously registered via {@link addSubcircuit}.
@@ -1648,8 +1676,10 @@ export class Circuit {
     }
 
     if (this._globalNodes.size > 0) lines.push(`.global ${this.globalNodes.join(' ')}`);
+    // Top-level parameters only reach the output through subcircuit bodies.
+    if (this._parameters.size > 0 && this._subcircuits.size > 0) lines.push(`.param ${formatParams(this.parameters)}`);
     for (const subckt of this._subcircuits.values()) {
-      const params = formatParams(subckt.params);
+      const params = formatSubcircuitParams(subckt.params);
       const header = `.subckt ${subckt.name} ${subckt.ports.join(' ')}${params ? ` ${params}` : ''}`;
       lines.push(header.trim());
       lines.push(...subckt.body);
@@ -2213,6 +2243,12 @@ export class Circuit {
     }
   }
 
+  /** Top-level `.param` values as a prototype-free variable record for subcircuit scopes. */
+  private parameterScope(): Record<string, number> {
+    this._parameterScope ??= Object.assign(Object.create(null) as Record<string, number>, this.parameters);
+    return this._parameterScope;
+  }
+
   /** Collect top-level and reachable subcircuit `.global` declarations. */
   private collectGlobalNodes(guard?: ProtocolExecutionGuard): Map<string, string> {
     const globals = new Map(this._globalNodes);
@@ -2235,9 +2271,7 @@ export class Circuit {
             if (node !== GROUND_NODE && !globals.has(key)) globals.set(key, node);
           }
         } else if (tokens[0]?.[0].toUpperCase() === 'X') {
-          let index = tokens.length - 1;
-          while (index > 1 && tokens[index].includes('=')) index--;
-          pending.push(tokens[index]);
+          pending.push(tokens[locateSubcircuitCall(tokens).nameIndex]);
         }
       }
     }
@@ -2720,10 +2754,32 @@ export class Circuit {
       portMap.set(def.ports[i].toUpperCase(), connectedPorts[i]);
     }
 
-    // Merge parameters: definition defaults overridden by instance params
-    const mergedParams: Record<string, number> = { ...def.params };
-    for (const [k, v] of Object.entries(instanceParams)) {
-      mergedParams[k.toUpperCase()] = v;
+    // ngspice numparam scope: top-level .params, shadowed by the subcircuit's
+    // parameters and the .params of its body.
+    const localParams: Record<string, number> = Object.create(this.parameterScope()) as Record<string, number>;
+    const overrides = new Map(Object.entries(instanceParams).map(([k, v]) => [k.toUpperCase(), v]));
+    // Defaults are evaluated in declaration order after the instance
+    // overrides, so `p2={p1*2}` follows an overridden p1 (ngspice-47).
+    for (const [k, value] of Object.entries(def.params)) {
+      const name = k.toUpperCase();
+      const override = overrides.get(name);
+      if (override !== undefined) {
+        localParams[name] = override;
+      } else if (typeof value === 'number') {
+        localParams[name] = value;
+      } else {
+        try {
+          localParams[name] = evaluateExpression(value, localParams);
+        } catch (error) {
+          throw new Error(
+            `Subcircuit '${subcktName}' (instance '${instanceName}') parameter '${k}=${value}': ${(error as Error).message}`,
+          );
+        }
+      }
+    }
+    const declared = new Set(Object.keys(def.params).map(k => k.toUpperCase()));
+    for (const [name, value] of overrides) {
+      if (!declared.has(name)) localParams[name] = value;
     }
 
     // Map a node name from the subcircuit body to the actual circuit node
@@ -2756,9 +2812,6 @@ export class Circuit {
       }
       return token;
     };
-
-    // Local params from .param lines inside subcircuit body
-    const localParams: Record<string, number> = { ...mergedParams };
 
     const result: DeviceDescriptor[] = [];
 
@@ -2820,24 +2873,30 @@ export class Circuit {
         case 'C': {
           const evaluatedTokens = tokens.map(t => evalToken(t));
           const parsed = parsePassiveElement(evaluatedTokens, 3, 'C');
+          // IC= is the initial condition, as on a top-level card.
+          const { IC: ic, ...params } = parsed.params;
           result.push({
             type: 'C', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             value: parsed.value,
             modelName: parsed.modelName,
-            params: parsed.params,
+            params,
+            ...(ic === undefined ? {} : { ic }),
           });
           break;
         }
         case 'L': {
           const evaluatedTokens = tokens.map(t => evalToken(t));
           const parsed = parsePassiveElement(evaluatedTokens, 3, 'L');
+          // IC= is the initial condition, as on a top-level card.
+          const { IC: ic, ...params } = parsed.params;
           result.push({
             type: 'L', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             value: parsed.value,
             modelName: parsed.modelName,
-            params: parsed.params,
+            params,
+            ...(ic === undefined ? {} : { ic }),
           });
           break;
         }
@@ -3029,14 +3088,11 @@ export class Circuit {
         }
         case 'X': {
           // Nested subcircuit instance — recursively expand
-          let subcktIdx = tokens.length - 1;
-          while (subcktIdx > 1 && tokens[subcktIdx].includes('=')) {
-            subcktIdx--;
-          }
-          const nestedSubcktName = tokens[subcktIdx];
-          const nestedPorts = tokens.slice(1, subcktIdx).map(mapNode);
+          const call = locateSubcircuitCall(tokens);
+          const nestedSubcktName = tokens[call.nameIndex];
+          const nestedPorts = tokens.slice(1, call.nameIndex).map(mapNode);
           const evaluatedTokens = tokens.map(t => evalToken(t));
-          const nestedParams = parseInstanceParams(evaluatedTokens, subcktIdx + 1);
+          const nestedParams = parseInstanceParams(evaluatedTokens, call.paramStart);
 
           const newVisited = new Set(visited);
           newVisited.add(key);
