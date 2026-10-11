@@ -149,6 +149,8 @@ export class Diode implements DeviceModel {
   readonly params: DiodeParams;
   readonly suppliedParams: Readonly<Partial<DiodeParams>>;
   private temperature = 27;
+  /** Limited junction voltage of the last stamp (ngspice CKTstate0 DIOvoltage). */
+  private previousJunctionVoltage: number | undefined;
 
   constructor(
     readonly name: string,
@@ -303,12 +305,7 @@ export class Diode implements DeviceModel {
     const [nA, nK] = this.nodes;
     const terminalVoltage = (nA >= 0 ? solution[nA] : 0) - (nK >= 0 ? solution[nK] : 0);
     const { RS, KF, AF } = this.params;
-    const { current } = diodeCurrent(
-      terminalVoltage,
-      this.junction(),
-      RS,
-      !this.hasExternalSeriesResistance,
-    );
+    const { current } = diodeCurrent(terminalVoltage, this.junction(), RS);
     return {
       current,
       flickerCoefficient: KF!,
@@ -321,13 +318,29 @@ export class Diode implements DeviceModel {
     const [nA, nK] = this.nodes;
     const vA = nA >= 0 ? ctx.getVoltage(nA) : 0;
     const vK = nK >= 0 ? ctx.getVoltage(nK) : 0;
-    const vd = vA - vK;
+    const junction = this.junction();
+    let vd = vA - vK;
+
+    if (this.params.RS === 0 && ctx.dt === 0) {
+      // DC: ngspice dioload.c limits the junction relative to the previous
+      // Newton iterate (CKTstate0 DIOvoltage) and stores the limited value
+      // back. Limiting only shapes iterates: once a step is within 2*Vte it is
+      // the identity, so the converged point is on the exact diode law (#430).
+      vd = limitJunctionStep(vd, this.previousJunctionVoltage ?? 0, junction);
+      this.previousJunctionVoltage = vd;
+    } else if (this.params.RS === 0 && !this.hasExternalSeriesResistance) {
+      // Transient Newton also damps nonlinear-terminal node voltages
+      // (transient-step.ts), so the node can lag a limited junction and the
+      // iterate-relative limit ratchets away from it. Keep the previous
+      // stateless compression (and no limit behind an expanded RS) there until
+      // the transient loop stops damping those nodes.
+      vd = limitVoltage(vd, junction);
+    }
 
     const { current: id, conductance, linearizationVoltage } = diodeCurrent(
       vd,
-      this.junction(),
+      junction,
       this.params.RS,
-      !this.hasExternalSeriesResistance,
     );
     const gd = conductance + GMIN;
 
@@ -448,7 +461,6 @@ function diodeCurrent(
   terminalVoltage: number,
   junction: Junction,
   seriesResistance: number,
-  limitJunctionVoltage = true,
 ): {
   current: number;
   conductance: number;
@@ -456,18 +468,15 @@ function diodeCurrent(
   junctionVoltage: number;
   linearizationVoltage: number;
 } {
-  const { thermalVoltage, saturationCurrent, breakdown } = junction;
+  const { thermalVoltage, saturationCurrent } = junction;
   if (seriesResistance === 0) {
-    const limitedVoltage = limitJunctionVoltage
-      ? limitVoltage(terminalVoltage, thermalVoltage, saturationCurrent, breakdown)
-      : terminalVoltage;
-    const { current, conductance } = junctionCurrent(limitedVoltage, junction);
+    const { current, conductance } = junctionCurrent(terminalVoltage, junction);
     return {
       current,
       conductance,
       junctionConductance: conductance,
-      junctionVoltage: limitedVoltage,
-      linearizationVoltage: limitedVoltage,
+      junctionVoltage: terminalVoltage,
+      linearizationVoltage: terminalVoltage,
     };
   }
 
@@ -547,11 +556,64 @@ function breakdownKneeVoltage(
   return knee;
 }
 
+/**
+ * ngspice-47 dioload.c junction limiting: DEVpnjlim on the forward junction,
+ * or on the voltage beyond the breakdown knee when the junction is in breakdown.
+ * Both use the forward critical voltage tVcrit, as ngspice does.
+ */
+function limitJunctionStep(
+  voltage: number,
+  previousVoltage: number,
+  { thermalVoltage, saturationCurrent, breakdown }: Junction,
+): number {
+  const criticalVoltage = thermalVoltage
+    * Math.log(thermalVoltage / (Math.SQRT2 * saturationCurrent));
+  if (breakdown) {
+    const knee = breakdownKneeVoltage(breakdown, saturationCurrent);
+    if (voltage < Math.min(0, -knee + 10 * breakdown.thermalVoltage)) {
+      return -knee - pnjlim(
+        -(voltage + knee),
+        -(previousVoltage + knee),
+        breakdown.thermalVoltage,
+        criticalVoltage,
+      );
+    }
+  }
+  return pnjlim(voltage, previousVoltage, thermalVoltage, criticalVoltage);
+}
+
+/** ngspice-47 devsup.c DEVpnjlim: limit a junction step relative to the last iterate. */
+function pnjlim(
+  voltage: number,
+  previousVoltage: number,
+  thermalVoltage: number,
+  criticalVoltage: number,
+): number {
+  if (voltage > criticalVoltage
+    && Math.abs(voltage - previousVoltage) > 2 * thermalVoltage) {
+    if (previousVoltage > 0) {
+      const ratio = (voltage - previousVoltage) / thermalVoltage;
+      return ratio > 0
+        ? previousVoltage + thermalVoltage * (2 + Math.log(ratio - 2))
+        : previousVoltage - thermalVoltage * (2 + Math.log(2 - ratio));
+    }
+    return thermalVoltage * Math.log(voltage / thermalVoltage);
+  }
+  if (voltage < 0) {
+    const minimum = previousVoltage > 0 ? -previousVoltage - 1 : 2 * previousVoltage - 1;
+    return Math.max(voltage, minimum);
+  }
+  return voltage;
+}
+
+/**
+ * Stateless junction compression above vcrit, used only by transient Newton.
+ * Its fixed point is not the diode law above vcrit (#430), so the DC path uses
+ * {@link limitJunctionStep} instead.
+ */
 function limitVoltage(
   voltage: number,
-  thermalVoltage: number,
-  saturationCurrent: number,
-  breakdown?: BreakdownParams,
+  { thermalVoltage, saturationCurrent, breakdown }: Junction,
 ): number {
   if (breakdown) {
     const knee = breakdownKneeVoltage(breakdown, saturationCurrent);
