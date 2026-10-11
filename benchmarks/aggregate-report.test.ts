@@ -143,10 +143,17 @@ describe('aggregate report artifact verification', () => {
     // VBIC substrate terminal (#453, PR #473): the PZ abs envelope moves to pole(1) at 7175.3, with every pole and zero closer to ngspice.
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #476') && text.includes('PR #473') && text.includes('PR #481') && text.includes('7175.34033203125')));
     assert.equal(vbicAc.comparisons[1].metrics.signals['v(pole(1))'].absoluteError.max, report.matchedPointEnvelope.maximumAbsoluteError);
-    for (const key of ['ngspice/mos6-inverter-transient', 'ngspice/mos6-simple-inverter-transient', 'classic/mos6-inverter-chain']) {
+    // MOS6 TransientChargeState (#468, PR #478): simpleinv improves, the mos6inv node voltages lose (#479). Locked exactly, not bounded.
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #474') && text.includes('PR #485') && text.includes('PR #478') && text.includes('#479')));
+    const mos6Worst: Record<string, number> = {
+      'ngspice/mos6-inverter-transient': 0.3261166904115491,
+      'ngspice/mos6-simple-inverter-transient': 0.10566947866046283,
+      'classic/mos6-inverter-chain': 0.3261166904115491,
+    };
+    for (const [key, expected] of Object.entries(mos6Worst)) {
       const mos6 = report.fixtures.find((fixture: { key: string }) => fixture.key === key);
       const worst = Math.max(...Object.values(mos6.comparisons[0].metrics.signals as Record<string, { absoluteError: { max: number } }>).map(signal => signal.absoluteError.max));
-      assert.ok(worst < 0.3, `${key} worst absolute max ${worst}`);
+      assert.equal(worst, expected, `${key} worst absolute max ${worst}`);
     }
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #449') && text.includes('PR #457') && text.includes('PR #455')));
     const inductor = report.fixtures.find((fixture: { key: string }) => fixture.key === 'xyce/inductor-transient');
@@ -197,7 +204,7 @@ describe('aggregate report artifact verification', () => {
 
     assert.deepEqual(report.provenance, {
       fixtureTreeSha256: '13b4675cfb97766fc7caed79d023ca514840880d17cb924c0e70561ff8b82e00',
-      sourcesSha256: '53cd510ca559ac9409c40e543c8a1da5c7cbe5bc5fa80338f5086bce701e0228',
+      sourcesSha256: 'cdd28c9802f1e7706a7a19dc02caa2f2622672dd518aa158b8a367a092ad873d',
     });
   });
 
