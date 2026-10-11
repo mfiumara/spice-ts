@@ -2,7 +2,7 @@
 /**
  * Issue #501: TRNOISE / TRRANDOM sources, spice-ts vs ngspice-47 on identical netlists.
  *
- * usage: pnpm exec tsx benchmarks/trnoise-501/compare.ts
+ * usage: pnpm exec tsx benchmarks/trnoise-501/compare.ts [--only <fixture substring>]
  *
  * Two kinds of evidence (see README.md):
  * - seeded: decks with `.option seed=N`. ngspice-47 then draws RTS and TRRANDOM values from
@@ -13,6 +13,10 @@
  *   sample by sample. Both engines are reduced to the same statistics on a linear k*TS grid:
  *   mean and rms of white noise, spectral slope of 1/f noise, mean/std of TRRANDOM values and
  *   the RTS high-time fraction, next to the value the source parameters imply.
+ * - amplitude: a 1/f-only deck run several times in each engine (ngspice re-draws its pool per
+ *   process; spice-ts gets `.option seed=N` appended per run). Metric: variance of the first
+ *   differences of the TS-grid samples and the mean per-octave periodogram power, which the
+ *   spectral slope cannot see.
  *
  * Each fixture's `.control` block and `.end` are removed (corpus-f decks keep their bytes in
  * benchmarks/corpus/corpus-f/fixtures; only the analysis/plot commands are replaced). ngspice
@@ -33,17 +37,21 @@ type Metric =
   | { kind: 'white'; node: string; rms: number; mean?: number }
   | { kind: 'pink'; node: string; alpha: number }
   | { kind: 'trrandom'; node: string; mean: number; std: number }
-  | { kind: 'rts-duty'; node: string; high: number; expectedFraction: number };
+  | { kind: 'rts-duty'; node: string; high: number; expectedFraction: number }
+  | { kind: 'pink-amplitude'; node: string; alpha: number; namp: number };
 
 interface Case {
   /** Path relative to the repository root. */
   fixture: string;
-  mode: 'seeded' | 'statistics';
+  mode: 'seeded' | 'statistics' | 'amplitude';
   /** Analysis card when the deck runs `tran` only from `.control`. */
   tran?: string;
   /** Linear sampling step (the TRNOISE TS) for statistics. */
   step?: number;
   metrics: Metric[];
+  /** amplitude mode: ngspice process runs and spice-ts `.option seed` values. */
+  ngspiceRuns?: number;
+  spiceTsSeeds?: number[];
 }
 
 const CORPUS = 'benchmarks/corpus/corpus-f/fixtures/examples';
@@ -93,6 +101,14 @@ const CASES: Case[] = [
     ],
   },
   {
+    fixture: 'benchmarks/trnoise-501/fixtures/pink-amplitude.cir', mode: 'amplitude', step: 1e-6,
+    ngspiceRuns: 6, spiceTsSeeds: [1, 2, 3, 4],
+    metrics: [
+      { kind: 'pink-amplitude', node: '1', alpha: 1, namp: 1 },
+      { kind: 'pink-amplitude', node: '2', alpha: 1.7, namp: 1 },
+    ],
+  },
+  {
     fixture: `${CORPUS}/various/mtimeavg_test.cir`, mode: 'statistics', step: 0.5e-9, tran: '.tran 0.5n 500n',
     metrics: [{ kind: 'white', node: '1', rms: 20e-9, mean: 0 }],
   },
@@ -106,13 +122,16 @@ void main();
 async function main(): Promise<void> {
   const ngspice = execFileSync('ngspice', ['-v'], { encoding: 'utf8' })
     .split('\n').find(line => /ngspice-\d+/.test(line))?.replace(/\*+/g, '').trim();
+  // `--only <substring>` runs the matching fixtures and prints them without writing report.json.
+  const onlyIndex = process.argv.indexOf('--only');
+  const only = onlyIndex >= 0 ? process.argv[onlyIndex + 1] : undefined;
   const results = [];
-  for (const entry of CASES) {
+  for (const entry of CASES.filter(candidate => only === undefined || candidate.fixture.includes(only))) {
     results.push(await compare(entry));
     process.stderr.write(`${entry.fixture}: done\n`);
   }
   const report = { ngspice, generatedBy: 'benchmarks/trnoise-501/compare.ts', results };
-  writeFileSync(join(here, 'report.json'), `${JSON.stringify(report, null, 2)}\n`);
+  if (only === undefined) writeFileSync(join(here, 'report.json'), `${JSON.stringify(report, null, 2)}\n`);
   console.log(JSON.stringify(report, null, 2));
 }
 
@@ -125,6 +144,7 @@ async function compare(entry: Case): Promise<Record<string, unknown>> {
     .replace(/^\s*\.end\s*$/im, '');
   const deck = `${body}\n${entry.tran ?? ''}\n`;
   const nodes = [...new Set(entry.metrics.map(metric => metric.node))];
+  if (entry.mode === 'amplitude') return compareAmplitude(entry, raw, deck, nodes);
   const reference = runNgspice(deck, nodes, entry.mode === 'statistics' ? entry.step : undefined);
   const started = performance.now();
   const result = await simulate(`${deck}.end\n`);
@@ -145,6 +165,52 @@ async function compare(entry: Case): Promise<Record<string, unknown>> {
     return { ...metric, ngspice: statistic(metric, reference.time, sampledNg, entry.step!), spiceTs: statistic(metric, reference.time, sampledTs, entry.step!) };
   });
   return record;
+}
+
+/** 1/f amplitude over repeated runs: ngspice processes vs spice-ts seeds, on the TS grid. */
+async function compareAmplitude(entry: Case, raw: Buffer, deck: string, nodes: string[]): Promise<Record<string, unknown>> {
+  const step = entry.step!;
+  const references = Array.from({ length: entry.ngspiceRuns ?? 1 }, () => runNgspice(deck, nodes, step));
+  const grid = references[0].time;
+  const runs: Series[] = [];
+  for (const seed of entry.spiceTsSeeds ?? [1]) {
+    const tran = (await simulate(`${deck}.option seed=${seed}\n.end\n`)).transient!;
+    runs.push({ time: [...tran.time], values: new Map(nodes.map(node => [node, [...tran.voltage(node)]])) });
+  }
+  const round = (value: number): number => Number(value.toPrecision(4));
+  const mean = (values: number[]): number => values.reduce((sum, value) => sum + value, 0) / values.length;
+  return {
+    fixture: entry.fixture,
+    sha256: createHash('sha256').update(raw).digest('hex'),
+    mode: entry.mode,
+    runs: { ngspice: references.length, spiceTsSeeds: entry.spiceTsSeeds ?? [1] },
+    metrics: entry.metrics.map(metric => {
+      const ng = references.map(reference => amplitude(reference.values.get(metric.node)!));
+      const ts = runs.map(run => amplitude(linearGrid(run, metric.node, step, grid)));
+      const ngDiff = mean(ng.map(value => value.diffVariance));
+      const tsDiff = mean(ts.map(value => value.diffVariance));
+      const ngOctave = mean(ng.map(value => value.octavePower));
+      const tsOctave = mean(ts.map(value => value.octavePower));
+      return {
+        ...metric,
+        ngspice: { diffVariance: ng.map(value => round(value.diffVariance)), octavePower: ng.map(value => round(value.octavePower)) },
+        spiceTs: { diffVariance: ts.map(value => round(value.diffVariance)), octavePower: ts.map(value => round(value.octavePower)) },
+        meanDiffVarianceRatioSpiceTsOverNgspice: round(tsDiff / ngDiff),
+        meanOctavePowerRatioSpiceTsOverNgspice: round(tsOctave / ngOctave),
+      };
+    }),
+  };
+}
+
+/** Variance of first differences and mean per-octave power (octaves 4..n/4) of TS-grid samples. */
+function amplitude(values: number[]): { diffVariance: number; octavePower: number } {
+  const samples = values.slice(1);
+  const diffs = samples.slice(1).map((value, k) => value - samples[k]);
+  const diffMean = diffs.reduce((sum, value) => sum + value, 0) / diffs.length;
+  const diffVariance = diffs.reduce((sum, value) => sum + (value - diffMean) ** 2, 0) / diffs.length;
+  const bands = octaveBands(samples);
+  const octavePower = Math.exp(bands.reduce((sum, [, logPower]) => sum + logPower, 0) / bands.length);
+  return { diffVariance, octavePower };
 }
 
 /** ngspice-47 on the deck body; `step` linearizes onto k*step before writing. */
@@ -252,6 +318,14 @@ function statistic(metric: Metric, time: number[], values: number[], step: numbe
 
 /** Least-squares slope of log power vs log frequency over octave bands of a radix-2 periodogram. */
 function spectralSlope(samples: number[]): number {
+  const points = octaveBands(samples);
+  const mx = points.reduce((s, [x]) => s + x, 0) / points.length;
+  const my = points.reduce((s, [, y]) => s + y, 0) / points.length;
+  return points.reduce((s, [x, y]) => s + (x - mx) * (y - my), 0) / points.reduce((s, [x]) => s + (x - mx) ** 2, 0);
+}
+
+/** [log centre frequency, log mean power] of octave bands 4..n/4 of a radix-2 periodogram. */
+function octaveBands(samples: number[]): [number, number][] {
   let n = 1;
   while (n * 2 <= samples.length) n *= 2;
   const re = Float64Array.from(samples.slice(0, n));
@@ -263,9 +337,7 @@ function spectralSlope(samples: number[]): number {
     for (let f = low; f < 2 * low; f++) power += re[f] * re[f] + im[f] * im[f];
     points.push([Math.log(1.5 * low), Math.log(power / low)]);
   }
-  const mx = points.reduce((s, [x]) => s + x, 0) / points.length;
-  const my = points.reduce((s, [, y]) => s + y, 0) / points.length;
-  return points.reduce((s, [x, y]) => s + (x - mx) * (y - my), 0) / points.reduce((s, [x]) => s + (x - mx) ** 2, 0);
+  return points;
 }
 
 function fft(re: Float64Array, im: Float64Array): void {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { simulate } from './simulate.js';
 import { parse } from './parser/index.js';
+import { ParseError } from './errors.js';
 import { UnsupportedSourceWaveformError } from './parser/waveform-parser.js';
 import type { TransientResult } from './results.js';
 
@@ -234,6 +235,21 @@ describe('seeded RTS and TRRANDOM draws match ngspice-47', () => {
       0.5779089154016269, 1.918937730606219, -1.377383092537428, 0.3874522147536118, 0.9053041386582484,
       1.80205200218965, -0.2291241861256262, -0.4412973898624927, 0.4146907047643469,
     ]);
+  });
+});
+
+describe('.options seed validation', () => {
+  it.each(['random', '0', '-3', '1.5'])('rejects seed=%s with a structured ParseError', value => {
+    const netlist = ['* seed', `.options seed=${value}`, 'V1 1 0 DC 1', 'R1 1 0 1k', '.op', '.end'].join('\n');
+    let error: unknown;
+    try {
+      parse(netlist);
+    } catch (caught) {
+      error = caught;
+    }
+    expect(error).toBeInstanceOf(ParseError);
+    expect((error as ParseError).line).toBe(2);
+    expect((error as ParseError).message).toMatch(/seed/);
   });
 });
 

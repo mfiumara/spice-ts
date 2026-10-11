@@ -10,7 +10,7 @@
         "ngspice": 342,
         "spiceTs": 796
       },
-      "spiceTsRuntimeMs": 17,
+      "spiceTsRuntimeMs": 20,
       "metrics": [
         {
           "kind": "rts",
@@ -62,7 +62,7 @@
         "ngspice": 284,
         "spiceTs": 598
       },
-      "spiceTsRuntimeMs": 7,
+      "spiceTsRuntimeMs": 9,
       "metrics": [
         {
           "kind": "rts",
@@ -102,9 +102,9 @@
       "mode": "statistics",
       "points": {
         "ngspice": 501,
-        "spiceTs": 6601
+        "spiceTs": 6575
       },
-      "spiceTsRuntimeMs": 43,
+      "spiceTsRuntimeMs": 57,
       "metrics": [
         {
           "kind": "white",
@@ -112,15 +112,15 @@
           "rms": 0.001004987562112089,
           "ngspice": {
             "samples": 500,
-            "mean": -0.000002908,
-            "rms": 0.00101,
-            "rmsOverExpected": 1.005
+            "mean": 0.0001014,
+            "rms": 0.001022,
+            "rmsOverExpected": 1.017
           },
           "spiceTs": {
             "samples": 500,
-            "mean": 0.0002843,
-            "rms": 0.0009805,
-            "rmsOverExpected": 0.9756
+            "mean": -0.00007252,
+            "rms": 0.0009679,
+            "rmsOverExpected": 0.9631
           }
         },
         {
@@ -130,8 +130,8 @@
           "expectedFraction": 0.6666666666666666,
           "ngspice": {
             "samples": 500,
-            "highFraction": 0.604,
-            "transitions": 13,
+            "highFraction": 0.688,
+            "transitions": 10,
             "durationS": 0.0005,
             "stepS": 0.000001
           },
@@ -153,7 +153,7 @@
         "ngspice": 25001,
         "spiceTs": 223490
       },
-      "spiceTsRuntimeMs": 647,
+      "spiceTsRuntimeMs": 829,
       "metrics": [
         {
           "kind": "white",
@@ -162,9 +162,9 @@
           "mean": -0.001,
           "ngspice": {
             "samples": 25000,
-            "mean": -0.0001151,
-            "rms": 0.05033,
-            "rmsOverExpected": 1.007
+            "mean": -0.0008588,
+            "rms": 0.05021,
+            "rmsOverExpected": 1.004
           },
           "spiceTs": {
             "samples": 25000,
@@ -180,8 +180,8 @@
           "std": 1,
           "ngspice": {
             "samples": 25000,
-            "mean": 0.276,
-            "std": 0.005257
+            "mean": 0.1459,
+            "std": 0.0007867
           },
           "spiceTs": {
             "samples": 25000,
@@ -196,8 +196,8 @@
           "std": 1,
           "ngspice": {
             "samples": 25000,
-            "mean": 0.005407,
-            "std": 0.9978
+            "mean": 0.002337,
+            "std": 0.9946
           },
           "spiceTs": {
             "samples": 25000,
@@ -215,7 +215,7 @@
         "ngspice": 250001,
         "spiceTs": 1480182
       },
-      "spiceTsRuntimeMs": 3199,
+      "spiceTsRuntimeMs": 6918,
       "metrics": [
         {
           "kind": "pink",
@@ -223,12 +223,12 @@
           "alpha": 1.7,
           "ngspice": {
             "samples": 250000,
-            "spectralSlope": -1.59,
+            "spectralSlope": -1.586,
             "expectedSlope": -1.7
           },
           "spiceTs": {
             "samples": 250000,
-            "spectralSlope": -1.62,
+            "spectralSlope": -1.616,
             "expectedSlope": -1.7
           }
         },
@@ -238,12 +238,12 @@
           "alpha": 1.4,
           "ngspice": {
             "samples": 250000,
-            "spectralSlope": -1.257,
+            "spectralSlope": -1.316,
             "expectedSlope": -1.4
           },
           "spiceTs": {
             "samples": 250000,
-            "spectralSlope": -1.425,
+            "spectralSlope": -1.411,
             "expectedSlope": -1.4
           }
         },
@@ -253,12 +253,12 @@
           "alpha": 1,
           "ngspice": {
             "samples": 250000,
-            "spectralSlope": -0.9493,
+            "spectralSlope": -1.007,
             "expectedSlope": -1
           },
           "spiceTs": {
             "samples": 250000,
-            "spectralSlope": -1.001,
+            "spectralSlope": -0.9503,
             "expectedSlope": -1
           }
         },
@@ -268,12 +268,12 @@
           "alpha": 0.5,
           "ngspice": {
             "samples": 250000,
-            "spectralSlope": -0.4499,
+            "spectralSlope": -0.482,
             "expectedSlope": -0.5
           },
           "spiceTs": {
             "samples": 250000,
-            "spectralSlope": -0.5309,
+            "spectralSlope": -0.542,
             "expectedSlope": -0.5
           }
         },
@@ -284,9 +284,9 @@
           "mean": 0,
           "ngspice": {
             "samples": 250000,
-            "mean": -1.9e-12,
-            "rms": 9.996e-10,
-            "rmsOverExpected": 0.9996
+            "mean": -4.67e-13,
+            "rms": 1.003e-9,
+            "rmsOverExpected": 1.003
           },
           "spiceTs": {
             "samples": 250000,
@@ -298,6 +298,102 @@
       ]
     },
     {
+      "fixture": "benchmarks/trnoise-501/fixtures/pink-amplitude.cir",
+      "sha256": "4c8c5df823bd407daa65c54402bcf07bd7cd1bbdb4ca6107e0e4d0c90c24e199",
+      "mode": "amplitude",
+      "runs": {
+        "ngspice": 6,
+        "spiceTsSeeds": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "metrics": [
+        {
+          "kind": "pink-amplitude",
+          "node": "1",
+          "alpha": 1,
+          "namp": 1,
+          "ngspice": {
+            "diffVariance": [
+              2.184,
+              2.199,
+              2.195,
+              2.222,
+              2.166,
+              2.159
+            ],
+            "octavePower": [
+              501600,
+              581400,
+              503800,
+              517500,
+              514700,
+              616300
+            ]
+          },
+          "spiceTs": {
+            "diffVariance": [
+              2.143,
+              2.141,
+              2.137,
+              2.149
+            ],
+            "octavePower": [
+              591500,
+              589600,
+              589600,
+              582200
+            ]
+          },
+          "meanDiffVarianceRatioSpiceTsOverNgspice": 0.9795,
+          "meanOctavePowerRatioSpiceTsOverNgspice": 1.091
+        },
+        {
+          "kind": "pink-amplitude",
+          "node": "2",
+          "alpha": 1.7,
+          "namp": 1,
+          "ngspice": {
+            "diffVariance": [
+              1.704,
+              1.642,
+              1.639,
+              1.675,
+              1.676,
+              1.674
+            ],
+            "octavePower": [
+              3164000,
+              3530000,
+              3225000,
+              3212000,
+              3244000,
+              3107000
+            ]
+          },
+          "spiceTs": {
+            "diffVariance": [
+              1.703,
+              1.699,
+              1.707,
+              1.703
+            ],
+            "octavePower": [
+              3333000,
+              3306000,
+              3187000,
+              3236000
+            ]
+          },
+          "meanDiffVarianceRatioSpiceTsOverNgspice": 1.021,
+          "meanOctavePowerRatioSpiceTsOverNgspice": 1.006
+        }
+      ]
+    },
+    {
       "fixture": "benchmarks/corpus/corpus-f/fixtures/examples/various/mtimeavg_test.cir",
       "sha256": "4edde76934e2bf955b88a6c8774c715aeeaf49e23da11d67db25465a443c2630",
       "mode": "statistics",
@@ -305,7 +401,7 @@
         "ngspice": 1001,
         "spiceTs": 5856
       },
-      "spiceTsRuntimeMs": 5,
+      "spiceTsRuntimeMs": 8,
       "metrics": [
         {
           "kind": "white",
@@ -314,9 +410,9 @@
           "mean": 0,
           "ngspice": {
             "samples": 1000,
-            "mean": -4.139e-10,
-            "rms": 1.991e-8,
-            "rmsOverExpected": 0.9954
+            "mean": -1.067e-9,
+            "rms": 1.965e-8,
+            "rmsOverExpected": 0.9824
           },
           "spiceTs": {
             "samples": 1000,

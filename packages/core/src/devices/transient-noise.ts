@@ -8,7 +8,8 @@
  * - frontend/trannoise/wallace.c: Wallace normal generator (initw, NewWa,
  *   GaussWa) used for white and 1/f noise;
  * - frontend/trannoise/1-f-code.c: Kasdin 1/f^alpha noise (f_alpha, FFTW
- *   path), trnoise_state_gen/init, trrandom_state_init;
+ *   path, including its stride-1 spectral product), trnoise_state_gen/init,
+ *   trrandom_state_init;
  * - include/ngspice/1-f-code.h: trnoise_state_get, trrandom_state_get;
  * - spicelib/devices/{vsrc,isrc}/{load,acct}.c: TRNOISE/TRRANDOM evaluation
  *   and breakpoint scheduling.
@@ -279,9 +280,9 @@ export class NgspiceRandom {
 }
 
 /**
- * Kasdin 1/f^alpha noise (ngspice-47 f_alpha, FFTW build): `nPoints` samples of
- * white noise with deviation `q` filtered by the fractional-integration
- * coefficients h_k, as the circular convolution FFTW computes.
+ * Kasdin 1/f^alpha noise as the ngspice-47 FFTW build computes it (1-f-code.c
+ * f_alpha, HAVE_LIBFFTW3 branch): `nPoints` samples of white noise with
+ * deviation `q` filtered by the fractional-integration coefficients h_k.
  */
 export function fAlpha(nPoints: number, q: number, alpha: number, random: NgspiceRandom): Float64Array {
   const ha = alpha / 2;
@@ -293,37 +294,125 @@ export function fAlpha(nPoints: number, q: number, alpha: number, random: Ngspic
     h[i] = h[i - 1] * (ha + (i - 1)) / i;
     w[i] = q * random.gaussWa();
   }
-  return circularConvolution(h, w);
+  return fAlphaFftwFilter(h, w);
 }
 
-/** Circular convolution of two equal-length real sequences via a radix-2 FFT. */
-export function circularConvolution(a: Float64Array, b: Float64Array): Float64Array {
-  const n = a.length;
+/**
+ * The spectral product of ngspice-47 f_alpha (FFTW build), ported verbatim.
+ *
+ * ngspice transforms h and w in place with `fftw_plan_dft_r2c_1d(n)`, which
+ * leaves the n/2+1 complex bins interleaved (re, im, re, im, ...) in each
+ * double array, then forms
+ *
+ *     out[i] = (hfa[i]*wfa[i] - hfa[i+1]*wfa[i+1], hfa[i]*wfa[i+1] + hfa[i+1]*wfa[i])
+ *
+ * for i = 0..n/2. The intended complex product would index 2i and 2i+1; the
+ * stride-1 indexing mixes real and imaginary parts of neighbouring bins, so the
+ * result is not the circular convolution of h and w: with the same spectral
+ * slope it carries more power than the true Kasdin filter (about 1.6x the
+ * per-octave power at alpha = 1 and 2.7x at alpha = 1.7, see
+ * benchmarks/trnoise-501). spice-ts keeps the ngspice-47 indexing for parity; `fftw_plan_dft_c2r_1d` then reads the
+ * product as a Hermitian half spectrum (the imaginary parts of the DC and,
+ * for even n, Nyquist bins are ignored) and the result is divided by n.
+ */
+export function fAlphaFftwFilter(h: Float64Array, w: Float64Array): Float64Array {
+  const n = h.length;
+  const half = n >> 1;
+  const hfa = realForwardInterleaved(h);
+  const wfa = realForwardInterleaved(w);
+  const outRe = new Float64Array(half + 1);
+  const outIm = new Float64Array(half + 1);
+  for (let i = 0; i < half + 1; i++) {
+    outRe[i] = hfa[i] * wfa[i] - hfa[i + 1] * wfa[i + 1];
+    outIm[i] = hfa[i] * wfa[i + 1] + hfa[i + 1] * wfa[i];
+  }
+  // fftw_plan_dft_c2r_1d: unnormalised inverse DFT of the Hermitian extension.
+  const re = new Float64Array(n);
+  const im = new Float64Array(n);
+  re[0] = outRe[0];
+  for (let k = 1; k < half + 1; k++) {
+    re[k] = outRe[k];
+    im[k] = outIm[k];
+    re[n - k] = outRe[k];
+    im[n - k] = -outIm[k];
+  }
+  if ((n & 1) === 0 && n > 0) {
+    re[half] = outRe[half];
+    im[half] = 0;
+  }
+  dft(re, im, true);
+  const result = new Float64Array(n);
+  for (let i = 0; i < n; i++) result[i] = re[i] / n;
+  return result;
+}
+
+/**
+ * `fftw_plan_dft_r2c_1d(n, x, (fftw_complex *)x)` on an n+2 double buffer:
+ * bins 0..n/2 of the forward DFT, interleaved as re, im; the tail stays zero.
+ */
+function realForwardInterleaved(x: Float64Array): Float64Array {
+  const n = x.length;
+  const re = Float64Array.from(x);
+  const im = new Float64Array(n);
+  dft(re, im, false);
+  const buffer = new Float64Array(n + 2);
+  for (let k = 0; k <= n >> 1; k++) {
+    buffer[2 * k] = re[k];
+    buffer[2 * k + 1] = im[k];
+  }
+  return buffer;
+}
+
+/**
+ * In-place unnormalised complex DFT of any length (forward sign -1, inverse
+ * +1): radix-2 for powers of two, Bluestein's chirp-z algorithm otherwise.
+ */
+function dft(re: Float64Array, im: Float64Array, inverse: boolean): void {
+  const n = re.length;
+  if (n <= 1) return;
+  if ((n & (n - 1)) === 0) {
+    fft(re, im, inverse);
+    return;
+  }
   let size = 1;
   while (size < 2 * n - 1) size <<= 1;
-  // Pack a + i b, transform once and separate the two spectra.
-  const re = new Float64Array(size);
-  const im = new Float64Array(size);
-  re.set(a);
-  im.set(b);
-  fft(re, im, false);
-  const productRe = new Float64Array(size);
-  const productIm = new Float64Array(size);
-  for (let k = 0; k < size; k++) {
-    const conjugate = (size - k) & (size - 1);
-    const aRe = (re[k] + re[conjugate]) / 2;
-    const aIm = (im[k] - im[conjugate]) / 2;
-    const bRe = (im[k] + im[conjugate]) / 2;
-    const bIm = -(re[k] - re[conjugate]) / 2;
-    productRe[k] = aRe * bRe - aIm * bIm;
-    productIm[k] = aRe * bIm + aIm * bRe;
-  }
-  fft(productRe, productIm, true);
-  const result = new Float64Array(n);
+  const sign = inverse ? 1 : -1;
+  // chirp_k = exp(sign * i*pi*k^2/n); k^2 is reduced mod 2n to keep the angle exact.
+  const chirpRe = new Float64Array(n);
+  const chirpIm = new Float64Array(n);
   for (let k = 0; k < n; k++) {
-    result[k] = (productRe[k] + (k + n < size ? productRe[k + n] : 0)) / size;
+    const angle = sign * Math.PI * ((k * k) % (2 * n)) / n;
+    chirpRe[k] = Math.cos(angle);
+    chirpIm[k] = Math.sin(angle);
   }
-  return result;
+  const aRe = new Float64Array(size);
+  const aIm = new Float64Array(size);
+  for (let k = 0; k < n; k++) {
+    aRe[k] = re[k] * chirpRe[k] - im[k] * chirpIm[k];
+    aIm[k] = re[k] * chirpIm[k] + im[k] * chirpRe[k];
+  }
+  const bRe = new Float64Array(size);
+  const bIm = new Float64Array(size);
+  bRe[0] = chirpRe[0];
+  bIm[0] = -chirpIm[0];
+  for (let k = 1; k < n; k++) {
+    bRe[k] = bRe[size - k] = chirpRe[k];
+    bIm[k] = bIm[size - k] = -chirpIm[k];
+  }
+  fft(aRe, aIm, false);
+  fft(bRe, bIm, false);
+  for (let k = 0; k < size; k++) {
+    const r = aRe[k] * bRe[k] - aIm[k] * bIm[k];
+    aIm[k] = aRe[k] * bIm[k] + aIm[k] * bRe[k];
+    aRe[k] = r;
+  }
+  fft(aRe, aIm, true);
+  for (let k = 0; k < n; k++) {
+    const cRe = aRe[k] / size;
+    const cIm = aIm[k] / size;
+    re[k] = cRe * chirpRe[k] - cIm * chirpIm[k];
+    im[k] = cRe * chirpIm[k] + cIm * chirpRe[k];
+  }
 }
 
 /** In-place iterative radix-2 complex FFT; `inverse` omits the 1/N scaling. */

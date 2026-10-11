@@ -835,7 +835,11 @@ function parseSimulationOptions(
       // `seed=random` seeds from the clock, which would make runs unrepeatable.
       const value = Number(rawValue);
       if (!Number.isInteger(value) || value <= 0 || value > 0x7fffffff) {
-        throw new Error(`Unsupported .options seed value: '${rawValue}' (spice-ts needs a positive integer seed)`);
+        throw new ParseError(
+          `Unsupported .options seed value: '${rawValue}' (spice-ts needs a positive integer seed)`,
+          lineNumber,
+          context,
+        );
       }
       options.seed = value;
       continue;
