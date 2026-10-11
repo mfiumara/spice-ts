@@ -49,7 +49,8 @@ export const REPORT_SCHEMA = 'spice-ts-corpus-f-outcomes/v1' as const;
 const MANIFEST_PATH = resolve(CORPUS_ROOT, 'manifest.json');
 const JSON_PATH = resolve(CORPUS_ROOT, 'outcomes.json');
 const MARKDOWN_PATH = resolve(CORPUS_ROOT, 'README.md');
-const NGSPICE_TIMEOUT_MS = 120_000;
+/** Some CIDER decks need about 115 s alone in ngspice-47, so its bound is wider than spice-ts's 120 s. */
+const NGSPICE_TIMEOUT_MS = 600_000;
 const CHILD_FLAG = '--corpus-f-fixture-child';
 const SPICE_TS_CHILD_FLAG = '--corpus-f-spice-ts-child';
 
@@ -62,7 +63,7 @@ export interface EngineOutcome {
   note?: string;
 }
 
-export const CONTROL_ONLY_NOTE = 'ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare';
+export const CONTROL_ONLY_NOTE = 'ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare';
 
 export interface FixtureOutcome {
   id: string;
@@ -70,6 +71,8 @@ export interface FixtureOutcome {
   sha256: string;
   analyses: string[];
   unmappedAnalyses: string[];
+  /** Fixtures of other public corpora with the same file name (upstream variants, different bytes). */
+  sameNameAs: string[];
   ngspice: EngineOutcome;
   spiceTs: EngineOutcome;
   comparedAnalyses: number;
@@ -94,7 +97,7 @@ export interface CorpusFReport {
     perCircuitToleranceTuning: false;
     matchThreshold: number;
     matchRule: string;
-    deterministicHashExcludes: ['environment', 'tools.node'];
+    deterministicHashExcludes: ['environment', 'tools.node', 'ngspice.analyses', 'spiceTs.analyses'];
   };
   totals: {
     fixtures: number;
@@ -107,10 +110,45 @@ export interface CorpusFReport {
 }
 
 /**
- * Gap issues filed for this batch. Keys are gap buckets; a bucket without an entry has no issue yet.
- * Filled in after searching open and closed issues for duplicates.
+ * Gap issues for this batch, filed after searching open and closed issues for duplicates
+ * (`.temp` joins the existing #459). Keys are gap buckets; buckets where ngspice also fails every
+ * fixture get no issue.
  */
-export const GAP_ISSUES: Record<string, string> = {};
+export const GAP_ISSUES: Record<string, string> = {
+  "device: XSPICE A-element code models": 'https://github.com/mfiumara/spice-ts/issues/487',
+  "control: ngspice control-language scripting (set/let/save/foreach/meas/...)": 'https://github.com/mfiumara/spice-ts/issues/488',
+  "control: analysis commands inside .control (tran/dc/op/ac/...)": 'https://github.com/mfiumara/spice-ts/issues/489',
+  "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)": 'https://github.com/mfiumara/spice-ts/issues/490',
+  "device: P/Y-element lossy multiconductor lines (CPL, TXL)": 'https://github.com/mfiumara/spice-ts/issues/491',
+  "source: parenthesised and extended waveform syntax": 'https://github.com/mfiumara/spice-ts/issues/492',
+  "expression: quoted/brace expressions in values (TEMPER, functions)": 'https://github.com/mfiumara/spice-ts/issues/493',
+  "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)": 'https://github.com/mfiumara/spice-ts/issues/494',
+  "expression: B-source V= and expression functions/operators": 'https://github.com/mfiumara/spice-ts/issues/495',
+  "directive: numparam extensions (.func, .csparam, .if, string/vector .param)": 'https://github.com/mfiumara/spice-ts/issues/496',
+  "model: CIDER numerical device models (NUMD/NUMOS/NBJT)": 'https://github.com/mfiumara/spice-ts/issues/497',
+  "device: R-card forms (r=, ac=, noisy=, resistor models)": 'https://github.com/mfiumara/spice-ts/issues/498',
+  "source: RF port sources (portnum/z0)": 'https://github.com/mfiumara/spice-ts/issues/499',
+  "model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card)": 'https://github.com/mfiumara/spice-ts/issues/500',
+  "source: TRNOISE/EXTERNAL waveforms": 'https://github.com/mfiumara/spice-ts/issues/501',
+  "directive: .global": 'https://github.com/mfiumara/spice-ts/issues/502',
+  "model: VERSION= strings on BSIM model cards": 'https://github.com/mfiumara/spice-ts/issues/503',
+  "analysis: .pz beyond ideal R, L, C": 'https://github.com/mfiumara/spice-ts/issues/504',
+  "directive: .measure": 'https://github.com/mfiumara/spice-ts/issues/505',
+  "model: VDMOS power MOSFET": 'https://github.com/mfiumara/spice-ts/issues/506',
+  "device: S/W-element switches": 'https://github.com/mfiumara/spice-ts/issues/507',
+  "syntax: µ (micro sign) scale suffix": 'https://github.com/mfiumara/spice-ts/issues/508',
+  "directive: .temp / .options temp": 'https://github.com/mfiumara/spice-ts/issues/459',
+};
+
+export const HARNESS_ISSUE = 'https://github.com/mfiumara/spice-ts/issues/528';
+
+/** Findings beyond the gap buckets: correctness bugs and harness defects exposed by this batch. */
+export const FOLLOW_UP_ISSUES: ReadonlyArray<{ url: string; scope: string }> = [
+  { url: 'https://github.com/mfiumara/spice-ts/issues/509', scope: 'a .model VDMOS card is silently dropped and the M device simulates with no model (examples/vdmos/vdmosp-out.sp mismatch, 9e75 A vs 14.44 A)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/510', scope: 'parse() rejects .param decks that simulate() accepts; the shared corpus adapter reports parse()\'s error (corpus-f calls simulate() only)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/511', scope: 'triage of the 10 ngspice-successful decks that exceed the 1% parity threshold' },
+  { url: HARNESS_ISSUE, scope: 'the ngspice harness exports no vectors for decks that run analyses from .control or quit inside it' },
+];
 
 const OUTCOMES: Outcome[] = ['matched', 'mismatch', 'not-compared', 'spice-ts-loss', 'ngspice-failed', 'both-failed'];
 const STATUSES: EngineStatus[] = ['success', 'failed', 'unsupported'];
@@ -240,6 +278,7 @@ export async function runFixture(circuit: CorpusFCircuit): Promise<FixtureOutcom
     sha256: circuit.sha256,
     analyses: circuit.analyses,
     unmappedAnalyses: circuit.unmappedAnalyses,
+    sameNameAs: circuit.sameNameAs,
     ngspice: { status: ngspice.status, analyses: producedAnalyses(ngspice.execution) },
     spiceTs: { status: spiceTsStatus, analyses: producedAnalyses(spiceTs.execution) },
     comparedAnalyses: comparisons.length,
@@ -291,9 +330,18 @@ function commandVersion(command: string, args: string[], pattern: RegExp): strin
   return pattern.exec(`${result.stdout}\n${result.stderr}`)?.[0] ?? 'unknown';
 }
 
+/**
+ * The outcome hash covers statuses, error lines, comparisons and buckets. It excludes the
+ * environment and the per-engine analysis point counts: ngspice-47's transient-noise (TRNOISE RTS)
+ * and Monte-Carlo decks produce a different number of time points on every run, even at the
+ * default seed, so point counts are published but not hashed.
+ */
 function deterministicView(report: Omit<CorpusFReport, 'outcomeSha256'> | CorpusFReport): unknown {
-  return JSON.parse(JSON.stringify(report, (key, value) =>
-    key === 'outcomeSha256' || key === 'environment' || key === 'node' ? undefined : value));
+  return JSON.parse(JSON.stringify(report, function (this: Record<string, unknown>, key: string, value: unknown) {
+    if (key === 'outcomeSha256' || key === 'environment' || key === 'node') return undefined;
+    if (key === 'analyses' && this !== null && typeof this === 'object' && 'status' in this) return undefined;
+    return value;
+  }));
 }
 
 export function outcomeDigest(report: Omit<CorpusFReport, 'outcomeSha256'> | CorpusFReport): string {
@@ -369,7 +417,7 @@ export async function buildReport(manifest: CorpusFManifest, jobs: number, only?
       perCircuitToleranceTuning: false,
       matchThreshold: MATCH_THRESHOLD,
       matchRule: `matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= ${MATCH_THRESHOLD} x max(peak |ngspice signal|, ${PEAK_FLOOR}). Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).`,
-      deterministicHashExcludes: ['environment', 'tools.node'],
+      deterministicHashExcludes: ['environment', 'tools.node', 'ngspice.analyses', 'spiceTs.analyses'],
     },
     ...summarize(results),
     fixtures: results,
@@ -398,7 +446,7 @@ export function renderMarkdown(report: CorpusFReport): string {
     `- ngspice (${report.tools.ngspice}): ${totals.ngspice.success} success, ${totals.ngspice.failed} failed, ${totals.ngspice.unsupported} unsupported.`,
     `- spice-ts (${report.tools.spiceTs}): ${totals.spiceTs.success} success, ${totals.spiceTs.failed} failed, ${totals.spiceTs.unsupported} unsupported.`,
     `- Outcomes: ${OUTCOMES.map(name => `${name} ${totals.outcomes[name]}`).join(', ')}.`,
-    `- Of the ${ngspiceSuccess.length} decks ngspice runs successfully, spice-ts matches ${totals.outcomes.matched}, mismatches ${totals.outcomes.mismatch}, produces no comparable result for ${totals.outcomes['not-compared']} and fails ${totals.outcomes['spice-ts-loss']}.`,
+    `- Of the ${ngspiceSuccess.length} decks ngspice runs successfully, spice-ts matches ${totals.outcomes.matched}, mismatches ${totals.outcomes.mismatch}, produces no comparable result for ${totals.outcomes['not-compared']} and fails ${totals.outcomes['spice-ts-loss']}. For ${ngspiceSuccess.filter(fixture => fixture.ngspice.note).length} of those ngspice successes the deck runs its analyses from \`.control\` (or its control block ends with \`quit\`), so \`ngspice -r\` exports no vectors: they cannot be compared even when spice-ts runs them (harness follow-up ${HARNESS_ISSUE}).`,
     '',
     '## Method',
     '',
@@ -406,8 +454,14 @@ export function renderMarkdown(report: CorpusFReport): string {
     `- spice-ts: \`${report.commands.spiceTs}\`, through the same adapter as the aggregate parity report. A deck whose analyses spice-ts does not return is unsupported.`,
     `- ${report.policy.matchRule}`,
     '- "worst" is that normalised error for the worst signal. ngspice-failed rows are not spice-ts losses but cannot be compared.',
+    `- Bounds: ngspice ${NGSPICE_TIMEOUT_MS / 1000} s, spice-ts ${SPICE_TS_TIMEOUT_MS / 1000} s per fixture. The outcome hash excludes ${report.policy.deterministicHashExcludes.join(', ')}: ngspice's TRNOISE and Monte-Carlo decks change their time-point count from run to run even at the default seed.`,
     `- Regenerate: \`${report.commands.generate}\`; verify without writing: \`${report.commands.verify}\`.`,
     `- Machine: ${report.environment.platform} ${report.environment.release} ${report.environment.arch}, ${report.environment.cpu}; Node ${report.tools.node}.`,
+    `- ${report.fixtures.filter(fixture => fixture.sameNameAs.length > 0).length} fixtures share a file name with a fixture of another public corpus; their bytes differ (ngspice-modified variants). They are marked † below so they are not read as independent evidence.`,
+    '',
+    '## Follow-up issues',
+    '',
+    ...FOLLOW_UP_ISSUES.map(issue => `- ${issue.url}: ${issue.scope}.`),
     '',
     '## spice-ts gap buckets',
     '',
@@ -427,7 +481,7 @@ export function renderMarkdown(report: CorpusFReport): string {
         fixture.ngspice.note ? `ngspice note: ${fixture.ngspice.note}` : '',
         fixture.spiceTs.firstErrorLine ? `spice-ts: ${fixture.spiceTs.firstErrorLine}` : '',
       ].filter(Boolean).join(' / ');
-      return `| [${fixture.sourcePath}](fixtures/${fixture.sourcePath}) | ${fixture.ngspice.status} | ${fixture.spiceTs.status} | ${fixture.outcome} | ${fixture.worstNormalizedError ?? ''} | ${cell(fixture.worstSignal)} | ${cell(errors)} |`;
+      return `| [${fixture.sourcePath}](fixtures/${fixture.sourcePath})${fixture.sameNameAs.length > 0 ? ' †' : ''} | ${fixture.ngspice.status} | ${fixture.spiceTs.status} | ${fixture.outcome} | ${fixture.worstNormalizedError ?? ''} | ${cell(fixture.worstSignal)} | ${cell(errors)} |`;
     }),
     '',
   ];
@@ -445,6 +499,7 @@ export function stableReport(report: CorpusFReport): string {
 export function relabel(report: CorpusFReport): CorpusFReport {
   const fixtures = report.fixtures.map(fixture => ({
     ...fixture,
+    ngspice: fixture.ngspice.note ? { ...fixture.ngspice, note: CONTROL_ONLY_NOTE } : fixture.ngspice,
     gapBucket: gapBucket(fixture.spiceTs.firstErrorLine, fixture.spiceTs.status) ?? null,
   }));
   const { outcomeSha256: _previous, ...rest } = report;

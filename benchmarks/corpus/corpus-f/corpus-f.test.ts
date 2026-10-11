@@ -70,9 +70,10 @@ describe('corpus-f deck classification', () => {
         { sourcePath: 'tests/lib.cir', bytes: Buffer.from('t\n.subckt x 1 2\nR1 1 2 1\n.ends\n') },
       ],
       new Set(['tests/a.cir', 'tests/b.cir', 'tests/known.cir', 'tests/lib.cir']),
-      { hashes: new Set([sha256('known\n.op')]), ngspicePaths: new Set() },
+      { hashes: new Set([sha256('known\n.op')]), ngspicePaths: new Set(), names: new Map([['a.cir', ['benchmarks/corpus/classic/fixtures/a.cir']]]) },
     );
     assert.deepEqual(circuits.map(circuit => circuit.sourcePath), ['tests/a.cir']);
+    assert.deepEqual(circuits[0].sameNameAs, ['benchmarks/corpus/classic/fixtures/a.cir']);
     assert.deepEqual(exclusions.map(exclusion => [exclusion.sourcePath, exclusion.reason]), [
       ['tests/b.cir', 'duplicate-content'],
       ['tests/known.cir', 'already-in-corpus'],

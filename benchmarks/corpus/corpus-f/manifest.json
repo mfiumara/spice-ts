@@ -54,7 +54,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-bjt-colposc-cir",
@@ -67,7 +68,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-bjt-ecp-cir",
@@ -80,7 +82,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-bjt-invchain-cir",
@@ -93,7 +96,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-bjt-meclgate-cir",
@@ -106,7 +110,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-bjt-rtlinv-cir",
@@ -119,7 +124,10 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/rtlinv.cir"
+      ]
     },
     {
       "id": "examples-cider-bjt-vco-cir",
@@ -132,7 +140,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-diode-diode-cir",
@@ -146,7 +155,10 @@
         "op",
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/xyce/fixtures/DIODE/diode.cir"
+      ]
     },
     {
       "id": "examples-cider-diode-diotran-cir",
@@ -159,7 +171,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-diode-pd1-cir",
@@ -172,7 +185,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-diode-pindiode-cir",
@@ -185,7 +199,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-jfet-jfet-cir",
@@ -198,7 +213,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-mos-bootinv-cir",
@@ -211,7 +227,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-mos-charge-cir",
@@ -224,7 +241,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-mos-cmosinv-cir",
@@ -237,7 +255,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-mos-nmosinv-cir",
@@ -250,7 +269,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-mos-pass-cir",
@@ -263,7 +283,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-mos-ringosc-cir",
@@ -276,7 +297,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-parallel-ringosc-2u-cir",
@@ -289,7 +311,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-resistor-gaasres-cir",
@@ -302,7 +325,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-resistor-sires-cir",
@@ -315,7 +339,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-serial-astable-cir",
@@ -328,7 +353,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-serial-charge-cir",
@@ -341,7 +367,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-serial-colposc-cir",
@@ -354,7 +381,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-serial-dbridge-cir",
@@ -367,7 +395,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-serial-invchain-cir",
@@ -380,7 +409,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-serial-meclgate-cir",
@@ -393,7 +423,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-serial-nmosinv-cir",
@@ -406,7 +437,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-serial-pass-cir",
@@ -419,7 +451,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-serial-pullup-cir",
@@ -432,7 +465,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-serial-recovery-cir",
@@ -445,7 +479,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-serial-rtlinv-cir",
@@ -458,7 +493,10 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/rtlinv.cir"
+      ]
     },
     {
       "id": "examples-cider-serial-vco-cir",
@@ -471,7 +509,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-surfmob-cd4007n-200402idvg-net",
@@ -484,7 +523,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-surfmob-cdxy-net",
@@ -497,7 +537,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-surfmob-tbicmpd1-cir",
@@ -510,7 +551,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-surfmob-tbicmpd1xy-cir",
@@ -523,7 +565,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-surfmob-tbicmpu1-cir",
@@ -536,7 +579,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-cider-surfmob-tbicmpu1xy-cir",
@@ -549,7 +593,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-control-structs-foreach-bjt-ft-sp",
@@ -562,7 +607,8 @@
       "analyses": [
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-control-structs-if-batchmode-cir",
@@ -575,7 +621,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-control-structs-if-test-1-cir",
@@ -588,7 +635,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-control-structs-new-check-3-sp",
@@ -601,7 +649,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-control-structs-new-check-4-sp",
@@ -614,7 +663,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-control-structs-s-param-cir",
@@ -628,7 +678,8 @@
         "op",
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-ddt-ddt-test1-cir",
@@ -641,7 +692,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-ddt-ddt-test2-cir",
@@ -654,7 +706,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-ddt-ddt-test3-cir",
@@ -667,7 +720,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-digital-auto-bridge-shared-line-cir",
@@ -680,7 +734,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-digital-auto-bridge-vcc-cir",
@@ -693,7 +748,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-digital-compare-adder-bip-cir",
@@ -706,7 +762,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-digital-compare-adder-mos-cir",
@@ -719,7 +776,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-digital-digital-devices-xspice-c4-cir",
@@ -732,7 +790,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-loops-instance-loop-cir",
@@ -745,7 +804,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-loops-loop-instance-cir",
@@ -758,7 +818,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-loops-loop-model-cir",
@@ -771,7 +832,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-loops-loop-param-cir",
@@ -784,7 +846,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-measure-buggy-meas-tran-sp",
@@ -797,7 +860,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-measure-func-cap-sp",
@@ -810,7 +874,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-measure-inv-meas-tran-auto-sp",
@@ -823,7 +888,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-measure-inv-meas-tran-control-sp",
@@ -836,7 +902,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-measure-inv-meas-tran-sp",
@@ -849,7 +916,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-measure-meas-expression-cir",
@@ -862,7 +930,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-measure-mos-meas-dc-control-file-sp",
@@ -875,7 +944,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-measure-mos-meas-dc-control-sp",
@@ -888,7 +958,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-measure-mos-meas-dc-sp",
@@ -901,7 +972,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-measure-rc-meas-ac-sp",
@@ -914,7 +986,8 @@
       "analyses": [
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-memristor-memristor-x-sp",
@@ -929,7 +1002,8 @@
         "ac",
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-memristor-memristor-sp",
@@ -942,7 +1016,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-monte-carlo-mc-ring-sp",
@@ -955,7 +1030,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-monte-carlo-montecarlo-sp",
@@ -968,7 +1044,8 @@
       "analyses": [
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-monte-carlo-opwien-sp",
@@ -981,7 +1058,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-monte-carlo-rand-numb-test-cir",
@@ -994,7 +1072,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-mos-adder-mos-cir",
@@ -1007,7 +1086,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-mos-nmos-out-bsim330-plainwrite-sp",
@@ -1020,7 +1100,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-mos-nmos-pmos-bsim482-sp",
@@ -1033,7 +1114,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-mos-nmos-pmos-drainresistor-sp",
@@ -1046,7 +1128,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-mos-nmos-pmos-plotting-sp",
@@ -1059,7 +1142,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-mos-ro-17-4-cir",
@@ -1072,7 +1156,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-mos-ro-meas-cir",
@@ -1085,7 +1170,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-noise-baker-252-gain-cir",
@@ -1098,7 +1184,8 @@
       "analyses": [
         "noise"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-noise-bipolar-noise-cir",
@@ -1111,7 +1198,8 @@
       "analyses": [
         "noise"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-noise-resdiv-gain-cir",
@@ -1124,7 +1212,8 @@
       "analyses": [
         "noise"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-noise-resdiv-cir",
@@ -1137,7 +1226,8 @@
       "analyses": [
         "noise"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-numparam-strings-cir",
@@ -1150,7 +1240,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-numparam-vector-param-cir",
@@ -1163,7 +1254,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-osdi-hicuml0-bip-subsmod-sp",
@@ -1176,7 +1268,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-osdi-hicuml0-dff-y-ecl-vbic-sp",
@@ -1189,7 +1282,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-osdi-hicuml0-vbic-out-sp",
@@ -1202,7 +1296,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-p-to-n-examples-logic-cir",
@@ -1215,7 +1310,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-p-to-n-examples-mos1-out-cir",
@@ -1228,7 +1324,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-p-to-n-examples-switch-oscillators-cir",
@@ -1241,7 +1338,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-plot-inv-chain-pyplot-cir",
@@ -1254,7 +1352,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-probe-cntrl-sources-cir",
@@ -1267,7 +1366,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-probe-mos-test-cir",
@@ -1280,7 +1380,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-probe-probe-i-dev-cir",
@@ -1293,7 +1394,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-probe-switches-manual-p92-cir",
@@ -1306,7 +1408,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-rf-hbosc-examples-hb-osc-cir",
@@ -1319,7 +1422,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-rf-pss-colpitt-osc-pss-ctrl-cir",
@@ -1334,7 +1438,8 @@
       ],
       "unmappedAnalyses": [
         "pss"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "examples-rf-pss-compl-cross-quad-osc-pss-ctrl-cir",
@@ -1349,7 +1454,8 @@
       ],
       "unmappedAnalyses": [
         "pss"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "examples-rf-pss-ring-osc-pss-ctrl-cir",
@@ -1364,7 +1470,8 @@
       ],
       "unmappedAnalyses": [
         "pss"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "examples-rf-pss-vackar-osc-pss-ctrl-cir",
@@ -1379,7 +1486,8 @@
       ],
       "unmappedAnalyses": [
         "pss"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "examples-rf-pss-vdp-osc-pss-ctrl-cir",
@@ -1394,7 +1502,8 @@
       ],
       "unmappedAnalyses": [
         "pss"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "examples-rf-sp-file-cir",
@@ -1409,7 +1518,8 @@
       ],
       "unmappedAnalyses": [
         "sp"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "examples-rf-sp-sp1-cir",
@@ -1422,7 +1532,8 @@
       "analyses": [],
       "unmappedAnalyses": [
         "sp"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "examples-rf-sp-sp2-cir",
@@ -1435,7 +1546,8 @@
       "analyses": [],
       "unmappedAnalyses": [
         "sp"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "examples-rf-sp-sp3-cir",
@@ -1448,7 +1560,8 @@
       "analyses": [],
       "unmappedAnalyses": [
         "sp"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "examples-rf-sp-sp4-cir",
@@ -1461,7 +1574,8 @@
       "analyses": [],
       "unmappedAnalyses": [
         "sp"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "examples-rf-sp-tschebyschef-lp-cir",
@@ -1474,7 +1588,8 @@
       "analyses": [],
       "unmappedAnalyses": [
         "sp"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "examples-shared-t-cir",
@@ -1487,7 +1602,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-snapshot-adder-mos-circ-cir",
@@ -1500,7 +1616,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-soa-bjt-soa-cir",
@@ -1513,7 +1630,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-soa-diode-soa-sh-cir",
@@ -1526,7 +1644,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-soa-diode-soa-simple-cir",
@@ -1539,7 +1658,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-tclspice-tcl-testbench2-example-cir",
@@ -1552,7 +1672,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-tclspice-tcl-testbench4-example-cir",
@@ -1565,7 +1686,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-tclspice-tcl-diffpair-cir",
@@ -1579,6 +1701,9 @@
       "unmappedAnalyses": [
         "tf",
         "sens"
+      ],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/diffpair.cir"
       ]
     },
     {
@@ -1592,7 +1717,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transient-noise-noise-vnoi-cir",
@@ -1605,7 +1731,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transient-noise-rts-1-cir",
@@ -1618,7 +1745,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transient-noise-shot-ng-cir",
@@ -1631,7 +1759,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transient-noise-simple-noise-cir",
@@ -1644,7 +1773,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-cpl-ibm1-sp",
@@ -1657,7 +1787,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-cpl-ibm1a-sp",
@@ -1670,7 +1801,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-cpl-ibm2-sp",
@@ -1683,7 +1815,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-cpl-ibm3-sp",
@@ -1696,7 +1829,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-cpl1-4-line-sp",
@@ -1709,7 +1843,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-cpl2-2-line-sp",
@@ -1722,7 +1857,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-cpl3-4-line-sp",
@@ -1735,7 +1871,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-cpl4-txl-2-line-sp",
@@ -1748,7 +1885,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-ltra1-1-line-sp",
@@ -1761,7 +1899,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-ltra1-4-line-sp",
@@ -1774,7 +1913,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-ltra2-2-line-sp",
@@ -1787,7 +1927,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-ltra3-2-line-sp",
@@ -1800,7 +1941,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-ltra4-1-line-sp",
@@ -1813,7 +1955,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-ltra5-1-line-sp",
@@ -1826,7 +1969,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-ltra6-2-line-sp",
@@ -1839,7 +1983,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-ltra7-4-line-sp",
@@ -1852,7 +1997,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-txl1-1-line-sp",
@@ -1865,7 +2011,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-txl2-3-line-sp",
@@ -1878,7 +2025,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-txl3-1-line-sp",
@@ -1891,7 +2039,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-txl4-1-line-sp",
@@ -1904,7 +2053,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-transmissionlines-urc-tm-sub-cir",
@@ -1917,7 +2067,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-3d-loop-sp",
@@ -1930,7 +2081,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-alterparam-sp",
@@ -1943,7 +2095,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-atanh-sp",
@@ -1956,7 +2109,8 @@
       "analyses": [
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-bjt-ac-par-sp",
@@ -1969,7 +2123,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-bjtnoise-cir",
@@ -1982,7 +2137,10 @@
       "analyses": [
         "noise"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/bjtnoise.cir"
+      ]
     },
     {
       "id": "examples-various-cutout1-cir",
@@ -1995,7 +2153,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-dc-loop-sp",
@@ -2008,7 +2167,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-diode-ac-par-sp",
@@ -2021,7 +2181,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-fft-leakage-cir",
@@ -2034,7 +2195,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-gain-stage-cir",
@@ -2047,7 +2209,8 @@
       "analyses": [
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-integrate1-cir",
@@ -2060,7 +2223,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-mtimeavg-test-cir",
@@ -2073,7 +2237,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-param-sweep-cir",
@@ -2086,7 +2251,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-roessler-attractor-cir",
@@ -2099,7 +2265,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-tmp-noise-2-cir",
@@ -2113,7 +2280,8 @@
         "op",
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-tmp-noise-cir",
@@ -2128,7 +2296,8 @@
         "noise",
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-todo-temper-3-cir",
@@ -2141,7 +2310,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-transformers1-cir",
@@ -2154,7 +2324,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-various-v-i-sources-am-ffm-cir",
@@ -2167,7 +2338,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vbic-dff-y-ecl-sp",
@@ -2180,7 +2352,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vbic-vbic99-dc-sp",
@@ -2193,7 +2366,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vbic-vbic99-tran-sp",
@@ -2207,7 +2381,8 @@
         "op",
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-100w-wingspread-sp",
@@ -2221,7 +2396,8 @@
         "op",
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-100w-sp",
@@ -2237,7 +2413,8 @@
         "tran",
         "noise"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-crss-coss-ciss-sp",
@@ -2250,7 +2427,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-dcdc-sp",
@@ -2263,7 +2441,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-inv-vdmos-sp",
@@ -2277,7 +2456,8 @@
         "dc",
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-ixth80n20l-ixth48p20p-quasisat-sp",
@@ -2290,7 +2470,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-ixtp6n100d2-cap-sp",
@@ -2303,7 +2484,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-ixtp6n100d2-n-weak-inv-sp",
@@ -2316,7 +2498,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-mtriode-nch-sp",
@@ -2329,7 +2512,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-ro-11-vdmos-sp",
@@ -2342,7 +2526,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-self-heating-sp",
@@ -2355,7 +2540,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-soa-chk-sp",
@@ -2368,7 +2554,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-theta-nch-sp",
@@ -2381,7 +2568,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-vdmos-dio-sp",
@@ -2395,7 +2583,8 @@
         "tran",
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-vdmos-out-ir-mtr-sp",
@@ -2408,7 +2597,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-vdmos-out-sp",
@@ -2421,7 +2611,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-vdmosp-out-mtr-sp",
@@ -2434,7 +2625,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-vdmos-vdmosp-out-sp",
@@ -2447,7 +2639,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-wave-rcsim-cir",
@@ -2460,7 +2653,8 @@
       "analyses": [
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-d-lut-mult4bit-spi",
@@ -2473,7 +2667,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-d-process-checks-cir",
@@ -2486,7 +2681,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-delay-analog-delay1-cir",
@@ -2499,7 +2695,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-ghdl-mc-cir",
@@ -2512,7 +2709,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-ghdl-pwm-cir",
@@ -2525,7 +2723,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-icarus-verilog-delay-cir",
@@ -2538,7 +2737,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-icarus-verilog-pwm-cir",
@@ -2551,7 +2751,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-noise-noise-gain-cir",
@@ -2564,7 +2765,8 @@
       "analyses": [
         "noise"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-noise-ota-noise-test1-cir",
@@ -2577,7 +2779,8 @@
       "analyses": [
         "noise"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models1-ac-deck",
@@ -2590,7 +2793,8 @@
       "analyses": [
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models1-dc-deck",
@@ -2603,7 +2807,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models1-swept-dc-deck",
@@ -2616,7 +2821,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models1-transient-deck",
@@ -2629,7 +2835,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models2-ac-deck",
@@ -2642,7 +2849,8 @@
       "analyses": [
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models2-dc-deck",
@@ -2655,7 +2863,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models2-swept-dc-deck",
@@ -2668,7 +2877,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models2-transient-deck",
@@ -2681,7 +2891,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models3-ac-deck",
@@ -2694,7 +2905,8 @@
       "analyses": [
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models3-dc-deck",
@@ -2707,7 +2919,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models3-swept-dc-deck",
@@ -2720,7 +2933,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models3-transient-deck",
@@ -2733,7 +2947,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models4-ac-deck",
@@ -2746,7 +2961,8 @@
       "analyses": [
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models4-dc-deck",
@@ -2759,7 +2975,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models4-swept-dc-deck",
@@ -2772,7 +2989,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-analog-models4-transient-deck",
@@ -2785,7 +3003,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-arbitrary-phase-deck",
@@ -2798,7 +3017,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-bad-io-type-deck",
@@ -2811,7 +3031,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-bad-io-deck",
@@ -2824,7 +3045,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-bad-name-deck",
@@ -2837,7 +3059,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-bad-param-type-deck",
@@ -2850,7 +3073,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-bad-param-deck",
@@ -2863,7 +3087,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-digital-invert-deck",
@@ -2876,7 +3101,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-digital-models-deck",
@@ -2889,7 +3115,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-digital-models1-deck",
@@ -2902,7 +3129,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-digital-models2-deck",
@@ -2915,7 +3143,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-digital-models3-deck",
@@ -2928,7 +3157,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-digital-models4-deck",
@@ -2941,7 +3171,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-dot-model-ref-deck",
@@ -2954,7 +3185,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-hybrid-models1-dc-deck",
@@ -2967,7 +3199,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-hybrid-models1-transient-deck",
@@ -2980,7 +3213,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-initial-conditions-deck",
@@ -2993,7 +3227,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-io-ordering-deck",
@@ -3006,7 +3241,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-io-types-deck",
@@ -3019,7 +3255,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-long-names-deck",
@@ -3032,7 +3269,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-mixed-case-deck",
@@ -3045,7 +3283,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-mixed-io-size-deck",
@@ -3058,7 +3297,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-mixed-mode-deck",
@@ -3071,7 +3311,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-mixed-ref-deck",
@@ -3084,7 +3325,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-param-defaults-deck",
@@ -3097,7 +3339,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-param-types-deck",
@@ -3110,7 +3353,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-parsing-deck",
@@ -3123,7 +3367,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-polarity-deck",
@@ -3136,7 +3381,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-spice3-deck",
@@ -3149,7 +3395,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-suffixes-deck",
@@ -3162,7 +3409,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-supply-ramping-deck",
@@ -3175,7 +3423,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-original-examples-user-defined-nodes-deck",
@@ -3188,7 +3437,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-pwm-osc-fmcw-dosc-cir",
@@ -3201,7 +3451,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-pwm-osc-pwm-sin-cir",
@@ -3214,7 +3465,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-see-repeat-loop-seegen-net",
@@ -3227,7 +3479,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-see-seegen-cm1-cir",
@@ -3240,7 +3493,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-see-set1-cir",
@@ -3253,7 +3507,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-table-table-generator-q-2d-sp",
@@ -3266,7 +3521,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-transmission-lines-cpline-ac-cir",
@@ -3279,7 +3535,8 @@
       "analyses": [],
       "unmappedAnalyses": [
         "sp"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-transmission-lines-cpline-tran-cir",
@@ -3292,7 +3549,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-transmission-lines-cpmline-ac-cir",
@@ -3305,7 +3563,8 @@
       "analyses": [],
       "unmappedAnalyses": [
         "sp"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-transmission-lines-mlin-tran-cir",
@@ -3318,7 +3577,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-transmission-lines-mlin-cir",
@@ -3332,7 +3592,8 @@
         "op",
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-various-analog-models1-transient-sp",
@@ -3345,7 +3606,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-various-astate-pulse-cir",
@@ -3358,7 +3620,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-various-astate-cir",
@@ -3371,7 +3634,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-various-pwlts1-cir",
@@ -3384,7 +3648,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-various-ro-nand-digi-cir",
@@ -3397,7 +3662,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-various-simple-diode-cir",
@@ -3410,7 +3676,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-various-vswitch-test-lin-cir",
@@ -3423,7 +3690,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-various-vswitch-test-log-cir",
@@ -3436,7 +3704,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-various-x-fer-cir",
@@ -3450,7 +3719,8 @@
         "ac",
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-various-xspice-c1-cir",
@@ -3463,7 +3733,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-various-xspice-c2-cir",
@@ -3476,7 +3747,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-various-xspice-c3-cir",
@@ -3489,7 +3761,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-verilator-delay-cir",
@@ -3502,7 +3775,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "examples-xspice-verilator-pwm-cir",
@@ -3515,7 +3789,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-bsim1-test-cir",
@@ -3528,7 +3803,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-bsim2-test-cir",
@@ -3541,7 +3817,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-general-diffpair-cir",
@@ -3555,6 +3832,9 @@
       "unmappedAnalyses": [
         "tf",
         "sens"
+      ],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/diffpair.cir"
       ]
     },
     {
@@ -3568,7 +3848,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-general-mosmem-cir",
@@ -3581,7 +3862,10 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/mosmem.cir"
+      ]
     },
     {
       "id": "tests-general-rca3040-cir",
@@ -3596,7 +3880,10 @@
         "dc",
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/rca3040.cir"
+      ]
     },
     {
       "id": "tests-general-rtlinv-cir",
@@ -3610,7 +3897,10 @@
         "dc",
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/rtlinv.cir"
+      ]
     },
     {
       "id": "tests-hfet-id-vgs-cir",
@@ -3623,7 +3913,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-mes-subth-cir",
@@ -3636,7 +3927,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-mesa-mesa-12-cir",
@@ -3650,7 +3942,8 @@
         "dc",
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-mesa-mesa-cir",
@@ -3663,7 +3956,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-mesa-mesa11-cir",
@@ -3677,7 +3971,8 @@
         "op",
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-mesa-mesa12-cir",
@@ -3691,7 +3986,8 @@
         "dc",
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-mesa-mesa13-cir",
@@ -3704,7 +4000,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-mesa-mesa14-cir",
@@ -3717,7 +4014,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-mesa-mesa15-cir",
@@ -3730,7 +4028,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-mesa-mesa21-cir",
@@ -3743,7 +4042,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-mesa-mesgout-cir",
@@ -3756,7 +4056,8 @@
       "analyses": [
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-mesa-mesinv-cir",
@@ -3769,7 +4070,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-polezero-filt-bridge-t-cir",
@@ -3783,7 +4085,8 @@
         "op",
         "pz"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-polezero-filt-multistage-cir",
@@ -3796,7 +4099,8 @@
       "analyses": [
         "pz"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-polezero-filt-rc-cir",
@@ -3809,7 +4113,8 @@
       "analyses": [
         "pz"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-polezero-pz2-cir",
@@ -3822,7 +4127,10 @@
       "analyses": [
         "pz"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/pz2.cir"
+      ]
     },
     {
       "id": "tests-polezero-pzt-cir",
@@ -3835,7 +4143,10 @@
       "analyses": [
         "pz"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/pzt.cir"
+      ]
     },
     {
       "id": "tests-polezero-simplepz-cir",
@@ -3848,7 +4159,10 @@
       "analyses": [
         "pz"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/simplepz.cir"
+      ]
     },
     {
       "id": "tests-regression-func-func-1-cir",
@@ -3861,7 +4175,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-lib-processing-scope-1-cir",
@@ -3874,7 +4189,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-lib-processing-scope-2-cir",
@@ -3887,7 +4203,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-lib-processing-scope-3-cir",
@@ -3900,7 +4217,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-misc-alter-vec-cir",
@@ -3913,7 +4231,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-misc-asrc-tc-1-cir",
@@ -3927,7 +4246,8 @@
         "op",
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-misc-asrc-tc-2-cir",
@@ -3941,7 +4261,8 @@
         "op",
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-misc-bugs-1-cir",
@@ -3954,7 +4275,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-misc-bugs-2-cir",
@@ -3967,7 +4289,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-misc-convergence-cir",
@@ -3980,7 +4303,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-misc-empty-1-cir",
@@ -3995,7 +4319,8 @@
         "tran",
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-misc-if-elseif-cir",
@@ -4008,7 +4333,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-misc-log-functions-1-cir",
@@ -4021,7 +4347,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-misc-resume-1-cir",
@@ -4034,7 +4361,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-misc-test-noise-2-cir",
@@ -4047,7 +4375,8 @@
       "analyses": [
         "noise"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-misc-test-noise-3-cir",
@@ -4060,7 +4389,8 @@
       "analyses": [
         "noise"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-model-binning-1-cir",
@@ -4073,7 +4403,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-model-instance-defaults-cir",
@@ -4086,7 +4417,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-model-special-names-1-cir",
@@ -4099,7 +4431,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-parser-bxpressn-1-cir",
@@ -4112,7 +4445,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-parser-minus-minus-cir",
@@ -4125,7 +4459,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-parser-xpressn-1-cir",
@@ -4138,7 +4473,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-parser-xpressn-2-cir",
@@ -4151,7 +4487,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-parser-xpressn-3-cir",
@@ -4164,7 +4501,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-pz-ac-resistance-cir",
@@ -4179,7 +4517,8 @@
         "ac",
         "pz"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-sens-sens-ac-1-cir",
@@ -4192,7 +4531,8 @@
       "analyses": [],
       "unmappedAnalyses": [
         "sens"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-sens-sens-ac-2-cir",
@@ -4205,7 +4545,8 @@
       "analyses": [],
       "unmappedAnalyses": [
         "sens"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-sens-sens-dc-1-cir",
@@ -4218,7 +4559,8 @@
       "analyses": [],
       "unmappedAnalyses": [
         "sens"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-sens-sens-dc-2-cir",
@@ -4231,7 +4573,8 @@
       "analyses": [],
       "unmappedAnalyses": [
         "sens"
-      ]
+      ],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-subckt-processing-global-1-cir",
@@ -4244,7 +4587,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-subckt-processing-model-scope-5-cir",
@@ -4257,7 +4601,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-temper-temper-1-cir",
@@ -4270,7 +4615,8 @@
       "analyses": [
         "op"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-temper-temper-2-cir",
@@ -4283,7 +4629,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-temper-temper-3-cir",
@@ -4296,7 +4643,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-regression-temper-temper-res-1-cir",
@@ -4309,7 +4657,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-resistance-res-array-cir",
@@ -4324,7 +4673,8 @@
         "tran",
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-resistance-res-partition-cir",
@@ -4338,7 +4688,8 @@
         "op",
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-resistance-res-simple-cir",
@@ -4351,7 +4702,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-sensitivity-diffpair-cir",
@@ -4365,6 +4717,9 @@
       "unmappedAnalyses": [
         "tf",
         "sens"
+      ],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/diffpair.cir"
       ]
     },
     {
@@ -4378,7 +4733,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-transmission-cpl3-4-line-cir",
@@ -4391,7 +4747,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-transmission-ltra2-2-line-cir",
@@ -4404,7 +4761,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-transmission-txl1-1-line-cir",
@@ -4417,7 +4775,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-transmission-txl2-3-line-cir",
@@ -4430,7 +4789,8 @@
       "analyses": [
         "tran"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-vbic-diffamp-cir",
@@ -4445,7 +4805,8 @@
         "tran",
         "ac"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-vbic-fg-cir",
@@ -4458,7 +4819,8 @@
       "analyses": [
         "dc"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     },
     {
       "id": "tests-vbic-noise-scale-test-cir",
@@ -4471,7 +4833,8 @@
       "analyses": [
         "noise"
       ],
-      "unmappedAnalyses": []
+      "unmappedAnalyses": [],
+      "sameNameAs": []
     }
   ],
   "exclusions": [

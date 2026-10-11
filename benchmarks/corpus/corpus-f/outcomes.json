@@ -3,7 +3,7 @@
   "source": {
     "revision": "3ef069fb1f04177a153f342a32d941fc20ff047e",
     "license": "BSD-3-Clause",
-    "manifestSha256": "21937160c07b45acc43ee8a625990f371a6fce3b3f9f76564aabdc727b1e1db4"
+    "manifestSha256": "7e921f59eb5721aeab06c8b3bc74e7160e5191085c23613ac5333b058153e740"
   },
   "tools": {
     "ngspice": "ngspice-47",
@@ -30,14 +30,16 @@
     "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, 1e-12). Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
     "deterministicHashExcludes": [
       "environment",
-      "tools.node"
+      "tools.node",
+      "ngspice.analyses",
+      "spiceTs.analyses"
     ]
   },
   "totals": {
     "fixtures": 337,
     "ngspice": {
-      "success": 306,
-      "failed": 19,
+      "success": 307,
+      "failed": 18,
       "unsupported": 12
     },
     "spiceTs": {
@@ -49,9 +51,9 @@
       "matched": 8,
       "mismatch": 10,
       "not-compared": 0,
-      "spice-ts-loss": 288,
+      "spice-ts-loss": 289,
       "ngspice-failed": 0,
-      "both-failed": 31
+      "both-failed": 30
     }
   },
   "gapBuckets": [
@@ -126,7 +128,7 @@
         "examples-xspice-verilator-delay-cir",
         "examples-xspice-verilator-pwm-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/487"
     },
     {
       "bucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)",
@@ -181,7 +183,7 @@
         "tests-regression-subckt-processing-global-1-cir",
         "tests-regression-subckt-processing-model-scope-5-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/488"
     },
     {
       "bucket": "control: analysis commands inside .control (tran/dc/op/ac/...)",
@@ -226,7 +228,7 @@
         "tests-regression-misc-empty-1-cir",
         "tests-regression-model-special-names-1-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/489"
     },
     {
       "bucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)",
@@ -256,7 +258,7 @@
         "tests-vbic-fg-cir",
         "tests-vbic-noise-scale-test-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/490"
     },
     {
       "bucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)",
@@ -279,12 +281,12 @@
         "tests-transmission-txl1-1-line-cir",
         "tests-transmission-txl2-3-line-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/491"
     },
     {
       "bucket": "source: parenthesised and extended waveform syntax",
       "fixtures": 14,
-      "ngspiceSuccess": 13,
+      "ngspiceSuccess": 14,
       "ids": [
         "examples-cider-diode-diode-cir",
         "examples-cider-diode-diotran-cir",
@@ -301,7 +303,7 @@
         "examples-xspice-original-examples-digital-models4-deck",
         "examples-xspice-original-examples-hybrid-models1-transient-deck"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/492"
     },
     {
       "bucket": "expression: quoted/brace expressions in values (TEMPER, functions)",
@@ -322,7 +324,7 @@
         "tests-regression-temper-temper-2-cir",
         "tests-regression-temper-temper-3-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/493"
     },
     {
       "bucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)",
@@ -342,7 +344,7 @@
         "examples-xspice-original-examples-supply-ramping-deck",
         "examples-xspice-various-ro-nand-digi-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/494"
     },
     {
       "bucket": "expression: B-source V= and expression functions/operators",
@@ -362,7 +364,7 @@
         "examples-xspice-see-set1-cir",
         "tests-regression-misc-asrc-tc-1-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/495"
     },
     {
       "bucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)",
@@ -380,7 +382,7 @@
         "examples-xspice-table-table-generator-q-2d-sp",
         "tests-regression-misc-if-elseif-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/496"
     },
     {
       "bucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)",
@@ -398,7 +400,7 @@
         "examples-cider-surfmob-cd4007n-200402idvg-net",
         "examples-cider-surfmob-cdxy-net"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/497"
     },
     {
       "bucket": "device: R-card forms (r=, ac=, noisy=, resistor models)",
@@ -415,7 +417,7 @@
         "tests-resistance-res-array-cir",
         "tests-resistance-res-partition-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/498"
     },
     {
       "bucket": "source: RF port sources (portnum/z0)",
@@ -431,7 +433,7 @@
         "examples-xspice-transmission-lines-cpline-ac-cir",
         "examples-xspice-transmission-lines-cpmline-ac-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/499"
     },
     {
       "bucket": "directive: .temp / .options temp",
@@ -446,7 +448,7 @@
         "tests-regression-misc-test-noise-2-cir",
         "tests-regression-misc-test-noise-3-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/459"
     },
     {
       "bucket": "model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card)",
@@ -461,7 +463,7 @@
         "tests-mesa-mesgout-cir",
         "tests-mesa-mesinv-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/500"
     },
     {
       "bucket": "source: TRNOISE/EXTERNAL waveforms",
@@ -474,7 +476,7 @@
         "examples-transient-noise-simple-noise-cir",
         "examples-various-mtimeavg-test-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/501"
     },
     {
       "bucket": "directive: .global",
@@ -486,7 +488,7 @@
         "examples-measure-inv-meas-tran-sp",
         "examples-measure-rc-meas-ac-sp"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/502"
     },
     {
       "bucket": "model: VERSION= strings on BSIM model cards",
@@ -498,7 +500,7 @@
         "examples-snapshot-adder-mos-circ-cir",
         "examples-tclspice-tcl-testbench4-example-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/503"
     },
     {
       "bucket": "analysis: .pz beyond ideal R, L, C",
@@ -509,7 +511,7 @@
         "tests-polezero-filt-multistage-cir",
         "tests-polezero-filt-rc-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/504"
     },
     {
       "bucket": "analysis: .sens forms",
@@ -531,7 +533,7 @@
         "examples-measure-meas-expression-cir",
         "examples-measure-mos-meas-dc-sp"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/505"
     },
     {
       "bucket": "model: VDMOS power MOSFET",
@@ -542,7 +544,7 @@
         "examples-vdmos-vdmos-out-sp",
         "examples-vdmos-vdmosp-out-mtr-sp"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/506"
     },
     {
       "bucket": "convergence",
@@ -562,7 +564,7 @@
         "examples-probe-switches-manual-p92-cir",
         "examples-transient-noise-noi-sc-tr-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/507"
     },
     {
       "bucket": "model: string-valued model parameters (MFG= and similar)",
@@ -580,7 +582,7 @@
       "ids": [
         "tests-regression-misc-convergence-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/508"
     }
   ],
   "fixtures": [
@@ -592,6 +594,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -618,6 +621,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -644,6 +648,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -670,6 +675,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -696,6 +702,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -722,6 +729,9 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/rtlinv.cir"
+      ],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -748,6 +758,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -775,6 +786,9 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/xyce/fixtures/DIODE/diode.cir"
+      ],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -802,6 +816,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -828,6 +843,7 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -854,10 +870,12 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 120000 ms bound"
+        "status": "success",
+        "analyses": [
+          "tran:335"
+        ]
       },
       "spiceTs": {
         "status": "unsupported",
@@ -868,7 +886,7 @@
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "both-failed",
+      "outcome": "spice-ts-loss",
       "gapBucket": "source: parenthesised and extended waveform syntax"
     },
     {
@@ -879,6 +897,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -905,6 +924,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -931,6 +951,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -957,6 +978,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -983,6 +1005,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1009,6 +1032,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1035,6 +1059,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1061,6 +1086,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1087,6 +1113,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1113,6 +1140,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1139,6 +1167,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1165,6 +1194,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1191,6 +1221,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1217,6 +1248,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1243,6 +1275,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1269,6 +1302,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1295,6 +1329,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1321,6 +1356,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1347,6 +1383,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1373,6 +1410,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1399,6 +1437,9 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/rtlinv.cir"
+      ],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1425,6 +1466,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1451,6 +1493,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1477,6 +1520,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1503,6 +1547,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1529,6 +1574,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1555,6 +1601,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1581,6 +1628,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1607,10 +1655,11 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -1632,6 +1681,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1658,6 +1708,7 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "unsupported",
         "analyses": [],
@@ -1683,10 +1734,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -1708,6 +1760,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "unsupported",
         "analyses": [],
@@ -1734,10 +1787,11 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -1759,6 +1813,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1785,6 +1840,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "unsupported",
         "analyses": [],
@@ -1810,6 +1866,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1836,10 +1893,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -1861,10 +1919,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -1886,6 +1945,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1912,6 +1972,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -1938,6 +1999,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -1963,10 +2025,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -1988,10 +2051,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2013,10 +2077,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2038,10 +2103,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2063,6 +2129,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -2089,6 +2156,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -2115,6 +2183,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -2141,10 +2210,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2166,6 +2236,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -2192,6 +2263,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -2218,6 +2290,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "unsupported",
         "analyses": [],
@@ -2243,6 +2316,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "unsupported",
         "analyses": [],
@@ -2268,6 +2342,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -2294,6 +2369,7 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -2322,10 +2398,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2347,10 +2424,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2372,10 +2450,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2397,10 +2476,11 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2422,10 +2502,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:243907"
+          "tran:243916"
         ]
       },
       "spiceTs": {
@@ -2448,10 +2529,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2473,6 +2555,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -2499,10 +2582,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2524,10 +2608,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2549,10 +2634,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2574,10 +2660,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2599,6 +2686,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -2625,10 +2713,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2650,10 +2739,11 @@
         "noise"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2675,10 +2765,11 @@
         "noise"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2700,10 +2791,11 @@
         "noise"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2725,10 +2817,11 @@
         "noise"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2750,10 +2843,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2775,10 +2869,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2800,10 +2895,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2825,10 +2921,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2850,10 +2947,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2875,6 +2973,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -2900,10 +2999,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2925,6 +3025,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -2951,10 +3052,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -2976,6 +3078,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -3002,6 +3105,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -3028,10 +3132,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3053,6 +3158,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -3079,10 +3185,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3106,10 +3213,11 @@
       "unmappedAnalyses": [
         "pss"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3133,10 +3241,11 @@
       "unmappedAnalyses": [
         "pss"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3160,10 +3269,11 @@
       "unmappedAnalyses": [
         "pss"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3187,10 +3297,11 @@
       "unmappedAnalyses": [
         "pss"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3214,10 +3325,11 @@
       "unmappedAnalyses": [
         "pss"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3241,10 +3353,11 @@
       "unmappedAnalyses": [
         "sp"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3266,10 +3379,11 @@
       "unmappedAnalyses": [
         "sp"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3291,10 +3405,11 @@
       "unmappedAnalyses": [
         "sp"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3316,10 +3431,11 @@
       "unmappedAnalyses": [
         "sp"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3341,10 +3457,11 @@
       "unmappedAnalyses": [
         "sp"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3366,10 +3483,11 @@
       "unmappedAnalyses": [
         "sp"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3391,6 +3509,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "unsupported",
         "analyses": [],
@@ -3416,6 +3535,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -3442,6 +3562,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "unsupported",
         "analyses": [],
@@ -3467,10 +3588,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3492,10 +3614,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3517,6 +3640,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -3543,6 +3667,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -3570,6 +3695,9 @@
         "tf",
         "sens"
       ],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/diffpair.cir"
+      ],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -3595,10 +3723,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3620,6 +3749,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -3646,10 +3776,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:3149"
+          "tran:3136"
         ]
       },
       "spiceTs": {
@@ -3672,6 +3803,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -3698,6 +3830,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -3724,10 +3857,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3749,10 +3883,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3774,10 +3909,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3799,10 +3935,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3824,10 +3961,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3849,10 +3987,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3874,10 +4013,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3899,10 +4039,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3924,10 +4065,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3949,10 +4091,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3974,10 +4117,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -3999,10 +4143,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4024,10 +4169,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4049,10 +4195,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4074,10 +4221,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4099,10 +4247,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4124,10 +4273,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4149,10 +4299,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4174,10 +4325,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4199,10 +4351,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4224,10 +4377,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4249,6 +4403,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "unsupported",
         "analyses": [],
@@ -4274,10 +4429,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4299,10 +4455,11 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4324,10 +4481,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4349,6 +4507,9 @@
         "noise"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/bjtnoise.cir"
+      ],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -4376,10 +4537,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4401,10 +4563,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4426,10 +4589,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4451,10 +4615,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4476,10 +4641,11 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4501,6 +4667,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -4527,10 +4694,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4552,6 +4720,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -4578,10 +4747,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4604,10 +4774,11 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4631,10 +4802,11 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4656,10 +4828,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4681,6 +4854,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -4707,6 +4881,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -4733,10 +4908,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4758,10 +4934,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4784,10 +4961,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4810,10 +4988,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4838,10 +5017,11 @@
         "noise"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4863,10 +5043,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4888,6 +5069,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "unsupported",
         "analyses": [],
@@ -4914,10 +5096,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4939,10 +5122,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4964,10 +5148,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -4989,10 +5174,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -5014,10 +5200,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -5039,6 +5226,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5065,10 +5253,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -5090,10 +5279,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -5115,10 +5305,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -5141,10 +5332,11 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -5166,6 +5358,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5192,10 +5385,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -5217,10 +5411,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -5242,6 +5437,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5269,6 +5465,7 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5296,10 +5493,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -5321,6 +5519,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -5346,10 +5545,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -5371,10 +5571,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -5396,10 +5597,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -5421,6 +5623,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -5446,6 +5649,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -5471,10 +5675,11 @@
         "noise"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -5496,10 +5701,11 @@
         "noise"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -5521,6 +5727,7 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5547,6 +5754,7 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5573,6 +5781,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5599,6 +5808,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5625,6 +5835,7 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5651,6 +5862,7 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5677,6 +5889,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5703,6 +5916,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5729,6 +5943,7 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5755,6 +5970,7 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5781,6 +5997,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5807,6 +6024,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5833,6 +6051,7 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5859,6 +6078,7 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5885,6 +6105,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5911,6 +6132,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5937,6 +6159,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -5963,6 +6186,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -5988,6 +6212,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -6013,6 +6238,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "unsupported",
         "analyses": [],
@@ -6038,6 +6264,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -6063,6 +6290,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6089,6 +6317,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6115,6 +6344,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6141,6 +6371,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6167,6 +6398,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6193,6 +6425,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6219,6 +6452,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6245,6 +6479,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6271,6 +6506,7 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6297,6 +6533,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6323,6 +6560,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -6348,6 +6586,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6374,6 +6613,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6400,6 +6640,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6426,6 +6667,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6452,6 +6694,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6478,6 +6721,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6504,6 +6748,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6530,6 +6775,7 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -6555,6 +6801,7 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "unsupported",
         "analyses": [],
@@ -6580,6 +6827,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6606,6 +6854,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6632,6 +6881,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6659,6 +6909,7 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "unsupported",
         "analyses": [],
@@ -6684,6 +6935,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6710,6 +6962,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6736,6 +6989,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6762,10 +7016,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -6787,6 +7042,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -6813,10 +7069,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -6838,10 +7095,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -6863,10 +7121,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -6888,10 +7147,11 @@
       "unmappedAnalyses": [
         "sp"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -6913,10 +7173,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -6938,10 +7199,11 @@
       "unmappedAnalyses": [
         "sp"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -6963,10 +7225,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -6989,10 +7252,11 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -7014,10 +7278,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -7039,10 +7304,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -7064,10 +7330,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -7089,10 +7356,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -7114,10 +7382,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -7139,10 +7408,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -7164,6 +7434,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7190,6 +7461,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7217,10 +7489,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -7242,6 +7515,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7269,6 +7543,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7295,6 +7570,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7321,10 +7597,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -7346,10 +7623,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -7371,6 +7649,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7398,6 +7677,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7426,6 +7706,9 @@
         "tf",
         "sens"
       ],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/diffpair.cir"
+      ],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -7451,6 +7734,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7478,6 +7762,9 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/mosmem.cir"
+      ],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7507,6 +7794,9 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/rca3040.cir"
+      ],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7539,6 +7829,9 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/rtlinv.cir"
+      ],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7568,6 +7861,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7594,6 +7888,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7621,10 +7916,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 120000 ms bound"
+        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
       },
       "spiceTs": {
         "status": "failed",
@@ -7646,6 +7942,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7674,6 +7971,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7704,10 +8002,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 120000 ms bound"
+        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
       },
       "spiceTs": {
         "status": "failed",
@@ -7729,6 +8028,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7755,6 +8055,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7782,6 +8083,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7808,6 +8110,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7834,6 +8137,7 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7860,6 +8164,7 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7887,6 +8192,7 @@
         "pz"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7914,6 +8220,7 @@
         "pz"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7940,6 +8247,7 @@
         "pz"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7966,6 +8274,9 @@
         "pz"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/pz2.cir"
+      ],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -7993,6 +8304,9 @@
         "pz"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/pzt.cir"
+      ],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -8020,6 +8334,9 @@
         "pz"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/simplepz.cir"
+      ],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -8047,10 +8364,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8072,10 +8390,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8097,10 +8416,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8122,10 +8442,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8147,10 +8468,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8173,10 +8495,11 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8199,10 +8522,11 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8224,10 +8548,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8249,10 +8574,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8274,10 +8600,11 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8301,10 +8628,11 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8326,10 +8654,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8351,10 +8680,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8376,6 +8706,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -8401,10 +8732,11 @@
         "noise"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8426,10 +8758,11 @@
         "noise"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8451,10 +8784,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8476,10 +8810,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8501,10 +8836,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8526,10 +8862,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8551,10 +8888,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8576,10 +8914,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8601,10 +8940,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8626,10 +8966,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8653,10 +8994,11 @@
         "pz"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8678,10 +9020,11 @@
       "unmappedAnalyses": [
         "sens"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8703,10 +9046,11 @@
       "unmappedAnalyses": [
         "sens"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8728,10 +9072,11 @@
       "unmappedAnalyses": [
         "sens"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8753,10 +9098,11 @@
       "unmappedAnalyses": [
         "sens"
       ],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8778,10 +9124,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8803,10 +9150,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8828,10 +9176,11 @@
         "op"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8853,10 +9202,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8878,10 +9228,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8903,10 +9254,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [],
-        "note": "ran its analyses only inside .control; -r exports dot-card analyses only, so no vectors to compare"
+        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -8930,6 +9282,7 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -8959,6 +9312,7 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -8986,6 +9340,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -9014,6 +9369,9 @@
         "tf",
         "sens"
       ],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/diffpair.cir"
+      ],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -9039,6 +9397,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -9065,6 +9424,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -9091,6 +9451,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -9118,6 +9479,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -9144,6 +9506,7 @@
         "tran"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -9172,6 +9535,7 @@
         "ac"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
@@ -9197,10 +9561,11 @@
         "dc"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "failed",
         "analyses": [],
-        "firstErrorLine": "ngspice exceeded the 120000 ms bound"
+        "firstErrorLine": "ngspice exceeded the 600000 ms bound"
       },
       "spiceTs": {
         "status": "unsupported",
@@ -9222,6 +9587,7 @@
         "noise"
       ],
       "unmappedAnalyses": [],
+      "sameNameAs": [],
       "ngspice": {
         "status": "success",
         "analyses": [
@@ -9242,5 +9608,5 @@
       "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
     }
   ],
-  "outcomeSha256": "c74fa700546867eebcd7f2f3137d159848eee63d187e28daff2e0092d42d52d6"
+  "outcomeSha256": "ebb8eee8bf2a79191047f23f08fe8af2684ac65abd8b45079e337619e15b2775"
 }

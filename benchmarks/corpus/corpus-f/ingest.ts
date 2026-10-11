@@ -13,7 +13,7 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
-import { basename, dirname, resolve } from 'node:path';
+import { basename, dirname, relative, resolve } from 'node:path';
 import {
   companionReferences,
   CORPUS_ROOT,
@@ -41,6 +41,8 @@ export interface CorpusFCircuit {
   licence: 'BSD-3-Clause';
   analyses: string[];
   unmappedAnalyses: string[];
+  /** Fixtures of other public corpora with the same file name: likely upstream variants (different bytes). */
+  sameNameAs: string[];
 }
 
 export interface CorpusFExclusion {
@@ -101,18 +103,30 @@ async function filesBelow(directory: string): Promise<string[]> {
 }
 
 /** Hashes and upstream paths already covered by the committed public corpora (excluding corpus-f). */
-export async function existingCorpusIdentity(root: string): Promise<{ hashes: Set<string>; ngspicePaths: Set<string> }> {
+export interface ExistingCorpora {
+  hashes: Set<string>;
+  ngspicePaths: Set<string>;
+  /** Lower-case file name -> repository paths of existing fixtures with that name. */
+  names: Map<string, string[]>;
+}
+
+export async function existingCorpusIdentity(root: string): Promise<ExistingCorpora> {
   const corpusDirectory = resolve(root, 'benchmarks/corpus');
   const hashes = new Set<string>();
+  const names = new Map<string, string[]>();
   for (const corpus of await readdir(corpusDirectory, { withFileTypes: true })) {
     if (!corpus.isDirectory() || corpus.name === 'corpus-f') continue;
     const fixtures = resolve(corpusDirectory, corpus.name, 'fixtures');
     let files: string[] = [];
     try { files = await filesBelow(fixtures); } catch { continue; }
-    for (const file of files) hashes.add(sha256(await readFile(file)));
+    for (const file of files.sort()) {
+      hashes.add(sha256(await readFile(file)));
+      const name = basename(file).toLowerCase();
+      names.set(name, [...(names.get(name) ?? []), relative(root, file)]);
+    }
   }
   const manifest = JSON.parse(await readFile(resolve(corpusDirectory, 'ngspice/manifest.json'), 'utf8')) as { circuits: Array<{ sourcePath: string }> };
-  return { hashes, ngspicePaths: new Set(manifest.circuits.map(circuit => circuit.sourcePath)) };
+  return { hashes, ngspicePaths: new Set(manifest.circuits.map(circuit => circuit.sourcePath)), names };
 }
 
 function stripTerminalNewline(bytes: Buffer): Buffer {
@@ -125,7 +139,7 @@ function stripTerminalNewline(bytes: Buffer): Buffer {
 export function selectDecks(
   candidates: ReadonlyArray<{ sourcePath: string; bytes: Buffer }>,
   upstreamFiles: ReadonlySet<string>,
-  existing: { hashes: Set<string>; ngspicePaths: Set<string> },
+  existing: ExistingCorpora,
 ): { circuits: CorpusFCircuit[]; exclusions: CorpusFExclusion[] } {
   const circuits: CorpusFCircuit[] = [];
   const exclusions: CorpusFExclusion[] = [];
@@ -171,6 +185,7 @@ export function selectDecks(
       licence: 'BSD-3-Clause',
       analyses: analyses.mapped,
       unmappedAnalyses: analyses.unmapped,
+      sameNameAs: existing.names.get(basename(sourcePath).toLowerCase()) ?? [],
     });
   }
   return { circuits, exclusions };
@@ -203,9 +218,11 @@ export function renderSources(manifest: CorpusFManifest): string {
     '',
     '## Fixtures',
     '',
-    '| ID | Upstream path | Revision | Licence | SHA-256 | Local path |',
-    '|---|---|---|---|---|---|',
-    ...manifest.circuits.map(circuit => `| \`${circuit.id}\` | [${circuit.sourcePath}](${circuit.sourceUrl}) | \`${source.revision.slice(0, 12)}\` | ${circuit.licence} | \`${circuit.sha256}\` | \`${circuit.localPath}\` |`),
+    `Every fixture's bytes differ from every fixture of the other public corpora (SHA-256, also with the terminal newline stripped). ${manifest.circuits.filter(circuit => circuit.sameNameAs.length > 0).length} fixtures share a file name with an existing fixture; they are ngspice-modified variants (for example SPICE3 decks edited upstream), listed in the last column so they are not counted as independent evidence by accident.`,
+    '',
+    '| ID | Upstream path | Revision | Licence | SHA-256 | Local path | Same name in |',
+    '|---|---|---|---|---|---|---|',
+    ...manifest.circuits.map(circuit => `| \`${circuit.id}\` | [${circuit.sourcePath}](${circuit.sourceUrl}) | \`${source.revision.slice(0, 12)}\` | ${circuit.licence} | \`${circuit.sha256}\` | \`${circuit.localPath}\` | ${circuit.sameNameAs.map(path => `\`${path}\``).join(', ')} |`),
     '',
     '## Exclusions',
     '',
