@@ -511,6 +511,7 @@ function* streamTransient(
     // formula already used in the synchronous `transient.ts` path.
     maxTimestep: analysis.maxTimestep ?? Math.min(analysis.timestep, analysis.stopTime / 50),
     initialSolution,
+    useInitialConditions: analysis.useInitialConditions,
   });
 
   try {

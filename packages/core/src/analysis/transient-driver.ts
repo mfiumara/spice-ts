@@ -145,6 +145,7 @@ export async function createTransientSim(
     initialSolution: tranAnalysis?.type === 'tran' && tranAnalysis.useInitialConditions
       ? computeUICInitialSolution(compiled)
       : undefined,
+    useInitialConditions: tranAnalysis?.type === 'tran' && tranAnalysis.useInitialConditions,
   });
 }
 
@@ -154,6 +155,12 @@ interface InternalTransientConfig {
   maxTimestep: number;
   /** Optional pre-computed DC solution. When provided, skips internal DC op point. */
   initialSolution?: Float64Array;
+  /**
+   * `.tran ... uic`: {@link initialSolution} is the UIC seed, not a solution
+   * of the circuit equations (#560). It sets capacitor voltages and inductor
+   * currents from their ICs but leaves algebraic nodes at an arbitrary value.
+   */
+  useInitialConditions?: boolean;
   /** Shared aggregate used by one-shot simulations. */
   convergence?: ConvergenceTelemetry;
   /** Cooperative guard used by bounded protocol executions. */
@@ -198,6 +205,14 @@ class TransientSimImpl implements TransientSim {
    * slope discontinuity no device reports as a breakpoint.
    */
   private orderOnePending = false;
+  /**
+   * The previous accepted point is the UIC seed (#560). Its algebraic node
+   * voltages violate KCL, so it is neither trapezoidal history nor a point
+   * of the node-voltage LTE predictor. ngspice-47 keeps only device states
+   * from it: MODEINITTRAN loads capacitor and inductor states from their ICs
+   * and CKTterr truncates on device charges, not node voltages.
+   */
+  private startsFromUICSeed = false;
   private progress: TransientProgressMonitor;
 
   constructor(compiled: CompiledCircuit, options: ResolvedOptions, config: InternalTransientConfig) {
@@ -240,8 +255,7 @@ class TransientSimImpl implements TransientSim {
     } else {
       this.initDC();
     }
-    this.acceptTransientStep();
-    this.stampPrevB();
+    this.acceptInitialPoint();
 
     this.breakpoints = this.collectBreakpoints();
     this.progress = new TransientProgressMonitor(config.maxTimestep);
@@ -398,7 +412,10 @@ class TransientSimImpl implements TransientSim {
       if (this.integrationMethod === 'trapezoidal') {
         this.stampPrevB();
       }
-      this.secondPrevSol = prevSol;
+      // A UIC seed is no predictor point: the next step gets no LTE check and,
+      // under Gear-2, integrates at order 1, as after a breakpoint.
+      this.secondPrevSol = this.startsFromUICSeed ? undefined : prevSol;
+      this.startsFromUICSeed = false;
       this.prevPrevDt = this.prevDt;
       this.prevDt = actualDt;
       this.time = nextTime;
@@ -482,8 +499,7 @@ class TransientSimImpl implements TransientSim {
     } else {
       this.initDC();
     }
-    this.acceptTransientStep();
-    this.stampPrevB();
+    this.acceptInitialPoint();
     this.breakpoints = this.collectBreakpoints();
   }
 
@@ -539,6 +555,20 @@ class TransientSimImpl implements TransientSim {
         this.compiled.branchNames,
       ),
     });
+  }
+
+  /**
+   * Commit the t=0 point. A DC operating point is a solution, so it seeds the
+   * trapezoidal history; a UIC seed is not (#560): its KCL residual would
+   * enter that history as a reactive current (1000 A through the 1 nF
+   * capacitor of the #560 deck, +4897 V after one 10 ns trapezoidal step),
+   * so the first step integrates at order 1 without it.
+   */
+  private acceptInitialPoint(): void {
+    this.acceptTransientStep();
+    this.startsFromUICSeed = this.config.useInitialConditions === true;
+    if (this.startsFromUICSeed) this.prevB = undefined;
+    else this.stampPrevB();
   }
 
   private stampPrevB(): void {
@@ -677,6 +707,7 @@ export function createDriverFromCompiled(
     timestep: number;
     maxTimestep: number;
     initialSolution?: Float64Array;
+    useInitialConditions?: boolean;
     convergence?: ConvergenceTelemetry;
     guard?: ProtocolExecutionGuard;
   },
@@ -690,6 +721,7 @@ export function createDriverFromCompiled(
     timestep: config.timestep,
     maxTimestep: config.maxTimestep,
     initialSolution: config.initialSolution,
+    useInitialConditions: config.useInitialConditions,
     convergence: config.convergence,
     guard: config.guard,
   });
