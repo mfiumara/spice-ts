@@ -534,9 +534,13 @@ function parseDotCommand(
     }
     case '.OPT':
     case '.OPTION':
-    case '.OPTIONS':
-      circuit.setSimulationOptions(parseSimulationOptions(tokens.slice(1), lineNumber, context));
+    case '.OPTIONS': {
+      const optionTokens = tokens.slice(1);
+      const temperature = takeCircuitTemperatureOption(optionTokens, lineNumber, context);
+      circuit.setSimulationOptions(parseSimulationOptions(optionTokens, lineNumber, context));
+      if (temperature !== undefined) circuit.setTemperature(temperature);
       break;
+    }
     case '.LIST':
       requireGnucapOutputDirective(tokens.length === 1, '.list', lineNumber, context);
       break;
@@ -662,6 +666,35 @@ function stripGnucapTraceSuffix(
     throw new ParseError(`Unsupported ${analysis} trace arguments`, lineNumber, context);
   }
   return args.slice(0, traceIndex);
+}
+
+/**
+ * Remove an ngspice `TEMP=<celsius>` field from `.options` tokens (in place) and
+ * return its value. As in ngspice, it sets the circuit temperature that every
+ * device without an instance TEMP is evaluated at (default 27 C).
+ */
+function takeCircuitTemperatureOption(
+  tokens: string[],
+  lineNumber: number,
+  context: string,
+): number | undefined {
+  if (tokens[0]?.toLowerCase() === 'timeint') return undefined;
+  let temperature: number | undefined;
+  for (let index = tokens.length - 1; index >= 0; index -= 1) {
+    const token = tokens[index];
+    const separator = token.indexOf('=');
+    const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
+    if (name !== 'temp') continue;
+    const rawValue = separator < 0 ? '' : token.slice(separator + 1);
+    const value = rawValue === '' ? Number.NaN : parseNumber(rawValue);
+    if (!Number.isFinite(value) || value <= -273.15) {
+      throw new ParseError(`Invalid .options temp value: '${rawValue}'`, lineNumber, context);
+    }
+    // The last TEMP field wins, as with every other repeated .options field.
+    temperature ??= value;
+    tokens.splice(index, 1);
+  }
+  return temperature;
 }
 
 function parseSimulationOptions(
