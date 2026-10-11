@@ -82,6 +82,17 @@ describe('ngspice-47 compatibility options (#494)', () => {
     sim.dispose();
   });
 
+  it('keeps the finite ramptime breakpoint in open-ended simulations', async () => {
+    const sim = await createTransientSim('Open-ended\nV1 out 0 10\nR1 out 0 1k\n.op', {
+      timestep: 0.0001, rampTime: 0.000731,
+    });
+    for (let run = 0; run < 2; run++) {
+      expect(sim.advanceUntil(0.001).map(point => point.time)).toContain(0.000731);
+      sim.reset();
+    }
+    sim.dispose();
+  });
+
   it('lets explicit API ramptime override the deck', async () => {
     const sim = await createTransientSim(`${deck}.options ramptime=0.731m\n`, { rampTime: 0.000913 });
     const times: number[] = [];
