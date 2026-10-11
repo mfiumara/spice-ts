@@ -120,8 +120,17 @@ export class VDMOS implements DeviceModel {
         `VDMOS '${name}': soft reverse recovery (model '${model.name}' VP with TT) is not implemented`,
       );
     }
-    this.instance = { M: instance.M ?? 1, TEMP: instance.TEMP, DTEMP: instance.DTEMP ?? 0 };
-    this.modelWarnings = warnings;
+    // vdmosset.c: with both TEMP and DTEMP given, ngspice-47 warns and drops
+    // TEMP (VDMOStempGiven = FALSE), so the instance runs at circuit temp + DTEMP.
+    const bothTemps = instance.TEMP !== undefined && instance.DTEMP !== undefined;
+    this.instance = {
+      M: instance.M ?? 1,
+      TEMP: bothTemps ? undefined : instance.TEMP,
+      DTEMP: instance.DTEMP ?? 0,
+    };
+    this.modelWarnings = bothTemps
+      ? [...warnings, `${name}: temp and dtemp instance parameter given - using dtemp`]
+      : warnings;
     const m = this.instance.M;
     if (model.rd > 0) this.drainConductance = m / model.rd;
     this.applyTemperature();

@@ -165,6 +165,23 @@ m1 d g 0 n1 temp=75
     const ours = result.dcSweep!.current('vd');
     reference.forEach((expected, index) => expectClose(ours[index], expected, 1e-6));
   });
+
+  it('uses DTEMP and warns when an instance gives both TEMP and DTEMP, like ngspice-47 vdmosset.c (issue #566)', async () => {
+    const result = await simulate(`temp dtemp
+m1 d g 0 nm1 temp=100 dtemp=10
+.model nm1 vdmos vto=2 kp=10 tcvth=-5m mu=-1.5
+vd d 0 5
+vg g 0 3
+.op
+.end
+`);
+    // ngspice-47: vd#branch = -5.24808334682163 (circuit 27 C + DTEMP 10 C); TEMP=100 gives -6.72075.
+    expectClose(result.dc!.current('vd'), -5.24808334682163, 1e-6);
+    expect(result.warnings).toContainEqual({
+      type: 'model',
+      message: 'm1: temp and dtemp instance parameter given - using dtemp',
+    });
+  });
 });
 
 describe('VDMOS capacitances (issue #506)', () => {
