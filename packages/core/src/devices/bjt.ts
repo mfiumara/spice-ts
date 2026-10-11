@@ -294,24 +294,56 @@ export function resolveBJTParams(
   return resolved;
 }
 
+/** Gummel-Poon instance geometry: ngspice-47 bjt.c `area`, `areab`, `areac` and `m`. */
+export interface BJTInstanceScaling {
+  AREA?: number;
+  AREAB?: number;
+  AREAC?: number;
+  M?: number;
+}
+
+/**
+ * ngspice-47 bjttemp.c area factor of the B-C junction (BCtSatCur, tBCcap):
+ * AREAB for a vertical device (SUBS = 1), AREAC for a lateral one. bjtsetup.c
+ * defaults both to AREA. tBCcap = CJC times this factor; BCtSatCur = tSatCur
+ * times it, and tSatCur already includes AREA, so by default the B-C
+ * saturation current is IS*AREA^2.
+ */
+export function bjtBaseCollectorArea(subs: number, instance: BJTInstanceScaling | undefined): number {
+  const area = instance?.AREA ?? 1;
+  return subs === 1 ? instance?.AREAB ?? area : instance?.AREAC ?? area;
+}
+
+/** ngspice-47 bjttemp.c area factor of the substrate capacitance (tSubcap): AREAC vertical, AREAB lateral. */
+function bjtSubstrateArea(subs: number, instance: BJTInstanceScaling | undefined): number {
+  const area = instance?.AREA ?? 1;
+  return subs === 1 ? instance?.AREAC ?? area : instance?.AREAB ?? area;
+}
+
 /**
  * Apply ngspice-47 instance scaling to resolved Gummel-Poon parameters.
  *
- * bjttemp.c multiplies IS, ISE, ISS, IKF, ITF, CJE, CJC and CJS (and the RC/RE
- * conductances) by AREA and divides RB by it; bjtload.c then multiplies every
- * stamp by M. For the bounded parameter set both are the same as a device
- * with these parameters scaled by AREA*M. Flicker noise is the exception:
+ * bjttemp.c multiplies IS, ISE, ISS, IKF, ITF and CJE (and the RC/RE
+ * conductances) by AREA and divides RB by it; CJC by the B-C area and CJS by
+ * the substrate area (AREAB/AREAC by SUBS, both defaulting to AREA);
+ * bjtload.c then multiplies every stamp by M. For the bounded parameter set
+ * both are the same as a device with these parameters scaled by AREA*M. The
+ * B-C saturation current (bjttemp.c BCtSatCur = tSatCur * AREAB or AREAC) is
+ * applied by the device on top of the scaled IS, see
+ * {@link bjtBaseCollectorArea}. Flicker noise is the exception:
  * bjtnoise.c uses M*KF*|Ib/M|^AF, so KF absorbs M^(1-AF). (ngspice also scales
  * its gmin by M; spice-ts keeps its fixed 1e-12 S gmin.)
  */
 export function scaleBJTInstance(
   params: BJTParams,
-  instance: { AREA?: number; M?: number } | undefined,
+  instance: BJTInstanceScaling | undefined,
 ): BJTParams {
   const area = instance?.AREA ?? 1;
   const multiplier = instance?.M ?? 1;
   const scale = area * multiplier;
-  if (scale === 1) return params;
+  const collectorScale = bjtBaseCollectorArea(params.SUBS, instance) * multiplier;
+  const substrateScale = bjtSubstrateArea(params.SUBS, instance) * multiplier;
+  if (scale === 1 && collectorScale === 1 && substrateScale === 1) return params;
   return {
     ...params,
     IS: params.IS * scale,
@@ -320,8 +352,8 @@ export function scaleBJTInstance(
     IKF: params.IKF * scale,
     ITF: params.ITF * scale,
     CJE: params.CJE * scale,
-    CJC: params.CJC * scale,
-    CJS: params.CJS * scale,
+    CJC: params.CJC * collectorScale,
+    CJS: params.CJS * substrateScale,
     RB: params.RB / scale,
     RC: params.RC / scale,
     RE: params.RE / scale,
@@ -368,6 +400,10 @@ export class BJT implements DeviceModel {
   /** Instance-scaled parameters at TNOM; {@link params} holds them at the device temperature. */
   private readonly nominal: BJTParams;
   private temperature = NOMINAL_TEMPERATURE_C;
+  /** B-C area factor: bjttemp.c BCtSatCur = tSatCur * {@link bjtBaseCollectorArea}. */
+  private readonly baseCollectorArea: number;
+  /** B-C saturation current at the device temperature (bjttemp.c BCtSatCur, times M). */
+  private baseCollectorSatCur: number;
   /** Thermal voltage kT/q at the device temperature (bjttemp.c vt). */
   private vt = CONSTKOVERQ * (NOMINAL_TEMPERATURE_C + CONSTCTOK);
   /**
@@ -394,11 +430,15 @@ export class BJT implements DeviceModel {
     readonly name: string,
     readonly nodes: number[],
     params: Partial<BJTParams> & Record<string, number>,
-    instance?: { AREA?: number; M?: number },
+    instance?: BJTInstanceScaling,
   ) {
     this.suppliedParams = { ...params };
-    this.nominal = scaleBJTInstance(resolveBJTParams(params), instance);
+    const resolved = resolveBJTParams(params);
+    // tSatCur already carries AREA, so the default B-C current is IS*AREA^2 (*M).
+    this.baseCollectorArea = bjtBaseCollectorArea(resolved.SUBS, instance);
+    this.nominal = scaleBJTInstance(resolved, instance);
     this.params = { ...this.nominal };
+    this.baseCollectorSatCur = this.nominal.IS * this.baseCollectorArea;
     this.applyTemperature();
     const { CJE, CJC, CJS, TF, TR } = this.params;
     this.integratesTransientCharge = CJE > 0 || CJC > 0 || CJS > 0 || TF > 0 || TR > 0;
@@ -437,12 +477,14 @@ export class BJT implements DeviceModel {
     this.vt = CONSTKOVERQ * kelvin;
     if (kelvin === nominalKelvin) {
       Object.assign(params, nominal);
+      this.baseCollectorSatCur = params.IS * this.baseCollectorArea;
       return;
     }
     const ratlog = Math.log(kelvin / nominalKelvin);
     const factlog = (kelvin / nominalKelvin - 1) * nominal.EG / this.vt + nominal.XTI * ratlog;
     const bfactor = Math.exp(ratlog * nominal.XTB);
     params.IS = nominal.IS * Math.exp(factlog);
+    this.baseCollectorSatCur = params.IS * this.baseCollectorArea;
     params.ISS = nominal.ISS * Math.exp(factlog);
     params.ISE = nominal.ISE * Math.exp(factlog / nominal.NE) / bfactor;
     params.BF = nominal.BF * bfactor;
@@ -566,7 +608,7 @@ export class BJT implements DeviceModel {
 
   /**
    * ngspice-47 bjtload.c DC evaluation at the polarity-domain junction
-   * voltages: cbe/cbc from the IS law, the B-E leakage cben from ISE/NE, and
+   * voltages: cbe from tSatCur and cbc from BCtSatCur, the B-E leakage cben from ISE/NE, and
    * CKTgmin*vbe in cben and CKTgmin*vbc in cbcn, so the gmin current flows at
    * convergence as in ngspice, not only in the Jacobian (#551). With VAF and
    * IKF omitted qb = 1, which is the Ebers-Moll transport model. Writes into a
@@ -575,7 +617,9 @@ export class BJT implements DeviceModel {
   private evaluateDC(vBE: number, vBC: number): BJTDCPoint {
     const { BF, BR, IS, NF, NR, VAF, IKF, ISE, NE } = this.params;
     const { current: cbe, conductance: gbe } = junctionLaw(this.junction, vBE, IS, NF * this.vt);
-    const { current: cbc, conductance: gbc } = junctionLaw(this.junction, vBC, IS, NR * this.vt);
+    const { current: cbc, conductance: gbc } = junctionLaw(
+      this.junction, vBC, this.baseCollectorSatCur, NR * this.vt,
+    );
     let cben = GMIN * vBE;
     let gben = GMIN;
     if (ISE !== 0) {
@@ -792,7 +836,7 @@ export class BJT implements DeviceModel {
     const forward = junctionLaw(this.junction, vBE, IS, vtF);
     const forwardCurrent = forward.current;
     const forwardConductance = forward.conductance;
-    const reverse = junctionLaw(this.junction, vBC, IS, vtR);
+    const reverse = junctionLaw(this.junction, vBC, this.baseCollectorSatCur, vtR);
     const reverseCurrent = reverse.current;
     const reverseConductance = reverse.conductance;
 

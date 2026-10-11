@@ -502,11 +502,12 @@ function formatStep(step: StepAnalysis): string {
 function bjtInstanceDescriptorParams(
   instance: BJTInstanceParams | undefined,
 ): Record<string, number> | undefined {
-  if (!instance || (instance.AREA === undefined && instance.M === undefined)) return undefined;
-  return {
-    ...(instance.AREA !== undefined ? { AREA: instance.AREA } : {}),
-    ...(instance.M !== undefined ? { M: instance.M } : {}),
-  };
+  if (!instance) return undefined;
+  const params: Record<string, number> = {};
+  for (const name of ['AREA', 'AREAB', 'AREAC', 'M'] as const) {
+    if (instance[name] !== undefined) params[name] = instance[name];
+  }
+  return Object.keys(params).length > 0 ? params : undefined;
 }
 
 /** ngspice-47 BJT/VBIC instance scale: AREA * M (both default to 1). */
@@ -1227,8 +1228,8 @@ export class Circuit {
    *   ground as in ngspice.
    * @param nodeThermal - Optional thermal node. Self-heating is not
    *   implemented, so compilation rejects it with an InvalidCircuitError.
-   * @param instanceParams - Optional instance scaling (`AREA`, multiplier
-   *   `M`); the device is scaled by AREA*M as in ngspice-47.
+   * @param instanceParams - Optional instance scaling (`AREA`, base/collector
+   *   areas `AREAB`/`AREAC`, multiplier `M`), as in ngspice-47.
    */
   addBJT(
     name: string,
@@ -1957,6 +1958,13 @@ export class Circuit {
           const modelParams = model.params;
           const polarity = model.type === 'PNP' ? -1 : 1;
           if (modelParams.LEVEL === 4) {
+            // ngspice-47 vbic.c has no areab/areac instance parameters.
+            const geometry = ['AREAB', 'AREAC'].filter(name => desc.params?.[name] !== undefined);
+            if (geometry.length > 0) {
+              throw new InvalidCircuitError(
+                `VBIC '${desc.name}' does not accept instance parameters: ${geometry.join(', ')}`,
+              );
+            }
             devices.push(new VBIC(desc.name, nodeIndices, modelParams, polarity, bjtInstanceScale(desc.params)));
           } else {
             devices.push(new BJT(desc.name, nodeIndices, { ...modelParams, polarity }, desc.params));
