@@ -1,4 +1,3 @@
-import { spawn, type ChildProcess } from 'node:child_process';
 import { createServer } from 'node:http';
 import { access, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -8,6 +7,7 @@ import { build } from 'vite';
 import WebSocket from 'ws';
 import negative from '../../protocol/fixtures/negative-v1.json';
 import positive from '../../protocol/fixtures/positive-v1.json';
+import { spawnProcessTree, terminateProcessTree } from './test-support/browser-process.js';
 
 const temporaryDirectories: string[] = [];
 
@@ -52,14 +52,6 @@ async function pageDebuggerUrl(profileDirectory: string): Promise<string> {
     } catch { await delay(50); }
   }
   throw new Error('Chrome DevTools endpoint did not become ready');
-}
-
-async function terminateProcess(child: ChildProcess): Promise<void> {
-  if (child.exitCode !== null) return;
-  const exited = new Promise<void>(resolveExit => child.once('exit', () => resolveExit()));
-  child.kill('SIGTERM');
-  await Promise.race([exited, delay(2_000)]);
-  if (child.exitCode === null) child.kill('SIGKILL');
 }
 
 async function waitForResult(debuggerUrl: string, pageUrl: string): Promise<string> {
@@ -108,7 +100,11 @@ async function waitForResult(debuggerUrl: string, pageUrl: string): Promise<stri
 }
 
 afterAll(async () => {
-  await Promise.all(temporaryDirectories.map(directory => rm(directory, { recursive: true, force: true })));
+  // Chrome's whole process tree is gone by now (terminateProcessTree); the
+  // retries only absorb filesystem lag, not live writers.
+  await Promise.all(temporaryDirectories.map(directory => rm(directory, {
+    recursive: true, force: true, maxRetries: 5, retryDelay: 100,
+  })));
 });
 
 describe('browser protocol-v1 worker facade', () => {
@@ -258,15 +254,15 @@ describe('browser protocol-v1 worker facade', () => {
     try {
       const address = server.address();
       if (!address || typeof address === 'string') throw new Error('Smoke server has no TCP address');
-      const browser = spawn(chrome!, [
+      const browser = spawnProcessTree(chrome!, [
         '--headless', '--disable-background-networking', '--disable-gpu', '--no-first-run', '--no-sandbox',
         '--remote-debugging-port=0', `--user-data-dir=${profileDirectory}`, 'about:blank',
-      ], { stdio: 'ignore' });
+      ]);
       try {
         const debuggerUrl = await pageDebuggerUrl(profileDirectory);
         const result = await waitForResult(debuggerUrl, `http://127.0.0.1:${address.port}/`);
         expect(result).toBe('browser-worker-facade-and-wasm-passed');
-      } finally { await terminateProcess(browser); }
+      } finally { await terminateProcessTree(browser); }
     } finally {
       await new Promise<void>(resolveClose => server.close(() => resolveClose()));
     }
