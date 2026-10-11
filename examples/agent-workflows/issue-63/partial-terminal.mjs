@@ -7,11 +7,21 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import Ajv2020 from 'ajv/dist/2020.js';
-import { fromCircuitJSON } from '@spice-ts/circuit-json';
-import { createToolExecutor } from '@spice-ts/mcp';
-import { protocolSchemasV1, sha256CanonicalJson } from '@spice-ts/protocol';
 
-const require = createRequire(import.meta.url);
+// Load each package through its published `exports["."].import` entry (the
+// built dist), exactly what a consumer gets. The examples package does not
+// declare these as workspace dependencies: doing so reorders `pnpm -r build`
+// so that @spice-ts/mcp's prebuild rebuilds core while @spice-ts/wasm bundles it.
+const packagesDir = new URL('../../../packages/', import.meta.url);
+async function publicPackage(name) {
+  const packageJson = new URL(`${name}/package.json`, packagesDir);
+  const manifest = JSON.parse(await readFile(packageJson, 'utf8'));
+  return import(new URL(manifest.exports['.'].import, packageJson).href);
+}
+const { fromCircuitJSON } = await publicPackage('circuit-json');
+const { createToolExecutor } = await publicPackage('mcp');
+const { protocolSchemasV1, sha256CanonicalJson } = await publicPackage('protocol');
+const require = createRequire(new URL('protocol/package.json', packagesDir));
 const schemaId = name => `https://spice-ts.dev/schemas/v1/${name}.schema.json`;
 const ajv = new Ajv2020({ allErrors: true, strict: true });
 for (const schema of Object.values(protocolSchemasV1)) ajv.addSchema(schema);
@@ -107,7 +117,7 @@ const leakedResultSha256 = sha256CanonicalJson(pointEvents);
 const resultHashInPartialMetadata = { ...terminal, metadata: { inputSha256, resultSha256: leakedResultSha256 } };
 const resultHashInPartialData = { ...terminal, partial: { ...terminal.partial, resultSha256: leakedResultSha256 } };
 const packagedNegative = JSON.parse(await readFile(
-  require.resolve('@spice-ts/protocol/fixtures/negative-v1.json'),
+  require.resolve('./fixtures/negative-v1.json'),
   'utf8',
 )).partialWithResultHash;
 

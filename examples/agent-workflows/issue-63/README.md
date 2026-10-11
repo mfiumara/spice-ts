@@ -4,8 +4,9 @@ This directory is the CI entry point for the two agent workflows described in
 [`docs/architecture/ai-native-api.md` §10](../../../docs/architecture/ai-native-api.md#10-agent-workflows).
 Both run headlessly against public package entry points only (the built
 `@spice-ts/mcp` stdio server, and the exported `@spice-ts/circuit-json`,
-`@spice-ts/mcp`, and `@spice-ts/protocol` APIs). Nothing imports workspace
-source files or private helpers.
+`@spice-ts/mcp`, and `@spice-ts/protocol` APIs, loaded through each package's
+`exports["."].import` dist entry). Nothing imports workspace source files or
+private helpers.
 
     pnpm install --frozen-lockfile
     pnpm build
