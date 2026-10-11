@@ -1,0 +1,331 @@
+{
+  "ngspice": "ngspice-47 : Circuit level simulation program",
+  "generatedBy": "benchmarks/trnoise-501/compare.ts",
+  "results": [
+    {
+      "fixture": "benchmarks/trnoise-501/fixtures/seeded-vsrc.cir",
+      "sha256": "932c40b4b9713f5f81c895714b24717b3e8c9a0349227a21896b2bdd35ac75b1",
+      "mode": "seeded",
+      "points": {
+        "ngspice": 342,
+        "spiceTs": 796
+      },
+      "spiceTsRuntimeMs": 17,
+      "metrics": [
+        {
+          "kind": "rts",
+          "node": "1",
+          "amplitude": 1,
+          "captures": {
+            "ngspice": 2,
+            "spiceTs": 2
+          },
+          "maxRelativeCaptureTimeDifference": 1.69e-16
+        },
+        {
+          "kind": "held",
+          "node": "2",
+          "draws": {
+            "ngspice": 22,
+            "spiceTs": 21,
+            "compared": 21
+          },
+          "maxRelativeValueDifference": 3.78e-15
+        },
+        {
+          "kind": "held",
+          "node": "5",
+          "draws": {
+            "ngspice": 20,
+            "spiceTs": 20,
+            "compared": 20
+          },
+          "maxRelativeValueDifference": 1.2e-16
+        },
+        {
+          "kind": "held",
+          "node": "6",
+          "draws": {
+            "ngspice": 21,
+            "spiceTs": 20,
+            "compared": 20
+          },
+          "maxRelativeValueDifference": 0
+        }
+      ]
+    },
+    {
+      "fixture": "benchmarks/trnoise-501/fixtures/seeded-isrc.cir",
+      "sha256": "a0f2ec058d8755639652ad70ffb3c9ea83b2eb455c9db2178cf492583bc30a43",
+      "mode": "seeded",
+      "points": {
+        "ngspice": 284,
+        "spiceTs": 598
+      },
+      "spiceTsRuntimeMs": 7,
+      "metrics": [
+        {
+          "kind": "rts",
+          "node": "3",
+          "amplitude": -1,
+          "captures": {
+            "ngspice": 2,
+            "spiceTs": 2
+          },
+          "maxRelativeCaptureTimeDifference": 0
+        },
+        {
+          "kind": "held",
+          "node": "4",
+          "draws": {
+            "ngspice": 21,
+            "spiceTs": 21,
+            "compared": 21
+          },
+          "maxRelativeValueDifference": 1.47e-16
+        },
+        {
+          "kind": "held",
+          "node": "7",
+          "draws": {
+            "ngspice": 21,
+            "spiceTs": 21,
+            "compared": 21
+          },
+          "maxRelativeValueDifference": 2.29e-16
+        }
+      ]
+    },
+    {
+      "fixture": "benchmarks/corpus/corpus-f/fixtures/examples/transient-noise/rts-1.cir",
+      "sha256": "4e0a74d62b7d24b01ad05574ef2ede6b75d1cf85a0b3b6c9c3a28a1986ef984f",
+      "mode": "statistics",
+      "points": {
+        "ngspice": 501,
+        "spiceTs": 6601
+      },
+      "spiceTsRuntimeMs": 43,
+      "metrics": [
+        {
+          "kind": "white",
+          "node": "21",
+          "rms": 0.001004987562112089,
+          "ngspice": {
+            "samples": 500,
+            "mean": -0.000002908,
+            "rms": 0.00101,
+            "rmsOverExpected": 1.005
+          },
+          "spiceTs": {
+            "samples": 500,
+            "mean": 0.0002843,
+            "rms": 0.0009805,
+            "rmsOverExpected": 0.9756
+          }
+        },
+        {
+          "kind": "rts-duty",
+          "node": "11",
+          "high": 0.01,
+          "expectedFraction": 0.6666666666666666,
+          "ngspice": {
+            "samples": 500,
+            "highFraction": 0.604,
+            "transitions": 13,
+            "durationS": 0.0005,
+            "stepS": 0.000001
+          },
+          "spiceTs": {
+            "samples": 500,
+            "highFraction": 0.644,
+            "transitions": 16,
+            "durationS": 0.0005,
+            "stepS": 0.000001
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "benchmarks/corpus/corpus-f/fixtures/examples/transient-noise/simple-noise.cir",
+      "sha256": "f969d203eabffcdf9acbd4a021d161963b16d99f556a4bfabc49ab2f7c145bad",
+      "mode": "statistics",
+      "points": {
+        "ngspice": 25001,
+        "spiceTs": 223490
+      },
+      "spiceTsRuntimeMs": 647,
+      "metrics": [
+        {
+          "kind": "white",
+          "node": "2",
+          "rms": 0.05,
+          "mean": -0.001,
+          "ngspice": {
+            "samples": 25000,
+            "mean": -0.0001151,
+            "rms": 0.05033,
+            "rmsOverExpected": 1.007
+          },
+          "spiceTs": {
+            "samples": 25000,
+            "mean": -0.0005535,
+            "rms": 0.04989,
+            "rmsOverExpected": 0.9979
+          }
+        },
+        {
+          "kind": "trrandom",
+          "node": "3",
+          "mean": -0.01,
+          "std": 1,
+          "ngspice": {
+            "samples": 25000,
+            "mean": 0.276,
+            "std": 0.005257
+          },
+          "spiceTs": {
+            "samples": 25000,
+            "mean": -0.005334,
+            "std": 1.004
+          }
+        },
+        {
+          "kind": "trrandom",
+          "node": "4",
+          "mean": 0.01,
+          "std": 1,
+          "ngspice": {
+            "samples": 25000,
+            "mean": 0.005407,
+            "std": 0.9978
+          },
+          "spiceTs": {
+            "samples": 25000,
+            "mean": 0.01307,
+            "std": 0.9996
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "benchmarks/corpus/corpus-f/fixtures/examples/transient-noise/noise_vnoi.cir",
+      "sha256": "010864aa7bddb5e9c779609f7d04969f628fc81621f0216078772facdffcb8be",
+      "mode": "statistics",
+      "points": {
+        "ngspice": 250001,
+        "spiceTs": 1480182
+      },
+      "spiceTsRuntimeMs": 3199,
+      "metrics": [
+        {
+          "kind": "pink",
+          "node": "1",
+          "alpha": 1.7,
+          "ngspice": {
+            "samples": 250000,
+            "spectralSlope": -1.59,
+            "expectedSlope": -1.7
+          },
+          "spiceTs": {
+            "samples": 250000,
+            "spectralSlope": -1.62,
+            "expectedSlope": -1.7
+          }
+        },
+        {
+          "kind": "pink",
+          "node": "2",
+          "alpha": 1.4,
+          "ngspice": {
+            "samples": 250000,
+            "spectralSlope": -1.257,
+            "expectedSlope": -1.4
+          },
+          "spiceTs": {
+            "samples": 250000,
+            "spectralSlope": -1.425,
+            "expectedSlope": -1.4
+          }
+        },
+        {
+          "kind": "pink",
+          "node": "3",
+          "alpha": 1,
+          "ngspice": {
+            "samples": 250000,
+            "spectralSlope": -0.9493,
+            "expectedSlope": -1
+          },
+          "spiceTs": {
+            "samples": 250000,
+            "spectralSlope": -1.001,
+            "expectedSlope": -1
+          }
+        },
+        {
+          "kind": "pink",
+          "node": "4",
+          "alpha": 0.5,
+          "ngspice": {
+            "samples": 250000,
+            "spectralSlope": -0.4499,
+            "expectedSlope": -0.5
+          },
+          "spiceTs": {
+            "samples": 250000,
+            "spectralSlope": -0.5309,
+            "expectedSlope": -0.5
+          }
+        },
+        {
+          "kind": "white",
+          "node": "5",
+          "rms": 1e-9,
+          "mean": 0,
+          "ngspice": {
+            "samples": 250000,
+            "mean": -1.9e-12,
+            "rms": 9.996e-10,
+            "rmsOverExpected": 0.9996
+          },
+          "spiceTs": {
+            "samples": 250000,
+            "mean": -7.809e-13,
+            "rms": 1.019e-9,
+            "rmsOverExpected": 1.019
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "benchmarks/corpus/corpus-f/fixtures/examples/various/mtimeavg_test.cir",
+      "sha256": "4edde76934e2bf955b88a6c8774c715aeeaf49e23da11d67db25465a443c2630",
+      "mode": "statistics",
+      "points": {
+        "ngspice": 1001,
+        "spiceTs": 5856
+      },
+      "spiceTsRuntimeMs": 5,
+      "metrics": [
+        {
+          "kind": "white",
+          "node": "1",
+          "rms": 2e-8,
+          "mean": 0,
+          "ngspice": {
+            "samples": 1000,
+            "mean": -4.139e-10,
+            "rms": 1.991e-8,
+            "rmsOverExpected": 0.9954
+          },
+          "spiceTs": {
+            "samples": 1000,
+            "mean": 9.555e-10,
+            "rms": 1.965e-8,
+            "rmsOverExpected": 0.9824
+          }
+        }
+      ]
+    }
+  ]
+}
