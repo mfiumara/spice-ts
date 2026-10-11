@@ -1,4 +1,10 @@
 /**
+ * Default device minimum conductance in siemens (ngspice `CKTgmin`), added by
+ * models across their pn junctions.
+ */
+export const DEVICE_GMIN = 1e-12;
+
+/**
  * Context provided to device models during MNA matrix assembly.
  *
  * Devices use `stampG`, `stampB`, and `stampC` to contribute their
@@ -25,6 +31,12 @@ export interface StampContext {
   sourceScale: number;
   /** Use an explicit DC value instead of a transient waveform when available. */
   useDcSourceValue: boolean;
+  /**
+   * Device minimum conductance (ngspice `CKTgmin`) to add across pn junctions.
+   * Absent means {@link DEVICE_GMIN}; the DC operating point's true gmin
+   * stepping raises it temporarily.
+   */
+  gmin?: number;
 }
 
 /**

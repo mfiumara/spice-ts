@@ -31,7 +31,7 @@ const PORT_NAMES: Record<string, readonly string[]> = {
   V: TWO_TERMINAL,
   I: TWO_TERMINAL,
   D: ['anode', 'cathode'],
-  Q: ['collector', 'base', 'emitter'],
+  Q: ['collector', 'base', 'emitter', 'substrate', 'thermal'],
   // M handled specially (3 or 4 nodes)
   E: ['ctrlP', 'ctrlN', 'outP', 'outN'],
   G: ['ctrlP', 'ctrlN', 'outP', 'outN'],

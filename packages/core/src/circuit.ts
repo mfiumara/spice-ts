@@ -44,6 +44,7 @@ import { parseModelCard } from './parser/model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
+import { parseBJTInstance } from './parser/bjt-parser.js';
 import { parseLtraModelCard } from './parser/transmission-line-parser.js';
 import {
   parseDiodeInstanceParams,
@@ -234,7 +235,7 @@ function formatDevice(desc: DeviceDescriptor): string {
     case 'D':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.modelName ?? ''}${tail}`.trim();
     case 'Q':
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.nodes[2]} ${desc.modelName ?? ''}`.trim();
+      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}`.trim();
     case 'J':
     case 'Z':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.nodes[2]} ${desc.modelName ?? ''}`.trim();
@@ -730,12 +731,30 @@ export class Circuit {
    * @param nodeBase - Base node
    * @param nodeEmitter - Emitter node
    * @param modelName - Name of a `.model NPN` or `.model PNP` card
+   * @param nodeSubstrate - Optional substrate node. Bounded VBIC (LEVEL=4)
+   *   stamps it; omitted, it is ground as in ngspice. The bounded
+   *   Gummel-Poon BJT has no substrate junction, so it ignores the node.
+   * @param nodeThermal - Optional thermal node. Self-heating is not
+   *   implemented, so compilation rejects it with an InvalidCircuitError.
    */
-  addBJT(name: string, nodeCollector: string, nodeBase: string, nodeEmitter: string, modelName: string): void {
+  addBJT(
+    name: string,
+    nodeCollector: string,
+    nodeBase: string,
+    nodeEmitter: string,
+    modelName: string,
+    nodeSubstrate?: string,
+    nodeThermal?: string,
+  ): void {
     this.nodeSet.add(nodeCollector);
     this.nodeSet.add(nodeBase);
     this.nodeSet.add(nodeEmitter);
-    this.descriptors.push({ type: 'Q', name, nodes: [nodeCollector, nodeBase, nodeEmitter], modelName });
+    // Substrate/thermal nodes join the node set during expansion, and only
+    // when the resolved model stamps them.
+    const nodes = [nodeCollector, nodeBase, nodeEmitter];
+    if (nodeSubstrate !== undefined || nodeThermal !== undefined) nodes.push(nodeSubstrate ?? GROUND_NODE);
+    if (nodeThermal !== undefined) nodes.push(nodeThermal);
+    this.descriptors.push({ type: 'Q', name, nodes, modelName });
   }
 
   /** Add a bounded level-1 N-channel junction field-effect transistor. */
@@ -1578,15 +1597,27 @@ export class Circuit {
 
       if (desc.type === 'Q') {
         const model = this._models.get(desc.modelName!);
+        const isVBIC = (model?.type === 'NPN' || model?.type === 'PNP') && model.params.LEVEL === 4;
+        if (desc.nodes.length > 4) {
+          // ngspice-47 accepts a fifth (thermal) node only for VBIC/HICUM.
+          throw new InvalidCircuitError(isVBIC
+            ? `Unsupported VBIC thermal node on '${desc.name}': self-heating (5-terminal instance) is not implemented`
+            : `BJT '${desc.name}' has a thermal node, but only VBIC (LEVEL=4) instances accept a fifth terminal`);
+        }
+        // The substrate is a stamped terminal only for VBIC; the bounded
+        // Gummel-Poon BJT has no substrate junction, so the node is dropped.
+        const terminals = isVBIC ? desc.nodes : desc.nodes.slice(0, 3);
         if (model?.type === 'NPN' || model?.type === 'PNP') {
           if (model.params.LEVEL === 4) {
             const polarity = model.type === 'PNP' ? -1 : 1;
             const params = resolveVBICParams(model.params, polarity);
-            let [collector, base, emitter] = desc.nodes;
+            let [collector, base, emitter] = terminals;
+            // Omitted substrate is ground, as in ngspice.
+            const substrate = terminals[3] ?? GROUND_NODE;
             let collectorExternal = collector;
             let baseExternal = base;
             let emitterInternal = emitter;
-            let substrateInternal = GROUND_NODE;
+            let substrateInternal = substrate;
             if (params.RCX > 0) {
               collectorExternal = internalNodeName(desc.name, 'cx');
               result.push({
@@ -1611,7 +1642,7 @@ export class Circuit {
             if (params.RS > 0) {
               substrateInternal = internalNodeName(desc.name, 'si');
               result.push({
-                type: 'R', name: `${desc.name}.RS`, nodes: [GROUND_NODE, substrateInternal],
+                type: 'R', name: `${desc.name}.RS`, nodes: [substrate, substrateInternal],
                 value: params.RS,
               });
             }
@@ -1632,7 +1663,7 @@ export class Circuit {
             });
             continue;
           }
-          let [collector, base, emitter] = desc.nodes;
+          let [collector, base, emitter] = terminals;
           for (const [parameter, terminal] of [
             ['RC', collector], ['RB', base], ['RE', emitter],
           ] as const) {
@@ -1649,7 +1680,7 @@ export class Circuit {
           }
           result.push({ ...desc, nodes: [collector, base, emitter] });
         } else {
-          result.push(desc);
+          result.push({ ...desc, nodes: terminals });
         }
         continue;
       }
@@ -2037,10 +2068,14 @@ export class Circuit {
           break;
         }
         case 'Q': {
+          const instance = parseBJTInstance(tokens, lineNumber);
+          const nodes = [instance.collector, instance.base, instance.emitter];
+          if (instance.substrate !== undefined) nodes.push(instance.substrate);
+          if (instance.thermal !== undefined) nodes.push(instance.thermal);
           result.push({
             type: 'Q', name: devName,
-            nodes: [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3])],
-            modelName: tokens[4],
+            nodes: nodes.map(mapNode),
+            modelName: instance.modelName,
           });
           break;
         }

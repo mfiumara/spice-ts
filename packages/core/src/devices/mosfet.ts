@@ -1,4 +1,6 @@
-import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import {
+  DEVICE_GMIN, type ChargeIntegration, type DeviceModel, type StampContext,
+} from './device.js';
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 
 export interface MOSFETParams {
@@ -31,17 +33,20 @@ const MAX_EXP_ARG = 709;
 
 /**
  * ngspice mos1load.c bulk junction (bulk-source or bulk-drain), in the
- * polarity-adjusted domain. Writes [conductance, current] into `out`.
+ * polarity-adjusted domain, with `gmin` the circuit CKTgmin. Writes
+ * [conductance, current] into `out`.
  */
-function bulkJunction(voltage: number, saturationCurrent: number, out: Float64Array, offset: number): void {
+function bulkJunction(
+  voltage: number, saturationCurrent: number, gmin: number, out: Float64Array, offset: number,
+): void {
   if (voltage <= -3 * JUNCTION_VT) {
-    out[offset] = GMIN;
-    out[offset + 1] = GMIN * voltage - saturationCurrent;
+    out[offset] = gmin;
+    out[offset + 1] = gmin * voltage - saturationCurrent;
     return;
   }
   const expTerm = Math.exp(Math.min(MAX_EXP_ARG, voltage / JUNCTION_VT));
-  out[offset] = saturationCurrent * expTerm / JUNCTION_VT + GMIN;
-  out[offset + 1] = saturationCurrent * (expTerm - 1) + GMIN * voltage;
+  out[offset] = saturationCurrent * expTerm / JUNCTION_VT + gmin;
+  out[offset + 1] = saturationCurrent * (expTerm - 1) + gmin * voltage;
 }
 
 /** ngspice devsup.c DEVpnjlim: limit a junction voltage step from `previous`. */
@@ -177,7 +182,7 @@ export class MOSFET implements DeviceModel {
    * DEVpnjlim when vds >= 0 (vbd otherwise) against the previous stamp, so a
    * converged Newton point is evaluated without limiting.
    */
-  private evaluateBulkJunctions(vD: number, vS: number, vB: number): Float64Array {
+  private evaluateBulkJunctions(vD: number, vS: number, vB: number, gmin: number): Float64Array {
     const polarity = this.params.polarity;
     const vds = polarity * (vD - vS);
     let vbs = polarity * (vB - vS);
@@ -192,8 +197,8 @@ export class MOSFET implements DeviceModel {
     this.lastVbs = vbs;
     this.lastVbd = vbd;
     const out = junctionScratch;
-    bulkJunction(vbs, this.sourceSatCur, out, 0);
-    bulkJunction(vbd, this.drainSatCur, out, 2);
+    bulkJunction(vbs, this.sourceSatCur, gmin, out, 0);
+    bulkJunction(vbd, this.drainSatCur, gmin, out, 2);
     out[1] -= out[0] * vbs;
     out[3] -= out[2] * vbd;
     return out;
@@ -360,7 +365,7 @@ export class MOSFET implements DeviceModel {
     const [jD, , jS] = this.nodes;
     const jB = this.bulkNode;
     const junction = this.evaluateBulkJunctions(
-      vD, vS, jB >= 0 ? ctx.getVoltage(jB) : 0,
+      vD, vS, jB >= 0 ? ctx.getVoltage(jB) : 0, ctx.gmin ?? DEVICE_GMIN,
     );
     const gbs = junction[0];
     const gbd = junction[2];
@@ -457,6 +462,7 @@ export class MOSFET implements DeviceModel {
     b: Float64Array,
     solution: Float64Array,
     stampIndex: (row: number, col: number) => number,
+    gmin: number = DEVICE_GMIN,
   ): void {
     for (let m = 0; m < mosfets.length; m++) {
       const mosfet = mosfets[m];
@@ -535,7 +541,7 @@ export class MOSFET implements DeviceModel {
       // Bulk-source / bulk-drain junctions use the unswapped terminals.
       const [jD, , jS] = mosfet.nodes;
       const jB = mosfet.bulkNode;
-      const junction = mosfet.evaluateBulkJunctions(vD, vS, jB >= 0 ? solution[jB] : 0);
+      const junction = mosfet.evaluateBulkJunctions(vD, vS, jB >= 0 ? solution[jB] : 0, gmin);
       const gbs = junction[0];
       const gbd = junction[2];
       const ceqbs = polarity * junction[1];
