@@ -249,7 +249,9 @@ function buildParams(
 ): Record<string, number | string | boolean> {
   switch (desc.type) {
     case 'R': {
-      if (!desc.modelName) return { resistance: desc.value ?? 0 };
+      if (!desc.modelName) {
+        return { resistance: resolveResistor(desc.name, desc.value, undefined, desc.params).resistance };
+      }
       const model = models.get(desc.modelName);
       return {
         resistance: desc.value ?? (model ? resolveResistor(desc.name, undefined, model, desc.params).resistance : 0),

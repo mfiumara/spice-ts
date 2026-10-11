@@ -210,8 +210,9 @@ describe('ngspice-47 resistor card forms (#498)', () => {
     expect(() => parseTitleless('R1 1 0\nV1 1 0 1\n.op')).toThrow(ParseError);
     expect(() => parseTitleless('R1 1 0 rmissing\nV1 1 0 1\n.op').compile())
       .toThrow(InvalidCircuitError);
-    expect(() => parseTitleless('R1 1 0 rempty\n.model rempty r tc1=1m\nV1 1 0 1\n.op').compile())
-      .toThrow("Resistor 'R1' has no resistance");
+    // ngspice-47 restemp.c: a model without R or RSH defaults to 1 mOhm (#574).
+    expect(resistor('R1 1 0 rempty\n.model rempty r tc1=1m\nV1 1 0 1\n.op', 'R1').resistance)
+      .toBe(1e-3);
   });
 
   it('rejects .noise for a resistor model with flicker noise', async () => {

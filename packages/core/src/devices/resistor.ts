@@ -20,6 +20,8 @@ export interface ResistorParameters {
   noisy?: boolean;
   /** `.model R` flicker-noise coefficient KF (not simulated). */
   flickerCoefficient?: number;
+  /** ngspice-47 warnings from resolving the resistance, surfaced as `'model'` warnings. */
+  warnings?: readonly string[];
 }
 
 export class Resistor implements DeviceModel {
@@ -33,6 +35,7 @@ export class Resistor implements DeviceModel {
   acConductance: number | undefined;
   private nominalResistance: number;
   private temperature = 27;
+  readonly modelWarnings?: readonly string[];
 
   constructor(
     readonly name: string,
@@ -43,6 +46,7 @@ export class Resistor implements DeviceModel {
   ) {
     this.branches = branchIndex === undefined ? [] : [branchIndex];
     this.nominalResistance = resistance;
+    if (parameters.warnings?.length) this.modelWarnings = parameters.warnings;
     this.applyTemperature();
   }
 

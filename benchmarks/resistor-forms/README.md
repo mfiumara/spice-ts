@@ -14,7 +14,8 @@ corpus-f batch-1 decks in the `device: R-card forms` bucket (#484):
 
 Semantics follow ngspice-47 `restemp.c RESupdate_conduct`: an explicit value
 wins, then `RSH*(L-2*SHORT)/(W-2*NARROW)` when `L*W*RSH > 0`, then the model
-`R`. `G = M / (R * factor * SCALE)`; any `TCE` (instance or model) selects
+`R`, else 1 mOhm with a warning (#574, see `../resistor-default-574`).
+`G = M / (R * factor * SCALE)`; any `TCE` (instance or model) selects
 `factor = 1.01^(TCE*dT)`, otherwise `1 + TC1*dT + TC2*dT^2`. Thermal noise
 uses the DC conductance even when `ac=` is given (as ngspice does).
 
