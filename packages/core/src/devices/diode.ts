@@ -181,6 +181,13 @@ export class Diode implements DeviceModel {
   private previousJunctionVoltage: number | undefined;
   /** Junction voltage of the last accepted transient timepoint (CKTstate1). */
   private acceptedJunctionVoltage: number | undefined;
+  /** Junction voltage and step of the accepted timepoint before that (CKTstate2, CKTdeltaOld[1]). */
+  private priorAcceptedJunctionVoltage: number | undefined;
+  private acceptedStep: number | undefined;
+  /** The next stamp is the first Newton iterate of a timepoint (ngspice MODEINITPRED). */
+  private predictJunction = false;
+  /** A transient Newton solve ran since the last accepted timepoint. */
+  private inTransientNewton = false;
   /** Junction voltage of the last undamped transient Newton solve, if unused. */
   private newtonJunctionVoltage: number | undefined;
   /** Whether the last stamp limited the junction (ngspice noncon). */
@@ -285,6 +292,26 @@ export class Diode implements DeviceModel {
       this.previousJunctionVoltage = this.acceptedJunctionVoltage;
     }
     this.newtonJunctionVoltage = undefined;
+    this.predictJunction = true;
+    this.inTransientNewton = true;
+  }
+
+  /**
+   * First-iterate junction voltage of a timepoint, as ngspice dioload.c
+   * MODEINITPRED: DEVpred extrapolates the two accepted junction voltages,
+   * vd = (1+x)*vd(n) - x*vd(n-1) with x = h(n+1)/h(n). The first timepoint
+   * after the operating point (MODEINITTRAN) starts from vd(n). On a
+   * non-monotonic junction charge (the sidewall F1 step, #450) the start
+   * selects which charge-conserving solution Newton converges to.
+   */
+  private predictedJunctionVoltage(dt: number): number | undefined {
+    const accepted = this.acceptedJunctionVoltage;
+    if (accepted === undefined) return undefined;
+    const prior = this.priorAcceptedJunctionVoltage;
+    const step = this.acceptedStep;
+    if (prior === undefined || step === undefined || !(step > 0) || !(dt > 0)) return accepted;
+    const ratio = dt / step;
+    return (1 + ratio) * accepted - ratio * prior;
   }
 
   observeTransientNewton(solution: Float64Array): void {
@@ -302,14 +329,28 @@ export class Diode implements DeviceModel {
 
   acceptTransientStep(ctx: StampContext): void {
     const [nA, nK] = this.nodes;
-    this.acceptedJunctionVoltage = (nA >= 0 ? ctx.getVoltage(nA) : 0)
-      - (nK >= 0 ? ctx.getVoltage(nK) : 0);
+    const voltage = (nA >= 0 ? ctx.getVoltage(nA) : 0) - (nK >= 0 ? ctx.getVoltage(nK) : 0);
+    if (this.inTransientNewton) {
+      this.priorAcceptedJunctionVoltage = this.acceptedJunctionVoltage;
+      this.acceptedStep = ctx.dt;
+    } else {
+      // Operating point: the transient history restarts here.
+      this.priorAcceptedJunctionVoltage = undefined;
+      this.acceptedStep = undefined;
+    }
+    this.acceptedJunctionVoltage = voltage;
+    this.inTransientNewton = false;
+    this.predictJunction = false;
     this.newtonJunctionVoltage = undefined;
     if (this.integratesTransientCharge) this.acceptCharge(this.acceptedJunctionVoltage);
   }
 
   resetTransient(): void {
     this.acceptedJunctionVoltage = undefined;
+    this.priorAcceptedJunctionVoltage = undefined;
+    this.acceptedStep = undefined;
+    this.predictJunction = false;
+    this.inTransientNewton = false;
     this.newtonJunctionVoltage = undefined;
     this.limited = false;
     this.acceptedCharge = undefined;
@@ -450,6 +491,9 @@ export class Diode implements DeviceModel {
     this.limited = false;
     if (this.limitsOwnJunctions) {
       if (this.newtonJunctionVoltage !== undefined) vd = this.newtonJunctionVoltage;
+      const predicted = this.predictJunction ? this.predictedJunctionVoltage(ctx.dt) : undefined;
+      if (predicted !== undefined) vd = predicted;
+      this.predictJunction = false;
       this.newtonJunctionVoltage = undefined;
       // ngspice dioload.c limits the junction relative to the previous Newton
       // iterate (CKTstate0 DIOvoltage) and stores the limited value back, in
@@ -584,11 +628,13 @@ export class Diode implements DeviceModel {
   private junctionCharge(voltage: number): { charge: number; capacitance: number } {
     const { CJ0, CJSW, VJ, VJSW, M, MJSW, FC, FCS, TT } = this.params;
     const bottom = depletionCharge(voltage, CJ0!, VJ!, M!, FC!);
-    // ngspice-47 offsets the sidewall charge above FCS*VJSW with the bottom
-    // junction's F1 (DIOtF1), which steps the charge at FCS*VJSW whenever the
-    // bottom and sidewall F1 differ. That step is not reproduced: the charge
-    // here is the integral of the (ngspice-identical) capacitance (#450).
-    const sidewall = depletionCharge(voltage, CJSW!, VJSW!, MJSW!, FCS!);
+    // ngspice-47 dioload.c:559 offsets the sidewall charge above FCS*VJSW with
+    // the bottom junction's F1 (DIOtF1 = VJ*(1-(1-FC)^(1-M))/(1-M)), not a
+    // sidewall F1, so the charge steps at FCS*VJSW by CJSW*(F1 - F1sw)
+    // whenever the two differ. The capacitance is unaffected (#450).
+    const sidewall = depletionCharge(
+      voltage, CJSW!, VJSW!, MJSW!, FCS!, abruptJunctionCharge(FC! * VJ!, 1, VJ!, M!),
+    );
     let charge = bottom.charge + sidewall.charge;
     let capacitance = bottom.capacitance + sidewall.capacitance;
     if (TT) {
@@ -631,7 +677,9 @@ export class Diode implements DeviceModel {
 /**
  * Depletion charge and capacitance of one junction component, as ngspice
  * dioload.c: Q = VJ*CJ0*(1 - (1-V/VJ)^(1-M))/(1-M) below FC*VJ, and the
- * integral of the linear capacitance extension above it, so Q is C^1.
+ * integral of the linear capacitance extension above it. Above FC*VJ the
+ * extension starts from CJ0*F1; `f1` overrides F1 (default: this junction's
+ * own, which keeps Q C^1) for the ngspice sidewall quirk.
  */
 function depletionCharge(
   voltage: number,
@@ -639,6 +687,7 @@ function depletionCharge(
   junctionPotential: number,
   gradingCoefficient: number,
   forwardCoefficient: number,
+  f1?: number,
 ): { charge: number; capacitance: number } {
   if (!zeroBiasCapacitance) return { charge: 0, capacitance: 0 };
   const { capacitance } = depletionChargeTaylor(
@@ -657,9 +706,11 @@ function depletionCharge(
     linear * (voltage - threshold)
     + gradingCoefficient / (2 * junctionPotential) * (voltage * voltage - threshold * threshold)
   );
+  const offset = f1 === undefined
+    ? abruptJunctionCharge(threshold, zeroBiasCapacitance, junctionPotential, gradingCoefficient)
+    : zeroBiasCapacitance * f1;
   return {
-    charge: abruptJunctionCharge(threshold, zeroBiasCapacitance, junctionPotential, gradingCoefficient)
-      + extension,
+    charge: offset + extension,
     capacitance,
   };
 }
