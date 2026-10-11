@@ -1,4 +1,4 @@
-import { ParseError } from '../errors.js';
+import { ModelTypeMismatchError, ParseError, UnsupportedCircuitModelTypeError } from '../errors.js';
 
 /**
  * `.model` types that a spice-ts device consumes. Every other type is rejected
@@ -15,6 +15,47 @@ export const SUPPORTED_MODEL_TYPES: ReadonlySet<string> = new Set([
   'R', 'C', 'L',
   'LTRA', 'TXL', 'CPL',
 ]);
+
+/**
+ * Model types each model-referencing instance accepts, keyed by SPICE instance
+ * letter (ngspice-47 rejects an instance whose model belongs to another device
+ * kind). Every listed type is in {@link SUPPORTED_MODEL_TYPES}.
+ */
+export const DEVICE_MODEL_TYPES: Readonly<Record<string, readonly string[]>> = {
+  R: ['R'],
+  C: ['C'],
+  L: ['L'],
+  D: ['D'],
+  Q: ['NPN', 'PNP'],
+  J: ['NJF'],
+  M: ['NMOS', 'PMOS', 'VDMOS', 'VDMOSN', 'VDMOSP'],
+  Z: ['NHFET', 'NMF'],
+};
+
+/**
+ * Upper-case and validate a model registered outside the netlist parser
+ * (Circuit API, subcircuit body, JSON protocol). Returns the normalized type.
+ */
+export function normalizeModelType(modelName: string, modelType: string): string {
+  const upper = modelType.toUpperCase();
+  if (!SUPPORTED_MODEL_TYPES.has(upper)) {
+    throw new UnsupportedCircuitModelTypeError(modelName, upper, [...SUPPORTED_MODEL_TYPES]);
+  }
+  return upper;
+}
+
+/** Throw unless `modelType` belongs to the device kind of instance letter `kind`. */
+export function assertDeviceModelType(
+  kind: string,
+  deviceName: string,
+  modelName: string,
+  modelType: string,
+): void {
+  const expected = DEVICE_MODEL_TYPES[kind];
+  if (expected && !expected.includes(modelType)) {
+    throw new ModelTypeMismatchError(deviceName, kind, modelName, modelType, expected);
+  }
+}
 
 /**
  * Thrown when a `.model` card declares a type that no spice-ts device

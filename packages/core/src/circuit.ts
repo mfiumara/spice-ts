@@ -57,6 +57,7 @@ import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
+import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
 import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
 import { parseResistorElement } from './parser/resistor-parser.js';
@@ -1002,9 +1003,16 @@ export class Circuit {
    * Register a device model parameter card (`.model`).
    *
    * @param params - Model parameters including name, type (e.g., `'NPN'`, `'NMOS'`), and parameter values
+   * @throws UnsupportedCircuitModelTypeError if no spice-ts device implements the model type
    */
   addModel(params: ModelParams): void {
-    this._models.set(params.name, params);
+    this.registerModel(params);
+  }
+
+  /** Store a model with its type upper-cased, rejecting unsupported types (#544). */
+  private registerModel(params: ModelParams): void {
+    const type = normalizeModelType(params.name, params.type);
+    this._models.set(params.name, type === params.type ? params : { ...params, type });
   }
 
   /**
@@ -1315,8 +1323,10 @@ export class Circuit {
    */
   compile(guard?: ProtocolExecutionGuard): CompiledCircuit {
     // Pre-expand subcircuit instances into flat device descriptors
+    const flatDescriptors = this.expandAllSubcircuits(guard);
+    this.assertDeviceModelTypes(flatDescriptors);
     const expandedDescriptors = this.expandPassiveParasitics(
-      this.expandLossyTransmissionLines(this.expandAllSubcircuits(guard)),
+      this.expandLossyTransmissionLines(flatDescriptors),
     );
     guard?.maximum('maxComponents', expandedDescriptors.length, 'compile');
     if (
@@ -2169,6 +2179,19 @@ export class Circuit {
    * it is undefined. ngspice refuses such instances ("Unable to find definition
    * of model"); falling back to defaults would silently simulate a different device.
    */
+  /**
+   * Reject instances whose model belongs to another device kind (e.g. an M
+   * card naming an NPN model), before any device-specific expansion (#544).
+   * Unknown model names are left to the per-device resolution paths.
+   */
+  private assertDeviceModelTypes(descriptors: readonly DeviceDescriptor[]): void {
+    for (const desc of descriptors) {
+      if (!desc.modelName) continue;
+      const model = this._models.get(desc.modelName);
+      if (model) assertDeviceModelType(desc.type, desc.name, desc.modelName, model.type);
+    }
+  }
+
   private requireModel(kind: string, desc: DeviceDescriptor): ModelParams {
     const model = this._models.get(desc.modelName ?? '');
     if (!model) {
@@ -2262,7 +2285,7 @@ export class Circuit {
         const modelParams = parseTransmissionLineModelCard(tokens, 0)
           ?? parseModelCard(tokens, 0);
         // Register in the circuit's global model map so compile() can find it
-        this._models.set(modelParams.name, modelParams);
+        this.registerModel(modelParams);
         continue;
       }
 

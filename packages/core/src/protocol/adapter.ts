@@ -22,10 +22,12 @@ import {
   ConvergenceError,
   CycleError,
   InvalidCircuitError,
+  ModelTypeMismatchError,
   ParseError,
   SingularMatrixError,
   SpiceError,
   TimestepTooSmallError,
+  UnsupportedCircuitModelTypeError,
 } from '../errors.js';
 import { parseTitlelessAsync } from '../parser/index.js';
 import type { ACResult, DCSweepResult, DCResult, SimulationResult, StepResult, TransientResult } from '../results.js';
@@ -182,6 +184,21 @@ export function mapProtocolErrorV1(error: unknown): SpiceApiErrorV1 {
       kind: error.kind,
       involvedNodes: error.involvedNodes.slice(0, MAX_DETAIL_NAMES),
       sourcePaths: error.sourcePaths.slice(0, MAX_DETAIL_NAMES),
+    });
+  }
+  if (error instanceof UnsupportedCircuitModelTypeError) {
+    return apiError('UNSUPPORTED_FEATURE', error, 'validation', {
+      reason: error.code, modelName: error.modelName, modelType: error.modelType,
+    });
+  }
+  if (error instanceof ModelTypeMismatchError) {
+    return apiError('INVALID_CIRCUIT', error, 'compile', {
+      reason: error.code,
+      deviceName: error.deviceName,
+      deviceKind: error.deviceKind,
+      modelName: error.modelName,
+      modelType: error.modelType,
+      expectedTypes: [...error.expectedTypes],
     });
   }
   if (error instanceof InvalidCircuitError) {
