@@ -3,13 +3,11 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
 // Source tests pin the facade to the worker in dist/, mirroring the define that
-// scripts/build.ts injects into dist/index.js (#412). Without a build, use a pin
-// that matches nothing so the facade fails closed.
-function bundledWorkerPin(): Record<string, string | number> {
+// scripts/build.ts injects into dist/index.js (#412). Without a build there is no
+// pin and the facade fails closed on the bundled manifest.
+function bundledWorkerPin(): Record<string, string | number> | undefined {
   const manifestPath = fileURLToPath(new URL('./dist/manifest.json', import.meta.url));
-  if (!existsSync(manifestPath)) {
-    return { engineBuildId: '', sha256: '', numericEngineBuildId: '', numericSha256: '', numericByteLength: -1 };
-  }
+  if (!existsSync(manifestPath)) return undefined;
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
   return {
     engineBuildId: manifest.engineBuildId,
@@ -20,10 +18,10 @@ function bundledWorkerPin(): Record<string, string | number> {
   };
 }
 
+const pin = bundledWorkerPin();
+
 export default defineConfig({
-  define: {
-    __SPICE_TS_BUNDLED_WORKER__: JSON.stringify(bundledWorkerPin()),
-  },
+  define: pin ? { __SPICE_TS_BUNDLED_WORKER__: JSON.stringify(pin) } : {},
   resolve: {
     alias: {
       '@spice-ts/core': fileURLToPath(new URL('../core/src/index.ts', import.meta.url)),
