@@ -1,29 +1,29 @@
-/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/prof-before/rc-ladder-tran-1000.cpuprofile: 102 samples, 369.2 ms sampled
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/run2/prof-before/rc-ladder-tran-1000.cpuprofile: 119 samples, 845.9 ms sampled
 
 Top self time
-      73.0 ms  19.8%  buildCompanionSystem packages/core/dist/chunk-JYXEBWTO.js:16752
-      67.0 ms  18.2%  stampG packages/core/dist/chunk-JYXEBWTO.js:16226
-      53.2 ms  14.4%  attemptStep packages/core/dist/chunk-JYXEBWTO.js:16932
-      32.5 ms   8.8%  stamp packages/core/dist/chunk-JYXEBWTO.js:782
-      22.7 ms   6.2%  factorize packages/core/dist/chunk-JYXEBWTO.js:15688
-      17.2 ms   4.6%  (garbage collector)
-      11.9 ms   3.2%  compileSourceTextModule node:internal/modules/esm/utils:344
-      10.1 ms   2.7%  newtonRaphson packages/core/dist/chunk-JYXEBWTO.js:16341
-       8.5 ms   2.3%  stampPrevB packages/core/dist/chunk-JYXEBWTO.js:17578
-       8.3 ms   2.3%  (program)
-       6.6 ms   1.8%  advanceSolution packages/core/dist/chunk-JYXEBWTO.js:17363
-       5.1 ms   1.4%  get pathname node:internal/url:1079
+     166.7 ms  19.7%  buildCompanionSystem packages/core/dist/chunk-U7VPSPAU.js:17937
+     151.5 ms  17.9%  stampG packages/core/dist/chunk-U7VPSPAU.js:17410
+      81.0 ms   9.6%  (garbage collector)
+      80.1 ms   9.5%  stamp packages/core/dist/chunk-U7VPSPAU.js:1219
+      38.8 ms   4.6%  attemptStep packages/core/dist/chunk-U7VPSPAU.js:18117
+      29.9 ms   3.5%  stamp packages/core/dist/chunk-U7VPSPAU.js:1506
+      26.8 ms   3.2%  compileSourceTextModule node:internal/modules/esm/utils:344
+      25.0 ms   3.0%  factorize packages/core/dist/chunk-U7VPSPAU.js:16804
+      24.1 ms   2.9%  stampPrevB packages/core/dist/chunk-U7VPSPAU.js:18799
+      24.0 ms   2.8%  save packages/core/dist/chunk-U7VPSPAU.js:19142
+      16.8 ms   2.0%  stampC packages/core/dist/chunk-U7VPSPAU.js:17416
+      16.6 ms   2.0%  lockTopology packages/core/dist/chunk-U7VPSPAU.js:17220
 
 Top inclusive time
-     369.2 ms 100.0%  (root)
-     317.8 ms  86.1%  simulate packages/core/dist/chunk-JYXEBWTO.js:20972
-     282.0 ms  76.4%  solveTransient packages/core/dist/chunk-JYXEBWTO.js:17888
-     276.4 ms  74.9%  advanceSolution packages/core/dist/chunk-JYXEBWTO.js:17363
-     223.3 ms  60.5%  attemptStep packages/core/dist/chunk-JYXEBWTO.js:16932
-     144.8 ms  39.2%  buildCompanionSystem packages/core/dist/chunk-JYXEBWTO.js:16752
-      85.0 ms  23.0%  stamp packages/core/dist/chunk-JYXEBWTO.js:782
-      68.9 ms  18.7%  stampG packages/core/dist/chunk-JYXEBWTO.js:16226
-      47.0 ms  12.7%  stampPrevB packages/core/dist/chunk-JYXEBWTO.js:17578
-      22.7 ms   6.2%  factorize packages/core/dist/chunk-JYXEBWTO.js:15688
-      21.6 ms   5.8%  solveLinearized packages/core/dist/chunk-JYXEBWTO.js:17024
-      18.0 ms   4.9%  newtonRaphson packages/core/dist/chunk-JYXEBWTO.js:16341
+     845.9 ms 100.0%  (root)
+     708.1 ms  83.7%  simulate packages/core/dist/chunk-U7VPSPAU.js:22218
+     650.8 ms  76.9%  solveTransient packages/core/dist/chunk-U7VPSPAU.js:19111
+     623.9 ms  73.8%  advanceSolution packages/core/dist/chunk-U7VPSPAU.js:18571
+     526.0 ms  62.2%  attemptStep packages/core/dist/chunk-U7VPSPAU.js:18117
+     381.0 ms  45.0%  buildCompanionSystem packages/core/dist/chunk-U7VPSPAU.js:17937
+     241.8 ms  28.6%  stamp packages/core/dist/chunk-U7VPSPAU.js:1219
+     161.7 ms  19.1%  stampWith packages/core/dist/chunk-U7VPSPAU.js:1230
+     158.1 ms  18.7%  stampG packages/core/dist/chunk-U7VPSPAU.js:17410
+      82.4 ms   9.7%  stampPrevB packages/core/dist/chunk-U7VPSPAU.js:18799
+      81.0 ms   9.6%  (garbage collector)
+      36.0 ms   4.3%  solveLinearized packages/core/dist/chunk-U7VPSPAU.js:18209

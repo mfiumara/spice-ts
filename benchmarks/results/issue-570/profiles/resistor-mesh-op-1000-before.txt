@@ -1,29 +1,29 @@
-/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/prof-before/resistor-mesh-op-1000.cpuprofile: 38 samples, 142.7 ms sampled
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/run2/prof-before/resistor-mesh-op-1000.cpuprofile: 41 samples, 279.6 ms sampled
 
 Top self time
-      26.9 ms  18.9%  factorize packages/core/dist/chunk-JYXEBWTO.js:15688
-      14.0 ms   9.8%  (idle)
-      12.1 ms   8.5%  amdOrdering packages/core/dist/chunk-JYXEBWTO.js:15378
-      10.2 ms   7.2%  (program)
-       9.9 ms   6.9%  compileForInternalLoader node:internal/bootstrap/realm:385
-       8.8 ms   6.2%  compileSourceTextModule node:internal/modules/esm/utils:344
-       8.8 ms   6.2%  newtonRaphson packages/core/dist/chunk-JYXEBWTO.js:16341
-       8.0 ms   5.6%  parseNumber packages/core/dist/chunk-JYXEBWTO.js:4889
-       6.6 ms   4.6%  growLookup packages/core/dist/chunk-JYXEBWTO.js:16054
-       5.0 ms   3.5%  getSparseSolver packages/core/dist/chunk-JYXEBWTO.js:16163
-       5.0 ms   3.5%  stampG packages/core/dist/chunk-JYXEBWTO.js:16252
-       5.0 ms   3.5%  (anonymous) packages/core/dist/chunk-JYXEBWTO.js:1157
+      45.5 ms  16.3%  detectModuleFormat node:internal/modules/esm/get_format:36
+      35.0 ms  12.5%  (garbage collector)
+      26.6 ms   9.5%  analyzePattern packages/core/dist/chunk-U7VPSPAU.js:16708
+      23.7 ms   8.5%  lockTopology packages/core/dist/chunk-U7VPSPAU.js:17220
+      20.7 ms   7.4%  factorize packages/core/dist/chunk-U7VPSPAU.js:16804
+      16.2 ms   5.8%  amdOrdering packages/core/dist/chunk-U7VPSPAU.js:16488
+      13.0 ms   4.7%  compileSourceTextModule node:internal/modules/esm/utils:344
+      10.9 ms   3.9%  (program)
+       9.6 ms   3.4%  stampWith packages/core/dist/chunk-U7VPSPAU.js:1230
+       9.5 ms   3.4%  (idle)
+       9.0 ms   3.2%  simulate packages/core/dist/chunk-U7VPSPAU.js:22218
+       8.6 ms   3.1%  newtonRaphson packages/core/dist/chunk-U7VPSPAU.js:17525
 
 Top inclusive time
-     142.7 ms 100.0%  (root)
-      78.9 ms  55.3%  simulate packages/core/dist/chunk-JYXEBWTO.js:20972
-      74.0 ms  51.9%  newtonRaphson packages/core/dist/chunk-JYXEBWTO.js:16341
-      74.0 ms  51.9%  solveDCOperatingPoint packages/core/dist/chunk-JYXEBWTO.js:16557
-      26.9 ms  18.9%  factorize packages/core/dist/chunk-JYXEBWTO.js:15688
-      17.2 ms  12.0%  getSparseSolver packages/core/dist/chunk-JYXEBWTO.js:16163
-      14.0 ms   9.8%  (idle)
-      13.6 ms   9.5%  #createModuleJob node:internal/modules/esm/loader:632
-      13.6 ms   9.5%  #getJobFromResolveResult node:internal/modules/esm/loader:347
-      13.6 ms   9.5%  getModuleJobForImport node:internal/modules/esm/loader:319
-      12.8 ms   9.0%  parseNetlist packages/core/dist/chunk-JYXEBWTO.js:14198
-      12.8 ms   9.0%  parse packages/core/dist/chunk-JYXEBWTO.js:14192
+     279.6 ms 100.0%  (root)
+     145.1 ms  51.9%  simulate packages/core/dist/chunk-U7VPSPAU.js:22218
+     125.3 ms  44.8%  solveDCOperatingPoint packages/core/dist/chunk-U7VPSPAU.js:17742
+     116.8 ms  41.8%  newtonRaphson packages/core/dist/chunk-U7VPSPAU.js:17525
+      62.0 ms  22.2%  getModuleJobForImport node:internal/modules/esm/loader:319
+      58.5 ms  20.9%  loadAndTranslate node:internal/modules/esm/loader:608
+      58.5 ms  20.9%  #createModuleJob node:internal/modules/esm/loader:632
+      58.5 ms  20.9%  #getJobFromResolveResult node:internal/modules/esm/loader:347
+      45.5 ms  16.3%  detectModuleFormat node:internal/modules/esm/get_format:36
+      45.5 ms  16.3%  getFileProtocolModuleFormat node:internal/modules/esm/get_format:111
+      45.5 ms  16.3%  defaultGetFormat node:internal/modules/esm/get_format:240
+      45.5 ms  16.3%  defaultLoadSync node:internal/modules/esm/load:136

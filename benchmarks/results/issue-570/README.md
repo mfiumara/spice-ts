@@ -1,7 +1,9 @@
 # Issue #570: M2 scaling decks after #548, next bottleneck
 
-Base: main `702faed` (includes #541 LU-factor reuse and #548 result
-recording). Machine: Apple M5 Pro (18 cores), Node v22.23.1, ngspice-47 (KLU
+Base: main `93987d0` (includes #541 LU-factor reuse, #548 result recording
+and the #498/#574 resistor changes; the branch merges it). An earlier pass of
+this work measured against main `702faed`; all numbers below were rerun on
+`93987d0`. Machine: Apple M5 Pro (18 cores), Node v22.23.1, ngspice-47 (KLU
 compiled in). The machine was shared with other agents throughout, at load
 average roughly 20-100 on 18 cores, and the load changed between runs. The
 A/B below therefore starts both builds at the same moment and reports process
@@ -13,39 +15,39 @@ CPU time next to wall time. CPU time is the column to read.
 (one warmup plus one measured `simulate()`), summarised with
 `benchmarks/performance/profile-summary.mjs` (`scripts/prof.sh` runs both).
 Raw `.cpuprofile` files and summaries are in `profiles/` (`-before` = main
-`702faed`, `-after` = this branch). Before and after ran at different moments
+`93987d0`, `-after` = this branch). Before and after ran at different moments
 under different load, so compare shares, not absolute ms.
 
 Top 5 self-time frames per deck (`scripts/table.mjs`):
 
 | deck | build | sampled s | #1 | #2 | #3 | #4 | #5 |
 |---|---|---:|---|---|---|---|---|
-| rc-ladder-tran-1000 | before | 0.37 | buildCompanionSystem 19.8% | stampG 18.2% | attemptStep 14.4% | stamp 8.8% | factorize 6.2% |
-| rc-ladder-tran-1000 | after | 0.49 | attemptStep 16.7% | (garbage collector) 11.1% | factorize 8.5% | advanceSolution 5.8% | buildCompanionSystem 5.7% |
-| rc-ladder-tran-10000 | before | 2.48 | buildCompanionSystem 18.2% | stampG 15.6% | factorize 9.2% | attemptStep 8.6% | stamp 7.6% |
-| rc-ladder-tran-10000 | after | 3.36 | attemptStep 16.3% | buildCompanionSystem 14.3% | (garbage collector) 13.4% | factorize 13.4% | save 4.8% |
-| rc-ladder-tran-50000 | before | 11.99 | stampG 18.6% | buildCompanionSystem 16.9% | attemptStep 9.8% | factorize 9.7% | stamp 8.3% |
-| rc-ladder-tran-50000 | after | 15.84 | save 15.6% | factorize 15.3% | attemptStep 13.8% | (garbage collector) 11.9% | buildCompanionSystem 8.8% |
-| resistor-mesh-op-1000 | before | 0.14 | factorize 18.9% | (idle) 9.8% | amdOrdering 8.5% | (program) 7.2% | compileForInternalLoader 6.9% |
-| resistor-mesh-op-1000 | after | 0.27 | (garbage collector) 30.0% | (idle) 14.6% | remove 9.7% | compileSourceTextModule 8.0% | (program) 7.6% |
-| resistor-mesh-op-10000 | before | 0.62 | factorize 32.3% | amdOrdering 12.1% | (garbage collector) 6.4% | compile 5.1% | lockTopology 4.3% |
-| resistor-mesh-op-10000 | after | 1.62 | factorize 26.8% | (garbage collector) 25.6% | amdOrdering 11.3% | compile 6.9% | lockTopology 6.6% |
-| resistor-mesh-op-50000 | before | 4.18 | factorize 61.7% | amdOrdering 11.2% | (garbage collector) 7.4% | compile 2.8% | lockTopology 2.3% |
-| resistor-mesh-op-50000 | after | 12.25 | factorize 67.1% | (garbage collector) 9.0% | amdOrdering 8.1% | compile 2.2% | lockTopology 1.4% |
-| cmos-inverter-chain-tran-1000 | before | 2.69 | stamp 12.6% | batchStamp 11.6% | stampG 11.5% | evaluateBulkJunctions 10.9% | factorize 9.9% |
-| cmos-inverter-chain-tran-1000 | after | 5.81 | (garbage collector) 13.0% | batchStamp 12.1% | stamp 11.0% | factorize 10.7% | evaluateBulkJunctions 10.2% |
-| cmos-inverter-chain-tran-10000 | before | 33.04 | batchStamp 19.2% | stampG 12.0% | stamp 10.1% | evaluateBulkJunctions 9.5% | buildCompanionSystem 8.0% |
-| cmos-inverter-chain-tran-10000 | after | 51.99 | batchStamp 20.2% | stampG 13.1% | evaluateBulkJunctions 11.5% | stamp 11.2% | factorize 8.1% |
+| rc-ladder-tran-1000 | before | 0.85 | buildCompanionSystem 19.7% | stampG 17.9% | (garbage collector) 9.6% | stamp 9.5% | attemptStep 4.6% |
+| rc-ladder-tran-1000 | after | 0.53 | buildCompanionSystem 17.1% | attemptStep 14.2% | (garbage collector) 11.1% | advanceSolution 8.6% | factorize 6.7% |
+| rc-ladder-tran-10000 | before | 5.51 | buildCompanionSystem 13.8% | stampG 12.8% | (garbage collector) 10.9% | factorize 10.6% | attemptStep 9.5% |
+| rc-ladder-tran-10000 | after | 3.01 | factorize 21.3% | attemptStep 10.9% | (garbage collector) 10.9% | buildCompanionSystem 10.4% | stampStaticDevices 10.0% |
+| rc-ladder-tran-50000 | before | 35.76 | (garbage collector) 16.3% | stampG 16.0% | buildCompanionSystem 13.1% | factorize 9.1% | attemptStep 7.9% |
+| rc-ladder-tran-50000 | after | 16.36 | (garbage collector) 14.8% | factorize 14.4% | attemptStep 12.1% | save 11.7% | stampStaticDevices 8.7% |
+| resistor-mesh-op-1000 | before | 0.28 | detectModuleFormat 16.3% | (garbage collector) 12.5% | analyzePattern 9.5% | lockTopology 8.5% | factorize 7.4% |
+| resistor-mesh-op-1000 | after | 0.29 | factorize 12.2% | (garbage collector) 12.1% | newtonRaphson 8.6% | compile 8.3% | analyzePattern 7.8% |
+| resistor-mesh-op-10000 | before | 1.76 | factorize 24.1% | (garbage collector) 17.7% | amdOrdering 12.0% | compile 6.8% | newtonRaphson 5.1% |
+| resistor-mesh-op-10000 | after | 1.26 | factorize 28.0% | amdOrdering 13.8% | (garbage collector) 13.5% | newtonRaphson 4.3% | resolveResistor 4.1% |
+| resistor-mesh-op-50000 | before | 14.37 | factorize 64.5% | (garbage collector) 9.0% | amdOrdering 7.8% | compile 2.7% | analyzePattern 2.4% |
+| resistor-mesh-op-50000 | after | 8.95 | factorize 55.9% | amdOrdering 12.2% | (garbage collector) 10.0% | compile 2.4% | lockTopology 2.3% |
+| cmos-inverter-chain-tran-1000 | before | 9.41 | (garbage collector) 13.5% | stamp 12.6% | batchStamp 10.3% | factorize 8.8% | stampG 8.6% |
+| cmos-inverter-chain-tran-1000 | after | 4.43 | stamp 13.9% | stampG 13.6% | evaluateBulkJunctions 13.1% | factorize 9.0% | batchStamp 8.5% |
+| cmos-inverter-chain-tran-10000 | before | 85.80 | batchStamp 15.8% | stampG 11.8% | evaluateBulkJunctions 10.5% | stamp 9.1% | (garbage collector) 8.9% |
+| cmos-inverter-chain-tran-10000 | after | 68.64 | batchStamp 20.4% | stampG 13.3% | stamp 10.9% | evaluateBulkJunctions 10.6% | (garbage collector) 8.8% |
 
-The mesh "after" profiles ran during a load spike (sampled time 2-3x the
-before run, GC share inflated); the mesh path is effectively unchanged (see
-the A/B control below).
+Before and after profiles ran at different load (sampled times differ by up
+to 2x); read shares only. The mesh path is effectively unchanged (see the A/B
+control below).
 
 Chosen hot spot: **MNA assembly on the transient decks**. On the RC ladder
 the assembly frames together (`buildCompanionSystem`, the fast-path
 `stampG`/`stampC` closures, `Resistor.stamp`, `stampDynamic`, `stampPrevB`,
-`acceptTransientStep`) were 55% of self time at every size
-(`scripts/assembly-share.mjs`), and 40% on the MOS1 chain. `stampG` alone was
+`acceptTransientStep`) were 49-55% of self time at 1k/10k/50k
+(`scripts/assembly-share.mjs`), and 36-42% on the MOS1 chain. `stampG` alone was
 the #1 or #2 frame on every RC size. The mesh OP's top frame is still the one
 numeric `factorize` of a single linear solve (and `amdOrdering`), and the MOS
 chain's top frames are `MOSFET.batchStamp` / `stamp` /
@@ -74,7 +76,8 @@ resistors and capacitors.
   `Resistor`s (or plain `Capacitor`s) is stamped by one loop over value slots
   resolved once with `stampIndex`; every other device is still stamped
   through its own method at its place in the sequence. Values are read from
-  the device at stamp time (`conductance`, `capacitance`), so
+  the device at stamp time (`conductance`, `capacitance`; `conductance` is the effective
+  ngspice RESconduct including M, SCALE and temperature since #498), so
   `setParameter`/temperature updates apply exactly as before. A plain
   capacitor's empty static stamp is skipped.
 - "Plain" means the exact class (prototype is `Resistor.prototype` /
@@ -106,8 +109,11 @@ missing). It compares the program path against per-device stamping with
 device-by-device warm-up passes and the program are exercised), after
 changing every R and C value, after `invalidateTopology` + relock, for a
 sub-list, and on the unlocked Map path. The fixture mixes resistors to ground
-in both orientations, capacitors, a diode, an inductor, sources and a small
-resistor. Mutating either kernel (one `* 1.0000001`) makes 4 of 5 tests fail.
+in both orientations, capacitors, a diode, an inductor, sources, a small
+resistor, and resistors with `m=`, `scale=`, `tc1/tc2` and `tce` plus a
+temperature change. Mutating either kernel (one `* 1.0000001`) makes 4 of 5
+tests fail, and the pre-#498 kernel (`1 / resistance`) fails the parameter
+test by one ulp, which is how the merge with main was caught.
 
 ### Profile after the change
 
@@ -115,15 +121,17 @@ MNA assembly self-time share (`scripts/assembly-share.mjs`):
 
 | deck | before | after |
 |---|---:|---:|
-| RC ladder 1k | 54.9% | 28.0% |
-| RC ladder 10k | 55.1% | 26.8% |
-| RC ladder 50k | 55.5% | 28.5% |
-| MOS1 chain 1k | 40.8% | 35.4% |
-| MOS1 chain 10k | 40.2% | 36.8% |
+| RC ladder 1k | 54.6% | 25.3% |
+| RC ladder 10k | 49.1% | 28.0% |
+| RC ladder 50k | 49.6% | 25.7% |
+| MOS1 chain 1k | 35.8% | 37.9% |
+| MOS1 chain 10k | 42.0% | 37.8% |
 
-On the RC ladder, `stampG` and `Resistor.stamp` drop out of the top 5 (to
-1.4% / 0.9% at 10k); the remaining assembly is the companion arithmetic in
-`buildCompanionSystem` and the two kernels. The MOS chain keeps its
+On the RC ladder `stampG` and `Resistor.stamp` drop out of the top 5; the
+remaining assembly is the companion arithmetic in `buildCompanionSystem` and
+the two kernels (their self time is the slot loads and adds themselves). On
+the MOS chain the assembly share is flat to slightly lower; it is dominated by
+the MOSFET's own `stamp`/`stampG` calls. The MOS chain keeps its
 device-model frames (`batchStamp`, `MOSFET.stamp` via the history restamp and
 `stampG` from it, `evaluateBulkJunctions`).
 
@@ -131,15 +139,13 @@ device-model frames (`batchStamp`, `MOSFET.stamp` via the history restamp and
 
 - `issue-486/sample.mjs` hashes (SHA-256) the time axis and every node
   voltage and branch current as Float64 bytes. In all 108 samples of the A/B
-  both builds gave the same hash per cell (rc 1k `c6710bfb82c7c505`, rc 10k
-  `685f65c16b2ef1e4`, rc 50k `8ca8fb22476658b2`, mesh 10k `73da68241f2c6ad6`,
-  MOS 1k `04a9fa4f0f067778`, MOS 10k `a3f30d5252ca3690`; mesh 1k
-  `cc196ac698927bd3` in the sequential run).
+  both builds gave the same hash per cell (rc 1k `ac5d6929fc25a221`, rc 10k
+  `e59b4235d4c157c7`, rc 50k `d706c8a5619a8049`, mesh 10k `73da68241f2c6ad6`,
+  MOS 1k `04a9fa4f0f067778`, MOS 10k `a3f30d5252ca3690`).
 - Aggregate corpus: `issue-486/corpus-hash.mts` digests of all 100 fixtures'
-  spice-ts `EngineExecution` are byte-identical between main `702faed` and
+  spice-ts `EngineExecution` are byte-identical between main `93987d0` and
   this branch (`corpus-digests-before.json`, `corpus-digests-after.json`),
-  with no child failures. 100/100 identical. (They differ from the #548 files
-  because main gained other fixes since.)
+  with no child failures. 100/100 identical.
 - `benchmarks/accuracy.ts --ci` with each build: the new history entry is
   identical (date excluded), and both print "All circuits within acceptable
   error bounds".
@@ -157,44 +163,40 @@ Process CPU time (user + system, includes GC helper threads):
 
 | cell | n | before median (min) CPU ms | after median (min) CPU ms | median speedup | paired ratio median (min..max) | hash identical |
 |---|---:|---:|---:|---:|---:|---|
-| rc-ladder-tran:1000 | 9 | 326 (253) | 292 (240) | 1.12x | 1.11x (1.01..1.19) | yes c6710bfb82c7c505, 235 pts |
-| rc-ladder-tran:10000 | 9 | 1698 (1183) | 975 (778) | 1.74x | 1.70x (1.52..1.90) | yes 685f65c16b2ef1e4, 235 pts |
-| rc-ladder-tran:50000 | 9 | 8218 (5568) | 4535 (3905) | 1.81x | 1.76x (1.39..2.13) | yes 8ca8fb22476658b2, 235 pts |
-| resistor-mesh-op:10000 (control) | 9 | 373 (299) | 388 (314) | 0.96x | 0.95x (0.91..1.03) | yes 73da68241f2c6ad6, 1 pts |
-| cmos-inverter-chain-tran:1000 | 9 | 1847 (1288) | 1771 (1232) | 1.04x | 1.05x (1.03..1.09) | yes 04a9fa4f0f067778, 654 pts |
-| cmos-inverter-chain-tran:10000 | 9 | 24753 (22879) | 21524 (20757) | 1.15x | 1.15x (1.09..1.20) | yes a3f30d5252ca3690, 654 pts |
+| rc-ladder-tran:1000 | 9 | 341 (321) | 298 (281) | 1.14x | 1.15x (1.00..1.20) | yes ac5d6929fc25a221, 235 pts |
+| rc-ladder-tran:10000 | 9 | 1699 (1617) | 1070 (996) | 1.59x | 1.59x (1.46..1.74) | yes e59b4235d4c157c7, 235 pts |
+| rc-ladder-tran:50000 | 9 | 8338 (6394) | 4732 (4691) | 1.76x | 1.69x (1.36..1.77) | yes d706c8a5619a8049, 235 pts |
+| resistor-mesh-op:10000 (control) | 9 | 424 (385) | 442 (386) | 0.96x | 0.96x (0.91..1.01) | yes 73da68241f2c6ad6, 1 pts |
+| cmos-inverter-chain-tran:1000 | 9 | 1797 (1622) | 1692 (1510) | 1.06x | 1.07x (1.04..1.09) | yes 04a9fa4f0f067778, 654 pts |
+| cmos-inverter-chain-tran:10000 | 9 | 23253 (21780) | 20604 (18930) | 1.13x | 1.13x (1.11..1.20) | yes a3f30d5252ca3690, 654 pts |
 
 Wall time:
 
-| cell | n | before median (min) ms | after median (min) ms | median speedup | paired ratio median (min..max) |
-|---|---:|---:|---:|---:|---:|
-| rc-ladder-tran:1000 | 9 | 371 (145) | 273 (94.2) | 1.36x | 1.38x (0.96..1.64) |
-| rc-ladder-tran:10000 | 9 | 2657 (934) | 1433 (522) | 1.85x | 1.79x (1.05..4.49) |
-| rc-ladder-tran:50000 | 9 | 12284 (4877) | 6124 (3656) | 2.01x | 1.68x (1.23..3.02) |
-| resistor-mesh-op:10000 (control) | 9 | 538 (200) | 551 (207) | 0.98x | 0.98x (0.93..1.03) |
-| cmos-inverter-chain-tran:1000 | 9 | 3167 (1097) | 2907 (1037) | 1.09x | 1.07x (0.98..1.19) |
-| cmos-inverter-chain-tran:10000 | 9 | 40070 (25223) | 36653 (22383) | 1.09x | 1.15x (0.98..1.36) |
+| cell | n | before median (min) ms | after median (min) ms | median speedup | paired ratio median (min..max) | hash identical |
+|---|---:|---:|---:|---:|---:|---|
+| rc-ladder-tran:1000 | 9 | 270 (180) | 199 (121) | 1.36x | 1.25x (0.93..1.64) | yes ac5d6929fc25a221, 235 pts |
+| rc-ladder-tran:10000 | 9 | 1748 (1382) | 1124 (806) | 1.56x | 1.65x (1.41..2.28) | yes e59b4235d4c157c7, 235 pts |
+| rc-ladder-tran:50000 | 9 | 7834 (5993) | 5100 (3868) | 1.54x | 1.53x (1.34..1.97) | yes d706c8a5619a8049, 235 pts |
+| resistor-mesh-op:10000 (control) | 9 | 375 (266) | 383 (267) | 0.98x | 1.00x (0.94..1.01) | yes 73da68241f2c6ad6, 1 pts |
+| cmos-inverter-chain-tran:1000 | 9 | 1997 (1417) | 1723 (1298) | 1.16x | 1.09x (1.07..1.16) | yes 04a9fa4f0f067778, 654 pts |
+| cmos-inverter-chain-tran:10000 | 9 | 27169 (21737) | 23232 (18711) | 1.17x | 1.14x (1.09..1.17) | yes a3f30d5252ca3690, 654 pts |
 
-Reading it: the RC ladder gains 1.7x (10k) and 1.8x (50k) in CPU time with
-every pair faster. The MOS chain gains 5% (1k) and 15% (10k). Individual
-pairs where after was slower: rc 1k wall 0.96x, MOS 1k wall 0.98x, MOS 10k
-wall 0.98x (CPU ratios of those pairs were all >1).
+Reading it: the RC ladder gains 1.6x (10k) and 1.7x (50k) in CPU time, the
+MOS chain 7% (1k) and 13% (10k). Pairs where after was slower: rc 1k wall
+0.93x min (its CPU ratio stayed >= 1.00).
 
 **Control loss, published as measured:** the mesh OP control came out at a
-median paired CPU ratio of 0.95x (0.91..1.03) here, and 0.97x (0.86..1.33)
-in a separate 15-round sequential run (`ab-mesh-sequential.jsonl`, wall
-0.91x median there, mesh 1k 1.02x CPU). In-process, 30 alternating
-`simulate()` calls on the 10k mesh after warmup (`scripts/inproc.mjs`) gave
-1.04x in favour of this branch, and the profile shows the mesh never builds a
-program (`buildProgram` absent). A later 9-round concurrent rerun of the
-control alone (`ab-mesh-concurrent-rerun.jsonl`) gave 1.01x CPU
-(0.94..1.13) but 0.95x wall (0.76..1.22); a build with only the DC
-`newtonRaphson` call site reverted gave 0.98x CPU (0.92..1.07) in the same
-session. So the signal does not reproduce consistently and I could not
-isolate a cause; the only change on that path is one extra function layer
-and a Map lookup per Newton pass. Treat the mesh OP as unchanged to slightly
-slower (up to ~5% CPU in fresh processes) until an unloaded rerun says
-otherwise.
+median paired CPU ratio of 0.96x (0.91..1.01), wall 1.00x (0.94..1.01). The
+first pass of this work (against `702faed`) saw the same pattern: 0.95x CPU
+concurrent, 0.97x in a 15-round sequential run, 1.01x in a rerun. In-process,
+30 alternating `simulate()` calls on the 10k mesh after warmup
+(`scripts/inproc.mjs`, `inproc-mesh.txt`) give 1.05x in favour of this
+branch, and the profile shows the mesh never builds a program. So the
+fresh-process DC path is up to ~4-5% slower in CPU time (one warmup + one run
+per process), with no slowdown once warm; I could not isolate the cause
+beyond the extra function layer and Map lookups on that path. As a small
+nonlinear transient check, the #25 half-wave rectifier test deck
+(`scripts/inproc-netlist.mjs`, `inproc-rect.txt`) is 1.09x faster in-process.
 
 ## 4. spice-ts vs ngspice-47 (KLU), same machine, same decks
 
@@ -205,25 +207,22 @@ moment, so load is **not** paired across engines.
 
 | workload | nodes | spice-ts total median (min) ms | ngspice KLU wall median (min) ms | spice-ts analysis median ms | ngspice analysis median ms | spice-ts / ngspice wall | spice-ts / ngspice analysis | timepoints spice-ts / ngspice |
 |---|---:|---:|---:|---:|---:|---|---|---|
-| rc-ladder-tran | 1,000 | 83.6 (81.1) | 54.3 (49.1) | 80.8 | 21.0 | 1.54x slower | 3.85x slower | 235 / 120 |
-| rc-ladder-tran | 10,000 | 905 (808) | 392 (347) | 819 | 296 | 2.31x slower | 2.76x slower | 235 / 120 |
-| resistor-mesh-op | 1,024 | 20.1 (13.7) | 40.7 (40.6) | 17.0 | 5.0 | 0.49x (faster wall) | 3.39x slower | op / op |
-| resistor-mesh-op | 10,000 | 280 (258) | 296 (238) | 255 | 79.0 | 0.95x (faster wall) | 3.23x slower | op / op |
-| cmos-inverter-chain-tran | 1,000 | 1996 (1707) | 407 (394) | 1990 | 359 | 4.90x slower | 5.54x slower | 654 / 214 |
-| cmos-inverter-chain-tran | 10,000 | 71398 (53129) | 13945 (13028) | 71040 | 13456 | 5.12x slower | 5.28x slower | 654 / 214 |
+| rc-ladder-tran | 1,000 | 74.3 (71.4) | 51.4 (51.1) | 71.6 | 22.8 | 1.45x slower | 3.14x slower | 235 / 120 |
+| rc-ladder-tran | 10,000 | 661 (611) | 303 (296) | 636 | 225 | 2.18x slower | 2.83x slower | 235 / 120 |
+| resistor-mesh-op | 1,024 | 16.1 (13.0) | 33.5 (32.7) | 12.6 | 4.4 | 0.48x (faster) | 2.88x slower | op / op |
+| resistor-mesh-op | 10,000 | 212 (193) | 184 (180) | 190 | 63.4 | 1.15x slower | 2.99x slower | op / op |
+| cmos-inverter-chain-tran | 1,000 | 1527 (1029) | 373 (247) | 1521 | 316 | 4.09x slower | 4.82x slower | 654 / 214 |
+| cmos-inverter-chain-tran | 10,000 | 10340 (7411) | 2981 (2910) | 10314 | 2870 | 3.47x slower | 3.59x slower | 654 / 214 |
 
-spice-ts is still slower than ngspice-47 KLU in every analysis-time cell.
-The two mesh wall-time "wins" are ngspice process startup only: ngspice's own
-analysis beats spice-ts by 3.2-3.4x there. The MOS 10k spice-ts cell ran into
-a load spike (the A/B above measured ~21.5 s CPU for the same build and
-deck), so its ratio is inflated; ngspice's MOS cells also ran slower than in
-#548's table. Because the engines are not load-paired these ratios are rough;
-the unloaded #426 table in `PERFORMANCE_BASELINE.md` stays the reference until
-an unloaded rerun.
+spice-ts is still slower than ngspice-47 KLU in analysis time on every deck
+(2.8-4.8x). The 1k mesh wall-time "win" is ngspice process startup only;
+ngspice's own analysis is 2.9x faster there. Because the engines are not
+load-paired these ratios are rough; the unloaded #426 table in
+`PERFORMANCE_BASELINE.md` stays the reference until an unloaded rerun.
 
 ## 5. Remaining scope (not in this PR)
 
-- RC ladder 50k: result recording (`save`, 15.6%) is now the #1 frame again:
+- RC ladder 50k: result recording (`save`, 11.7%) is back in the top 5:
   `number[]` pushes for 50k columns x 235 points plus array growth/GC. A
   preallocated/chunked typed-array result buffer would need a result-format
   decision.
@@ -234,8 +233,8 @@ an unloaded rerun.
 - MOS chain: `MOSFET.batchStamp`, `MOSFET.stamp` (the trapezoidal history
   restamp still stamps MOSFETs through `ctx.stampG`, not `batchStamp`) and
   `evaluateBulkJunctions`. Device-model lane.
-- Mesh OP: the single numeric `factorize` (27-67%) and `amdOrdering`
-  (8-15%). Better ordering or supernodal LU.
+- Mesh OP: the single numeric `factorize` (12-65%) and `amdOrdering`
+  (8-14%). Better ordering or supernodal LU.
 - Step count: 235 / 654 spice-ts timepoints vs 120 / 214 for ngspice.
   Still the largest single factor on the transient decks.
 
