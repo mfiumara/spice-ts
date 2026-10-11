@@ -29,8 +29,8 @@
         "ngspice": "success"
       },
       "runtimeMilliseconds": {
-        "spiceTs": 38.4,
-        "ngspiceProcess": 124
+        "spiceTs": 108.3,
+        "ngspiceProcess": 47.9
       },
       "comparedVectors": 20,
       "worstNormalizedError": 4.35e-14,
@@ -218,6 +218,205 @@
       ]
     },
     {
+      "fixture": "benchmarks/rf-port-sp/sp1-power-ports-temp80.cir",
+      "sha256": "4b597600328eda07ed9b8e630ee20a9e71099d080594cacada805d886735ab10",
+      "plots": [
+        "SP Analysis:5"
+      ],
+      "convergence": {
+        "spiceTs": "success",
+        "ngspice": "success"
+      },
+      "runtimeMilliseconds": {
+        "spiceTs": 4.2,
+        "ngspiceProcess": 88.7
+      },
+      "comparedVectors": 20,
+      "worstNormalizedError": 3.26e-14,
+      "vectors": [
+        {
+          "vector": "SP Analysis: s_1_1",
+          "points": 5,
+          "ngspicePeak": 0.00795,
+          "maxAbsolute": 1.11e-16,
+          "maxNormalized": 1.4e-14,
+          "rmsNormalized": 8.98e-15,
+          "maxNormalizedToMatrix": 1.67e-16
+        },
+        {
+          "vector": "SP Analysis: s_1_2",
+          "points": 5,
+          "ngspicePeak": 0.0187,
+          "maxAbsolute": 6.94e-18,
+          "maxNormalized": 3.7e-16,
+          "rmsNormalized": 1.72e-16,
+          "maxNormalizedToMatrix": 1.04e-17
+        },
+        {
+          "vector": "SP Analysis: s_2_1",
+          "points": 5,
+          "ngspicePeak": 0.0187,
+          "maxAbsolute": 3.47e-18,
+          "maxNormalized": 1.85e-16,
+          "rmsNormalized": 8.86e-17,
+          "maxNormalizedToMatrix": 5.21e-18
+        },
+        {
+          "vector": "SP Analysis: s_2_2",
+          "points": 5,
+          "ngspicePeak": 0.667,
+          "maxAbsolute": 1.13e-16,
+          "maxNormalized": 1.69e-16,
+          "rmsNormalized": 1.5e-16,
+          "maxNormalizedToMatrix": 1.69e-16
+        },
+        {
+          "vector": "SP Analysis: y_1_1",
+          "points": 5,
+          "ngspicePeak": 0.01,
+          "maxAbsolute": 5.2e-18,
+          "maxNormalized": 5.2e-16,
+          "rmsNormalized": 3.56e-16,
+          "maxNormalizedToMatrix": 5.21e-17
+        },
+        {
+          "vector": "SP Analysis: y_1_2",
+          "points": 5,
+          "ngspicePeak": 0.00157,
+          "maxAbsolute": 1.99e-18,
+          "maxNormalized": 1.27e-15,
+          "rmsNormalized": 5.7e-16,
+          "maxNormalizedToMatrix": 1.99e-17
+        },
+        {
+          "vector": "SP Analysis: y_2_1",
+          "points": 5,
+          "ngspicePeak": 0.00157,
+          "maxAbsolute": 1.12e-18,
+          "maxNormalized": 7.13e-16,
+          "rmsNormalized": 3.23e-16,
+          "maxNormalizedToMatrix": 1.12e-17
+        },
+        {
+          "vector": "SP Analysis: y_2_2",
+          "points": 5,
+          "ngspicePeak": 0.1,
+          "maxAbsolute": 5.77e-17,
+          "maxNormalized": 5.77e-16,
+          "rmsNormalized": 3.42e-16,
+          "maxNormalizedToMatrix": 5.77e-16
+        },
+        {
+          "vector": "SP Analysis: z_1_1",
+          "points": 5,
+          "ngspicePeak": 100,
+          "maxAbsolute": 9.95e-14,
+          "maxNormalized": 9.95e-16,
+          "rmsNormalized": 4.58e-16,
+          "maxNormalizedToMatrix": 9.95e-16
+        },
+        {
+          "vector": "SP Analysis: z_1_2",
+          "points": 5,
+          "ngspicePeak": 1.59,
+          "maxAbsolute": 1.33e-15,
+          "maxNormalized": 8.37e-16,
+          "rmsNormalized": 3.76e-16,
+          "maxNormalizedToMatrix": 1.33e-17
+        },
+        {
+          "vector": "SP Analysis: z_2_1",
+          "points": 5,
+          "ngspicePeak": 1.59,
+          "maxAbsolute": 6.67e-16,
+          "maxNormalized": 4.19e-16,
+          "rmsNormalized": 1.99e-16,
+          "maxNormalizedToMatrix": 6.67e-18
+        },
+        {
+          "vector": "SP Analysis: z_2_2",
+          "points": 5,
+          "ngspicePeak": 10.1,
+          "maxAbsolute": 3.79e-15,
+          "maxNormalized": 3.75e-16,
+          "rmsNormalized": 2.55e-16,
+          "maxNormalizedToMatrix": 3.79e-17
+        },
+        {
+          "vector": "SP Analysis: i(cy_1_1)",
+          "points": 5,
+          "ngspicePeak": 1.95e-22,
+          "maxAbsolute": 2.59e-37,
+          "maxNormalized": 1.33e-15,
+          "rmsNormalized": 6.4e-16,
+          "maxNormalizedToMatrix": 1.33e-16
+        },
+        {
+          "vector": "SP Analysis: i(cy_1_2)",
+          "points": 5,
+          "ngspicePeak": 5.27e-24,
+          "maxAbsolute": 3.01e-38,
+          "maxNormalized": 5.71e-15,
+          "rmsNormalized": 2.64e-15,
+          "maxNormalizedToMatrix": 1.54e-17
+        },
+        {
+          "vector": "SP Analysis: i(cy_2_1)",
+          "points": 5,
+          "ngspicePeak": 5.27e-24,
+          "maxAbsolute": 3.59e-38,
+          "maxNormalized": 6.8e-15,
+          "rmsNormalized": 3.12e-15,
+          "maxNormalizedToMatrix": 1.84e-17
+        },
+        {
+          "vector": "SP Analysis: i(cy_2_2)",
+          "points": 5,
+          "ngspicePeak": 1.95e-21,
+          "maxAbsolute": 2.63e-36,
+          "maxNormalized": 1.35e-15,
+          "rmsNormalized": 7.67e-16,
+          "maxNormalizedToMatrix": 1.35e-15
+        },
+        {
+          "vector": "SP Analysis: nf",
+          "points": 5,
+          "ngspicePeak": 52,
+          "maxAbsolute": 1.42e-14,
+          "maxNormalized": 2.73e-16,
+          "rmsNormalized": 1.5e-16,
+          "maxNormalizedToMatrix": 2.73e-16
+        },
+        {
+          "vector": "SP Analysis: sopt",
+          "points": 5,
+          "ngspicePeak": 0.00798,
+          "maxAbsolute": 2.6e-16,
+          "maxNormalized": 3.26e-14,
+          "rmsNormalized": 2.23e-14,
+          "maxNormalizedToMatrix": 3.26e-14
+        },
+        {
+          "vector": "SP Analysis: nfmin",
+          "points": 5,
+          "ngspicePeak": 52,
+          "maxAbsolute": 7.11e-15,
+          "maxNormalized": 1.37e-16,
+          "rmsNormalized": 9.17e-17,
+          "maxNormalizedToMatrix": 1.37e-16
+        },
+        {
+          "vector": "SP Analysis: rn",
+          "points": 5,
+          "ngspicePeak": 3950000,
+          "maxAbsolute": 1.4e-9,
+          "maxNormalized": 3.54e-16,
+          "rmsNormalized": 2.32e-16,
+          "maxNormalizedToMatrix": 3.54e-16
+        }
+      ]
+    },
+    {
       "fixture": "benchmarks/rf-port-sp/sp2-lc-voltage-ports.cir",
       "sha256": "bc6ad10295cc75c3d4c1f571414528196401cc9d3631edc7d84af0c8efc09501",
       "plots": [
@@ -228,8 +427,8 @@
         "ngspice": "success"
       },
       "runtimeMilliseconds": {
-        "spiceTs": 85.1,
-        "ngspiceProcess": 50
+        "spiceTs": 168,
+        "ngspiceProcess": 86.2
       },
       "comparedVectors": 12,
       "worstNormalizedError": 1.08e-8,
@@ -355,8 +554,8 @@
         "ngspice": "success"
       },
       "runtimeMilliseconds": {
-        "spiceTs": 22.5,
-        "ngspiceProcess": 69.3
+        "spiceTs": 29,
+        "ngspiceProcess": 195.7
       },
       "comparedVectors": 36,
       "worstNormalizedError": 1.33e-13,
@@ -698,8 +897,8 @@
         "ngspice": "success"
       },
       "runtimeMilliseconds": {
-        "spiceTs": 13.9,
-        "ngspiceProcess": 62.3
+        "spiceTs": 3.3,
+        "ngspiceProcess": 199
       },
       "comparedVectors": 12,
       "worstNormalizedError": 1.1e-13,
@@ -826,8 +1025,8 @@
         "ngspice": "success"
       },
       "runtimeMilliseconds": {
-        "spiceTs": 2.3,
-        "ngspiceProcess": 28.3
+        "spiceTs": 3.6,
+        "ngspiceProcess": 87.3
       },
       "comparedVectors": 14,
       "worstNormalizedError": 1.73e-15,

@@ -22,6 +22,7 @@ const DIRECTORY = 'benchmarks/rf-port-sp';
 const REPORT_PATH = `${DIRECTORY}/report.json`;
 const FIXTURES = [
   'sp1-power-ports.cir',
+  'sp1-power-ports-temp80.cir',
   'sp2-lc-voltage-ports.cir',
   'sp4-three-ports.cir',
   'tschebyschef-lp.cir',

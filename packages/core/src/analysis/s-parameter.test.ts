@@ -138,6 +138,17 @@ describe('.sp S-parameter analysis', () => {
     expectComplex(sp.vector('Rn')[2], [3947951.760435746, 0], 1e6);
   });
 
+  it('normalises two-port noise by 4kT at the circuit temperature like ngspice span.c', async () => {
+    const result = await simulate(TWO_PORT.replace('.sp', '.options temp=80\n.sp'));
+    const sp = result.sParameters!;
+    // ngspice-47, identical netlist: Cy scales with T, NF/NFmin/Rn/SOpt do not.
+    expectComplex(sp.vector('Cy_2_2')[1], [1.948509489310238e-21, 0], 1e-21);
+    expectComplex(sp.vector('NF')[1], [46.79164198923979, 0], 10);
+    expectComplex(sp.vector('NFmin')[1], [46.79163289615022, 0], 10);
+    expectComplex(sp.vector('Rn')[1], [1194332.132531812, 0], 1e6);
+    expectComplex(sp.vector('SOpt')[1], [2.302652946236932e-05, 0.001446799515927517], 1);
+  });
+
   it('computes the full noise correlation matrix for three ports', async () => {
     const result = await simulate(`three port sp noise
 V1 in 0 dc 0 ac 1 portnum 1 z0 100

@@ -20,6 +20,8 @@ import { frequencyGrid } from './frequency-grid.js';
 /** ngspice-47 const.h CONSTboltz (the SP noise path normalizes Cy by the same 4kT). */
 const NGSPICE_BOLTZMANN = 1.38064852e-23;
 const CELSIUS_TO_KELVIN = 273.15;
+/** ngspice's default circuit temperature in degrees Celsius. */
+const NOMINAL_TEMPERATURE_C = 27;
 
 /** Devices whose only `.sp` noise is resistor thermal noise; anything else is rejected with donoise. */
 const SP_NOISE_DEVICES = [
@@ -69,6 +71,7 @@ export function solveSParameters(
   const twoPortNoise = analysis.noise && n === 2;
   if (twoPortNoise) for (const name of ['NF', 'SOpt', 'NFmin', 'Rn']) vectors.set(name, []);
   const noiseSources = analysis.noise ? resistorNoiseSources(compiled.devices) : [];
+  const noiseKelvin = twoPortNoise ? circuitKelvin(compiled.devices) : 0;
 
   const portVoltage = (x: { real: Float64Array; imaginary: Float64Array }, port: VoltageSource): ComplexValue => {
     const [positive, negative] = port.nodes;
@@ -144,7 +147,7 @@ export function solveSParameters(
         }
       }
       push(vectors, 'Cy', cy);
-      if (twoPortNoise) pushTwoPortNoise(vectors, cy, y, 1 / z0[0]);
+      if (twoPortNoise) pushTwoPortNoise(vectors, cy, y, 1 / z0[0], noiseKelvin);
     }
   }
 
@@ -208,9 +211,25 @@ function resistorNoiseSources(devices: DeviceModel[]): Array<{ positive: number;
     });
 }
 
-/** span.c CKTspnoise N_CALC for two ports, referred to port 1's reference admittance. */
-function pushTwoPortNoise(vectors: Map<string, ComplexValue[]>, cy: Matrix, y: Matrix, y0: number): void {
-  const kelvin = 27 + CELSIUS_TO_KELVIN;
+/**
+ * The circuit temperature (CKTtemp) in kelvin. Resistors are the only `.sp`
+ * noise sources and always run at it (instance TEMP/DTEMP is rejected at
+ * compile; `.options temp` sets every resistor), so their
+ * temperature is the one ngspice span.c normalizes Cy with.
+ */
+function circuitKelvin(devices: DeviceModel[]): number {
+  const temperatures = new Set(devices
+    .filter((device): device is Resistor => device instanceof Resistor)
+    .map(resistor => resistor.getTemperature()));
+  if (temperatures.size > 1) {
+    throw new InvalidCircuitError('.sp donoise requires every resistor at the circuit temperature');
+  }
+  const [celsius = NOMINAL_TEMPERATURE_C] = temperatures;
+  return celsius + CELSIUS_TO_KELVIN;
+}
+
+/** span.c CKTspnoise N_CALC for two ports, referred to port 1's reference admittance; Cy / (4 k CKTtemp). */
+function pushTwoPortNoise(vectors: Map<string, ComplexValue[]>, cy: Matrix, y: Matrix, y0: number, kelvin: number): void {
   const knorm = 4 * NGSPICE_BOLTZMANN * kelvin;
   const c = cy.map(row => row.map(value => ({ real: value.real / knorm, imaginary: value.imaginary / knorm })));
   let rn = c[1][1].real / modulusSquared(y[1][0]);
