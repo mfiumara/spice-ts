@@ -18,6 +18,7 @@ import { preprocess, preprocessLines } from './preprocessor.js';
 import { classifyControlCommand, repeatedControlAnalysisError } from './control-block.js';
 import { parseBehavioralSourceCard } from './behavioral-expression.js';
 import { parseZInstance } from './z-device-parser.js';
+import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
 import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
@@ -513,6 +514,10 @@ function parseDotCommand(
       break;
     }
     case '.MODEL': {
+      if (xspiceModelType(tokens) !== undefined) {
+        circuit.addXspiceModel(parseXspiceModelCard(context, lineNumber));
+        break;
+      }
       assertSupportedModelType(tokens, lineNumber, context);
       const model = tokens[2]?.toUpperCase() === 'LTRA'
         ? parseLtraModelCard(tokens, lineNumber)
@@ -987,6 +992,9 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       circuit.addZDevice(name, ...instance.nodes, instance.modelName, instance.params);
       break;
     }
+    case 'A':
+      circuit.addXspiceInstance(parseXspiceInstance(raw, lineNumber));
+      break;
     default:
       throw new ParseError(`Unsupported device card: '${type}'`, lineNumber, tokens.join(' '));
   }
