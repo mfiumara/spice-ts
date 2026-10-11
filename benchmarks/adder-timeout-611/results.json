@@ -1,0 +1,662 @@
+{
+  "issues": [
+    611,
+    604
+  ],
+  "machine": {
+    "cpu": "Apple M5 Pro, 18 cores, 48 GiB",
+    "os": "macOS 27.0.1",
+    "node": "v22.23.1",
+    "ngspice": "ngspice-47 (Homebrew)",
+    "hostLoad": "NOT quiet: shared host, 1-min load average 28-38 on 18 cores during the runs (uptime at start 37.90 29.53 36.60; at end 27.93 36.26 39.39). Every engine run was wrapped in spice-heavy (max 2 heavy runs machine-wide). Wall times are upper bounds; step and iteration counts do not depend on load."
+  },
+  "spiceTsTree": "local measurement-only merge 3d4d3c68 (not pushed) = origin/main 8013a231 + PR #600 head 7eace8f6aad6543c51d2b2f7f175416e021faf88 (.option noinit/acct) + PR #605 head 51aaf22a323d3ca9963632589cfed40f903c8383 (BSIM3 reverse mode, type*VTH0). Without #600 both decks stop at ParseError: Unsupported .options field: 'noinit'. With #600 but without #605 adder_mos fails its DC operating point (nr-divergence after source and gmin stepping).",
+  "decks": {
+    "adder_bip.cir": {
+      "sha256": "fd53a062fea047adf6b465a754521a1fcd8b2db74a025ff1f93689695495aa42",
+      "source": "corpus-f examples/digital/compare/adder_bip.cir, identical bytes"
+    },
+    "adder_bip_body.cir": {
+      "sha256": "d9d08aeec806a19ada211b1d05f3cfc0b843a2865fc9dd1ef810ca432bea9fcb",
+      "source": "adder_bip.cir without its .control block (ngspice single-run counters only)"
+    },
+    "adder_mos_body.cir": {
+      "sha256": "ef804f3ac0ee95c8b47d0f934c70d0fc0c494ca2e3a68ee98965c93cd3ba5738",
+      "source": "corpus-f examples/digital/compare/adder_mos.cir without its .control block, outputs kept as `.save V(9) V(10) V(11) V(12) V(13)`; same circuit as examples/mos/adder_mos.cir; both engines read these bytes"
+    }
+  },
+  "ngspice47": {
+    "adder_bip (fixture; ngspice -b runs the deck twice, batch + .control run, counters cumulative)": {
+      "acceptedTimepoints": 27380,
+      "rejectedTimepoints": 8268,
+      "transientIterations": 152072,
+      "transientAnalysisSeconds": 12.8241,
+      "loadSeconds": 6.36072,
+      "factorSeconds": 3.08074,
+      "solveSeconds": 1.60328,
+      "truncSeconds": 0.789805,
+      "wallSecondsIncludingSpiceHeavyQueue": 12.97
+    },
+    "adder_bip_body (single run)": {
+      "acceptedTimepoints": 13690,
+      "rejectedTimepoints": 4134,
+      "transientIterations": 76036,
+      "transientAnalysisSeconds": 6.35936,
+      "loadSeconds": 3.11688,
+      "factorSeconds": 1.50594,
+      "solveSeconds": 0.779999,
+      "truncSeconds": 0.390601,
+      "wallSecondsIncludingSpiceHeavyQueue": 6.52
+    },
+    "adder_mos_body (single run)": {
+      "acceptedTimepoints": 18073,
+      "rejectedTimepoints": 2429,
+      "transientIterations": 67718,
+      "transientAnalysisSeconds": 5.65989,
+      "loadSeconds": 4.74008,
+      "factorSeconds": 0.201731,
+      "solveSeconds": 0.106595,
+      "truncSeconds": 0.245652,
+      "wallSecondsIncludingSpiceHeavyQueue": 5.82
+    }
+  },
+  "spiceTs": {
+    "adder_bip": {
+      "baseline": {
+        "fixture": "adder_bip.cir",
+        "sha256": "fd53a062fea047adf6b465a754521a1fcd8b2db74a025ff1f93689695495aa42",
+        "budgetMs": 120000,
+        "experiment": null,
+        "limiter": {
+          "attempts": 64138,
+          "nodeLteRejects": 10770,
+          "chargeRejects": 0,
+          "bothReject": 20,
+          "acceptedNodeLteLimited": 52428,
+          "acceptedChargeLimited": 2,
+          "acceptedOther": 918
+        },
+        "completed": false,
+        "error": null,
+        "stopTime": 0.0000064,
+        "setupMs": 169,
+        "final": {
+          "wallMs": 120043,
+          "simTime": 0.0000032091761193295238,
+          "acceptedSteps": 53348,
+          "rejectedSteps": 10790,
+          "nrRetries": 0,
+          "lteRetries": 10790,
+          "newtonIterations": 171925
+        },
+        "fractionOfStopTime": 0.5014337686452381,
+        "newtonIterationsPerAttempt": 2.6805481929589323,
+        "newtonIterationsPerAcceptedStep": 3.2227075054360053,
+        "minimumAcceptedTimestep": 2.2591040823915836e-14,
+        "dcNewtonIterations": 267,
+        "dtHistogram": {
+          "1e-14": 6,
+          "1e-13": 126,
+          "1e-12": 2799,
+          "1e-11": 41334,
+          "1e-10": 9083
+        },
+        "msPerNewtonIteration": 0.6982
+      },
+      "experimentNoNodeLte": {
+        "fixture": "adder_bip.cir",
+        "sha256": "fd53a062fea047adf6b465a754521a1fcd8b2db74a025ff1f93689695495aa42",
+        "budgetMs": 120000,
+        "experiment": "no-node-lte",
+        "limiter": {
+          "attempts": 18050,
+          "nodeLteRejects": 0,
+          "chargeRejects": 4026,
+          "bothReject": 0,
+          "acceptedNodeLteLimited": 0,
+          "acceptedChargeLimited": 11583,
+          "acceptedOther": 2441
+        },
+        "completed": true,
+        "error": null,
+        "stopTime": 0.0000064,
+        "setupMs": 111,
+        "final": {
+          "wallMs": 34362,
+          "simTime": 0.0000064,
+          "acceptedSteps": 14024,
+          "rejectedSteps": 4026,
+          "nrRetries": 0,
+          "lteRetries": 4026,
+          "newtonIterations": 89624
+        },
+        "fractionOfStopTime": 1,
+        "newtonIterationsPerAttempt": 4.965318559556787,
+        "newtonIterationsPerAcceptedStep": 6.390758699372504,
+        "minimumAcceptedTimestep": 4.3764977739383336e-14,
+        "dcNewtonIterations": 267,
+        "dtHistogram": {
+          "1e-14": 3,
+          "1e-13": 29,
+          "1e-12": 196,
+          "1e-11": 1761,
+          "1e-10": 11772,
+          "1e-9": 263
+        },
+        "msPerNewtonIteration": 0.3834
+      },
+      "profile30s": {
+        "busyMs": 30383,
+        "split": {
+          "device-eval": {
+            "ms": 15273,
+            "shareOfBusy": 0.503
+          },
+          "assembly": {
+            "ms": 5953,
+            "shareOfBusy": 0.196
+          },
+          "factor/solve": {
+            "ms": 5071,
+            "shareOfBusy": 0.167
+          },
+          "analysis (driver, NR loop, LTE)": {
+            "ms": 1981,
+            "shareOfBusy": 0.065
+          },
+          "gc": {
+            "ms": 1651,
+            "shareOfBusy": 0.054
+          },
+          "runtime/other": {
+            "ms": 419,
+            "shareOfBusy": 0.014
+          },
+          "idle/program": {
+            "ms": 322,
+            "shareOfBusy": null
+          },
+          "core other": {
+            "ms": 35,
+            "shareOfBusy": 0.001
+          }
+        },
+        "top": [
+          {
+            "name": "factorize solver/gilbert-peierls.ts",
+            "ms": 4959,
+            "shareOfBusy": 0.163
+          },
+          {
+            "name": "(anonymous) mna/assembler.ts",
+            "ms": 3841,
+            "shareOfBusy": 0.126
+          },
+          {
+            "name": "__name devices/bjt.ts",
+            "ms": 3341,
+            "shareOfBusy": 0.11
+          },
+          {
+            "name": "set TextDecoder ",
+            "ms": 2893,
+            "shareOfBusy": 0.095
+          },
+          {
+            "name": "(garbage collector) ",
+            "ms": 1651,
+            "shareOfBusy": 0.054
+          },
+          {
+            "name": "evaluateCharges devices/bjt.ts",
+            "ms": 1565,
+            "shareOfBusy": 0.051
+          },
+          {
+            "name": "stamp devices/bjt.ts",
+            "ms": 1239,
+            "shareOfBusy": 0.041
+          },
+          {
+            "name": "depletionCharge devices/charge-state.ts",
+            "ms": 1139,
+            "shareOfBusy": 0.037
+          },
+          {
+            "name": "stampStaticDevices mna/linear-stamp.ts",
+            "ms": 1133,
+            "shareOfBusy": 0.037
+          },
+          {
+            "name": "stampTransientCharge devices/bjt.ts",
+            "ms": 1091,
+            "shareOfBusy": 0.036
+          },
+          {
+            "name": "abruptJunctionCharge devices/charge-state.ts",
+            "ms": 888,
+            "shareOfBusy": 0.029
+          },
+          {
+            "name": "buildCompanionSystem mna/companion.ts",
+            "ms": 871,
+            "shareOfBusy": 0.029
+          }
+        ]
+      }
+    },
+    "adder_mos_body": {
+      "baseline": {
+        "fixture": "adder_mos_body.cir",
+        "sha256": "ef804f3ac0ee95c8b47d0f934c70d0fc0c494ca2e3a68ee98965c93cd3ba5738",
+        "budgetMs": 120000,
+        "experiment": null,
+        "limiter": {
+          "attempts": 97783,
+          "nodeLteRejects": 18792,
+          "chargeRejects": 0,
+          "bothReject": 0,
+          "acceptedNodeLteLimited": 72687,
+          "acceptedChargeLimited": 0,
+          "acceptedOther": 6304
+        },
+        "completed": false,
+        "error": null,
+        "stopTime": 0.0000064,
+        "setupMs": 470,
+        "final": {
+          "wallMs": 120000,
+          "simTime": 0.000002736732784942209,
+          "acceptedSteps": 78991,
+          "rejectedSteps": 19283,
+          "nrRetries": 491,
+          "lteRetries": 18792,
+          "newtonIterations": 293311
+        },
+        "fractionOfStopTime": 0.42761449764722015,
+        "newtonIterationsPerAttempt": 2.9846246209577303,
+        "newtonIterationsPerAcceptedStep": 3.71322049347394,
+        "minimumAcceptedTimestep": 1.1910278502108487e-15,
+        "dcNewtonIterations": 1575,
+        "dtHistogram": {
+          "1e-15": 310,
+          "1e-14": 610,
+          "1e-13": 25931,
+          "1e-12": 27809,
+          "1e-11": 19308,
+          "1e-10": 5023
+        },
+        "msPerNewtonIteration": 0.4091
+      },
+      "experimentNoNodeLte": {
+        "fixture": "adder_mos_body.cir",
+        "sha256": "ef804f3ac0ee95c8b47d0f934c70d0fc0c494ca2e3a68ee98965c93cd3ba5738",
+        "budgetMs": 120000,
+        "experiment": "no-node-lte",
+        "limiter": {
+          "attempts": 18409,
+          "nodeLteRejects": 0,
+          "chargeRejects": 1040,
+          "bothReject": 0,
+          "acceptedNodeLteLimited": 0,
+          "acceptedChargeLimited": 4761,
+          "acceptedOther": 12608
+        },
+        "completed": true,
+        "error": null,
+        "stopTime": 0.0000064,
+        "setupMs": 160,
+        "final": {
+          "wallMs": 16403,
+          "simTime": 0.0000064,
+          "acceptedSteps": 17369,
+          "rejectedSteps": 1060,
+          "nrRetries": 20,
+          "lteRetries": 1040,
+          "newtonIterations": 68145
+        },
+        "fractionOfStopTime": 1,
+        "newtonIterationsPerAttempt": 3.697704704541755,
+        "newtonIterationsPerAcceptedStep": 3.9233692210259656,
+        "minimumAcceptedTimestep": 1.0963846958471899e-13,
+        "dcNewtonIterations": 1575,
+        "dtHistogram": {
+          "1e-13": 26,
+          "1e-12": 359,
+          "1e-11": 2245,
+          "1e-10": 14739
+        },
+        "msPerNewtonIteration": 0.2407
+      },
+      "profile30s": {
+        "busyMs": 30235,
+        "split": {
+          "device-eval": {
+            "ms": 17961,
+            "shareOfBusy": 0.594
+          },
+          "assembly": {
+            "ms": 8796,
+            "shareOfBusy": 0.291
+          },
+          "factor/solve": {
+            "ms": 1552,
+            "shareOfBusy": 0.051
+          },
+          "analysis (driver, NR loop, LTE)": {
+            "ms": 1097,
+            "shareOfBusy": 0.036
+          },
+          "gc": {
+            "ms": 578,
+            "shareOfBusy": 0.019
+          },
+          "runtime/other": {
+            "ms": 246,
+            "shareOfBusy": 0.008
+          },
+          "idle/program": {
+            "ms": 48,
+            "shareOfBusy": null
+          },
+          "core other": {
+            "ms": 4,
+            "shareOfBusy": 0
+          }
+        },
+        "top": [
+          {
+            "name": "evalIds devices/bsim3v3-dc.ts",
+            "ms": 7269,
+            "shareOfBusy": 0.24
+          },
+          {
+            "name": "(anonymous) mna/assembler.ts",
+            "ms": 6762,
+            "shareOfBusy": 0.224
+          },
+          {
+            "name": "stampTransientCharge devices/bsim3v3.ts",
+            "ms": 3475,
+            "shareOfBusy": 0.115
+          },
+          {
+            "name": "acceptTransientStep devices/bsim3v3.ts",
+            "ms": 1638,
+            "shareOfBusy": 0.054
+          },
+          {
+            "name": "stamp devices/bsim3v3.ts",
+            "ms": 1620,
+            "shareOfBusy": 0.054
+          },
+          {
+            "name": "factorize solver/gilbert-peierls.ts",
+            "ms": 1491,
+            "shareOfBusy": 0.049
+          },
+          {
+            "name": "chargeTruncation devices/charge-state.ts",
+            "ms": 1201,
+            "shareOfBusy": 0.04
+          },
+          {
+            "name": "buildCompanionSystem mna/companion.ts",
+            "ms": 1196,
+            "shareOfBusy": 0.04
+          },
+          {
+            "name": "junctionCap devices/bsim3v3-cap.ts",
+            "ms": 981,
+            "shareOfBusy": 0.032
+          },
+          {
+            "name": "evaluateCap devices/bsim3v3-cap.ts",
+            "ms": 972,
+            "shareOfBusy": 0.032
+          },
+          {
+            "name": "stampStaticDevices mna/linear-stamp.ts",
+            "ms": 774,
+            "shareOfBusy": 0.026
+          },
+          {
+            "name": "evaluateCapacitances devices/bsim3v3.ts",
+            "ms": 707,
+            "shareOfBusy": 0.023
+          }
+        ]
+      }
+    }
+  },
+  "parityVsNgspice47": {
+    "adder_bip": {
+      "baselineWindowUntilBound": {
+        "spiceTsPoints": 53349,
+        "ngspicePoints": 13690,
+        "spiceTsEnd": 0.0000032091761193295238,
+        "threshold": 0.01,
+        "worst": {
+          "signal": "v(10)",
+          "absoluteMax": 0.08552823218722855,
+          "ngspicePeak": 3.577659425216711,
+          "normalized": 0.0239061973267754,
+          "match": false,
+          "oppositeLevelFraction": 0
+        },
+        "signals": [
+          {
+            "signal": "v(9)",
+            "absoluteMax": 0.07496307921594664,
+            "ngspicePeak": 3.425383487367174,
+            "normalized": 0.02188458007473053,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(10)",
+            "absoluteMax": 0.08552823218722855,
+            "ngspicePeak": 3.577659425216711,
+            "normalized": 0.0239061973267754,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(11)",
+            "absoluteMax": 0.058555789675302616,
+            "ngspicePeak": 3.624645947929459,
+            "normalized": 0.016154899131252252,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(12)",
+            "absoluteMax": 0.05521705649282202,
+            "ngspicePeak": 3.627859027776103,
+            "normalized": 0.015220287246572083,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(13)",
+            "absoluteMax": 0.03763396357045276,
+            "ngspicePeak": 3.61138835195509,
+            "normalized": 0.010420912929532749,
+            "match": false,
+            "oppositeLevelFraction": 0
+          }
+        ]
+      },
+      "experimentNoNodeLteFullRun": {
+        "spiceTsPoints": 14025,
+        "ngspicePoints": 13690,
+        "spiceTsEnd": 0.0000064,
+        "threshold": 0.01,
+        "worst": {
+          "signal": "v(10)",
+          "absoluteMax": 0.10170236465623939,
+          "ngspicePeak": 3.577659425216711,
+          "normalized": 0.02842706713204791,
+          "match": false,
+          "oppositeLevelFraction": 0
+        },
+        "signals": [
+          {
+            "signal": "v(9)",
+            "absoluteMax": 0.05479140313550601,
+            "ngspicePeak": 3.425383487367174,
+            "normalized": 0.01599569897431248,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(10)",
+            "absoluteMax": 0.10170236465623939,
+            "ngspicePeak": 3.577659425216711,
+            "normalized": 0.02842706713204791,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(11)",
+            "absoluteMax": 0.041811467145260225,
+            "ngspicePeak": 3.624645947929459,
+            "normalized": 0.011535324482973182,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(12)",
+            "absoluteMax": 0.049567428596833274,
+            "ngspicePeak": 3.627859027776103,
+            "normalized": 0.013662997436595097,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(13)",
+            "absoluteMax": 0.028293728685023112,
+            "ngspicePeak": 3.61138835195509,
+            "normalized": 0.007834584909625074,
+            "match": true,
+            "oppositeLevelFraction": 0
+          }
+        ]
+      }
+    },
+    "adder_mos_body": {
+      "baselineWindowUntilBound": {
+        "spiceTsPoints": 78992,
+        "ngspicePoints": 18073,
+        "spiceTsEnd": 0.000002736732784942209,
+        "threshold": 0.01,
+        "worst": {
+          "signal": "v(10)",
+          "absoluteMax": 3.417263907150227,
+          "ngspicePeak": 3.407593858117898,
+          "normalized": 1.002837793890634,
+          "match": false,
+          "oppositeLevelFraction": 0.16731166150670795
+        },
+        "signals": [
+          {
+            "signal": "v(9)",
+            "absoluteMax": 3.396965425551003,
+            "ngspicePeak": 3.400342712603436,
+            "normalized": 0.9990067803930719,
+            "match": false,
+            "oppositeLevelFraction": 0.23581011351909184
+          },
+          {
+            "signal": "v(10)",
+            "absoluteMax": 3.417263907150227,
+            "ngspicePeak": 3.407593858117898,
+            "normalized": 1.002837793890634,
+            "match": false,
+            "oppositeLevelFraction": 0.16731166150670795
+          },
+          {
+            "signal": "v(11)",
+            "absoluteMax": 3.4290013288037593,
+            "ngspicePeak": 3.467834007672367,
+            "normalized": 0.9888020364346468,
+            "match": false,
+            "oppositeLevelFraction": 0.0968782249742002
+          },
+          {
+            "signal": "v(12)",
+            "absoluteMax": 3.402955506620596,
+            "ngspicePeak": 3.448264484790065,
+            "normalized": 0.9868603529777596,
+            "match": false,
+            "oppositeLevelFraction": 0.049277605779153764
+          },
+          {
+            "signal": "v(13)",
+            "absoluteMax": 3.3764795985328164,
+            "ngspicePeak": 3.399745516696902,
+            "normalized": 0.9931565706757104,
+            "match": false,
+            "oppositeLevelFraction": 0.010319917440660475
+          }
+        ]
+      },
+      "experimentNoNodeLteFullRun": {
+        "spiceTsPoints": 17370,
+        "ngspicePoints": 18073,
+        "spiceTsEnd": 0.0000064,
+        "threshold": 0.01,
+        "worst": {
+          "signal": "v(9)",
+          "absoluteMax": 3.5581274084882533,
+          "ngspicePeak": 3.400342712603436,
+          "normalized": 1.0464025862157909,
+          "match": false,
+          "oppositeLevelFraction": 0.25254537405931826
+        },
+        "signals": [
+          {
+            "signal": "v(9)",
+            "absoluteMax": 3.5581274084882533,
+            "ngspicePeak": 3.400342712603436,
+            "normalized": 1.0464025862157909,
+            "match": false,
+            "oppositeLevelFraction": 0.25254537405931826
+          },
+          {
+            "signal": "v(10)",
+            "absoluteMax": 3.464663353476128,
+            "ngspicePeak": 3.407593858117898,
+            "normalized": 1.0167477398230056,
+            "match": false,
+            "oppositeLevelFraction": 0.17369411243913235
+          },
+          {
+            "signal": "v(11)",
+            "absoluteMax": 3.5574402451360654,
+            "ngspicePeak": 3.467834007672367,
+            "normalized": 1.0258392521860764,
+            "match": false,
+            "oppositeLevelFraction": 0.0966688800354139
+          },
+          {
+            "signal": "v(12)",
+            "absoluteMax": 3.444594353949002,
+            "ngspicePeak": 3.448264484790065,
+            "normalized": 0.9989356585443919,
+            "match": false,
+            "oppositeLevelFraction": 0.04277335104028331
+          },
+          {
+            "signal": "v(13)",
+            "absoluteMax": 3.409737408931485,
+            "ngspicePeak": 3.399745516696902,
+            "normalized": 1.0029390118129462,
+            "match": false,
+            "oppositeLevelFraction": 0.011343514829570606
+          }
+        ]
+      }
+    }
+  }
+}
