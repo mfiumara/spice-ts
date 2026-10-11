@@ -74,7 +74,7 @@ resistors and capacitors.
   `Resistor`s (or plain `Capacitor`s) is stamped by one loop over value slots
   resolved once with `stampIndex`; every other device is still stamped
   through its own method at its place in the sequence. Values are read from
-  the device at stamp time (`1 / resistance`, `capacitance`), so
+  the device at stamp time (`conductance`, `capacitance`), so
   `setParameter`/temperature updates apply exactly as before. A plain
   capacitor's empty static stamp is skipped.
 - "Plain" means the exact class (prototype is `Resistor.prototype` /

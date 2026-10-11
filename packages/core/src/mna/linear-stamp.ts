@@ -16,7 +16,7 @@ import { Capacitor } from '../devices/capacitor.js';
  * consecutive plain resistors (or capacitors) is stamped by one tight loop
  * from value slots resolved once per locked topology; every other device is
  * still stamped through its own method. Values are read from the device at
- * stamp time (`1 / resistance`, `capacitance`), so parameter changes apply as
+ * stamp time (`conductance`, `capacitance`), so parameter changes apply as
  * before. Each slot receives exactly the additions the devices would make, in
  * the same order, so matrices are bit-identical to per-device stamping.
  */
@@ -169,7 +169,7 @@ export function stampStaticDevices(
     const run = step.run as readonly Resistor[];
     const slots = step.slots;
     for (let i = 0, k = 0; i < run.length; i++, k += 4) {
-      const g = 1 / run[i].resistance;
+      const g = run[i].conductance;
       const s11 = slots[k];
       const s22 = slots[k + 1];
       const s12 = slots[k + 2];

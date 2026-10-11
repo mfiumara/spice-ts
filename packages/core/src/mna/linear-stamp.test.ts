@@ -26,6 +26,8 @@ L1 c d 1m
 R5 d 0 1e-3
 I1 0 c DC 1m
 R6 c 0 5k
+R7 a c 3.3k m=3 scale=0.7 tc1=1e-3 tc2=2e-6
+R8 d b 7.77k tce=0.5
 C4 c 0 3p
 .tran 50n 12u
 `;
@@ -103,6 +105,7 @@ describe('linear stamp programs (#570)', () => {
       if (device instanceof Resistor || device instanceof Capacitor) {
         device.setParameter(device.getParameter() * 1.37);
       }
+      if (device instanceof Resistor) device.setTemperature(61.3);
     }
     expectSamePass(actual, expected, compiled.devices);
   });
