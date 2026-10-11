@@ -1,13 +1,20 @@
 #!/usr/bin/env tsx
-/** Summarize the full corpus-f rerun against the committed pre-change snapshot. */
+/**
+ * Summarize the full corpus-f rerun receipt against the committed pre-change snapshot.
+ *
+ * The rerun is evidence only: it lives in benchmarks/options-494/corpus-f-rerun-outcomes.json
+ * and is never copied over benchmarks/corpus/corpus-f/outcomes.json, because it was taken on
+ * a loaded host where 13 ngspice reference runs hit their time bound.
+ */
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import type { CorpusFReport } from '../corpus/corpus-f/outcomes.js';
 
 const beforeRevision = 'bf2e4169d8c903d7e35f5de6886d5aaa127d9cf8';
 const path = 'benchmarks/corpus/corpus-f/outcomes.json';
+const rerunPath = 'benchmarks/options-494/corpus-f-rerun-outcomes.json';
 const before: CorpusFReport = JSON.parse(execFileSync('git', ['show', `${beforeRevision}:${path}`], { encoding: 'utf8' }));
-const after: CorpusFReport = JSON.parse(readFileSync(path, 'utf8'));
+const after: CorpusFReport = JSON.parse(readFileSync(rerunPath, 'utf8'));
 if (after.fixtures.length !== before.fixtures.length) throw new Error('Unexpected corpus membership change');
 const bucket = before.gapBuckets.find(row => row.issue?.endsWith('/494'));
 if (!bucket) throw new Error('Missing baseline options bucket');
@@ -38,7 +45,13 @@ const affectedHashes = new Set(rows.map(row => row.before.sha256));
 const report = {
   beforeRevision,
   beforeKind: 'Committed pre-change snapshot, not a contemporaneous full rerun; unrelated drift and host timeouts are not attributed to this patch.',
-  command: 'pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --jobs 4 && pnpm exec tsx benchmarks/options-494/corpus-delta.ts',
+  afterPath: rerunPath,
+  afterKind: 'Evidence-only rerun receipt on a loaded shared host. It does not replace the committed corpus-f outcomes.json/README.md.',
+  command: 'pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --jobs 4 && cp benchmarks/corpus/corpus-f/outcomes.json benchmarks/options-494/corpus-f-rerun-outcomes.json && git checkout -- benchmarks/corpus/corpus-f && pnpm exec tsx benchmarks/options-494/corpus-delta.ts',
+  hostReferenceTimeouts: before.fixtures.filter(old => {
+    const current = after.fixtures.find(row => row.id === old.id);
+    return old.ngspice.status === 'success' && current?.ngspice.status === 'failed';
+  }).map(row => row.sourcePath),
   beforeTotals: before.totals, afterTotals: after.totals,
   baselineBucketCount: rows.length, originalIssueCount: originalPaths.size,
   originalIssueSuccessesAfter: rows.filter(row => row.originalIssueFixture && row.after.spiceTs.status === 'success').length,

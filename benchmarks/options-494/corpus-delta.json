@@ -1,7 +1,24 @@
 {
   "beforeRevision": "bf2e4169d8c903d7e35f5de6886d5aaa127d9cf8",
   "beforeKind": "Committed pre-change snapshot, not a contemporaneous full rerun; unrelated drift and host timeouts are not attributed to this patch.",
-  "command": "pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --jobs 4 && pnpm exec tsx benchmarks/options-494/corpus-delta.ts",
+  "afterPath": "benchmarks/options-494/corpus-f-rerun-outcomes.json",
+  "afterKind": "Evidence-only rerun receipt on a loaded shared host. It does not replace the committed corpus-f outcomes.json/README.md.",
+  "command": "pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --jobs 4 && cp benchmarks/corpus/corpus-f/outcomes.json benchmarks/options-494/corpus-f-rerun-outcomes.json && git checkout -- benchmarks/corpus/corpus-f && pnpm exec tsx benchmarks/options-494/corpus-delta.ts",
+  "hostReferenceTimeouts": [
+    "examples/cider/bjt/ecp.cir",
+    "examples/cider/diode/pindiode.cir",
+    "examples/cider/mos/ringosc.cir",
+    "examples/cider/parallel/ringosc.2u.cir",
+    "examples/cider/serial/pullup.cir",
+    "examples/cider/serial/recovery.cir",
+    "examples/cider/surfmob/cd4007n_200402idvg.net",
+    "examples/cider/surfmob/cdxy.net",
+    "examples/cider/surfmob/Tbicmpd1.cir",
+    "examples/cider/surfmob/Tbicmpd1xy.cir",
+    "examples/cider/surfmob/Tbicmpu1.cir",
+    "examples/cider/surfmob/Tbicmpu1xy.cir",
+    "examples/transient-noise/noi-sc-tr.cir"
+  ],
   "beforeTotals": {
     "fixtures": 336,
     "ngspice": {

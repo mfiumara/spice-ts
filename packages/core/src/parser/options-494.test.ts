@@ -28,8 +28,12 @@ describe('ngspice-47 compatibility options (#494)', () => {
     expect(parse(`.options ${option}\n.op`).simulationOptions).toEqual({});
   });
 
-  it.each(['warn=no', 'maxwarns=1.5', 'bypass=1.5', 'ramptime=-1', 'ramptime=NaN'])('rejects invalid %s', option => {
+  it.each(['warn=no', 'maxwarns=1.5', 'bypass=1.5', 'bypass=-1', 'ramptime=-1', 'ramptime=NaN'])('rejects invalid %s', option => {
     expect(() => parse(`.options ${option}\n.op`)).toThrow();
+  });
+
+  it.each([-1, 1.5, NaN])('rejects invalid API bypass %s', async bypass => {
+    await expect(simulate(deck, { bypass })).rejects.toBeInstanceOf(InvalidCircuitError);
   });
 
   it('preserves bypass and ramptime through compilation and serialization', () => {

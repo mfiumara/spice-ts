@@ -74,7 +74,7 @@ Solver-backed fields, the diagnostic-only fields below, and the explicitly diagn
 | `trtol` | `trtol` | Non-negative finite number | implemented |
 | `noinit`, `seedinfo` | — | Bare flags, case-insensitive. Suppress the initial-transient printout / request seed printing; neither skips initialization nor changes the RNG seed. | diagnostic-only no-op |
 | `warn`, `maxwarns` | — | Integer. Enable SOA diagnostics / limit warnings per SOA violation category in ngspice; do not alter circuit equations. Native SOA diagnostics are not implemented. | diagnostic-only no-op |
-| `bypass` | `bypass` | Integer, preserved for external backends. `0` matches native always-evaluate behavior. Nonzero requests do **not** enable ngspice's nonlinear evaluation reuse; `simulate()` returns an `option` warning. Runtime, iteration counts and tolerance-level values may differ. | accepted with explicit limitation, not solver parity |
+| `bypass` | `bypass` | Non-negative integer, preserved for external backends. `0` matches native always-evaluate behavior. Nonzero requests do **not** enable ngspice's nonlinear evaluation reuse; `simulate()` returns an `option` warning. Runtime, iteration counts and tolerance-level values may differ. | accepted with explicit limitation, not solver parity |
 | `ramptime` | `rampTime` | Non-negative finite seconds, default 0. Adds the end-of-ramp transient breakpoint. Ordinary V/I sources are **not** ramped by the ngspice-47 release build. XSPICE `capacitoric`/`inductoric` remain explicitly unsupported. | implemented for supported devices in release-build semantics |
 | Every other `.options` field/value | — | Explicit parse error | unsupported |
 

@@ -331,8 +331,8 @@ export function resolveOptions(opts?: SimulationOptions, stopTime?: number): Res
   if (opts?.rampTime !== undefined && (!Number.isFinite(opts.rampTime) || opts.rampTime < 0)) {
     throw new InvalidCircuitError('SimulationOptions.rampTime must be a non-negative finite number');
   }
-  if (opts?.bypass !== undefined && !Number.isInteger(opts.bypass)) {
-    throw new InvalidCircuitError('SimulationOptions.bypass must be an integer');
+  if (opts?.bypass !== undefined && (!Number.isInteger(opts.bypass) || opts.bypass < 0)) {
+    throw new InvalidCircuitError('SimulationOptions.bypass must be a non-negative integer');
   }
   return {
     rampTime: opts?.rampTime ?? DEFAULT_OPTIONS.rampTime,

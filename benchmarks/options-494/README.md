@@ -4,7 +4,7 @@
 
 - `noinit` suppresses ngspice's printed initial transient solution. It does not mean UIC. `seedinfo` requests seed printing and does not change the seed. Both are diagnostic-only no-ops in spice-ts.
 - Integer `warn` and `maxwarns` control SOA diagnostics, not circuit equations. Native SOA checks are not implemented; these are documented diagnostic-only no-ops.
-- Integer `bypass` is preserved, but native nonlinear-device evaluation reuse is not implemented. The native solver always evaluates devices. `simulate()` returns an explicit `option` warning for nonzero requests. This is not a claim of ngspice bypass parity: runtimes, iteration counts and tolerance-level values can differ.
+- Integer `bypass` is preserved; negative values are rejected in decks and the API. Native nonlinear-device evaluation reuse is not implemented. The native solver always evaluates devices. `simulate()` returns an explicit `option` warning for nonzero requests. This is not a claim of ngspice bypass parity: runtimes, iteration counts and tolerance-level values can differ.
 - `ramptime` adds the transient ramp-end breakpoint. ngspice-47 release builds do not ramp ordinary V/I sources: their ramp calls are guarded by `XSPICE_EXP`. XSPICE `capacitoric` and `inductoric`, which use the linear ramp factor in normal builds, remain explicitly unsupported. Finite and open-ended transient APIs, reset, batch/stream parity, API precedence and serialization are tested.
 
 Source references use the [ngspice-47 release](https://sourceforge.net/p/ngspice/ngspice/ci/ngspice-47/tree/): `src/frontend/spiceif.c:449–451` (`noinit`), `src/frontend/inp.c:439–440,1446–1454` (`seedinfo`, SOA controls), `src/spicelib/analysis/cktsopt.c` (bypass/ramptime), `src/spicelib/analysis/dctran.c:217–221` (breakpoint), `src/spicelib/devices/vsrc/vsrcload.c:464–470` and `isrc/isrcload.c:447–453` (experimental source ramp guard), `src/xspice/cm/cm.c:498–522` (linear ramp factor). The separate `optran` cosine ramp is not used.
@@ -16,7 +16,10 @@ pnpm install --frozen-lockfile
 pnpm build && pnpm lint && pnpm test
 pnpm -C packages/core exec vitest run src/parser/options-494.test.ts
 pnpm exec tsx benchmarks/options-494/compare.ts
+# optional, heavy (wrap in spice-heavy on shared hosts); evidence only, never committed over corpus-f:
 pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --jobs 4
+cp benchmarks/corpus/corpus-f/outcomes.json benchmarks/options-494/corpus-f-rerun-outcomes.json
+git checkout -- benchmarks/corpus/corpus-f
 pnpm exec tsx benchmarks/options-494/corpus-delta.ts
 ```
 
@@ -47,7 +50,9 @@ The diode current's pointwise relative error reaches **0.17617266017448674** nea
 
 ## Corpus-f
 
-The full 336-fixture rerun exited 0. `corpus-delta.json` preserves every before/after row and hash for all 18 first-failure members in the base #494 bucket, including the original 12. All 18 advance beyond the named options. The bucket shrinks **18 → 2**; its two residual members now reject `seed` and `NOMOD`, not the options implemented here.
+**This patch does not change the committed corpus-f `outcomes.json` or `README.md`.** The full 336-fixture rerun ran on a loaded shared host, from base `bf2e4169`, before #605 and #610 landed. In that run 13 ngspice reference runs that succeed in the committed snapshot hit the 600000 ms bound: 12 `examples/cider/*` decks and `examples/transient-noise/noi-sc-tr.cir` (listed in `corpus-delta.json` as `hostReferenceTimeouts`). Those are host-load timeouts, not ngspice failures, so the rerun must not replace the published corpus. It is kept here as `corpus-f-rerun-outcomes.json`, an evidence-only receipt. `corpus-delta.ts` reads it from that path. A quiet-host corpus-f refresh belongs to the corpus owners, not this options patch.
+
+The rerun exited 0. `corpus-delta.json` preserves every before/after row and hash for all 18 first-failure members in the base #494 bucket, including the original 12. All 18 advance beyond the named options. The bucket shrinks **18 → 2**; its two residual members now reject `seed` and `NOMOD`, not the options implemented here.
 
 **None of the original 12 produces a new completed native simulation or numerical comparison.** Eleven reach a further explicit unsupported decision; the bipolar adder reaches the unchanged 120-second execution bound. All 12 reference runs succeed. A timeout has no waveform score, not zero error. The synthetic probes above validate the implemented semantics without pretending these upstream decks now have parity.
 
@@ -66,7 +71,7 @@ The full 336-fixture rerun exited 0. `corpus-delta.json` preserves every before/
 | `examples/xspice/original-examples/supply_ramping.deck` | TRAN, 67 points | unsupported XSPICE `capacitoric` | not comparable |
 | `examples/xspice/various/ro_nand_digi.cir` | control-only; no raw vectors | unsupported `NOMOD` (also contains `XTRTOL`) | not comparable |
 
-Full corpus totals (committed snapshot → this full rerun):
+Full corpus totals (committed snapshot → evidence-only rerun receipt):
 
 | Measure | Before | After |
 |---|---:|---:|

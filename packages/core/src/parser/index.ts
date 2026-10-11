@@ -753,7 +753,7 @@ function parseSimulationOptions(
     const rawValue = token.slice(separator + 1);
     if (name === 'warn' || name === 'maxwarns' || name === 'bypass') {
       const value = parseNumber(rawValue);
-      if (!Number.isInteger(value)) {
+      if (!Number.isInteger(value) || (name === 'bypass' && value < 0)) {
         throw new Error(`Invalid .options ${name} value: '${rawValue}'`);
       }
       // WARN/MAXWARNS only control ngspice's SOA diagnostics. BYPASS is
