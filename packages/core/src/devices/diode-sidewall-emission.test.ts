@@ -96,6 +96,58 @@ describe('diode NS sidewall emission coefficient like ngspice-47 (#642)', () => 
     expectNear(out, -5.041423737369, NGSPICE_BREAKDOWN_RESIDUAL);
   });
 
+  describe('when IBV is below Isat*BV/vt (diotemp.c xbv = tBV)', () => {
+    // ngspice-47 diotemp.c:221-228 raises cbv and puts the breakdown knee at
+    // tBV itself; iterating the log law there would give a NaN knee.
+    // ngspice's reverse currents include CKTgmin*vd through the junction, which
+    // the spice-ts diode keeps out of its DC current (#643), so it is removed
+    // from the references below.
+    const GMIN = 1e-12;
+    const withoutGmin = (ngspiceCurrent: number, out: number) => ngspiceCurrent - GMIN * Math.abs(out);
+
+    it('solves a reverse-biased NS diode with PJ=0 (review repro 1)', async () => {
+      // ngspice-47: v(out) = -9.999999989900e-01, i(v1) = 1.0099998615232e-12
+      const { out, current } = await operatingPoint(
+        'IS=1e-14 JSW=1e-14 NS=2 BV=5 IBV=1e-12',
+        { source: -1, pj: 0 },
+      );
+      expectNear(out, -0.99999999899, NGSPICE_NEWTON_RESIDUAL);
+      const expected = withoutGmin(1.0099998615232e-12, out);
+      expect(Math.abs(current - expected) / expected).toBeLessThan(1e-4);
+    });
+
+    it('solves a reverse-biased NS sidewall above the knee (review repro 2)', async () => {
+      const model = 'IS=1e-14 JSW=1e-7 NS=2.5 BV=6 IBV=1u';
+      // The review used R1=10; this deck's R1=1k changes nothing about the junction law.
+      const cases = [
+        // ngspice-47: v(out) = -9.999000353451e-01, i(v1) = 9.9964654923901e-08
+        { source: -1, out: -0.9999000353451, current: 9.9964654923901e-8 },
+        // ngspice-47: v(out) = -3.999899996558e+00, i(v1) = 1.0000344198113e-07
+        { source: -4, out: -3.999899996558, current: 1.0000344198113e-7 },
+      ];
+      for (const reference of cases) {
+        const { out, current } = await operatingPoint(model, { source: reference.source, pj: 1 });
+        expectNear(out, reference.out, NGSPICE_NEWTON_RESIDUAL);
+        const expected = withoutGmin(reference.current, out);
+        expect(Math.abs(current - expected) / expected).toBeLessThan(1e-5);
+      }
+    });
+
+    it('puts the breakdown knee at BV itself', async () => {
+      // ngspice-47: v(out) = -5.692887890375e+00, i(v1) = 4.3071121096245e-03
+      const { out } = await operatingPoint(
+        'IS=1e-14 JSW=1e-14 NS=2 BV=5 IBV=1e-12',
+        { source: -10, pj: 0 },
+      );
+      expectNear(out, -5.692887890375, NGSPICE_NEWTON_RESIDUAL);
+      // Without NS/JSW the bottom junction takes the same knee (ngspice-47
+      // gives the identical operating point); before, its NaN knee kept it out
+      // of breakdown altogether.
+      const plain = await operatingPoint('IS=1e-14 BV=5 IBV=1e-12', { source: -10, pj: 0 });
+      expectNear(plain.out, -5.692887890375, NGSPICE_NEWTON_RESIDUAL);
+    });
+  });
+
   it('keeps NS=1 and NS-absent decks bit-identical', async () => {
     // ngspice-47 gives v(out) = 6.7494123725255e-01 for both decks.
     const absent = await operatingPoint('IS=1e-16 JSW=1e-14');

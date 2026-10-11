@@ -1007,8 +1007,9 @@ function sidewallCurrent(
       conductance: saturationCurrent * exponential / thermalVoltage,
     };
   }
-  const knee = breakdown ? breakdownKneeVoltage(breakdown, totalSaturationCurrent) : Infinity;
-  if (voltage >= -knee) {
+  // dioload.c: the reverse law applies when `!BVgiven || vdsw >= -tBrkdwnV`.
+  const knee = breakdown ? breakdownKneeVoltage(breakdown, totalSaturationCurrent) : 0;
+  if (!breakdown || voltage >= -knee) {
     const root = 3 * thermalVoltage / (voltage * Math.E);
     const cube = root * root * root;
     return {
@@ -1016,10 +1017,10 @@ function sidewallCurrent(
       conductance: saturationCurrent * 3 * cube / voltage,
     };
   }
-  const exponential = safeExponential(-(knee + voltage) / breakdown!.thermalVoltage);
+  const exponential = safeExponential(-(knee + voltage) / breakdown.thermalVoltage);
   return {
     current: -saturationCurrent * exponential,
-    conductance: saturationCurrent * exponential / breakdown!.thermalVoltage,
+    conductance: saturationCurrent * exponential / breakdown.thermalVoltage,
   };
 }
 
@@ -1043,6 +1044,10 @@ function breakdownKneeVoltage(
   saturationCurrent: number,
 ): number {
   const { voltage, current, thermalVoltage, junctionThermalVoltage } = breakdown;
+  // ngspice-47 diotemp.c:221-228: a breakdown current below Isat*BV/vt cannot
+  // be matched by the knee iteration (its log argument goes negative), so
+  // ngspice raises cbv and puts the knee at the breakdown voltage itself.
+  if (current < saturationCurrent * voltage / junctionThermalVoltage) return voltage;
   // ngspice-47 diotemp.c:231-235: the log term scales with NBV*vt, while the
   // linear reverse-leakage term -xbv/vt uses plain vt.
   let knee = voltage - thermalVoltage * Math.log1p(current / saturationCurrent);
