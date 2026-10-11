@@ -1,6 +1,6 @@
 import type { DiodeInstanceParams } from '../parser/diode-parser.js';
 import { InvalidCircuitError } from '../errors.js';
-import type { DeviceModel, StampContext } from './device.js';
+import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
 
 export interface DiodeParams {
   IS: number;
@@ -146,6 +146,7 @@ interface ChargeTaylorCoefficients {
 export class Diode implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  readonly integratesTransientCharge: boolean;
   readonly params: DiodeParams;
   readonly suppliedParams: Readonly<Partial<DiodeParams>>;
   private temperature = 27;
@@ -165,6 +166,17 @@ export class Diode implements DeviceModel {
   readonly limitsOwnJunctions: boolean;
   /** stampDynamic is a no-op without junction capacitance or transit time. */
   readonly storesCharge: boolean;
+  /** Junction voltage the last `stamp` linearised at; the charge uses the same point. */
+  private stampedJunctionVoltage = 0;
+  /**
+   * Accepted junction charge history (ngspice DIOcapCharge in CKTstate1/2) and
+   * the charge current at the last accepted point (DIOcapCurrent).
+   */
+  private acceptedCharge: number | undefined;
+  private previousAcceptedCharge: number | undefined;
+  private acceptedChargeCurrent = 0;
+  /** Integration rule of the most recent charge stamp, committed on acceptance. */
+  private pendingIntegration: ChargeIntegration | undefined;
 
   constructor(
     readonly name: string,
@@ -213,6 +225,10 @@ export class Diode implements DeviceModel {
     };
     this.limitsOwnJunctions = this.params.RS === 0;
     this.storesCharge = Boolean(this.params.CJ0 || this.params.CJSW || this.params.TT);
+    // A two-terminal RS fallback cannot carry the internal junction charge, so
+    // it keeps the reduced C(v) stamp. Compiled circuits expand RS whenever the
+    // junction stores charge, leaving RS = 0 here.
+    this.integratesTransientCharge = this.limitsOwnJunctions && this.storesCharge;
   }
 
   beginTransientNewton(): void {
@@ -242,12 +258,17 @@ export class Diode implements DeviceModel {
     this.acceptedJunctionVoltage = (nA >= 0 ? ctx.getVoltage(nA) : 0)
       - (nK >= 0 ? ctx.getVoltage(nK) : 0);
     this.newtonJunctionVoltage = undefined;
+    if (this.integratesTransientCharge) this.acceptCharge(this.acceptedJunctionVoltage);
   }
 
   resetTransient(): void {
     this.acceptedJunctionVoltage = undefined;
     this.newtonJunctionVoltage = undefined;
     this.limited = false;
+    this.acceptedCharge = undefined;
+    this.previousAcceptedCharge = undefined;
+    this.acceptedChargeCurrent = 0;
+    this.pendingIntegration = undefined;
   }
 
   setTemperature(value: number): void {
@@ -386,6 +407,7 @@ export class Diode implements DeviceModel {
       vd = limited;
       this.previousJunctionVoltage = vd;
     }
+    this.stampedJunctionVoltage = vd;
 
     const { current: id, conductance, linearizationVoltage } = diodeCurrent(
       vd,
@@ -455,6 +477,151 @@ export class Diode implements DeviceModel {
       ctx.stampC(nK, nA, -cj);
     }
   }
+
+  /**
+   * Transient junction charge companion, as ngspice dioload.c integrates
+   * DIOcapCharge with NIintegrate: the current is the integrated dQ/dt of the
+   * charge q(v), not C(v)*dv/dt, so the stored charge is conserved across a
+   * nonlinear swing (#403).
+   */
+  stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
+    const voltage = this.stampedJunctionVoltage;
+    const { charge, capacitance } = this.junctionCharge(voltage);
+    const { current, conductance } = this.integrateCharge(charge, capacitance, integration);
+    this.pendingIntegration = integration;
+
+    const [nA, nK] = this.nodes;
+    const ieq = current - conductance * voltage;
+    if (nA >= 0) ctx.stampG(nA, nA, conductance);
+    if (nK >= 0) ctx.stampG(nK, nK, conductance);
+    if (nA >= 0 && nK >= 0) {
+      ctx.stampG(nA, nK, -conductance);
+      ctx.stampG(nK, nA, -conductance);
+    }
+    if (nA >= 0) ctx.stampB(nA, -ieq);
+    if (nK >= 0) ctx.stampB(nK, ieq);
+  }
+
+  stampAcceptedChargeCurrent(ctx: StampContext): void {
+    const [nA, nK] = this.nodes;
+    if (nA >= 0) ctx.stampB(nA, -this.acceptedChargeCurrent);
+    if (nK >= 0) ctx.stampB(nK, this.acceptedChargeCurrent);
+  }
+
+  /** Commit the junction charge and its integrated current at an accepted timepoint. */
+  private acceptCharge(junctionVoltage: number): void {
+    const { charge, capacitance } = this.junctionCharge(junctionVoltage);
+    const integration = this.pendingIntegration;
+    this.pendingIntegration = undefined;
+    if (integration === undefined || this.acceptedCharge === undefined) {
+      // Initial operating point: the charge is at rest (ngspice copies
+      // CKTstate0 into CKTstate1 with a zero capacitor current at MODEINITTRAN).
+      this.acceptedCharge = charge;
+      this.previousAcceptedCharge = undefined;
+      this.acceptedChargeCurrent = 0;
+      return;
+    }
+    this.acceptedChargeCurrent = this.integrateCharge(charge, capacitance, integration).current;
+    this.previousAcceptedCharge = this.acceptedCharge;
+    this.acceptedCharge = charge;
+  }
+
+  /** Depletion (bottom + sidewall) plus diffusion charge and dQ/dV (ngspice dioload.c). */
+  private junctionCharge(voltage: number): { charge: number; capacitance: number } {
+    const { CJ0, CJSW, VJ, VJSW, M, MJSW, FC, FCS, TT } = this.params;
+    const bottom = depletionCharge(voltage, CJ0!, VJ!, M!, FC!);
+    // ngspice-47 offsets the sidewall charge above FCS*VJSW with the bottom
+    // junction's F1 (DIOtF1), which steps the charge at FCS*VJSW whenever the
+    // bottom and sidewall F1 differ. That step is not reproduced: the charge
+    // here is the integral of the (ngspice-identical) capacitance (#450).
+    const sidewall = depletionCharge(voltage, CJSW!, VJSW!, MJSW!, FCS!);
+    let charge = bottom.charge + sidewall.charge;
+    let capacitance = bottom.capacitance + sidewall.capacitance;
+    if (TT) {
+      // ngspice: diffcharge = TT*cd, diffcap = TT*gd, with cd and gd including GMIN.
+      const { current, conductance } = junctionCurrent(voltage, this.junction());
+      charge += TT * (current + GMIN * voltage);
+      capacitance += TT * (conductance + GMIN);
+    }
+    return { charge, capacitance };
+  }
+
+  /** ngspice NIintegrate for one charge: returns the capacitor current and its dI/dV. */
+  private integrateCharge(
+    charge: number,
+    capacitance: number,
+    { method, dt, prevDt }: ChargeIntegration,
+  ): { current: number; conductance: number } {
+    const previous = this.acceptedCharge ?? charge;
+    if (method === 'trapezoidal') {
+      const factor = 2 / dt;
+      return {
+        current: factor * (charge - previous) - this.acceptedChargeCurrent,
+        conductance: factor * capacitance,
+      };
+    }
+    if (method === 'gear2' && prevDt !== undefined && this.previousAcceptedCharge !== undefined) {
+      const alpha = prevDt / dt;
+      const a1 = (2 + alpha) / ((1 + alpha) * dt);
+      const a2 = (1 + alpha) / (alpha * dt);
+      const a3 = 1 / (alpha * (1 + alpha) * dt);
+      return {
+        current: a1 * charge - a2 * previous + a3 * this.previousAcceptedCharge,
+        conductance: a1 * capacitance,
+      };
+    }
+    return { current: (charge - previous) / dt, conductance: capacitance / dt };
+  }
+}
+
+/**
+ * Depletion charge and capacitance of one junction component, as ngspice
+ * dioload.c: Q = VJ*CJ0*(1 - (1-V/VJ)^(1-M))/(1-M) below FC*VJ, and the
+ * integral of the linear capacitance extension above it, so Q is C^1.
+ */
+function depletionCharge(
+  voltage: number,
+  zeroBiasCapacitance: number,
+  junctionPotential: number,
+  gradingCoefficient: number,
+  forwardCoefficient: number,
+): { charge: number; capacitance: number } {
+  if (!zeroBiasCapacitance) return { charge: 0, capacitance: 0 };
+  const { capacitance } = depletionChargeTaylor(
+    voltage, zeroBiasCapacitance, junctionPotential, gradingCoefficient, forwardCoefficient,
+  );
+  const threshold = forwardCoefficient * junctionPotential;
+  if (voltage < threshold) {
+    return {
+      charge: abruptJunctionCharge(voltage, zeroBiasCapacitance, junctionPotential, gradingCoefficient),
+      capacitance,
+    };
+  }
+  const continuation = Math.pow(1 - forwardCoefficient, 1 + gradingCoefficient);
+  const linear = 1 - forwardCoefficient * (1 + gradingCoefficient);
+  const extension = zeroBiasCapacitance / continuation * (
+    linear * (voltage - threshold)
+    + gradingCoefficient / (2 * junctionPotential) * (voltage * voltage - threshold * threshold)
+  );
+  return {
+    charge: abruptJunctionCharge(threshold, zeroBiasCapacitance, junctionPotential, gradingCoefficient)
+      + extension,
+    capacitance,
+  };
+}
+
+/** Charge stored between 0 and V on the abrupt-junction law CJ0/(1-V/VJ)^M. */
+function abruptJunctionCharge(
+  voltage: number,
+  zeroBiasCapacitance: number,
+  junctionPotential: number,
+  gradingCoefficient: number,
+): number {
+  const depletion = 1 - voltage / junctionPotential;
+  const exponent = 1 - gradingCoefficient;
+  return Math.abs(exponent) < 1e-12
+    ? -junctionPotential * zeroBiasCapacitance * Math.log(depletion)
+    : junctionPotential * zeroBiasCapacitance * (1 - Math.pow(depletion, exponent)) / exponent;
 }
 
 /**

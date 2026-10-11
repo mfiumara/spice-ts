@@ -180,15 +180,16 @@ class TransientSimImpl implements TransientSim {
     this.config = config;
     this.convergenceTelemetry = config.convergence ?? createConvergenceTelemetry();
     for (const device of compiled.devices) device.setTransientTimestep?.(config.timestep);
-    // Voltage-dependent capacitances need charge state, which the current
-    // device contract does not expose. Preserve their established companion
-    // history while using the exact static residual for constant-C circuits.
+    // Voltage-dependent capacitances stamped as C(v) need charge state, which
+    // the C-matrix companion does not keep. Preserve their established
+    // companion history while using the exact static residual for constant-C
+    // circuits. Devices that integrate their own charge keep that state.
     // A nonlinear device that stores no charge (e.g. a diode without CJO, CJSW
     // or TT) is static: the raw-RHS history would pair the new Newton
     // conductance with the old operating point and misintegrate its current.
     this.useStaticCurrentHistory = !compiled.devices.some(device => (
       (device.isNonlinear && device.stampDynamic !== undefined
-        && device.storesCharge !== false)
+        && device.storesCharge !== false && !device.integratesTransientCharge)
       || (config.stopTime !== undefined && (device.getBreakpoints?.(config.stopTime) ?? []).some(time => time > 0))
     ));
     this.useDampedInductiveRecovery = compiled.devices.some(device => device instanceof Inductor)
@@ -493,6 +494,11 @@ class TransientSimImpl implements TransientSim {
     this.assembler.clear();
     const ctx = this.assembler.getStampContext();
     for (const d of this.compiled.devices) d.stamp(ctx);
+    // Charge currents accepted at x(n) belong to the static side of the KCL
+    // that defines the trapezoidal history of the linear reactive elements.
+    for (const d of this.compiled.devices) {
+      if (d.integratesTransientCharge) d.stampAcceptedChargeCurrent?.(ctx);
+    }
     const current = this.historyWorkspace ??= new Float64Array(this.assembler.systemSize);
     if (!this.useStaticCurrentHistory) {
       current.set(this.assembler.b);

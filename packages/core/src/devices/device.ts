@@ -27,6 +27,18 @@ export interface StampContext {
   useDcSourceValue: boolean;
 }
 
+/**
+ * Integration rule for one transient step, after the order-1 bootstrap at
+ * starts, breakpoints and history resets has been applied.
+ */
+export interface ChargeIntegration {
+  readonly method: 'euler' | 'trapezoidal' | 'gear2';
+  /** Step being solved, t(n+1) - t(n). */
+  readonly dt: number;
+  /** Previous accepted step t(n) - t(n-1); required for `gear2`. */
+  readonly prevDt?: number;
+}
+
 /** A frequency-independent contribution to the complex AC right-hand side. */
 export type ACRHSContribution =
   | {
@@ -68,6 +80,24 @@ export interface DeviceModel {
    * as purely static and uses the exact accepted static-current history.
    */
   readonly storesCharge?: boolean;
+  /**
+   * True when the device integrates its own nonlinear charge in transient
+   * analysis (ngspice NIintegrate on q(v)) through {@link stampTransientCharge}
+   * instead of stamping C(v) via {@link stampDynamic}. `stampDynamic` is then
+   * still used for AC, noise and other small-signal analyses.
+   */
+  readonly integratesTransientCharge?: boolean;
+  /**
+   * Stamp the integrated charge companion (G and b) for one transient Newton
+   * iteration. Called after `stamp` with the same context.
+   */
+  stampTransientCharge?(ctx: StampContext, integration: ChargeIntegration): void;
+  /**
+   * Stamp the charge current accepted at the last committed timepoint as a
+   * constant current. Used to build the trapezoidal history of other
+   * reactive elements that share its nodes.
+   */
+  stampAcceptedChargeCurrent?(ctx: StampContext): void;
   /** Stamp AC small-signal contributions at angular frequency omega. */
   stampAC?(ctx: StampContext, omega: number): void;
   /** Commit state from a transient timepoint after NR and LTE acceptance. */
