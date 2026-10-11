@@ -1,12 +1,12 @@
 import { ParseError } from '../errors.js';
 import type { PoleZeroAnalysis } from '../types.js';
-import { assertSupportedPoleZero, BOUNDED_POLE_ZERO_FORM } from '../validation/pole-zero.js';
+import { assertSupportedPoleZero, POLE_ZERO_FORM } from '../validation/pole-zero.js';
 
-/** Parse the bounded ngspice `.pz in 0 out 0 {cur|vol} {pol|pz}` slice. */
+/** Parse the ngspice `.pz in+ in- out+ out- {cur|vol} {pol|zer|pz}` directive. */
 export function parsePoleZero(tokens: string[], lineNumber: number): PoleZeroAnalysis {
   if (tokens.length !== 7) {
     throw new ParseError(
-      `Unsupported .pz form; expected '${BOUNDED_POLE_ZERO_FORM}'`,
+      `Unsupported .pz form; expected '${POLE_ZERO_FORM}'`,
       lineNumber,
       tokens.join(' '),
     );

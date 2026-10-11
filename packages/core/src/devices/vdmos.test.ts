@@ -255,6 +255,50 @@ mn 3 2 0 n1
     expectClose(at(input, 15e-9), -6.38337e-4, 1e-2);
     expectClose(at(input, 21e-9), -1.01623e-3, 1e-2);
   });
+
+  it('matches the ngspice-47 inverter shoot-through supply current i(vdd) on both edges within 1% (issue #596)', async () => {
+    // corpus-f examples/vdmos/inv_vdmos.sp devices and sources. The references
+    // are ngspice-47 `meas tran` (6 significant digits) at TMAX 0.5p, where its
+    // i(vdd) has converged to 0.1%; at the fixture's `tran 1n 1u` ngspice
+    // samples this ~4 ns spike with 1 ns steps and under-reads it by ~5%.
+    const result = await simulate(`inv_vdmos i(vdd)
+vdd 1 0 5
+vin 2 0 PULSE(0 5 10n 10n 10n 140n 300n)
+mp 3 2 1 p1
+mn 3 2 0 n1
+.model n1 vdmos cgdmin=0.2p cgdmax=1p a=2 cgs=0.5p rg=5k rb=1e9 cjo=0.1p
+.model p1 vdmos cgdmin=0.2p cgdmax=1p a=2 cgs=0.5p rg=5k rb=1e9 cjo=0.1p pchan
+.tran 1n 180n 0 10p
+.end
+`);
+    const tran = result.transient!;
+    const time = tran.time;
+    const supply = tran.current('vdd');
+    const at = (t: number) => {
+      let index = 1;
+      while (index < time.length - 1 && time[index] < t) index++;
+      const fraction = (t - time[index - 1]) / (time[index] - time[index - 1]);
+      return supply[index - 1] + fraction * (supply[index] - supply[index - 1]);
+    };
+    const minimum = (from: number, to: number) => {
+      let value = Infinity;
+      for (let index = 0; index < time.length; index++) {
+        if (time[index] >= from && time[index] <= to) value = Math.min(value, supply[index]);
+      }
+      return value;
+    };
+    const peak = 0.313532;
+    // 1% of the shoot-through peak, the corpus-f parity threshold.
+    const tolerance = 0.01 * peak;
+    expect(Math.abs(minimum(15e-9, 40e-9) - -0.313532)).toBeLessThan(tolerance);
+    expect(Math.abs(minimum(165e-9, 180e-9) - -0.288999)).toBeLessThan(tolerance);
+    for (const [t, expected] of [
+      [20.5e-9, -0.199837], [22e-9, -0.268970], [23.5e-9, -0.0791984],
+      [170.5e-9, -0.166805], [172e-9, -0.264030], [173.5e-9, -0.0879487],
+    ] as const) {
+      expect(Math.abs(at(t) - expected)).toBeLessThan(tolerance);
+    }
+  });
 });
 
 describe('VDMOS unsupported features (issue #506)', () => {

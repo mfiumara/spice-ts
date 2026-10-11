@@ -1,3 +1,5 @@
+import { InvalidCircuitError } from './errors.js';
+
 /** Node identifier — string name from netlist (e.g., '1', 'out', '0' for ground) */
 export type NodeName = string;
 
@@ -147,16 +149,16 @@ export interface PoleZeroAnalysis {
   type: 'pz';
   /** Positive input terminal. */
   inputPositive: string;
-  /** Negative input terminal; bounded to ground in this slice. */
+  /** Negative input terminal (`'0'` for ground). */
   inputNegative: string;
   /** Positive voltage-output terminal. */
   outputPositive: string;
-  /** Negative voltage-output terminal; bounded to ground in this slice. */
+  /** Negative voltage-output terminal (`'0'` for ground). */
   outputNegative: string;
-  /** Current or voltage input; voltage input is bounded to passive RLC circuits. */
+  /** Current or voltage input. */
   inputType: 'cur' | 'vol';
-  /** Compute poles only, or both poles and zeros. */
-  mode: 'pol' | 'pz';
+  /** Compute poles only, zeros only, or both poles and zeros. */
+  mode: 'pol' | 'zer' | 'pz';
 }
 
 /** Bounded single-node voltage sensitivity analysis. */
@@ -201,6 +203,10 @@ export type IntegrationMethod = 'euler' | 'trapezoidal' | 'gear2';
  * All fields are optional; SPICE-convention defaults are used when omitted.
  */
 export interface SimulationOptions {
+  /** ngspice nonlinear-device bypass request. Native solver always evaluates devices and warns when nonzero. */
+  bypass?: number;
+  /** ngspice-47 RAMPTIME breakpoint (s). Ordinary V/I sources do not ramp in the release build. Default: 0. */
+  rampTime?: number;
   /** Absolute current tolerance (A). Default: 1e-12 */
   abstol?: number;
   /** Absolute voltage tolerance (V). Default: 1e-6 */
@@ -285,6 +291,7 @@ export type SimulatorBackend = SimulatorBackendName | SimulatorAdapter;
 
 /** Resolved options with all defaults filled in */
 export interface ResolvedOptions {
+  rampTime: number;
   abstol: number;
   vntol: number;
   reltol: number;
@@ -298,6 +305,7 @@ export interface ResolvedOptions {
 }
 
 export const DEFAULT_OPTIONS: ResolvedOptions = {
+  rampTime: 0,
   abstol: 1e-12,
   vntol: 1e-6,
   reltol: 1e-3,
@@ -320,7 +328,14 @@ export function withNetlistOptions<T extends SimulationOptions>(netlist: Simulat
 }
 
 export function resolveOptions(opts?: SimulationOptions, stopTime?: number): ResolvedOptions {
+  if (opts?.rampTime !== undefined && (!Number.isFinite(opts.rampTime) || opts.rampTime < 0)) {
+    throw new InvalidCircuitError('SimulationOptions.rampTime must be a non-negative finite number');
+  }
+  if (opts?.bypass !== undefined && (!Number.isInteger(opts.bypass) || opts.bypass < 0)) {
+    throw new InvalidCircuitError('SimulationOptions.bypass must be a non-negative integer');
+  }
   return {
+    rampTime: opts?.rampTime ?? DEFAULT_OPTIONS.rampTime,
     abstol: opts?.abstol ?? DEFAULT_OPTIONS.abstol,
     vntol: opts?.vntol ?? DEFAULT_OPTIONS.vntol,
     reltol: opts?.reltol ?? DEFAULT_OPTIONS.reltol,

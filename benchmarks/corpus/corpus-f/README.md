@@ -6,11 +6,11 @@ Every deck below is byte-identical to ngspice `3ef069fb1f04177a153f342a32d941fc2
 
 ## Totals
 
-- Fixtures: 336. Outcome SHA-256: `f9f294c59c514e91f63134d66941e898d115c4cdf2ef05e24197e746f770b5a3`.
+- Fixtures: 336. Outcome SHA-256: `dc2cf07f454b6d10bc8b7dda4c91cd32d33facb11e4dba62434067e5f444bfc2`.
 - ngspice (ngspice-47): 306 success, 18 failed, 12 unsupported.
-- spice-ts (0.3.0): 32 success, 8 failed, 296 unsupported.
-- Outcomes: matched 11, mismatch 10, not-compared 11, spice-ts-loss 274, ngspice-failed 0, both-failed 30.
-- Of the 306 decks ngspice runs successfully, spice-ts matches 11, mismatches 10, produces no comparable result for 11 and fails 274. For 155 of those ngspice successes the deck runs its analyses from `.control` (or its control block ends with `quit`), so `ngspice -r` exports no vectors: they cannot be compared even when spice-ts runs them (harness follow-up https://github.com/mfiumara/spice-ts/issues/528).
+- spice-ts (0.3.0): 35 success, 5 failed, 296 unsupported.
+- Outcomes: matched 14, mismatch 10, not-compared 11, spice-ts-loss 271, ngspice-failed 0, both-failed 30.
+- Of the 306 decks ngspice runs successfully, spice-ts matches 14, mismatches 10, produces no comparable result for 11 and fails 271. For 155 of those ngspice successes the deck runs its analyses from `.control` (or its control block ends with `quit`), so `ngspice -r` exports no vectors: they cannot be compared even when spice-ts runs them (harness follow-up https://github.com/mfiumara/spice-ts/issues/528).
 
 ## Method
 
@@ -53,7 +53,6 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP) | 4 | 2 | https://github.com/mfiumara/spice-ts/issues/490 |
 | directive: .global | 4 | 4 | https://github.com/mfiumara/spice-ts/issues/502 |
 | model: VERSION= strings on BSIM model cards | 4 | 4 | https://github.com/mfiumara/spice-ts/issues/503 |
-| analysis: .pz beyond ideal R, L, C | 3 | 3 | https://github.com/mfiumara/spice-ts/issues/504 |
 | analysis: .sens forms | 3 | 0 | none: ngspice also fails every fixture in this bucket |
 | convergence | 3 | 1 | none filed |
 | directive: .measure | 3 | 3 | https://github.com/mfiumara/spice-ts/issues/505 |
@@ -352,9 +351,9 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [tests/mesa/mesa21.cir](fixtures/tests/mesa/mesa21.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Unsupported NMF model level: 3 |
 | [tests/mesa/mesgout.cir](fixtures/tests/mesa/mesgout.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Unsupported NMF level-2 model parameter: 'DELFO' |
 | [tests/mesa/mesinv.cir](fixtures/tests/mesa/mesinv.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Unsupported NMF level-2 model parameter: 'RI' |
-| [tests/polezero/filt_bridge_t.cir](fixtures/tests/polezero/filt_bridge_t.cir) | success | failed | spice-ts-loss |  |  | spice-ts: .pz vol supports only ideal R, L, C devices; found V1 (VoltageSource) |
-| [tests/polezero/filt_multistage.cir](fixtures/tests/polezero/filt_multistage.cir) | success | failed | spice-ts-loss |  |  | spice-ts: .pz vol supports only ideal R, L, C devices; found v1 (VoltageSource) |
-| [tests/polezero/filt_rc.cir](fixtures/tests/polezero/filt_rc.cir) | success | failed | spice-ts-loss |  |  | spice-ts: .pz vol supports only ideal R, L, C devices; found v1 (VoltageSource) |
+| [tests/polezero/filt_bridge_t.cir](fixtures/tests/polezero/filt_bridge_t.cir) | success | success | matched | 7.28e-9 | pz v(zero(1)) |  |
+| [tests/polezero/filt_multistage.cir](fixtures/tests/polezero/filt_multistage.cir) | success | success | matched | 7.45e-16 | pz v(pole(3)) |  |
+| [tests/polezero/filt_rc.cir](fixtures/tests/polezero/filt_rc.cir) | success | success | matched | 0 | pz v(pole(1)) |  |
 | [tests/polezero/pz2.cir](fixtures/tests/polezero/pz2.cir) † | success | success | matched | 1.72e-16 | pz v(pole(3)) |  |
 | [tests/polezero/pzt.cir](fixtures/tests/polezero/pzt.cir) † | success | success | matched | 1.82e-13 | pz v(pole(1)) |  |
 | [tests/polezero/simplepz.cir](fixtures/tests/polezero/simplepz.cir) † | success | success | matched | 1.19e-16 | pz v(pole(1)) |  |
