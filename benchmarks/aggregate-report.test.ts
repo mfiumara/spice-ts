@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import { describe, it } from 'node:test';
 import { resolve } from 'node:path';
 import {
+  comparisonMethodLines,
   matchedPointEnvelope,
   preflightAggregateInputs,
   runBoundedSpiceTs,
@@ -284,6 +285,20 @@ describe('aggregate report artifact verification', () => {
       () => verifyCommittedArtifacts(generated, json, markdown.replace('100-circuit', '101-circuit')),
       /Markdown/,
     );
+  });
+
+  it('describes the comparison grid the committed report was generated with (#445)', async () => {
+    const { json, markdown } = await committedArtifacts();
+    const policy = JSON.parse(json).policy;
+    for (const line of comparisonMethodLines(policy)) assert.ok(markdown.includes(line), line);
+
+    const current = comparisonMethodLines({
+      ...policy,
+      breakpointAlignment: 'one-sided at time points shared by both transient grids; linear metric retained',
+    }).join('\n');
+    assert.match(current, /Breakpoint alignment/);
+    assert.match(current, /linearMetrics/);
+    assert.match(current, /issues\/445/);
   });
 });
 
