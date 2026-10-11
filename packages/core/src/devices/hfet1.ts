@@ -1,4 +1,5 @@
-import type { DeviceModel, StampContext } from './device.js';
+import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import {
   evaluateHFET1,
   type HFET1InstanceParams,
@@ -8,6 +9,12 @@ import {
 export class HFET1 implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  /**
+   * Transient gate charges qgs and qgd, advanced as ngspice hfetload.c does:
+   * q = q(n) + C(v) * (v - v(n)) and integrated with NIintegrate.
+   */
+  readonly integratesTransientCharge = true;
+  private readonly charges = new TransientChargeState(2);
 
   constructor(
     readonly name: string,
@@ -68,7 +75,44 @@ export class HFET1 implements DeviceModel {
   stampAC(ctx: StampContext, _omega: number): void {
     this.stampDynamic(ctx);
   }
+
+  stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
+    const [drain, gate, source] = this.nodes;
+    const vGS = voltage(ctx, gate) - voltage(ctx, source);
+    const vGD = voltage(ctx, gate) - voltage(ctx, drain);
+    const { capGS, capGD } = evaluateHFET1(vGS, vGS - vGD, this.model, this.instance);
+    const charges = this.charges;
+    charges.begin(integration);
+    const qGS = charges.incrementalCharge(GATE_SOURCE, vGS, capGS);
+    const qGD = charges.incrementalCharge(GATE_DRAIN, vGD, capGD);
+    stampChargeBranch(ctx, gate, source, charges.current(GATE_SOURCE, qGS), charges.factor * capGS, vGS);
+    stampChargeBranch(ctx, gate, drain, charges.current(GATE_DRAIN, qGD), charges.factor * capGD, vGD);
+  }
+
+  stampAcceptedChargeCurrent(ctx: StampContext): void {
+    const [drain, gate, source] = this.nodes;
+    stampChargeCurrent(ctx, gate, source, this.charges.acceptedChargeCurrent(GATE_SOURCE));
+    stampChargeCurrent(ctx, gate, drain, this.charges.acceptedChargeCurrent(GATE_DRAIN));
+  }
+
+  acceptTransientStep(ctx: StampContext): void {
+    const [drain, gate, source] = this.nodes;
+    const vGS = voltage(ctx, gate) - voltage(ctx, source);
+    const vGD = voltage(ctx, gate) - voltage(ctx, drain);
+    const { capGS, capGD } = evaluateHFET1(vGS, vGS - vGD, this.model, this.instance);
+    const charges = this.charges;
+    charges.accept(GATE_SOURCE, charges.incrementalCharge(GATE_SOURCE, vGS, capGS), vGS, capGS);
+    charges.accept(GATE_DRAIN, charges.incrementalCharge(GATE_DRAIN, vGD, capGD), vGD, capGD);
+    charges.commit();
+  }
+
+  resetTransient(): void {
+    this.charges.reset();
+  }
 }
+
+const GATE_SOURCE = 0;
+const GATE_DRAIN = 1;
 
 function voltage(ctx: StampContext, node: number): number {
   return node >= 0 ? ctx.getVoltage(node) : 0;

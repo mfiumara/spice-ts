@@ -1,0 +1,101 @@
+{
+  "rounds": 7,
+  "rows": [
+    {
+      "circuit": "bench RC chain 10",
+      "baseMedianMs": 5.31,
+      "changeMedianMs": 5.2,
+      "deltaPercent": -2,
+      "basePoints": 583,
+      "changePoints": 583
+    },
+    {
+      "circuit": "bench RC chain 100",
+      "baseMedianMs": 40.77,
+      "changeMedianMs": 40.73,
+      "deltaPercent": -0.1,
+      "basePoints": 655,
+      "changePoints": 655
+    },
+    {
+      "circuit": "bench LC ladder 50 (euler)",
+      "baseMedianMs": 42.58,
+      "changeMedianMs": 41.21,
+      "deltaPercent": -3.2,
+      "basePoints": 1019,
+      "changePoints": 1019
+    },
+    {
+      "circuit": "bench CMOS inverter chain 10 (euler)",
+      "baseMedianMs": 36.76,
+      "changeMedianMs": 34.61,
+      "deltaPercent": -5.9,
+      "basePoints": 3492,
+      "changePoints": 3492
+    },
+    {
+      "circuit": "bench ring oscillator 5 (euler)",
+      "baseMedianMs": 140.41,
+      "changeMedianMs": 138.29,
+      "deltaPercent": -1.5,
+      "basePoints": 20902,
+      "changePoints": 20902
+    },
+    {
+      "circuit": "bench ring oscillator 11 (euler)",
+      "baseMedianMs": 323.74,
+      "changeMedianMs": 310,
+      "deltaPercent": -4.2,
+      "basePoints": 20982,
+      "changePoints": 20982
+    },
+    {
+      "circuit": "bench CMOS inverter single (euler)",
+      "baseMedianMs": 5.22,
+      "changeMedianMs": 5.08,
+      "deltaPercent": -2.6,
+      "basePoints": 2363,
+      "changePoints": 2363
+    },
+    {
+      "circuit": "corpus bjt-differential-pair",
+      "baseMedianMs": 5.39,
+      "changeMedianMs": 412.32,
+      "deltaPercent": 7542.9,
+      "basePoints": 159,
+      "changePoints": 3184
+    },
+    {
+      "circuit": "corpus rtl-inverter-chain",
+      "baseMedianMs": 6.46,
+      "changeMedianMs": 363.46,
+      "deltaPercent": 5522.4,
+      "basePoints": 170,
+      "changePoints": 3229
+    },
+    {
+      "circuit": "corpus mos6-inverter-transient",
+      "baseMedianMs": 263.02,
+      "changeMedianMs": 4642.72,
+      "deltaPercent": 1665.1,
+      "basePoints": 840,
+      "changePoints": 3782
+    },
+    {
+      "circuit": "corpus hfet-inverter",
+      "baseMedianMs": 51.1,
+      "changeMedianMs": 76.38,
+      "deltaPercent": 49.5,
+      "basePoints": 457,
+      "changePoints": 593
+    },
+    {
+      "circuit": "corpus mesa-oscillator",
+      "baseMedianMs": 5593.87,
+      "changeMedianMs": 5738.86,
+      "deltaPercent": 2.6,
+      "basePoints": 3861,
+      "changePoints": 2088
+    }
+  ]
+}

@@ -162,6 +162,19 @@ Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/
 
 Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-448/verify.ts --check`. The receipt also records a diagnostic, electrically identical reordering of the unchanged ngspice `hfet-inverter` fixture; it is never substituted for the identical-netlist comparison (see `benchmarks/results/issue-448/README.md`).
 
+## Nonlinear charge-integration fixtures
+
+- Source: project-authored reference circuits for [issue #456](https://github.com/mfiumara/spice-ts/issues/456), issue revision as of 2026-10-11. `hfet-inverter-converged.cir` is the ngspice `tests/hfet/inverter.cir` fixture already listed in the ngspice corpus, with the two Z cards inside `.subckt inv` listed driver first (electrically identical, see issue #448) and tightened accuracy settings (`reltol=1e-6 trtol=1`, TMAX 0.1 ps) so both engines run to a converged waveform. `jfet-gate-charge.cir` is new.
+- Licence: MIT, under the repository [licence](../LICENSE).
+- Adaptation: none. `benchmarks/results/issue-456/verify.ts` supplies the exact committed bytes to spice-ts and ngspice-47 with no engine-specific values, tolerances, or rewrites.
+
+| Fixture | SHA-256 | Coverage |
+|---|---|---|
+| `benchmarks/results/issue-456/ngspice/jfet-gate-charge.cir` | `8d4a6fa85295e71cb674ceba2f51ec9299a6a44face3441cb6bf2e5e24d6b212` | NJF gate depletion charge (CGS, CGD, FC) driven through forward bias and back by a pulse. |
+| `benchmarks/results/issue-456/ngspice/hfet-inverter-converged.cir` | `9583e47aeb903a9225badaab3335260429e224c9ecc436395761d9d1ef09195d` | NHFET level-5 two-inverter chain at converged accuracy settings (gate charges qgs/qgd). |
+
+Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-456/verify.ts --output <file>` (see `benchmarks/results/issue-456/README.md`).
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |

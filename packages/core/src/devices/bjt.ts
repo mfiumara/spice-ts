@@ -1,4 +1,7 @@
-import type { DeviceModel, StampContext } from './device.js';
+import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import {
+  depletionCharge, stampChargeBranch, stampChargeCurrent, TransientChargeState,
+} from './charge-state.js';
 
 export interface BJTParams {
   LEVEL: number;
@@ -79,6 +82,13 @@ function limitJunctionVoltage(vd: number, vt: number, IS: number): number {
  */
 function limitForwardJunctionVoltage(vd: number, vt: number, IS: number): number {
   return vd < 0 ? vd : limitJunctionVoltage(vd, vt, IS);
+}
+
+/** Derivative of {@link limitForwardJunctionVoltage} with respect to `vd`. */
+function forwardJunctionLimitSlope(vd: number, vt: number, IS: number): number {
+  if (vd < 0) return 1;
+  const vcrit = vt * Math.log(vt / (Math.sqrt(2) * IS));
+  return vd > vcrit ? vt / (vt + vd - vcrit) : 1;
 }
 
 function limitJunctionStep(
@@ -238,6 +248,16 @@ export class BJT implements DeviceModel {
    * transient driver's static-current history path unchanged.
    */
   readonly stampDynamic?: (ctx: StampContext) => void;
+  /**
+   * Charge-storing BJTs integrate qbe (with its dQbe/dVbc cross term), qbc and
+   * qsub themselves in transient analysis, as ngspice bjtload.c NIintegrates them.
+   */
+  readonly integratesTransientCharge: boolean;
+  private readonly charges = new TransientChargeState(3);
+  private readonly chargePoint: BJTChargePoint = {
+    nodeVBE: 0, nodeVBC: 0, slopeBE: 1, slopeBC: 1, vSub: 0, substrateNode: -1,
+    qBE: 0, capBE: 0, crossCapacitance: 0, qBC: 0, capBC: 0, qSub: 0, capSub: 0,
+  };
 
   constructor(
     readonly name: string,
@@ -247,9 +267,74 @@ export class BJT implements DeviceModel {
     this.suppliedParams = { ...params };
     this.params = resolveBJTParams(params);
     const { CJE, CJC, CJS, TF, TR } = this.params;
-    if (CJE > 0 || CJC > 0 || CJS > 0 || TF > 0 || TR > 0) {
+    this.integratesTransientCharge = CJE > 0 || CJC > 0 || CJS > 0 || TF > 0 || TR > 0;
+    if (this.integratesTransientCharge) {
       this.stampDynamic = ctx => this.stampChargeStorage(ctx);
     }
+  }
+
+  stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
+    const point = this.evaluateCharges(ctx);
+    const charges = this.charges;
+    charges.begin(integration);
+    const { polarity } = this.params;
+    const [nC, nB, nE] = this.nodes;
+    const factor = charges.factor;
+    // Physical branch quantities are the polarity-domain ones times the sign.
+    // The charges are functions of the clamped junction voltages; the chain
+    // rule through the clamp keeps the companion consistent with the node
+    // voltages, so a converged point carries exactly the integrated current.
+    const crossConductance = factor * point.crossCapacitance * point.slopeBC;
+    stampChargeBranch(
+      ctx, nB, nE,
+      polarity * charges.current(BASE_EMITTER, point.qBE) - crossConductance * polarity * point.nodeVBC,
+      factor * point.capBE * point.slopeBE, polarity * point.nodeVBE,
+    );
+    if (crossConductance !== 0) {
+      // dQbe/dVbc: the B-E charge current is controlled by the B-C voltage.
+      if (nB >= 0) {
+        ctx.stampG(nB, nB, crossConductance);
+        if (nC >= 0) ctx.stampG(nB, nC, -crossConductance);
+      }
+      if (nE >= 0) {
+        if (nB >= 0) ctx.stampG(nE, nB, -crossConductance);
+        if (nC >= 0) ctx.stampG(nE, nC, crossConductance);
+      }
+    }
+    stampChargeBranch(
+      ctx, nB, nC, polarity * charges.current(BASE_COLLECTOR, point.qBC),
+      factor * point.capBC * point.slopeBC, polarity * point.nodeVBC,
+    );
+    const substrateSign = -polarity * this.params.SUBS;
+    stampChargeBranch(
+      ctx, point.substrateNode, -1, substrateSign * charges.current(SUBSTRATE, point.qSub),
+      factor * point.capSub, substrateSign * point.vSub,
+    );
+  }
+
+  stampAcceptedChargeCurrent(ctx: StampContext): void {
+    const { polarity, SUBS } = this.params;
+    const [nC, nB, nE] = this.nodes;
+    const charges = this.charges;
+    stampChargeCurrent(ctx, nB, nE, polarity * charges.acceptedChargeCurrent(BASE_EMITTER));
+    stampChargeCurrent(ctx, nB, nC, polarity * charges.acceptedChargeCurrent(BASE_COLLECTOR));
+    stampChargeCurrent(
+      ctx, SUBS === 1 ? nC : nB, -1, -polarity * SUBS * charges.acceptedChargeCurrent(SUBSTRATE),
+    );
+  }
+
+  acceptTransientStep(ctx: StampContext): void {
+    if (!this.integratesTransientCharge) return;
+    const point = this.evaluateCharges(ctx);
+    const charges = this.charges;
+    charges.accept(BASE_EMITTER, point.qBE);
+    charges.accept(BASE_COLLECTOR, point.qBC);
+    charges.accept(SUBSTRATE, point.qSub);
+    charges.commit();
+  }
+
+  resetTransient(): void {
+    this.charges.reset();
   }
 
   limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {
@@ -467,6 +552,30 @@ export class BJT implements DeviceModel {
    * substrate junction to ground. Polarity cancels in every capacitance.
    */
   private stampChargeStorage(ctx: StampContext): void {
+    const [nC, nB, nE] = this.nodes;
+    const { capBE, capBC, capSub, crossCapacitance, substrateNode } = this.evaluateCharges(ctx);
+    stampCapacitance(ctx, nB, nE, capBE);
+    stampCapacitance(ctx, nB, nC, capBC);
+    stampCapacitance(ctx, substrateNode, -1, capSub);
+    if (crossCapacitance !== 0) {
+      // dQbe/dVbc: charge between B and E controlled by the B-C voltage.
+      if (nB >= 0) {
+        ctx.stampC(nB, nB, crossCapacitance);
+        if (nC >= 0) ctx.stampC(nB, nC, -crossCapacitance);
+      }
+      if (nE >= 0) {
+        if (nB >= 0) ctx.stampC(nE, nB, -crossCapacitance);
+        if (nC >= 0) ctx.stampC(nE, nC, crossCapacitance);
+      }
+    }
+  }
+
+  /**
+   * ngspice bjtload.c charges qbe, qbc and qsub (polarity domain) with their
+   * capacitances dQ/dV and the dQbe/dVbc cross capacitance, at the present
+   * terminal voltages. Writes into a reused object.
+   */
+  private evaluateCharges(ctx: StampContext): BJTChargePoint {
     const {
       IS, NF, NR, VAF, IKF, polarity,
       CJE, VJE, MJE, TF, XTF, VTF, ITF, CJC, VJC, MJC, TR, CJS, VJS, MJS, FC, SUBS,
@@ -476,10 +585,10 @@ export class BJT implements DeviceModel {
     const vtF = NF * VT;
     const vtR = NR * VT;
     // Depletion charge needs the true reverse bias.
-    const junction = (positive: number, negative: number, vt: number): number =>
-      limitForwardJunctionVoltage(polarity * (voltage(positive) - voltage(negative)), vt, IS);
-    const vBE = junction(nB, nE, vtF);
-    const vBC = junction(nB, nC, vtR);
+    const nodeVBE = polarity * (voltage(nB) - voltage(nE));
+    const nodeVBC = polarity * (voltage(nB) - voltage(nC));
+    const vBE = limitForwardJunctionVoltage(nodeVBE, vtF, IS);
+    const vBC = limitForwardJunctionVoltage(nodeVBC, vtR, IS);
 
     const expBE = Math.exp(vBE / vtF);
     const expBC = Math.exp(vBC / vtR);
@@ -487,9 +596,13 @@ export class BJT implements DeviceModel {
     const forwardConductance = IS * expBE / vtF;
     const reverseConductance = IS * expBC / vtR;
 
-    let capBE = depletionCapacitance(vBE, CJE, VJE, MJE, FC);
+    const point = this.chargePoint;
+    const depletionBE = depletionCharge(vBE, CJE, VJE, MJE, FC);
+    let qBE = depletionBE.charge;
+    let capBE = depletionBE.capacitance;
     let crossCapacitance = 0;
     if (TF > 0) {
+      let diffusionCurrent = forwardCurrent;
       let diffusionConductance = forwardConductance;
       if (vBE > 0) {
         const qEarly = Number.isFinite(VAF) ? 1 / (1 - vBC / VAF) : 1;
@@ -514,52 +627,69 @@ export class BJT implements DeviceModel {
           arg3 = forwardCurrent * argtf * inverseVtf;
         }
         const transportCurrent = forwardCurrent * (1 + argtf) / qB;
+        diffusionCurrent = transportCurrent;
         diffusionConductance = (forwardConductance * (1 + arg2) - transportCurrent * dqBdVBE) / qB;
         crossCapacitance = TF * (arg3 - transportCurrent * dqBdVBC) / qB;
       }
+      qBE += TF * diffusionCurrent;
       capBE += TF * diffusionConductance;
     }
-    const capBC = TR * reverseConductance + depletionCapacitance(vBC, CJC, VJC, MJC, FC);
+    const depletionBC = depletionCharge(vBC, CJC, VJC, MJC, FC);
 
     const substrateNode = SUBS === 1 ? nC : nB;
     const vSub = -polarity * SUBS * voltage(substrateNode);
-    const capSub = CJS === 0 ? 0 : vSub < 0
-      ? CJS * Math.pow(1 - vSub / VJS, -MJS)
-      : CJS * (1 + MJS * vSub / VJS);
-
-    stampCapacitance(ctx, nB, nE, capBE);
-    stampCapacitance(ctx, nB, nC, capBC);
-    stampCapacitance(ctx, substrateNode, -1, capSub);
-    if (crossCapacitance !== 0) {
-      // dQbe/dVbc: charge between B and E controlled by the B-C voltage.
-      if (nB >= 0) {
-        ctx.stampC(nB, nB, crossCapacitance);
-        if (nC >= 0) ctx.stampC(nB, nC, -crossCapacitance);
-      }
-      if (nE >= 0) {
-        if (nB >= 0) ctx.stampC(nE, nB, -crossCapacitance);
-        if (nC >= 0) ctx.stampC(nE, nC, crossCapacitance);
+    let qSub = 0;
+    let capSub = 0;
+    if (CJS !== 0) {
+      if (vSub < 0) {
+        const depletion = depletionCharge(vSub, CJS, VJS, MJS, 1);
+        qSub = depletion.charge;
+        capSub = depletion.capacitance;
+      } else {
+        // ngspice: linear capacitance continuation from zero bias.
+        qSub = vSub * CJS * (1 + MJS * vSub / (2 * VJS));
+        capSub = CJS * (1 + MJS * vSub / VJS);
       }
     }
+
+    point.nodeVBE = nodeVBE;
+    point.nodeVBC = nodeVBC;
+    point.slopeBE = forwardJunctionLimitSlope(nodeVBE, vtF, IS);
+    point.slopeBC = forwardJunctionLimitSlope(nodeVBC, vtR, IS);
+    point.vSub = vSub;
+    point.substrateNode = substrateNode;
+    point.qBE = qBE;
+    point.capBE = capBE;
+    point.crossCapacitance = crossCapacitance;
+    point.qBC = TR * IS * (expBC - 1) + depletionBC.charge;
+    point.capBC = TR * reverseConductance + depletionBC.capacitance;
+    point.qSub = qSub;
+    point.capSub = capSub;
+    return point;
   }
 }
 
-/** ngspice junction depletion capacitance with the FC linear extension. */
-function depletionCapacitance(
-  junctionVoltage: number,
-  zeroBiasCapacitance: number,
-  potential: number,
-  grading: number,
-  forwardCoefficient: number,
-): number {
-  if (zeroBiasCapacitance === 0) return 0;
-  if (junctionVoltage < forwardCoefficient * potential) {
-    return zeroBiasCapacitance * Math.pow(1 - junctionVoltage / potential, -grading);
-  }
-  const f2 = Math.pow(1 - forwardCoefficient, 1 + grading);
-  const f3 = 1 - forwardCoefficient * (1 + grading);
-  return zeroBiasCapacitance / f2 * (f3 + grading * junctionVoltage / potential);
+interface BJTChargePoint {
+  /** Polarity-domain junction voltages at the nodes (before the forward clamp). */
+  nodeVBE: number;
+  nodeVBC: number;
+  /** d(clamped junction voltage)/d(node junction voltage). */
+  slopeBE: number;
+  slopeBC: number;
+  vSub: number;
+  substrateNode: number;
+  qBE: number;
+  capBE: number;
+  crossCapacitance: number;
+  qBC: number;
+  capBC: number;
+  qSub: number;
+  capSub: number;
 }
+
+const BASE_EMITTER = 0;
+const BASE_COLLECTOR = 1;
+const SUBSTRATE = 2;
 
 function stampCapacitance(ctx: StampContext, a: number, b: number, capacitance: number): void {
   if (capacitance === 0) return;
