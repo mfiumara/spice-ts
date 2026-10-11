@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/609/prof-before/rc-ladder-tran-1000.cpuprofile: 78 samples, 246.4 ms sampled
+
+Top self time
+      31.9 ms  13.0%  buildCompanionSystem packages/core/dist/chunk-ZLHT5X54.js:19025
+      28.8 ms  11.7%  factorize packages/core/dist/chunk-ZLHT5X54.js:17725
+      21.6 ms   8.8%  attemptStep packages/core/dist/chunk-ZLHT5X54.js:19201
+      16.7 ms   6.8%  save packages/core/dist/chunk-ZLHT5X54.js:20231
+      15.2 ms   6.2%  compileSourceTextModule node:internal/modules/esm/utils:344
+      14.0 ms   5.7%  stampStaticDevices packages/core/dist/chunk-ZLHT5X54.js:18503
+      11.8 ms   4.8%  (garbage collector)
+      10.9 ms   4.4%  stampDynamicDevices packages/core/dist/chunk-ZLHT5X54.js:18533
+       8.7 ms   3.5%  (program)
+       8.4 ms   3.4%  advanceSolution packages/core/dist/chunk-ZLHT5X54.js:19661
+       6.8 ms   2.8%  parseDevice packages/core/dist/chunk-ZLHT5X54.js:16874
+       5.0 ms   2.0%  nonlinearTerminalNodes packages/core/dist/chunk-ZLHT5X54.js:19326
+
+Top inclusive time
+     246.4 ms 100.0%  (root)
+     189.1 ms  76.7%  simulate packages/core/dist/chunk-ZLHT5X54.js:23562
+     159.3 ms  64.6%  solveTransient packages/core/dist/chunk-ZLHT5X54.js:20200
+     136.7 ms  55.5%  advanceSolution packages/core/dist/chunk-ZLHT5X54.js:19661
+     122.9 ms  49.9%  attemptStep packages/core/dist/chunk-ZLHT5X54.js:19201
+      61.8 ms  25.1%  buildCompanionSystem packages/core/dist/chunk-ZLHT5X54.js:19025
+      30.6 ms  12.4%  factorize packages/core/dist/chunk-ZLHT5X54.js:17725
+      28.8 ms  11.7%  solveLinearized packages/core/dist/chunk-ZLHT5X54.js:19293
+      16.7 ms   6.8%  save packages/core/dist/chunk-ZLHT5X54.js:20231
+      16.6 ms   6.7%  solveDCOperatingPoint packages/core/dist/chunk-ZLHT5X54.js:18821
+      16.6 ms   6.7%  transientInitialSolution packages/core/dist/chunk-ZLHT5X54.js:23868
+      16.5 ms   6.7%  stampStaticDevices packages/core/dist/chunk-ZLHT5X54.js:18503

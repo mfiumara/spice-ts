@@ -127,6 +127,12 @@ export async function simulate(
   options = withNetlistOptions(compiled.simulationOptions, options);
   const warnings: SimulationWarning[] = [];
   const convergence = createConvergenceTelemetry();
+  if (options.bypass) {
+    warnings.push({
+      type: 'option',
+      message: 'bypass: native solver always evaluates nonlinear devices; ngspice evaluation reuse is not implemented. Iteration counts and tolerance-level results may differ.',
+    });
+  }
 
   validateCircuit(compiled, warnings);
 
