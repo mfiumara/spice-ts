@@ -183,8 +183,12 @@ class TransientSimImpl implements TransientSim {
     // Voltage-dependent capacitances need charge state, which the current
     // device contract does not expose. Preserve their established companion
     // history while using the exact static residual for constant-C circuits.
+    // A nonlinear device that stores no charge (e.g. a diode without CJO, CJSW
+    // or TT) is static: the raw-RHS history would pair the new Newton
+    // conductance with the old operating point and misintegrate its current.
     this.useStaticCurrentHistory = !compiled.devices.some(device => (
-      (device.isNonlinear && device.stampDynamic !== undefined)
+      (device.isNonlinear && device.stampDynamic !== undefined
+        && device.storesCharge !== false)
       || (config.stopTime !== undefined && (device.getBreakpoints?.(config.stopTime) ?? []).some(time => time > 0))
     ));
     this.useDampedInductiveRecovery = compiled.devices.some(device => device instanceof Inductor)

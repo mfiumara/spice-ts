@@ -62,10 +62,42 @@ export interface DeviceModel {
   limitNewtonStep?(previous: Float64Array, candidate: Float64Array): number;
   /** Stamp dynamic (reactive) contributions for AC and transient analysis. */
   stampDynamic?(ctx: StampContext): void;
+  /**
+   * False when `stampDynamic` stamps nothing for this instance (e.g. a diode
+   * without CJO, CJSW or TT). Transient integration then treats the device
+   * as purely static and uses the exact accepted static-current history.
+   */
+  readonly storesCharge?: boolean;
   /** Stamp AC small-signal contributions at angular frequency omega. */
   stampAC?(ctx: StampContext, omega: number): void;
   /** Commit state from a transient timepoint after NR and LTE acceptance. */
   acceptTransientStep?(ctx: StampContext): void;
+  /**
+   * True when the device limits every junction voltage it reads relative to
+   * its previous Newton iterate (ngspice DEVpnjlim). Transient Newton leaves
+   * the nodes of such devices undamped, because a damped node cannot follow
+   * the limited junction and the iterate-relative limit would ratchet away.
+   */
+  readonly limitsOwnJunctions?: boolean;
+  /**
+   * Start a transient Newton solve at a new or retried timepoint: limit the
+   * first iterate against the last accepted junction state (ngspice
+   * MODEINITPRED), not against an iterate of a rejected attempt.
+   */
+  beginTransientNewton?(): void;
+  /**
+   * Receive the undamped transient Newton solution. A self-limiting device
+   * limits its next junction voltage from this solve, not from the damped
+   * iterate: node damping may hold a terminal back, and limiting against that
+   * lagging node would ratchet the junction away from the Newton step.
+   */
+  observeTransientNewton?(solution: Float64Array): void;
+  /**
+   * Whether the last `stamp` limited a junction (ngspice CKTnoncon). Newton
+   * cannot be declared converged on an iterate that was limited, because the
+   * stamp then linearised a voltage the solution does not have.
+   */
+  limitedLastStamp?(): boolean;
   /** Receive the transient TSTEP used by SPICE waveform defaults (e.g. zero PULSE TR/TF). */
   setTransientTimestep?(timestep: number): void;
   /** Clear device-owned transient history before restarting at t=0. */
