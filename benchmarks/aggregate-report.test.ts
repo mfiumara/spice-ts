@@ -152,7 +152,7 @@ describe('aggregate report artifact verification', () => {
     assert.equal(vbicAc.comparisons[1].metrics.signals['v(pole(1))'].absoluteError.max, 7853.15771484375);
     assert.equal(vbicAc.comparisons[0].metrics.signals['v(3)'].absoluteError.max, 1.1984493472929842e-9);
     // Static trapezoidal history under breakpoints (#482, PR #522): mesa and mos6inv gain, coupled-lossy-lines relative envelope loss published.
-    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #515') && text.includes('PR #523') && text.includes('PR #522') && text.includes('231274507458.05075 to 535751686335.6694')));
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #515') && text.includes('PR #523') && text.includes('PR #522') && text.includes('231274507458.05075 to 535751686335.6694') && text.includes('PR #527')));
     const mos6Worst: Record<string, number> = {
       'ngspice/mos6-inverter-transient': 0.29206718514420427,
       'ngspice/mos6-simple-inverter-transient': 0.10566947866046283,
@@ -197,7 +197,8 @@ describe('aggregate report artifact verification', () => {
     const tstart = report.gapIssues.find((issue: { url: string }) => issue.url === 'https://github.com/mfiumara/spice-ts/issues/432');
     assert.match(tstart.scope, /closed by PR #440/);
     const mesaTran = mesa.comparisons.find((comparison: { analysis: string }) => comparison.analysis === 'tran');
-    assert.deepEqual(mesaTran.metrics.grid, { spiceTsPoints: 3861, ngspicePoints: 201, alignedPoints: 3838, excludedOutOfRange: 23 });
+    // Static trapezoidal history under breakpoints (#482, PR #522) cuts mesa-oscillator from 3861 to 1348 points.
+    assert.deepEqual(mesaTran.metrics.grid, { spiceTsPoints: 1348, ngspicePoints: 201, alignedPoints: 1345, excludedOutOfRange: 3 });
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #440') && text.includes('PR #443') && text.includes('PR #442')));
     assert.ok(!report.comparisonToPrevious.statusTransitions.some((transition: { explanation: string }) => /3219 of those are before TSTART/.test(transition.explanation)));
     assert.deepEqual(report.comparisonToPrevious.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
