@@ -5,6 +5,7 @@ import type { CompiledCircuit } from '../circuit.js';
 import { TransientResult } from '../results.js';
 import { createDriverFromCompiled } from './transient-driver.js';
 import { maxTimestepOption } from './max-timestep.js';
+import { ColumnRecorder } from './transient-columns.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 /**
@@ -77,11 +78,13 @@ export function solveTransient(
   const slots: number[] = [];
   for (const [name, slot] of nodeSlots) { columns.push(voltageArrays.get(name)!); slots.push(slot); }
   for (const [name, slot] of branchSlots) { columns.push(currentArrays.get(name)!); slots.push(slot); }
-  const columnCount = columns.length;
+  // Points are buffered in a typed chunk and appended a column at a time
+  // (#609); the columns are complete once `flush()` runs below.
+  const recorder = new ColumnRecorder(columns, slots);
   const save = (time: number, solution: Float64Array): void => {
     guard?.recordResultPoint();
     timePoints.push(time);
-    for (let k = 0; k < columnCount; k++) columns[k].push(solution[slots[k]]);
+    recorder.record(solution);
   };
 
   try {
@@ -95,6 +98,7 @@ export function solveTransient(
   } finally {
     driver.dispose();
   }
+  recorder.flush();
 
   return new TransientResult(timePoints, voltageArrays, currentArrays);
 }
