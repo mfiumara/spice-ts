@@ -1,0 +1,464 @@
+{
+  "schemaVersion": "spice-ts-issue-453/v1",
+  "issueUrl": "https://github.com/mfiumara/spice-ts/issues/453",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "node": "v22.23.1"
+  },
+  "policy": {
+    "input": "byte-identical netlist for both engines",
+    "comparison": "benchmarks/aggregate-report.ts compareExecutions (spice-ts grid, linear interpolation)",
+    "perCircuitToleranceTuning": false,
+    "speedClaim": false
+  },
+  "fixtures": [
+    {
+      "key": "vbic-substrate/dc",
+      "source": "project-authored (MIT), issue #453",
+      "input": {
+        "localPath": "benchmarks/vbic-substrate/dc.cir",
+        "bytes": 696,
+        "sha256": "3229c4f71f6e450c0da6f5b1b371d8f8c3e7fd3ad845ae04859e7c3aacb1a32c",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 34
+          }
+        ],
+        "runtimeMs": 17.542
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 34
+          }
+        ],
+        "runtimeMs": 75.824
+      },
+      "comparisons": [
+        {
+          "analysis": "dc",
+          "alignedPoints": 34,
+          "signals": {
+            "i(vb)": {
+              "samples": 34,
+              "maxAbsoluteError": 8.1348390581561e-06,
+              "rmsAbsoluteError": 1.3954053209800047e-06,
+              "maxRelativeError": 1.8735584105902452
+            },
+            "i(vcc)": {
+              "samples": 34,
+              "maxAbsoluteError": 7.716461483477143e-07,
+              "rmsAbsoluteError": 1.3236385053578986e-07,
+              "maxRelativeError": 0.002683533696993111
+            },
+            "i(vsub)": {
+              "samples": 34,
+              "maxAbsoluteError": 8.146617745690314e-06,
+              "rmsAbsoluteError": 1.3974257716110559e-06,
+              "maxRelativeError": 1
+            },
+            "v(1)": {
+              "samples": 34,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            },
+            "v(2)": {
+              "samples": 34,
+              "maxAbsoluteError": 0.0007716461483473491,
+              "rmsAbsoluteError": 0.00013236385053572844,
+              "maxRelativeError": 0.0004506090585733318
+            },
+            "v(3)": {
+              "samples": 34,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            },
+            "v(4)": {
+              "samples": 34,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "vbic-substrate/ac",
+      "source": "project-authored (MIT), issue #453",
+      "input": {
+        "localPath": "benchmarks/vbic-substrate/ac.cir",
+        "bytes": 850,
+        "sha256": "897e30fd367d4ad14ad4fc355bf1cc7f76e0afdae12671e6a6a3e83fcf40ed66",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "ac",
+            "points": 51
+          }
+        ],
+        "runtimeMs": 16.04
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "ac",
+            "points": 51
+          }
+        ],
+        "runtimeMs": 11.815
+      },
+      "comparisons": [
+        {
+          "analysis": "ac",
+          "alignedPoints": 51,
+          "signals": {
+            "i(vcc)": {
+              "samples": 51,
+              "maxAbsoluteError": 2.4601837041661933e-06,
+              "rmsAbsoluteError": 9.451969557995881e-07,
+              "maxRelativeError": 0.014049036696632527
+            },
+            "i(vmeas)": {
+              "samples": 51,
+              "maxAbsoluteError": 0.09247601972827652,
+              "rmsAbsoluteError": 0.041950376093416994,
+              "maxRelativeError": 0.13600362248263184
+            },
+            "i(vsub)": {
+              "samples": 51,
+              "maxAbsoluteError": 0.07780776584117452,
+              "rmsAbsoluteError": 0.034946101733464276,
+              "maxRelativeError": 1
+            },
+            "v(1)": {
+              "samples": 51,
+              "maxAbsoluteError": 0.4938195061384466,
+              "rmsAbsoluteError": 0.19093137083927259,
+              "maxRelativeError": 0.01410649926494171
+            },
+            "v(2)": {
+              "samples": 51,
+              "maxAbsoluteError": 0.00015902268291336942,
+              "rmsAbsoluteError": 8.947564462604575e-05,
+              "maxRelativeError": 0.13600362254054438
+            },
+            "v(3)": {
+              "samples": 51,
+              "maxAbsoluteError": 6.268979346635163e-10,
+              "rmsAbsoluteError": 2.2132961802820957e-10,
+              "maxRelativeError": null
+            },
+            "v(4)": {
+              "samples": 51,
+              "maxAbsoluteError": 0.00015902268829843058,
+              "rmsAbsoluteError": 8.947562970468906e-05,
+              "maxRelativeError": 0.13600362248263334
+            },
+            "v(5)": {
+              "samples": 51,
+              "maxAbsoluteError": 77.80776584117451,
+              "rmsAbsoluteError": 34.946101733464275,
+              "maxRelativeError": 1
+            },
+            "v(6)": {
+              "samples": 51,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "vbic-substrate/dc-latchup",
+      "source": "project-authored (MIT), issue #453",
+      "input": {
+        "localPath": "benchmarks/vbic-substrate/dc-latchup.cir",
+        "bytes": 697,
+        "sha256": "53259667c7b0fe7f2e20b5591b9273c4beca5c51e9b5027a74b06d04c964173d",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 41
+          }
+        ],
+        "runtimeMs": 16.498
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 41
+          }
+        ],
+        "runtimeMs": 13.194
+      },
+      "comparisons": [
+        {
+          "analysis": "dc",
+          "alignedPoints": 41,
+          "signals": {
+            "i(vb)": {
+              "samples": 41,
+              "maxAbsoluteError": 0.03801499383513142,
+              "rmsAbsoluteError": 0.014395820005166376,
+              "maxRelativeError": 1.8740407349358479
+            },
+            "i(vcc)": {
+              "samples": 41,
+              "maxAbsoluteError": 0.0015669014687299365,
+              "rmsAbsoluteError": 0.000638278684495213,
+              "maxRelativeError": 0.8452930754126992
+            },
+            "i(vsub)": {
+              "samples": 41,
+              "maxAbsoluteError": 0.09211938189552009,
+              "rmsAbsoluteError": 0.03273411873444454,
+              "maxRelativeError": 1
+            },
+            "v(1)": {
+              "samples": 41,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            },
+            "v(2)": {
+              "samples": 41,
+              "maxAbsoluteError": 1.5669014687299359,
+              "rmsAbsoluteError": 0.6382786844952129,
+              "maxRelativeError": 10.708609497408368
+            },
+            "v(3)": {
+              "samples": 41,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            },
+            "v(4)": {
+              "samples": 41,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "ngspice/vbic-fo",
+      "source": "ngspice corpus (BSD-3-Clause), aggregate row",
+      "input": {
+        "localPath": "benchmarks/corpus/ngspice/fixtures/tests/vbic/FO.cir",
+        "bytes": 492,
+        "sha256": "de57231ef8879e785b07068db662bfa5ecfde8734011b88b09f319b826242e92",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 707
+          }
+        ],
+        "runtimeMs": 21.675
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "dc",
+            "points": 707
+          }
+        ],
+        "runtimeMs": 298.138
+      },
+      "comparisons": [
+        {
+          "analysis": "dc",
+          "alignedPoints": 700,
+          "signals": {
+            "i(v1)": {
+              "samples": 700,
+              "maxAbsoluteError": 3.7715827023027115e-06,
+              "rmsAbsoluteError": 2.2510097844284378e-07,
+              "maxRelativeError": 0.0012397081219976216
+            },
+            "i(vb)": {
+              "samples": 700,
+              "maxAbsoluteError": 3.7715827023027115e-06,
+              "rmsAbsoluteError": 2.2510097844284378e-07,
+              "maxRelativeError": 0.0012397081219976216
+            },
+            "i(vc)": {
+              "samples": 700,
+              "maxAbsoluteError": 6.71477496218785e-06,
+              "rmsAbsoluteError": 2.894371479735615e-07,
+              "maxRelativeError": 0.0006405032259847643
+            },
+            "v(q1_c)": {
+              "samples": 700,
+              "maxAbsoluteError": 0,
+              "rmsAbsoluteError": 0,
+              "maxRelativeError": 0
+            },
+            "v(v1_n)": {
+              "samples": 700,
+              "maxAbsoluteError": 3.3306690738754696e-16,
+              "rmsAbsoluteError": 2.220446049250313e-16,
+              "maxRelativeError": 3.7007434154171876e-16
+            },
+            "v(v1_p)": {
+              "samples": 700,
+              "maxAbsoluteError": 3.3306690738754696e-16,
+              "rmsAbsoluteError": 2.220446049250313e-16,
+              "maxRelativeError": 3.7007434154171876e-16
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "ngspice/vbic-common-emitter-ac",
+      "source": "ngspice corpus (BSD-3-Clause), aggregate row",
+      "input": {
+        "localPath": "benchmarks/corpus/ngspice/fixtures/tests/vbic/CEamp.cir",
+        "bytes": 583,
+        "sha256": "088d1ebede86588ff8b823ba45219006bfeec34939af69e10c176e23d8a020ab",
+        "identicalForBothEngines": true
+      },
+      "ngspice": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "ac",
+            "points": 501
+          },
+          {
+            "type": "pz",
+            "points": 1
+          }
+        ],
+        "runtimeMs": 29.063
+      },
+      "spiceTs": {
+        "status": "success",
+        "convergence": "converged",
+        "analyses": [
+          {
+            "type": "ac",
+            "points": 501
+          },
+          {
+            "type": "pz",
+            "points": 1
+          }
+        ],
+        "runtimeMs": 30.711
+      },
+      "comparisons": [
+        {
+          "analysis": "ac",
+          "alignedPoints": 500,
+          "signals": {
+            "i(vcc)": {
+              "samples": 500,
+              "maxAbsoluteError": 7.363529266660746e-08,
+              "rmsAbsoluteError": 1.5543531023700263e-08,
+              "maxRelativeError": 1.6190931095986222e-07
+            },
+            "i(vmeas)": {
+              "samples": 500,
+              "maxAbsoluteError": 4.630516849217327e-06,
+              "rmsAbsoluteError": 3.5964570520284504e-06,
+              "maxRelativeError": 1.0751810045018762e-07
+            },
+            "v(1)": {
+              "samples": 500,
+              "maxAbsoluteError": 0.00018391271691357928,
+              "rmsAbsoluteError": 0.00014321275488736175,
+              "maxRelativeError": 1.6776746723280057e-07
+            },
+            "v(2)": {
+              "samples": 500,
+              "maxAbsoluteError": 7.364821306272488e-05,
+              "rmsAbsoluteError": 1.553030810775828e-05,
+              "maxRelativeError": 1.0751824877096412e-07
+            },
+            "v(3)": {
+              "samples": 500,
+              "maxAbsoluteError": 1.0317812581679068e-09,
+              "rmsAbsoluteError": 2.407875297925157e-10,
+              "maxRelativeError": null
+            },
+            "v(4)": {
+              "samples": 500,
+              "maxAbsoluteError": 7.364821154438375e-05,
+              "rmsAbsoluteError": 1.5530308158203848e-05,
+              "maxRelativeError": 1.0751810090733276e-07
+            }
+          }
+        },
+        {
+          "analysis": "pz",
+          "alignedPoints": 1,
+          "signals": {
+            "v(pole(1))": {
+              "samples": 1,
+              "maxAbsoluteError": 1143866306323.989,
+              "rmsAbsoluteError": 1143866306323.989,
+              "maxRelativeError": 0.9783823944799271
+            },
+            "v(pole(2))": {
+              "samples": 1,
+              "maxAbsoluteError": 541165275506.06055,
+              "rmsAbsoluteError": 541165275506.06055,
+              "maxRelativeError": 0.9980533295801028
+            },
+            "v(pole(3))": {
+              "samples": 1,
+              "maxAbsoluteError": 86524057643.3095,
+              "rmsAbsoluteError": 86524057643.3095,
+              "maxRelativeError": 0.9999998197767744
+            },
+            "v(zero(1))": {
+              "samples": 1,
+              "maxAbsoluteError": 1251172988128.5068,
+              "rmsAbsoluteError": 1251172988128.5068,
+              "maxRelativeError": 0.9474983414857449
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

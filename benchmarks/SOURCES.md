@@ -213,6 +213,14 @@ Run `pnpm exec tsx benchmarks/sensitivity/compare.ts` with ngspice-47. The JSON 
 - Adaptation: none between engines. The verifier reads the committed fixture once and supplies those exact bytes to spice-ts and ngspice-47. No engine-specific values, tolerances, or rewrites are used.
 - Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-319/verify.ts --output benchmarks/results/issue-319/report.json`. The receipt records ngspice-47, exact commands, the 17-point `.dc VSWEEP 8 12 0.25` grid, `V(cold)`, `V(nominal)`, `V(hot)`, and `I(VSWEEP)`, convergence, runtimes, and matched-point maximum/RMS absolute and relative errors.
 
+## Bounded VBIC non-ground substrate parity fixtures
+
+- Fixtures: `benchmarks/vbic-substrate/dc.cir` (SHA-256 `3229c4f71f6e450c0da6f5b1b371d8f8c3e7fd3ad845ae04859e7c3aacb1a32c`), `benchmarks/vbic-substrate/ac.cir` (SHA-256 `897e30fd367d4ad14ad4fc355bf1cc7f76e0afdae12671e6a6a3e83fcf40ed66`), and `benchmarks/vbic-substrate/dc-latchup.cir` (SHA-256 `53259667c7b0fe7f2e20b5591b9273c4beca5c51e9b5027a74b06d04c964173d`).
+- Source: project-authored reference circuits for [issue #453](https://github.com/mfiumara/spice-ts/issues/453). The `N1` VBIC model card and the `ac.cir` common-emitter topology are copied from ngspice [`tests/vbic/CEamp.cir`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/vbic/CEamp.cir) at revision `3ef069fb1f04177a153f342a32d941fc20ff047e`.
+- Licence: the circuits are MIT under the repository [licence](../LICENSE); the copied model card and topology are BSD-3-Clause (ngspice public corpus A above). Redistribution is allowed under both.
+- Adaptation: the substrate is node 4 (DC, swept by `VSUB`) or node 5 (AC, biased through `RSUB` from `VSUB`) instead of ground. `dc.cir` sets `.options reltol=1e-6` for both engines so each sweep point converges below the comparison tolerance. `dc-latchup.cir` is `dc.cir` with the sweep extended to 3 V and the default reltol, which forward-biases the substrate junction into NPN + parasitic-PNP latch-up; spice-ts does not converge there, and that loss is retained. Both engines receive each committed netlist byte-for-byte; no engine-specific tolerance or circuit rewrite is used.
+- Reproduce with `pnpm -C packages/core build && npx tsx benchmarks/results/issue-453/verify.ts --output benchmarks/results/issue-453/report.json`. The receipt records ngspice-47, both engines' status, and the aggregate's matched-point error metrics for the three fixtures and the `vbic-fo` and `vbic-common-emitter-ac` aggregate rows.
+
 ## Bounded Gummel-Poon forward-active parity fixtures
 
 - Public source: John P. Doty's CA3080 ngspice model, [`ca3080.mod`](https://github.com/xxv/gedasymbols/blob/49eda5e627e167fcb6346ef9805535ca92e43b0c/www/user/john_doty/models/opamp/ca3080.mod), pinned `gedasymbols` revision `49eda5e627e167fcb6346ef9805535ca92e43b0c`.
