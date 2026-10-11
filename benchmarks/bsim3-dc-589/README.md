@@ -49,7 +49,7 @@ Worst relative error per case. `[n/N]` counts points within 1%.
 | stress-pmos | 5.4e6 [0/70] | 5.5 [1/25] | 3.2e-14 [70/70] | 1.4e-4 [25/25] | 2.6e-14 / 1.7e-14 / 2.5e-14 / 1.6e-14 |
 | gamma1-nmos | 2.3e7 [0/70] | 62 [1/25] | 1.3e-14 [70/70] | 6.8e-9 [25/25] | 1.4e-14 / 1.4e-14 / 1.6e-14 / 1.2e-14 |
 
-The very large "before" ratios are subthreshold and off-state points, where the old model's current was orders of magnitude off a picoampere-scale reference. Operating points match to rounding because the sources fix every terminal voltage. Every sweep point is within 1%. The largest sweep residual (1.05e-4, issue-582-pmos at VD = -1.7 V) is on the ngspice side. ngspice's own `.op` at that bias gives 5.057206e-5 A, which is spice-ts's sweep value, while its `.dc` point is 5.056674e-5 A. The other PMOS worst cases are also at the first step of the sweep.
+The very large "before" ratios are subthreshold and off-state points, where the old model's current was orders of magnitude off a picoampere-scale reference. Operating points match to rounding because the sources fix every terminal voltage. Every sweep point is within 1%. The largest sweep residuals (up to 1.37e-4, stress-pmos) all fall on the PMOS sweeps at VD = -1.7 V, the first step after the start point. For issue-582-pmos (1.05e-4) the residual was checked and is on the ngspice side. ngspice's own `.op` at that bias gives 5.057206e-5 A, which is spice-ts's sweep value, while its `.dc` point is 5.056674e-5 A.
 
 The issue deck (`.dc VD 0 1.8 0.6`, Vgs = 1.8 V):
 
