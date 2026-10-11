@@ -260,10 +260,10 @@ function producedAnalyses(execution: EngineExecution): string[] {
 }
 
 /** Runs one fixture through both engines and reduces it to its published outcome. */
-export async function runFixture(circuit: CorpusFCircuit): Promise<FixtureOutcome> {
+export async function runFixture(circuit: CorpusFCircuit, reference = runNgspice): Promise<FixtureOutcome> {
   const input = await readFile(resolve(circuit.localPath));
   if (sha256(input) !== circuit.sha256) throw new Error(`${circuit.id}: fixture SHA-256 mismatch`);
-  const ngspice = await runNgspice(input, circuit);
+  const ngspice = await reference(input, circuit);
   const spiceTs = { execution: await runBoundedSimulate(input, asClassic(circuit)) };
   const spiceTsStatus: EngineStatus = spiceTs.execution.status;
   const comparisons = ngspice.status === 'success' && spiceTsStatus === 'success'
