@@ -1,6 +1,7 @@
 # Issue #472: VBIC DC through the substrate latch-up fold
 
 Receipts: `report.json` (this branch, on origin/main `1e8d9f8`) and `before.json` (origin/main `1e8d9f8`, same verifier, same inputs).
+After rebasing onto origin/main `96a9039` (#469 transient LTE), `verify.ts --check` still matches every deterministic field.
 Regenerate with `pnpm -C packages/core build && npx tsx benchmarks/results/issue-472/verify.ts --output benchmarks/results/issue-472/report.json`; check with `--check`.
 Machine: Apple Silicon macOS, Node 22.23.1, Homebrew ngspice-47. Both engines get the same netlist bytes. Metrics come from the aggregate's own `compareExecutions` (spice-ts grid, linear interpolation, no per-circuit tolerance). Tolerances are the defaults in both engines; nothing was loosened.
 
