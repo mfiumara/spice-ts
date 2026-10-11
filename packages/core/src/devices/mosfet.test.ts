@@ -388,7 +388,7 @@ describe('MOSFET model defaults match ngspice-47 (issue #518)', () => {
     expect(relativeError(result.dc!.current('vd3'), -3.45314e-5)).toBeLessThan(1e-5);
   });
 
-  it('derives VTO from NSUB (with GAMMA, PHI, NSS, TPG) like ngspice mos1/2/3temp.c', async () => {
+  it('derives VTO from NSUB (with GAMMA, PHI, NSS, TPG) like ngspice mos1temp.c', async () => {
     // ngspice-47 showmod after .op (6 significant digits).
     const cases: Array<[Record<string, number>, number, number, number]> = [
       [{ LEVEL: 1, TOX: 1e-7, NSUB: 1e16 }, 1, 1.1816, 2.07189e-5],
@@ -396,8 +396,6 @@ describe('MOSFET model defaults match ngspice-47 (issue #518)', () => {
       [{ LEVEL: 1, TOX: 1e-7, NSUB: 1e16, TPG: 0, PHI: 0.7 }, 1, 1.13841, 2.07189e-5],
       [{ LEVEL: 1, TOX: 1e-7, NSUB: 1e16, TPG: -1, GAMMA: 0.5 }, 1, 1.32224, 2.07189e-5],
       [{ LEVEL: 1, TOX: 1e-7, NSUB: 1e16 }, -1, -1.1816, 2.07189e-5],
-      [{ LEVEL: 2, TOX: 0.11e-6, NSUB: 2.2e15, UO: 575, NSS: 3.2e10, KP: 2e-5, PHI: 0.6 }, 1, 0.245948, 2e-5],
-      [{ LEVEL: 3, TOX: 2e-8, NSUB: 5e16 }, 1, 0.489715, 1.03594e-4],
     ];
     for (const [card, polarity, vto, kp] of cases) {
       const device = new MOSFET('M', [0, 1, -1, -1], { ...card, polarity });
@@ -425,10 +423,11 @@ describe('MOSFET model defaults match ngspice-47 (issue #518)', () => {
     expect(relativeError(result.dc!.current('vp'), 1.510424e-4)).toBeLessThan(1e-5);
   });
 
-  it('keeps the historical VTO=1, KP=2e-5 fallback for non-MOS1-3 levels', () => {
-    const device = new MOSFET('M', [0, 1, -1, -1], { LEVEL: 4, TOX: 3e-2 });
-    expect(device.params.VTO).toBe(1);
-    expect(device.params.KP).toBe(2e-5);
+  it('refuses to evaluate a non-level-1 card with the level-1 equations (#530)', () => {
+    for (const LEVEL of [2, 3, 4]) {
+      expect(() => new MOSFET('M', [0, 1, -1, -1], { LEVEL, TOX: 3e-2 }))
+        .toThrow(expect.objectContaining({ code: 'UNSUPPORTED_MODEL_LEVEL', level: LEVEL }));
+    }
   });
 
   it('scales gate overlap capacitance by the default W=100u', async () => {

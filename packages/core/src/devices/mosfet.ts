@@ -2,12 +2,19 @@ import {
   DEVICE_GMIN, type ChargeIntegration, type ChargeTruncation, type DeviceModel, type StampContext,
 } from './device.js';
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
+import { InvalidCircuitError, UnsupportedModelLevelError } from '../errors.js';
 
 export interface MOSFETParams {
   LEVEL: number;
   VTO: number;
   KP: number;
   LAMBDA: number;
+  /** Body-effect coefficient (V^0.5); given, or derived from TOX and NSUB. */
+  GAMMA: number;
+  /** Surface potential (V); given, derived from NSUB, or 0.6. */
+  PHI: number;
+  /** Lateral diffusion (m); the effective channel length is L - 2*LD. */
+  LD: number;
   W: number;
   L: number;
   KF: number;
@@ -42,35 +49,27 @@ const OXIDE_PERMITTIVITY = 3.9 * 8.854214871e-12;
 const SILICON_PERMITTIVITY = 11.7 * 8.854214871e-12;
 
 /**
- * VTO and KP when the model card omits them, for the ngspice MOS levels 1-3
- * whose defaults this model follows (mos1set.c/mos1temp.c, mos2set.c/mos2temp.c,
- * mos3set.c/mos3temp.c, all at TNOM = 27 C):
- * - VTO defaults to 0 and KP to 2e-5.
- * - With a non-zero oxide capacitance Cox = 3.9*eps0/TOX, KP = UO*Cox*1e-4
- *   (UO default 600), and a given NSUB > ni sets VTO from the flat-band voltage:
- *   vfb + type*(GAMMA*sqrt(PHI) + PHI), with PHI and GAMMA derived from NSUB
- *   when omitted. Level 1 has Cox only when TOX is given; levels 2 and 3
- *   default TOX to 1e-7.
- * Any other level reaching this Level-1 evaluator is not an ngspice MOS1-3
- * card, so it keeps the historical VTO=1, KP=2e-5 fallback unchanged.
+ * VTO, KP, PHI and GAMMA when the model card omits them, as ngspice-47
+ * mos1set.c/mos1temp.c resolve them at TNOM = 27 C:
+ * - VTO defaults to 0, KP to 2e-5, PHI to 0.6 and GAMMA to 0.
+ * - With a non-zero oxide capacitance Cox = 3.9*eps0/TOX (TOX given), KP =
+ *   UO*Cox*1e-4 (UO default 600). A given NSUB > ni then sets PHI =
+ *   max(0.1, 2*vt*ln(NSUB/ni)), GAMMA = sqrt(2*eps_si*q*NSUB)/Cox and VTO from
+ *   the flat-band voltage: vfb + type*(GAMMA*sqrt(PHI) + PHI).
  */
-function modelDefaults(
-  level: number, polarity: number, params: Record<string, number | undefined>,
-): { VTO: number; KP: number } {
-  if (level !== 1 && level !== 2 && level !== 3) return { VTO: 1, KP: 2e-5 };
-  const oxideThickness = params.TOX ?? (level === 1 ? undefined : 1e-7);
-  if (oxideThickness === undefined || oxideThickness === 0) return { VTO: 0, KP: 2e-5 };
+function level1Defaults(
+  polarity: number, params: Record<string, number | undefined>,
+): { VTO: number; KP: number; PHI: number; GAMMA: number } {
+  const plain = { PHI: params.PHI ?? 0.6, GAMMA: params.GAMMA ?? 0 };
+  const oxideThickness = params.TOX;
+  if (oxideThickness === undefined || oxideThickness === 0) return { VTO: 0, KP: 2e-5, ...plain };
   const oxideCapacitance = OXIDE_PERMITTIVITY / oxideThickness;
   const KP = (params.UO ?? params.U0 ?? 600) * oxideCapacitance * 1e-4;
   const doping = params.NSUB === undefined ? 0 : params.NSUB * 1e6;
+  const intrinsic = 1.45e16;
+  if (!(doping > intrinsic)) return { VTO: 0, KP, ...plain };
   const vtnom = NOMINAL_TEMPERATURE * K_OVER_Q;
   const bandGap = 1.16 - (7.02e-4 * NOMINAL_TEMPERATURE * NOMINAL_TEMPERATURE) / (NOMINAL_TEMPERATURE + 1108);
-  // mos3temp.c scales the intrinsic density to TNOM; mos1temp.c and mos2temp.c use 1.45e16.
-  const intrinsic = level === 3
-    ? 1.45e16 * Math.pow(NOMINAL_TEMPERATURE / 300, 1.5)
-      * Math.exp(0.5 * bandGap * (1 / 300 - 1 / NOMINAL_TEMPERATURE) / K_OVER_Q)
-    : 1.45e16;
-  if (!(doping > intrinsic)) return { VTO: 0, KP };
   const phi = params.PHI ?? Math.max(0.1, 2 * vtnom * Math.log(doping / intrinsic));
   const gateType = params.TPG ?? 1;
   const surfaceFermi = polarity * 0.5 * phi;
@@ -80,8 +79,11 @@ function modelDefaults(
   const workFunctionDifference = gateWorkFunction - (3.25 + 0.5 * bandGap + surfaceFermi);
   const gamma = params.GAMMA ?? Math.sqrt(2 * SILICON_PERMITTIVITY * ELECTRON_CHARGE * doping) / oxideCapacitance;
   const flatBand = workFunctionDifference - (params.NSS ?? 0) * 1e4 * ELECTRON_CHARGE / oxideCapacitance;
-  return { VTO: flatBand + polarity * (gamma * Math.sqrt(phi) + phi), KP };
+  return { VTO: flatBand + polarity * (gamma * Math.sqrt(phi) + phi), KP, PHI: phi, GAMMA: gamma };
 }
+
+/** Reused [cdrain, gm, gds, gmbs, von] buffer written by MOSFET.evaluateChannel. */
+const channelScratch = new Float64Array(5);
 
 /**
  * ngspice mos1load.c bulk junction (bulk-source or bulk-drain), in the
@@ -191,6 +193,15 @@ export class MOSFET implements DeviceModel {
   /** Junction voltages used by the previous stamp (ngspice CKTstate0 vbs/vbd). */
   private lastVbs = 0;
   private lastVbd = 0;
+  /** Effective channel length L - 2*LD (m), as used by mos1load.c and mos1noi.c. */
+  readonly effectiveLength: number;
+  /** mos1load.c Beta = KP*W/Leff and the polarity-domain threshold terms. */
+  private readonly beta: number;
+  private readonly sqrtPhi: number;
+  private readonly zeroBiasVon: number;
+  private readonly builtInVon: number;
+  /** Threshold of the previous stamp (ngspice MOS1von), the DEVfetlim pivot. */
+  private lastVon: number;
   /** Constant G-D, G-S, B-D and B-S capacitances (F), in {@link CHARGE_BRANCHES} order. */
   private readonly capacitances: Float64Array;
   /** Transient charges q = C*v of those capacitances, integrated by the device. */
@@ -208,13 +219,18 @@ export class MOSFET implements DeviceModel {
   ) {
     this.suppliedParams = { ...params };
     const level = params.LEVEL ?? 1;
+    // #530: only ngspice mos1 is implemented here; other levels must not run these equations.
+    if (level !== 1) throw new UnsupportedModelLevelError(name, undefined, level, [1]);
     const polarity = params.polarity ?? 1;
-    const defaults = modelDefaults(level, polarity, params);
+    const defaults = level1Defaults(polarity, params);
     this.params = {
       LEVEL: level,
       VTO: params.VTO ?? params.VT0 ?? defaults.VTO,
       KP: params.KP ?? params.KC ?? defaults.KP,
       LAMBDA: params.LAMBDA ?? params.LAMBDA0 ?? 0,
+      GAMMA: defaults.GAMMA,
+      PHI: defaults.PHI,
+      LD: params.LD ?? 0,
       // cktinit.c CKTdefaultMosW / CKTdefaultMosL (.option defw / defl).
       W: params.W ?? DEFAULT_MOS_WIDTH,
       L: params.L ?? DEFAULT_MOS_LENGTH,
@@ -234,6 +250,22 @@ export class MOSFET implements DeviceModel {
     this.sourceSatCur = useDensity ? saturationDensity * sourceArea : saturationCurrent;
     this.drainVcrit = criticalVoltage(this.drainSatCur);
     this.sourceVcrit = criticalVoltage(this.sourceSatCur);
+    // mos1load.c: Beta = KP * W / (L - 2*LD); von = type*tVbi + GAMMA*sarg with
+    // type*tVbi = type*VTO - GAMMA*sqrt(PHI) at TNOM (mos1temp.c).
+    const { KP, VTO, GAMMA, PHI, LD, L, W } = this.params;
+    const effectiveLength = L - 2 * LD;
+    if (!(effectiveLength > 0)) {
+      throw new InvalidCircuitError(
+        `MOSFET '${name}' has a non-positive effective channel length L - 2*LD = ${effectiveLength}`,
+      );
+    }
+    if (!(PHI > 0)) throw new InvalidCircuitError(`MOSFET '${name}' requires PHI > 0, got ${PHI}`);
+    this.effectiveLength = effectiveLength;
+    this.beta = KP * W / effectiveLength;
+    this.sqrtPhi = Math.sqrt(PHI);
+    this.zeroBiasVon = polarity * VTO;
+    this.builtInVon = this.zeroBiasVon - GAMMA * this.sqrtPhi;
+    this.lastVon = this.zeroBiasVon;
     const width = this.params.W;
     this.capacitances = Float64Array.of(
       (this.suppliedParams.CGDO ?? 0) * width,
@@ -278,6 +310,44 @@ export class MOSFET implements DeviceModel {
     return out;
   }
 
+  /**
+   * ngspice mos1load.c drain current in the polarity domain for a device in
+   * normal mode (vds >= 0; callers swap drain and source otherwise and pass vbd
+   * as vbs). Writes [cdrain, gm, gds, gmbs, von] into channelScratch.
+   */
+  private evaluateChannel(vgs: number, vds: number, vbs: number): Float64Array {
+    const { GAMMA, LAMBDA } = this.params;
+    let sarg: number;
+    if (vbs <= 0) {
+      sarg = Math.sqrt(this.params.PHI - vbs);
+    } else {
+      sarg = this.sqrtPhi - vbs / (2 * this.sqrtPhi);
+      sarg = Math.max(0, sarg);
+    }
+    const von = this.builtInVon + GAMMA * sarg;
+    const vgst = vgs - von;
+    const arg = sarg <= 0 ? 0 : GAMMA / (2 * sarg);
+    const out = channelScratch;
+    out[4] = von;
+    if (vgst <= 0) {
+      out[0] = 0; out[1] = 0; out[2] = 0; out[3] = 0;
+      return out;
+    }
+    const beta = this.beta;
+    const betap = beta * (1 + LAMBDA * vds);
+    if (vgst <= vds) {
+      out[0] = betap * vgst * vgst * 0.5;
+      out[1] = betap * vgst;
+      out[2] = LAMBDA * beta * vgst * vgst * 0.5;
+    } else {
+      out[0] = betap * vds * (vgst - 0.5 * vds);
+      out[1] = betap * vds;
+      out[2] = betap * (vgst - vds) + LAMBDA * beta * vds * (vgst - 0.5 * vds);
+    }
+    out[3] = out[1] * arg;
+    return out;
+  }
+
   limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {
     const [nD, nG, nS] = this.nodes;
     const voltage = (solution: Float64Array, node: number): number =>
@@ -298,7 +368,7 @@ export class MOSFET implements DeviceModel {
    * turns the limited gate voltage into a scale on the whole Newton step.
    */
   private gateStepScale(previous: Float64Array, candidate: Float64Array): number {
-    const { polarity, VTO } = this.params;
+    const { polarity } = this.params;
     const [nD, nG, nS] = this.nodes;
     const voltage = (solution: Float64Array, node: number): number =>
       node >= 0 ? solution[node] : 0;
@@ -308,139 +378,44 @@ export class MOSFET implements DeviceModel {
     const proposedGate = polarity * (voltage(candidate, nG) - voltage(candidate, reference));
     const delta = proposedGate - previousGate;
     if (delta === 0) return 1;
-    const limited = fetlim(proposedGate, previousGate, Math.abs(VTO));
+    const limited = fetlim(proposedGate, previousGate, this.lastVon);
     return Math.min(1, Math.max(0, (limited - previousGate) / delta));
   }
 
   /** Level-1 DC quantities used by the small-signal noise generators. */
   noiseOperatingPoint(solution: Float64Array): MOSFETOperatingPoint {
-    const { VTO, KP, LAMBDA, W, L, polarity } = this.params;
+    const { polarity } = this.params;
     let drainNode = this.nodes[0];
     const gateNode = this.nodes[1];
     let sourceNode = this.nodes[2];
-    const drainVoltage = drainNode >= 0 ? solution[drainNode] : 0;
-    const gateVoltage = gateNode >= 0 ? solution[gateNode] : 0;
-    const sourceVoltage = sourceNode >= 0 ? solution[sourceNode] : 0;
-    let vGS = polarity * (gateVoltage - sourceVoltage);
-    let vDS = polarity * (drainVoltage - sourceVoltage);
+    const bulkNode = this.bulkNode;
+    const voltage = (node: number): number => (node >= 0 ? solution[node] : 0);
+    let vGS = polarity * (voltage(gateNode) - voltage(sourceNode));
+    let vDS = polarity * (voltage(drainNode) - voltage(sourceNode));
+    let vBS = polarity * (voltage(bulkNode) - voltage(sourceNode));
 
     if (vDS < 0) {
       [drainNode, sourceNode] = [sourceNode, drainNode];
       vGS -= vDS;
+      vBS -= vDS;
       vDS = -vDS;
     }
-
-    const threshold = Math.abs(VTO);
-    const aspectRatio = W / L;
-    let drainCurrent = 0;
-    let transconductance = 0;
-    if (vGS > threshold) {
-      const overdrive = vGS - threshold;
-      if (vDS < overdrive) {
-        drainCurrent = KP * aspectRatio * (overdrive * vDS - vDS * vDS / 2)
-          * (1 + LAMBDA * vDS);
-        transconductance = KP * aspectRatio * vDS * (1 + LAMBDA * vDS);
-      } else {
-        drainCurrent = (KP * aspectRatio / 2) * overdrive * overdrive
-          * (1 + LAMBDA * vDS);
-        transconductance = KP * aspectRatio * overdrive * (1 + LAMBDA * vDS);
-      }
-    }
-    return { drainNode, sourceNode, drainCurrent, transconductance };
+    const channel = this.evaluateChannel(vGS, vDS, vBS);
+    return { drainNode, sourceNode, drainCurrent: channel[0], transconductance: channel[1] };
   }
 
   stamp(ctx: StampContext): void {
-    const { VTO, KP, LAMBDA, W, L, polarity } = this.params;
-    const WL = W / L;
-
-    // Get node voltages — may swap drain/source below
-    let nD = this.nodes[0];
-    const nG = this.nodes[1];
-    let nS = this.nodes[2];
-
-    const vD = nD >= 0 ? ctx.getVoltage(nD) : 0;
-    const vG = nG >= 0 ? ctx.getVoltage(nG) : 0;
-    const vS = nS >= 0 ? ctx.getVoltage(nS) : 0;
-
-    // Internal voltages adjusted for polarity (PMOS flips)
-    let vGS = polarity * (vG - vS);
-    let vDS = polarity * (vD - vS);
-
-    // Source-drain swap: if vDS < 0, the device operates in reverse mode.
-    // Standard SPICE Level 1 handles this by swapping drain and source
-    // internally so that vDS >= 0 for the model equations.
-    if (vDS < 0) {
-      const tmp = nD;
-      nD = nS;
-      nS = tmp;
-      vGS = vGS - vDS; // vG - vD (gate to new effective source)
-      vDS = -vDS;       // |vDS|
-    }
-
-    // Threshold in polarity-adjusted domain: for PMOS, VTO from model card is
-    // negative (e.g. -0.5V). After the polarity flip vGS is positive, so we
-    // need |VTO| as the positive threshold.
-    const Vth = Math.abs(VTO);
-
-    let ID: number;
-    let gm: number;   // dID/dVGS
-    let gds: number;  // dID/dVDS
-
-    if (vGS <= Vth) {
-      // Cutoff
-      ID = 0;
-      gm = 0;
-      gds = 0;
-    } else if (vDS < vGS - Vth) {
-      // Linear/triode region
-      const vov = vGS - Vth;
-      ID = KP * WL * (vov * vDS - vDS * vDS / 2) * (1 + LAMBDA * vDS);
-      gm = KP * WL * vDS * (1 + LAMBDA * vDS);
-      gds = KP * WL * (vov - vDS) * (1 + LAMBDA * vDS) + KP * WL * (vov * vDS - vDS * vDS / 2) * LAMBDA;
-    } else {
-      // Saturation region
-      const vov = vGS - Vth;
-      ID = (KP * WL / 2) * vov * vov * (1 + LAMBDA * vDS);
-      gm = KP * WL * vov * (1 + LAMBDA * vDS);
-      gds = (KP * WL / 2) * vov * vov * LAMBDA;
-    }
-
-    // Add GMIN for convergence
-    gds += GMIN;
-
-    // NR companion: ID ≈ gm*(VGS - VGS0) + gds*(VDS - VDS0) + ID0
-    // Equivalent current: Ieq = ID0 - gm*VGS0 - gds*VDS0
-    const Ieq = ID - gm * vGS - gds * vDS;
-
-    // Physical current into effective drain = polarity * ID
-    // The stamps below use the (possibly swapped) nD, nG, nS.
-    //
-    // dID_node/dvG = gm
-    // dID_node/dvD = gds
-    // dID_node/dvS = -(gm + gds)
-
-    // Stamp drain row (current into effective drain)
-    if (nD >= 0) {
-      if (nG >= 0) ctx.stampG(nD, nG, gm);
-      if (nD >= 0) ctx.stampG(nD, nD, gds);
-      if (nS >= 0) ctx.stampG(nD, nS, -(gm + gds));
-      ctx.stampB(nD, -polarity * Ieq);
-    }
-
-    // Stamp source row (current into effective source = -current into effective drain)
-    if (nS >= 0) {
-      if (nG >= 0) ctx.stampG(nS, nG, -gm);
-      if (nD >= 0) ctx.stampG(nS, nD, -gds);
-      if (nS >= 0) ctx.stampG(nS, nS, gm + gds);
-      ctx.stampB(nS, polarity * Ieq);
-    }
-
-    // Bulk-source / bulk-drain junctions use the unswapped terminals.
-    const [jD, , jS] = this.nodes;
+    const polarity = this.params.polarity;
+    const [jD, nG, jS] = this.nodes;
     const jB = this.bulkNode;
-    const junction = this.evaluateBulkJunctions(
-      vD, vS, jB >= 0 ? ctx.getVoltage(jB) : 0, ctx.gmin ?? DEVICE_GMIN,
-    );
+    const vD = jD >= 0 ? ctx.getVoltage(jD) : 0;
+    const vG = nG >= 0 ? ctx.getVoltage(nG) : 0;
+    const vS = jS >= 0 ? ctx.getVoltage(jS) : 0;
+    const vB = jB >= 0 ? ctx.getVoltage(jB) : 0;
+
+    // Bulk junctions first: as in mos1load.c, the drain current uses the
+    // DEVpnjlim-limited vbs/vbd. They stamp on the unswapped terminals.
+    const junction = this.evaluateBulkJunctions(vD, vS, vB, ctx.gmin ?? DEVICE_GMIN);
     const gbs = junction[0];
     const gbd = junction[2];
     const ceqbs = polarity * junction[1];
@@ -460,6 +435,47 @@ export class MOSFET implements DeviceModel {
       ctx.stampG(jD, jD, gbd);
       if (jB >= 0) ctx.stampG(jD, jB, -gbd);
       ctx.stampB(jD, ceqbd);
+    }
+
+    // Polarity-domain terminal voltages. For vds < 0 the device runs in
+    // reverse mode (ngspice MOS1mode = -1): drain and source swap and the body
+    // effect uses vbd.
+    let nD = jD;
+    let nS = jS;
+    let vGS = polarity * (vG - vS);
+    let vDS = polarity * (vD - vS);
+    let vBS = this.lastVbs;
+    if (vDS < 0) {
+      nD = jS;
+      nS = jD;
+      vGS -= vDS;
+      vDS = -vDS;
+      vBS = this.lastVbd;
+    }
+
+    const channel = this.evaluateChannel(vGS, vDS, vBS);
+    const ID = channel[0];
+    const gm = channel[1];
+    const gds = channel[2] + GMIN;
+    const gmbs = channel[3];
+    this.lastVon = channel[4];
+
+    // NR companion: ID ~ ID0 + gm*dVGS + gds*dVDS + gmbs*dVBS around the
+    // (possibly swapped) effective drain/source; physical current = polarity*ID.
+    const Ieq = ID - gm * vGS - gds * vDS - gmbs * vBS;
+    if (nD >= 0) {
+      if (nG >= 0) ctx.stampG(nD, nG, gm);
+      ctx.stampG(nD, nD, gds);
+      if (nS >= 0) ctx.stampG(nD, nS, -(gm + gds + gmbs));
+      if (jB >= 0 && gmbs !== 0) ctx.stampG(nD, jB, gmbs);
+      ctx.stampB(nD, -polarity * Ieq);
+    }
+    if (nS >= 0) {
+      if (nG >= 0) ctx.stampG(nS, nG, -gm);
+      if (nD >= 0) ctx.stampG(nS, nD, -gds);
+      ctx.stampG(nS, nS, gm + gds + gmbs);
+      if (jB >= 0 && gmbs !== 0) ctx.stampG(nS, jB, -gmbs);
+      ctx.stampB(nS, polarity * Ieq);
     }
   }
 
@@ -568,87 +584,16 @@ export class MOSFET implements DeviceModel {
       const slots = mosfet.batchSlotKey === stampIndex && mosfet.batchSlots !== null
         ? mosfet.batchSlots
         : mosfet.resolveBatchSlots(stampIndex);
-      const { VTO, KP, LAMBDA, W, L, polarity } = mosfet.params;
-      const WL = W / L;
-
-      // Get node voltages — may swap drain/source below
-      let nD = mosfet.nodes[0];
-      const nG = mosfet.nodes[1];
-      let nS = mosfet.nodes[2];
-
-      const vD = nD >= 0 ? solution[nD] : 0;
-      const vG = nG >= 0 ? solution[nG] : 0;
-      const vS = nS >= 0 ? solution[nS] : 0;
-
-      // Internal voltages adjusted for polarity (PMOS flips)
-      let vGS = polarity * (vG - vS);
-      let vDS = polarity * (vD - vS);
-
-      // Source-drain swap for negative vDS. The value slots of the drain and
-      // source rows swap with the terminals.
-      let slotDG = slots[SLOT_DG], slotDD = slots[SLOT_DD], slotDS = slots[SLOT_DS];
-      let slotSG = slots[SLOT_SG], slotSD = slots[SLOT_SD], slotSS = slots[SLOT_SS];
-      if (vDS < 0) {
-        const tmp = nD;
-        nD = nS;
-        nS = tmp;
-        vGS = vGS - vDS;
-        vDS = -vDS;
-        slotDG = slots[SLOT_SG]; slotDD = slots[SLOT_SS]; slotDS = slots[SLOT_SD];
-        slotSG = slots[SLOT_DG]; slotSD = slots[SLOT_DS]; slotSS = slots[SLOT_DD];
-      }
-
-      const Vth = Math.abs(VTO);
-
-      let ID: number;
-      let gm: number;
-      let gds: number;
-
-      if (vGS <= Vth) {
-        // Cutoff
-        ID = 0;
-        gm = 0;
-        gds = 0;
-      } else if (vDS < vGS - Vth) {
-        // Linear/triode region
-        const vov = vGS - Vth;
-        ID = KP * WL * (vov * vDS - vDS * vDS / 2) * (1 + LAMBDA * vDS);
-        gm = KP * WL * vDS * (1 + LAMBDA * vDS);
-        gds = KP * WL * (vov - vDS) * (1 + LAMBDA * vDS) + KP * WL * (vov * vDS - vDS * vDS / 2) * LAMBDA;
-      } else {
-        // Saturation region
-        const vov = vGS - Vth;
-        ID = (KP * WL / 2) * vov * vov * (1 + LAMBDA * vDS);
-        gm = KP * WL * vov * (1 + LAMBDA * vDS);
-        gds = (KP * WL / 2) * vov * vov * LAMBDA;
-      }
-
-      // Add GMIN for convergence
-      gds += GMIN;
-
-      // NR companion: Ieq = ID0 - gm*VGS0 - gds*VDS0
-      const Ieq = ID - gm * vGS - gds * vDS;
-
-      // Stamp drain row — direct array writes using (possibly swapped) nD, nS
-      if (nD >= 0) {
-        if (nG >= 0) gValues[slotDG] += gm;
-        if (nD >= 0) gValues[slotDD] += gds;
-        if (nS >= 0) gValues[slotDS] -= (gm + gds);
-        b[nD] -= polarity * Ieq;
-      }
-
-      // Stamp source row
-      if (nS >= 0) {
-        if (nG >= 0) gValues[slotSG] -= gm;
-        if (nD >= 0) gValues[slotSD] -= gds;
-        if (nS >= 0) gValues[slotSS] += (gm + gds);
-        b[nS] += polarity * Ieq;
-      }
-
-      // Bulk-source / bulk-drain junctions use the unswapped terminals.
-      const [jD, , jS] = mosfet.nodes;
+      const polarity = mosfet.params.polarity;
+      const [jD, nG, jS] = mosfet.nodes;
       const jB = mosfet.bulkNode;
-      const junction = mosfet.evaluateBulkJunctions(vD, vS, jB >= 0 ? solution[jB] : 0, gmin);
+      const vD = jD >= 0 ? solution[jD] : 0;
+      const vG = nG >= 0 ? solution[nG] : 0;
+      const vS = jS >= 0 ? solution[jS] : 0;
+      const vB = jB >= 0 ? solution[jB] : 0;
+
+      // Bulk junctions first (limited vbs/vbd feed the drain current), on the unswapped terminals.
+      const junction = mosfet.evaluateBulkJunctions(vD, vS, vB, gmin);
       const gbs = junction[0];
       const gbd = junction[2];
       const ceqbs = polarity * junction[1];
@@ -668,6 +613,47 @@ export class MOSFET implements DeviceModel {
         gValues[slots[SLOT_DD]] += gbd;
         if (jB >= 0) gValues[slots[SLOT_DB]] -= gbd;
         b[jD] += ceqbd;
+      }
+
+      // Reverse mode swaps drain and source, their value slots, and uses vbd.
+      let nD = jD;
+      let nS = jS;
+      let vGS = polarity * (vG - vS);
+      let vDS = polarity * (vD - vS);
+      let vBS = mosfet.lastVbs;
+      let slotDG = slots[SLOT_DG], slotDD = slots[SLOT_DD], slotDS = slots[SLOT_DS], slotDB = slots[SLOT_DB];
+      let slotSG = slots[SLOT_SG], slotSD = slots[SLOT_SD], slotSS = slots[SLOT_SS], slotSB = slots[SLOT_SB];
+      if (vDS < 0) {
+        nD = jS;
+        nS = jD;
+        vGS -= vDS;
+        vDS = -vDS;
+        vBS = mosfet.lastVbd;
+        slotDG = slots[SLOT_SG]; slotDD = slots[SLOT_SS]; slotDS = slots[SLOT_SD]; slotDB = slots[SLOT_SB];
+        slotSG = slots[SLOT_DG]; slotSD = slots[SLOT_DS]; slotSS = slots[SLOT_DD]; slotSB = slots[SLOT_DB];
+      }
+
+      const channel = mosfet.evaluateChannel(vGS, vDS, vBS);
+      const ID = channel[0];
+      const gm = channel[1];
+      const gds = channel[2] + GMIN;
+      const gmbs = channel[3];
+      mosfet.lastVon = channel[4];
+
+      const Ieq = ID - gm * vGS - gds * vDS - gmbs * vBS;
+      if (nD >= 0) {
+        if (nG >= 0) gValues[slotDG] += gm;
+        gValues[slotDD] += gds;
+        if (nS >= 0) gValues[slotDS] -= gm + gds + gmbs;
+        if (jB >= 0 && gmbs !== 0) gValues[slotDB] += gmbs;
+        b[nD] -= polarity * Ieq;
+      }
+      if (nS >= 0) {
+        if (nG >= 0) gValues[slotSG] -= gm;
+        if (nD >= 0) gValues[slotSD] -= gds;
+        gValues[slotSS] += gm + gds + gmbs;
+        if (jB >= 0 && gmbs !== 0) gValues[slotSB] -= gmbs;
+        b[nS] += polarity * Ieq;
       }
     }
   }
