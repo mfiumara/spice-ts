@@ -159,6 +159,65 @@ describe('AC frequency grid (ngspice-47 parity)', () => {
     expect(frequencies[count - 1]).toBeCloseTo(last, 5);
   });
 
+  // ngspice-47 `.ac` DEC sweeps spanning at least one decade keep floor(decades*N) intervals and
+  // stretch the ratio so the last point lands on stop (acan.c). Grids from `wrdata frequency`.
+  it.each([
+    ['dec 10 1 5k', 37, 1.26691993, 5000],
+    ['dec 7 3 47k', 30, 4.1857725, 47000],
+    ['dec 10 1 50', 17, 1.2769845, 50],
+    ['dec 10 1 900', 30, 1.26435908, 900],
+    ['dec 1 1 50', 2, 50, 50],
+    ['dec 1 1 500', 3, 22.3606798, 500],
+    ['dec 10 1 12.6', 12, 1.25902306, 12.6],
+    ['dec 10 1 10.001', 11, 1.258938, 10.001],
+    ['dec 10 1 99.99', 20, 1.27426828, 99.99],
+    ['dec 10 1 999.999', 30, 1.26896096, 999.999],
+    ['dec 2 1 10.5', 3, 3.24037035, 10.5],
+    ['dec 10 3 1e5', 46, 3.78120019, 1e5],
+    ['dec 10 1 9.999', 11, 1.25892541, 10],
+    ['dec 10 1 1k', 31, 1.25892541, 1000],
+    ['oct 4 1 50', 23, 1.18920712, 45.254834],
+  ])('.ac %s gives %i points, second %d, ending at %d', async (sweep, count, second, last) => {
+    const frequencies = (await simulate(deck(sweep))).ac!.frequencies;
+    expect(frequencies).toHaveLength(count);
+    expect(frequencies[1] / second).toBeCloseTo(1, 7);
+    expect(frequencies[count - 1] / last).toBeCloseTo(1, 7);
+  });
+
+  it('streams the stretched multi-decade DEC grid', async () => {
+    const streamed: number[] = [];
+    for await (const point of simulateStream(deck('dec 10 1 5k'))) {
+      if ('frequency' in point) streamed.push(point.frequency);
+    }
+    expect(streamed).toHaveLength(37);
+    expect(streamed[36] / 5000).toBeCloseTo(1, 7);
+  });
+
+  // `.noise` keeps the plain 10^(1/N) stepping with the reltol stop tolerance (noisean.c), so
+  // its grid differs from `.ac` for the same multi-decade fractional sweep.
+  it.each([
+    ['dec 10 1 5k', 37, 3981.07171],
+    ['dec 10 1 99.99', 21, 100],
+    ['dec 1 1 50', 2, 10],
+  ])('.noise %s keeps ngspice-47 plain stepping: %i points ending at %d', async (sweep, count, last) => {
+    const noise = (await simulate(
+      `title\nV1 a 0 AC 1\nR1 a b 1k\nC1 b 0 1u\n.noise v(b) V1 ${sweep}\n.end`,
+    )).noise!;
+    expect(noise.frequencies).toHaveLength(count);
+    expect(noise.frequencies[count - 1] / last).toBeCloseTo(1, 7);
+  });
+
+  it('accepts a stretched .ac dec sweep under a maxResultPoints limit of its ngspice count', async () => {
+    const result = await simulateProtocolV1({
+      apiVersion: '1',
+      input: { format: 'spice', source: 'V1 a 0 AC 1\nR1 a 0 1k\n.ac dec 10 1 99.99' },
+      options: { limits: { maxResultPoints: 20 } },
+    });
+    const ac = result.analyses[0];
+    if (ac?.type !== 'ac') throw new Error('expected AC result');
+    expect(ac.frequencyHz).toHaveLength(20);
+  });
+
   it('streams the same grid as the batch solver', async () => {
     const streamed: number[] = [];
     for await (const point of simulateStream(deck('lin 10 1 1k'))) {
