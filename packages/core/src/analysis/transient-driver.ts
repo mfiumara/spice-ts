@@ -16,6 +16,7 @@ import {
 } from '../convergence-telemetry.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { Inductor } from '../devices/inductor.js';
+import { maxTimestepOption } from './max-timestep.js';
 
 /**
  * Smallest allowed timestep (femtosecond). Must be small enough that LTE can
@@ -114,7 +115,7 @@ export async function createTransientSim(
   const tranAnalysis = compiled.analyses.find(a => a.type === 'tran');
   const stopTime = effectiveOptions.stopTime ?? (tranAnalysis?.type === 'tran' ? tranAnalysis.stopTime : undefined);
   const timestep = effectiveOptions.timestep ?? (tranAnalysis?.type === 'tran' ? tranAnalysis.timestep : undefined) ?? (stopTime ? stopTime / 50 : 1e-6);
-  const maxTimestep = effectiveOptions.maxTimestep
+  const maxTimestep = maxTimestepOption(effectiveOptions.maxTimestep)
     ?? (stopTime ? Math.min(timestep, stopTime / 50) : timestep * 10);
 
   const resolved = resolveOptions(effectiveOptions, stopTime);
