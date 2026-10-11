@@ -54,11 +54,15 @@ describe('BJT Ebers-Moll', () => {
     const collectorSupply = result.dcSweep!.current('VCE');
     const baseSupply = result.dcSweep!.current('VBE');
     expect(collectorSupply).toHaveLength(3);
-    // ngspice-47 on the identical deck: i(vce) = -7.20006e-04, -8.34565e-04;
-    // i(vbe) = -3.52294e-05 (VT = kT/q at 300.15 K, #525).
-    expect(collectorSupply[0]).toBeCloseTo(-0.0007200057759178837, 12);
-    // Closed-form model value IF/qB at VCE = 9 V (true reverse VBC = -8.28 V).
-    expect(collectorSupply[2]).toBeCloseTo(-0.000834565167471881, 12);
+    // ngspice-47 on the identical deck: i(vce) = -7.20005777197881e-04,
+    // -8.34565184751882e-04; i(vbe) = -3.52293523293051e-05 (VT = kT/q at
+    // 300.15 K, #525). i(vce) includes the substrate junction gmin current
+    // gmin*Vcs = 1e-12 A (#539); the remaining ~3e-13 A is ngspice's
+    // gmin*vbc in the B-C leakage, which spice-ts stamps only in the Jacobian.
+    expect(collectorSupply[0]).toBeCloseTo(-0.0007200057769178837, 12);
+    // Closed-form model value IF/qB at VCE = 9 V (true reverse VBC = -8.28 V)
+    // plus gmin*Vcs = 9e-12 A.
+    expect(collectorSupply[2]).toBeCloseTo(-0.000834565176471881, 12);
     expect(baseSupply[0]).toBeCloseTo(-0.0000352293518893033, 12);
     expect(result.convergence!.dc).toMatchObject({
       acceptedSolves: 3,
