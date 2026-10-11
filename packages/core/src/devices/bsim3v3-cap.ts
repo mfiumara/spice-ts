@@ -1,4 +1,40 @@
-import type { BSIM3v3ModelParams, BSIM3v3Derived } from './bsim3v3-params.js';
+import type { BSIM3Model, BSIM3Size } from './bsim3v3-params.js';
+
+/**
+ * Inputs of the bounded capacitance approximation below. Geometry, overlap
+ * and junction values come from the ngspice b3temp.c size-dependent
+ * parameters; the intrinsic charge model itself is not ngspice capMod.
+ */
+export interface BSIM3v3CapParams {
+  /** NMOS-convention zero-bias threshold (type * vth0). */
+  vth0: number;
+  k1: number;
+  phi: number;
+  /** Cox * WeffCV * LeffCV (F). */
+  coxWL: number;
+  /** Absolute overlap capacitances (F): (CGDO + CF) * WeffCV etc. */
+  cgdo: number;
+  cgso: number;
+  cgbo: number;
+  cj: number; cjsw: number; mj: number; mjsw: number; pb: number; pbsw: number;
+  ad: number; as: number; pd: number; ps: number;
+}
+
+/** Capacitance inputs for one instance. */
+export function capParams(model: BSIM3Model, size: BSIM3Size): BSIM3v3CapParams {
+  const m = model.values;
+  return {
+    vth0: model.type * size.instVth0,
+    k1: size.k1,
+    phi: size.phi,
+    coxWL: model.cox * size.weffCV * size.leffCV,
+    cgdo: size.cgdo,
+    cgso: size.cgso,
+    cgbo: size.cgbo,
+    cj: m.cj, cjsw: m.cjsw, mj: m.mj, mjsw: m.mjsw, pb: m.pb, pbsw: m.pbsw,
+    ad: size.drainArea, as: size.sourceArea, pd: size.drainPerimeter, ps: size.sourcePerimeter,
+  };
+}
 
 export interface BSIM3v3CapResult {
   Cgg: number;  // Total gate capacitance
@@ -18,13 +54,12 @@ export interface BSIM3v3CapResult {
  * - Junction: CJ, CJSW with reverse-bias depletion
  */
 export function evaluateCap(
-  p: BSIM3v3ModelParams,
-  d: BSIM3v3Derived,
+  p: BSIM3v3CapParams,
   Vgs: number,
   Vds: number,
   Vbs: number,
 ): BSIM3v3CapResult {
-  const CoxWL = d.Cox * d.Weff * d.Leff;
+  const CoxWL = p.coxWL;
 
   // Reverse mode (Vds < 0): the intrinsic channel charge is evaluated with
   // drain and source interchanged and its gate-drain/gate-source split is
@@ -37,8 +72,8 @@ export function evaluateCap(
   const iVbs = reverse ? Vbs - Vds : Vbs;
 
   // ===== Approximate Vth for cap model (simplified, no SCE) =====
-  const sqrtPhiMinusVbs = Math.sqrt(Math.max(d.phi_s - iVbs, 0.01));
-  const Vth = p.VTH0 + p.K1 * sqrtPhiMinusVbs - Math.abs(p.K1) * d.sqrtPhi;
+  const sqrtPhiMinusVbs = Math.sqrt(Math.max(p.phi - iVbs, 0.01));
+  const Vth = p.vth0 + p.k1 * sqrtPhiMinusVbs - Math.abs(p.k1) * Math.sqrt(p.phi);
 
   // Normalized gate overdrive
   const Vov = iVgs - Vth;
@@ -84,15 +119,15 @@ export function evaluateCap(
   const Cgs_i = reverse ? CgdEff : CgsEff;
 
   // ===== Overlap capacitances (bias-independent) =====
-  const Cgd_ov = p.CGDO * d.Weff;
-  const Cgs_ov = p.CGSO * d.Weff;
-  const Cgb_ov = p.CGBO * d.Leff;
+  const Cgd_ov = p.cgdo;
+  const Cgs_ov = p.cgso;
+  const Cgb_ov = p.cgbo;
 
   // ===== Junction capacitances =====
   // Drain junction: Vbd = Vbs - Vds
-  const Cbd = junctionCap(p, d, Vbs - Vds, 'drain');
+  const Cbd = junctionCap(p, Vbs - Vds, 'drain');
   // Source junction: Vbs = Vbs
-  const Cbs = junctionCap(p, d, Vbs, 'source');
+  const Cbs = junctionCap(p, Vbs, 'source');
 
   // ===== Totals =====
   const Cgd = Cgd_i + Cgd_ov;
@@ -109,31 +144,30 @@ export function evaluateCap(
  * With linearization for forward bias (Vj > 0.5*PB).
  */
 function junctionCap(
-  p: BSIM3v3ModelParams,
-  d: BSIM3v3Derived,
+  p: BSIM3v3CapParams,
   Vj: number,
   terminal: 'drain' | 'source',
 ): number {
-  const area = terminal === 'drain' ? d.AD : d.AS;
-  const perim = terminal === 'drain' ? d.PD : d.PS;
+  const area = terminal === 'drain' ? p.ad : p.as;
+  const perim = terminal === 'drain' ? p.pd : p.ps;
 
   let cBottom = 0;
-  if (p.CJ > 0 && area > 0) {
-    if (Vj < 0.5 * p.PB) {
-      cBottom = p.CJ * area / Math.pow(1 - Vj / p.PB, p.MJ);
+  if (p.cj > 0 && area > 0) {
+    if (Vj < 0.5 * p.pb) {
+      cBottom = p.cj * area / Math.pow(1 - Vj / p.pb, p.mj);
     } else {
       // Linearize in forward bias: use value at 0.5*PB
-      cBottom = p.CJ * area / Math.pow(0.5, p.MJ);
+      cBottom = p.cj * area / Math.pow(0.5, p.mj);
     }
   }
 
   let cSidewall = 0;
-  if (p.CJSW > 0 && perim > 0) {
-    if (Vj < 0.5 * p.PBSW) {
-      cSidewall = p.CJSW * perim / Math.pow(1 - Vj / p.PBSW, p.MJSW);
+  if (p.cjsw > 0 && perim > 0) {
+    if (Vj < 0.5 * p.pbsw) {
+      cSidewall = p.cjsw * perim / Math.pow(1 - Vj / p.pbsw, p.mjsw);
     } else {
       // Linearize in forward bias: use value at 0.5*PBSW
-      cSidewall = p.CJSW * perim / Math.pow(0.5, p.MJSW);
+      cSidewall = p.cjsw * perim / Math.pow(0.5, p.mjsw);
     }
   }
 
