@@ -1,4 +1,5 @@
-import type { DeviceModel, StampContext } from './device.js';
+import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import type { BSIM3v3ModelParams, BSIM3v3InstanceParams, BSIM3v3Derived } from './bsim3v3-params.js';
 import { BSIM3v3_DEFAULTS, computeDerived } from './bsim3v3-params.js';
 import { evaluateDC } from './bsim3v3-dc.js';
@@ -7,6 +8,15 @@ import { evaluateCap } from './bsim3v3-cap.js';
 export class BSIM3v3 implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  /**
+   * The bounded cap model provides capacitances only, so the transient charge
+   * of each two-terminal capacitance is advanced from the accepted point with
+   * the averaged capacitance, as ngspice integrates Meyer gate capacitances
+   * (DEVqmeyer): q = q(n) + (C(v) + C(v(n)))/2 * (v - v(n)).
+   */
+  readonly integratesTransientCharge = true;
+  private readonly charges = new TransientChargeState(5);
+  private readonly capacitanceScratch = new Float64Array(5);
 
   private readonly params: BSIM3v3ModelParams;
   private readonly derived: BSIM3v3Derived;
@@ -107,6 +117,66 @@ export class BSIM3v3 implements DeviceModel {
     this.stampDynamic(ctx);
   }
 
+  stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
+    const caps = this.evaluateCapacitances(ctx);
+    const charges = this.charges;
+    charges.begin(integration);
+    for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
+      const [p, n] = CHARGE_BRANCHES[index];
+      const positive = this.nodes[p];
+      const negative = this.nodes[n];
+      const capacitance = caps[index];
+      const voltage = branchVoltage(ctx, positive, negative);
+      const charge = charges.incrementalCharge(index, voltage, capacitance, true);
+      const effective = charges.factor * charges.incrementalCapacitance(index, capacitance, true);
+      stampChargeBranch(ctx, positive, negative, charges.current(index, charge), effective, voltage);
+    }
+  }
+
+  stampAcceptedChargeCurrent(ctx: StampContext): void {
+    for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
+      const [p, n] = CHARGE_BRANCHES[index];
+      stampChargeCurrent(ctx, this.nodes[p], this.nodes[n], this.charges.acceptedChargeCurrent(index));
+    }
+  }
+
+  acceptTransientStep(ctx: StampContext): void {
+    const caps = this.evaluateCapacitances(ctx);
+    for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
+      const [p, n] = CHARGE_BRANCHES[index];
+      const voltage = branchVoltage(ctx, this.nodes[p], this.nodes[n]);
+      const capacitance = caps[index];
+      this.charges.accept(
+        index, this.charges.incrementalCharge(index, voltage, capacitance, true), voltage, capacitance,
+      );
+    }
+    this.charges.commit();
+  }
+
+  resetTransient(): void {
+    this.charges.reset();
+  }
+
+  /** Cgd, Cgs, Cgb, Cbd, Cbs at the present terminal voltages, in CHARGE_BRANCHES order. */
+  private evaluateCapacitances(ctx: StampContext): Float64Array {
+    const [nD, nG, nS, nB] = this.nodes;
+    const pol = this.polarity;
+    const vD = nD >= 0 ? ctx.getVoltage(nD) : 0;
+    const vG = nG >= 0 ? ctx.getVoltage(nG) : 0;
+    const vS = nS >= 0 ? ctx.getVoltage(nS) : 0;
+    const vB = nB >= 0 ? ctx.getVoltage(nB) : 0;
+    const caps = evaluateCap(
+      this.params, this.derived, pol * (vG - vS), pol * (vD - vS), pol * (vB - vS),
+    );
+    const out = this.capacitanceScratch;
+    out[0] = caps.Cgd;
+    out[1] = caps.Cgs;
+    out[2] = caps.Cgb;
+    out[3] = caps.Cbd;
+    out[4] = caps.Cbs;
+    return out;
+  }
+
   private stampCap2(ctx: StampContext, n1: number, n2: number, cap: number): void {
     if (cap === 0) return;
     if (n1 >= 0) {
@@ -118,4 +188,14 @@ export class BSIM3v3 implements DeviceModel {
       if (n1 >= 0) ctx.stampC(n2, n1, -cap);
     }
   }
+}
+
+/** Terminal indices (D, G, S, B) of the Cgd, Cgs, Cgb, Cbd and Cbs capacitances. */
+const CHARGE_BRANCHES: ReadonlyArray<readonly [number, number]> = [
+  [1, 0], [1, 2], [1, 3], [3, 0], [3, 2],
+];
+
+function branchVoltage(ctx: StampContext, positive: number, negative: number): number {
+  return (positive >= 0 ? ctx.getVoltage(positive) : 0)
+    - (negative >= 0 ? ctx.getVoltage(negative) : 0);
 }

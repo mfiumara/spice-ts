@@ -1,0 +1,8 @@
+jfet gate charge across FC*PB
+V1 in 0 PULSE(-4 1.5 0 1n 1n 20n 50n)
+R1 in g 1k
+VD d 0 2
+J1 d g 0 JM
+.model JM NJF VTO=-2 BETA=1m CGS=2p CGD=1p PB=0.8 FC=0.5 IS=1e-18
+.tran 0.1n 50n
+.end

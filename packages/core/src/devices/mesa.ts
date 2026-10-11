@@ -1,4 +1,5 @@
-import type { DeviceModel, StampContext } from './device.js';
+import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import {
   evaluateMESA,
   MESA_JUNCTION_GMIN,
@@ -13,6 +14,12 @@ import {
 export class MESA implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  /**
+   * Transient gate charges qgs and qgd, advanced as ngspice mesaload.c does:
+   * q = q(n) + C(v) * (v - v(n)) and integrated with NIintegrate.
+   */
+  readonly integratesTransientCharge = true;
+  private readonly charges = new TransientChargeState(2);
 
   constructor(
     readonly name: string,
@@ -57,7 +64,39 @@ export class MESA implements DeviceModel {
     stampCapacitance(ctx, gate, source, point.capGS);
     stampCapacitance(ctx, gate, drain, point.capGD);
   }
+
+  stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
+    const [drain, gate, source] = this.nodes;
+    const { vgs, vgd, point } = this.evaluate(ctx);
+    const charges = this.charges;
+    charges.begin(integration);
+    const qgs = charges.incrementalCharge(GATE_SOURCE, vgs, point.capGS);
+    const qgd = charges.incrementalCharge(GATE_DRAIN, vgd, point.capGD);
+    stampChargeBranch(ctx, gate, source, charges.current(GATE_SOURCE, qgs), charges.factor * point.capGS, vgs);
+    stampChargeBranch(ctx, gate, drain, charges.current(GATE_DRAIN, qgd), charges.factor * point.capGD, vgd);
+  }
+
+  stampAcceptedChargeCurrent(ctx: StampContext): void {
+    const [drain, gate, source] = this.nodes;
+    stampChargeCurrent(ctx, gate, source, this.charges.acceptedChargeCurrent(GATE_SOURCE));
+    stampChargeCurrent(ctx, gate, drain, this.charges.acceptedChargeCurrent(GATE_DRAIN));
+  }
+
+  acceptTransientStep(ctx: StampContext): void {
+    const { vgs, vgd, point } = this.evaluate(ctx);
+    const charges = this.charges;
+    charges.accept(GATE_SOURCE, charges.incrementalCharge(GATE_SOURCE, vgs, point.capGS), vgs, point.capGS);
+    charges.accept(GATE_DRAIN, charges.incrementalCharge(GATE_DRAIN, vgd, point.capGD), vgd, point.capGD);
+    charges.commit();
+  }
+
+  resetTransient(): void {
+    this.charges.reset();
+  }
 }
+
+const GATE_SOURCE = 0;
+const GATE_DRAIN = 1;
 
 function voltage(ctx: StampContext, node: number): number {
   return node >= 0 ? ctx.getVoltage(node) : 0;

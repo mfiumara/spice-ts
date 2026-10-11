@@ -1,4 +1,5 @@
-import type { DeviceModel, StampContext } from './device.js';
+import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 
 export interface JFETParams {
   LEVEL: number;
@@ -76,6 +77,11 @@ export class JFET implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
   readonly params: JFETParams;
+  /** Gate charges qgd/qgs integrated as ngspice jfetload.c (NIintegrate) when CGD or CGS is set. */
+  readonly integratesTransientCharge: boolean;
+  readonly storesCharge: boolean;
+  private readonly charges = new TransientChargeState(2);
+  private readonly junction = { charge: 0, capacitance: 0 };
 
   constructor(
     readonly name: string,
@@ -83,6 +89,8 @@ export class JFET implements DeviceModel {
     params: Record<string, number>,
   ) {
     this.params = resolveNJFETParams(params);
+    this.storesCharge = this.params.CGS !== 0 || this.params.CGD !== 0;
+    this.integratesTransientCharge = this.storesCharge;
   }
 
   stamp(ctx: StampContext): void {
@@ -130,6 +138,86 @@ export class JFET implements DeviceModel {
     this.stampJunctionCapacitance(ctx, nG, nS, vG - vS, this.params.CGS);
   }
 
+  stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
+    const [nD, nG, nS] = this.nodes;
+    const charges = this.charges;
+    charges.begin(integration);
+    this.stampGateCharge(ctx, GATE_DRAIN, nG, nD, this.params.CGD);
+    this.stampGateCharge(ctx, GATE_SOURCE, nG, nS, this.params.CGS);
+  }
+
+  stampAcceptedChargeCurrent(ctx: StampContext): void {
+    const [nD, nG, nS] = this.nodes;
+    stampChargeCurrent(ctx, nG, nD, this.charges.acceptedChargeCurrent(GATE_DRAIN));
+    stampChargeCurrent(ctx, nG, nS, this.charges.acceptedChargeCurrent(GATE_SOURCE));
+  }
+
+  acceptTransientStep(ctx: StampContext): void {
+    if (!this.integratesTransientCharge) return;
+    const [nD, nG, nS] = this.nodes;
+    const vG = nG >= 0 ? ctx.getVoltage(nG) : 0;
+    const vGD = vG - (nD >= 0 ? ctx.getVoltage(nD) : 0);
+    const vGS = vG - (nS >= 0 ? ctx.getVoltage(nS) : 0);
+    this.gateJunctionCharge(vGD, this.params.CGD);
+    this.charges.accept(GATE_DRAIN, this.junction.charge);
+    this.gateJunctionCharge(vGS, this.params.CGS);
+    this.charges.accept(GATE_SOURCE, this.junction.charge);
+    this.charges.commit();
+  }
+
+  resetTransient(): void {
+    this.charges.reset();
+  }
+
+  private stampGateCharge(
+    ctx: StampContext,
+    index: number,
+    gate: number,
+    terminal: number,
+    zeroBiasCapacitance: number,
+  ): void {
+    if (zeroBiasCapacitance === 0) return;
+    const voltage = (gate >= 0 ? ctx.getVoltage(gate) : 0)
+      - (terminal >= 0 ? ctx.getVoltage(terminal) : 0);
+    const { charge, capacitance } = this.gateJunctionCharge(voltage, zeroBiasCapacitance);
+    const charges = this.charges;
+    stampChargeBranch(
+      ctx, gate, terminal, charges.current(index, charge), charges.factor * capacitance, voltage,
+    );
+  }
+
+  /**
+   * ngspice jfetload.c gate depletion charge and capacitance (grading 1/2,
+   * linear capacitance above FC*PB), written to a reused result object.
+   */
+  private gateJunctionCharge(
+    voltage: number,
+    zeroBiasCapacitance: number,
+  ): { charge: number; capacitance: number } {
+    const result = this.junction;
+    if (zeroBiasCapacitance === 0) {
+      result.charge = 0;
+      result.capacitance = 0;
+      return result;
+    }
+    const { PB, FC } = this.params;
+    const corner = FC * PB;
+    if (voltage < corner) {
+      const sarg = Math.sqrt(1 - voltage / PB);
+      result.charge = 2 * PB * zeroBiasCapacitance * (1 - sarg);
+      result.capacitance = zeroBiasCapacitance / sarg;
+      return result;
+    }
+    const f1 = 2 * PB * (1 - Math.sqrt(1 - FC));
+    const f2 = Math.pow(1 - FC, 1.5);
+    const f3 = 1 - 1.5 * FC;
+    const scaled = zeroBiasCapacitance / f2;
+    result.charge = zeroBiasCapacitance * f1
+      + scaled * (f3 * (voltage - corner) + (voltage * voltage - corner * corner) / (4 * PB));
+    result.capacitance = scaled * (f3 + voltage / (2 * PB));
+    return result;
+  }
+
   private stampGateJunction(
     ctx: StampContext,
     anode: number,
@@ -151,14 +239,13 @@ export class JFET implements DeviceModel {
     zeroBiasCapacitance: number,
   ): void {
     if (zeroBiasCapacitance === 0) return;
-    const { PB, FC } = this.params;
-    const capacitance = voltage < FC * PB
-      ? zeroBiasCapacitance / Math.sqrt(1 - voltage / PB)
-      : zeroBiasCapacitance / Math.sqrt(1 - FC)
-        * (1 + (voltage - FC * PB) / (2 * PB * (1 - FC)));
+    const { capacitance } = this.gateJunctionCharge(voltage, zeroBiasCapacitance);
     stampCapacitance(ctx, anode, cathode, capacitance);
   }
 }
+
+const GATE_DRAIN = 0;
+const GATE_SOURCE = 1;
 
 function channelCurrent(
   vGS: number,

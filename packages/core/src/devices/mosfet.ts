@@ -1,4 +1,5 @@
-import type { DeviceModel, StampContext } from './device.js';
+import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 
 export interface MOSFETParams {
   LEVEL: number;
@@ -97,6 +98,14 @@ function fetlim(vnew: number, vold: number, vto: number): number {
   return vtemp;
 }
 
+/** Terminal indices (D, G, S, B) of the G-D, G-S, B-D and B-S capacitances. */
+const CHARGE_BRANCHES: ReadonlyArray<readonly [number, number]> = [[1, 0], [1, 2], [3, 0], [3, 2]];
+
+function branchVoltage(ctx: StampContext, positive: number, negative: number): number {
+  return (positive >= 0 ? ctx.getVoltage(positive) : 0)
+    - (negative >= 0 ? ctx.getVoltage(negative) : 0);
+}
+
 export class MOSFET implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
@@ -110,6 +119,12 @@ export class MOSFET implements DeviceModel {
   /** Junction voltages used by the previous stamp (ngspice CKTstate0 vbs/vbd). */
   private lastVbs = 0;
   private lastVbd = 0;
+  /** Constant G-D, G-S, B-D and B-S capacitances (F), in {@link CHARGE_BRANCHES} order. */
+  private readonly capacitances: Float64Array;
+  /** Transient charges q = C*v of those capacitances, integrated by the device. */
+  readonly integratesTransientCharge: boolean;
+  readonly storesCharge: boolean;
+  private readonly charges = new TransientChargeState(4);
 
   constructor(
     readonly name: string,
@@ -140,6 +155,15 @@ export class MOSFET implements DeviceModel {
     this.sourceSatCur = useDensity ? saturationDensity * sourceArea : saturationCurrent;
     this.drainVcrit = criticalVoltage(this.drainSatCur);
     this.sourceVcrit = criticalVoltage(this.sourceSatCur);
+    const width = this.params.W;
+    this.capacitances = Float64Array.of(
+      (this.suppliedParams.CGDO ?? 0) * width,
+      (this.suppliedParams.CGSO ?? 0) * width,
+      this.suppliedParams.CBD ?? 0,
+      this.suppliedParams.CBS ?? 0,
+    );
+    this.storesCharge = this.capacitances.some(value => value !== 0);
+    this.integratesTransientCharge = this.storesCharge;
   }
 
   private get bulkNode(): number {
@@ -361,12 +385,50 @@ export class MOSFET implements DeviceModel {
   }
 
   stampDynamic(ctx: StampContext): void {
-    const [nD, nG, nS, nB] = this.nodes;
-    const width = this.params.W;
-    this.stampCapacitance(ctx, nG, nD, (this.suppliedParams.CGDO ?? 0) * width);
-    this.stampCapacitance(ctx, nG, nS, (this.suppliedParams.CGSO ?? 0) * width);
-    this.stampCapacitance(ctx, nB, nD, this.suppliedParams.CBD ?? 0);
-    this.stampCapacitance(ctx, nB, nS, this.suppliedParams.CBS ?? 0);
+    for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
+      const [positive, negative] = CHARGE_BRANCHES[index];
+      this.stampCapacitance(
+        ctx, this.nodes[positive], this.nodes[negative], this.capacitances[index],
+      );
+    }
+  }
+
+  stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
+    const charges = this.charges;
+    charges.begin(integration);
+    for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
+      const capacitance = this.capacitances[index];
+      if (capacitance === 0) continue;
+      const [p, n] = CHARGE_BRANCHES[index];
+      const positive = this.nodes[p];
+      const negative = this.nodes[n];
+      const voltage = branchVoltage(ctx, positive, negative);
+      stampChargeBranch(
+        ctx, positive, negative, charges.current(index, capacitance * voltage),
+        charges.factor * capacitance, voltage,
+      );
+    }
+  }
+
+  stampAcceptedChargeCurrent(ctx: StampContext): void {
+    for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
+      const [p, n] = CHARGE_BRANCHES[index];
+      stampChargeCurrent(ctx, this.nodes[p], this.nodes[n], this.charges.acceptedChargeCurrent(index));
+    }
+  }
+
+  acceptTransientStep(ctx: StampContext): void {
+    if (!this.integratesTransientCharge) return;
+    for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
+      const [p, n] = CHARGE_BRANCHES[index];
+      const voltage = branchVoltage(ctx, this.nodes[p], this.nodes[n]);
+      this.charges.accept(index, this.capacitances[index] * voltage);
+    }
+    this.charges.commit();
+  }
+
+  resetTransient(): void {
+    this.charges.reset();
   }
 
   stampAC(ctx: StampContext, _omega: number): void {
