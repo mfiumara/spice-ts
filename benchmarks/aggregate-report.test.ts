@@ -138,6 +138,12 @@ describe('aggregate report artifact verification', () => {
     assert.equal(mixer.ngspice.status, 'failed');
     const mos1Inverter = report.fixtures.find((fixture: { key: string }) => fixture.key === 'corpus-e/mos1-inverter-sweep');
     assert.ok(mos1Inverter.gapIssues.includes('https://github.com/mfiumara/spice-ts/issues/427'));
+    const spike = report.gapIssues.find((issue: { url: string }) => issue.url === 'https://github.com/mfiumara/spice-ts/issues/427');
+    assert.match(spike.scope, /closed by PR #436/);
+    const mos1Tran = mos1Inverter.comparisons.find((comparison: { analysis: string }) => comparison.analysis === 'tran');
+    assert.ok(mos1Tran.metrics.signals['i(vdd)'].absoluteError.max < 1e-4);
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #436') && text.includes('PR #437') && text.includes('PR #439')));
+    assert.ok(!report.comparisonToPrevious.metricTransitions.some((text: string) => /worst DC\/TRAN abs max still about 4\.35 V/.test(text)));
     const mesa = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/mesa-oscillator');
     assert.equal(mesa.spiceTs.status, 'success');
     assert.ok(mesa.gapIssues.includes('https://github.com/mfiumara/spice-ts/issues/432'));
@@ -166,8 +172,8 @@ describe('aggregate report artifact verification', () => {
     assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 906);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 31.65338535154384);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 8.272157976952819);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 318874896057.84845);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 6401850478.823812);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 349781933131.4126);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 6858037632.217204);
   });
 
   it('commits runtime sums derived from all 100 engine receipts', async () => {
