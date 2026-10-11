@@ -30,7 +30,7 @@
             "points": 34
           }
         ],
-        "runtimeMs": 17.542
+        "runtimeMs": 249.335
       },
       "spiceTs": {
         "status": "success",
@@ -41,7 +41,7 @@
             "points": 34
           }
         ],
-        "runtimeMs": 75.824
+        "runtimeMs": 177.779
       },
       "comparisons": [
         {
@@ -50,20 +50,20 @@
           "signals": {
             "i(vb)": {
               "samples": 34,
-              "maxAbsoluteError": 8.1348390581561e-06,
-              "rmsAbsoluteError": 1.3954053209800047e-06,
+              "maxAbsoluteError": 0.0000081348390581561,
+              "rmsAbsoluteError": 0.0000013954053209800047,
               "maxRelativeError": 1.8735584105902452
             },
             "i(vcc)": {
               "samples": 34,
-              "maxAbsoluteError": 7.716461483477143e-07,
-              "rmsAbsoluteError": 1.3236385053578986e-07,
+              "maxAbsoluteError": 7.716461483477143e-7,
+              "rmsAbsoluteError": 1.3236385053578986e-7,
               "maxRelativeError": 0.002683533696993111
             },
             "i(vsub)": {
               "samples": 34,
-              "maxAbsoluteError": 8.146617745690314e-06,
-              "rmsAbsoluteError": 1.3974257716110559e-06,
+              "maxAbsoluteError": 0.000008146617745690314,
+              "rmsAbsoluteError": 0.0000013974257716110559,
               "maxRelativeError": 1
             },
             "v(1)": {
@@ -112,7 +112,7 @@
             "points": 51
           }
         ],
-        "runtimeMs": 16.04
+        "runtimeMs": 35.226
       },
       "spiceTs": {
         "status": "success",
@@ -123,7 +123,7 @@
             "points": 51
           }
         ],
-        "runtimeMs": 11.815
+        "runtimeMs": 75.673
       },
       "comparisons": [
         {
@@ -132,8 +132,8 @@
           "signals": {
             "i(vcc)": {
               "samples": 51,
-              "maxAbsoluteError": 2.4601837041661933e-06,
-              "rmsAbsoluteError": 9.451969557995881e-07,
+              "maxAbsoluteError": 0.0000024601837041661933,
+              "rmsAbsoluteError": 9.451969557995881e-7,
               "maxRelativeError": 0.014049036696632527
             },
             "i(vmeas)": {
@@ -157,7 +157,7 @@
             "v(2)": {
               "samples": 51,
               "maxAbsoluteError": 0.00015902268291336942,
-              "rmsAbsoluteError": 8.947564462604575e-05,
+              "rmsAbsoluteError": 0.00008947564462604575,
               "maxRelativeError": 0.13600362254054438
             },
             "v(3)": {
@@ -169,7 +169,7 @@
             "v(4)": {
               "samples": 51,
               "maxAbsoluteError": 0.00015902268829843058,
-              "rmsAbsoluteError": 8.947562970468906e-05,
+              "rmsAbsoluteError": 0.00008947562970468906,
               "maxRelativeError": 0.13600362248263334
             },
             "v(5)": {
@@ -206,7 +206,7 @@
             "points": 41
           }
         ],
-        "runtimeMs": 16.498
+        "runtimeMs": 84.566
       },
       "spiceTs": {
         "status": "success",
@@ -217,7 +217,7 @@
             "points": 41
           }
         ],
-        "runtimeMs": 13.194
+        "runtimeMs": 29.794
       },
       "comparisons": [
         {
@@ -288,7 +288,7 @@
             "points": 707
           }
         ],
-        "runtimeMs": 21.675
+        "runtimeMs": 43.052
       },
       "spiceTs": {
         "status": "success",
@@ -299,7 +299,7 @@
             "points": 707
           }
         ],
-        "runtimeMs": 298.138
+        "runtimeMs": 434.657
       },
       "comparisons": [
         {
@@ -308,20 +308,20 @@
           "signals": {
             "i(v1)": {
               "samples": 700,
-              "maxAbsoluteError": 3.7715827023027115e-06,
-              "rmsAbsoluteError": 2.2510097844284378e-07,
+              "maxAbsoluteError": 0.0000037715827023027115,
+              "rmsAbsoluteError": 2.2510097844284378e-7,
               "maxRelativeError": 0.0012397081219976216
             },
             "i(vb)": {
               "samples": 700,
-              "maxAbsoluteError": 3.7715827023027115e-06,
-              "rmsAbsoluteError": 2.2510097844284378e-07,
+              "maxAbsoluteError": 0.0000037715827023027115,
+              "rmsAbsoluteError": 2.2510097844284378e-7,
               "maxRelativeError": 0.0012397081219976216
             },
             "i(vc)": {
               "samples": 700,
-              "maxAbsoluteError": 6.71477496218785e-06,
-              "rmsAbsoluteError": 2.894371479735615e-07,
+              "maxAbsoluteError": 0.00000671477496218785,
+              "rmsAbsoluteError": 2.894371479735615e-7,
               "maxRelativeError": 0.0006405032259847643
             },
             "v(q1_c)": {
@@ -368,7 +368,7 @@
             "points": 1
           }
         ],
-        "runtimeMs": 29.063
+        "runtimeMs": 35.07
       },
       "spiceTs": {
         "status": "success",
@@ -383,7 +383,7 @@
             "points": 1
           }
         ],
-        "runtimeMs": 30.711
+        "runtimeMs": 32.146
       },
       "comparisons": [
         {
@@ -392,39 +392,39 @@
           "signals": {
             "i(vcc)": {
               "samples": 500,
-              "maxAbsoluteError": 7.363529266660746e-08,
-              "rmsAbsoluteError": 1.5543531023700263e-08,
-              "maxRelativeError": 1.6190931095986222e-07
+              "maxAbsoluteError": 7.363529266660746e-8,
+              "rmsAbsoluteError": 1.5543531023700263e-8,
+              "maxRelativeError": 1.6190931095986222e-7
             },
             "i(vmeas)": {
               "samples": 500,
-              "maxAbsoluteError": 4.630516849217327e-06,
-              "rmsAbsoluteError": 3.5964570520284504e-06,
-              "maxRelativeError": 1.0751810045018762e-07
+              "maxAbsoluteError": 0.000004630516849217327,
+              "rmsAbsoluteError": 0.0000035964570520284504,
+              "maxRelativeError": 1.0751810045018762e-7
             },
             "v(1)": {
               "samples": 500,
               "maxAbsoluteError": 0.00018391271691357928,
               "rmsAbsoluteError": 0.00014321275488736175,
-              "maxRelativeError": 1.6776746723280057e-07
+              "maxRelativeError": 1.6776746723280057e-7
             },
             "v(2)": {
               "samples": 500,
-              "maxAbsoluteError": 7.364821306272488e-05,
-              "rmsAbsoluteError": 1.553030810775828e-05,
-              "maxRelativeError": 1.0751824877096412e-07
+              "maxAbsoluteError": 0.00007364821306272488,
+              "rmsAbsoluteError": 0.00001553030810775828,
+              "maxRelativeError": 1.0751824877096412e-7
             },
             "v(3)": {
               "samples": 500,
-              "maxAbsoluteError": 1.0317812581679068e-09,
+              "maxAbsoluteError": 1.0317812581679068e-9,
               "rmsAbsoluteError": 2.407875297925157e-10,
               "maxRelativeError": null
             },
             "v(4)": {
               "samples": 500,
-              "maxAbsoluteError": 7.364821154438375e-05,
-              "rmsAbsoluteError": 1.5530308158203848e-05,
-              "maxRelativeError": 1.0751810090733276e-07
+              "maxAbsoluteError": 0.00007364821154438375,
+              "rmsAbsoluteError": 0.000015530308158203848,
+              "maxRelativeError": 1.0751810090733276e-7
             }
           }
         },
@@ -434,27 +434,81 @@
           "signals": {
             "v(pole(1))": {
               "samples": 1,
-              "maxAbsoluteError": 1143866306323.989,
-              "rmsAbsoluteError": 1143866306323.989,
-              "maxRelativeError": 0.9783823944799271
+              "maxAbsoluteError": 13002.781982421875,
+              "rmsAbsoluteError": 13002.781982421875,
+              "maxRelativeError": 1.1121660722524222e-8
             },
             "v(pole(2))": {
               "samples": 1,
-              "maxAbsoluteError": 541165275506.06055,
-              "rmsAbsoluteError": 541165275506.06055,
-              "maxRelativeError": 0.9980533295801028
+              "maxAbsoluteError": 5426.4847412109375,
+              "rmsAbsoluteError": 5426.4847412109375,
+              "maxRelativeError": 1.0007887440332534e-8
             },
             "v(pole(3))": {
               "samples": 1,
-              "maxAbsoluteError": 86524057643.3095,
-              "rmsAbsoluteError": 86524057643.3095,
-              "maxRelativeError": 0.9999998197767744
+              "maxAbsoluteError": 108.90575388010222,
+              "rmsAbsoluteError": 108.90575388010222,
+              "maxRelativeError": 1.2586757627770264e-9
+            },
+            "v(pole(4))": {
+              "samples": 1,
+              "maxAbsoluteError": 108.90575388010222,
+              "rmsAbsoluteError": 108.90575388010222,
+              "maxRelativeError": 1.2586757627770264e-9
+            },
+            "v(pole(5))": {
+              "samples": 1,
+              "maxAbsoluteError": 350.04598236083984,
+              "rmsAbsoluteError": 350.04598236083984,
+              "maxRelativeError": 5.9128796693564336e-9
+            },
+            "v(pole(6))": {
+              "samples": 1,
+              "maxAbsoluteError": 126.48632144927979,
+              "rmsAbsoluteError": 126.48632144927979,
+              "maxRelativeError": 1.199105918316337e-7
+            },
+            "v(pole(7))": {
+              "samples": 1,
+              "maxAbsoluteError": 0.0007022059326118324,
+              "rmsAbsoluteError": 0.0007022059326118324,
+              "maxRelativeError": 3.7712878511081736e-8
             },
             "v(zero(1))": {
               "samples": 1,
-              "maxAbsoluteError": 1251172988128.5068,
-              "rmsAbsoluteError": 1251172988128.5068,
-              "maxRelativeError": 0.9474983414857449
+              "maxAbsoluteError": 13716.60302734375,
+              "rmsAbsoluteError": 13716.60302734375,
+              "maxRelativeError": 1.0387419439630434e-8
+            },
+            "v(zero(2))": {
+              "samples": 1,
+              "maxAbsoluteError": 569.0274047851562,
+              "rmsAbsoluteError": 569.0274047851562,
+              "maxRelativeError": 1.9027618736315156e-9
+            },
+            "v(zero(3))": {
+              "samples": 1,
+              "maxAbsoluteError": 2262.017649642839,
+              "rmsAbsoluteError": 2262.017649642839,
+              "maxRelativeError": 1.2592676760077003e-8
+            },
+            "v(zero(4))": {
+              "samples": 1,
+              "maxAbsoluteError": 2262.017649642839,
+              "rmsAbsoluteError": 2262.017649642839,
+              "maxRelativeError": 1.2592676760077003e-8
+            },
+            "v(zero(5))": {
+              "samples": 1,
+              "maxAbsoluteError": 451.3279571533203,
+              "rmsAbsoluteError": 451.3279571533203,
+              "maxRelativeError": 6.969818173646622e-9
+            },
+            "v(zero(6))": {
+              "samples": 1,
+              "maxAbsoluteError": 1805.729965209961,
+              "rmsAbsoluteError": 1805.729965209961,
+              "maxRelativeError": 1.911397167844757e-8
             }
           }
         }

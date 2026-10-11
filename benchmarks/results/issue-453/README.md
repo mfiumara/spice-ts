@@ -1,6 +1,6 @@
 # Issue #453: bounded VBIC non-ground substrate terminal
 
-Receipts: `report.json` (this branch) and `before.json` (origin/main `4ed111e`, same verifier and fixtures).
+Receipts: `report.json` (this branch, merged with origin/main `6bae695`) and `before.json` (origin/main `6bae695`, same verifier and fixtures).
 Regenerate with `pnpm -C packages/core build && npx tsx benchmarks/results/issue-453/verify.ts --output benchmarks/results/issue-453/report.json`; check with `--check`.
 Machine: Apple Silicon macOS, Node 22, Homebrew ngspice-47. Both engines receive the same committed netlist bytes, and metrics come from the aggregate's own `compareExecutions` (spice-ts grid, linear interpolation, no per-circuit tolerance).
 
@@ -25,9 +25,9 @@ Machine: Apple Silicon macOS, Node 22, Homebrew ngspice-47. Both engines receive
 | aggregate row vbic-fo `i(vb)` | 3.7715827e-6 A (1.240e-3) | 3.7715832e-6 A (9.29e-4) |
 | aggregate row vbic-fo `i(vc)` | 6.7147750e-6 A (6.40503226e-4) | 6.7147755e-6 A (6.40503273e-4) |
 | aggregate row vbic-common-emitter-ac `i(vmeas)` | 4.631e-6 (1.08e-7) | 2.873e-6 (6.7e-8) |
-| aggregate row vbic-common-emitter-ac `.pz` | pole(1) rel 0.978 | pole(1) rel 0.978 (unchanged; #451 lane) |
+| aggregate row vbic-common-emitter-ac `.pz` (7 poles, 6 zeros, after #466) | worst rel 1.20e-7 (pole(6)); pole(1) 1.11e-8 | worst rel 7.6e-8 (pole(6)); pole(1) 6.1e-9 |
 
-On the vbic-fo row, the max absolute errors for `i(vb)` and `i(vc)` rise by 4.9e-13 A. That is 1.3e-7 of the error itself. The `i(vc)` max relative error rises by 4.7e-11, and the `i(vb)` max relative error falls from 1.24e-3 to 9.29e-4. Every vbic-common-emitter-ac AC signal improves. The `.pz` comparison does not change; pole/zero parity belongs to #451.
+On the vbic-fo row, the max absolute errors for `i(vb)` and `i(vc)` rise by 4.9e-13 A. That is 1.3e-7 of the error itself. The `i(vc)` max relative error rises by 4.7e-11, and the `i(vb)` max relative error falls from 1.24e-3 to 9.29e-4. Every vbic-common-emitter-ac AC signal and all 13 pole/zero errors improve.
 
 ## Retained loss
 
