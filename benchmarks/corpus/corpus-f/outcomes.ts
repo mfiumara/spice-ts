@@ -524,11 +524,15 @@ async function main(): Promise<void> {
   const report = await buildReport(manifest, jobs);
   if (check) {
     const committed = JSON.parse(await readFile(JSON_PATH, 'utf8')) as CorpusFReport;
+    // Compare fixtures through the hashed view, so ngspice's run-to-run point counts are not listed.
+    const hashed = (fixture: unknown): string => JSON.stringify(deterministicView({ fixtures: [fixture] } as unknown as CorpusFReport));
     const differing = report.fixtures
-      .filter((fixture, index) => JSON.stringify(fixture) !== JSON.stringify(committed.fixtures[index]))
+      .filter((fixture, index) => hashed(fixture) !== hashed(committed.fixtures[index]))
       .map(fixture => fixture.id);
     if (committed.outcomeSha256 !== report.outcomeSha256) {
-      throw new Error(`corpus-f outcome differs: committed ${committed.outcomeSha256}, regenerated ${report.outcomeSha256}; fixtures: ${differing.join(', ') || 'none'}`);
+      const regenerated = resolve(tmpdir(), `corpus-f-outcomes-check-${process.pid}.json`);
+      await writeFile(regenerated, stableReport(report));
+      throw new Error(`corpus-f outcome differs: committed ${committed.outcomeSha256}, regenerated ${report.outcomeSha256} (written to ${regenerated}); fixtures: ${differing.join(', ') || 'none (report-level fields differ)'}`);
     }
     if (await readFile(MARKDOWN_PATH, 'utf8') !== renderMarkdown(committed)) {
       throw new Error('corpus-f README.md differs from the committed report.json');
