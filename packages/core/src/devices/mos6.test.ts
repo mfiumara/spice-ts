@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { simulate } from '../simulate.js';
+import { createTransientSim } from '../analysis/transient-driver.js';
 
 /**
  * Issue #447: MOSFET level 6 (Sakurai-Newton n-th power law) used to fall back
@@ -125,6 +126,51 @@ M1 d g 0 b N6X L=2u W=10u
       if ((current[index] - current[index - 1]) * (current[index - 1] - current[index - 2]) < 0) reversals++;
     }
     expect(reversals).toBeLessThan(0.3 * current.length);
+  });
+
+  // mos6load.c integrates the exact bulk-junction depletion charges qbs/qbd,
+  // continued above FC*PB by f2/f3/f4. Here the bulk is driven through 100k to
+  // 0.71 V, past FC*PB = 0.5 V, with junction caps from AD/AS/PD/PS. Deck:
+  // benchmarks/results/issue-468/ngspice/mos6-bulk-junction.cir.
+  it('integrates the bulk junction charges across FC*PB like ngspice-47', async () => {
+    const deck = readFileSync(
+      new URL('../../../../benchmarks/results/issue-468/ngspice/mos6-bulk-junction.cir', import.meta.url),
+      'utf8',
+    );
+    // ngspice-47 v(b) every 2 ns of its `linearize`d output on the identical deck.
+    const reference = [
+      -2.9999992, -1.82003696, -0.434823285, 0.187987181, 0.48450271, 0.632190231,
+      0.697707703, 0.710408136, 0.71143711, 0.71150613, 0.711510689, 0.71151099,
+      0.71151101, 0.711511011, 0.711511011, 0.711511011, 0.711511011, 0.711511011,
+      0.711511011, 0.711511011, 0.711511011, 0.711511011, -0.288112369, -1.72445555,
+      -2.42136188, -2.74089037, -2.88459034, -2.94871319, -2.97723134, -2.98989614,
+      -2.99551692, -2.99801079, -2.99911714, -2.99960793, -2.99982564, -2.99992221,
+      -2.99996505, -2.99998405, -2.99999248, -2.99999622, -2.99999788, -2.99999861,
+      -2.99999894, -2.99999908, -2.99999915, -2.99999918, -2.99999919, -2.9999992,
+      -2.9999992, -2.9999992, -2.9999992,
+    ];
+    const result = await simulate(deck);
+    const transient = result.transient!;
+    const bulk = transient.voltage('b');
+    let worst = 0;
+    reference.forEach((expected, index) => {
+      worst = Math.max(worst, Math.abs(interpolate(transient.time, bulk, index * 2e-9) - expected));
+    });
+    // 17.2 mV at these points with the generic C(v) history (main 0f50fb1).
+    expect(worst).toBeLessThan(3e-3);
+  });
+
+  it('replays the identical MOS6 trajectory after a transient reset', async () => {
+    const sim = await createTransientSim(SIMPLE_INVERTER);
+    const first = sim.advanceUntil(80e-9);
+    sim.reset();
+    const second = sim.advanceUntil(80e-9);
+    expect(second.length).toBe(first.length);
+    for (let index = 0; index < first.length; index++) {
+      expect(second[index].time).toBe(first[index].time);
+      expect(second[index].voltages.get('11')).toBe(first[index].voltages.get('11'));
+    }
+    sim.dispose();
   });
 
   it('rejects unsupported level-6 series resistances instead of ignoring them', async () => {

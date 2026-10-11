@@ -89,3 +89,15 @@ part of this card).
 
 No tolerance was loosened and no per-circuit setting was changed. Fixture bytes are
 unchanged (SHA-256 checked in `verify.ts`).
+
+### Bulk junction charge (project deck `ngspice/mos6-bulk-junction.cir`)
+
+None of the corpus MOS6 decks give their transistors junction areas, so their qbs/qbd are
+zero. This deck drives the bulk through 100k to 0.71 V, past FC*PB = 0.5 V, with
+AD/AS/PD/PS set (`diag.ts <deck> ".tran 0.1n 100n" "v(b),i(vd),i(vb)"`, identical bytes):
+v(b) abs max goes from 26.6 mV to 0.58 mV against ngspice-47 (RMS from 4.18 mV to
+0.11 mV). `mos6.test.ts` guards it at 3 mV over 2 ns samples: 17.2 mV on main.
+
+AC observation (unchanged by this PR): on a single biased level-6 device, ngspice-47
+prints i(vg) = i(vd) = 0 for `.ac`. spice-ts gives |i(vg)| = 124 nA (gate caps) and
+|i(vd)| = 440 uA (gm) at 1 MHz.
