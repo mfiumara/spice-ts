@@ -81,6 +81,12 @@ export interface DeviceModel {
    */
   readonly storesCharge?: boolean;
   /**
+   * Non-fatal model-card diagnostics found while building the device, such as
+   * a parameter ngspice-47 warns about and ignores. Surfaced as `'model'`
+   * simulation warnings.
+   */
+  readonly modelWarnings?: readonly string[];
+  /**
    * True when the device integrates its own nonlinear charge in transient
    * analysis (ngspice NIintegrate on q(v)) through {@link stampTransientCharge}
    * instead of stamping C(v) via {@link stampDynamic}. `stampDynamic` is then

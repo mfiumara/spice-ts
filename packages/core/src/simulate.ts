@@ -417,6 +417,11 @@ function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[
   if (compiled.steps.length > 0 && compiled.analyses.some(analysis => analysis.type === 'disto')) {
     throw new InvalidCircuitError('.step cannot be combined with .disto');
   }
+  for (const device of compiled.devices) {
+    for (const message of device.modelWarnings ?? []) {
+      warnings.push({ type: 'model', message });
+    }
+  }
 }
 
 function transientInitialSolution(

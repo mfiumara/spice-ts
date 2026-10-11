@@ -13,7 +13,7 @@ export interface DiodeParams {
    * PSpice/Xyce relative coefficient: BV(T) = BV * (1 + TBV1*dT + TBV2*dT^2).
    */
   TBV1: number;
-  /** PSpice/Xyce second-order coefficient, accepted only with LEVEL=2. */
+  /** PSpice/Xyce second-order coefficient; ignored with a warning outside LEVEL=2. */
   TBV2: number;
   /**
    * Breakdown emission coefficient (alias NZ). Defaults to N like ngspice-47;
@@ -92,15 +92,12 @@ const UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS = new Set([
   'IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2',
 ]);
 /**
- * Fields whose meaning depends on the breakdown law. ngspice-47 has no TBV2
- * (it warns and ignores it) and its TBV1 is TCV, so a PSpice quadratic
- * coefficient is rejected rather than silently dropped. The LEVEL=2 PSpice
- * slice keeps NBV = 1 and has no ngspice TCV.
+ * Fields the LEVEL=2 PSpice breakdown law cannot honour: it keeps NBV = 1 and
+ * has no ngspice TCV. (TBV2 outside LEVEL=2 is warned about and ignored, like
+ * ngspice-47; see {@link Diode.modelWarnings}.)
  */
 const LAW_SPECIFIC_UNSUPPORTED: Readonly<Record<'ngspice' | 'pspice', ReadonlyMap<string, string>>> = {
-  ngspice: new Map([
-    ['TBV2', 'ngspice-47 has no TBV2; LEVEL=2 selects the PSpice TBV1/TBV2 law'],
-  ]),
+  ngspice: new Map(),
   pspice: new Map([
     ['NBV', 'the LEVEL=2 PSpice breakdown law uses NBV=1'],
     ['TCV', 'TCV is the ngspice-47 linear coefficient; LEVEL=2 uses TBV1/TBV2'],
@@ -178,6 +175,7 @@ export class Diode implements DeviceModel {
   readonly integratesTransientCharge: boolean;
   readonly params: DiodeParams;
   readonly suppliedParams: Readonly<Partial<DiodeParams>>;
+  readonly modelWarnings: readonly string[];
   private temperature = 27;
   /** Limited junction voltage of the last stamp (ngspice CKTstate0 DIOvoltage). */
   private previousJunctionVoltage: number | undefined;
@@ -230,6 +228,17 @@ export class Diode implements DeviceModel {
       }
     }
     const params = canonicalDiodeModelParams(name, modelParams);
+    const warnings: string[] = [];
+    if (!pspiceBreakdownLaw && params.TBV2 !== undefined) {
+      // ngspice-47 dio.c has no tbv2 (only tbv1, an alias of tcv, at dio.c:121),
+      // so inpgmod.c:186-189 reports "unrecognized parameter (tbv2) - ignored"
+      // and simulates without it. Only the LEVEL=2 PSpice law applies TBV2.
+      warnings.push(
+        `Diode ${name}: unrecognized parameter (tbv2) - ignored; ngspice-47 has no TBV2, `
+          + 'only LEVEL=2 applies the PSpice TBV1/TBV2 law',
+      );
+    }
+    this.modelWarnings = warnings;
     this.suppliedParams = params;
     const effectiveArea = (instanceParams.AREA ?? 1) * (instanceParams.M ?? 1);
     const effectivePerimeter = (instanceParams.PJ ?? 0) * (instanceParams.M ?? 1);
@@ -240,7 +249,7 @@ export class Diode implements DeviceModel {
       BV: params.BV ?? Infinity,
       IBV: params.IBV ?? 1e-3,
       TBV1: params.TBV1 ?? 0,
-      TBV2: params.TBV2 ?? 0,
+      TBV2: pspiceBreakdownLaw ? params.TBV2 ?? 0 : 0,
       // ngspice-47 diosetup.c:131-133: NBV defaults to the emission coefficient N.
       NBV: pspiceBreakdownLaw ? 1 : params.NBV ?? params.N ?? 1,
       LEVEL: params.LEVEL,

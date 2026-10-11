@@ -133,7 +133,7 @@ describe('Diode', () => {
     expect(diode.params.BV).toBe(7.255);
   });
 
-  it.each(['IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2', 'TBV2'])(
+  it.each(['IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2'])(
     'rejects unsupported level-2 breakdown field %s explicitly',
     (parameter) => {
       expect(() => parse(`unsupported diode level-2 field
@@ -145,6 +145,17 @@ describe('Diode', () => {
       );
     },
   );
+
+  it('ignores TBV2 with a model warning outside LEVEL=2, like ngspice-47', () => {
+    const diode = new Diode('D1', [0, -1], { BV: 7.255, IBV: 1e-3, TBV1: 0.00013, TBV2: 1 });
+    expect(diode.params.TBV2).toBe(0);
+    expect(diode.modelWarnings).toEqual([
+      expect.stringContaining('unrecognized parameter (tbv2) - ignored'),
+    ]);
+    const level2 = new Diode('D2', [0, -1], { LEVEL: 2, BV: 7.255, IBV: 1e-3, TBV2: 1 });
+    expect(level2.params.TBV2).toBe(1);
+    expect(level2.modelWarnings).toEqual([]);
+  });
 
   it('scales model parameters by instance area, perimeter, and multiplier', () => {
     const diode = new Diode('D1', [0, -1], {

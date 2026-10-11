@@ -312,14 +312,28 @@ describe('diode TBV1 is ngspice-47 TCV: BV(T) = BV - TCV*(T-TNOM) (#429)', () =>
     );
   });
 
-  it('rejects TBV2, which ngspice-47 does not have, outside LEVEL=2', () => {
-    // ngspice-47 warns "unrecognized parameter (tbv2) - ignored"; silently
-    // dropping a PSpice quadratic coefficient would hide the law change.
-    expect(() => parse(`unsupported diode TBV2
-      D1 out 0 DM
-      .model DM D(BV=5 TBV1=0.01 TBV2=1e-4)
+  it('warns about and ignores TBV2 outside LEVEL=2 like ngspice-47', async () => {
+    // ngspice-47 dio.c has no tbv2, so inpgmod.c:186-189 reports
+    // "unrecognized parameter (tbv2) - ignored" and simulates without it.
+    const deck = (tbv2: string) => `ignored diode TBV2
+      V1 in 0 DC -10
+      R1 in out 1k
+      D1 out 0 DZ
+      .model DZ D IS=1e-14 BV=5 IBV=1m TBV1=0.01 TNOM=-18 ${tbv2}
+      .options reltol=1e-7 abstol=1e-15 vntol=1e-9
       .op
-    `).compile()).toThrow("'TBV2'; ngspice-47 has no TBV2; LEVEL=2 selects the PSpice TBV1/TBV2 law");
+      .end
+    `;
+    const withTbv2 = await simulate(deck('TBV2=1e-4'));
+    const without = await simulate(deck(''));
+    // ngspice-47 gives -4.593649099182 for this deck with or without TBV2.
+    expectNear(withTbv2.dc!.voltage('out'), -4.593649099182, NGSPICE_BREAKDOWN_RESIDUAL);
+    expect(withTbv2.dc!.voltage('out')).toBe(without.dc!.voltage('out'));
+    expect(withTbv2.warnings).toContainEqual({
+      type: 'model',
+      message: expect.stringContaining('unrecognized parameter (tbv2) - ignored'),
+    });
+    expect(without.warnings.some(warning => warning.type === 'model')).toBe(false);
   });
 
   it('keeps the PSpice TBV1 law under LEVEL=2, which ngspice-47 rejects', async () => {
