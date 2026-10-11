@@ -798,7 +798,7 @@ async function boundedRequestPlan(request: SimulationRequestV1, limits: McpLimit
 
   const plan = await requestPlan(request);
   enforceMaximum('maxAnalyses', limits.maxAnalyses, plan.analyses.length, 'validation');
-  enforceMaximum('maxResultPoints', limits.maxResultPoints, estimatedResultPoints(plan), 'validation');
+  enforceMaximum('maxResultPoints', limits.maxResultPoints, estimatedResultPoints(request, plan), 'validation');
   return plan;
 }
 

@@ -11,6 +11,7 @@ import { VoltageSource } from '../devices/voltage-source.js';
 import { InvalidCircuitError } from '../errors.js';
 import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
 import { NoiseResult } from '../results.js';
+import { frequencyGrid } from './frequency-grid.js';
 import { toCsc } from '../solver/csc-matrix.js';
 import { ComplexSparseSolver } from '../solver/complex-sparse-solver.js';
 import type { NoiseAnalysis, ResolvedOptions } from '../types.js';
@@ -248,7 +249,7 @@ export function solveNoise(
     });
   const noiseSources = [...resistorSources, ...mosfetSources, ...bjtSources];
 
-  const frequencies = generateFrequencies(analysis, options.reltol);
+  const frequencies = frequencyGrid(analysis, options.reltol, 'noise');
   const hasIntegratedTotals = analysis.stopFreq > analysis.startFreq;
   const outputNoiseDensity: number[] = [];
   const inputNoiseDensity: number[] = [];
@@ -366,30 +367,6 @@ function differentialMagnitudeSquared(
   const imaginaryDifference = (positive < 0 ? 0 : imaginary[positive])
     - (negative < 0 ? 0 : imaginary[negative]);
   return realDifference * realDifference + imaginaryDifference * imaginaryDifference;
-}
-
-function generateFrequencies(analysis: NoiseAnalysis, relativeTolerance: number): number[] {
-  if (analysis.variation === 'lin') {
-    const step = (analysis.stopFreq - analysis.startFreq) / (analysis.points - 1);
-    return Array.from(
-      { length: analysis.points },
-      (_, index) => index === analysis.points - 1
-        ? analysis.stopFreq
-        : analysis.startFreq + index * step,
-    );
-  }
-
-  const base = analysis.variation === 'dec' ? 10 : 2;
-  const frequencyRatio = Math.pow(base, 1 / analysis.points);
-  const ngspiceStopTolerance = frequencyRatio * analysis.stopFreq * relativeTolerance;
-  const toleratedSpan = analysis.variation === 'dec'
-    ? Math.log10((analysis.stopFreq + ngspiceStopTolerance) / analysis.startFreq)
-    : Math.log2((analysis.stopFreq + ngspiceStopTolerance) / analysis.startFreq);
-  const intervalCount = Math.floor(toleratedSpan * analysis.points + 1e-12);
-  return Array.from(
-    { length: intervalCount + 1 },
-    (_, index) => analysis.startFreq * Math.pow(base, index / analysis.points),
-  );
 }
 
 function sumIntegratedOutputPower(frequencies: number[], sources: number[][]): number {

@@ -1,0 +1,23 @@
+mesinv dc transfer
+.subckt mesinv 10 20 3
+rdl 10 1 20
+bl1 1 2 i=0.00025*tanh(v(1,2)/0.00025/2240)*(1+v(1,2)*0.027)
+rsl 2 3 20
+zd 3 20 0 driver l=0.7u w=20u
+ci 3 0 20f
+.ends mesinv
+.model driver nmf level=2 n=1.44 rd=20 rs=20 vs=1.9e5
++ mu=0.25 d=1e-7 vto=0.15 m=2 lambda=0.15 sigma0=0.02
++ vsigmat=0.5
+vdd 1 0 dc 1.6
+vin 2 0 dc 0.4
+x1 1 2 3 mesinv
+.control
+foreach vv 0 0.2 0.3 0.4 0.6
+alter vin dc = $vv
+op
+echo REF $vv
+print v(3) i(vdd) i(vin)
+end
+.endc
+.end

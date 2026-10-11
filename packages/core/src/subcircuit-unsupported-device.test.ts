@@ -1,57 +1,51 @@
-import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ParseError } from './errors.js';
 import { simulate, simulateStream } from './simulate.js';
 
-const ngspiceFixtureRoot = new URL('../../../benchmarks/corpus/ngspice/fixtures/', import.meta.url);
-
-const fixtures = [
-  {
-    path: 'tests/mesa/mesosc.cir',
-    sha256: '3cd4609cca7874775b7b2cac8cd0124bd2b8c5512064a0550a29de2da4896bcf',
-    card: 'B',
-  },
-] as const;
+// ngspice/mesa-oscillator (B + Z NMF cards) is now supported; see
+// mesa-behavioral-integration.test.ts. Keep the guard that an unsupported
+// card inside a subcircuit is rejected explicitly instead of being dropped
+// and later reported as a singular matrix.
+const netlist = [
+  'unsupported XSPICE card in a subcircuit',
+  '.subckt digital in out',
+  'a1 in out buf',
+  'r1 in out 1k',
+  '.ends',
+  '.model buf d_buffer',
+  'v1 1 0 dc 1',
+  'x1 1 2 digital',
+  'r2 2 0 1k',
+  '.op',
+  '.end',
+].join('\n');
 
 describe('unsupported devices inside subcircuits', () => {
-  it.each(fixtures)(
-    'rejects the first unsupported card in unchanged $path instead of reaching a singular solve',
-    async ({ path, sha256, card }) => {
-      const bytes = readFileSync(new URL(path, ngspiceFixtureRoot));
-      expect(createHash('sha256').update(bytes).digest('hex')).toBe(sha256);
+  it('rejects the first unsupported card instead of reaching a singular solve', async () => {
+    let error: unknown;
+    try {
+      await simulate(netlist);
+    } catch (caught) {
+      error = caught;
+    }
 
-      let error: unknown;
-      try {
-        await simulate(bytes.toString('utf8'));
-      } catch (caught) {
-        error = caught;
+    expect(error).toBeInstanceOf(ParseError);
+    expect((error as Error).message).toContain("Unsupported device card: 'A'");
+    expect((error as Error).message).not.toContain('Singular matrix');
+  });
+
+  it('reports the same unsupported boundary through streaming', async () => {
+    let error: unknown;
+    try {
+      for await (const _point of simulateStream(netlist)) {
+        // The unsupported card is rejected while compiling, before points exist.
       }
+    } catch (caught) {
+      error = caught;
+    }
 
-      expect(error).toBeInstanceOf(ParseError);
-      expect((error as Error).message).toContain(`Unsupported device card: '${card}'`);
-      expect((error as Error).message).not.toContain('Singular matrix');
-    },
-  );
-
-  it.each(fixtures)(
-    'reports the same unsupported $card boundary through streaming for unchanged $path',
-    async ({ path, sha256, card }) => {
-      const bytes = readFileSync(new URL(path, ngspiceFixtureRoot));
-      expect(createHash('sha256').update(bytes).digest('hex')).toBe(sha256);
-
-      let error: unknown;
-      try {
-        for await (const _point of simulateStream(bytes.toString('utf8'))) {
-          // The unsupported card is rejected while compiling, before points exist.
-        }
-      } catch (caught) {
-        error = caught;
-      }
-
-      expect(error).toBeInstanceOf(ParseError);
-      expect((error as Error).message).toContain(`Unsupported device card: '${card}'`);
-      expect((error as Error).message).not.toContain('Singular matrix');
-    },
-  );
+    expect(error).toBeInstanceOf(ParseError);
+    expect((error as Error).message).toContain("Unsupported device card: 'A'");
+    expect((error as Error).message).not.toContain('Singular matrix');
+  });
 });

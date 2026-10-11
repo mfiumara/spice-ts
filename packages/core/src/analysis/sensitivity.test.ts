@@ -3,6 +3,7 @@ import { Circuit } from '../circuit.js';
 import { InvalidCircuitError, ParseError } from '../errors.js';
 import { parse } from '../parser/index.js';
 import { SensitivityResult } from '../results.js';
+import { mapProtocolErrorV1, validateProtocolV1 } from '../protocol/adapter.js';
 import { simulate } from '../simulate.js';
 
 const dcDivider = `DC sensitivity divider
@@ -250,5 +251,51 @@ R1 out 0 1k
   it('rejects multiple sensitivity analyses rather than overwriting results', () => {
     expect(() => parse('multiple sensitivity\nR1 out 0 1k\n.sens V(out)\n.sens V(out)'))
       .toThrow(/multiple.*sens/i);
+  });
+});
+
+describe('.sens AC frequency grid (ngspice-47 parity)', () => {
+  const body = (sweep: string) =>
+    `V1 in 0 DC 0 AC 1\nR1 in out 1k\nC1 out 0 1u\n.sens v(out) ac ${sweep}\n.end`;
+  const deck = (sweep: string) => `sens grid\n${body(sweep)}`;
+
+  // ngspice-47 cktsens.c count_steps: DEC keeps plain 10^(1/N) stepping (unlike `.ac`, which
+  // stretches multi-decade sweeps) with n = (int)(N * log10(stop/start) + 1.01) points, and a
+  // stop <= start sweep spans one decade. Grids from `print n frequency[1] frequency[n-1]`
+  // on these identical decks.
+  it.each([
+    ['dec 10 1 5k', 37, 1.258925, 3981.072],
+    ['dec 10 1 99.99', 21, 1.258925, 100],
+    ['dec 1 1 50', 2, 10, 10],
+    ['dec 1 1 500', 3, 10, 100],
+    ['dec 7 3 47k', 30, 4.168486, 41684.86],
+    ['dec 10 1 9.98', 11, 1.258925, 10],
+    ['dec 10 1 1k', 31, 1.258925, 1000],
+    ['dec 10 100 100', 11, 125.8925, 1000],
+    ['dec 2 5 5', 3, 15.81139, 50],
+  ])('.sens ac %s gives %i points, second %d, ending at %d', async (sweep, count, second, last) => {
+    const frequencies = (await simulate(deck(sweep))).sensitivity!.frequencies;
+    expect(frequencies).toHaveLength(count);
+    expect(frequencies[1] / second).toBeCloseTo(1, 6);
+    expect(frequencies[count - 1] / last).toBeCloseTo(1, 6);
+  });
+
+  it('preflights maxResultPoints with the ngspice .sens point count', async () => {
+    const request = (maxResultPoints: number) => ({
+      apiVersion: '1' as const,
+      input: { format: 'spice' as const, source: body('dec 10 1 9.98') },
+      options: { limits: { maxResultPoints } },
+    });
+    await expect(validateProtocolV1(request(11))).resolves.toBeDefined();
+    let failure: unknown;
+    try {
+      await validateProtocolV1(request(10));
+    } catch (error) {
+      failure = error;
+    }
+    expect(mapProtocolErrorV1(failure)).toMatchObject({
+      code: 'RESOURCE_LIMIT',
+      details: { limit: 'maxResultPoints', configured: 10, observed: 11 },
+    });
   });
 });
