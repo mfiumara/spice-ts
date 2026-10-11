@@ -186,6 +186,69 @@ describe('classic corpus comparison report', () => {
     }
   });
 
+  it('emits native spice-ts distortion products with ngspice-47 plot and vector names (#391)', async () => {
+    const classicManifest = JSON.parse(
+      readFileSync(resolve('benchmarks/corpus/classic/manifest.json'), 'utf8'),
+    ) as ClassicManifest;
+    const fixture = classicManifest.circuits.find(candidate => candidate.id === 'diode-distortion');
+    if (!fixture) throw new Error('missing classic fixture diode-distortion');
+    const input = readFileSync(resolve(fixture.localPath));
+    assert.equal(createHash('sha256').update(input).digest('hex'), fixture.sha256);
+
+    const execution = await runNativeSpiceTs(input, fixture);
+
+    assert.equal(execution.status, 'success', execution.error);
+    assert.equal(execution.convergence, 'converged');
+    // ngspice-47 emits one complex plot per two-tone product, in this order.
+    assert.deepEqual(
+      execution.analyses.map(analysis => [analysis.type, analysis.plotName]),
+      [
+        ['disto', 'DISTORTION - IM: f1+f2'],
+        ['disto', 'DISTORTION - IM: f1-f2'],
+        ['disto', 'DISTORTION - IM: 2f1-f2'],
+      ],
+    );
+    for (const analysis of execution.analyses) {
+      assert.equal(analysis.series.grid.length, 101);
+      assert.equal(analysis.series.grid[0], 1e3);
+      assert.deepEqual(Object.keys(analysis.series.signals), ['v(1)', 'v(2)', 'v(3)', 'i(vcc)', 'i(vcc2)']);
+      assert.equal(Object.values(analysis.series.signals).every(values => values.length === 101), true);
+    }
+    // Rectangular components are carried through unchanged (not as magnitude/phase).
+    const first = execution.analyses[0]?.series.signals['v(2)']?.[0];
+    assert.ok(first && first.re > 0 && first.im < 0);
+  });
+
+  it('pairs each spice-ts distortion product with the same-named ngspice plot', async () => {
+    const distoCircuit: ClassicCircuit = { ...circuit, analyses: ['disto'] };
+    const plots = (scale: number): EngineExecution => ({
+      status: 'success',
+      convergence: 'converged',
+      analyses: ['f1+f2', 'f1-f2', '2f1-f2'].map((product, index) => ({
+        type: 'disto' as const,
+        plotName: `DISTORTION - IM: ${product}`,
+        series: { grid: [1e3, 1e4], signals: { 'v(2)': [{ re: (index + 1) * scale, im: 0 }, { re: 0, im: index + 1 }] } },
+      })),
+    });
+    const ngspice = plots(1);
+    const report = await buildClassicReport({ ...manifest, circuits: [distoCircuit] }, {
+      readFixture: async () => Buffer.from('fixture bytes'),
+      // Reversed plot order proves pairing is by name, not position.
+      runNgspice: async () => ({ ...ngspice, analyses: [...ngspice.analyses].reverse() }),
+      runSpiceTs: async () => plots(1.5),
+      tools: { ngspice: 'ngspice-test', spiceTs: 'spice-ts-test' },
+    });
+
+    const comparisons = report.fixtures[0]?.comparisons ?? [];
+    assert.equal(comparisons.length, 3);
+    const maxima = comparisons.map(comparison => {
+      const signal = comparison.metrics.signals['v(2)'];
+      if (!signal || signal.status !== 'compared') throw new Error('expected compared v(2)');
+      return signal.absoluteError.max;
+    });
+    assert.deepEqual(maxima, [0.5, 1, 1.5]);
+  });
+
   it('pairs same-type plots by plot name so noise spectra and totals are both compared', async () => {
     const noiseCircuit: ClassicCircuit = { ...circuit, analyses: ['noise'] };
     const noisePlots = (spectrum: number[], total: number): EngineExecution => ({

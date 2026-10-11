@@ -439,6 +439,49 @@ function noiseAnalyses(noise: {
   return analyses;
 }
 
+/** ngspice-47 `DISTORTION - ...` plot name for each bounded spice-ts product. */
+const DISTORTION_PLOT_NAMES: Record<string, string> = {
+  2: 'DISTORTION - 2nd harmonic',
+  3: 'DISTORTION - 3rd harmonic',
+  'f1+f2': 'DISTORTION - IM: f1+f2',
+  'f1-f2': 'DISTORTION - IM: f1-f2',
+  '2f1-f2': 'DISTORTION - IM: 2f1-f2',
+};
+
+/**
+ * Map a spice-ts `.disto` result onto ngspice-47's complex distortion plots:
+ * one plot per harmonic/intermodulation product, on the swept F1 grid, with
+ * every node voltage `v(n)` and source branch current `i(vx)` kept in
+ * rectangular form.
+ */
+function distortionAnalyses(distortion: {
+  frequencies: number[];
+  products: readonly (string | number)[];
+}): EngineAnalysis[] {
+  const internal = distortion as unknown as {
+    voltageArrays: Map<string | number, Map<string, Array<{ real: number; imaginary: number }>>>;
+    currentArrays: Map<string | number, Map<string, Array<{ real: number; imaginary: number }>>>;
+  };
+  const rectangular = (values: Array<{ real: number; imaginary: number }>): ComplexValue[] =>
+    values.map(value => ({ re: value.real, im: value.imaginary }));
+  return distortion.products.map(product => {
+    const plotName = DISTORTION_PLOT_NAMES[String(product)];
+    if (!plotName) throw new Error(`unmapped spice-ts distortion product ${String(product)}`);
+    return {
+      type: 'disto' as const,
+      plotName,
+      series: {
+        grid: [...distortion.frequencies],
+        signals: mapSignals(
+          internal.voltageArrays.get(product) ?? new Map(),
+          internal.currentArrays.get(product) ?? new Map(),
+          rectangular,
+        ),
+      },
+    };
+  });
+}
+
 export async function runNativeSpiceTs(input: Buffer, circuit: ClassicCircuit): Promise<EngineExecution> {
   const text = input.toString('utf8');
   if (!Buffer.from(text, 'utf8').equals(input)) {
@@ -500,6 +543,8 @@ export async function runNativeSpiceTs(input: Buffer, circuit: ClassicCircuit): 
         });
       } else if (type === 'noise' && result.noise) {
         analyses.push(...noiseAnalyses(result.noise));
+      } else if (type === 'disto' && result.distortion) {
+        analyses.push(...distortionAnalyses(result.distortion));
       }
     }
     const missing = circuit.analyses.filter(type => !analyses.some(analysis => analysis.type === type));
