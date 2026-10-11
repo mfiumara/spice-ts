@@ -93,7 +93,7 @@ The full matrix took 56 minutes, mostly in the ngspice 50k cells.
 
 ## Workloads and provenance
 
-All decks come from `benchmarks/performance/scaling-m2-fixture.mjs`. They are original generated material written for this repository and carry the repository's MIT licence. No third-party circuit, model card or netlist is used. The MOS1 model cards are hand-picked generic level-1 values (`vto=±0.5`, `kp=120u/60u`, `lambda=0.02`), not vendor models. `benchmarks/SOURCES.md` is deliberately untouched because `aggregate-report.ts --check` pins its hash. A SOURCES entry for these generated fixtures is left to a follow-up that also refreshes that pin.
+All decks come from `benchmarks/performance/scaling-m2-fixture.mjs`. They are original generated material written for this repository and carry the repository's MIT licence. No third-party circuit, model card or netlist is used. The MOS1 model cards are hand-picked generic level-1 values (`vto=±0.5`, `kp=120u/60u`, `lambda=0.02`), not vendor models. Generator, licence, ngspice version and the SHA-256 of all nine decks are recorded in `benchmarks/SOURCES.md` ([#480](https://github.com/mfiumara/spice-ts/issues/480)); `scaling-m2.test.ts` fails if the generator, `results/scaling-m2.json` and that table disagree. That test runs in CI and `pnpm test`; the timing matrix does not.
 
 | Circuit | Deck | Analysis | Nodes run |
 |---|---|---|---|

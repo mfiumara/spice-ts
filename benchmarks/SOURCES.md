@@ -176,6 +176,26 @@ Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/
 
 Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-456/verify.ts --output <file>` (see `benchmarks/results/issue-456/README.md`).
 
+## MOS1 inverter-chain `.op` scaling decks (issue #462)
+
+- Source: project-authored, generated reference circuits for [issue #428](https://github.com/mfiumara/spice-ts/issues/428) and [issue #462](https://github.com/mfiumara/spice-ts/issues/462): an N-stage level-1 CMOS inverter chain with a 10 fF load per stage. The `issue-428` variant (lambda=0.02, W_p=2u) is the #426 scaling-fixture deck with `.op`; the `true-gmin` variant (lambda=0.005, W_p=1u) at 6000 stages is a CI-sized deck on which ngspice-47 also falls back to true gmin stepping (at 5000 stages its dynamic gmin stepping still completes).
+- Licence: MIT, under the repository [licence](../LICENSE).
+- Adaptation: none. `benchmarks/results/issue-462/measure.mjs` and `packages/core/src/mos1-inverter-chain-op.test.ts` generate the same deck text; the script writes it once and supplies those bytes to both ngspice-47 and spice-ts. Each receipt records the deck SHA-256.
+
+Reproduce with `pnpm -C packages/core build && node benchmarks/results/issue-462/measure.mjs --stages 40000` (see `benchmarks/results/issue-462/README.md`).
+
+## MOS6 charge-integration fixture
+
+- Source: project-authored reference circuit for [issue #468](https://github.com/mfiumara/spice-ts/issues/468), issue revision as of 2026-10-11. The model card reuses the `N10L5` level-6 parameters of the ngspice `tests/mos6/simpleinv.cir` fixture, adding `IS=1e-18` and instance junction areas/perimeters.
+- Licence: MIT, under the repository [licence](../LICENSE).
+- Adaptation: none. The committed bytes are run unchanged by ngspice-47 and spice-ts.
+
+| Fixture | SHA-256 | Coverage |
+|---|---|---|
+| `benchmarks/results/issue-468/ngspice/mos6-bulk-junction.cir` | `fa2a0dee6b790db2ac4deef8c77184f3bd84406cd1f91a59eb7632a4d4fabd53` | NMOS level-6 bulk driven through 100k to 0.71 V, past FC·PB = 0.5 V, with bottom and sidewall junction caps (MOS6 qbs/qbd charges including the f2/f3/f4 continuation). Reference for `mos6.test.ts`. |
+
+The corpus comparisons for #468 are reproduced with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-468/verify.ts --output <file>` (see `benchmarks/results/issue-468/README.md`).
+
 ## Bounded pole-zero parity fixtures
 
 | Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
@@ -421,6 +441,29 @@ Strategy references used by the audit, not copied into the fixtures:
 - ngspice manual, convergence options and transient analysis: https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml
 - ngspice `CKTop` operating-point fallback implementation (`src/spicelib/analysis/cktop.c`), GPL-2.0-or-later: https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/src/spicelib/analysis/cktop.c
 - ngspice transient retry/timestep implementation (`src/spicelib/analysis/dctran.c`), GPL-2.0-or-later: https://sourceforge.net/p/ngspice/ngspice/ci/master/tree/src/spicelib/analysis/dctran.c
+
+## M2 generated scaling decks, issue #426
+
+- Generator: `benchmarks/performance/scaling-m2-fixture.mjs`, added in [`34e85e9`](https://github.com/mfiumara/spice-ts/commit/34e85e9ef6e87219ff39a8ca2ef1a6892caf711c) (PR #476). Harness: `benchmarks/performance/scaling-m2.ts`; methodology and published results, losses included: `benchmarks/PERFORMANCE_BASELINE.md`.
+- Origin: original material generated for this repository. No third-party circuit, model card or netlist is used. The MOS1 cards (`vto=±0.5`, `kp=120u/60u`, `lambda=0.02`) are generic hand-picked level-1 values, not vendor models.
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; the decks are regenerated deterministically and are not committed as files.
+- Adaptation: none. Each circuit/size yields one byte-identical deck that is given unchanged to spice-ts and ngspice. The ngspice linear solver (KLU or Sparse 1.3) is chosen outside the deck by a per-run `.spiceinit`, so the deck hash is the same for every engine cell.
+- Reference simulator: ngspice-47 (Homebrew build, KLU compiled in), as recorded in `versions.ngspice` of the receipt `benchmarks/performance/results/scaling-m2.json`.
+- Deck SHA-256 values below equal the `netlistSha256` of every row in that receipt. The mesh rounds up to a square, so emitted nodes can exceed the requested size.
+
+| Circuit | Requested nodes | Emitted nodes | Deck SHA-256 |
+|---|---|---|---|
+| `rc-ladder-tran` | 1000 | 1000 | `0944ed6b76f64f56c8e04b48919f1e12b9de19df4e5a08708c4be314fa7a91b7` |
+| `rc-ladder-tran` | 10000 | 10000 | `eb21933fd99fcbc32276816a4f389ba216dcdddc29683551a67f606f352dfca7` |
+| `rc-ladder-tran` | 50000 | 50000 | `2fd0c2090d17dddf80980eb3391440a3e4f99e1a77d1158360ffedc4246a7ada` |
+| `resistor-mesh-op` | 1000 | 1024 | `6c6d5adb109cdde9ac844c3346135f4e7ffc352626b2f3c430598c0ebd9d8d40` |
+| `resistor-mesh-op` | 10000 | 10000 | `c88e6076daf2523437e3da014d7a3c329f679a7405f789530c5c805f447ed0dc` |
+| `resistor-mesh-op` | 50000 | 50176 | `f81ed198f7ba67068138846b12fe93b9ec957e6bb3a89300d2c7c50e30d47329` |
+| `cmos-inverter-chain-tran` | 1000 | 1000 | `1a9866593c778a9fa26e23c1916c7b00b1bdb1adc2e7a246d9e3f4aa4f1ca1e1` |
+| `cmos-inverter-chain-tran` | 10000 | 10000 | `2ce663326238609299d8628016b1211632f1474e9d40b6c39747fff964999a18` |
+| `cmos-inverter-chain-tran` | 50000 | 50000 | `d680f1054eb14002980a7a65eb68a5dddae8063a871050fde025e8f5080bc543` |
+
+- CI gate: `benchmarks/performance/scaling-m2.test.ts` runs in CI (`build` job) and in `pnpm test`. It takes about a second and needs no ngspice. It checks determinism, node counts, deck directives, the ngspice output parser, and that the generator, the receipt and this table agree on all nine hashes. The timing matrix itself (`pnpm bench:scaling:m2`, about 56 minutes, machine-dependent) is excluded from CI and run by hand; its JSON receipt is the evidence of record.
 
 ## Gnucap public corpus E
 
