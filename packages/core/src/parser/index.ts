@@ -13,7 +13,7 @@ import {
   parseLtraModelCard,
   parseTransmissionLine,
 } from './transmission-line-parser.js';
-import { preprocess } from './preprocessor.js';
+import { preprocess, preprocessLines } from './preprocessor.js';
 import { validateControlCommand } from './control-block.js';
 import { parseBehavioralSourceCard } from './behavioral-expression.js';
 import { parseZInstance } from './z-device-parser.js';
@@ -248,7 +248,8 @@ export async function parseAsync(
   const newline = netlist.indexOf('\n');
   const title = newline < 0 ? netlist : netlist.slice(0, newline);
   const body = newline < 0 ? '' : netlist.slice(newline + 1);
-  const preprocessed = await preprocess(body, resolver);
+  // The body starts on line 2 of the caller's netlist (after the title).
+  const preprocessed = await preprocessLines(body, resolver, undefined, 1);
   return parse(`${title}\n${preprocessed}`);
 }
 

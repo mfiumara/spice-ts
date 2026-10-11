@@ -26,9 +26,23 @@ export async function preprocess(
   resolver?: IncludeResolver,
   guard?: ProtocolExecutionGuard,
 ): Promise<string> {
+  return preprocessLines(netlist, resolver, guard, 0);
+}
+
+/**
+ * @internal Preprocess a netlist fragment that starts `lineOffset` lines into the
+ * original netlist (e.g. the body after a title line), so ParseError line
+ * numbers refer to the caller's netlist.
+ */
+export async function preprocessLines(
+  netlist: string,
+  resolver: IncludeResolver | undefined,
+  guard: ProtocolExecutionGuard | undefined,
+  lineOffset: number,
+): Promise<string> {
   const definitions = new Map<string, ParamDefinition>();
   const statements: PendingStatement[] = [];
-  await collectStatements(netlist, resolver, new Set(), [], 0, definitions, statements, guard);
+  await collectStatements(netlist, resolver, new Set(), [], 0, definitions, statements, guard, lineOffset);
   // ngspice collects every top-level `.param` before substituting, so a
   // parameter may be used before its definition and the last definition wins.
   const params = createParamScope(definitions);
@@ -88,9 +102,13 @@ function evaluateParamExpression(definition: ParamDefinition, scope: Record<stri
     return evaluateExpression(definition.expression, scope);
   } catch (error) {
     if (error instanceof ParseError) throw error;
-    const value = parseNumber(definition.expression);
-    if (Number.isNaN(value)) throw toParseError(error, definition.line, definition.context);
-    return value;
+    // A bare SPICE number (e.g. `1meg`) is not an expression; anything else
+    // that fails to evaluate is reported at the `.param` definition.
+    try {
+      return parseNumber(definition.expression);
+    } catch {
+      throw toParseError(error, definition.line, definition.context);
+    }
   }
 }
 
@@ -119,6 +137,7 @@ async function collectStatements(
   definitions: Map<string, ParamDefinition>,
   statements: PendingStatement[],
   guard?: ProtocolExecutionGuard,
+  lineOffset = 0,
 ): Promise<void> {
   guard?.maximum('maxIncludeDepth', depth, 'parse');
   if (depth > MAX_DEPTH) {
@@ -130,7 +149,7 @@ async function collectStatements(
 
   for (const [index, line] of lines.entries()) {
     guard?.checkpoint('parse:line');
-    const lineNumber = index + 1;
+    const lineNumber = index + 1 + lineOffset;
     const trimmed = line.trim();
     const upper = trimmed.toUpperCase();
     const passThrough = () => statements.push({ text: line, substitute: false, line: lineNumber });

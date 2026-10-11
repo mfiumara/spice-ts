@@ -93,6 +93,13 @@ describe('preprocessor', () => {
       expect((failure as ParseError).message).toContain("Undefined parameter 'zz'");
     });
 
+    it('throws an undefined-parameter ParseError at the .param line for an undefined RHS name', async () => {
+      const failure = await preprocess('R1 a 0 {r}\nV1 a 0 1\n.param r={zz}\n.op').catch((e: unknown) => e);
+      expect(failure).toBeInstanceOf(ParseError);
+      expect((failure as ParseError).line).toBe(3);
+      expect((failure as ParseError).message).toContain("Undefined parameter 'zz'");
+    });
+
     it('throws a ParseError at the definition line for circular .param dependencies', async () => {
       const failure = await preprocess('.param a={b}\n.param b={a}\nR1 x 0 {a}\n.op')
         .catch((e: unknown) => e);

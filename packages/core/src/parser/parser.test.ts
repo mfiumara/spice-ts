@@ -4,6 +4,7 @@ import { describe, it, expect } from 'vitest';
 import {
   parseTitleless as parse,
   parseTitlelessAsync as parseAsync,
+  parseAsync as parseTitledAsync,
 } from './index.js';
 import { Capacitor } from '../devices/capacitor.js';
 import { Inductor } from '../devices/inductor.js';
@@ -408,6 +409,36 @@ describe('SPICE netlist parser', () => {
       expect((caught as ParseError).line).toBe(2);
       expect((caught as ParseError).message).toContain(message);
       expect((caught as ParseError).message).not.toContain('Cannot read properties');
+    });
+  });
+
+  describe('preprocessor ParseErrors on titled netlists', () => {
+    const catchError = (promise: Promise<unknown>) => promise.then(() => undefined, (e: unknown) => e);
+
+    it('reports the 1-based netlist line (title counted) from parseAsync', async () => {
+      const failure = await catchError(parseTitledAsync('T\nR1 a 0 {zz}\nV1 a 0 1\n.op\n.end'));
+      expect(failure).toBeInstanceOf(ParseError);
+      expect((failure as ParseError).line).toBe(2);
+      expect((failure as ParseError).message).toContain("Undefined parameter 'zz'");
+    });
+
+    it('reports the 1-based netlist line (title counted) from simulate', async () => {
+      const failure = await catchError(simulate('T\nV1 a 0 1\nR1 a 0 {zz}\n.op\n.end'));
+      expect(failure).toBeInstanceOf(ParseError);
+      expect((failure as ParseError).line).toBe(3);
+    });
+
+    it('reports an undefined name inside a .param RHS at the .param line', async () => {
+      const failure = await catchError(parseTitledAsync('T\nR1 a 0 {r}\nV1 a 0 1\n.param r={zz}\n.op\n.end'));
+      expect(failure).toBeInstanceOf(ParseError);
+      expect((failure as ParseError).line).toBe(4);
+      expect((failure as ParseError).message).toContain("Undefined parameter 'zz'");
+      expect((failure as ParseError).message).not.toContain('Cannot parse number');
+    });
+
+    it('still accepts a bare SI-suffixed number as a .param RHS', async () => {
+      const circuit = await parseTitledAsync('T\nR1 a 0 {r}\nV1 a 0 1\n.param r=1meg\n.op\n.end');
+      expect(circuit).toBeInstanceOf(Circuit);
     });
   });
 
