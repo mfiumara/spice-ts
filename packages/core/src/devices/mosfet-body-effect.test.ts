@@ -114,7 +114,8 @@ M1 out gate 0 0 NMOD W=10u L=3u
 });
 
 describe('unimplemented MOSFET levels are rejected (issue #530)', () => {
-  it.each([2, 3, 4, 5, 7, 9, 14, 54])('rejects LEVEL=%i with a typed error', level => {
+  // LEVEL=2 is implemented by the ngspice mos2 port since #565.
+  it.each([3, 4, 5, 7, 9, 14, 54])('rejects LEVEL=%i with a typed error', level => {
     const deck = `level ${level}
 VD d 0 DC 2
 VG g 0 DC 2
@@ -136,7 +137,7 @@ M1 d g 0 0 NX W=10u L=2u
       deviceName: 'M1',
       modelName: 'NX',
       level,
-      supportedLevels: [1, 6, 8, 49],
+      supportedLevels: [1, 2, 6, 8, 49],
     });
   });
 

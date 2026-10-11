@@ -170,7 +170,7 @@ export class CycleError extends SpiceError {
 
 /**
  * Thrown when a MOSFET model card selects a `LEVEL` that spice-ts does not
- * implement (for example MOS2 `LEVEL=2`, MOS3 `LEVEL=3`, BSIM1 `LEVEL=4` or
+ * implement (for example MOS3 `LEVEL=3`, BSIM1 `LEVEL=4` or
  * BSIM2 `LEVEL=5`). Such cards used to run the Level-1 equations silently.
  */
 export class UnsupportedModelLevelError extends InvalidCircuitError {

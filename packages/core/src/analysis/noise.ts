@@ -5,6 +5,7 @@ import { CurrentSource } from '../devices/current-source.js';
 import { Diode } from '../devices/diode.js';
 import { HFET1 } from '../devices/hfet1.js';
 import { JFET } from '../devices/jfet.js';
+import { MOS2 } from '../devices/mos2.js';
 import { MOSFET } from '../devices/mosfet.js';
 import { Resistor } from '../devices/resistor.js';
 import { SwitchBase } from '../devices/switch.js';
@@ -51,6 +52,8 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
         }
       }
     } else if (device instanceof BSIM3v3) kind = 'MOSFET';
+    // mos2noi.c is not ported; reject rather than treat the MOS2 channel as noiseless.
+    else if (device instanceof MOS2) kind = 'MOSFET level 2';
     // ngspice HFETA has no noise routine, so its RD/RS are noiseless; reject
     // rather than add thermal noise from the expanded series resistors.
     else if (device instanceof HFET1) kind = 'HFET';
@@ -360,6 +363,7 @@ function isSemiconductorNoiseDevice(device: CompiledCircuit['devices'][number]):
     || device instanceof BJT
     || device instanceof JFET
     || device instanceof MOSFET
+    || device instanceof MOS2
     || device instanceof BSIM3v3;
 }
 
