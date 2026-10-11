@@ -1,0 +1,239 @@
+[
+  {
+    "key": "ngspice/vbic-common-emitter-ac",
+    "localPath": "benchmarks/corpus/ngspice/fixtures/tests/vbic/CEamp.cir",
+    "sha256": "088d1ebede86588ff8b823ba45219006bfeec34939af69e10c176e23d8a020ab",
+    "ngspice": {
+      "status": "success",
+      "counts": {
+        "poles": 7,
+        "zeros": 6
+      }
+    },
+    "spiceTs": {
+      "status": "success",
+      "counts": {
+        "poles": 7,
+        "zeros": 6
+      }
+    },
+    "comparisons": [
+      {
+        "analysis": "ac",
+        "signals": {
+          "i(vcc)": {
+            "max": 7.363529266660746e-8,
+            "relMax": 1.6190931095986222e-7
+          },
+          "i(vmeas)": {
+            "max": 0.000004630516849217327,
+            "relMax": 1.0751810045018762e-7
+          },
+          "v(1)": {
+            "max": 0.00018391271691357928,
+            "relMax": 1.6776746723280057e-7
+          },
+          "v(2)": {
+            "max": 0.00007364821306272488,
+            "relMax": 1.0751824877096412e-7
+          },
+          "v(3)": {
+            "max": 1.0317812581679068e-9,
+            "relMax": null
+          },
+          "v(4)": {
+            "max": 0.00007364821154438375,
+            "relMax": 1.0751810090733276e-7
+          }
+        }
+      },
+      {
+        "analysis": "pz",
+        "signals": {
+          "v(pole(1))": {
+            "max": 13002.781982421875,
+            "relMax": 1.1121660722524222e-8
+          },
+          "v(pole(2))": {
+            "max": 5426.4847412109375,
+            "relMax": 1.0007887440332534e-8
+          },
+          "v(pole(3))": {
+            "max": 108.90575388010222,
+            "relMax": 1.2586757627770264e-9
+          },
+          "v(pole(4))": {
+            "max": 108.90575388010222,
+            "relMax": 1.2586757627770264e-9
+          },
+          "v(pole(5))": {
+            "max": 350.04598236083984,
+            "relMax": 5.9128796693564336e-9
+          },
+          "v(pole(6))": {
+            "max": 126.48632144927979,
+            "relMax": 1.199105918316337e-7
+          },
+          "v(pole(7))": {
+            "max": 0.0007022059326118324,
+            "relMax": 3.7712878511081736e-8
+          },
+          "v(zero(1))": {
+            "max": 13716.60302734375,
+            "relMax": 1.0387419439630434e-8
+          },
+          "v(zero(2))": {
+            "max": 569.0274047851562,
+            "relMax": 1.9027618736315156e-9
+          },
+          "v(zero(3))": {
+            "max": 2262.017649642839,
+            "relMax": 1.2592676760077003e-8
+          },
+          "v(zero(4))": {
+            "max": 2262.017649642839,
+            "relMax": 1.2592676760077003e-8
+          },
+          "v(zero(5))": {
+            "max": 451.3279571533203,
+            "relMax": 6.969818173646622e-9
+          },
+          "v(zero(6))": {
+            "max": 1805.729965209961,
+            "relMax": 1.911397167844757e-8
+          }
+        }
+      }
+    ]
+  },
+  {
+    "key": "classic/pole-zero-four-stage",
+    "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/pz2.cir",
+    "sha256": "c21a9628a46581ad9e163632d992422afafeaa15443787e00153dbd7331d3b73",
+    "ngspice": {
+      "status": "success",
+      "counts": {
+        "poles": 4,
+        "zeros": 0
+      }
+    },
+    "spiceTs": {
+      "status": "success",
+      "counts": {
+        "poles": 4,
+        "zeros": 0
+      }
+    },
+    "comparisons": [
+      {
+        "analysis": "pz",
+        "signals": {
+          "v(pole(1))": {
+            "max": 0,
+            "relMax": 0
+          },
+          "v(pole(2))": {
+            "max": 0,
+            "relMax": 0
+          },
+          "v(pole(3))": {
+            "max": 1.4901161193847656e-8,
+            "relMax": 1.7222686305295428e-16
+          },
+          "v(pole(4))": {
+            "max": 0,
+            "relMax": 0
+          }
+        }
+      }
+    ]
+  },
+  {
+    "key": "classic/pole-zero-three-stage",
+    "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/pzt.cir",
+    "sha256": "1c50c0623b02d991eb04a1523d1aa50914e88c0ea53a64438daeec97ec359a18",
+    "ngspice": {
+      "status": "success",
+      "counts": {
+        "poles": 3,
+        "zeros": 0
+      }
+    },
+    "spiceTs": {
+      "status": "success",
+      "counts": {
+        "poles": 3,
+        "zeros": 0
+      }
+    },
+    "comparisons": [
+      {
+        "analysis": "pz",
+        "signals": {
+          "v(pole(1))": {
+            "max": 3.6486369481281145e-12,
+            "relMax": 1.8243184740637243e-13
+          },
+          "v(pole(2))": {
+            "max": 3.6486369481281145e-12,
+            "relMax": 1.8243184740637243e-13
+          },
+          "v(pole(3))": {
+            "max": 3.6486369481281145e-12,
+            "relMax": 1.8243184740637243e-13
+          }
+        }
+      }
+    ]
+  },
+  {
+    "key": "classic/high-pass-pole-zero",
+    "localPath": "benchmarks/corpus/classic/fixtures/spice3f5/simplepz.cir",
+    "sha256": "750846efbf93b9ae9f93e477922589439b859648de15b7508d2ea8e39da23720",
+    "ngspice": {
+      "status": "success",
+      "counts": {
+        "poles": 1,
+        "zeros": 1
+      }
+    },
+    "spiceTs": {
+      "status": "success",
+      "counts": {
+        "poles": 1,
+        "zeros": 1
+      }
+    },
+    "comparisons": [
+      {
+        "analysis": "pz",
+        "signals": {
+          "v(pole(1))": {
+            "max": 5.960464477539063e-8,
+            "relMax": 1.1920928955078126e-16
+          },
+          "v(zero(1))": {
+            "max": 0,
+            "relMax": null
+          }
+        }
+      }
+    ]
+  },
+  {
+    "key": "corpus-d/passive-pole-zero-ac",
+    "localPath": "benchmarks/corpus/corpus-d/fixtures/tests/pz1/pz1.ckt",
+    "sha256": "3a597bfe073b0d0219444b15559e6390a2aabe9ca8f1b9246db626efd8dda94c",
+    "ngspice": {
+      "status": "failed",
+      "counts": null,
+      "error": "Error in netlist line no. 3, new internal line no. 2: Undefined parameter [idc] Error in netlist line no. 3, new internal line no. 2: Cannot compute substitute ERROR: fatal error in ngspice, exit(1) Note: No compatibility mode selected! Circuit: ** pz test"
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "counts": null,
+      "error": "Parse error at line 2: Cannot parse number: 'type=idc' IN 0 1 type=idc idc=1.00 iac=1"
+    },
+    "comparisons": []
+  }
+]

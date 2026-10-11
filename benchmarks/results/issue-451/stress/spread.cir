@@ -1,0 +1,12 @@
+ten decade spread
+r1 1 0 1
+c1 1 0 1
+r2 1 2 1
+c2 2 0 1n
+r3 2 3 1
+c3 3 0 1f
+r4 3 4 1
+c4 4 0 1e-18
+.pz 1 0 4 0 cur pz
+.print pz all
+.end

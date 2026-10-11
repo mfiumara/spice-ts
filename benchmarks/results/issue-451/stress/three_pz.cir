@@ -1,0 +1,13 @@
+three stage pz
+iin 1 0 ac
+r1 1 0 1
+l1 1 0 0.05H
+gm2 2 0 1 0 1
+r2 2 0 1
+l2 2 0 0.05H
+gm3 3 0 2 0 1
+r3 3 0 1
+l3 3 0 0.05H
+.pz 1 0 3 0 cur pz
+.print pz all
+.end

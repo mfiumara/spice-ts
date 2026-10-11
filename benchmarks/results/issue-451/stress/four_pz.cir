@@ -1,0 +1,16 @@
+four stage pz
+iin 1 0 ac
+r1 1 0 1.019524e+9
+l1 1 0 1H
+gm2 2 0 1 0 1
+r2 2 0 8.296965e+08
+l2 2 0 1H
+gm3 3 0 2 0 1
+r3 3 0 8.652054e+07
+l3 3 0 1H
+gm4 4 0 3 0 1
+r4 4 0 1.060594e+07
+l4 4 0 1H
+.pz 1 0 4 0 cur pz
+.print pz all
+.end

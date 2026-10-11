@@ -1,0 +1,9 @@
+series LC bandpass
+r1 1 0 1k
+l1 1 2 10u
+c1 2 3 1n
+r2 3 0 50
+c3 3 0 100p
+.pz 1 0 3 0 cur pz
+.print pz all
+.end
