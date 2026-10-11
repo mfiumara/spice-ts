@@ -50,6 +50,8 @@ export type {
   AnalysisDirective,
   NodeInitialState,
   SourceWaveform,
+  TransientNoiseSource,
+  TransientRandomSource,
   ModelParams,
   SubcktDefinition,
   IncludeResolver,
@@ -88,6 +90,7 @@ export {
   UnsupportedTemperatureError,
 } from './errors.js';
 export { SUPPORTED_MODEL_TYPES, DEVICE_MODEL_TYPES, UnsupportedModelTypeError } from './parser/model-type.js';
+export { UnsupportedSourceWaveformError } from './parser/waveform-parser.js';
 export type { ConvergenceFailureKind } from './errors.js';
 export { UnsupportedCodeModelError } from './parser/xspice-parser.js';
 export { UnsupportedResistorParameterError } from './parser/resistor-parser.js';
