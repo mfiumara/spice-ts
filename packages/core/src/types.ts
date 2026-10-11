@@ -655,8 +655,13 @@ export interface SubcktDefinition {
   name: string;
   /** Ordered list of port node names */
   ports: string[];
-  /** Default parameter values (can be overridden per instance) */
-  params: Record<string, number>;
+  /**
+   * Default parameter values (can be overridden per instance), in declaration
+   * order. A string is a numparam expression (`'20e3/stime'`), evaluated per
+   * instance like ngspice-47: after the instance overrides, over the earlier
+   * parameters of the same definition and the top-level `.param` values.
+   */
+  params: Record<string, number | string>;
   /** Raw netlist lines between `.subckt` and `.ends` */
   body: string[];
 }
