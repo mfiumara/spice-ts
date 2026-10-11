@@ -4,6 +4,7 @@ import type {
 import type { CompiledCircuit } from '../circuit.js';
 import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
 import { newtonRaphson } from './newton-raphson.js';
+import { gminSteppingHomotopy } from './dc.js';
 import { DCSweepResult } from '../results.js';
 import { VoltageSource } from '../devices/voltage-source.js';
 import { CurrentSource } from '../devices/current-source.js';
@@ -78,9 +79,7 @@ export function solveDCSweep(
 
         source.waveform = { type: 'dc', value: sweepValue };
 
-        newtonRaphson(
-          assembler, devices, options, options.maxIterations, nodeNames, convergence.dc, guard,
-        );
+        solveSweepPoint(assembler, devices, options, nodeNames, convergence, guard);
 
         // Record solution
         for (let n = 0; n < nodeNames.length; n++) {
@@ -105,6 +104,35 @@ export function solveDCSweep(
   }
 
   return new DCSweepResult(sweepValues, voltageArrays, currentArrays, secondarySweepValues);
+}
+
+/**
+ * One DC transfer-curve point, as ngspice-47 dctrcurv.c: Newton from the
+ * previous point's solution, and on failure the full CKTop operating-point
+ * homotopy (here dynamic, then true gmin stepping). A sweep that drives the
+ * circuit through a fold (e.g. latch-up) needs it: the previous branch no
+ * longer exists, and plain Newton from it need not converge.
+ */
+function solveSweepPoint(
+  assembler: MNAAssembler,
+  devices: CompiledCircuit['devices'],
+  options: ResolvedOptions,
+  nodeNames: string[],
+  convergence: ConvergenceTelemetry,
+  guard?: ProtocolExecutionGuard,
+): void {
+  try {
+    newtonRaphson(
+      assembler, devices, options, options.maxIterations, nodeNames, convergence.dc, guard,
+    );
+  } catch (error) {
+    if (!(error instanceof ConvergenceError) || !devices.some(device => device.isNonlinear)) throw error;
+    const savedSolution = new Float64Array(assembler.solution);
+    if (!gminSteppingHomotopy(assembler, devices, options, nodeNames, convergence, guard)) {
+      assembler.solution.set(savedSolution);
+      throw error;
+    }
+  }
 }
 
 function resolveSweepSource(

@@ -389,6 +389,8 @@ Backend IDs remain explicit: `spice-ts-js`, reserved `spice-ts-wasm`, and existi
 
 ### Workflow A: repair a floating-node circuit
 
+Executable: [`examples/floating-node-repair`](../../examples/floating-node-repair/README.md), run in CI by [`examples/agent-workflows/issue-63`](../../examples/agent-workflows/issue-63/README.md).
+
 1. The agent calls `spice_validate` with a SPICE netlist.
 2. The topology preflight returns `INVALID_CIRCUIT`, `details.involvedNodes: ["sense"]`, a source location, and a suggestion to add a DC path. If a different singularity is only discovered while solving, `spice_simulate` instead returns `SINGULAR_MATRIX`.
 3. The agent edits the netlist, validates again, then calls `spice_simulate` for OP.
@@ -397,6 +399,8 @@ Backend IDs remain explicit: `spice-ts-js`, reserved `spice-ts-wasm`, and existi
 No console-message parsing or host file access is required.
 
 ### Workflow B: simulate a large tscircuit transient
+
+Executable: [`examples/circuit-json-threshold-cancellation`](../../examples/circuit-json-threshold-cancellation/README.md) and the partial-terminal schema checks in [`examples/agent-workflows/issue-63`](../../examples/agent-workflows/issue-63/README.md).
 
 1. The agent exports a tscircuit design as circuit-json and calls `spice_validate` with explicit transient analysis.
 2. The #35 adapter reports every ignored layout-only element as info and rejects any unsupported simulation-relevant device as `UNSUPPORTED_FEATURE`.

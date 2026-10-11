@@ -57,8 +57,10 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
   }
 
   if (keyword === 'PULSE') {
+    // ngspice-47 reads up to eight PULSE fields; the eighth is NP, the number
+    // of pulses (vsrcload.c, outside the `ngbehavior=xs` phase mode).
     const args = parseWaveformArguments(
-      tokens, waveformIdx, acIdx >= 0 ? startIdx + acIdx : -1, 7, 'PULSE',
+      tokens, waveformIdx, acIdx >= 0 ? startIdx + acIdx : -1, 8, 'PULSE',
     );
     return {
       ...(dc !== undefined ? { dc } : {}),
@@ -68,6 +70,7 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
       // TSTEP in transient analysis (see effectivePulse).
       delay: args[2] ?? 0, rise: args[3] ?? 0, fall: args[4] ?? 0,
       width: args[5] ?? Infinity, period: args[6] ?? Infinity,
+      ...(args[7] !== undefined ? { pulses: args[7] } : {}),
     } satisfies PulseSource;
   }
 
@@ -84,24 +87,9 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
   }
 
   if (keyword === 'PWL') {
-    const parenStart = tokens.indexOf('(', waveformIdx);
-    let argumentTokens: string[];
-    if (parenStart === waveformIdx + 1) {
-      const parenEnd = tokens.indexOf(')', parenStart);
-      if (parenEnd < 0) throw new Error('PWL source requires a closing parenthesis');
-      if (parenEnd !== tokens.length - 1 && parenEnd + 1 !== startIdx + acIdx) {
-        throw new Error(`Unsupported PWL source parameters: '${tokens.slice(parenEnd + 1).join(' ')}'`);
-      }
-      argumentTokens = tokens.slice(parenStart + 1, parenEnd);
-    } else {
-      let end = waveformIdx + 1;
-      while (end < tokens.length && !SOURCE_KEYWORDS.has(tokens[end].toUpperCase())) end++;
-      if (end !== tokens.length && end !== startIdx + acIdx) {
-        throw new Error(`Unsupported PWL source parameters: '${tokens.slice(end).join(' ')}'`);
-      }
-      argumentTokens = tokens.slice(waveformIdx + 1, end);
-    }
-    const args = argumentTokens.map(parseNumber);
+    const args = parseWaveformArguments(
+      tokens, waveformIdx, acIdx >= 0 ? startIdx + acIdx : -1, Infinity, 'PWL',
+    );
     if (args.length < 2 || args.length % 2 !== 0) {
       throw new Error('PWL source requires one or more complete time/value pairs');
     }
@@ -135,22 +123,14 @@ function parseWaveformArguments(
   maximum: number,
   keyword: string,
 ): number[] {
-  const parenStart = tokens.indexOf('(', waveformIdx);
-  if (parenStart === waveformIdx + 1) {
-    const parenEnd = tokens.indexOf(')', parenStart);
-    if (parenEnd < 0) throw new Error(`${keyword} source requires a closing parenthesis`);
-    if (parenEnd !== tokens.length - 1 && parenEnd + 1 !== acIdx) {
-      throw new Error(`Unsupported ${keyword} source parameters: '${tokens.slice(parenEnd + 1).join(' ')}'`);
-    }
-    const args = tokens.slice(parenStart + 1, parenEnd);
-    if (args.length > maximum) {
-      throw new Error(`Unsupported ${keyword} source parameters: '${args.slice(maximum).join(' ')}'`);
-    }
-    return args.map(parseNumber);
-  }
-
+  // Arguments run to the next source keyword. A `KEY=value` token (e.g. the
+  // PWL `R=`/`TD=` repeat options) is not supported and ends the list.
   let end = waveformIdx + 1;
-  while (end < tokens.length && !SOURCE_KEYWORDS.has(tokens[end].toUpperCase())) end++;
+  while (
+    end < tokens.length
+    && !SOURCE_KEYWORDS.has(tokens[end].toUpperCase())
+    && !tokens[end].includes('=')
+  ) end++;
   const args = tokens.slice(waveformIdx + 1, end);
   if (args.length > maximum || (end !== tokens.length && end !== acIdx)) {
     const trailing = args.length > maximum ? args.slice(maximum) : tokens.slice(end);
@@ -197,9 +177,16 @@ const SOURCE_KEYWORDS = new Set([
   ...UNSUPPORTED_WAVEFORMS,
 ]);
 
+/**
+ * Normalize the value part of a source card the way ngspice-47 reads it:
+ * `DC=`/`AC=` split into keyword and value, and every '(' or ')' dropped.
+ * ngspice's INPgetUTok skips parentheses (and commas) as separators, so
+ * `0.7v (PWL 0 3 1n -6) (AC 1v)` and `PWL( (0 0) (1 1) )` are flat value lists.
+ */
 function normalizeSourceAssignments(tokens: string[], startIdx: number): string[] {
   return tokens.flatMap((token, index) => {
     if (index < startIdx) return token;
+    if (token === '(' || token === ')') return [];
     const match = token.match(/^(DC|AC)=(.*)$/i);
     return match ? [match[1], match[2]] : token;
   });
