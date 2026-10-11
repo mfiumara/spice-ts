@@ -10,7 +10,8 @@ export interface GilbertPeierlsOptions {
   /**
    * Fill-reducing ordering. `'amd'` (default) permutes columns and preferred
    * pivot rows symmetrically by an approximate minimum degree ordering of
-   * A + Aᵀ; `'natural'` keeps the MNA variable order.
+   * A + Aᵀ; `'natural'` keeps the MNA variable order. Either way, structural
+   * column singletons are pivoted first (see `columnSingletonsFirst`).
    */
   ordering?: ColumnOrdering;
 }
@@ -43,6 +44,8 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
   // colPerm[k] = j means original column j is factorized at step k
   private colPerm!: Int32Array;
+  // rowPref[k] = i means original row i is the preferred pivot at step k
+  private rowPref!: Int32Array;
 
   // Pre-allocated L/U structure (CSC format)
   private lColPtr!: Int32Array;
@@ -86,12 +89,16 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
     // The fill-reducing ordering depends only on the sparsity pattern, so it
     // is computed here once per topology and reused by every factorize().
+    let order: Int32Array;
     if (this.ordering === 'amd') {
-      this.colPerm = amdOrdering(A);
+      order = amdOrdering(A);
     } else {
-      this.colPerm = new Int32Array(n);
-      for (let j = 0; j < n; j++) this.colPerm[j] = j;
+      order = new Int32Array(n);
+      for (let j = 0; j < n; j++) order[j] = j;
     }
+    const pivots = columnSingletonsFirst(A, order);
+    this.colPerm = pivots.colPerm;
+    this.rowPref = pivots.rowPref;
 
     // Size the initial factors from A's structural lower/upper parts in the
     // natural order. The column ordering moves entries between L and U, and
@@ -221,9 +228,10 @@ export class GilbertPeierlsSolver implements SparseSolver {
     if (this.workspaceDirty) workspace.fill(0);
     this.workspaceDirty = true;
 
-    // Initialize the row permutation to the column ordering so the natural
-    // pivot candidate at step j is the symmetrically permuted diagonal.
-    perm.set(colPerm);
+    // Initialize the row permutation to the preferred pivot rows: the forced
+    // row of each leading column singleton, then the symmetrically permuted
+    // diagonal where it is still available.
+    perm.set(this.rowPref);
     pinv.fill(-1);
     nonzeroFlag.fill(-1);
 
@@ -510,6 +518,101 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
     return x;
   }
+}
+
+/**
+ * Move structural column singletons ahead of the fill-reducing order.
+ *
+ * A column whose stored entries all lie in already-claimed rows except one
+ * can only pivot on that row. Left-looking threshold pivoting chooses a row
+ * per column without looking ahead, so an earlier column whose largest entry
+ * sits in that row (e.g. a 1e64 nonlinear derivative) would consume it and
+ * leave the singleton column with only round-off below the singularity
+ * threshold (#568). ngspice's Markowitz search avoids this by pivoting
+ * singletons first (spOrderAndFactor → SearchForSingleton); this does the
+ * same structurally, peeling iteratively so that columns which become
+ * singletons once a row is claimed are also forced.
+ *
+ * Peeled columns have empty L columns, so they add no fill. The remaining
+ * columns keep their relative order. Stored explicit zeros count as
+ * structure, because values change between Newton iterations.
+ */
+function columnSingletonsFirst(
+  A: CscMatrix,
+  order: Int32Array,
+): { colPerm: Int32Array; rowPref: Int32Array } {
+  const n = A.size;
+  const { colPtr, rowIdx } = A;
+
+  // Row-wise structure (CSR of the pattern) and unclaimed entries per column.
+  const rowPtr = new Int32Array(n + 1);
+  const remaining = new Int32Array(n);
+  for (let j = 0; j < n; j++) {
+    remaining[j] = colPtr[j + 1] - colPtr[j];
+    for (let p = colPtr[j]; p < colPtr[j + 1]; p++) rowPtr[rowIdx[p] + 1]++;
+  }
+  for (let i = 0; i < n; i++) rowPtr[i + 1] += rowPtr[i];
+  const rowCols = new Int32Array(rowPtr[n]);
+  const fill = rowPtr.slice(0, n);
+  for (let j = 0; j < n; j++) {
+    for (let p = colPtr[j]; p < colPtr[j + 1]; p++) rowCols[fill[rowIdx[p]]++] = j;
+  }
+
+  const colPerm = new Int32Array(n);
+  const rowPref = new Int32Array(n);
+  const rowClaimed = new Uint8Array(n);
+  const colPlaced = new Uint8Array(n);
+  const queue = new Int32Array(n);
+  let head = 0;
+  let tail = 0;
+  for (let t = 0; t < n; t++) {
+    if (remaining[order[t]] === 1) queue[tail++] = order[t];
+  }
+
+  let k = 0;
+  while (head < tail) {
+    const c = queue[head++];
+    // A column can be queued once; it may since have lost its last row to
+    // another singleton (structurally singular) — leave it to the main order.
+    if (colPlaced[c] || remaining[c] !== 1) continue;
+    let r = -1;
+    for (let p = colPtr[c]; p < colPtr[c + 1]; p++) {
+      if (!rowClaimed[rowIdx[p]]) { r = rowIdx[p]; break; }
+    }
+    colPlaced[c] = 1;
+    rowClaimed[r] = 1;
+    colPerm[k] = c;
+    rowPref[k] = r;
+    k++;
+    for (let p = rowPtr[r]; p < rowPtr[r + 1]; p++) {
+      const c2 = rowCols[p];
+      if (!colPlaced[c2] && --remaining[c2] === 1 && tail < n) queue[tail++] = c2;
+    }
+  }
+
+  // Remaining columns in their original relative order, preferring the
+  // diagonal row when no singleton claimed it; fill gaps with unclaimed rows.
+  const firstRest = k;
+  for (let t = 0; t < n; t++) {
+    const c = order[t];
+    if (colPlaced[c]) continue;
+    colPerm[k] = c;
+    if (!rowClaimed[c]) {
+      rowClaimed[c] = 1;
+      rowPref[k] = c;
+    } else {
+      rowPref[k] = -1;
+    }
+    k++;
+  }
+  let nextRow = 0;
+  for (let t = firstRest; t < n; t++) {
+    if (rowPref[t] >= 0) continue;
+    while (rowClaimed[nextRow]) nextRow++;
+    rowClaimed[nextRow] = 1;
+    rowPref[t] = nextRow;
+  }
+  return { colPerm, rowPref };
 }
 
 /**
