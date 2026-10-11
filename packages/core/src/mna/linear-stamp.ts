@@ -1,34 +1,52 @@
 import type { MNAAssembler } from './assembler.js';
-import type { DeviceModel, StampContext } from '../devices/device.js';
+import { DEVICE_GMIN, type DeviceModel, type StampContext } from '../devices/device.js';
 import { Resistor } from '../devices/resistor.js';
 import { Capacitor } from '../devices/capacitor.js';
+import { MOSFET } from '../devices/mosfet.js';
 
 /**
- * Stamp programs for the plain two-terminal linear devices (issue #570).
+ * Stamp programs for device lists stamped every Newton iteration (issues
+ * #570, #625).
  *
  * Every Newton iteration restamps every device. For a plain conductance-form
  * {@link Resistor} or a {@link Capacitor} that is a megamorphic `stamp` call,
  * an array destructure and up to four `ctx.stampG`/`ctx.stampC` calls, each
  * looking up its value slot. On large linear decks (the M2 RC ladder) that
- * dispatch dominated self time.
+ * dispatch dominated self time. A level-1 {@link MOSFET} makes up to eleven
+ * such `ctx.stampG` calls per stamp; lists that still reach `stamp` (the
+ * trapezoidal history restamp, operating points on an already locked
+ * assembler) spent more time there than the batch-stamped companion build.
  *
  * A program walks the same device list in the same order. Each maximal run of
  * consecutive plain resistors (or capacitors) is stamped by one tight loop
- * from value slots resolved once per locked topology; every other device is
- * still stamped through its own method. Values are read from the device at
- * stamp time (`conductance`, `capacitance`), so parameter changes apply as
- * before. Each slot receives exactly the additions the devices would make, in
- * the same order, so matrices are bit-identical to per-device stamping.
+ * from value slots resolved once per locked topology, and each maximal run of
+ * consecutive plain MOSFETs by {@link MOSFET.batchStamp}, which performs the
+ * same additions as {@link MOSFET.stamp} from cached slots. Every other device
+ * is still stamped through its own method. Values are read from the device at
+ * stamp time (`conductance`, `capacitance`, the solution vector), so parameter
+ * changes apply as before. Each slot receives exactly the additions the
+ * devices would make, in the same order, so matrices are bit-identical to
+ * per-device stamping.
  */
+
+/** Step kernel: a single device stamped through its own method. */
+const KERNEL_DEVICE = 0;
+/** Step kernel: a run of plain resistors (static) or capacitors (dynamic). */
+const KERNEL_TWO_TERMINAL = 1;
+/** Step kernel: a run of plain level-1 MOSFETs (static programs only). */
+const KERNEL_MOSFET = 2;
 
 /** One run of kernel devices, or a single device stamped through its own method. */
 interface Step {
+  readonly kernel: typeof KERNEL_DEVICE | typeof KERNEL_TWO_TERMINAL | typeof KERNEL_MOSFET;
   /** Device stamped through its own method; null for a kernel run. */
   readonly device: DeviceModel | null;
-  /** Kernel-run devices (resistors in a static program, capacitors in a dynamic one). */
+  /** Two-terminal run devices (resistors in a static program, capacitors in a dynamic one). */
   readonly run: readonly (Resistor | Capacitor)[];
-  /** Four value slots per run device: (n1,n1), (n2,n2), (n1,n2), (n2,n1); -1 = not stamped. */
+  /** Four value slots per two-terminal run device: (n1,n1), (n2,n2), (n1,n2), (n2,n1); -1 = not stamped. */
   readonly slots: Int32Array;
+  /** MOSFET run devices, in netlist order. */
+  readonly mosfets: MOSFET[];
 }
 
 interface Program {
@@ -60,6 +78,8 @@ const programs: WeakMap<MNAAssembler, Map<readonly DeviceModel[], Entry>>[] = [
   new WeakMap(), new WeakMap(),
 ];
 
+const NO_SLOTS = new Int32Array(0);
+
 /** Exactly a Resistor (no subclass, no own override) in conductance form. */
 function isPlainResistor(device: DeviceModel): device is Resistor {
   return Object.getPrototypeOf(device) === Resistor.prototype
@@ -72,6 +92,12 @@ function isPlainCapacitor(device: DeviceModel): device is Capacitor {
   return Object.getPrototypeOf(device) === Capacitor.prototype
     && !Object.hasOwn(device, 'stamp')
     && !Object.hasOwn(device, 'stampDynamic');
+}
+
+/** Exactly a MOSFET (no subclass, no own override). */
+function isPlainMosfet(device: DeviceModel): device is MOSFET {
+  return Object.getPrototypeOf(device) === MOSFET.prototype
+    && !Object.hasOwn(device, 'stamp');
 }
 
 /**
@@ -99,22 +125,42 @@ function buildProgram(assembler: MNAAssembler, devices: readonly DeviceModel[], 
   const index = assembler.stampIndex;
   const steps: Step[] = [];
   const scratch = new Int32Array(4 * devices.length);
+  // At most one of the two runs is open at a time, so runs never mix and
+  // netlist order is kept.
   let run: (Resistor | Capacitor)[] = [];
+  let mosfets: MOSFET[] = [];
   const flush = (): void => {
-    if (run.length === 0) return;
-    steps.push({ device: null, run, slots: scratch.slice(0, 4 * run.length) });
-    run = [];
+    if (run.length > 0) {
+      steps.push({
+        kernel: KERNEL_TWO_TERMINAL, device: null, run, slots: scratch.slice(0, 4 * run.length), mosfets: [],
+      });
+      run = [];
+    }
+    if (mosfets.length > 0) {
+      steps.push({ kernel: KERNEL_MOSFET, device: null, run: [], slots: NO_SLOTS, mosfets });
+      mosfets = [];
+    }
   };
   for (const device of devices) {
     // A plain capacitor's static stamp is empty: skipping it adds nothing.
     if (kind === 'static' && isPlainCapacitor(device)) continue;
-    const kernel = kind === 'static' ? isPlainResistor(device) : isPlainCapacitor(device);
-    if (kernel && writeTwoTerminalSlots(index, device, scratch, 4 * run.length)) {
-      run.push(device as Resistor | Capacitor);
-      continue;
+    if (kind === 'static' ? isPlainResistor(device) : isPlainCapacitor(device)) {
+      if (mosfets.length > 0) flush();
+      if (writeTwoTerminalSlots(index, device, scratch, 4 * run.length)) {
+        run.push(device as Resistor | Capacitor);
+        continue;
+      }
+    } else if (kind === 'static' && isPlainMosfet(device)) {
+      if (run.length > 0) flush();
+      if (device.canBatchStamp(index)) {
+        mosfets.push(device);
+        continue;
+      }
     }
+    // Not a kernel device, or not in the locked pattern: its own stamp
+    // handles (or reports) it.
     flush();
-    steps.push({ device, run: [], slots: new Int32Array(0) });
+    steps.push({ kernel: KERNEL_DEVICE, device, run: [], slots: NO_SLOTS, mosfets: [] });
   }
   flush();
   return { steps };
@@ -162,8 +208,18 @@ export function stampStaticDevices(
   const gv = assembler.gValues;
   for (let s = 0; s < steps.length; s++) {
     const step = steps[s];
-    if (step.device !== null) {
-      step.device.stamp(ctx);
+    if (step.kernel === KERNEL_DEVICE) {
+      step.device!.stamp(ctx);
+      continue;
+    }
+    if (step.kernel === KERNEL_MOSFET) {
+      // MOSFET.stamp reads ctx.getVoltage (the assembler solution) and adds
+      // through ctx.stampG/stampB into gValues and b; batchStamp performs the
+      // same additions in the same order from cached slots.
+      MOSFET.batchStamp(
+        step.mosfets, gv, assembler.b, assembler.solution, assembler.stampIndex,
+        ctx.gmin ?? DEVICE_GMIN,
+      );
       continue;
     }
     const run = step.run as readonly Resistor[];
@@ -199,8 +255,8 @@ export function stampDynamicDevices(
   const cv = assembler.cValues;
   for (let s = 0; s < steps.length; s++) {
     const step = steps[s];
-    if (step.device !== null) {
-      step.device.stampDynamic!(ctx);
+    if (step.kernel === KERNEL_DEVICE) {
+      step.device!.stampDynamic!(ctx);
       continue;
     }
     const run = step.run as readonly Capacitor[];

@@ -2033,11 +2033,8 @@ export class Circuit {
               resolveNode(desc.nodes[2]),
               resolveNode(bulkNode),
             ];
-            devices.push(new BSIM3v3(
-              desc.name, nodeIdxs, modelParams,
-              { W: desc.params?.W ?? 1e-6, L: desc.params?.L ?? 1e-6 },
-              polarity,
-            ));
+            // Instance W/L/AD/AS/PD/PS/DELVTO/MULU0/M; b3set.c supplies the defaults.
+            devices.push(new BSIM3v3(desc.name, nodeIdxs, modelParams, desc.params ?? {}, polarity));
           } else if (level === 6) {
             // MOS6 (Sakurai-Newton n-th power law) — 4-terminal, bulk defaults to source.
             const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];

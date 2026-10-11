@@ -1,0 +1,29 @@
+<dir>/prof-after/resistor-mesh-op-10000.cpuprofile: 166 samples, 529.3 ms sampled
+
+Top self time
+     141.5 ms  26.7%  factorize packages/core/dist/chunk-7SY35Y23.js:18259
+      62.0 ms  11.7%  (garbage collector)
+      58.0 ms  11.0%  amdOrdering packages/core/dist/chunk-7SY35Y23.js:17943
+      21.0 ms   4.0%  analyzePattern packages/core/dist/chunk-7SY35Y23.js:18163
+      21.0 ms   4.0%  newtonRaphson packages/core/dist/chunk-7SY35Y23.js:19149
+      19.3 ms   3.6%  lockTopology packages/core/dist/chunk-7SY35Y23.js:18675
+      16.5 ms   3.1%  compile packages/core/dist/chunk-7SY35Y23.js:14500
+      15.0 ms   2.8%  resolveResistor packages/core/dist/chunk-7SY35Y23.js:847
+      13.7 ms   2.6%  parseDevice packages/core/dist/chunk-7SY35Y23.js:17400
+      13.4 ms   2.5%  extractControlBlocks packages/core/dist/chunk-7SY35Y23.js:16392
+      10.0 ms   1.9%  resolveNode packages/core/dist/chunk-7SY35Y23.js:14570
+       9.8 ms   1.9%  compileSourceTextModule node:internal/modules/esm/utils:344
+
+Top inclusive time
+     529.3 ms 100.0%  (root)
+     380.5 ms  71.9%  simulate packages/core/dist/chunk-7SY35Y23.js:25584
+     316.0 ms  59.7%  solveDCOperatingPoint packages/core/dist/chunk-7SY35Y23.js:19393
+     316.0 ms  59.7%  solveCompiledAnalyses packages/core/dist/chunk-7SY35Y23.js:25621
+     310.9 ms  58.7%  newtonRaphson packages/core/dist/chunk-7SY35Y23.js:19149
+     147.5 ms  27.9%  factorize packages/core/dist/chunk-7SY35Y23.js:18259
+      93.7 ms  17.7%  getSparseSolver packages/core/dist/chunk-7SY35Y23.js:18802
+      88.8 ms  16.8%  analyzePattern packages/core/dist/chunk-7SY35Y23.js:18163
+      62.0 ms  11.7%  (garbage collector)
+      58.6 ms  11.1%  amdOrdering packages/core/dist/chunk-7SY35Y23.js:17943
+      47.7 ms   9.0%  parseAsync packages/core/dist/chunk-7SY35Y23.js:16822
+      46.6 ms   8.8%  compile packages/core/dist/chunk-7SY35Y23.js:14500
