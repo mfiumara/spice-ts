@@ -145,6 +145,8 @@ describe('aggregate report artifact verification', () => {
     assert.equal(vbicAc.comparisons[1].metrics.signals['v(pole(1))'].absoluteError.max, report.matchedPointEnvelope.maximumAbsoluteError);
     // MOS6 TransientChargeState (#468, PR #478): simpleinv improves, the mos6inv node voltages lose (#479). Locked exactly, not bounded.
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #474') && text.includes('PR #485') && text.includes('PR #478') && text.includes('#479')));
+    // Charge LTE and PULSE breakpoints (#469, PR #483): bjt-rtl v(3) loss gone, rc-transient matched-point loss published.
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #483') && text.includes('231274507458.05075') && text.includes('rc-transient')));
     const mos6Worst: Record<string, number> = {
       'ngspice/mos6-inverter-transient': 0.3261166904115491,
       'ngspice/mos6-simple-inverter-transient': 0.10566947866046283,
@@ -217,8 +219,8 @@ describe('aggregate report artifact verification', () => {
     assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 933);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 7175.34033203125);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 7175.34033203125);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 248284946174.52246);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 5233588211.050267);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 231274507458.05075);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 4829584075.03667);
   });
 
   it('commits runtime sums derived from all 100 engine receipts', async () => {

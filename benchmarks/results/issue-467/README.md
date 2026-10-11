@@ -26,6 +26,7 @@ them by per-fixture metrics, not by hash.
 | 15 | `90b461b` + `cc21aec` | #474 DC OP true gmin stepping | `5a57e79a` (metrics identical to run 14) | 63/1/36 | 70 / 51 | pin `53cd510c` → `7c3bae20` only; no fixture reaches the true-gmin fallback |
 | 16 | `9ba80af` + `cc21aec` | #485 MNA stamp slot cache | `5a57e79a` | 63/1/36 | 70 / 51 | outcome reproduces run 15 exactly: outcome-neutral |
 | 17 | `1e8d9f8` (this branch, pin `cdd28c98`) | #478 MOS6 TransientChargeState | `e669374c` (before ledger edit) | 63/1/36 | 70 / 51 | only the 3 MOS6 fixtures: simpleinv v(11) 0.2215 → 0.1057 V, i(vin)/i(vdd) RMS down 71x/915x; mos6inv currents down but worst voltage 0.2798 → 0.3261 V, abs max worse on 39 of 44 (#479) |
+| 18 | `96a9039` (this branch, pin `cdd28c98` unchanged) | #483 charge LTE + PULSE omitted-parameter breakpoints | `662cd15d` (before ledger edit) | 63/1/36 | 70 / 51 | 12 transients: bjt-rtl v(3) 0.5997 → 0.2940 V; mos-amp v(6) 4.805 → 4.784 V; rel envelope 2.483e11 → 2.313e11; rc-transient v(2) 6.9e-4 → 1.67e-3 V loss; mesa unchanged |
 | final | this branch, regenerated ledger | — | see AGGREGATE_PARITY.md | 63/1/36 | 70 / 51 | `--check` passes |
 
 ngspice stays at 52/9/39 throughout. Run 5 reproducing run 4's metrics
@@ -39,10 +40,14 @@ before the ledger text was edited. Row 11 is an unmodified `--check` on the
 merge. Rows 15 and 16 ran in throwaway worktrees (main commit + `cc21aec`,
 `git merge --no-commit`) with only the SOURCES.md pin set to that commit's
 catalogue (`7c3bae20`); row 17 is the merged branch with the pin at `cdd28c98`,
-before the ledger text was edited. Nothing from the bisect patches is committed.
+before the ledger text was edited. Row 18 is the branch after merging main
+`96a9039` (SOURCES.md unchanged), before the ledger text was edited. Nothing
+from the bisect patches is committed.
 
 ## Notable moves (abs max / abs RMS)
 
+- #483 gains: corpus-e/bjt-rtl-inverter-chain v(3) 0.5997 → 0.2940 V, v(2) 0.214 → 0.119 V (removes the #463 loss); mos-amplifier v(6) 4.805 → 4.784 V; coupled-lossy-lines 0.866 → 0.845 V and v(5) rel max 2.483e11 → 2.313e11 (relative envelope); lossy-line-24-inch v(2) 1.135 → 1.115 V; schmitt-trigger RMS down on 8 of 10. mesa-oscillator unchanged.
+- #483 losses: rc-transient (ngspice and classic) v(2)/i(vin) 6.89e-4 → 1.67e-3 at matched points (closed-form error improves per PR #483); bjt-rtl v(5) 0.243 → 0.282 V; mos-amplifier v(5) 4.494 → 4.571 V; lossy-line-24-inch v(3) 1.104 → 1.122 V; coupled-lossy-lines RMS up on 12 of 47; mos-memory-cell RMS up on 8 of 13; rtl-inverter-chain RMS up on 4 of 8.
 - #474 and #485: no per-fixture metric, grid or status change (rows 15-16).
 - #478 gains: mos6-simple-inverter-transient (590 → 321 points, ngspice 308) v(11) 0.2215 → 0.1057 V, i(vdd) 8.14e-5 → 6.17e-7 A (RMS 6.74e-5 → 7.37e-8 A, rel max 22447 → 1.16), i(vin) 2.27e-5 → 2.01e-6 A (RMS 1.61e-5 → 2.28e-7 A); mos6inv rows i(vin) 3.21e-5 → 1.13e-5 A (RMS 1.47e-5 → 9.05e-7 A), i(vdd) 1.97e-4 → 4.35e-5 A. The #455/#461 i(vin) RMS losses below shrink 16x-71x; #461 stays open.
 - #478 losses: mos6-inverter-transient / mos6-inverter-chain (3872 → 912 points, ngspice 315) worst 0.2798 V v(xndinv4.14) → 0.3261 V v(xndinv3.14); abs max worse on 39 and abs RMS on 36 of 44 signals; v(5) 0.0076 → 0.0752 V, v(43) 0.0062 → 0.0724 V. Voltage error scales with RELTOL: missing MOS6 device convergence test / MODEINITPRED in transient Newton (#479).
