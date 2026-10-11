@@ -79,6 +79,9 @@ export {
   TimestepTooSmallError,
   CycleError,
   UnsupportedModelLevelError,
+  UnsupportedCircuitModelTypeError,
+  ModelTypeMismatchError,
 } from './errors.js';
+export { SUPPORTED_MODEL_TYPES, DEVICE_MODEL_TYPES, UnsupportedModelTypeError } from './parser/model-type.js';
 export type { ConvergenceFailureKind } from './errors.js';
 export { UnsupportedCodeModelError } from './parser/xspice-parser.js';
