@@ -1,0 +1,29 @@
+cmos-inverter-chain-tran-10000.cpuprofile (prof-before): 3372 samples, 14382.4 ms sampled
+
+Top self time
+    7323.9 ms  50.9%  batchStamp packages/core/dist/chunk-5X6YM5GK.js:5352
+    1719.6 ms  12.0%  factorize packages/core/dist/chunk-5X6YM5GK.js:20118
+     647.5 ms   4.5%  (garbage collector)
+     637.1 ms   4.4%  limitNewtonStep packages/core/dist/chunk-5X6YM5GK.js:5091
+     515.5 ms   3.6%  attemptStep packages/core/dist/chunk-5X6YM5GK.js:21632
+     450.8 ms   3.1%  buildCompanionSystem packages/core/dist/chunk-5X6YM5GK.js:21456
+     372.6 ms   2.6%  applyDeviceStepLimits packages/core/dist/chunk-5X6YM5GK.js:20996
+     292.8 ms   2.0%  pnjlim4 packages/core/dist/chunk-5X6YM5GK.js:4806
+     284.3 ms   2.0%  chargeTruncationTimestep packages/core/dist/chunk-5X6YM5GK.js:22447
+     247.8 ms   1.7%  bulkJunction packages/core/dist/chunk-5X6YM5GK.js:4796
+     245.3 ms   1.7%  stampDynamicDevices packages/core/dist/chunk-5X6YM5GK.js:20964
+     210.3 ms   1.5%  newtonRaphson packages/core/dist/chunk-5X6YM5GK.js:21008
+
+Top inclusive time
+   14382.4 ms 100.0%  (root)
+   13616.4 ms  94.7%  simulate packages/core/dist/chunk-5X6YM5GK.js:27506
+   13459.6 ms  93.6%  solveCompiledAnalyses packages/core/dist/chunk-5X6YM5GK.js:27543
+    9788.5 ms  68.1%  solveTransient packages/core/dist/chunk-5X6YM5GK.js:22732
+    9622.5 ms  66.9%  advanceSolution packages/core/dist/chunk-5X6YM5GK.js:22135
+    7883.6 ms  54.8%  batchStamp packages/core/dist/chunk-5X6YM5GK.js:5352
+    7089.2 ms  49.3%  attemptStep packages/core/dist/chunk-5X6YM5GK.js:21632
+    5138.7 ms  35.7%  buildCompanionSystem packages/core/dist/chunk-5X6YM5GK.js:21456
+    3679.8 ms  25.6%  stampStaticDevices packages/core/dist/chunk-5X6YM5GK.js:20923
+    3671.0 ms  25.5%  transientInitialSolution packages/core/dist/chunk-5X6YM5GK.js:27914
+    3666.6 ms  25.5%  solveDCOperatingPoint packages/core/dist/chunk-5X6YM5GK.js:21252
+    3596.8 ms  25.0%  newtonRaphson packages/core/dist/chunk-5X6YM5GK.js:21008
