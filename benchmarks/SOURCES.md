@@ -411,6 +411,12 @@ At ingestion on ngspice-47, 13 circuits produce raw analysis data and 7 fail on 
 |---|---|---|---|---|
 | Forward-biased diode shot and flicker noise, LIN/DEC/OCT | Original spice-ts benchmark specified by [issue #179](https://github.com/mfiumara/spice-ts/issues/179), issue revision as of 2026-10-10. Reference equations and behavior are pinned to ngspice source revision [`032b1c32`](https://github.com/ngspice/ngspice/blob/032b1c32/src/spicelib/devices/dio/dionoise.c). | Fixtures dedicated [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/); ngspice reference source is BSD-3-Clause under its pinned `COPYING`. | The three original fixture decks differ only in the `.noise` LIN/DEC/OCT card and are committed for unrestricted redistribution. No values or tolerances are adapted between engines; the runner adds only temporary ngspice output-control commands. | `benchmarks/diode-noise/diode-noise-{lin,dec,oct}.cir`; compare against ngspice-47 with `pnpm exec tsx benchmarks/diode-noise/compare.ts`. |
 
+## Independent-source waveform syntax, issue #492
+
+| Circuit(s) | Canonical source / revision | Licence | Redistribution / adaptation | Local use |
+|---|---|---|---|---|
+| 14 minimal decks, one per parenthesised/extended source form | Source cards copied verbatim from ngspice examples at [`3ef069fb`](https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/): `cider/diode/{diode,diotran,pd1,pindiode}.cir`, `cider/mos/bootinv.cir`, `cider/serial/recovery.cir`, `cider/surfmob/Tbicmpd1.cir`, `xspice/original-examples/{arbitrary_phase,digital_models1,hybrid_models1_transient}.deck` (corpus-f batch 1, #484). One NP-truncation deck is project-authored. | ngspice examples are BSD-3-Clause; the project-authored deck and the added RC loads are MIT, as is this repository. | Each deck is the verbatim source card plus a linear RC load and the analysis line, so both engines can run it without CIDER/XSPICE devices. Both engines read the same text. ngspice also receives a `.control` block that only runs the deck and writes the vectors. | `benchmarks/source-waveform-syntax/compare.ts` writes `report.json`; the README there records every residual. |
+
 ## Chua & Lin circuit, issue #48
 
 - Fixture: `benchmarks/circuits/chua-issue-48.cir`
