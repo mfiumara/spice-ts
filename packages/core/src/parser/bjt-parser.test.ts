@@ -83,9 +83,9 @@ describe('BJT Q-card parser', () => {
 
     expect(() => parse(`classic substrate form
       Q1 c b e substrate QMOD
-      .model QMOD NPN(BF=100 VAF=50 ISS=1f)
+      .model QMOD NPN(BF=100 VAF=50 ISC=1f)
       .op
-    `).compile()).toThrow("Unsupported bounded BJT model parameter: 'ISS'");
+    `).compile()).toThrow("Unsupported bounded BJT model parameter: 'ISC'");
   });
 
   it.each([

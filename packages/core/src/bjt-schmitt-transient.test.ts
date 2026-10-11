@@ -119,8 +119,18 @@ describe('corpus-E BJT Schmitt transient convergence (#139)', () => {
     // scale. Before #482 the raw-RHS trapezoidal history of cload paired the
     // new BJT Jacobian with the old solution, and the step after recovery fell
     // into a 0.24/0.49/0.98 ps grow-fail-cut cycle (3129 points, 1037 Newton
-    // retries) instead.
-    expect(Math.min(...postRecoveryGaps)).toBeGreaterThan(1e-12);
+    // retries) instead. That cycle shrinks the step again after each growth
+    // and never leaves the picosecond scale, so the guard asserts monotonic
+    // regrowth: no post-recovery gap is smaller than the one before it, and dt
+    // grows at least fourfold over the eight steps. Once the junctions are no
+    // longer statically clamped above vcrit (#538) the recovery step is a
+    // shorter 0.5 ns and the first regrown gap is 0.99 ps, then 1.97, 3.95 ps...
+    // (previously 5.4, 10.8, 17.2 ps...), so an absolute 1 ps floor no longer
+    // separates the two behaviours.
+    expect(postRecoveryGaps.every((gap, index) => (
+      index === 0 || gap >= postRecoveryGaps[index - 1]!
+    ))).toBe(true);
+    expect(postRecoveryGaps.at(-1)!).toBeGreaterThanOrEqual(4 * postRecoveryGaps[0]!);
     expect(postRecoveryGaps.some((gap, index) => (
       index > 0 && gap > postRecoveryGaps[index - 1]!
       && gap <= postRecoveryGaps[index - 1]! * 2.01
@@ -141,11 +151,18 @@ describe('corpus-E BJT Schmitt transient convergence (#139)', () => {
     // deck converged (RELTOL=1e-7, TMAX=10 ps) gives v6=-1.0125, v7=-1.8101
     // at that time; the raw-RHS history (#482) had v7 0.6 mV high at -1.8095.
     // The mid-jump v7 sample moved from -0.8945 to -0.8950 when the BJT
-    // thermal voltage became ngspice's kT/q at 300.15 K (#525).
+    // thermal voltage became ngspice's kT/q at 300.15 K (#525). The mid-jump
+    // sample is wherever the recovery step lands: with the true exponential
+    // above vcrit (#538) the step is 287.62 -> 288.12 ns instead of
+    // 287.62 -> 291.62 ns, so it reads v6=-0.0604, v7=-0.9199.
+    // ngspice-47 on this charge-free deck (`off`, `.tran 20ns 1000ns 0 0.2ns`)
+    // aborts with "timestep too small" at 287.616 ns with v6=-1.0122,
+    // v7=-1.8102: the same onset as the pre-edge sample here.
+    expect(transient.time[edgeStart - 1]! / 287.616e-9).toBeCloseTo(1, 4);
     expect(v6[edgeStart - 1]).toBeCloseTo(-1.0125, 3);
     expect(v7[edgeStart - 1]).toBeCloseTo(-1.8101, 3);
-    expect(v6[edgeStart]).toBeCloseTo(-0.0461, 3);
-    expect(v7[edgeStart]).toBeCloseTo(-0.8950, 3);
+    expect(v6[edgeStart]).toBeCloseTo(-0.0604, 3);
+    expect(v7[edgeStart]).toBeCloseTo(-0.9199, 3);
 
     const telemetry = first.convergence!.transient;
     expect(telemetry.acceptedSteps).toBeLessThan(4_000);
