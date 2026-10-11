@@ -84,7 +84,7 @@ R1 a 0 1k
   });
 
   it.each([
-    'SW', 'CSW', 'R', 'PJF', 'PHFET', 'PMF', 'URC', 'TRANSLINE',
+    'SW', 'CSW', 'PJF', 'PHFET', 'PMF', 'URC', 'TRANSLINE',
     'NCH', 'PCH', 'DI', 'HIGH_SW', 'LOW_SW', 'NIGBT', 'BOGUS',
   ])('rejects .model type %s that no spice-ts device implements', type => {
     const error = parseFailure(`unsupported ${type}
@@ -124,6 +124,7 @@ R1 a 0 1k
     ['PMOS', 'LEVEL=1 VTO=-0.7', { LEVEL: 1, VTO: -0.7 }],
     ['NHFET', 'VTO=-1', { VTO: -1 }],
     ['NMF', 'VTO=-2', { VTO: -2 }],
+    ['R', 'R=1k TC1=1m', { R: 1e3, TC1: 1e-3 }],
     ['C', 'CAP=1n', { CAP: 1e-9 }],
     ['L', 'IND=1u', { IND: 1e-6 }],
     ['LTRA', 'R=0.2 L=9.13e-9 G=0 C=3.65e-12 LEN=1', { R: 0.2, L: 9.13e-9, G: 0, C: 3.65e-12, LEN: 1 }],
