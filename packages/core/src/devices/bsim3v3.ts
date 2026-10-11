@@ -2,12 +2,14 @@ import type {
   ChargeIntegration, ChargeTruncation, DeviceModel, StampContext,
 } from './device.js';
 import { DEVICE_GMIN } from './device.js';
-import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
+import { stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import type { BSIM3Model, BSIM3Size, BSIM3v3InstanceParams } from './bsim3v3-params.js';
 import { CONST_VT0, computeBsim3Size, resolveBsim3Model } from './bsim3v3-params.js';
-import { createDCResult, evaluateDC } from './bsim3v3-dc.js';
-import type { BSIM3v3CapParams, BSIM3v3CapResult } from './bsim3v3-cap.js';
-import { capParams, evaluateCap } from './bsim3v3-cap.js';
+import { createChargeInputs, createDCResult, evaluateDC } from './bsim3v3-dc.js';
+import type { BSIM3ChargeParams, BSIM3TerminalCharges } from './bsim3v3-charge.js';
+import {
+  TERMINAL, chargeParams, createTerminalCharges, evaluateTerminalCharges,
+} from './bsim3v3-charge.js';
 
 /** Reused b3ld.c DC result; consumed immediately by each stamp. */
 const dcScratch = createDCResult();
@@ -18,22 +20,29 @@ export class BSIM3v3 implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
   /**
-   * The bounded cap model provides capacitances only, so the transient charge
-   * of each two-terminal capacitance is advanced from the accepted point with
-   * the averaged capacitance, as ngspice integrates Meyer gate capacitances
-   * (DEVqmeyer): q = q(n) + (C(v) + C(v(n)))/2 * (v - v(n)).
+   * The ngspice-47 b3ld.c terminal charges qg, qd and qb (CKTstate0
+   * BSIM3qg/qd/qb, source charge by neutrality) are integrated as
+   * NIintegrate does, with their full nonreciprocal 4x4 Jacobian.
    */
   readonly integratesTransientCharge = true;
-  /** {@link truncateTransientStep} bounds every stored charge (BSIM3trunc). */
+  /** {@link truncateTransientStep} bounds every stored charge (BSIM3trunc: qb, qg, qd). */
   readonly truncationCoversCharges = true;
-  private readonly charges = new TransientChargeState(5);
-  private readonly capacitanceScratch = new Float64Array(5);
+  private readonly charges = new TransientChargeState(CHARGE_ROWS.length);
+  private readonly terminalCharges: BSIM3TerminalCharges = createTerminalCharges();
+  /**
+   * evaluateDC charge inputs of the last {@link stamp} and the polarity-domain
+   * physical bias they belong to, so the charge stamp of the same Newton
+   * iteration does not repeat the DC evaluation (b3ld.c does both in one load).
+   */
+  private readonly lastDC = { valid: false, vgs: 0, vds: 0, vbs: 0, inputs: createChargeInputs() };
+  /** Bias of the charges currently held in {@link terminalCharges}. */
+  private readonly chargeKey = { valid: false, vgs: 0, vds: 0, vbs: 0 };
 
   /** ngspice-47 BSIM3v3.3.0 model card (b3set.c defaults applied). */
   readonly model: BSIM3Model;
   /** b3temp.c size-dependent parameters of this instance. */
   readonly size: BSIM3Size;
-  private readonly capInputs: BSIM3v3CapParams;
+  private readonly chargeInputs: BSIM3ChargeParams;
   private readonly polarity: number;
   /** Parallel multiplier M (ngspice BSIM3m). */
   private readonly multiplier: number;
@@ -56,7 +65,7 @@ export class BSIM3v3 implements DeviceModel {
     } catch (error) {
       throw new RangeError(`BSIM3 '${name}': ${(error as Error).message}`);
     }
-    this.capInputs = capParams(this.model, this.size);
+    this.chargeInputs = chargeParams(this.model, this.size);
     this.multiplier = this.size.m;
     this.lastVon = polarity * this.size.instVth0;
   }
@@ -164,7 +173,12 @@ export class BSIM3v3 implements DeviceModel {
       Vbs = vbd;
     }
 
-    const dc = evaluateDC(this.model, this.size, Vgs, Vds, Vbs, dcScratch);
+    const lastDC = this.lastDC;
+    const dc = evaluateDC(this.model, this.size, Vgs, Vds, Vbs, dcScratch, lastDC.inputs);
+    lastDC.valid = true;
+    lastDC.vgs = vgs;
+    lastDC.vds = vds;
+    lastDC.vbs = vbs;
     this.lastVon = dc.von;
     // Channel current from the effective drain to the effective source.
     stampControlledCurrent(ctx, type, m, nD, nS, nD, nG, nS, nB, dc.Ids, dc.gm, dc.gds, dc.gmbs, Vgs, Vds, Vbs);
@@ -173,68 +187,69 @@ export class BSIM3v3 implements DeviceModel {
     stampControlledCurrent(ctx, type, m, nD, nB, nD, nG, nS, nB, dc.Isub, dc.gbg, dc.gbd, dc.gbb, Vgs, Vds, Vbs);
   }
 
+  /** Charge Jacobian dQ/dV (b3acld.c capacitance matrix) at the operating point in `ctx`. */
   stampDynamic(ctx: StampContext): void {
-    const [nD, nG, nS, nB] = this.nodes;
-    const pol = this.polarity;
-
-    const vD = nD >= 0 ? ctx.getVoltage(nD) : 0;
-    const vG = nG >= 0 ? ctx.getVoltage(nG) : 0;
-    const vS = nS >= 0 ? ctx.getVoltage(nS) : 0;
-    const vB = nB >= 0 ? ctx.getVoltage(nB) : 0;
-
-    const Vgs = pol * (vG - vS);
-    const Vds = pol * (vD - vS);
-    const Vbs = pol * (vB - vS);
-
-    const caps = scaleCaps(evaluateCap(this.capInputs, Vgs, Vds, Vbs), this.multiplier);
-
-    // Stamp 2-terminal capacitances
-    // Gate-drain, gate-source, gate-bulk are between polarity-adjusted terminals
-    // For NMOS (pol=1): Cgd between G-D, Cgs between G-S, Cgb between G-B
-    // For PMOS (pol=-1): same physical terminals, caps are symmetric
-    this.stampCap2(ctx, nG, nD, caps.Cgd);
-    this.stampCap2(ctx, nG, nS, caps.Cgs);
-    this.stampCap2(ctx, nG, nB, caps.Cgb);
-    this.stampCap2(ctx, nB, nD, caps.Cbd);
-    this.stampCap2(ctx, nB, nS, caps.Cbs);
+    const tc = this.evaluateCharges(ctx);
+    const m = this.multiplier;
+    for (let row = 0; row < 4; row++) {
+      const r = this.nodes[row];
+      if (r < 0) continue;
+      for (let col = 0; col < 4; col++) {
+        const c = this.nodes[col];
+        const value = tc.jacobian[row * 4 + col];
+        if (c >= 0 && value !== 0) ctx.stampC(r, c, m * value);
+      }
+    }
   }
 
   stampAC(ctx: StampContext, _omega: number): void {
     this.stampDynamic(ctx);
   }
 
+  /**
+   * b3ld.c NIintegrate of qg, qd and qb: each terminal charge current flows
+   * into the device at its terminal and out at the source, linearised with
+   * CKTag[0] times the charge Jacobian (the gc**b terms).
+   */
   stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
-    const caps = this.evaluateCapacitances(ctx);
+    const tc = this.evaluateCharges(ctx);
     const charges = this.charges;
     charges.begin(integration);
-    for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
-      const [p, n] = CHARGE_BRANCHES[index];
-      const positive = this.nodes[p];
-      const negative = this.nodes[n];
-      const capacitance = caps[index];
-      const voltage = branchVoltage(ctx, positive, negative);
-      const charge = charges.incrementalCharge(index, voltage, capacitance, true);
-      const effective = charges.factor * charges.incrementalCapacitance(index, capacitance, true);
-      stampChargeBranch(ctx, positive, negative, charges.current(index, charge), effective, voltage);
+    const nodes = this.nodes;
+    const nS = nodes[TERMINAL.S];
+    const scale = this.multiplier * this.polarity;
+    const conductanceScale = charges.factor * this.multiplier;
+    for (let index = 0; index < CHARGE_ROWS.length; index++) {
+      const row = CHARGE_ROWS[index];
+      const into = nodes[row];
+      const current = charges.current(index, scale * chargeOf(tc, row));
+      let equivalent = current;
+      for (let col = 0; col < 4; col++) {
+        const node = nodes[col];
+        if (node < 0) continue;
+        const g = conductanceScale * tc.jacobian[row * 4 + col];
+        if (g === 0) continue;
+        equivalent -= g * ctx.getVoltage(node);
+        if (into >= 0) ctx.stampG(into, node, g);
+        if (nS >= 0) ctx.stampG(nS, node, -g);
+      }
+      if (into >= 0) ctx.stampB(into, -equivalent);
+      if (nS >= 0) ctx.stampB(nS, equivalent);
     }
   }
 
   stampAcceptedChargeCurrent(ctx: StampContext): void {
-    for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
-      const [p, n] = CHARGE_BRANCHES[index];
-      stampChargeCurrent(ctx, this.nodes[p], this.nodes[n], this.charges.acceptedChargeCurrent(index));
+    const nS = this.nodes[TERMINAL.S];
+    for (let index = 0; index < CHARGE_ROWS.length; index++) {
+      stampChargeCurrent(ctx, this.nodes[CHARGE_ROWS[index]], nS, this.charges.acceptedChargeCurrent(index));
     }
   }
 
   acceptTransientStep(ctx: StampContext): void {
-    const caps = this.evaluateCapacitances(ctx);
-    for (let index = 0; index < CHARGE_BRANCHES.length; index++) {
-      const [p, n] = CHARGE_BRANCHES[index];
-      const voltage = branchVoltage(ctx, this.nodes[p], this.nodes[n]);
-      const capacitance = caps[index];
-      this.charges.accept(
-        index, this.charges.incrementalCharge(index, voltage, capacitance, true), voltage, capacitance,
-      );
+    const tc = this.evaluateCharges(ctx);
+    const scale = this.multiplier * this.polarity;
+    for (let index = 0; index < CHARGE_ROWS.length; index++) {
+      this.charges.accept(index, scale * chargeOf(tc, CHARGE_ROWS[index]));
     }
     this.charges.commit();
   }
@@ -243,61 +258,39 @@ export class BSIM3v3 implements DeviceModel {
     this.charges.reset();
   }
 
-  /** ngspice BSIM3trunc truncates the terminal charges; this Meyer model's branch charges stand in for them. */
+  /** ngspice BSIM3trunc: CKTterr on qb, qg and qd. */
   truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
     return this.charges.truncationTimestep(truncation, () => this.acceptTransientStep(ctx));
   }
 
-  /** Cgd, Cgs, Cgb, Cbd, Cbs at the present terminal voltages, in CHARGE_BRANCHES order. */
-  private evaluateCapacitances(ctx: StampContext): Float64Array {
-    const [nD, nG, nS, nB] = this.nodes;
-    const pol = this.polarity;
-    const vD = nD >= 0 ? ctx.getVoltage(nD) : 0;
-    const vG = nG >= 0 ? ctx.getVoltage(nG) : 0;
-    const vS = nS >= 0 ? ctx.getVoltage(nS) : 0;
-    const vB = nB >= 0 ? ctx.getVoltage(nB) : 0;
-    const caps = evaluateCap(
-      this.capInputs, pol * (vG - vS), pol * (vD - vS), pol * (vB - vS),
+  /** b3ld.c terminal charges (NMOS convention, per unit multiplier) at the voltages in `ctx`. */
+  private evaluateCharges(ctx: StampContext): BSIM3TerminalCharges {
+    const [vgs, vds, vbs] = this.terminalVoltages(
+      (node: number) => (node >= 0 ? ctx.getVoltage(node) : 0),
     );
-    const m = this.multiplier;
-    const out = this.capacitanceScratch;
-    out[0] = m * caps.Cgd;
-    out[1] = m * caps.Cgs;
-    out[2] = m * caps.Cgb;
-    out[3] = m * caps.Cbd;
-    out[4] = m * caps.Cbs;
-    return out;
-  }
-
-  private stampCap2(ctx: StampContext, n1: number, n2: number, cap: number): void {
-    if (cap === 0) return;
-    if (n1 >= 0) {
-      ctx.stampC(n1, n1, cap);
-      if (n2 >= 0) ctx.stampC(n1, n2, -cap);
-    }
-    if (n2 >= 0) {
-      ctx.stampC(n2, n2, cap);
-      if (n1 >= 0) ctx.stampC(n2, n1, -cap);
-    }
+    const lastDC = this.lastDC;
+    const charges = this.terminalCharges;
+    const key = this.chargeKey;
+    // BSIM3trunc and the acceptance of one timepoint read the same converged bias.
+    if (key.valid && key.vgs === vgs && key.vds === vds && key.vbs === vbs) return charges;
+    const reuse = lastDC.valid && lastDC.vgs === vgs && lastDC.vds === vds && lastDC.vbs === vbs;
+    evaluateTerminalCharges(
+      this.model, this.size, this.chargeInputs, vgs, vds, vbs, charges,
+      reuse ? lastDC.inputs : undefined,
+    );
+    key.valid = true;
+    key.vgs = vgs;
+    key.vds = vds;
+    key.vbs = vbs;
+    return charges;
   }
 }
 
-/** Terminal indices (D, G, S, B) of the Cgd, Cgs, Cgb, Cbd and Cbs capacitances. */
-const CHARGE_BRANCHES: ReadonlyArray<readonly [number, number]> = [
-  [1, 0], [1, 2], [1, 3], [3, 0], [3, 2],
-];
+/** Terminals whose charge ngspice integrates (BSIM3qg, BSIM3qd, BSIM3qb), in state order. */
+const CHARGE_ROWS: readonly number[] = [TERMINAL.G, TERMINAL.D, TERMINAL.B];
 
-function branchVoltage(ctx: StampContext, positive: number, negative: number): number {
-  return (positive >= 0 ? ctx.getVoltage(positive) : 0)
-    - (negative >= 0 ? ctx.getVoltage(negative) : 0);
-}
-
-function scaleCaps(caps: BSIM3v3CapResult, m: number): BSIM3v3CapResult {
-  if (m === 1) return caps;
-  return {
-    Cgg: m * caps.Cgg, Cgd: m * caps.Cgd, Cgs: m * caps.Cgs,
-    Cgb: m * caps.Cgb, Cbd: m * caps.Cbd, Cbs: m * caps.Cbs,
-  };
+function chargeOf(tc: BSIM3TerminalCharges, terminal: number): number {
+  return terminal === TERMINAL.G ? tc.qg : terminal === TERMINAL.D ? tc.qd : tc.qb;
 }
 
 /**

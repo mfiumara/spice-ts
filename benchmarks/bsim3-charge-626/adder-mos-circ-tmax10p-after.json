@@ -1,0 +1,145 @@
+{
+  "spiceTsPoints": 20075,
+  "ngspicePoints": 20059,
+  "spiceTsEnd": 2e-7,
+  "ngspiceEnd": 2e-7,
+  "threshold": 0.01,
+  "worst": {
+    "signal": "i(vin1a)",
+    "absoluteMax": 0.0000043928702359433554,
+    "ngspicePeak": 0.00001509731251230755,
+    "normalized": 0.2909703453751933,
+    "match": false,
+    "oppositeLevelFraction": 0.00014955880153547037
+  },
+  "signals": [
+    {
+      "signal": "v(1)",
+      "absoluteMax": 2.398081733190338e-14,
+      "ngspicePeak": 3,
+      "normalized": 7.993605777301127e-15,
+      "match": true,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "v(10)",
+      "absoluteMax": 0.003461482676334171,
+      "ngspicePeak": 3.821943907508595,
+      "normalized": 0.0009056864151076991,
+      "match": true,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "v(11)",
+      "absoluteMax": 0.0020935375899783226,
+      "ngspicePeak": 3.820820401274812,
+      "normalized": 0.0005479288137384883,
+      "match": true,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "v(12)",
+      "absoluteMax": 0.0011858755473337368,
+      "ngspicePeak": 3.820882577794904,
+      "normalized": 0.00031036691737805917,
+      "match": true,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "v(13)",
+      "absoluteMax": 0.0005955667501278405,
+      "ngspicePeak": 3.30171041321489,
+      "normalized": 0.00018038127987970168,
+      "match": true,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "v(2)",
+      "absoluteMax": 2.020605904817785e-14,
+      "ngspicePeak": 3,
+      "normalized": 6.735353016059283e-15,
+      "match": true,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "v(9)",
+      "absoluteMax": 0.0029333917849698743,
+      "ngspicePeak": 3.821918687540138,
+      "normalized": 0.0007675181040698338,
+      "match": true,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "i(vcc)",
+      "absoluteMax": 0.000003999752627791698,
+      "ngspicePeak": 0.0002735929710186415,
+      "normalized": 0.014619354484509663,
+      "match": false,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "i(vin1a)",
+      "absoluteMax": 0.0000043928702359433554,
+      "ngspicePeak": 0.00001509731251230755,
+      "normalized": 0.2909703453751933,
+      "match": false,
+      "oppositeLevelFraction": 0.00014955880153547037
+    },
+    {
+      "signal": "i(vin1b)",
+      "absoluteMax": 0.0000035037361030626307,
+      "ngspicePeak": 0.00001445834957083478,
+      "normalized": 0.2423330606233458,
+      "match": false,
+      "oppositeLevelFraction": 0.000049852933845156785
+    },
+    {
+      "signal": "i(vin2a)",
+      "absoluteMax": 1.56083202019819e-7,
+      "ngspicePeak": 0.00001458494570881561,
+      "normalized": 0.010701664931496956,
+      "match": false,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "i(vin2b)",
+      "absoluteMax": 1.2550878570117014e-7,
+      "ngspicePeak": 0.00001525668831275954,
+      "normalized": 0.008226476357664336,
+      "match": true,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "i(vin3a)",
+      "absoluteMax": 0.0000029878500860761036,
+      "ngspicePeak": 0.00001458490947882795,
+      "normalized": 0.20485900789534475,
+      "match": false,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "i(vin3b)",
+      "absoluteMax": 2.9256264935769396e-7,
+      "ngspicePeak": 0.00001445846506224538,
+      "normalized": 0.020234696290247798,
+      "match": false,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "i(vin4a)",
+      "absoluteMax": 7.542734853030207e-8,
+      "ngspicePeak": 0.00001458321114383233,
+      "normalized": 0.005172204378471371,
+      "match": true,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "i(vin4b)",
+      "absoluteMax": 1.038588982683278e-7,
+      "ngspicePeak": 0.00001445844727216525,
+      "normalized": 0.007183267768197507,
+      "match": true,
+      "oppositeLevelFraction": 0
+    }
+  ]
+}

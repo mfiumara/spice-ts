@@ -1,0 +1,311 @@
+{
+ "summary": {
+  "reference": "ngspice-47",
+  "nandTransient": {
+   "v(9)": 0.20392775543710237,
+   "v(10)": 0.9588840048234373,
+   "q(vcc)": 0.620951700441914
+  },
+  "core": "/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/a626/main-wt/packages/core/dist/index.js",
+  "threshold": 0.01,
+  "acWithin": 1744,
+  "acTotal": 6696,
+  "acCasesPassing": 0,
+  "cases": 31
+ },
+ "nandTransient": {
+  "v(9)": {
+   "error": 0.20392775543710237,
+   "label": "at 1.625e-8: 0.7507994649544468 vs 0.05139345869634711"
+  },
+  "v(10)": {
+   "error": 0.9588840048234373,
+   "label": "at 1.375e-8: -0.42708814881470747 vs 3.2368154329990833"
+  },
+  "q(vcc)": {
+   "error": 0.620951700441914,
+   "label": "at 1.575e-8: -1.1300812057267699e-14 vs -9.037876125722357e-16"
+  }
+ },
+ "cases": [
+  {
+   "name": "issue-589-nmos",
+   "ac": {
+    "error": 2.05468693513002,
+    "within": 45,
+    "total": 216,
+    "label": "d i(vg)/d vd at Vgs=1 Vds=0.9 Vbs=-0.9: 4.865098227513438e-16 vs 1.5926667219357325e-16"
+   }
+  },
+  {
+   "name": "issue-582-pmos",
+   "ac": {
+    "error": 2.056547674425627,
+    "within": 44,
+    "total": 216,
+    "label": "d i(vg)/d vd at Vgs=1 Vds=0.9 Vbs=-0.9: 9.73019645502688e-16 vs 3.183394303462103e-16"
+   }
+  },
+  {
+   "name": "validation-nmos",
+   "ac": {
+    "error": 2.0643029438969505,
+    "within": 40,
+    "total": 216,
+    "label": "d i(vg)/d vd at Vgs=1 Vds=0.9 Vbs=-0.9: 9.730196455026881e-15 vs 3.1753376324642197e-15"
+   }
+  },
+  {
+   "name": "defaults-nmos",
+   "ac": {
+    "error": 1.9674613113986006,
+    "within": 92,
+    "total": 216,
+    "label": "d i(vd)/d vg at Vgs=1 Vds=-0.6 Vbs=0: 2.5150428167833615e-15 vs 8.475402213746104e-16"
+   }
+  },
+  {
+   "name": "defaults-pmos",
+   "ac": {
+    "error": 1.8584911794982728,
+    "within": 94,
+    "total": 216,
+    "label": "d i(vd)/d vg at Vgs=1 Vds=-0.6 Vbs=0: 6.287607041958406e-15 vs 2.199624433706322e-15"
+   }
+  },
+  {
+   "name": "defaults-nmos-no-wl",
+   "ac": {
+    "error": 24.64874681539999,
+    "within": 80,
+    "total": 216,
+    "label": "d i(vd)/d vg at Vgs=0.3 Vds=-0.6 Vbs=0: 3.593221823159608e-14 vs 1.4009346534631353e-15"
+   }
+  },
+  {
+   "name": "bsim330-nmos",
+   "ac": {
+    "error": 2.0875342899999065,
+    "within": 40,
+    "total": 216,
+    "label": "d i(vd)/d vg at Vgs=-0.6 Vds=-0.6 Vbs=0: 3.064192231606337e-15 vs 9.9243990310677e-16"
+   }
+  },
+  {
+   "name": "bsim330-pmos",
+   "ac": {
+    "error": 2.087602982221126,
+    "within": 41,
+    "total": 216,
+    "label": "d i(vd)/d vg at Vgs=-0.6 Vds=-0.6 Vbs=0: 3.0641922316063375e-15 vs 9.92417823551282e-16"
+   }
+  },
+  {
+   "name": "mc-ring-nmos",
+   "ac": {
+    "error": 0.8227249252786123,
+    "within": 48,
+    "total": 216,
+    "label": "d i(vg)/d vd at Vgs=1 Vds=0.9 Vbs=-0.9: 1.008586639881053e-15 vs 5.533400163093099e-16"
+   }
+  },
+  {
+   "name": "mc-ring-pmos",
+   "ac": {
+    "error": 2.7161587082190937,
+    "within": 56,
+    "total": 216,
+    "label": "d i(vb)/d vg at Vgs=1 Vds=0.05 Vbs=-0.9: 1.114327585101979e-15 vs 2.998600631984315e-16"
+   }
+  },
+  {
+   "name": "stress-nmos",
+   "ac": {
+    "error": 1.0000000000073634,
+    "within": 43,
+    "total": 216,
+    "label": "d i(vd)/d vb at Vgs=0.3 Vds=-0.6 Vbs=0: -1.1847951178781e-28 vs 1.609028470487052e-17"
+   }
+  },
+  {
+   "name": "stress-pmos",
+   "ac": {
+    "error": 1.4050812463766165,
+    "within": 58,
+    "total": 216,
+    "label": "d i(vd)/d vg at Vgs=0.3 Vds=-0.6 Vbs=-0.9: 2.947807986254868e-15 vs 1.2256583808534112e-15"
+   }
+  },
+  {
+   "name": "gamma1-nmos",
+   "ac": {
+    "error": 2.775062562479179,
+    "within": 53,
+    "total": 216,
+    "label": "d i(vd)/d vd at Vgs=-0.6 Vds=-0.6 Vbs=0: -2.013204513623123e-15 vs -5.332903707696438e-16"
+   }
+  },
+  {
+   "name": "corner-nmos",
+   "ac": {
+    "error": 1.0000000000000133,
+    "within": 48,
+    "total": 216,
+    "label": "d i(vd)/d vb at Vgs=1.8 Vds=-0.6 Vbs=-0.9: -6.868434145293296e-30 vs 5.156663663191343e-16"
+   }
+  },
+  {
+   "name": "corner2-nmos",
+   "ac": {
+    "error": 1.962533459710626,
+    "within": 42,
+    "total": 216,
+    "label": "d i(vg)/d vg at Vgs=1 Vds=0.9 Vbs=-0.9: -4.346671011005374e-15 vs -1.4672141496859068e-15"
+   }
+  },
+  {
+   "name": "corner-pmos",
+   "ac": {
+    "error": 24.428140976697488,
+    "within": 104,
+    "total": 216,
+    "label": "d i(vb)/d vd at Vgs=1.8 Vds=-0.6 Vbs=0: 1.4142135623730957e-15 vs -6.03638830660839e-17"
+   }
+  },
+  {
+   "name": "capmod0-xpart0-nmos",
+   "ac": {
+    "error": 1.7685413275934034,
+    "within": 61,
+    "total": 216,
+    "label": "d i(vg)/d vd at Vgs=1 Vds=0.9 Vbs=-0.9: 9.73019645502688e-16 vs 3.51455705502688e-16"
+   }
+  },
+  {
+   "name": "capmod0-xpart05-pmos",
+   "ac": {
+    "error": 1.768541327593404,
+    "within": 63,
+    "total": 216,
+    "label": "d i(vg)/d vd at Vgs=1 Vds=0.9 Vbs=0: 9.730196455026882e-16 vs 3.51455705502688e-16"
+   }
+  },
+  {
+   "name": "capmod0-xpart1-nmos",
+   "ac": {
+    "error": 1.7685413275934283,
+    "within": 70,
+    "total": 216,
+    "label": "d i(vd)/d vg at Vgs=1 Vds=0.9 Vbs=0: 9.730196455026967e-16 vs 3.51455705502688e-16"
+   }
+  },
+  {
+   "name": "capmod1-xpart0-nmos",
+   "ac": {
+    "error": 2.101726503131804,
+    "within": 57,
+    "total": 216,
+    "label": "d i(vg)/d vd at Vgs=1 Vds=0.9 Vbs=-0.9: 9.73019645502688e-16 vs 3.137025925787567e-16"
+   }
+  },
+  {
+   "name": "capmod1-xpart1-pmos",
+   "ac": {
+    "error": 2.1033516530008574,
+    "within": 63,
+    "total": 216,
+    "label": "d i(vg)/d vd at Vgs=1 Vds=0.9 Vbs=-0.9: 9.730196455026882e-16 vs 3.135383141519926e-16"
+   }
+  },
+  {
+   "name": "capmod1-xpart05-nmos",
+   "ac": {
+    "error": 0.9832227038915913,
+    "within": 26,
+    "total": 216,
+    "label": "d i(vb)/d vg at Vgs=-0.6 Vds=0.05 Vbs=0: 1.799999999999987e-17 vs 1.0728784831411773e-15"
+   }
+  },
+  {
+   "name": "capmod2-xpart0-pmos",
+   "ac": {
+    "error": 0.9835481756473184,
+    "within": 25,
+    "total": 216,
+    "label": "d i(vb)/d vg at Vgs=-0.6 Vds=0.05 Vbs=0: 1.7999999999999806e-17 vs 1.0941035847532584e-15"
+   }
+  },
+  {
+   "name": "capmod2-xpart1-nmos",
+   "ac": {
+    "error": 2.1022366982304517,
+    "within": 62,
+    "total": 216,
+    "label": "d i(vg)/d vd at Vgs=1 Vds=0.9 Vbs=-0.9: 9.73019645502688e-16 vs 3.1365100092385236e-16"
+   }
+  },
+  {
+   "name": "capmod2-xpart05-nmos",
+   "ac": {
+    "error": 2.10289602299967,
+    "within": 58,
+    "total": 216,
+    "label": "d i(vg)/d vd at Vgs=1 Vds=0.9 Vbs=-0.9: 9.73019645502688e-16 vs 3.1358435419374394e-16"
+   }
+  },
+  {
+   "name": "capmod3-xpart1-nmos",
+   "ac": {
+    "error": 2.0526920885374245,
+    "within": 57,
+    "total": 216,
+    "label": "d i(vg)/d vd at Vgs=1 Vds=0.9 Vbs=-0.9: 9.73019645502688e-16 vs 3.1874149677797066e-16"
+   }
+  },
+  {
+   "name": "capmod3-xpart05-pmos",
+   "ac": {
+    "error": 0.9791165955851636,
+    "within": 25,
+    "total": 216,
+    "label": "d i(vb)/d vg at Vgs=-0.6 Vds=0.05 Vbs=0: 1.7999999999999806e-17 vs 8.619284309416456e-16"
+   }
+  },
+  {
+   "name": "capmod3-xpartneg-nmos",
+   "ac": {
+    "error": 3.454709342397969,
+    "within": 147,
+    "total": 216,
+    "label": "d i(vd)/d vg at Vgs=0.3 Vds=-0.6 Vbs=0: 1.5656330147418934e-15 vs 3.51455705502688e-16"
+   }
+  },
+  {
+   "name": "capmod3-dlc-nmos",
+   "ac": {
+    "error": 1.9540126628979364,
+    "within": 53,
+    "total": 216,
+    "label": "d i(vg)/d vb at Vgs=1.8 Vds=-0.6 Vbs=0: 1.288888888888892e-17 vs 4.363179972371784e-18"
+   }
+  },
+  {
+   "name": "junction-temp-nmos",
+   "ac": {
+    "error": 2.0506141316760944,
+    "within": 27,
+    "total": 216,
+    "label": "d i(vg)/d vd at Vgs=1 Vds=0.9 Vbs=-0.9: 9.73019645502688e-16 vs 3.1895861079227457e-16"
+   }
+  },
+  {
+   "name": "junction-swg-pmos",
+   "ac": {
+    "error": 2.6712230292994534,
+    "within": 22,
+    "total": 216,
+    "label": "d i(vg)/d vd at Vgs=1 Vds=0.9 Vbs=-0.9: 4.858955822010751e-15 vs 1.3235250986475594e-15"
+   }
+  }
+ ]
+}
