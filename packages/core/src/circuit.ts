@@ -125,7 +125,10 @@ export interface CompiledCircuit {
   steps: StepAnalysis[];
   /** Solver options declared by `.options` cards in the netlist */
   simulationOptions: SimulationOptions;
-  /** Node voltages from `.ic`; forced only for transient UIC, otherwise Newton guesses. */
+  /**
+   * Node voltages from `.ic`: the t=0 state with transient UIC; otherwise held
+   * during the transient operating point and released at t=0 (ngspice).
+   */
   initialConditions: NodeInitialState[];
   /** Node-voltage Newton guesses from `.nodeset`. */
   nodeSets: NodeInitialState[];

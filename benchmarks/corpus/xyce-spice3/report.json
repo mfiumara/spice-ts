@@ -24,12 +24,12 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 37
+        "runtimeMs": 51
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 325
+        "runtimeMs": 349
       },
       "xyceReference": {
         "kind": "xyce-analytic-gold",
@@ -43,29 +43,29 @@
           "type": "tran",
           "spiceTsVsNgspice": {
             "grid": {
-              "spiceTsPoints": 51,
+              "spiceTsPoints": 58,
               "ngspicePoints": 59,
-              "alignedPoints": 51,
+              "alignedPoints": 58,
               "excludedOutOfRange": 0
             },
             "signals": {
               "v(1)": {
                 "status": "compared",
-                "sampleCount": 51,
+                "sampleCount": 58,
                 "absoluteError": {
-                  "max": 1,
-                  "rms": 0.3290336233624044
+                  "max": 0.00002094837199873023,
+                  "rms": 0.000006850796318182981
                 },
                 "relativeError": {
-                  "max": 1,
-                  "rms": 1,
-                  "sampleCount": 51,
+                  "max": 0.000502465156751047,
+                  "rms": 0.00007015148101144672,
+                  "sampleCount": 58,
                   "excludedZeroReferences": 0
                 }
               },
               "v(2)": {
                 "status": "compared",
-                "sampleCount": 51,
+                "sampleCount": 58,
                 "absoluteError": {
                   "max": 0,
                   "rms": 0
@@ -74,20 +74,20 @@
                   "max": null,
                   "rms": null,
                   "sampleCount": 0,
-                  "excludedZeroReferences": 51
+                  "excludedZeroReferences": 58
                 }
               },
               "i(v1)": {
                 "status": "compared",
-                "sampleCount": 51,
+                "sampleCount": 58,
                 "absoluteError": {
-                  "max": 0.001,
-                  "rms": 0.00032903362336240424
+                  "max": 2.0948371998652168e-8,
+                  "rms": 6.850796318172144e-9
                 },
                 "relativeError": {
-                  "max": 1,
-                  "rms": 1,
-                  "sampleCount": 51,
+                  "max": 0.000502465156751064,
+                  "rms": 0.00007015148101145225,
+                  "sampleCount": 58,
                   "excludedZeroReferences": 0
                 }
               }
@@ -119,23 +119,23 @@
           },
           "spiceTsVsXyceReference": {
             "grid": {
-              "spiceTsPoints": 51,
-              "ngspicePoints": 51,
-              "alignedPoints": 51,
+              "spiceTsPoints": 58,
+              "ngspicePoints": 58,
+              "alignedPoints": 58,
               "excludedOutOfRange": 0
             },
             "signals": {
               "v(1)": {
                 "status": "compared",
-                "sampleCount": 51,
+                "sampleCount": 58,
                 "absoluteError": {
-                  "max": 1,
-                  "rms": 0.3288855367449746
+                  "max": 0.0002782032539642709,
+                  "rms": 0.00015681568044310934
                 },
                 "relativeError": {
-                  "max": 1,
-                  "rms": 1,
-                  "sampleCount": 51,
+                  "max": 0.004054405909714636,
+                  "rms": 0.002218164847466293,
+                  "sampleCount": 58,
                   "excludedZeroReferences": 0
                 }
               }
@@ -174,12 +174,12 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 38
+        "runtimeMs": 67
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 74
+        "runtimeMs": 38
       },
       "xyceReference": {
         "kind": "xyce-analytic-gold",
@@ -193,51 +193,51 @@
           "type": "tran",
           "spiceTsVsNgspice": {
             "grid": {
-              "spiceTsPoints": 995,
+              "spiceTsPoints": 1007,
               "ngspicePoints": 154,
-              "alignedPoints": 995,
+              "alignedPoints": 1007,
               "excludedOutOfRange": 0
             },
             "signals": {
               "v(1)": {
                 "status": "compared",
-                "sampleCount": 995,
+                "sampleCount": 1007,
                 "absoluteError": {
-                  "max": 0.19320896640123875,
-                  "rms": 0.06394097362712191
+                  "max": 0.19186242610808824,
+                  "rms": 0.06383092558875933
                 },
                 "relativeError": {
-                  "max": 42.76003058987197,
-                  "rms": 1.5191806353497024,
-                  "sampleCount": 994,
+                  "max": 42.41768426063153,
+                  "rms": 1.4393336634596001,
+                  "sampleCount": 1006,
                   "excludedZeroReferences": 1
                 }
               },
               "v(2)": {
                 "status": "compared",
-                "sampleCount": 995,
+                "sampleCount": 1007,
                 "absoluteError": {
-                  "max": 0.001158891135845837,
-                  "rms": 0.0009092123535473179
+                  "max": 0.00038117378113991843,
+                  "rms": 0.00015284530203996073
                 },
                 "relativeError": {
-                  "max": 11.359845764953313,
-                  "rms": 3.1679710777152743,
-                  "sampleCount": 994,
+                  "max": 1.360741922637344,
+                  "rms": 0.5179278387897761,
+                  "sampleCount": 1006,
                   "excludedZeroReferences": 1
                 }
               },
               "i(v1)": {
                 "status": "compared",
-                "sampleCount": 995,
+                "sampleCount": 1007,
                 "absoluteError": {
-                  "max": 0.00019225939364303848,
-                  "rms": 0.0000639000875890035
+                  "max": 0.00019168749909908894,
+                  "rms": 0.00006382396150822451
                 },
                 "relativeError": {
-                  "max": 34.912526267385445,
-                  "rms": 1.164200106620582,
-                  "sampleCount": 994,
+                  "max": 12.247406727913694,
+                  "rms": 0.4916417180035535,
+                  "sampleCount": 1006,
                   "excludedZeroReferences": 1
                 }
               }
@@ -269,23 +269,23 @@
           },
           "spiceTsVsXyceReference": {
             "grid": {
-              "spiceTsPoints": 995,
-              "ngspicePoints": 995,
-              "alignedPoints": 995,
+              "spiceTsPoints": 1007,
+              "ngspicePoints": 1007,
+              "alignedPoints": 1007,
               "excludedOutOfRange": 0
             },
             "signals": {
               "v(2)": {
                 "status": "compared",
-                "sampleCount": 995,
+                "sampleCount": 1007,
                 "absoluteError": {
-                  "max": 0.0008511532753860236,
-                  "rms": 0.0008098327589710818
+                  "max": 0.0000023113479829756176,
+                  "rms": 0.0000010840406313812614
                 },
                 "relativeError": {
-                  "max": 1322.0327857670218,
-                  "rms": 63.323543318702505,
-                  "sampleCount": 994,
+                  "max": 1.8765264268408626,
+                  "rms": 0.07443143312318203,
+                  "sampleCount": 1006,
                   "excludedZeroReferences": 1
                 }
               }
@@ -335,12 +335,12 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 36
+        "runtimeMs": 68
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 8
+        "runtimeMs": 14
       },
       "xyceReference": {
         "kind": "xyce-gold-prn",
@@ -353,79 +353,79 @@
           "type": "tran",
           "spiceTsVsNgspice": {
             "grid": {
-              "spiceTsPoints": 101,
+              "spiceTsPoints": 108,
               "ngspicePoints": 129,
-              "alignedPoints": 101,
+              "alignedPoints": 108,
               "excludedOutOfRange": 0
             },
             "signals": {
               "v(1)": {
                 "status": "compared",
-                "sampleCount": 101,
+                "sampleCount": 108,
                 "absoluteError": {
                   "max": 4.211742066217994e-12,
-                  "rms": 5.536762176999031e-13
+                  "rms": 5.354324382345815e-13
                 },
                 "relativeError": {
                   "max": 1.6262546864748964e-12,
-                  "rms": 1.9339099683706378e-13,
-                  "sampleCount": 101,
+                  "rms": 1.8701871176487669e-13,
+                  "sampleCount": 108,
                   "excludedZeroReferences": 0
                 }
               },
               "v(2)": {
                 "status": "compared",
-                "sampleCount": 101,
+                "sampleCount": 108,
                 "absoluteError": {
                   "max": 0.0006135578985754231,
-                  "rms": 0.00009251029344278462
+                  "rms": 0.00008946205453006124
                 },
                 "relativeError": {
                   "max": 0.0009952676753300243,
-                  "rms": 0.0001500751362333814,
-                  "sampleCount": 101,
+                  "rms": 0.00014513012035380487,
+                  "sampleCount": 108,
                   "excludedZeroReferences": 0
                 }
               },
               "v(3)": {
                 "status": "compared",
-                "sampleCount": 101,
+                "sampleCount": 108,
                 "absoluteError": {
                   "max": 0.0006135578985754231,
-                  "rms": 0.00009251029344278462
+                  "rms": 0.00008946205453006124
                 },
                 "relativeError": {
                   "max": 0.0009952676753300243,
-                  "rms": 0.0001500751362333814,
-                  "sampleCount": 101,
+                  "rms": 0.00014513012035380487,
+                  "sampleCount": 108,
                   "excludedZeroReferences": 0
                 }
               },
               "i(vin)": {
                 "status": "compared",
-                "sampleCount": 101,
+                "sampleCount": 108,
                 "absoluteError": {
                   "max": 3.0677895138412833e-7,
-                  "rms": 4.6255146859719323e-8
+                  "rms": 4.473102739879988e-8
                 },
                 "relativeError": {
-                  "max": 1.0559875244453976,
-                  "rms": 0.6772132736883586,
-                  "sampleCount": 101,
+                  "max": 1.0559875075472767,
+                  "rms": 0.6548989276941559,
+                  "sampleCount": 108,
                   "excludedZeroReferences": 0
                 }
               },
               "i(vmon)": {
                 "status": "compared",
-                "sampleCount": 101,
+                "sampleCount": 108,
                 "absoluteError": {
                   "max": 3.067789513854294e-7,
-                  "rms": 4.6255146858951594e-8
+                  "rms": 4.473102739805729e-8
                 },
                 "relativeError": {
                   "max": 1.0559875227847977,
-                  "rms": 0.6772132768699305,
-                  "sampleCount": 101,
+                  "rms": 0.6548989182624252,
+                  "sampleCount": 108,
                   "excludedZeroReferences": 0
                 }
               }
@@ -471,37 +471,37 @@
           },
           "spiceTsVsXyceReference": {
             "grid": {
-              "spiceTsPoints": 101,
+              "spiceTsPoints": 108,
               "ngspicePoints": 482,
-              "alignedPoints": 101,
+              "alignedPoints": 108,
               "excludedOutOfRange": 0
             },
             "signals": {
               "i(vmon)": {
                 "status": "compared",
-                "sampleCount": 101,
+                "sampleCount": 108,
                 "absoluteError": {
                   "max": 9.10087941119464e-9,
-                  "rms": 5.8508194706313685e-9
+                  "rms": 6.071384680225581e-9
                 },
                 "relativeError": {
                   "max": 1.0559875453520071,
-                  "rms": 0.6810062673732921,
-                  "sampleCount": 101,
+                  "rms": 0.6585669287149537,
+                  "sampleCount": 108,
                   "excludedZeroReferences": 0
                 }
               },
               "v(3)": {
                 "status": "compared",
-                "sampleCount": 101,
+                "sampleCount": 108,
                 "absoluteError": {
                   "max": 0.000018205756543210327,
-                  "rms": 0.000011699775746339117
+                  "rms": 0.000012140813236150034
                 },
                 "relativeError": {
                   "max": 0.000029562310329587906,
-                  "rms": 0.00001898909821988751,
-                  "sampleCount": 101,
+                  "rms": 0.000019706122880410404,
+                  "sampleCount": 108,
                   "excludedZeroReferences": 0
                 }
               }
@@ -528,12 +528,12 @@
       "ngspice": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 29
+        "runtimeMs": 72
       },
       "spiceTs": {
         "status": "success",
         "convergence": "converged",
-        "runtimeMs": 7
+        "runtimeMs": 10
       },
       "xyceReference": {
         "kind": "xyce-gold-prn",

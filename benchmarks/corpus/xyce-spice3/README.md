@@ -76,7 +76,7 @@ references are evaluated exactly at each engine's own points.
 
 | Fixture | Translation | ngspice | spice-ts | spice-ts vs ngspice, worst abs max | vs Xyce ref: ngspice | vs Xyce ref: spice-ts |
 |---|---|---|---|---|---|---|
-| capacitor-rc-transient | translated | success, 59 pts | success, 51 pts | v(1) 1.00 V (loss, #531) | v(1) 2.78e-4 V (analytic) | v(1) 1.00 V (analytic; `.ic` ignored, #531) |
+| capacitor-rc-transient | translated | success, 59 pts | success, 58 pts | v(1) 2.09e-5 V (was 1.00 V before the #531 fix: `.ic` was not held in the transient operating point) | v(1) 2.78e-4 V (analytic) | v(1) 2.78e-4 V (analytic) |
 | capacitor-rc-transient-newlte | unsupported-translation: `.options timeint newlte=2` selects a Xyce-only LTE algorithm; without it the deck is the same circuit, analysis and outputs as capacitor-rc-transient | not run | not run | n/a | n/a | n/a |
 | capacitor-rc-oscillator | translated | success, 154 pts | success, 995 pts | v(1) 0.193 V, v(2) 1.16e-3 V (loss) | v(2) 3.42e-4 V (analytic) | v(2) 8.51e-4 V (analytic; first step, #532) |
 | diode-level2-temperature-breakdown | unsupported-translation: Xyce LEVEL=2 diode (no SPICE3 level-2 diode, ngspice-47 rejects it) and `.step TEMP list` | not run | not run | n/a | n/a | n/a |

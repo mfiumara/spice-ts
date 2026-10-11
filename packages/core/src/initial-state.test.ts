@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parse, simulate } from './index.js';
+import { createTransientSim, parse, simulate } from './index.js';
 
 describe('initial-state semantics', () => {
   it('parses .ic and .nodeset into distinct typed node state', () => {
@@ -35,7 +35,7 @@ describe('initial-state semantics', () => {
     expect(compiled.nodeSets).toEqual([{ node: 'oUT', value: 0.5 }]);
   });
 
-  it('uses .ic only as a DC initial guess when UIC is absent', async () => {
+  it('holds a source-driven .ic node through the source branch like ngspice (#531)', async () => {
     const result = await simulate(`
       V1 out 0 DC 1
       R1 out 0 1k
@@ -45,6 +45,68 @@ describe('initial-state semantics', () => {
 
     expect(result.transient?.time[0]).toBe(0);
     expect(result.transient?.voltage('out')[0]).toBeCloseTo(1, 9);
+    // ngspice-47 prints i(v1) = 2e10 A at t=0 (1e10 S hold against 2 V), then -1 mA.
+    const current = result.transient!.current('V1');
+    expect(current[0] / 2e10).toBeCloseTo(1, 9);
+    expect(current[1]).toBeCloseTo(-1e-3, 12);
+  });
+
+  // #531: ngspice-47 cktload.c holds `.ic` nodes during the transient
+  // operating point (MODETRANOP without UIC), then releases them at t=0.
+  it('holds .ic nodes in the transient operating point without UIC (#531)', async () => {
+    const result = await simulate(`
+      c1 1 0 1uF
+      R1 1 2 1K
+      v1 2 0 0V
+      .ic v(1)=1
+      .tran 1e-4 5ms
+    `);
+
+    const time = result.transient!.time;
+    const v1 = result.transient!.voltage('1');
+    expect(time[0]).toBe(0);
+    expect(v1[0]).toBeCloseTo(1, 9);
+    // Released at t=0: the capacitor discharges as exp(-t/1ms).
+    for (let i = 1; i < time.length; i++) {
+      expect(Math.abs(v1[i] - Math.exp(-time[i] / 1e-3))).toBeLessThan(3e-3);
+    }
+  });
+
+  it('holds a source-free .ic node in the transient operating point (#531)', async () => {
+    const result = await simulate(`
+      c1 1 0 1u
+      R1 1 0 1k
+      .ic v(1)=1
+      .tran 0.5u 5u
+    `);
+
+    const time = result.transient!.time;
+    const v1 = result.transient!.voltage('1');
+    expect(v1[0]).toBeCloseTo(1, 9);
+    expect(v1.at(-1)!).toBeCloseTo(Math.exp(-time.at(-1)! / 1e-3), 5);
+  });
+
+  it('holds .ic nodes in the createTransientSim operating point (#531)', async () => {
+    const sim = await createTransientSim(`
+      c1 1 0 1u
+      R1 1 0 1k
+      .ic v(1)=1
+      .tran 0.5u 5u
+    `);
+    const step = sim.advance();
+    expect(step.voltages.get('1')!).toBeCloseTo(Math.exp(-step.time / 1e-3), 6);
+  });
+
+  it('does not hold .ic nodes in a .op operating point', async () => {
+    const result = await simulate(`
+      V1 2 0 1
+      R2 2 1 1k
+      R1 1 0 1k
+      .ic V(1)=3
+      .op
+    `);
+
+    expect(result.dc?.voltage('1')).toBeCloseTo(0.5, 9);
   });
 
   it('uses .nodeset as a Newton initial guess without forcing the operating point', async () => {
