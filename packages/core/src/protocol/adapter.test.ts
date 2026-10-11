@@ -7,7 +7,7 @@ import {
 } from '../errors.js';
 import { Circuit } from '../circuit.js';
 import { simulate } from '../simulate.js';
-import { mapProtocolErrorV1, simulateProtocolV1 } from './adapter.js';
+import { mapProtocolErrorV1, simulateProtocolV1, validateProtocolV1 } from './adapter.js';
 import { ProtocolExecutionError } from './execution-guard.js';
 import { TopologyPreflightError } from '../validation/topology-preflight.js';
 import type { SimulationRequestV1, SimulationResultV1, SpiceTsCircuitDocumentV1 } from './types.js';
@@ -239,6 +239,30 @@ describe('protocol v1 core adapter', () => {
       phase: 'solve', details: {},
     });
     expect(JSON.stringify([publicFailure, unexpected])).not.toContain('/private/');
+  });
+
+  it.each([
+    ['R1 a 0 1k\n.tran 1u', 2, '.tran requires TSTEP and TSTOP'],
+    ['V1 a 0 1\nR1 a 0 {zz}\n.op', 2, "Undefined parameter 'zz'"],
+  ])('maps netlist mistakes to a structured PARSE_ERROR with the line: %j', async (source, line, message) => {
+    let caught: unknown;
+    try {
+      await validateProtocolV1({ apiVersion: '1', input: { format: 'spice', source } });
+    } catch (error) {
+      caught = error;
+    }
+    expect(mapProtocolErrorV1(caught)).toMatchObject({
+      code: 'PARSE_ERROR', phase: 'parse', details: { line },
+      message: expect.stringContaining(message),
+    });
+  });
+
+  it('simulates a netlist whose .param is defined after its use, like ngspice', async () => {
+    const result = await simulateProtocolV1({
+      apiVersion: '1',
+      input: { format: 'spice', source: 'R1 a 0 {r}\nV1 a 0 1\n.param r=1k\n.op' },
+    });
+    expect(JSON.stringify(result)).toContain('-0.001');
   });
 
   it('never exposes the internal backend name on protocol values', async () => {

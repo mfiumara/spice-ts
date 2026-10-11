@@ -5,6 +5,17 @@ import { Inductor } from './devices/inductor.js';
 import { Resistor } from './devices/resistor.js';
 
 describe('Circuit', () => {
+  it('keys compiled .model cards case-insensitively, like ngspice (issue #427)', () => {
+    const ckt = new Circuit();
+    ckt.addModel({ name: 'pmos', type: 'PMOS', params: { VTO: -0.7 } });
+    const { models } = ckt.compile();
+
+    expect(models.has('PMOS')).toBe(true);
+    expect(models.get('Pmos')?.params.VTO).toBe(-0.7);
+    expect(models.delete('PMOS')).toBe(true);
+    expect(models.has('pmos')).toBe(false);
+  });
+
   it('maps node names to indices, with ground at -1', () => {
     const ckt = new Circuit();
     ckt.addResistor('R1', '1', '0', 1000);

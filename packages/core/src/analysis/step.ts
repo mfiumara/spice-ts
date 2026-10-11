@@ -6,7 +6,7 @@ import type { CompiledCircuit } from '../circuit.js';
 import type { StepResult } from '../results.js';
 import { solveDCOperatingPoint } from './dc.js';
 import { solveDCSweep } from './dc-sweep.js';
-import { solveTransient } from './transient.js';
+import { runnableTransient, solveTransient } from './transient.js';
 import { solveAC } from './ac.js';
 import { solveTransferFunction } from './transfer-function.js';
 import { InvalidCircuitError } from '../errors.js';
@@ -175,12 +175,8 @@ export function solveStep(
               : solveDCOperatingPoint(
                 compiled, opts, prevDCSolution, convergence, 'transient', guard,
               ).assembler.solution;
-            const runnable = analysis.timestep > 0 ? analysis : {
-              ...analysis,
-              timestep: analysis.maxTimestep ?? analysis.stopTime / 50,
-            };
             stepResult.transient = solveTransient(
-              compiled, runnable, opts, seed, convergence, guard,
+              compiled, runnableTransient(analysis, options), opts, seed, convergence, guard,
             );
             if (!analysis.useInitialConditions) prevDCSolution = new Float64Array(seed);
             break;

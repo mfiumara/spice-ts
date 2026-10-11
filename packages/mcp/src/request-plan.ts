@@ -52,7 +52,7 @@ export function resolvedOptions(request: SimulationRequestV1, plan: RequestPlan)
     reltol: requested?.reltol ?? netlist.reltol ?? 1e-3,
     maxIterations: requested?.maxIterations ?? netlist.maxIterations ?? 100,
     maxTransientIterations: requested?.maxTransientIterations ?? netlist.maxTransientIterations ?? 50,
-    maxTimestep: transientMaxTimestep(plan.analyses),
+    maxTimestep: transientMaxTimestep(plan.analyses, requested?.maxTimestep || undefined),
     integrationMethod: requested?.integrationMethod ?? netlist.integrationMethod ?? 'trapezoidal',
     trtol: requested?.trtol ?? netlist.trtol ?? 7,
     gmin: requested?.gmin ?? netlist.gmin ?? 0,
@@ -62,17 +62,17 @@ export function resolvedOptions(request: SimulationRequestV1, plan: RequestPlan)
 }
 
 /**
- * Core's transient step cap: `.tran` TMAX, else min(TSTEP, TSTOP/50), where a
- * zero TSTEP runs as TMAX or TSTOP/50. Core does not apply a request-level
- * `maxTimestep` to transient analyses, so it is not reported here.
+ * Core's transient step cap: `.tran` TMAX, else the requested `maxTimestep`
+ * (0 is unset, as in ngspice), else min(TSTEP, TSTOP/50), where a zero TSTEP runs as that cap or TSTOP/50.
  */
-function transientMaxTimestep(analyses: readonly AnalysisDirective[]): number {
+function transientMaxTimestep(analyses: readonly AnalysisDirective[], requested?: number): number {
   let largest: number | undefined;
   for (const analysis of analyses) {
     if (analysis.type !== 'tran') continue;
     const defaultCap = analysis.stopTime / 50;
-    const timestep = analysis.timestep > 0 ? analysis.timestep : analysis.maxTimestep ?? defaultCap;
-    const cap = analysis.maxTimestep ?? Math.min(timestep, defaultCap);
+    const explicitCap = analysis.maxTimestep ?? requested;
+    const timestep = analysis.timestep > 0 ? analysis.timestep : explicitCap ?? defaultCap;
+    const cap = explicitCap ?? Math.min(timestep, defaultCap);
     largest = Math.max(largest ?? cap, cap);
   }
   return largest ?? Number.MAX_VALUE;

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { preprocess } from './preprocessor.js';
 import type { IncludeResolver } from '../types.js';
+import { ParseError } from '../errors.js';
 
 describe('preprocessor', () => {
   describe('.param substitution', () => {
@@ -62,6 +63,49 @@ describe('preprocessor', () => {
     ])('keeps ambiguous output expressions explicit: %s', async directive => {
       await expect(preprocess(directive))
         .rejects.toThrow("Unknown function 'V'");
+    });
+
+    it('resolves a device reference to a .param defined later (ngspice global .param scope)', async () => {
+      const result = await preprocess('T\nR1 a 0 {r}\nV1 a 0 1\n.param r=1k\n.op\n.end');
+      expect(result).toContain('R1 a 0 1000');
+    });
+
+    it('resolves a .param expression that references a later .param', async () => {
+      const result = await preprocess('R1 a 0 {r}\n.param r={2*k}\n.param k=1k\n.op');
+      expect(result).toContain('R1 a 0 2000');
+    });
+
+    it('uses the last definition of a redefined .param everywhere, like ngspice', async () => {
+      const result = await preprocess('.param r=1k\nR1 a 0 {r}\n.param r=2k\n.op');
+      expect(result).toContain('R1 a 0 2000');
+    });
+
+    it('resolves a forward reference to a .param defined in an included file', async () => {
+      const resolver: IncludeResolver = async () => '.param r=3k';
+      const result = await preprocess('R1 a 0 {r}\n.include params.inc\n.op', resolver);
+      expect(result).toContain('R1 a 0 3000');
+    });
+
+    it('throws a ParseError with the line for an undefined parameter', async () => {
+      const failure = await preprocess('T\nR1 a 0 {zz}\n.op').catch((e: unknown) => e);
+      expect(failure).toBeInstanceOf(ParseError);
+      expect((failure as ParseError).line).toBe(2);
+      expect((failure as ParseError).message).toContain("Undefined parameter 'zz'");
+    });
+
+    it('throws an undefined-parameter ParseError at the .param line for an undefined RHS name', async () => {
+      const failure = await preprocess('R1 a 0 {r}\nV1 a 0 1\n.param r={zz}\n.op').catch((e: unknown) => e);
+      expect(failure).toBeInstanceOf(ParseError);
+      expect((failure as ParseError).line).toBe(3);
+      expect((failure as ParseError).message).toContain("Undefined parameter 'zz'");
+    });
+
+    it('throws a ParseError at the definition line for circular .param dependencies', async () => {
+      const failure = await preprocess('.param a={b}\n.param b={a}\nR1 x 0 {a}\n.op')
+        .catch((e: unknown) => e);
+      expect(failure).toBeInstanceOf(ParseError);
+      expect((failure as ParseError).message).toContain('Circular .param dependency');
+      expect([1, 2]).toContain((failure as ParseError).line);
     });
 
     it('handles .param with = sign and spaces', async () => {
