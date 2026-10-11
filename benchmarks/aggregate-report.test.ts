@@ -120,12 +120,13 @@ describe('aggregate report artifact verification', () => {
         ['spiceTs', 'xyce/inductor-transient', 'failed', 'success'],
         ['spiceTs', 'ngspice/probe-ac', 'unsupported', 'success'],
         ['spiceTs', 'classic/bjt-mixer-distortion', 'unsupported', 'failed'],
+        ['spiceTs', 'ngspice/mesa-oscillator', 'unsupported', 'success'],
       ],
     );
     assert.deepEqual(report.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
-    assert.deepEqual(report.totals.spiceTs, { success: 60, failed: 1, unsupported: 39 });
-    assert.equal(report.totals.comparedAnalyses, 64);
-    assert.equal(report.totals.comparedFixtures, 48);
+    assert.deepEqual(report.totals.spiceTs, { success: 61, failed: 1, unsupported: 38 });
+    assert.equal(report.totals.comparedAnalyses, 65);
+    assert.equal(report.totals.comparedFixtures, 49);
     const inductor = report.fixtures.find((fixture: { key: string }) => fixture.key === 'xyce/inductor-transient');
     assert.equal(inductor.spiceTs.status, 'success');
     assert.ok(inductor.gapIssues.includes('https://github.com/mfiumara/spice-ts/issues/366'));
@@ -137,6 +138,9 @@ describe('aggregate report artifact verification', () => {
     assert.equal(mixer.ngspice.status, 'failed');
     const mos1Inverter = report.fixtures.find((fixture: { key: string }) => fixture.key === 'corpus-e/mos1-inverter-sweep');
     assert.ok(mos1Inverter.gapIssues.includes('https://github.com/mfiumara/spice-ts/issues/427'));
+    const mesa = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/mesa-oscillator');
+    assert.equal(mesa.spiceTs.status, 'success');
+    assert.ok(mesa.gapIssues.includes('https://github.com/mfiumara/spice-ts/issues/432'));
     assert.deepEqual(report.comparisonToPrevious.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
     assert.deepEqual(report.comparisonToPrevious.totals.spiceTs, { success: 55, failed: 2, unsupported: 43 });
     assert.equal(report.comparisonToPrevious.totals.comparedAnalyses, 58);
@@ -158,8 +162,8 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
-    assert.equal(report.matchedPointEnvelope.comparedSignals, 898);
-    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 869);
+    assert.equal(report.matchedPointEnvelope.comparedSignals, 935);
+    assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 906);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 31.65338535154384);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 8.272157976952819);
     assert.equal(report.matchedPointEnvelope.maximumRelativeError, 350697351664.8823);
