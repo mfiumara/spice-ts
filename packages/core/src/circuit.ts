@@ -1243,7 +1243,7 @@ export class Circuit {
         case 'C': {
           const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
           if (desc.modelName && !model) {
-            throw new Error(`Capacitor '${desc.name}' references unknown model '${desc.modelName}'`);
+            throw new InvalidCircuitError(`Capacitor '${desc.name}' references unknown model '${desc.modelName}'`);
           }
           const { value } = resolveCapacitance(desc.value, model, desc.params);
           devices.push(new Capacitor(desc.name, nodeIndices, value, desc.ic));
@@ -1252,7 +1252,7 @@ export class Circuit {
         case 'L': {
           const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
           if (desc.modelName && !model) {
-            throw new Error(`Inductor '${desc.name}' references unknown model '${desc.modelName}'`);
+            throw new InvalidCircuitError(`Inductor '${desc.name}' references unknown model '${desc.modelName}'`);
           }
           const { value } = resolveInductance(desc.value, model, desc.params);
           const bi = branchIndex++;
@@ -1286,8 +1286,7 @@ export class Circuit {
           break;
         }
         case 'D': {
-          const modelName = desc.modelName;
-          const modelParams = modelName ? this._models.get(modelName)?.params ?? {} : {};
+          const modelParams = desc.modelName ? this.requireModel('Diode', desc).params : {};
           const { RS: seriesResistanceOverride, ...instanceParams } = desc.params ?? {};
           const hasExpandedSeriesResistance = isPositiveFinite(modelParams.RS)
             && seriesResistanceOverride === 0;
@@ -1305,9 +1304,7 @@ export class Circuit {
         case 'Q': {
           const modelName = desc.modelName!;
           const model = this._models.get(modelName);
-          if (!model && modelName !== '0') {
-            throw new Error(`BJT '${desc.name}' references unknown model '${modelName}'`);
-          }
+          if (!model && modelName !== '0') this.requireModel('BJT', desc);
           if (!model) {
             devices.push(new BJT(desc.name, nodeIndices, { polarity: 1 }));
             break;
@@ -1325,9 +1322,7 @@ export class Circuit {
           break;
         }
         case 'J': {
-          const modelName = desc.modelName!;
-          const model = this._models.get(modelName);
-          if (!model) throw new Error(`JFET '${desc.name}' references unknown model '${modelName}'`);
+          const model = this.requireModel('JFET', desc);
           if (model.type !== 'NJF') {
             throw new Error(`Unsupported JFET model type: '${model.type}'`);
           }
@@ -1335,9 +1330,7 @@ export class Circuit {
           break;
         }
         case 'Z': {
-          const modelName = desc.modelName!;
-          const model = this._models.get(modelName);
-          if (!model) throw new Error(`Z-card '${desc.name}' references unknown model '${modelName}'`);
+          const model = this.requireModel('Z-card', desc);
           const resolved = resolveZModel(model);
           if (resolved.kind === 'hfet') {
             devices.push(new HFET1(
@@ -1366,10 +1359,9 @@ export class Circuit {
           break;
         }
         case 'M': {
-          const modelName = desc.modelName;
-          const model = modelName ? this._models.get(modelName) : undefined;
-          const modelParams = model?.params ?? {};
-          const polarity = model?.type === 'PMOS' ? -1 : 1;
+          const model = this.requireModel('MOSFET', desc);
+          const modelParams = model.params;
+          const polarity = model.type === 'PMOS' ? -1 : 1;
           const level = modelParams.LEVEL ?? 1;
 
           if (level === 49 || level === 8) {
@@ -1495,7 +1487,7 @@ export class Circuit {
         throw new Error(`Unsupported LTRA '${desc.name}': both ports must use a common reference node`);
       }
       const model = this._models.get(desc.modelName!);
-      if (!model) throw new Error(`LTRA '${desc.name}' references unknown model '${desc.modelName}'`);
+      if (!model) throw new InvalidCircuitError(`LTRA '${desc.name}' references unknown model '${desc.modelName}'`);
       result.push(...expandLtraLadder(
         desc.name,
         input,
@@ -1514,7 +1506,7 @@ export class Circuit {
       if (desc.type === 'C') {
         const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
         if (desc.modelName && !model) {
-          throw new Error(`Capacitor '${desc.name}' references unknown model '${desc.modelName}'`);
+          throw new InvalidCircuitError(`Capacitor '${desc.name}' references unknown model '${desc.modelName}'`);
         }
         const resolved = resolveCapacitorModel(desc.value, model, desc.params);
         if (hasCapacitorParasitics(resolved)) {
@@ -1528,7 +1520,7 @@ export class Circuit {
       if (desc.type === 'L') {
         const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
         if (desc.modelName && !model) {
-          throw new Error(`Inductor '${desc.name}' references unknown model '${desc.modelName}'`);
+          throw new InvalidCircuitError(`Inductor '${desc.name}' references unknown model '${desc.modelName}'`);
         }
         const resolved = resolveInductorModel(desc.value, model, desc.params);
         if (hasInductorParasitics(resolved)) {
@@ -1648,7 +1640,7 @@ export class Circuit {
       if (desc.type === 'J') {
         const modelName = desc.modelName!;
         const model = this._models.get(modelName);
-        if (!model) throw new Error(`JFET '${desc.name}' references unknown model '${modelName}'`);
+        if (!model) throw new InvalidCircuitError(`JFET '${desc.name}' references unknown model '${modelName}'`);
         if (model.type !== 'NJF') {
           throw new Error(`Unsupported JFET model type: '${model.type}'`);
         }
@@ -1675,7 +1667,7 @@ export class Circuit {
       if (desc.type === 'Z') {
         const modelName = desc.modelName!;
         const model = this._models.get(modelName);
-        if (!model) throw new Error(`Z-card '${desc.name}' references unknown model '${modelName}'`);
+        if (!model) throw new InvalidCircuitError(`Z-card '${desc.name}' references unknown model '${modelName}'`);
         const resolved = resolveZModel(model);
         if (resolved.kind === 'hfet') resolveHFET1Instance(desc.params);
         else resolveMESAInstance(desc.params);
@@ -1812,6 +1804,19 @@ export class Circuit {
    * @param instanceParams  parameter overrides from the X line
    * @param visited  set of subcircuit names currently being expanded (cycle detection)
    */
+  /**
+   * Resolve a device's `.model` card, raising {@link InvalidCircuitError} when
+   * it is undefined. ngspice refuses such instances ("Unable to find definition
+   * of model"); falling back to defaults would silently simulate a different device.
+   */
+  private requireModel(kind: string, desc: DeviceDescriptor): ModelParams {
+    const model = this._models.get(desc.modelName ?? '');
+    if (!model) {
+      throw new InvalidCircuitError(`${kind} '${desc.name}' references unknown model '${desc.modelName}'`);
+    }
+    return model;
+  }
+
   private expandSubcircuit(
     instanceName: string,
     connectedPorts: string[],
