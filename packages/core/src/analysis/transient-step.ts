@@ -168,7 +168,11 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
     // ngspice CKTnoncon: an iterate a device had to limit was linearised at a
     // junction voltage the solution does not have, so it cannot converge.
     const limited = selfLimiting.some(device => device.limitedLastStamp?.() === true);
-    if (!limited && isConvergedTransient(x, prev, nodeCount, options)) {
+    if (
+      !limited
+      && isConvergedTransient(x, prev, nodeCount, options)
+      && convergenceTestedDevices(compiled).every(device => device.convergenceTest!(x, options))
+    ) {
       return {
         ok: true,
         solution: new Float64Array(x),
@@ -225,6 +229,18 @@ function selfLimitingDevices(compiled: CompiledCircuit): readonly DeviceModel[] 
   if (devices === undefined) {
     devices = compiled.devices.filter(device => device.limitsOwnJunctions === true);
     selfLimitingCache.set(compiled, devices);
+  }
+  return devices;
+}
+
+const convergenceTestedCache = new WeakMap<CompiledCircuit, readonly DeviceModel[]>();
+
+/** Devices with their own ngspice DEVconvTest (e.g. B sources). */
+function convergenceTestedDevices(compiled: CompiledCircuit): readonly DeviceModel[] {
+  let devices = convergenceTestedCache.get(compiled);
+  if (devices === undefined) {
+    devices = compiled.devices.filter(device => device.convergenceTest !== undefined);
+    convergenceTestedCache.set(compiled, devices);
   }
   return devices;
 }

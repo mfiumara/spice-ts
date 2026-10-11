@@ -995,7 +995,11 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
     }
     case 'B': {
       const card = parseBehavioralSourceCard(raw, lineNumber);
-      circuit.addBehavioralCurrentSource(card.name, card.nodes[0], card.nodes[1], card.expression);
+      if (card.kind === 'voltage') {
+        circuit.addBehavioralVoltageSource(card.name, card.nodes[0], card.nodes[1], card.expression, card.params);
+      } else {
+        circuit.addBehavioralCurrentSource(card.name, card.nodes[0], card.nodes[1], card.expression, card.params);
+      }
       break;
     }
     case 'Z': {

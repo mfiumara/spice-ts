@@ -1,4 +1,5 @@
 import { evaluateExpression } from './expression.js';
+import { substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber } from './tokenizer.js';
 import { CycleError, ParseError } from '../errors.js';
 import type { IncludeResolver } from '../types.js';
@@ -115,7 +116,8 @@ function evaluateParamExpression(definition: ParamDefinition, scope: Record<stri
 function substituteStatement(statement: PendingStatement, params: Record<string, number>): string {
   const preserveOutputFunctions = /^\.PRINT(?:\s|$)/i.test(statement.text.trim());
   try {
-    return substituteExpressions(statement.text, params, preserveOutputFunctions);
+    const substituted = substituteExpressions(statement.text, params, preserveOutputFunctions);
+    return /^\s*b/i.test(substituted) ? substituteBehavioralParameters(substituted, params) : substituted;
   } catch (error) {
     if (error instanceof ParseError) throw error;
     throw toParseError(error, statement.line, statement.text.trim());

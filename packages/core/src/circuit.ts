@@ -24,13 +24,17 @@ import { resolveHFET1Instance } from './devices/hfet1-model.js';
 import { MESA } from './devices/mesa.js';
 import { MESA_JUNCTION_GMIN, resolveMESAInstance } from './devices/mesa-model.js';
 import { resolveZModel } from './devices/z-device.js';
-import { BehavioralCurrentSource } from './devices/behavioral-current-source.js';
+import { BehavioralCurrentSource, BehavioralVoltageSource } from './devices/behavioral-source.js';
 import {
+  behavioralControlNodes,
   compileBehavioralExpression,
   formatBehavioralExpression,
   mapBehavioralNodes,
   parseBehavioralSourceCard,
+  substituteBehavioralParameters,
   type BehavioralExpression,
+  type BehavioralInstanceParams,
+  type BehavioralSourceKind,
 } from './parser/behavioral-expression.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
 import { VCCS } from './devices/vccs.js';
@@ -133,8 +137,10 @@ interface DeviceDescriptor {
   ic?: number;
   coupledA?: string;
   coupledB?: string;
-  /** B-card `I=` expression; node references are already circuit node names. */
+  /** B-card `I=`/`V=` expression; node references are already circuit node names. */
   expression?: BehavioralExpression;
+  /** B-card source form and ASRC instance parameters. */
+  behavioral?: { kind: BehavioralSourceKind; params: BehavioralInstanceParams };
   /** XSPICE A-card; its nodes are known once the model's port table is applied at compile. */
   xspice?: XspiceInstanceCard;
 }
@@ -143,10 +149,22 @@ function behavioralDescriptor(
   name: string,
   nPlus: string,
   nMinus: string,
+  kind: BehavioralSourceKind,
   expression: BehavioralExpression,
+  params: BehavioralInstanceParams = {},
 ): DeviceDescriptor {
-  const controls = compileBehavioralExpression(expression).nodes;
-  return { type: 'B', name, nodes: [nPlus, nMinus, ...controls], expression };
+  const controls = behavioralControlNodes(expression);
+  return {
+    type: 'B', name, nodes: [nPlus, nMinus, ...controls], expression, behavioral: { kind, params },
+  };
+}
+
+function formatBehavioralSource(desc: DeviceDescriptor): string {
+  const { kind, params } = desc.behavioral!;
+  const assignment = `${kind === 'voltage' ? 'V' : 'I'}=${formatBehavioralExpression(desc.expression!)}`;
+  const instance = Object.entries(params)
+    .map(([key, value]) => `${key}=${typeof value === 'boolean' ? Number(value) : formatNumber(value)}`);
+  return [desc.name, desc.nodes[0], desc.nodes[1], assignment, ...instance].join(' ');
 }
 
 function formatNumber(value: number): string {
@@ -279,7 +297,7 @@ function formatDevice(desc: DeviceDescriptor): string {
     case 'H':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.controlSource ?? ''} ${formatNumber(desc.value ?? 0)}`.trim();
     case 'B':
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} I=${formatBehavioralExpression(desc.expression!)}`;
+      return formatBehavioralSource(desc);
     case 'X':
       return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''}${tail}`.trim();
     case 'A':
@@ -755,8 +773,32 @@ export class Circuit {
     nPlus: string,
     nMinus: string,
     expression: BehavioralExpression,
+    params: BehavioralInstanceParams = {},
   ): void {
-    const descriptor = behavioralDescriptor(name, nPlus, nMinus, expression);
+    this.addBehavioralSource(behavioralDescriptor(name, nPlus, nMinus, 'current', expression, params));
+  }
+
+  /**
+   * Add an ngspice B-source with a `V=` expression: V(nPlus) - V(nMinus)
+   * follows the expression, with a branch current like a `V` source.
+   *
+   * @param name - Device name (e.g., `'B1'`)
+   * @param nPlus - Positive node
+   * @param nMinus - Negative node
+   * @param expression - Parsed behavioral voltage expression
+   * @param params - ASRC instance parameters (`tc1`, `tc2`, `temp`, `dtemp`, `reciproctc`)
+   */
+  addBehavioralVoltageSource(
+    name: string,
+    nPlus: string,
+    nMinus: string,
+    expression: BehavioralExpression,
+    params: BehavioralInstanceParams = {},
+  ): void {
+    this.addBehavioralSource(behavioralDescriptor(name, nPlus, nMinus, 'voltage', expression, params));
+  }
+
+  private addBehavioralSource(descriptor: DeviceDescriptor): void {
     for (const node of descriptor.nodes) this.nodeSet.add(node);
     this.descriptors.push(descriptor);
   }
@@ -1556,11 +1598,15 @@ export class Circuit {
           break;
         }
         case 'B': {
-          devices.push(new BehavioralCurrentSource(
-            desc.name,
-            nodeIndices,
-            compileBehavioralExpression(desc.expression!),
-          ));
+          const compiledExpression = compileBehavioralExpression(desc.expression!);
+          const { kind, params } = desc.behavioral!;
+          if (kind === 'voltage') {
+            const bi = branchIndex++;
+            branchNames.push(desc.name);
+            devices.push(new BehavioralVoltageSource(desc.name, nodeIndices, bi, compiledExpression, params));
+          } else {
+            devices.push(new BehavioralCurrentSource(desc.name, nodeIndices, compiledExpression, params));
+          }
           break;
         }
         case 'M': {
@@ -2409,12 +2455,15 @@ export class Circuit {
           break;
         }
         case 'B': {
-          const card = parseBehavioralSourceCard(raw, lineNumber);
+          // ngspice's numparam front end substitutes parameters into B expressions.
+          const card = parseBehavioralSourceCard(substituteBehavioralParameters(raw, localParams), lineNumber);
           result.push(behavioralDescriptor(
             devName,
             mapNode(card.nodes[0]),
             mapNode(card.nodes[1]),
+            card.kind,
             mapBehavioralNodes(card.expression, mapNode),
+            card.params,
           ));
           break;
         }

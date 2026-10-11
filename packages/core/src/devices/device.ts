@@ -69,6 +69,15 @@ export interface ChargeTruncation {
   readonly trtol: number;
 }
 
+/** Newton convergence tolerances (ngspice RELTOL, ABSTOL, VNTOL). */
+export interface ConvergenceTolerances {
+  readonly reltol: number;
+  /** Current tolerance (A). */
+  readonly abstol: number;
+  /** Voltage tolerance (V). */
+  readonly vntol: number;
+}
+
 /** A frequency-independent contribution to the complex AC right-hand side. */
 export type ACRHSContribution =
   | {
@@ -170,6 +179,18 @@ export interface DeviceModel {
    * stamp then linearised a voltage the solution does not have.
    */
   limitedLastStamp?(): boolean;
+  /**
+   * ngspice DEVconvTest: whether the device's own quantity has converged at
+   * the Newton solution `solution`, beyond the node-voltage test. Newton
+   * cannot be declared converged while any device returns false.
+   */
+  convergenceTest?(solution: Float64Array, tolerances: ConvergenceTolerances): boolean;
+  /**
+   * Nodes whose voltage the device sets algebraically from other unknowns
+   * (e.g. the output of a grounded B-source `V=` expression). ngspice has no
+   * truncation error on them, so the transient node-voltage LTE skips them.
+   */
+  readonly algebraicNodes?: readonly number[];
   /** Receive the transient TSTEP used by SPICE waveform defaults (e.g. zero PULSE TR/TF). */
   setTransientTimestep?(timestep: number): void;
   /** Clear device-owned transient history before restarting at t=0. */

@@ -170,6 +170,8 @@ class TransientSimImpl implements TransientSim {
   private readonly useDampedInductiveRecovery: boolean;
   /** Devices with an ngspice DEVtrunc charge truncation-error hook. */
   private readonly truncatingDevices: readonly DeviceModel[];
+  /** Nodes a device sets algebraically (no truncation error in ngspice); skipped by the node LTE. */
+  private readonly lteExemptNodes: Uint8Array;
 
   private time = 0;
   private dt: number;
@@ -221,6 +223,10 @@ class TransientSimImpl implements TransientSim {
     this.useDampedInductiveRecovery = compiled.devices.some(device => device instanceof Inductor)
       && compiled.devices.some(device => device.isNonlinear);
     this.truncatingDevices = compiled.devices.filter(device => device.truncateTransientStep !== undefined);
+    this.lteExemptNodes = new Uint8Array(compiled.nodeCount);
+    for (const device of compiled.devices) {
+      for (const node of device.algebraicNodes ?? []) this.lteExemptNodes[node] = 1;
+    }
     this.dt = Math.min(config.timestep, config.maxTimestep);
     this.prevDt = this.dt;
     this.prevPrevDt = this.dt;
@@ -605,6 +611,7 @@ class TransientSimImpl implements TransientSim {
     const divider = method === 'trapezoidal' || method === 'gear2' ? 3 : 2;
     const { nodeCount } = this.compiled;
     for (let i = 0; i < nodeCount; i++) {
+      if (this.lteExemptNodes[i] === 1) continue;
       const slope = (previous[i] - this.secondPrevSol[i]) / this.prevDt;
       const predicted = previous[i] + dt * slope;
       const error = Math.abs(current[i] - predicted) / divider;
