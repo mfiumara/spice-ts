@@ -43,15 +43,15 @@
       "unsupported": 12
     },
     "spiceTs": {
-      "success": 99,
-      "failed": 22,
+      "success": 98,
+      "failed": 23,
       "unsupported": 215
     },
     "outcomes": {
       "matched": 32,
-      "mismatch": 14,
+      "mismatch": 13,
       "not-compared": 53,
-      "spice-ts-loss": 207,
+      "spice-ts-loss": 208,
       "ngspice-failed": 0,
       "both-failed": 30
     }
@@ -419,6 +419,17 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/3"
     },
     {
+      "bucket": "timeout: spice-ts exceeded the 120 s bound",
+      "fixtures": 3,
+      "ngspiceSuccess": 3,
+      "ids": [
+        "examples-digital-compare-adder-bip-cir",
+        "examples-snapshot-adder-mos-circ-cir",
+        "examples-transmissionlines-cpl-ibm1a-sp"
+      ],
+      "issue": null
+    },
+    {
       "bucket": "directive: .measure",
       "fixtures": 2,
       "ngspiceSuccess": 2,
@@ -457,16 +468,6 @@
         "examples-xspice-see-set1-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/492"
-    },
-    {
-      "bucket": "timeout: spice-ts exceeded the 120 s bound",
-      "fixtures": 2,
-      "ngspiceSuccess": 2,
-      "ids": [
-        "examples-digital-compare-adder-bip-cir",
-        "examples-transmissionlines-cpl-ibm1a-sp"
-      ],
-      "issue": null
     },
     {
       "bucket": "model: string-valued model parameters (MFG= and similar)",
@@ -2412,7 +2413,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:244071"
+          "tran:243840"
         ]
       },
       "spiceTs": {
@@ -3460,17 +3461,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:38165"
-        ]
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "spice-ts exceeded the 120000 ms aggregate execution bound"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 90,
-      "worstNormalizedError": 42,
-      "worstSignal": "tran i(vcc)",
-      "outcome": "mismatch",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "timeout: spice-ts exceeded the 120 s bound"
     },
     {
       "id": "examples-soa-bjt-soa-cir",
@@ -3698,7 +3698,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:3076"
+          "tran:3024"
         ]
       },
       "spiceTs": {
@@ -9573,5 +9573,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "dc42e15f43adc1f05782c71770f2ca150d8fe493a6930bf4c7a97dfce14489e8"
+  "outcomeSha256": "e07901d45bc1575083ebdf4a8b78bc4f134d9f6260e13bd9fdb579f15ed2c007"
 }

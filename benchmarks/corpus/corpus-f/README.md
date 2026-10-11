@@ -6,11 +6,11 @@ Every deck below is byte-identical to ngspice `3ef069fb1f04177a153f342a32d941fc2
 
 ## Totals
 
-- Fixtures: 336. Outcome SHA-256: `dc42e15f43adc1f05782c71770f2ca150d8fe493a6930bf4c7a97dfce14489e8`.
+- Fixtures: 336. Outcome SHA-256: `e07901d45bc1575083ebdf4a8b78bc4f134d9f6260e13bd9fdb579f15ed2c007`.
 - ngspice (ngspice-47): 306 success, 18 failed, 12 unsupported.
-- spice-ts (0.3.0): 99 success, 22 failed, 215 unsupported.
-- Outcomes: matched 32, mismatch 14, not-compared 53, spice-ts-loss 207, ngspice-failed 0, both-failed 30.
-- Of the 306 decks ngspice runs successfully, spice-ts matches 32, mismatches 14, produces no comparable result for 53 and fails 207. For 155 of those ngspice successes the deck runs its analyses from `.control` (or its control block ends with `quit`), so `ngspice -r` exports no vectors: they cannot be compared even when spice-ts runs them (harness follow-up https://github.com/mfiumara/spice-ts/issues/528).
+- spice-ts (0.3.0): 98 success, 23 failed, 215 unsupported.
+- Outcomes: matched 32, mismatch 13, not-compared 53, spice-ts-loss 208, ngspice-failed 0, both-failed 30.
+- Of the 306 decks ngspice runs successfully, spice-ts matches 32, mismatches 13, produces no comparable result for 53 and fails 208. For 155 of those ngspice successes the deck runs its analyses from `.control` (or its control block ends with `quit`), so `ngspice -r` exports no vectors: they cannot be compared even when spice-ts runs them (harness follow-up https://github.com/mfiumara/spice-ts/issues/528).
 
 ## Method
 
@@ -31,7 +31,7 @@ Every deck below is byte-identical to ngspice `3ef069fb1f04177a153f342a32d941fc2
 - https://github.com/mfiumara/spice-ts/issues/528: the ngspice harness exports no vectors for decks that run analyses from .control or quit inside it.
 - https://github.com/mfiumara/spice-ts/issues/590: closed by #601: MOS1 depletion junction capacitance (tests/general/mosmem.cir now matches; #511 triage in TRIAGE-511.md).
 - https://github.com/mfiumara/spice-ts/issues/591: closed by #601: MOS1 Meyer gate capacitance from TOX; residual i(vs) mismatch is grid discretisation per #627/#629, routed to #592.
-- https://github.com/mfiumara/spice-ts/issues/626: BSIM3 4-bit NAND adder (examples/snapshot/adder_mos_circ.cir) completes but i(vcc) is ~40x ngspice-47; root cause not established (#511 triage).
+- https://github.com/mfiumara/spice-ts/issues/626: BSIM3 4-bit NAND adder (examples/snapshot/adder_mos_circ.cir): i(vcc) ~40x ngspice-47 before #624, exceeds the 120 s bound since; root cause not established (#511 triage).
 - https://github.com/mfiumara/spice-ts/issues/592: metric: ngspice's coarse default-step output is scored as spice-ts error (rca3040, rtlinv, mos-test, fourbitadder, switches-manual-p92, ltra2_2_line/txl1_1_line i(vs); #511 triage).
 - https://github.com/mfiumara/spice-ts/issues/593: metric: zero/near-zero ngspice peaks turn fV-uV residuals into mismatches (rca3040 AC v(2), fourbitadder; #511 triage).
 
@@ -58,11 +58,11 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo) | 3 | 3 | https://github.com/mfiumara/spice-ts/issues/494 |
 | harness: analysis result not produced or not mapped | 3 | 3 | none filed |
 | model: BSIM4 (LEVEL=14/54) | 3 | 3 | https://github.com/mfiumara/spice-ts/issues/3 |
+| timeout: spice-ts exceeded the 120 s bound | 3 | 3 | none filed |
 | directive: .measure | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/505 |
 | expression: B-source V= and expression functions/operators | 2 | 0 | https://github.com/mfiumara/spice-ts/issues/495 |
 | model: BSIM3 revisions other than 3.3 (VERSION=3.0/3.1/3.2.x) | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/594 |
 | source: parenthesised and extended waveform syntax | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/492 |
-| timeout: spice-ts exceeded the 120 s bound | 2 | 2 | none filed |
 | model: string-valued model parameters (MFG= and similar) | 1 | 0 | none: ngspice also fails every fixture in this bucket |
 | syntax: µ (micro sign) scale suffix | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/508 |
 
@@ -180,7 +180,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [examples/rf/sp/sp4.cir](fixtures/examples/rf/sp/sp4.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: fixture declares no runnable analysis |
 | [examples/rf/sp/Tschebyschef-LP.cir](fixtures/examples/rf/sp/Tschebyschef-LP.cir) | success | failed | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Control script error at line 15: no such vector 's_1_1' in plot 'sp1' let S11db = db(s_1_1) |
 | [examples/shared/t.cir](fixtures/examples/shared/t.cir) | unsupported | unsupported | both-failed |  |  | ngspice: Error on line 14 or its substitute: / spice-ts: Parse error at line 14: Unsupported source waveform 'EXTERNAL' vext ctl 0 0 external |
-| [examples/snapshot/adder_mos_circ.cir](fixtures/examples/snapshot/adder_mos_circ.cir) | success | success | mismatch | 42 | tran i(vcc) |  |
+| [examples/snapshot/adder_mos_circ.cir](fixtures/examples/snapshot/adder_mos_circ.cir) | success | failed | spice-ts-loss |  |  | spice-ts: spice-ts exceeded the 120000 ms aggregate execution bound |
 | [examples/soa/bjt-soa.cir](fixtures/examples/soa/bjt-soa.cir) | unsupported | unsupported | both-failed |  |  | ngspice: Error in netlist line no. 9, new internal line no. 11: / spice-ts: Parse error at line 11: Cannot parse number: 'SIEMENS' .MODEL MPSA92 PNP(IS=9.53E-14 ISE=8.37E-13 ISC=9.99E-11 XTI=3.00 BF=9.80E1 BR=4.78 IKF=3.49E-2 IKR=1.00 XTB=1.5 VAF=2.60E2 VAR=1.40E2 VJE=3.00E-1 VJC=3.00E-1 RE=1.00E-2 RC=1.00E-2 RB=2. |
 | [examples/soa/diode-soa-sh.cir](fixtures/examples/soa/diode-soa-sh.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 11: Unsupported diode thermal node 'tj' (model 'dmod'): diode self-heating is not implemented D1 1 0 tj dmod thermal |
 | [examples/soa/diode-soa-simple.cir](fixtures/examples/soa/diode-soa-simple.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 5: Unsupported dot command: '.temp' .temp 100 |
@@ -411,7 +411,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 
 This supplement supersedes the historical batch-1 rows above for every `.control` deck. The original `outcomes.json` is deliberately unchanged.
 
-Measured with core tree `91e0f224cfeb923d87c99183ba6a96809e9ff279` (`git rev-parse HEAD:packages/core`), ngspice-47, Node v22.23.1, darwin/arm64, Apple M5 Pro.
+Measured with core tree `8d5859b29185f36ce2b1c5928365c48d53545354` (`git rev-parse HEAD:packages/core`), ngspice-47, Node v22.23.1, darwin/arm64, Apple M5 Pro.
 `pnpm build && pnpm exec tsx benchmarks/corpus/corpus-f/control-vectors.ts > control-receipt.json` regenerates this section and prints the full receipt. Add `--check` to rerun without changing files; `--jobs N` controls parallelism.
 
 Every reference comes only from `ngspice -b wrapper.cir`. In a fresh temporary directory, the wrapper runs `source fixture.cir`, then `setplot <type>1` and `write <type>.raw all` for each declared analysis type. `fixture.cir` is a byte-identical copy, verified against the manifest. No rewritten decks or `-r` reference fallback.

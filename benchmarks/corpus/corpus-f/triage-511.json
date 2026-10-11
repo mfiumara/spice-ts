@@ -2,7 +2,7 @@
   "schemaVersion": "spice-ts-corpus-f-triage/v1",
   "issue": "https://github.com/mfiumara/spice-ts/issues/511",
   "measuredOn": {
-    "spiceTsCommit": "68b649095fa0b7e6bf14d92078fb3c7de176e3c6",
+    "spiceTsCommit": "c317324fde94608d0aea7b1662feac4243a94034",
     "ngspice": "ngspice-47",
     "metric": "corpus-f published metric (lib.ts normalizedSignalErrors, MATCH_THRESHOLD 0.01), unchanged",
     "tool": "pnpm exec tsx benchmarks/corpus/corpus-f/triage-detail.ts <fixture-id> [--tmax s] [--deck variant] [--reference-tmax s [--candidate ngspice]]",
@@ -25,7 +25,7 @@
       "id": "bsim3-adder-supply-current",
       "kind": "simulator",
       "issue": "https://github.com/mfiumara/spice-ts/issues/626",
-      "summary": "BSIM3 (level 8, version 3.3.0, default parameters) 4-bit NAND adder: supply and source currents are 10-40x ngspice-47 at its own points. Not root-caused; possibly #589."
+      "summary": "BSIM3 (level 8, version 3.3.0, default parameters) 4-bit NAND adder. Before #624, supply and source currents were 10-40x ngspice-47 at its own points. Since the #624 b3ld.c DC-core port, spice-ts exceeds the 120 s bound. Not root-caused; tracked in #626."
     },
     {
       "id": "reference-grid-artefact",
@@ -121,14 +121,14 @@
       "issueTable": { "outcome": "mismatch", "worst": 0.0439, "signal": "tran v(emit)" },
       "current": { "outcome": "matched", "worst": 2.26e-05, "signal": "tran i(vin)" },
       "rootCauses": [],
-      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and 68b64909 give 0.0000226 after #531 initial-condition handling."
+      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and c317324f give 0.0000226 after #531 initial-condition handling."
     },
     {
       "id": "examples-xspice-original-examples-spice3-deck",
       "issueTable": { "outcome": "mismatch", "worst": 0.0439, "signal": "tran v(emit)" },
       "current": { "outcome": "matched", "worst": 2.26e-05, "signal": "tran i(vin)" },
       "rootCauses": [],
-      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and 68b64909 give 0.0000226 after #531 initial-condition handling."
+      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and c317324f give 0.0000226 after #531 initial-condition handling."
     },
     {
       "id": "examples-probe-mos-test-cir",
@@ -147,9 +147,9 @@
     {
       "id": "examples-snapshot-adder-mos-circ-cir",
       "issueTable": null,
-      "current": { "outcome": "mismatch", "worst": 42, "signal": "tran i(vcc)" },
+      "current": { "outcome": "spice-ts-loss", "worst": null, "signal": null },
       "rootCauses": ["bsim3-adder-supply-current"],
-      "evidence": "spice-ts-loss at bf2e4169 (dotted VERSION=3.3.0 rejected); runnable since #599. 81/90 signals over 1%. i(vcc) near t=8.95 ns: spice-ts -11.6 mA vs ngspice -25 uA (ngspice peak 275 uA), 40.6 at ngspice points. Input source currents are 7-8.7 (about 117 uA vs 13-15 uA peaks). This is a real device-level loss, not a grid artefact. Filed as #626, root cause not established."
+      "evidence": "spice-ts-loss at bf2e4169 (dotted VERSION=3.3.0 rejected); runnable since #599. On main 68b64909 it completed in about 45 s as a mismatch: 81/90 signals over 1%. i(vcc) near t=8.95 ns was spice-ts -11.6 mA vs ngspice -25 uA (ngspice peak 275 uA), 40.6 at ngspice points, and input source currents were 7-8.7. That was a real device-level loss, not a grid artefact. On c317324f, after the #624 BSIM3 DC-core port, spice-ts exceeds the 120 s bound (2m02s wall on a lightly loaded host), so it is published as spice-ts-loss. Tracked in #626, root cause not established."
     }
   ],
   "deferredMismatches": {
