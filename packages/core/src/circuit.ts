@@ -1416,6 +1416,8 @@ export class Circuit {
     const lines: string[] = ['* spice-ts generated netlist'];
 
     const optionNames: Array<[keyof SimulationOptions, string, (value: unknown) => string]> = [
+      ['bypass', 'bypass', String],
+      ['rampTime', 'ramptime', String],
       ['abstol', 'abstol', String],
       ['vntol', 'vntol', String],
       ['reltol', 'reltol', String],

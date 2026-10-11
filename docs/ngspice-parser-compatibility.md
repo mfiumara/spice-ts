@@ -59,7 +59,7 @@ The full-row promotions are end-of-line comments, whitespace around `=` in model
 
 ## `.options` semantic mapping
 
-Only ngspice fields with a direct, solver-backed `SimulationOptions` counterpart are accepted. Values from later `.options` cards replace earlier deck values; explicit API options replace deck values.
+Solver-backed fields, the diagnostic-only fields below, and the explicitly diagnosed `bypass` compatibility request are accepted. Values from later `.options` cards replace earlier deck values; explicit API options replace deck values.
 
 | ngspice field | spice-ts field | Accepted values / mapping | Classification |
 | --- | --- | --- | --- |
@@ -72,10 +72,16 @@ Only ngspice fields with a direct, solver-backed `SimulationOptions` counterpart
 | `method=trap` | `integrationMethod='trapezoidal'` | Exact method mapping | implemented |
 | `method=gear` | `integrationMethod='gear2'` | spice-ts's implemented second-order Gear method | implemented |
 | `trtol` | `trtol` | Non-negative finite number | implemented |
+| `noinit`, `seedinfo` | — | Bare flags, case-insensitive. Suppress the initial-transient printout / request seed printing; neither skips initialization nor changes the RNG seed. | diagnostic-only no-op |
+| `warn`, `maxwarns` | — | Integer. Enable SOA diagnostics / limit warnings per SOA violation category in ngspice; do not alter circuit equations. Native SOA diagnostics are not implemented. | diagnostic-only no-op |
+| `bypass` | `bypass` | Non-negative integer, preserved for external backends. `0` matches native always-evaluate behavior. Nonzero requests do **not** enable ngspice's nonlinear evaluation reuse; `simulate()` returns an `option` warning. Runtime, iteration counts and tolerance-level values may differ. | accepted with explicit limitation, not solver parity |
+| `ramptime` | `rampTime` | Non-negative finite seconds, default 0. Adds the end-of-ramp transient breakpoint. Ordinary V/I sources are **not** ramped by the ngspice-47 release build. XSPICE `capacitoric`/`inductoric` remain explicitly unsupported. | implemented for supported devices in release-build semantics |
 | Every other `.options` field/value | — | Explicit parse error | unsupported |
 
 The ngspice definitions and defaults for these fields are documented in [11.1.1 General Options](https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#magicparlabel-23074). `maxTimestep` remains controlled by `.tran ... tmax` or the API; it is not exposed through an invented ngspice `.options` spelling.
 
 ## Scope decisions
+
+Option semantics were checked against the [ngspice-47 release source](https://sourceforge.net/p/ngspice/ngspice/ci/ngspice-47/tree/): `src/frontend/spiceif.c` (`noinit`), `src/frontend/inp.c` (`warn`, `maxwarns`, `seedinfo`), `src/spicelib/analysis/cktsopt.c` (`bypass`, `ramptime`), and `src/spicelib/analysis/dctran.c` (ramp-end breakpoint). The V/I source ramp calls in `src/spicelib/devices/{vsrc/vsrcload,isrc/isrcload}.c` are guarded by `XSPICE_EXP`. `src/xspice/cm/cm.c` defines the linear `time/ramptime` factor used by participating code models. This is not the separate cosine ramp used by `optran`. See `benchmarks/options-494` for identical-input receipts and remaining corpus losses.
 
 This compatibility work implements bounded parser and runtime semantics already backed by the native solver: PWL evaluation and the `.options` fields listed above. It does not add device-temperature behavior, measurement evaluation, new analyses, the remaining source-waveform families, or a control-language interpreter. Those semantic gaps remain explicitly unsupported and keep their executable rejection fixtures.
