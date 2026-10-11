@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { simulate, simulateStream, simulateStepStream } from './simulate.js';
-import { simulateProtocolV1 } from './protocol/adapter.js';
+import { mapProtocolErrorV1, simulateProtocolV1 } from './protocol/adapter.js';
+import { createTransientSim } from './analysis/transient-driver.js';
+import { InvalidCircuitError } from './errors.js';
 import type { TransientStep } from './types.js';
 
 // Issue #415: SimulationOptions.maxTimestep must cap transient steps in
@@ -87,5 +89,59 @@ describe('SimulationOptions.maxTimestep caps transient steps (#415)', () => {
     };
     expect(largestStep(timeOf(baseline))).toBeCloseTo(0.4e-6, 15);
     expect(largestStep(timeOf(capped))).toBeLessThanOrEqual(1e-8 * TOLERANCE);
+  });
+});
+
+describe('SimulationOptions.maxTimestep validation (#415)', () => {
+  const source = `${RC_PULSE}\n.tran 1u 20u`;
+  const INVALID = [-1e-7, Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY];
+
+  it('treats maxTimestep 0 as unset, as ngspice does', async () => {
+    const baseline = await simulate(source);
+    const zero = await simulate(source, { maxTimestep: 0 });
+
+    expect(zero.transient!.time).toEqual(baseline.transient!.time);
+  });
+
+  it.each(INVALID)('simulate() rejects maxTimestep %s with InvalidCircuitError', async (value: number) => {
+    await expect(simulate(source, { maxTimestep: value })).rejects.toThrow(InvalidCircuitError);
+    await expect(simulate(source, { maxTimestep: value })).rejects.toThrow(/maxTimestep/);
+  });
+
+  it('simulate() with .step rejects a negative maxTimestep with InvalidCircuitError', async () => {
+    const stepped = `${RC_PULSE}\n.step param R1 list 1k 2k\n.tran 1u 20u`;
+    await expect(simulate(stepped, { maxTimestep: -1 })).rejects.toThrow(InvalidCircuitError);
+  });
+
+  it('simulateStream() rejects a negative maxTimestep with InvalidCircuitError', async () => {
+    const drain = async () => {
+      for await (const _ of simulateStream(source, { maxTimestep: -1 })) { /* drain */ }
+    };
+    await expect(drain()).rejects.toThrow(InvalidCircuitError);
+  });
+
+  it('createTransientSim() treats 0 as unset and rejects negative maxTimestep', async () => {
+    const baseline = (await createTransientSim(source)).advanceUntil(20e-6).map(step => step.time);
+    const zero = (await createTransientSim(source, { maxTimestep: 0 })).advanceUntil(20e-6).map(step => step.time);
+
+    expect(zero).toEqual(baseline);
+    await expect(createTransientSim(source, { maxTimestep: -1 })).rejects.toThrow(InvalidCircuitError);
+  });
+
+  it('simulateProtocolV1 treats maxTimestep 0 as unset', async () => {
+    const input = { format: 'spice' as const, source };
+    const baseline = await simulateProtocolV1({ apiVersion: '1', input });
+    const zero = await simulateProtocolV1({ apiVersion: '1', input, options: { maxTimestep: 0 } });
+
+    expect(zero.analyses).toEqual(baseline.analyses);
+  });
+
+  it.each(INVALID)('simulateProtocolV1 maps maxTimestep %s to INVALID_REQUEST', async (value: number) => {
+    const request = { apiVersion: '1' as const, input: { format: 'spice' as const, source }, options: { maxTimestep: value } };
+    const error = await simulateProtocolV1(request).then(() => undefined, (cause: unknown) => cause);
+
+    expect(mapProtocolErrorV1(error)).toMatchObject({
+      code: 'INVALID_REQUEST', phase: 'validation', details: { option: 'maxTimestep' },
+    });
   });
 });

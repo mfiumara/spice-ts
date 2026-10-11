@@ -194,7 +194,8 @@ export interface SimulationOptions {
   maxTransientIterations?: number;
   /**
    * Maximum timestep for transient analyses without a `.tran` TMAX (TMAX wins,
-   * as in ngspice). Default: min(TSTEP, TSTOP/50).
+   * as in ngspice). Default: min(TSTEP, TSTOP/50). 0 means unset, as in
+   * ngspice; negative or non-finite values throw `InvalidCircuitError`.
    */
   maxTimestep?: number;
   /** Integration method. Default: 'trapezoidal' */

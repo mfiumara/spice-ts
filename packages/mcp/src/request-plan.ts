@@ -52,7 +52,7 @@ export function resolvedOptions(request: SimulationRequestV1, plan: RequestPlan)
     reltol: requested?.reltol ?? netlist.reltol ?? 1e-3,
     maxIterations: requested?.maxIterations ?? netlist.maxIterations ?? 100,
     maxTransientIterations: requested?.maxTransientIterations ?? netlist.maxTransientIterations ?? 50,
-    maxTimestep: transientMaxTimestep(plan.analyses, requested?.maxTimestep),
+    maxTimestep: transientMaxTimestep(plan.analyses, requested?.maxTimestep || undefined),
     integrationMethod: requested?.integrationMethod ?? netlist.integrationMethod ?? 'trapezoidal',
     trtol: requested?.trtol ?? netlist.trtol ?? 7,
     gmin: requested?.gmin ?? netlist.gmin ?? 0,
@@ -62,8 +62,8 @@ export function resolvedOptions(request: SimulationRequestV1, plan: RequestPlan)
 }
 
 /**
- * Core's transient step cap: `.tran` TMAX, else the requested `maxTimestep`,
- * else min(TSTEP, TSTOP/50), where a zero TSTEP runs as that cap or TSTOP/50.
+ * Core's transient step cap: `.tran` TMAX, else the requested `maxTimestep`
+ * (0 is unset, as in ngspice), else min(TSTEP, TSTOP/50), where a zero TSTEP runs as that cap or TSTOP/50.
  */
 function transientMaxTimestep(analyses: readonly AnalysisDirective[], requested?: number): number {
   let largest: number | undefined;
