@@ -4,6 +4,22 @@ const NI = 1.45e10;
 const VT_300 = 0.02585;
 const MIN_LEFF = 1e-9;
 
+/** BSIM3 `VERSION=` prefixes spice-ts implements: ngspice's default BSIM3 (3.3.0) revision. */
+export const SUPPORTED_BSIM3_VERSIONS: readonly string[] = ['3.3'];
+
+/**
+ * Whether a LEVEL=8/49 card's `VERSION=` string selects the BSIM3 revision spice-ts implements.
+ * Mirrors ngspice inpdomod.c: an absent version or one containing `default` or starting with
+ * `3.3` selects BSIM3 (3.3.0); `3.0`, `3.1` and `3.2` select BSIM3v0/v1/v32, which spice-ts does
+ * not implement, and any other string is unavailable in ngspice too. ngspice lower-cases the deck
+ * before matching, so the comparison is case-insensitive.
+ */
+export function isSupportedBsim3Version(version: string | undefined): boolean {
+  if (version === undefined) return true;
+  const ver = version.toLowerCase();
+  return ver.includes('default') || SUPPORTED_BSIM3_VERSIONS.some((prefix) => ver.startsWith(prefix));
+}
+
 export interface BSIM3v3ModelParams {
   // Threshold
   VTH0: number; K1: number; K2: number; K3: number; K3B: number;

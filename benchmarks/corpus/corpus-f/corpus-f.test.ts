@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { describe, it } from 'node:test';
@@ -19,8 +20,44 @@ import {
   thirdPartyNotice,
 } from './lib.js';
 import { outcomeDigest, renderMarkdown, summarize, type CorpusFReport } from './outcomes.js';
+import { CONTROL_SECTION, controlWrapperDeck, hasControlBlock, runControlReference } from './control-vectors.js';
 
 const ROOT = 'benchmarks/corpus/corpus-f';
+const HAS_NGSPICE = spawnSync('ngspice', ['--version'], { encoding: 'utf8' }).status === 0;
+
+describe('corpus-f control wrapper (#521)', () => {
+  it('sources a separate unchanged fixture and exports each declared type once', () => {
+    assert.equal(controlWrapperDeck(['dc', 'dc', 'ac']), '* corpus-f unmodified-fixture export wrapper\n.control\nsource fixture.cir\nsetplot dc1\nwrite dc.raw all\nsetplot ac1\nwrite ac.raw all\n.endc\n.end\n');
+    assert.equal(hasControlBlock('.control in title\n.op\n.end\n'), false);
+    assert.equal(hasControlBlock('title\n .CONTROL\nop\n.endc\n'), true);
+  });
+  it('exports control-only op/DC vectors without changing the fixture', { skip: !HAS_NGSPICE }, async () => {
+    const input = Buffer.from('control toy\nV1 1 0 1\nR1 1 2 1k\nR2 2 0 1k\n.control\nop\ndc V1 0 1 0.5\n.endc\n.end\n');
+    const before = sha256(input);
+    const circuit = { localPath: 'toy.cir', analyses: ['op', 'tran', 'dc'] } as CorpusFManifest['circuits'][number];
+    const result = await runControlReference(input, circuit);
+    assert.equal(result.status, 'success');
+    assert.deepEqual(result.execution.analyses.map(analysis => analysis.type), ['op', 'dc']);
+    const dc = result.execution.analyses[1].series;
+    assert.deepEqual(dc.grid, [0, 0.5, 1]);
+    assert.deepEqual(dc.signals['v(2)'].map(value => value.re), [0, 0.25, 0.5]);
+    assert.equal(sha256(input), before);
+  });
+  it('does not score a deck that quits before export as a match', { skip: !HAS_NGSPICE }, async () => {
+    const circuit = { localPath: 'toy.cir', analyses: ['op'] } as CorpusFManifest['circuits'][number];
+    const result = await runControlReference(Buffer.from('quit toy\nV1 1 0 1\nR1 1 0 1k\n.control\nop\nquit\n.endc\n.end\n'), circuit);
+    assert.deepEqual(result.execution.analyses, []);
+    assert.match(result.note ?? '', /no reference vectors/);
+    assert.equal(outcome({ ngspice: result.status, spiceTs: 'success', comparedAnalyses: 0, spiceTsAnalyses: 1, worstNormalized: null, missingSignals: 0 }), 'not-compared');
+  });
+  it('reports ngspice source failures rather than inventing a reference', { skip: !HAS_NGSPICE }, async () => {
+    const circuit = { localPath: 'toy.cir', analyses: ['op'] } as CorpusFManifest['circuits'][number];
+    const result = await runControlReference(Buffer.from('invalid toy\nQ1 1 0 0 missing_model\n.control\nop\n.endc\n.end\n'), circuit);
+    assert.notEqual(result.status, 'success');
+    assert.deepEqual(result.execution.analyses, []);
+    assert.ok(result.firstErrorLine);
+  });
+});
 
 function sha256(bytes: Buffer | string): string {
   return createHash('sha256').update(bytes).digest('hex');
@@ -105,6 +142,8 @@ describe('corpus-f outcome rules', () => {
     assert.equal(gapBucket("Parse error at line 3: Unsupported .control command 'set': only bare", 'unsupported'), 'control: ngspice control-language scripting (set/let/save/foreach/meas/...)');
     assert.equal(gapBucket("Parse error at line 4: Unsupported device card: 'A' a1 1 2 gain_block", 'unsupported'), 'device: XSPICE A-element code models');
     assert.equal(gapBucket("Parse error at line 4: Unsupported dot command: '.global' .global vdd", 'unsupported'), 'directive: .global');
+    assert.equal(gapBucket("MOSFET 'MNA0' (model 'Nmod') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)", 'unsupported'), 'model: BSIM3 revisions other than 3.3 (VERSION=3.0/3.1/3.2.x)');
+    assert.equal(gapBucket("MOSFET 'M1' (model 'n1') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 6, 8, 49)", 'unsupported'), 'model: BSIM4 (LEVEL=14/54)');
     assert.equal(gapBucket('weird', 'unsupported'), 'parse: other unsupported syntax');
     assert.equal(gapBucket('spice-ts exceeded the 120000 ms aggregate execution bound', 'failed'), 'timeout: spice-ts exceeded the 120 s bound');
     assert.equal(gapBucket('Transient analysis: timestep too small at t=1e-9', 'failed'), 'convergence');
@@ -172,6 +211,18 @@ describe('corpus-f committed artifacts', () => {
     const { totals, gapBuckets } = summarize(report.fixtures);
     assert.deepEqual(report.totals, totals);
     assert.deepEqual(report.gapBuckets, gapBuckets);
-    assert.equal(await readFile(resolve(ROOT, 'README.md'), 'utf8'), renderMarkdown(report));
+    const readme = await readFile(resolve(ROOT, 'README.md'), 'utf8');
+    assert.equal(readme.split(CONTROL_SECTION)[0].trimEnd(), renderMarkdown(report).trimEnd());
+  });
+  it('lists every control deck exactly once in the supplemental table', async () => {
+    const readme = await readFile(resolve(ROOT, 'README.md'), 'utf8');
+    const section = readme.split(CONTROL_SECTION)[1] ?? '';
+    const rows = section.split('\n').filter(line => line.startsWith('| ['));
+    const expected: string[] = [];
+    for (const circuit of (await manifest()).circuits) {
+      if (hasControlBlock(await readFile(resolve(circuit.localPath), 'utf8'))) expected.push(circuit.sourcePath);
+    }
+    assert.deepEqual(rows.map(row => /^\| \[([^\]]+)\]/.exec(row)?.[1]), expected);
+    for (const row of rows.filter(line => line.includes(' | loss | '))) assert.match(row, /https:\/\/github.com\/mfiumara\/spice-ts\/issues\/\d+/);
   });
 });

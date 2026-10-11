@@ -1,0 +1,1172 @@
+{
+  "schema": "spice-ts-rf-port-sp/v1",
+  "issue": "https://github.com/mfiumara/spice-ts/issues/499",
+  "referenceSimulator": "ngspice-47",
+  "machine": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "architecture": "arm64",
+    "cpu": "Apple M5 Pro",
+    "node": "v22.23.1"
+  },
+  "commands": {
+    "comparison": "pnpm bench:rf-port-sp",
+    "ngspice": "ngspice -b -r <temporary-raw-path> <byte-identical fixture> (with set filetype=ascii)"
+  },
+  "identicalNetlistBytesForBothEngines": true,
+  "errorMetric": "max_k |spice-ts_k - ngspice_k| over all points, divided by the ngspice peak of the vector (maxNormalized) and of its whole S/Y/Z/Cy matrix (maxNormalizedToMatrix, the headline metric: structurally zero entries such as sp4 Y_1_2 ~ 3e-17 are rounding noise in both engines); frequency grids must match exactly",
+  "worstNormalizedError": 1.08e-8,
+  "worstVector": "SP Analysis: y_1_1",
+  "fixtures": [
+    {
+      "fixture": "benchmarks/rf-port-sp/sp1-power-ports.cir",
+      "sha256": "024ddde0dffa1b1058376dc1f8ecad87774affe22c89d9117079d3b66fa6905b",
+      "plots": [
+        "SP Analysis:100"
+      ],
+      "convergence": {
+        "spiceTs": "success",
+        "ngspice": "success"
+      },
+      "runtimeMilliseconds": {
+        "spiceTs": 108.3,
+        "ngspiceProcess": 47.9
+      },
+      "comparedVectors": 20,
+      "worstNormalizedError": 4.35e-14,
+      "vectors": [
+        {
+          "vector": "SP Analysis: s_1_1",
+          "points": 100,
+          "ngspicePeak": 0.00795,
+          "maxAbsolute": 2.43e-16,
+          "maxNormalized": 3.05e-14,
+          "rmsNormalized": 1.02e-14,
+          "maxNormalizedToMatrix": 3.64e-16
+        },
+        {
+          "vector": "SP Analysis: s_1_2",
+          "points": 100,
+          "ngspicePeak": 0.0187,
+          "maxAbsolute": 6.94e-18,
+          "maxNormalized": 3.7e-16,
+          "rmsNormalized": 1.73e-16,
+          "maxNormalizedToMatrix": 1.04e-17
+        },
+        {
+          "vector": "SP Analysis: s_2_1",
+          "points": 100,
+          "ngspicePeak": 0.0187,
+          "maxAbsolute": 7.81e-18,
+          "maxNormalized": 4.16e-16,
+          "rmsNormalized": 1.93e-16,
+          "maxNormalizedToMatrix": 1.17e-17
+        },
+        {
+          "vector": "SP Analysis: s_2_2",
+          "points": 100,
+          "ngspicePeak": 0.667,
+          "maxAbsolute": 3.33e-16,
+          "maxNormalized": 5e-16,
+          "rmsNormalized": 1.64e-16,
+          "maxNormalizedToMatrix": 5e-16
+        },
+        {
+          "vector": "SP Analysis: y_1_1",
+          "points": 100,
+          "ngspicePeak": 0.01,
+          "maxAbsolute": 6.94e-18,
+          "maxNormalized": 6.94e-16,
+          "rmsNormalized": 2.67e-16,
+          "maxNormalizedToMatrix": 6.94e-17
+        },
+        {
+          "vector": "SP Analysis: y_1_2",
+          "points": 100,
+          "ngspicePeak": 0.00157,
+          "maxAbsolute": 1.99e-18,
+          "maxNormalized": 1.27e-15,
+          "rmsNormalized": 2.7e-16,
+          "maxNormalizedToMatrix": 1.99e-17
+        },
+        {
+          "vector": "SP Analysis: y_2_1",
+          "points": 100,
+          "ngspicePeak": 0.00157,
+          "maxAbsolute": 1.12e-18,
+          "maxNormalized": 7.13e-16,
+          "rmsNormalized": 2.53e-16,
+          "maxNormalizedToMatrix": 1.12e-17
+        },
+        {
+          "vector": "SP Analysis: y_2_2",
+          "points": 100,
+          "ngspicePeak": 0.1,
+          "maxAbsolute": 1.11e-16,
+          "maxNormalized": 1.11e-15,
+          "rmsNormalized": 4.39e-16,
+          "maxNormalizedToMatrix": 1.11e-15
+        },
+        {
+          "vector": "SP Analysis: z_1_1",
+          "points": 100,
+          "ngspicePeak": 100,
+          "maxAbsolute": 8.53e-14,
+          "maxNormalized": 8.53e-16,
+          "rmsNormalized": 1.86e-16,
+          "maxNormalizedToMatrix": 8.53e-16
+        },
+        {
+          "vector": "SP Analysis: z_1_2",
+          "points": 100,
+          "ngspicePeak": 1.59,
+          "maxAbsolute": 1.33e-15,
+          "maxNormalized": 8.37e-16,
+          "rmsNormalized": 2.06e-16,
+          "maxNormalizedToMatrix": 1.33e-17
+        },
+        {
+          "vector": "SP Analysis: z_2_1",
+          "points": 100,
+          "ngspicePeak": 1.59,
+          "maxAbsolute": 6.67e-16,
+          "maxNormalized": 4.19e-16,
+          "rmsNormalized": 2.07e-16,
+          "maxNormalizedToMatrix": 6.67e-18
+        },
+        {
+          "vector": "SP Analysis: z_2_2",
+          "points": 100,
+          "ngspicePeak": 10.1,
+          "maxAbsolute": 1.6e-14,
+          "maxNormalized": 1.58e-15,
+          "rmsNormalized": 4.6e-16,
+          "maxNormalizedToMatrix": 1.6e-16
+        },
+        {
+          "vector": "SP Analysis: i(cy_1_1)",
+          "points": 100,
+          "ngspicePeak": 1.66e-22,
+          "maxAbsolute": 1.88e-37,
+          "maxNormalized": 1.13e-15,
+          "rmsNormalized": 4.43e-16,
+          "maxNormalizedToMatrix": 1.13e-16
+        },
+        {
+          "vector": "SP Analysis: i(cy_1_2)",
+          "points": 100,
+          "ngspicePeak": 4.48e-24,
+          "maxAbsolute": 3e-38,
+          "maxNormalized": 6.69e-15,
+          "rmsNormalized": 1.19e-15,
+          "maxNormalizedToMatrix": 1.81e-17
+        },
+        {
+          "vector": "SP Analysis: i(cy_2_1)",
+          "points": 100,
+          "ngspicePeak": 4.48e-24,
+          "maxAbsolute": 3e-38,
+          "maxNormalized": 6.69e-15,
+          "rmsNormalized": 1.22e-15,
+          "maxNormalizedToMatrix": 1.81e-17
+        },
+        {
+          "vector": "SP Analysis: i(cy_2_2)",
+          "points": 100,
+          "ngspicePeak": 1.66e-21,
+          "maxAbsolute": 3.01e-36,
+          "maxNormalized": 1.82e-15,
+          "rmsNormalized": 7.66e-16,
+          "maxNormalizedToMatrix": 1.82e-15
+        },
+        {
+          "vector": "SP Analysis: nf",
+          "points": 100,
+          "ngspicePeak": 52,
+          "maxAbsolute": 2.84e-14,
+          "maxNormalized": 5.47e-16,
+          "rmsNormalized": 2.09e-16,
+          "maxNormalizedToMatrix": 5.47e-16
+        },
+        {
+          "vector": "SP Analysis: sopt",
+          "points": 100,
+          "ngspicePeak": 0.00798,
+          "maxAbsolute": 3.47e-16,
+          "maxNormalized": 4.35e-14,
+          "rmsNormalized": 1.76e-14,
+          "maxNormalizedToMatrix": 4.35e-14
+        },
+        {
+          "vector": "SP Analysis: nfmin",
+          "points": 100,
+          "ngspicePeak": 52,
+          "maxAbsolute": 2.13e-14,
+          "maxNormalized": 4.1e-16,
+          "rmsNormalized": 1.97e-16,
+          "maxNormalizedToMatrix": 4.1e-16
+        },
+        {
+          "vector": "SP Analysis: rn",
+          "points": 100,
+          "ngspicePeak": 3950000,
+          "maxAbsolute": 8.38e-9,
+          "maxNormalized": 2.12e-15,
+          "rmsNormalized": 7.26e-16,
+          "maxNormalizedToMatrix": 2.12e-15
+        }
+      ]
+    },
+    {
+      "fixture": "benchmarks/rf-port-sp/sp1-power-ports-temp80.cir",
+      "sha256": "4b597600328eda07ed9b8e630ee20a9e71099d080594cacada805d886735ab10",
+      "plots": [
+        "SP Analysis:5"
+      ],
+      "convergence": {
+        "spiceTs": "success",
+        "ngspice": "success"
+      },
+      "runtimeMilliseconds": {
+        "spiceTs": 4.2,
+        "ngspiceProcess": 88.7
+      },
+      "comparedVectors": 20,
+      "worstNormalizedError": 3.26e-14,
+      "vectors": [
+        {
+          "vector": "SP Analysis: s_1_1",
+          "points": 5,
+          "ngspicePeak": 0.00795,
+          "maxAbsolute": 1.11e-16,
+          "maxNormalized": 1.4e-14,
+          "rmsNormalized": 8.98e-15,
+          "maxNormalizedToMatrix": 1.67e-16
+        },
+        {
+          "vector": "SP Analysis: s_1_2",
+          "points": 5,
+          "ngspicePeak": 0.0187,
+          "maxAbsolute": 6.94e-18,
+          "maxNormalized": 3.7e-16,
+          "rmsNormalized": 1.72e-16,
+          "maxNormalizedToMatrix": 1.04e-17
+        },
+        {
+          "vector": "SP Analysis: s_2_1",
+          "points": 5,
+          "ngspicePeak": 0.0187,
+          "maxAbsolute": 3.47e-18,
+          "maxNormalized": 1.85e-16,
+          "rmsNormalized": 8.86e-17,
+          "maxNormalizedToMatrix": 5.21e-18
+        },
+        {
+          "vector": "SP Analysis: s_2_2",
+          "points": 5,
+          "ngspicePeak": 0.667,
+          "maxAbsolute": 1.13e-16,
+          "maxNormalized": 1.69e-16,
+          "rmsNormalized": 1.5e-16,
+          "maxNormalizedToMatrix": 1.69e-16
+        },
+        {
+          "vector": "SP Analysis: y_1_1",
+          "points": 5,
+          "ngspicePeak": 0.01,
+          "maxAbsolute": 5.2e-18,
+          "maxNormalized": 5.2e-16,
+          "rmsNormalized": 3.56e-16,
+          "maxNormalizedToMatrix": 5.21e-17
+        },
+        {
+          "vector": "SP Analysis: y_1_2",
+          "points": 5,
+          "ngspicePeak": 0.00157,
+          "maxAbsolute": 1.99e-18,
+          "maxNormalized": 1.27e-15,
+          "rmsNormalized": 5.7e-16,
+          "maxNormalizedToMatrix": 1.99e-17
+        },
+        {
+          "vector": "SP Analysis: y_2_1",
+          "points": 5,
+          "ngspicePeak": 0.00157,
+          "maxAbsolute": 1.12e-18,
+          "maxNormalized": 7.13e-16,
+          "rmsNormalized": 3.23e-16,
+          "maxNormalizedToMatrix": 1.12e-17
+        },
+        {
+          "vector": "SP Analysis: y_2_2",
+          "points": 5,
+          "ngspicePeak": 0.1,
+          "maxAbsolute": 5.77e-17,
+          "maxNormalized": 5.77e-16,
+          "rmsNormalized": 3.42e-16,
+          "maxNormalizedToMatrix": 5.77e-16
+        },
+        {
+          "vector": "SP Analysis: z_1_1",
+          "points": 5,
+          "ngspicePeak": 100,
+          "maxAbsolute": 9.95e-14,
+          "maxNormalized": 9.95e-16,
+          "rmsNormalized": 4.58e-16,
+          "maxNormalizedToMatrix": 9.95e-16
+        },
+        {
+          "vector": "SP Analysis: z_1_2",
+          "points": 5,
+          "ngspicePeak": 1.59,
+          "maxAbsolute": 1.33e-15,
+          "maxNormalized": 8.37e-16,
+          "rmsNormalized": 3.76e-16,
+          "maxNormalizedToMatrix": 1.33e-17
+        },
+        {
+          "vector": "SP Analysis: z_2_1",
+          "points": 5,
+          "ngspicePeak": 1.59,
+          "maxAbsolute": 6.67e-16,
+          "maxNormalized": 4.19e-16,
+          "rmsNormalized": 1.99e-16,
+          "maxNormalizedToMatrix": 6.67e-18
+        },
+        {
+          "vector": "SP Analysis: z_2_2",
+          "points": 5,
+          "ngspicePeak": 10.1,
+          "maxAbsolute": 3.79e-15,
+          "maxNormalized": 3.75e-16,
+          "rmsNormalized": 2.55e-16,
+          "maxNormalizedToMatrix": 3.79e-17
+        },
+        {
+          "vector": "SP Analysis: i(cy_1_1)",
+          "points": 5,
+          "ngspicePeak": 1.95e-22,
+          "maxAbsolute": 2.59e-37,
+          "maxNormalized": 1.33e-15,
+          "rmsNormalized": 6.4e-16,
+          "maxNormalizedToMatrix": 1.33e-16
+        },
+        {
+          "vector": "SP Analysis: i(cy_1_2)",
+          "points": 5,
+          "ngspicePeak": 5.27e-24,
+          "maxAbsolute": 3.01e-38,
+          "maxNormalized": 5.71e-15,
+          "rmsNormalized": 2.64e-15,
+          "maxNormalizedToMatrix": 1.54e-17
+        },
+        {
+          "vector": "SP Analysis: i(cy_2_1)",
+          "points": 5,
+          "ngspicePeak": 5.27e-24,
+          "maxAbsolute": 3.59e-38,
+          "maxNormalized": 6.8e-15,
+          "rmsNormalized": 3.12e-15,
+          "maxNormalizedToMatrix": 1.84e-17
+        },
+        {
+          "vector": "SP Analysis: i(cy_2_2)",
+          "points": 5,
+          "ngspicePeak": 1.95e-21,
+          "maxAbsolute": 2.63e-36,
+          "maxNormalized": 1.35e-15,
+          "rmsNormalized": 7.67e-16,
+          "maxNormalizedToMatrix": 1.35e-15
+        },
+        {
+          "vector": "SP Analysis: nf",
+          "points": 5,
+          "ngspicePeak": 52,
+          "maxAbsolute": 1.42e-14,
+          "maxNormalized": 2.73e-16,
+          "rmsNormalized": 1.5e-16,
+          "maxNormalizedToMatrix": 2.73e-16
+        },
+        {
+          "vector": "SP Analysis: sopt",
+          "points": 5,
+          "ngspicePeak": 0.00798,
+          "maxAbsolute": 2.6e-16,
+          "maxNormalized": 3.26e-14,
+          "rmsNormalized": 2.23e-14,
+          "maxNormalizedToMatrix": 3.26e-14
+        },
+        {
+          "vector": "SP Analysis: nfmin",
+          "points": 5,
+          "ngspicePeak": 52,
+          "maxAbsolute": 7.11e-15,
+          "maxNormalized": 1.37e-16,
+          "rmsNormalized": 9.17e-17,
+          "maxNormalizedToMatrix": 1.37e-16
+        },
+        {
+          "vector": "SP Analysis: rn",
+          "points": 5,
+          "ngspicePeak": 3950000,
+          "maxAbsolute": 1.4e-9,
+          "maxNormalized": 3.54e-16,
+          "rmsNormalized": 2.32e-16,
+          "maxNormalizedToMatrix": 3.54e-16
+        }
+      ]
+    },
+    {
+      "fixture": "benchmarks/rf-port-sp/sp2-lc-voltage-ports.cir",
+      "sha256": "bc6ad10295cc75c3d4c1f571414528196401cc9d3631edc7d84af0c8efc09501",
+      "plots": [
+        "SP Analysis:601"
+      ],
+      "convergence": {
+        "spiceTs": "success",
+        "ngspice": "success"
+      },
+      "runtimeMilliseconds": {
+        "spiceTs": 168,
+        "ngspiceProcess": 86.2
+      },
+      "comparedVectors": 12,
+      "worstNormalizedError": 1.08e-8,
+      "vectors": [
+        {
+          "vector": "SP Analysis: s_1_1",
+          "points": 601,
+          "ngspicePeak": 1,
+          "maxAbsolute": 2.14e-12,
+          "maxNormalized": 2.14e-12,
+          "rmsNormalized": 1.82e-13,
+          "maxNormalizedToMatrix": 2.14e-12
+        },
+        {
+          "vector": "SP Analysis: s_1_2",
+          "points": 601,
+          "ngspicePeak": 1,
+          "maxAbsolute": 1.6e-12,
+          "maxNormalized": 1.6e-12,
+          "rmsNormalized": 1.75e-13,
+          "maxNormalizedToMatrix": 1.6e-12
+        },
+        {
+          "vector": "SP Analysis: s_2_1",
+          "points": 601,
+          "ngspicePeak": 1,
+          "maxAbsolute": 2.14e-12,
+          "maxNormalized": 2.14e-12,
+          "rmsNormalized": 1.82e-13,
+          "maxNormalizedToMatrix": 2.14e-12
+        },
+        {
+          "vector": "SP Analysis: s_2_2",
+          "points": 601,
+          "ngspicePeak": 1,
+          "maxAbsolute": 1.6e-12,
+          "maxNormalized": 1.6e-12,
+          "rmsNormalized": 1.75e-13,
+          "maxNormalizedToMatrix": 1.6e-12
+        },
+        {
+          "vector": "SP Analysis: y_1_1",
+          "points": 601,
+          "ngspicePeak": 100,
+          "maxAbsolute": 0.00000108,
+          "maxNormalized": 1.08e-8,
+          "rmsNormalized": 8.66e-10,
+          "maxNormalizedToMatrix": 1.08e-8
+        },
+        {
+          "vector": "SP Analysis: y_1_2",
+          "points": 601,
+          "ngspicePeak": 100,
+          "maxAbsolute": 0.00000108,
+          "maxNormalized": 1.08e-8,
+          "rmsNormalized": 8.66e-10,
+          "maxNormalizedToMatrix": 1.08e-8
+        },
+        {
+          "vector": "SP Analysis: y_2_1",
+          "points": 601,
+          "ngspicePeak": 100,
+          "maxAbsolute": 0.00000108,
+          "maxNormalized": 1.08e-8,
+          "rmsNormalized": 8.66e-10,
+          "maxNormalizedToMatrix": 1.08e-8
+        },
+        {
+          "vector": "SP Analysis: y_2_2",
+          "points": 601,
+          "ngspicePeak": 100,
+          "maxAbsolute": 0.00000108,
+          "maxNormalized": 1.08e-8,
+          "rmsNormalized": 8.66e-10,
+          "maxNormalizedToMatrix": 1.08e-8
+        },
+        {
+          "vector": "SP Analysis: z_1_1",
+          "points": 601,
+          "ngspicePeak": 250000,
+          "maxAbsolute": 0.0000103,
+          "maxNormalized": 4.1e-11,
+          "rmsNormalized": 1.68e-12,
+          "maxNormalizedToMatrix": 4.1e-11
+        },
+        {
+          "vector": "SP Analysis: z_1_2",
+          "points": 601,
+          "ngspicePeak": 250000,
+          "maxAbsolute": 0.0000103,
+          "maxNormalized": 4.1e-11,
+          "rmsNormalized": 1.68e-12,
+          "maxNormalizedToMatrix": 4.1e-11
+        },
+        {
+          "vector": "SP Analysis: z_2_1",
+          "points": 601,
+          "ngspicePeak": 250000,
+          "maxAbsolute": 0.0000103,
+          "maxNormalized": 4.1e-11,
+          "rmsNormalized": 1.68e-12,
+          "maxNormalizedToMatrix": 4.1e-11
+        },
+        {
+          "vector": "SP Analysis: z_2_2",
+          "points": 601,
+          "ngspicePeak": 250000,
+          "maxAbsolute": 0.0000103,
+          "maxNormalized": 4.1e-11,
+          "rmsNormalized": 1.68e-12,
+          "maxNormalizedToMatrix": 4.1e-11
+        }
+      ]
+    },
+    {
+      "fixture": "benchmarks/rf-port-sp/sp4-three-ports.cir",
+      "sha256": "1ca31050c073af961a37a00288f3be696da196ff7cb6eed0b2957e80f9a57394",
+      "plots": [
+        "SP Analysis:100"
+      ],
+      "convergence": {
+        "spiceTs": "success",
+        "ngspice": "success"
+      },
+      "runtimeMilliseconds": {
+        "spiceTs": 29,
+        "ngspiceProcess": 195.7
+      },
+      "comparedVectors": 36,
+      "worstNormalizedError": 1.33e-13,
+      "vectors": [
+        {
+          "vector": "SP Analysis: s_1_1",
+          "points": 100,
+          "ngspicePeak": 0.00795,
+          "maxAbsolute": 2.12e-16,
+          "maxNormalized": 2.66e-14,
+          "rmsNormalized": 1.13e-14,
+          "maxNormalizedToMatrix": 2.12e-16
+        },
+        {
+          "vector": "SP Analysis: s_1_2",
+          "points": 100,
+          "ngspicePeak": 0.0187,
+          "maxAbsolute": 7.81e-18,
+          "maxNormalized": 4.17e-16,
+          "rmsNormalized": 1.79e-16,
+          "maxNormalizedToMatrix": 7.81e-18
+        },
+        {
+          "vector": "SP Analysis: s_1_3",
+          "points": 100,
+          "ngspicePeak": 0.0112,
+          "maxAbsolute": 4.77e-18,
+          "maxNormalized": 4.24e-16,
+          "rmsNormalized": 1.75e-16,
+          "maxNormalizedToMatrix": 4.77e-18
+        },
+        {
+          "vector": "SP Analysis: s_2_1",
+          "points": 100,
+          "ngspicePeak": 0.0187,
+          "maxAbsolute": 8.67e-18,
+          "maxNormalized": 4.63e-16,
+          "rmsNormalized": 1.93e-16,
+          "maxNormalizedToMatrix": 8.67e-18
+        },
+        {
+          "vector": "SP Analysis: s_2_2",
+          "points": 100,
+          "ngspicePeak": 0.667,
+          "maxAbsolute": 2.23e-16,
+          "maxNormalized": 3.34e-16,
+          "rmsNormalized": 1.65e-16,
+          "maxNormalizedToMatrix": 2.23e-16
+        },
+        {
+          "vector": "SP Analysis: s_2_3",
+          "points": 100,
+          "ngspicePeak": 0.0265,
+          "maxAbsolute": 1.04e-17,
+          "maxNormalized": 3.93e-16,
+          "rmsNormalized": 1.84e-16,
+          "maxNormalizedToMatrix": 1.04e-17
+        },
+        {
+          "vector": "SP Analysis: s_3_1",
+          "points": 100,
+          "ngspicePeak": 0.0112,
+          "maxAbsolute": 5.2e-18,
+          "maxNormalized": 4.63e-16,
+          "rmsNormalized": 1.96e-16,
+          "maxNormalizedToMatrix": 5.2e-18
+        },
+        {
+          "vector": "SP Analysis: s_3_2",
+          "points": 100,
+          "ngspicePeak": 0.0265,
+          "maxAbsolute": 1.04e-17,
+          "maxNormalized": 3.93e-16,
+          "rmsNormalized": 1.74e-16,
+          "maxNormalizedToMatrix": 1.04e-17
+        },
+        {
+          "vector": "SP Analysis: s_3_3",
+          "points": 100,
+          "ngspicePeak": 1,
+          "maxAbsolute": 3.33e-16,
+          "maxNormalized": 3.33e-16,
+          "rmsNormalized": 1.38e-16,
+          "maxNormalizedToMatrix": 3.33e-16
+        },
+        {
+          "vector": "SP Analysis: y_1_1",
+          "points": 100,
+          "ngspicePeak": 0.01,
+          "maxAbsolute": 1.56e-17,
+          "maxNormalized": 1.56e-15,
+          "rmsNormalized": 4.92e-16,
+          "maxNormalizedToMatrix": 2.48e-18
+        },
+        {
+          "vector": "SP Analysis: y_1_2",
+          "points": 100,
+          "ngspicePeak": 3.02e-17,
+          "maxAbsolute": 4.26e-17,
+          "maxNormalized": 1.41,
+          "rmsNormalized": 0.489,
+          "maxNormalizedToMatrix": 6.79e-18
+        },
+        {
+          "vector": "SP Analysis: y_1_3",
+          "points": 100,
+          "ngspicePeak": 0.01,
+          "maxAbsolute": 1.46e-15,
+          "maxNormalized": 1.46e-13,
+          "rmsNormalized": 5.41e-14,
+          "maxNormalizedToMatrix": 2.33e-16
+        },
+        {
+          "vector": "SP Analysis: y_2_1",
+          "points": 100,
+          "ngspicePeak": 3.02e-17,
+          "maxAbsolute": 4.26e-17,
+          "maxNormalized": 1.41,
+          "rmsNormalized": 0.489,
+          "maxNormalizedToMatrix": 6.79e-18
+        },
+        {
+          "vector": "SP Analysis: y_2_2",
+          "points": 100,
+          "ngspicePeak": 0.1,
+          "maxAbsolute": 4.3e-16,
+          "maxNormalized": 4.3e-15,
+          "rmsNormalized": 1.7e-15,
+          "maxNormalizedToMatrix": 6.85e-17
+        },
+        {
+          "vector": "SP Analysis: y_2_3",
+          "points": 100,
+          "ngspicePeak": 0.1,
+          "maxAbsolute": 1.46e-14,
+          "maxNormalized": 1.46e-13,
+          "rmsNormalized": 5.41e-14,
+          "maxNormalizedToMatrix": 2.33e-15
+        },
+        {
+          "vector": "SP Analysis: y_3_1",
+          "points": 100,
+          "ngspicePeak": 0.01,
+          "maxAbsolute": 1.46e-15,
+          "maxNormalized": 1.46e-13,
+          "rmsNormalized": 5.41e-14,
+          "maxNormalizedToMatrix": 2.33e-16
+        },
+        {
+          "vector": "SP Analysis: y_3_2",
+          "points": 100,
+          "ngspicePeak": 0.1,
+          "maxAbsolute": 1.46e-14,
+          "maxNormalized": 1.46e-13,
+          "rmsNormalized": 5.41e-14,
+          "maxNormalizedToMatrix": 2.33e-15
+        },
+        {
+          "vector": "SP Analysis: y_3_3",
+          "points": 100,
+          "ngspicePeak": 6.28,
+          "maxAbsolute": 7.51e-13,
+          "maxNormalized": 1.2e-13,
+          "rmsNormalized": 4.01e-14,
+          "maxNormalizedToMatrix": 1.2e-13
+        },
+        {
+          "vector": "SP Analysis: z_1_1",
+          "points": 100,
+          "ngspicePeak": 100,
+          "maxAbsolute": 8.53e-14,
+          "maxNormalized": 8.53e-16,
+          "rmsNormalized": 2.14e-16,
+          "maxNormalizedToMatrix": 8.53e-16
+        },
+        {
+          "vector": "SP Analysis: z_1_2",
+          "points": 100,
+          "ngspicePeak": 1.59,
+          "maxAbsolute": 8.88e-16,
+          "maxNormalized": 5.58e-16,
+          "rmsNormalized": 1.86e-16,
+          "maxNormalizedToMatrix": 8.88e-18
+        },
+        {
+          "vector": "SP Analysis: z_1_3",
+          "points": 100,
+          "ngspicePeak": 1.59,
+          "maxAbsolute": 6.67e-16,
+          "maxNormalized": 4.19e-16,
+          "rmsNormalized": 1.91e-16,
+          "maxNormalizedToMatrix": 6.67e-18
+        },
+        {
+          "vector": "SP Analysis: z_2_1",
+          "points": 100,
+          "ngspicePeak": 1.59,
+          "maxAbsolute": 7.22e-16,
+          "maxNormalized": 4.53e-16,
+          "rmsNormalized": 2.01e-16,
+          "maxNormalizedToMatrix": 7.22e-18
+        },
+        {
+          "vector": "SP Analysis: z_2_2",
+          "points": 100,
+          "ngspicePeak": 10.1,
+          "maxAbsolute": 1.24e-14,
+          "maxNormalized": 1.23e-15,
+          "rmsNormalized": 4.66e-16,
+          "maxNormalizedToMatrix": 1.24e-16
+        },
+        {
+          "vector": "SP Analysis: z_2_3",
+          "points": 100,
+          "ngspicePeak": 1.59,
+          "maxAbsolute": 1.33e-15,
+          "maxNormalized": 8.37e-16,
+          "rmsNormalized": 2.02e-16,
+          "maxNormalizedToMatrix": 1.33e-17
+        },
+        {
+          "vector": "SP Analysis: z_3_1",
+          "points": 100,
+          "ngspicePeak": 1.59,
+          "maxAbsolute": 6.67e-16,
+          "maxNormalized": 4.19e-16,
+          "rmsNormalized": 1.94e-16,
+          "maxNormalizedToMatrix": 6.67e-18
+        },
+        {
+          "vector": "SP Analysis: z_3_2",
+          "points": 100,
+          "ngspicePeak": 1.59,
+          "maxAbsolute": 7.77e-16,
+          "maxNormalized": 4.88e-16,
+          "rmsNormalized": 1.8e-16,
+          "maxNormalizedToMatrix": 7.77e-18
+        },
+        {
+          "vector": "SP Analysis: z_3_3",
+          "points": 100,
+          "ngspicePeak": 1.59,
+          "maxAbsolute": 4.26e-14,
+          "maxNormalized": 2.68e-14,
+          "rmsNormalized": 9.28e-15,
+          "maxNormalizedToMatrix": 4.26e-16
+        },
+        {
+          "vector": "SP Analysis: i(cy_1_1)",
+          "points": 100,
+          "ngspicePeak": 1.66e-22,
+          "maxAbsolute": 2.35e-37,
+          "maxNormalized": 1.42e-15,
+          "rmsNormalized": 4.97e-16,
+          "maxNormalizedToMatrix": 1.29e-16
+        },
+        {
+          "vector": "SP Analysis: i(cy_1_2)",
+          "points": 100,
+          "ngspicePeak": 1e-36,
+          "maxAbsolute": 1.41e-36,
+          "maxNormalized": 1.41,
+          "rmsNormalized": 0.489,
+          "maxNormalizedToMatrix": 7.75e-16
+        },
+        {
+          "vector": "SP Analysis: i(cy_1_3)",
+          "points": 100,
+          "ngspicePeak": 1.66e-22,
+          "maxAbsolute": 2.42e-35,
+          "maxNormalized": 1.46e-13,
+          "rmsNormalized": 5.42e-14,
+          "maxNormalizedToMatrix": 1.33e-14
+        },
+        {
+          "vector": "SP Analysis: i(cy_2_1)",
+          "points": 100,
+          "ngspicePeak": 1e-36,
+          "maxAbsolute": 1.41e-36,
+          "maxNormalized": 1.41,
+          "rmsNormalized": 0.489,
+          "maxNormalizedToMatrix": 7.75e-16
+        },
+        {
+          "vector": "SP Analysis: i(cy_2_2)",
+          "points": 100,
+          "ngspicePeak": 1.66e-21,
+          "maxAbsolute": 1.45e-35,
+          "maxNormalized": 8.74e-15,
+          "rmsNormalized": 3.27e-15,
+          "maxNormalizedToMatrix": 7.94e-15
+        },
+        {
+          "vector": "SP Analysis: i(cy_2_3)",
+          "points": 100,
+          "ngspicePeak": 1.66e-21,
+          "maxAbsolute": 2.42e-34,
+          "maxNormalized": 1.46e-13,
+          "rmsNormalized": 5.42e-14,
+          "maxNormalizedToMatrix": 1.33e-13
+        },
+        {
+          "vector": "SP Analysis: i(cy_3_1)",
+          "points": 100,
+          "ngspicePeak": 1.66e-22,
+          "maxAbsolute": 2.42e-35,
+          "maxNormalized": 1.46e-13,
+          "rmsNormalized": 5.42e-14,
+          "maxNormalizedToMatrix": 1.33e-14
+        },
+        {
+          "vector": "SP Analysis: i(cy_3_2)",
+          "points": 100,
+          "ngspicePeak": 1.66e-21,
+          "maxAbsolute": 2.42e-34,
+          "maxNormalized": 1.46e-13,
+          "rmsNormalized": 5.42e-14,
+          "maxNormalizedToMatrix": 1.33e-13
+        },
+        {
+          "vector": "SP Analysis: i(cy_3_3)",
+          "points": 100,
+          "ngspicePeak": 1.82e-21,
+          "maxAbsolute": 1.77e-35,
+          "maxNormalized": 9.7e-15,
+          "rmsNormalized": 3.64e-15,
+          "maxNormalizedToMatrix": 9.7e-15
+        }
+      ]
+    },
+    {
+      "fixture": "benchmarks/rf-port-sp/tschebyschef-lp.cir",
+      "sha256": "889b1f4cfb4ede62fbbf046631b90ff2dd0bc1944e9dabd0261afdeb999ee4bf",
+      "plots": [
+        "SP Analysis:100"
+      ],
+      "convergence": {
+        "spiceTs": "success",
+        "ngspice": "success"
+      },
+      "runtimeMilliseconds": {
+        "spiceTs": 3.3,
+        "ngspiceProcess": 199
+      },
+      "comparedVectors": 12,
+      "worstNormalizedError": 1.1e-13,
+      "vectors": [
+        {
+          "vector": "SP Analysis: s_1_1",
+          "points": 100,
+          "ngspicePeak": 1,
+          "maxAbsolute": 8.28e-15,
+          "maxNormalized": 8.28e-15,
+          "rmsNormalized": 9.64e-16,
+          "maxNormalizedToMatrix": 8.28e-15
+        },
+        {
+          "vector": "SP Analysis: s_1_2",
+          "points": 100,
+          "ngspicePeak": 1,
+          "maxAbsolute": 9.81e-15,
+          "maxNormalized": 9.81e-15,
+          "rmsNormalized": 1.36e-15,
+          "maxNormalizedToMatrix": 9.81e-15
+        },
+        {
+          "vector": "SP Analysis: s_2_1",
+          "points": 100,
+          "ngspicePeak": 1,
+          "maxAbsolute": 8.27e-15,
+          "maxNormalized": 8.27e-15,
+          "rmsNormalized": 9.63e-16,
+          "maxNormalizedToMatrix": 8.27e-15
+        },
+        {
+          "vector": "SP Analysis: s_2_2",
+          "points": 100,
+          "ngspicePeak": 1,
+          "maxAbsolute": 1.15e-14,
+          "maxNormalized": 1.15e-14,
+          "rmsNormalized": 1.48e-15,
+          "maxNormalizedToMatrix": 1.15e-14
+        },
+        {
+          "vector": "SP Analysis: y_1_1",
+          "points": 100,
+          "ngspicePeak": 0.776,
+          "maxAbsolute": 8.51e-14,
+          "maxNormalized": 1.1e-13,
+          "rmsNormalized": 1.11e-14,
+          "maxNormalizedToMatrix": 1.09e-13
+        },
+        {
+          "vector": "SP Analysis: y_1_2",
+          "points": 100,
+          "ngspicePeak": 0.779,
+          "maxAbsolute": 8.52e-14,
+          "maxNormalized": 1.09e-13,
+          "rmsNormalized": 1.1e-14,
+          "maxNormalizedToMatrix": 1.09e-13
+        },
+        {
+          "vector": "SP Analysis: y_2_1",
+          "points": 100,
+          "ngspicePeak": 0.779,
+          "maxAbsolute": 8.53e-14,
+          "maxNormalized": 1.1e-13,
+          "rmsNormalized": 1.1e-14,
+          "maxNormalizedToMatrix": 1.1e-13
+        },
+        {
+          "vector": "SP Analysis: y_2_2",
+          "points": 100,
+          "ngspicePeak": 0.776,
+          "maxAbsolute": 8.52e-14,
+          "maxNormalized": 1.1e-13,
+          "rmsNormalized": 1.11e-14,
+          "maxNormalizedToMatrix": 1.09e-13
+        },
+        {
+          "vector": "SP Analysis: z_1_1",
+          "points": 100,
+          "ngspicePeak": 6010,
+          "maxAbsolute": 2.93e-10,
+          "maxNormalized": 4.88e-14,
+          "rmsNormalized": 4.88e-15,
+          "maxNormalizedToMatrix": 4.87e-14
+        },
+        {
+          "vector": "SP Analysis: z_1_2",
+          "points": 100,
+          "ngspicePeak": 6020,
+          "maxAbsolute": 2.91e-10,
+          "maxNormalized": 4.83e-14,
+          "rmsNormalized": 4.83e-15,
+          "maxNormalizedToMatrix": 4.83e-14
+        },
+        {
+          "vector": "SP Analysis: z_2_1",
+          "points": 100,
+          "ngspicePeak": 6020,
+          "maxAbsolute": 2.94e-10,
+          "maxNormalized": 4.88e-14,
+          "rmsNormalized": 4.88e-15,
+          "maxNormalizedToMatrix": 4.88e-14
+        },
+        {
+          "vector": "SP Analysis: z_2_2",
+          "points": 100,
+          "ngspicePeak": 6010,
+          "maxAbsolute": 2.92e-10,
+          "maxNormalized": 4.87e-14,
+          "rmsNormalized": 4.87e-15,
+          "maxNormalizedToMatrix": 4.86e-14
+        }
+      ]
+    },
+    {
+      "fixture": "benchmarks/rf-port-sp/port-op-ac.cir",
+      "sha256": "2b613c9ccacb88a8daaf4d80efd45493bd747721902c25349163462e0a43f0cb",
+      "plots": [
+        "AC Analysis:16",
+        "Operating Point:1"
+      ],
+      "convergence": {
+        "spiceTs": "success",
+        "ngspice": "success"
+      },
+      "runtimeMilliseconds": {
+        "spiceTs": 3.6,
+        "ngspiceProcess": 87.3
+      },
+      "comparedVectors": 14,
+      "worstNormalizedError": 1.73e-15,
+      "vectors": [
+        {
+          "vector": "AC Analysis: v(in)",
+          "points": 16,
+          "ngspicePeak": 0.767,
+          "maxAbsolute": 1.39e-16,
+          "maxNormalized": 1.81e-16,
+          "rmsNormalized": 9.94e-17,
+          "maxNormalizedToMatrix": 1.81e-16
+        },
+        {
+          "vector": "AC Analysis: v(out)",
+          "points": 16,
+          "ngspicePeak": 0.665,
+          "maxAbsolute": 1.76e-16,
+          "maxNormalized": 2.64e-16,
+          "rmsNormalized": 1.02e-16,
+          "maxNormalizedToMatrix": 2.64e-16
+        },
+        {
+          "vector": "AC Analysis: v(out2)",
+          "points": 16,
+          "ngspicePeak": 0.285,
+          "maxAbsolute": 1.42e-16,
+          "maxNormalized": 4.97e-16,
+          "rmsNormalized": 1.98e-16,
+          "maxNormalizedToMatrix": 4.97e-16
+        },
+        {
+          "vector": "AC Analysis: i(v2)",
+          "points": 16,
+          "ngspicePeak": 0.0038,
+          "maxAbsolute": 1.73e-18,
+          "maxNormalized": 4.57e-16,
+          "rmsNormalized": 1.58e-16,
+          "maxNormalizedToMatrix": 4.57e-16
+        },
+        {
+          "vector": "AC Analysis: v(v2#res)",
+          "points": 16,
+          "ngspicePeak": 0,
+          "maxAbsolute": 2.37e-16,
+          "maxNormalized": 2.37e-16,
+          "rmsNormalized": 8.47e-17,
+          "maxNormalizedToMatrix": 2.37e-16
+        },
+        {
+          "vector": "AC Analysis: i(v1)",
+          "points": 16,
+          "ngspicePeak": 0.0133,
+          "maxAbsolute": 9.53e-18,
+          "maxNormalized": 7.14e-16,
+          "rmsNormalized": 4.29e-16,
+          "maxNormalizedToMatrix": 7.14e-16
+        },
+        {
+          "vector": "AC Analysis: v(v1#res)",
+          "points": 16,
+          "ngspicePeak": 1,
+          "maxAbsolute": 2.31e-16,
+          "maxNormalized": 2.31e-16,
+          "rmsNormalized": 1.57e-16,
+          "maxNormalizedToMatrix": 2.31e-16
+        },
+        {
+          "vector": "Operating Point: v(in)",
+          "points": 1,
+          "ngspicePeak": 0.9,
+          "maxAbsolute": 1.11e-16,
+          "maxNormalized": 1.23e-16,
+          "rmsNormalized": 1.23e-16,
+          "maxNormalizedToMatrix": 1.23e-16
+        },
+        {
+          "vector": "Operating Point: v(out)",
+          "points": 1,
+          "ngspicePeak": 0.85,
+          "maxAbsolute": 0,
+          "maxNormalized": 0,
+          "rmsNormalized": 0,
+          "maxNormalizedToMatrix": 0
+        },
+        {
+          "vector": "Operating Point: v(out2)",
+          "points": 1,
+          "ngspicePeak": 0.65,
+          "maxAbsolute": 0,
+          "maxNormalized": 0,
+          "rmsNormalized": 0,
+          "maxNormalizedToMatrix": 0
+        },
+        {
+          "vector": "Operating Point: i(v2)",
+          "points": 1,
+          "ngspicePeak": 0.002,
+          "maxAbsolute": 8.67e-19,
+          "maxNormalized": 4.34e-16,
+          "rmsNormalized": 4.34e-16,
+          "maxNormalizedToMatrix": 4.34e-16
+        },
+        {
+          "vector": "Operating Point: v(v2#res)",
+          "points": 1,
+          "ngspicePeak": 0.5,
+          "maxAbsolute": 0,
+          "maxNormalized": 0,
+          "rmsNormalized": 0,
+          "maxNormalizedToMatrix": 0
+        },
+        {
+          "vector": "Operating Point: i(v1)",
+          "points": 1,
+          "ngspicePeak": 0.002,
+          "maxAbsolute": 3.47e-18,
+          "maxNormalized": 1.73e-15,
+          "rmsNormalized": 1.73e-15,
+          "maxNormalizedToMatrix": 1.73e-15
+        },
+        {
+          "vector": "Operating Point: v(v1#res)",
+          "points": 1,
+          "ngspicePeak": 1,
+          "maxAbsolute": 0,
+          "maxNormalized": 0,
+          "rmsNormalized": 0,
+          "maxNormalizedToMatrix": 0
+        }
+      ]
+    }
+  ],
+  "exclusions": [
+    "ngspice also writes the node voltages/branch currents of its last port excitation into the SP plot; spice-ts returns only the S/Y/Z (and noise) vectors, so those are not compared.",
+    "Transient pwr/freq port waveforms are covered by unit tests (closed form, ngspice-47 t=0 value), not this receipt."
+  ],
+  "losses": [
+    "donoise supports resistor thermal noise only; other noisy devices are rejected with InvalidCircuitError.",
+    "ngspice-47 vsrcload.c adds the previously loaded V source value to a pwr/freq port waveform (uninitialized accumulator); spice-ts evaluates sqrt(4*pwr*z0)*cos(2*pi*freq*t) alone, so circuits with another V source loaded just before a power port differ in .op (no DC value) and .tran.",
+    "Any non-zero residual above is retained; runtimes include ngspice process startup and are not a speed claim."
+  ]
+}

@@ -1,9 +1,77 @@
 import { parseNumber } from './tokenizer.js';
 import type {
-  ACExcitation, DistortionExcitation, SourceWaveform, PulseSource, SinSource, PWLSource,
+  ACExcitation, DistortionExcitation, SourceWaveform, PulseSource, SinSource, PWLSource, RFPort,
 } from '../types.js';
 
 const UNSUPPORTED_WAVEFORMS = new Set(['EXP', 'SFFM', 'AM', 'TRNOISE', 'EXTERNAL']);
+const TRANSIENT_WAVEFORMS = new Set(['PULSE', 'SIN', 'SINE', 'PWL', ...UNSUPPORTED_WAVEFORMS]);
+const RF_PORT_KEYWORDS = new Set(['PORTNUM', 'Z0', 'PWR', 'FREQ', 'PHASE']);
+
+/**
+ * Split ngspice-47 RF port parameters (`portnum`, `z0`, `pwr`, `freq`, `phase`,
+ * as `key value` or `key=value`) off a voltage-source card.
+ *
+ * ngspice vsrctemp.c makes the source a port only when `portnum > 0` and
+ * `z0 > 0` (z0 defaults to 50); otherwise it stays a plain source. `pwr`/`freq`
+ * switch the transient function to the port's cosine (defaults 1 mW, 1 GHz);
+ * `phase` is stored by ngspice but never used, so it has no effect here either.
+ *
+ * Port parameters without `portnum`, and `pwr`/`freq` next to a transient
+ * waveform (whose precedence ngspice decides by card order), are rejected.
+ */
+export function extractRFPort(tokens: string[], startIdx: number): { tokens: string[]; port?: RFPort } {
+  const rest: string[] = tokens.slice(0, startIdx);
+  const values = new Map<string, number>();
+  for (let index = startIdx; index < tokens.length; index++) {
+    const token = tokens[index];
+    const assignment = token.match(/^([A-Za-z0-9]+)=(.*)$/);
+    const key = (assignment ? assignment[1] : token).toUpperCase();
+    if (!RF_PORT_KEYWORDS.has(key)) {
+      rest.push(token);
+      continue;
+    }
+    const raw = assignment ? assignment[2] : tokens[++index];
+    if (raw === undefined || raw === '') throw new Error(`RF port parameter '${key.toLowerCase()}' requires a value`);
+    if (values.has(key)) throw new Error(`Duplicate RF port parameter '${key.toLowerCase()}'`);
+    values.set(key, parseNumber(raw));
+  }
+  if (values.size === 0) return { tokens: rest };
+
+  const portNumber = values.get('PORTNUM');
+  if (portNumber === undefined) {
+    throw new Error(`RF port parameters (${[...values.keys()].map(key => key.toLowerCase()).join(', ')}) require portnum`);
+  }
+  if (!Number.isInteger(portNumber)) throw new Error(`RF port number must be an integer, got ${portNumber}`);
+  const z0 = values.get('Z0') ?? 50;
+  const hasPower = values.has('PWR') || values.has('FREQ');
+  if (hasPower && rest.slice(startIdx).some(token => TRANSIENT_WAVEFORMS.has(token.toUpperCase()))) {
+    throw new Error('RF port pwr/freq cannot be combined with a transient source waveform');
+  }
+  if (!(portNumber > 0 && z0 > 0)) {
+    if (hasPower) throw new Error('RF port pwr/freq require portnum > 0 and z0 > 0');
+    return { tokens: rest };
+  }
+  const port: RFPort = { number: portNumber, z0 };
+  if (hasPower) {
+    const dc = explicitDcValue(rest, startIdx);
+    port.power = {
+      watts: values.get('PWR') ?? 0.001,
+      frequency: values.get('FREQ') ?? 1e9,
+      ...(dc === undefined ? {} : { dc }),
+    };
+  }
+  return { tokens: rest, port };
+}
+
+/** The DC value a source card states explicitly (`DC v`, `DC=v` or a leading value), if any. */
+function explicitDcValue(tokens: string[], startIdx: number): number | undefined {
+  const normalized = normalizeSourceAssignments(tokens, startIdx);
+  const dcIdx = normalized.findIndex((token, index) => index >= startIdx && token.toUpperCase() === 'DC');
+  if (dcIdx >= 0) return parseNumber(normalized[dcIdx + 1]);
+  const first = normalized[startIdx];
+  if (first === undefined || SOURCE_KEYWORDS.has(first.toUpperCase())) return undefined;
+  return parseNumber(first);
+}
 
 export function parseSourceWaveform(tokens: string[], startIdx: number): SourceWaveform {
   const normalizedTokens = normalizeSourceAssignments(tokens, startIdx);

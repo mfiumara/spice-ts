@@ -1,5 +1,5 @@
 import type { ACRHSContribution, DeviceModel, StampContext } from './device.js';
-import type { SourceWaveform, PulseSource, SinSource, PWLSource } from '../types.js';
+import type { SourceWaveform, PulseSource, SinSource, PWLSource, RFPort } from '../types.js';
 import { InvalidCircuitError } from '../errors.js';
 
 export class VoltageSource implements DeviceModel {
@@ -7,19 +7,42 @@ export class VoltageSource implements DeviceModel {
   readonly isNonlinear = false;
   private transientTimestep = 0;
 
+  /**
+   * @param nodes - `[+, -]`, or `[+, -, res]` for an RF port, whose ideal
+   *   source sits between the internal `res` node and `-` with `z0` from `+`
+   *   to `res` (ngspice-47 vsrcset.c/vsrcload.c RFSPICE).
+   */
   constructor(
     readonly name: string,
     readonly nodes: number[],
     readonly branchIndex: number,
     public waveform: SourceWaveform,
+    readonly port?: RFPort,
   ) {
     this.branches = [branchIndex];
   }
 
+  /** The node the ideal source drives: the internal `res` node of an RF port, else `+`. */
+  get sourceNode(): number {
+    return this.port ? this.nodes[2] : this.nodes[0];
+  }
+
   stamp(ctx: StampContext): void {
-    const [nPlus, nMinus] = this.nodes;
+    const nMinus = this.nodes[1];
+    const nPlus = this.sourceNode;
     const bi = ctx.numNodes + this.branchIndex;
     const voltage = this.getValue(ctx) * ctx.sourceScale;
+
+    if (this.port) {
+      const outer = this.nodes[0];
+      const g0 = 1 / this.port.z0;
+      if (outer >= 0) ctx.stampG(outer, outer, g0);
+      ctx.stampG(nPlus, nPlus, g0);
+      if (outer >= 0) {
+        ctx.stampG(outer, nPlus, -g0);
+        ctx.stampG(nPlus, outer, -g0);
+      }
+    }
 
     // KCL: branch current enters positive node, leaves negative
     if (nPlus >= 0) ctx.stampG(nPlus, bi, 1);
@@ -33,6 +56,11 @@ export class VoltageSource implements DeviceModel {
   }
 
   getVoltageAtTime(time: number): number {
+    const power = this.port?.power;
+    if (power) {
+      // ngspice-47 vsrctemp.c/vsrcload.c PORT: sqrt(4*pwr*z0) * cos(2*pi*freq*t).
+      return Math.sqrt(4 * power.watts * this.port!.z0) * Math.cos(2 * Math.PI * power.frequency * time);
+    }
     switch (this.waveform.type) {
       case 'dc':
         return this.waveform.value;
@@ -48,6 +76,10 @@ export class VoltageSource implements DeviceModel {
   }
 
   private getValue(ctx: StampContext): number {
+    const power = this.port?.power;
+    if (power) {
+      return ctx.useDcSourceValue && power.dc !== undefined ? power.dc : this.getVoltageAtTime(ctx.time);
+    }
     if (ctx.useDcSourceValue && this.waveform.type !== 'dc' && this.waveform.dc !== undefined) {
       return this.waveform.dc;
     }
@@ -68,6 +100,9 @@ export class VoltageSource implements DeviceModel {
   }
 
   setParameter(value: number): void {
+    if (this.port?.power) {
+      throw new InvalidCircuitError(`RF power port '${this.name}' has no sweepable DC value`);
+    }
     if (this.waveform.type === 'dc') {
       this.waveform.value = value;
       return;

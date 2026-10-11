@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/run2/prof-before/cmos-inverter-chain-tran-10000.cpuprofile: 11844 samples, 85797.0 ms sampled
+
+Top self time
+   13586.8 ms  15.8%  batchStamp packages/core/dist/chunk-U7VPSPAU.js:4132
+   10145.3 ms  11.8%  stampG packages/core/dist/chunk-U7VPSPAU.js:17410
+    9037.3 ms  10.5%  evaluateBulkJunctions packages/core/dist/chunk-U7VPSPAU.js:3862
+    7777.4 ms   9.1%  stamp packages/core/dist/chunk-U7VPSPAU.js:3970
+    7616.0 ms   8.9%  (garbage collector)
+    7455.4 ms   8.7%  stampDynamic packages/core/dist/chunk-U7VPSPAU.js:1508
+    5678.9 ms   6.6%  factorize packages/core/dist/chunk-U7VPSPAU.js:16804
+    4994.0 ms   5.8%  buildCompanionSystem packages/core/dist/chunk-U7VPSPAU.js:17937
+    2693.6 ms   3.1%  limitNewtonStep packages/core/dist/chunk-U7VPSPAU.js:3923
+    2527.7 ms   2.9%  stampPrevB packages/core/dist/chunk-U7VPSPAU.js:18799
+    1674.5 ms   2.0%  attemptStep packages/core/dist/chunk-U7VPSPAU.js:18117
+    1671.0 ms   1.9%  newtonRaphson packages/core/dist/chunk-U7VPSPAU.js:17525
+
+Top inclusive time
+   85797.0 ms 100.0%  (root)
+   77905.8 ms  90.8%  simulate packages/core/dist/chunk-U7VPSPAU.js:22218
+   61253.5 ms  71.4%  solveTransient packages/core/dist/chunk-U7VPSPAU.js:19111
+   60587.3 ms  70.6%  advanceSolution packages/core/dist/chunk-U7VPSPAU.js:18571
+   41078.4 ms  47.9%  attemptStep packages/core/dist/chunk-U7VPSPAU.js:18117
+   33848.0 ms  39.5%  buildCompanionSystem packages/core/dist/chunk-U7VPSPAU.js:17937
+   21880.5 ms  25.5%  stamp packages/core/dist/chunk-U7VPSPAU.js:3970
+   20401.1 ms  23.8%  batchStamp packages/core/dist/chunk-U7VPSPAU.js:4132
+   17319.7 ms  20.2%  stampPrevB packages/core/dist/chunk-U7VPSPAU.js:18799
+   16440.7 ms  19.2%  solveDCOperatingPoint packages/core/dist/chunk-U7VPSPAU.js:17742
+   16440.7 ms  19.2%  transientInitialSolution packages/core/dist/chunk-U7VPSPAU.js:22506
+   16383.5 ms  19.1%  newtonRaphson packages/core/dist/chunk-U7VPSPAU.js:17525

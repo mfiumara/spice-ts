@@ -1,0 +1,9 @@
+csw ac
+i1 0 c 2m
+vm c 0 0
+vin in 0 dc 0 ac 1
+r1 in o 1k
+w1 o 0 vm wmod
+.model wmod csw it=1m ih=0.5m ron=1k roff=1meg
+.ac lin 1 1k 1k
+.end

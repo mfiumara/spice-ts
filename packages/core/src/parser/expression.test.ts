@@ -23,8 +23,9 @@ describe('evaluateExpression', () => {
       expect(evaluateExpression('2**3', {})).toBe(8);
     });
 
-    it('treats exponentiation as right-associative', () => {
-      expect(evaluateExpression('2**3**2', {})).toBe(512); // 2**(3**2), not (2**3)**2
+    it('treats exponentiation as left-associative, like ngspice numparam', () => {
+      // ngspice-47: v1 1 0 {2**3**2} -> 64, i.e. (2**3)**2, not 2**(3**2) = 512
+      expect(evaluateExpression('2**3**2', {})).toBe(64);
     });
 
     it('respects operator precedence (mul before add)', () => {
@@ -95,8 +96,9 @@ describe('evaluateExpression', () => {
       expect(evaluateExpression('abs(-3)', {})).toBe(3);
     });
 
-    it('evaluates log (base 10)', () => {
-      expect(evaluateExpression('log(100)', {})).toBeCloseTo(2);
+    it('evaluates log as the natural log, like ngspice numparam', () => {
+      // ngspice-47: v1 1 0 {log(100)} -> 4.605170185988093
+      expect(evaluateExpression('log(100)', {})).toBe(Math.log(100));
     });
 
     it('evaluates ln (natural log)', () => {
@@ -178,6 +180,119 @@ describe('evaluateExpression', () => {
 
     it('evaluates embedded suffix in arithmetic: 4k7 + 300', () => {
       expect(evaluateExpression('4k7 + 300', {})).toBe(5000);
+    });
+  });
+
+  describe('ngspice numparam functions and operators (#493)', () => {
+    // Expected values are ngspice-47 operating points of `vN n 0 {expr}` cards.
+    it.each([
+      ['log10(2.7)', Math.log10(2.7)],
+      ['sin(1.0e-1)', Math.sin(0.1)],
+      ['cos(7.0e-1)', Math.cos(0.7)],
+      ['tan(1.0e-1)', Math.tan(0.1)],
+      ['asin(7.0e-1)', Math.asin(0.7)],
+      ['acos(1.0e-1)', Math.acos(0.1)],
+      ['atan(7.0e-1)', Math.atan(0.7)],
+      ['arctan(1)', 0.7853981633974483],
+      ['sinh(1.0e-1)', Math.sinh(0.1)],
+      ['cosh(1.0e-1)', Math.cosh(0.1)],
+      ['tanh(7.0e-1)', Math.tanh(0.7)],
+      ['asinh(1.0e-1)', Math.asinh(0.1)],
+      ['acosh(1.2e+0)', 0.6223625037147786],
+      ['atanh(7.0e-1)', Math.atanh(0.7)],
+      ['sqr(3)', 9],
+      ['pwr(-2,3)', 8],
+      ['pwr(-4,0.5)', 2],
+      ['int(-2.7)', -2],
+      ['nint(2.5)', 2],
+      ['nint(-2.5)', -2],
+      ['nint(3.5)', 4],
+      ['sgn(-3)', -1],
+      ['floor(-2.5)', -3],
+      ['ceil(2.1)', 3],
+      ['ternary_fcn(0,1,2)', 2],
+    ])('evaluates %s', (expression, expected) => {
+      expect(evaluateExpression(expression, {})).toBe(expected);
+    });
+
+    it('evaluates a double minus as subtraction of a negation', () => {
+      expect(evaluateExpression('2--3', {})).toBe(5);
+    });
+
+    it('evaluates comparisons, logical operators and the ternary operator', () => {
+      expect(evaluateExpression('1 < 2 && 3 >= 3 ? 7 : 8', {})).toBe(7);
+      expect(evaluateExpression('!0 + (2 == 2) + (2 != 2)', {})).toBe(2);
+      expect(evaluateExpression('0 || 2 > 3 ? 1 : 0', {})).toBe(0);
+      expect(evaluateExpression('1 ? 2 : 0 ? 3 : 4', {})).toBe(2);
+    });
+
+    it('evaluates % and ^', () => {
+      expect(evaluateExpression('7%3', {})).toBe(1);
+      expect(evaluateExpression('2^3', {})).toBe(8);
+    });
+
+    describe('power precedence and associativity (ngspice-47 xpressn.c)', () => {
+      // Each expected value is the ngspice-47 operating point of a one-card deck
+      // `.param x=2` / `V1 1 0 {expr}` (see the deck test in
+      // numparam-quoted-expressions.test.ts). ngspice numparam evaluates `^`
+      // and `**` left-associatively at the tightest binary level; a leading
+      // sign is the binary `0 - ...`, so it applies after the power; a minus
+      // directly after another operator negates the following number literal,
+      // which then is the power base; and the power base is taken as |x|.
+      it.each([
+        ['2^3^2', 64],
+        ['2**3**2', 64],
+        ['2^3**2', 64],
+        ['4^0.5^2', 4],
+        ['2^-2^2', 0.0625],
+        ['-2^2', -4],
+        ['-2**2', -4],
+        ['- 2 ^ 2', -4],
+        ['-3^2+1', -8],
+        ['-3**2+1', -8],
+        ['-x^2', -4],
+        ['-x**2+1', -3],
+        ['-2^-2', -0.25],
+        ['-2^2^3', -64],
+        ['-2*3^2', -18],
+        ['-sqrt(4)^2', -4],
+        ['--2^2', -4],
+        ['(-2^2)', -4],
+        ['3*(-2^2)', -12],
+        ['max(-2^2,-5)', -4],
+        ['abs(-2^2)', 4],
+        ['3*-2^2', 12],
+        ['3*-2**2', 12],
+        ['3 * - 2 ^ 2', 12],
+        ['3/-2^2', 0.75],
+        ['1+-2^2', 5],
+        ['3- -2^2', -1],
+        ['1<-2^2', 1],
+        ['1?-2^2:0', 4],
+        ['3*-2*2', -12],
+        ['(-2)^2', 4],
+        ['(-2)^3', 8],
+        ['(-3)^-1', 1 / 3],
+        ['1-(-2)^3', -7],
+        ['2*-3^-1', 2 / 3],
+        ['!0^2', 1],
+        ['!2^0', 1],
+        ['3*!0^2', 3],
+        ['2^3*2', 16],
+        ['2*3^2', 18],
+        ['2-3^2', -7],
+        ['x^-1', 0.5],
+        ['2^ -1', 0.5],
+      ])('evaluates %s', (expression, expected) => {
+        expect(evaluateExpression(expression, { X: 2 })).toBeCloseTo(expected, 12);
+      });
+    });
+
+    it('evaluates the corpus-f TEMPER ternary from todo-temper-3.cir', () => {
+      const expression = 'temper >= 25 ? 1e-10 : (temper+1)*1e-11';
+      expect(evaluateExpression(expression, { TEMPER: 27 })).toBe(1e-10);
+      expect(evaluateExpression(expression, { TEMPER: 9 })).toBeCloseTo(1e-10, 22);
+      expect(evaluateExpression(expression, { TEMPER: 0 })).toBeCloseTo(1e-11, 22);
     });
   });
 
