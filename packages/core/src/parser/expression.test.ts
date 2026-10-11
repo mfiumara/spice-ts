@@ -23,8 +23,9 @@ describe('evaluateExpression', () => {
       expect(evaluateExpression('2**3', {})).toBe(8);
     });
 
-    it('treats exponentiation as right-associative', () => {
-      expect(evaluateExpression('2**3**2', {})).toBe(512); // 2**(3**2), not (2**3)**2
+    it('treats exponentiation as left-associative, like ngspice numparam', () => {
+      // ngspice-47: v1 1 0 {2**3**2} -> 64, i.e. (2**3)**2, not 2**(3**2) = 512
+      expect(evaluateExpression('2**3**2', {})).toBe(64);
     });
 
     it('respects operator precedence (mul before add)', () => {
@@ -228,6 +229,63 @@ describe('evaluateExpression', () => {
     it('evaluates % and ^', () => {
       expect(evaluateExpression('7%3', {})).toBe(1);
       expect(evaluateExpression('2^3', {})).toBe(8);
+    });
+
+    describe('power precedence and associativity (ngspice-47 xpressn.c)', () => {
+      // Each expected value is the ngspice-47 operating point of a one-card deck
+      // `.param x=2` / `V1 1 0 {expr}` (see the deck test in
+      // numparam-quoted-expressions.test.ts). ngspice numparam evaluates `^`
+      // and `**` left-associatively at the tightest binary level; a leading
+      // sign is the binary `0 - ...`, so it applies after the power; a minus
+      // directly after another operator negates the following number literal,
+      // which then is the power base; and the power base is taken as |x|.
+      it.each([
+        ['2^3^2', 64],
+        ['2**3**2', 64],
+        ['2^3**2', 64],
+        ['4^0.5^2', 4],
+        ['2^-2^2', 0.0625],
+        ['-2^2', -4],
+        ['-2**2', -4],
+        ['- 2 ^ 2', -4],
+        ['-3^2+1', -8],
+        ['-3**2+1', -8],
+        ['-x^2', -4],
+        ['-x**2+1', -3],
+        ['-2^-2', -0.25],
+        ['-2^2^3', -64],
+        ['-2*3^2', -18],
+        ['-sqrt(4)^2', -4],
+        ['--2^2', -4],
+        ['(-2^2)', -4],
+        ['3*(-2^2)', -12],
+        ['max(-2^2,-5)', -4],
+        ['abs(-2^2)', 4],
+        ['3*-2^2', 12],
+        ['3*-2**2', 12],
+        ['3 * - 2 ^ 2', 12],
+        ['3/-2^2', 0.75],
+        ['1+-2^2', 5],
+        ['3- -2^2', -1],
+        ['1<-2^2', 1],
+        ['1?-2^2:0', 4],
+        ['3*-2*2', -12],
+        ['(-2)^2', 4],
+        ['(-2)^3', 8],
+        ['(-3)^-1', 1 / 3],
+        ['1-(-2)^3', -7],
+        ['2*-3^-1', 2 / 3],
+        ['!0^2', 1],
+        ['!2^0', 1],
+        ['3*!0^2', 3],
+        ['2^3*2', 16],
+        ['2*3^2', 18],
+        ['2-3^2', -7],
+        ['x^-1', 0.5],
+        ['2^ -1', 0.5],
+      ])('evaluates %s', (expression, expected) => {
+        expect(evaluateExpression(expression, { X: 2 })).toBeCloseTo(expected, 12);
+      });
     });
 
     it('evaluates the corpus-f TEMPER ternary from todo-temper-3.cir', () => {

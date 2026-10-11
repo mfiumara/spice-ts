@@ -91,3 +91,49 @@ describe('quoted/brace numparam expressions against ngspice-47 (#493)', () => {
     }
   });
 });
+
+/**
+ * PR #587 review: `^`/`**` precedence and associativity. Expected values are
+ * the ngspice-47 operating point of this identical deck:
+ *   HOME=<tmp with .spiceinit "set filetype=ascii"> ngspice -b -r power.raw power.cir
+ */
+const POWER_DECK = `power precedence and associativity (#493 review)
+.param x = 2
+.param pa = {2^3^2}
+.param pb = '-3**2+1'
+vp1 p1 0 {pa}
+vp2 p2 0 {2**3**2}
+vp3 p3 0 {-2^2}
+vp4 p4 0 {pb}
+vp5 p5 0 {-x^2}
+vp6 p6 0 {3*-2^2}
+vp7 p7 0 {1+-2^2}
+vp8 p8 0 {4^0.5^2}
+vp9 p9 0 {(-2)^3}
+vp10 p10 0 {-2^-2}
+.op
+.end
+`;
+
+const NGSPICE_POWER_VOLTAGES: Record<string, number> = {
+  p1: 64,
+  p2: 64,
+  p3: -4,
+  p4: -8,
+  p5: -4,
+  p6: 12,
+  p7: 5,
+  p8: 4,
+  p9: 8,
+  p10: -0.25,
+};
+
+describe('numparam ^ and ** precedence against ngspice-47 (#493)', () => {
+  it('matches the ngspice operating point of the power deck', async () => {
+    const result = await simulate(POWER_DECK);
+    const op = result.dc!;
+    for (const [node, expected] of Object.entries(NGSPICE_POWER_VOLTAGES)) {
+      expect(op.voltage(node), `v(${node})`).toBeCloseTo(expected, 12);
+    }
+  });
+});
