@@ -1,0 +1,9 @@
+RF port operating point and AC sweep (spice-ts #499)
+V1 in 0 dc 1 ac 1 portnum 1 z0 50
+R1 in out 25
+C1 out 0 1n
+R2 out out2 100
+V2 out2 0 dc 0.5 portnum 2 z0 75
+.op
+.ac dec 5 1e6 1e9
+.end

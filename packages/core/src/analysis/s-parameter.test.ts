@@ -76,6 +76,44 @@ R1 a 0 50
 .op
 `)).rejects.toThrow(ParseError);
   });
+
+  it('rejects port parameters without portnum', async () => {
+    await expect(simulate(`no portnum
+V1 a 0 dc 1 z0 50
+R1 a 0 50
+.op
+`)).rejects.toThrow(/require portnum/);
+  });
+
+  it('accepts key=value port parameters, subcircuit ports and serializes them in toNetlist()', async () => {
+    const netlist = `subckt port
+.subckt src out
+V1 out 0 dc 2 portnum=1 z0=100
+.ends
+X1 a src
+R1 a 0 100
+.op
+.end
+`;
+    const result = await simulate(netlist);
+    // ngspice-47: v(a) = 1, i(v.x1.v1) = -0.01, v(v.x1.v1#res) = 2.
+    expect(result.dc!.voltage('a')).toBeCloseTo(1, 12);
+    const { parse } = await import('../parser/index.js');
+    const topLevel = parse(`top\nV1 a 0 dc 1 ac 1 portnum=2 z0=75 pwr 0.002 freq 1e6\nV2 b 0 ac 1 portnum 1 freq 2e6\nR1 a b 1k\n.op\n`);
+    expect(topLevel.toNetlist()).toContain('V1 a 0 DC 1 AC 1 0 portnum 2 z0 75 pwr 0.002 freq 1000000');
+    // No DC value was given, so none may appear: it would replace the port cosine at the operating point.
+    expect(topLevel.toNetlist()).toContain('V2 b 0 AC 1 0 portnum 1 z0 50 pwr 0.001 freq 2000000');
+    expect(parse(topLevel.toNetlist()).toNetlist()).toBe(topLevel.toNetlist());
+  });
+
+  it('keeps a plain source when portnum or z0 is not positive, like ngspice vsrctemp.c', async () => {
+    const result = await simulate(`not a port
+V1 a 0 dc 1 portnum 0 z0 50
+R1 a 0 50
+.op
+`);
+    expect(result.dc!.voltage('a')).toBeCloseTo(1, 12);
+  });
 });
 
 describe('.sp S-parameter analysis', () => {

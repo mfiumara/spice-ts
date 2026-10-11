@@ -201,6 +201,20 @@ function formatModel(model: ModelParams): string {
     : `.model ${model.name} ${model.type}`;
 }
 
+/**
+ * A pwr/freq port uses its DC value only when one was given, so it must not
+ * gain the `DC 0` that {@link formatWaveform} writes for an omitted value.
+ */
+function formatSourceValue(desc: DeviceDescriptor): string {
+  const power = desc.port?.power;
+  const wf = desc.waveform;
+  if (!power) return formatWaveform(wf);
+  const terms = power.dc === undefined ? [] : [`DC ${formatNumber(power.dc)}`];
+  const ac = wf?.type === 'ac' ? { magnitude: wf.magnitude ?? 1, phase: wf.phase ?? 0 } : wf?.ac;
+  if (ac) terms.push(`AC ${formatNumber(ac.magnitude)} ${formatNumber(ac.phase)}`);
+  return terms.join(' ');
+}
+
 function formatRFPort(port?: RFPort): string {
   if (!port) return '';
   const power = port.power
@@ -338,7 +352,7 @@ function formatDevice(desc: DeviceDescriptor): string {
     }
     case 'V':
     case 'I':
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatWaveform(desc.waveform)}${formatRFPort(desc.port)}`;
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatSourceValue(desc)}${formatRFPort(desc.port)}`;
     case 'D':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.modelName ?? ''}${tail}`.trim();
     case 'Q':
