@@ -18,7 +18,7 @@ ngspice integrates each device charge with `NIintegrate`. The history is the acc
 | MOSFET levels 1-3 (this class) | q = C·v for the constant CGDO·W, CGSO·W, CBD, CBS that spice-ts models |
 | BSIM3v3 (bounded) | capacitance-only model: Meyer-style averaged increment (DEVqmeyer) for Cgd, Cgs, Cgb, Cbd, Cbs |
 
-Not covered: MOS6 (level 6, `mos6.ts` from PR #455). #455 merged while this change was being measured, and this branch is rebased on top of it, but MOS6 still stamps its averaged Meyer and bulk-junction C(v) through the generic path. The before/after numbers below were measured on 2c11c9f, before #455, so the MOS6 rows reflect the old MOS6 handling. Moving MOS6 onto `TransientChargeState` is remaining scope. Diode behaviour from #452 is unchanged, and there is no sidewall work (#450).
+Not covered: MOS6 (level 6, `mos6.ts` from PR #455). #455 merged while this change was being measured, and this branch is rebased on top of it, but MOS6 still stamps its averaged Meyer and bulk-junction C(v) through the generic path. The before/after numbers below were measured on 2c11c9f, before #455, so the MOS6 rows reflect the old MOS6 handling. Moving MOS6 onto `TransientChargeState` is remaining scope, tracked in #468. Diode behaviour from #452 is unchanged, and there is no sidewall work (#450).
 
 The BJT charges are functions of the clamped junction voltage (`limitForwardJunctionVoltage`, a static clamp, not iterate-relative like pnjlim). Their companion therefore applies the chain rule through the clamp. Without it, a converged point kept a residual `2C/dt·(v − v*)`, and trapezoidal integration turned that into persistent ringing. During development this rang 420 times on an internal BJT base in `classic/lossy-line-24-inch` and tripled its point count (3112 → 9615). With the chain rule: 3146 points.
 
@@ -30,6 +30,16 @@ The generic `G·x(n)` raw-RHS history is **kept**. After this change only the br
 |---|---|---|---|
 | JFET gate charge vs ngspice-47 (every 2 ns) | 21.9 mV (fail) | 0.39 mV | 5 mV |
 | NHFET chain v(4) edge vs converged ngspice-47 (1.0-1.2 ns) | 85.5 mV (fail) | 21.2 mV | 40 mV |
+| JFET gate charge past FC·PB vs ngspice-47 (`jfet-gate-forward.cir`, every 1 ns, v(g) peaks 0.881 V) | 49.95 mV (fail) | 1.04 mV | 5 mV |
+| BSIM3v3 3-stage inverter chain v(inv3), default settings vs the same deck converged (RELTOL=1e-6, TMAX 1 ps) | 200.3 mV (fail) | 10.0 mV | 30 mV |
+| `TransientChargeState.reset()` returns to the MODEINITTRAN state | pass | pass | - |
+
+The rows added in the review round were measured on f0ce055 (rebased on 4ed111e). "main" there means the six device files from origin/main 4ed111e with `charge-state.ts` removed; the HFET row reads 95.1 mV on that base. The BSIM3v3 row has no ngspice reference because spice-ts's BSIM3v3 is capacitance-only (Meyer), not ngspice's charge-based capMod. It checks integration self-consistency instead: converged runs do not depend on how the charge history is integrated. The reset test is a direct state test. Through `TransientSim.reset()`, a no-op reset is not observable, because the driver re-accepts the initial operating point after a reset. With a no-op `reset()` the direct test fails.
+
+## Follow-up issues
+
+- #468: move MOS6 onto `TransientChargeState`. This is the remaining #456 scope, and it is linked to #461 (i(vin) trap ringing on MOS6).
+- #469: charge-based LTE (ngspice CKTterr). It targets the step-control losses below (mesa-oscillator, bjt-rtl, mos-amplifier).
 
 ## Identical-netlist ngspice-47 per-signal metrics (`verify.ts`)
 
@@ -52,7 +62,7 @@ The flag-reset build is ngspice-47 with one diagnostic line, `inverse = FALSE;`,
 
 **The remaining ~1 V hfet-inverter v(4) gap against the flag-reset build is mostly ngspice's own truncation error.** At its default settings, ngspice-47 puts the 1.07-1.09 ns v(4) edge 0.96 V away from ngspice-47 run to convergence (reltol=1e-6, TMAX=0.1 ps) on the same driver-first deck. Against that converged reference, spice-ts at the fixture's default settings is within 21 mV after this change (76 mV before). The "~15 ps lag" of #448 is therefore ngspice being early at default settings, not spice-ts being late.
 
-**mesa-oscillator loss.** The period stays correct. On the fixture, rising v(8) crossings at 0.33 V are 0.8820 ns apart after vs 0.8833 ns before, against 0.8815 ns for converged ngspice. The whole waveform, however, shifts by about 45 ps during the start-up transient (first crossing 1.4988 ns after vs 1.4537 ns before, converged ngspice 1.4486 ns, converged spice-ts 1.4515/1.4521 ns before/after). Start-up amplifies the step error exponentially. With the history fixed, spice-ts's voltage-predictor LTE (`trtol·(reltol·|v| + vntol)`) lets steps grow further in start-up (2732 vs 4256 points before 1.4 ns), and the start-up becomes less accurate. Averaging C in the MESA increment changed nothing (1.4993 ns). The loss is in step control, not in charge history. ngspice uses a charge-based LTE (CKTterr on each integrated charge), which the device charge state now makes possible; that is filed as follow-up work.
+**mesa-oscillator loss.** The period stays correct. On the fixture, rising v(8) crossings at 0.33 V are 0.8820 ns apart after vs 0.8833 ns before, against 0.8815 ns for converged ngspice. The whole waveform, however, shifts by about 45 ps during the start-up transient (first crossing 1.4988 ns after vs 1.4537 ns before, converged ngspice 1.4486 ns, converged spice-ts 1.4515/1.4521 ns before/after). Start-up amplifies the step error exponentially. With the history fixed, spice-ts's voltage-predictor LTE (`trtol·(reltol·|v| + vntol)`) lets steps grow further in start-up (2732 vs 4256 points before 1.4 ns), and the start-up becomes less accurate. Averaging C in the MESA increment changed nothing (1.4993 ns). The loss is in step control, not in charge history. ngspice uses a charge-based LTE (CKTterr on each integrated charge), which the device charge state now makes possible; that is follow-up #469.
 
 ## Aggregate (100 fixtures), before/after
 
