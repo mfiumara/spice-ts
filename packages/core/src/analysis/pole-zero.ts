@@ -145,7 +145,10 @@ function buildLinearizedSystem(
   const assembler = new MNAAssembler(compiled.nodeCount, compiled.branchCount);
   assembler.solution.set(dcSolution);
   const context = assembler.getStampContext();
-  for (const device of compiled.devices) device.stamp(context);
+  for (const device of compiled.devices) {
+    if (device.stampSmallSignal) device.stampSmallSignal(context);
+    else device.stamp(context);
+  }
   for (const device of compiled.devices) device.stampDynamic?.(context);
   for (let index = 0; index < compiled.nodeCount; index++) {
     assembler.G.add(index, index, options.gmin);

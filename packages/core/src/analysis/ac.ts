@@ -61,7 +61,10 @@ export function createLinearizedFrequencySystem(
   const assembler = new MNAAssembler(nodeCount, branchCount);
   assembler.solution.set(dcSolution);
   const ctx = assembler.getStampContext();
-  for (const device of devices) device.stamp(ctx);
+  for (const device of devices) {
+    if (mode === 'standard' && device.stampSmallSignal) device.stampSmallSignal(ctx);
+    else device.stamp(ctx);
+  }
   for (const device of devices) {
     if (mode === 'distortion' && device instanceof Diode) device.stampDistortionDynamic(ctx);
     else device.stampDynamic?.(ctx);

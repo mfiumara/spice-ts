@@ -92,7 +92,7 @@ describe('ngspice parser compatibility fixtures', () => {
   });
 
   it('rejects unsupported resistor parameters continued onto the card', () => {
-    expect(() => parse('R1 in out 1k\n+ TC=0')).toThrow('Unsupported resistor parameters');
+    expect(() => parse('R1 in out 1k\n+ DTEMP=5')).toThrow('Unsupported resistor parameters');
   });
 
   it('accepts .include, .lib, and top-level .param through parseAsync', async () => {

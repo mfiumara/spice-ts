@@ -2,6 +2,7 @@ import type { CircuitIR, IRComponent, IRPort, ComponentType } from './types.js';
 import type { SourceWaveform, ModelParams } from '../types.js';
 import { GROUND_NODE } from '../types.js';
 import { resolveCapacitorModel, resolveInductorModel } from '../devices/passive-model.js';
+import { resolveResistor } from '../devices/resistor-model.js';
 
 /**
  * Device descriptor — mirrors the private interface in circuit.ts.
@@ -168,7 +169,7 @@ function buildDisplayValue(
 ): string | undefined {
   switch (desc.type) {
     case 'R':
-      return formatSI(desc.value ?? 0);
+      return formatSI((componentParams.resistance as number) ?? 0);
     case 'C':
       return formatSI((componentParams.capacitance as number) ?? 0, 'F');
     case 'L':
@@ -247,8 +248,14 @@ function buildParams(
   models: Map<string, ModelParams>,
 ): Record<string, number | string | boolean> {
   switch (desc.type) {
-    case 'R':
-      return { resistance: desc.value ?? 0 };
+    case 'R': {
+      if (!desc.modelName) return { resistance: desc.value ?? 0 };
+      const model = models.get(desc.modelName);
+      return {
+        resistance: desc.value ?? (model ? resolveResistor(desc.name, undefined, model, desc.params).resistance : 0),
+        modelName: desc.modelName,
+      };
+    }
     case 'C':
       {
         const model = desc.modelName ? models.get(desc.modelName) : undefined;

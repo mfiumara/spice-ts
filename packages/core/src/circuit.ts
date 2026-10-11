@@ -6,6 +6,7 @@ import type {
 import type { CircuitIR } from './ir/types.js';
 import { buildIR } from './ir/builder.js';
 import { Resistor } from './devices/resistor.js';
+import { resolveResistor } from './devices/resistor-model.js';
 import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
 import { Capacitor } from './devices/capacitor.js';
@@ -54,6 +55,7 @@ import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
+import { parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
 import { parseBJTInstance, type BJTInstanceParams } from './parser/bjt-parser.js';
 import {
@@ -238,8 +240,13 @@ function formatDevice(desc: DeviceDescriptor): string {
   const tail = params ? ` ${params}` : '';
 
   switch (desc.type) {
-    case 'R':
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatNumber(desc.value ?? 0)}${tail}`;
+    case 'R': {
+      const valueAndModel = [
+        desc.value !== undefined ? formatNumber(desc.value) : undefined,
+        desc.modelName,
+      ].filter(Boolean).join(' ');
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${valueAndModel || '0'}${tail}`;
+    }
     case 'C':
     case 'L': {
       const value = desc.value !== undefined ? formatNumber(desc.value) : undefined;
@@ -487,20 +494,24 @@ export class Circuit {
    * @param name - Device name (e.g., `'R1'`)
    * @param nodePos - Positive terminal node
    * @param nodeNeg - Negative terminal node
-   * @param resistance - Resistance value in ohms
+   * @param resistance - Resistance value in ohms. Omit when using a `.model R` card value.
+   * @param instanceParams - ngspice instance parameters (e.g. `{ TC1: 1e-3, AC: 4e3, M: 2, NOISY: 0 }`)
+   * @param modelName - Optional name of a `.model R` card
    */
   addResistor(
     name: string,
     nodePos: string,
     nodeNeg: string,
-    resistance: number,
-    temperatureCoefficients?: Record<string, number>,
+    resistance?: number,
+    instanceParams?: Record<string, number>,
+    modelName?: string,
   ): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
     this.descriptors.push({
       type: 'R', name, nodes: [nodePos, nodeNeg], value: resistance,
-      params: temperatureCoefficients,
+      params: instanceParams,
+      modelName,
     });
   }
 
@@ -1391,19 +1402,17 @@ export class Circuit {
 
       switch (desc.type) {
         case 'R': {
+          const model = desc.modelName ? this.requireModel('Resistor', desc) : undefined;
+          const resolved = resolveResistor(desc.name, desc.value, model, desc.params);
           // A zero-ohm resistor is an ideal voltage constraint, not infinite
           // conductance. Give it an MNA branch so its equation and current are
           // represented exactly. Stepped resistors also use branch form because
           // their value may cross zero without changing matrix topology.
-          const usesBranch = desc.value === 0 || this._steps.some(step =>
+          const usesBranch = resolved.resistance === 0 || this._steps.some(step =>
             step.param === desc.name || step.param.toUpperCase() === 'TEMP');
           const bi = usesBranch ? branchIndex++ : undefined;
           if (bi !== undefined) branchNames.push(desc.name);
-          devices.push(new Resistor(desc.name, nodeIndices, desc.value!, bi, {
-            tc1: desc.params?.TC1,
-            tc2: desc.params?.TC2,
-            tnom: desc.params?.TNOM,
-          }));
+          devices.push(new Resistor(desc.name, nodeIndices, resolved.resistance, bi, resolved.parameters));
           break;
         }
         case 'V': {
@@ -2238,11 +2247,14 @@ export class Circuit {
 
       switch (devType) {
         case 'R': {
-          const valStr = evalToken(tokens[3]);
+          const evaluatedTokens = tokens.map(t => evalToken(t));
+          const parsed = parseResistorElement(evaluatedTokens, lineNumber, raw);
           result.push({
             type: 'R', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
-            value: parseNumber(valStr),
+            value: parsed.value,
+            modelName: parsed.modelName,
+            params: parsed.params,
           });
           break;
         }

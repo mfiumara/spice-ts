@@ -100,6 +100,12 @@ export interface DeviceModel {
   readonly branches: number[];
   /** Stamp the device's DC/resistive contributions into the MNA system. */
   stamp(ctx: StampContext): void;
+  /**
+   * Stamp the small-signal conductances used by AC, noise and pole-zero
+   * analyses in place of {@link stamp} (e.g. a resistor's `ac=` value, ngspice
+   * RESacload). Absent means `stamp` is used.
+   */
+  stampSmallSignal?(ctx: StampContext): void;
   /** Restrict a Newton candidate while preserving its global step direction. */
   limitNewtonStep?(previous: Float64Array, candidate: Float64Array): number;
   /** Stamp dynamic (reactive) contributions for AC and transient analysis. */

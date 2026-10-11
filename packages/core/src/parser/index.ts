@@ -3,6 +3,7 @@ import { ParseError } from '../errors.js';
 import { tokenizeNetlist, parseNumber } from './tokenizer.js';
 import { parseModelCard } from './model-parser.js';
 import { assertSupportedModelType } from './model-type.js';
+import { assertSupportedResistorModel, parseResistorElement } from './resistor-parser.js';
 import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
@@ -26,6 +27,7 @@ import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 export { parseSourceWaveform } from './waveform-parser.js';
 export { SUPPORTED_MODEL_TYPES, UnsupportedModelTypeError } from './model-type.js';
+export { UnsupportedResistorParameterError } from './resistor-parser.js';
 
 /**
  * Parse a standard SPICE deck into a {@link Circuit} object.
@@ -112,7 +114,10 @@ function parseNetlist(
         } else {
           // Subcircuit bodies are compiled later; reject unsupported model types now,
           // while the source line is still known.
-          if (first === '.MODEL') assertSupportedModelType(tokens, lineNumber, raw);
+          if (first === '.MODEL') {
+            assertSupportedModelType(tokens, lineNumber, raw);
+            assertSupportedResistorModel(tokens, lineNumber, raw);
+          }
           subcktCollector.body.push(raw);
         }
         continue;
@@ -521,6 +526,7 @@ function parseDotCommand(
         break;
       }
       assertSupportedModelType(tokens, lineNumber, context);
+      assertSupportedResistorModel(tokens, lineNumber, context);
       const model = parseTransmissionLineModelCard(tokens, lineNumber)
         ?? parseModelCard(tokens, lineNumber);
       circuit.addModel(model);
@@ -841,18 +847,8 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
 
   switch (type) {
     case 'R': {
-      const params = parseInstanceParams(tokens, 4);
-      const unsupported = Object.keys(params).filter(
-        parameter => !['TC1', 'TC2', 'TNOM'].includes(parameter),
-      );
-      if (unsupported.length > 0) {
-        throw new ParseError(
-          `Unsupported resistor parameters: '${unsupported.join(' ')}'`,
-          lineNumber, tokens.join(' '),
-        );
-      }
-      const value = parseNumber(tokens[3]);
-      circuit.addResistor(name, tokens[1], tokens[2], value, params);
+      const parsed = parseResistorElement(tokens, lineNumber, tokens.join(' '));
+      circuit.addResistor(name, tokens[1], tokens[2], parsed.value, parsed.params, parsed.modelName);
       break;
     }
     case 'C': {
