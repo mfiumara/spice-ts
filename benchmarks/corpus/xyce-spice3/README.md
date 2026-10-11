@@ -5,8 +5,9 @@ their Xyce dialect (five zero-print-step `.tran`, one `.STEP`, one PSpice level-
 corpus holds SPICE3/ngspice-dialect companions for them. The verbatim originals are untouched and
 keep their current status in the aggregate report.
 
-Not yet registered in `benchmarks/aggregate-report.ts` or `benchmarks/SOURCES.md`: #524 lane 4 does
-that (both files are hash-pinned by the aggregate report).
+Decks and reference files are recorded in `benchmarks/SOURCES.md` (section "Xyce Regression Suite
+corpus C translated to SPICE3"). Not yet registered in `benchmarks/aggregate-report.ts`: #524 lane 4
+does that.
 
 ## Files
 
