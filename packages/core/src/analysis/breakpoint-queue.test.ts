@@ -42,6 +42,42 @@ describe('BreakpointQueue', () => {
     q.pop(); // must not throw
   });
 
+  describe('insert (ngspice CKTsetBreak)', () => {
+    it('inserts a run-time breakpoint in order after the current time', () => {
+      const q = new BreakpointQueue([1e-6, 3e-6], 1e-14);
+      q.insert(2e-6, 0.5e-6);
+      q.insert(4e-6, 0.5e-6);
+      expect([...q.remaining()]).toEqual([1e-6, 2e-6, 3e-6, 4e-6]);
+    });
+
+    it('ignores breakpoints at or before the current time', () => {
+      const q = new BreakpointQueue([3e-6], 1e-14);
+      q.insert(1e-6, 1e-6);
+      q.insert(0.5e-6, 1e-6);
+      q.insert(1e-6 + 5e-15, 1e-6);
+      expect([...q.remaining()]).toEqual([3e-6]);
+    });
+
+    it('keeps the earlier of two breakpoints within tolerance', () => {
+      const q = new BreakpointQueue([2e-6], 1e-14);
+      q.insert(2e-6 - 5e-15, 0);
+      expect([...q.remaining()]).toEqual([2e-6 - 5e-15]);
+      q.insert(2e-6, 0);
+      expect([...q.remaining()]).toEqual([2e-6 - 5e-15]);
+      q.insert(5e-6, 0);
+      q.insert(5e-6 + 5e-15, 0);
+      expect([...q.remaining()]).toEqual([2e-6 - 5e-15, 5e-6]);
+    });
+
+    it('only inserts into the unconsumed part of the queue', () => {
+      const q = new BreakpointQueue([1e-6, 3e-6], 1e-14);
+      q.pop();
+      q.insert(2e-6, 1e-6);
+      expect([...q.remaining()]).toEqual([2e-6, 3e-6]);
+      expect(q.peek()).toBe(2e-6);
+    });
+  });
+
   it('remaining() returns unconsumed entries in order', () => {
     const q = new BreakpointQueue([3e-6, 1e-6, 2e-6], 1e-14);
     expect([...q.remaining()]).toEqual([1e-6, 2e-6, 3e-6]);

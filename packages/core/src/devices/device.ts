@@ -40,6 +40,15 @@ export interface StampContext {
 }
 
 /**
+ * Receives breakpoints a device creates while accepting a transient
+ * timepoint (ngspice CKTsetBreak from DEVaccept).
+ */
+export interface TransientBreakpointSink {
+  /** Request a breakpoint at absolute time `time`; times not after the accepted point are ignored. */
+  schedule(time: number): void;
+}
+
+/**
  * Integration rule for one transient step, after the order-1 bootstrap at
  * starts, breakpoints and history resets has been applied.
  */
@@ -151,8 +160,12 @@ export interface DeviceModel {
   stampAcceptedChargeCurrent?(ctx: StampContext): void;
   /** Stamp AC small-signal contributions at angular frequency omega. */
   stampAC?(ctx: StampContext, omega: number): void;
-  /** Commit state from a transient timepoint after NR and LTE acceptance. */
-  acceptTransientStep?(ctx: StampContext): void;
+  /**
+   * Commit state from a transient timepoint after NR and LTE acceptance.
+   * `breakpoints` (transient analysis only) schedules breakpoints the
+   * accepted state creates later in the run (ngspice DEVaccept + CKTsetBreak).
+   */
+  acceptTransientStep?(ctx: StampContext, breakpoints?: TransientBreakpointSink): void;
   /**
    * ngspice DEVtrunc: the largest next timestep the truncation error of the
    * device's integrated charges allows, evaluated at the converged but not yet
