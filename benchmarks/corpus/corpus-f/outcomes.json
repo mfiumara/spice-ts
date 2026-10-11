@@ -43,15 +43,15 @@
       "unsupported": 12
     },
     "spiceTs": {
-      "success": 96,
+      "success": 98,
       "failed": 22,
-      "unsupported": 218
+      "unsupported": 216
     },
     "outcomes": {
       "matched": 32,
       "mismatch": 14,
-      "not-compared": 50,
-      "spice-ts-loss": 210,
+      "not-compared": 52,
+      "spice-ts-loss": 208,
       "ngspice-failed": 0,
       "both-failed": 30
     }
@@ -59,17 +59,21 @@
   "gapBuckets": [
     {
       "bucket": "parse: other unsupported syntax",
-      "fixtures": 68,
-      "ngspiceSuccess": 63,
+      "fixtures": 73,
+      "ngspiceSuccess": 68,
       "ids": [
         "examples-control-structs-foreach-bjt-ft-sp",
         "examples-digital-auto-bridge-shared-line-cir",
         "examples-digital-auto-bridge-vcc-cir",
         "examples-digital-digital-devices-xspice-c4-cir",
-        "examples-measure-func-cap-sp",
+        "examples-loops-instance-loop-cir",
+        "examples-loops-loop-instance-cir",
+        "examples-loops-loop-model-cir",
         "examples-measure-inv-meas-tran-auto-sp",
         "examples-measure-inv-meas-tran-sp",
         "examples-measure-rc-meas-ac-sp",
+        "examples-memristor-memristor-x-sp",
+        "examples-memristor-memristor-sp",
         "examples-mos-nmos-out-bsim330-plainwrite-sp",
         "examples-noise-bipolar-noise-cir",
         "examples-numparam-vector-param-cir",
@@ -113,6 +117,7 @@
         "examples-xspice-original-examples-supply-ramping-deck",
         "examples-xspice-original-examples-user-defined-nodes-deck",
         "examples-xspice-pwm-osc-pwm-sin-cir",
+        "examples-xspice-see-repeat-loop-seegen-net",
         "examples-xspice-see-seegen-cm1-cir",
         "examples-xspice-transmission-lines-cpline-ac-cir",
         "examples-xspice-transmission-lines-cpline-tran-cir",
@@ -180,11 +185,12 @@
     },
     {
       "bucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)",
-      "fixtures": 26,
-      "ngspiceSuccess": 22,
+      "fixtures": 28,
+      "ngspiceSuccess": 24,
       "ids": [
         "examples-control-structs-new-check-4-sp",
         "examples-digital-compare-adder-mos-cir",
+        "examples-loops-loop-param-cir",
         "examples-measure-mos-meas-dc-control-file-sp",
         "examples-measure-mos-meas-dc-control-sp",
         "examples-monte-carlo-mc-ring-sp",
@@ -208,6 +214,7 @@
         "examples-various-integrate1-cir",
         "examples-vdmos-100w-wingspread-sp",
         "examples-vdmos-100w-sp",
+        "examples-xspice-table-table-generator-q-2d-sp",
         "tests-regression-misc-bugs-2-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/488"
@@ -235,25 +242,6 @@
         "tests-regression-temper-temper-res-1-cir"
       ],
       "issue": null
-    },
-    {
-      "bucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)",
-      "fixtures": 11,
-      "ngspiceSuccess": 11,
-      "ids": [
-        "examples-loops-instance-loop-cir",
-        "examples-loops-loop-instance-cir",
-        "examples-loops-loop-model-cir",
-        "examples-loops-loop-param-cir",
-        "examples-memristor-memristor-x-sp",
-        "examples-memristor-memristor-sp",
-        "examples-rf-sp-file-cir",
-        "examples-various-v-i-sources-am-ffm-cir",
-        "examples-xspice-see-repeat-loop-seegen-net",
-        "examples-xspice-table-table-generator-q-2d-sp",
-        "tests-regression-misc-if-elseif-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/496"
     },
     {
       "bucket": "model: VDMOS power MOSFET",
@@ -299,10 +287,10 @@
         "examples-measure-meas-expression-cir",
         "examples-monte-carlo-opwien-sp",
         "examples-monte-carlo-rand-numb-test-cir",
+        "examples-rf-sp-file-cir",
         "examples-vdmos-dcdc-sp",
         "tests-regression-func-func-1-cir",
-        "tests-regression-parser-bxpressn-1-cir",
-        "tests-regression-parser-xpressn-3-cir"
+        "tests-regression-parser-bxpressn-1-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/493"
     },
@@ -430,6 +418,16 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/502"
     },
     {
+      "bucket": "directive: .measure",
+      "fixtures": 2,
+      "ngspiceSuccess": 2,
+      "ids": [
+        "examples-measure-func-cap-sp",
+        "examples-measure-mos-meas-dc-sp"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/505"
+    },
+    {
       "bucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)",
       "fixtures": 2,
       "ngspiceSuccess": 2,
@@ -460,6 +458,16 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/594"
     },
     {
+      "bucket": "source: parenthesised and extended waveform syntax",
+      "fixtures": 2,
+      "ngspiceSuccess": 2,
+      "ids": [
+        "examples-various-v-i-sources-am-ffm-cir",
+        "examples-xspice-see-set1-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/492"
+    },
+    {
       "bucket": "timeout: spice-ts exceeded the 120 s bound",
       "fixtures": 2,
       "ngspiceSuccess": 2,
@@ -470,15 +478,6 @@
       "issue": null
     },
     {
-      "bucket": "directive: .measure",
-      "fixtures": 1,
-      "ngspiceSuccess": 1,
-      "ids": [
-        "examples-measure-mos-meas-dc-sp"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/505"
-    },
-    {
       "bucket": "model: string-valued model parameters (MFG= and similar)",
       "fixtures": 1,
       "ngspiceSuccess": 0,
@@ -486,15 +485,6 @@
         "examples-soa-bjt-soa-cir"
       ],
       "issue": null
-    },
-    {
-      "bucket": "source: parenthesised and extended waveform syntax",
-      "fixtures": 1,
-      "ngspiceSuccess": 1,
-      "ids": [
-        "examples-xspice-see-set1-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/492"
     },
     {
       "bucket": "syntax: µ (micro sign) scale suffix",
@@ -1773,7 +1763,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: Unsupported behavioral expression function 'border' B3 3 0 v = border(v(1))"
+        "firstErrorLine": "Parse error at line 7: Unsupported behavioral expression function 'if' B3 3 0 v = (if(ddt((v(1)))>0,1,0))"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1853,7 +1843,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: XSPICE code model 'd_buffer' (.model 'buf') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model buf d_buffer"
+        "firstErrorLine": "Parse error at line 11: XSPICE code model 'd_buffer' (.model 'buf') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model buf d_buffer"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1959,14 +1949,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 12: Unsupported dot command: '.csparam' .csparam start=1k"
+        "firstErrorLine": "Control script error at line 22: no such vector 'end' in plot 'unknown1' if (end < start)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-loops-loop-instance-cir",
@@ -1985,14 +1975,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 12: Unsupported dot command: '.csparam' .csparam start=1k"
+        "firstErrorLine": "Control script error at line 22: no such vector 'end' in plot 'unknown1' if (end < start)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-loops-loop-model-cir",
@@ -2011,14 +2001,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: Unsupported dot command: '.csparam' .csparam start=1k"
+        "firstErrorLine": "Control script error at line 23: no such vector 'end' in plot 'unknown1' if (end < start)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-loops-loop-param-cir",
@@ -2037,14 +2027,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: Unsupported dot command: '.csparam' .csparam start=1000"
+        "firstErrorLine": "Parse error at line 38: Unsupported .control command 'alterparam': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-measure-buggy-meas-tran-sp",
@@ -2091,14 +2081,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: Undefined parameter 'A' .func icap_calc(A,B,C,D) '2*A*sqrt(B*C*D)'"
+        "firstErrorLine": "Parse error at line 10: Unsupported dot command: '.measure' .measure tran capacitance param=9.797958971132712"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "directive: .measure"
     },
     {
       "id": "examples-measure-inv-meas-tran-auto-sp",
@@ -2332,14 +2322,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: Unsupported dot command: '.csparam' .csparam stime=1e-8"
+        "firstErrorLine": "Parse error at line 31: XSPICE code model 'memristor' (.model 'memr') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model memr memristor (rmin=1k rmax=10k rinit=7k alpha=0 beta=2000000000000 vt=1.6)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-memristor-memristor-sp",
@@ -2358,14 +2348,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: Unsupported dot command: '.csparam' .csparam stime=1e-8"
+        "firstErrorLine": "Parse error at line 26: Cannot parse number: '20e3/stime' .subckt memristor plus minus PARAMS: Ron=1K Roff=10K Rinit=7.0K alpha=0 beta=20e3/stime Vt=1.6"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-monte-carlo-mc-ring-sp",
@@ -2431,7 +2421,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:243793"
+          "tran:243920"
         ]
       },
       "spiceTs": {
@@ -2783,7 +2773,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: XSPICE code model 'd_lut' (.model 'l_and') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model l_and d_lut table_values=and"
+        "firstErrorLine": "Parse error at line 7: XSPICE code model 'd_lut' (.model 'l_and') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model l_and d_lut table_values=and"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -3298,14 +3288,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 24: Unsupported dot command: '.csparam' .csparam Rbase=50"
+        "firstErrorLine": "Parse error at line 30: Cannot parse number: '\"137MHz_BPF.s2p\"' X1 sin sp_model_out 0 s2p_generic touchstone=\"137MHz_BPF.s2p\""
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)"
+      "gapBucket": "expression: quoted/brace expressions in values (TEMPER, functions)"
     },
     {
       "id": "examples-rf-sp-sp1-cir",
@@ -3717,7 +3707,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:3088"
+          "tran:3084"
         ]
       },
       "spiceTs": {
@@ -4017,7 +4007,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:688"
+          "tran:690"
         ]
       },
       "comparedAnalyses": 0,
@@ -4044,7 +4034,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:6320"
+          "tran:6359"
         ]
       },
       "comparedAnalyses": 0,
@@ -4071,7 +4061,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:711"
+          "tran:710"
         ]
       },
       "comparedAnalyses": 0,
@@ -4098,7 +4088,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:2173"
+          "tran:2153"
         ]
       },
       "comparedAnalyses": 0,
@@ -4125,7 +4115,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:2396"
+          "tran:2441"
         ]
       },
       "comparedAnalyses": 0,
@@ -4179,7 +4169,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:3084"
+          "tran:3079"
         ]
       },
       "comparedAnalyses": 0,
@@ -4850,14 +4840,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 8: Unsupported dot command: '.if' .if ( is )"
+        "firstErrorLine": "Parse error at line 13: Unsupported source waveform 'AM' V1 1 0 AM 0.5 2 1.8 1k 100k 1m 0 0"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)"
+      "gapBucket": "source: parenthesised and extended waveform syntax"
     },
     {
       "id": "examples-vbic-dff-y-ecl-sp",
@@ -5501,7 +5491,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: XSPICE code model 'delay' (.model 'newdelay') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model newdelay delay(delay=400u)"
+        "firstErrorLine": "Parse error at line 7: XSPICE code model 'delay' (.model 'newdelay') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model newdelay delay(delay=400u)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6958,7 +6948,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: XSPICE code model 'd_osc' (.model 'var_clock') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model var_clock d_osc(cntl_array = [-2 -1 1 2] freq_array = [1e3 1e3 10e3 10e3] duty_cyc"
+        "firstErrorLine": "Parse error at line 15: XSPICE code model 'd_osc' (.model 'var_clock') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model var_clock d_osc(cntl_array = [-2 -1 1 2] freq_array = [1e3 1e3 10e3 10e3] duty_cyc"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7011,14 +7001,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 3: Unsupported dot command: '.csparam' .csparam let=10.5"
+        "firstErrorLine": "Parse error at line 15: XSPICE code model 'seegen' (.model 'seemod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model seemod1 seegen (tdelay = 11n tperiod=25n let=10.5 cdepth=1.2 trise=2e-11 tfall=5e-1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-xspice-see-seegen-cm1-cir",
@@ -7063,7 +7053,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: Unsupported source waveform 'EXP' Iset 2 0 EXP(0 -2.5m 1e-9 1e-10 1e-9 5e-10)"
+        "firstErrorLine": "Parse error at line 11: Unsupported source waveform 'EXP' Iset 2 0 EXP(0 -2.5m 1e-9 1e-10 1e-9 5e-10)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7089,14 +7079,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: Unsupported dot command: '.csparam' .csparam vcstart=-0.2"
+        "firstErrorLine": "Parse error at line 36: Unsupported .control command 'endif': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, set"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-xspice-transmission-lines-cpline-ac-cir",
@@ -8337,7 +8327,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 23: Unknown function 'foo0' v1001_t n1001_t 0 '100*foo0()'"
+        "firstErrorLine": "Parse error at line 36: Unknown function 'v' b1004_t n1004_t 0 v = '(v((17.0))+(17.0))'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -8627,16 +8617,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 5: Unsupported dot command: '.if' .if ( select==1 )"
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: numparam extensions (.func, .csparam, .if, string/vector .param)"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "tests-regression-misc-log-functions-1-cir",
@@ -8945,16 +8936,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Cannot parse number: '{nint'"
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "expression: quoted/brace expressions in values (TEMPER, functions)"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "tests-regression-pz-ac-resistance-cir",
@@ -9440,7 +9432,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:711"
+          "tran:710"
         ]
       },
       "comparedAnalyses": 1,
@@ -9589,5 +9581,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "43088dd9c3c8622e028316379218ca0e6d8768c2501b377771774290a87fdd3c"
+  "outcomeSha256": "157de6acde9c3159d0c8da4bf3acb53b3d383180e479b4c97d19a34ea0569134"
 }
