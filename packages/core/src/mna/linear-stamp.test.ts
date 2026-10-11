@@ -75,7 +75,7 @@ function expectSamePass(
   actual: MNAAssembler, expected: MNAAssembler, devices: readonly DeviceModel[],
 ): void {
   const dyn = dynamic(devices);
-  for (let repeat = 0; repeat < 3; repeat++) {
+  for (let repeat = 0; repeat < 5; repeat++) {
     genericPass(expected, devices);
     programPass(actual, devices, dyn);
     expectIdentical(actual.gValues, expected.gValues);

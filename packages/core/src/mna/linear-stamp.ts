@@ -32,16 +32,31 @@ interface Step {
 }
 
 interface Program {
+  readonly steps: readonly Step[];
+}
+
+/** Per (assembler, device list) cache entry. */
+interface Entry {
   /** Value storage the slots index; a relock allocates new storage. */
   readonly values: Float64Array;
   readonly length: number;
-  readonly steps: readonly Step[];
+  /** Fast-path passes stamped per device before the program was built. */
+  passes: number;
+  program: Program | undefined;
 }
+
+/**
+ * Fast-path passes stamped device by device before a program is built.
+ * Building resolves every slot once, which only pays off when the list is
+ * stamped repeatedly (transient Newton) rather than a few times (a linear
+ * operating point converges in a couple of iterations).
+ */
+const PASSES_BEFORE_PROGRAM = 2;
 
 type Kind = 'static' | 'dynamic';
 
 /** Program caches per assembler and device list: [static, dynamic]. */
-const programs: WeakMap<MNAAssembler, Map<readonly DeviceModel[], Program>>[] = [
+const programs: WeakMap<MNAAssembler, Map<readonly DeviceModel[], Entry>>[] = [
   new WeakMap(), new WeakMap(),
 ];
 
@@ -59,53 +74,56 @@ function isPlainCapacitor(device: DeviceModel): device is Capacitor {
     && !Object.hasOwn(device, 'stampDynamic');
 }
 
-/** The four slots a plain two-terminal stamp writes, or undefined if any is outside the topology. */
-function twoTerminalSlots(assembler: MNAAssembler, device: DeviceModel): number[] | undefined {
+/**
+ * Write the four slots a plain two-terminal stamp touches at `slots[k..k+3]`.
+ * False if any lies outside the locked topology.
+ */
+function writeTwoTerminalSlots(
+  index: (row: number, col: number) => number, device: DeviceModel, slots: Int32Array, k: number,
+): boolean {
   const n1 = device.nodes[0];
   const n2 = device.nodes[1];
-  const index = assembler.stampIndex;
   try {
-    return [
-      n1 >= 0 ? index(n1, n1) : -1,
-      n2 >= 0 ? index(n2, n2) : -1,
-      n1 >= 0 && n2 >= 0 ? index(n1, n2) : -1,
-      n1 >= 0 && n2 >= 0 ? index(n2, n1) : -1,
-    ];
+    slots[k] = n1 >= 0 ? index(n1, n1) : -1;
+    slots[k + 1] = n2 >= 0 ? index(n2, n2) : -1;
+    slots[k + 2] = n1 >= 0 && n2 >= 0 ? index(n1, n2) : -1;
+    slots[k + 3] = n1 >= 0 && n2 >= 0 ? index(n2, n1) : -1;
+    return true;
   } catch {
     // Not in the locked pattern: the device's own stamp reports it.
-    return undefined;
+    return false;
   }
 }
 
 function buildProgram(assembler: MNAAssembler, devices: readonly DeviceModel[], kind: Kind): Program {
+  const index = assembler.stampIndex;
   const steps: Step[] = [];
+  const scratch = new Int32Array(4 * devices.length);
   let run: (Resistor | Capacitor)[] = [];
-  let slots: number[] = [];
   const flush = (): void => {
     if (run.length === 0) return;
-    steps.push({ device: null, run, slots: Int32Array.from(slots) });
+    steps.push({ device: null, run, slots: scratch.slice(0, 4 * run.length) });
     run = [];
-    slots = [];
   };
   for (const device of devices) {
     // A plain capacitor's static stamp is empty: skipping it adds nothing.
     if (kind === 'static' && isPlainCapacitor(device)) continue;
     const kernel = kind === 'static' ? isPlainResistor(device) : isPlainCapacitor(device);
-    const deviceSlots = kernel ? twoTerminalSlots(assembler, device) : undefined;
-    if (deviceSlots === undefined) {
-      flush();
-      steps.push({ device, run: [], slots: new Int32Array(0) });
+    if (kernel && writeTwoTerminalSlots(index, device, scratch, 4 * run.length)) {
+      run.push(device as Resistor | Capacitor);
       continue;
     }
-    run.push(device as Resistor | Capacitor);
-    slots.push(...deviceSlots);
+    flush();
+    steps.push({ device, run: [], slots: new Int32Array(0) });
   }
   flush();
-  const values = kind === 'static' ? assembler.gValues : assembler.cValues;
-  return { values, length: devices.length, steps };
+  return { steps };
 }
 
-function programFor(assembler: MNAAssembler, devices: readonly DeviceModel[], kind: Kind): Program {
+/** The list's program, or undefined while it should still be stamped device by device. */
+function programFor(
+  assembler: MNAAssembler, devices: readonly DeviceModel[], kind: Kind,
+): Program | undefined {
   const cache = programs[kind === 'static' ? 0 : 1];
   let byList = cache.get(assembler);
   if (byList === undefined) {
@@ -113,12 +131,19 @@ function programFor(assembler: MNAAssembler, devices: readonly DeviceModel[], ki
     cache.set(assembler, byList);
   }
   const values = kind === 'static' ? assembler.gValues : assembler.cValues;
-  let program = byList.get(devices);
-  if (program === undefined || program.values !== values || program.length !== devices.length) {
-    program = buildProgram(assembler, devices, kind);
-    byList.set(devices, program);
+  let entry = byList.get(devices);
+  if (entry === undefined || entry.values !== values || entry.length !== devices.length) {
+    entry = { values, length: devices.length, passes: 0, program: undefined };
+    byList.set(devices, entry);
   }
-  return program;
+  if (entry.program === undefined) {
+    if (entry.passes < PASSES_BEFORE_PROGRAM) {
+      entry.passes++;
+      return undefined;
+    }
+    entry.program = buildProgram(assembler, devices, kind);
+  }
+  return entry.program;
 }
 
 /**
@@ -128,11 +153,12 @@ function programFor(assembler: MNAAssembler, devices: readonly DeviceModel[], ki
 export function stampStaticDevices(
   assembler: MNAAssembler, devices: readonly DeviceModel[], ctx: StampContext,
 ): void {
-  if (!assembler.isFastPath) {
+  const program = assembler.isFastPath ? programFor(assembler, devices, 'static') : undefined;
+  if (program === undefined) {
     for (const device of devices) device.stamp(ctx);
     return;
   }
-  const { steps } = programFor(assembler, devices, 'static');
+  const { steps } = program;
   const gv = assembler.gValues;
   for (let s = 0; s < steps.length; s++) {
     const step = steps[s];
@@ -164,11 +190,12 @@ export function stampStaticDevices(
 export function stampDynamicDevices(
   assembler: MNAAssembler, devices: readonly DeviceModel[], ctx: StampContext,
 ): void {
-  if (!assembler.isFastPath) {
+  const program = assembler.isFastPath ? programFor(assembler, devices, 'dynamic') : undefined;
+  if (program === undefined) {
     for (const device of devices) device.stampDynamic!(ctx);
     return;
   }
-  const { steps } = programFor(assembler, devices, 'dynamic');
+  const { steps } = program;
   const cv = assembler.cValues;
   for (let s = 0; s < steps.length; s++) {
     const step = steps[s];
