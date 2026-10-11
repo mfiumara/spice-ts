@@ -81,6 +81,7 @@ export {
   TimestepTooSmallError,
   CycleError,
   UnsupportedModelLevelError,
+  UnsupportedModelVersionError,
   UnsupportedCircuitModelTypeError,
   ModelTypeMismatchError,
 } from './errors.js';

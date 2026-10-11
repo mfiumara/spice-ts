@@ -38,6 +38,7 @@ import {
   type BehavioralSourceKind,
 } from './parser/behavioral-expression.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
+import { isSupportedBsim3Version, SUPPORTED_BSIM3_VERSIONS } from './devices/bsim3v3-params.js';
 import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
 import { CCCS } from './devices/cccs.js';
@@ -87,7 +88,9 @@ import {
   type ResolvedCapacitorModel,
   type ResolvedInductorModel,
 } from './devices/passive-model.js';
-import { CycleError, InvalidCircuitError, ParseError, UnsupportedModelLevelError } from './errors.js';
+import {
+  CycleError, InvalidCircuitError, ParseError, UnsupportedModelLevelError, UnsupportedModelVersionError,
+} from './errors.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
 /** MOSFET model levels with a spice-ts implementation: MOS1, MOS6 and BSIM3v3 (8/49). */
@@ -195,7 +198,8 @@ function formatParams(params?: Record<string, number>): string {
 
 function formatModel(model: ModelParams): string {
   if (model.type === 'CPL') return formatCplModelCard(model);
-  const params = formatParams(model.params);
+  const params = [formatParams(model.params), model.version === undefined ? '' : `VERSION=${model.version}`]
+    .filter(Boolean).join(' ');
   return params
     ? `.model ${model.name} ${model.type} (${params})`
     : `.model ${model.name} ${model.type}`;
@@ -1803,6 +1807,12 @@ export class Circuit {
           const level = modelParams.LEVEL ?? 1;
 
           if (level === 49 || level === 8) {
+            // #503: VERSION=3.0/3.1/3.2.x select other BSIM3 revisions in ngspice; never run them as 3.3.
+            if (!isSupportedBsim3Version(model.version)) {
+              throw new UnsupportedModelVersionError(
+                desc.name, desc.modelName, level, model.version!, SUPPORTED_BSIM3_VERSIONS,
+              );
+            }
             // BSIM3v3 — 4-terminal
             const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2]; // default bulk=source
             const nodeIdxs = [
