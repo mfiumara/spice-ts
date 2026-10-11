@@ -7,12 +7,15 @@ import {
   INITIAL_STATE_FIXTURES,
   alignAndMeasure,
   compareFixture,
+  sharedGridPoints,
   parseNgspiceRaw,
   runNgspice,
   serializeReport,
   type ComparisonFixture,
+  type ComparisonMetrics,
   type EngineRun,
 } from './comparison-harness.js';
+import { compareExecutions } from './aggregate-report.js';
 import { runNativeNgspice, runNativeSpiceTs, type ClassicCircuit } from './corpus/classic/report.js';
 import './corpus/classic/report.test.js';
 
@@ -113,6 +116,85 @@ describe('comparison metrics', () => {
     assert.equal(supply.absoluteError.max, 0);
     // ngspice stops Newton at RELTOL=1e-3; spice-ts lands on the analytic square-law root.
     assert.ok(source.absoluteError.max < 1e-3, `v(2) max abs error ${source.absoluteError.max}`);
+  });
+
+  // xyce/inductor-transient v(2) = L·di/dt steps from -50 V to 0 V just after the 1 ms
+  // breakpoint. ngspice samples 1 ms and then 1.01 ms; spice-ts samples inside that interval.
+  const steppedSpiceTs = {
+    grid: [0, 1e-3, 1.0036693e-3, 1.5e-3, 2e-3],
+    signals: { 'v(2)': real([-50, -50, 0, 0, 0]) },
+  };
+  const steppedNgspice = {
+    grid: [0, 1e-3, 1.01e-3, 2e-3],
+    signals: { 'v(2)': real([-50, -50, 0, 0]) },
+  };
+
+  it('charges a step inside an unresolved ngspice interval to linear interpolation on the spice-ts grid', () => {
+    const signal = alignAndMeasure(steppedSpiceTs, steppedNgspice, ['v(2)']).signals['v(2)'];
+    if (signal?.status !== 'compared') throw new Error('expected compared signal');
+    // The interpolated reference is (1 - 0.36693) * -50 = -31.65 V although both traces are exact.
+    assert.ok(Math.abs(signal.absoluteError.max - 31.6535) < 1e-3, `max ${signal.absoluteError.max}`);
+  });
+
+  it('compares one-sided across an ngspice interval that opens at a shared breakpoint (#445)', () => {
+    const breakpoints = sharedGridPoints(steppedSpiceTs.grid, steppedNgspice.grid);
+    assert.deepEqual([...breakpoints], [0, 1e-3, 2e-3]);
+    const result = alignAndMeasure(steppedSpiceTs, steppedNgspice, ['v(2)'], { breakpoints });
+    assert.equal(result.grid.alignedPoints, 5);
+    const signal = result.signals['v(2)'];
+    if (signal?.status !== 'compared') throw new Error('expected compared signal');
+    assert.equal(signal.sampleCount, 5);
+    assert.deepEqual(signal.absoluteError, { max: 0, rms: 0 });
+  });
+
+  it('still charges a post-breakpoint value that matches neither side of the step', () => {
+    const wrong = { ...steppedSpiceTs, signals: { 'v(2)': real([-50, -50, 10, 0, 0]) } };
+    const breakpoints = sharedGridPoints(wrong.grid, steppedNgspice.grid);
+    const signal = alignAndMeasure(wrong, steppedNgspice, ['v(2)'], { breakpoints }).signals['v(2)'];
+    if (signal?.status !== 'compared') throw new Error('expected compared signal');
+    // Nearer reconstruction is the right-sided 0 V, not the interpolated -31.65 V.
+    assert.ok(Math.abs(signal.absoluteError.max - 10) < 1e-9, `max ${signal.absoluteError.max}`);
+  });
+
+  it('keeps plain linear interpolation in intervals that do not open at a shared point', () => {
+    const spiceTs = { grid: [0.5, 1, 1.5], signals: { 'v(out)': real([0, 1, 0]) } };
+    const ngspice = { grid: [0, 1, 2], signals: { 'v(out)': real([0, 1, 0]) } };
+    const breakpoints = sharedGridPoints(spiceTs.grid, ngspice.grid);
+    assert.deepEqual([...breakpoints], [1]);
+    const signal = alignAndMeasure(spiceTs, ngspice, ['v(out)'], { breakpoints }).signals['v(out)'];
+    if (signal?.status !== 'compared') throw new Error('expected compared signal');
+    // t = 0.5 lies in (0, 1), which opens at no shared point: compared with the linear 0.5.
+    // t = 1.5 lies in (1, 2): the right-sided hold of 0 at t = 2 matches spice-ts exactly.
+    assert.equal(signal.absoluteError.max, 0.5);
+    assert.equal(signal.sampleCount, 3);
+  });
+
+  it('publishes xyce/inductor-transient breakpoint-aligned with the linear metric retained (#445)', { skip: !hasNgspice }, async () => {
+    const manifest = JSON.parse(readFileSync('benchmarks/corpus/xyce/manifest.json', 'utf8')) as {
+      circuits: Array<ClassicCircuit>;
+    };
+    const circuit = manifest.circuits.find(candidate => candidate.id === 'inductor-transient');
+    if (!circuit) throw new Error('missing inductor-transient fixture');
+    const input = readFileSync(circuit.localPath);
+    assert.equal(createHash('sha256').update(input).digest('hex'), circuit.sha256);
+
+    const spiceTs = await runNativeSpiceTs(input, circuit);
+    const ngspice = await runNativeNgspice(input, circuit);
+    const [comparison] = compareExecutions(spiceTs, ngspice);
+    if (!comparison) throw new Error('expected a transient comparison');
+    assert.equal(comparison.analysis, 'tran');
+    const metric = (metrics: ComparisonMetrics, name: string) => {
+      const signal = metrics.signals[name];
+      if (signal?.status !== 'compared') throw new Error(`expected compared ${name}`);
+      return signal.absoluteError.max;
+    };
+    for (const name of ['v(1)', 'v(2)']) {
+      assert.ok(metric(comparison.metrics, name) < 1e-6, `${name} max ${metric(comparison.metrics, name)}`);
+      // The pre-#445 metric is still published so the change hides nothing.
+      assert.ok(metric(comparison.linearMetrics, name) > 30, `${name} linear max ${metric(comparison.linearMetrics, name)}`);
+    }
+    assert.ok(metric(comparison.metrics, 'i(l1)') < 1e-9);
+    assert.ok(metric(comparison.linearMetrics, 'i(l1)') < 1e-9);
   });
 
   it('reports zero-reference relative error as unavailable instead of Infinity', () => {

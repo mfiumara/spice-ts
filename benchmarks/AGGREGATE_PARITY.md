@@ -17,6 +17,8 @@ This report publishes all outcomes, including failures and unsupported cases. It
 
 - Both engines receive the exact same fixture bytes; each row records the common SHA-256.
 - No fixture adaptation and no per-circuit tolerance tuning.
+- Comparison method: errors are evaluated at the spice-ts output points with ngspice linearly interpolated onto them; relative errors divide by that ngspice value.
+- Known artifact ([#445](https://github.com/mfiumara/spice-ts/issues/445)): At a source breakpoint both engines report the left limit, so a waveform that steps there (for example L·di/dt at a PWL corner) shows its right limit only at the next ngspice sample. Linear interpolation across that interval invents values neither engine produced and charges them as error at every spice-ts point inside it. The next regeneration compares one-sided across such intervals and keeps this plain-linear metric as a secondary column.
 - Accounted fixtures: 100 (ngspice=20, classic=20, xyce=20, corpus-d=20, corpus-e=20).
 - ngspice: 52 success, 9 failed, 39 unsupported.
 - spice-ts: 55 success, 2 failed, 43 unsupported.

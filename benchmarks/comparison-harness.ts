@@ -140,28 +140,58 @@ function rms(values: number[]): number {
   return Math.sqrt(values.reduce((sum, value) => sum + value * value, 0) / values.length);
 }
 
-function interpolate(grid: number[], values: ComplexValue[], target: number): ComplexValue | null {
+function linear(
+  grid: number[],
+  values: ComplexValue[],
+  from: number,
+  to: number,
+  target: number,
+): ComplexValue | null {
+  const span = grid[to] - grid[from];
+  if (span <= 0 || values[from] === undefined || values[to] === undefined) return null;
+  const fraction = (target - grid[from]) / span;
+  return {
+    re: values[from].re + (values[to].re - values[from].re) * fraction,
+    im: values[from].im + (values[to].im - values[from].im) * fraction,
+  };
+}
+
+/**
+ * Reference value(s) at `target`. `linear` is the usual interpolation between the bracketing
+ * samples. `rightSided` is set only when the bracket opens at a transient breakpoint: the
+ * reconstruction from the samples after the breakpoint, valid if the waveform steps there.
+ */
+function interpolate(
+  grid: number[],
+  values: ComplexValue[],
+  target: number,
+  breakpoints?: ReadonlySet<number>,
+): { linear: ComplexValue; rightSided?: ComplexValue } | null {
   if (grid.length === 0 || target < grid[0] || target > grid[grid.length - 1]) return null;
-  if (grid.length === 1) return target === grid[0] ? values[0] ?? null : null;
+  if (grid.length === 1) return target === grid[0] && values[0] !== undefined ? { linear: values[0] } : null;
 
   let low = 0;
   let high = grid.length - 1;
   while (low <= high) {
     const middle = Math.floor((low + high) / 2);
-    if (grid[middle] === target) return values[middle] ?? null;
+    if (grid[middle] === target) return values[middle] === undefined ? null : { linear: values[middle] };
     if (grid[middle] < target) low = middle + 1;
     else high = middle - 1;
   }
 
   const upper = low;
   const lower = upper - 1;
-  const span = grid[upper] - grid[lower];
-  if (span <= 0 || values[lower] === undefined || values[upper] === undefined) return null;
-  const fraction = (target - grid[lower]) / span;
-  return {
-    re: values[lower].re + (values[upper].re - values[lower].re) * fraction,
-    im: values[lower].im + (values[upper].im - values[lower].im) * fraction,
-  };
+  const interpolated = linear(grid, values, lower, upper, target);
+  if (interpolated === null) return null;
+  if (!breakpoints?.has(grid[lower])) return { linear: interpolated };
+  // Extrapolate backwards from the first two samples after the breakpoint; with only one
+  // sample left, hold it.
+  const rightSided = upper + 1 < grid.length
+    ? linear(grid, values, upper, upper + 1, target)
+    : values[upper];
+  return rightSided === null || rightSided === undefined
+    ? { linear: interpolated }
+    : { linear: interpolated, rightSided };
 }
 
 /**
@@ -186,10 +216,43 @@ function monotonicSegments(grid: number[]): Array<{ start: number; end: number }
   return segments;
 }
 
+/**
+ * Transient breakpoints as evidenced by the outputs: the time points present, bit-identical,
+ * in both engines' grids. Adaptive time steps essentially never coincide exactly; forced
+ * breakpoints (t = 0, source corners, TSTOP) do.
+ */
+export function sharedGridPoints(spiceTsGrid: readonly number[], ngspiceGrid: readonly number[]): Set<number> {
+  const spiceTsPoints = new Set(spiceTsGrid);
+  return new Set(ngspiceGrid.filter(point => spiceTsPoints.has(point)));
+}
+
+export interface AlignmentOptions {
+  /**
+   * Transient only: breakpoints from {@link sharedGridPoints}. The comparison is one-sided
+   * across every ngspice interval that opens at one of them (#445).
+   *
+   * Both engines land exactly on source breakpoints (PWL/PULSE corners) and report there the
+   * solution of the step that ends at the breakpoint: the left limit. A quantity such as
+   * L·di/dt can step at that instant, and ngspice first reports its right limit at the next
+   * sample. Linear interpolation across that interval invents intermediate values neither
+   * engine produced and charges them as error. Inside such an interval only, each spice-ts
+   * sample is compared with the nearer of two reconstructions: the linear interpolation
+   * (continuous waveform) and the right-sided reconstruction from the samples after the
+   * breakpoint (waveform steps at the breakpoint). No other interval and no tolerance changes.
+   */
+  breakpoints?: ReadonlySet<number>;
+}
+
+/**
+ * Compare on the spice-ts output points, linearly interpolating the ngspice reference.
+ * With `breakpoints` the reference is not interpolated across a breakpoint
+ * step it leaves unresolved; see {@link AlignmentOptions}.
+ */
 export function alignAndMeasure(
   spiceTs: SampleSeries,
   ngspice: SampleSeries,
   requestedSignals: string[],
+  options: AlignmentOptions = {},
 ): ComparisonMetrics {
   // A two-source nested DC sweep restarts the primary grid for every secondary
   // value, so each engine's grid is a sequence of monotonic segments. Points are
@@ -202,6 +265,7 @@ export function alignAndMeasure(
     return { start, end, descending, grid: descending ? grid.reverse() : grid };
   });
   const segmentsAlign = spiceSegments.length === referenceSegments.length;
+  const { breakpoints } = options;
   const targetIndexes = segmentsAlign
     ? spiceSegments.flatMap(({ start, end }, segment) => {
       const referenceGrid = referenceSegments[segment].grid;
@@ -238,8 +302,12 @@ export function alignAndMeasure(
     });
     for (const { point, index, segment } of targetIndexes) {
       const actual = spiceValues[index];
-      const reference = interpolate(referenceSegments[segment].grid, referenceValues[segment], point);
-      if (actual === undefined || reference === null) continue;
+      const candidates = interpolate(referenceSegments[segment].grid, referenceValues[segment], point, breakpoints);
+      if (actual === undefined || candidates === null) continue;
+      const { rightSided } = candidates;
+      const reference = rightSided !== undefined && difference(actual, rightSided) < difference(actual, candidates.linear)
+        ? rightSided
+        : candidates.linear;
       const absoluteError = difference(actual, reference);
       absoluteErrors.push(absoluteError);
       const referenceMagnitude = magnitude(reference);
