@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/run2/prof-after/resistor-mesh-op-1000.cpuprofile: 39 samples, 292.8 ms sampled
+
+Top self time
+      35.6 ms  12.2%  factorize packages/core/dist/chunk-P2PXJXZ6.js:16804
+      35.4 ms  12.1%  (garbage collector)
+      25.2 ms   8.6%  newtonRaphson packages/core/dist/chunk-P2PXJXZ6.js:17656
+      24.2 ms   8.3%  compile packages/core/dist/chunk-P2PXJXZ6.js:13591
+      22.9 ms   7.8%  analyzePattern packages/core/dist/chunk-P2PXJXZ6.js:16708
+      20.0 ms   6.8%  read
+      17.7 ms   6.0%  compileForInternalLoader node:internal/bootstrap/realm:385
+      15.3 ms   5.2%  detectModuleFormat node:internal/modules/esm/get_format:36
+      12.4 ms   4.2%  amdOrdering packages/core/dist/chunk-P2PXJXZ6.js:16488
+      11.9 ms   4.1%  (idle)
+      11.9 ms   4.1%  nextPart node:fs:2704
+       9.8 ms   3.3%  parseNumber packages/core/dist/chunk-P2PXJXZ6.js:352
+
+Top inclusive time
+     292.8 ms 100.0%  (root)
+     143.8 ms  49.1%  simulate packages/core/dist/chunk-P2PXJXZ6.js:22356
+     107.3 ms  36.7%  newtonRaphson packages/core/dist/chunk-P2PXJXZ6.js:17656
+     107.3 ms  36.7%  solveDCOperatingPoint packages/core/dist/chunk-P2PXJXZ6.js:17873
+      73.9 ms  25.2%  getModuleJobForImport node:internal/modules/esm/loader:319
+      62.0 ms  21.2%  #createModuleJob node:internal/modules/esm/loader:632
+      62.0 ms  21.2%  #getJobFromResolveResult node:internal/modules/esm/loader:347
+      44.3 ms  15.1%  loadAndTranslate node:internal/modules/esm/loader:608
+      42.5 ms  14.5%  analyzePattern packages/core/dist/chunk-P2PXJXZ6.js:16708
+      42.5 ms  14.5%  getSparseSolver packages/core/dist/chunk-P2PXJXZ6.js:17347
+      35.6 ms  12.2%  factorize packages/core/dist/chunk-P2PXJXZ6.js:16804
+      35.4 ms  12.1%  (garbage collector)

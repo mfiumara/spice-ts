@@ -196,6 +196,36 @@ export class UnsupportedModelLevelError extends InvalidCircuitError {
 }
 
 /**
+ * Thrown when a MOSFET model card selects, through its `VERSION=` string, a revision of a
+ * supported `LEVEL` that spice-ts does not implement. ngspice picks BSIM3v0/v1/v32 for
+ * `LEVEL=8/49 VERSION=3.0/3.1/3.2.x`; spice-ts implements only the default BSIM3 3.3 revision
+ * and never runs those cards with the 3.3 equations silently.
+ */
+export class UnsupportedModelVersionError extends InvalidCircuitError {
+  /** Stable machine-readable error code. */
+  readonly code = 'UNSUPPORTED_MODEL_VERSION';
+
+  constructor(
+    /** Instance name, e.g. `M1` */
+    public readonly deviceName: string,
+    /** Model card name, when the instance was compiled from a netlist */
+    public readonly modelName: string | undefined,
+    /** Model `LEVEL` value */
+    public readonly level: number,
+    /** Requested `VERSION=` string */
+    public readonly version: string,
+    /** Version prefixes spice-ts implements for this level */
+    public readonly supportedVersions: readonly string[],
+  ) {
+    super(
+      `MOSFET '${deviceName}'${modelName ? ` (model '${modelName}')` : ''} uses unsupported LEVEL=${level}`
+        + ` VERSION=${version} (supported versions: ${supportedVersions.join(', ')})`,
+    );
+    this.name = 'UnsupportedModelVersionError';
+  }
+}
+
+/**
  * Thrown when a model registered through the Circuit API, a subcircuit body
  * or the JSON protocol declares a `.model` type that no spice-ts device
  * implements. The netlist parser raises the {@link ParseError} subclass

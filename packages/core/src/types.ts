@@ -1,3 +1,5 @@
+import { InvalidCircuitError } from './errors.js';
+
 /** Node identifier — string name from netlist (e.g., '1', 'out', '0' for ground) */
 export type NodeName = string;
 
@@ -5,7 +7,7 @@ export type NodeName = string;
 export const GROUND_NODE = '0';
 
 /** Supported analysis command types. */
-export type AnalysisType = 'op' | 'dc' | 'tran' | 'ac' | 'noise' | 'tf' | 'pz' | 'sens' | 'disto';
+export type AnalysisType = 'op' | 'dc' | 'tran' | 'ac' | 'noise' | 'sp' | 'tf' | 'pz' | 'sens' | 'disto';
 
 /** DC operating point analysis (`.op`). */
 export interface DCAnalysis {
@@ -88,6 +90,24 @@ export interface NoiseAnalysis {
   pointsPerSummary?: number;
 }
 
+/**
+ * S-parameter analysis over the circuit's RF ports
+ * (`.sp {dec|oct|lin} points fstart fstop [donoise]`, ngspice-47 span.c).
+ */
+export interface SParameterAnalysis {
+  type: 'sp';
+  /** Frequency sweep spacing. */
+  variation: 'dec' | 'oct' | 'lin';
+  /** Number of points per decade/octave, or total points for a linear sweep. */
+  points: number;
+  /** Start frequency in Hz. */
+  startFreq: number;
+  /** Stop frequency in Hz. */
+  stopFreq: number;
+  /** `donoise = 1`: also compute the port noise-current correlation matrix Cy (and NF/SOpt/NFmin/Rn for two ports). */
+  noise: boolean;
+}
+
 /** Bounded distortion analysis (`.disto dec ... [f2overf1]`). */
 export interface DistortionAnalysis {
   type: 'disto';
@@ -129,16 +149,16 @@ export interface PoleZeroAnalysis {
   type: 'pz';
   /** Positive input terminal. */
   inputPositive: string;
-  /** Negative input terminal; bounded to ground in this slice. */
+  /** Negative input terminal (`'0'` for ground). */
   inputNegative: string;
   /** Positive voltage-output terminal. */
   outputPositive: string;
-  /** Negative voltage-output terminal; bounded to ground in this slice. */
+  /** Negative voltage-output terminal (`'0'` for ground). */
   outputNegative: string;
-  /** Current or voltage input; voltage input is bounded to passive RLC circuits. */
+  /** Current or voltage input. */
   inputType: 'cur' | 'vol';
-  /** Compute poles only, or both poles and zeros. */
-  mode: 'pol' | 'pz';
+  /** Compute poles only, zeros only, or both poles and zeros. */
+  mode: 'pol' | 'zer' | 'pz';
 }
 
 /** Bounded single-node voltage sensitivity analysis. */
@@ -169,6 +189,7 @@ export type AnalysisCommand = DCAnalysis | DCSweepAnalysis | TransientAnalysis |
 export type AnalysisDirective =
   | AnalysisCommand
   | NoiseAnalysis
+  | SParameterAnalysis
   | DistortionAnalysis
   | TransferFunctionAnalysis
   | SensitivityAnalysis;
@@ -182,6 +203,10 @@ export type IntegrationMethod = 'euler' | 'trapezoidal' | 'gear2';
  * All fields are optional; SPICE-convention defaults are used when omitted.
  */
 export interface SimulationOptions {
+  /** ngspice nonlinear-device bypass request. Native solver always evaluates devices and warns when nonzero. */
+  bypass?: number;
+  /** ngspice-47 RAMPTIME breakpoint (s). Ordinary V/I sources do not ramp in the release build. Default: 0. */
+  rampTime?: number;
   /** Absolute current tolerance (A). Default: 1e-12 */
   abstol?: number;
   /** Absolute voltage tolerance (V). Default: 1e-6 */
@@ -266,6 +291,7 @@ export type SimulatorBackend = SimulatorBackendName | SimulatorAdapter;
 
 /** Resolved options with all defaults filled in */
 export interface ResolvedOptions {
+  rampTime: number;
   abstol: number;
   vntol: number;
   reltol: number;
@@ -279,6 +305,7 @@ export interface ResolvedOptions {
 }
 
 export const DEFAULT_OPTIONS: ResolvedOptions = {
+  rampTime: 0,
   abstol: 1e-12,
   vntol: 1e-6,
   reltol: 1e-3,
@@ -301,7 +328,14 @@ export function withNetlistOptions<T extends SimulationOptions>(netlist: Simulat
 }
 
 export function resolveOptions(opts?: SimulationOptions, stopTime?: number): ResolvedOptions {
+  if (opts?.rampTime !== undefined && (!Number.isFinite(opts.rampTime) || opts.rampTime < 0)) {
+    throw new InvalidCircuitError('SimulationOptions.rampTime must be a non-negative finite number');
+  }
+  if (opts?.bypass !== undefined && (!Number.isInteger(opts.bypass) || opts.bypass < 0)) {
+    throw new InvalidCircuitError('SimulationOptions.bypass must be a non-negative integer');
+  }
   return {
+    rampTime: opts?.rampTime ?? DEFAULT_OPTIONS.rampTime,
     abstol: opts?.abstol ?? DEFAULT_OPTIONS.abstol,
     vntol: opts?.vntol ?? DEFAULT_OPTIONS.vntol,
     reltol: opts?.reltol ?? DEFAULT_OPTIONS.reltol,
@@ -349,6 +383,11 @@ export interface ModelParams {
   type: string;
   /** Key-value parameter map (e.g., `{ BF: 100, IS: 1e-14 }`) */
   params: Record<string, number>;
+  /**
+   * Raw `VERSION=` string of the card (e.g. `'3.3.0'`). ngspice declares the BSIM version as a
+   * string parameter and selects the BSIM implementation by its prefix, so it is kept verbatim.
+   */
+  version?: string;
 }
 
 /** DC source waveform. Constant value. */
@@ -453,6 +492,34 @@ export interface DistortionExcitation {
 export interface SourceDistortionTerms {
   distortionF1?: DistortionExcitation;
   distortionF2?: DistortionExcitation;
+}
+
+/**
+ * ngspice-47 RF port on an independent voltage source
+ * (`V1 in 0 dc 0 ac 1 portnum 1 z0 50 [pwr P] [freq F]`, RFSPICE vsrc).
+ *
+ * A port puts its reference impedance `z0` in series with the source through
+ * an internal node `<name>.res` (ngspice `<name>#res`) in every analysis, and
+ * makes the source one of the ports of an `.sp` analysis.
+ */
+export interface RFPort {
+  /** `portnum`: 1-based port index; a circuit's ports are numbered 1..N. */
+  number: number;
+  /** `z0`: reference impedance in ohms (default 50). */
+  z0: number;
+  /**
+   * Present when `pwr` or `freq` is given. ngspice then evaluates the source as
+   * `sqrt(4*pwr*z0) * cos(2*pi*freq*t)` (defaults 1 mW, 1 GHz) everywhere except
+   * a DC operating point of a source with an explicit DC value.
+   */
+  power?: {
+    /** `pwr`: available power in watts. */
+    watts: number;
+    /** `freq`: frequency in Hz. */
+    frequency: number;
+    /** Explicit DC value, used for `.op`, `.dc` and the small-signal operating point. */
+    dc?: number;
+  };
 }
 
 /** Union of all source waveform types. Discriminated on the `type` field. */

@@ -1,7 +1,7 @@
 import type { DeviceModel } from './devices/device.js';
 import type {
   AnalysisDirective, DCSweepDimension, PoleZeroAnalysis, SensitivityAnalysis, SourceWaveform, ModelParams, SubcktDefinition, StepAnalysis,
-  SimulationOptions, NodeInitialState,
+  SimulationOptions, NodeInitialState, RFPort,
 } from './types.js';
 import type { CircuitIR } from './ir/types.js';
 import { buildIR } from './ir/builder.js';
@@ -38,9 +38,11 @@ import {
   type BehavioralSourceKind,
 } from './parser/behavioral-expression.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
+import { isSupportedBsim3Version, SUPPORTED_BSIM3_VERSIONS } from './devices/bsim3v3-params.js';
 import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
 import { CCCS } from './devices/cccs.js';
+import { CurrentSwitch, resolveSwitchModel, VoltageSwitch } from './devices/switch.js';
 import { CCVS } from './devices/ccvs.js';
 import { TransmissionLine } from './devices/transmission-line.js';
 import { resolveLtraModel } from './devices/ltra-model.js';
@@ -58,10 +60,12 @@ import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
-import { parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
+import { extractRFPort, parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
 import { parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
+import { parseSwitchInstance } from './parser/switch-parser.js';
+import { DEVICE_GMIN } from './devices/device.js';
 import { parseBJTInstance, type BJTInstanceParams } from './parser/bjt-parser.js';
 import {
   formatCplModelCard,
@@ -84,7 +88,9 @@ import {
   type ResolvedCapacitorModel,
   type ResolvedInductorModel,
 } from './devices/passive-model.js';
-import { CycleError, InvalidCircuitError, ParseError, UnsupportedModelLevelError } from './errors.js';
+import {
+  CycleError, InvalidCircuitError, ParseError, UnsupportedModelLevelError, UnsupportedModelVersionError,
+} from './errors.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
 /** MOSFET model levels with a spice-ts implementation: MOS1, MOS6 and BSIM3v3 (8/49). */
@@ -153,6 +159,8 @@ interface DeviceDescriptor {
   behavioral?: { kind: BehavioralSourceKind; params: BehavioralInstanceParams };
   /** XSPICE A-card; its nodes are known once the model's port table is applied at compile. */
   xspice?: XspiceInstanceCard;
+  /** RF port of a V source (`portnum`/`z0`/`pwr`/`freq`). */
+  port?: RFPort;
 }
 
 function behavioralDescriptor(
@@ -190,10 +198,60 @@ function formatParams(params?: Record<string, number>): string {
 
 function formatModel(model: ModelParams): string {
   if (model.type === 'CPL') return formatCplModelCard(model);
-  const params = formatParams(model.params);
+  const params = [formatParams(model.params), model.version === undefined ? '' : `VERSION=${model.version}`]
+    .filter(Boolean).join(' ');
   return params
     ? `.model ${model.name} ${model.type} (${params})`
     : `.model ${model.name} ${model.type}`;
+}
+
+/**
+ * A pwr/freq port uses its DC value only when one was given, so it must not
+ * gain the `DC 0` that {@link formatWaveform} writes for an omitted value.
+ */
+function formatSourceValue(desc: DeviceDescriptor): string {
+  const power = desc.port?.power;
+  const wf = desc.waveform;
+  if (!power) return formatWaveform(wf);
+  const terms = power.dc === undefined ? [] : [`DC ${formatNumber(power.dc)}`];
+  const ac = wf?.type === 'ac' ? { magnitude: wf.magnitude ?? 1, phase: wf.phase ?? 0 } : wf?.ac;
+  if (ac) terms.push(`AC ${formatNumber(ac.magnitude)} ${formatNumber(ac.phase)}`);
+  return terms.join(' ');
+}
+
+function formatRFPort(port?: RFPort): string {
+  if (!port) return '';
+  const power = port.power
+    ? ` pwr ${formatNumber(port.power.watts)} freq ${formatNumber(port.power.frequency)}`
+    : '';
+  return ` portnum ${port.number} z0 ${formatNumber(port.z0)}${power}`;
+}
+
+/**
+ * Give every RF port source its internal `<name>.res` node (ngspice vsrcset.c
+ * `<name>#res`: z0 sits between the outer + node and it) and enforce ngspice
+ * vsrctemp.c port numbering: the N ports are numbered 1..N, each once.
+ */
+function withRFPortNodes(descriptors: DeviceDescriptor[]): DeviceDescriptor[] {
+  const ports = descriptors.filter(desc => desc.type === 'V' && desc.port);
+  const seen = new Map<number, string>();
+  for (const desc of ports) {
+    const { number } = desc.port!;
+    const previous = seen.get(number);
+    if (previous !== undefined) {
+      throw new InvalidCircuitError(`RF port sources '${previous}' and '${desc.name}' share port number ${number}`);
+    }
+    if (number > ports.length) {
+      throw new InvalidCircuitError(
+        `RF port '${desc.name}' has port number ${number}, but the ${ports.length} port(s) must use port numbers 1..${ports.length}`,
+      );
+    }
+    seen.set(number, desc.name);
+  }
+  if (ports.length === 0) return descriptors;
+  return descriptors.map(desc => (desc.type === 'V' && desc.port
+    ? { ...desc, nodes: [desc.nodes[0], desc.nodes[1], internalNodeName(desc.name, 'res')] }
+    : desc));
 }
 
 function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string {
@@ -298,7 +356,7 @@ function formatDevice(desc: DeviceDescriptor): string {
     }
     case 'V':
     case 'I':
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatWaveform(desc.waveform)}`;
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatSourceValue(desc)}${formatRFPort(desc.port)}`;
     case 'D':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.modelName ?? ''}${tail}`.trim();
     case 'Q':
@@ -314,6 +372,10 @@ function formatDevice(desc: DeviceDescriptor): string {
     case 'F':
     case 'H':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.controlSource ?? ''} ${formatNumber(desc.value ?? 0)}`.trim();
+    case 'S':
+      return `${desc.name} ${desc.nodes.join(' ')} ${desc.modelName ?? ''} ${desc.params?.ON ? 'ON' : 'OFF'}`;
+    case 'W':
+      return `${desc.name} ${desc.nodes.join(' ')} ${desc.controlSource ?? ''} ${desc.modelName ?? ''} ${desc.params?.ON ? 'ON' : 'OFF'}`;
     case 'B':
       return formatBehavioralSource(desc);
     case 'X':
@@ -342,6 +404,8 @@ function formatAnalysis(analysis: AnalysisDirective | PoleZeroAnalysis): string 
       return `.ac ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}`;
     case 'noise':
       return `.noise v(${analysis.outputNode}${analysis.outputReferenceNode === undefined ? '' : `,${analysis.outputReferenceNode}`}) ${analysis.inputSource} ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}${analysis.pointsPerSummary === undefined ? '' : ` ${analysis.pointsPerSummary}`}`;
+    case 'sp':
+      return `.sp ${analysis.variation} ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)} ${analysis.noise ? 1 : 0}`;
     case 'disto':
       return `.disto dec ${analysis.points} ${formatNumber(analysis.startFreq)} ${formatNumber(analysis.stopFreq)}${analysis.f2OverF1 === undefined ? '' : ` ${formatNumber(analysis.f2OverF1)}`}`;
     case 'tf':
@@ -710,14 +774,16 @@ export class Circuit {
    * @param nodePos - Positive terminal node
    * @param nodeNeg - Negative terminal node
    * @param waveform - Source waveform specification (DC, pulse, sine, or AC)
+   * @param port - Optional ngspice RF port (`portnum`, `z0`, `pwr`, `freq`) for `.sp`
    */
   addVoltageSource(
     name: string, nodePos: string, nodeNeg: string,
     waveform: Partial<SourceWaveform> & { dc?: number },
+    port?: RFPort,
   ): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
-    this.descriptors.push({ type: 'V', name, nodes: [nodePos, nodeNeg], waveform });
+    this.descriptors.push({ type: 'V', name, nodes: [nodePos, nodeNeg], waveform, ...(port ? { port } : {}) });
   }
 
   /**
@@ -801,6 +867,50 @@ export class Circuit {
     this.nodeSet.add(nOutP);
     this.nodeSet.add(nOutN);
     this.descriptors.push({ type: 'F', name, nodes: [nOutP, nOutN], value: gain, controlSource });
+  }
+
+  /**
+   * Add an ngspice voltage-controlled switch (S-element, `.model SW`).
+   *
+   * @param name - Device name (e.g., `'S1'`)
+   * @param nodePos - Positive switch node
+   * @param nodeNeg - Negative switch node
+   * @param nCtrlP - Positive control node
+   * @param nCtrlN - Negative control node
+   * @param modelName - Name of a `.model ... SW` card
+   * @param initiallyOn - Instance `ON` flag (default `OFF`)
+   */
+  addVoltageSwitch(
+    name: string, nodePos: string, nodeNeg: string, nCtrlP: string, nCtrlN: string,
+    modelName: string, initiallyOn = false,
+  ): void {
+    for (const node of [nodePos, nodeNeg, nCtrlP, nCtrlN]) this.nodeSet.add(node);
+    this.descriptors.push({
+      type: 'S', name, nodes: [nodePos, nodeNeg, nCtrlP, nCtrlN], modelName,
+      ...(initiallyOn ? { params: { ON: 1 } } : {}),
+    });
+  }
+
+  /**
+   * Add an ngspice current-controlled switch (W-element, `.model CSW`).
+   *
+   * @param name - Device name (e.g., `'W1'`)
+   * @param nodePos - Positive switch node
+   * @param nodeNeg - Negative switch node
+   * @param controlSource - Voltage source whose current controls the switch
+   * @param modelName - Name of a `.model ... CSW` card
+   * @param initiallyOn - Instance `ON` flag (default `OFF`)
+   */
+  addCurrentSwitch(
+    name: string, nodePos: string, nodeNeg: string, controlSource: string,
+    modelName: string, initiallyOn = false,
+  ): void {
+    this.nodeSet.add(nodePos);
+    this.nodeSet.add(nodeNeg);
+    this.descriptors.push({
+      type: 'W', name, nodes: [nodePos, nodeNeg], modelName, controlSource,
+      ...(initiallyOn ? { params: { ON: 1 } } : {}),
+    });
   }
 
   /**
@@ -1059,11 +1169,12 @@ export class Circuit {
   addAnalysis(type: 'tran', params: { timestep: number; stopTime: number; startTime?: number; maxTimestep?: number; useInitialConditions?: boolean }): void;
   addAnalysis(type: 'ac', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: 'noise', params: { outputNode: string; outputReferenceNode?: string; inputSource: string; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number; pointsPerSummary?: number }): void;
+  addAnalysis(type: 'sp', params: { variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number; noise?: boolean }): void;
   addAnalysis(type: 'disto', params: { variation: 'dec'; points: number; startFreq: number; stopFreq: number; f2OverF1?: number }): void;
   addAnalysis(type: 'tf', params:
     | { outputNode: string; inputSource: string }
     | { outputSource: string; inputSource: string }): void;
-  addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur' | 'vol'; mode: 'pol' | 'pz' }): void;
+  addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur' | 'vol'; mode: 'pol' | 'zer' | 'pz' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'dc' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'ac'; variation: 'dec'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
@@ -1137,6 +1248,22 @@ export class Circuit {
             : { pointsPerSummary: params!.pointsPerSummary as number }),
         });
         break;
+      case 'sp':
+        if (this._steps.length > 0) {
+          throw new InvalidCircuitError('.step cannot be combined with .sp');
+        }
+        if (this._analyses.some(existing => existing.type === 'sp')) {
+          throw new InvalidCircuitError('Multiple .sp analyses are not supported');
+        }
+        this._analyses.push({
+          type: 'sp',
+          variation: params!.variation as 'dec' | 'oct' | 'lin',
+          points: params!.points as number,
+          startFreq: params!.startFreq as number,
+          stopFreq: params!.stopFreq as number,
+          noise: params!.noise === true,
+        });
+        break;
       case 'disto':
         if (this._steps.length > 0) {
           throw new InvalidCircuitError('.step cannot be combined with .disto');
@@ -1190,7 +1317,7 @@ export class Circuit {
           outputPositive: params!.outputPositive as string,
           outputNegative: params!.outputNegative as string,
           inputType: params!.inputType as 'cur' | 'vol',
-          mode: params!.mode as 'pol' | 'pz',
+          mode: params!.mode as PoleZeroAnalysis['mode'],
         };
         assertSupportedPoleZero(analysis);
         this._poleZeroAnalyses.push(analysis);
@@ -1250,6 +1377,9 @@ export class Circuit {
     if (this._analyses.some(analysis => analysis.type === 'disto')) {
       throw new InvalidCircuitError('.step cannot be combined with .disto');
     }
+    if (this._analyses.some(analysis => analysis.type === 'sp')) {
+      throw new InvalidCircuitError('.step cannot be combined with .sp');
+    }
     if (opts.values) {
       this._steps.push({ type: 'step', param, sweepMode: 'list', values: opts.values });
     } else {
@@ -1286,6 +1416,8 @@ export class Circuit {
     const lines: string[] = ['* spice-ts generated netlist'];
 
     const optionNames: Array<[keyof SimulationOptions, string, (value: unknown) => string]> = [
+      ['bypass', 'bypass', String],
+      ['rampTime', 'ramptime', String],
       ['abstol', 'abstol', String],
       ['vntol', 'vntol', String],
       ['reltol', 'reltol', String],
@@ -1358,9 +1490,9 @@ export class Circuit {
     // Pre-expand subcircuit instances into flat device descriptors
     const flatDescriptors = this.expandAllSubcircuits(guard);
     this.assertDeviceModelTypes(flatDescriptors);
-    const expandedDescriptors = this.expandPassiveParasitics(
+    const expandedDescriptors = withRFPortNodes(this.expandPassiveParasitics(
       this.expandLossyTransmissionLines(flatDescriptors),
-    );
+    ));
     guard?.maximum('maxComponents', expandedDescriptors.length, 'compile');
     if (
       expandedDescriptors.some(desc => desc.type === 'Z')
@@ -1478,6 +1610,7 @@ export class Circuit {
 
     const devices: DeviceModel[] = [];
     const deviceMap = new Map<string, DeviceModel>();
+    const pendingCurrentSwitches: { device: CurrentSwitch; controlSource: string }[] = [];
     const ltraStates = new Map<string, LtraModelState>();
 
     for (const desc of expandedDescriptors) {
@@ -1503,7 +1636,7 @@ export class Circuit {
         case 'V': {
           const bi = branchIndex++;
           branchNames.push(desc.name);
-          devices.push(new VoltageSource(desc.name, nodeIndices, bi, resolveWaveform(desc.waveform)));
+          devices.push(new VoltageSource(desc.name, nodeIndices, bi, resolveWaveform(desc.waveform), desc.port));
           break;
         }
         case 'I':
@@ -1676,6 +1809,12 @@ export class Circuit {
           const level = modelParams.LEVEL ?? 1;
 
           if (level === 49 || level === 8) {
+            // #503: VERSION=3.0/3.1/3.2.x select other BSIM3 revisions in ngspice; never run them as 3.3.
+            if (!isSupportedBsim3Version(model.version)) {
+              throw new UnsupportedModelVersionError(
+                desc.name, desc.modelName, level, model.version!, SUPPORTED_BSIM3_VERSIONS,
+              );
+            }
             // BSIM3v3 — 4-terminal
             const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2]; // default bulk=source
             const nodeIdxs = [
@@ -1753,6 +1892,24 @@ export class Circuit {
           devices.push(new CCVS(desc.name, nodeIndices, ctrlDev.branches[0], bi, desc.value!));
           break;
         }
+        case 'S':
+        case 'W': {
+          const type = desc.type === 'S' ? 'SW' : 'CSW';
+          const model = this.requireModel(desc.type === 'S' ? 'Switch' : 'Current switch', desc);
+          const { model: switchModel, warnings } = resolveSwitchModel(
+            type, model.params, this._simulationOptions.gmin ?? DEVICE_GMIN,
+          );
+          const initiallyOn = desc.params?.ON === 1;
+          if (desc.type === 'S') {
+            devices.push(new VoltageSwitch(desc.name, nodeIndices, switchModel, initiallyOn, warnings));
+          } else {
+            // The controlling source may be declared after the switch; bind its branch below.
+            const device = new CurrentSwitch(desc.name, nodeIndices, -1, switchModel, initiallyOn, warnings);
+            pendingCurrentSwitches.push({ device, controlSource: desc.controlSource! });
+            devices.push(device);
+          }
+          break;
+        }
         case 'A': {
           devices.push(createXspiceDevice(xspiceInstances.get(desc)!, resolveNode, branchName => {
             branchNames.push(branchName);
@@ -1770,6 +1927,15 @@ export class Circuit {
     }
 
     bindXspiceSources(devices, deviceMap);
+    for (const { device, controlSource } of pendingCurrentSwitches) {
+      const control = deviceMap.get(controlSource);
+      if (!control || !(control instanceof VoltageSource)) {
+        throw new InvalidCircuitError(
+          `W-element '${device.name}' references unknown or non-voltage-source control '${controlSource}'`,
+        );
+      }
+      device.bindControlBranch(control.branches[0]);
+    }
 
     if (this._temperature !== undefined && this._temperature !== NOMINAL_TEMPERATURE_C) {
       this.applyCircuitTemperature(this._temperature, expandedDescriptors, devices);
@@ -2436,11 +2602,13 @@ export class Circuit {
           for (let i = 3; i < tokens.length; i++) {
             mappedTokens.push(evalToken(tokens[i]));
           }
-          const waveform = parseSourceWaveform(mappedTokens, 3);
+          const { tokens: sourceTokens, port } = extractRFPort(mappedTokens, 3);
+          const waveform = parseSourceWaveform(sourceTokens, 3);
           result.push({
             type: 'V', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             waveform,
+            ...(port ? { port } : {}),
           });
           break;
         }
@@ -2598,6 +2766,19 @@ export class Circuit {
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             controlSource: `${instanceName}.${tokens[3]}`,
             value: parseNumber(valStr),
+          });
+          break;
+        }
+        case 'S':
+        case 'W': {
+          const instance = parseSwitchInstance(tokens, lineNumber);
+          result.push({
+            type: devType, name: devName,
+            nodes: instance.nodes.map(mapNode),
+            modelName: instance.modelName,
+            ...(instance.controlSource === undefined
+              ? {} : { controlSource: `${instanceName}.${instance.controlSource}` }),
+            ...(instance.initiallyOn ? { params: { ON: 1 } } : {}),
           });
           break;
         }

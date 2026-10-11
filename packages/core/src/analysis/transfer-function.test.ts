@@ -208,7 +208,7 @@ R2 out 0 1k
   });
 
   it.each([
-    '.pz in ref out 0 vol pz',
+    '.pz in ref out 0 vol',
   ])('continues to reject unsupported advanced analysis with ParseError: %s', directive => {
     expect(() => parse(directive)).toThrow(ParseError);
   });

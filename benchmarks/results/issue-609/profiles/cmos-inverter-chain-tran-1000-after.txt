@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/609/prof-after/cmos-inverter-chain-tran-1000.cpuprofile: 791 samples, 2592.3 ms sampled
+
+Top self time
+     364.5 ms  14.1%  stamp packages/core/dist/chunk-AQKNVZEZ.js:4763
+     335.6 ms  12.9%  batchStamp packages/core/dist/chunk-AQKNVZEZ.js:4965
+     296.2 ms  11.4%  evaluateBulkJunctions packages/core/dist/chunk-AQKNVZEZ.js:4655
+     268.6 ms  10.4%  stampG packages/core/dist/chunk-AQKNVZEZ.js:18331
+     238.5 ms   9.2%  factorize packages/core/dist/chunk-AQKNVZEZ.js:17725
+     179.0 ms   6.9%  stampStaticDevices packages/core/dist/chunk-AQKNVZEZ.js:18503
+      86.3 ms   3.3%  stampB packages/core/dist/chunk-AQKNVZEZ.js:18334
+      85.5 ms   3.3%  (garbage collector)
+      84.0 ms   3.2%  buildCompanionSystem packages/core/dist/chunk-AQKNVZEZ.js:19025
+      73.8 ms   2.8%  getVoltage packages/core/dist/chunk-AQKNVZEZ.js:18340
+      65.5 ms   2.5%  flush packages/core/dist/chunk-AQKNVZEZ.js:20229
+      55.1 ms   2.1%  attemptStep packages/core/dist/chunk-AQKNVZEZ.js:19201
+
+Top inclusive time
+    2592.3 ms 100.0%  (root)
+    2452.3 ms  94.6%  simulate packages/core/dist/chunk-AQKNVZEZ.js:23617
+    1797.6 ms  69.3%  solveTransient packages/core/dist/chunk-AQKNVZEZ.js:20254
+    1722.3 ms  66.4%  advanceSolution packages/core/dist/chunk-AQKNVZEZ.js:19661
+    1065.4 ms  41.1%  stampStaticDevices packages/core/dist/chunk-AQKNVZEZ.js:18503
+    1007.7 ms  38.9%  attemptStep packages/core/dist/chunk-AQKNVZEZ.js:19201
+     860.7 ms  33.2%  stamp packages/core/dist/chunk-AQKNVZEZ.js:4763
+     667.3 ms  25.7%  stampPrevB packages/core/dist/chunk-AQKNVZEZ.js:19889
+     665.4 ms  25.7%  buildCompanionSystem packages/core/dist/chunk-AQKNVZEZ.js:19025
+     631.0 ms  24.3%  solveDCOperatingPoint packages/core/dist/chunk-AQKNVZEZ.js:18821
+     631.0 ms  24.3%  transientInitialSolution packages/core/dist/chunk-AQKNVZEZ.js:23923
+     624.1 ms  24.1%  newtonRaphson packages/core/dist/chunk-AQKNVZEZ.js:18577

@@ -52,6 +52,8 @@ export function solveDCSweep(
   const assembler = new MNAAssembler(nodeCount, branchCount, {
     variables: createMatrixVariableIdentities(nodeNames, branchNames),
   });
+  // ngspice dctrcurv.c solves the first point in MODEINITJCT.
+  for (const device of devices) device.beginOperatingPoint?.();
   const secondarySweepValues = analysis.secondary === undefined
     ? undefined
     : new Float64Array(numPoints);

@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/609/prof-after/rc-ladder-tran-1000.cpuprofile: 112 samples, 389.5 ms sampled
+
+Top self time
+      76.2 ms  19.6%  attemptStep packages/core/dist/chunk-AQKNVZEZ.js:19201
+      41.9 ms  10.8%  factorize packages/core/dist/chunk-AQKNVZEZ.js:17725
+      36.5 ms   9.4%  (garbage collector)
+      30.5 ms   7.8%  advanceSolution packages/core/dist/chunk-AQKNVZEZ.js:19661
+      29.5 ms   7.6%  buildCompanionSystem packages/core/dist/chunk-AQKNVZEZ.js:19025
+      18.1 ms   4.6%  solveLinearized packages/core/dist/chunk-AQKNVZEZ.js:19293
+      15.3 ms   3.9%  flush packages/core/dist/chunk-AQKNVZEZ.js:20229
+      15.0 ms   3.9%  compileSourceTextModule node:internal/modules/esm/utils:344
+       9.4 ms   2.4%  (program)
+       8.7 ms   2.2%  stampDynamicDevices packages/core/dist/chunk-AQKNVZEZ.js:18533
+       7.3 ms   1.9%  amdOrdering packages/core/dist/chunk-AQKNVZEZ.js:17409
+       6.8 ms   1.7%  stampPrevB packages/core/dist/chunk-AQKNVZEZ.js:19889
+
+Top inclusive time
+     389.5 ms 100.0%  (root)
+     291.7 ms  74.9%  simulate packages/core/dist/chunk-AQKNVZEZ.js:23617
+     252.5 ms  64.8%  solveTransient packages/core/dist/chunk-AQKNVZEZ.js:20254
+     227.0 ms  58.3%  advanceSolution packages/core/dist/chunk-AQKNVZEZ.js:19661
+     192.3 ms  49.4%  attemptStep packages/core/dist/chunk-AQKNVZEZ.js:19201
+      60.0 ms  15.4%  solveLinearized packages/core/dist/chunk-AQKNVZEZ.js:19293
+      51.1 ms  13.1%  buildCompanionSystem packages/core/dist/chunk-AQKNVZEZ.js:19025
+      41.9 ms  10.8%  factorize packages/core/dist/chunk-AQKNVZEZ.js:17725
+      36.5 ms   9.4%  (garbage collector)
+      24.1 ms   6.2%  loadAndTranslate node:internal/modules/esm/loader:608
+      24.1 ms   6.2%  #createModuleJob node:internal/modules/esm/loader:632
+      24.1 ms   6.2%  #getJobFromResolveResult node:internal/modules/esm/loader:347

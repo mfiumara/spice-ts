@@ -1,0 +1,2 @@
+# Fixtures are byte-identical upstream ngspice decks (SHA-256 pinned in report.json); never normalise line endings.
+fixtures/** -text

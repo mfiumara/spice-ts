@@ -1,0 +1,14 @@
+** Example S--parameters of a Tschebyschef Low Pass filter
+C1 in 0 33.2p
+L1 in 2 99.2n
+C2 2 0 57.2p
+L2 2 out 99.2n
+C3 out 0 33.2p
+
+V1 in 0 dc 0 ac 1 portnum 1 z0 50
+V2 out 0 dc 0 ac 0 portnum 2 z0 50
+
+.sp lin 100 2.5MEG 250MEG ; use for Tschebyschef 
+
+
+.end

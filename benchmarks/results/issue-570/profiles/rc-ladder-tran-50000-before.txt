@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/run2/prof-before/rc-ladder-tran-50000.cpuprofile: 4300 samples, 35763.8 ms sampled
+
+Top self time
+    5842.1 ms  16.3%  (garbage collector)
+    5713.5 ms  16.0%  stampG packages/core/dist/chunk-U7VPSPAU.js:17410
+    4673.9 ms  13.1%  buildCompanionSystem packages/core/dist/chunk-U7VPSPAU.js:17937
+    3249.7 ms   9.1%  factorize packages/core/dist/chunk-U7VPSPAU.js:16804
+    2817.1 ms   7.9%  attemptStep packages/core/dist/chunk-U7VPSPAU.js:18117
+    2638.9 ms   7.4%  stamp packages/core/dist/chunk-U7VPSPAU.js:1219
+    1876.5 ms   5.2%  save packages/core/dist/chunk-U7VPSPAU.js:19142
+    1748.0 ms   4.9%  stampPrevB packages/core/dist/chunk-U7VPSPAU.js:18799
+    1328.7 ms   3.7%  stampDynamic packages/core/dist/chunk-U7VPSPAU.js:1508
+     717.4 ms   2.0%  lockTopology packages/core/dist/chunk-U7VPSPAU.js:17220
+     553.1 ms   1.5%  amdOrdering packages/core/dist/chunk-U7VPSPAU.js:16488
+     437.5 ms   1.2%  stampC packages/core/dist/chunk-U7VPSPAU.js:17416
+
+Top inclusive time
+   35763.8 ms 100.0%  (root)
+   29282.2 ms  81.9%  simulate packages/core/dist/chunk-U7VPSPAU.js:22218
+   26998.5 ms  75.5%  solveTransient packages/core/dist/chunk-U7VPSPAU.js:19111
+   24593.6 ms  68.8%  advanceSolution packages/core/dist/chunk-U7VPSPAU.js:18571
+   19295.4 ms  54.0%  attemptStep packages/core/dist/chunk-U7VPSPAU.js:18117
+   12011.8 ms  33.6%  buildCompanionSystem packages/core/dist/chunk-U7VPSPAU.js:17937
+    8195.7 ms  22.9%  stamp packages/core/dist/chunk-U7VPSPAU.js:1219
+    5842.1 ms  16.3%  (garbage collector)
+    5732.1 ms  16.0%  stampG packages/core/dist/chunk-U7VPSPAU.js:17410
+    5556.8 ms  15.5%  stampWith packages/core/dist/chunk-U7VPSPAU.js:1230
+    4729.7 ms  13.2%  stampPrevB packages/core/dist/chunk-U7VPSPAU.js:18799
+    3407.9 ms   9.5%  solveLinearized packages/core/dist/chunk-U7VPSPAU.js:18209

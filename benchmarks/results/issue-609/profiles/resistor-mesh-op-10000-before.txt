@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/609/prof-before/resistor-mesh-op-10000.cpuprofile: 140 samples, 489.4 ms sampled
+
+Top self time
+     142.1 ms  29.0%  factorize packages/core/dist/chunk-ZLHT5X54.js:17725
+      56.5 ms  11.5%  (garbage collector)
+      54.0 ms  11.0%  amdOrdering packages/core/dist/chunk-ZLHT5X54.js:17409
+      26.0 ms   5.3%  analyzePattern packages/core/dist/chunk-ZLHT5X54.js:17629
+      19.1 ms   3.9%  compile packages/core/dist/chunk-ZLHT5X54.js:14295
+      18.7 ms   3.8%  lockTopology packages/core/dist/chunk-ZLHT5X54.js:18141
+      11.4 ms   2.3%  resolveResistor packages/core/dist/chunk-ZLHT5X54.js:839
+      10.7 ms   2.2%  solve packages/core/dist/chunk-ZLHT5X54.js:17911
+      10.2 ms   2.1%  tokenizeNetlist packages/core/dist/chunk-ZLHT5X54.js:398
+      10.1 ms   2.1%  addPosition packages/core/dist/chunk-ZLHT5X54.js:18183
+      10.0 ms   2.1%  compileSourceTextModule node:internal/modules/esm/utils:344
+       7.5 ms   1.5%  (program)
+
+Top inclusive time
+     489.4 ms 100.0%  (root)
+     349.0 ms  71.3%  simulate packages/core/dist/chunk-ZLHT5X54.js:23562
+     298.3 ms  61.0%  newtonRaphson packages/core/dist/chunk-ZLHT5X54.js:18577
+     298.3 ms  61.0%  solveDCOperatingPoint packages/core/dist/chunk-ZLHT5X54.js:18821
+     144.5 ms  29.5%  factorize packages/core/dist/chunk-ZLHT5X54.js:17725
+      85.0 ms  17.4%  getSparseSolver packages/core/dist/chunk-ZLHT5X54.js:18268
+      80.0 ms  16.3%  analyzePattern packages/core/dist/chunk-ZLHT5X54.js:17629
+      56.5 ms  11.5%  (garbage collector)
+      54.0 ms  11.0%  amdOrdering packages/core/dist/chunk-ZLHT5X54.js:17409
+      40.6 ms   8.3%  compile packages/core/dist/chunk-ZLHT5X54.js:14295
+      32.8 ms   6.7%  lockTopology packages/core/dist/chunk-ZLHT5X54.js:18141
+      30.5 ms   6.2%  parseAsync packages/core/dist/chunk-ZLHT5X54.js:16309

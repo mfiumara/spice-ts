@@ -1,7 +1,6 @@
 import type { CompiledCircuit } from '../circuit.js';
-import { Capacitor } from '../devices/capacitor.js';
-import { Inductor } from '../devices/inductor.js';
-import { Resistor } from '../devices/resistor.js';
+import type { StampContext } from '../devices/device.js';
+import { VoltageSource } from '../devices/voltage-source.js';
 import { InvalidCircuitError } from '../errors.js';
 import { MNAAssembler } from '../mna/assembler.js';
 import { PoleZeroResult, type PoleZeroValue } from '../results.js';
@@ -27,7 +26,11 @@ interface Complex {
 
 const MAX_DYNAMIC_ORDER = 12;
 
-/** Solve the bounded grounded-reference ngspice `.pz` forms. */
+/**
+ * ngspice-47 `.pz`: poles and zeros of the small-signal (AC) linearisation at
+ * the DC operating point, for current (`cur`, Vo/Ii) or voltage (`vol`, Vo/Vi)
+ * input between arbitrary input and output node pairs.
+ */
 export function solvePoleZero(
   compiled: CompiledCircuit,
   analysis: PoleZeroAnalysis,
@@ -38,7 +41,7 @@ export function solvePoleZero(
   const inputNegative = nodeIndex(compiled, analysis.inputNegative, 'input');
   const outputPositive = nodeIndex(compiled, analysis.outputPositive, 'output');
   const outputNegative = nodeIndex(compiled, analysis.outputNegative, 'output');
-  if (analysis.inputType === 'vol') assertVoltageInputDevicesSupported(compiled);
+  assertTerminalsNotDegenerate(analysis, inputPositive, inputNegative, outputPositive, outputNegative);
 
   const dcSolution = solveDCOperatingPoint(
     compiled,
@@ -101,16 +104,17 @@ export function solvePoleZero(
   let poleRoots = naturalRoots;
   if (analysis.inputType === 'vol') {
     const inputVoltage = new Float64Array(input.length);
-    inputVoltage[inputPositive] = 1;
+    if (inputPositive >= 0) inputVoltage[inputPositive] += 1;
+    if (inputNegative >= 0) inputVoltage[inputNegative] -= 1;
     poleRoots = transferZeros(conductance, storage, input, inputVoltage, shiftScale);
   }
-  const poles = orderedValues(poleRoots);
+  const poles = analysis.mode === 'zer' ? [] : orderedValues(poleRoots);
 
   let zeros: PoleZeroValue[] = [];
-  if (analysis.mode === 'pz') {
+  if (analysis.mode !== 'pol') {
     zeros = orderedValues(
       transferZeros(conductance, storage, input, output, shiftScale),
-      maximumMagnitude(poles),
+      maximumMagnitude(orderedValues(poleRoots)),
     );
   }
 
@@ -124,17 +128,38 @@ export function solvePoleZero(
   );
 }
 
-function assertVoltageInputDevicesSupported(compiled: CompiledCircuit): void {
-  for (const device of compiled.devices) {
-    if (
-      device instanceof Resistor
-      || device instanceof Capacitor
-      || device instanceof Inductor
-    ) continue;
-    throw new InvalidCircuitError(
-      `.pz vol supports only ideal R, L, C devices; found ${device.name} (${device.constructor.name})`,
-    );
+/** ngspice-47 PZinit terminal checks (pzan.c), on resolved node indices. */
+function assertTerminalsNotDegenerate(
+  analysis: PoleZeroAnalysis,
+  inputPositive: number,
+  inputNegative: number,
+  outputPositive: number,
+  outputNegative: number,
+): void {
+  if (inputPositive === inputNegative) throw new InvalidCircuitError('.pz Input is shorted');
+  if (outputPositive === outputNegative) throw new InvalidCircuitError('.pz Output is shorted');
+  if (analysis.inputType !== 'vol') return;
+  if (inputPositive === outputPositive && inputNegative === outputNegative) {
+    throw new InvalidCircuitError('.pz Transfer function is unity');
   }
+  if (inputPositive === outputNegative && inputNegative === outputPositive) {
+    throw new InvalidCircuitError('.pz Transfer function is -1');
+  }
+}
+
+/**
+ * ngspice-47 VSRCpzLoad: an independent voltage source with an AC value is
+ * removed (its branch current is forced to zero, so it is an open circuit),
+ * while a source without one stays a short. RF ports keep their regular stamp.
+ */
+function stampPoleZeroVoltageSource(device: VoltageSource, context: StampContext): boolean {
+  if (device.port || device.getACExcitation() === null) return false;
+  const branch = context.numNodes + device.branchIndex;
+  const [positive, negative] = device.nodes;
+  if (positive >= 0) context.stampG(positive, branch, 1);
+  if (negative >= 0) context.stampG(negative, branch, -1);
+  context.stampG(branch, branch, 1);
+  return true;
 }
 
 function buildLinearizedSystem(
@@ -146,6 +171,10 @@ function buildLinearizedSystem(
   assembler.solution.set(dcSolution);
   const context = assembler.getStampContext();
   for (const device of compiled.devices) {
+    if (device instanceof VoltageSource) {
+      if (!stampPoleZeroVoltageSource(device, context)) device.stamp(context);
+      continue;
+    }
     if (device.stampSmallSignal) device.stampSmallSignal(context);
     else device.stamp(context);
   }

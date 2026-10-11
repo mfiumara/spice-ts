@@ -150,6 +150,11 @@ describe('aggregate report artifact verification', () => {
       && text.includes('PR #556') && text.includes('PR #543') && text.includes('PR #557') && text.includes('PR #563')
       && text.includes('PR #569') && text.includes('PR #571') && text.includes('fa95e5d0 to 596e6067') && text.includes('PR #567')));
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.startsWith('.OPTIONS TEMP') && text.includes('#459') && text.includes('only ngspice/vbic-temperature')));
+    // #529, #586, #579, #587, #585, #599 and #580 are outcome-neutral; #601 gains and losses published; fixture-tree pin moves (#598).
+    assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #529') && text.includes('PR #586') && text.includes('PR #579')
+      && text.includes('PR #587') && text.includes('PR #585') && text.includes('PR #599') && text.includes('PR #580')
+      && text.includes('13b4675c to d5327777') && text.includes('outcome-neutral together')
+      && text.includes('PR #601') && text.includes('worst 0.248 V v(3) to 1.40e-3 V v(4)') && text.includes('PR #610') && text.includes('PR #605') && text.includes('e9d9663c to a0fc235c') && text.includes('v(2) abs max 0.0768 to 0.0836 V')));
     const vbicAc = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/vbic-common-emitter-ac');
     assert.equal(vbicAc.spiceTs.status, 'success');
     assert.deepEqual(vbicAc.comparisons.map((comparison: { analysis: string }) => comparison.analysis), ['ac', 'pz']);
@@ -185,7 +190,7 @@ describe('aggregate report artifact verification', () => {
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #552') && text.includes('#565') && text.includes('classic/mos-memory-cell (155 points) worst 1.906 V v(8) to 0.248 V v(3)')));
     const mos6Worst: Record<string, number> = {
       'ngspice/mos6-inverter-transient': 0.2848979467162085,
-      'ngspice/mos6-simple-inverter-transient': 0.10560974273956214,
+      'ngspice/mos6-simple-inverter-transient': 0.10560974273955948, // #572 LU pivot order moved this at rounding level (#583).
       'classic/mos6-inverter-chain': 0.2848979467162085,
     };
     for (const [key, expected] of Object.entries(mos6Worst)) {
@@ -242,8 +247,8 @@ describe('aggregate report artifact verification', () => {
     const report = JSON.parse(json);
 
     assert.deepEqual(report.provenance, {
-      fixtureTreeSha256: '13b4675cfb97766fc7caed79d023ca514840880d17cb924c0e70561ff8b82e00',
-      sourcesSha256: '649db81aef8f1de23d39c400b1249cd926289d5060f4f3ef76c60ae97730dc2e',
+      fixtureTreeSha256: 'd53277772db73fd3fb2a193f323b0681db173fa8798b764b97755998a5f36d87',
+      sourcesSha256: 'a0fc235cd194ff914fabcf25718c6f67f709d95263dfcdf507f8feb5226cf457',
     });
   });
 

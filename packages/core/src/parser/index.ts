@@ -4,7 +4,7 @@ import { tokenizeNetlist, parseNumber } from './tokenizer.js';
 import { parseModelCard } from './model-parser.js';
 import { assertSupportedModelType } from './model-type.js';
 import { assertSupportedResistorModel, parseResistorElement } from './resistor-parser.js';
-import { parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
+import { extractRFPort, parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
 import { parseBJTInstance } from './bjt-parser.js';
@@ -21,6 +21,7 @@ import { preprocess, preprocessLines } from './preprocessor.js';
 import { classifyControlCommand, repeatedControlAnalysisError } from './control-block.js';
 import { parseBehavioralSourceCard } from './behavioral-expression.js';
 import { parseZInstance } from './z-device-parser.js';
+import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
 import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -292,7 +293,7 @@ export async function parseTitlelessAsync(
 }
 
 const OUTPUT_ONLY_OPTION_FLAGS = new Set([
-  'nopage', 'acct', 'noacct', 'list', 'node', 'post', 'trans',
+  'nopage', 'acct', 'noacct', 'list', 'node', 'post', 'trans', 'noinit', 'seedinfo',
 ]);
 const BEHAVIOR_CHANGING_GNUCAP_OPTIONS = new Set([
   'cstray', 'dampstrategy', 'itermin', 'nobypass', 'noincmode', 'rstray', 'trsteporder',
@@ -378,6 +379,27 @@ function parseDotCommand(
       const startFreq = parseNumber(tokens[3]);
       const stopFreq = parseNumber(tokens[4]);
       circuit.addAnalysis('ac', { variation, points, startFreq, stopFreq });
+      break;
+    }
+    case '.SP': {
+      // ngspice-47 inp2dot.c dot_sp: {DEC|OCT|LIN} points fstart fstop [donoise].
+      const variation = tokens[1]?.toLowerCase();
+      if ((tokens.length !== 5 && tokens.length !== 6)
+          || (variation !== 'lin' && variation !== 'dec' && variation !== 'oct')) {
+        throw new ParseError(
+          "Unsupported .sp form; expected '.sp {dec|oct|lin} points fstart fstop [donoise]'",
+          lineNumber, context,
+        );
+      }
+      const points = parseNumber(tokens[2]);
+      const startFreq = parseNumber(tokens[3]);
+      const stopFreq = parseNumber(tokens[4]);
+      if (!Number.isInteger(points) || points < 1 || !(startFreq >= 0) || !(stopFreq >= startFreq)
+          || (variation !== 'lin' && startFreq <= 0)) {
+        throw new ParseError(`Invalid .sp ${variation} sweep`, lineNumber, context);
+      }
+      const noise = tokens[5] === undefined ? false : parseNumber(tokens[5]) === 1;
+      circuit.addAnalysis('sp', { variation, points, startFreq, stopFreq, noise });
       break;
     }
     case '.NOISE': {
@@ -729,6 +751,16 @@ function parseSimulationOptions(
     }
 
     const rawValue = token.slice(separator + 1);
+    if (name === 'warn' || name === 'maxwarns' || name === 'bypass') {
+      const value = parseNumber(rawValue);
+      if (!Number.isInteger(value) || (name === 'bypass' && value < 0)) {
+        throw new Error(`Invalid .options ${name} value: '${rawValue}'`);
+      }
+      // WARN/MAXWARNS only control ngspice's SOA diagnostics. BYPASS is
+      // retained for serialization and an explicit native-solver warning.
+      if (name === 'bypass') options.bypass = value;
+      continue;
+    }
     if (obsoleteNumericFields.has(name)) {
       const value = parseNumber(rawValue);
       if (!Number.isInteger(value) || value < 0) {
@@ -758,6 +790,7 @@ function parseSimulationOptions(
       itl4: 'maxTransientIterations',
       trtol: 'trtol',
       chgtol: 'chgtol',
+      ramptime: 'rampTime',
     };
     const target = mappings[name];
     if (!target) throw new ParseError(`Unsupported .options field: '${name}'`, lineNumber, context);
@@ -929,8 +962,9 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       break;
     }
     case 'V': {
-      const waveform = parseSourceWaveform(tokens, 3);
-      circuit.addVoltageSource(name, tokens[1], tokens[2], waveform);
+      const { tokens: sourceTokens, port } = extractRFPort(tokens, 3);
+      const waveform = parseSourceWaveform(sourceTokens, 3);
+      circuit.addVoltageSource(name, tokens[1], tokens[2], waveform, port);
       break;
     }
     case 'I': {
@@ -1039,6 +1073,20 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
     case 'A':
       circuit.addXspiceInstance(parseXspiceInstance(raw, lineNumber));
       break;
+    case 'S':
+    case 'W': {
+      const instance = parseSwitchInstance(tokens, lineNumber);
+      if (instance.controlSource === undefined) {
+        const [nodePos, nodeNeg, nCtrlP, nCtrlN] = instance.nodes;
+        circuit.addVoltageSwitch(name, nodePos, nodeNeg, nCtrlP, nCtrlN, instance.modelName, instance.initiallyOn);
+      } else {
+        const [nodePos, nodeNeg] = instance.nodes;
+        circuit.addCurrentSwitch(
+          name, nodePos, nodeNeg, instance.controlSource, instance.modelName, instance.initiallyOn,
+        );
+      }
+      break;
+    }
     default:
       throw new ParseError(`Unsupported device card: '${type}'`, lineNumber, tokens.join(' '));
   }

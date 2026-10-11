@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/p570/run2/prof-after/rc-ladder-tran-10000.cpuprofile: 403 samples, 3010.3 ms sampled
+
+Top self time
+     642.6 ms  21.3%  factorize packages/core/dist/chunk-P2PXJXZ6.js:16804
+     328.7 ms  10.9%  attemptStep packages/core/dist/chunk-P2PXJXZ6.js:18251
+     327.8 ms  10.9%  (garbage collector)
+     314.1 ms  10.4%  buildCompanionSystem packages/core/dist/chunk-P2PXJXZ6.js:18075
+     299.8 ms  10.0%  stampStaticDevices packages/core/dist/chunk-P2PXJXZ6.js:17582
+     159.1 ms   5.3%  save packages/core/dist/chunk-P2PXJXZ6.js:19280
+      66.0 ms   2.2%  stampDynamicDevices packages/core/dist/chunk-P2PXJXZ6.js:17612
+      50.3 ms   1.7%  amdOrdering packages/core/dist/chunk-P2PXJXZ6.js:16488
+      45.1 ms   1.5%  analyzePattern packages/core/dist/chunk-P2PXJXZ6.js:16708
+      37.7 ms   1.3%  stampG packages/core/dist/chunk-P2PXJXZ6.js:17410
+      35.7 ms   1.2%  matchesFactoredInput packages/core/dist/chunk-P2PXJXZ6.js:16760
+      35.3 ms   1.2%  solveTransient packages/core/dist/chunk-P2PXJXZ6.js:19249
+
+Top inclusive time
+    3010.3 ms 100.0%  (root)
+    2490.1 ms  82.7%  simulate packages/core/dist/chunk-P2PXJXZ6.js:22356
+    2252.6 ms  74.8%  solveTransient packages/core/dist/chunk-P2PXJXZ6.js:19249
+    2007.0 ms  66.7%  advanceSolution packages/core/dist/chunk-P2PXJXZ6.js:18711
+    1786.2 ms  59.3%  attemptStep packages/core/dist/chunk-P2PXJXZ6.js:18251
+     727.5 ms  24.2%  solveLinearized packages/core/dist/chunk-P2PXJXZ6.js:18343
+     688.5 ms  22.9%  factorize packages/core/dist/chunk-P2PXJXZ6.js:16804
+     646.2 ms  21.5%  buildCompanionSystem packages/core/dist/chunk-P2PXJXZ6.js:18075
+     422.1 ms  14.0%  stampStaticDevices packages/core/dist/chunk-P2PXJXZ6.js:17582
+     327.8 ms  10.9%  (garbage collector)
+     216.5 ms   7.2%  stampPrevB packages/core/dist/chunk-P2PXJXZ6.js:18939
+     159.1 ms   5.3%  save packages/core/dist/chunk-P2PXJXZ6.js:19280
