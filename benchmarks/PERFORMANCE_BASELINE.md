@@ -80,17 +80,16 @@ pnpm install --frozen-lockfile
 pnpm bench:scaling:m2 -- --sizes=1000,10000,50000 --ngspice-solvers=klu,sparse \
   --warmups=2 --runs=10 --timeout-s=600 --output=benchmarks/performance/results/scaling-m2.json
 node benchmarks/performance/scaling-m2-report.mjs   # renders the tables below from the JSON
-node --cpu-prof --cpu-prof-dir=benchmarks/performance/results/profiles \
-  --cpu-prof-name=resistor-mesh-op-10000.cpuprofile \
-  benchmarks/performance/profile-scaling-m2.mjs resistor-mesh-op 10000 3
-node --cpu-prof --cpu-prof-dir=benchmarks/performance/results/profiles \
-  --cpu-prof-name=rc-ladder-tran-10000.cpuprofile \
-  benchmarks/performance/profile-scaling-m2.mjs rc-ladder-tran 10000 3
+for c in resistor-mesh-op:3 rc-ladder-tran:3 cmos-inverter-chain-tran:1; do
+  node --cpu-prof --cpu-prof-dir=benchmarks/performance/results/profiles \
+    --cpu-prof-name=${c%%:*}-10000.cpuprofile \
+    benchmarks/performance/profile-scaling-m2.mjs ${c%%:*} 10000 ${c##*:}
+done
 node benchmarks/performance/profile-summary.mjs benchmarks/performance/results/profiles/<file>.cpuprofile
 npx tsx --test benchmarks/performance/scaling-m2.test.ts   # fixture/parser unit checks
 ```
 
-The full run took about 85 minutes, mostly in the 50k cells.
+The full matrix took 86 minutes, mostly in the 50k cells.
 
 ## Workloads and provenance
 
@@ -120,63 +119,68 @@ Every deck carries `.options acct`, which spice-ts accepts as output-only. The h
 
 - Each engine/circuit/size/solver cell runs in its own fresh child process: 2 warmups, then 10 recorded samples. Medians are primary. Min, p95 (nearest rank, which is the maximum at 10 samples), max and every raw sample are in `benchmarks/performance/results/scaling-m2.json`.
 - spice-ts time is `parseAsync()` plus `simulate(circuit)` through the public API, all in-process. The JSON splits it into `parseMs` and `analysisMs` (compile + analysis).
-- ngspice time is the wall time of a fresh `ngspice -b` CLI process per sample. That includes process start, deck loading and printing the `.print` rows / `.op` listing to a pipe. The JSON also records ngspice's own `Netlist loading time`, `Total analysis time` and matrix reorder/factor/solve/load phases from `.options acct`.
+- ngspice time is the wall time of a fresh `ngspice -b` CLI process per sample. That includes process start, deck loading, and printing the `.print` rows plus the initial-solution / `.op` node listing to a pipe. The JSON also records ngspice's own `Netlist loading time`, `Total analysis time` and matrix reorder/factor/solve/load phases from `.options acct`.
 - ngspice-47 defaults to **Sparse 1.3** when the deck does not request KLU. This build was compiled with KLU. Both solvers are measured. spice-ts rejects `.options klu`, so the solver is chosen outside the shared deck with a per-run `.spiceinit` (`option klu` or `option sparse`). The harness checks the `Using ... as Direct Linear Solver` banner on every sample. KLU is the stronger ngspice baseline and the one spice-ts has to beat.
-- Failures stop a cell. The error text and time-to-failure are recorded and never retried or dropped. No timeouts were hit in this run, with a budget of 600 s per sample.
-- Correctness sanity: the probe value is recorded per sample, and timing is only meaningful when the engines agree. At t = 100 ns the RC-ladder `v(n10)` is 0.168395 V in spice-ts and 0.168377 V in ngspice (both solvers): a 1.08e-4 relative difference at every size, with different accepted step counts. The mesh corner voltage agrees to ≤1.9e-7 relative at every size.
+- Failures stop a cell. The error text and time-to-failure are recorded and never retried or dropped. No timeouts were hit, with a budget of 600 s per sample.
+- Correctness sanity: the probe value is recorded per sample, because timing is only meaningful when the engines agree.
+  - RC ladder `v(n10)` at 100 ns: 0.168395 V (spice-ts) against 0.168377 V (ngspice, both solvers), a 1.08e-4 relative difference at every size.
+  - Mesh corner voltage: agrees to ≤1.9e-7 relative at every size.
+  - Inverter chain `v(s20)` at 2 ns: 0.6456 V (spice-ts) against 0.3501 V (ngspice). This probe sits on a steep rising edge, so small delay differences amplify. A side check on the 1k deck compares the 1.25 V crossing times. spice-ts is earlier by 4.0 ps at `s1` (0.2214 vs 0.2254 ns), 4.8 ps at `s2`, 7.6 ps at `s5` and 11.5 ps at `s10` (1.0793 vs 1.0908 ns, -1.1%). Read the inverter-chain timings with that roughly 1% per-stage delay difference in mind. spice-ts also emits 671 output points against ngspice's 214 accepted timepoints.
 
 ## Environment and load
 
-- Run: 2026-10-11 01:03–02:28 UTC (`generatedAt` 2026-10-11T02:28:43Z)
+- Run: 2026-10-11 02:39–04:05 UTC (`generatedAt` 2026-10-11T04:04:57Z)
 - Machine: Apple M5 Pro, 18 logical CPUs, 48 GiB RAM, Darwin 27.0.0 arm64
-- spice-ts 0.3.0 at main `60f49b2` plus this measurement-only branch. Node.js v22.23.1, pnpm 10.28.1
+- spice-ts 0.3.0 at main `9b21238` plus this measurement-only branch. Node.js v22.23.1, pnpm 10.28.1
 - ngspice: ngspice-47 (Homebrew build, KLU compiled in)
-- **The host was shared with other agent workloads.** The 1-minute load average ranged from about 3.5 to 42 on 18 logical CPUs during the run. That inflates p95 (for example spice-ts RC ladder 50k: median 21.3 s, p95 43.0 s) and adds noise in both directions. Medians across isolated processes are the comparison of record. Re-run on an idle machine before quoting any ratio tighter than "about Nx".
+- **The host was shared with other agent workloads.** The 1-minute load average, sampled every 30 s, ranged from 3.9 to 26.6 on 18 logical CPUs during the run. That inflates some p95 values (for example spice-ts mesh 50k: median 83.2 s, p95 172.1 s) and adds noise in both directions. Medians across isolated processes are the comparison of record. Re-run on an idle machine before quoting any ratio tighter than "about Nx".
+- An earlier full run on main `60f49b2`, before the #428 gmin-stepping fix landed, was discarded rather than mixed in. Its inverter-chain cells all failed. It is superseded by this run on the PR's base.
 
 ## Results: end-to-end time (median / p95 of 10)
 
 | Circuit | Nodes | spice-ts total | ngspice KLU wall | ngspice Sparse 1.3 wall | spice-ts vs KLU | spice-ts vs Sparse |
 |---|---:|---:|---:|---:|---:|---:|
-| rc-ladder-tran | 1,000 | 371 ms / 1.92 s | 110 ms / 188 ms | 75.8 ms / 113 ms | 3.38x slower | 4.89x slower |
-| rc-ladder-tran | 10,000 | 3.62 s / 4.47 s | 339 ms / 451 ms | 283 ms / 362 ms | 10.69x slower | 12.80x slower |
-| rc-ladder-tran | 50,000 | 21.34 s / 42.98 s | 2.53 s / 3.67 s | 1.80 s / 2.00 s | 8.43x slower | 11.89x slower |
-| resistor-mesh-op | 1,024 | 48.4 ms / 78.0 ms | 30.2 ms / 32.6 ms | 40.6 ms / 44.0 ms | 1.61x slower | 1.19x slower |
-| resistor-mesh-op | 10,000 | 9.03 s / 17.71 s | 329 ms / 562 ms | 8.07 s / 11.53 s | 27.40x slower | 1.12x slower |
-| resistor-mesh-op | 50,176 | 114.24 s / 166.59 s | 1.26 s / 1.83 s | 70.70 s / 130.22 s | 90.59x slower | 1.62x slower |
-| cmos-inverter-chain-tran | 1,000 | **FAILED** | 179 ms / 242 ms | 362 ms / 496 ms | - | - |
-| cmos-inverter-chain-tran | 10,000 | **FAILED** | 8.06 s / 15.37 s | 8.44 s / 13.17 s | - | - |
-| cmos-inverter-chain-tran | 50,000 | **FAILED** | 64.45 s / 68.50 s | 73.47 s / 118.37 s | - | - |
+| rc-ladder-tran | 1,000 | 126 ms / 136 ms | 40.4 ms / 46.0 ms | 31.5 ms / 33.0 ms | 3.11x slower | 4.00x slower |
+| rc-ladder-tran | 10,000 | 1.13 s / 1.91 s | 375 ms / 571 ms | 266 ms / 393 ms | 3.00x slower | 4.23x slower |
+| rc-ladder-tran | 50,000 | 9.08 s / 11.83 s | 865 ms / 1.00 s | 701 ms / 799 ms | 10.50x slower | 12.94x slower |
+| resistor-mesh-op | 1,024 | 26.8 ms / 41.1 ms | 19.2 ms / 20.8 ms | 28.0 ms / 29.5 ms | 1.40x slower | 1.05x faster |
+| resistor-mesh-op | 10,000 | 2.91 s / 2.98 s | 108 ms / 114 ms | 1.41 s / 1.58 s | 26.91x slower | 2.07x slower |
+| resistor-mesh-op | 50,176 | 83.21 s / 172.07 s | 784 ms / 885 ms | 79.31 s / 154.48 s | 106.08x slower | 1.05x slower |
+| cmos-inverter-chain-tran | 1,000 | 1.43 s / 2.02 s | 234 ms / 247 ms | 282 ms / 305 ms | 6.09x slower | 5.05x slower |
+| cmos-inverter-chain-tran | 10,000 | 23.38 s / 35.86 s | 3.76 s / 5.28 s | 3.90 s / 5.85 s | 6.22x slower | 6.00x slower |
+| cmos-inverter-chain-tran | 50,000 | **FAILED** | 78.92 s / 157.07 s | 104.06 s / 144.30 s | - | - |
 
 ## Results: phase split, step counts, memory
 
 | Circuit | Nodes | spice-ts parse | spice-ts compile+analysis | ngspice KLU load | ngspice KLU analysis | ngspice Sparse analysis | spice-ts analysis vs KLU analysis | timepoints spice-ts / ngspice | peak RSS spice-ts / KLU / Sparse |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| rc-ladder-tran | 1,000 | 1.77 ms | 369 ms | 3.85 ms | 34.6 ms | 18.7 ms | 10.68x slower | 235 / 120 | 243 / 13 / 12 MiB |
-| rc-ladder-tran | 10,000 | 32.4 ms | 3.58 s | 32.5 ms | 247 ms | 185 ms | 14.47x slower | 235 / 120 | 424 / 35 / 30 MiB |
-| rc-ladder-tran | 50,000 | 169 ms | 21.17 s | 195 ms | 2.11 s | 1.52 s | 10.04x slower | 235 / 120 | 958 / 137 / 106 MiB |
-| resistor-mesh-op | 1,024 | 1.59 ms | 46.9 ms | 3.34 ms | 3.76 ms | 14.4 ms | 12.49x slower | op | 182 / 14 / 13 MiB |
-| resistor-mesh-op | 10,000 | 27.5 ms | 8.97 s | 63.8 ms | 113 ms | 7.81 s | 79.58x slower | op | 316 / 49 / 49 MiB |
-| resistor-mesh-op | 50,176 | 102 ms | 114.12 s | 192 ms | 676 ms | 70.29 s | 168.79x slower | op | 1503 / 222 / 244 MiB |
-| cmos-inverter-chain-tran | 1,000 | failed | failed | 4.93 ms | 155 ms | 316 ms | - | - / 214 | - / 20 / 18 MiB |
-| cmos-inverter-chain-tran | 10,000 | failed | failed | 94.0 ms | 7.67 s | 8.21 s | - | - / 214 | - / 105 / 75 MiB |
-| cmos-inverter-chain-tran | 50,000 | failed | failed | 264 ms | 63.68 s | 72.83 s | - | - / 214 | - / 473 / 333 MiB |
+| rc-ladder-tran | 1,000 | 1.36 ms | 124 ms | 3.25 ms | 17.4 ms | 12.2 ms | 7.15x slower | 235 / 120 | 245 / 13 / 12 MiB |
+| rc-ladder-tran | 10,000 | 10.1 ms | 1.12 s | 41.4 ms | 259 ms | 177 ms | 4.30x slower | 235 / 120 | 423 / 35 / 30 MiB |
+| rc-ladder-tran | 50,000 | 68.4 ms | 9.00 s | 97.4 ms | 684 ms | 533 ms | 13.16x slower | 235 / 120 | 935 / 134 / 105 MiB |
+| resistor-mesh-op | 1,024 | 1.02 ms | 25.9 ms | 2.12 ms | 2.35 ms | 9.85 ms | 11.01x slower | op | 184 / 14 / 13 MiB |
+| resistor-mesh-op | 10,000 | 12.9 ms | 2.90 s | 21.9 ms | 36.2 ms | 1.34 s | 79.91x slower | op | 331 / 48 / 49 MiB |
+| resistor-mesh-op | 50,176 | 64.0 ms | 83.13 s | 140 ms | 416 ms | 78.73 s | 199.73x slower | op | 1676 / 219 / 244 MiB |
+| cmos-inverter-chain-tran | 1,000 | 3.36 ms | 1.42 s | 6.45 ms | 205 ms | 244 ms | 6.92x slower | 671 / 214 | 257 / 19 / 17 MiB |
+| cmos-inverter-chain-tran | 10,000 | 47.0 ms | 23.33 s | 53.5 ms | 3.61 s | 3.77 s | 6.47x slower | 671 / 214 | 654 / 103 / 75 MiB |
+| cmos-inverter-chain-tran | 50,000 | failed | failed | 354 ms | 77.91 s | 103.05 s | - | - / 214 | - / 467 / 334 MiB |
 
 spice-ts "timepoints" counts returned output points, and ngspice's counts its "Accepted timepoints". The two are related but not the same quantity.
 
 ## Wins and losses
 
-- **No category is a spice-ts win at these sizes.** Against ngspice with KLU, spice-ts loses every completed cell end-to-end, even though ngspice's wall time includes native process start and deck loading.
-- **Linear transient (RC ladder):** about 3.4x slower than KLU wall time at 1k and 8–11x slower at 10k–50k. Comparing analysis time only, the gap is 10–14x. spice-ts also takes about 2x the output timepoints for the same `.tran 1n 100n`, and its final value matches ngspice to 1.1e-4 relative.
-- **Linear OP (2-D mesh):** this is the scaling problem. spice-ts grows from 48 ms (1k) to 9.0 s (10k) to 114 s (50k). ngspice KLU stays at 0.33 s and 1.26 s wall, so spice-ts is 90.6x slower at 50k (168.8x in analysis time). Against ngspice's default Sparse 1.3 the gap is only 1.1–1.6x, because Sparse 1.3 shows the same super-linear blow-up. Most of ngspice's lead comes from KLU's ordering, not from a faster language.
-- **Nonlinear transient (MOS1 inverter chain):** spice-ts **fails at every size**. The DC operating point that seeds the transient throws `SingularMatrixError` at the second-to-last stage. A bisection shows chains of 90 stages solve and 91+ stages fail. ngspice solves all sizes with both solvers. Filed as [#428](https://github.com/mfiumara/spice-ts/issues/428) (correctness bug, measurement-only here). No nonlinear runtime comparison exists until it is fixed.
-- **Memory:** a loss everywhere. At the largest completed sizes spice-ts peaks at 958 MiB (RC 50k) and 1,503 MiB (mesh 50k), against 137 MiB and 222 MiB for ngspice KLU. That is 7.0x and 6.8x, including Node's roughly 120 MiB baseline.
-- **Parsing is not the problem.** spice-ts parses 50k-node decks in 102–169 ms, on par with ngspice's netlist loading (192–195 ms).
+- **No meaningful spice-ts win at these sizes.** The single cell where spice-ts is not slower is the 1,024-node mesh against ngspice's default Sparse 1.3 wall time: 26.8 ms vs 28.0 ms. That 1.05x is within this run's noise, and spice-ts loses the same cell to KLU by 1.40x. Against KLU, spice-ts loses every completed cell end-to-end, even though ngspice's wall time includes native process start and deck loading.
+- **Linear transient (RC ladder):** about 3x slower than KLU wall time at 1k–10k and 10.5x at 50k. Analysis time alone is 4.3–13.2x slower. spice-ts takes about 2x the output timepoints for the same `.tran 1n 100n`, and its final value matches ngspice to 1.1e-4 relative.
+- **Linear OP (2-D mesh):** this is the scaling problem. spice-ts grows from 27 ms (1k) to 2.9 s (10k) to 83 s (50k). ngspice KLU stays at 0.11 s and 0.78 s wall, so spice-ts is 106x slower at 50k (200x in analysis time). Against ngspice's default Sparse 1.3 the gap is only 1.05–2.1x, because Sparse 1.3 shows the same super-linear blow-up. Most of ngspice's lead comes from KLU's fill-reducing ordering.
+- **Nonlinear transient (MOS1 inverter chain):** about 6x slower than both ngspice solvers at 1k and 10k, with the roughly 1% stage-delay difference noted above. At 50k spice-ts **fails**: the DC operating point that seeds the transient throws `SingularMatrixError` at `s49998` after 40.8 s. ngspice solves it with both solvers. A side bisection on the `.op`-only deck shows 30k nodes solve and 40k fail. This is the residual of #428 and is filed as [#462](https://github.com/mfiumara/spice-ts/issues/462) (measurement-only here).
+- **Memory:** a loss everywhere. At the largest completed sizes spice-ts peaks at 935 MiB (RC 50k), 1,676 MiB (mesh 50k) and 654 MiB (inverter 10k). ngspice KLU peaks at 134, 219 and 103 MiB: ratios of 7.0x, 7.7x and 6.3x, including Node's roughly 120 MiB runtime baseline.
+- **Parsing is not the problem.** spice-ts parses 50k-node decks in 64–68 ms, faster than ngspice's netlist loading (97–140 ms KLU runs).
 
 ## Measured bottleneck (CPU profiles)
 
-Both profiles are committed under `benchmarks/performance/results/profiles/`. Each covers 1 warmup plus 3 measured `simulate()` calls at 10k nodes. Summaries come from `profile-summary.mjs`.
+The profiles are committed under `benchmarks/performance/results/profiles/`, at 10k nodes on the same build as the run above. The mesh and RC profiles cover 1 warmup plus 3 measured `simulate()` calls. The inverter-chain profile covers 1 warmup plus 1 measured call. Summaries come from `profile-summary.mjs`.
 
-- `resistor-mesh-op-10000.cpuprofile` (2,390 samples, 10.14 s): **`GilbertPeierlsSolver.factorize` is 96.9% of self time (9.83 s).** Parse, compile, topology lock and stamping together are under 1%. This is the top measured bottleneck of M2. Source inspection of `packages/core/src/solver/gilbert-peierls.ts` finds threshold row pivoting but no fill-reducing column ordering (AMD/COLAMD). The working hypothesis is fill-in along the grid bandwidth, which matches ngspice Sparse 1.3 behaving similarly while KLU (AMD-ordered) does not. Follow-up: [#444](https://github.com/mfiumara/spice-ts/issues/444).
-- `rc-ladder-tran-10000.cpuprofile` (1,530 samples, 6.24 s): the cost is spread across per-step assembly rather than LU. Self time is `stampG` closure 25.4%, `factorize` 15.4%, `buildCompanionSystem` 12.3%, `buildStep` 11.6%, `attemptStep` 7.3%, `stampC` 5.2% and GC 4.7%. Inclusive, `attemptStep` is 61.7% and `buildCompanionSystem` 38.4%. This is the second target after ordering: per-step re-stamping of a linear circuit, plus spice-ts taking about 2x ngspice's step count. It is listed in #444 as a separate track.
+- **Top bottleneck: sparse LU factorization on the 2-D mesh OP.** In `resistor-mesh-op-10000.cpuprofile` (3,725 samples, 15.48 s), `GilbertPeierlsSolver.factorize` takes 95.7% of self time (14.81 s). Parse, compile, topology lock and stamping together stay under 2%. Source inspection of `packages/core/src/solver/gilbert-peierls.ts` finds threshold row pivoting but no fill-reducing column ordering (AMD/COLAMD). The working hypothesis is fill-in along the grid bandwidth, which matches ngspice Sparse 1.3 behaving similarly while KLU (AMD-ordered) does not. Follow-up: [#444](https://github.com/mfiumara/spice-ts/issues/444).
+- **Per-step assembly on the nonlinear transient.** In `cmos-inverter-chain-tran-10000.cpuprofile` (8,876 samples, 36.60 s), self time is led by `MOSFET.batchStamp` (17.1%), the assembler `stampIndex` position lookup (12.7%), `factorize` (10.8%), the `stampG` closure (9.5%), `buildCompanionSystem` (7.8%), MOSFET `stamp` (7.1%) and `evaluateBulkJunctions` (6.1%). Inclusive, `buildCompanionSystem` is 49.1% and `batchStamp` 35.5%. Here device evaluation and stamping through the `stampIndex` closure cost more than the LU.
+- **RC-ladder transient.** In `rc-ladder-tran-10000.cpuprofile` (2,251 samples, 7.36 s), self time is `stampG` closure 18.9%, the transient result `save` 18.3%, `factorize` 13.2%, `buildStep` 12.7% and `buildCompanionSystem` 9.3%. `save` stores every node's voltage at every output point (10k nodes x 235 points), and the deck asks for only one `.print` node.
 
 The raw JSON and CPU profiles are the evidence of record. Rounded values here are rendered by `scaling-m2-report.mjs` and are summaries only.
