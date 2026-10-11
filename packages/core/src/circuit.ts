@@ -317,6 +317,29 @@ function internalNodeName(deviceName: string, suffix: string): string {
 }
 
 /**
+ * `.model` registry keyed case-insensitively, as in ngspice: `M1 ... PMOS`
+ * must resolve `.model pmos pmos ...`. A miss silently falls back to default
+ * device parameters, so a case mismatch would otherwise change the circuit.
+ */
+class ModelTable extends Map<string, ModelParams> {
+  override get(name: string): ModelParams | undefined {
+    return super.get(name.toUpperCase());
+  }
+
+  override has(name: string): boolean {
+    return super.has(name.toUpperCase());
+  }
+
+  override set(name: string, model: ModelParams): this {
+    return super.set(name.toUpperCase(), model);
+  }
+
+  override delete(name: string): boolean {
+    return super.delete(name.toUpperCase());
+  }
+}
+
+/**
  * Programmatic circuit builder for constructing SPICE circuits without a netlist.
  *
  * Add devices, models, subcircuits, and analysis commands via the `add*` methods,
@@ -337,7 +360,7 @@ export class Circuit {
   private _analyses: AnalysisDirective[] = [];
   private _poleZeroAnalyses: PoleZeroAnalysis[] = [];
   private _steps: StepAnalysis[] = [];
-  private _models = new Map<string, ModelParams>();
+  private _models: Map<string, ModelParams> = new ModelTable();
   private _subcircuits = new Map<string, SubcktDefinition>();
   private _simulationOptions: SimulationOptions = {};
   private _initialConditions: NodeInitialState[] = [];

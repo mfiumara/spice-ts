@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, it, expect } from 'vitest';
 import { simulate } from '../simulate.js';
 
@@ -283,6 +284,43 @@ describe('MOSFET level-1 bulk junction currents (issue #393)', () => {
     for (const [node, expected] of Object.entries(reference)) {
       expect(relativeError(result.dc!.voltage(node), expected)).toBeLessThan(1e-3);
     }
+  });
+});
+
+describe('MOSFET model-name resolution (issue #427)', () => {
+  it('resolves a lower-case .model card from an upper-case instance reference', async () => {
+    // ngspice model names are case-insensitive. Before the fix `PMOS` missed
+    // `.model pmos`, so Mp4 silently became a default NMOS whose bulk-drain
+    // junction was forward biased.
+    const result = await simulate(`
+      .model pmos pmos level=1 vto=-0.7
+      Mp4 6 2 1 1 PMOS W=8e-6 L=600e-9
+      R4 6 0 5.8k
+      VDD 1 0 5
+      VIN 2 0 0
+      .op
+      .end
+    `);
+    // ngspice-47 .op: v(6) = 4.296426
+    expect(result.dc!.voltage('6')).toBeCloseTo(4.296426, 4);
+  });
+
+  it('keeps the corpus-e mos1 inverter supply current at ngspice scale', { timeout: 30_000 }, async () => {
+    const fixture = new URL(
+      '../../../../benchmarks/corpus/corpus-e/fixtures/tests/d_mos1.inv1.ckt',
+      import.meta.url,
+    );
+    const result = await simulate(readFileSync(fixture, 'utf8'));
+
+    // ngspice-47 on the unchanged fixture: .op v(3)=5 v(4)=4.580071
+    // v(6)=4.296426, i(vdd)=-1.19877e-3; TRAN vecmax(abs(i(vdd)))=1.774848e-3.
+    expect(result.dc!.voltage('3')).toBeCloseTo(5, 4);
+    expect(result.dc!.voltage('4')).toBeCloseTo(4.580071, 4);
+    expect(result.dc!.voltage('6')).toBeCloseTo(4.296426, 4);
+    const supply = result.transient!.current('vdd');
+    const peak = supply.reduce((max, value) => Math.max(max, Math.abs(value)), 0);
+    expect(peak).toBeLessThan(1.774848e-3 * 1.05);
+    expect(peak).toBeGreaterThan(1.774848e-3 * 0.95);
   });
 });
 
