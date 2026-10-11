@@ -1,0 +1,89 @@
+Control expression regression probes
+V1 1 0 1
+R1 1 0 1k
+.control
+let c = log(100)
+echo log100 $&c
+let c = log10(100)
+echo log10_100 $&c
+let c = -7%3
+echo mod_negative $&c
+let c = 7.5%2
+echo mod_fraction $&c
+let c = 5.9%2.9
+echo mod_both_fraction $&c
+let c = 7%-3
+echo mod_negative_divisor $&c
+let c = -7.5%-2
+echo mod_both_negative $&c
+let c = 7%4
+echo mod_positive $&c
+let c = not 0 + 1
+echo not_add $&c
+let c = not 1 - 1
+echo not_subtract $&c
+let c = ~0 + 1
+echo tilde_add $&c
+let c = not 0 * 5
+echo not_multiply $&c
+let c = not 1>0
+echo not_gt $&c
+let c = not 0 & 0
+echo not_and $&c
+let c = 2 + not 0
+echo add_not $&c
+let c = not 0 ^ 2
+echo not_power $&c
+let c = - not 0 + 1
+echo minus_not $&c
+let c = not 0<2
+echo not_lt $&c
+let c = not 0 = 0
+echo not_eq_zero $&c
+let c = not 5 = 0
+echo not_eq_five $&c
+let c = not 0 | 0
+echo not_or $&c
+let c = not 0 ? 7 : 9
+echo not_ternary $&c
+let c = not 0 * 0 + 1
+echo not_multiply_add $&c
+let c = 1 + not 0 * 0
+echo add_not_multiply $&c
+let c = 1<not 0 + 1
+echo lt_not_add $&c
+let c = not not 0 + 1
+echo double_not $&c
+let c = not 0 , 1
+echo not_comma $&c
+let c = (not 0) , 1
+let d = imag(c)
+echo parenthesized_not_comma $&c $&d
+let c = 1 + 2 , 3
+let d = imag(c)
+echo add_comma $&c $&d
+let c = 2 , 3 + 1
+let d = imag(c)
+echo comma_add $&c $&d
+let c = - 2 , 3
+let d = imag(c)
+echo minus_comma $&c $&d
+let c = 2 * 2 , 3
+let d = imag(c)
+echo multiply_comma $&c $&d
+let c = 2 , 3 * 2
+let d = imag(c)
+echo comma_multiply $&c $&d
+let c = 1<2 , 3
+echo lt_comma $&c
+let c = mag(3,4)
+echo mag_complex $&c
+define f(x,y) x+y
+let a = f(1+2,3*4)
+let b = mag(3,4)
+let c = real(log(3,4))
+let d = imag(log(3,4))
+echo functions $&a $&b $&c $&d
+quit
+.endc
+.end

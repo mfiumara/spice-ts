@@ -1,0 +1,15 @@
+Control state isolation probe
+V1 1 0 1
+R1 1 0 1k
+.control
+op
+let first = v(1)
+echo first $&first
+alter v1 2
+option gmin=1e-10
+op
+let second = v(1)
+echo second $&second
+quit
+.endc
+.end

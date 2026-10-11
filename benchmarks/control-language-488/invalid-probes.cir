@@ -1,0 +1,12 @@
+Control expression invalid input probes
+V1 1 0 1
+R1 1 0 1k
+.control
+let bad_log = log(-1)
+let bad_ln = ln(-1)
+let bad_log10 = log10(-1)
+let bad_mod = 5 % 0.5
+let bad_not = !0 + 1
+quit
+.endc
+.end

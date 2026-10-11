@@ -18,12 +18,17 @@ import {
   parseTxlLine,
 } from './transmission-line-parser.js';
 import { preprocess, preprocessLines } from './preprocessor.js';
-import { classifyControlCommand, repeatedControlAnalysisError } from './control-block.js';
+import { lowerControlScript } from './control-block.js';
+import { extractControlBlocks, type ControlSourceBlock, type ControlSourceLine } from './control/source.js';
+import {
+  CONTROL_ANALYSIS_COMMANDS, commandName, parseControlScript, type ControlScript, type ControlStatement,
+} from './control/script.js';
+import { UnsupportedControlCommandError } from './control/errors.js';
 import { parseBehavioralSourceCard } from './behavioral-expression.js';
 import { parseZInstance } from './z-device-parser.js';
 import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
-import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
+import type { AnalysisDirective, IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 export { parseSourceWaveform } from './waveform-parser.js';
@@ -75,8 +80,13 @@ function parseNetlist(
   netlist: string,
   firstLineIsTitle: boolean,
   guard?: ProtocolExecutionGuard,
+  extractedBlocks: ControlSourceBlock[] = [],
 ): Circuit {
-  const lines = tokenizeNetlist(netlist, { firstLineIsTitle });
+  // ngspice control-language lines are not netlist cards; read them from the raw text.
+  const extracted = extractControlBlocks(netlist, firstLineIsTitle);
+  const controlBlocks = [...extractedBlocks, ...extracted.blocks];
+  const controlStartLine = controlBlocks[0]?.startLine;
+  const lines = tokenizeNetlist(extracted.netlist, { firstLineIsTitle });
   const circuit = new Circuit();
 
   let subcktCollector: { name: string; ports: string[]; params: Record<string, number>; body: string[]; depth: number } | null = null;
@@ -85,13 +95,16 @@ function parseNetlist(
   let hasSensitivityAnalysis = false;
   let hasDistortionAnalysis = false;
   let hasStepAnalysis = false;
-  let controlStart: { lineNumber: number; raw: string } | null = null;
-  const controlAnalyses: { type: string; lineNumber: number; raw: string }[] = [];
+  // Index in circuit.analyses where the control block sits among the dot cards.
+  let controlAnalysisIndex: number | undefined;
 
   for (const { tokens, lineNumber, raw } of lines) {
     guard?.checkpoint('parse:line');
     if (tokens.length === 0) continue;
     const first = tokens[0].toUpperCase();
+    if (controlAnalysisIndex === undefined && controlStartLine !== undefined && lineNumber > controlStartLine) {
+      controlAnalysisIndex = circuit.analyses.length;
+    }
 
     try {
       // Inside a .subckt — collect raw lines until .ends
@@ -122,36 +135,6 @@ function parseNetlist(
           subcktCollector.body.push(raw);
         }
         continue;
-      }
-
-      // Inside a .control block — ngspice control language, not netlist cards
-      if (controlStart !== null) {
-        if (first === '.ENDC') {
-          requireNoDirectiveArguments(tokens, lineNumber, raw);
-          controlStart = null;
-        } else if (first === '.CONTROL') {
-          throw new ParseError("Nested '.control' blocks are not supported", lineNumber, raw);
-        } else {
-          const command = classifyControlCommand(tokens, lineNumber, raw);
-          if (command.kind === 'analysis') {
-            if (circuit.analyses.some(analysis => analysis.type === command.analysisType)) {
-              throw repeatedControlAnalysisError(command.analysisType, lineNumber, raw);
-            }
-            parseDotCommand(circuit, command.dotCardTokens, lineNumber, raw);
-            controlAnalyses.push({ type: command.analysisType, lineNumber, raw });
-          }
-        }
-        continue;
-      }
-
-      if (first === '.CONTROL') {
-        requireNoDirectiveArguments(tokens, lineNumber, raw);
-        controlStart = { lineNumber, raw };
-        continue;
-      }
-
-      if (first === '.ENDC') {
-        throw new ParseError("'.endc' without a matching '.control'", lineNumber, raw);
       }
 
       if (first === '.SUBCKT') {
@@ -224,31 +207,100 @@ function parseNetlist(
     }
   }
 
-  if (controlStart !== null) {
-    throw new ParseError(
-      "Unterminated .control block: missing '.endc'",
-      controlStart.lineNumber,
-      controlStart.raw,
-    );
-  }
-
-  // A dot card after the block can still repeat a type a control command requested.
-  for (const { type, lineNumber, raw } of controlAnalyses) {
-    if (circuit.analyses.filter(analysis => analysis.type === type).length > 1) {
-      throw repeatedControlAnalysisError(type, lineNumber, raw);
-    }
+  if (controlBlocks.length > 0) {
+    attachControlScript(circuit, parseControlScript(controlBlocks), controlAnalysisIndex, hasStepAnalysis);
   }
 
   return circuit;
 }
 
-function requireNoDirectiveArguments(tokens: string[], lineNumber: number, context: string): void {
-  if (tokens.length > 1) {
-    throw new ParseError(
-      `Unsupported ${tokens[0].toLowerCase()} arguments: '${tokens.slice(1).join(' ')}'`,
-      lineNumber,
-      context,
+/**
+ * Lower a straight-line control script onto the circuit's analyses (#489), or
+ * attach it for the interpreter after checking its literal analysis commands.
+ */
+function attachControlScript(
+  circuit: Circuit,
+  script: ControlScript,
+  insertionIndex: number | undefined,
+  hasStepAnalysis: boolean,
+): void {
+  const dotTypes = new Set(circuit.analyses.map(analysis => analysis.type as string));
+  const lowered = lowerControlScript(script, dotTypes);
+  if (lowered !== null) {
+    const dotAnalyses = circuit.analyses.splice(0);
+    for (const { dotCardTokens, lineNumber, context } of lowered) {
+      parseAnalysisCard(circuit, dotCardTokens, lineNumber, context);
+    }
+    const controlAnalyses = circuit.analyses.splice(0);
+    const index = insertionIndex ?? dotAnalyses.length;
+    circuit.analyses.push(...dotAnalyses.slice(0, index), ...controlAnalyses, ...dotAnalyses.slice(index));
+    return;
+  }
+  const first = script.statements[0]?.line;
+  if (hasStepAnalysis && first) {
+    throw new UnsupportedControlCommandError(
+      commandName(first.text),
+      'an interpreted .control script cannot be combined with .step',
+      first.lineNumber,
+      first.text,
     );
+  }
+  forEachControlCommand(script.statements, (name, line) => {
+    if (!CONTROL_ANALYSIS_COMMANDS.has(name) || /[$`{]/.test(line.text)) return;
+    const tokens = tokenizeNetlist(line.text)[0]?.tokens ?? [];
+    parseControlAnalysisCard([`.${name.toUpperCase()}`, ...tokens.slice(1)], line.lineNumber, line.text);
+  });
+  circuit.setControlScript(script);
+}
+
+function forEachControlCommand(
+  statements: ControlStatement[],
+  visit: (name: string, line: ControlSourceLine) => void,
+): void {
+  for (const statement of statements) {
+    switch (statement.kind) {
+      case 'command': visit(statement.name, statement.line); break;
+      case 'if':
+        forEachControlCommand(statement.then, visit);
+        forEachControlCommand(statement.otherwise, visit);
+        break;
+      case 'while': case 'dowhile': case 'repeat': case 'foreach':
+        forEachControlCommand(statement.body, visit);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+function parseAnalysisCard(circuit: Circuit, tokens: string[], lineNumber: number, context: string): void {
+  try {
+    parseDotCommand(circuit, tokens, lineNumber, context);
+  } catch (e) {
+    if (e instanceof ParseError) throw e;
+    throw new ParseError((e as Error).message, lineNumber, context);
+  }
+}
+
+/**
+ * @internal Parse an analysis given as dot-card tokens (`['.TRAN', '1n', '1u']`)
+ * for the control-language interpreter.
+ */
+export function parseControlAnalysisCard(tokens: string[], lineNumber: number, context: string): AnalysisDirective {
+  const scratch = new Circuit();
+  parseAnalysisCard(scratch, tokens, lineNumber, context);
+  const analysis = scratch.analyses[0];
+  if (!analysis) throw new ParseError(`'${tokens[0].toLowerCase()}' did not define an analysis`, lineNumber, context);
+  return analysis;
+}
+
+/** @internal Parse `.options` tokens for the control-language `option`/`set` commands. */
+export function parseControlOptions(tokens: string[], lineNumber: number, context: string): SimulationOptions {
+  try {
+    return parseSimulationOptions(tokens, lineNumber, context);
+  } catch (e) {
+    if (e instanceof ParseError) throw e;
+    throw new ParseError((e as Error).message, lineNumber, context);
   }
 }
 
@@ -277,9 +329,12 @@ export async function parseAsync(
   const newline = netlist.indexOf('\n');
   const title = newline < 0 ? netlist : netlist.slice(0, newline);
   const body = newline < 0 ? '' : netlist.slice(newline + 1);
+  // Control blocks are taken out before .param preprocessing, which would
+  // read their `{$var}` references as numparam expressions.
   // The body starts on line 2 of the caller's netlist (after the title).
-  const preprocessed = await preprocessLines(body, resolver, undefined, 1);
-  return parse(`${title}\n${preprocessed}`);
+  const control = extractControlBlocks(body, false, 1);
+  const preprocessed = await preprocessLines(control.netlist, resolver, undefined, 1);
+  return parseNetlist(`${title}\n${preprocessed}`, true, undefined, control.blocks);
 }
 
 /** Parse and preprocess a title-less SPICE fragment. */
@@ -288,8 +343,9 @@ export async function parseTitlelessAsync(
   resolver?: IncludeResolver,
   guard?: ProtocolExecutionGuard,
 ): Promise<Circuit> {
-  const preprocessed = await preprocess(netlist, resolver, guard);
-  return parseNetlist(preprocessed, false, guard);
+  const control = extractControlBlocks(netlist, false);
+  const preprocessed = await preprocess(control.netlist, resolver, guard);
+  return parseNetlist(preprocessed, false, guard, control.blocks);
 }
 
 const OUTPUT_ONLY_OPTION_FLAGS = new Set([
