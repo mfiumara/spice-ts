@@ -58,12 +58,22 @@ describe('pulseBreakpoints', () => {
     expect(pulseBreakpoints(p, 1e-6)).toEqual([]);
   });
 
-  it('returns empty for invalid period (defensive)', () => {
+  it('treats PER <= 0 as one pulse, as evaluatePulse and ngspice (TPER = TSTOP) do', () => {
     const p: PulseSource = {
       type: 'pulse', v1: 0, v2: 5, delay: 0,
       rise: 100e-9, fall: 100e-9, width: 4.8e-6, period: 0,
     };
-    expect(pulseBreakpoints(p, 1e-3)).toEqual([]);
+    expect(pulseBreakpoints(p, 1e-3)).toEqual([0, 100e-9, 100e-9 + 4.8e-6, 100e-9 + 4.8e-6 + 100e-9]);
+  });
+
+  it('keeps the corners of a PULSE with PER omitted (period Infinity, #469)', () => {
+    // corpus-e d_bjt-rtlinv.ckt: pulse(0 5 2ns 2ns 2ns 80ns), .tran 5ns 200ns.
+    // 0 * Infinity is NaN, which used to drop every corner.
+    const p: PulseSource = {
+      type: 'pulse', v1: 0, v2: 5, delay: 2e-9,
+      rise: 2e-9, fall: 2e-9, width: 80e-9, period: Infinity,
+    };
+    expect(pulseBreakpoints(p, 200e-9)).toEqual([2e-9, 2e-9 + 2e-9, 2e-9 + 2e-9 + 80e-9, 2e-9 + 2e-9 + 80e-9 + 2e-9]);
   });
 });
 

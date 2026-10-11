@@ -1086,6 +1086,7 @@ export class Circuit {
       ['maxTransientIterations', 'itl4', String],
       ['integrationMethod', 'method', value => value === 'trapezoidal' ? 'trap' : value === 'gear2' ? 'gear' : String(value)],
       ['trtol', 'trtol', String],
+      ['chgtol', 'chgtol', String],
     ];
     const serializedOptions = optionNames.flatMap(([key, name, format]) => {
       const value = this._simulationOptions[key];

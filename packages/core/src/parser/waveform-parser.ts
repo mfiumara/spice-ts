@@ -64,7 +64,9 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
       ...(dc !== undefined ? { dc } : {}),
       ...(ac ? { ac } : {}),
       type: 'pulse', v1: args[0] ?? 0, v2: args[1] ?? 0,
-      delay: args[2] ?? 0, rise: args[3] ?? 1e-12, fall: args[4] ?? 1e-12,
+      // ngspice vsrcload.c: an omitted TR/TF defaults like an explicit 0, to
+      // TSTEP in transient analysis (see effectivePulse).
+      delay: args[2] ?? 0, rise: args[3] ?? 0, fall: args[4] ?? 0,
       width: args[5] ?? Infinity, period: args[6] ?? Infinity,
     } satisfies PulseSource;
   }

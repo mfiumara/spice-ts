@@ -691,6 +691,7 @@ function parseSimulationOptions(
       itl1: 'maxIterations',
       itl4: 'maxTransientIterations',
       trtol: 'trtol',
+      chgtol: 'chgtol',
     };
     const target = mappings[name];
     if (!target) throw new ParseError(`Unsupported .options field: '${name}'`, lineNumber, context);
