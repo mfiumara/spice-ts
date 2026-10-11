@@ -3,7 +3,7 @@
   "source": {
     "revision": "3ef069fb1f04177a153f342a32d941fc20ff047e",
     "license": "BSD-3-Clause",
-    "manifestSha256": "7e921f59eb5721aeab06c8b3bc74e7160e5191085c23613ac5333b058153e740"
+    "manifestSha256": "c3b01fcf52824c949452e10a3e6e14cd3e35d31e3890dd3ac23806781ab3b05f"
   },
   "tools": {
     "ngspice": "ngspice-47",
@@ -36,22 +36,22 @@
     ]
   },
   "totals": {
-    "fixtures": 337,
+    "fixtures": 336,
     "ngspice": {
-      "success": 307,
+      "success": 306,
       "failed": 18,
       "unsupported": 12
     },
     "spiceTs": {
-      "success": 18,
-      "failed": 5,
-      "unsupported": 314
+      "success": 32,
+      "failed": 8,
+      "unsupported": 296
     },
     "outcomes": {
-      "matched": 8,
+      "matched": 11,
       "mismatch": 10,
-      "not-compared": 0,
-      "spice-ts-loss": 289,
+      "not-compared": 11,
+      "spice-ts-loss": 274,
       "ngspice-failed": 0,
       "both-failed": 30
     }
@@ -59,10 +59,11 @@
   "gapBuckets": [
     {
       "bucket": "device: XSPICE A-element code models",
-      "fixtures": 65,
-      "ngspiceSuccess": 53,
+      "fixtures": 72,
+      "ngspiceSuccess": 60,
       "ids": [
         "examples-digital-auto-bridge-shared-line-cir",
+        "examples-digital-auto-bridge-vcc-cir",
         "examples-digital-digital-devices-xspice-c4-cir",
         "examples-noise-resdiv-gain-cir",
         "examples-numparam-strings-cir",
@@ -97,8 +98,13 @@
         "examples-xspice-original-examples-bad-param-deck",
         "examples-xspice-original-examples-digital-invert-deck",
         "examples-xspice-original-examples-digital-models-deck",
+        "examples-xspice-original-examples-digital-models1-deck",
+        "examples-xspice-original-examples-digital-models2-deck",
+        "examples-xspice-original-examples-digital-models3-deck",
+        "examples-xspice-original-examples-digital-models4-deck",
         "examples-xspice-original-examples-dot-model-ref-deck",
         "examples-xspice-original-examples-hybrid-models1-dc-deck",
+        "examples-xspice-original-examples-hybrid-models1-transient-deck",
         "examples-xspice-original-examples-initial-conditions-deck",
         "examples-xspice-original-examples-io-ordering-deck",
         "examples-xspice-original-examples-io-types-deck",
@@ -119,6 +125,7 @@
         "examples-xspice-transmission-lines-cpline-tran-cir",
         "examples-xspice-transmission-lines-mlin-tran-cir",
         "examples-xspice-transmission-lines-mlin-cir",
+        "examples-xspice-various-analog-models1-transient-sp",
         "examples-xspice-various-astate-pulse-cir",
         "examples-xspice-various-astate-cir",
         "examples-xspice-various-pwlts1-cir",
@@ -132,22 +139,27 @@
     },
     {
       "bucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)",
-      "fixtures": 47,
-      "ngspiceSuccess": 45,
+      "fixtures": 56,
+      "ngspiceSuccess": 52,
       "ids": [
         "examples-control-structs-foreach-bjt-ft-sp",
         "examples-control-structs-if-batchmode-cir",
         "examples-control-structs-if-test-1-cir",
+        "examples-control-structs-new-check-3-sp",
+        "examples-control-structs-new-check-4-sp",
         "examples-control-structs-s-param-cir",
         "examples-measure-mos-meas-dc-control-file-sp",
+        "examples-measure-mos-meas-dc-control-sp",
         "examples-monte-carlo-mc-ring-sp",
         "examples-monte-carlo-montecarlo-sp",
         "examples-mos-ro-17-4-cir",
         "examples-noise-baker-252-gain-cir",
         "examples-p-to-n-examples-switch-oscillators-cir",
-        "examples-probe-cntrl-sources-cir",
-        "examples-probe-mos-test-cir",
         "examples-rf-hbosc-examples-hb-osc-cir",
+        "examples-rf-pss-colpitt-osc-pss-ctrl-cir",
+        "examples-rf-pss-compl-cross-quad-osc-pss-ctrl-cir",
+        "examples-rf-pss-ring-osc-pss-ctrl-cir",
+        "examples-rf-pss-vackar-osc-pss-ctrl-cir",
         "examples-tclspice-tcl-testbench2-example-cir",
         "examples-transient-noise-shot-ng-cir",
         "examples-transmissionlines-ltra1-4-line-sp",
@@ -155,24 +167,28 @@
         "examples-various-atanh-sp",
         "examples-various-bjt-ac-par-sp",
         "examples-various-bjtnoise-cir",
+        "examples-various-cutout1-cir",
         "examples-various-diode-ac-par-sp",
+        "examples-various-gain-stage-cir",
         "examples-various-param-sweep-cir",
-        "examples-various-transformers1-cir",
         "examples-vdmos-100w-wingspread-sp",
+        "examples-vdmos-100w-sp",
         "examples-vdmos-ixtp6n100d2-cap-sp",
         "examples-vdmos-mtriode-nch-sp",
-        "examples-vdmos-ro-11-vdmos-sp",
         "examples-vdmos-theta-nch-sp",
         "examples-vdmos-vdmos-dio-sp",
+        "examples-xspice-d-lut-mult4bit-spi",
         "examples-xspice-various-vswitch-test-lin-cir",
         "examples-xspice-various-vswitch-test-log-cir",
         "tests-regression-func-func-1-cir",
         "tests-regression-lib-processing-scope-1-cir",
         "tests-regression-lib-processing-scope-2-cir",
         "tests-regression-lib-processing-scope-3-cir",
+        "tests-regression-misc-alter-vec-cir",
         "tests-regression-misc-bugs-1-cir",
         "tests-regression-misc-bugs-2-cir",
         "tests-regression-model-binning-1-cir",
+        "tests-regression-model-special-names-1-cir",
         "tests-regression-parser-bxpressn-1-cir",
         "tests-regression-parser-xpressn-1-cir",
         "tests-regression-parser-xpressn-3-cir",
@@ -186,84 +202,70 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/488"
     },
     {
-      "bucket": "control: analysis commands inside .control (tran/dc/op/ac/...)",
-      "fixtures": 37,
-      "ngspiceSuccess": 35,
+      "bucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)",
+      "fixtures": 27,
+      "ngspiceSuccess": 27,
       "ids": [
-        "examples-control-structs-new-check-3-sp",
-        "examples-control-structs-new-check-4-sp",
-        "examples-digital-auto-bridge-vcc-cir",
-        "examples-measure-mos-meas-dc-control-sp",
-        "examples-osdi-hicuml0-bip-subsmod-sp",
-        "examples-osdi-hicuml0-dff-y-ecl-vbic-sp",
-        "examples-osdi-hicuml0-vbic-out-sp",
-        "examples-p-to-n-examples-mos1-out-cir",
-        "examples-probe-probe-i-dev-cir",
-        "examples-rf-pss-colpitt-osc-pss-ctrl-cir",
-        "examples-rf-pss-compl-cross-quad-osc-pss-ctrl-cir",
-        "examples-rf-pss-ring-osc-pss-ctrl-cir",
-        "examples-rf-pss-vackar-osc-pss-ctrl-cir",
-        "examples-transmissionlines-cpl4-txl-2-line-sp",
-        "examples-transmissionlines-ltra1-1-line-sp",
-        "examples-transmissionlines-ltra2-2-line-sp",
-        "examples-transmissionlines-ltra3-2-line-sp",
-        "examples-transmissionlines-ltra4-1-line-sp",
-        "examples-transmissionlines-ltra5-1-line-sp",
-        "examples-transmissionlines-ltra6-2-line-sp",
-        "examples-transmissionlines-urc-tm-sub-cir",
-        "examples-various-cutout1-cir",
-        "examples-various-gain-stage-cir",
-        "examples-vbic-dff-y-ecl-sp",
-        "examples-vbic-vbic99-tran-sp",
-        "examples-vdmos-100w-sp",
-        "examples-vdmos-crss-coss-ciss-sp",
-        "examples-vdmos-inv-vdmos-sp",
-        "examples-vdmos-ixth80n20l-ixth48p20p-quasisat-sp",
-        "examples-vdmos-ixtp6n100d2-n-weak-inv-sp",
-        "examples-vdmos-self-heating-sp",
-        "examples-xspice-d-lut-mult4bit-spi",
-        "examples-xspice-various-analog-models1-transient-sp",
-        "examples-xspice-various-simple-diode-cir",
-        "tests-regression-misc-alter-vec-cir",
-        "tests-regression-misc-empty-1-cir",
-        "tests-regression-model-special-names-1-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/489"
-    },
-    {
-      "bucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)",
-      "fixtures": 22,
-      "ngspiceSuccess": 20,
-      "ids": [
-        "examples-cider-bjt-astable-cir",
         "examples-cider-bjt-colposc-cir",
         "examples-cider-bjt-ecp-cir",
         "examples-cider-bjt-invchain-cir",
         "examples-cider-bjt-meclgate-cir",
-        "examples-cider-bjt-rtlinv-cir",
         "examples-cider-bjt-vco-cir",
-        "examples-cider-jfet-jfet-cir",
-        "examples-cider-serial-astable-cir",
+        "examples-cider-diode-diode-cir",
+        "examples-cider-diode-diotran-cir",
+        "examples-cider-mos-bootinv-cir",
+        "examples-cider-mos-cmosinv-cir",
+        "examples-cider-mos-nmosinv-cir",
+        "examples-cider-mos-ringosc-cir",
+        "examples-cider-parallel-ringosc-2u-cir",
+        "examples-cider-resistor-gaasres-cir",
+        "examples-cider-resistor-sires-cir",
         "examples-cider-serial-colposc-cir",
+        "examples-cider-serial-dbridge-cir",
         "examples-cider-serial-invchain-cir",
         "examples-cider-serial-meclgate-cir",
+        "examples-cider-serial-nmosinv-cir",
         "examples-cider-serial-pullup-cir",
-        "examples-cider-serial-rtlinv-cir",
         "examples-cider-serial-vco-cir",
+        "examples-cider-surfmob-cd4007n-200402idvg-net",
+        "examples-cider-surfmob-cdxy-net",
+        "examples-cider-surfmob-tbicmpd1-cir",
+        "examples-cider-surfmob-tbicmpd1xy-cir",
         "examples-cider-surfmob-tbicmpu1-cir",
-        "examples-cider-surfmob-tbicmpu1xy-cir",
-        "examples-soa-diode-soa-sh-cir",
-        "examples-vbic-vbic99-dc-sp",
-        "tests-vbic-diffamp-cir",
-        "tests-vbic-fg-cir",
-        "tests-vbic-noise-scale-test-cir"
+        "examples-cider-surfmob-tbicmpu1xy-cir"
       ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/490"
+      "issue": "https://github.com/mfiumara/spice-ts/issues/497"
+    },
+    {
+      "bucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)",
+      "fixtures": 18,
+      "ngspiceSuccess": 18,
+      "ids": [
+        "examples-cider-bjt-astable-cir",
+        "examples-cider-bjt-rtlinv-cir",
+        "examples-cider-jfet-jfet-cir",
+        "examples-cider-mos-charge-cir",
+        "examples-cider-mos-pass-cir",
+        "examples-cider-serial-astable-cir",
+        "examples-cider-serial-charge-cir",
+        "examples-cider-serial-pass-cir",
+        "examples-cider-serial-recovery-cir",
+        "examples-cider-serial-rtlinv-cir",
+        "examples-digital-compare-adder-bip-cir",
+        "examples-digital-compare-adder-mos-cir",
+        "examples-monte-carlo-rand-numb-test-cir",
+        "examples-mos-adder-mos-cir",
+        "examples-plot-inv-chain-pyplot-cir",
+        "examples-vdmos-soa-chk-sp",
+        "examples-xspice-original-examples-supply-ramping-deck",
+        "examples-xspice-various-ro-nand-digi-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/494"
     },
     {
       "bucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)",
-      "fixtures": 15,
-      "ngspiceSuccess": 15,
+      "fixtures": 16,
+      "ngspiceSuccess": 16,
       "ids": [
         "examples-transmissionlines-cpl-ibm1-sp",
         "examples-transmissionlines-cpl-ibm1a-sp",
@@ -272,6 +274,7 @@
         "examples-transmissionlines-cpl1-4-line-sp",
         "examples-transmissionlines-cpl2-2-line-sp",
         "examples-transmissionlines-cpl3-4-line-sp",
+        "examples-transmissionlines-cpl4-txl-2-line-sp",
         "examples-transmissionlines-txl1-1-line-sp",
         "examples-transmissionlines-txl2-3-line-sp",
         "examples-transmissionlines-txl3-1-line-sp",
@@ -282,28 +285,6 @@
         "tests-transmission-txl2-3-line-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/491"
-    },
-    {
-      "bucket": "source: parenthesised and extended waveform syntax",
-      "fixtures": 14,
-      "ngspiceSuccess": 14,
-      "ids": [
-        "examples-cider-diode-diode-cir",
-        "examples-cider-diode-diotran-cir",
-        "examples-cider-diode-pd1-cir",
-        "examples-cider-diode-pindiode-cir",
-        "examples-cider-mos-bootinv-cir",
-        "examples-cider-serial-recovery-cir",
-        "examples-cider-surfmob-tbicmpd1-cir",
-        "examples-cider-surfmob-tbicmpd1xy-cir",
-        "examples-xspice-original-examples-arbitrary-phase-deck",
-        "examples-xspice-original-examples-digital-models1-deck",
-        "examples-xspice-original-examples-digital-models2-deck",
-        "examples-xspice-original-examples-digital-models3-deck",
-        "examples-xspice-original-examples-digital-models4-deck",
-        "examples-xspice-original-examples-hybrid-models1-transient-deck"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/492"
     },
     {
       "bucket": "expression: quoted/brace expressions in values (TEMPER, functions)",
@@ -325,26 +306,6 @@
         "tests-regression-temper-temper-3-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/493"
-    },
-    {
-      "bucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)",
-      "fixtures": 12,
-      "ngspiceSuccess": 12,
-      "ids": [
-        "examples-cider-mos-charge-cir",
-        "examples-cider-mos-pass-cir",
-        "examples-cider-serial-charge-cir",
-        "examples-cider-serial-pass-cir",
-        "examples-digital-compare-adder-bip-cir",
-        "examples-digital-compare-adder-mos-cir",
-        "examples-monte-carlo-rand-numb-test-cir",
-        "examples-mos-adder-mos-cir",
-        "examples-plot-inv-chain-pyplot-cir",
-        "examples-vdmos-soa-chk-sp",
-        "examples-xspice-original-examples-supply-ramping-deck",
-        "examples-xspice-various-ro-nand-digi-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/494"
     },
     {
       "bucket": "expression: B-source V= and expression functions/operators",
@@ -385,24 +346,6 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/496"
     },
     {
-      "bucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)",
-      "fixtures": 10,
-      "ngspiceSuccess": 10,
-      "ids": [
-        "examples-cider-mos-cmosinv-cir",
-        "examples-cider-mos-nmosinv-cir",
-        "examples-cider-mos-ringosc-cir",
-        "examples-cider-parallel-ringosc-2u-cir",
-        "examples-cider-resistor-gaasres-cir",
-        "examples-cider-resistor-sires-cir",
-        "examples-cider-serial-dbridge-cir",
-        "examples-cider-serial-nmosinv-cir",
-        "examples-cider-surfmob-cd4007n-200402idvg-net",
-        "examples-cider-surfmob-cdxy-net"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/497"
-    },
-    {
       "bucket": "device: R-card forms (r=, ac=, noisy=, resistor models)",
       "fixtures": 9,
       "ngspiceSuccess": 9,
@@ -420,6 +363,38 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/498"
     },
     {
+      "bucket": "directive: .temp / .options temp",
+      "fixtures": 8,
+      "ngspiceSuccess": 7,
+      "ids": [
+        "examples-mos-nmos-out-bsim330-plainwrite-sp",
+        "examples-mos-nmos-pmos-drainresistor-sp",
+        "examples-mos-nmos-pmos-plotting-sp",
+        "examples-soa-diode-soa-simple-cir",
+        "examples-vbic-vbic99-dc-sp",
+        "tests-regression-misc-resume-1-cir",
+        "tests-regression-misc-test-noise-2-cir",
+        "tests-regression-misc-test-noise-3-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/459"
+    },
+    {
+      "bucket": "parse: other unsupported syntax",
+      "fixtures": 8,
+      "ngspiceSuccess": 8,
+      "ids": [
+        "examples-osdi-hicuml0-dff-y-ecl-vbic-sp",
+        "examples-osdi-hicuml0-vbic-out-sp",
+        "examples-probe-cntrl-sources-cir",
+        "examples-soa-diode-soa-sh-cir",
+        "examples-vbic-dff-y-ecl-sp",
+        "examples-vdmos-ixtp6n100d2-n-weak-inv-sp",
+        "examples-vdmos-self-heating-sp",
+        "tests-vbic-noise-scale-test-cir"
+      ],
+      "issue": null
+    },
+    {
       "bucket": "source: RF port sources (portnum/z0)",
       "fixtures": 8,
       "ngspiceSuccess": 8,
@@ -434,21 +409,6 @@
         "examples-xspice-transmission-lines-cpmline-ac-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/499"
-    },
-    {
-      "bucket": "directive: .temp / .options temp",
-      "fixtures": 7,
-      "ngspiceSuccess": 6,
-      "ids": [
-        "examples-mos-nmos-out-bsim330-plainwrite-sp",
-        "examples-mos-nmos-pmos-drainresistor-sp",
-        "examples-mos-nmos-pmos-plotting-sp",
-        "examples-soa-diode-soa-simple-cir",
-        "tests-regression-misc-resume-1-cir",
-        "tests-regression-misc-test-noise-2-cir",
-        "tests-regression-misc-test-noise-3-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/459"
     },
     {
       "bucket": "model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card)",
@@ -477,6 +437,18 @@
         "examples-various-mtimeavg-test-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/501"
+    },
+    {
+      "bucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)",
+      "fixtures": 4,
+      "ngspiceSuccess": 2,
+      "ids": [
+        "examples-cider-diode-pd1-cir",
+        "examples-cider-diode-pindiode-cir",
+        "tests-vbic-diffamp-cir",
+        "tests-vbic-fg-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/490"
     },
     {
       "bucket": "directive: .global",
@@ -525,6 +497,17 @@
       "issue": null
     },
     {
+      "bucket": "convergence",
+      "fixtures": 3,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "examples-vdmos-crss-coss-ciss-sp",
+        "tests-mesa-mesa-12-cir",
+        "tests-mesa-mesa12-cir"
+      ],
+      "issue": null
+    },
+    {
       "bucket": "directive: .measure",
       "fixtures": 3,
       "ngspiceSuccess": 3,
@@ -547,16 +530,6 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/506"
     },
     {
-      "bucket": "convergence",
-      "fixtures": 2,
-      "ngspiceSuccess": 0,
-      "ids": [
-        "tests-mesa-mesa-12-cir",
-        "tests-mesa-mesa12-cir"
-      ],
-      "issue": null
-    },
-    {
       "bucket": "device: S/W-element switches",
       "fixtures": 2,
       "ngspiceSuccess": 2,
@@ -565,6 +538,34 @@
         "examples-transient-noise-noi-sc-tr-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/507"
+    },
+    {
+      "bucket": "execution: other failure",
+      "fixtures": 2,
+      "ngspiceSuccess": 2,
+      "ids": [
+        "examples-vbic-vbic99-tran-sp",
+        "tests-regression-misc-empty-1-cir"
+      ],
+      "issue": null
+    },
+    {
+      "bucket": "device: K-element",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "examples-various-transformers1-cir"
+      ],
+      "issue": null
+    },
+    {
+      "bucket": "device: U-element",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "examples-transmissionlines-urc-tm-sub-cir"
+      ],
+      "issue": null
     },
     {
       "bucket": "model: string-valued model parameters (MFG= and similar)",
@@ -604,14 +605,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: Unsupported BJT Q-card form: 'q1 1 3 0 qmod area=100p' q1 1 3 0 qmod area=100p"
+        "firstErrorLine": "Parse error at line 14: Unsupported .options field: 'bypass' .option acct bypass=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-bjt-colposc-cir",
@@ -631,14 +632,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: Unsupported BJT Q-card form: 'q1 2 1 3 qmod area=100p' q1 2 1 3 qmod area=100p"
+        "firstErrorLine": "Parse error at line 16: Cannot parse number: 'sg' .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-bjt-ecp-cir",
@@ -658,14 +659,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: Unsupported BJT Q-card form: 'Q1 11 12 13 M_NPN AREA=8' Q1 11 12 13 M_NPN AREA=8"
+        "firstErrorLine": "Parse error at line 14: Cannot parse number: 'direct' .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since, we are only simulating half of a device, we double the unit width * 1.0 um emitt"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-bjt-invchain-cir",
@@ -685,14 +686,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: Unsupported BJT Q-card form: 'q1 3 2 0 qmod area=100p' q1 3 2 0 qmod area=100p"
+        "firstErrorLine": "Parse error at line 21: Cannot parse number: 'sg' .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-bjt-meclgate-cir",
@@ -712,14 +713,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: Unsupported BJT Q-card form: 'q1 4 2 6 qmod area=100p' q1 4 2 6 qmod area=100p"
+        "firstErrorLine": "Parse error at line 52: Cannot parse number: 'sg' .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node=10 loc=0.9 x.mesh node=20 loc=1.1 x.mesh node=30 loc=1.4 x.mesh node=40 loc=1.6 x.mesh node=61 loc=3.0 region num=1 material=1 mate"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-bjt-rtlinv-cir",
@@ -741,14 +742,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: Unsupported BJT Q-card form: 'q1 3 2 0 qmod area=100p' q1 3 2 0 qmod area=100p"
+        "firstErrorLine": "Parse error at line 9: Unsupported .options field: 'bypass' .option acct bypass=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-bjt-vco-cir",
@@ -768,14 +769,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: Unsupported BJT Q-card form: 'q5 7 7 5 qmod area=100p' q5 7 7 5 qmod area=100p"
+        "firstErrorLine": "Parse error at line 26: Cannot parse number: 'sg' .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node=61 loc=3.0 region num=1 material=1 material num=1 silicon nbgnn=1e17 nbgnp=1e17 mobility material=1 concmod=sg fieldmod=sg mobility"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-diode-diode-cir",
@@ -799,14 +800,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: Cannot parse number: ')' Vpp 1 0 0.7v (PWL 0ns 3.0v 0.01ns -6.0v) (AC 1v)"
+        "firstErrorLine": "Parse error at line 13: Cannot parse number: 'ct' .model M_PN numd level=1 *************************************** *** One-Dimensional Numerical Diode *** *************************************** options defa=1p x.mesh loc=0.0 n=1 x.mesh loc"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-diode-diotran-cir",
@@ -826,14 +827,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: Cannot parse number: ')' Vpp 1 0 0.7v (PWL 0ns 3.0v 0.1ns 3.0v 0.11ns -6.0v) (AC 1v)"
+        "firstErrorLine": "Parse error at line 11: Cannot parse number: 'ct' .MODEL M_PN numd level=1 *************************************** *** One-Dimensional Numerical Diode *** *************************************** options defa=1p x.mesh loc=0.0 n=1 x.mesh loc"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-diode-pd1-cir",
@@ -853,14 +854,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 3: Cannot parse number: ')' VIN 1 0 0.0v (PWL 0ns 0.8v 1ns -50.0v)"
+        "firstErrorLine": "Parse error at line 6: Unsupported diode parameter: 'save' D1 3 0 M_PIN AREA=200 save"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
     },
     {
       "id": "examples-cider-diode-pindiode-cir",
@@ -880,14 +881,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 3: Cannot parse number: ')' VIN 1 0 0.0v (PWL 0ns 0.8v 1ns -50.0v)"
+        "firstErrorLine": "Parse error at line 6: Unsupported diode parameter: 'IC.FILE=\"Pre-Pin-Diode-OP.0.d1\"' D1 3 0 M_PIN AREA=200 IC.FILE=\"Pre-Pin-Diode-OP.0.d1\""
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
     },
     {
       "id": "examples-cider-jfet-jfet-cir",
@@ -907,14 +908,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: Unsupported BJT Q-card form: 'QJ1 1 2 3 M_NJF AREA=1' QJ1 1 2 3 M_NJF AREA=1"
+        "firstErrorLine": "Parse error at line 30: Unsupported .options field: 'bypass' .option acct bypass=1 temp=27"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-mos-bootinv-cir",
@@ -934,14 +935,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: Unsupported PWL source parameters: '( 1ns 0.0v ) ( 10ns 0.0v ) ( 11ns 5.0v ) ( 20ns 5.0v ) ( 21ns 0.0v ) ( 30ns 0.0v ) ( 31ns 5.0v )' Vin 5 0 0.0v PWL (0.0ns 5.0v) (1ns 0.0v) (10ns 0.0v) (11ns 5.0v) (20ns 5.0v) (21ns "
+        "firstErrorLine": "Parse error at line 14: Cannot parse number: 'sg' .model M_NMOS numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x.mesh l=0.7 n=5 x.mesh l=1.0 n=7 x.mesh l=1.2 n=11 x.mesh l=3.2 n=21 x.mesh l=3.4 n=25 x.mesh l=3.7 n=27 x.mesh l=3.8 n=28 x.mesh l=4.4"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-mos-charge-cir",
@@ -1177,14 +1178,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: Unsupported BJT Q-card form: 'Q1 1 3 0 QMOD AREA=100P' Q1 1 3 0 QMOD AREA=100P"
+        "firstErrorLine": "Parse error at line 14: Unsupported .options field: 'bypass' .OPTION ACCT BYPASS=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-serial-charge-cir",
@@ -1231,14 +1232,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: Unsupported BJT Q-card form: 'Q1 2 1 3 QMOD AREA=100P' Q1 2 1 3 QMOD AREA=100P"
+        "firstErrorLine": "Parse error at line 16: Cannot parse number: 'SG' .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING U"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-serial-dbridge-cir",
@@ -1285,14 +1286,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: Unsupported BJT Q-card form: 'Q1 3 2 0 QMOD AREA=100P' Q1 3 2 0 QMOD AREA=100P"
+        "firstErrorLine": "Parse error at line 21: Cannot parse number: 'SG' .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING U"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-serial-meclgate-cir",
@@ -1312,14 +1313,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: Unsupported BJT Q-card form: 'Q1 4 2 6 QMOD AREA=100P' Q1 4 2 6 QMOD AREA=100P"
+        "firstErrorLine": "Parse error at line 52: Cannot parse number: 'SG' .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE=10 LOC=0.9 X.MESH NODE=20 LOC=1.1 X.MESH NODE=30 LOC=1.4 X.MESH NODE=40 LOC=1.6 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATE"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-serial-nmosinv-cir",
@@ -1393,14 +1394,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: Unsupported BJT Q-card form: 'Q1 11 15 4 M_NPN AREA=4' Q1 11 15 4 M_NPN AREA=4"
+        "firstErrorLine": "Parse error at line 23: Cannot parse number: 'DIRECT' .MODEL M_NPN NBJT LEVEL=2 TITLE TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR OPTIONS DEFW=2.0U OUTPUT STATISTICS X.MESH W=2.0 H.E=0.02 H.M=0.5 R=2.0 X.MESH W=0.5 H.S="
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-serial-recovery-cir",
@@ -1420,14 +1421,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 3: Unsupported PULSE source parameters: ')' VPP 1 0 0.0V (PULSE 1.0V -1.0V 1NS 1PS 1PS 20NS 40NS)"
+        "firstErrorLine": "Parse error at line 36: Unsupported .options field: 'bypass' .OPTION ACCT BYPASS=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-serial-rtlinv-cir",
@@ -1449,14 +1450,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: Unsupported BJT Q-card form: 'Q1 3 2 0 QMOD AREA=100P' Q1 3 2 0 QMOD AREA=100P"
+        "firstErrorLine": "Parse error at line 9: Unsupported .options field: 'bypass' .OPTION ACCT BYPASS=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-cider-serial-vco-cir",
@@ -1476,14 +1477,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: Unsupported BJT Q-card form: 'Q5 7 7 5 QMOD AREA=100P' Q5 7 7 5 QMOD AREA=100P"
+        "firstErrorLine": "Parse error at line 26: Cannot parse number: 'SG' .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE=61 LOC=3.0 REGION NUM=1 MATERIAL=1 MATERIAL NUM=1 SILICON NBGNN=1E17 NBGNP=1E17 MOBILITY MATERIAL=1 CONCMOD=SG FIELDMOD=SG DOPING U"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-surfmob-cd4007n-200402idvg-net",
@@ -1557,14 +1558,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 5: Unsupported PULSE source parameters: ')' VIN 3 2 0v (PULSE 0.0v 4.2v 0ns 1ns 1ns 9ns 20ns)"
+        "firstErrorLine": "Parse error at line 25: Cannot parse number: 'direct' .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since, we are only simulating half of a device, we double the unit width * 1.0 um emitt"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-surfmob-tbicmpd1xy-cir",
@@ -1584,14 +1585,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 5: Unsupported PULSE source parameters: ')' VIN 3 2 0v (PULSE 0.0v 4.2v 0ns 1ns 1ns 9ns 20ns)"
+        "firstErrorLine": "Parse error at line 25: Cannot parse number: 'direct' .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since, we are only simulating half of a device, we double the unit width * 1.0 um emitt"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-surfmob-tbicmpu1-cir",
@@ -1611,14 +1612,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: Unsupported BJT Q-card form: 'Q1 11 15 4 M_NPNS AREA=8' Q1 11 15 4 M_NPNS AREA=8"
+        "firstErrorLine": "Parse error at line 18: Cannot parse number: 'direct' .MODEL M_NPNS nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since half the device is simulated, double the unit width to get * 1.0 um emitter. Use"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-cider-surfmob-tbicmpu1xy-cir",
@@ -1638,14 +1639,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: Unsupported BJT Q-card form: 'Q1 11 15 4 M_NPNS AREA=8' Q1 11 15 4 M_NPNS AREA=8"
+        "firstErrorLine": "Parse error at line 18: Cannot parse number: 'direct' .MODEL M_NPNS nbjt level=2 title TWO-DIMENSIONAL NUMERICAL POLYSILICON EMITTER BIPOLAR TRANSISTOR * Since half the device is simulated, double the unit width to get * 1.0 um emitter. Use"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "model: CIDER numerical device models (NUMD/NUMOS/NBJT)"
     },
     {
       "id": "examples-control-structs-foreach-bjt-ft-sp",
@@ -1664,7 +1665,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: Unsupported .control command 'foreach': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice contro"
+        "firstErrorLine": "Parse error at line 13: Unsupported .control command 'foreach': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciipl"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1691,7 +1692,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 19: Unsupported .control command 'if': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "firstErrorLine": "Parse error at line 19: Unsupported .control command 'if': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot', "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1717,7 +1718,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: Unsupported .control command 'if': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "firstErrorLine": "Parse error at line 13: Unsupported .control command 'if': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot', "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1743,14 +1744,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: Unsupported .control command 'dc': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lang"
+        "firstErrorLine": "Parse error at line 13: Unsupported .control command 'let': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot',"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-control-structs-new-check-4-sp",
@@ -1769,14 +1770,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: Unsupported .control command 'dc': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lang"
+        "firstErrorLine": "Parse error at line 11: Unsupported .control command 'let': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot',"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-control-structs-s-param-cir",
@@ -1796,7 +1797,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 65: Unsupported .control command 'set': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-la"
+        "firstErrorLine": "Parse error at line 65: Unsupported .control command 'set': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot',"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1928,14 +1929,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: Unsupported .control command 'tran': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Parse error at line 1: Unsupported device card: 'A' abuf in out buf"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-digital-compare-adder-bip-cir",
@@ -2299,7 +2300,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: Unsupported .control command 'set': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-la"
+        "firstErrorLine": "Parse error at line 18: Unsupported .control command 'set': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot',"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -2325,14 +2326,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: Unsupported .control command 'dc': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "firstErrorLine": "Parse error at line 19: Unsupported .control command 'meas': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-measure-mos-meas-dc-sp",
@@ -2506,7 +2507,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:243916"
+          "tran:244049"
         ]
       },
       "spiceTs": {
@@ -2696,7 +2697,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 50: Unsupported .control command 'option': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control"
+        "firstErrorLine": "Parse error at line 50: Unsupported .control command 'option': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplo"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -2748,7 +2749,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: Unsupported .control command 'set': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "firstErrorLine": "Parse error at line 7: Unsupported .control command 'set': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot', "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -2902,16 +2903,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 9: Unsupported .control command 'dc': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lang"
+        "status": "success",
+        "analyses": [
+          "dc:121"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "examples-osdi-hicuml0-dff-y-ecl-vbic-sp",
@@ -2930,14 +2932,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 52: Unsupported .control command 'TRAN': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Unsupported bounded VBIC DC model parameter: 'TNOM'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-osdi-hicuml0-vbic-out-sp",
@@ -2956,14 +2958,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: Unsupported .control command 'dc': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lang"
+        "firstErrorLine": "Unsupported bounded VBIC DC model parameter: 'TNOM'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-p-to-n-examples-logic-cir",
@@ -3006,16 +3008,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 23: Unsupported .control command 'dc': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "status": "success",
+        "analyses": [
+          "dc:306"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "examples-p-to-n-examples-switch-oscillators-cir",
@@ -3035,7 +3038,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: Unsupported .control command 'destroy': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control"
+        "firstErrorLine": "Parse error at line 4: Unsupported .control command 'destroy': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplo"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -3088,14 +3091,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 34: Unsupported .control command 'set': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-la"
+        "firstErrorLine": "CCCS 'F1' references unknown or branchless source 'vf'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-probe-mos-test-cir",
@@ -3113,16 +3116,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 27: Unsupported .control command 'set': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-la"
+        "status": "success",
+        "analyses": [
+          "tran:565"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 2,
+      "worstNormalizedError": 0.176,
+      "worstSignal": "tran v(out)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "examples-probe-probe-i-dev-cir",
@@ -3139,16 +3143,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 33: Unsupported .control command 'dc': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "status": "success",
+        "analyses": [
+          "dc:201"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "examples-probe-switches-manual-p92-cir",
@@ -3194,7 +3199,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 8: Unsupported .control command 'option': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-"
+        "firstErrorLine": "Parse error at line 8: Unsupported .control command 'option': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -3222,14 +3227,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 22: Unsupported .control command 'tran': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Parse error at line 25: Unsupported .control command 'linearize': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'ascii"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-rf-pss-compl-cross-quad-osc-pss-ctrl-cir",
@@ -3250,14 +3255,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 35: Unsupported .control command 'tran': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Parse error at line 37: Unsupported .control command 'reset': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-rf-pss-ring-osc-pss-ctrl-cir",
@@ -3278,14 +3283,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 28: Unsupported .control command 'tran': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Parse error at line 30: Unsupported .control command 'linearize': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'ascii"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-rf-pss-vackar-osc-pss-ctrl-cir",
@@ -3306,14 +3311,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 20: Unsupported .control command 'tran': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Parse error at line 22: Unsupported .control command 'linearize': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'ascii"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-rf-pss-vdp-osc-pss-ctrl-cir",
@@ -3362,7 +3367,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: Unsupported SIN source parameters: 'portnum 2 z0 50' VP2 filter_out 0 dc 0 ac 0.316228 SIN(0 0.316228 1G) portnum 2 z0 50"
+        "firstErrorLine": "Parse error at line 14: Unsupported SIN source parameters: '50' VP2 filter_out 0 dc 0 ac 0.316228 SIN(0 0.316228 1G) portnum 2 z0 50"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -3597,14 +3602,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: Unsupported diode parameter: 'dmod' D1 1 0 tj dmod thermal"
+        "firstErrorLine": "Parse error at line 11: Unsupported diode thermal node 'tj' (model 'dmod'): diode self-heating is not implemented D1 1 0 tj dmod thermal"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-soa-diode-soa-simple-cir",
@@ -3650,7 +3655,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 3: Unsupported .control command 'set': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "firstErrorLine": "Parse error at line 3: Unsupported .control command 'set': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot', "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -3780,7 +3785,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:3136"
+          "tran:3066"
         ]
       },
       "spiceTs": {
@@ -3813,7 +3818,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 24: Unsupported .control command 'meas': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Parse error at line 24: Unsupported .control command 'meas': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -4048,14 +4053,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 77: Unsupported .control command 'tran': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Parse error at line 1: Unsupported device card: 'Y' y1 1 0 5 0 yconvtwoinch"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "device: P/Y-element lossy multiconductor lines (CPL, TXL)"
     },
     {
       "id": "examples-transmissionlines-ltra1-1-line-sp",
@@ -4072,16 +4077,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 10: Unsupported .control command 'TRAN': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "status": "success",
+        "analyses": [
+          "tran:599"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "examples-transmissionlines-ltra1-4-line-sp",
@@ -4100,7 +4106,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 138: Unsupported .control command 'option': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice contro"
+        "firstErrorLine": "Parse error at line 138: Unsupported .control command 'option': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciipl"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -4124,16 +4130,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 15: Unsupported .control command 'TRAN': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "status": "success",
+        "analyses": [
+          "tran:705"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "examples-transmissionlines-ltra3-2-line-sp",
@@ -4150,16 +4157,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 86: Unsupported .control command 'TRAN': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "status": "success",
+        "analyses": [
+          "tran:2169"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "examples-transmissionlines-ltra4-1-line-sp",
@@ -4176,16 +4184,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 55: Unsupported .control command 'tran': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "status": "success",
+        "analyses": [
+          "tran:2517"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "examples-transmissionlines-ltra5-1-line-sp",
@@ -4202,16 +4211,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 60: Unsupported .control command 'tran': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "status": "success",
+        "analyses": [
+          "tran:1023"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "examples-transmissionlines-ltra6-2-line-sp",
@@ -4228,16 +4238,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 77: Unsupported .control command 'tran': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "status": "success",
+        "analyses": [
+          "tran:3141"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "examples-transmissionlines-ltra7-4-line-sp",
@@ -4256,7 +4267,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 109: Unsupported .control command 'option': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice contro"
+        "firstErrorLine": "Parse error at line 109: Unsupported .control command 'option': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciipl"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -4386,14 +4397,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 12: Unsupported .control command 'TRAN': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Parse error at line 1: Unsupported device card: 'U' U1 in out gnd1 URCMOD L =20m"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "device: U-element"
     },
     {
       "id": "examples-various-3d-loop-sp",
@@ -4464,7 +4475,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: Unsupported .control command 'let': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-la"
+        "firstErrorLine": "Parse error at line 11: Unsupported .control command 'let': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot',"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -4490,7 +4501,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 21: Unsupported .control command 'save': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Parse error at line 21: Unsupported .control command 'save': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -4520,7 +4531,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 19: Unsupported .control command 'setplot': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice contro"
+        "firstErrorLine": "Parse error at line 19: Unsupported .control command 'setplot': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciipl"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -4546,14 +4557,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 8: Unsupported .control command 'tran': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-la"
+        "firstErrorLine": "Parse error at line 10: Unsupported .control command 'let': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot',"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-various-dc-loop-sp",
@@ -4598,7 +4609,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 21: Unsupported .control command 'save': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Parse error at line 21: Unsupported .control command 'save': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -4650,14 +4661,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: Unsupported .control command 'ac': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "firstErrorLine": "Parse error at line 15: Unsupported .control command 'let': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot',"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-various-integrate1-cir",
@@ -4730,7 +4741,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: Unsupported .control command 'let': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-la"
+        "firstErrorLine": "Parse error at line 13: Unsupported .control command 'let': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot',"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -4864,14 +4875,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 67: Unsupported .control command 'set': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-la"
+        "firstErrorLine": "Parse error at line 5: Unsupported device card: 'K' K1 L1 L2 0.98"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "device: K-element"
     },
     {
       "id": "examples-various-v-i-sources-am-ffm-cir",
@@ -4917,14 +4928,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 52: Unsupported .control command 'TRAN': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Unsupported bounded VBIC DC model parameter: 'TNOM'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-vbic-vbic99-dc-sp",
@@ -4943,14 +4954,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: Unsupported BJT Q-card form: 'q1 c b e s dt vbic99 area=1 m=1' q1 c b e s dt vbic99 area=1 m=1"
+        "firstErrorLine": "Parse error at line 40: Unsupported dot command: '.temp' .temp 27"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "directive: .temp / .options temp"
     },
     {
       "id": "examples-vbic-vbic99-tran-sp",
@@ -4968,16 +4979,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
+        "status": "failed",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: Unsupported .control command 'op': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "firstErrorLine": "BJT 'q1' has a thermal node, but only VBIC (LEVEL=4) instances accept a fifth terminal"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "execution: other failure"
     },
     {
       "id": "examples-vdmos-100w-wingspread-sp",
@@ -5026,14 +5037,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 58: Unsupported .control command 'op': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "firstErrorLine": "Parse error at line 62: Unsupported .control command 'set': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot',"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-vdmos-crss-coss-ciss-sp",
@@ -5050,16 +5061,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
+        "status": "failed",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 27: Unsupported .control command 'tran': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Singular matrix: zero pivot at matrix column 1 (nodes: 2)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "convergence"
     },
     {
       "id": "examples-vdmos-dcdc-sp",
@@ -5103,42 +5114,18 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 16: Unsupported .control command 'dc': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
-      },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
-    },
-    {
-      "id": "examples-vdmos-ixth80n20l-ixth48p20p-quasisat-sp",
-      "sourcePath": "examples/vdmos/IXTH80N20L-IXTH48P20P-quasisat.sp",
-      "sha256": "9728c327225c825ae3f44d88cf62f261084a91687bd95061eeb62bfa9d2b1b84",
-      "analyses": [
-        "dc"
-      ],
-      "unmappedAnalyses": [],
-      "sameNameAs": [],
-      "ngspice": {
         "status": "success",
-        "analyses": [],
-        "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
-      },
-      "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 20: Unsupported .control command 'dc': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "analyses": [
+          "dc:101",
+          "tran:1105"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "examples-vdmos-ixtp6n100d2-cap-sp",
@@ -5157,7 +5144,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 12: Unsupported .control command 'save': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Parse error at line 12: Unsupported .control command 'save': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5183,14 +5170,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 21: Unsupported .control command 'dc': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "firstErrorLine": "Parse error at line 24: Unsupported repeated 'dc' analysis in .control: spice-ts returns one result per analysis type, so each of op/dc/tran/ac may be requested once per deck (dot card or control command) dc vd 0 60 0.1 vg -3 5 1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-vdmos-mtriode-nch-sp",
@@ -5209,7 +5196,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: Unsupported .control command 'foreach': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control"
+        "firstErrorLine": "Parse error at line 6: Unsupported .control command 'foreach': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplo"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5234,16 +5221,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 30: Unsupported .control command 'rusage': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control"
+        "status": "success",
+        "analyses": [
+          "tran:100001"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 11,
+      "worstNormalizedError": 3.19,
+      "worstSignal": "tran i(vdd)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "examples-vdmos-self-heating-sp",
@@ -5262,14 +5250,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: Unsupported .control command 'dc': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "firstErrorLine": "MOSFET 'M1' references unknown model 'tc'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-vdmos-soa-chk-sp",
@@ -5314,7 +5302,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: Unsupported .control command 'foreach': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control"
+        "firstErrorLine": "Parse error at line 6: Unsupported .control command 'foreach': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplo"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5341,7 +5329,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: Unsupported .control command 'save': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Parse error at line 17: Unsupported .control command 'save': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5502,14 +5490,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 105: Unsupported .control command 'tran': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-"
+        "firstErrorLine": "Parse error at line 107: Unsupported .control command 'linearize': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asci"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-xspice-d-process-checks-cir",
@@ -6167,16 +6155,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 14: Unsupported PULSE source parameters: '45.0' v2 2 0 0.0 pulse(-1 1 0 1e-5 1e-5 5e-4 1e-3 45.0)"
+        "status": "success",
+        "analyses": [
+          "tran:147"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 0.00187,
+      "worstSignal": "tran i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "examples-xspice-original-examples-bad-io-type-deck",
@@ -6381,14 +6370,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: Unsupported PWL source parameters: '( 2 0.0 ) ( 2.0000000001 1.0 ) ( 3 1.0 ) )' v2 200 0 DC PWL( (0 0.0) (2 0.0) (2.0000000001 1.0) (3 1.0) )"
+        "firstErrorLine": "Parse error at line 16: Unsupported device card: 'A' aconverter [200 100] [2 1] adc_bridge1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-digital-models2-deck",
@@ -6408,14 +6397,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: Unsupported PWL source parameters: '( 2 0.0 ) ( 2.0000000001 1.0 ) ( 3 1.0 ) )' vdata1 100 0 DC PWL( (0 0.0) (2 0.0) (2.0000000001 1.0) (3 1.0) )"
+        "firstErrorLine": "Parse error at line 32: Unsupported device card: 'A' aconverter [100 200 300 400 500] [1 2 3 4 5] adc_bridge1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-digital-models3-deck",
@@ -6435,14 +6424,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: Unsupported PWL source parameters: '( 2 0.0 ) ( 2.0000000001 1.0 ) ( 3 1.0 ) )' vdata1 100 0 DC PWL( (0 0.0) (2 0.0) (2.0000000001 1.0) (3 1.0) )"
+        "firstErrorLine": "Parse error at line 40: Unsupported device card: 'A' aconverter [100 200 300 400 500] [1 2 3 4 5] adc_bridge1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-digital-models4-deck",
@@ -6462,14 +6451,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: Unsupported PWL source parameters: '( 2 0.0 ) ( 2.0000000001 1.0 ) ( 3 1.0 ) ( 3.5000000001 0.0 ) ( 4 0.0 ) )' vdata1 100 0 DC PWL( (0 0.0) (2 0.0) (2.0000000001 1.0) (3 1.0) (3.5000000001 0.0) (4 0.0) )"
+        "firstErrorLine": "Parse error at line 50: Unsupported device card: 'A' aconverter [100 200 300 400 500 600] [1 2 3 4 5 6] adc_bridge1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-dot-model-ref-deck",
@@ -6543,14 +6532,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: Unsupported PWL source parameters: '( 1 1.0 ) )' v1 1 0 DC PWL( (0 0.0) (1 1.0) )"
+        "firstErrorLine": "Parse error at line 15: Unsupported device card: 'A' a1 1 10 d_osc1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: parenthesised and extended waveform syntax"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-original-examples-initial-conditions-deck",
@@ -6896,9 +6885,9 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 7,
-      "worstNormalizedError": 0.0439,
-      "worstSignal": "tran v(emit)",
-      "outcome": "mismatch",
+      "worstNormalizedError": 0.000493,
+      "worstSignal": "tran v(1)",
+      "outcome": "matched",
       "gapBucket": null
     },
     {
@@ -7287,14 +7276,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: Unsupported .control command 'tran': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-la"
+        "firstErrorLine": "Parse error at line 17: Unsupported device card: 'A' a1 1 10 gain1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "device: XSPICE A-element code models"
     },
     {
       "id": "examples-xspice-various-astate-pulse-cir",
@@ -7415,16 +7404,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 19: Unsupported .control command 'dc': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "status": "success",
+        "analyses": [
+          "dc:10001"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "examples-xspice-various-vswitch-test-lin-cir",
@@ -7444,7 +7434,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: Unsupported .control command 'destroy': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control"
+        "firstErrorLine": "Parse error at line 4: Unsupported .control command 'destroy': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplo"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7471,7 +7461,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: Unsupported .control command 'destroy': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control"
+        "firstErrorLine": "Parse error at line 4: Unsupported .control command 'destroy': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplo"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7530,9 +7520,9 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 7,
-      "worstNormalizedError": 0.0439,
-      "worstSignal": "tran v(emit)",
-      "outcome": "mismatch",
+      "worstNormalizedError": 0.000493,
+      "worstSignal": "tran v(1)",
+      "outcome": "matched",
       "gapBucket": null
     },
     {
@@ -7744,12 +7734,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:83"
+          "tran:80"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 270,
-      "worstNormalizedError": 8.64,
+      "worstNormalizedError": 0.0701,
       "worstSignal": "tran v(x1.x1.x1.x7.8)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -7774,7 +7764,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:135"
+          "tran:152"
         ]
       },
       "comparedAnalyses": 1,
@@ -7815,8 +7805,8 @@
       },
       "comparedAnalyses": 3,
       "comparedSignals": 63,
-      "worstNormalizedError": 0.148,
-      "worstSignal": "dc v(12)",
+      "worstNormalizedError": 0.0511,
+      "worstSignal": "tran v(1)",
       "outcome": "mismatch",
       "gapBucket": null
     },
@@ -7843,13 +7833,13 @@
         "status": "success",
         "analyses": [
           "dc:101",
-          "tran:234"
+          "tran:203"
         ]
       },
       "comparedAnalyses": 2,
       "comparedSignals": 16,
-      "worstNormalizedError": 0.432,
-      "worstSignal": "dc v(4)",
+      "worstNormalizedError": 0.0526,
+      "worstSignal": "tran v(2)",
       "outcome": "mismatch",
       "gapBucket": null
     },
@@ -8477,14 +8467,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: Unsupported .control command 'op': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "firstErrorLine": "Parse error at line 13: Unsupported .control command 'let': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot',"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "tests-regression-misc-asrc-tc-1-cir",
@@ -8583,7 +8573,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: Unsupported .control command 'save': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-l"
+        "firstErrorLine": "Parse error at line 10: Unsupported .control command 'save': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplot'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -8635,16 +8625,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
+        "status": "failed",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: Unsupported .control command 'op': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "firstErrorLine": "Circuit has no nodes"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "execution: other failure"
     },
     {
       "id": "tests-regression-misc-if-elseif-cir",
@@ -8793,7 +8783,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 27: Unsupported .control command 'define': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control"
+        "firstErrorLine": "Parse error at line 27: Unsupported .control command 'define': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciiplo"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -8845,14 +8835,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 32: Unsupported .control command 'op': only bare 'run' and the output-only commands 'asciiplot', 'display', 'echo', 'exit', 'listing', 'plot', 'print', 'quit' are accepted; spice-ts does not interpret ngspice control-lan"
+        "firstErrorLine": "Parse error at line 34: Unsupported .control command 'compose': only the analysis commands 'op', 'dc', 'tran', 'ac', bare 'run', 'set' of the plot-styling variables 'colorN', 'xbrushwidth', 'xgridwidth' and the output-only commands 'asciipl"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: analysis commands inside .control (tran/dc/op/ac/...)"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "tests-regression-parser-bxpressn-1-cir",
@@ -9461,7 +9451,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:769"
+          "tran:705"
         ]
       },
       "comparedAnalyses": 1,
@@ -9544,7 +9534,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: Unsupported BJT Q-card form: 'Q12 Q9_B I1_N 0 0 N1 M=2' Q12 Q9_B I1_N 0 0 N1 M=2"
+        "firstErrorLine": "Unsupported bounded VBIC polarity: only NPN LEVEL=4 is supported"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -9598,15 +9588,15 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: Unsupported BJT Q-card form: 'Q1 VOUT R3_N Q1_E N1 M=2' Q1 VOUT R3_N Q1_E N1 M=2"
+        "firstErrorLine": "Unsupported bounded VBIC DC model parameter: 'KFN'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)"
+      "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "ebb8eee8bf2a79191047f23f08fe8af2684ac65abd8b45079e337619e15b2775"
+  "outcomeSha256": "f9f294c59c514e91f63134d66941e898d115c4cdf2ef05e24197e746f770b5a3"
 }

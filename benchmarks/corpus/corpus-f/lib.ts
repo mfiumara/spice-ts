@@ -110,9 +110,18 @@ export function hostCommand(text: string): string | undefined {
   return line?.trim();
 }
 
-/** Third-party licence or copyright notices that override the blanket ngspice Modified-BSD grant. */
+/**
+ * Third-party licence or copyright notices that override the blanket ngspice Modified-BSD grant.
+ * Copyright marks count too: `©` anywhere, and `(c)`/`(C)` as a standalone token (start of line,
+ * after whitespace, `*` or punctuation, then whitespace, a digit or end of line), so a node probe
+ * such as `v(c)` or an expression `(c)*2` is not mistaken for a notice.
+ */
+const COPYRIGHT_MARK = /©|(?:^|[\s*,;:])\(c\)(?=\s|\d|$)/i;
+
 export function thirdPartyNotice(text: string): string | undefined {
-  const line = text.split(/\r?\n/).find(candidate => /copyright|licen[cs]e statement|all rights reserved|proprietary|confidential/i.test(candidate));
+  const line = text
+    .split(/\r?\n/)
+    .find(candidate => /copyright|licen[cs]e statement|all rights reserved|proprietary|confidential/i.test(candidate) || COPYRIGHT_MARK.test(candidate));
   return line?.trim().replace(/^\*+\s*/, '').replace(/\*+$/, '').trim();
 }
 

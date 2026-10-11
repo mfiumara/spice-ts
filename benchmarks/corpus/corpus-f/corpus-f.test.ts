@@ -56,6 +56,15 @@ describe('corpus-f deck classification', () => {
     assert.equal(thirdPartyNotice('t\nR1 1 0 1\n'), undefined);
   });
 
+  it('flags (c), (C) and © copyright marks but not a node named c', () => {
+    assert.equal(thirdPartyNotice('t\n* David Zan, (c) 2017/03/02 Preliminary\n'), 'David Zan, (c) 2017/03/02 Preliminary');
+    assert.equal(thirdPartyNotice('t\n* (C) National Semiconductor, Inc.\n'), '(C) National Semiconductor, Inc.');
+    assert.equal(thirdPartyNotice('t\n* © 2017 Example Corp.\n'), '© 2017 Example Corp.');
+    assert.equal(thirdPartyNotice('t\n*©2017 Example Corp.\n'), '©2017 Example Corp.');
+    assert.equal(thirdPartyNotice('t\n.control\nplot v(in) v(b) v(c) v(vp)\n.endc\n'), undefined);
+    assert.equal(thirdPartyNotice('t\nB1 1 0 v=(c)*2\n'), undefined);
+  });
+
   it('derives stable path ids', () => {
     assert.equal(fixtureId('examples/xspice/various/xspice_c1.cir'), 'examples-xspice-various-xspice-c1-cir');
   });

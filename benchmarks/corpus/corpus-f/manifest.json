@@ -21,11 +21,11 @@
     ],
     "deckExtensions": "\\.(cir|sp|net|deck|spi|cki|ckt)$",
     "candidates": 623,
-    "selected": 337,
+    "selected": 336,
     "excluded": {
       "already-in-corpus": 20,
       "duplicate-content": 2,
-      "licence": 2,
+      "licence": 3,
       "not-utf8": 0,
       "host-command": 29,
       "not-self-contained": 204,
@@ -2455,20 +2455,6 @@
       "analyses": [
         "dc",
         "tran"
-      ],
-      "unmappedAnalyses": [],
-      "sameNameAs": []
-    },
-    {
-      "id": "examples-vdmos-ixth80n20l-ixth48p20p-quasisat-sp",
-      "sourcePath": "examples/vdmos/IXTH80N20L-IXTH48P20P-quasisat.sp",
-      "sourceUrl": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/vdmos/IXTH80N20L-IXTH48P20P-quasisat.sp",
-      "localPath": "benchmarks/corpus/corpus-f/fixtures/examples/vdmos/IXTH80N20L-IXTH48P20P-quasisat.sp",
-      "sha256": "9728c327225c825ae3f44d88cf62f261084a91687bd95061eeb62bfa9d2b1b84",
-      "bytes": 1564,
-      "licence": "BSD-3-Clause",
-      "analyses": [
-        "dc"
       ],
       "unmappedAnalyses": [],
       "sameNameAs": []
@@ -5929,6 +5915,12 @@
       "sha256": "30c4ca7ec4b803a58cae712ebef5787c7004006f8bdc793fe3340fe6706b72af",
       "reason": "not-self-contained",
       "detail": ".include Infineon_VBIC.lib; references examples/vbic/Infineon_VBIC.lib"
+    },
+    {
+      "sourcePath": "examples/vdmos/IXTH80N20L-IXTH48P20P-quasisat.sp",
+      "sha256": "9728c327225c825ae3f44d88cf62f261084a91687bd95061eeb62bfa9d2b1b84",
+      "reason": "licence",
+      "detail": "David Zan, (c) 2017/03/02 Preliminary"
     },
     {
       "sourcePath": "examples/wave/jimi_fuzz-snd.cir",
