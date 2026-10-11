@@ -26,11 +26,11 @@ export { Circuit } from './circuit.js';
 export type { CompiledCircuit } from './circuit.js';
 export {
   DCResult, TransientResult, ACResult, DCSweepResult, NoiseResult, DistortionResult,
-  TransferFunctionResult, PoleZeroResult, SensitivityResult,
+  TransferFunctionResult, PoleZeroResult, SensitivityResult, SParameterResult,
 } from './results.js';
 export type {
   SimulationResult, StepResult, PoleZeroValue, SensitivityEntry, ComplexSensitivityValue,
-  ComplexDistortionValue, DistortionOrder, DistortionIntermodulationProduct, DistortionProduct,
+  ComplexDistortionValue, ComplexValue, DistortionOrder, DistortionIntermodulationProduct, DistortionProduct,
   ControlScriptResult, ControlScriptRun,
 } from './results.js';
 export type {
@@ -39,6 +39,8 @@ export type {
   TransientStep,
   ACPoint,
   NoiseAnalysis,
+  SParameterAnalysis,
+  RFPort,
   DistortionAnalysis,
   DistortionExcitation,
   TransferFunctionAnalysis,
@@ -80,6 +82,7 @@ export {
   TimestepTooSmallError,
   CycleError,
   UnsupportedModelLevelError,
+  UnsupportedModelVersionError,
   UnsupportedCircuitModelTypeError,
   ModelTypeMismatchError,
 } from './errors.js';

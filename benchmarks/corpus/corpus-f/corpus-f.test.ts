@@ -105,6 +105,8 @@ describe('corpus-f outcome rules', () => {
     assert.equal(gapBucket("Parse error at line 3: Unsupported .control command 'set': only bare", 'unsupported'), 'control: ngspice control-language scripting (set/let/save/foreach/meas/...)');
     assert.equal(gapBucket("Parse error at line 4: Unsupported device card: 'A' a1 1 2 gain_block", 'unsupported'), 'device: XSPICE A-element code models');
     assert.equal(gapBucket("Parse error at line 4: Unsupported dot command: '.global' .global vdd", 'unsupported'), 'directive: .global');
+    assert.equal(gapBucket("MOSFET 'MNA0' (model 'Nmod') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)", 'unsupported'), 'model: BSIM3 revisions other than 3.3 (VERSION=3.0/3.1/3.2.x)');
+    assert.equal(gapBucket("MOSFET 'M1' (model 'n1') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 6, 8, 49)", 'unsupported'), 'model: BSIM4 (LEVEL=14/54)');
     assert.equal(gapBucket('weird', 'unsupported'), 'parse: other unsupported syntax');
     assert.equal(gapBucket('spice-ts exceeded the 120000 ms aggregate execution bound', 'failed'), 'timeout: spice-ts exceeded the 120 s bound');
     assert.equal(gapBucket('Transient analysis: timestep too small at t=1e-9', 'failed'), 'convergence');

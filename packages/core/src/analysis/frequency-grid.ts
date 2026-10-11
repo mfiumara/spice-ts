@@ -6,9 +6,10 @@ type FrequencySweep = Pick<ACAnalysis, 'variation' | 'points' | 'startFreq' | 's
  * Which ngspice analysis owns the sweep. ngspice-47 `.ac` (acan.c) stretches DEC sweeps that
  * span at least one decade so the last point lands on stop; `.noise` (noisean.c) always steps
  * by 10^(1/N) up to stop plus a reltol tolerance; `.sens` (cktsens.c `count_steps`) also steps
- * by 10^(1/N) but counts `(int)(N * log10(stop/start) + 1.01)` points.
+ * by 10^(1/N) but counts `(int)(N * log10(stop/start) + 1.01)` points. `.sp` (span.c) steps
+ * DEC/OCT like `.noise` and LIN like `.ac`.
  */
-export type FrequencySweepKind = 'ac' | 'noise' | 'sens';
+export type FrequencySweepKind = 'ac' | 'noise' | 'sens' | 'sp';
 
 /** A log sweep advances by `base^(1/steps)` per point: point i is `start * base^(i/steps)`. */
 interface LogStep {
@@ -38,7 +39,7 @@ export function frequencyPointCount(
   relativeTolerance: number,
   kind: FrequencySweepKind,
 ): number {
-  if (sweep.variation === 'lin') return kind === 'ac' && sweep.points === 2 ? 1 : sweep.points;
+  if (sweep.variation === 'lin') return (kind === 'ac' || kind === 'sp') && sweep.points === 2 ? 1 : sweep.points;
   if (kind === 'sens') return sensitivityPointCount(sweep);
   const { base, steps } = logStep(sweep, kind);
   const tolerance = Math.pow(base, 1 / steps) * sweep.stopFreq * relativeTolerance;

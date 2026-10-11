@@ -176,6 +176,42 @@ export class NoiseResult {
   ) {}
 }
 
+/** Rectangular complex value of an S-parameter analysis vector. */
+export interface ComplexValue {
+  real: number;
+  imaginary: number;
+}
+
+/**
+ * S-parameter analysis result (from `.sp`), with ngspice-47's vector names:
+ * `S_i_j`, `Y_i_j`, `Z_i_j` for every port pair, plus with `donoise = 1` the
+ * port noise-current correlation matrix `Cy_i_j` (A²/Hz; ngspice writes these
+ * as `i(Cy_i_j)`) and, for exactly two ports, `NF`, `SOpt`, `NFmin` (dB) and
+ * `Rn` (ohms).
+ */
+export class SParameterResult {
+  constructor(
+    /** Frequency points in Hz. */
+    public readonly frequencies: number[],
+    /** Port source names; entry `i` is port `i + 1`. */
+    public readonly ports: string[],
+    /** Complex vectors keyed by ngspice name, one value per frequency. */
+    public readonly vectors: Map<string, ComplexValue[]>,
+  ) {}
+
+  /**
+   * Get a vector by ngspice name, case-insensitively (`'S_2_1'`, `'cy_1_1'`).
+   *
+   * @throws Error if the analysis produced no such vector
+   */
+  vector(name: string): ComplexValue[] {
+    for (const [key, values] of this.vectors) {
+      if (key.toLowerCase() === name.toLowerCase()) return values;
+    }
+    throw new Error(`Unknown S-parameter vector '${name}'`);
+  }
+}
+
 /** Rectangular complex distortion component. */
 export interface ComplexDistortionValue {
   real: number;
@@ -373,6 +409,8 @@ export interface SimulationResult {
   ac?: ACResult;
   /** Resistor-noise spectral result (from `.noise`) */
   noise?: NoiseResult;
+  /** S-, Y-, Z-parameters over the RF ports (from `.sp`). */
+  sParameters?: SParameterResult;
   /** Bounded harmonic or intermodulation result (from `.disto`). */
   distortion?: DistortionResult;
   /** DC small-signal transfer function (from `.tf`) */
