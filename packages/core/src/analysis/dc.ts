@@ -5,7 +5,7 @@ import { newtonRaphson } from './newton-raphson.js';
 import { DCResult } from '../results.js';
 import { createConvergenceTelemetry, snapshotConvergenceTelemetry } from '../convergence-telemetry.js';
 import { ConvergenceError } from '../errors.js';
-import { createNodeStateSolution } from './initial-state.js';
+import { createNodeStateSolution, initialConditionHolds } from './initial-state.js';
 import { DEVICE_GMIN } from '../devices/device.js';
 import {
   ProtocolExecutionError,
@@ -22,7 +22,12 @@ export function solveDCOperatingPoint(
   sourceMode: DCSourceMode = 'operating-point',
   guard?: ProtocolExecutionGuard,
 ): { result: DCResult; assembler: MNAAssembler; convergence: ConvergenceTelemetry } {
-  const { devices, nodeCount, branchCount, nodeNames, branchNames } = compiled;
+  const { nodeCount, branchCount, nodeNames, branchNames } = compiled;
+  // The transient operating point (ngspice MODETRANOP, never reached with
+  // UIC) holds `.ic` nodes at their values; a plain `.op` does not (#531).
+  const devices = sourceMode === 'transient' && compiled.initialConditions.length > 0
+    ? [...compiled.devices, ...initialConditionHolds(compiled)]
+    : compiled.devices;
   const assembler = new MNAAssembler(nodeCount, branchCount, {
     variables: createMatrixVariableIdentities(nodeNames, branchNames),
     useDcSourceValue: sourceMode === 'operating-point',
