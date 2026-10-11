@@ -1,0 +1,77 @@
+import { InvalidCircuitError } from '../errors.js';
+import type { ModelParams } from '../types.js';
+import type { ResistorParameters } from './resistor.js';
+
+/** ngspice RESsetup default instance width and length (10 um). */
+const DEFAULT_GEOMETRY = 10e-6;
+
+/** Instance parameters a `.model R` card may default (ngspice inpgmod.c instance defaults). */
+const MODEL_INSTANCE_DEFAULTS: Record<string, string> = {
+  RESISTANCE: 'R', AC: 'AC', TC: 'TC1', SCALE: 'SCALE', NOISY: 'NOISY', NOISE: 'NOISY',
+};
+
+export interface ResolvedResistor {
+  /** Nominal resistance before temperature, `SCALE` and `M` (ngspice RESresist). */
+  resistance: number;
+  parameters: ResistorParameters;
+}
+
+/**
+ * Resolve a resistor instance against its optional `.model R` card the way
+ * ngspice-47 RESupdate_conduct does: an explicit value wins, then
+ * `RSH * (L - 2*SHORT) / (W - 2*NARROW)` when `L*W*RSH > 0`, then the model `R`.
+ * Instance `TC1`/`TC2`/`TCE` override the model's; any `TCE` selects the
+ * exponential `1.01^(TCE*dT)` temperature factor.
+ */
+export function resolveResistor(
+  name: string,
+  instanceValue: number | undefined,
+  model: ModelParams | undefined,
+  instanceParams: Record<string, number> = {},
+): ResolvedResistor {
+  if (model && model.type.toUpperCase() !== 'R') {
+    throw new InvalidCircuitError(
+      `Resistor '${name}' references model '${model.name}' of type '${model.type}', expected R`,
+    );
+  }
+  const card = model?.params ?? {};
+  const defaults: Record<string, number> = {};
+  for (const [key, target] of Object.entries(MODEL_INSTANCE_DEFAULTS)) {
+    if (card[key] !== undefined) defaults[target] = card[key];
+  }
+  const instance = { ...defaults, ...instanceParams };
+
+  let resistance = instanceValue ?? instance.R;
+  if (resistance === undefined) {
+    const length = instance.L ?? card.L ?? DEFAULT_GEOMETRY;
+    const width = instance.W ?? card.DEFW ?? card.W ?? DEFAULT_GEOMETRY;
+    const sheet = card.RSH ?? 0;
+    const modelResistance = card.R ?? card.RES;
+    if (length * width * sheet > 0) {
+      resistance = (length - 2 * (card.SHORT ?? card.DLR ?? 0))
+        / (width - 2 * (card.NARROW ?? card.DW ?? 0))
+        * sheet;
+    } else if (modelResistance !== undefined && modelResistance > 0) {
+      resistance = modelResistance;
+    } else {
+      throw new InvalidCircuitError(
+        `Resistor '${name}' has no resistance: give a value, R=, or a model with R or RSH`,
+      );
+    }
+  }
+
+  return {
+    resistance,
+    parameters: {
+      tc1: instance.TC1 ?? card.TC1 ?? card.TC1R,
+      tc2: instance.TC2 ?? card.TC2 ?? card.TC2R,
+      tce: instance.TCE ?? card.TCE,
+      tnom: instance.TNOM ?? card.TNOM,
+      multiplier: instance.M,
+      scale: instance.SCALE,
+      acResistance: instance.AC,
+      noisy: instance.NOISY === undefined ? undefined : instance.NOISY !== 0,
+      flickerCoefficient: card.KF,
+    },
+  };
+}

@@ -77,6 +77,11 @@ function assertSupportedDevices(compiled: CompiledCircuit): asserts compiled is 
       device.assertDistortionSupported();
       continue;
     }
+    if (device instanceof Resistor && device.hasAcResistance) {
+      throw new InvalidCircuitError(
+        `.disto does not support a resistor with an ac= resistance; found ${device.name}`,
+      );
+    }
     if (
       device instanceof Resistor
       || device instanceof Capacitor

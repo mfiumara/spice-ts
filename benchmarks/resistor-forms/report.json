@@ -1,0 +1,584 @@
+{
+  "schemaVersion": "spice-ts-resistor-forms/v1",
+  "issue": "https://github.com/mfiumara/spice-ts/issues/498",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "node": "v22.23.1"
+  },
+  "environment": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "command": "pnpm exec tsx benchmarks/resistor-forms/compare.ts",
+  "policy": "no per-case tolerances; every error is reported as measured",
+  "cases": [
+    {
+      "id": "loop-model-op",
+      "fixture": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/loops/loop-model.cir",
+      "forms": "model reference R2 n2 n1 rmod with .model rmod r (r=1k)",
+      "identicalNetlist": true,
+      "netlistSha256": "4f4adcf91771a2077f6937c4cf267bf06090d0e8faaa03c428b8f10f3397bce8",
+      "spiceTs": {
+        "status": "success"
+      },
+      "signals": [
+        {
+          "signal": "v(n1)",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        }
+      ]
+    },
+    {
+      "id": "bipolar-noise",
+      "fixture": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/noise/bipolar-noise.cir",
+      "forms": "r1 1 2 r=1k keyword value",
+      "identicalNetlist": true,
+      "netlistSha256": "92f8aaf2157ecda7c413000b92ac674dffb9613fe275a7356c92ef1a9f3b8b45",
+      "spiceTs": {
+        "status": "unsupported",
+        "error": "Unsupported bounded BJT model parameter: 'VAR'"
+      },
+      "signals": []
+    },
+    {
+      "id": "resdiv-divider",
+      "fixture": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/noise/resdiv.cir",
+      "forms": "plain R (control for noisy=0)",
+      "identicalNetlist": true,
+      "netlistSha256": "437ee83a7e55391f6a6606a691c6e4bdec1f793b238b3682962d92fe63de6f85",
+      "spiceTs": {
+        "status": "success"
+      },
+      "signals": [
+        {
+          "signal": "onoise_spectrum",
+          "status": "compared",
+          "points": 51,
+          "maxAbsoluteError": 1.5825367718673289e-15,
+          "maxRelativeError": 1.7383133782605268e-7,
+          "maxErrorOverNgspicePeak": 1.7383133782605268e-7,
+          "rmsRelativeError": 1.7383133782605273e-7
+        },
+        {
+          "signal": "inoise_spectrum",
+          "status": "compared",
+          "points": 51,
+          "maxAbsoluteError": 3.1650735404259353e-15,
+          "maxRelativeError": 1.7383133764433187e-7,
+          "maxErrorOverNgspicePeak": 1.7383133764433187e-7,
+          "rmsRelativeError": 1.7383133764433195e-7
+        },
+        {
+          "signal": "onoise_total",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 5.004395606678785e-13,
+          "maxRelativeError": 1.738313360466696e-7,
+          "maxErrorOverNgspicePeak": 1.738313360466696e-7,
+          "rmsRelativeError": 1.738313360466696e-7
+        },
+        {
+          "signal": "inoise_total",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 1.000879121335757e-12,
+          "maxRelativeError": 1.738313360466696e-7,
+          "maxErrorOverNgspicePeak": 1.738313360466696e-7,
+          "rmsRelativeError": 1.738313360466696e-7
+        }
+      ]
+    },
+    {
+      "id": "resdiv-noiseless",
+      "fixture": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/noise/resdiv.cir",
+      "forms": "noisy=0",
+      "identicalNetlist": true,
+      "netlistSha256": "49156e7e0965e665a80429b4c016c0cb5ed54c3d7112147a2dbce05b654299e3",
+      "spiceTs": {
+        "status": "success"
+      },
+      "signals": [
+        {
+          "signal": "onoise_spectrum",
+          "status": "compared",
+          "points": 51,
+          "maxAbsoluteError": 1.1190224818188089e-15,
+          "maxRelativeError": 1.7383133766361952e-7,
+          "maxErrorOverNgspicePeak": 1.7383133766361952e-7,
+          "rmsRelativeError": 1.7383133766361947e-7
+        },
+        {
+          "signal": "inoise_spectrum",
+          "status": "compared",
+          "points": 51,
+          "maxAbsoluteError": 2.2380449636376178e-15,
+          "maxRelativeError": 1.7383133766361952e-7,
+          "maxErrorOverNgspicePeak": 1.7383133766361952e-7,
+          "rmsRelativeError": 1.7383133766361947e-7
+        },
+        {
+          "signal": "onoise_total",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 3.5386420729136957e-13,
+          "maxRelativeError": 1.7383133622798338e-7,
+          "maxErrorOverNgspicePeak": 1.7383133622798338e-7,
+          "rmsRelativeError": 1.7383133622798338e-7
+        },
+        {
+          "signal": "inoise_total",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 7.077284145827391e-13,
+          "maxRelativeError": 1.7383133622798338e-7,
+          "maxErrorOverNgspicePeak": 1.7383133622798338e-7,
+          "rmsRelativeError": 1.7383133622798338e-7
+        }
+      ]
+    },
+    {
+      "id": "resdiv-filter",
+      "fixture": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/examples/noise/resdiv.cir",
+      "forms": "plain R (control for noisy=0)",
+      "identicalNetlist": true,
+      "netlistSha256": "65d4b0e46223dec5ae8aba0476621397c6cea125fa69e768f6225e9ff5a51d72",
+      "spiceTs": {
+        "status": "success"
+      },
+      "signals": [
+        {
+          "signal": "onoise_spectrum",
+          "status": "compared",
+          "points": 51,
+          "maxAbsoluteError": 1.5817563980969178e-15,
+          "maxRelativeError": 1.7383134216521307e-7,
+          "maxErrorOverNgspicePeak": 1.7383133774072215e-7,
+          "rmsRelativeError": 1.738313393380807e-7
+        },
+        {
+          "signal": "inoise_spectrum",
+          "status": "compared",
+          "points": 51,
+          "maxAbsoluteError": 3.165073553660825e-15,
+          "maxRelativeError": 1.738313383712151e-7,
+          "maxErrorOverNgspicePeak": 1.73831338371215e-7,
+          "rmsRelativeError": 1.7383133797214206e-7
+        },
+        {
+          "signal": "onoise_total",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 1.1064191545072481e-14,
+          "maxRelativeError": 1.7383133790137868e-7,
+          "maxErrorOverNgspicePeak": 1.7383133790137868e-7,
+          "rmsRelativeError": 1.7383133790137868e-7
+        },
+        {
+          "signal": "inoise_total",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 1.1229434189905462e-12,
+          "maxRelativeError": 1.7383133516098998e-7,
+          "maxErrorOverNgspicePeak": 1.7383133516098998e-7,
+          "rmsRelativeError": 1.7383133516098998e-7
+        }
+      ]
+    },
+    {
+      "id": "instance-defaults-op",
+      "fixture": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/regression/model/instance-defaults.cir",
+      "forms": "r1 1 0 myres with .model myres r(resistance=2k) instance default",
+      "identicalNetlist": true,
+      "netlistSha256": "41ea72691c63d184f77910d33e1f6785591d2863082f3bfa87bf034951fb4b9a",
+      "spiceTs": {
+        "status": "success"
+      },
+      "signals": [
+        {
+          "signal": "i(v1)",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        }
+      ]
+    },
+    {
+      "id": "ac-resistance-op-ac",
+      "fixture": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/regression/pz/ac-resistance.cir",
+      "forms": "R1 1 2 1k ac=4k (op uses 1k, ac uses 4k)",
+      "identicalNetlist": true,
+      "netlistSha256": "25c696bbb4176aaabcbaf5458025983163b1ecebd0dda23cbe7d2d9dd21c4b93",
+      "spiceTs": {
+        "status": "success"
+      },
+      "signals": [
+        {
+          "signal": "v(2)",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "signal": "v(2)",
+          "status": "compared",
+          "points": 3,
+          "maxAbsoluteError": 2.220446049250313e-16,
+          "maxRelativeError": 2.3773118076841847e-16,
+          "maxErrorOverNgspicePeak": 2.3773118076841847e-16,
+          "rmsRelativeError": 1.7944137986817916e-16
+        }
+      ]
+    },
+    {
+      "id": "ac-resistance-pz",
+      "fixture": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/regression/pz/ac-resistance.cir",
+      "forms": "R1 1 2 1k ac=4k in pole-zero (Vin removed: spice-ts .pz vol accepts only R, L, C; #504)",
+      "identicalNetlist": true,
+      "netlistSha256": "9633586325e6a1c5a91ed9a4224b9b4a1bec4a9ef89ca24e5cce0f9a74e386f8",
+      "spiceTs": {
+        "status": "success"
+      },
+      "signals": [
+        {
+          "signal": "v(pole(1))",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 5.820766091346741e-11,
+          "maxRelativeError": 1.164153218269348e-16,
+          "maxErrorOverNgspicePeak": 1.164153218269348e-16,
+          "rmsRelativeError": 1.164153218269348e-16
+        }
+      ]
+    },
+    {
+      "id": "temper-res-1",
+      "fixture": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/regression/temper/temper-res-1.cir",
+      "forms": "instance tc1/tc2/tce, .model rtest r r=1000 tc1 tc2 tce (TCE overrides TC1/TC2)",
+      "identicalNetlist": false,
+      "netlistSha256": "dd7e16bc09bd8ad68cfc6f5b0c3ec7bf330529ed9907c1b0319170348f35ec59",
+      "spiceTs": {
+        "status": "success"
+      },
+      "signals": [
+        {
+          "signal": "i(v1)",
+          "status": "compared",
+          "points": 10,
+          "maxAbsoluteError": 1.734723475976807e-18,
+          "maxRelativeError": 3.4259747816456364e-16,
+          "maxErrorOverNgspicePeak": 3.38156586066063e-16,
+          "rmsRelativeError": 1.3878404615588282e-16
+        },
+        {
+          "signal": "i(v2)",
+          "status": "compared",
+          "points": 10,
+          "maxAbsoluteError": 8.673617379884035e-19,
+          "maxRelativeError": 2.5093036779402833e-16,
+          "maxErrorOverNgspicePeak": 1.541011599713693e-16,
+          "rmsRelativeError": 1.416186782059898e-16
+        },
+        {
+          "signal": "i(v3)",
+          "status": "compared",
+          "points": 10,
+          "maxAbsoluteError": 8.673617379884035e-19,
+          "maxRelativeError": 2.5093036779402833e-16,
+          "maxErrorOverNgspicePeak": 1.541011599713693e-16,
+          "rmsRelativeError": 1.416186782059898e-16
+        }
+      ]
+    },
+    {
+      "id": "res_array",
+      "fixture": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/resistance/res_array.cir",
+      "forms": "ac=, rsh/narrow model with L/W (zero effective width: open), m=2, scale=1K",
+      "identicalNetlist": true,
+      "netlistSha256": "c2bdf3e66b26fa45f157dbf8576776ce644a3650735e8ee928cdec1bebfc12d1",
+      "signals": [
+        {
+          "analysis": "op",
+          "signal": "i(VR1)",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "analysis": "op",
+          "signal": "i(VR2)",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "analysis": "op",
+          "signal": "i(VR3)",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "analysis": "op",
+          "signal": "i(VR4)",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "analysis": "op",
+          "signal": "i(VR5)",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "analysis": "ac",
+          "signal": "|i(VR1)|",
+          "status": "compared",
+          "points": 201,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "analysis": "ac",
+          "signal": "|i(VR2)|",
+          "status": "compared",
+          "points": 201,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "analysis": "ac",
+          "signal": "|i(VR3)|",
+          "status": "compared",
+          "points": 201,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "analysis": "ac",
+          "signal": "|i(VR4)|",
+          "status": "compared",
+          "points": 201,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "analysis": "ac",
+          "signal": "|i(VR5)|",
+          "status": "compared",
+          "points": 201,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "analysis": "tran",
+          "signal": "i(VR1)",
+          "note": "spice-ts linearly interpolated onto ngspice output times",
+          "status": "compared",
+          "points": 59,
+          "maxAbsoluteError": 8.839112724374175e-8,
+          "maxRelativeError": 0.0013887789272580445,
+          "maxErrorOverNgspicePeak": 0.0008842491676919758,
+          "rmsRelativeError": 0.0006262940794614217
+        },
+        {
+          "analysis": "tran",
+          "signal": "i(VR2)",
+          "note": "spice-ts linearly interpolated onto ngspice output times",
+          "status": "compared",
+          "points": 59,
+          "maxAbsoluteError": 8.839112724374175e-8,
+          "maxRelativeError": 0.0013887789272580445,
+          "maxErrorOverNgspicePeak": 0.0008842491676919758,
+          "rmsRelativeError": 0.0006262940794614217
+        },
+        {
+          "analysis": "tran",
+          "signal": "i(VR3)",
+          "note": "spice-ts linearly interpolated onto ngspice output times",
+          "status": "compared",
+          "points": 59,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "analysis": "tran",
+          "signal": "i(VR4)",
+          "note": "spice-ts linearly interpolated onto ngspice output times",
+          "status": "compared",
+          "points": 59,
+          "maxAbsoluteError": 1.767822544874835e-7,
+          "maxRelativeError": 0.0013887789272580445,
+          "maxErrorOverNgspicePeak": 0.000884249167691976,
+          "rmsRelativeError": 0.0006262940794614199
+        },
+        {
+          "analysis": "tran",
+          "signal": "i(VR5)",
+          "note": "spice-ts linearly interpolated onto ngspice output times",
+          "status": "compared",
+          "points": 59,
+          "maxAbsoluteError": 8.839112724374175e-8,
+          "maxRelativeError": 0.0013887789272580445,
+          "maxErrorOverNgspicePeak": 0.0008842491676919758,
+          "rmsRelativeError": 0.0006262940794614217
+        },
+        {
+          "analysis": "tran",
+          "signal": "i(VR1)/v(1)",
+          "note": "conductance seen at each engine's own timepoints with |v(1)| > 0.1 V",
+          "spiceTs": {
+            "min": 0.0001,
+            "max": 0.00010000000000000002
+          },
+          "ngspice": {
+            "min": 0.00009999999999999999,
+            "max": 0.00010000000000000003
+          }
+        },
+        {
+          "analysis": "tran",
+          "signal": "i(VR2)/v(1)",
+          "note": "conductance seen at each engine's own timepoints with |v(1)| > 0.1 V",
+          "spiceTs": {
+            "min": 0.0001,
+            "max": 0.00010000000000000002
+          },
+          "ngspice": {
+            "min": 0.00009999999999999999,
+            "max": 0.00010000000000000003
+          }
+        },
+        {
+          "analysis": "tran",
+          "signal": "i(VR3)/v(1)",
+          "note": "conductance seen at each engine's own timepoints with |v(1)| > 0.1 V",
+          "spiceTs": {
+            "min": 0,
+            "max": 0
+          },
+          "ngspice": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        {
+          "analysis": "tran",
+          "signal": "i(VR4)/v(1)",
+          "note": "conductance seen at each engine's own timepoints with |v(1)| > 0.1 V",
+          "spiceTs": {
+            "min": 0.0002,
+            "max": 0.00020000000000000004
+          },
+          "ngspice": {
+            "min": 0.00019999999999999993,
+            "max": 0.0002000000000000001
+          }
+        },
+        {
+          "analysis": "tran",
+          "signal": "i(VR5)/v(1)",
+          "note": "conductance seen at each engine's own timepoints with |v(1)| > 0.1 V",
+          "spiceTs": {
+            "min": 0.0001,
+            "max": 0.00010000000000000002
+          },
+          "ngspice": {
+            "min": 0.00009999999999999999,
+            "max": 0.00010000000000000003
+          }
+        }
+      ]
+    },
+    {
+      "id": "res_partition",
+      "fixture": "https://sourceforge.net/p/ngspice/ngspice/ci/3ef069fb1f04177a153f342a32d941fc20ff047e/tree/tests/resistance/res_partition.cir",
+      "forms": "r2 2 0 5K ac=15k",
+      "identicalNetlist": true,
+      "netlistSha256": "4341fba574909ad98f5569d50a4a896af3172843a0b6aa56846ad78b00776cab",
+      "signals": [
+        {
+          "analysis": "op",
+          "signal": "v(2)",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "analysis": "op",
+          "signal": "i(vin)",
+          "status": "compared",
+          "points": 1,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "analysis": "ac",
+          "signal": "|v(2)|",
+          "status": "compared",
+          "points": 41,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        },
+        {
+          "analysis": "ac",
+          "signal": "|i(vin)|",
+          "status": "compared",
+          "points": 41,
+          "maxAbsoluteError": 0,
+          "maxRelativeError": 0,
+          "maxErrorOverNgspicePeak": 0,
+          "rmsRelativeError": 0
+        }
+      ]
+    }
+  ]
+}

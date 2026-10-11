@@ -110,7 +110,10 @@ function collectTargets(compiled: CompiledCircuit, mode: 'dc' | 'ac'): Parameter
 
 function parameterTarget(device: DeviceModel, mode: 'dc' | 'ac'): ParameterTarget | null {
   if (device instanceof Resistor) {
-    return mutable(device, 'resistance', device.resistance, value => device.setParameter(value));
+    if (mode === 'ac' && device.hasAcResistance) {
+      throw unsupported(device, 'AC sensitivity of a resistor with an ac= resistance is not supported');
+    }
+    return mutable(device, 'resistance', device.getParameter(), value => device.setParameter(value));
   }
   if (device instanceof Capacitor) {
     if (mode === 'dc') return null;

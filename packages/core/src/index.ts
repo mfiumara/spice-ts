@@ -82,3 +82,4 @@ export {
 } from './errors.js';
 export type { ConvergenceFailureKind } from './errors.js';
 export { UnsupportedCodeModelError } from './parser/xspice-parser.js';
+export { UnsupportedResistorParameterError } from './parser/resistor-parser.js';
