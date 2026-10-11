@@ -146,6 +146,23 @@ describe('preprocessor', () => {
       expect(result).toContain('.model rtest r r=1027');
     });
 
+    it('evaluates TEMPER at the .options TEMP circuit temperature; the last TEMP wins', async () => {
+      const result = await preprocess([
+        '.options reltol=1e-4 temp=40',
+        "R1 1 0 r = {1k + TEMPER}",
+        ".model rtest r r='1000 + temper'",
+        '.option TEMP = 50',
+        '.op',
+      ].join('\n'));
+      expect(result).toContain('R1 1 0 r = 1050');
+      expect(result).toContain('.model rtest r r=1050');
+    });
+
+    it('ignores TEMP fields outside .options when choosing TEMPER', async () => {
+      const result = await preprocess(".model q1 npn temp=80\nR1 1 0 {TEMPER}\n.op");
+      expect(result).toContain('R1 1 0 27');
+    });
+
     it('rejects TEMPER under a .step TEMP sweep instead of freezing it at 27 C', async () => {
       const failure = await preprocess("T\n.model d1 d is='1e-12*temper'\n.step temp list 0 50\n.op")
         .catch((e: unknown) => e);

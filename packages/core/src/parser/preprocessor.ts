@@ -47,7 +47,7 @@ export async function preprocessLines(
   // ngspice collects every top-level `.param` before substituting, so a
   // parameter may be used before its definition and the last definition wins.
   const temperatureSweep = statements.find(isTemperatureSweep);
-  const scopes = createParamScopes(definitions, temperatureSweep);
+  const scopes = createParamScopes(definitions, temperatureSweep, circuitTemperature(statements));
   return statements.map(statement => statement.substitute
     ? substituteStatement(statement, scopes)
     : statement.text).join('\n');
@@ -79,13 +79,34 @@ interface ParamScopes {
   numparam: Record<string, number>;
 }
 
-/**
- * spice-ts simulates at the ngspice default circuit temperature: `.temp` and
- * `.options temp=` are rejected by the parser, so TEMPER is 27 C unless the
- * deck sweeps temperature.
- */
-const CIRCUIT_TEMPERATURE_CELSIUS = 27;
+/** ngspice's default circuit temperature in Celsius. */
+const DEFAULT_CIRCUIT_TEMPERATURE_CELSIUS = 27;
 const TEMPER = 'TEMPER';
+
+const OPTIONS_CARD = /^\s*\.opt(?:ion|ions)?(?:\s|$)/i;
+const OPTIONS_TEMP_FIELD = /(?:^|\s)temp\s*=\s*([^\s=]+)/gi;
+
+/**
+ * Circuit temperature that TEMPER reads: the last `TEMP=` field of the
+ * top-level `.options` cards (as the parser applies them), else 27 C. `.temp`
+ * cards are rejected by the parser. An unparsable value is left to the
+ * `.options` parser to report.
+ */
+function circuitTemperature(statements: PendingStatement[]): number {
+  let temperature = DEFAULT_CIRCUIT_TEMPERATURE_CELSIUS;
+  for (const statement of statements) {
+    if (statement.control || !OPTIONS_CARD.test(statement.text)) continue;
+    const text = statement.text.slice(0, commentStart(statement.text));
+    for (const match of text.matchAll(OPTIONS_TEMP_FIELD)) {
+      try {
+        temperature = parseNumber(match[1]);
+      } catch {
+        // reported by the .options parser
+      }
+    }
+  }
+  return temperature;
+}
 
 /** `.step [lin|dec|oct] [param] temp ...` or `.dc temp ...`; control blocks sweep with `dc temp ...`. */
 const TEMPERATURE_SWEEP = /^\s*(?:\.step\s+(?:(?:lin|dec|oct)\s+)?(?:param\s+)?temp\b|\.dc\s+temp\b)/i;
@@ -102,6 +123,7 @@ function isTemperatureSweep(statement: PendingStatement): boolean {
 function createParamScopes(
   definitions: Map<string, ParamDefinition>,
   temperatureSweep: PendingStatement | undefined,
+  temperature: number,
 ): ParamScopes {
   const values = new Map<string, number>();
   const resolving: string[] = [];
@@ -124,10 +146,10 @@ function createParamScopes(
       throw new Error(
         'TEMPER-dependent expressions are not supported with a temperature sweep '
         + `(.step TEMP or dc TEMP, line ${temperatureSweep.line}): spice-ts evaluates parameter `
-        + `expressions once, at the ${CIRCUIT_TEMPERATURE_CELSIUS} C circuit temperature`,
+        + `expressions once, at the ${temperature} C circuit temperature`,
       );
     }
-    return CIRCUIT_TEMPERATURE_CELSIUS;
+    return temperature;
   }
 
   function resolve(name: string): number {
