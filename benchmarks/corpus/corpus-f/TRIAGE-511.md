@@ -4,7 +4,7 @@ Hand-written companion to the generated [README.md](README.md). Machine-readable
 
 Scope: all ten rows of the #511 table, the two other mismatches present in the imported report, and the two mismatches exposed by the refresh on main `e58322ea` (switches-manual-p92, adder_mos_circ). The seven newly runnable mismatches found by the first refresh on `bf2e4169` remain published losses. They are explicitly deferred to [#597](https://github.com/mfiumara/spice-ts/issues/597), not claimed as root-caused here. No fixture, tolerance, threshold or metric was changed. Current measurements (the "Now" column and `outcomes.json`) use ngspice-47 and the simulator at main `e58322ea`; `packages/` on this branch is byte-identical to it. They use the published corpus-f metric with the published corpus-f metric (worst over signals of max|spice-ts - ngspice| / max(peak|ngspice|, 1e-12), ngspice interpolated onto spice-ts points with breakpoint alignment). Values attributed to `bf2e4169` are historical and appear only where they explain an issue. Diagnostic variants are labelled separately.
 
-This triage covers the batch-1 `outcomes.json` table only. The "Control-vector supplement (#521)" in README.md is generated separately by `control-vectors.ts` and is not triaged here.
+This triage covers the batch-1 `outcomes.json` table only. The "Control-vector supplement (#521)" in README.md is generated separately by `control-vectors.ts`. It was refreshed on the same tree (all 207 control decks: 13 matched, 36 mismatched, 10 not compared, 130 spice-ts losses, 1 ngspice-only failure, 17 both-engine failures) but is not triaged here. Its mismatches remain linked to #511 or their gap issues.
 
 ## Tool
 
