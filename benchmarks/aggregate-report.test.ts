@@ -147,7 +147,8 @@ describe('aggregate report artifact verification', () => {
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #562') && text.includes('reproduces outcome 3c88e414') && text.includes('PR #554') && text.includes('d4a0994d to fa95e5d0')));
     // #564 losses published; #556, #543 and #557 are outcome-neutral.
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #564') && text.includes('onoise_total 9.83e-12 to 1.32e-11') && text.includes('v(x3.3) 0.8435 to 0.8457 V')
-      && text.includes('PR #556') && text.includes('PR #543') && text.includes('PR #557') && text.includes('PR #563')));
+      && text.includes('PR #556') && text.includes('PR #543') && text.includes('PR #557') && text.includes('PR #563')
+      && text.includes('PR #569') && text.includes('PR #571') && text.includes('fa95e5d0 to 596e6067')));
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.startsWith('.OPTIONS TEMP') && text.includes('#459') && text.includes('only ngspice/vbic-temperature')));
     const vbicAc = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/vbic-common-emitter-ac');
     assert.equal(vbicAc.spiceTs.status, 'success');
@@ -242,7 +243,7 @@ describe('aggregate report artifact verification', () => {
 
     assert.deepEqual(report.provenance, {
       fixtureTreeSha256: '13b4675cfb97766fc7caed79d023ca514840880d17cb924c0e70561ff8b82e00',
-      sourcesSha256: 'fd8b534c908d9248278301a9ec9f2189372f0c70674378a85b6ee7391cf95a0c',
+      sourcesSha256: '649db81aef8f1de23d39c400b1249cd926289d5060f4f3ef76c60ae97730dc2e',
     });
   });
 

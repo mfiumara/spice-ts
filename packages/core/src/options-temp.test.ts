@@ -54,6 +54,21 @@ R1 1 0 1k TC1=1e-3 TC2=1e-6
     expect(result.dc!.current('V1')).toBeCloseTo(-1 / resistance, 12);
   });
 
+  it('applies TEMP to .model R TC1/TC2 and instance tce like ngspice-47 restemp.c', async () => {
+    // ngspice-47 `print` on the same deck: i(v1) = -9.00900900901e-4, i(v2) = -6.08038824689e-4.
+    const result = await simulate(`rmodel temp
+V1 1 0 1
+R1 1 0 1k RM
+.model RM R TC1=1e-3 TC2=1e-6
+V2 2 0 1
+R2 2 0 1k tce=0.5
+.options TEMP=127
+.op`);
+
+    expect(result.dc!.current('V1')).toBeCloseTo(-9.00900900901e-4, 14);
+    expect(result.dc!.current('V2')).toBeCloseTo(-6.08038824689e-4, 14);
+  });
+
   it('applies TEMP to B-source tc1/tc2 and temper like ngspice-47 asrctemp.c', async () => {
     // ngspice-47 `print` on the same deck: v(2) = 3, v(3) = 77, v(4) = 1.75.
     const result = await simulate(`asrc temp
