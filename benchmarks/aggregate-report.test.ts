@@ -154,7 +154,7 @@ describe('aggregate report artifact verification', () => {
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #529') && text.includes('PR #586') && text.includes('PR #579')
       && text.includes('PR #587') && text.includes('PR #585') && text.includes('PR #599') && text.includes('PR #580')
       && text.includes('13b4675c to d5327777') && text.includes('outcome-neutral together')
-      && text.includes('PR #601') && text.includes('worst 0.248 V v(3) to 1.40e-3 V v(4)') && text.includes('v(2) abs max 0.0768 to 0.0836 V')));
+      && text.includes('PR #601') && text.includes('worst 0.248 V v(3) to 1.40e-3 V v(4)') && text.includes('PR #610') && text.includes('PR #605') && text.includes('e9d9663c to a0fc235c') && text.includes('v(2) abs max 0.0768 to 0.0836 V')));
     const vbicAc = report.fixtures.find((fixture: { key: string }) => fixture.key === 'ngspice/vbic-common-emitter-ac');
     assert.equal(vbicAc.spiceTs.status, 'success');
     assert.deepEqual(vbicAc.comparisons.map((comparison: { analysis: string }) => comparison.analysis), ['ac', 'pz']);
@@ -248,7 +248,7 @@ describe('aggregate report artifact verification', () => {
 
     assert.deepEqual(report.provenance, {
       fixtureTreeSha256: 'd53277772db73fd3fb2a193f323b0681db173fa8798b764b97755998a5f36d87',
-      sourcesSha256: 'e9d9663c395843d0f3ce15e7ef49e2d0c5c3cd837aa8f36401cf6b4992e47710',
+      sourcesSha256: 'a0fc235cd194ff914fabcf25718c6f67f709d95263dfcdf507f8feb5226cf457',
     });
   });
 
