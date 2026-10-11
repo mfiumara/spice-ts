@@ -251,7 +251,7 @@ R2 2 0 1k
   it.each([
     '.temp 27\n.op',
     '.measure tran peak MAX v(out)\n.op',
-    '.control\nop\n.endc',
+    '.control\nlet x = 1\n.endc',
   ])('rejects unsupported semantic/control directives: %s', netlist => {
     expect(() => parse(netlist)).toThrow();
   });
@@ -290,9 +290,6 @@ ${control}
   });
 
   it.each([
-    ['op', 'op'],
-    ['ac lin 1 1k 1k', 'ac'],
-    ['tran 1u 1m', 'tran'],
     ['let x = v(2)', 'let'],
     ['set temp = 50', 'set'],
     ['alter R1 2k', 'alter'],

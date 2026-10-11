@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { VoltageSource, pulseBreakpoints, pwlBreakpoints } from './voltage-source.js';
+import { VoltageSource, evaluatePulse, pulseBreakpoints, pwlBreakpoints } from './voltage-source.js';
 import type { PulseSource, PWLSource } from '../types.js';
 
 describe('pulseBreakpoints', () => {
@@ -74,6 +74,51 @@ describe('pulseBreakpoints', () => {
       rise: 2e-9, fall: 2e-9, width: 80e-9, period: Infinity,
     };
     expect(pulseBreakpoints(p, 200e-9)).toEqual([2e-9, 2e-9 + 2e-9, 2e-9 + 2e-9 + 80e-9, 2e-9 + 2e-9 + 80e-9 + 2e-9]);
+  });
+
+  it('stops after NP pulses, keeping the one corner ngspice schedules past NP*PER (#492)', () => {
+    // ngspice-47 vsrcacct.c: no breakpoint is scheduled once TIME-TD > NP*PER,
+    // but the evaluation at TIME-TD == NP*PER still queues the next corner.
+    // `pulse(0 1 0 0.1 0.1 0.3 1 2)` over 5 s: ngspice -b steps through
+    // 2.0 and 2.1 and then never lands on another corner.
+    const p: PulseSource = {
+      type: 'pulse', v1: 0, v2: 1, delay: 0,
+      rise: 0.1, fall: 0.1, width: 0.3, period: 1, pulses: 2,
+    };
+    expectCloseList(pulseBreakpoints(p, 5), [0, 0.1, 0.4, 0.5, 1, 1.1, 1.4, 1.5, 2, 2.1]);
+  });
+
+  it('ignores a non-positive NP like ngspice (PHASE > 0 guard)', () => {
+    const p: PulseSource = {
+      type: 'pulse', v1: 0, v2: 1, delay: 0,
+      rise: 0.1, fall: 0.1, width: 0.3, period: 1, pulses: 0,
+    };
+    expectCloseList(pulseBreakpoints(p, 2), [0, 0.1, 0.4, 0.5, 1, 1.1, 1.4, 1.5]);
+  });
+});
+
+function expectCloseList(actual: number[], expected: number[]): void {
+  expect(actual).toHaveLength(expected.length);
+  expected.forEach((value, index) => expect(actual[index]).toBeCloseTo(value, 14));
+}
+
+describe('evaluatePulse number of pulses (NP)', () => {
+  const p: PulseSource = {
+    type: 'pulse', v1: -1, v2: 1, delay: 0.5,
+    rise: 0.1, fall: 0.1, width: 0.3, period: 1, pulses: 2,
+  };
+
+  it('repeats only NP pulses after the delay, then holds V1 (ngspice vsrcload.c)', () => {
+    expect(evaluatePulse(p, 0.5 + 0.2)).toBe(1);
+    expect(evaluatePulse(p, 1.5 + 0.2)).toBe(1);
+    expect(evaluatePulse(p, 2.5 + 0.2)).toBe(-1);
+    expect(evaluatePulse(p, 9.5 + 0.2)).toBe(-1);
+  });
+
+  it('truncates a fractional NP at NP*PER after the delay', () => {
+    const half = { ...p, pulses: 1.25 };
+    expect(evaluatePulse(half, 0.5 + 1.2)).toBe(1);
+    expect(evaluatePulse(half, 0.5 + 1.3)).toBe(-1);
   });
 });
 

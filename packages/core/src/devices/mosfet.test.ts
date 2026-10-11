@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, it, expect } from 'vitest';
 import { simulate } from '../simulate.js';
+import { MOSFET } from './mosfet.js';
 
 describe('MOSFET Level 1', () => {
   it('NMOS inverter: high input → low output', async () => {
@@ -321,6 +322,134 @@ describe('MOSFET model-name resolution (issue #427)', () => {
     const peak = supply.reduce((max, value) => Math.max(max, Math.abs(value)), 0);
     expect(peak).toBeLessThan(1.774848e-3 * 1.05);
     expect(peak).toBeGreaterThan(1.774848e-3 * 0.95);
+  });
+});
+
+// ngspice-47 model/instance defaults (issue #518): mos1set.c VTO=0 (mos2set.c
+// and mos3set.c too), cktinit.c CKTdefaultMosW/L = 100u, and mos1temp.c
+// KP = UO*(3.9*eps0/TOX)*1e-4 with UO=600 when TOX is given without KP.
+// Every reference value is ngspice-47 batch output for the identical netlist.
+describe('MOSFET model defaults match ngspice-47 (issue #518)', () => {
+  const relativeError = (actual: number, expected: number): number =>
+    Math.abs(actual - expected) / Math.abs(expected);
+
+  it('defaults VTO to 0 V like ngspice mos1set.c (MOS1_out.cir at vd=vg=5)', async () => {
+    const result = await simulate(`
+      vb Nvf 0 0
+      vd Nvd 0 5
+      vg Nvg 0 5
+      vs1 Nvs1 0 0
+      vs2 Nvs2 0 0
+      vs3 Nvs3 0 0
+      M1  Nvd Nvg Nvs1 Nvf  NMOS
+      M2  Nvd Nvg Nvs2 Nvf  NMOS W=10u L=5u
+      M3  Nvd Nvg Nvs3 Nvf  NMOS3
+      .MODEL  NMOS         NMOS (LEVEL  = 1  L = 3u  W = 9u)
+      .MODEL  NMOS3        NMOS (LEVEL  = 1)
+      .op
+      .end
+    `);
+    // ngspice-47: vs1 7.5e-4, vs2 5.0e-4, vs3 2.5e-4, vd -1.5e-3, vb 1.503e-11.
+    expect(relativeError(result.dc!.current('vs1'), 7.5e-4)).toBeLessThan(1e-6);
+    expect(relativeError(result.dc!.current('vs2'), 5.0e-4)).toBeLessThan(1e-6);
+    expect(relativeError(result.dc!.current('vs3'), 2.5e-4)).toBeLessThan(1e-6);
+    expect(relativeError(result.dc!.current('vd'), -1.5e-3)).toBeLessThan(1e-6);
+    expect(relativeError(result.dc!.current('vb'), 1.503e-11)).toBeLessThan(1e-3);
+  });
+
+  it('defaults an omitted instance W or L to 100u like ngspice CKTdefaultMosW/L', async () => {
+    const result = await simulate(`
+      vd d 0 5
+      vg g 0 2
+      M1 d g 0 0 NM W=10u
+      M2 d g 0 0 NM L=50u
+      .MODEL NM NMOS (LEVEL=1 KP=1e-4 VTO=1)
+      .op
+      .end
+    `);
+    // ngspice-47: vd#branch = -1.05000e-04 (W/L = 0.1 and 2).
+    expect(relativeError(result.dc!.current('vd'), -1.05e-4)).toBeLessThan(1e-6);
+  });
+
+  it('derives KP from TOX and UO when KP is omitted, like ngspice mos1temp.c', async () => {
+    const result = await simulate(`
+      vg g 0 2
+      vd2 d2 0 5
+      M3 d2 g 0 0 NOX
+      .MODEL NOX NMOS (LEVEL=1 VTO=1 TOX=1e-8)
+      vd3 d3 0 5
+      M4 d3 g 0 0 NOXU
+      .MODEL NOXU NMOS (LEVEL=1 VTO=1 TOX=2e-8 UO=400)
+      .op
+      .end
+    `);
+    // ngspice-47: vd2#branch = -1.03594e-04, vd3#branch = -3.45314e-05.
+    expect(relativeError(result.dc!.current('vd2'), -1.03594e-4)).toBeLessThan(1e-5);
+    expect(relativeError(result.dc!.current('vd3'), -3.45314e-5)).toBeLessThan(1e-5);
+  });
+
+  it('derives VTO from NSUB (with GAMMA, PHI, NSS, TPG) like ngspice mos1/2/3temp.c', async () => {
+    // ngspice-47 showmod after .op (6 significant digits).
+    const cases: Array<[Record<string, number>, number, number, number]> = [
+      [{ LEVEL: 1, TOX: 1e-7, NSUB: 1e16 }, 1, 1.1816, 2.07189e-5],
+      [{ LEVEL: 1, TOX: 5e-8, NSUB: 3e15, NSS: 1e10, UO: 500 }, 1, 0.0994357, 3.45314e-5],
+      [{ LEVEL: 1, TOX: 1e-7, NSUB: 1e16, TPG: 0, PHI: 0.7 }, 1, 1.13841, 2.07189e-5],
+      [{ LEVEL: 1, TOX: 1e-7, NSUB: 1e16, TPG: -1, GAMMA: 0.5 }, 1, 1.32224, 2.07189e-5],
+      [{ LEVEL: 1, TOX: 1e-7, NSUB: 1e16 }, -1, -1.1816, 2.07189e-5],
+      [{ LEVEL: 2, TOX: 0.11e-6, NSUB: 2.2e15, UO: 575, NSS: 3.2e10, KP: 2e-5, PHI: 0.6 }, 1, 0.245948, 2e-5],
+      [{ LEVEL: 3, TOX: 2e-8, NSUB: 5e16 }, 1, 0.489715, 1.03594e-4],
+    ];
+    for (const [card, polarity, vto, kp] of cases) {
+      const device = new MOSFET('M', [0, 1, -1, -1], { ...card, polarity });
+      expect(relativeError(device.params.VTO, vto)).toBeLessThan(1e-5);
+      expect(relativeError(device.params.KP, kp)).toBeLessThan(1e-5);
+    }
+    const result = await simulate(`
+      vd1 d1 0 5
+      vd2 d2 0 5
+      vg g 0 5
+      vp dp 0 -5
+      vgp gp 0 -5
+      M1 d1 g 0 0 N1
+      M2 d2 g 0 0 N2
+      M7 dp gp 0 0 P1
+      .MODEL N1 NMOS (LEVEL=1 TOX=1e-7 NSUB=1e16)
+      .MODEL N2 NMOS (LEVEL=1 TOX=5e-8 NSUB=3e15 NSS=1e10 UO=500)
+      .MODEL P1 PMOS (LEVEL=1 TOX=1e-7 NSUB=1e16)
+      .op
+      .end
+    `);
+    // ngspice-47: vd1#branch -1.51042e-04, vd2#branch -4.14645e-04, vp#branch 1.510424e-04.
+    expect(relativeError(result.dc!.current('vd1'), -1.51042e-4)).toBeLessThan(1e-5);
+    expect(relativeError(result.dc!.current('vd2'), -4.14645e-4)).toBeLessThan(1e-5);
+    expect(relativeError(result.dc!.current('vp'), 1.510424e-4)).toBeLessThan(1e-5);
+  });
+
+  it('keeps the historical VTO=1, KP=2e-5 fallback for non-MOS1-3 levels', () => {
+    const device = new MOSFET('M', [0, 1, -1, -1], { LEVEL: 4, TOX: 3e-2 });
+    expect(device.params.VTO).toBe(1);
+    expect(device.params.KP).toBe(2e-5);
+  });
+
+  it('scales gate overlap capacitance by the default W=100u', async () => {
+    const result = await simulate(`
+      vin in 0 dc 0 ac 1
+      r1 in g 1meg
+      M1 0 g 0 0 NM
+      .MODEL NM NMOS (LEVEL=1 CGSO=1e-9)
+      .ac dec 1 1e5 1e7
+      .end
+    `);
+    // ngspice-47 v(g): 1e5 9.960677e-01,-6.25848e-02; 1e6 7.169568e-01,-4.50477e-01;
+    // 1e7 2.470452e-02,-1.55223e-01 (CGSO*W = 1e-13 F against 1 Mohm).
+    const reference = [[9.960677e-1, -6.25848e-2], [7.169568e-1, -4.50477e-1], [2.470452e-2, -1.55223e-1]];
+    const response = result.ac!.voltage('g');
+    expect(response).toHaveLength(reference.length);
+    response.forEach((point, index) => {
+      const [re, im] = reference[index];
+      expect(relativeError(point.magnitude, Math.hypot(re, im))).toBeLessThan(1e-5);
+      expect(point.phase).toBeCloseTo(Math.atan2(im, re) * 180 / Math.PI, 3);
+    });
   });
 });
 

@@ -269,7 +269,7 @@ function pnjlim(voltage: number, previous: number, criticalVoltage: number): num
  * QTF = VTF = CBEO = CBCO = CCSO = 0. With TD > 0 the forward transport current
  * passes through ngspice's second-order excess-phase network (nodes xf1/xf2).
  */
-function evaluate(voltages: readonly number[], params: VBICParams): Evaluation {
+function evaluate(voltages: readonly number[], params: VBICParams, instanceScale: number): Evaluation {
   const size = voltages.length;
   const nodeCount = size === BRANCHES.length ? XF1 : XF2 + 1;
   const excessPhase = nodeCount > XF2;
@@ -354,24 +354,29 @@ function evaluate(voltages: readonly number[], params: VBICParams): Evaluation {
     charge[from] = add(charge[from], stored);
     charge[to] = sub(charge[to], stored);
   };
-  // ngspice vbicload.c adds CKTgmin to Ibe, Ibex, Ibc, Ibep, Ibcp and to
-  // Irci (via Vrci, Vbci and Vbcx). Ibep/Ibcp diode currents are zero in the
-  // bounded subset (IBEIP/IBENP/IBCIP/IBCNP unsupported), leaving only gmin.
-  branch(CX, CI, add(irci, scale(add(add(vrci, vbci), vbcx), GMIN)));
-  branch(BX, BI, irbi);
-  branch(BP, CX, irbp);
-  branch(BI, EI, add(ibe, scale(vbei, GMIN)));
-  branch(BX, EI, add(ibex, scale(vbex, GMIN)));
-  branch(CI, EI, iciei);
-  branch(BI, CI, add(ibc, scale(vbci, GMIN)));
+  // ngspice vbic_4T_et_cf_fj scales every current and charge by
+  // SCALE = area * m; the excess-phase network rows stay per-unit because
+  // Iciei = SCALE * (V(xf2) - Itzr) is scaled once at the device branch.
+  const s = (quantity: Dual): Dual => (instanceScale === 1 ? quantity : scale(quantity, instanceScale));
+  // ngspice vbicload.c then adds an unscaled CKTgmin to Ibe, Ibex, Ibc, Ibep,
+  // Ibcp and to Irci (via Vrci, Vbci and Vbcx). Ibep/Ibcp diode currents are
+  // zero in the bounded subset (IBEIP/IBENP/IBCIP/IBCNP unsupported), leaving
+  // only gmin.
+  branch(CX, CI, add(s(irci), scale(add(add(vrci, vbci), vbcx), GMIN)));
+  branch(BX, BI, s(irbi));
+  branch(BP, CX, s(irbp));
+  branch(BI, EI, add(s(ibe), scale(vbei, GMIN)));
+  branch(BX, EI, add(s(ibex), scale(vbex, GMIN)));
+  branch(CI, EI, s(iciei));
+  branch(BI, CI, add(s(ibc), scale(vbci, GMIN)));
   branch(BX, BP, scale(vbep, GMIN));
   branch(SI, BP, scale(vbcp, GMIN));
-  branch(BX, SI, iccp);
-  store(BI, EI, qbe);
-  store(BI, CI, qbc);
-  store(BI, CX, qbcx);
-  store(BX, BP, qbep);
-  store(SI, BP, qbcp);
+  branch(BX, SI, s(iccp));
+  store(BI, EI, s(qbe));
+  store(BI, CI, s(qbc));
+  store(BI, CX, s(qbcx));
+  store(BX, BP, s(qbep));
+  store(SI, BP, s(qbcp));
   if (excessPhase) {
     residual[XF1] = sub(xf2, itzf);
     residual[XF2] = sub(xf2, xf1);
@@ -405,6 +410,8 @@ export class VBIC implements DeviceModel {
     readonly nodes: number[],
     supplied: Record<string, number>,
     polarity: number,
+    /** ngspice instance SCALE = AREA * M; the circuit divides the series resistors by it. */
+    private readonly instanceScale = 1,
   ) {
     this.params = resolveVBICParams(supplied, polarity);
     const expected = vbicNodeCount(this.params);
@@ -412,7 +419,8 @@ export class VBIC implements DeviceModel {
       throw new InvalidCircuitError(`Bounded VBIC device requires ${expected} internal nodes`);
     }
     this.branchTerminals = expected > XF1 ? [...BRANCHES, ...EXCESS_PHASE_BRANCHES] : BRANCHES;
-    this.criticalVoltage = VT * Math.log(VT / (Math.SQRT2 * this.params.IS));
+    // vbictemp.c: tVcrit from IS * area * m.
+    this.criticalVoltage = VT * Math.log(VT / (Math.SQRT2 * this.params.IS * instanceScale));
   }
 
   /** Branch voltages of the evaluation, in {@link BRANCHES} order. */
@@ -470,7 +478,7 @@ export class VBIC implements DeviceModel {
   stamp(ctx: StampContext): void {
     const voltages = this.branchVoltages(ctx);
     this.limitJunctions(voltages);
-    const { residual } = evaluate(voltages, this.params);
+    const { residual } = evaluate(voltages, this.params, this.instanceScale);
     for (let row = 0; row < this.nodes.length; row += 1) {
       const matrixRow = this.nodes[row];
       if (matrixRow < 0) continue;
@@ -496,7 +504,7 @@ export class VBIC implements DeviceModel {
    * linearized AC and pole-zero analyses reach this: transient stays rejected.
    */
   stampDynamic(ctx: StampContext): void {
-    const { charge } = evaluate(this.branchVoltages(ctx), this.params);
+    const { charge } = evaluate(this.branchVoltages(ctx), this.params, this.instanceScale);
     for (let row = 0; row < this.nodes.length; row += 1) {
       const matrixRow = this.nodes[row];
       if (matrixRow < 0) continue;

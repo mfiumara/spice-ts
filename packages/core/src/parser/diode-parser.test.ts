@@ -15,6 +15,13 @@ describe('parseDiodeInstanceParams', () => {
     },
   );
 
+  it('rejects the ngspice thermal-node form with a typed self-heating error (#490)', () => {
+    expect(() => parseDiodeInstanceParams(['D1', '1', '0', 'tj', 'dmod', 'thermal'], 4))
+      .toThrow("Unsupported diode thermal node 'tj' (model 'dmod'): diode self-heating is not implemented");
+    expect(() => parseDiodeInstanceParams(['D1', '1', '0', 'dmod', 'thermal'], 4))
+      .toThrow("Unsupported diode instance flag: 'THERMAL' (diode self-heating is not implemented)");
+  });
+
   it('validates geometry domains', () => {
     expect(() => parseDiodeInstanceParams(['D1', '1', '0', 'DMOD', 'AREA=0'], 4))
       .toThrow('Diode AREA must be greater than zero');

@@ -184,3 +184,106 @@ describe('jimi-fuzz source regression', () => {
     expect((source as VoltageSource).getVoltageAtTime(1 / (4 * 440))).toBeCloseTo(0.3, 12);
   });
 });
+
+// Cards copied byte-for-byte from the corpus-f batch-1 fixtures (ngspice tree
+// 3ef069fb, BSD-3-Clause; see #484/#492). ngspice-47's INPgetUTok treats '('
+// and ')' on a source card as separators, so every form below is a plain
+// value list to ngspice.
+describe('ngspice parenthesised and extended source waveforms (#492)', () => {
+  const sourceOf = (card: string) => {
+    const source = parse(`corpus-f source\n${card}\n.end`).compile().devices[0];
+    expect(source).toBeInstanceOf(VoltageSource);
+    return (source as VoltageSource).waveform;
+  };
+
+  it('accepts a whole parenthesised PWL after the DC value (cider/diode/pd1.cir)', () => {
+    expect(sourceOf('VIN 1 0 0.0v (PWL 0ns 0.8v 1ns -50.0v)')).toEqual({
+      type: 'pwl', dc: 0,
+      points: [{ time: 0, value: 0.8 }, { time: 1e-9, value: -50 }],
+    });
+  });
+
+  it('accepts parenthesised PWL and AC groups (cider/diode/diode.cir)', () => {
+    expect(sourceOf('Vpp 1 0 0.7v (PWL 0ns 3.0v 0.01ns -6.0v) (AC 1v)')).toEqual({
+      type: 'pwl', dc: 0.7, ac: { magnitude: 1, phase: 0 },
+      points: [{ time: 0, value: 3 }, { time: 0.01e-9, value: -6 }],
+    });
+  });
+
+  it('accepts a whole parenthesised PULSE (cider/serial/recovery.cir)', () => {
+    expect(sourceOf('VPP 1 0 0.0V (PULSE 1.0V -1.0V 1NS 1PS 1PS 20NS 40NS)')).toEqual({
+      type: 'pulse', dc: 0, v1: 1, v2: -1, delay: 1e-9, rise: 1e-12, fall: 1e-12,
+      width: 20e-9, period: 40e-9,
+    });
+  });
+
+  it('accepts parenthesised PWL time/value pairs (xspice digital_models*.deck)', () => {
+    expect(sourceOf('vdata1 100 0 DC PWL( (0 0.0) (2 0.0) (2.0000000001 1.0) (3 1.0) ) ')).toEqual({
+      type: 'pwl',
+      points: [
+        { time: 0, value: 0 }, { time: 2, value: 0 },
+        { time: 2.0000000001, value: 1 }, { time: 3, value: 1 },
+      ],
+    });
+  });
+
+  it('accepts bare parenthesised PWL pairs across a continuation (cider/mos/bootinv.cir)', () => {
+    expect(sourceOf([
+      'Vin 5 0 0.0v PWL (0.0ns 5.0v) (1ns 0.0v) (10ns 0.0v) (11ns 5.0v)',
+      '+ (20ns 5.0v) (21ns 0.0v) (30ns 0.0v) (31ns 5.0v)',
+    ].join('\n'))).toEqual({
+      type: 'pwl', dc: 0,
+      points: [
+        { time: 0, value: 5 }, { time: 1e-9, value: 0 },
+        { time: 10e-9, value: 0 }, { time: 11e-9, value: 5 },
+        { time: 20e-9, value: 5 }, { time: 21e-9, value: 0 },
+        { time: 30e-9, value: 0 }, { time: 31e-9, value: 5 },
+      ],
+    });
+  });
+
+  it('reads the eighth PULSE field as ngspice NP (xspice arbitrary_phase.deck)', () => {
+    expect(sourceOf('v2 2 0 0.0 pulse(-1 1 0 1e-5 1e-5 5e-4 1e-3 45.0)')).toEqual({
+      type: 'pulse', dc: 0, v1: -1, v2: 1, delay: 0, rise: 1e-5, fall: 1e-5,
+      width: 5e-4, period: 1e-3, pulses: 45,
+    });
+  });
+
+  it.each([
+    ['V1 1 0 PULSE(0 1 0 0.1 0.1 0.3 1 2 7)', /Unsupported PULSE source parameters: '7'/],
+    ['V1 1 0 PWL(0 0 1 1) R=1u', /Unsupported PWL source parameters: 'R=1u'/],
+    ['V1 1 0 (PULSE 0 1 0 0.1 0.1 0.3 1) TD=1', /Unsupported PULSE source parameters: 'TD=1'/],
+  ])('keeps strict structured diagnostics for %s', (card, diagnostic) => {
+    try {
+      parse(`strict source\n${card}`);
+      expect.fail('expected the source card to be rejected');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ParseError);
+      expect(error).toMatchObject({ line: 2, context: card });
+      expect((error as Error).message).toMatch(diagnostic);
+    }
+  });
+
+  it('round-trips NP through netlist export', () => {
+    const netlist = parse('np\nV3 3 0 PULSE(0 1 0 0.1 0.1 0.3 1 2)\nR3 3 0 1\n.end').toNetlist();
+    expect(netlist).toContain('V3 3 0 PULSE(0 1 0 0.1 0.1 0.3 1 2)');
+    expect(parse(netlist).compile().devices.find(d => d.name === 'V3'))
+      .toMatchObject({ waveform: { pulses: 2 } });
+  });
+
+  it('stops a PULSE after NP periods in transient analysis', async () => {
+    // ngspice-47 `ngspice -b`, identical card, R load, .tran 0.1 5:
+    // v(3)=1 at t=1.1 (second pulse) and 0 at t=2.1 (no third pulse).
+    const result = await simulate(`NP pulse
+V3 3 0 0 PULSE(0 1 0 0.1 0.1 0.3 1 2)
+R3 3 0 1
+.tran 0.1 5
+.end`);
+    const time = result.transient!.time;
+    const v = result.transient!.voltage('3');
+    const at = (t: number) => v[time.findIndex(sample => Math.abs(sample - t) < 1e-9)];
+    expect(at(1.1)).toBeCloseTo(1, 12);
+    expect(at(2.1)).toBeCloseTo(0, 12);
+    expect(Math.max(...v.filter((_, i) => time[i] > 2))).toBe(0);
+  });
+});

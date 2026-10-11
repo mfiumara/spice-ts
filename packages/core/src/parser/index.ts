@@ -14,7 +14,7 @@ import {
   parseTransmissionLine,
 } from './transmission-line-parser.js';
 import { preprocess, preprocessLines } from './preprocessor.js';
-import { validateControlCommand } from './control-block.js';
+import { classifyControlCommand, repeatedControlAnalysisError } from './control-block.js';
 import { parseBehavioralSourceCard } from './behavioral-expression.js';
 import { parseZInstance } from './z-device-parser.js';
 import type { IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
@@ -78,6 +78,7 @@ function parseNetlist(
   let hasDistortionAnalysis = false;
   let hasStepAnalysis = false;
   let controlStart: { lineNumber: number; raw: string } | null = null;
+  const controlAnalyses: { type: string; lineNumber: number; raw: string }[] = [];
 
   for (const { tokens, lineNumber, raw } of lines) {
     guard?.checkpoint('parse:line');
@@ -117,7 +118,14 @@ function parseNetlist(
         } else if (first === '.CONTROL') {
           throw new ParseError("Nested '.control' blocks are not supported", lineNumber, raw);
         } else {
-          validateControlCommand(tokens, lineNumber, raw);
+          const command = classifyControlCommand(tokens, lineNumber, raw);
+          if (command.kind === 'analysis') {
+            if (circuit.analyses.some(analysis => analysis.type === command.analysisType)) {
+              throw repeatedControlAnalysisError(command.analysisType, lineNumber, raw);
+            }
+            parseDotCommand(circuit, command.dotCardTokens, lineNumber, raw);
+            controlAnalyses.push({ type: command.analysisType, lineNumber, raw });
+          }
         }
         continue;
       }
@@ -208,6 +216,13 @@ function parseNetlist(
       controlStart.lineNumber,
       controlStart.raw,
     );
+  }
+
+  // A dot card after the block can still repeat a type a control command requested.
+  for (const { type, lineNumber, raw } of controlAnalyses) {
+    if (circuit.analyses.filter(analysis => analysis.type === type).length > 1) {
+      throw repeatedControlAnalysisError(type, lineNumber, raw);
+    }
   }
 
   return circuit;
@@ -891,6 +906,7 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
         instance.modelName,
         instance.substrate,
         instance.thermal,
+        instance.params,
       );
       break;
     }

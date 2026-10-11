@@ -209,6 +209,40 @@ export function resolveBJTParams(
   return resolved;
 }
 
+/**
+ * Apply ngspice-47 instance scaling to resolved Gummel-Poon parameters.
+ *
+ * bjttemp.c multiplies IS, ISE, IKF, ITF, CJE, CJC and CJS (and the RC/RE
+ * conductances) by AREA and divides RB by it; bjtload.c then multiplies every
+ * stamp by M. For the bounded parameter set both are the same as a device
+ * with these parameters scaled by AREA*M. Flicker noise is the exception:
+ * bjtnoise.c uses M*KF*|Ib/M|^AF, so KF absorbs M^(1-AF). (ngspice also scales
+ * its gmin by M; spice-ts keeps its fixed 1e-12 S gmin.)
+ */
+export function scaleBJTInstance(
+  params: BJTParams,
+  instance: { AREA?: number; M?: number } | undefined,
+): BJTParams {
+  const area = instance?.AREA ?? 1;
+  const multiplier = instance?.M ?? 1;
+  const scale = area * multiplier;
+  if (scale === 1) return params;
+  return {
+    ...params,
+    IS: params.IS * scale,
+    ISE: params.ISE * scale,
+    IKF: params.IKF * scale,
+    ITF: params.ITF * scale,
+    CJE: params.CJE * scale,
+    CJC: params.CJC * scale,
+    CJS: params.CJS * scale,
+    RB: params.RB / scale,
+    RC: params.RC / scale,
+    RE: params.RE / scale,
+    KF: params.KF * Math.pow(multiplier, 1 - params.AF),
+  };
+}
+
 function validateChargeStorage(params: BJTParams, excessPhase: number): void {
   const nonNegative = ['CJE', 'TF', 'XTF', 'ITF', 'CJC', 'TR', 'CJS', 'MJE', 'MJC', 'MJS', 'FC'] as const;
   for (const name of nonNegative) {
@@ -265,9 +299,10 @@ export class BJT implements DeviceModel {
     readonly name: string,
     readonly nodes: number[],
     params: Partial<BJTParams> & Record<string, number>,
+    instance?: { AREA?: number; M?: number },
   ) {
     this.suppliedParams = { ...params };
-    this.params = resolveBJTParams(params);
+    this.params = scaleBJTInstance(resolveBJTParams(params), instance);
     const { CJE, CJC, CJS, TF, TR } = this.params;
     this.integratesTransientCharge = CJE > 0 || CJC > 0 || CJS > 0 || TF > 0 || TR > 0;
     if (this.integratesTransientCharge) {

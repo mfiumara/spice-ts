@@ -1,0 +1,423 @@
+{
+  "issue": 492,
+  "ngspice": "ngspice-47",
+  "method": "signals: spice-ts transient/AC output linearly interpolated onto ngspice output points (includes interpolation and timestep-control differences); sourceWaveformAtNgspiceTimes: the compiled spice-ts source evaluated exactly at ngspice output times; relative error is max |error| / max |ngspice|.",
+  "cases": [
+    {
+      "id": "pd1-paren-pwl-op",
+      "form": "DC value + whole parenthesised PWL",
+      "fixture": "examples/cider/diode/pd1.cir",
+      "analysis": "op",
+      "netlistSha256": "a9297f418b6021e49706e4cff85d5c7e868b714e037f9359740a23daf5cb55ae",
+      "ngspicePoints": 1,
+      "spiceTsPoints": 1,
+      "status": "compared",
+      "identicalToUnparenthesised": true,
+      "signals": [
+        {
+          "name": "v(1)",
+          "points": 1,
+          "maxAbsError": 0,
+          "maxRelErrorOfPeak": 0
+        },
+        {
+          "name": "v(2)",
+          "points": 1,
+          "maxAbsError": 0,
+          "maxRelErrorOfPeak": 0
+        }
+      ]
+    },
+    {
+      "id": "pindiode-paren-pwl-tran",
+      "form": "DC value + whole parenthesised PWL",
+      "fixture": "examples/cider/diode/pindiode.cir",
+      "analysis": "tran",
+      "netlistSha256": "1f17a51377ad610149d782577ea848511f06e2e3c5fdd91436a9080d2676659e",
+      "ngspicePoints": 112,
+      "spiceTsPoints": 159,
+      "status": "compared",
+      "identicalToUnparenthesised": true,
+      "sourceWaveformAtNgspiceTimes": {
+        "name": "VIN -> v(1)",
+        "points": 112,
+        "maxAbsError": 3.552713678800501e-15,
+        "maxRelErrorOfPeak": 7.105427357601002e-17
+      },
+      "signals": [
+        {
+          "name": "v(1)",
+          "points": 112,
+          "maxAbsError": 3.552713678800501e-15,
+          "maxRelErrorOfPeak": 7.105427357601002e-17
+        },
+        {
+          "name": "v(2)",
+          "points": 112,
+          "maxAbsError": 0.3713720159610645,
+          "maxRelErrorOfPeak": 0.007427440319221291
+        }
+      ]
+    },
+    {
+      "id": "diode-paren-pwl-ac-op",
+      "form": "DC value + parenthesised PWL + parenthesised AC",
+      "fixture": "examples/cider/diode/diode.cir",
+      "analysis": "op",
+      "netlistSha256": "c796bfae79786ae5f8ede421f0130b4061426239abec4351d25c1c3b79b2531a",
+      "ngspicePoints": 1,
+      "spiceTsPoints": 1,
+      "status": "compared",
+      "identicalToUnparenthesised": true,
+      "signals": [
+        {
+          "name": "v(1)",
+          "points": 1,
+          "maxAbsError": 1.1102230246251565e-16,
+          "maxRelErrorOfPeak": 1.586032892321652e-16
+        },
+        {
+          "name": "v(2)",
+          "points": 1,
+          "maxAbsError": 1.1102230246251565e-16,
+          "maxRelErrorOfPeak": 1.586032892321652e-16
+        }
+      ]
+    },
+    {
+      "id": "diode-paren-pwl-ac-ac",
+      "form": "DC value + parenthesised PWL + parenthesised AC",
+      "fixture": "examples/cider/diode/diode.cir",
+      "analysis": "ac",
+      "netlistSha256": "bb26e172905eaad5f328fa0f654eba6ec5d98c40260eafcfb9120644f3cdf872",
+      "ngspicePoints": 51,
+      "spiceTsPoints": 51,
+      "status": "compared",
+      "identicalToUnparenthesised": true,
+      "signals": [
+        {
+          "name": "vm(2)",
+          "points": 51,
+          "maxAbsError": 5.551115123125783e-16,
+          "maxRelErrorOfPeak": 5.55111621887188e-16
+        },
+        {
+          "name": "vp(2)",
+          "points": 51,
+          "maxAbsError": 5.684341886080802e-14,
+          "maxRelErrorOfPeak": 6.380578750363431e-16
+        }
+      ]
+    },
+    {
+      "id": "diotran-paren-pwl-ac-tran",
+      "form": "DC value + parenthesised PWL + parenthesised AC",
+      "fixture": "examples/cider/diode/diotran.cir",
+      "analysis": "tran",
+      "netlistSha256": "b23fbfb11dd18d00f4641dc9b6b83a9c32db659e90c6f8ffd652214cefebb47c",
+      "ngspicePoints": 1014,
+      "spiceTsPoints": 1012,
+      "status": "compared",
+      "identicalToUnparenthesised": true,
+      "sourceWaveformAtNgspiceTimes": {
+        "name": "Vpp -> v(1)",
+        "points": 1014,
+        "maxAbsError": 1.3322676295501878e-14,
+        "maxRelErrorOfPeak": 2.220446049250313e-15
+      },
+      "signals": [
+        {
+          "name": "v(1)",
+          "points": 1014,
+          "maxAbsError": 1.2434497875801753e-14,
+          "maxRelErrorOfPeak": 2.0724163126336257e-15
+        },
+        {
+          "name": "v(2)",
+          "points": 1014,
+          "maxAbsError": 0.0000902780011240445,
+          "maxRelErrorOfPeak": 0.000030092667041348165
+        }
+      ]
+    },
+    {
+      "id": "bootinv-paren-pairs-tran",
+      "form": "PWL with bare parenthesised time/value pairs across a continuation",
+      "fixture": "examples/cider/mos/bootinv.cir",
+      "analysis": "tran",
+      "netlistSha256": "ac115ea72e6c4f405701d4741b2e676f81d2d75eb6e603100e568ba24e54c32f",
+      "ngspicePoints": 231,
+      "spiceTsPoints": 346,
+      "status": "compared",
+      "identicalToUnparenthesised": true,
+      "sourceWaveformAtNgspiceTimes": {
+        "name": "Vin -> v(5)",
+        "points": 231,
+        "maxAbsError": 3.186340080674199e-14,
+        "maxRelErrorOfPeak": 6.372680161348398e-15
+      },
+      "signals": [
+        {
+          "name": "v(5)",
+          "points": 231,
+          "maxAbsError": 3.189115638235762e-14,
+          "maxRelErrorOfPeak": 6.378231276471525e-15
+        },
+        {
+          "name": "v(6)",
+          "points": 231,
+          "maxAbsError": 0.010546635131468918,
+          "maxRelErrorOfPeak": 0.0021093270262937834
+        }
+      ]
+    },
+    {
+      "id": "recovery-paren-pulse-tran",
+      "form": "DC value + whole parenthesised PULSE",
+      "fixture": "examples/cider/serial/recovery.cir",
+      "analysis": "tran",
+      "netlistSha256": "daa4b996fc3a56c1c87fc75d99a5163d1d0a461d5d5c9c66d38cf72517dfe824",
+      "ngspicePoints": 122,
+      "spiceTsPoints": 125,
+      "status": "compared",
+      "identicalToUnparenthesised": true,
+      "sourceWaveformAtNgspiceTimes": {
+        "name": "VPP -> v(1)",
+        "points": 122,
+        "maxAbsError": 4.1361358782410207e-13,
+        "maxRelErrorOfPeak": 4.1361358782410207e-13
+      },
+      "signals": [
+        {
+          "name": "v(1)",
+          "points": 122,
+          "maxAbsError": 5.435096817052454e-13,
+          "maxRelErrorOfPeak": 5.435096817052454e-13
+        },
+        {
+          "name": "v(2)",
+          "points": 122,
+          "maxAbsError": 0.0011630354931381204,
+          "maxRelErrorOfPeak": 0.0011630354931381204
+        }
+      ]
+    },
+    {
+      "id": "tbicmpd1-paren-pulse-tran",
+      "form": "DC value + whole parenthesised PULSE (floating reference)",
+      "fixture": "examples/cider/surfmob/Tbicmpd1.cir",
+      "analysis": "tran",
+      "netlistSha256": "0d5a4ced32cfadd962f3dcb3bac9d231fad60e6c398ce2480fe9e0dde13febc8",
+      "ngspicePoints": 16,
+      "spiceTsPoints": 9,
+      "status": "compared",
+      "identicalToUnparenthesised": true,
+      "sourceWaveformAtNgspiceTimes": {
+        "name": "VIN -> v(3)",
+        "points": 16,
+        "maxAbsError": 2.220446049250313e-16,
+        "maxRelErrorOfPeak": 9.824982518806696e-17
+      },
+      "signals": [
+        {
+          "name": "v(3)",
+          "points": 16,
+          "maxAbsError": 2.220446049250313e-16,
+          "maxRelErrorOfPeak": 9.824982518806696e-17
+        },
+        {
+          "name": "v(4)",
+          "points": 16,
+          "maxAbsError": 0.0025700226080866972,
+          "maxRelErrorOfPeak": 0.00219471120971499
+        }
+      ]
+    },
+    {
+      "id": "tbicmpd1-paren-pulse-long-tran",
+      "form": "DC value + whole parenthesised PULSE (two periods)",
+      "fixture": "examples/cider/surfmob/Tbicmpd1.cir",
+      "analysis": "tran",
+      "netlistSha256": "6bc8b47361692bca3810bfc31bab3e8b81e03efd6a7c53031a633ecaa89407e6",
+      "ngspicePoints": 429,
+      "spiceTsPoints": 432,
+      "status": "compared",
+      "identicalToUnparenthesised": true,
+      "sourceWaveformAtNgspiceTimes": {
+        "name": "VIN -> v(3)",
+        "points": 429,
+        "maxAbsError": 3.5083047578154947e-14,
+        "maxRelErrorOfPeak": 6.746739918875951e-15
+      },
+      "signals": [
+        {
+          "name": "v(3)",
+          "points": 429,
+          "maxAbsError": 3.5083047578154947e-14,
+          "maxRelErrorOfPeak": 6.746739918875951e-15
+        },
+        {
+          "name": "v(4)",
+          "points": 429,
+          "maxAbsError": 0.004313935886657738,
+          "maxRelErrorOfPeak": 0.000829654965611626
+        }
+      ]
+    },
+    {
+      "id": "arbitrary-phase-pulse-np-tran",
+      "form": "eighth PULSE field (NP) and sixth SIN field",
+      "fixture": "examples/xspice/original-examples/arbitrary_phase.deck",
+      "analysis": "tran",
+      "netlistSha256": "1809d74828a00b4d8a51c96ba624ea15ae81a4c2c4455aaa58811df25d515d74",
+      "ngspicePoints": 143,
+      "spiceTsPoints": 296,
+      "status": "compared",
+      "identicalToUnparenthesised": true,
+      "sourceWaveformAtNgspiceTimes": {
+        "name": "v2 -> v(2)",
+        "points": 143,
+        "maxAbsError": 1.1102230246251565e-16,
+        "maxRelErrorOfPeak": 1.1102230246251565e-16
+      },
+      "signals": [
+        {
+          "name": "v(1)",
+          "points": 143,
+          "maxAbsError": 0.0019684516427106447,
+          "maxRelErrorOfPeak": 0.0019685047522153805
+        },
+        {
+          "name": "v(2)",
+          "points": 143,
+          "maxAbsError": 1.1102230246251565e-16,
+          "maxRelErrorOfPeak": 1.1102230246251565e-16
+        },
+        {
+          "name": "v(3)",
+          "points": 143,
+          "maxAbsError": 0.01179052907237177,
+          "maxRelErrorOfPeak": 0.01179052907237177
+        }
+      ]
+    },
+    {
+      "id": "arbitrary-phase-sin-tran",
+      "form": "sixth SIN field (phase), already supported; control for the deck above",
+      "fixture": "examples/xspice/original-examples/arbitrary_phase.deck",
+      "analysis": "tran",
+      "netlistSha256": "07418d48f6b2dbcfd8242e19a64de5e114a0a9e926ba10ce4b987de721e79a04",
+      "ngspicePoints": 108,
+      "spiceTsPoints": 109,
+      "status": "compared",
+      "identicalToUnparenthesised": true,
+      "sourceWaveformAtNgspiceTimes": {
+        "name": "v1 -> v(1)",
+        "points": 108,
+        "maxAbsError": 5.322131624296844e-15,
+        "maxRelErrorOfPeak": 5.3221694442010704e-15
+      },
+      "signals": [
+        {
+          "name": "v(1)",
+          "points": 108,
+          "maxAbsError": 0.0015908203410581745,
+          "maxRelErrorOfPeak": 0.0015908316456776743
+        }
+      ]
+    },
+    {
+      "id": "pulse-np-truncation-tran",
+      "form": "eighth PULSE field (NP) ending the train inside the run",
+      "fixture": "(synthetic: NP=2 over five periods, same grammar as arbitrary_phase.deck)",
+      "analysis": "tran",
+      "netlistSha256": "e4fe32fa7094613e6bcf4a3dfa9804598a3f807f923051a59f98defd3ad3aa08",
+      "ngspicePoints": 126,
+      "spiceTsPoints": 294,
+      "status": "compared",
+      "identicalToUnparenthesised": true,
+      "sourceWaveformAtNgspiceTimes": {
+        "name": "V3 -> v(3)",
+        "points": 126,
+        "maxAbsError": 4.440892098500626e-15,
+        "maxRelErrorOfPeak": 4.440892098500626e-15
+      },
+      "signals": [
+        {
+          "name": "v(3)",
+          "points": 126,
+          "maxAbsError": 4.551914400963142e-15,
+          "maxRelErrorOfPeak": 4.551914400963142e-15
+        },
+        {
+          "name": "v(4)",
+          "points": 126,
+          "maxAbsError": 0.009123169236804562,
+          "maxRelErrorOfPeak": 0.009125212071561806
+        }
+      ]
+    },
+    {
+      "id": "digital-models-paren-pairs-tran",
+      "form": "DC keyword + PWL( (t v) ... ) parenthesised pairs",
+      "fixture": "examples/xspice/original-examples/digital_models1.deck",
+      "analysis": "tran",
+      "netlistSha256": "02563dc0cc879da98a99441e667413f4c4b676505daa0bc4b91204e49bd2e7f4",
+      "ngspicePoints": 446,
+      "spiceTsPoints": 442,
+      "status": "compared",
+      "identicalToUnparenthesised": true,
+      "sourceWaveformAtNgspiceTimes": {
+        "name": "v2 -> v(200)",
+        "points": 446,
+        "maxAbsError": 0,
+        "maxRelErrorOfPeak": 0
+      },
+      "signals": [
+        {
+          "name": "v(200)",
+          "points": 446,
+          "maxAbsError": 2.220446049250313e-16,
+          "maxRelErrorOfPeak": 2.220446049250313e-16
+        },
+        {
+          "name": "v(201)",
+          "points": 446,
+          "maxAbsError": 0.0006673661675036247,
+          "maxRelErrorOfPeak": 0.0006673661688568274
+        }
+      ]
+    },
+    {
+      "id": "hybrid-paren-pairs-tran",
+      "form": "DC keyword + PWL( (t v) (t v) )",
+      "fixture": "examples/xspice/original-examples/hybrid_models1_transient.deck",
+      "analysis": "tran",
+      "netlistSha256": "21e7225ae9a23ef79eefc533d62c8f9195568be0403b5047ed05d1b88b112d67",
+      "ngspicePoints": 112,
+      "spiceTsPoints": 118,
+      "status": "compared",
+      "identicalToUnparenthesised": true,
+      "sourceWaveformAtNgspiceTimes": {
+        "name": "v1 -> v(1)",
+        "points": 112,
+        "maxAbsError": 0,
+        "maxRelErrorOfPeak": 0
+      },
+      "signals": [
+        {
+          "name": "v(1)",
+          "points": 112,
+          "maxAbsError": 1.1102230246251565e-16,
+          "maxRelErrorOfPeak": 1.1102230246251565e-16
+        },
+        {
+          "name": "v(11)",
+          "points": 112,
+          "maxAbsError": 0.00006551807459963949,
+          "maxRelErrorOfPeak": 0.00007279749644223857
+        }
+      ]
+    }
+  ]
+}
