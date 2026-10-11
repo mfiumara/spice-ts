@@ -207,6 +207,12 @@ export interface SimulationOptions {
   bypass?: number;
   /** ngspice-47 RAMPTIME breakpoint (s). Ordinary V/I sources do not ramp in the release build. Default: 0. */
   rampTime?: number;
+  /**
+   * ngspice `.options seed=N` (positive integer): seeds the uniform random
+   * streams of TRNOISE RTS noise and TRRANDOM sources as ngspice-47 does.
+   * Absent keeps spice-ts's fixed default streams, so runs stay reproducible.
+   */
+  seed?: number;
   /** Absolute current tolerance (A). Default: 1e-12 */
   abstol?: number;
   /** Absolute voltage tolerance (V). Default: 1e-6 */
@@ -460,6 +466,58 @@ export interface PWLSource {
   points: PWLPoint[];
 }
 
+/**
+ * ngspice-47 transient noise source
+ * (`TRNOISE(NA TS [NALPHA [NAMP [RTSAM [RTSCAPT [RTSEMT]]]]])`): white noise
+ * of rms `amplitude` and 1/f^`alpha` noise of rms `oneOverFAmplitude`, both
+ * sampled every `ts` and linearly interpolated, plus random-telegraph noise of
+ * amplitude `rtsAmplitude` with exponentially distributed mean capture and
+ * emission times.
+ */
+export interface TransientNoiseSource {
+  type: 'trnoise';
+  /** Explicit DC value, added to the noise as in ngspice. */
+  dc?: number;
+  /** NA: white-noise rms value. */
+  amplitude: number;
+  /** TS: noise sample interval in seconds (0 disables white and 1/f noise). */
+  ts: number;
+  /** NALPHA: 1/f exponent (0 < alpha < 2); 0 disables 1/f noise. */
+  alpha: number;
+  /** NAMP: 1/f noise rms value (ignored by ngspice when NALPHA is 0). */
+  oneOverFAmplitude: number;
+  /** RTSAM: random-telegraph amplitude (0 disables RTS noise). */
+  rtsAmplitude: number;
+  /** RTSCAPT: mean trap capture time in seconds (ignored when RTSAM is 0). */
+  rtsCaptureTime: number;
+  /** RTSEMT: mean trap emission time in seconds (ignored when RTSAM is 0). */
+  rtsEmissionTime: number;
+}
+
+/**
+ * ngspice-47 random-value source (`TRRANDOM(TYPE TS [TD [PARAM1 [PARAM2]]])`):
+ * a new random value every `ts` seconds after the delay `td`.
+ */
+export interface TransientRandomSource {
+  type: 'trrandom';
+  /** Explicit DC value, added to the random value as in ngspice. */
+  dc?: number;
+  /**
+   * TYPE: 1 uniform in [-PARAM1+PARAM2, PARAM1+PARAM2[; 2 Gaussian (deviation
+   * PARAM1, mean PARAM2); 3 exponential (mean PARAM1, offset PARAM2); 4 Poisson
+   * (lambda PARAM1, offset PARAM2). ngspice yields 0 for any other value.
+   */
+  distribution: number;
+  /** TS: interval between new values in seconds. */
+  ts: number;
+  /** TD: delay before the first new value in seconds. */
+  td: number;
+  /** PARAM1 (default 1). */
+  param1: number;
+  /** PARAM2 (default 0); also the value before the first draw. */
+  param2: number;
+}
+
 /** AC small-signal source (AC). Used for `.ac` analysis excitation. */
 export interface ACSource {
   type: 'ac';
@@ -524,7 +582,8 @@ export interface RFPort {
 
 /** Union of all source waveform types. Discriminated on the `type` field. */
 export type SourceWaveform =
-  (DCSource | PulseSource | SinSource | PWLSource | ACSource) & SourceACTerm & SourceDistortionTerms;
+  (DCSource | PulseSource | SinSource | PWLSource | TransientNoiseSource | TransientRandomSource | ACSource)
+  & SourceACTerm & SourceDistortionTerms;
 
 /** Warning collected during simulation (non-fatal). */
 export interface SimulationWarning {

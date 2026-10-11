@@ -4,7 +4,7 @@ import { tokenizeNetlist, parseNumber } from './tokenizer.js';
 import { parseModelCard } from './model-parser.js';
 import { assertSupportedModelType } from './model-type.js';
 import { assertSupportedResistorModel, parseResistorElement } from './resistor-parser.js';
-import { extractRFPort, parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
+import { extractRFPort, parseSourceCardWaveform, parseInstanceParams } from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
 import { parseBJTInstance } from './bjt-parser.js';
@@ -33,6 +33,7 @@ import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
 export { parseSourceWaveform } from './waveform-parser.js';
 export { SUPPORTED_MODEL_TYPES, UnsupportedModelTypeError } from './model-type.js';
+export { UnsupportedSourceWaveformError } from './waveform-parser.js';
 export { UnsupportedResistorParameterError } from './resistor-parser.js';
 
 /**
@@ -829,6 +830,16 @@ function parseSimulationOptions(
       // unimplemented in SPICE3, and LVLCOD selected CDC matrix codegen.
       continue;
     }
+    if (name === 'seed') {
+      // ngspice-47 inp.c: `seed=N` (atoi, N > 0) re-seeds the random streams;
+      // `seed=random` seeds from the clock, which would make runs unrepeatable.
+      const value = Number(rawValue);
+      if (!Number.isInteger(value) || value <= 0 || value > 0x7fffffff) {
+        throw new Error(`Unsupported .options seed value: '${rawValue}' (spice-ts needs a positive integer seed)`);
+      }
+      options.seed = value;
+      continue;
+    }
     if (name === 'method') {
       const methods: Record<string, IntegrationMethod> = {
         trap: 'trapezoidal',
@@ -1022,12 +1033,12 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
     }
     case 'V': {
       const { tokens: sourceTokens, port } = extractRFPort(tokens, 3);
-      const waveform = parseSourceWaveform(sourceTokens, 3);
+      const waveform = parseSourceCardWaveform(sourceTokens, 3, lineNumber, raw);
       circuit.addVoltageSource(name, tokens[1], tokens[2], waveform, port);
       break;
     }
     case 'I': {
-      const waveform = parseSourceWaveform(tokens, 3);
+      const waveform = parseSourceCardWaveform(tokens, 3, lineNumber, raw);
       circuit.addCurrentSource(name, tokens[1], tokens[2], waveform);
       break;
     }
