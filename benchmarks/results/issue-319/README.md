@@ -1,5 +1,7 @@
 # Issue #319 diode reverse-breakdown receipt
 
+> **Scope narrowed by #429/#438.** spice-ts now follows ngspice-47 for diode breakdown by default: `TBV1` is an alias of ngspice `TCV` with `BV(T) = BV - TCV*(TEMP - TNOM)`, `NBV` (alias `NZ`) defaults to `N`, and `TBV2`, which ngspice-47 does not have, is ignored with a `model` simulation warning exactly as ngspice-47 does (`inpgmod.c:186-189`: "unrecognized parameter (tbv2) - ignored"). The level-1 receipt decks `benchmarks/results/issue-{365,388,403}/ngspice/l1_{cjo,nocjo}_27.cir`, which keep `tbv2 = -5e-8`, therefore still run and match ngspice-47 to 3.49e-7 V. The PSpice `BV*(1 + TBV1*dT + TBV2*dT^2)` law documented below now applies only to `LEVEL=2` models, which ngspice-47 rejects ("Diode model level 2 is not supported"). The unchanged Xyce fixture declares `level=2`, so the results below still hold; the byte-identical DC-equivalent fixture carries no temperature coefficients and is unaffected.
+
 This receipt covers the bounded diode model slice implemented for issue #319. It does not claim complete PSpice/Xyce diode level-2 support. It contains two deliberately separate results: an unchanged Xyce regression receipt that is not identical-netlist ngspice parity, and a project-authored DC-equivalent fixture that is supplied byte-identically to spice-ts and ngspice-47.
 
 ## Reproduce

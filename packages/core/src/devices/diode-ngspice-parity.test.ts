@@ -190,21 +190,163 @@ describe('ngspice diode model aliases (#404)', () => {
     `).compile()).toThrow(new RegExp(`${canonical}.*${alias}|${alias}.*${canonical}`));
   });
 
-  it('rejects NZ like its canonical NBV', () => {
-    expect(() => parse(`unsupported diode NZ
+  it.each([
+    ['NBV=1.6 NZ=2', 'NBV', 'NZ'],
+    ['TBV1=0.01 TCV=0.02', 'TBV1', 'TCV'],
+  ])('rejects conflicting breakdown aliases %s', (fields, canonical, alias) => {
+    expect(() => parse(`conflicting diode aliases
       D1 out 0 DM
-      .model DM D(BV=5 NZ=2)
+      .model DM D(BV=5 ${fields})
       .op
-    `).compile()).toThrow("Unsupported bounded diode breakdown-temperature model parameter: 'NBV'");
+    `).compile()).toThrow(new RegExp(`${canonical}.*${alias}|${alias}.*${canonical}`));
+  });
+});
+
+/**
+ * Identical-netlist ngspice-47 references for the breakdown law. Each deck is
+ * run verbatim by spice-ts; ngspice-47 ran the same lines with
+ * `.control / set numdgt=13 / op / print v(out) / .endc`.
+ */
+async function breakdownDeck(model: string, options: {
+  source: number;
+  resistance: string;
+  extra?: string;
+}): Promise<number> {
+  const result = await simulate(`diode breakdown parity
+    V1 in 0 DC ${options.source}
+    R1 in out ${options.resistance}
+    D1 out 0 DZ
+    .model DZ D ${model}
+    .options reltol=1e-7 abstol=1e-15 vntol=1e-9
+    ${options.extra ?? ''}
+    .op
+    .end
+  `);
+  return result.steps ? result.steps[0]!.dc!.voltage('out') : result.dc!.voltage('out');
+}
+
+describe('diode breakdown emission coefficient NBV like ngspice-47 (#438)', () => {
+  // ngspice-47 diosetup.c:131-133 defaults NBV to N; dioload.c:109/322 use
+  // vtebrk = NBV*vt in breakdown, and diotemp.c:231-237 fit the knee with it.
+  it('defaults NBV to N in breakdown', async () => {
+    // ngspice-47: v(out) = -5.307482141622 (spice-ts used NBV=1: -5.288653254).
+    expectNear(
+      await breakdownDeck('IS=1e-14 BV=5.1 IBV=1m N=1.1', { source: -20, resistance: '10' }),
+      -5.307482141622,
+      NGSPICE_BREAKDOWN_RESIDUAL,
+    );
   });
 
-  it('rejects TCV explicitly instead of ignoring it', () => {
-    // ngspice-47 TCV uses BV - TCV*dT, which differs from the bounded
-    // TBV1/TBV2 law spice-ts implements, so it cannot be mapped silently.
-    expect(() => parse(`unsupported diode TCV
-      D1 out 0 DM
-      .model DM D(BV=5 TCV=0.01)
+  it.each(['NBV', 'NZ'])('applies an explicit %s', async (name) => {
+    // ngspice-47: v(out) = -5.401526463458 for NBV=1.6 and NZ=1.6.
+    expectNear(
+      await breakdownDeck(`IS=1e-14 BV=5.1 IBV=1m N=1.1 ${name}=1.6`, {
+        source: -20,
+        resistance: '10',
+      }),
+      -5.401526463458,
+      NGSPICE_BREAKDOWN_RESIDUAL,
+    );
+  });
+
+  it('keeps NBV out of the forward junction', async () => {
+    // NBV only shapes breakdown: the forward point equals the plain diode.
+    expect(await breakdownDeck('IS=1e-14 BV=5.1 N=1.1 NBV=3', { source: 5, resistance: '1k' }))
+      .toBe(await breakdownDeck('IS=1e-14 BV=5.1 N=1.1', { source: 5, resistance: '1k' }));
+  });
+});
+
+describe('diode TBV1 is ngspice-47 TCV: BV(T) = BV - TCV*(T-TNOM) (#429)', () => {
+  // ngspice-47 dio.c:120-121 makes tbv1 an alias of tcv; diotemp.c:210-212
+  // applies BV - TCV*dt for TLEV=0. TNOM != 27 gives TEMP != TNOM in both
+  // engines from the identical deck.
+  it.each(['TBV1', 'TCV'])('lowers BV by %s*dT above TNOM', async (name) => {
+    // ngspice-47: v(out) = -4.593649099182 for TBV1=0.01 and TCV=0.01
+    // (BV(T) = 4.55 V; the PSpice law gave 7.25 V).
+    expectNear(
+      await breakdownDeck(`IS=1e-14 BV=5 IBV=1m ${name}=0.01 TNOM=-18`, {
+        source: -10,
+        resistance: '1k',
+      }),
+      -4.593649099182,
+      NGSPICE_BREAKDOWN_RESIDUAL,
+    );
+  });
+
+  it('raises BV for a negative TBV1 below TNOM', async () => {
+    // ngspice-47: v(out) = -4.842430502458 (BV(T) = 5 - (-0.004)*(27-77) = 4.8 V).
+    expectNear(
+      await breakdownDeck('IS=1e-14 BV=5 IBV=1m TBV1=-0.004 TNOM=77', {
+        source: -10,
+        resistance: '1k',
+      }),
+      -4.842430502458,
+      NGSPICE_BREAKDOWN_RESIDUAL,
+    );
+  });
+
+  it('combines TBV1 with the NBV=N default', async () => {
+    // ngspice-47: v(out) = -4.597991075358
+    expectNear(
+      await breakdownDeck('IS=1e-14 BV=5 IBV=1m TBV1=0.01 TNOM=-18 N=1.1', {
+        source: -10,
+        resistance: '1k',
+      }),
+      -4.597991075358,
+      NGSPICE_BREAKDOWN_RESIDUAL,
+    );
+  });
+
+  it('applies TBV1 at a stepped TEMP', async () => {
+    // ngspice-47 has no .step, so its deck sets `.temp 72` instead:
+    // v(out) = -4.600157234640. ngspice also scales IS with EG/XTI, which moves
+    // this point by only 1.6e-8 V (XTI=0 EG=0 gives -4.600157218617).
+    expectNear(
+      await breakdownDeck('IS=1e-14 BV=5 IBV=1m TBV1=0.01', {
+        source: -10,
+        resistance: '1k',
+        extra: '.step TEMP LIST 72',
+      }),
+      -4.60015723464,
+      NGSPICE_BREAKDOWN_RESIDUAL,
+    );
+  });
+
+  it('warns about and ignores TBV2 outside LEVEL=2 like ngspice-47', async () => {
+    // ngspice-47 dio.c has no tbv2, so inpgmod.c:186-189 reports
+    // "unrecognized parameter (tbv2) - ignored" and simulates without it.
+    const deck = (tbv2: string) => `ignored diode TBV2
+      V1 in 0 DC -10
+      R1 in out 1k
+      D1 out 0 DZ
+      .model DZ D IS=1e-14 BV=5 IBV=1m TBV1=0.01 TNOM=-18 ${tbv2}
+      .options reltol=1e-7 abstol=1e-15 vntol=1e-9
       .op
-    `).compile()).toThrow("'TCV'");
+      .end
+    `;
+    const withTbv2 = await simulate(deck('TBV2=1e-4'));
+    const without = await simulate(deck(''));
+    // ngspice-47 gives -4.593649099182 for this deck with or without TBV2.
+    expectNear(withTbv2.dc!.voltage('out'), -4.593649099182, NGSPICE_BREAKDOWN_RESIDUAL);
+    expect(withTbv2.dc!.voltage('out')).toBe(without.dc!.voltage('out'));
+    expect(withTbv2.warnings).toContainEqual({
+      type: 'model',
+      message: expect.stringContaining('unrecognized parameter (tbv2) - ignored'),
+    });
+    expect(without.warnings.some(warning => warning.type === 'model')).toBe(false);
+  });
+
+  it('keeps the PSpice TBV1 law under LEVEL=2, which ngspice-47 rejects', async () => {
+    // ngspice-47 stops with "Diode model level 2 is not supported", so LEVEL=2
+    // keeps the #319 PSpice/Xyce law: BV(T) = 5*(1 + 0.01*45) = 7.25 V.
+    const level2 = await breakdownDeck('LEVEL=2 IS=1e-14 BV=5 IBV=1m TBV1=0.01 TNOM=-18', {
+      source: -10,
+      resistance: '1k',
+    });
+    const nominal = await breakdownDeck('IS=1e-14 BV=7.25 IBV=1m', {
+      source: -10,
+      resistance: '1k',
+    });
+    expect(level2).toBe(nominal);
   });
 });

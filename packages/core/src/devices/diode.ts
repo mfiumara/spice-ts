@@ -7,8 +7,21 @@ export interface DiodeParams {
   N: number;
   BV: number;
   IBV: number;
+  /**
+   * First-order breakdown-voltage temperature coefficient. By default it is
+   * ngspice-47 TCV (V/K): BV(T) = BV - TBV1 * (T - TNOM). With LEVEL=2 it is the
+   * PSpice/Xyce relative coefficient: BV(T) = BV * (1 + TBV1*dT + TBV2*dT^2).
+   */
   TBV1: number;
+  /** PSpice/Xyce second-order coefficient; ignored with a warning outside LEVEL=2. */
   TBV2: number;
+  /**
+   * Breakdown emission coefficient (alias NZ). Defaults to N like ngspice-47;
+   * the LEVEL=2 PSpice slice keeps NBV = 1.
+   */
+  NBV: number;
+  /** Diode model level; only LEVEL=2 changes the breakdown law here. */
+  LEVEL?: number;
   TNOM: number;
   RS: number;
   JSW?: number;
@@ -51,6 +64,7 @@ const DIODE_ALIAS_GROUPS: ReadonlyArray<{
   { names: ['NBV', 'NZ'], description: 'breakdown emission coefficient' },
   { names: ['BV', 'VB', 'VRB', 'VAR'], description: 'reverse breakdown voltage' },
   { names: ['IBV', 'IB'], description: 'reverse breakdown current' },
+  { names: ['TBV1', 'TCV'], description: 'breakdown-voltage temperature coefficient' },
 ];
 
 const DIODE_CANONICAL_NAMES: ReadonlyMap<string, string> = new Map(
@@ -59,7 +73,7 @@ const DIODE_CANONICAL_NAMES: ReadonlyMap<string, string> = new Map(
 
 export type DiodeModelAlias =
   | 'JS' | 'ISW' | 'TREF' | 'TRS' | 'CJ' | 'PB' | 'MJ' | 'IK' | 'NZ'
-  | 'VB' | 'VRB' | 'VAR' | 'IB';
+  | 'VB' | 'VRB' | 'VAR' | 'IB' | 'TCV';
 
 /** Diode model fields as written in a netlist, canonical names or ngspice aliases. */
 export type DiodeModelInput = Partial<DiodeParams> & Partial<Record<DiodeModelAlias, number>>;
@@ -75,11 +89,20 @@ const MIN_KNEE_CURRENT = 1e-28;
 /** ngspice dioload.c applies the knee only above this junction current. */
 const KNEE_CURRENT_THRESHOLD = 1e-18;
 const UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS = new Set([
-  'NBV', 'IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2',
-  // ngspice-47 TCV (with alias TBV1) lowers BV by TCV*dT, unlike the bounded
-  // TBV1/TBV2 law below, so it is rejected instead of being mapped.
-  'TCV',
+  'IBVL', 'NBVL', 'TLEV', 'TRS1', 'TRS2',
 ]);
+/**
+ * Fields the LEVEL=2 PSpice breakdown law cannot honour: it keeps NBV = 1 and
+ * has no ngspice TCV. (TBV2 outside LEVEL=2 is warned about and ignored, like
+ * ngspice-47; see {@link Diode.modelWarnings}.)
+ */
+const LAW_SPECIFIC_UNSUPPORTED: Readonly<Record<'ngspice' | 'pspice', ReadonlyMap<string, string>>> = {
+  ngspice: new Map(),
+  pspice: new Map([
+    ['NBV', 'the LEVEL=2 PSpice breakdown law uses NBV=1'],
+    ['TCV', 'TCV is the ngspice-47 linear coefficient; LEVEL=2 uses TBV1/TBV2'],
+  ]),
+};
 
 /** Thermal voltage kT/q at a temperature in Celsius, as ngspice computes it. */
 function thermalVoltageAt(temperatureCelsius: number): number {
@@ -118,7 +141,10 @@ export function canonicalDiodeModelParams(
 interface BreakdownParams {
   voltage: number;
   current: number;
+  /** Breakdown thermal voltage NBV*kT/q (ngspice vtebrk). */
   thermalVoltage: number;
+  /** Plain kT/q, used by the knee fit's linear term (ngspice vt). */
+  junctionThermalVoltage: number;
 }
 
 /** Temperature-resolved junction law shared by the DC, AC and noise paths. */
@@ -149,6 +175,7 @@ export class Diode implements DeviceModel {
   readonly integratesTransientCharge: boolean;
   readonly params: DiodeParams;
   readonly suppliedParams: Readonly<Partial<DiodeParams>>;
+  readonly modelWarnings: readonly string[];
   private temperature = 27;
   /** Limited junction voltage of the last stamp (ngspice CKTstate0 DIOvoltage). */
   private previousJunctionVoltage: number | undefined;
@@ -185,16 +212,33 @@ export class Diode implements DeviceModel {
     private readonly hasExternalSeriesResistance = false,
     readonly instanceParams: DiodeInstanceParams = {},
   ) {
+    const pspiceBreakdownLaw = modelParams.LEVEL === 2;
+    const lawSpecific = LAW_SPECIFIC_UNSUPPORTED[pspiceBreakdownLaw ? 'pspice' : 'ngspice'];
     for (const field of Object.keys(modelParams)) {
       const canonicalField = DIODE_CANONICAL_NAMES.get(field) ?? field;
-      if (UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS.has(canonicalField)) {
-        const written = canonicalField === field ? '' : ` (written as '${field}')`;
+      // TCV is checked as written: it shares TBV1's field but not its LEVEL=2 law.
+      const lawField = lawSpecific.has(field) ? field : canonicalField;
+      const reason = lawSpecific.get(lawField);
+      if (UNSUPPORTED_BREAKDOWN_TEMPERATURE_PARAMETERS.has(canonicalField) || reason) {
+        const written = lawField === field ? '' : ` (written as '${field}')`;
         throw new Error(
-          `Unsupported bounded diode breakdown-temperature model parameter: '${canonicalField}'${written}`,
+          `Unsupported bounded diode breakdown-temperature model parameter: '${lawField}'${written}`
+            + (reason ? `; ${reason}` : ''),
         );
       }
     }
     const params = canonicalDiodeModelParams(name, modelParams);
+    const warnings: string[] = [];
+    if (!pspiceBreakdownLaw && params.TBV2 !== undefined) {
+      // ngspice-47 dio.c has no tbv2 (only tbv1, an alias of tcv, at dio.c:121),
+      // so inpgmod.c:186-189 reports "unrecognized parameter (tbv2) - ignored"
+      // and simulates without it. Only the LEVEL=2 PSpice law applies TBV2.
+      warnings.push(
+        `Diode ${name}: unrecognized parameter (tbv2) - ignored; ngspice-47 has no TBV2, `
+          + 'only LEVEL=2 applies the PSpice TBV1/TBV2 law',
+      );
+    }
+    this.modelWarnings = warnings;
     this.suppliedParams = params;
     const effectiveArea = (instanceParams.AREA ?? 1) * (instanceParams.M ?? 1);
     const effectivePerimeter = (instanceParams.PJ ?? 0) * (instanceParams.M ?? 1);
@@ -205,7 +249,10 @@ export class Diode implements DeviceModel {
       BV: params.BV ?? Infinity,
       IBV: params.IBV ?? 1e-3,
       TBV1: params.TBV1 ?? 0,
-      TBV2: params.TBV2 ?? 0,
+      TBV2: pspiceBreakdownLaw ? params.TBV2 ?? 0 : 0,
+      // ngspice-47 diosetup.c:131-133: NBV defaults to the emission coefficient N.
+      NBV: pspiceBreakdownLaw ? 1 : params.NBV ?? params.N ?? 1,
+      LEVEL: params.LEVEL,
       TNOM: params.TNOM ?? 27,
       RS: (params.RS ?? 0) / effectiveArea,
       JSW: params.JSW ?? 0,
@@ -355,15 +402,22 @@ export class Diode implements DeviceModel {
   }
 
   private breakdownParams(): BreakdownParams | undefined {
-    const { BV, IBV, TBV1, TBV2, TNOM } = this.params;
+    const { BV, IBV, TBV1, TBV2, NBV, TNOM, LEVEL } = this.params;
     if (!Number.isFinite(BV) || BV <= 0 || !Number.isFinite(IBV) || IBV <= 0) {
       return undefined;
     }
+    const thermalVoltage = thermalVoltageAt(this.temperature);
     const delta = this.temperature - TNOM;
     return {
-      voltage: BV * (1 + TBV1 * delta + TBV2 * delta * delta),
+      voltage: LEVEL === 2
+        // PSpice/Xyce level-2 law (#319).
+        ? BV * (1 + TBV1 * delta + TBV2 * delta * delta)
+        // ngspice-47 diotemp.c:211-212 (TLEV=0): BV(T) = BV - TCV*(T - TNOM).
+        : BV - TBV1 * delta,
       current: IBV,
-      thermalVoltage: thermalVoltageAt(this.temperature),
+      // ngspice-47 dioload.c:109/322: vtebrk = NBV*vt.
+      thermalVoltage: NBV * thermalVoltage,
+      junctionThermalVoltage: thermalVoltage,
     };
   }
 
@@ -764,11 +818,13 @@ function breakdownKneeVoltage(
   breakdown: BreakdownParams,
   saturationCurrent: number,
 ): number {
-  const { voltage, current, thermalVoltage } = breakdown;
+  const { voltage, current, thermalVoltage, junctionThermalVoltage } = breakdown;
+  // ngspice-47 diotemp.c:231-235: the log term scales with NBV*vt, while the
+  // linear reverse-leakage term -xbv/vt uses plain vt.
   let knee = voltage - thermalVoltage * Math.log1p(current / saturationCurrent);
   for (let iteration = 0; iteration < 25; iteration++) {
     knee = voltage - thermalVoltage
-      * Math.log(current / saturationCurrent + 1 - knee / thermalVoltage);
+      * Math.log(current / saturationCurrent + 1 - knee / junctionThermalVoltage);
   }
   return knee;
 }
