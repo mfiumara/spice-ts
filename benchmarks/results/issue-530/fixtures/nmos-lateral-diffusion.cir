@@ -1,0 +1,7 @@
+* issue 530: lateral diffusion LD shortens the effective channel (Leff = L - 2*LD)
+M1 d g 0 0 NLD W=10u L=2u
+VD d 0 DC 3
+VG g 0 DC 0
+.model NLD NMOS (LEVEL=1 VTO=0.7 KP=100u LD=0.3u LAMBDA=0.02)
+.dc VG 0 3 0.05
+.end

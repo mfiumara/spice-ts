@@ -1,0 +1,10 @@
+* issue 530: NMOS level-1 gate sweep with bulk reverse-biased (linear and saturation)
+M1 d g 0 b NBODY W=20u L=2u
+VD d 0 DC 0.4
+M2 d2 g 0 b NBODY W=20u L=2u
+VD2 d2 0 DC 3
+VG g 0 DC 0
+VB b 0 DC -2
+.model NBODY NMOS (LEVEL=1 VTO=0.7 KP=100u GAMMA=0.45 PHI=0.7 LAMBDA=0.01)
+.dc VG 0 4 0.05
+.end

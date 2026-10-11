@@ -78,5 +78,6 @@ export {
   ConvergenceError,
   TimestepTooSmallError,
   CycleError,
+  UnsupportedModelLevelError,
 } from './errors.js';
 export type { ConvergenceFailureKind } from './errors.js';

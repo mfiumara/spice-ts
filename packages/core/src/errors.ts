@@ -167,3 +167,30 @@ export class CycleError extends SpiceError {
     this.name = 'CycleError';
   }
 }
+
+/**
+ * Thrown when a MOSFET model card selects a `LEVEL` that spice-ts does not
+ * implement (for example MOS2 `LEVEL=2`, MOS3 `LEVEL=3`, BSIM1 `LEVEL=4` or
+ * BSIM2 `LEVEL=5`). Such cards used to run the Level-1 equations silently.
+ */
+export class UnsupportedModelLevelError extends InvalidCircuitError {
+  /** Stable machine-readable error code. */
+  readonly code = 'UNSUPPORTED_MODEL_LEVEL';
+
+  constructor(
+    /** Instance name, e.g. `M1` */
+    public readonly deviceName: string,
+    /** Model card name, when the instance was compiled from a netlist */
+    public readonly modelName: string | undefined,
+    /** Requested `LEVEL` value */
+    public readonly level: number,
+    /** Levels spice-ts implements for this device kind */
+    public readonly supportedLevels: readonly number[],
+  ) {
+    super(
+      `MOSFET '${deviceName}'${modelName ? ` (model '${modelName}')` : ''} uses unsupported model LEVEL=${level}`
+        + ` (supported MOSFET levels: ${supportedLevels.join(', ')})`,
+    );
+    this.name = 'UnsupportedModelLevelError';
+  }
+}

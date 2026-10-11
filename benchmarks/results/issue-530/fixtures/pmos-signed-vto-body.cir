@@ -1,0 +1,14 @@
+* issue 530: PMOS enhancement with body effect, and PMOS depletion (VTO>0)
+VDD vdd 0 DC 5
+M1 d1 g vdd vdd PENH W=20u L=2u
+RL1 d1 0 10k
+M2 d2 g s2 vdd PENH W=20u L=2u
+RS2 s2 vdd 2k
+RL2 d2 0 10k
+M3 d3 g vdd vdd PDEP W=10u L=2u
+RL3 d3 0 10k
+VG g 0 DC 5
+.model PENH PMOS (LEVEL=1 VTO=-0.8 KP=40u GAMMA=0.5 PHI=0.7 LAMBDA=0.02)
+.model PDEP PMOS (LEVEL=1 VTO=0.6 KP=40u)
+.dc VG 0 5 0.05
+.end

@@ -150,6 +150,23 @@ Reproduce with `pnpm --filter @spice-ts/wasm bench:rlc-tran`. The JSON receipt r
 
 Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-393/compare.ts --label after`, then `pnpm exec tsx benchmarks/results/issue-393/summarize.ts`. The receipts record ngspice-47, the measured revision, fixture hashes, engine status, and per-signal max/RMS absolute and relative errors for these fixtures and for every corpus fixture that runs through the level-1 MOSFET class.
 
+## MOS1 body-effect, signed-VTO and LD fixtures
+
+- Source: project-authored reference circuits for [issue #530](https://github.com/mfiumara/spice-ts/issues/530), issue revision as of 2026-10-11.
+- Licence: MIT, under the repository [licence](../LICENSE). Redistribution is allowed; no third-party circuit material was copied.
+- Adaptation: none. `benchmarks/results/issue-530/compare.ts` supplies the exact committed bytes to spice-ts and ngspice-47 with no engine-specific values, tolerances, or rewrites.
+
+| Fixture | SHA-256 | Coverage |
+|---|---|---|
+| `benchmarks/results/issue-530/fixtures/nmos-body-effect-vbs-sweep.cir` | `7a38c5b1b676c8ffc931f7595747f324c0d944e2e4dd8be9891622ed68cb45fe` | NMOS GAMMA/PHI body effect swept over vbs from -4 V to +0.3 V (DC sweep), including the forward-vbs branch. |
+| `benchmarks/results/issue-530/fixtures/nmos-body-effect-vgs-sweep.cir` | `bcb58b1c35442cd1f607f0bbc8fe7521860e7d030d0a937aaf786f59810e5a36` | NMOS gate sweep at vbs = -2 V in the linear and saturation regions (DC sweep). |
+| `benchmarks/results/issue-530/fixtures/nmos-depletion-signed-vto.cir` | `984895980a3e59a83df39c83fe98c69feed8eb650e957cf31ae5c1157695f55b` | NMOS depletion device, VTO = -1 V (DC sweep). |
+| `benchmarks/results/issue-530/fixtures/pmos-signed-vto-body.cir` | `07defa7af60f632fc1f706b228fc609ad5df0a072529322e61024e8f61d6224f` | PMOS enhancement with body effect (bulk at the supply and source above ground) and PMOS depletion, VTO = +0.6 V (DC sweep). |
+| `benchmarks/results/issue-530/fixtures/nmos-lateral-diffusion.cir` | `ac3bc2ef4d05eaee1452b2f78bcd201850853a2a7f3e3072ce415e3b77ff8de8` | Lateral diffusion LD: Leff = L - 2*LD (DC sweep). |
+| `benchmarks/results/issue-530/fixtures/nmos-nsub-derived-gamma.cir` | `410e3d3f06f15c8966863045da78b0e031901163b0967fc0faedfdfa14e38ea2` | GAMMA/PHI/VTO/KP derived from TOX, NSUB, UO; source follower with grounded bulk (OP, DC sweep, transient). |
+
+Reproduce with `pnpm -C packages/core build && pnpm exec tsx benchmarks/results/issue-530/compare.ts --label after`, then `pnpm exec tsx benchmarks/results/issue-530/summarize.ts`. The receipts record ngspice-47, the measured revision, fixture hashes, engine status, and per-signal max/RMS absolute and relative errors for these fixtures and for every corpus fixture that the base revision ran through the level-1 MOSFET class.
+
 ## NHFET level-5 inverse-operation fixture
 
 - Source: project-authored reference circuit for [issue #448](https://github.com/mfiumara/spice-ts/issues/448), issue revision as of 2026-10-11. The model card values are copied from the ngspice `tests/hfet/inverter.cir` fixture already listed in the ngspice corpus.

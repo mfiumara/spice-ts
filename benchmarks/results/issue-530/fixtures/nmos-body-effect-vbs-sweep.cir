@@ -1,0 +1,8 @@
+* issue 530: NMOS level-1 body effect (GAMMA/PHI) swept over vbs, incl. forward vbs
+M1 d g 0 b NBODY W=10u L=2u
+VD d 0 DC 2
+VG g 0 DC 1.5
+VB b 0 DC 0
+.model NBODY NMOS (LEVEL=1 VTO=0.7 KP=100u GAMMA=0.6 PHI=0.65 LAMBDA=0.02)
+.dc VB -4 0.3 0.05
+.end
