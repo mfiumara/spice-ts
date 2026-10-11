@@ -73,7 +73,7 @@ type LoadMode = 'init' | 'predict' | 'float';
  * verbatim, quirks included) and in that only SW stores its control value,
  * so only SW limits the timestep (CSWtrunc never fires, see cswload.c).
  */
-abstract class SwitchBase implements DeviceModel {
+export abstract class SwitchBase implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
   /**
@@ -165,12 +165,20 @@ abstract class SwitchBase implements DeviceModel {
     this.stampConductance(ctx, this.conductance);
   }
 
-  /** AC, noise and pole-zero: ngspice SWacLoad treats every nonzero state as on. */
+  /**
+   * Conductance of AC, noise and pole-zero analyses. Before a small-signal
+   * analysis ngspice loads once in MODEINITSMSIG, which sets state0 to
+   * CKTstate1 (swload.c / cswload.c); SWacLoad, SWpzLoad and SWnoise then
+   * treat every nonzero state as on. CKTstate1 is not advanced during an
+   * operating point, so after one it is REALLY_OFF and ngspice-47 stamps
+   * ROFF whatever state the operating point settled in.
+   */
+  get smallSignalConductance(): number {
+    return this.acceptedState !== REALLY_OFF ? this.model.onConductance : this.model.offConductance;
+  }
+
   stampSmallSignal(ctx: StampContext): void {
-    this.stampConductance(
-      ctx,
-      this.state !== REALLY_OFF ? this.model.onConductance : this.model.offConductance,
-    );
+    this.stampConductance(ctx, this.smallSignalConductance);
   }
 
   stampAC(_ctx: StampContext, _omega: number): void {

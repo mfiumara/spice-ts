@@ -7,6 +7,7 @@ import { HFET1 } from '../devices/hfet1.js';
 import { JFET } from '../devices/jfet.js';
 import { MOSFET } from '../devices/mosfet.js';
 import { Resistor } from '../devices/resistor.js';
+import { SwitchBase } from '../devices/switch.js';
 import { VoltageSource } from '../devices/voltage-source.js';
 import { InvalidCircuitError } from '../errors.js';
 import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
@@ -102,7 +103,7 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
 
 /**
  * Solve the bounded noise slice at ngspice's default 27 C circuit temperature:
- * resistor thermal noise, diode junction shot/flicker noise, BJT level-1
+ * resistor and S/W switch thermal noise, diode junction shot/flicker noise, BJT level-1
  * collector/base shot, base-current KF/AF flicker noise, and RB/RC/RE
  * thermal noise, plus MOS1 channel thermal/KF/AF flicker noise.
  * Controlled and independent ideal sources are noiseless.
@@ -258,7 +259,17 @@ export function solveNoise(
       }
       return sources;
     });
-  const noiseSources = [...resistorSources, ...mosfetSources, ...bjtSources];
+  // ngspice swnoise.c / cswnoise.c: thermal noise of the small-signal
+  // switch conductance (the MODEINITSMSIG state, see SwitchBase).
+  const switchSources = devices
+    .filter((device): device is SwitchBase => device instanceof SwitchBase)
+    .map(sw => ({
+      positive: sw.nodes[0],
+      negative: sw.nodes[1],
+      currentPowerDensity: (_frequency: number) =>
+        4 * BOLTZMANN_CONSTANT * DEFAULT_TEMPERATURE_KELVIN * sw.smallSignalConductance,
+    }));
+  const noiseSources = [...resistorSources, ...switchSources, ...mosfetSources, ...bjtSources];
 
   const frequencies = frequencyGrid(analysis, options.reltol, 'noise');
   const hasIntegratedTotals = analysis.stopFreq > analysis.startFreq;

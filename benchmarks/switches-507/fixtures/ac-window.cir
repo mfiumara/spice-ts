@@ -1,0 +1,10 @@
+window ac
+vc c 0 0.9
+vin in 0 dc 0 ac 1
+r1 in o 1k
+s1 o 0 c 0 sw1 ON
+s2 o 0 c 0 sw2 OFF
+.model sw1 sw vt=1 vh=0.2 ron=1k roff=1meg
+.model sw2 sw vt=1 vh=0.2 ron=3k roff=1meg
+.ac lin 1 1k 1k
+.end

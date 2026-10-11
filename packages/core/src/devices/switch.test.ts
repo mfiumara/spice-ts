@@ -187,7 +187,12 @@ r1 vdd o 10k
     expect(result.dc!.voltage('o')).toBeCloseTo(2 / 10001, 9);
   });
 
-  it('stamps the switch conductance in AC, every nonzero state counting as on (SWacLoad)', async () => {
+  // Small-signal analyses: ngspice loads once in MODEINITSMSIG, which copies
+  // CKTstate1 into state0. CKTstate1 is REALLY_OFF after an operating point,
+  // so ngspice-47 stamps ROFF in AC and noise (and pole-zero) even for a switch
+  // that is closed at the operating point. References are `ngspice -b`
+  // (ngspice-47) on the identical cards; see benchmarks/switches-507.
+  it('stamps ROFF in AC after an operating point that closed the switch (MODEINITSMSIG)', async () => {
     const result = await simulate(`ac
 vc c 0 2
 vin in 0 dc 0 ac 1
@@ -197,7 +202,85 @@ s1 o 0 c 0 sw1
 .ac lin 1 1k 1k
 .end
 `);
-    expect(result.ac!.voltage('o')[0].magnitude).toBeCloseTo(0.5, 9);
+    // The operating point closes s1 (2 V > VT); ngspice-47 vm(o) = 9.990010e-01.
+    expect(result.ac!.voltage('o')[0].magnitude).toBeCloseTo(1e6 / 1.001e6, 9);
+  });
+
+  it('stamps ROFF in AC for ON-flag and hysteresis-window switches (MODEINITSMSIG)', async () => {
+    const result = await simulate(`window ac
+vc c 0 0.9
+vin in 0 dc 0 ac 1
+r1 in o 1k
+s1 o 0 c 0 sw1 ON
+s2 o 0 c 0 sw2 OFF
+.model sw1 sw vt=1 vh=0.2 ron=1k roff=1meg
+.model sw2 sw vt=1 vh=0.2 ron=3k roff=1meg
+.op
+.ac lin 1 1k 1k
+.end
+`);
+    // The operating point keeps s1 closed (ON flag, HYST_ON): v(o) = 0 V
+    // with vin at 0 V DC. AC still sees both open: ngspice-47 vm(o) = 9.980040e-01.
+    expect(result.dc!.voltage('o')).toBeCloseTo(0, 12);
+    expect(result.ac!.voltage('o')[0].magnitude).toBeCloseTo(5e5 / 5.01e5, 9);
+  });
+
+  it('stamps ROFF in AC for a W switch closed at the operating point', async () => {
+    const result = await simulate(`csw ac
+i1 0 c 2m
+vm c 0 0
+vin in 0 dc 0 ac 1
+r1 in o 1k
+w1 o 0 vm wmod
+.model wmod csw it=1m ih=0.5m ron=1k roff=1meg
+.ac lin 1 1k 1k
+.end
+`);
+    // ngspice-47 vm(o) = 9.990010e-01.
+    expect(result.ac!.voltage('o')[0].magnitude).toBeCloseTo(1e6 / 1.001e6, 9);
+  });
+
+  it('adds switch thermal noise at the ROFF conductance in .noise (swnoise.c, cswnoise.c)', async () => {
+    const deck = (output: string) => `switch noise
+vc c 0 2
+vin in 0 dc 0 ac 1
+r1 in o 1k
+s1 o 0 c 0 sw1
+.model sw1 sw vt=1 ron=1 roff=1k
+i2 0 c2 2m
+vm c2 0 0
+r2 in o2 1k
+w2 o2 0 vm wmod
+.model wmod csw it=1m ih=0.5m ron=1 roff=3k
+.noise v(${output}) vin lin 2 1k 2k
+.end
+`;
+    const s = (await simulate(deck('o'))).noise!;
+    // ngspice-47: onoise_spectrum = 2.878894e-09, inoise_spectrum = 5.757789e-09
+    // (1k || ROFF 1k; RON would give 4.07e-12).
+    expect(Math.abs(s.outputNoiseDensity[0] / 2.878894e-9 - 1)).toBeLessThan(1e-6);
+    expect(Math.abs(s.inputNoiseDensity[0] / 5.757789e-9 - 1)).toBeLessThan(1e-6);
+    const w = (await simulate(deck('o2'))).noise!;
+    // ngspice-47: onoise_spectrum = 3.525911e-09, inoise_spectrum = 4.701215e-09.
+    expect(Math.abs(w.outputNoiseDensity[0] / 3.525911e-9 - 1)).toBeLessThan(1e-6);
+    expect(Math.abs(w.inputNoiseDensity[0] / 4.701215e-9 - 1)).toBeLessThan(1e-6);
+  });
+
+  it('places the .pz pole with ROFF (MODEINITSMSIG)', async () => {
+    const result = await simulate(`switch pz
+vc c 0 2
+r1 o 0 1k
+c1 o 0 1u
+s1 o 0 c 0 sw1
+.model sw1 sw vt=1 ron=1k roff=1meg
+.pz o 0 o 0 cur pol
+.end
+`);
+    // ngspice-47 print all: -1.00100e+03,0.000000e+00 (RON would give -2000).
+    expect(result.poleZero!.poles).toHaveLength(1);
+    const [pole] = result.poleZero!.poles;
+    expect(pole.real).toBeCloseTo(-1001, 6);
+    expect(pole.imaginary).toBe(0);
   });
 
   it('rejects a model of the wrong type and malformed instance flags', () => {
