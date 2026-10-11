@@ -158,7 +158,12 @@ function findIdealConstraintLoop(
       || device instanceof CCVS
       || includeInductors && device instanceof Inductor,
     )
-    .map(device => ({ device, left: device.nodes[0]!, right: device.nodes[1]! }))
+    // An RF port's ideal source drives its internal res node, behind z0.
+    .map(device => ({
+      device,
+      left: device instanceof VoltageSource ? device.sourceNode : device.nodes[0]!,
+      right: device.nodes[1]!,
+    }))
     .sort((left, right) => compareCodePoints(left.device.name, right.device.name));
   const forest = new Map<number, ForestEdge[]>();
 
