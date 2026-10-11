@@ -140,7 +140,9 @@ export function parseResistorElement(
     value = params.R;
     delete params.R;
   }
-  if (value === undefined && modelName === undefined) {
+  // ngspice-47 inp2r.c ignores a bare `Rname n1 n2` line; a card with keyword
+  // parameters but no value or model defaults to 1 mOhm (see resolveResistor).
+  if (value === undefined && modelName === undefined && Object.keys(params).length === 0) {
     throw new ParseError(
       `Resistor '${name}' has no resistance value or model`,
       lineNumber,

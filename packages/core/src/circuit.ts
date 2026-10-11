@@ -263,7 +263,10 @@ function formatDevice(desc: DeviceDescriptor): string {
         desc.value !== undefined ? formatNumber(desc.value) : undefined,
         desc.modelName,
       ].filter(Boolean).join(' ');
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${valueAndModel || '0'}${tail}`;
+      // A keyword-only card (no value, no model) round-trips as written: ngspice
+      // resolves it to the 1 mOhm default (#574), not to the '0' placeholder.
+      const resistance = valueAndModel || (tail ? '' : '0');
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]}${resistance ? ` ${resistance}` : ''}${tail}`;
     }
     case 'C':
     case 'L': {
