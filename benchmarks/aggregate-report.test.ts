@@ -119,10 +119,11 @@ describe('aggregate report artifact verification', () => {
         ['spiceTs', 'classic/resistor-noise', 'unsupported', 'success'],
         ['spiceTs', 'xyce/inductor-transient', 'failed', 'success'],
         ['spiceTs', 'ngspice/probe-ac', 'unsupported', 'success'],
+        ['spiceTs', 'classic/bjt-mixer-distortion', 'unsupported', 'failed'],
       ],
     );
     assert.deepEqual(report.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
-    assert.deepEqual(report.totals.spiceTs, { success: 60, failed: 0, unsupported: 40 });
+    assert.deepEqual(report.totals.spiceTs, { success: 60, failed: 1, unsupported: 39 });
     assert.equal(report.totals.comparedAnalyses, 64);
     assert.equal(report.totals.comparedFixtures, 48);
     const inductor = report.fixtures.find((fixture: { key: string }) => fixture.key === 'xyce/inductor-transient');
@@ -131,6 +132,11 @@ describe('aggregate report artifact verification', () => {
     const distortion = report.fixtures.find((fixture: { key: string }) => fixture.key === 'classic/diode-distortion');
     assert.equal(distortion.spiceTs.error, 'no spice-ts result for analyses: disto');
     assert.ok(report.gapIssues.some((issue: { url: string }) => issue.url === 'https://github.com/mfiumara/spice-ts/issues/391'));
+    const mixer = report.fixtures.find((fixture: { key: string }) => fixture.key === 'classic/bjt-mixer-distortion');
+    assert.equal(mixer.spiceTs.error, 'No analysis command specified');
+    assert.equal(mixer.ngspice.status, 'failed');
+    const mos1Inverter = report.fixtures.find((fixture: { key: string }) => fixture.key === 'corpus-e/mos1-inverter-sweep');
+    assert.ok(mos1Inverter.gapIssues.includes('https://github.com/mfiumara/spice-ts/issues/427'));
     assert.deepEqual(report.comparisonToPrevious.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
     assert.deepEqual(report.comparisonToPrevious.totals.spiceTs, { success: 55, failed: 2, unsupported: 43 });
     assert.equal(report.comparisonToPrevious.totals.comparedAnalyses, 58);
@@ -143,7 +149,7 @@ describe('aggregate report artifact verification', () => {
 
     assert.deepEqual(report.provenance, {
       fixtureTreeSha256: '00365c397b0ee279767f8167a9d3ee121bf186421cb684af30ef5e1bd44d83d7',
-      sourcesSha256: '49379991e8f1f84c1289f78d50608fc7b6d1b3d3a8bcaed67320e5202213f2e5',
+      sourcesSha256: '539de6042888ad113c1713b9912ac1ec327eddbc83a839774223626a4c868e03',
     });
   });
 
@@ -154,10 +160,10 @@ describe('aggregate report artifact verification', () => {
     assert.deepEqual(report.matchedPointEnvelope, matchedPointEnvelope(report.fixtures));
     assert.equal(report.matchedPointEnvelope.comparedSignals, 898);
     assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 869);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 154.02408984579006);
-    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 66.59015057379884);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 45497356677842.63);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 872317191517.6284);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 31.65338535154384);
+    assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 8.272157976952819);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 350697351664.8823);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 6918151585.579732);
   });
 
   it('commits runtime sums derived from all 100 engine receipts', async () => {
