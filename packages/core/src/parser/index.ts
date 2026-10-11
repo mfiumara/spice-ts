@@ -308,6 +308,12 @@ function parseDotCommand(
       break;
     }
     case '.TRAN': {
+      if (tokens.length < 3) {
+        throw new ParseError(
+          ".tran requires TSTEP and TSTOP; expected '.tran tstep tstop [tstart [tmax]] [uic]'",
+          lineNumber, context,
+        );
+      }
       const timestep = parseNumber(tokens[1]);
       const stopTime = parseNumber(tokens[2]);
       const args = stripGnucapTraceSuffix(
@@ -333,6 +339,11 @@ function parseDotCommand(
       parseNodeInitialState(circuit, 'nodeset', tokens, lineNumber);
       break;
     case '.AC': {
+      if (tokens.length < 5) {
+        throw new ParseError(
+          ".ac requires '.ac {dec|oct|lin} points fstart fstop'", lineNumber, context,
+        );
+      }
       const variation = tokens[1].toLowerCase() as 'dec' | 'oct' | 'lin';
       const points = parseInt(tokens[2], 10);
       const startFreq = parseNumber(tokens[3]);

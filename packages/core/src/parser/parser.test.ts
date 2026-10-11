@@ -8,6 +8,7 @@ import {
 import { Capacitor } from '../devices/capacitor.js';
 import { Inductor } from '../devices/inductor.js';
 import { Circuit } from '../circuit.js';
+import { ParseError } from '../errors.js';
 import { simulate } from '../simulate.js';
 
 const vbicFoFixture = readFileSync(new URL(
@@ -387,6 +388,26 @@ describe('SPICE netlist parser', () => {
       `);
       const compiled = ckt.compile();
       expect(compiled.devices.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe('incomplete analysis cards', () => {
+    it.each([
+      ['R1 a 0 1k\n.tran 1u', '.tran requires TSTEP and TSTOP'],
+      ['R1 a 0 1k\n.tran', '.tran requires TSTEP and TSTOP'],
+      ['R1 a 0 1k\n.ac dec 10 1', ".ac requires '.ac {dec|oct|lin} points fstart fstop'"],
+      ['R1 a 0 1k\n.ac', ".ac requires '.ac {dec|oct|lin} points fstart fstop'"],
+    ])('reports a descriptive ParseError with the line for %j', (netlist, message) => {
+      let caught: unknown;
+      try {
+        parse(netlist);
+      } catch (error) {
+        caught = error;
+      }
+      expect(caught).toBeInstanceOf(ParseError);
+      expect((caught as ParseError).line).toBe(2);
+      expect((caught as ParseError).message).toContain(message);
+      expect((caught as ParseError).message).not.toContain('Cannot read properties');
     });
   });
 
