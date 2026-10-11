@@ -28,6 +28,22 @@ const linCircuits = [
   { points: 4, source: 'V1 in 0 AC 1\nR1 in 0 1k\n.ac lin 4 100 1k', expectedGrid: [100, 400, 700, 1000] },
 ] as const;
 
+// ngspice-47 `.ac` grids for `V1 in 0 AC 1 / R1 in out 1k / C1 out 0 1u / .ac <sweep>`, printed
+// with `wrdata frequency` (count, second point, last point).
+const ngspiceAcGrids = [
+  ['lin 10 1 1k', 10, 112, 1000],
+  ['dec 10 1 5', 7, 1.25892541, 3.98107171],
+  ['dec 1 1 1k', 4, 10, 1000],
+  ['oct 4 1 5', 10, 1.18920712, 4.75682846],
+  ['oct 3 1 10', 10, 1.25992105, 8],
+  ['dec 10 1 5k', 37, 1.26691993, 5000],
+  ['dec 7 3 47k', 30, 4.1857725, 47000],
+  ['dec 10 1 50', 17, 1.2769845, 50],
+  ['dec 10 1 99.99', 20, 1.27426828, 99.99],
+  ['dec 10 1 9.999', 11, 1.25892541, 10],
+  ['oct 4 1 50', 23, 1.18920712, 45.254834],
+] as const;
+
 const transientCircuit = [
   'V1 in 0 PULSE(0 1 0 100u 100u 10m 20m)',
   'R1 in out 1k',
@@ -886,6 +902,48 @@ describe('bounded numeric WebAssembly backend', () => {
         expect(analysis?.type).toBe('ac');
         if (analysis?.type !== 'ac') continue;
         expect(analysis.frequencyHz).toEqual(expectedGrid);
+      }
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('matches ngspice-47 .ac point counts and grids for DEC, OCT and LIN sweeps', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const [sweep, count, second, last] of ngspiceAcGrids) {
+        const source = `V1 in 0 AC 1\nR1 in out 1k\nC1 out 0 1u\n.ac ${sweep}`;
+        const result = await wasm.simulate(request(source), { requestId: `wasm-ac-grid-${sweep}` });
+        expect(result.ok, sweep).toBe(true);
+        if (!result.ok) continue;
+        const analysis = result.data.analyses[0];
+        if (analysis?.type !== 'ac') throw new Error(`expected AC result for ${sweep}`);
+        const grid = analysis.frequencyHz;
+        expect(grid, sweep).toHaveLength(count);
+        expect(grid[1]! / second, sweep).toBeCloseTo(1, 7);
+        expect(grid.at(-1)! / last, sweep).toBeCloseTo(1, 7);
+      }
+    } finally {
+      await wasm.close();
+    }
+  });
+
+  it('rejects oversized .ac sweeps with RESOURCE_LIMIT instead of an internal error', async () => {
+    const wasm = await engine('spice-ts-wasm');
+    try {
+      for (const [sweep, observed] of [['lin 5000000000 1 10', 5_000_000_000], ['lin 30000000 1 10', 30_000_000]] as const) {
+        const result = await wasm.simulate(
+          request(`V1 in 0 AC 1\nR1 in out 1k\nC1 out 0 1u\n.ac ${sweep}`),
+          { requestId: `wasm-ac-limit-${sweep}` },
+        );
+        expect(result, sweep).toMatchObject({
+          ok: false,
+          error: {
+            code: 'RESOURCE_LIMIT',
+            phase: 'validation',
+            details: { limit: 'maxResultPoints', configured: NUMERIC_WASM_LIMITS.maxAcPoints, observed },
+          },
+        });
       }
     } finally {
       await wasm.close();
