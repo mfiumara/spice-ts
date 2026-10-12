@@ -8,13 +8,14 @@ import { parseNumber } from './tokenizer.js';
  * `ptfuncs.c`.
  *
  * Supported: numbers with SPICE scale factors, the constants `pi` and `e`,
- * `time`, `temper`, `v(node)`, `v(node1,node2)`, unary `+ - !`, binary
+ * `time`, `temper`, `v(node)`, `v(node1,node2)`, the branch current
+ * `i(vsource)` of a branch-carrying source, unary `+ - !`, binary
  * `+ - * / ^ **`, comparisons `== != <> < <= > >=`, `&&`, `||`, the ternary
  * `c ? a : b` / `ternary_fcn(c, a, b)`, and every function listed in
  * {@link BEHAVIORAL_FUNCTIONS}. `.param` names, `{expr}` and `'expr'` are
  * substituted before parsing, as ngspice's numparam front end does (see
- * {@link substituteBehavioralParameters}). Branch currents `i(...)`, `hertz`,
- * `pwl(...)` and the PSPICE logic operators `~ & |` are rejected explicitly.
+ * {@link substituteBehavioralParameters}). `hertz`, `pwl(...)` and the PSPICE
+ * logic operators `~ & |` are rejected explicitly.
  */
 export type BehavioralFunction =
   | 'abs' | 'acos' | 'acosh' | 'asin' | 'asinh' | 'atan' | 'atanh'
@@ -30,6 +31,8 @@ export type BehavioralVariable = 'time' | 'temper';
 export type BehavioralExpression =
   | { kind: 'number'; value: number }
   | { kind: 'voltage'; positive: string; negative?: string }
+  /** ngspice PT_CURRENT: the MNA branch current of the named source (`i(vsource)`). */
+  | { kind: 'current'; source: string }
   | { kind: 'variable'; name: BehavioralVariable }
   | { kind: 'negate'; operand: BehavioralExpression }
   | { kind: 'not'; operand: BehavioralExpression }
@@ -283,9 +286,7 @@ class Parser {
     const name = identifier[0].toLowerCase();
     if (!this.accept('(')) return this.parseName(identifier[0], name);
     if (name === 'v') return this.parseVoltage();
-    if (name === 'i') {
-      throw new ExpressionError('Unsupported behavioral expression: branch current i(...) references');
-    }
+    if (name === 'i') return this.parseCurrent();
     return this.parseCall(identifier[0], name);
   }
 
@@ -337,6 +338,16 @@ class Parser {
     return nodes.length === 1
       ? { kind: 'voltage', positive: nodes[0] }
       : { kind: 'voltage', positive: nodes[0], negative: nodes[1] };
+  }
+
+  /** `i(vsource)`: ngspice accepts exactly one source name. */
+  private parseCurrent(): BehavioralExpression {
+    this.skipWhitespace();
+    const source = NODE_NAME.exec(this.source.slice(this.position));
+    if (!source) throw new ExpressionError('i() takes one source name');
+    this.position += source[0].length;
+    if (!this.accept(')')) throw new ExpressionError('i() takes one source name');
+    return { kind: 'current', source: source[0] };
   }
 
   private accept(text: string): boolean {
@@ -438,17 +449,24 @@ function matchingBrace(text: string, open: number): number {
   return -1;
 }
 
-/** Rename every node referenced by `v()` (ground stays ground). */
+/**
+ * Rename every node referenced by `v()` (ground stays ground) and every
+ * source referenced by `i()` (ngspice subckt.c qualifies both inside a
+ * subcircuit instance).
+ */
 export function mapBehavioralNodes(
   expression: BehavioralExpression,
   mapNode: (node: string) => string,
+  mapSource: (source: string) => string = source => source,
 ): BehavioralExpression {
   const map = (node: string) => (node === GROUND ? GROUND : mapNode(node));
-  const recurse = (node: BehavioralExpression) => mapBehavioralNodes(node, mapNode);
+  const recurse = (node: BehavioralExpression) => mapBehavioralNodes(node, mapNode, mapSource);
   switch (expression.kind) {
     case 'number':
     case 'variable':
       return expression;
+    case 'current':
+      return { kind: 'current', source: mapSource(expression.source) };
     case 'voltage':
       return expression.negative === undefined
         ? { kind: 'voltage', positive: map(expression.positive) }
@@ -486,6 +504,8 @@ export function formatBehavioralExpression(expression: BehavioralExpression): st
       return expression.negative === undefined
         ? `v(${expression.positive})`
         : `v(${expression.positive},${expression.negative})`;
+    case 'current':
+      return `i(${expression.source})`;
     case 'negate':
       return `(-${format(expression.operand)})`;
     case 'not':
@@ -503,7 +523,17 @@ export function formatBehavioralExpression(expression: BehavioralExpression): st
 
 /** Distinct non-ground `v()` nodes of an expression, in first-reference order. */
 export function behavioralControlNodes(expression: BehavioralExpression): string[] {
+  return behavioralControls(expression).nodes;
+}
+
+/** Distinct `i()` sources of an expression, in first-reference order. */
+export function behavioralControlSources(expression: BehavioralExpression): string[] {
+  return behavioralControls(expression).sources;
+}
+
+function behavioralControls(expression: BehavioralExpression): { nodes: string[]; sources: string[] } {
   const nodes: string[] = [];
+  const sources: string[] = [];
   const add = (node: string | undefined) => {
     if (node !== undefined && node !== GROUND && !nodes.includes(node)) nodes.push(node);
   };
@@ -512,6 +542,9 @@ export function behavioralControlNodes(expression: BehavioralExpression): string
       case 'voltage':
         add(node.positive);
         add(node.negative);
+        return;
+      case 'current':
+        if (!sources.includes(node.source)) sources.push(node.source);
         return;
       case 'negate':
       case 'not':
@@ -537,7 +570,7 @@ export function behavioralControlNodes(expression: BehavioralExpression): string
     }
   };
   visit(expression);
-  return nodes;
+  return { nodes, sources };
 }
 
 /** Simulator state a B-source expression reads besides node voltages. */
@@ -558,9 +591,13 @@ export class BehavioralRangeError extends Error {}
 export interface CompiledBehavioralExpression {
   /** Distinct non-ground controlling nodes, in first-reference order. */
   readonly nodes: readonly string[];
+  /** Distinct controlling `i()` sources, in first-reference order. */
+  readonly sources: readonly string[];
   /**
-   * Evaluate at the given node voltages (indexed like {@link nodes}); writes
-   * d(value)/d(node voltage) into `gradient` and returns the value.
+   * Evaluate at the given control values: the node voltages (indexed like
+   * {@link nodes}) followed by the branch currents (indexed like
+   * {@link sources}). Writes d(value)/d(control) into `gradient`, indexed the
+   * same way, and returns the value.
    */
   evaluate(voltages: ArrayLike<number>, gradient: Float64Array, environment?: BehavioralEnvironment): number;
 }
@@ -726,8 +763,8 @@ function compare(op: BehavioralComparison, difference: number): number {
  * instance.
  */
 export function compileBehavioralExpression(expression: BehavioralExpression): CompiledBehavioralExpression {
-  const nodes = behavioralControlNodes(expression);
-  const size = nodes.length;
+  const { nodes, sources } = behavioralControls(expression);
+  const size = nodes.length + sources.length;
 
   /**
    * d(base^exponent) as ngspice builds it for `^` and `pow()`: a literal
@@ -792,6 +829,15 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
             gradient[negative] -= 1;
           }
           return value;
+        };
+      }
+      case 'current': {
+        // ngspice PT_CURRENT reads the branch unknown: d/d(branch) = 1.
+        const index = nodes.length + sources.indexOf(node.source);
+        return (values, gradient) => {
+          gradient.fill(0);
+          gradient[index] = 1;
+          return values[index];
         };
       }
       case 'negate': {
@@ -996,6 +1042,7 @@ export function compileBehavioralExpression(expression: BehavioralExpression): C
   const root = build(expression);
   return {
     nodes,
+    sources,
     evaluate(voltages, gradient, environment = DEFAULT_ENVIRONMENT) {
       return root(voltages, gradient, environment);
     },

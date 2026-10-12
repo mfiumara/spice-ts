@@ -242,6 +242,22 @@ describe('behavioral source expressions', () => {
     expect(compileBehavioralExpression(mapped).nodes).toEqual(['x1.1', 'x1.2', 'x1.3', 'x1.4']);
   });
 
+  it('reads i() branch currents after the node voltages, with a unit derivative on the branch', () => {
+    const compiled = compileBehavioralExpression(
+      parseBehavioralExpression('v(a)*i(vx) + 2*i(vy)^2 - i(vx)'),
+    );
+    expect(compiled.nodes).toEqual(['a']);
+    expect(compiled.sources).toEqual(['vx', 'vy']);
+    const gradient = new Float64Array(3);
+    // controls: [v(a), i(vx), i(vy)]
+    expect(compiled.evaluate([3, 0.5, -2], gradient)).toBeCloseTo(3 * 0.5 + 2 * 4 - 0.5, 14);
+    expect([...gradient]).toEqual([0.5, 3 - 1, 2 * 2 * -2]);
+    const mapped = mapBehavioralNodes(
+      parseBehavioralExpression('i(vx)+v(a)'), node => `x1.${node}`, source => `x1.${source}`,
+    );
+    expect(formatBehavioralExpression(mapped)).toBe('(i(x1.vx)+v(x1.a))');
+  });
+
   it('formats every node kind back to an equivalent expression', () => {
     const text = '-v(a)^2 + (v(a,b) >= 1 && !(v(b) < 0) ? min(time, 2) : ddt(v(a)) / 3) - (-1) || 0';
     const formatted = formatBehavioralExpression(parseBehavioralExpression(text));
@@ -286,7 +302,8 @@ describe('behavioral source expressions', () => {
   });
 
   it.each([
-    ['b1 1 0 i=i(v1)', 'branch current i(...)'],
+    ['b1 1 0 i=i(v1,v2)', 'i() takes one source name'],
+    ['b1 1 0 i=i()', 'i() takes one source name'],
     ['b1 1 0 i=hertz*2', "Unsupported behavioral expression token 'hertz'"],
     ['b1 1 0 i=a*2', "Unsupported behavioral expression token 'a'"],
     ['b1 1 0 V=~(~v(9)&v(8)) + 0.5', "Unsupported behavioral expression operator '~'"],

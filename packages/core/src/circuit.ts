@@ -274,6 +274,42 @@ function behavioralDescriptor(
   };
 }
 
+/**
+ * Bind every B-source `i(vsource)` to its source's MNA branch (ngspice
+ * PT_CURRENT via CKTfndBranch). As in ngspice, only elements that own a
+ * branch current (V, E, H, L and V= B-sources) can be referenced; names
+ * match case-insensitively, as ngspice lower-cases the whole deck.
+ */
+function bindBehavioralControlBranches(
+  sources: readonly BehavioralSource[],
+  deviceMap: ReadonlyMap<string, DeviceModel>,
+): void {
+  if (sources.length === 0) return;
+  const byLowerName = new Map<string, DeviceModel>();
+  for (const [name, device] of deviceMap) {
+    if (!byLowerName.has(name.toLowerCase())) byLowerName.set(name.toLowerCase(), device);
+  }
+  for (const device of sources) {
+    device.bindControlBranches(device.expression.sources.map(source => {
+      const control = deviceMap.get(source) ?? byLowerName.get(source.toLowerCase());
+      if (!control) {
+        throw new InvalidCircuitError(
+          `B-source '${device.name}' references i(${source}), but '${source}' is not a source in the circuit`,
+        );
+      }
+      const ownsBranch = control instanceof VoltageSource || control instanceof VCVS || control instanceof CCVS
+        || control instanceof Inductor || control instanceof BehavioralVoltageSource;
+      if (!ownsBranch) {
+        throw new InvalidCircuitError(
+          `B-source '${device.name}' references i(${source}), but '${source}' has no branch current `
+          + '(only V, E, H, L and V= B elements can be referenced)',
+        );
+      }
+      return control.branches[0];
+    }));
+  }
+}
+
 function formatBehavioralSource(desc: DeviceDescriptor): string {
   const { kind, params } = desc.behavioral!;
   const assignment = `${kind === 'voltage' ? 'V' : 'I'}=${formatBehavioralExpression(desc.expression!)}`;
@@ -1952,6 +1988,7 @@ export class Circuit {
     // One random stream per compiled circuit for its TRNOISE/TRRANDOM sources (ngspice has one per process).
     const noiseContext = new TransientNoiseContext(this._simulationOptions.seed);
     const pendingCurrentSwitches: { device: CurrentSwitch; controlSource: string }[] = [];
+    const pendingBehavioralSources: BehavioralSource[] = [];
     const ltraStates = new Map<string, LtraModelState>();
     // BSIM3 instances per ngspice model, in netlist order (b3v32temp.c pParam reuse, #700).
     const bsim3ModelInstances = new Map<string, BSIM3v3[]>();
@@ -2132,6 +2169,10 @@ export class Circuit {
           } else {
             devices.push(new BehavioralCurrentSource(desc.name, nodeIndices, compiledExpression, params));
           }
+          // i() sources may be declared after the B-source; bind their branches below.
+          if (compiledExpression.sources.length > 0) {
+            pendingBehavioralSources.push(devices[devices.length - 1] as BehavioralSource);
+          }
           break;
         }
         case 'M': {
@@ -2302,6 +2343,7 @@ export class Circuit {
       }
       device.bindControlBranch(control.branches[0]);
     }
+    bindBehavioralControlBranches(pendingBehavioralSources, deviceMap);
 
     if (this._temperature !== undefined && this._temperature !== NOMINAL_TEMPERATURE_C) {
       this.applyCircuitTemperature(this._temperature, expandedDescriptors, devices);
@@ -3219,7 +3261,7 @@ export class Circuit {
             mapNode(card.nodes[0]),
             mapNode(card.nodes[1]),
             card.kind,
-            mapBehavioralNodes(card.expression, mapNode),
+            mapBehavioralNodes(card.expression, mapNode, source => `${instanceName}.${source}`),
             card.params,
           ));
           break;
