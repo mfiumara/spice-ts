@@ -361,6 +361,39 @@ function real(values: Iterable<number>): ComplexValue[] {
   return Array.from(values, re => ({ re, im: 0 }));
 }
 
+/**
+ * How the native adapter stores each signal's samples. The default keeps one ComplexValue per
+ * sample; corpus-f's bounded child packs them into typed arrays instead, because per-sample
+ * objects for a 1e6-point transient exhaust the V8 heap (#839). Both encode the same values.
+ */
+export interface SampleEncoding<S> {
+  real(values: Iterable<number>): S;
+  complex(values: ComplexValue[]): S;
+}
+
+export interface EncodedAnalysis<S> {
+  type: ClassicAnalysisType;
+  plotName: string;
+  series: { grid: number[]; signals: Record<string, S> };
+}
+
+export interface EncodedExecution<S> extends Omit<EngineExecution, 'analyses'> {
+  analyses: EncodedAnalysis<S>[];
+}
+
+export const OBJECT_SAMPLES: SampleEncoding<ComplexValue[]> = { real, complex: values => values };
+
+export function encodeAnalysis<S>(analysis: EngineAnalysis, encoding: SampleEncoding<S>): EncodedAnalysis<S> {
+  return {
+    type: analysis.type,
+    plotName: analysis.plotName,
+    series: {
+      grid: analysis.series.grid,
+      signals: Object.fromEntries(Object.entries(analysis.series.signals).map(([name, values]) => [name, encoding.complex(values)])),
+    },
+  };
+}
+
 function phasors(values: Iterable<{ magnitude: number; phase: number }>): ComplexValue[] {
   return Array.from(values, value => {
     const radians = value.phase * Math.PI / 180;
@@ -382,12 +415,12 @@ function poleZeroSignals(result: {
   return signals;
 }
 
-function mapSignals<T>(
+function mapSignals<T, S>(
   voltages: Map<string, T>,
   currents: Map<string, T>,
-  convert: (values: T) => ComplexValue[],
-): Record<string, ComplexValue[]> {
-  const signals: Record<string, ComplexValue[]> = {};
+  convert: (values: T) => S,
+): Record<string, S> {
+  const signals: Record<string, S> = {};
   for (const [name, values] of [...voltages.entries()].sort(([left], [right]) => left.localeCompare(right))) {
     signals[`v(${name.toLowerCase()})`] = convert(values);
   }
@@ -493,6 +526,16 @@ export async function runNativeSpiceTs(
   circuit: ClassicCircuit,
   options: { parseFirst?: boolean } = {},
 ): Promise<EngineExecution> {
+  return runNativeSpiceTsEncoded(input, circuit, OBJECT_SAMPLES, options);
+}
+
+/** `runNativeSpiceTs` with each signal's samples stored by `encoding` (#839). */
+export async function runNativeSpiceTsEncoded<S>(
+  input: Buffer,
+  circuit: ClassicCircuit,
+  encoding: SampleEncoding<S>,
+  options: { parseFirst?: boolean } = {},
+): Promise<EncodedExecution<S>> {
   const text = input.toString('utf8');
   if (!Buffer.from(text, 'utf8').equals(input)) {
     return {
@@ -507,19 +550,19 @@ export async function runNativeSpiceTs(
     const core = await import(pathToFileURL(resolve('packages/core/dist/index.js')).href);
     if (options.parseFirst ?? true) core.parse(text);
     const result = await core.simulate(text);
-    const analyses: EngineAnalysis[] = [];
+    const analyses: EncodedAnalysis<S>[] = [];
     for (const type of circuit.analyses) {
       if (type === 'op' && result.dc) {
         const voltages = new Map([...result.dc.voltages].map(([name, value]: [string, number]) => [name, [value]]));
         const currents = new Map([...result.dc.currents].map(([name, value]: [string, number]) => [name, [value]]));
-        analyses.push({ type, plotName: 'Operating Point', series: { grid: [0], signals: mapSignals(voltages, currents, real) } });
+        analyses.push({ type, plotName: 'Operating Point', series: { grid: [0], signals: mapSignals(voltages, currents, encoding.real) } });
       } else if (type === 'tran' && result.transient) {
         analyses.push({
           type,
           plotName: 'Transient Analysis',
           series: {
             grid: result.transient.time,
-            signals: mapSignals(result.transient.voltages, result.transient.currents, real),
+            signals: mapSignals(result.transient.voltages, result.transient.currents, encoding.real),
           },
         });
       } else if (type === 'ac' && result.ac) {
@@ -528,7 +571,7 @@ export async function runNativeSpiceTs(
           plotName: 'AC Analysis',
           series: {
             grid: result.ac.frequencies,
-            signals: mapSignals(result.ac.voltages, result.ac.currents, phasors),
+            signals: mapSignals(result.ac.voltages, result.ac.currents, (values: Iterable<{ magnitude: number; phase: number }>) => encoding.complex(phasors(values))),
           },
         });
       } else if (type === 'dc' && result.dcSweep) {
@@ -542,19 +585,19 @@ export async function runNativeSpiceTs(
           plotName: 'DC transfer characteristic',
           series: {
             grid: Array.from(internal.sweepValues),
-            signals: mapSignals(internal.voltageArrays, internal.currentArrays, real),
+            signals: mapSignals(internal.voltageArrays, internal.currentArrays, encoding.real),
           },
         });
       } else if (type === 'pz' && result.poleZero) {
-        analyses.push({
+        analyses.push(encodeAnalysis({
           type,
           plotName: 'Pole-Zero Analysis',
           series: { grid: [0], signals: poleZeroSignals(result.poleZero) },
-        });
+        }, encoding));
       } else if (type === 'noise' && result.noise) {
-        analyses.push(...noiseAnalyses(result.noise));
+        analyses.push(...noiseAnalyses(result.noise).map(analysis => encodeAnalysis(analysis, encoding)));
       } else if (type === 'disto' && result.distortion) {
-        analyses.push(...distortionAnalyses(result.distortion));
+        analyses.push(...distortionAnalyses(result.distortion).map(analysis => encodeAnalysis(analysis, encoding)));
       }
     }
     const missing = circuit.analyses.filter(type => !analyses.some(analysis => analysis.type === type));
