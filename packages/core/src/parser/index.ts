@@ -19,7 +19,9 @@ import {
 } from './transmission-line-parser.js';
 import { preprocessDeck, preprocessDeckSync } from './preprocessor.js';
 import { lowerControlScript } from './control-block.js';
-import { extractControlBlocks, type ControlSourceBlock, type ControlSourceLine } from './control/source.js';
+import {
+  extractControlBlocks, type ControlSourceBlock, type ControlSourceLine, type ControlSourceWarning,
+} from './control/source.js';
 import {
   CONTROL_ANALYSIS_COMMANDS, commandName, parseControlScript, type ControlScript, type ControlStatement,
 } from './control/script.js';
@@ -72,7 +74,9 @@ export { UnsupportedModelFlagError } from './model-flags.js';
 export function parse(netlist: string): Circuit {
   const { title, control } = splitTitledDeck(netlist);
   const preprocessed = preprocessDeckSync(control.netlist, undefined, 1);
-  return parseNetlist(`${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters);
+  return parseNetlist(
+    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters, control.warnings,
+  );
 }
 
 /**
@@ -85,7 +89,7 @@ export function parse(netlist: string): Circuit {
 export function parseTitleless(netlist: string): Circuit {
   const control = extractControlBlocks(netlist, false);
   const preprocessed = preprocessDeckSync(control.netlist, undefined, 0);
-  return parseNetlist(preprocessed.text, false, undefined, control.blocks, preprocessed.parameters);
+  return parseNetlist(preprocessed.text, false, undefined, control.blocks, preprocessed.parameters, control.warnings);
 }
 
 /**
@@ -106,6 +110,7 @@ function parseNetlist(
   guard?: ProtocolExecutionGuard,
   extractedBlocks: ControlSourceBlock[] = [],
   parameters: Record<string, number> = {},
+  controlWarnings: ControlSourceWarning[] = [],
 ): Circuit {
   // ngspice control-language lines are not netlist cards; read them from the raw text.
   const extracted = extractControlBlocks(netlist, firstLineIsTitle);
@@ -114,6 +119,7 @@ function parseNetlist(
   const lines = tokenizeNetlist(extracted.netlist, { firstLineIsTitle });
   const circuit = new Circuit();
   circuit.setParameters(parameters);
+  for (const warning of [...controlWarnings, ...extracted.warnings]) circuit.addParseWarning(warning.message);
 
   let subcktCollector: (SubcircuitHeader & { body: string[]; depth: number }) | null = null;
   let hasNoiseAnalysis = false;
@@ -343,7 +349,9 @@ export async function parseAsync(
 ): Promise<Circuit> {
   const { title, control } = splitTitledDeck(netlist);
   const preprocessed = await preprocessDeck(control.netlist, resolver, undefined, 1);
-  return parseNetlist(`${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters);
+  return parseNetlist(
+    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters, control.warnings,
+  );
 }
 
 /** Parse and preprocess a title-less SPICE fragment. */
@@ -354,7 +362,7 @@ export async function parseTitlelessAsync(
 ): Promise<Circuit> {
   const control = extractControlBlocks(netlist, false);
   const preprocessed = await preprocessDeck(control.netlist, resolver, guard, 0);
-  return parseNetlist(preprocessed.text, false, guard, control.blocks, preprocessed.parameters);
+  return parseNetlist(preprocessed.text, false, guard, control.blocks, preprocessed.parameters, control.warnings);
 }
 
 const OUTPUT_ONLY_OPTION_FLAGS = new Set([

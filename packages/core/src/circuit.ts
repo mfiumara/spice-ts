@@ -655,6 +655,7 @@ export class Circuit {
   private _nodeSets: NodeInitialState[] = [];
   private nodeSet = new Set<string>();
   private _controlScript?: ControlScript;
+  private _parseWarnings: string[] = [];
 
   get analyses(): AnalysisDirective[] {
     return this._analyses;
@@ -700,6 +701,19 @@ export class Circuit {
    */
   get xspiceTrtol(): number | undefined {
     return this._xspiceTrtol;
+  }
+
+  /**
+   * Non-fatal netlist diagnostics recorded while parsing, such as ngspice's
+   * "misplaced .endc card". {@link simulate} reports them as `parse` warnings.
+   */
+  get parseWarnings(): readonly string[] {
+    return this._parseWarnings;
+  }
+
+  /** @internal Record a non-fatal parse diagnostic; see {@link parseWarnings}. */
+  addParseWarning(message: string): void {
+    this._parseWarnings.push(message);
   }
 
   /** Set the ngspice `.options XTRTOL=` value; see {@link xspiceTrtol}. */

@@ -129,7 +129,7 @@ export async function simulate(
   }
   const compiled = circuit.compile(guard);
   options = withNetlistOptions(compiled.simulationOptions, options);
-  const warnings: SimulationWarning[] = [];
+  const warnings: SimulationWarning[] = parseWarnings(circuit);
   const convergence = createConvergenceTelemetry();
   if (options.bypass) {
     warnings.push({
@@ -318,7 +318,7 @@ function simulateControlScript(
   guard: ProtocolExecutionGuard | undefined,
   measures: readonly MeasureCard[],
 ): SimulationResult {
-  const warnings: SimulationWarning[] = [];
+  const warnings: SimulationWarning[] = parseWarnings(circuit);
   const convergence = createConvergenceTelemetry();
   const measureValues = new Map<string, number>();
   const deckAnalyses = [...circuit.analyses];
@@ -594,6 +594,10 @@ function* streamWithSteps(
   } finally {
     target.restore();
   }
+}
+
+function parseWarnings(circuit: Circuit): SimulationWarning[] {
+  return circuit.parseWarnings.map(message => ({ type: 'parse', message }));
 }
 
 function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[]): void {

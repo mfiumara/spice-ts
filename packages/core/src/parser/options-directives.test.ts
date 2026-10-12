@@ -315,7 +315,6 @@ ${control}
 
   it.each([
     ['.control\nrun', "Unterminated .control block: missing '.endc'"],
-    ['.endc', "'.endc' without a matching '.control'"],
     ['.control\n.control\n.endc', "Nested '.control' blocks are not supported"],
     ['.control extra\n.endc', "Unsupported .control arguments: 'extra'"],
     ['.control\n.endc extra', "Unsupported .endc arguments: 'extra'"],
