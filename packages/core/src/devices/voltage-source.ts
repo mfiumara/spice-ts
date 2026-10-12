@@ -16,11 +16,11 @@ export class VoltageSource implements DeviceModel {
   /** Present only for TRNOISE/TRRANDOM and PWL with TD=/R=, so other sources stay off the accept pass. */
   readonly acceptTransientStep?: (ctx: StampContext, breakpoints?: TransientBreakpointSink) => void;
   /**
-   * False for a PWL with TD=/R=: its accept hook only schedules breakpoints,
+   * False for a PWL: its accept hook only schedules breakpoints,
    * so it must not put its nodes under the node-voltage LTE.
    */
   readonly storesCharge?: boolean;
-  /** ngspice accept-time PWL corners for `TD=`/`R=` (vsrcacct.c). */
+  /** ngspice accept-time PWL corners (vsrcacct.c). */
   private readonly pwlSchedule?: PwlBreakpointSchedule;
 
   /**
@@ -43,7 +43,7 @@ export class VoltageSource implements DeviceModel {
       const noise = (noiseContext ?? new TransientNoiseContext()).register('V', name, waveform);
       this.noise = noise;
       this.acceptTransientStep = (ctx, breakpoints) => noise.accept(ctx.time, breakpoints);
-    } else if (waveform.type === 'pwl' && usesPwlSchedule(waveform)) {
+    } else if (waveform.type === 'pwl') {
       const schedule = new PwlBreakpointSchedule(waveform);
       this.pwlSchedule = schedule;
       this.storesCharge = false;
@@ -243,23 +243,13 @@ function pulseTrainEnd(p: PulseSource): number {
 }
 
 /**
- * Return PWL corners in [0, stopTime], preserving their declared times. A
- * PWL with `TD=`/`R=` schedules its corners on accept instead
- * ({@link PwlBreakpointSchedule}); only its first corner is returned here.
+ * The first PWL corner ngspice requests as a breakpoint, if within
+ * [0, stopTime]. Later corners are scheduled on accept
+ * ({@link PwlBreakpointSchedule}), as ngspice-47 vsrcacct.c does.
  */
 export function pwlBreakpoints(pwl: PWLSource, stopTime: number, transientTimestep = 0): number[] {
-  if (usesPwlSchedule(pwl)) {
-    const first = new PwlBreakpointSchedule(pwl).next(0, stopTime, transientTimestep);
-    return first !== undefined && first <= stopTime ? [first] : [];
-  }
-  return pwl.points
-    .map(point => point.time)
-    .filter(time => time >= 0 && time <= stopTime);
-}
-
-/** Whether a PWL source needs ngspice's accept-time breakpoint chain (`TD=` or `R=`). */
-export function usesPwlSchedule(waveform: SourceWaveform): boolean {
-  return waveform.type === 'pwl' && (waveform.delay !== undefined || waveform.repeat !== undefined);
+  const first = new PwlBreakpointSchedule(pwl).next(0, stopTime, transientTimestep);
+  return first !== undefined && first <= stopTime ? [first] : [];
 }
 
 /**
@@ -267,8 +257,9 @@ export function usesPwlSchedule(waveform: SourceWaveform): boolean {
  * `T` at or past the pending break, the source maps `T - TD` into the
  * (repeating) waveform and requests the next corner at `(T + corner) - mapped`.
  * That floating-point chain, not `corner + TD + n * period`, decides on which
- * side of a repeat's wrap-around discontinuity ngspice samples, so spice-ts
- * reproduces it. `minBreak` is ngspice's CKTminBreak, 10 * CKTdelmin =
+ * side of a repeat's wrap-around discontinuity ngspice samples, and even
+ * without TD=/R= it can put the breakpoint one ulp off the corner, where the
+ * step then lands, so spice-ts reproduces it for every PWL. `minBreak` is ngspice's CKTminBreak, 10 * CKTdelmin =
  * 1e-10 * CKTmaxStep in an XSPICE build, with the default CKTmaxStep
  * `min(TSTEP, TSTOP / 50)`.
  */
