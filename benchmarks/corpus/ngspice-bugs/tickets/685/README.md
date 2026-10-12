@@ -32,7 +32,7 @@ undetermined: supplied interconnected nonlinear vendor model library does not ad
 |---|---|---|
 | ngspice-47 | error | Timestep too small at 2.25e-12s, timestep=1.25e-22, node net-_v1-e1_; 4 rows; native and ps. |
 | ngspice master | error | Same failure as 47: "Timestep too small" at t=2e-12 s (47: 2.25e-12 s). [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch] |
-| spice-ts | unsupported | With filesystem resolver: UnsupportedModelTypeError .model 'Rdmod' has unsupported type 'RES'. |
+| spice-ts | unsupported | PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1a' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it to an XSPICE aswitch in LTPS mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: With filesystem resolver: UnsupportedModelTypeError .model 'Rdmod' has unsupported type 'RES'. |
 
 Reproduces on ngspice-47: yes. Check: Transient aborts after only 4 rows, far short of the requested 100ns.
 
