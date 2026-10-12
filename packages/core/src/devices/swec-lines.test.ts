@@ -4,6 +4,7 @@ import { parse as parseWithTitle, parseTitleless as parse } from '../parser/inde
 import { simulate } from '../simulate.js';
 import { computeTxlCoefficients, TxlLine } from './txl.js';
 import { computeCplCoefficients, CplLines, cplMatricesFromUpperTriangles, type CplTerms } from './cpl.js';
+import { chargeTruncatedNodes } from '../analysis/transient-node-truncation.js';
 
 // ngspice-47 TXL (Y) and CPL (P) lossy lines, issue #491. Decks below are
 // ngspice tests/transmission fixtures (BSD-3-Clause, ngspice 3ef069fb) and one
@@ -646,4 +647,48 @@ describe('TXL/CPL transient waveforms against ngspice-47 on identical netlists',
     const errors = maxErrors(tr.time, [tr.voltage('5'), tr.voltage('9'), tr.voltage('11')], NGSPICE_CPL_4_LINE);
     expect(Math.max(...errors)).toBeLessThan(LIN4_BOUND);
   }, 20_000);
+});
+
+// Issue #549: ngspice-47 TXL and CPL have no DEVtrunc (txlinit.c / cplinit.c
+// `.DEVtrunc = NULL`). CKTtrunc never sees the lines; they only lower
+// CKTmaxStep in TXLload/CPLload. spice-ts used to count them as charge-storing
+// devices without a truncation port, so the node-voltage LTE ran on every port
+// node and cut the step at each reflected edge: 1278 points instead of
+// ngspice's 520 on the deck below, 1168 instead of 217 on cpl_ibm2. #621 made
+// the lines truncation-covering; these tests pin that ngspice behaviour.
+describe('TXL/CPL leave step control to CKTmaxStep, as ngspice (DEVtrunc = NULL, #549)', () => {
+  it('exempts line ports shared only with static elements from the node-voltage LTE', () => {
+    const compiled = parse([
+      'VS 1 0 PULSE(0 1 0.1n 0.1n 0.1n 5n 20n)',
+      'RS 1 a 50',
+      'Y1 a 0 b 0 ymod',
+      'RL b 0 100',
+      'RE e 0 50',
+      'P1 b e 0 c d 0 pmod',
+      'RC c 0 100',
+      'CL d 0 1p',
+      '.model ymod txl R=5 L=2.5e-7 G=1e-3 C=1e-10 length=1',
+      '.model pmod cpl R=0.5 0 0.5 L=247.3e-9 31.65e-9 247.3e-9 G=0 0 0 C=31.4e-12 -2.45e-12 31.4e-12 length=0.3048',
+      '.tran 0.02n 10n',
+    ].join('\n')).compile();
+    const exempt = chargeTruncatedNodes(compiled.nodeCount, compiled.devices);
+    const at = (node: string) => exempt[compiled.nodeIndexMap.get(node)!];
+    // d also carries a linear capacitor, which CAPtrunc covers since #621.
+    expect([at('a'), at('b'), at('c'), at('d'), at('e')]).toEqual([1, 1, 1, 1, 1]);
+  });
+
+  it('takes the ngspice-47 grid on resistively terminated TXL lines', async () => {
+    const tr = (await simulate(TXL_LOSSLESS_AND_SHUNT_G_DECK)).transient!;
+    // ngspice-47 accepts 520 timepoints on this deck.
+    expect(tr.time.length).toBeLessThanOrEqual(530);
+    // On the same grid the shunt-G lossy line Y2 reproduces ngspice to < 1 uV.
+    const [errorD] = maxErrors(tr.time, [tr.voltage('d')], NGSPICE_TXL_LOSSLESS_AND_SHUNT_G.map(row => [row[0], row[2]]));
+    expect(errorD).toBeLessThan(1e-6);
+  });
+
+  it('takes the ngspice-47 grid on cpl_ibm2', async () => {
+    const tr = (await simulate(CPL_IBM2_DECK)).transient!;
+    // ngspice-47 accepts 217 timepoints on this deck.
+    expect(tr.time.length).toBeLessThanOrEqual(240);
+  });
 });

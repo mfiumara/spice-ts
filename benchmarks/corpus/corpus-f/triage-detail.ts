@@ -12,7 +12,7 @@ import { readFile } from 'node:fs/promises';
 import { basename, resolve } from 'node:path';
 import { compareExecutions } from '../../aggregate-report.js';
 import type { CorpusFManifest } from './ingest.js';
-import { CORPUS_ROOT, MATCH_THRESHOLD, normalizedSignalErrors, sig3 } from './lib.js';
+import { CORPUS_ROOT, MATCH_THRESHOLD, normalizedSignalErrors, peakFloor, sig3 } from './lib.js';
 import { runBoundedSimulate, runNgspice } from './outcomes.js';
 
 interface Sample { re: number; im?: number }
@@ -132,7 +132,7 @@ async function main(): Promise<void> {
         if (!value || !reference) return;
         worst = Math.max(worst, Math.hypot(value.re - reference.re, (value.im ?? 0) - (reference.im ?? 0)));
       });
-      reverse = ` | at ngspice points: ${sig3(worst / Math.max(error.ngspicePeak, 1e-12))}`;
+      reverse = ` | at ngspice points: ${sig3(worst / Math.max(error.ngspicePeak, peakFloor(error.analysis, error.signal)))}`;
     }
     console.log(`  ${sig3(error.normalized)}\t${error.analysis} ${error.signal}\tabs ${sig3(error.absoluteMax)} / peak ${sig3(error.ngspicePeak)}${at}${reverse}`);
   }

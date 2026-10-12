@@ -1,0 +1,9 @@
+Test of nint
+*
+R1 1 0 1
+V1 1 0 1.0
+
+.print dc V(1) {fmod(99.5,V(1))}
+.DC V1 1.0 10.0 0.5
+
+.end

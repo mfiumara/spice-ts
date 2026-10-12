@@ -17,8 +17,36 @@ export const UPSTREAM_ROOTS = ['examples', 'tests'] as const;
 export const DECK_EXTENSIONS = /\.(cir|sp|net|deck|spi|cki|ckt)$/i;
 /** Uniform, corpus-wide parity threshold. Never tuned per circuit. */
 export const MATCH_THRESHOLD = 0.01;
-/** Floor for the normalising peak so that an all-zero reference signal does not divide by zero. */
+/**
+ * Floor for the normalising peak of signals that are neither node voltages nor branch currents
+ * (pole/zero locations, noise spectra), so that an all-zero reference does not divide by zero.
+ */
 export const PEAK_FLOOR = 1e-12;
+/** ngspice-47 default absolute voltage tolerance (`.options vntol`), in volts. */
+export const NGSPICE_VNTOL = 1e-6;
+/** ngspice-47 default absolute current tolerance (`.options abstol`), in amperes. */
+export const NGSPICE_ABSTOL = 1e-12;
+/**
+ * Normalising-peak floor for node voltages (#593): NGSPICE_VNTOL / MATCH_THRESHOLD. With it, a
+ * voltage whose ngspice peak is zero or below 100 uV matches when the absolute difference is at
+ * most VNTOL, the smallest voltage difference ngspice itself resolves. Uniform for every fixture;
+ * a deck's own `.options vntol` is not consulted.
+ */
+export const VOLTAGE_PEAK_FLOOR = 1e-4;
+/** Normalising-peak floor for branch currents (#593): NGSPICE_ABSTOL / MATCH_THRESHOLD. */
+export const CURRENT_PEAK_FLOOR = 1e-10;
+
+/**
+ * Normalising-peak floor for one signal: node voltages `v(...)` use VOLTAGE_PEAK_FLOOR, branch
+ * currents `i(...)` CURRENT_PEAK_FLOOR, and everything else (including `.pz` roots, which the
+ * harness also names `v(pole(n))`/`v(zero(n))` but which are frequencies) PEAK_FLOOR.
+ */
+export function peakFloor(analysis: string, signal: string): number {
+  if (analysis === 'pz') return PEAK_FLOOR;
+  if (/^v\(/i.test(signal)) return VOLTAGE_PEAK_FLOOR;
+  if (/^i\(/i.test(signal)) return CURRENT_PEAK_FLOOR;
+  return PEAK_FLOOR;
+}
 
 /** README heading of the control-vector supplement (#521), owned by control-vectors.ts; outcomes.ts keeps it intact. */
 export const CONTROL_SECTION = '\n## Control-vector supplement (#521)\n';
@@ -249,13 +277,14 @@ export interface SignalError {
   signal: string;
   absoluteMax: number;
   ngspicePeak: number;
-  /** absoluteMax / max(ngspicePeak, PEAK_FLOOR). */
+  /** absoluteMax / max(ngspicePeak, peakFloor(analysis, signal)). */
   normalized: number;
 }
 
 /**
- * Per-signal error normalised to the ngspice full-scale value of that signal. One uniform
- * normalisation for every fixture: the threshold applied to it is MATCH_THRESHOLD.
+ * Per-signal error normalised to the ngspice full-scale value of that signal, floored per
+ * quantity by `peakFloor`. One uniform normalisation for every fixture: the threshold applied to
+ * it is MATCH_THRESHOLD.
  */
 export function normalizedSignalErrors(
   comparisons: ReadonlyArray<{ analysis: string; metrics: ComparisonMetrics }>,
@@ -273,7 +302,7 @@ export function normalizedSignalErrors(
         signal,
         absoluteMax: metric.absoluteError.max,
         ngspicePeak,
-        normalized: metric.absoluteError.max / Math.max(ngspicePeak, PEAK_FLOOR),
+        normalized: metric.absoluteError.max / Math.max(ngspicePeak, peakFloor(comparison.analysis, signal)),
       });
     }
   }

@@ -1,0 +1,31 @@
+Test of Function Handling in Expression Lib
+********************************************************************************
+* Tier No.:     1
+* Directory/Circuit Name: ABM_FUNC/func.cir
+* Description:  Test of the XYCE analog behavioral modeling user defined
+*               function handling
+* Input: VX, VY, VZ
+* Output: V(F)
+* Analysis:
+*    Through nested function definitions, a function is defined:
+*      f(x,y,z) = y - z - 4 + x**2
+*    The circuit generated x, y, and z values as voltage nodes and
+*    a sourse sets the value of node f to the result of the function.
+*
+*********************************************************************************
+* This also tests the case of a function that does not contain all the independent
+* variables in the definition
+.func fy(x,y) {y}
+.func diff(x,y) {x-y}
+.FUNC f(x,y,z) {diff(y,z)-4+fy(z,x)**2}
+VX  x  0  PWL(0 1v  1ms  2v  2ms  0v)
+VY  y  0  PWL(0 2v  1ms  2v  2ms  0v)
+VZ  z  0  PWL(0 3v  1ms  2v  2ms  1v)
+BF  F  0  v = {f(v(x), v(y), v(z))}
+RX  x  0  1M
+RY  y  0  1M
+RZ  z  0  1M
+RF  f  0  1M
+.TRAN 0.02MS 2MS
+.PRINT TRAN v(x) v(y) v(z) v(f)
+.END

@@ -1,0 +1,34 @@
+*** schmitt trigger ***
+
+v0 6 0 dc 24V
+v1 1 0 dc 0 pulse 0 5V 0 5s 5s 1s
+
+r1 1 2 10k
+r2 3 6 12k
+r3 5 6 8k
+r4 4 0 1k
+
+q1 3 2 4 2n2222
+q2 5 3 4 2n2222
+
+.dc v0 24 24 1
+
+.options device voltlim=1 debuglevel=-100
+
+.options nonlin continuation=1 
+
+.options loca stepper=1 maxsteps=500
++ predictor=1 stepcontrol=1 
++ conparam=v1:DCV0
++ initialvalue=0.0 minvalue=-5.0 maxvalue=10.0
++ initialstepsize=0.01 minstepsize=1.0e-8 maxstepsize=0.1
++ aggressiveness=1.0
+
+*COMP v(5) reltol=0.02
+.print homotopy format=tecplot v(5) 
+
+.model 2n2222 npn (is=19f bf=150 vaf=100 ikf=.18 ise=50p ne=2.5
++ br=7.5 var=6.4 ikr=12m isc=8.7p nc=1.2 rb=50 re=.4 rc=.3
++ cje=26p tf=.5n cjc=11p tr=7n xtb=1.5 kf=0.032f af=1)
+
+.end

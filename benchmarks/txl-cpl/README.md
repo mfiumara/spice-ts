@@ -181,3 +181,80 @@ the far ends of the lines drive gates that feed back into the lines.
    sed 's/^tran 0.1ns 60ns 0 0.35N/tran 0.1ns 60ns 0 0.01n/' /tmp/cpl4_txl_2_line.sp > /tmp/cpl4_tmax.sp
    pnpm exec tsx benchmarks/txl-cpl/compare.ts /tmp/cpl4_tmax.sp
    ```
+
+## #549: TXL/CPL no longer drive the node-voltage LTE
+
+ngspice-47 TXL and CPL have no truncation routine (`txlinit.c` and
+`cplinit.c` set `.DEVtrunc = NULL`). CKTtrunc never sees the lines. They
+affect step control only by lowering CKTmaxStep to 0.9 tau in
+TXLload/CPLload. spice-ts used to count them as charge-storing devices without
+a truncation port, so its node-voltage LTE (#638) ran on every line port and
+cut the step at each reflected edge. `TxlLine`/`CplLines` declaring
+`truncationCoversCharges` fixes this. That line landed on main with the
+CKTtrunc step-control port #689 (#621). The #549 lane found the same change
+independently. Its regression tests (`swec-lines.test.ts`, "TXL/CPL leave
+step control to CKTmaxStep") pin the behaviour.
+
+### That change alone (isolated on main `b1a1ff58`, before #689)
+
+Same machine (macOS arm64, Homebrew ngspice-47), same fixture bytes,
+`compare.ts`, worst max err / swing, points spice-ts / ngspice. Raw output:
+`results-549/corpus-before.jsonl` and `corpus-after.jsonl`.
+
+| Fixture | before | points | after | points |
+|---|---|---|---|---|
+| cpl4_txl_2_line.sp | 26.914% | 11137 / 285 | 26.869% | 1908 / 285 |
+| cpl4_txl_2_line.sp at TMAX=0.01n | 1.49% | 13817 / 6026 | 1.18% | 6523 / 6026 |
+| cpl3_4_line (both) | `TimestepTooSmallError` at 23.3 ns | | 5.867% | 1017 / 1018 |
+| cpl_ibm1 / cpl_ibm1a | 32.122% | 21896 / 392 | 15.057% | 4736 / 392 |
+| cpl_ibm2 (both) | 0.079% | 1168 / 217 | 0.076% | 216 / 217 |
+| cpl_ibm3.sp | 15.213% | 13792 / 124 | 15.187% | 9614 / 124 |
+| txl4_1_line.sp | 5.374% | 562 / 148 | 5.365% | 548 / 148 |
+| cpl1_4, cpl2_2, txl1 (both), txl2 (both), txl3 | unchanged | | unchanged | |
+
+### Current main `dd4e58be` (#689 CKTtrunc for C/L/MOS1 + the TXL/CPL change)
+
+Raw output: `results-549/corpus-main-dd4e58be.jsonl`. The **LOSS** rows are above
+the 1% threshold.
+
+| Fixture | worst max err / swing | points ts / ng |
+|---|---|---|
+| cpl4_txl_2_line.sp (#549) | **26.869% LOSS** | 278 / 285 |
+| cpl4_txl_2_line.sp at TMAX=0.01n (both engines) | 0.064% | 6025 / 6026 |
+| cpl2_2_line.sp | **36.367% LOSS** (8.794% before #689) | 96 / 96 |
+| cpl3_4_line (both) | **5.867% LOSS** | 1017 / 1018 |
+| txl1_1_line (both) | **3.792% LOSS** (1.003% before #689) | 491 / 492 |
+| cpl_ibm3.sp | **3.018% LOSS** | 120 / 124 |
+| txl3_1_line.sp | **2.774% LOSS** | 269 / 263 |
+| txl2_3_line (both) | **2.236% LOSS** (1.495% before #689) | 493 / 493 |
+| txl4_1_line.sp | **1.799% LOSS** | 147 / 148 |
+| cpl_ibm1 / cpl_ibm1a | **1.469% LOSS** | 387 / 392 |
+| cpl1_4_line.sp | **1.194% LOSS** | 977 / 978 |
+| cpl_ibm2 (both) | 0.076% | 216 / 217 |
+
+cpl4_txl_2_line is now 0.064% from ngspice when both run at TMAX=0.01n, so
+the line load, history and convolution agree with ngspice. At the deck's
+own step it is still a 27% loss, even though the point counts nearly match
+(278 vs 285). The grids split at the second step after t=0: ngspice takes 0,
+1, 2, 4, 8, 16 ps and spice-ts takes 0, 1, 3, 7, 15, 31 ps. That is the
+step-grid gap #561. ngspice is not converged on this deck either: its own
+default run is 21.3% / 18.5% / 25.9% of swing (v(2)/v(4)/v(5)) from its
+TMAX=0.01n run. A different step sequence therefore lands on a different
+coarse answer.
+
+On the resistively terminated lossless/shunt-G unit deck both engines take
+the same 520-point grid. The shunt-G line matches ngspice-47 to 7e-8 V. The
+lossless line's delayed edge is 6.7e-3 V (1%) low: it lands one picosecond
+late. spice-ts accepts `nextTime - time` where ngspice adds CKTdelta, so the
+accepted times differ by an ulp, and the line history is keyed on integer
+picoseconds. Tracked in #708. A scratch run with CKTdelta arithmetic matched
+both lines to 1e-14 V.
+
+Reproduce:
+
+```sh
+pnpm exec tsx benchmarks/txl-cpl/compare.ts $(grep -l -i -E '^\s*\.model\s+\S+\s+(txl|cpl)' -r benchmarks/corpus/corpus-f/fixtures | grep -v xspice | sort)
+# matched TMAX
+sed 's/^tran 0.1ns 60ns 0 0.35N/tran 0.1ns 60ns 0 0.01n/' benchmarks/corpus/corpus-f/fixtures/examples/TransmissionLines/cpl4_txl_2_line.sp > /tmp/cpl4_tmax.sp
+pnpm exec tsx benchmarks/txl-cpl/compare.ts /tmp/cpl4_tmax.sp
+```

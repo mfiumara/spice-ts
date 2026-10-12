@@ -1,0 +1,3775 @@
+{
+  "schemaVersion": "spice-ts-corpus-g-outcomes/v1",
+  "source": {
+    "revision": "7bb7e98f0ed3a81a7d1cf1d10b68592107ed40b2",
+    "license": "GPL-3.0-or-later",
+    "manifestSha256": "db32b77a319f4458dea3349aa8e0746ada52991ba76a0cce022591ed95f20cf1"
+  },
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1"
+  },
+  "environment": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "commands": {
+    "generate": "pnpm build && spice-heavy pnpm exec tsx benchmarks/corpus/corpus-g/parity.ts",
+    "verify": "spice-heavy pnpm exec tsx benchmarks/corpus/corpus-g/parity.ts --check",
+    "ngspice": "ngspice -b -r <raw> <identical-fixture> (HOME=<tmp> with .spiceinit \"set filetype=ascii\")",
+    "spiceTs": "@spice-ts/core simulate(<identical-fixture>) in a bounded child process (no parse() pre-check)"
+  },
+  "policy": {
+    "input": "byte-identical fixture for both engines",
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "matchThreshold": 0.01,
+    "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, 1e-12). Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
+    "deterministicHashExcludes": [
+      "environment",
+      "tools.node",
+      "ngspice.analyses",
+      "spiceTs.analyses"
+    ]
+  },
+  "totals": {
+    "fixtures": 128,
+    "ngspice": {
+      "success": 128,
+      "failed": 0,
+      "unsupported": 0
+    },
+    "spiceTs": {
+      "success": 62,
+      "failed": 5,
+      "unsupported": 61
+    },
+    "outcomes": {
+      "matched": 48,
+      "mismatch": 14,
+      "not-compared": 0,
+      "spice-ts-loss": 66,
+      "ngspice-failed": 0,
+      "both-failed": 0
+    }
+  },
+  "gapBuckets": [
+    {
+      "bucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)",
+      "fixtures": 22,
+      "ngspiceSuccess": 22,
+      "ids": [
+        "bjt-analytic-ramp-test1-cir",
+        "bjt-off-bjt-off-cir",
+        "bug-458-bug458-cir",
+        "diagnostic-dc-currentcheck1-cir",
+        "diode-analytic-reverse-model-cir",
+        "gmin-stepping-gstep-cont3a-cir",
+        "homotopy-schmidt-cir",
+        "measure-cont-derivtest1dc-cir",
+        "mextram-acfreq-gbb-noflip-p-cir",
+        "mpde-invert1-cir",
+        "nonlinear-convergencetests-nlstrategy1-cir",
+        "param-refactor-paramhomotopy-cir",
+        "powernode-resinner-cir",
+        "pseudo-pseudo-cir",
+        "psp102-idvg0-id-t27-pmos-cir",
+        "psp103-invert-psp-testdta0-cir",
+        "resistor-td-temp-dep-cir",
+        "sandler25-sandler25-cir",
+        "supernode-supernode1-cir",
+        "testjac-testjac-comp-cir",
+        "tia-erroroption-erroroption-cir",
+        "twolevelapi-resinnertran-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/713"
+    },
+    {
+      "bucket": "output: expressions and output variables in .print lines",
+      "fixtures": 11,
+      "ngspiceSuccess": 11,
+      "ids": [
+        "abm-db-dbtest-cir",
+        "abm-int-floor-ceil-int-floor-ceil-cir",
+        "abm-nint-fmod-fmod-cir",
+        "acsens-ac-sens-current-obj-fd-cir",
+        "expprint-expprint-cir",
+        "multiplicity-factor-bjt-diffpair-noise-baseline-net",
+        "noise-cascodebjtnoise-cir",
+        "power-power-bjt-gear-cir",
+        "sens-bsim4-issue694-fd-cir",
+        "vanoise-commonemitterbjt-mextram-cir",
+        "verilog-power-power-juncap200-gear-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/714"
+    },
+    {
+      "bucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)",
+      "fixtures": 7,
+      "ngspiceSuccess": 7,
+      "ids": [
+        "actests-bsim3-gain-stage-cir",
+        "comparator-comparator-cir",
+        "model-binning-comparatorbaseline-forglobal-cir",
+        "mos13-ic-invert42-mos3-cir",
+        "nmos3-dc-mos3-dc-cir",
+        "op-comparator-op-cir",
+        "subckt-subckt-a0-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/715"
+    },
+    {
+      "bucket": "source: EXP/SFFM/AM waveforms and PWL TD=",
+      "fixtures": 6,
+      "ngspiceSuccess": 6,
+      "ids": [
+        "iexp-iexp-cir",
+        "isffm-isffm-cir",
+        "tl1x-tl1x-mpi-cir",
+        "vexp-vexp-cir",
+        "vpwl-vpwl-cir",
+        "vsffm-vsffm-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/716"
+    },
+    {
+      "bucket": "parse: other unsupported syntax",
+      "fixtures": 5,
+      "ngspiceSuccess": 5,
+      "ids": [
+        "abm-freq-rc-simple-hertz-cir",
+        "init-conds-inv1xic-cir",
+        "ltra-ltra1-cir",
+        "resistor-defaultvaluewarning-cir",
+        "soln-dep-res-multsoldepres-cir"
+      ],
+      "issue": null
+    },
+    {
+      "bucket": "device: JFET forms (PJF model type, instance TEMP=, J card)",
+      "fixtures": 3,
+      "ngspiceSuccess": 3,
+      "ids": [
+        "measure-bad-dot-measure-line5-cir",
+        "pjfet-dc-pjfet-2108-cir",
+        "pjfet-switch-pjfet-tran-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/717"
+    },
+    {
+      "bucket": "deck: element-free deck (ngspice runs an empty analysis)",
+      "fixtures": 2,
+      "ngspiceSuccess": 2,
+      "ids": [
+        "embedded-printline-for-embedded-cmosinverter-cir",
+        "pce-ni-regression-printline-for-cmosinverter-regr-cir"
+      ],
+      "issue": null
+    },
+    {
+      "bucket": "execution: other failure",
+      "fixtures": 2,
+      "ngspiceSuccess": 2,
+      "ids": [
+        "message-device-core-safebarrier-1-cir",
+        "mos6-invert-mos6-cir"
+      ],
+      "issue": null
+    },
+    {
+      "bucket": "expression: branch-current i() references in B-source expressions",
+      "fixtures": 2,
+      "ngspiceSuccess": 2,
+      "ids": [
+        "sandler1-sandler1-cir",
+        "sandler2-sandler2-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/718"
+    },
+    {
+      "bucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)",
+      "fixtures": 2,
+      "ngspiceSuccess": 2,
+      "ids": [
+        "bsimsoi3-b3soitrandefaults-cir",
+        "ekv26-inverter-transient-ekv26-cir"
+      ],
+      "issue": null
+    },
+    {
+      "bucket": "convergence",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "polyg-polyg-cir"
+      ],
+      "issue": null
+    },
+    {
+      "bucket": "device: BJT instance IC= initial conditions",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "bjt-ic-bjt-ic-nonzero-cir"
+      ],
+      "issue": null
+    },
+    {
+      "bucket": "device: lossless T-line NL=/F= electrical-length form",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "transline-errormessagetest2-cir"
+      ],
+      "issue": null
+    },
+    {
+      "bucket": "directive: .four",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "fourier-bad-dot-four-line1-cir"
+      ],
+      "issue": null
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "abm-abs-abs-cir",
+      "sourcePath": "Netlists/ABM_ABS/abs.cir",
+      "sha256": "ee14cbe071d42979aa0e36be4cbbd74ef999b78cc9ed121915df49c2876cb843",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:21"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:21"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 8.68e-14,
+      "worstSignal": "dc i(b1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "abm-acos-asin-acos-asin-cir",
+      "sourcePath": "Netlists/ABM_ACOS_ASIN/acos_asin.cir",
+      "sha256": "ca6f8c06b5d301dce0aaf6b257be769087de807b149b734ee12b5e8f0a69ae15",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:199"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:199"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.000765,
+      "worstSignal": "dc i(b2)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "abm-atan-tan-atan-tan-cir",
+      "sourcePath": "Netlists/ABM_ATAN_TAN/atan_tan.cir",
+      "sha256": "fbd3505496f98b9029028d81e6e09eaaaff206638e7ca9cfdf659a4115acd5b7",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:59"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:58"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.000347,
+      "worstSignal": "tran i(b2)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "abm-db-dbtest-cir",
+      "sourcePath": "Netlists/ABM_DB/dbTest.cir",
+      "sha256": "19ab475504cf925b402402057d86b6a412c3bb7c7cf950241c8c2ad896de9c64",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:21"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 10: Unknown function 'DB' .PRINT AC {DB(V(b))} VDB(b)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "output: expressions and output variables in .print lines"
+    },
+    {
+      "id": "abm-expln-exp-ln-cir",
+      "sourcePath": "Netlists/ABM_EXPLN/exp_ln.cir",
+      "sha256": "da918962b8f454a2033db0bc84aee04115b48b18e06c76dc0fc1f23a3a5b47e3",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:145"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:144"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.000766,
+      "worstSignal": "tran i(b2)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "abm-freq-rc-simple-hertz-cir",
+      "sourcePath": "Netlists/ABM_FREQ/RC_simple_hertz.cir",
+      "sha256": "78ca5e3468b0524b8845a6a381d645f73fdf4291eefe3552b759abadf9bfd9a2",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:6"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 7: Undefined parameter 'hertz' R1 1 0 {hertz}"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "parse: other unsupported syntax"
+    },
+    {
+      "id": "abm-func-func-cir",
+      "sourcePath": "Netlists/ABM_FUNC/func.cir",
+      "sha256": "a917d0d057a938eb5a2c3f4607a6830a9ed857fe87521617d6203cdf1e47574a",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:111"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:110"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 8,
+      "worstNormalizedError": 1,
+      "worstSignal": "tran i(bf)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "abm-int-floor-ceil-int-floor-ceil-cir",
+      "sourcePath": "Netlists/ABM_INT_FLOOR_CEIL/int_floor_ceil.cir",
+      "sha256": "a81525bef161e2398c21ecf1d7a49607a04c208d0163d8c564811768050ead75",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:5000008"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 15: Unknown function 'v' .print tran V(1) {int(v(1))} {floor(v(1))} {ceil(v(1))}"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "output: expressions and output variables in .print lines"
+    },
+    {
+      "id": "abm-log-log-cir",
+      "sourcePath": "Netlists/ABM_LOG/log.cir",
+      "sha256": "f4b77e2fb466de9446b12c54f3fcd52013b545308d8599878acc032c25c08e49",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:71"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:70"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 8,
+      "worstNormalizedError": 0.000312,
+      "worstSignal": "tran i(b3)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "abm-nint-fmod-fmod-cir",
+      "sourcePath": "Netlists/ABM_NINT_FMOD/fmod.cir",
+      "sha256": "be94f47d1d5b9c97f0e27148abd86fc9769c4b4b24b042b5c34c655970b1d671",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:19"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 6: Unknown function 'fmod' .print dc V(1) {fmod(99.5,V(1))}"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "output: expressions and output variables in .print lines"
+    },
+    {
+      "id": "abm-pow-abmpow1-cir",
+      "sourcePath": "Netlists/ABM_POW/abmpow1.cir",
+      "sha256": "72a1f97fd4bdfee9f4336595ee5dc506e042dd228422451f5b8b385c74d645da",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:51"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:51"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 3.55e-16,
+      "worstSignal": "dc i(b4)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "abm-sct-sct-cir",
+      "sourcePath": "Netlists/ABM_SCT/sct.cir",
+      "sha256": "3065d6030fbd6b273dff7dd5e15455baa341a9fa2820e84f8fe0d6b660e37ef4",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:66"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:66"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 10,
+      "worstNormalizedError": 0.000805,
+      "worstSignal": "dc i(b5)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "abm-sqrt-sqrt-cir",
+      "sourcePath": "Netlists/ABM_SQRT/sqrt.cir",
+      "sha256": "b1f37d625b35f68ef4a64a2cba72668582a268966d6c1f3dbaa3d39a7f3efb46",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:90"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:89"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.000595,
+      "worstSignal": "tran i(b3)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "abm-time-time-cir",
+      "sourcePath": "Netlists/ABM_TIME/time.cir",
+      "sha256": "2c23037278054cf19146413d810fac1779163101de05f8bfbe7835f370c07127",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:73"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:72"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 0.0000119,
+      "worstSignal": "tran v(2)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "abm-ddt-cir",
+      "sourcePath": "Netlists/ABM/ddt.cir",
+      "sha256": "c2cf72dbaf2b435f847912d3c389eda43e89be0a2d95c4edf076ad43750f07d3",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:25008"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:25007"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 2,
+      "worstNormalizedError": 0.5,
+      "worstSignal": "tran i(v1)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "acsens-ac-sens-current-obj-fd-cir",
+      "sourcePath": "Netlists/ACSENS/ac-sens-current-obj_FD.cir",
+      "sha256": "ae52f0f59a36d92e07d3a11d6bb1a5742ca9ceb98bd0d7a3f4bac9762278a8e0",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:41"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 35: Unknown function 'ir' + { ((ir(v1_r1)) - (ir(v1)))/dr }"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "output: expressions and output variables in .print lines"
+    },
+    {
+      "id": "actests-bsim3-gain-stage-cir",
+      "sourcePath": "Netlists/ACtests/bsim3/gain-stage.cir",
+      "sha256": "0e5aa7cbfeb8b34c75c98a4a8be6763d299170d7a08aaf611197a36c4a33532e",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:71"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'M1' (model 'nmos') uses unsupported model LEVEL=9 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)"
+    },
+    {
+      "id": "agecap-agecap-ref-cir",
+      "sourcePath": "Netlists/AGECAP/agecap_ref.cir",
+      "sha256": "b2ac35cd08c4409515bf25f3309ae919dea9fe9b2f165f5a9fbe885247ac4077",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1030"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1030"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 0.000379,
+      "worstSignal": "tran i(vmon)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "bjt-analytic-ramp-test1-cir",
+      "sourcePath": "Netlists/BJT_ANALYTIC/ramp_test1.cir",
+      "sha256": "f5bb4d0e330f0bbb2f5683a870e1312c1de364184dce6aafb147d87e940bf19e",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:800008"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 59: Unsupported .options field: 'device' .options device gmin=0 voltlim=0"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "bjt-extnode-npn-rb-rc-re-1-cir",
+      "sourcePath": "Netlists/BJT_EXTNODE/npn_rb_rc_re_1.cir",
+      "sha256": "f50eb5ad28ae3c5a5a1b44aba7adf972bf89ea5c30632cbf6098624774044fb3",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:12"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:12"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 8,
+      "worstNormalizedError": 0.000859,
+      "worstSignal": "dc v(1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "bjt-ic-bjt-ic-nonzero-cir",
+      "sourcePath": "Netlists/BJT_IC/bjt_ic_nonzero.cir",
+      "sha256": "ff51174099ac2601e5fcea3c65bcde943b404194272cedbd5afe05f085bd4462",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:10"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 21: Unsupported BJT instance parameter: 'IC=1' in 'Q1 7 3 5 BFT92 IC=1 0' Q1 7 3 5 BFT92 IC=1 0"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: BJT instance IC= initial conditions"
+    },
+    {
+      "id": "bjt-off-bjt-off-cir",
+      "sourcePath": "Netlists/BJT_OFF/bjt_off.cir",
+      "sha256": "069958261bbae4661fc7bf23270569ae2722afeaabf0f13ed61c7d2115bd525e",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 37: Unsupported .options field: 'nonlin' .options nonlin maxstep=200 reltol=1.0e-2 abstol=1.0e-6 rhstol=1.0e-4"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "bjt-pspice-nk-bjt-test-nk-cir",
+      "sourcePath": "Netlists/BJT_PSPICE_NK/bjt_test_nk.cir",
+      "sha256": "64757a3938f2cfac44ead84d9b7245fbc10f588518c2153ba933596f877e7be1",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:17"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:17"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.000226,
+      "worstSignal": "dc i(vmon1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "bsimsoi3-b3soitrandefaults-cir",
+      "sourcePath": "Netlists/BSIMSOI3/b3soiTranDefaults.cir",
+      "sha256": "ba2991f854b5f7be57429ef829ab03109a8d30e55472af52158c33542f3ac842",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:108"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'M1' (model 'nmos') uses unsupported model LEVEL=10 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)"
+    },
+    {
+      "id": "bsrc-bsrc-a1-cir",
+      "sourcePath": "Netlists/BSRC/Bsrc_A1.cir",
+      "sha256": "a3bca0d6905769267ce6639c9822703ebb0991f6b1a254b84483fdd5df79442d",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:51"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:51"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 0.00039,
+      "worstSignal": "dc i(b1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "bug-139-in-line-comment-cir",
+      "sourcePath": "Netlists/BUG_139/in_line_comment.cir",
+      "sha256": "e2580ff28f721697fe854c448510bb0978866304b5128f25b464407dea39f9bd",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 7,
+      "worstNormalizedError": 5.18e-9,
+      "worstSignal": "dc i(vmon)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "bug-237-bug-237-a1-cir",
+      "sourcePath": "Netlists/BUG_237/Bug_237_A1.cir",
+      "sha256": "45f77d5c083b12b500dab6cf952fedaadcb2bac19371a4657d4031bde88e4f90",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1705"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1674"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 8,
+      "worstNormalizedError": 0.426,
+      "worstSignal": "tran i(vdddev)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "bug-374-capacitor-bug-cir",
+      "sourcePath": "Netlists/BUG_374/capacitor-bug.cir",
+      "sha256": "0633c22a7d20197fb305ef46942c0ce7fb5d27c424a2c48e4178ce45a36fbc83",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:20018"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:20013"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 1,
+      "worstSignal": "tran i(vin)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "bug-458-bug458-cir",
+      "sourcePath": "Netlists/BUG_458/bug458.cir",
+      "sha256": "35d2563fba78817a52343e99365b5e551c3b1ca7979e1d5cc780275c4362e79b",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:62"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 8: Unsupported .options field: 'LINSOL' .OPTIONS LINSOL TYPE=klu"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "cccs-ftest-cir",
+      "sourcePath": "Netlists/CCCS/ftest.cir",
+      "sha256": "eb4bf8acd8f699b5738dc5fae5503f5534893f3d5834c77f4887dbee042f8618",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:115"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:114"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 1.7e-17,
+      "worstSignal": "tran v(1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "certification-tests-bug-1011-sand23-cir",
+      "sourcePath": "Netlists/Certification_Tests/BUG_1011/sand23.cir",
+      "sha256": "c4d80b5930e9a866e3b5f9c91bdaf327516ec4900ec87f7788358889587d8ce1",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 16,
+      "worstNormalizedError": 4.29e-12,
+      "worstSignal": "dc v(x1.11)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "circuitsim90-bjt-vreg-cir",
+      "sourcePath": "Netlists/CircuitSim90/BJT/vreg.cir",
+      "sha256": "37e51383099449f21e699332828708241cb233bb59d95721d61cc11d9672bbeb",
+      "analyses": [
+        "op",
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:16",
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:16",
+          "op:1"
+        ]
+      },
+      "comparedAnalyses": 2,
+      "comparedSignals": 40,
+      "worstNormalizedError": 0.000921,
+      "worstSignal": "dc v(5)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "commandline-command-line-cir",
+      "sourcePath": "Netlists/CommandLine/command_line.cir",
+      "sha256": "97477ebd5fea950085e0e9256e2347b58f04e6efe29c79d4bc05ad56941cce77",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:68"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:67"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 16,
+      "worstNormalizedError": 0.00379,
+      "worstSignal": "tran v(x1.12)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "comparator-comparator-cir",
+      "sourcePath": "Netlists/COMPARATOR/comparator.cir",
+      "sha256": "12c28f84973fc091f98103767334ac6d787dc2d6cff370982805bfdaffff1efa",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:121"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'M1' (model 'PMOS') uses unsupported model LEVEL=9 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)"
+    },
+    {
+      "id": "complex-num-test1-cir",
+      "sourcePath": "Netlists/COMPLEX_NUM/test1.cir",
+      "sha256": "3aea25fbb7792f112dea82c3d7a902b3a7a95dbcc121a0e257b90f175866d05b",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:51"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:51"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 1,
+      "worstNormalizedError": 3.7e-16,
+      "worstSignal": "ac v(1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "diagnostic-dc-currentcheck1-cir",
+      "sourcePath": "Netlists/DIAGNOSTIC/DC_CurrentCheck1.cir",
+      "sha256": "aacf25e8f4d43aab081a548f54b145edf0d56eb52115d286503c337d24445d73",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:7"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 24: Unsupported .options field: 'diagnostic' .options diagnostic CURRENTLIMIT=3e-2 diagfilename=DC_CurrentCheck1.dia"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "diode-analytic-reverse-model-cir",
+      "sourcePath": "Netlists/DIODE_ANALYTIC/reverse_model.cir",
+      "sha256": "84ec00feef59479221276fd0c0b4421135b7ed62bfa0b8f36706acb67cdc63b4",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:9258"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 55: Unsupported .options TIMEINT field: 'abstol-1e-6' .options TIMEINT reltol=1e-6 abstol-1e-6"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "diode-cmc-diodeclipper-ac-cir",
+      "sourcePath": "Netlists/DIODE_CMC/DiodeClipper_AC.cir",
+      "sha256": "76c3510fbf5962bda9db8cf37e4765c86b1917af409dda7454e5bb270925d36a",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:31"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:31"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.000358,
+      "worstSignal": "ac v(1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "diode-diode-with-sidewall-fcs-cir",
+      "sourcePath": "Netlists/DIODE/diode_with_sidewall_fcs.cir",
+      "sha256": "7dfb595eacc8071425df3cdea35238e114e7f41c774625e349569a38a0c3fd60",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:61"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:61"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 0.000631,
+      "worstSignal": "dc i(vin)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "ekv26-inverter-transient-ekv26-cir",
+      "sourcePath": "Netlists/EKV26/inverter_transient_ekv26.cir",
+      "sha256": "c23703254e36b5454a2f02463e84cf16e6bb64a6b2a557b3a901486cdbe2dd98",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:508"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'Xinv1.Mp1' (model 'pmos1') uses unsupported model LEVEL=260 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)"
+    },
+    {
+      "id": "embedded-printline-for-embedded-cmosinverter-cir",
+      "sourcePath": "Netlists/EMBEDDED/printLine_for_embedded_cmosInverter.cir",
+      "sha256": "1f577930c9907c4d915df9a9b712747b810ead19887058f48f66e224e18a717b",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1508"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Circuit has no nodes"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "deck: element-free deck (ngspice runs an empty analysis)"
+    },
+    {
+      "id": "expprint-expprint-cir",
+      "sourcePath": "Netlists/EXPPRINT/expPrint.cir",
+      "sha256": "0d779b6c4b0b918fa12f1c7806f873b7ecba5bb6dd7d3508dfbb4ce67b9db115",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:71"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 10: Unknown function 'I' .print DC v(4) {(abs(I(VT1)))} {(V(4)**2.0)} I(VT1)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "output: expressions and output variables in .print lines"
+    },
+    {
+      "id": "fourier-bad-dot-four-line1-cir",
+      "sourcePath": "Netlists/FOURIER/bad_dot_four_line1.cir",
+      "sha256": "517491f95aac189bad4e2336db8308dd51af0de106ed0d00a74c61d87511b6f7",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:110"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 21: Unsupported dot command: '.FOUR' .FOUR"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: .four"
+    },
+    {
+      "id": "gencoupapi-rlc-series-vccs-ac-nogenext-cir",
+      "sourcePath": "Netlists/GenCoupAPI/rlc_series_vccs_AC_nogenext.cir",
+      "sha256": "dbf878dc42525c6823bd87fce098f89e2205cbce70ad48aec7e169c87c683f4b",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:211"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:211"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 7,
+      "worstNormalizedError": 1.19e-15,
+      "worstSignal": "ac v(1c)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "globalnode-global-hspice-cir",
+      "sourcePath": "Netlists/GLOBALNODE/global_hspice.cir",
+      "sha256": "4d895f9d846c996ac0eacb8862869e3a625117723810ff7f57626493dbfc50b4",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1000008"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1000007"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.67e-16,
+      "worstSignal": "tran i(v3)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "gmin-stepping-gstep-cont3a-cir",
+      "sourcePath": "Netlists/GMIN_STEPPING/gstep_cont3a.cir",
+      "sha256": "3d1873a8b9fd3e791ee86f84b4875f8475e449478b5d3e49bd9b21bedd938179",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:10008"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 36: Unsupported .options field: 'nonlin' .options nonlin nlstrategy=0 searchmethod=0 maxstep=200 continuation=3 reltol=1.0e-2 abstol=1.0e-6 rhstol=1.0e-4"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "homotopy-schmidt-cir",
+      "sourcePath": "Netlists/HOMOTOPY/schmidt.cir",
+      "sha256": "488b4d00dbd2541b77e77b637444a60b9904857c03f6797bde83829c8d518eb4",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 16: Unsupported .options field: 'device' .options device voltlim=1 debuglevel=-100"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "ic-and-nodeset-hussamp-par1-cir",
+      "sourcePath": "Netlists/IC_AND_NODESET/hussamp_par1.cir",
+      "sha256": "82a63696619476f97c7aeb22c2f49a5730434bd6f346136066e3fe6764e1481f",
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1",
+          "tran:118"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "op:1",
+          "tran:117"
+        ]
+      },
+      "comparedAnalyses": 2,
+      "comparedSignals": 34,
+      "worstNormalizedError": 0.0174,
+      "worstSignal": "tran i(vap)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "iexp-iexp-cir",
+      "sourcePath": "Netlists/IEXP/iexp.cir",
+      "sha256": "57d0bdd0174c4b85802549e631962e6f4b7f9d46b5d0e3bdd14c9efc2a4551af",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:59"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 17: Unsupported source waveform 'EXP' IEXP 0 1 EXP(1A 5A 1S 0.2S 2S 0.5S)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+    },
+    {
+      "id": "inductor-errormessagetest-cir",
+      "sourcePath": "Netlists/INDUCTOR/ErrorMessageTest.cir",
+      "sha256": "53ace6428fc9c2452ca93e9bcd1380d2c52a54570567a6467d320272be7be2d4",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:217"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:216"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 1,
+      "worstSignal": "tran v(1a)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "init-conds-inv1xic-cir",
+      "sourcePath": "Netlists/INIT_CONDS/inv1xIC.cir",
+      "sha256": "b929578b4090bc63311827e613a386771072ebc1ae06d316e4354d9054af73c2",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1853"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'XINV1.MN1' references unknown model 'GND'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "parse: other unsupported syntax"
+    },
+    {
+      "id": "invalid-chars-colon-fails-device-name-cir",
+      "sourcePath": "Netlists/INVALID_CHARS/colon_fails_device_name.cir",
+      "sha256": "3d38b0a7106fd836ecef226f6970c2c835ec99a047cc2d9d043482c8ed4d51b1",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 0,
+      "worstSignal": "dc i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "ipulse-ipulse-cir",
+      "sourcePath": "Netlists/IPULSE/ipulse.cir",
+      "sha256": "d841aeb4ceb4e0c52d66454899e5690e53bdd968ca726460316f766a487c586b",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:115"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:114"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.7e-17,
+      "worstSignal": "tran v(1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "ipwl-ipwl-cir",
+      "sourcePath": "Netlists/IPWL/ipwl.cir",
+      "sha256": "b5dba3d8df4c6a5fd38cf87962d86dca76cca6ccfc5db8c2438878ed185f3866",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:74"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:73"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.77e-18,
+      "worstSignal": "tran v(1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "isffm-isffm-cir",
+      "sourcePath": "Netlists/ISFFM/isffm.cir",
+      "sha256": "37d7d5c249263956fd028472938a244ddbf8a56c371d5b512d5b44639afc2f67",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:208"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 14: Unsupported source waveform 'SFFM' ISSFM 0 1 SFFM(0 5 10KHZ 3 1KHZ)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+    },
+    {
+      "id": "isin-isin-cir",
+      "sourcePath": "Netlists/ISIN/isin.cir",
+      "sha256": "1b594087d0531fda2cd614862aaec4f2b0a49723da14d998aa8e424daced622e",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:108"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:107"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.49e-10,
+      "worstSignal": "tran i(vmon)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "juncap200-diodeclipper-cir",
+      "sourcePath": "Netlists/JUNCAP200/DiodeClipper.cir",
+      "sha256": "364aa94ce83e726df34f8c6629d3eb4f8af2ee40e8a0bc273425c5fe4c3b8839",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1000008"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1000007"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 5.42e-9,
+      "worstSignal": "tran v(4)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "lead-currents-lead-bsrc-ac-cir",
+      "sourcePath": "Netlists/LEAD_CURRENTS/lead_bsrc_ac.cir",
+      "sha256": "077e738120963a20c7414115e04f47ef983630675af50e6f6550a18efa9eed8c",
+      "analyses": [
+        "op",
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:31",
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:31",
+          "op:1"
+        ]
+      },
+      "comparedAnalyses": 2,
+      "comparedSignals": 20,
+      "worstNormalizedError": 8.67e-7,
+      "worstSignal": "op i(eamp)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "load-load-cir",
+      "sourcePath": "Netlists/LOAD/load.cir",
+      "sha256": "a1bea7fc88fa6974b32d27825a7a03e245fa84c9bb47fe976020b60d7c55c77e",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:1001"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:1001"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 22,
+      "worstNormalizedError": 0.000034,
+      "worstSignal": "dc v(9)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "ltra-ltra1-cir",
+      "sourcePath": "Netlists/LTRA/ltra1.cir",
+      "sha256": "9ecb2e652071bef1cfd099a369e2c03e7990f63c06ea729792cb526ad5c31c0f",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:556"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 33: Unsupported LTRA model parameter: 'steplimit=1' .model lline ltra rel=1 r=0.2 g=0 l=9.13e-9 c=3.65e-12 len=24 steplimit=1 compactrel=1.0e-3 compactabs=1.0e-14"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "parse: other unsupported syntax"
+    },
+    {
+      "id": "mcnc-bjt-latch-latch-cir",
+      "sourcePath": "Netlists/MCNC_BJT_LATCH/latch.cir",
+      "sha256": "41622f75dcc9297915a1b0614ad27cfe19850cb4e19817f02a8914644e4d6382",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:223"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:218"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 23,
+      "worstNormalizedError": 0.236,
+      "worstSignal": "tran i(vref)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "mcnc-bjt-opampal-opampal-cir",
+      "sourcePath": "Netlists/MCNC_BJT_OPAMPAL/opampal.cir",
+      "sha256": "690904bc6bc2fc65367e1b13eed7625b647fa8d8131dff71687c558da2a9ca8b",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1008"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1007"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 74,
+      "worstNormalizedError": 0.0189,
+      "worstSignal": "tran i(vvin)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "mcnc-bjt-rca-rca-cir",
+      "sourcePath": "Netlists/MCNC_BJT_RCA/rca.cir",
+      "sha256": "a90dde190b244726972cfafabadeab0531357008dc0b3eda7d9c6a7ee42e11a3",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:258"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:257"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 21,
+      "worstNormalizedError": 0.00114,
+      "worstSignal": "tran v(31)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "measure-ac-dotopnoac-cir",
+      "sourcePath": "Netlists/MEASURE_AC/DotOpNoAC.cir",
+      "sha256": "74b90a09225fd661b311d7390c0662dff585141f44dd18c68ebe709299a151d5",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 0,
+      "worstSignal": "op i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "measure-cont-derivtest1dc-cir",
+      "sourcePath": "Netlists/MEASURE_CONT/DerivTest1DC.cir",
+      "sha256": "db0d2c76fb13c80e746e24fd432bd23cb9ccc39019f25c3d41d3e88a3aa55f74",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:10"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 9: Unsupported .options field: 'MEASURE' .OPTIONS MEASURE USE_CONT_FILES=0"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "measure-dc-avgtest2dc-cir",
+      "sourcePath": "Netlists/MEASURE_DC/AvgTest2DC.cir",
+      "sha256": "28ddd861d4b00fe88d462da28adb7f01f00ddff832bfbbc89500e05333f5347c",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:10"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:10"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 0,
+      "worstSignal": "dc i(vsrc1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "measure-noise-dotopnonoise-cir",
+      "sourcePath": "Netlists/MEASURE_NOISE/DotOpNoNoise.cir",
+      "sha256": "c6c63158b464bc0c206b22e3812a753304f2ecd08109760aab86e7202118af91",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.00000163,
+      "worstSignal": "op i(eamp)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "measure-bad-dot-measure-line5-cir",
+      "sourcePath": "Netlists/MEASURE/bad_dot_measure_line5.cir",
+      "sha256": "a7ceb2dab39414b20f5135321d41375e7f67d882ff583fe7426c7144a72846d8",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:108"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 2: Unsupported device card: 'J' J1 Vout Vin Nsource J2N3819"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: JFET forms (PJF model type, instance TEMP=, J card)"
+    },
+    {
+      "id": "message-device-core-safebarrier-1-cir",
+      "sourcePath": "Netlists/Message/Device/Core_SafeBarrier_1.cir",
+      "sha256": "5aadc8bbcbc3e45fb3aebc5d8c382f44d9458653f22a14efe35a74a010e340ba",
+      "analyses": [
+        "noise"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "noise:1",
+          "noise:51"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": ".noise does not support BJT model parameter 'VAR' for 'Q2'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "execution: other failure"
+    },
+    {
+      "id": "mextram-acfreq-gbb-noflip-p-cir",
+      "sourcePath": "Netlists/MEXTRAM/acFreq_Gbb_noFlip_P.cir",
+      "sha256": "7a63f982cea7ece66c9139af6e18f48ad4f86c56321da2fdfda886eafd19788d",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:4"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 2: Unsupported .options field: 'device' .options device temp=25"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "minductors-inductoricbug-cir",
+      "sourcePath": "Netlists/MINDUCTORS/InductorICBug.cir",
+      "sha256": "45b38d3102fb421872678da59ae8cf0a05cd170fc34a0d232b5d8fc1a9d0c730",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:511"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:507"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 0.00343,
+      "worstSignal": "tran i(l2)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "model-binning-comparatorbaseline-forglobal-cir",
+      "sourcePath": "Netlists/MODEL_BINNING/comparatorBaseline_forGlobal.cir",
+      "sha256": "110cb1669e43d799654c8ca775e87f3fa59f9843c22e529c913f8da1d33c6931",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:121"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'M1' (model 'PMOS') uses unsupported model LEVEL=9 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)"
+    },
+    {
+      "id": "mos13-ic-invert42-mos3-cir",
+      "sourcePath": "Netlists/MOS13_IC/invert42_mos3.cir",
+      "sha256": "030f8ba6e631357ded80674e653376d338d46b93cc84787d2f193009976367e4",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:5803"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'XINV1.MN1' (model 'CD4012_NMOS') uses unsupported model LEVEL=3 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)"
+    },
+    {
+      "id": "mos6-invert-mos6-cir",
+      "sourcePath": "Netlists/MOS6/invert_mos6.cir",
+      "sha256": "eb06558814d7a40c6d92e5e7f0d92848a295833ce53f980fa123538047969e99",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:372"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "MOSFET level 6 model 'CD4012_NMOS': series resistance parameter RD is not supported"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "execution: other failure"
+    },
+    {
+      "id": "mosfet-paramaliases-invert1-alt-cir",
+      "sourcePath": "Netlists/MOSFET_ParamAliases/invert1_alt.cir",
+      "sha256": "059f73d7dc3bcc5b5b05698a50d9356c4dcd39eec05b0f2996906111a9d496bb",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1930"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1957"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.256,
+      "worstSignal": "tran i(vdddev)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "mpde-invert1-cir",
+      "sourcePath": "Netlists/MPDE/invert1.cir",
+      "sha256": "ab40803da5a5694fc8c86f6f478fb443a2760039c0e96f71ea31ddb1ce2419dd",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:522"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 21: Unsupported .options TIMEINT field: 'maxord' .options TIMEINT maxord=5 debuglevel=-10 reltol=1.0e-4"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "multiplicity-factor-bjt-diffpair-noise-baseline-net",
+      "sourcePath": "Netlists/MULTIPLICITY_FACTOR/bjt_diffpair_noise_baseline.net",
+      "sha256": "775589b98d3e41798efc5a250cb1074c80643b5c1e5db5c1d212516ee2191e1c",
+      "analyses": [
+        "noise"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "noise:1",
+          "noise:167"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 25: Undefined parameter 'inoise' .PRINT noise {sqrt(abs(inoise))} {sqrt(abs(onoise))}"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "output: expressions and output variables in .print lines"
+    },
+    {
+      "id": "nmesfet-nmesfet-cir",
+      "sourcePath": "Netlists/NMESFET/nmesfet.cir",
+      "sha256": "bdc5d6e4f0b5ac474e057eb53c41d66d0e49f86b94ec161b0509b31a340a700a",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:72"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:72"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 8.52e-8,
+      "worstSignal": "dc i(vds)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "nmos-analytic-mosfet-level1-cir",
+      "sourcePath": "Netlists/NMOS_ANALYTIC/mosfet_level1.cir",
+      "sha256": "b4cffa7173991ad37e46b005fb0761d3b07cd9aa3d8734554b0790367b583048",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:10008"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:10007"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 0.00866,
+      "worstSignal": "tran v(2)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "nmos3-dc-mos3-dc-cir",
+      "sourcePath": "Netlists/NMOS3_DC/mos3_dc.cir",
+      "sha256": "27642aa865e437ab6d3ec158fecb4e546b1795e25909f9f7dd950e49211dafc7",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:2404"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'M1' (model 'NFET') uses unsupported model LEVEL=3 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)"
+    },
+    {
+      "id": "noise-cascodebjtnoise-cir",
+      "sourcePath": "Netlists/NOISE/cascodeBjtNOISE.cir",
+      "sha256": "c4ee91f0678a12aa12244e7b75158634d5f6cd021395b5619dd35cf71089c9dc",
+      "analyses": [
+        "noise"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "noise:1",
+          "noise:51"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 22: Undefined parameter 'inoise' .print noise {log(inoise)} {log(onoise)}"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "output: expressions and output variables in .print lines"
+    },
+    {
+      "id": "nonlinear-convergencetests-nlstrategy1-cir",
+      "sourcePath": "Netlists/Nonlinear/ConvergenceTests/NLStrategy1.cir",
+      "sha256": "cf67252f6d8195b8362cbd9e1769dc90a7ca10bd76b47512c79f19d026345ea4",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:121"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 41: Unsupported .options field: 'nonlin' .options nonlin nlstrategy=1 searchmethod=0"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "op-comparator-op-cir",
+      "sourcePath": "Netlists/OP/comparator_op.cir",
+      "sha256": "3201bb9089b74bc6546a97c3d4b169233837f0716f6603dc898e469f45db682f",
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1",
+          "tran:121"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'M1' (model 'PMOS') uses unsupported model LEVEL=9 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)"
+    },
+    {
+      "id": "output-ac-ac-csv-cir",
+      "sourcePath": "Netlists/Output/AC/ac-csv.cir",
+      "sha256": "0491074eda36d7b8ebf728039a3c01802b28ea74bef4b2c82f23e9ee36cbfb62",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:21"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:21"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 4.73e-16,
+      "worstSignal": "ac i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "param-refactor-paramhomotopy-cir",
+      "sourcePath": "Netlists/PARAM_REFACTOR/paramHomotopy.cir",
+      "sha256": "fd75a441df684f720357a9333071658ca36837dfd3bf13464a99494e8903e578",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 12: Unsupported .options field: 'nonlin' .options nonlin continuation=1"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "params1-params-a0-cir",
+      "sourcePath": "Netlists/PARAMS1/params_a0.cir",
+      "sha256": "4fc432623b7502e1c741efb8e0ed7a0da133da3123b1079f03129298f43103f4",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:80"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:79"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 0.000472,
+      "worstSignal": "tran i(v2)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "params2-params-a0-cir",
+      "sourcePath": "Netlists/PARAMS2/Params_A0.cir",
+      "sha256": "435a890873e4c65c2d02e2fa9895844f6d8ce72b64d9ed8bcaf632dc6ad0c66c",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:6"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:6"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 2,
+      "worstNormalizedError": 1.08e-16,
+      "worstSignal": "dc i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "parser-aasamp-cir",
+      "sourcePath": "Netlists/PARSER/aAsAmp.cir",
+      "sha256": "609e858af4f3f13fd0822d66392c8c2c3703523f5312f900ef9afde2920fa0ed",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:5"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:5"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 0,
+      "worstSignal": "dc i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "pce-ni-regression-printline-for-cmosinverter-regr-cir",
+      "sourcePath": "Netlists/PCE/NI_REGRESSION/printLine_for_cmosInverter_regr.cir",
+      "sha256": "3b9741991f8ae9c300675ff617ac8c7e4e57f3180dcc5cfa6a8707109f232925",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1508"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Circuit has no nodes"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "deck: element-free deck (ngspice runs an empty analysis)"
+    },
+    {
+      "id": "pjfet-dc-pjfet-2108-cir",
+      "sourcePath": "Netlists/PJFET_DC/pjfet-2108.cir",
+      "sha256": "5c8ff49a0368429f5d0c71dbbb5a0f849789a0c9739677f75e6b467808979911",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:64"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 17: Unsupported JFET instance parameter: 'TEMP=27' Jtest 1a 2a 3 SA2108 TEMP=27"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: JFET forms (PJF model type, instance TEMP=, J card)"
+    },
+    {
+      "id": "pjfet-switch-pjfet-tran-cir",
+      "sourcePath": "Netlists/PJFET_SWITCH/pjfet_tran.cir",
+      "sha256": "22f4c18f8eca0ba98ddf00e7e10e1f7d120b2f5d9e54e1db070ee6a2e6c5ec7c",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:707"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 8: .model '2N5114' has unsupported type 'PJF' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL 2N5114 PJF VTO = -5.288 BETA = 2.1897M LAMBDA = 9.946M R"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: JFET forms (PJF model type, instance TEMP=, J card)"
+    },
+    {
+      "id": "polyg-polyg-cir",
+      "sourcePath": "Netlists/POLYG/polyg.cir",
+      "sha256": "a2bcaad9f6fa0351bd60f71034b6e1fda47d7da0e37b1989e9394b242adef10a",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:10018"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Singular matrix: zero pivot at matrix column 0 (nodes: ()"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "convergence"
+    },
+    {
+      "id": "power-power-bjt-gear-cir",
+      "sourcePath": "Netlists/POWER/power_bjt_gear.cir",
+      "sha256": "af5969a749147500f34ea3e3362858f2f23ae384dc89b55e4e3335ecab89b8ea",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:15046"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 22: Unknown function 'i' + {abs(i(vic1)*(v(3)-v(1)))+abs(i(vib1)*(v(2)-v(1)))} p(q1) w(q1)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "output: expressions and output variables in .print lines"
+    },
+    {
+      "id": "powernode-resinner-cir",
+      "sourcePath": "Netlists/POWERNODE/resInner.cir",
+      "sha256": "963948800a47b162460c649e476a6eef2b563f85ded298ae28da55cb16dfcd4d",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 12: Unsupported .options field: 'nonlin' .options nonlin nox=1"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "pseudo-pseudo-cir",
+      "sourcePath": "Netlists/PSEUDO/pseudo.cir",
+      "sha256": "d2817876b2068e9827f88b45f19f9dd7b9e82f2cfe4c8b0e511e44981137962e",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 37: Unsupported .options field: 'device' .options device debuglevel=-10 voltlim=1"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "psp102-idvg0-id-t27-pmos-cir",
+      "sourcePath": "Netlists/PSP102/idvg0_Id_T27_pmos.cir",
+      "sha256": "7135f800d6d6dfb8720d81e4ef7e576e702fbfe9a28b077b9c48e09c037a4c92",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:221"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 2: Unsupported .options field: 'device' .options device temp=27"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "psp103-invert-psp-testdta0-cir",
+      "sourcePath": "Netlists/PSP103/invert_psp_testDTA0.cir",
+      "sha256": "cae412b9ac52fbb9c544c3a013080634a9e404a1c4f1858c5c05e202f31925ba",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:2067"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 15: Unsupported .options field: 'device' .options device temp=100"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "resistor-td-temp-dep-cir",
+      "sourcePath": "Netlists/RESISTOR_TD/temp_dep.cir",
+      "sha256": "9b04414534c5249140ad91e4de18980c410aa9f641c0acfdee767cbe94132fd5",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:6"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 48: Unsupported .options field: 'DEVICE' .OPTIONS DEVICE TEMP=-55"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "resistor-defaultvaluewarning-cir",
+      "sourcePath": "Netlists/RESISTOR/DefaultValueWarning.cir",
+      "sha256": "9e01b73102468f635051a076e7e9daea8f5f95883f37a8630751c48b5216e205",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 12: Resistor 'R1' has no resistance value or model R1 1a 0"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "parse: other unsupported syntax"
+    },
+    {
+      "id": "rom-autosize-rc-ladder100-cir",
+      "sourcePath": "Netlists/ROM/AUTOSIZE/RC_ladder100.cir",
+      "sha256": "0608845b83c78cbe6a6b3fad0a3a113c9885552dffbdc78c71a6be178232ae2e",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:120020"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:120019"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 102,
+      "worstNormalizedError": 6.77e-12,
+      "worstSignal": "tran i(vs)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "sandler1-sandler1-cir",
+      "sourcePath": "Netlists/SANDLER1/sandler1.cir",
+      "sha256": "982b06886b9dd2578a55f52e0ebb3b8629f8914c7bb98d3d0034afbb6072c011",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:12523"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 7: Unsupported behavioral expression: branch current i(...) references BFIBN 2 4 I=(I(VIB))"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "expression: branch-current i() references in B-source expressions"
+    },
+    {
+      "id": "sandler2-sandler2-cir",
+      "sourcePath": "Netlists/SANDLER2/sandler2.cir",
+      "sha256": "79214a89bdb03d96c2ae9119ae3c2ac122c47ab2376617c312bd8cf1b0d36b22",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:12525"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 7: Unsupported behavioral expression: branch current i(...) references BIBN 2 4 I=(I(VIB))"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "expression: branch-current i() references in B-source expressions"
+    },
+    {
+      "id": "sandler21-sandler21-cir",
+      "sourcePath": "Netlists/SANDLER21/sandler21.cir",
+      "sha256": "04f2b149b6ee09744b69b4bc9173e980fdf5eee7064738ca47334a5953a4fabb",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:6979"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:7026"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 32,
+      "worstNormalizedError": 0.127,
+      "worstSignal": "tran i(v2)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "sandler22-sandler22-cir",
+      "sourcePath": "Netlists/SANDLER22/sandler22.cir",
+      "sha256": "f437228dd6af82c13025394ee827c917502d5454dac7df93ad2ee60bb4ad0c0b",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1513"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1569"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 36,
+      "worstNormalizedError": 0.86,
+      "worstSignal": "tran v(4)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "sandler23-sandler23-cir",
+      "sourcePath": "Netlists/SANDLER23/sandler23.cir",
+      "sha256": "f5d33650f1594325f38309ee229cc227032c1b48f8f1d41a2e8335a464e65d64",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:3058"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:3085"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 16,
+      "worstNormalizedError": 0.0498,
+      "worstSignal": "tran v(x1.12)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "sandler25-sandler25-cir",
+      "sourcePath": "Netlists/SANDLER25/sandler25.cir",
+      "sha256": "17b05fe703c11ba27232a55a9f7a7f629d79e9bb79c228e63bd0ebfdeb17b1c9",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:10151"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 32: Unsupported .options field: 'NONLIN-TRAN' .OPTIONS NONLIN-TRAN SEARCHMETHOD=0"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "semic-capacitor-semicap-subc-cir",
+      "sourcePath": "Netlists/SEMIC_CAPACITOR/semicap_subc.cir",
+      "sha256": "3ed7c47325242cf9579e622a4242e31e939f41a9c6ffc21546a3e34e0ed9d9c1",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:20018"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:20017"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 0.00000381,
+      "worstSignal": "tran i(vin)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "semic-resistor-semic-resistor-cir",
+      "sourcePath": "Netlists/SEMIC_RESISTOR/semic_resistor.cir",
+      "sha256": "e9dfce650ace9802d7ff44d64ac0a36cf3399080f47e60fd653fb471fb52fdab",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:6"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:6"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 8.67e-17,
+      "worstSignal": "dc i(vin)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "sens-bsim4-issue694-fd-cir",
+      "sourcePath": "Netlists/SENS/bsim4_issue694_FD.cir",
+      "sha256": "389855a2c201ca9c67578051bb074cabc015c4b3c2942ac9ee149f7934156bbb",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:517"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 27: Unknown function 'v' .print tran v(vo) { (v(vo_w) - v(vo))/dW }"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "output: expressions and output variables in .print lines"
+    },
+    {
+      "id": "soln-dep-res-multsoldepres-cir",
+      "sourcePath": "Netlists/SOLN_DEP_RES/multSolDepRes.cir",
+      "sha256": "3c153c455472fdae4e83804fad666871ad2675c44ba4e5761a78b7dc344667f3",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 10: Unsupported parameter 'M=10' on behavioral resistor 'R2': a resistor whose value depends on v() or i() is simulated as an ngspice B-source, which carries only tc1= and tc2= R2 2 0 R={1.0+scalar*V(cntl)} M=10"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "parse: other unsupported syntax"
+    },
+    {
+      "id": "subckt-subckt-a0-cir",
+      "sourcePath": "Netlists/SUBCKT/subckt_a0.cir",
+      "sha256": "c850223e654c3b3308b1488ed1fd2634d054f57a00b3c8a49c516ece1645de44",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1988"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'MN1' (model 'CD4012_NMOS') uses unsupported model LEVEL=3 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)"
+    },
+    {
+      "id": "supernode-supernode1-cir",
+      "sourcePath": "Netlists/SUPERNODE/supernode1.cir",
+      "sha256": "5199d50c4e9039ab0191a9b986371671301e67a4f075dad8728269c994dcc7a0",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:6"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 5: Unsupported .options field: 'topology' .options topology supernode=true"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "testjac-testjac-comp-cir",
+      "sourcePath": "Netlists/TESTJAC/testjac_comp.cir",
+      "sha256": "28e72b5b93522017e27805acfe1a49c445853bcece776cb2b1fde0e62db63046",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 45: Unsupported .options field: 'device' .options device testjac=1 testjacwarn=1 TESTJACDEVICENAME=MQLO TJABSTOL=1.0e-19 TJRELTOL=1.0e-12 debuglevel=-100"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "tia-erroroption-erroroption-cir",
+      "sourcePath": "Netlists/TIA/ERROROPTION/erroroption.cir",
+      "sha256": "4c20d987ab43a25c74d26f18975246aad819b6c65e0f77b0d5cb8c472bbddc61",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:357"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 24: Unsupported .options TIMEINT field: 'erroption' .options TIMEINT method=7 erroption=1 nlmin=3 nlmax=5 timestepsreversal=0"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "tl1x-tl1x-mpi-cir",
+      "sourcePath": "Netlists/TL1X/TL1X_mpi.cir",
+      "sha256": "ac276aea0d49801729d251cfda311fcd4f35f7fc70eeb980f5a87fe17a7c0057",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:3008"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 6: Unsupported source waveform 'EXP' VSLOW 1 22 DC 0 EXP(0v 10v 3ms 10ms 200ms 10ms)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+    },
+    {
+      "id": "transline-errormessagetest2-cir",
+      "sourcePath": "Netlists/TRANSLINE/ErrorMessageTest2.cir",
+      "sha256": "d7315bc1a6e750efb35298d764b66a3d489c41cc84b02a1606dcc70276719252",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:268"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 19: Unsupported lossless transmission line parameter; only Z0 and TD are supported (F/NL/IC/REL/ABS are unsupported) TLINE1 2 0 3 0 Z0=50 NL=10"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "device: lossless T-line NL=/F= electrical-length form"
+    },
+    {
+      "id": "twolevelapi-resinnertran-cir",
+      "sourcePath": "Netlists/TwoLevelAPI/resInnerTran.cir",
+      "sha256": "eae83786c277e0051575d39472149475b04479b91695cf4d96b01f9b88c834b4",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1008"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 12: Unsupported .options TIMEINT field: 'debuglevel' .options timeint debuglevel=-100"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+    },
+    {
+      "id": "users-guide-diodeclipper-cir",
+      "sourcePath": "Netlists/USERS_GUIDE/DiodeClipper.cir",
+      "sha256": "d83f0fe7c6d0beea63143e4e867b0582658b687ea00dbce6fa925dba26da8d62",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1000008"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1000007"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 4.42e-8,
+      "worstSignal": "tran i(vcc)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "vanoise-commonemitterbjt-mextram-cir",
+      "sourcePath": "Netlists/VANOISE/commonEmitterBjt_mextram.cir",
+      "sha256": "60084d89571f491bb82e47223a7e1d0eb5345fbcd4e191cdd06e3c507397ab9c",
+      "analyses": [
+        "noise"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "noise:1",
+          "noise:167"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 13: Undefined parameter 'onoise' .print noise {log(onoise)} {log(inoise)}"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "output: expressions and output variables in .print lines"
+    },
+    {
+      "id": "verilog-power-power-juncap200-gear-cir",
+      "sourcePath": "Netlists/Verilog_POWER/power_juncap200_gear.cir",
+      "sha256": "d2941c726548480747d555aa574b5145d4c2e235a44b7115904f308857569f92",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:800020"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 19: Unknown function 'i' + v(4) v(5) i(d2) {i(d2)*(v(4)-v(5))} p(d2) w(d2)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "output: expressions and output variables in .print lines"
+    },
+    {
+      "id": "vexp-vexp-cir",
+      "sourcePath": "Netlists/VEXP/vexp.cir",
+      "sha256": "69847ed11e03e8c810d376ac1f5e116c5c4f461012dccd29c21c3cb9e823b3ea",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:59"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 14: Unsupported source waveform 'EXP' VEXP 1 0 EXP(0V 5V 1US 1US 1S)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+    },
+    {
+      "id": "vpulse-vpulse-cir",
+      "sourcePath": "Netlists/VPULSE/vpulse.cir",
+      "sha256": "fc1c7154d6cb089ae3110b2870b383fde003e1440c9bbf214c33bf500b704f34",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:68"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:67"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 2,
+      "worstNormalizedError": 6.51e-16,
+      "worstSignal": "tran i(vpulse)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "vpwl-vpwl-cir",
+      "sourcePath": "Netlists/VPWL/vpwl.cir",
+      "sha256": "2566eaf4e46da8225face26c0bb756866cbf164d5e3dc5451beee09436bdd12d",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:3146"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 40: Unsupported PWL source parameters: 'TD=1' VPWL4 4 0 PWL(0S 0V 2S 3V 3S 2V 4S 2V 4.01V 5V 4.5S 5V 4.51S -2V 7S 1V 9S -1V 9.01S 4V 10S 3V) TD=1"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+    },
+    {
+      "id": "vsffm-vsffm-cir",
+      "sourcePath": "Netlists/VSFFM/vsffm.cir",
+      "sha256": "abe707a6983674c1a7d44375ae08db94a6f57ac82cf507f1676a91413aca733e",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1008"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 14: Unsupported source waveform 'SFFM' VSSFM 1 0 SFFM(0 1 1MEG 2 250K)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+    },
+    {
+      "id": "vsin-bug1679-cir",
+      "sourcePath": "Netlists/VSIN/bug1679.cir",
+      "sha256": "6573343c22c0c7deb102a3f3437b45b5f080840413f10ae7f985ae0af3b4405e",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1000008"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1000007"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 2,
+      "worstNormalizedError": 9.77e-12,
+      "worstSignal": "tran i(vvinp)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "vstartest-vstartest-cir",
+      "sourcePath": "Netlists/VSTARTEST/vstarTest.cir",
+      "sha256": "c30936001d81029f324cf1bbef02b5a44364ad0e92b5595bbfb4b93ad17531c6",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:374"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:387"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.218,
+      "worstSignal": "tran v(vout)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "wampde-blocking-simple-single-channel-cir",
+      "sourcePath": "Netlists/WAMPDE/BLOCKING/simple_single_channel.cir",
+      "sha256": "58c53bde4e87f10292e5729f2b5f3e0aaa896dfef399d88995d2b1527f797714",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:30008"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:30019"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 7,
+      "worstNormalizedError": 2.45,
+      "worstSignal": "tran i(l2)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "xdm-hspice-controlled-sources-current-controlled-sources-w-extraneous-identifiers-cir",
+      "sourcePath": "Netlists/XDM/HSPICE/CONTROLLED_SOURCES/current_controlled_sources_w_extraneous_identifiers.cir",
+      "sha256": "665d9c2d797f291d27d94c8a4fd2f3cb5523086bf52df526393d028abab46a64",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:11"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:11"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 12,
+      "worstNormalizedError": 2.22e-16,
+      "worstSignal": "dc v(6)",
+      "outcome": "matched",
+      "gapBucket": null
+    }
+  ],
+  "outcomeSha256": "1f27c5f0e5ab53b173603c5255aa6ba3538902f3646bb30ee8f8b1ca6ee7b4ab"
+}

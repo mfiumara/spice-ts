@@ -27,7 +27,7 @@
     "fixtureAdaptation": "none",
     "perCircuitToleranceTuning": false,
     "matchThreshold": 0.01,
-    "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, 1e-12). Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
+    "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, floor). The floor is uniform per quantity (#593): 0.0001 V for node voltages v(...) and 1e-10 A for branch currents i(...), so a signal whose ngspice peak is zero or tiny matches when the absolute difference is at most the ngspice-47 default VNTOL (0.000001 V) or ABSTOL (1e-12 A); every other quantity (pole/zero roots, noise spectra) keeps 1e-12. Deck .options tolerances are not consulted. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
     "deterministicHashExcludes": [
       "environment",
       "tools.node",
@@ -48,8 +48,8 @@
       "unsupported": 193
     },
     "outcomes": {
-      "matched": 51,
-      "mismatch": 15,
+      "matched": 52,
+      "mismatch": 14,
       "not-compared": 56,
       "spice-ts-loss": 184,
       "ngspice-failed": 0,
@@ -1677,7 +1677,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 4,
-      "worstNormalizedError": 2000000000000,
+      "worstNormalizedError": 20000,
       "worstSignal": "tran v(2)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -2361,7 +2361,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:243923"
+          "tran:244248"
         ]
       },
       "spiceTs": {
@@ -3647,7 +3647,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:3100"
+          "tran:3093"
         ]
       },
       "spiceTs": {
@@ -3658,7 +3658,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 10,
-      "worstNormalizedError": 1.48,
+      "worstNormalizedError": 1.24,
       "worstSignal": "tran v(9)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -3713,7 +3713,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 5,
-      "worstNormalizedError": 1.59,
+      "worstNormalizedError": 3.04,
       "worstSignal": "tran v(3)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -5843,9 +5843,9 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 15,
-      "worstNormalizedError": 1.11,
+      "worstNormalizedError": 1.11e-8,
       "worstSignal": "ac v(2)",
-      "outcome": "mismatch",
+      "outcome": "matched",
       "gapBucket": null
     },
     {
@@ -7715,8 +7715,8 @@
       },
       "comparedAnalyses": 3,
       "comparedSignals": 63,
-      "worstNormalizedError": 0.0564,
-      "worstSignal": "ac v(2)",
+      "worstNormalizedError": 0.0118,
+      "worstSignal": "tran v(31)",
       "outcome": "mismatch",
       "gapBucket": null
     },
@@ -8057,8 +8057,8 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 8,
-      "worstNormalizedError": 0.00000569,
-      "worstSignal": "ac v(1)",
+      "worstNormalizedError": 0.00000185,
+      "worstSignal": "ac i(vds)",
       "outcome": "matched",
       "gapBucket": null
     },
@@ -9541,5 +9541,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "fc1ee9574cb2ca08a237ca5da9311ad71cd4764f49549bcd6d0abfd13ba64331"
+  "outcomeSha256": "f0ca8fa8f9aed1f533ae25f6c04fff5ceebfc32a5eb2c7dec2326db524563111"
 }

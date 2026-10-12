@@ -1,0 +1,11 @@
+iNetlist to demonstrate initial condition bug on transformer
+L1 2 0 10mH IC=5
+R1 0 2 1
+L2 1 0 10mH
+R2 0 1 1
+K1 L1 L2 .95
+.TRAN 0.1MS 50MS UIC
+.PRINT TRAN V(2) I(L1) V(1) I(L2)
+.END
+
+

@@ -1,0 +1,63 @@
+Testing ill-formed .MEASURE lines
+*********************************************************************
+* This tests for illegal values for AT, NUMFREQ and GRIDSIZE for the
+* FOUR measure.  The allowed values are:
+*   AT >= 0 
+*   GRIDSIZE > 0
+*   NUMFREQ > 0
+*
+* See SON Bug 699
+*
+*
+*
+*********************************************************************
+* Jfet Transient Sine wave 6 volt input signal to output 
+
+Vdd   Vdd     0       DC 20
+*                          SIN(Voffset Vamplitude Frequency)
+*                          ---------------------------------
+V1    Vin     0       DC 0 SIN(0       6        1e6)
+Rload Vout    0       1Meg
+Xamp1 Vin Vdd 0 Vout  amp2n3819
+*
+*     STEP STOP
+*     TIME TIME
+*     ---- ---
+.TRAN 1e-8 1e-6 
+
+.PRINT TRAN V(Vin) V(Vout)
+
+.MEASURE TRAN fourVP1 FOUR V(Vout) AT=-1e6 NUMFREQ=10 GRIDSIZE=200
+.MEASURE TRAN fourVP2 FOUR V(Vout) AT=1e6 NUMFREQ=0 GRIDSIZE=200
+.MEASURE TRAN fourVP3 FOUR V(Vout) AT=1e6 NUMFREQ=10 GRIDSIZE=0
+
+* Amplifier subcircuit
+
+.subckt amp2n3819 Vin Vdd Vss Vout
+Rd  Vdd     Vout           1462
+J1  Vout    Vin    Nsource J2N3819
+Rs  Nsource Vss            188
+Rg  Vin     Vss            1Meg
+*
+.model J2N3819 NJF(Beta=1.304m Rd=1 Rs=1 Lambda=2.25m Vto=-3
++ Is=33.57f Cgd=1.6p Pb=1 Fc=.5 Cgs=2.414p Kf=9.882E-18 Af=1)
+*
+.ENDS
+
+.END
+
+*Fourier analysis for Vout:
+*  No. Harmonics: 10, THD: 37.3013 %, Gridsize: 200, Interpolation Degree: 1
+*
+*Harmonic Frequency   Magnitude   Phase       Norm. Mag   Norm. Phase
+*-------- ---------   ---------   -----       ---------   -----------
+* 0       0           12.4351     0           0           0          
+* 1       1e+06       9.00839     179.515     1           0          
+* 2       2e+06       0.747533    -89.631     0.0829818   -269.15    
+* 3       3e+06       3.0704      179.045     0.340837    -0.46939   
+* 4       4e+06       0.105121    81.2828     0.0116693   -98.232    
+* 5       5e+06       1.08458     178.589     0.120397    -0.92552   
+* 6       6e+06       0.163678    84.0992     0.0181695   -95.416    
+* 7       7e+06       0.265723    179.039     0.0294973   -0.47605   
+* 8       8e+06       0.135003    85.1087     0.0149864   -94.406    
+* 9       9e+06       0.0460269   -10.666     0.00510933  -190.18    

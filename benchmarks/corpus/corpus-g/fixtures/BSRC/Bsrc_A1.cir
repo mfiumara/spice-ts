@@ -1,0 +1,24 @@
+test for nested functions
+*
+* Tests whether Xyce is properly expanding nested function calls in B source
+*
+* F(x) = a*x+b
+* g(x) = c*x*x+d
+* f(g(x)) = a*(c*x*x+d)+b = a*c*x*x+a*d+b
+
+.param a=5
+.param b=3
+.param c=4
+.param d=2
+.func f(x) {a*x+b}
+.func g(x) {c*x*x+d}
+
+V1 1 0 5v
+r1 1 0 10k
+
+B1 2 0 V={f(g(v(1)))}
+R2 2 0 10k
+
+.DC v1 0 5 .1
+.print DC v(1) v(2)
+.end

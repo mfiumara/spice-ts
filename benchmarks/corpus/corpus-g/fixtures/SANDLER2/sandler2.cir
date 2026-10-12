@@ -1,0 +1,76 @@
+4TH ORDER BUTTERWORTH HIGH-PASS FILTER
+********************************************************************************
+* Tier No.: 2
+* Directory/Circuit Name:SANDLER2/sandler2.cir
+* Description:  Fourth Order Butterworth high-pass filter circuit netlist developed
+*       by Steve Sandler to compare the validity of simulations using 3 different
+*       circuit simulation tools.  The results were compared to measured data.
+* Input: V4
+* Output: V(3), V(11), V(4)
+* Analysis:
+*********************************************************************************
+*
+.SUBCKT OPAMP#0 2    3  6   7   4
+*             - IN + OUT VCC VEE
+RP 4 7 10K
+IB 3 90 1.0000N
+VIB 90 4
+IO 3 2 500.00N
+RIP 3 4 1G
+CIP 3 4 1.4PF
+*FIBN 2 4 VIB 1
+BIBN 2 4 I={I(VIB)}
+RIN 2 4 1G
+CIN 2 4 1.4PF
+VOFST 2 10 1.0000M
+RID 10 3 1G
+EA 11 4 10 3 1
+R1 11 12 5K
+R2 12 13 50K
+C1 12 4 13.000P
+GA 4 14 4 13 1.3500K
+C2 13 14 2.7000P
+RO 14 4A 75
+EBAL 4A 4 2A 4 1
+RBAL1 7 2A 1MEG
+RBAL2 2A 4 1MEG
+L 14 6 30.000U
+RL 14 6 1000
+CL 6 4 3PF
+D1 6 70 DN
+VSAT 70 7 -2.5
+D2 40 6 DN
+VSAT2 40 4 2.5
+.MODEL DN D
+.ENDS OPAMP#0
+*
+*
+*MAIN CIRCUIT
+*
+V2 0 2 15
+R2 6 0 21.3K
+C1 6 5 .005U
+C2 5 4 .01U
+X4 3 6 3 1 2 OPAMP#0
+R1 5 3 21.3K
+R5 9 0 21.3K
+C5 9 10 .005U
+C6 10 3 .01U
+X6 11 9 11 1 2 OPAMP#0
+R6 10 11 21.3K
+V3 4 0 PULSE(0 5 .5M 100N)
+V1 1 0 15
+*
+.TRAN .2U 2.9M .4M
+
+* These signals all have 2 added to them so that none of them 
+* cross zero.  Crossing zero causes problems for xyce_verify.
+.PRINT TRAN  {V(3)+2.0}  {V(11)+2.0} {V(4)+2.0}
+
+* Xyce option needed when default is changed to 1 (Backward Euler).
+* Also serves as useful test of non-default method.
+.OPTIONS TIMEINT reltol=1.0e-3 
+
+*ALIAS  V(11)=OUT V(4)=IN
+.END
+

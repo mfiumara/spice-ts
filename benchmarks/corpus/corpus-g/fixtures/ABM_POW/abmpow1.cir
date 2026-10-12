@@ -1,0 +1,13 @@
+Test of ABM power function
+**********************************************************
+* This circuit tests the precedence of u- w.r.t. **.
+* Passing this test certifies bug #7 (joseki bugzilla).
+**********************************************************
+VS  1  0  -2.5
+R1  1  0  1.0
+B4  4  0  V = { -V(1)**2 }
+R4  4  0  1
+*
+.DC VS -2.5 2.5 0.1
+.PRINT DC V(1) V(4) 
+.END

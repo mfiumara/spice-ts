@@ -1,0 +1,334 @@
+{
+  "issue": 604,
+  "main": "b04bc1ee",
+  "host": "Apple M5 Pro, macOS 27.0.1, Node v22, ngspice-47 Homebrew; 1-min load ~10-14",
+  "deck": "corpus-f adder_mos.cir with .control removed and .save V(9..13) added (benchmarks/adder-timeout-611/run.sh derivation)",
+  "deckSha256": "ef804f3ac0ee95c8b47d0f934c70d0fc0c494ca2e3a68ee98965c93cd3ba5738",
+  "ngspice47": {
+    "accepted": 18073,
+    "rejected": 2429,
+    "transientIterations": 67718,
+    "transientAnalysisSeconds": 5.25
+  },
+  "ngspice47_trtol7.07": {
+    "accepted": 18065,
+    "rejected": 2438
+  },
+  "ngspice47_trtol6.93": {
+    "accepted": 18257,
+    "rejected": 2464
+  },
+  "spiceTsMain": {
+    "wallMs": 76047,
+    "acceptedSteps": 18106,
+    "rejectedSteps": 2289,
+    "newtonIterations": 71597,
+    "completed": true,
+    "minimumAcceptedTimestep": 5.0000000000000005e-12
+  },
+  "spiceTsBeforePR618Measurement": {
+    "source": "benchmarks/adder-timeout-611/results.json (main 7c66aab9 + #600/#605)",
+    "simTimeReachedAt120s": 3e-06,
+    "accepted": 85926,
+    "rejected": 20909
+  },
+  "compare": {
+    "st.wave.json": {
+      "metric": {
+        "spiceTsPoints": 18107,
+        "ngspicePoints": 18073,
+        "spiceTsEnd": 6.4e-06,
+        "ngspiceEnd": 6.400000000000001e-06,
+        "threshold": 0.01,
+        "worst": {
+          "signal": "v(9)",
+          "absoluteMax": 0.2560994922041655,
+          "ngspicePeak": 3.400342712603436,
+          "normalized": 0.07531578839242521,
+          "match": false,
+          "oppositeLevelFraction": 0
+        },
+        "signals": [
+          {
+            "signal": "v(9)",
+            "absoluteMax": 0.2560994922041655,
+            "ngspicePeak": 3.400342712603436,
+            "normalized": 0.07531578839242521,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(10)",
+            "absoluteMax": 0.18372682897659376,
+            "ngspicePeak": 3.407593858117898,
+            "normalized": 0.05391687995296213,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(11)",
+            "absoluteMax": 0.16907978557799241,
+            "ngspicePeak": 3.467834007672367,
+            "normalized": 0.04875659711621545,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(12)",
+            "absoluteMax": 0.2531462375854284,
+            "ngspicePeak": 3.448264484790065,
+            "normalized": 0.07341265111827416,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(13)",
+            "absoluteMax": 0.12533482870288015,
+            "ngspicePeak": 3.399745516696902,
+            "normalized": 0.03686594425592536,
+            "match": false,
+            "oppositeLevelFraction": 0
+          }
+        ]
+      },
+      "crossings": {
+        "level": 1.5,
+        "signals": [
+          {
+            "signal": "v(9)",
+            "crossings": 256,
+            "maxAbsShiftPs": 34.83543462938409,
+            "meanShiftPs": 0.600704510278255,
+            "positiveFraction": 0.50390625
+          },
+          {
+            "signal": "v(10)",
+            "crossings": 192,
+            "maxAbsShiftPs": 16.5419337070448,
+            "meanShiftPs": -2.0027527386335864,
+            "positiveFraction": 0.5
+          },
+          {
+            "signal": "v(11)",
+            "crossings": 80,
+            "maxAbsShiftPs": 22.976130606887303,
+            "meanShiftPs": 2.6205945068534278,
+            "positiveFraction": 0.6125
+          },
+          {
+            "signal": "v(12)",
+            "crossings": 28,
+            "maxAbsShiftPs": 36.050469490573704,
+            "meanShiftPs": 6.162206831426792,
+            "positiveFraction": 0.7857142857142857
+          },
+          {
+            "signal": "v(13)",
+            "crossings": 8,
+            "maxAbsShiftPs": 28.516795039521565,
+            "meanShiftPs": 4.869490495909777,
+            "positiveFraction": 0.5
+          }
+        ]
+      }
+    },
+    "tr7.07.raw": {
+      "metric": {
+        "spiceTsPoints": 18065,
+        "ngspicePoints": 18073,
+        "spiceTsEnd": 6.400000000000001e-06,
+        "ngspiceEnd": 6.400000000000001e-06,
+        "threshold": 0.01,
+        "worst": {
+          "signal": "v(10)",
+          "absoluteMax": 0.18990676812157858,
+          "ngspicePeak": 3.407593858117898,
+          "normalized": 0.05573045850788949,
+          "match": false,
+          "oppositeLevelFraction": 0
+        },
+        "signals": [
+          {
+            "signal": "v(9)",
+            "absoluteMax": 0.09491319059809733,
+            "ngspicePeak": 3.400342712603436,
+            "normalized": 0.0279128307409426,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(10)",
+            "absoluteMax": 0.18990676812157858,
+            "ngspicePeak": 3.407593858117898,
+            "normalized": 0.05573045850788949,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(11)",
+            "absoluteMax": 0.19314634233160433,
+            "ngspicePeak": 3.467834007672367,
+            "normalized": 0.05569653619645002,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(12)",
+            "absoluteMax": 0.1919240593541507,
+            "ngspicePeak": 3.448264484790065,
+            "normalized": 0.05565816085184524,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(13)",
+            "absoluteMax": 0.15743686474701102,
+            "ngspicePeak": 3.399745516696902,
+            "normalized": 0.0463084263142061,
+            "match": false,
+            "oppositeLevelFraction": 0
+          }
+        ]
+      },
+      "crossings": {
+        "level": 1.5,
+        "signals": [
+          {
+            "signal": "v(9)",
+            "crossings": 256,
+            "maxAbsShiftPs": 14.09343686463674,
+            "meanShiftPs": 1.2112556876573133,
+            "positiveFraction": 0.63671875
+          },
+          {
+            "signal": "v(10)",
+            "crossings": 192,
+            "maxAbsShiftPs": 12.833207986628612,
+            "meanShiftPs": -0.23166078618761088,
+            "positiveFraction": 0.4739583333333333
+          },
+          {
+            "signal": "v(11)",
+            "crossings": 80,
+            "maxAbsShiftPs": 23.931245838702,
+            "meanShiftPs": -2.85745728122221,
+            "positiveFraction": 0.5375
+          },
+          {
+            "signal": "v(12)",
+            "crossings": 28,
+            "maxAbsShiftPs": 28.084768986291525,
+            "meanShiftPs": -0.8991660887764202,
+            "positiveFraction": 0.35714285714285715
+          },
+          {
+            "signal": "v(13)",
+            "crossings": 8,
+            "maxAbsShiftPs": 24.592973452036464,
+            "meanShiftPs": -0.19106872363900085,
+            "positiveFraction": 0.375
+          }
+        ]
+      }
+    },
+    "tr6.93.raw": {
+      "metric": {
+        "spiceTsPoints": 18257,
+        "ngspicePoints": 18073,
+        "spiceTsEnd": 6.400000000000001e-06,
+        "ngspiceEnd": 6.400000000000001e-06,
+        "threshold": 0.01,
+        "worst": {
+          "signal": "v(12)",
+          "absoluteMax": 0.30843901591819867,
+          "ngspicePeak": 3.448264484790065,
+          "normalized": 0.08944760974069449,
+          "match": false,
+          "oppositeLevelFraction": 0
+        },
+        "signals": [
+          {
+            "signal": "v(9)",
+            "absoluteMax": 0.17699418753768126,
+            "ngspicePeak": 3.400342712603436,
+            "normalized": 0.05205186726668723,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(10)",
+            "absoluteMax": 0.3015217949923419,
+            "ngspicePeak": 3.407593858117898,
+            "normalized": 0.0884852501638444,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(11)",
+            "absoluteMax": 0.1877679127839984,
+            "ngspicePeak": 3.467834007672367,
+            "normalized": 0.054145588389921076,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(12)",
+            "absoluteMax": 0.30843901591819867,
+            "ngspicePeak": 3.448264484790065,
+            "normalized": 0.08944760974069449,
+            "match": false,
+            "oppositeLevelFraction": 0
+          },
+          {
+            "signal": "v(13)",
+            "absoluteMax": 0.20801768468351822,
+            "ngspicePeak": 3.399745516696902,
+            "normalized": 0.06118625163615846,
+            "match": false,
+            "oppositeLevelFraction": 0
+          }
+        ]
+      },
+      "crossings": {
+        "level": 1.5,
+        "signals": [
+          {
+            "signal": "v(9)",
+            "crossings": 256,
+            "maxAbsShiftPs": 38.040574879914246,
+            "meanShiftPs": -1.6742010041860715,
+            "positiveFraction": 0.30859375
+          },
+          {
+            "signal": "v(10)",
+            "crossings": 192,
+            "maxAbsShiftPs": 65.73848902327332,
+            "meanShiftPs": -7.847423444820143,
+            "positiveFraction": 0.25
+          },
+          {
+            "signal": "v(11)",
+            "crossings": 80,
+            "maxAbsShiftPs": 26.944087415401107,
+            "meanShiftPs": -8.399580023062894,
+            "positiveFraction": 0.1125
+          },
+          {
+            "signal": "v(12)",
+            "crossings": 28,
+            "maxAbsShiftPs": 64.94563888350085,
+            "meanShiftPs": -3.33235037655097,
+            "positiveFraction": 0.39285714285714285
+          },
+          {
+            "signal": "v(13)",
+            "crossings": 8,
+            "maxAbsShiftPs": 43.769765524508024,
+            "meanShiftPs": 4.566523511074426,
+            "positiveFraction": 0.625
+          }
+        ]
+      }
+    }
+  }
+}

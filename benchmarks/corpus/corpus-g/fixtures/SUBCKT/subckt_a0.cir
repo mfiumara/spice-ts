@@ -1,0 +1,67 @@
+Baseline case for subcircuit regression tests
+* **********************************************************************
+* A simple pair of MOSFET level 3 inverters
+* The inverters are constructed from dissimilar mosfets, just for testing 
+* purposes
+*
+* Test A0 is merely a baseline.  It uses no subcircuits nor parameters.  The
+* other tests in this set should all be compared to this one, as they should
+* be exactly equivalent in a properly functioning code.
+*
+* Author:   $Author$
+* Revision: $Revision$
+* Date:     $Date$
+*
+* **********************************************************************
+
+MN1 MID IN 0 0 CD4012_NMOS L=5u W=175u
+MP1 MID IN VDD VDD CD4012_PMOS L=5u W=270u
+
+MN1a OUT MID 0 0 CD4012_NMOS1 L=5u W=175u
+MP1a OUT MID VDD VDD CD4012_PMOS1 L=5u W=270u
+VDDdev 	VDD	0	5V
+RIN	IN	1	1K
+VIN1  1	0  5V PULSE (5V 0V 1.5us 5ns 5ns 1.5us 3.01us)
+R1    OUT  0  10K  
+C2    OUT  0  0.1p
+
+.tran 20ns 30us
+.print tran PRECISION=10 WIDTH=19 v(out) v(in) v(1)
+*COMP TIME   reltol=1e-6 abstol=1e-6
+*COMP V(OUT) reltol=6e-6 abstol=1e-6
+*COMP V(IN)  reltol=4e-6 abstol=1e-6
+*COMP V(1)   reltol=1e-6 abstol=1e-6
+
+***** original mosfets
+.MODEL cd4012_nmos NMOS (
++ LEVEL = 3 UO = 190   VTO = 1.679   TOX = 6E-08   NSUB = 8.601E+15
++ NSS = 0   RS = 13.21   RD = 11.59   RSH = 0   IS = 1E-14
++ VMAX = 4.206E+04 NFS=1E10  GAMMA=0.37 PHI=0.65 
++ XJ = 7.1E-06   LD = 8.6E-07   DELTA = 0   THETA = 0.0021   ETA = 0.057   KAPPA = 0.15
++ KP = 2.161E-05  L=5u W=175u
++ CBD=0.1P CBS=0.1P PB=0.81 CGSO=2P CGBO=4P CGDO=2P CJ=2E-4 MJ=0.5 CJSW=1E-9
++ MJSW=0.5 JS=1E-8 TPG=0 KF=1E-25 AF=1 FC=0.5 TNOM=27)
+.MODEL cd4012_pmos PMOS (
++ LEVEL = 3  UO = 310  VTO = -1.6  TOX = 6E-08  NSUB = 5.701E+15
++ NSS = 0    VMAX = 5.374E+04   RS = 5.359   RD = 93.66   RSH = 0   IS = 1E-14
++ XJ = 7.9E-06   LD = 3E-08   DELTA = 0   THETA = 0.0278   ETA = 0.535   KAPPA = 0.643
++ KP = 1.711E-05 L=5u W=270u GAMMA=0.37 PHI=0.65 NFS=1E10
++ CBD=0.1P CBS=0.1P PB=0.81 CGSO=2P CGBO=4P CGDO=2P CJ=2E-4 MJ=0.5 CJSW=1E-9
++ MJSW=0.5 JS=1E-8 TPG=0 KF=1E-25 AF=1 FC=0.5 TNOM=27)
+******slightly modified mosfets (changed VTO of both)
+.MODEL cd4012_nmos1 NMOS (
++ LEVEL = 3 UO = 190   VTO = 1.0   TOX = 6E-08   NSUB = 8.601E+15
++ NSS = 0   RS = 13.21   RD = 11.59   RSH = 0   IS = 1E-14
++ VMAX = 4.206E+04 NFS=1E10  GAMMA=0.37 PHI=0.65 
++ XJ = 7.1E-06   LD = 8.6E-07   DELTA = 0   THETA = 0.0021   ETA = 0.057   KAPPA = 0.15
++ KP = 2.161E-05  L=5u W=175u
++ CBD=0.1P CBS=0.1P PB=0.81 CGSO=2P CGBO=4P CGDO=2P CJ=2E-4 MJ=0.5 CJSW=1E-9
++ MJSW=0.5 JS=1E-8 TPG=0 KF=1E-25 AF=1 FC=0.5 TNOM=27)
+.MODEL cd4012_pmos1 PMOS (
++ LEVEL = 3  UO = 310  VTO = -1.0  TOX = 6E-08  NSUB = 5.701E+15
++ NSS = 0    VMAX = 5.374E+04   RS = 5.359   RD = 93.66   RSH = 0   IS = 1E-14
++ XJ = 7.9E-06   LD = 3E-08   DELTA = 0   THETA = 0.0278   ETA = 0.535   KAPPA = 0.643
++ KP = 1.711E-05 L=5u W=270u GAMMA=0.37 PHI=0.65 NFS=1E10
++ CBD=0.1P CBS=0.1P PB=0.81 CGSO=2P CGBO=4P CGDO=2P CJ=2E-4 MJ=0.5 CJSW=1E-9
++ MJSW=0.5 JS=1E-8 TPG=0 KF=1E-25 AF=1 FC=0.5 TNOM=27)
+.end

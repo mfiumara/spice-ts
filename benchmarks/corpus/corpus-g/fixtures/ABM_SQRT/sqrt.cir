@@ -1,0 +1,46 @@
+Test Circuit for the Square Root Function
+********************************************************************************
+* Tier No.:     1
+* Directory/Circuit Name: ABM_SQRT/sqrt.cir
+* Description: Test of the Xyce analog behavioral modeling square root function.
+* Input: VS
+* Output: V(1), V(2), V(3)
+* Analysis:
+*	An piece-wise linear input voltage source, VS or V(1) is used to define 
+*	various voltages in time.
+*	Two nonlinear dependent voltage sources are used to define the functions as follows:
+*		V(2)=B2=SQRT(V(1)) = square root of V1
+*		V(3)=B3=(V(2))**2  = value of B2 source squared = V1
+*
+*	This table shows hand calculations for the square root and square functions
+*	The X values represent the values of VS
+*
+*	X		SQRT(X)	X*X
+*	0		0		0
+*	1		1		1
+*	4		2		4
+*	9		3		9
+*	16		4		16
+*	25		5		25
+*	36		6		36
+*	49		7		49
+*	1.00E+06	1000		1000000
+*	998001		999		998001
+*	1.00E+08	10000		100000000
+*	1.00E+10	100000		10000000000
+*	390625		625		390625
+********************************************************************************
+VS   1  0  PWL(0S 0V  1S 1V 2S 4V  3S 9V  4S 16V   5S 25V  6S 36V  7S 49V  8S 1E6V 
++              9S 998001V 10S 1E8V 11S 1E10V 12S 390625V)
+R1   1  0  1
+* SOURCE THAT TAKES THE SQUARE ROOT OF V1
+B2   2  0  V = {SQRT(V(1))}
+R2   2  0  1
+* SOURCE THAT SQUARES THE VALUE OF B2 
+* RESULTING IN THE ORIGINAL VALUE OF V1
+B3   3  0  V = {V(2)**2}
+R3   3  0  1
+.TRAN 1S 12S
+.PRINT TRAN V(1) V(2) V(3)
+.END
+

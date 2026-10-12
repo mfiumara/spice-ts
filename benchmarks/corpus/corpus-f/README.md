@@ -6,17 +6,17 @@ Every deck below is byte-identical to ngspice `3ef069fb1f04177a153f342a32d941fc2
 
 ## Totals
 
-- Fixtures: 336. Outcome SHA-256: `fc1ee9574cb2ca08a237ca5da9311ad71cd4764f49549bcd6d0abfd13ba64331`.
+- Fixtures: 336. Outcome SHA-256: `f0ca8fa8f9aed1f533ae25f6c04fff5ceebfc32a5eb2c7dec2326db524563111`.
 - ngspice (ngspice-47): 306 success, 18 failed, 12 unsupported.
 - spice-ts (0.3.0): 122 success, 21 failed, 193 unsupported.
-- Outcomes: matched 51, mismatch 15, not-compared 56, spice-ts-loss 184, ngspice-failed 0, both-failed 30.
-- Of the 306 decks ngspice runs successfully, spice-ts matches 51, mismatches 15, produces no comparable result for 56 and fails 184. For 155 of those ngspice successes the deck runs its analyses from `.control` (or its control block ends with `quit`), so `ngspice -r` exports no vectors: they cannot be compared even when spice-ts runs them (harness follow-up https://github.com/mfiumara/spice-ts/issues/528).
+- Outcomes: matched 52, mismatch 14, not-compared 56, spice-ts-loss 184, ngspice-failed 0, both-failed 30.
+- Of the 306 decks ngspice runs successfully, spice-ts matches 52, mismatches 14, produces no comparable result for 56 and fails 184. For 155 of those ngspice successes the deck runs its analyses from `.control` (or its control block ends with `quit`), so `ngspice -r` exports no vectors: they cannot be compared even when spice-ts runs them (harness follow-up https://github.com/mfiumara/spice-ts/issues/528).
 
 ## Method
 
 - ngspice: `ngspice -b -r <raw> <identical-fixture> (HOME=<tmp> with .spiceinit "set filetype=ascii")`. Status success means exit 0 and at least one op/dc/ac/tran/pz/noise/disto plot in the raw file; failed/unsupported is classified from ngspice's own output.
 - spice-ts: `@spice-ts/core simulate(<identical-fixture>) in a bounded child process (no parse() pre-check)`, through the same adapter as the aggregate parity report. A deck whose analyses spice-ts does not return is unsupported.
-- matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, 1e-12). Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).
+- matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, floor). The floor is uniform per quantity (#593): 0.0001 V for node voltages v(...) and 1e-10 A for branch currents i(...), so a signal whose ngspice peak is zero or tiny matches when the absolute difference is at most the ngspice-47 default VNTOL (0.000001 V) or ABSTOL (1e-12 A); every other quantity (pole/zero roots, noise spectra) keeps 1e-12. Deck .options tolerances are not consulted. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).
 - "worst" is that normalised error for the worst signal. ngspice-failed rows are not spice-ts losses but cannot be compared.
 - Bounds: ngspice 600 s, spice-ts 120 s per fixture. The outcome hash excludes environment, tools.node, ngspice.analyses, spiceTs.analyses: ngspice's TRNOISE and Monte-Carlo decks change their time-point count from run to run even at the default seed.
 - Regenerate: `pnpm build && pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts`; verify without writing: `pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts --check`.
@@ -31,10 +31,11 @@ Every deck below is byte-identical to ngspice `3ef069fb1f04177a153f342a32d941fc2
 - https://github.com/mfiumara/spice-ts/issues/528: the ngspice harness exports no vectors for decks that run analyses from .control or quit inside it.
 - https://github.com/mfiumara/spice-ts/issues/590: closed by #601: MOS1 depletion junction capacitance (tests/general/mosmem.cir now matches; #511 triage in TRIAGE-511.md).
 - https://github.com/mfiumara/spice-ts/issues/591: closed by #601: MOS1 Meyer gate capacitance from TOX; residual i(vs) mismatch is grid discretisation per #627/#629, routed to #592.
-- https://github.com/mfiumara/spice-ts/issues/626: BSIM3 4-bit NAND adder (examples/snapshot/adder_mos_circ.cir): mismatch 1.54 after #624/#648, 0.755 after #661 and 0.0451 (i(vcc)) after #677; root cause not established (#511 triage).
+- https://github.com/mfiumara/spice-ts/issues/626: BSIM3 4-bit NAND adder (examples/snapshot/adder_mos_circ.cir): internal-node mismatch 1.54 after #624/#648; root cause not established (#511 triage).
 - https://github.com/mfiumara/spice-ts/issues/655: TRNOISE/TRRANDOM decks compare independent random realisations; ngspice-47 reseeds each run, so these values are not reproducible (transient-noise simple-noise, rts-1).
-- https://github.com/mfiumara/spice-ts/issues/592: metric: ngspice's coarse default-step output is scored as spice-ts error (rca3040, switches-manual-p92, txl1_1_line; rtlinv, mos-test, fourbitadder and ltra2_2_line match since #689 CKTtrunc step control; #511 triage).
-- https://github.com/mfiumara/spice-ts/issues/593: metric: zero/near-zero ngspice peaks turn fV-uV residuals into mismatches (rca3040 AC v(2), fourbitadder; #511 triage).
+- https://github.com/mfiumara/spice-ts/issues/592: metric: ngspice's coarse default-step output is scored as spice-ts error (rca3040, switches-manual-p92; rtlinv, mos-test, fourbitadder and ltra2_2_line match after the #689 step-control merge; #511 triage).
+- https://github.com/mfiumara/spice-ts/issues/593: metric: zero/near-zero ngspice peaks turned fV-uV residuals into mismatches; fixed by the per-quantity VNTOL/ABSTOL peak floor in the match rule above (rca3040 AC v(2) now 5.64e-10; #511 triage).
+- https://github.com/mfiumara/spice-ts/issues/698: fourbitadder TTL internal nodes kept 1-7 uV residuals above the VNTOL floor (split from #593); the deck matches (0.00313) on main 3b9c836f, re-check before closing.
 
 ## spice-ts gap buckets
 
@@ -112,7 +113,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [examples/control_structs/new-check-3.sp](fixtures/examples/control_structs/new-check-3.sp) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
 | [examples/control_structs/new-check-4.sp](fixtures/examples/control_structs/new-check-4.sp) | unsupported | unsupported | both-failed |  |  | ngspice: Error: RHS "const5 > unwanted_output_file_1" invalid / spice-ts: Parse error at line 101: Unsupported .control command 'let': a separate '<' or '>' word on a let line is csh-style redirection in ngspice and is not supported let tmp = const5 > unwanted_output_file_1 |
 | [examples/control_structs/s-param.cir](fixtures/examples/control_structs/s-param.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 79: Unsupported .control command 'alter': device 'R.X1.RS1' is inside a subcircuit; only top-level devices can be altered alter R.X1.RS1=1e12 |
-| [examples/ddt/ddt-test1.cir](fixtures/examples/ddt/ddt-test1.cir) | success | success | mismatch | 2000000000000 | tran v(2) |  |
+| [examples/ddt/ddt-test1.cir](fixtures/examples/ddt/ddt-test1.cir) | success | success | mismatch | 20000 | tran v(2) |  |
 | [examples/ddt/ddt-test2.cir](fixtures/examples/ddt/ddt-test2.cir) | unsupported | unsupported | both-failed |  |  | ngspice: Error: no such function 'if' at line 7 / spice-ts: Parse error at line 7: Unsupported behavioral expression function 'if' B3 3 0 v = (if(ddt((v(1)))>0,1,0)) |
 | [examples/ddt/ddt-test3.cir](fixtures/examples/ddt/ddt-test3.cir) | success | success | mismatch | 3.21 | tran v(22) |  |
 | [examples/digital/auto_bridge/shared_line.cir](fixtures/examples/digital/auto_bridge/shared_line.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 8: XSPICE code model 'd_inverter' (.model 'invert') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model invert d_inverter |
@@ -186,9 +187,9 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [examples/tclspice/tcl/diffpair.cir](fixtures/examples/tclspice/tcl/diffpair.cir) † | failed | unsupported | both-failed |  |  | ngspice: no raw analysis data produced / spice-ts: Parse error at line 27: Unsupported .sens form; expected '.sens v(node)' or '.sens v(node) ac dec points start stop' .sens v ( 5 4 ) |
 | [examples/transient-noise/noi-sc-tr.cir](fixtures/examples/transient-noise/noi-sc-tr.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 41: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option,  |
 | [examples/transient-noise/noise_vnoi.cir](fixtures/examples/transient-noise/noise_vnoi.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 21: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option,  |
-| [examples/transient-noise/rts-1.cir](fixtures/examples/transient-noise/rts-1.cir) | success | success | mismatch | 1.48 | tran v(9) |  |
+| [examples/transient-noise/rts-1.cir](fixtures/examples/transient-noise/rts-1.cir) | success | success | mismatch | 1.24 | tran v(9) |  |
 | [examples/transient-noise/shot_ng.cir](fixtures/examples/transient-noise/shot_ng.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 3: Unsupported behavioral expression: branch current i(...) references BI 1 3 I=sqrt(2*abs(i(v1))*1.6e-19*1e7)*v(11) |
-| [examples/transient-noise/simple-noise.cir](fixtures/examples/transient-noise/simple-noise.cir) | success | success | mismatch | 1.59 | tran v(3) |  |
+| [examples/transient-noise/simple-noise.cir](fixtures/examples/transient-noise/simple-noise.cir) | success | success | mismatch | 3.04 | tran v(3) |  |
 | [examples/TransmissionLines/cpl_ibm1.sp](fixtures/examples/TransmissionLines/cpl_ibm1.sp) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
 | [examples/TransmissionLines/cpl_ibm1a.sp](fixtures/examples/TransmissionLines/cpl_ibm1a.sp) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
 | [examples/TransmissionLines/cpl_ibm2.sp](fixtures/examples/TransmissionLines/cpl_ibm2.sp) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
@@ -267,7 +268,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [examples/xspice/original-examples/analog_models2_dc.deck](fixtures/examples/xspice/original-examples/analog_models2_dc.deck) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 27: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model filter1 s_xfer (in_offset=0.0 gai |
 | [examples/xspice/original-examples/analog_models2_swept_dc.deck](fixtures/examples/xspice/original-examples/analog_models2_swept_dc.deck) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 25: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model filter1 s_xfer (in_offset=0.0 gai |
 | [examples/xspice/original-examples/analog_models2_transient.deck](fixtures/examples/xspice/original-examples/analog_models2_transient.deck) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 29: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model filter1 s_xfer (in_offset=0.0 gai |
-| [examples/xspice/original-examples/analog_models3_ac.deck](fixtures/examples/xspice/original-examples/analog_models3_ac.deck) | success | success | mismatch | 1.11 | ac v(2) |  |
+| [examples/xspice/original-examples/analog_models3_ac.deck](fixtures/examples/xspice/original-examples/analog_models3_ac.deck) | success | success | matched | 1.11e-8 | ac v(2) |  |
 | [examples/xspice/original-examples/analog_models3_dc.deck](fixtures/examples/xspice/original-examples/analog_models3_dc.deck) | success | success | matched | 1.3e-15 | op i(v2) |  |
 | [examples/xspice/original-examples/analog_models3_swept_dc.deck](fixtures/examples/xspice/original-examples/analog_models3_swept_dc.deck) | success | success | matched | 8.88e-13 | dc i(v2) |  |
 | [examples/xspice/original-examples/analog_models3_transient.deck](fixtures/examples/xspice/original-examples/analog_models3_transient.deck) | success | success | mismatch | 0.0181 | tran v(10) |  |
@@ -336,7 +337,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [tests/general/diffpair.cir](fixtures/tests/general/diffpair.cir) † | failed | unsupported | both-failed |  |  | ngspice: no raw analysis data produced / spice-ts: Parse error at line 29: Unsupported .sens form; expected '.sens v(node)' or '.sens v(node) ac dec points start stop' .sens v ( 5 4 ) |
 | [tests/general/fourbitadder.cir](fixtures/tests/general/fourbitadder.cir) | success | success | matched | 0.00313 | tran v(x1.x2.x1.x6.8) |  |
 | [tests/general/mosmem.cir](fixtures/tests/general/mosmem.cir) † | success | success | matched | 0.00999 | tran i(vdd) |  |
-| [tests/general/rca3040.cir](fixtures/tests/general/rca3040.cir) † | success | success | mismatch | 0.0564 | ac v(2) |  |
+| [tests/general/rca3040.cir](fixtures/tests/general/rca3040.cir) † | success | success | mismatch | 0.0118 | tran v(31) |  |
 | [tests/general/rtlinv.cir](fixtures/tests/general/rtlinv.cir) † | success | success | matched | 0.00238 | tran v(2) |  |
 | [tests/hfet/id_vgs.cir](fixtures/tests/hfet/id_vgs.cir) | success | success | matched | 4.2e-7 | dc i(vgs) |  |
 | [tests/mes/subth.cir](fixtures/tests/mes/subth.cir) | success | success | matched | 3.59e-8 | dc i(vds) |  |
@@ -348,7 +349,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [tests/mesa/mesa14.cir](fixtures/tests/mesa/mesa14.cir) | success | success | matched | 0.0000564 | dc i(vdd) |  |
 | [tests/mesa/mesa15.cir](fixtures/tests/mesa/mesa15.cir) | success | success | matched | 0.000136 | dc i(vds) |  |
 | [tests/mesa/mesa21.cir](fixtures/tests/mesa/mesa21.cir) | success | success | matched | 9.24e-16 | dc i(vgs) |  |
-| [tests/mesa/mesgout.cir](fixtures/tests/mesa/mesgout.cir) | success | success | matched | 0.00000569 | ac v(1) |  |
+| [tests/mesa/mesgout.cir](fixtures/tests/mesa/mesgout.cir) | success | success | matched | 0.00000185 | ac i(vds) |  |
 | [tests/mesa/mesinv.cir](fixtures/tests/mesa/mesinv.cir) | success | success | matched | 0.00048 | dc v(50) |  |
 | [tests/polezero/filt_bridge_t.cir](fixtures/tests/polezero/filt_bridge_t.cir) | success | success | matched | 7.28e-9 | pz v(zero(1)) |  |
 | [tests/polezero/filt_multistage.cir](fixtures/tests/polezero/filt_multistage.cir) | success | success | matched | 7.45e-16 | pz v(pole(3)) |  |
@@ -408,7 +409,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 
 This supplement supersedes the historical batch-1 rows above for every `.control` deck. The original `outcomes.json` is deliberately unchanged.
 
-Measured with core tree `a7e5c7cf880e23b95926dd0d64ae4a7aff5ddd36` (`git rev-parse HEAD:packages/core`), ngspice-47, Node v22.23.1, darwin/arm64, Apple M5 Pro.
+Measured with core tree `870175c62378cc792dff59e6aba78cf3b53eafdb` (`git rev-parse HEAD:packages/core`), ngspice-47, Node v22.23.1, darwin/arm64, Apple M5 Pro.
 `pnpm build && pnpm exec tsx benchmarks/corpus/corpus-f/control-vectors.ts > control-receipt.json` regenerates this section and prints the full receipt. Add `--check` to rerun without changing files; `--jobs N` controls parallelism.
 
 Every reference comes only from `ngspice -b wrapper.cir`. In a fresh temporary directory, the wrapper first runs `alias quit echo ...` and `alias exit echo ...` (#528), so a deck whose control block calls `quit`/`exit` runs that block to completion exactly as written while ngspice stays alive for the export, then runs `source fixture.cir`, then `setplot <type>1` and `write <type>.raw all` for each declared analysis type. `fixture.cir` is a byte-identical copy, verified against the manifest. No rewritten decks or `-r` reference fallback.
@@ -469,7 +470,7 @@ Bucket “loss” includes numerical mismatches and typed-unsupported/failed spi
 | [examples/osdi/hicuml0/DFF_Y_ECL_VBIC.sp](fixtures/examples/osdi/hicuml0/DFF_Y_ECL_VBIC.sp) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/511 | Unsupported bounded VBIC DC model parameter: 'NF' |
 | [examples/osdi/hicuml0/vbic_out.sp](fixtures/examples/osdi/hicuml0/vbic_out.sp) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/511 | Unsupported bounded VBIC DC model parameter: 'NF' |
 | [examples/p-to-n-examples/logic.cir](fixtures/examples/p-to-n-examples/logic.cir) | no reference | both-failed | — | — | https://github.com/mfiumara/spice-ts/issues/694 | YYparse error, syntax error, in expression: parsing stopped at line 7 / Parse error at line 7: Unsupported behavioral expression operator '~' B1 1 0 V=~(~v(9)&v(8)) + 0.5 |
-| [examples/p-to-n-examples/MOS1_out.cir](fixtures/examples/p-to-n-examples/MOS1_out.cir) | match | matched | 0.00572 | dc i(vb) | — | — |
+| [examples/p-to-n-examples/MOS1_out.cir](fixtures/examples/p-to-n-examples/MOS1_out.cir) | match | matched | 0.00086 | dc i(vb) | — | — |
 | [examples/p-to-n-examples/switch-oscillators.cir](fixtures/examples/p-to-n-examples/switch-oscillators.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/494 | Parse error at line 14: Unsupported .options field: 'maxord' .option method=gear maxord=3 |
 | [examples/plot/inv-chain-pyplot.cir](fixtures/examples/plot/inv-chain-pyplot.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/488 | Parse error at line 24: Unsupported .control command 'pyplot': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, se |
 | [examples/probe/cntrl-sources.cir](fixtures/examples/probe/cntrl-sources.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/511 | CCCS 'F1' references unknown or branchless source 'vf' |
@@ -494,9 +495,9 @@ Bucket “loss” includes numerical mismatches and typed-unsupported/failed spi
 | [examples/tclspice/tcl-testbench2/example.cir](fixtures/examples/tclspice/tcl-testbench2/example.cir) | no reference | both-failed | — | — | https://github.com/mfiumara/spice-ts/issues/694 | Error: no such plot named tran1 / Device 'MNA0' uses unsupported model parameter 'NQSMOD': the BSIM3 non-quasi-static (NQS) charge model is not implemented; spice-ts would simulate the quasi-static model (NQSMOD=0) instead |
 | [examples/transient-noise/noi-sc-tr.cir](fixtures/examples/transient-noise/noi-sc-tr.cir) | no reference | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/488 | source/write wrapper exported no reference vectors: tran.raw (Invalid string length) could not be loaded as one string (e.g. larger than the Node string limit) / Parse error at line 41: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option,  |
 | [examples/transient-noise/noise_vnoi.cir](fixtures/examples/transient-noise/noise_vnoi.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/488 | Parse error at line 21: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option,  |
-| [examples/transient-noise/rts-1.cir](fixtures/examples/transient-noise/rts-1.cir) | loss | mismatch | 1.71 | tran v(9) | https://github.com/mfiumara/spice-ts/issues/511 | — |
+| [examples/transient-noise/rts-1.cir](fixtures/examples/transient-noise/rts-1.cir) | loss | mismatch | 1.7 | tran v(9) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/transient-noise/shot_ng.cir](fixtures/examples/transient-noise/shot_ng.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/495 | Parse error at line 3: Unsupported behavioral expression: branch current i(...) references BI 1 3 I=sqrt(2*abs(i(v1))*1.6e-19*1e7)*v(11) |
-| [examples/transient-noise/simple-noise.cir](fixtures/examples/transient-noise/simple-noise.cir) | loss | mismatch | 4.46 | tran v(3) | https://github.com/mfiumara/spice-ts/issues/511 | — |
+| [examples/transient-noise/simple-noise.cir](fixtures/examples/transient-noise/simple-noise.cir) | loss | mismatch | 6.68 | tran v(3) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/TransmissionLines/cpl_ibm1.sp](fixtures/examples/TransmissionLines/cpl_ibm1.sp) | loss | mismatch | 0.293 | tran v(x8.5) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/TransmissionLines/cpl_ibm1a.sp](fixtures/examples/TransmissionLines/cpl_ibm1a.sp) | loss | mismatch | 0.293 | tran v(x8.5) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/TransmissionLines/cpl_ibm2.sp](fixtures/examples/TransmissionLines/cpl_ibm2.sp) | match | matched | 0.00669 | tran v(v4) | — | — |
@@ -550,9 +551,9 @@ Bucket “loss” includes numerical mismatches and typed-unsupported/failed spi
 | [examples/vdmos/mtriode_nch.sp](fixtures/examples/vdmos/mtriode_nch.sp) | loss | mismatch | 0.184 | dc i(vd) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/vdmos/ro_11_vdmos.sp](fixtures/examples/vdmos/ro_11_vdmos.sp) | match | matched | 0.00694 | tran i(vdd) | — | — |
 | [examples/vdmos/self-heating.sp](fixtures/examples/vdmos/self-heating.sp) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/511 | MOSFET 'M1' references unknown model 'tc' |
-| [examples/vdmos/soa_chk.sp](fixtures/examples/vdmos/soa_chk.sp) | loss | mismatch | 25000000000000 | dc v(g2) | https://github.com/mfiumara/spice-ts/issues/511 | — |
+| [examples/vdmos/soa_chk.sp](fixtures/examples/vdmos/soa_chk.sp) | loss | mismatch | 25200000000 | dc i(vd2) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/vdmos/theta_nch.sp](fixtures/examples/vdmos/theta_nch.sp) | loss | mismatch | 0.359 | dc i(vd) | https://github.com/mfiumara/spice-ts/issues/511 | — |
-| [examples/vdmos/VDMOS-DIO.sp](fixtures/examples/vdmos/VDMOS-DIO.sp) | loss | mismatch | 29400000000 | ac v(kd) | https://github.com/mfiumara/spice-ts/issues/511 | — |
+| [examples/vdmos/VDMOS-DIO.sp](fixtures/examples/vdmos/VDMOS-DIO.sp) | loss | mismatch | 294 | ac v(kd) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/vdmos/vdmos-out_ir_mtr.sp](fixtures/examples/vdmos/vdmos-out_ir_mtr.sp) | match | matched | 0.0000834 | dc i(vs) | — | — |
 | [examples/vdmos/vdmos-out.sp](fixtures/examples/vdmos/vdmos-out.sp) | loss | mismatch | 0.873 | dc i(vs) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/vdmos/vdmosp-out-mtr.sp](fixtures/examples/vdmos/vdmosp-out-mtr.sp) | loss | mismatch | 1 | dc v(g) | https://github.com/mfiumara/spice-ts/issues/511 | — |
@@ -622,7 +623,7 @@ Bucket “loss” includes numerical mismatches and typed-unsupported/failed spi
 | [tests/regression/sens/sens-dc-2.cir](fixtures/tests/regression/sens/sens-dc-2.cir) | no reference | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/489 | source/write wrapper exported no reference vectors: the deck runs only sens analyses, which the comparison adapter does not map to a scored analysis type / Parse error at line 26: Unsupported .control command 'sens': control-language sensitivity analysis is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/des |
 | [tests/regression/subckt-processing/global-1.cir](fixtures/tests/regression/subckt-processing/global-1.cir) | match | matched | 2.22e-16 | op v(n1003_t) | — | — |
 | [tests/regression/subckt-processing/model-scope-5.cir](fixtures/tests/regression/subckt-processing/model-scope-5.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/511 | Undefined subcircuit 'sub3' |
-| [tests/regression/temper/temper-1.cir](fixtures/tests/regression/temper/temper-1.cir) | match | matched | 0.00000268 | op v(1) | — | — |
+| [tests/regression/temper/temper-1.cir](fixtures/tests/regression/temper/temper-1.cir) | match | matched | 2.68e-14 | op v(1) | — | — |
 | [tests/regression/temper/temper-2.cir](fixtures/tests/regression/temper/temper-2.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/511 | DC sweep source 'temp' not found |
 | [tests/regression/temper/temper-3.cir](fixtures/tests/regression/temper/temper-3.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/511 | DC sweep source 'temp' not found |
 | [tests/regression/temper/temper-res-1.cir](fixtures/tests/regression/temper/temper-res-1.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/511 | DC sweep source 'temp' not found |

@@ -1,0 +1,31 @@
+Simplified Single Channel Circuit
+* This circuit was designed from scratch by Ting Mei to produce oscillations
+* like the Single Channel circuit.  She did considerable research into these
+* types of oscillators and how you construct them.  08/29/05
+* 
+* IC = v(1)=6.2744 v(2)=0.63065 v(3)=0.11904 I(L1)=4.9899e-4 I(L2)=0
+*
+* To make the overshooting higher in frequency, make Cp smaller
+* To damp out the overshooting make RL1 smaller
+*
+
+.PARAM M=4.7e-3 L1val=11.25e-3 L2val=3.0e-3 k={M/sqrt(L1val*L2val)} Cp=1e-10
+.PRINT TRAN V(1) V(2) V(3) I(L1) I(L2)
+*.OPTIONS TIMEINT RELTOL=1e-9 ABSTOL=1e-9
+.OPTIONS TIMEINT RELTOL=1e-2 ABSTOL=1e-4
+.TRAN 1e-8 3e-4
+
+V1 N_V 0 12V
+RL1 N_V 1 10k
+L1 N_V 1 11.25e-3
+L2 3   0 3.0e-3
+C1 3   2 1e-7
+Q1 1 2 0 NPN
+.model NPN NPN( Is=1e-12 bf=100 )
+R1 N_V 2 10k
+R2 2   0 1k
+K1 L1 L2 8.090231878744383e-01
+Cp1 1 0 {Cp}
+Cp2 2 0 {Cp}
+
+.end

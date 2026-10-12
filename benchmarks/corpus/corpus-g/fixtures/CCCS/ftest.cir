@@ -1,0 +1,16 @@
+Test of current-controlled current source.
+
+* independent current source:
+IPULSE 0 1 PULSE(1A 5A 1S 0.1S 0.4S 0.5S 2S)
+R 2 0 500
+VMON 1 2 0
+.TRAN .1S 7S
+
+* current-controlled current source:
+FI2 0 1a VMON 1
+Ra 2a 0 500
+VMONa 1a 2a 0V
+
+* the 2 vmon's should match.
+.print tran i(vmon) i(vmona)
+

@@ -1,0 +1,20 @@
+Current Single Frequency FM Source (CSFFM) Circuit
+******************************************************************************
+* Tier No.:	1                                           
+* Description:	Test of the Xyce model for an independent current source.
+*	The current source is described as:
+*	A single frequency frequency modulation signal that has no initial
+*	current and a peak amplitude of 5A.  It has a carrier frequency of 
+*	10KHz.  For the 1ms transient analysis, 10 cycles of the carrier will be
+*	outputed. The carrier is modulated at a rate determined by the single
+*	frequency (1KHz) and the modulation index (3).  
+* Input/Output:	ISFFM; a common simulation data output (.csd) file can be
+*	generated for viewing the signal.
+****************************************************************************** 
+ISSFM 0 1 SFFM(0 5 10KHZ 3 1KHZ)
+R1 2 0 1
+VMON 1 2 0
+.TRAN 5US 1MS 0 5US
+.PRINT TRAN I(VMON) 
+*COMP I(VMON) reltol=0.02 abstol=1e-4
+.END

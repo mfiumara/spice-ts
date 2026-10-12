@@ -1,0 +1,38 @@
+Test of BJT "OFF" parametter
+*
+* This netlist will fail to get a DCOP in normal newton solves without
+* the OFF parameter on the BJT.
+* The regression test passes if the circuit runs.  No comparison with gold
+* standard is necessary.  We are ONLY testing that the circuit runs with
+* the "OFF" parameter.
+*
+* The netlist is derived from the one attached to bug 693's bugzilla report.
+*
+
+VB  1  0  0
+RB  3  1  50
+VC  4  0  -15
+* Work around to using the 15V DC source
+* VC 4 0 PULSE(0 -15 1ns 1ns 1ns 2us 60us)
+RC  6  4  1000
+VIC 6  7  0V
+CC  6  0  1u
+RE  5  0  1E12
+Q1  7  3  5  BFT92  IC=1,0
+.MODEL BFT92 PNP( level=1
++ IS = 6.613407E-16   BF = 52.63418      NF = 1.016342   VAF = 34.83 
++ IKF = 0.06801       ISE = 1.51008E-14  NE = 1.486583   BR = 3.979 
++ NR = 1.013835       VAR = 3.471        IKR = 0.008964  ISC = 3.250873E-14 
++ NC = 1.389357       RB = 86.06         IRB = 2.35E-05  RBM = 0.5585 
++ RE = 0.5113         RC = 14.21         EG = 1.083852   XTI = 3 
++ XTB = 1.386756      CJE = 8.741E-13    MJE = 0.4372    VJE = 1.229 
++ CJC = 1.021E-12     MJC = 0.1561       VJC = 0.3571    FC = 0.5 
++ TF = 3.965E-11      XTF = 10.35        VTF = 0.65      ITF = 0.07584 
++ PTF = 100.8         XCJC = 1           TR = 2.891E-08 
++ TNOM=27)
+
+.DC VB 1.0 10.0 1.0
+.PRINT DC  I(VB) I(VIC) 
+
+
+.END
