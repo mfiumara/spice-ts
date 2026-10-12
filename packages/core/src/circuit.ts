@@ -1996,6 +1996,7 @@ export class Circuit {
     const ltraStates = new Map<string, LtraModelState>();
     // BSIM3 instances per ngspice model, in netlist order (b3v32temp.c pParam reuse, #700).
     const bsim3ModelInstances = new Map<string, BSIM3v3[]>();
+    const pendingCouplings: DeviceDescriptor[] = [];
 
     for (const desc of expandedDescriptors) {
       guard?.checkpoint('compile:device');
@@ -2054,9 +2055,10 @@ export class Circuit {
           const indA = deviceMap.get(desc.coupledA!);
           const indB = deviceMap.get(desc.coupledB!);
           if (!(indA instanceof Inductor) || !(indB instanceof Inductor)) {
-            throw new Error(
-              `K-element '${desc.name}' references unknown or non-inductor device(s): ${desc.coupledA}, ${desc.coupledB}`,
-            );
+            // ngspice binds K after every instance exists (MUTsetup), so the
+            // inductors may follow the K card; resolve those after the loop.
+            pendingCouplings.push(desc);
+            break;
           }
           devices.push(new MutualInductor(desc.name, indA, indB, desc.value!));
           break;
@@ -2341,6 +2343,18 @@ export class Circuit {
       if (devices.length > prevLength) {
         deviceMap.set(desc.name, devices[devices.length - 1]);
       }
+    }
+
+    for (const desc of pendingCouplings) {
+      const indA = deviceMap.get(desc.coupledA!);
+      const indB = deviceMap.get(desc.coupledB!);
+      if (!(indA instanceof Inductor) || !(indB instanceof Inductor)) {
+        throw new Error(
+          `K-element '${desc.name}' references unknown or non-inductor device(s): ${desc.coupledA}, ${desc.coupledB}`,
+        );
+      }
+      devices.push(new MutualInductor(desc.name, indA, indB, desc.value!));
+      deviceMap.set(desc.name, devices[devices.length - 1]);
     }
 
     bindXspiceSources(devices, deviceMap);
@@ -3312,6 +3326,20 @@ export class Circuit {
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             controlSource: `${instanceName}.${tokens[3]}`,
             value: parseNumber(valStr),
+          });
+          break;
+        }
+        case 'K': {
+          // ngspice prefixes the coupled inductor names with the instance path,
+          // so a K card only reaches inductors of its own instance (#739).
+          if (tokens.length < 4) {
+            throw new ParseError(`K-element '${tokens[0]}' needs two inductors and a coupling`, lineNumber, raw);
+          }
+          result.push({
+            type: 'K', name: devName, nodes: [],
+            value: parseNumber(evalToken(tokens[3])),
+            coupledA: `${instanceName}.${tokens[1]}`,
+            coupledB: `${instanceName}.${tokens[2]}`,
           });
           break;
         }
