@@ -1,4 +1,5 @@
-import { parseNumber } from './tokenizer.js';
+import type { SubcktDefinition } from '../types.js';
+import { parseNumber, type ParsedLine } from './tokenizer.js';
 
 /**
  * ngspice's `params:` keyword, which may separate the ports from the
@@ -109,4 +110,47 @@ export function locateSubcircuitCall(tokens: readonly string[]): SubcircuitCall 
   while (index > 1 && tokens[index].includes('=')) index--;
   if (index > 1 && PARAMS_KEYWORD.test(tokens[index])) return { nameIndex: index - 1, paramStart: index + 1 };
   return { nameIndex: index, paramStart: index + 1 };
+}
+
+/** A subcircuit body with its directly nested `.subckt` blocks split out. */
+export interface SubcircuitBodyScope {
+  /** Body lines of the enclosing definition, nested definitions removed. */
+  lines: ParsedLine[];
+  /** Directly nested definitions, keyed by upper-case name. */
+  definitions: Map<string, SubcktDefinition>;
+}
+
+/**
+ * Split the `.subckt ... .ends` blocks nested directly in a subcircuit body
+ * out of it. ngspice-47 (subckt.c) scopes such a definition to the enclosing
+ * subcircuit: X cards of that body (and of definitions nested deeper) see it,
+ * ahead of a top-level definition of the same name, while its own lines are
+ * never instantiated as devices of the enclosing body. Deeper levels stay in
+ * the nested definition's body and are split when it is expanded.
+ */
+export function splitNestedSubcircuits(lines: readonly ParsedLine[]): SubcircuitBodyScope {
+  const body: ParsedLine[] = [];
+  const definitions = new Map<string, SubcktDefinition>();
+  let nested: SubcktDefinition | null = null;
+  let depth = 0;
+  for (const line of lines) {
+    const first = line.tokens[0]?.toUpperCase();
+    if (nested === null) {
+      if (first === '.SUBCKT') nested = { ...parseSubcircuitHeader(line.raw), body: [] };
+      else body.push(line);
+      continue;
+    }
+    if (first === '.ENDS' && depth === 0) {
+      definitions.set(nested.name.toUpperCase(), nested);
+      nested = null;
+      continue;
+    }
+    if (first === '.SUBCKT') depth++;
+    else if (first === '.ENDS') depth--;
+    nested.body.push(line.raw);
+  }
+  if (nested !== null) {
+    throw new Error(`Missing .ends for subcircuit '${nested.name}'`);
+  }
+  return { lines: body, definitions };
 }
