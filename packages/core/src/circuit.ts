@@ -63,7 +63,8 @@ import { assertControlledSourceCard, withoutNodePairParentheses } from './parser
 import type { ControlScript } from './parser/control/script.js';
 import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
-import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
+import { parseNumber, tokenizeLine, tokenizeNetlist } from './parser/tokenizer.js';
+import { isPspiceVswitchModel, translatePspiceVswitchModel } from './parser/pspice-switch.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
 import {
@@ -2091,11 +2092,20 @@ export class Circuit {
     // XSPICE A instances: their nodes follow from the code model's port table.
     const xspiceInstances = new Map<DeviceDescriptor, PreparedXspiceInstance>();
     for (const desc of expandedDescriptors) {
+      if (desc.type === 'S') {
+        // A PSpice VSWITCH switch: ngspice-47 inpcompat.c rewrites the S card
+        // into `a<name> %gd(nc+ nc-) %gd(n+ n-) a<model>`, a pswitch instance.
+        const switchModel = this._xspiceModels.get(desc.modelName!.toUpperCase());
+        if (!switchModel?.pspiceVswitch) continue;
+        xspiceInstances.set(desc, prepareXspiceInstance(pspiceSwitchInstance(desc), switchModel, false, GROUND_NODE));
+        continue;
+      }
       if (desc.type !== 'A') continue;
+      const model = this._xspiceModels.get(desc.modelName!.toUpperCase());
       const prepared = prepareXspiceInstance(
         desc.xspice!,
-        this._xspiceModels.get(desc.modelName!.toUpperCase()),
-        this._models.has(desc.modelName!),
+        model?.pspiceVswitch ? undefined : model,
+        this._models.has(desc.modelName!) || model?.pspiceVswitch === true,
         GROUND_NODE,
       );
       desc.nodes = [...prepared.nodes];
@@ -2512,6 +2522,13 @@ export class Circuit {
         }
         case 'S':
         case 'W': {
+          const pswitch = xspiceInstances.get(desc);
+          if (pswitch) {
+            devices.push(createXspiceDevice(pswitch, resolveNode, () => {
+              throw new Error(`pswitch '${desc.name}' has no branch`);
+            })!);
+            break;
+          }
           const type = desc.type === 'S' ? 'SW' : 'CSW';
           const model = this.requireModel(desc.type === 'S' ? 'Switch' : 'Current switch', desc);
           const { model: switchModel, warnings } = resolveSwitchModel(
@@ -3354,8 +3371,17 @@ export class Circuit {
 
       // Handle .model inside subcircuit — register locally AND globally
       if (first === '.MODEL') {
-        const modelParams = parseTransmissionLineModelCard(tokens, 0)
-          ?? parseModelCard(tokens, 0, message => this.addParseWarning(message));
+        let modelTokens = tokens;
+        if (isPspiceVswitchModel(tokens)) {
+          const translated = translatePspiceVswitchModel(raw, lineNumber);
+          if (translated.kind === 'pswitch') {
+            this._xspiceModels.set(translated.card.name.toUpperCase(), translated.card);
+            continue;
+          }
+          modelTokens = tokenizeLine(translated.raw);
+        }
+        const modelParams = parseTransmissionLineModelCard(modelTokens, 0)
+          ?? parseModelCard(modelTokens, 0, message => this.addParseWarning(message));
         // Register in the circuit's global model map so compile() can find it
         this.registerModel(modelParams);
         this._subcircuitModelNames.add(modelParams.name.toUpperCase());
@@ -3687,4 +3713,24 @@ export class Circuit {
 
     return result;
   }
+}
+
+/**
+ * The A card ngspice-47 inpcompat.c writes for an S instance of a PSpice
+ * VSWITCH model: `a<name> %gd(nc+ nc-) %gd(n+ n-) a<model>` (the instance
+ * keeps its S name here).
+ */
+function pspiceSwitchInstance(desc: DeviceDescriptor): XspiceInstanceCard {
+  const [nodePos, nodeNeg, ctrlPos, ctrlNeg] = desc.nodes;
+  const port = (positive: string, negative: string) => [
+    { kind: 'percent', text: '%' }, { kind: 'string', text: 'gd' },
+    { kind: 'string', text: positive }, { kind: 'string', text: negative },
+  ] as const;
+  return {
+    name: desc.name,
+    connectionTokens: [...port(ctrlPos, ctrlNeg), ...port(nodePos, nodeNeg)],
+    modelName: desc.modelName!,
+    raw: `a${desc.name} %gd(${ctrlPos} ${ctrlNeg}) %gd(${nodePos} ${nodeNeg}) a${desc.modelName}`,
+    line: 0,
+  };
 }

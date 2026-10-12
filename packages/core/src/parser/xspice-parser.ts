@@ -38,6 +38,11 @@ export interface XspiceModelCard {
   /** ngspice-47 MIF warnings: unrecognized parameters (ignored) and clamped limits. */
   readonly warnings: readonly string[];
   readonly raw: string;
+  /**
+   * Translated from a PSpice `VSWITCH` model (ngspice-47 inpcompat.c): only
+   * S instances use it, each compiled to a pswitch device.
+   */
+  readonly pspiceVswitch?: boolean;
 }
 
 /**
