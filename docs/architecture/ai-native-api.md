@@ -356,26 +356,34 @@ Within an analysis/step pair, `pointIndex` starts at zero and is contiguous. The
 
 The protocol accepts an `AbortSignal` in direct TypeScript adapters; core checks it before parse/compile, between analyses, between Newton iterations, and at each accepted/rejected streamed point. MCP cancellation terminates a dedicated worker if cooperative cancellation does not finish within one second. A killed worker yields `CANCELLED`, not `INTERNAL_ERROR`.
 
-Server defaults are conservative and are returned by `spice_capabilities`:
+Server defaults are conservative. The `@spice-ts/mcp` server enforces exactly the following defaults and returns them, under the same keys, from `spice_capabilities` (`limits.*` and `streaming.*`). A server embedder may configure them (`createToolExecutor({ limits, streamLimits })`); `spice_capabilities` then reports the configured values. This table is the contract: `packages/mcp/src/server.test.ts` parses it and fails if it drifts from the server.
 
-| Limit | Default | Hard maximum |
-|---|---:|---:|
-| source plus virtual files | 1 MiB | 8 MiB |
-| virtual files | 64 | 256 |
-| include depth | 16 | 32 |
-| components after expansion | 25,000 | 100,000 |
-| subcircuit expansion depth | 32 | 64 |
-| analyses per request | 8 | 16 |
-| result points | 100,000 | 1,000,000 |
-| synchronous result points | 10,000 | 50,000 |
-| serialized result | 16 MiB | 64 MiB |
-| synchronous wall time | 30 s | 60 s |
-| job wall time | 5 min | 15 min |
-| retained unread job data | 32 MiB | 128 MiB |
-| concurrent jobs per server | 2 | server configuration |
-| completed-job TTL | 5 min | 30 min |
+| Capability key | Default | Meaning |
+|---|---:|---|
+| `limits.maxDocumentBytes` | 262,144 | UTF-8 bytes of the request `input` (source plus virtual files), 256 KiB |
+| `limits.maxAnalyses` | 8 | analyses per request |
+| `limits.maxResultPoints` | 100,000 | result points, one-shot and streamed |
+| `limits.maxSerializedResultBytes` | 4,194,304 | serialized `SimulationResultV1`, 4 MiB |
+| `limits.maxWallTimeMs` | 10,000 | solve wall time of one call or job, including time a stream job is paused under backpressure |
+| `streaming.defaultChunkPoints` | 256 | points per `spice_simulation_read` when `maxPoints` is omitted |
+| `streaming.maxChunkPoints` | 1,024 | largest accepted `maxPoints` |
+| `streaming.maxRetainedJobs` | 16 | jobs retained per server, running or terminal; the oldest terminal job is evicted first |
+| `streaming.maxConcurrentJobs` | 2 | jobs solving at once per server: live stream jobs plus in-flight `spice_simulate` calls |
+| `streaming.runningJobTtlMs` | 30,000 | a stream job not terminal by then is cancelled with `RESOURCE_LIMIT` |
+| `streaming.terminalJobTtlMs` | 300,000 | completed, failed, cancelled, or expired jobs stay replayable for 5 min, then are deleted |
+| `streaming.maxUnreadEvents` | 256 | unread events retained per job |
+| `streaming.maxUnreadBytes` | 1,048,576 | unread event bytes retained per job (compact `JSON.stringify`), 1 MiB |
 
-Callers may lower limits but not raise them above server policy. Estimates do not replace runtime enforcement. Limit failures identify `limit`, `configured`, and `observed` in `details`. Jobs apply backpressure: when retained unread data reaches the cap, solving pauses; if the client does not read before TTL, the job is cancelled. Completed and abandoned jobs are deleted after TTL. Workers have no network access or ambient filesystem access and receive only validated input bytes.
+Why these values ([#792](https://github.com/mfiumara/spice-ts/issues/792) reconciled an earlier draft of this table with the server):
+
+- Concurrency is 2. It is the only cap on how many isolated workers solve at once, so it bounds CPU and memory on a shared host. `spice_simulation_start` or `spice_simulate` beyond it fails before any worker starts with `RESOURCE_LIMIT`, `phase: "transport"`, `retryable: true`, and `details` `{ limit: "maxConcurrentJobs", configured, observed, maximum, actual }`, where `configured`/`maximum` is the cap and `observed`/`actual` the running count the call would have made. A slot frees when the job turns terminal (completion, failure, cancellation, or running-TTL expiry), whether or not its data has been read. `spice_validate` does not take a slot.
+- The completed-job TTL is 5 min, not the earlier 60 s. An agent may spend more than a minute between starting a job and reading its terminal, and a terminal job holds memory (bounded by `maxRetainedJobs` and `maxSerializedResultBytes`, with oldest-terminal eviction) but no worker or concurrency slot.
+- The running TTL stays 30 s instead of a 5 min job wall time. `maxWallTimeMs` (10 s) already ends the solve, backpressure pauses included, so a longer running TTL would only keep a hung job's concurrency slot occupied for longer.
+- Unread retention stays 256 events / 1 MiB per job instead of 32 MiB. A live worker offers one two-point batch at a time and waits for it to be read, so a small buffer does not slow streaming, and 16 retained jobs then pin at most 16 MiB of unread data. Known gap: requests that are not streamed live (OP/DC analyses or `spice-ts` JSON input) are chunked from the finished result, which is retained in one batch and so fails `maxUnreadEvents` once it exceeds 256 events (for example a single DC sweep of more than 254 points); tracked in [#794](https://github.com/mfiumara/spice-ts/issues/794).
+
+Design targets not yet enforced by the MCP server, and so not reported by `spice_capabilities`: virtual files 64 (hard 256), include depth 16 (32), components after expansion 25,000 (100,000), subcircuit expansion depth 32 (64), synchronous result points 10,000 (50,000), and hard maxima above server policy.
+
+Callers may lower limits but not raise them above server policy. Estimates do not replace runtime enforcement. MCP-layer limit failures identify `limit`, `maximum` (the configured cap), and `actual` (the observed or attempted value) in `details`; core protocol-adapter failures use `limit`, `configured`, and `observed`; the concurrent-job failure carries both pairs. Jobs apply backpressure: a live producer pauses until its retained unread batch is read; a batch that would exceed the unread caps fails the job with `RESOURCE_LIMIT`, and a job not terminal within the running TTL is cancelled. Completed and abandoned jobs are deleted after the terminal TTL. Workers have no network access or ambient filesystem access and receive only validated input bytes.
 
 ## 9. WASM path
 
