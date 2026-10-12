@@ -159,8 +159,8 @@
       ]
     },
     "comparedSignals": 8,
-    "worstNormalizedError": 3.47e-13,
-    "worstSignal": "tran v(17)",
+    "worstNormalizedError": 1.06e-13,
+    "worstSignal": "tran v(13)",
     "outcome": "matched"
   },
   {
@@ -329,7 +329,7 @@
     "spiceTs": {
       "status": "success",
       "analyses": [
-        "tran:829"
+        "tran:830"
       ]
     },
     "comparedSignals": 7,
@@ -373,7 +373,7 @@
     },
     "comparedSignals": 9,
     "worstNormalizedError": 0.0123,
-    "worstSignal": "tran v(1)",
+    "worstSignal": "tran v(10)",
     "outcome": "mismatch"
   },
   {

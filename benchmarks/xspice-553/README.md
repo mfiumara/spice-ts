@@ -211,15 +211,21 @@ stopped at an unsupported code model or card).
 
 | Fixture | ngspice | before | after | Worst (signal) |
 |---|---|---|---|---|
-| `digital_invert.deck` | tran:218 | unsupported | **matched** (tran:218) | 3.5e-13 (v(17)) |
+| `digital_invert.deck` | tran:218 | unsupported | **matched** (tran:218) | 1.1e-13 (v(13)) |
 | `digital_models1.deck` | tran:510 | unsupported | **matched** (tran:510) | 0 |
 | **LOSS** `digital_models.deck` | tran:71 | unsupported | **mismatch** | 1.0 (i(v1)) |
-| **LOSS** `mixed_ref.deck` | tran:108 | unsupported | **mismatch** | 0.0123 (v(1)) |
+| **LOSS** `mixed_ref.deck` | tran:108 | unsupported | **mismatch** | 0.0123 (v(10)) |
 | **LOSS** `mixed_io_size.deck` | tran:208 | unsupported | **mismatch** | 0.208 (v(4)) |
 | 20 others | | unsupported | unsupported (now at d_dff, d_dlatch, d_ram, d_osc, d_tristate, d_lut, d_pwm, d_to_real, UGATE, subcircuit A-cards, string .param) or both-failed | — |
 
 Totals over the 25 decks: matched 0 -> 2, mismatch 0 -> 3, unsupported
 22 -> 17, both-failed 3 -> 3.
+
+Rerun after merging `origin/main` e94a7deb (#708 integrates CKTdelta, #763
+folds name case): same outcomes on all 25 decks. `digital_invert` worst moved
+from 3.5e-13 (v(17)) to 1.1e-13 (v(13)), `mixed_io_size` takes 830 points
+instead of 829 with the same 0.208, and `mixed_ref` keeps 0.0123 with v(10) now
+reported as the worst signal instead of v(1).
 
 - **Loss, `digital_models`.** Not a digital error: the deck drives the adc
   with `pulse(0 1 2e-8 1e-9 1e-9)`. ngspice-47 vsrcload.c sets PW = 0 when
@@ -230,7 +236,7 @@ Totals over the 25 decks: matched 0 -> 2, mismatch 0 -> 3, unsupported
   analog `gain` instances take node-voltage truncation that ngspice MIFtrunc
   does not apply. The digital nodes themselves match.
 - **Loss, `mixed_io_size`.** The `summer` instance shares that analog
-  truncation gap, so spice-ts takes 829 points against 208. The adc_bridge
+  truncation gap, so spice-ts takes 830 points against 208. The adc_bridge
   samples its input at accepted analog points, so the different steps move
   the enable edge (1.0104e-4 s against ngspice's 1.03e-4 s) and every later
   clock edge; the dac ramps then differ by up to 0.2 V. With node truncation
