@@ -97,6 +97,62 @@ describe('initial-state semantics', () => {
     expect(step.voltages.get('1')!).toBeCloseTo(Math.exp(-step.time / 1e-3), 6);
   });
 
+  // #588: ngspice-47 cktload.c ZeroNoncurRow zeroes the voltage columns of a
+  // held row and overwrites its RHS. Without a branch-current column the row
+  // becomes `v = ic` exactly, so the node's own conductances (here the 1 uOhm
+  // R1 to the 1 V source) no longer pull it off the .ic value.
+  it('pins a source-free .ic node exactly in the transient operating point like ngspice ZeroNoncurRow (#588)', async () => {
+    const result = await simulate(`
+      V1 a 0 1
+      R1 a b 1u
+      C1 b 0 1u
+      R2 b 0 1k
+      .ic v(b)=0
+      .tran 1n 100n
+    `);
+
+    const transient = result.transient!;
+    expect(transient.time[0]).toBe(0);
+    // ngspice-47: v(b) = 0 and i(v1) = -1e6 A at t=0.
+    expect(transient.voltage('b')[0]).toBe(0);
+    expect(transient.voltage('a')[0]).toBeCloseTo(1, 12);
+    expect(transient.current('V1')[0] / -1e6).toBeCloseTo(1, 9);
+  });
+
+  it('keeps the branch-current column of a held .ic row and replaces its node conductances (#588)', async () => {
+    // Row `out` has the V1 branch column: ngspice-47 keeps it, zeroes the R1
+    // conductance, adds 1e10 to the diagonal and sets the RHS to 1e10*ic, so
+    // i(v1) = 1e10*(3 - 1) exactly with no R1 contribution.
+    const result = await simulate(`
+      V1 out 0 DC 1
+      R1 out 0 1
+      .ic V(out)=3
+      .tran 1u 2u
+    `);
+
+    const current = result.transient!.current('V1');
+    expect(result.transient!.voltage('out')[0]).toBeCloseTo(1, 12);
+    // Keeping R1's 1 S would give 2e10 - 1 A.
+    expect(Math.abs(current[0] - 2e10)).toBeLessThan(1e-2);
+  });
+
+  it('pins a nonlinear .ic node exactly through source ramping (#588)', async () => {
+    const result = await simulate(`
+      V1 a 0 1
+      R1 a b 1k
+      D1 b 0 dm
+      C1 b 0 1n
+      .model dm d is=1e-14
+      .ic v(b)=0.2
+      .tran 1n 10n
+    `);
+
+    // ngspice-47: v(b) = 0.2 V and i(v1) = -0.8 mA at t=0 (the diode
+    // current at 0.2 V no longer pulls the held node).
+    expect(result.transient!.voltage('b')[0]).toBe(0.2);
+    expect(result.transient!.current('V1')[0]).toBeCloseTo(-8e-4, 15);
+  });
+
   it('does not hold .ic nodes in a .op operating point', async () => {
     const result = await simulate(`
       V1 2 0 1

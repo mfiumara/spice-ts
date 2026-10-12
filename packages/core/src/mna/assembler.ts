@@ -20,6 +20,29 @@ export interface MNAAssemblerOptions {
   useDcSourceValue?: boolean;
 }
 
+/**
+ * ngspice-47 cktload.c conductance (and RHS factor) that pins a held node row
+ * that also carries a branch-current column.
+ */
+export const NODE_HOLD_CONDUCTANCE = 1e10;
+
+/** A node row forced to a voltage after every device load (see {@link MNAAssembler.applyNodeHolds}). */
+export interface NodeHold {
+  /** MNA node index (never ground). */
+  readonly node: number;
+  /** Held voltage before source scaling. */
+  readonly value: number;
+}
+
+/** Value slots of one held row in the locked topology. */
+interface HeldRowSlots {
+  /** Slots of the row's node-voltage columns (diagonal included). */
+  readonly voltage: Int32Array;
+  /** The row has a structural branch-current column. */
+  readonly hasCurrent: boolean;
+  readonly diagonal: number;
+}
+
 /** Remembered (row, col) -> value-slot sequence of one stamp pass kind. */
 interface StampTrace {
   rows: Int32Array;
@@ -49,6 +72,12 @@ export class MNAAssembler {
   public sourceScale = 1;
   /** Device junction gmin (ngspice CKTgmin) handed to devices through the stamp context. */
   public deviceGmin = DEVICE_GMIN;
+  /**
+   * Node rows the Newton loop forces after every device load: the `.ic`
+   * holds of the transient operating point (ngspice MODETRANOP without UIC).
+   */
+  public nodeHolds: readonly NodeHold[] = [];
+  private _heldRowSlots: Map<number, HeldRowSlots> | null = null;
 
   // Fast-path typed-array stamping infrastructure
   private _fastPath = false;
@@ -259,6 +288,7 @@ export class MNAAssembler {
     this._traces = [];
     this._trace = null;
     this._traceCursor = 0;
+    this._heldRowSlots = null;
     // Bound each pass cache: a caller that keeps stamping through one context
     // without starting a new pass must not grow it without limit.
     this._traceLimit = 16 * nnz + 4096;
@@ -298,6 +328,7 @@ export class MNAAssembler {
     this._traces = [];
     this._trace = null;
     this._solver = null;
+    this._heldRowSlots = null;
     this.G.clear();
     this.C.clear();
     this.b.fill(0);
@@ -417,6 +448,81 @@ export class MNAAssembler {
       trace.length = k + 1;
     }
     return slot;
+  }
+
+  /**
+   * Force every {@link nodeHolds} row after the device load, as ngspice-47
+   * cktload.c does for `.ic` in MODETRANOP without MODEUIC. `ZeroNoncurRow`
+   * zeroes every node-voltage column of the row and reports whether the row
+   * has a branch-current column; then
+   * - with a current column: diag += 1e10 and rhs = 1e10 * ic * srcFact;
+   * - without: diag = 1 and rhs = ic * srcFact, pinning v = ic exactly.
+   * The node's own KCL conductances and currents are discarded either way.
+   * Call before the diagonal gmin, which ngspice adds at factorisation.
+   */
+  applyNodeHolds(): void {
+    if (this.nodeHolds.length === 0) return;
+    const scale = this.sourceScale;
+    if (this._fastPath) {
+      const values = this._gValues!;
+      for (const hold of this.nodeHolds) {
+        const row = this.heldRowSlots(hold.node);
+        for (let k = 0; k < row.voltage.length; k++) values[row.voltage[k]] = 0;
+        if (row.hasCurrent) {
+          values[row.diagonal] += NODE_HOLD_CONDUCTANCE;
+          this.b[hold.node] = NODE_HOLD_CONDUCTANCE * hold.value * scale;
+        } else {
+          values[row.diagonal] = 1;
+          this.b[hold.node] = hold.value * scale;
+        }
+      }
+      return;
+    }
+    for (const hold of this.nodeHolds) {
+      const node = hold.node;
+      let hasCurrent = false;
+      // Zero the stored row map in place so the positions stay structural.
+      const rowMap = this.G.getRow(node);
+      for (const col of rowMap.keys()) {
+        if (col >= this.numNodes) hasCurrent = true;
+        else rowMap.set(col, 0);
+      }
+      for (const col of this.C.getRow(node).keys()) {
+        if (col >= this.numNodes) hasCurrent = true;
+      }
+      if (hasCurrent) {
+        this.G.touch(node, node);
+        this.G.add(node, node, NODE_HOLD_CONDUCTANCE);
+        this.b[node] = NODE_HOLD_CONDUCTANCE * hold.value * scale;
+      } else {
+        this.G.set(node, node, 1);
+        this.b[node] = hold.value * scale;
+      }
+    }
+  }
+
+  /** Locked-topology value slots of held row `node`, resolved once per topology. */
+  private heldRowSlots(node: number): HeldRowSlots {
+    this._heldRowSlots ??= new Map();
+    const cached = this._heldRowSlots.get(node);
+    if (cached) return cached;
+    const colPtr = this._colPtr!;
+    const rowIdx = this._rowIdx!;
+    const voltage: number[] = [];
+    let hasCurrent = false;
+    for (let col = 0; col < this.systemSize; col++) {
+      for (let position = colPtr[col]; position < colPtr[col + 1]; position++) {
+        if (rowIdx[position] !== node) continue;
+        if (col >= this.numNodes) hasCurrent = true;
+        else voltage.push(position);
+        break;
+      }
+    }
+    const diagonal = this._diagIdx![node];
+    if (diagonal < 0) throw new Error(`Held node row ${node} has no diagonal in the locked topology`);
+    const slots: HeldRowSlots = { voltage: Int32Array.from(voltage), hasCurrent, diagonal };
+    this._heldRowSlots.set(node, slots);
+    return slots;
   }
 
   clear(): void {
