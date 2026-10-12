@@ -252,8 +252,10 @@ describe('.noise analysis', () => {
   });
 
   it.each([
-    ['unsupported model level', 'LEVEL=3', /unsupported model LEVEL=3/i],
+    ['unsupported model level', 'LEVEL=7', /unsupported model LEVEL=7/i],
     ['MOS2 noise (mos2noi.c not ported)', 'LEVEL=2', /does not support MOSFET level 2 noise/i],
+    ['MOS3 noise (mos3noi.c not ported)', 'LEVEL=3', /does not support MOSFET level 3 noise/i],
+    ['MOS9 noise (mos9noi.c not ported)', 'LEVEL=9', /does not support MOSFET level 9 noise/i],
     ['unsupported noisy parasitic resistance', 'LEVEL=1 RD=10', /does not support MOSFET model parameter 'RD'/i],
     ['unsupported noise selector', 'LEVEL=1 NLEV=1', /only supports MOSFET NLEV=2/i],
   ])('rejects %s explicitly', async (_name, modelParameters, expected) => {
