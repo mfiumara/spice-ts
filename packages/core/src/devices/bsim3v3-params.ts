@@ -8,14 +8,14 @@
  * revision-dependent blocks marked with b3v32 citations here and in
  * bsim3v3-dc.ts, bsim3v3-charge.ts and bsim3v3.ts.
  *
- * Known, deliberately unported b3v32temp.c behaviour: for revisions 3.2 and
- * 3.2.2 an instance whose (L, W) matches an earlier instance of the same
- * model reads its instance copies (vth0, vfb, vfbzb, u0temp) from whichever
- * size-dependent record the previous loop iteration left in `pParam` (the
- * "bug-fix" guarded by `BSIM3v32intVersion > BSIM3v32V322`). spice-ts always
- * uses the instance's own record. The two agree when every geometry of a
- * model is distinct (as in the corpus-f decks of #594) or when the previous
- * instance ngspice processed has the same geometry.
+ * b3v32temp.c size-record reuse (#700): for revisions 3.2 and 3.2.2 an
+ * instance whose (L, W) matches a size record already built for its model
+ * keeps `pParam` pointing at the most recently *allocated* record (the
+ * `pParam = here->pParam` "bug-fix" is guarded by `BSIM3v32intVersion >
+ * BSIM3v32V322`), so its instance copies vth0, vfb, vfbzb and u0temp come from
+ * the last newly-seen geometry instead of its own. {@link computeBsim3Size}
+ * takes that geometry as `copySource`; `BSIM3v3.linkBsim3v32SizeRecordReuse`
+ * (bsim3v3.ts) reproduces ngspice's instance order to choose it.
  *
  * Model parameters are keyed by their ngspice card name in lower case. The
  * size-dependent parameters use the b3temp.c `pParam` field names so that
@@ -297,6 +297,19 @@ function instanceValue(inst: Readonly<Record<string, number | undefined>>, name:
 }
 
 /**
+ * b3set.c / b3v32set.c instance channel length and width: L and W default to
+ * 5 um, and the bsim3v32 device scales L by the lmlt model parameter.
+ */
+export function bsim3Geometry(
+  model: BSIM3Model, inst: Readonly<Record<string, number | undefined>>,
+): [length: number, width: number] {
+  let L = instanceValue(inst, 'L') ?? 5.0e-6;
+  // b3v32set.c: channel length scaling with the lmlt model parameter (bsim3v32 only).
+  if (model.revision < BSIM3_REVISION.V330 && model.given('lmlt')) L *= model.values.lmlt;
+  return [L, instanceValue(inst, 'W') ?? 5.0e-6];
+}
+
+/**
  * b3set.c instance defaults and b3temp.c size-dependent parameters for one
  * instance geometry. Throws when an effective dimension is not positive, as
  * b3temp.c does (E_BADPARM).
@@ -304,13 +317,14 @@ function instanceValue(inst: Readonly<Record<string, number | undefined>>, name:
 export function computeBsim3Size(
   model: BSIM3Model,
   inst: Readonly<Record<string, number | undefined>> & BSIM3v3InstanceParams,
+  copySource?: Readonly<Record<string, number | undefined>>,
 ): BSIM3Size {
   const m = model.values;
   const p: Record<string, number> = {};
-  let L = instanceValue(inst, 'L') ?? 5.0e-6;
-  // b3v32set.c: channel length scaling with the lmlt model parameter (bsim3v32 only).
-  if (model.revision < BSIM3_REVISION.V330 && model.given('lmlt')) L *= m.lmlt;
-  const W = instanceValue(inst, 'W') ?? 5.0e-6;
+  const [L, W] = bsim3Geometry(model, inst);
+  // b3v32temp.c pParam->Length / Width, the size-record match key.
+  p.length = L;
+  p.width = W;
   const tnom = model.tnom;
   const temp = model.temp;
   const tRatio = temp / tnom;
@@ -442,12 +456,15 @@ export function computeBsim3Size(
   p.vfbzb = tmp3 - p.phi - p.k1 * p.sqrtPhi;
 
   // Instance values (delvto, mulu0) and junction saturation currents.
+  // b3v32temp.c (3.2, 3.2.2): these copies read `pParam`, which may be the
+  // record of another geometry (copySource); see the file comment.
   const delvto = instanceValue(inst, 'DELVTO') ?? 0;
   const mulu0 = instanceValue(inst, 'MULU0') ?? 1;
-  p.instVth0 = p.vth0 + delvto;
-  p.instVfb = p.vfb + type * delvto;
-  p.instVfbzb = p.vfbzb + type * delvto;
-  p.instU0temp = p.u0temp * mulu0;
+  const record = copySource ? computeBsim3Size(model, copySource) : p;
+  p.instVth0 = record.vth0 + delvto;
+  p.instVfb = record.vfb + type * delvto;
+  p.instVfbzb = record.vfbzb + type * delvto;
+  p.instU0temp = record.u0temp * mulu0;
 
   p.drainArea = instanceValue(inst, 'AD') ?? 0;
   p.sourceArea = instanceValue(inst, 'AS') ?? 0;

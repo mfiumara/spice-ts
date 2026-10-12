@@ -645,6 +645,11 @@ export class Circuit {
   private _poleZeroAnalyses: PoleZeroAnalysis[] = [];
   private _steps: StepAnalysis[] = [];
   private _models: Map<string, ModelParams> = new ModelTable();
+  /**
+   * Upper-case names of `.model` cards defined inside a subcircuit body. ngspice
+   * gives every subcircuit instance its own copy of such a model (`x1:name`).
+   */
+  private readonly _subcircuitModelNames = new Set<string>();
   /** XSPICE code model cards, keyed by upper-case model name like {@link ModelTable}. */
   private _xspiceModels = new Map<string, XspiceModelCard>();
   private _subcircuits = new Map<string, SubcktDefinition>();
@@ -1948,6 +1953,8 @@ export class Circuit {
     const noiseContext = new TransientNoiseContext(this._simulationOptions.seed);
     const pendingCurrentSwitches: { device: CurrentSwitch; controlSource: string }[] = [];
     const ltraStates = new Map<string, LtraModelState>();
+    // BSIM3 instances per ngspice model, in netlist order (b3v32temp.c pParam reuse, #700).
+    const bsim3ModelInstances = new Map<string, BSIM3v3[]>();
 
     for (const desc of expandedDescriptors) {
       guard?.checkpoint('compile:device');
@@ -2157,7 +2164,15 @@ export class Circuit {
               resolveNode(bulkNode),
             ];
             // Instance W/L/AD/AS/PD/PS/DELVTO/MULU0/M; b3set.c supplies the defaults.
-            devices.push(new BSIM3v3(desc.name, nodeIdxs, modelParams, desc.params ?? {}, polarity, model.version));
+            const bsim3 = new BSIM3v3(desc.name, nodeIdxs, modelParams, desc.params ?? {}, polarity, model.version);
+            devices.push(bsim3);
+            // A subcircuit-local card is a separate ngspice model per subcircuit instance.
+            const modelName = model.name.toUpperCase();
+            const scope = this._subcircuitModelNames.has(modelName)
+              ? desc.name.slice(0, Math.max(0, desc.name.lastIndexOf('.'))) : '';
+            const key = `${scope}\u0000${modelName}`;
+            const group = bsim3ModelInstances.get(key);
+            if (group) group.push(bsim3); else bsim3ModelInstances.set(key, [bsim3]);
           } else if (level === 6) {
             // MOS6 (Sakurai-Newton n-th power law) — 4-terminal, bulk defaults to source.
             const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];
@@ -2277,6 +2292,7 @@ export class Circuit {
     }
 
     bindXspiceSources(devices, deviceMap);
+    for (const instances of bsim3ModelInstances.values()) BSIM3v3.linkBsim3v32SizeRecordReuse(instances);
     for (const { device, controlSource } of pendingCurrentSwitches) {
       const control = deviceMap.get(controlSource);
       if (!control || !(control instanceof VoltageSource)) {
@@ -2980,6 +2996,7 @@ export class Circuit {
           ?? parseModelCard(tokens, 0);
         // Register in the circuit's global model map so compile() can find it
         this.registerModel(modelParams);
+        this._subcircuitModelNames.add(modelParams.name.toUpperCase());
         continue;
       }
 

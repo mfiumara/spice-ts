@@ -729,3 +729,7 @@ Local paths are relative to `benchmarks/corpus/xyce-spice3/`; full SHA-256 value
 ## bsim3-rsh-691 (#691)
 
 - `benchmarks/bsim3-rsh-691/`: the TSMC 0.25u `Nmod`/`Pmod` VERSION = 3.2.2 cards (RSH = 4.5), copied at run time from corpus-f `examples/tclspice/tcl-testbench4/example.cir` (ngspice `3ef069fb`, BSD-3-Clause; provenance in `benchmarks/corpus/corpus-f/SOURCES.md`), in project-authored (MIT) one-transistor `.op` probes with varied NRD/NRS/M and VERSION=3.3.0/3.2.4. `probe.ts` runs the identical decks through ngspice-47 and spice-ts.
+
+## bsim3v32-700 (#700)
+
+- `benchmarks/bsim3v32-700/`: the TSMC 0.25u `Nmod`/`Pmod` VERSION = 3.2.2 cards (binned VTH0/U0), copied at run time from corpus-f `examples/tclspice/tcl-testbench4/example.cir` (ngspice `3ef069fb`, BSD-3-Clause; provenance in `benchmarks/corpus/corpus-f/SOURCES.md`), with VERSION= rewritten to 3.2, 3.2.4 or 3.3.0 for some cases, in project-authored (MIT) multi-instance `.op` decks with alternating L/W. `probe.ts` runs the identical decks through ngspice-47 and spice-ts. The unit test `packages/core/src/devices/bsim3v32-size-reuse.test.ts` uses a project-authored (MIT) binned card with ngspice-47 references.
