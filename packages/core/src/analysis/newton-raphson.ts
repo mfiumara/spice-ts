@@ -37,9 +37,12 @@ export function newtonRaphson(
   let otherDevices: DeviceModel[] | null = null;
   const selfLimiting = devices.filter(device => device.limitedLastStamp !== undefined);
   const convergenceTested = devices.filter(device => device.convergenceTest !== undefined);
+  // The iterate two solves back, to recognise a rounding-floor two-cycle.
+  const twoBack = convergenceTested.length > 0 ? new Float64Array(assembler.solution.length) : undefined;
 
   for (let iter = 0; iter < maxIter; iter++) {
     guard?.checkpoint('solve:newton-iteration');
+    twoBack?.set(assembler.prevSolution);
     assembler.saveSolution();
     assembler.clear();
 
@@ -92,7 +95,10 @@ export function newtonRaphson(
     if (
       isConverged(assembler.solution, assembler.prevSolution, assembler.numNodes, options)
       && !selfLimiting.some(device => device.limitedLastStamp!())
-      && convergenceTested.every(device => device.convergenceTest!(assembler.solution, options))
+      && (
+        convergenceTested.every(device => device.convergenceTest!(assembler.solution, options))
+        || (iter >= 2 && isRoundingFloorCycle(assembler.solution, assembler.prevSolution, twoBack!, assembler.numNodes))
+      )
     ) {
       if (telemetry) {
         telemetry.newtonIterations += iter + 1;
@@ -130,6 +136,30 @@ function isConverged(
       ? options.vntol + options.reltol * Math.abs(current[i])
       : options.abstol + options.reltol * Math.abs(current[i]);
     if (diff > tol) return false;
+  }
+  return true;
+}
+
+/**
+ * Newton has reached the floating-point floor: the solve returned exactly the
+ * iterate two solves back, and every node voltage moved by about one double
+ * spacing. Linearised at either iterate, the stamped system's exact solution
+ * is the same fixed point (the one ngspice-47 lands on), but LU rounding
+ * returns its neighbour, so further iterations repeat the pair forever. With
+ * a tiny ABSTOL a device convergence test (mos2conv.c) cannot pass on such a
+ * pair, since one ulp of a node voltage times a triode gds already exceeds
+ * ABSTOL. Only reached once the node test has passed and no junction was
+ * limited; a cycle wider than one ulp still fails.
+ */
+function isRoundingFloorCycle(
+  current: Float64Array, previous: Float64Array, twoBack: Float64Array, numNodes: number,
+): boolean {
+  for (let i = 0; i < current.length; i++) {
+    if (current[i] !== twoBack[i]) return false;
+  }
+  for (let i = 0; i < numNodes; i++) {
+    const spacing = Number.EPSILON * Math.max(Math.abs(current[i]), Math.abs(previous[i]));
+    if (Math.abs(current[i] - previous[i]) > spacing) return false;
   }
   return true;
 }
