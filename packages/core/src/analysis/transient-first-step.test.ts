@@ -50,7 +50,8 @@ describe('ngspice first transient step (#532)', () => {
     // With ngspice's CAPtrunc step control (#621) instead of the stricter
     // node-voltage LTE (1006 points, max 2.31e-6 V), spice-ts takes 148
     // points to ngspice's 154 and has ngspice's accuracy: max 3.56e-4 V,
-    // RMS 2.07e-4 V. The remaining grid gap is the order-1 restart after t=0 (#561).
+    // RMS 2.07e-4 V. With ngspice's order-1 restart after t=0 (#742, #561)
+    // spice-ts takes ngspice's 154 points on the same grid.
     expect(max).toBeLessThan(4e-4);
     expect(rms).toBeLessThan(2.5e-4);
   });
