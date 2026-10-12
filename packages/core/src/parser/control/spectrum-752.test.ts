@@ -81,6 +81,11 @@ describe('fft (#752)', () => {
     ['none', '', -1.56365286274177e-01, 3.806768366207552e-02],
     ['gaussian', 'set specwindoworder=4', -9.80557601179185e-02, 3.912671377490935e-01],
     ['hamming', '', -1.13800674895264e-01, 2.011855942588531e-01],
+    ['rectangular', '', -1.56365286274177e-01, 3.806768366207552e-02],
+    ['triangle', '', -1.42826169241028e-01, 1.795743729448568e-01],
+    ['blackmanharris', '', -8.75886386193412e-02, 3.423457305825354e-01],
+    ['flattop', '', -1.49317976071212e-01, 5.217350706199742e-01],
+    ['cosine', '', -1.06398133785887e-01, 2.295539265365536e-01],
   ])('applies specwindow=%s (ngspice-47)', async (window, extra, re, im) => {
     const { values } = await probe(`set specwindow=${window}\n${extra}\nrun\nlinearize\nfft v(1)`, [
       'real(v(1)[3])', 'imag(v(1)[3])',
@@ -94,6 +99,18 @@ describe('fft (#752)', () => {
     ]);
     expectClose(values, [
       51, 4.999999999999994e+06, 8.631738141181789e-04, 0, -1.14582895459878e-03, 4.181995379973147e-04,
+    ], 1e-10, 1e-16);
+  });
+
+  it('transforms a power-of-two np=auto2n grid and expression operands (ngspice-47)', async () => {
+    const grid = await probe('run\nlinearize np=auto2n v(1)', ['length(time)', 'v(1)[99]', 'v(1)[100]', 'v(1)[120]', 'v(1)[127]']);
+    // 2^round(log2(100)) = 128 points run past tstop: ngspice leaves them 0 except the last.
+    expectClose(grid.values, [128, 2.149999999999985e-01, 0, 0, 0.2], 1e-13);
+    const { values } = await probe('run\nlinearize np=auto2n v(1)\nfft 2*v(1) v(1)', [
+      'frequency[1]', 'real(2*v(1)[5])', 'imag(2*v(1)[5])', 'real(v(1)[64])', 'imag(v(1)[64])',
+    ]);
+    expectClose(values, [
+      7.812499999999981e+04, 1.486782628145636e-02, -3.58199585894430e-02, -3.95526995874973e-05, 0,
     ], 1e-10, 1e-16);
   });
 
@@ -132,6 +149,18 @@ describe('psd (#752)', () => {
       'length(frequency)', 'real(v(1)[0])', 'real(v(1)[1])', 'real(v(1)[20])',
     ]);
     expectClose(values, [21, 8.296260548894419e-07, 9.480869798889739e-07, 2.511486524944333e-10], 1e-9);
+  });
+});
+
+describe('spectrum command errors (#752)', () => {
+  it.each([
+    ['run\npsd', 'missing number of averaged data points'],
+    ['run\nfft time', 'no vectors to transform'],
+    ['run\nlinearize\nlet short = vector(3)\nfft short', "lengths of short vectors don't match"],
+    ['run\nlet lin-tstop = -1\nlinearize', 'bad parameters'],
+    ['op\nfft v(1)', 'no vectors loaded'],
+  ])('%s', async (control, message) => {
+    await expect(simulate(`${pwl}\n.control\n${control}\n.endc`)).rejects.toThrow(message);
   });
 });
 
