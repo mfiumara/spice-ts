@@ -1,0 +1,15 @@
+************************************************************
+
+* Trivial high-pass filter
+
+R1 b 0 2
+C1 a b 1u
+V1 a 0 DC 0V AC 1
+
+.ac dec 5 100Hz 1e6
+.PRINT AC {DB(V(b))} VDB(b)
+
+*V(b) VR(b) VI(b) VM(b) VP(b) VDB(b)
+*+ V(a,b) VR(a,b) VI(a,b) VM(a,b) VP(a,b) VDB(a,b)
+
+.end

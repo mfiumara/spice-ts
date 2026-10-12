@@ -1,0 +1,36 @@
+Test Circuit for the Absolute Value Function
+********************************************************************************
+* Tier No.:  1								
+* Directory/Circuit Name: ABM_ABS/abs.cir			
+* Description:  Test of the Xyce analog behavioral modeling absolute value 
+*		function.
+* Input:  VS								
+* Output: V(1), V(3)						
+* Analysis:								
+*	A dc input voltage, VS, is swept from -10V to 10V in 1V steps. A nonlinear
+*	dependent voltage source (B1=V(3)) is defined as the negative of the 
+*	absolute value of the source voltage (VS=V(1)). A DC analysis is performed
+*	and the output recorded, V(3),  is the voltage defined by the input dc 
+*	source voltage and the absolute value function.
+*				
+*	This table is a set of hand calculations for the absolute value, ABS, of X
+*		    X		 -ABX(X) 					
+*		-1.00E+01	-1.00E+01			
+*		-5.00E+00	-5.00E+00		
+*		 0.00E+00	 0.00E+00	
+*		 5.00E+00	-5.00E+00
+*		 1.00E+01	-1.00E+01
+*					
+********************************************************************************
+VS   1  0  0
+RS   1  2  100
+R1   2  0  100K
+B1   3  0  V = {-(abs(V(1)))}
+R2   3  4  100
+R3   4  0  100K
+.DC VS -10 10 1
+.PRINT DC  V(1) V(3)
+.END
+
+
+

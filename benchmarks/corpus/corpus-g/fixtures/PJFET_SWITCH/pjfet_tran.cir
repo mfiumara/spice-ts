@@ -1,0 +1,24 @@
+2N5144 PJFET Switching Speed Characteristic
+Vin 3 0 pulse(12 0 10n 5n 5n 1u 1m)
+Vds 4 0 -15
+Rout 3 2 50
+Rterm 2 0 50
+Rload 4 1 500
+J1 1 2 0 2N5114
+.MODEL 2N5114 PJF
++        VTO = -5.288
++       BETA = 2.1897M
++     LAMBDA = 9.946M
++         RD = 22.042
++         RS = 22.042
++        CGS = 14.6595P
++        CGD = 14.6595P
++         PB = 1.40863
++         IS = 39.24F
++         KF = 0
++         AF = 1
++         FC = 0.5
+*
+.TRAN 0.5n 1.07u 1u .1n
+.PRINT TRAN V(1) V(2) V(3)
+.END

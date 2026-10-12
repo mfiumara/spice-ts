@@ -1,0 +1,18 @@
+Test of int, floor, ceil
+*
+* NOTE:  There is a reason we're not just using bsrcs here, and are only
+* testing the handling with .print lines.
+* If used in a bsrc, we can (and do) find that the V(1) printed is rounded
+* off to zero or 1.0, when in fact it might be slightly off from either.
+* This causes the perl script that compares floor and ceil of that number
+* to be off by one on those lines.  The discontinuities of int, floor, and
+* ceil can also cause convergence problems when they're used in B source
+* ABM expressions.  This feature must be used cautiously.
+
+R1 1 0 1
+V1 1 0 SIN(0 5 1K)
+
+.print tran V(1) {int(v(1))} {floor(v(1))} {ceil(v(1))}
+.tran 1n 5m
+
+.end

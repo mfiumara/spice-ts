@@ -1,0 +1,25 @@
+Regression test to ensure that homotopy can be applied to .param
+
+.param testnorm={0.5K}
+.param r1value={testnorm*2.0}
+
+r2 1 0 7k
+r1 1 2 {r1value}
+v1 2 0 1000v
+
+.dc v1 1000 1000 1
+
+.options nonlin continuation=1
+
+.options loca stepper=0 predictor=0 stepcontrol=0
++ conparam=testnorm
++ initialvalue=0.5k minvalue=-0.1k maxvalue=0.7k
++ initialstepsize=0.1k minstepsize=1.0 maxstepsize=0.5k
++ aggressiveness=1.0
++ maxsteps=5000 
+
+.print homotopy v(1) 
+.print dc v(1) 
+
+.end
+

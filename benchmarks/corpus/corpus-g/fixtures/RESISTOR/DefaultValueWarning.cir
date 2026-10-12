@@ -1,0 +1,32 @@
+*************************************************************
+* R1, R2 and R3 should all default to 1000 ohms, and issue
+* the appropriate warning message.  The netlist should run
+* though.
+*
+* See SON Bug 860.
+*************************************************************
+
+* Level 1 resistor, with no value for the R instance parameter
+V1  1   0  1
+R1a 1  1a  1000
+R1  1a  0 
+
+* Make sure that the Level 1 and level 2 resistors default to 1000 ohms,
+* when they have model cards for semiconductor resistors but the model
+* cards and instance lines lack all of the necessary parameters to define
+* a semiconductor resistor.
+V2  2   0  1
+R2a 2  2a  2k 
+R2  2a  0 RSHEET1 
+.MODEL RSHEET1 R (RSH=1 LEVEL=1)
+
+V3  3   0  1
+R3a 3  3a  3k 
+R3  3a  0  RSHEET2
+.MODEL RSHEET2 R (RSH=2 LEVEL=2)
+
+* Analysis and print statements.
+.DC V1 1 1 1
+.PRINT DC V(1) V(1a) V(2a) V(3a)
+
+.END

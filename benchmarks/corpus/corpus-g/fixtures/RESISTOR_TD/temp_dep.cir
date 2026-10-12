@@ -1,0 +1,50 @@
+Netlist to Test the Xyce Resistor Model
+*********************************************************************
+* Tier No.:	1                                               
+* Description:  Circuit to demonstrate the validity of the 
+*               the linear resistor model implemented in Xyce. 
+* Input: VIN=0-5V DC 
+* Output: Current through R1
+* Circuit Elements: R1
+* Analysis:     
+*	A DC voltage source, in parallel with a 1K Ohm resistor,
+*	is swept from 0-5V in 1V increments.  The measured output
+*	is the current through the resistor.  This is calculated
+*	using Ohm's Law (Voltage=Current*Resistance, V=IR), which
+*	yields a linear I-V characteristics for a resistor.
+*
+*			V(volts)  |  I(mA)
+*			  0       |    0
+*			  1       |    1
+*			  2       |    2
+*			  3       |    3
+*			  4       |    4
+*			  5       |    5
+* 
+* Addendum:
+* The purpose of this test is to add temperature dependence to the 
+* simple resistor tests.  As here, this should produce identical output
+* to the resistor test in the test suite.
+* If the options are changed to TEMP=-55, the resistance is computed
+* by 
+*   R=Rnom*(1+tc1*(t-tnom)+tc2*(t-tnom)**2
+*
+*  For T=-55, R is then 938.4443 ohms, which should lead to
+*  an I-V plot of:
+*            V(1)      I(V1)
+*            ----      -----
+*             0.0000   0.0000
+*             1.0000   1.0656 mA
+*             2.0000   2.1312 mA
+*             3.0000   3.1968 mA
+*             4.0000   4.2624 mA
+*             5.0000   5.3280 mA
+*
+*********************************************************************** 
+R1 1 0 1K RMODEL
+V1 1 0 5V
+.DC V1 0 5V 1V
+.PRINT DC V(1) I(V1)
+.OPTIONS DEVICE TEMP=-55
+.MODEL RMODEL R (TC1=0.0007325 TC2=-2.217E-07)  
+.END

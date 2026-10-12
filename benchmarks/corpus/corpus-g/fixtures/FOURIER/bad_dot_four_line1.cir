@@ -1,0 +1,32 @@
+Testing ill-formed .FOUR lines
+*********************************************************************
+* The .FOUR lines in this test are missing one, or more, of the    
+* required fields for a valid .FOUR line.  This is detailed in
+* SON Bug 699.
+*
+* This version includes processing of expressions on the .FOUR line
+*
+*
+*
+*********************************************************************
+* CMOS INVERTER
+*
+M1 2 1 0 0 NMOS W = 20U L = 5U
+M2 2 1 3 3 PMOS W = 40U L = 5U
+VDD 3 0 5
+VIN 1 0 SIN 2.5 2.5 20MEG
+.MODEL NMOS NMOS LEVEL = 3 CGDO = .2N CGSO = .2N CGBO = 2N
+.MODEL PMOS PMOS LEVEL = 3 CGDO = .2N CGSO = .2N CGBO = 2N
+.TRAN 1N 100N
+.FOUR
+.FOUR 20MEG
+.FOUR V(2)
+.FOUR {
+.FOUR }
+.FOUR 20MEG {
+.FOUR 20MEG }
+.FOUR 20MEG {V(2)
+.FOUR 20MEG V(
+.FOUR 20MEG V( V(2)
+.PRINT TRAN V(2) V(1)
+.END

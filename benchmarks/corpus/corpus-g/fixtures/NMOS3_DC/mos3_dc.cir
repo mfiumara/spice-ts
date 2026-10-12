@@ -1,0 +1,46 @@
+N-Channel Mosfet (Level 3) Circuit 
+**************************************************************
+* Tier No.: 2                                               
+* Description:   Circuit netlist to test a level 3 NMOS for 
+* 	Xyce. 
+* Input:  VDS, VGS
+* Output: ID or I(VMON)
+* Circuit Elements: nmos transistor
+* Analysis:
+* 	The drain to source voltage, VDS, is stepped from 0 to 6V and the
+* 	gate to source voltage, VGS, is swept from 1 to 4V.  This device
+* 	has a threshold voltage of 1.043 volts.  At the second value of VGS,
+* 	which is 2V, the MOSFET will be on and therefore conduct a drain
+* 	to source current, IDS, which will be plotted in the output.  In this 
+* 	test circuit the the internal source resistance, RS=0, so the bulk to 
+*	source voltage, Vbs=0.
+* 	This is a Tier II level model because the equations which describe the
+* 	drain current, IDS, are semi-empirical and require measurements to 
+* 	extract some of the terms that are in the equations- not an analytical 
+*	calculation.
+* 	L=2.0E-06
+* 	W=2.0E-03
+* 	VTO=1.043
+* 	KP=33.374640E-06
+* 	GAMMA=1.95933
+*       PHI=0.712057
+*	THETA=0.0582
+* 	ETA=0.095
+* 	KAPPA=2.93
+************************************************************** 
+VDS 4 0  0V
+VGS  1   0  0V
+VMON 4 3 0V
+M1 3 1 0 0 NFET L=2.0U W=2.0U  
+.MODEL NFET NMOS 
++  LEVEL=3  UO=966.5  L=2.0U  W=2.0U  VTO=1.043
++  NFS=1.009E+11  TOX=1E-07  NSUB=1.379E+16  VMAX=4.096E+05
++  RSH=0  RS=0 	RD=0  IS =1E-14
++  XJ=5.378E-06	LD=0 DELTA=0  NSS=1E10
++  THETA =0.0582  ETA=0.095  KAPPA=2.93  CGDO=1PF  	
++  CGSO=1PF  CGBO=1PF  CBD=1PF CBS=1PF 
+
+.DC VDS 0 6 0.01  VGS 1 4 1 
+.PRINT DC V(4) V(1) I(VMON)
+
+.END

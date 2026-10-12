@@ -1,0 +1,17 @@
+embedded sampling version of a CMOS inverter
+*
+* This "circuit" exists to provide a meaningful .PRINT line to xyce_verify.pl.  
+*
+* It isn't supposed to be run, and will exit with error.
+*
+
+*COMP {v(drain)}_regr_pce_mean      OFFSET=1.0
+*COMP {v(drain)}_regr_pce_meanPlus  OFFSET=1.0
+*COMP {v(drain)}_regr_pce_meanMinus OFFSET=1.0
+*COMP {v(drain)}_regr_pce_stddev    OFFSET=1.0
+*COMP {v(drain)}_regr_pce_variance  OFFSET=1.0
+
+.print tran {v(drain)}_regr_pce_mean    {v(drain)}_regr_pce_meanPlus    {v(drain)}_regr_pce_meanMinus    {v(drain)}_regr_pce_stddev    {v(drain)}_regr_pce_variance    
+
+.tran 1ns 1.5e-6
+

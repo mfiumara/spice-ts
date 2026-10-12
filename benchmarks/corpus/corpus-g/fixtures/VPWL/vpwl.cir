@@ -1,0 +1,57 @@
+Voltage Source - Piece Wise Linear Signal
+**************************************************************
+* Tier No.:	1                                           
+* Description:	Test of Xyce model for an independent voltage
+*	source.  The source is described as;
+*	A piece wise linear voltage which is a series of time
+*	and voltage pairs of data points, give by:
+*		  time(s), voltage(volts)	
+*			1    (0.00, 0.00)
+*			2    (2.00, 3.00)
+*			3    (3.00, 2.00)
+*			4    (4.00, 2.00)
+*			5    (4.01, 5.00)
+*			6    (4.50, 5.00)
+*			7    (4.51,-2.00)
+*			8    (7.00, 1.00)
+*			9    (9.00,-1.00)
+*			10   (9.01, 4.00)
+*			11   (10.0, 3.00)
+*
+* Input/Output:	VPWL; a common simulation data output (.csd)can
+*	be generated for viewing the signal.
+*************************************************************** 
+* most typical Xyce syntax
+VPWL1 1 0 PWL(0S 0V  2S 3V  3S 2V  4S 2V  4.01V 5V  4.5S 5V
++ 4.51S -2V  7S 1V  9S -1V  9.01S 4V  10S 3V)
+R1 1 0 500
+
+* parens are sometimes omitted
+VPWL2 2 0 PWL 0S 0V  2S 3V  3S 2V  4S 2V  4.01V 5V  4.5S 5V
++ 4.51S -2V  7S 1V  9S -1V  9.01S 4V  10S 3V
+R2 2 0 500
+
+* HSpice may haves commas between time-voltage pairs, and no parens
+VPWL3 3 0 PWL 0S 0V,  2S 3V,  3S 2V,  4S 2V,  4.01V 5V,  4.5S 5V
++ 4.51S -2V,  7S 1V,  9S -1V,  9.01S 4V,  10S 3V
+R3 3 0 500
+
+* Time delay
+VPWL4 4 0 PWL(0S 0V  2S 3V  3S 2V  4S 2V  4.01V 5V  4.5S 5V
++ 4.51S -2V  7S 1V  9S -1V  9.01S 4V  10S 3V) TD=1
+R4 4 0 500
+
+* Repeat whole waveform, with time delay
+VPWL5 5 0 PWL(0S 0V  2S 3V  3S 2V  4S 2V  4.01V 5V  4.5S 5V
++ 4.51S -2V  7S 1V  9S -1V  9.01S 4V  10S 3V) TD=1 R=0
+R5 5 0 500
+
+* Repeat part of waveform, starting at time=7s, with time delay
+* test with HSpice syntax also
+VPWL6 6 0 PWL 0S 0V,  2S 3V,  3S 2V,  4S 2V,  4.01V 5V,  4.5S 5V
++ 4.51S -2V,  7S 1V,  9S -1V,  9.01S 4V,  10S 3V  R=7 TD=1
+R6 6 0 500
+
+.TRAN 0.01S 30S
+.PRINT TRAN V(1) V(2) V(3) V(4) V(5) V(6)
+.END 

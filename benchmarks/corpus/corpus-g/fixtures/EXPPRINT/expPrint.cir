@@ -1,0 +1,13 @@
+Test for expressions in .print statement.
+*
+* Eric Keiter, 9233.
+* 8/9/04.
+*
+VT1 4 0 0V
+R1  4 0 10
+
+.DC VT1 -0.2 0.5 0.01
+.print DC v(4) {(abs(I(VT1)))} {(V(4)**2.0)} I(VT1) 
+
+.END
+

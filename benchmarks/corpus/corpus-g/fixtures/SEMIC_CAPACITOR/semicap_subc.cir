@@ -1,0 +1,51 @@
+Semiconductor Capacitor Circuit Netlist
+**************************************************************
+* Tier No.:	1                                           
+* Description:  Test of the Xyce semiconductor capacitor model 
+*	using a simple RC circuit configuration.  A 20pF
+*	capacitor is specified by a length, width and 
+*	juction capacitance. A transient analysis of
+*	the circuit voltage versus time is performed
+*	to determine the capacitor voltage and current.
+*	To obtain the capacitor value, integrate the 
+*	capacitor current (wrt time) then divide by the 
+*	capacitor voltage.
+* Input:  1V Pulse Source
+* Output: Capacitor voltage and current
+* Circuit Elements: capacitor, resistor, zero volt voltage source
+*	    used as an ameter to measure the capacitor current
+* Analysis:
+*	A series RC circuit is connected to pulse voltage source which
+*	goes from 0V to 1V after a 10us delay, with rise and fall
+*	times of 1ns. The Chilespice equation for a semiconductor 
+*	capacitor is:
+*
+*     	C = CJ*(L-NARROW)*(W-NARROW)+2*CJSW(L+W-2NARROW)
+*           where, 
+*           CJ=1 F/sq.meter, L=20U, W=1U, NARROW=0, CJSW=0
+*	This gives a capacitance value of 20pF (20E-12F).
+*	The capacitor voltage should reach 90% of its
+*	maximum value, 1V,  in 
+*		time = (3*R*C) + rise + delay 
+*		                 time    time
+* 		     = (3 * 1E3 * 20E-12) + 1E-9 + 10E-6
+*		     = 10.06us
+*	Therefore, at 10.06us the capacitor voltage should be at least
+*	0.9V.   Using the common simulation data (csd) format, the 20pF
+*	capacitance value can be confirmed by dividing the integral of the
+*	capacitor current (vmon_branch) by the capacitor voltage (V(3)).
+**************************************************************************** 
+VIN  1 0 PULSE(0 1 10U 1N 1N 30U)
+R    1 2 1K
+XC   3 0 semi_cap
+
+.subckt semi_cap 1 2
+C   1 2 CMODEL L=20U W=1U
+.ends
+
+VMON 2 3 0
+.MODEL CMODEL C (CJ=1)
+.TRAN 1N 20U 
+.PRINT TRAN  V(3) {I(VMON)*100.0+1.0}
+*.OPTIONS TIMEINT CONSTSTEP=1
+.END

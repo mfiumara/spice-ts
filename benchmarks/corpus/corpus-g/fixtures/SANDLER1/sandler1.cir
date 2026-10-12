@@ -1,0 +1,73 @@
+4TH ORDER BUTTERWORTH LOW-PASS FILTER
+********************************************************************************
+* Tier No.: 2
+* Directory/Circuit Name:SANDLER1/sandler1.cir
+* Description:  Fourth Order Butterworth low-pass filter circuit netlist developed
+*	by Steve Sandler to compare the validity of simulations using 3 different
+*	circuit simulation tools.  The results were compared to measured data.
+* Input: V4
+* Output: V(3), V(20)
+* Analysis:
+*********************************************************************************
+*
+* MAIN CIRCUIT
+*
+V2 0 2 15
+R1 3 4 20K
+R2 4 6 20K
+C1 6 0 .005U
+C2 4 5 .01U
+R3 5 9 20K
+R4 9 11 20K
+C3 11 0 .005U
+C4 9 20 .01U
+X4 5 6 5 1 2 OPAMP#0 
+X5 20 11 20 1 2 OPAMP#0 
+V4 3 0 PULSE(0 5 750U .1U)
+V1 1 0 15
+*
+* ANALYSIS AND OPTIONS
+*
+.TRAN .2U 3M 0.50M
+.PRINT TRAN  {V(20)+1}  V(3)
+*COMP {V(20)+1} reltol=0.02
+*
+* SUBCIRCUIT DEFINITION
+*
+.SUBCKT OPAMP#0 2    3  6   7   4
+*             - IN + OUT VCC VEE
+RP 4 7 10K
+IB 3 90 1.0000N
+VIB 90 4
+IO 3 2 500.00N
+RIP 3 4 1G
+CIP 3 4 1.4PF
+*FIBN 2 4 VIB 1
+BFIBN 2 4 I={I(VIB)}
+RIN 2 4 1G
+CIN 2 4 1.4PF
+VOFST 2 10 1.0000M
+RID 10 3 1G
+*EA 11 4 10 3 1
+BEA 11 4 V={V(10)-V(3)}
+R1 11 12 5K
+R2 12 13 50K
+C1 12 4 13.000P
+*GA 4 14 4 13 1.3500K
+B 4 14 I={(V(4)-V(13))*1.35E3}
+C2 13 14 2.7000P
+RO 14 4A 75
+EBAL 4A 4 2A 4 1
+RBAL1 7 2A 1MEG
+RBAL2 2A 4 1MEG
+L 14 6 30.000U
+RL 14 6 1000
+CL 6 4 3PF
+D1 6 70 DN
+VSAT 70 7 -2.5
+D2 40 6 DN
+VSAT2 40 4 2.5
+.MODEL DN D
+.ENDS
+.END
+

@@ -1,0 +1,47 @@
+* Test for issue 729, AC version
+* Issue 729 was about sensitivity analysis objective functions not properly 
+* differentiating between current variables and voltage variables with the 
+* same name.  In other words, conflating I(v1) with V(v1), for example.
+
+
+.param r1Val=4.7k
+
+.param relDp=1.0e-8
+.param dr = r1Val*relDp
+
+* baseline circuit
+v1 1 0 ac 10
+r1 1 2 {r1Val}
+c1 2 0 47n
+r2 2 3 4.7K
+c2 3 0 47n
+r3 3 v1 4.7K
+c3 v1 0 47n
+
+* r1 perturbation circuit
+v1_r1 1_r1 0 ac 10
+r1_r1 1_r1 2_r1 {r1Val+dr}
+c1_r1 2_r1 0 47n
+r2_r1 2_r1 3_r1 4.7K
+c2_r1 3_r1 0 47n
+r3_r1 3_r1 v1_r1 4.7K
+c3_r1 v1_r1 0 47n
+
+.ac dec 10 1 10K
+
+.print AC 
+* i(v1) sensitivities
++ I(V1) IM(V1) IP(V1)
++ { ((ir(v1_r1)) - (ir(v1)))/dr }
++ { ((ii(v1_r1)) - (ii(v1)))/dr }
++ { ((im(v1_r1)) - (im(v1)))/dr }
++ { ((ip(v1_r1)) - (ip(v1)))/dr }
+*
+* v(v1) sensitivities
++ V(V1) VM(V1) VP(V1)
++ { ((vr(v1_r1)) - (vr(v1)))/dr }
++ { ((vi(v1_r1)) - (vi(v1)))/dr }
++ { ((vm(v1_r1)) - (vm(v1)))/dr }
++ { ((vp(v1_r1)) - (vp(v1)))/dr }
+
+.end

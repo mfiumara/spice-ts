@@ -1,0 +1,60 @@
+Operational Amplifier Adder
+********************************************************************************
+* Tier No.: 3
+* Directory/Circuit Name:SANDLER23/sandler23.cir
+* Description:  The op amp adder circuit netlist was developed by Steve Sandler to 
+*       compare the validity of simulations using 3 different circuit simulation
+*       tools.  The results were compared to measured data.
+* Input: V3=V(6), V4=V(7)
+* Output: V(4), V(6), V(7)
+********************************************************************************
+*
+* MAIN CIRCUIT DEFINITION
+*
+R1 0 1 100K
+R2 1 4 100K
+R3 6 5 100K
+R4 7 5 100K
+VCC 2 0 15
+VEE 3 0 -15
+V3 6 0 SIN(0 1 1000 0 0)
+V4 7 0 PULSE(0 1 0 100N 100N 50U 100U)
+X1 1 5 4 2 3 OPAMP#0
+*
+* 
+* ANALYSIS AND OPTION STATEMENTS
+*
+.TRAN 1U 3M 1M
+.PRINT TRAN {V(4)+1.5}  V(6)  V(7)
+*ALIAS  V(4)=OUT V(6)=SIN_IN V(7)=PULSE_IN
+*
+**************************************
+* SUBCIRCUIT DEFINITION
+**************************************
+.SUBCKT OPAMP#0 2    3  6   7   4
+*             - IN + OUT VCC VEE
+RP 4 7 10K
+RXX 4 0 10MEG
+IBP 3 0 0
+RIP 3 0 10MEG
+CIP 3 0 1.4PF
+IBN 2 0 1.0000N
+RIN 2 0 10MEG
+CIN 2 0 1.4PF
+VOFST 2 10 1.0000U
+RID 10 3 200K
+EA 11 0 10 3 1
+R1 11 12 5K
+R2 12 13 50K
+C1 12 0 2.6000P
+GA 0 14 0 13 1.3500K
+C2 13 14 540.00F
+RO 14 0 75
+L 14 6 6.0000U
+RL 14 6 1000
+CL 6 0 3PF
+.ENDS
+***************************************
+*COMP {V(4)+1.5} reltol=0.05 abstol=1e-6
+.END
+

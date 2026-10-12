@@ -1,0 +1,39 @@
+N-Channel Mosfet Circuit 
+**************************************************************
+* Tier No.: 2
+* Description:   Circuit netlist to test current-voltage
+*                characteristics of the Xyce n-channel
+*                mosfet level 1 model.  
+* Input:  Vdd=18V
+* Output: Measure Id, Vds, Vgs
+* Circuit Elements: resistors (4), nmos transistor
+* Analysis:
+* FOR THE NMOS CIRCUIT BAISED IN THE ACTIVE MODE OF OPERATION :
+* VG  =  {R2/(R1 + R2)} * VDD  =  {22E+6 / (69E+6)} * 18  = 5.74V
+* ID  =  {[-B - SQRT(B**2 - 4*A*C)] / 2*A} 
+* Where,
+* A = RS**2  =  (500)**2 = 2.5E+5 
+* B = -2*{(VG - VT) * RS + 1/KP} = -2*{(5.74-2)*500 + 1/0.5E-3}=-7.74E+3
+* C = (VG - VT)**2 = (5.74 - 2)**2 = 13.9876
+* Therefore,
+* ID = {[-(-7.74E+3)-SQRT((-7.74E+3)**2 - 4*2.5E+5*2.5E+5*13.9876)]/2*2.5E+5}
+*      = 1.927mA
+* VGS = VG - VS = VG - ID*RS = 5.74 - 1.927E-3 * 500 = 4.78V
+* VDS = VDD - ID*(RD + RS) = 18 - 1.927E-3 * 2.7E+3 = 12.8V
+*
+*	The circuit simulation should yield the following outputs:
+*		Drain Current         Id= 1.926mA
+*		Drain-Source Voltage Vds= 12.8V
+*      		Drain-Gate Voltage   Vgs= 4.776V
+************************************************************** 
+VDD 5 0 DC 18V ; inline comment test
+R1 5 1 47MEG ; second inline comment
+R2 1 0 22MEG ; and another
+RD 5 4 2.2K
+RS 2 0 500; just one more
+VMON 4 3 0
+M1 3 1 2 2 NFET 
+.MODEL NFET NMOS(LEVEL=1 KP=0.5M VTO=2V)
+.DC VDD 18 18 1
+.PRINT DC V(5) I(VMON) {V(3)-V(2)} {V(1)-V(2)}
+.END

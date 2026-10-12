@@ -1,0 +1,38 @@
+* Test DC mode support for AVG Measures
+*
+* This bug covers:
+*   1) The case of two variables on the .DC line.  (Note:
+*      since there is no .STEP statement, the output is treated
+*      like one STEP, and the max is computed over all values
+*      of vsrc1 and vsrc2.
+*
+*   2) the use of FROM and TO statements, where the FROM value is
+*      always less than or equal to the TO value.  If there are
+*      more than one variable on the .DC line, then the
+*      first variable (vsrc1) is used with the FROM-TO
+*      qualifiers.
+*
+*   3) Have one sweep variable (vsrc1) be monotonically decreasing,
+*      while the other (vsrc2) is monotonically increasing
+*
+* See SON Bug 1267 for more details.
+**************************************************************
+
+vsrc1   1a 0 1
+rload1a 1a 1b 0.1
+rload1b 1b 0 1
+
+vsrc2   2a 0 1
+rload2a 2a 1b 0.2
+
+.DC vsrc1 5 1 -1 vsrc2 2 5 3
+
+* Note: vsrc1:DCV0 is the syntax for printing the DC value of vsrc1,
+* as it is swept.
+.print dc vsrc1:DCV0 vsrc2:DCV0 v(1a) v(2a) v(1b)
+
+.measure dc avgv1b   avg v(1b)
+.measure dc avgv1bFT avg v(1b) FROM=1 TO=3
+*.measure dc avgv1bFT1PT avg v(1b) FROM=2 TO=2
+
+.end

@@ -1,0 +1,18 @@
+Voltage Single Frequency FM Source (VSFFM) Circuit
+******************************************************************************
+* Tier No.:	1                                           
+* Description:	Test of a Xyce  model for an independent voltage source. The
+*	voltage source is described as;
+*	A single frequency frequency modulation signal that has not initial
+*	voltage and a peak amplitude of 1V.  It has a carrier frequency of
+*	1MEG Hz.  For the 10us transient analysis, 10 cycles of the carrier
+*	will be outputed.  The carrier is modulated at a rate determined by
+*	the single frequency, 250KHz, and the modulation index, 2.
+* Input/Output:	VSFFM; a common simulation data output (.csd) can be generated
+*	for viewing the signal.
+******************************************************************************* 
+VSSFM 1 0 SFFM(0 1 1MEG 2 250K)
+R1 1 0 1
+.TRAN 0.01US 10US 
+.PRINT TRAN {2.0 + V(1)}
+.END
