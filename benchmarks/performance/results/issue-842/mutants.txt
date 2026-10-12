@@ -1,0 +1,9 @@
+KILLED   invalidateLoad is a no-op
+SURVIVED constants change keeps the cache
+KILLED   key without vG
+KILLED   key without gmin
+KILLED   key without previous vbs/vbd
+KILLED   signed zeros compare equal
+KILLED   cached Ieq stores ID
+KILLED   cached gds read from gm
+KILLED   key stores limited vbs/vbd
