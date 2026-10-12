@@ -100,15 +100,22 @@ describe('Xyce primitive parser compatibility', () => {
   for (const [id, path, points] of [
     // The t=0 breakpoint always starts with ngspice's first step,
     // MIN(TSTOP/100, TSTEP)/10/10 at order 1 (issue #532), and regrows from
-    // there: 1780 -> 1814 and 101 -> 108 points.
+    // there: 1780 -> 1814 and 101 -> 108 points. Since #608 the step after a
+    // PULSE corner is 0.1 x the pre-snap step (ngspice CKTsaveDelta) instead
+    // of 0.1 x the snapped step, so the diode deck resolves the 100 ns input
+    // edges (it used to take each in one step) and the node-voltage LTE then
+    // refines the diode turn-off inside them: 108 -> 326 points. (ngspice-47
+    // rejects this TSTEP=0 deck; with `.TRAN 10u 0.5ms` it takes 129 points,
+    // spice-ts 207, and the first 16 match ngspice to 1e-9.)
     ['capacitor-rc-oscillator', 'CAPACITOR/rc_osc.cir', 1814],
-    ['diode-transient', 'DIODE/diode.cir', 108],
+    ['diode-transient', 'DIODE/diode.cir', 326],
     // Zero PULSE TR/TF use TSTEP (ngspice semantics, issue #375), adding the
     // 10 ms ramp corner at t=0.01 and its post-breakpoint steps (1018). The
     // t=0 corner then starts with ngspice's order-1 first step (1e-4, issue
-    // #366) and regrows through the ramp: 1037 points. ngspice-47 takes 1019
-    // on the same deck; i(v1) relMax vs ngspice drops from 4.9e-3 to 1.3e-4.
-    ['rlc-transient', 'RLC/rlc.cir', 1037],
+    // #366) and regrows through the ramp: 1037 points, 1031 with the #608
+    // CKTsaveDelta step after the ramp corners. ngspice-47 takes 1019 on the
+    // same deck; i(v1) relMax vs ngspice drops from 4.9e-3 to 1.3e-4.
+    ['rlc-transient', 'RLC/rlc.cir', 1031],
   ] as const) {
     it(`simulates unchanged ${id} with braced V/I output expressions`, async () => {
       const result = await simulate(fixture(path));
