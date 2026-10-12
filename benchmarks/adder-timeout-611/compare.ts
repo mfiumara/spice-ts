@@ -7,10 +7,30 @@
  * MATCH_THRESHOLD (1 %).
  *
  * Usage: pnpm exec tsx benchmarks/adder-timeout-611/compare.ts <spice-ts.json> <ngspice.raw>
+ *
+ * The first argument may also be an ngspice ASCII raw file (`*.raw`, nodes 9-13 are read):
+ * scoring a perturbed ngspice run against the reference measures the deck's own step-grid
+ * sensitivity under the same metric (#611 residual).
  */
 import { readFile } from 'node:fs/promises';
 import { alignAndMeasure, parseNgspiceRaw, sharedGridPoints } from '../comparison-harness.js';
 import { MATCH_THRESHOLD, PEAK_FLOOR } from '../corpus/corpus-f/lib.js';
+
+type Recorded = { grid: number[]; signals: Record<string, number[]> };
+
+async function transientPlot(rawPath: string): Promise<ReturnType<typeof parseNgspiceRaw>[number]> {
+  const plot = parseNgspiceRaw(await readFile(rawPath, 'utf8')).find(candidate => /transient/i.test(candidate.plotName));
+  if (!plot) throw new Error(`${rawPath}: no transient plot`);
+  return plot;
+}
+
+/** The `measure.mts --record` shape, read from an ngspice raw plot. */
+function recordedFromRaw(plot: ReturnType<typeof parseNgspiceRaw>[number], nodes: readonly string[]): Recorded {
+  return {
+    grid: [...plot.grid],
+    signals: Object.fromEntries(nodes.map(node => [`v(${node})`, plot.signals[`v(${node})`]!.map(value => value.re)])),
+  };
+}
 
 async function main(): Promise<void> {
   const [spicePath, rawPath] = process.argv.slice(2);
@@ -18,9 +38,10 @@ async function main(): Promise<void> {
     console.error('usage: compare.ts <spice-ts.json> <ngspice.raw>');
     process.exit(2);
   }
-  const recorded = JSON.parse(await readFile(spicePath, 'utf8')) as { grid: number[]; signals: Record<string, number[]> };
-  const plot = parseNgspiceRaw(await readFile(rawPath, 'utf8')).find(candidate => /transient/i.test(candidate.plotName));
-  if (!plot) throw new Error(`${rawPath}: no transient plot`);
+  const plot = await transientPlot(rawPath);
+  const recorded = spicePath.endsWith('.raw')
+    ? recordedFromRaw(await transientPlot(spicePath), ['9', '10', '11', '12', '13'])
+    : JSON.parse(await readFile(spicePath, 'utf8')) as Recorded;
 
   const spiceTs = {
     grid: recorded.grid,
