@@ -256,6 +256,8 @@ interface MosfetBatch {
   readonly stateEpoch: number;
   /** The shared {@link MosfetStateStore} values of every device in the list. */
   readonly state: Float64Array;
+  /** The store holding `state` (and the load cache). */
+  readonly store: MosfetStateStore;
   /** Offset of each device's state in `state`. */
   readonly stateBases: Int32Array;
 }
@@ -340,11 +342,59 @@ let stateStoreEpoch = 0;
  */
 class MosfetStateStore {
   readonly values: Float64Array;
+  /** {@link MOSFET.batchStamp}'s last load per member, LOAD_* layout; allocated on first use. */
+  private loads: Float64Array | undefined;
+  /** {@link constantsEpoch} the cached evaluations were made with. */
+  private loadsEpoch = -1;
 
   constructor(readonly members: readonly MOSFET[]) {
     this.values = new Float64Array(STATE_STRIDE * members.length);
   }
+
+  /**
+   * The load cache. Invariant: a member's row with a non-NaN key describes
+   * the last write to that member's state row, made by a batched load with
+   * those inputs. Every other writer of a state row calls
+   * {@link invalidateLoad} first; a constants change empties the cache (NaN
+   * keys match nothing).
+   */
+  loadCache(): Float64Array {
+    let loads = this.loads;
+    if (loads === undefined || this.loadsEpoch !== constantsEpoch) {
+      loads ??= new Float64Array(LOAD_STRIDE * this.members.length);
+      loads.fill(NaN);
+      this.loads = loads;
+      this.loadsEpoch = constantsEpoch;
+    }
+    return loads;
+  }
+
+  /** A state row is written outside {@link MOSFET.batchStamp}: forget its cached load. */
+  invalidateLoad(stateBase: number): void {
+    if (this.loads !== undefined) this.loads[(stateBase / STATE_STRIDE) * LOAD_STRIDE + LOAD_VD] = NaN;
+  }
 }
+
+// MosfetStateStore load-cache row per member: the inputs of the member's last
+// batched MOS1 load (terminal voltages, the previous limited junction voltages
+// read from its state row, the junction gmin) and the companion values that
+// load stamped.
+const LOAD_VD = 0;
+const LOAD_VG = 1;
+const LOAD_VS = 2;
+const LOAD_VB = 3;
+const LOAD_LAST_VBS = 4;
+const LOAD_LAST_VBD = 5;
+const LOAD_GMIN = 6;
+const LOAD_GBS = 7;
+const LOAD_GBD = 8;
+const LOAD_CEQBS = 9;
+const LOAD_CEQBD = 10;
+const LOAD_GM = 11;
+const LOAD_GDS = 12;
+const LOAD_GMBS = 13;
+const LOAD_IEQ = 14;
+const LOAD_STRIDE = 15;
 
 /** ngspice devsup.c DEVfetlim: limit a gate voltage step around threshold `vto`. */
 function fetlim(vnew: number, vold: number, vto: number): number {
@@ -548,6 +598,7 @@ export class MOSFET implements DeviceModel {
   }
 
   private set lastVbs(value: number) {
+    this.stateStore.invalidateLoad(this.stateBase);
     this.stateStore.values[this.stateBase + STATE_VBS] = value;
   }
 
@@ -557,6 +608,7 @@ export class MOSFET implements DeviceModel {
   }
 
   private set lastVbd(value: number) {
+    this.stateStore.invalidateLoad(this.stateBase);
     this.stateStore.values[this.stateBase + STATE_VBD] = value;
   }
 
@@ -566,6 +618,7 @@ export class MOSFET implements DeviceModel {
   }
 
   private set lastVon(value: number) {
+    this.stateStore.invalidateLoad(this.stateBase);
     this.stateStore.values[this.stateBase + STATE_VON] = value;
   }
 
@@ -689,6 +742,7 @@ export class MOSFET implements DeviceModel {
     );
     this.lastVbs = out[4];
     this.lastVbd = out[5];
+    this.stateStore.invalidateLoad(this.stateBase);
     this.stateStore.values[this.stateBase + STATE_LIMITED] = out[6];
     return out;
   }
@@ -835,6 +889,7 @@ export class MOSFET implements DeviceModel {
     const gds = channel[2] + GMIN;
     const gmbs = channel[3];
     this.lastVon = channel[4];
+    this.stateStore.invalidateLoad(this.stateBase);
     recordMos1Load(
       this.stateStore.values, this.stateBase, junction,
       polarity * (vG - vS), polarity * (vD - vS), ID, gm, gds, gmbs,
@@ -1103,7 +1158,7 @@ export class MOSFET implements DeviceModel {
     }
     const batch: MosfetBatch = {
       length, stampIndex, epoch: constantsEpoch, nodes, slots, params,
-      stateEpoch: stateStoreEpoch, state: store.values, stateBases,
+      stateEpoch: stateStoreEpoch, state: store.values, store, stateBases,
     };
     mosfetBatches.set(mosfets, batch);
     return batch;
@@ -1114,7 +1169,9 @@ export class MOSFET implements DeviceModel {
    * bypassing StampContext closures for better performance on the fast path.
    * Performs exactly the additions of {@link stamp} for each device, in list
    * order, reading the per-device constants from the list's
-   * {@link MosfetBatch}.
+   * {@link MosfetBatch}. A device whose inputs are bit-identical to its last
+   * batched load (a settled stage of a large circuit, issue #842) stamps that
+   * load's companion values without evaluating the model again.
    */
   static batchStamp(
     mosfets: MOSFET[],
@@ -1131,6 +1188,7 @@ export class MOSFET implements DeviceModel {
     const params = batch.params;
     const state = batch.state;
     const stateBases = batch.stateBases;
+    const loads = batch.store.loadCache();
     const junction = junctionScratch;
     const channel = channelScratch;
     for (let m = 0; m < mosfets.length; m++) {
@@ -1138,6 +1196,7 @@ export class MOSFET implements DeviceModel {
       const s = BATCH_SLOTS * m;
       const k = BP_STRIDE * m;
       const r = stateBases[m];
+      const c = (r / STATE_STRIDE) * LOAD_STRIDE;
       const jD = nodes[q];
       const nG = nodes[q + 1];
       const jS = nodes[q + 2];
@@ -1147,22 +1206,95 @@ export class MOSFET implements DeviceModel {
       const vG = nG >= 0 ? solution[nG] : 0;
       const vS = jS >= 0 ? solution[jS] : 0;
       const vB = jB >= 0 ? solution[jB] : 0;
+      const inVbs = state[r + STATE_VBS];
+      const inVbd = state[r + STATE_VBD];
 
-      // Bulk junctions first (limited vbs/vbd feed the drain current), on the unswapped terminals.
-      mos1BulkJunctions(
-        junction, vD, vS, vB, polarity, state[r + STATE_VBS], state[r + STATE_VBD], params[k + BP_VT],
-        params[k + BP_SOURCE_VCRIT], params[k + BP_DRAIN_VCRIT],
-        params[k + BP_SOURCE_SAT], params[k + BP_DRAIN_SAT], gmin,
-      );
-      const lastVbs = junction[4];
-      const lastVbd = junction[5];
-      state[r + STATE_VBS] = lastVbs;
-      state[r + STATE_VBD] = lastVbd;
-      state[r + STATE_LIMITED] = junction[6];
-      const gbs = junction[0];
-      const gbd = junction[2];
-      const ceqbs = polarity * junction[1];
-      const ceqbd = polarity * junction[3];
+      // Reverse mode swaps drain and source, their value slots, and uses vbd.
+      let nD = jD;
+      let nS = jS;
+      let vGS = polarity * (vG - vS);
+      let vDS = polarity * (vD - vS);
+      const reverse = vDS < 0;
+      if (reverse) {
+        nD = jS;
+        nS = jD;
+        vGS -= vDS;
+        vDS = -vDS;
+      }
+
+      let gbs: number, gbd: number, ceqbs: number, ceqbd: number;
+      let gm: number, gds: number, gmbs: number, Ieq: number;
+      // Same IEEE-754 values: `===` rejects NaN (an invalidated key), Object.is
+      // tells -0 from +0. V8 lowers both inline.
+      const kD = loads[c + LOAD_VD], kG = loads[c + LOAD_VG];
+      const kS = loads[c + LOAD_VS], kB = loads[c + LOAD_VB];
+      const kVbs = loads[c + LOAD_LAST_VBS], kVbd = loads[c + LOAD_LAST_VBD];
+      const kGmin = loads[c + LOAD_GMIN];
+      if (
+        kD === vD && kG === vG && kS === vS && kB === vB
+        && kVbs === inVbs && kVbd === inVbd && kGmin === gmin
+        && Object.is(kD, vD) && Object.is(kG, vG) && Object.is(kS, vS) && Object.is(kB, vB)
+        && Object.is(kVbs, inVbs) && Object.is(kVbd, inVbd) && Object.is(kGmin, gmin)
+      ) {
+        // The device's last load had exactly these inputs, and its state row
+        // still holds that load's writes (see MosfetStateStore.loadCache), so
+        // evaluating again would rewrite the same state and stamp the same
+        // values: reuse them.
+        gbs = loads[c + LOAD_GBS];
+        gbd = loads[c + LOAD_GBD];
+        ceqbs = loads[c + LOAD_CEQBS];
+        ceqbd = loads[c + LOAD_CEQBD];
+        gm = loads[c + LOAD_GM];
+        gds = loads[c + LOAD_GDS];
+        gmbs = loads[c + LOAD_GMBS];
+        Ieq = loads[c + LOAD_IEQ];
+      } else {
+        // Bulk junctions first (limited vbs/vbd feed the drain current), on the unswapped terminals.
+        mos1BulkJunctions(
+          junction, vD, vS, vB, polarity, inVbs, inVbd, params[k + BP_VT],
+          params[k + BP_SOURCE_VCRIT], params[k + BP_DRAIN_VCRIT],
+          params[k + BP_SOURCE_SAT], params[k + BP_DRAIN_SAT], gmin,
+        );
+        const lastVbs = junction[4];
+        const lastVbd = junction[5];
+        state[r + STATE_VBS] = lastVbs;
+        state[r + STATE_VBD] = lastVbd;
+        state[r + STATE_LIMITED] = junction[6];
+        gbs = junction[0];
+        gbd = junction[2];
+        ceqbs = polarity * junction[1];
+        ceqbd = polarity * junction[3];
+
+        const vBS = reverse ? lastVbd : lastVbs;
+        mos1Channel(
+          channel, vGS, vDS, vBS, params[k + BP_TPHI], params[k + BP_SQRT_PHI],
+          params[k + BP_BUILT_IN_VON], params[k + BP_GAMMA], params[k + BP_LAMBDA], params[k + BP_BETA],
+        );
+        const ID = channel[0];
+        gm = channel[1];
+        gds = channel[2] + GMIN;
+        gmbs = channel[3];
+        state[r + STATE_VON] = channel[4];
+        recordMos1Load(state, r, junction, polarity * (vG - vS), polarity * (vD - vS), ID, gm, gds, gmbs);
+        Ieq = ID - gm * vGS - gds * vDS - gmbs * vBS;
+
+        loads[c + LOAD_VD] = vD;
+        loads[c + LOAD_VG] = vG;
+        loads[c + LOAD_VS] = vS;
+        loads[c + LOAD_VB] = vB;
+        loads[c + LOAD_LAST_VBS] = inVbs;
+        loads[c + LOAD_LAST_VBD] = inVbd;
+        loads[c + LOAD_GMIN] = gmin;
+        loads[c + LOAD_GBS] = gbs;
+        loads[c + LOAD_GBD] = gbd;
+        loads[c + LOAD_CEQBS] = ceqbs;
+        loads[c + LOAD_CEQBD] = ceqbd;
+        loads[c + LOAD_GM] = gm;
+        loads[c + LOAD_GDS] = gds;
+        loads[c + LOAD_GMBS] = gmbs;
+        loads[c + LOAD_IEQ] = Ieq;
+      }
+
       if (jB >= 0) {
         gValues[allSlots[s + SLOT_BB]] += gbs + gbd;
         if (jS >= 0) gValues[allSlots[s + SLOT_BS]] -= gbs;
@@ -1180,40 +1312,17 @@ export class MOSFET implements DeviceModel {
         b[jD] += ceqbd;
       }
 
-      // Reverse mode swaps drain and source, their value slots, and uses vbd.
-      let nD = jD;
-      let nS = jS;
-      let vGS = polarity * (vG - vS);
-      let vDS = polarity * (vD - vS);
-      let vBS = lastVbs;
       let slotDG = allSlots[s + SLOT_DG], slotDD = allSlots[s + SLOT_DD];
       let slotDS = allSlots[s + SLOT_DS], slotDB = allSlots[s + SLOT_DB];
       let slotSG = allSlots[s + SLOT_SG], slotSD = allSlots[s + SLOT_SD];
       let slotSS = allSlots[s + SLOT_SS], slotSB = allSlots[s + SLOT_SB];
-      if (vDS < 0) {
-        nD = jS;
-        nS = jD;
-        vGS -= vDS;
-        vDS = -vDS;
-        vBS = lastVbd;
+      if (reverse) {
         slotDG = allSlots[s + SLOT_SG]; slotDD = allSlots[s + SLOT_SS];
         slotDS = allSlots[s + SLOT_SD]; slotDB = allSlots[s + SLOT_SB];
         slotSG = allSlots[s + SLOT_DG]; slotSD = allSlots[s + SLOT_DS];
         slotSS = allSlots[s + SLOT_DD]; slotSB = allSlots[s + SLOT_DB];
       }
 
-      mos1Channel(
-        channel, vGS, vDS, vBS, params[k + BP_TPHI], params[k + BP_SQRT_PHI],
-        params[k + BP_BUILT_IN_VON], params[k + BP_GAMMA], params[k + BP_LAMBDA], params[k + BP_BETA],
-      );
-      const ID = channel[0];
-      const gm = channel[1];
-      const gds = channel[2] + GMIN;
-      const gmbs = channel[3];
-      state[r + STATE_VON] = channel[4];
-      recordMos1Load(state, r, junction, polarity * (vG - vS), polarity * (vD - vS), ID, gm, gds, gmbs);
-
-      const Ieq = ID - gm * vGS - gds * vDS - gmbs * vBS;
       if (nD >= 0) {
         if (nG >= 0) gValues[slotDG] += gm;
         gValues[slotDD] += gds;
