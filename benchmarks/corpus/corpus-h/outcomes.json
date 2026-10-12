@@ -76,24 +76,24 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 23,
-      "failed": 6,
-      "unsupported": 23
+      "success": 39,
+      "failed": 1,
+      "unsupported": 12
     },
     "outcomes": {
-      "matched": 20,
-      "mismatch": 3,
+      "matched": 32,
+      "mismatch": 7,
       "not-compared": 0,
-      "spice-ts-loss": 29,
+      "spice-ts-loss": 13,
       "ngspice-failed": 0,
       "both-failed": 0
     },
     "bySource": {
       "kicad": {
-        "matched": 1,
-        "mismatch": 0,
+        "matched": 2,
+        "mismatch": 2,
         "not-compared": 0,
-        "spice-ts-loss": 4,
+        "spice-ts-loss": 1,
         "ngspice-failed": 0,
         "both-failed": 0
       },
@@ -114,43 +114,24 @@
         "both-failed": 0
       },
       "spicesharpparser": {
-        "matched": 12,
-        "mismatch": 3,
+        "matched": 14,
+        "mismatch": 4,
         "not-compared": 0,
-        "spice-ts-loss": 9,
+        "spice-ts-loss": 6,
         "ngspice-failed": 0,
         "both-failed": 0
       },
       "xictools": {
-        "matched": 1,
-        "mismatch": 0,
+        "matched": 10,
+        "mismatch": 1,
         "not-compared": 0,
-        "spice-ts-loss": 12,
+        "spice-ts-loss": 2,
         "ngspice-failed": 0,
         "both-failed": 0
       }
     }
   },
   "gapBuckets": [
-    {
-      "bucket": "control: edit command and # comment lines inside .control",
-      "fixtures": 11,
-      "ngspiceSuccess": 11,
-      "ids": [
-        "xictools-wrspice-devlib-obsolete-bsim1tst-cir",
-        "xictools-wrspice-devlib-obsolete-bsim2tst-cir",
-        "xictools-wrspice-examples-bjtnoise-cir",
-        "xictools-wrspice-examples-diodisto-cir",
-        "xictools-wrspice-examples-mos6inv-cir",
-        "xictools-wrspice-examples-mosamp2-cir",
-        "xictools-wrspice-examples-mosmem-cir",
-        "xictools-wrspice-examples-pz2-cir",
-        "xictools-wrspice-examples-pzt-cir",
-        "xictools-wrspice-examples-resnoise-cir",
-        "xictools-wrspice-examples-simplepz-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/787"
-    },
     {
       "bucket": "expression: bare parameter names as values (X-card R=R1, M = 10)",
       "fixtures": 5,
@@ -163,28 +144,6 @@
         "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example02-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/788"
-    },
-    {
-      "bucket": "convergence",
-      "fixtures": 3,
-      "ngspiceSuccess": 3,
-      "ids": [
-        "kicad-qa-data-eeschema-issue13162-spice",
-        "kicad-qa-data-eeschema-spice-netlists-legacy-sources-legacy-sources-spice",
-        "kicad-qa-data-eeschema-spice-netlists-tlines-tlines-spice"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/772"
-    },
-    {
-      "bucket": "crash: uncaught TypeError instead of a structured error",
-      "fixtures": 3,
-      "ngspiceSuccess": 3,
-      "ids": [
-        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example01-cir",
-        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example01-stringwriter-cir",
-        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example01-without-params-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/789"
     },
     {
       "bucket": "directive: bare .probe card",
@@ -205,6 +164,15 @@
         "xictools-wrspice-examples-schmitt-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/790"
+    },
+    {
+      "bucket": "control: failed setplot aborts the script (ngspice-47 continues)",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "xictools-wrspice-examples-diodisto-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/798"
     },
     {
       "bucket": "directive: .four",
@@ -251,16 +219,17 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "Timestep too small at t=0: dt=9.313225746154787e-16"
+        "status": "success",
+        "analyses": [
+          "tran:508"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "convergence"
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 3.65e-13,
+      "worstSignal": "tran i(vin1)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "kicad-qa-data-eeschema-issue13431-spice",
@@ -333,16 +302,17 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "Singular matrix: zero pivot at matrix column 17 (nodes: /vtrrandom)"
+        "status": "success",
+        "analyses": [
+          "tran:3029"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "convergence"
+      "comparedAnalyses": 1,
+      "comparedSignals": 27,
+      "worstNormalizedError": 2.94,
+      "worstSignal": "tran v(/itrrandom)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "kicad-qa-data-eeschema-spice-netlists-tlines-tlines-spice",
@@ -360,16 +330,17 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "Singular matrix: zero pivot at matrix column 0 (nodes: /rlgc_in)"
+        "status": "success",
+        "analyses": [
+          "tran:1753"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "convergence"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.0453,
+      "worstSignal": "tran v(/z0_out)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "pyspice-examples-c-examples-ngspice-cb-examples-adder-mos-cir",
@@ -397,8 +368,8 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 8,
-      "worstNormalizedError": 3.44e-13,
-      "worstSignal": "tran v(5)",
+      "worstNormalizedError": 1.7e-13,
+      "worstSignal": "tran v(1)",
       "outcome": "matched",
       "gapBucket": null
     },
@@ -729,13 +700,13 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:51318"
+          "tran:51317"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 4,
       "worstNormalizedError": 1.27,
-      "worstSignal": "tran v(base1)",
+      "worstSignal": "tran v(base2)",
       "outcome": "mismatch",
       "gapBucket": null
     },
@@ -788,12 +759,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:11367"
+          "tran:11368"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 4,
-      "worstNormalizedError": 0.0184,
+      "worstNormalizedError": 0.0224,
       "worstSignal": "tran v(collector)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -1211,16 +1182,17 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "Cannot read properties of undefined (reading 'startsWith')"
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "crash: uncaught TypeError instead of a structured error"
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.15,
+      "worstSignal": "op v(n1)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example01-stringwriter-cir",
@@ -1238,16 +1210,17 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "Cannot read properties of undefined (reading 'startsWith')"
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "crash: uncaught TypeError instead of a structured error"
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 2.03e-8,
+      "worstSignal": "op v(n1)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example01-without-params-cir",
@@ -1265,16 +1238,17 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "Cannot read properties of undefined (reading 'startsWith')"
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "crash: uncaught TypeError instead of a structured error"
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 2.03e-8,
+      "worstSignal": "op v(n1)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example02-cir",
@@ -1377,16 +1351,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 111: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, set"
+        "status": "success",
+        "analyses": [
+          "dc:501"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: edit command and # comment lines inside .control"
+      "comparedAnalyses": 1,
+      "comparedSignals": 24,
+      "worstNormalizedError": 9.46e-9,
+      "worstSignal": "dc i(v4)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "xictools-wrspice-devlib-obsolete-bsim2tst-cir",
@@ -1406,16 +1381,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 83: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp"
+        "status": "success",
+        "analyses": [
+          "dc:501"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: edit command and # comment lines inside .control"
+      "comparedAnalyses": 1,
+      "comparedSignals": 24,
+      "worstNormalizedError": 8.17e-12,
+      "worstSignal": "dc i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "xictools-wrspice-examples-bjtnoise-cir",
@@ -1437,16 +1413,18 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 21: Unsupported .control command '#': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot"
+        "status": "success",
+        "analyses": [
+          "noise:1",
+          "noise:41"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: edit command and # comment lines inside .control"
+      "comparedAnalyses": 2,
+      "comparedSignals": 4,
+      "worstNormalizedError": 1.51e-7,
+      "worstSignal": "noise onoise_spectrum",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "xictools-wrspice-examples-diodisto-cir",
@@ -1468,16 +1446,16 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
+        "status": "failed",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 22: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp"
+        "firstErrorLine": "Control script error at line 18: no such plot '-1' setplot -1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: edit command and # comment lines inside .control"
+      "gapBucket": "control: failed setplot aborts the script (ngspice-47 continues)"
     },
     {
       "id": "xictools-wrspice-examples-mos6inv-cir",
@@ -1498,16 +1476,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 111: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, set"
+        "status": "success",
+        "analyses": [
+          "tran:315"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: edit command and # comment lines inside .control"
+      "comparedAnalyses": 1,
+      "comparedSignals": 44,
+      "worstNormalizedError": 0.00798,
+      "worstSignal": "tran v(xndinv4.14)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "xictools-wrspice-examples-mosamp2-cir",
@@ -1527,16 +1506,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 46: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp"
+        "status": "success",
+        "analyses": [
+          "tran:3052"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: edit command and # comment lines inside .control"
+      "comparedAnalyses": 1,
+      "comparedSignals": 24,
+      "worstNormalizedError": 0.0161,
+      "worstSignal": "tran v(6)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "xictools-wrspice-examples-mosmem-cir",
@@ -1557,16 +1537,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 32: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp"
+        "status": "success",
+        "analyses": [
+          "tran:150"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: edit command and # comment lines inside .control"
+      "comparedAnalyses": 1,
+      "comparedSignals": 13,
+      "worstNormalizedError": 0.000636,
+      "worstSignal": "tran i(vdd)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "xictools-wrspice-examples-pz2-cir",
@@ -1587,16 +1568,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 30: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp"
+        "status": "success",
+        "analyses": [
+          "pz:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: edit command and # comment lines inside .control"
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 1.72e-16,
+      "worstSignal": "pz v(pole(3))",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "xictools-wrspice-examples-pzt-cir",
@@ -1617,16 +1599,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 29: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp"
+        "status": "success",
+        "analyses": [
+          "pz:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: edit command and # comment lines inside .control"
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 1.82e-13,
+      "worstSignal": "pz v(pole(1))",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "xictools-wrspice-examples-resnoise-cir",
@@ -1647,16 +1630,18 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 12: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp"
+        "status": "success",
+        "analyses": [
+          "noise:1",
+          "noise:41"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: edit command and # comment lines inside .control"
+      "comparedAnalyses": 2,
+      "comparedSignals": 4,
+      "worstNormalizedError": 1.74e-7,
+      "worstSignal": "noise onoise_spectrum",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "xictools-wrspice-examples-schmitt-cir",
@@ -1707,17 +1692,18 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 12: Unsupported .control command '#edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, set"
+        "status": "success",
+        "analyses": [
+          "pz:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: edit command and # comment lines inside .control"
+      "comparedAnalyses": 1,
+      "comparedSignals": 2,
+      "worstNormalizedError": 1.19e-16,
+      "worstSignal": "pz v(pole(1))",
+      "outcome": "matched",
+      "gapBucket": null
     }
   ],
-  "outcomeSha256": "cc828106a2f9b505c00ceace57fa4124539aea73cd2ef9821fccc0209d59861c"
+  "outcomeSha256": "dc66ab513c0e607988ac2b5e4520b4488b6c9ec1041313b8a7c42451f081c05a"
 }
