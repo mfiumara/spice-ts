@@ -76,15 +76,15 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 50,
-      "failed": 1,
+      "success": 51,
+      "failed": 0,
       "unsupported": 1
     },
     "outcomes": {
       "matched": 39,
-      "mismatch": 11,
+      "mismatch": 12,
       "not-compared": 0,
-      "spice-ts-loss": 2,
+      "spice-ts-loss": 1,
       "ngspice-failed": 0,
       "both-failed": 0
     },
@@ -115,9 +115,9 @@
       },
       "spicesharpparser": {
         "matched": 16,
-        "mismatch": 7,
+        "mismatch": 8,
         "not-compared": 0,
-        "spice-ts-loss": 1,
+        "spice-ts-loss": 0,
         "ngspice-failed": 0,
         "both-failed": 0
       },
@@ -132,15 +132,6 @@
     }
   },
   "gapBuckets": [
-    {
-      "bucket": "execution: other failure",
-      "fixtures": 1,
-      "ngspiceSuccess": 1,
-      "ids": [
-        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-nested-cir"
-      ],
-      "issue": null
-    },
     {
       "bucket": "model: VDMOS power MOSFET",
       "fixtures": 1,
@@ -944,16 +935,17 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "Undefined subcircuit 'resistor'"
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "execution: other failure"
+      "comparedAnalyses": 1,
+      "comparedSignals": 1,
+      "worstNormalizedError": 0.7,
+      "worstSignal": "op i(v1)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-reversed-cir",
@@ -1670,5 +1662,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "62d21e64fb18949ccf02cc540ea2eb846129d767c6c1517e004d1e87e428276e"
+  "outcomeSha256": "7716492cb1a4771ded806943b2245e5cba98ab4abaa858a66d1a50228708af53"
 }
