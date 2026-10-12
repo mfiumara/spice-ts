@@ -1,4 +1,5 @@
 import { Circuit } from '../circuit.js';
+import { assertControlledSourceCard } from './controlled-source.js';
 import { ParseError } from '../errors.js';
 import { tokenizeNetlist, parseNumber } from './tokenizer.js';
 import { parseModelCard } from './model-parser.js';
@@ -1214,21 +1215,25 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       break;
     }
     case 'E': {
+      assertControlledSourceCard(tokens, lineNumber, raw);
       const gain = parseNumber(tokens[5]);
       circuit.addVCVS(name, tokens[1], tokens[2], tokens[3], tokens[4], gain);
       break;
     }
     case 'G': {
+      assertControlledSourceCard(tokens, lineNumber, raw);
       const gm = parseNumber(tokens[5]);
       circuit.addVCCS(name, tokens[1], tokens[2], tokens[3], tokens[4], gm);
       break;
     }
     case 'H': {
+      assertControlledSourceCard(tokens, lineNumber, raw);
       const gain = parseNumber(tokens[4]);
       circuit.addCCVS(name, tokens[1], tokens[2], tokens[3], gain);
       break;
     }
     case 'F': {
+      assertControlledSourceCard(tokens, lineNumber, raw);
       const gain = parseNumber(tokens[4]);
       circuit.addCCCS(name, tokens[1], tokens[2], tokens[3], gain);
       break;

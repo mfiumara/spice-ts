@@ -58,6 +58,7 @@ import {
   type PreparedXspiceInstance,
 } from './devices/xspice/compile.js';
 import type { XspiceInstanceCard, XspiceModelCard } from './parser/xspice-parser.js';
+import { assertControlledSourceCard } from './parser/controlled-source.js';
 import type { ControlScript } from './parser/control/script.js';
 import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
@@ -3452,6 +3453,7 @@ export class Circuit {
           break;
         }
         case 'E': {
+          assertControlledSourceCard(tokens, lineNumber, raw);
           const valStr = evalToken(tokens[5]);
           result.push({
             type: 'E', name: devName,
@@ -3461,6 +3463,7 @@ export class Circuit {
           break;
         }
         case 'G': {
+          assertControlledSourceCard(tokens, lineNumber, raw);
           const valStr = evalToken(tokens[5]);
           result.push({
             type: 'G', name: devName,
@@ -3483,6 +3486,7 @@ export class Circuit {
           break;
         }
         case 'H': {
+          assertControlledSourceCard(tokens, lineNumber, raw);
           const valStr = evalToken(tokens[4]);
           result.push({
             type: 'H', name: devName,
@@ -3493,6 +3497,7 @@ export class Circuit {
           break;
         }
         case 'F': {
+          assertControlledSourceCard(tokens, lineNumber, raw);
           const valStr = evalToken(tokens[4]);
           result.push({
             type: 'F', name: devName,

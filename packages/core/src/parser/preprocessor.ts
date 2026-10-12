@@ -474,8 +474,8 @@ function evaluateParamExpression(
 function substituteStatement(statement: PendingStatement, scopes: ParamScopes, measureNames: ReadonlySet<string>): string {
   try {
     if (MEASURE_CARD.test(statement.text)) return substituteMeasureCard(statement.text, scopes, measureNames);
-    const behavioralResistor = behavioralResistorAsBSource(statement.text);
-    const text = behavioralResistor ?? statement.text;
+    const behavioralCard = behavioralCardAsBSource(statement.text);
+    const text = behavioralCard ?? statement.text;
     if (/^\s*b/i.test(text)) {
       // B-cards: `'...'`, `{...}` and bare `.param` names are substituted by
       // the B-card front end; `temper` stays a live ASRC variable.
@@ -650,6 +650,28 @@ function behavioralResistorAsBSource(line: string): string | undefined {
   return `b${name} ${positive} ${negative} i = v(${positive}, ${negative})/(${expression})${coefficients} reciproctc=1`;
 }
 
+const BEHAVIORAL_CONTROLLED_SOURCE = /^\s*([eg]\S*)\s+(\S+)\s+(\S+)\s+(value|vol|cur)\s*=\s*(\S.*?)\s*$/i;
+
+/**
+ * ngspice (inpcom.c inp_compat) runs a behavioural E/G card as an ASRC:
+ * `Exxx n1 n2 value={expr}` / `vol={expr}` drives v(n1,n2) = expr and
+ * `Gxxx n1 n2 value={expr}` / `cur={expr}` sinks i = expr from n1 to n2.
+ * Returns the equivalent B-card, or undefined when the line is not one.
+ */
+function behavioralControlledSourceAsBSource(line: string): string | undefined {
+  const card = BEHAVIORAL_CONTROLLED_SOURCE.exec(line.slice(0, commentStart(line)));
+  if (!card) return undefined;
+  const [, name, positive, negative, keyword, expression] = card;
+  const voltage = /^e/i.test(name);
+  if (keyword.toLowerCase() === (voltage ? 'cur' : 'vol')) return undefined;
+  return `b${name} ${positive} ${negative} ${voltage ? 'v' : 'i'} = ${expression}`;
+}
+
+/** Behavioural R/E/G cards that ngspice rewrites to B-sources, as their B-card. */
+function behavioralCardAsBSource(line: string): string | undefined {
+  return behavioralResistorAsBSource(line) ?? behavioralControlledSourceAsBSource(line);
+}
+
 function toParseError(error: unknown, line: number, context: string): ParseError {
   const message = (error as Error).message
     .replace(/^Undefined variable '([^']*)'$/, "Undefined parameter '$1'");
@@ -741,11 +763,11 @@ function* collectStatements(
     }
 
     // Inside a subcircuit — expressions are evaluated per instance later.
-    // A resistor whose value reads v()/i() becomes a B-source here too.
+    // A resistor whose value reads v()/i(), or a value= E/G card, becomes a B-source here too.
     if (inSubckt > 0) {
       let text: string;
       try {
-        text = behavioralResistorAsBSource(line) ?? compactSubcircuitExpressions(line);
+        text = behavioralCardAsBSource(line) ?? compactSubcircuitExpressions(line);
       } catch (error) {
         throw toParseError(error, lineNumber, trimmed);
       }
