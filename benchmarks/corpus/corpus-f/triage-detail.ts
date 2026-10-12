@@ -12,7 +12,7 @@ import { readFile } from 'node:fs/promises';
 import { basename, resolve } from 'node:path';
 import { compareExecutions } from '../../aggregate-report.js';
 import type { CorpusFManifest } from './ingest.js';
-import { CORPUS_ROOT, MATCH_THRESHOLD, normalizedSignalErrors, peakFloor, sig3 } from './lib.js';
+import { CORPUS_ROOT, MATCH_THRESHOLD, normalizedSignalErrors, pairedReferenceSeries, peakFloor, sig3 } from './lib.js';
 import { runBoundedSimulate, runNgspice } from './outcomes.js';
 
 interface Sample { re: number; im?: number }
@@ -95,7 +95,8 @@ async function main(): Promise<void> {
   const comparisons = compareExecutions(spiceTs, ngspice.execution);
   const ngSeries = (analysis: string) => ngspice.execution.analyses.find(candidate => candidate.type === analysis)?.series as Series | undefined;
   const tsSeries = (analysis: string) => spiceTs.analyses.find(candidate => candidate.type === analysis)?.series as Series | undefined;
-  const { errors } = normalizedSignalErrors(comparisons, ngSeries as never);
+  const paired = pairedReferenceSeries(spiceTs, ngspice.execution);
+  const { errors } = normalizedSignalErrors(comparisons, paired);
   errors.sort((a, b) => b.normalized - a.normalized);
   for (const analysis of new Set(errors.map(error => error.analysis))) {
     const ng = ngSeries(analysis);
@@ -105,8 +106,9 @@ async function main(): Promise<void> {
   const over = errors.filter(error => error.normalized > MATCH_THRESHOLD).length;
   console.log(`  ${errors.length} signals compared, ${over} over ${MATCH_THRESHOLD}`);
   for (const error of errors.slice(0, top)) {
-    const ts = tsSeries(error.analysis);
-    const ng = ngSeries(error.analysis);
+    // The plots the signal was compared in: `.noise` totals live in the second noise plot (#774).
+    const ts = spiceTs.analyses.find(candidate => candidate.type === error.analysis && Object.hasOwn(candidate.series.signals, error.signal))?.series as Series | undefined;
+    const ng = paired(error.analysis, error.signal) as Series | undefined;
     let at = '';
     if (ts && ng && monotonic(ng.grid)) {
       let worst = -1;

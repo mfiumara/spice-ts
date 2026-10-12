@@ -48,8 +48,8 @@
       "unsupported": 13
     },
     "outcomes": {
-      "matched": 93,
-      "mismatch": 15,
+      "matched": 94,
+      "mismatch": 14,
       "not-compared": 0,
       "spice-ts-loss": 20,
       "ngspice-failed": 0,
@@ -2416,7 +2416,7 @@
       },
       "comparedAnalyses": 2,
       "comparedSignals": 4,
-      "worstNormalizedError": 5.71e-7,
+      "worstNormalizedError": 8.78e-8,
       "worstSignal": "noise v(onoise_total)",
       "outcome": "matched",
       "gapBucket": null
@@ -3477,9 +3477,9 @@
       },
       "comparedAnalyses": 2,
       "comparedSignals": 4,
-      "worstNormalizedError": 0.285,
-      "worstSignal": "noise v(inoise_total)",
-      "outcome": "mismatch",
+      "worstNormalizedError": 1.74e-7,
+      "worstSignal": "noise inoise_spectrum",
+      "outcome": "matched",
       "gapBucket": null
     },
     {
@@ -3735,5 +3735,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "7b94f0076c0944b2e55892050d364b730c2fd0c244577d1878cf6c73cb30ac33"
+  "outcomeSha256": "d405531c7967f4737a042d44a6566ba51198d5a0458d66d00911d6c191635f1f"
 }

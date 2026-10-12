@@ -6,11 +6,11 @@ Every deck below is byte-identical to Xyce_Regression `7bb7e98f0ed3a81a7d1cf1d10
 
 ## Totals
 
-- Fixtures: 128. Outcome SHA-256: `7b94f0076c0944b2e55892050d364b730c2fd0c244577d1878cf6c73cb30ac33`.
+- Fixtures: 128. Outcome SHA-256: `d405531c7967f4737a042d44a6566ba51198d5a0458d66d00911d6c191635f1f`.
 - ngspice (ngspice-47): 128 success, 0 failed, 0 unsupported.
 - spice-ts (0.3.0): 108 success, 7 failed, 13 unsupported.
-- Outcomes: matched 93, mismatch 15, not-compared 0, spice-ts-loss 20, ngspice-failed 0, both-failed 0.
-- Of the 128 decks ngspice runs successfully, spice-ts matches 93, mismatches 15, produces no comparable result for 0 and fails 20.
+- Outcomes: matched 94, mismatch 14, not-compared 0, spice-ts-loss 20, ngspice-failed 0, both-failed 0.
+- Of the 128 decks ngspice runs successfully, spice-ts matches 94, mismatches 14, produces no comparable result for 0 and fails 20.
 
 ## Method
 
@@ -46,7 +46,7 @@ Grouped from spice-ts's own first error line (corpus-g rules, then corpus-f rule
 | model: BSIM4 (LEVEL=14/54) | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/3 |
 | model: compact MOSFET model B3SOI (LEVEL=10) | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/747 |
 
-## Losses (35)
+## Losses (34)
 
 Every fixture that is not matched: spice-ts failures, mismatches above the threshold, and results that could not be compared.
 
@@ -84,11 +84,10 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | [SUBCKT/subckt_a0.cir](fixtures/SUBCKT/subckt_a0.cir) | success | success | mismatch | 0.295 | tran v(out) |  |
 | [TIA/ERROROPTION/erroroption.cir](fixtures/TIA/ERROROPTION/erroroption.cir) | success | success | mismatch | 0.225 | tran i(vin1) |  |
 | [TRANSLINE/ErrorMessageTest2.cir](fixtures/TRANSLINE/ErrorMessageTest2.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 19: Unsupported lossless transmission line parameter; only Z0 and TD are supported (F/NL/IC/REL/ABS are unsupported) TLINE1 2 0 3 0 Z0=50 NL=10 |
-| [VANOISE/commonEmitterBjt_mextram.cir](fixtures/VANOISE/commonEmitterBjt_mextram.cir) | success | success | mismatch | 0.285 | noise v(inoise_total) |  |
 | [VSTARTEST/vstarTest.cir](fixtures/VSTARTEST/vstarTest.cir) | success | success | mismatch | 0.0672 | tran i(vdddev) |  |
 | [WAMPDE/BLOCKING/simple_single_channel.cir](fixtures/WAMPDE/BLOCKING/simple_single_channel.cir) | success | success | mismatch | 2.45 | tran i(l2) |  |
 
-## Wins (93)
+## Wins (94)
 
 Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every common signal.
 
@@ -157,7 +156,7 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [NMESFET/nmesfet.cir](fixtures/NMESFET/nmesfet.cir) | success | success | matched | 8.52e-8 | dc i(vds) |  |
 | [NMOS_ANALYTIC/mosfet_level1.cir](fixtures/NMOS_ANALYTIC/mosfet_level1.cir) | success | success | matched | 1.73e-9 | tran i(vcc) |  |
 | [NMOS3_DC/mos3_dc.cir](fixtures/NMOS3_DC/mos3_dc.cir) | success | success | matched | 1.26e-15 | dc i(vds) |  |
-| [NOISE/cascodeBjtNOISE.cir](fixtures/NOISE/cascodeBjtNOISE.cir) | success | success | matched | 5.71e-7 | noise v(onoise_total) |  |
+| [NOISE/cascodeBjtNOISE.cir](fixtures/NOISE/cascodeBjtNOISE.cir) | success | success | matched | 8.78e-8 | noise v(onoise_total) |  |
 | [Nonlinear/ConvergenceTests/NLStrategy1.cir](fixtures/Nonlinear/ConvergenceTests/NLStrategy1.cir) | success | success | matched | 0.00034 | tran v(9) |  |
 | [OP/comparator_op.cir](fixtures/OP/comparator_op.cir) | success | success | matched | 0.00034 | tran v(9) |  |
 | [Output/AC/ac-csv.cir](fixtures/Output/AC/ac-csv.cir) | success | success | matched | 8.15e-16 | ac i(v1) |  |
@@ -180,6 +179,7 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [TL1X/TL1X_mpi.cir](fixtures/TL1X/TL1X_mpi.cir) | success | success | matched | 8.32e-12 | tran i(vslow) |  |
 | [TwoLevelAPI/resInnerTran.cir](fixtures/TwoLevelAPI/resInnerTran.cir) | success | success | matched | 2.78e-16 | tran i(vconnect0000) |  |
 | [USERS_GUIDE/DiodeClipper.cir](fixtures/USERS_GUIDE/DiodeClipper.cir) | success | success | matched | 2.69e-8 | tran i(vcc) |  |
+| [VANOISE/commonEmitterBjt_mextram.cir](fixtures/VANOISE/commonEmitterBjt_mextram.cir) | success | success | matched | 1.74e-7 | noise inoise_spectrum |  |
 | [Verilog_POWER/power_juncap200_gear.cir](fixtures/Verilog_POWER/power_juncap200_gear.cir) | success | success | matched | 0.000493 | tran v(5) |  |
 | [VEXP/vexp.cir](fixtures/VEXP/vexp.cir) | success | success | matched | 2.71e-16 | tran v(1) |  |
 | [VPULSE/vpulse.cir](fixtures/VPULSE/vpulse.cir) | success | success | matched | 6.51e-16 | tran i(vpulse) |  |
