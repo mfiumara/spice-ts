@@ -13,6 +13,15 @@ import { SingularMatrixError, type MatrixVariableIdentity } from '../errors.js';
  * its complex equivalent, and all value arrays are doubled (separate real
  * and imaginary Float64Arrays).
  *
+ * Pivot acceptance follows ngspice-47 Sparse 1.3 (`spOrderAndFactor`, used by
+ * `SMPcReorder` in `NIacIter`): a candidate is acceptable when its magnitude
+ * |re| + |im| (`ELEMENT_MAG`) exceeds both the absolute threshold
+ * (CKTpivotAbsTol = 1e-13) and the relative threshold (CKTpivotRelTol = 1e-3)
+ * times the largest magnitude in its column of the reduced matrix. The natural
+ * diagonal is kept when acceptable; otherwise the column maximum is taken.
+ * Row pivoting creates fill the symbolic phase does not predict, so the factor
+ * buffers grow on demand, as in GilbertPeierlsSolver.
+ *
  * Usage:
  *   const solver = new ComplexSparseSolver();
  *   solver.analyzePattern(gCsc, cCsc);    // once per topology
@@ -53,7 +62,10 @@ export class ComplexSparseSolver {
   private factorized = false;
   private variables: readonly MatrixVariableIdentity[] = [];
 
-  private readonly pivotThreshold = 0.1;
+  /** ngspice-47 CKTpivotRelTol default (`cktntask.c`), Sparse RelThreshold. */
+  private readonly pivotRelThreshold = 1e-3;
+  /** ngspice-47 CKTpivotAbsTol default (`cktntask.c`), Sparse AbsThreshold. */
+  private readonly pivotAbsThreshold = 1e-13;
 
   /**
    * Analyze the union sparsity pattern of G and C.
@@ -187,17 +199,16 @@ export class ComplexSparseSolver {
     const wsRe = this.workspaceRe;
     const wsIm = this.workspaceIm;
     const lColPtr = this.lColPtr;
-    const lRows = this.lRows;
-    const lRe = this.lValuesRe;
-    const lIm = this.lValuesIm;
+    let lRe = this.lValuesRe;
+    let lIm = this.lValuesIm;
     const uColPtr = this.uColPtr;
-    const uRows = this.uRows;
-    const uRe = this.uValuesRe;
-    const uIm = this.uValuesIm;
+    let uRows = this.uRows;
+    let uRe = this.uValuesRe;
+    let uIm = this.uValuesIm;
     const uDiagIdx = this.uDiagIdx;
     const pivotOrigRow = this.pivotOrigRow;
     const pinv = this.pinv;
-    const lTempOrigRows = this.lTempOrigRows;
+    let lTempOrigRows = this.lTempOrigRows;
     const nonzeroFlag = this.nonzeroFlag;
     const nonzeroList = this.nonzeroList;
     const activeK = this.activeK;
@@ -262,6 +273,12 @@ export class ComplexSparseSolver {
         if (ukjRe === 0 && ukjIm === 0) continue;
 
         // Store U[k,j] (complex)
+        if (up === uRe.length) {
+          this.growUFactors(up + 1);
+          uRows = this.uRows;
+          uRe = this.uValuesRe;
+          uIm = this.uValuesIm;
+        }
         uRows[up] = k;
         uRe[up] = ukjRe;
         uIm[up] = ukjIm;
@@ -308,15 +325,13 @@ export class ComplexSparseSolver {
         }
       }
 
-      // === Step 3: THRESHOLD PIVOTING (compare magnitudes) ===
+      // === Step 3: THRESHOLD PIVOTING (ngspice ELEMENT_MAG = |re| + |im|) ===
       let maxMag = 0;
       let maxOrigRow = -1;
       for (let t = 0; t < nonzeroCount; t++) {
         const origRow = nonzeroList[t];
         if (pinv[origRow] < 0) {
-          const re = wsRe[origRow];
-          const im = wsIm[origRow];
-          const mag = Math.sqrt(re * re + im * im);
+          const mag = Math.abs(wsRe[origRow]) + Math.abs(wsIm[origRow]);
           if (mag > maxMag) {
             maxMag = mag;
             maxOrigRow = origRow;
@@ -328,25 +343,20 @@ export class ComplexSparseSolver {
         throw SingularMatrixError.atPivot(j, this.variables);
       }
 
-      // For complex MNA matrices, strongly prefer the natural diagonal row.
-      // The MNA ordering is structurally correct: node diagonals have GMIN + jwC,
-      // branch diagonals have structural 1s or -L. Only swap if the natural
-      // row is truly zero (< 1e-18), not based on threshold comparison —
-      // threshold pivoting incorrectly swaps small purely-imaginary diagonals
-      // (from jwC at low frequencies) with larger real off-diagonals.
+      // Keep the natural diagonal only when it passes ngspice's acceptance test
+      // (Sparse `spOrderAndFactor`: Mag > AbsThreshold && Mag > RelThreshold *
+      // LargestInCol). A diagonal that survives only as cancellation residue
+      // (#732: ~3e-12 against O(1) column entries) must not be used: it
+      // amplifies rounding error by 1/|pivot| and makes results depend on card
+      // order. When no candidate passes, Sparse falls back to the largest
+      // element (spSMALL_PIVOT), which is maxOrigRow here.
       const natOrigRow = perm[j];
-      let chosenOrigRow: number;
+      let chosenOrigRow = maxOrigRow;
       if (pinv[natOrigRow] < 0) {
-        const natRe = wsRe[natOrigRow];
-        const natIm = wsIm[natOrigRow];
-        const natMag = Math.sqrt(natRe * natRe + natIm * natIm);
-        if (natMag >= 1e-18) {
+        const natMag = Math.abs(wsRe[natOrigRow]) + Math.abs(wsIm[natOrigRow]);
+        if (natMag > this.pivotAbsThreshold && natMag > this.pivotRelThreshold * maxMag) {
           chosenOrigRow = natOrigRow;
-        } else {
-          chosenOrigRow = maxOrigRow;
         }
-      } else {
-        chosenOrigRow = maxOrigRow;
       }
 
       const pivRe = wsRe[chosenOrigRow];
@@ -369,6 +379,12 @@ export class ComplexSparseSolver {
       }
 
       // Store U diagonal for column j
+      if (up === uRe.length) {
+        this.growUFactors(up + 1);
+        uRows = this.uRows;
+        uRe = this.uValuesRe;
+        uIm = this.uValuesIm;
+      }
       uDiagIdx[j] = up;
       uRows[up] = j;
       uRe[up] = pivRe;
@@ -384,6 +400,12 @@ export class ComplexSparseSolver {
             (wsRe[origRow] !== 0 || wsIm[origRow] !== 0)) {
           const aRe = wsRe[origRow];
           const aIm = wsIm[origRow];
+          if (lp === lRe.length) {
+            this.growLFactors(lp + 1);
+            lRe = this.lValuesRe;
+            lIm = this.lValuesIm;
+            lTempOrigRows = this.lTempOrigRows;
+          }
           lTempOrigRows[lp] = origRow;
           lRe[lp] = (aRe * pivRe + aIm * pivIm) / pivMag2;
           lIm[lp] = (aIm * pivRe - aRe * pivIm) / pivMag2;
@@ -407,6 +429,8 @@ export class ComplexSparseSolver {
     for (let k = 0; k < n; k++) {
       pinv[perm[k]] = k;
     }
+    if (this.lRows.length < lp) this.lRows = new Int32Array(lTempOrigRows.length);
+    const lRows = this.lRows;
     for (let p = 0; p < lp; p++) {
       lRows[p] = pinv[lTempOrigRows[p]];
     }
@@ -482,6 +506,32 @@ export class ComplexSparseSolver {
     }
 
     return [xRe, xIm];
+  }
+
+  private growLFactors(required: number): void {
+    const capacity = Math.max(required, Math.max(4, this.lValuesRe.length * 2));
+    const re = new Float64Array(capacity);
+    const im = new Float64Array(capacity);
+    const rows = new Int32Array(capacity);
+    re.set(this.lValuesRe);
+    im.set(this.lValuesIm);
+    rows.set(this.lTempOrigRows);
+    this.lValuesRe = re;
+    this.lValuesIm = im;
+    this.lTempOrigRows = rows;
+  }
+
+  private growUFactors(required: number): void {
+    const capacity = Math.max(required, Math.max(4, this.uValuesRe.length * 2));
+    const re = new Float64Array(capacity);
+    const im = new Float64Array(capacity);
+    const rows = new Int32Array(capacity);
+    re.set(this.uValuesRe);
+    im.set(this.uValuesIm);
+    rows.set(this.uRows);
+    this.uValuesRe = re;
+    this.uValuesIm = im;
+    this.uRows = rows;
   }
 }
 

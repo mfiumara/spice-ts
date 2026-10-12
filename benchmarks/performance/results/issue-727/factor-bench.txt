@@ -1,0 +1,12 @@
+main   grid 100: factorize ms min 46.5 median 47.3 | supernodal n/a
+branch grid 100: factorize ms min 27.1 median 42.4 | supernodal 15948
+main   grid 100: factorize ms min 36.3 median 65.2 | supernodal n/a
+branch grid 100: factorize ms min 32.9 median 45.1 | supernodal 15948
+main   grid 100: factorize ms min 52.1 median 52.6 | supernodal n/a
+branch grid 100: factorize ms min 36.8 median 38.4 | supernodal 15948
+main   grid 224: factorize ms min 568.9 median 595.2 | supernodal n/a
+branch grid 224: factorize ms min 357.8 median 387.6 | supernodal 87665
+main   grid 224: factorize ms min 583.5 median 637.2 | supernodal n/a
+branch grid 224: factorize ms min 346.5 median 395.6 | supernodal 87665
+main   grid 224: factorize ms min 573.1 median 594.1 | supernodal n/a
+branch grid 224: factorize ms min 380.8 median 397.6 | supernodal 87665

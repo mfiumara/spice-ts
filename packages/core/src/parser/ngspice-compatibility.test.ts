@@ -38,6 +38,10 @@ const supportedFixtures: Fixture[] = [
   { feature: 'output-only directives', netlist: '.save v(out)\n.print tran v(out)\n.plot v(out)\n.op' },
   { feature: 'B-source V= and I= expressions', netlist: 'V1 in 0 1\nB1 out 0 V=V(in)^2 > 0.5 ? 1 : 0\nB2 out 0 I=max(V(in),0) tc1=1m\n.op' },
   { feature: 'S/W switches', netlist: '.model SMOD SW(VT=1 VH=0.1)\n.model WMOD CSW IT=1m\nV1 c 0 1\nS1 out 0 c 0 SMOD ON\nW1 out 0 V1 WMOD\n.op' },
+  { feature: 'EXP source waveform', netlist: 'V1 in 0 EXP(0 1 1n 1n)\n.tran 0.1n 1n' },
+  { feature: 'SFFM source waveform', netlist: 'V1 in 0 SFFM(0 1 1k 1 10)\n.tran 1u 1m' },
+  { feature: 'AM source waveform', netlist: 'V1 in 0 AM(1 1 1k 10k)\n.tran 1u 1m' },
+  { feature: 'PWL TD= and R= parameters', netlist: 'V1 in 0 PWL(0 0 1u 1 2u 0) TD=1u R=0\n.tran 0.1u 10u' },
   { feature: 'bounded lossless transmission line', netlist: 'T1 in 0 out 0 Z0=50 TD=1n\n.tran 1n 10n' },
   { feature: '.measure/.meas cards', netlist: 'V1 out 0 1\n.tran 1n 10n\n.measure tran peak MAX v(out)\n.meas tran t1 when v(out)=0.5' },
   { feature: 'ngspice control-language scripting', netlist: 'V1 in 0 1\nR1 in 0 1k\n.control\nlet x = 1\nop\n.endc' },
@@ -45,9 +49,6 @@ const supportedFixtures: Fixture[] = [
 ];
 
 const unsupportedFixtures: Fixture[] = [
-  { feature: 'EXP source waveform', netlist: 'V1 in 0 EXP(0 1 1n 1n)\n.tran 0.1n 1n' },
-  { feature: 'SFFM source waveform', netlist: 'V1 in 0 SFFM(0 1 1k 1 10)\n.tran 1u 1m' },
-  { feature: 'AM source waveform', netlist: 'V1 in 0 AM(1 1 1k 10k)\n.tran 1u 1m' },
   { feature: 'external source waveform', netlist: 'V1 in 0 EXTERNAL\n.tran 1n 10n' },
   { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
   { feature: 'PSPICE logic behavioral source', netlist: 'B1 out 0 V=~V(in)\n.op' },
