@@ -244,49 +244,58 @@ export class GilbertPeierlsSolver implements SparseSolver {
       lColPtr[j] = lp;
       uColPtr[j] = up;
 
+      // Per-row state for this column, stamped so no per-column reset is needed:
+      //   settled  — touched, and either not yet pivoted (an L/pivot candidate)
+      //              or a pivoted row already queued as an active column;
+      //   dormant  — touched pivoted row whose value is currently exactly zero,
+      //              so its column is not (yet) active;
+      //   anything else — not touched in this column.
+      // Only the rare non-settled rows take the slow path in the update loop.
+      const settled = 2 * j + 1;
+      const dormant = 2 * j;
+
       // === Step 1: SCATTER column colPerm[j] of A into workspace (original row space) ===
       const col = colPerm[j];
       for (let p = A.colPtr[col]; p < A.colPtr[col + 1]; p++) {
         const origRow = A.rowIdx[p];
         workspace[origRow] = A.values[p];
-        if (nonzeroFlag[origRow] !== j) {
-          nonzeroFlag[origRow] = j;
+        // Stamps only grow, so anything below `dormant` is untouched here.
+        if (nonzeroFlag[origRow] < dormant) {
+          nonzeroFlag[origRow] = dormant;
           nonzeroList[nonzeroCount++] = origRow;
         }
       }
 
       // === Step 2: LEFT-LOOKING sparse triangular solve ===
-      // For each column k < j (in order), if workspace[perm[k]] != 0,
+      // For each column k < j in ascending order with workspace[perm[k]] != 0,
       // record U[k,j] and subtract L[:,k] * U[k,j] from the workspace.
       //
-      // We build the active set from nonzeroList: for each nonzero workspace
-      // position that is a previously-used pivot row, find its column k.
-      // Then process in sorted column order.
-
-      // Build sorted list of active columns
+      // The active columns are pivoted rows with a nonzero workspace value.
+      // They live in a binary min-heap (activeK[0..activeCount)), so fill that
+      // activates a later column is queued in O(log active) and columns are
+      // still processed in strictly ascending k. That order fixes the
+      // floating-point summation order of every workspace entry.
       let activeCount = 0;
       for (let t = 0; t < nonzeroCount; t++) {
         const origRow = nonzeroList[t];
         const k = pinv[origRow];
-        if (k >= 0 && k < j && workspace[origRow] !== 0) {
+        if (k < 0) {
+          nonzeroFlag[origRow] = settled;
+        } else if (workspace[origRow] !== 0) {
+          nonzeroFlag[origRow] = settled;
           activeK[activeCount++] = k;
-          // Encode active state in the pivot entry until this column finishes.
-          // -1 remains the unused-row sentinel; active k is stored as -k - 2.
-          pinv[origRow] = -k - 2;
+        } else {
+          nonzeroFlag[origRow] = dormant;
         }
       }
-      // Sort active columns
+      // An ascending array is a valid min-heap.
       sortInt32Prefix(activeK, activeCount);
 
-      // Process active columns in order. New non-zeros from fill-in may create
-      // additional active columns that need processing.
-      let ki = 0;
-      while (ki < activeCount) {
-        const k = activeK[ki];
-        ki++;
+      while (activeCount > 0) {
+        const k = activeK[0];
+        activeCount = heapPopMin(activeK, activeCount);
 
-        const pr = perm[k];
-        const ukj = workspace[pr];
+        const ukj = workspace[perm[k]];
         if (ukj === 0) continue;
 
         // Store U[k,j]
@@ -299,42 +308,28 @@ export class GilbertPeierlsSolver implements SparseSolver {
         uValues[up] = ukj;
         up++;
 
-        // Apply L column k: subtract L[i,k] * U[k,j] from workspace
-        for (let p = lColPtr[k]; p < lColPtr[k + 1]; p++) {
+        // Apply L column k: subtract L[i,k] * U[k,j] from workspace. Every
+        // L[:,k] row was unpivoted at step k, so a pivoted row met here has
+        // its pivot column strictly between k and j.
+        const pEnd = lColPtr[k + 1];
+        for (let p = lColPtr[k]; p < pEnd; p++) {
           const origI = lRows[p];
-          const lik = lValues[p];
-          workspace[origI] -= lik * ukj;
+          workspace[origI] -= lValues[p] * ukj;
 
-          if (nonzeroFlag[origI] !== j) {
-            nonzeroFlag[origI] = j;
-            nonzeroList[nonzeroCount++] = origI;
-          }
-
-          // A structural zero may already be in nonzeroList but become active
-          // only after this update. Track activation separately from structure.
-          const k2 = pinv[origI];
-          if (k2 > k && k2 < j && workspace[origI] !== 0) {
-            pinv[origI] = -k2 - 2;
-            activeK[activeCount] = k2;
-            activeCount++;
-            for (let q = activeCount - 1; q > ki; q--) {
-              if (activeK[q] < activeK[q - 1]) {
-                const tmp = activeK[q];
-                activeK[q] = activeK[q - 1];
-                activeK[q - 1] = tmp;
-              } else {
-                break;
-              }
+          const state = nonzeroFlag[origI];
+          if (state !== settled) {
+            if (state !== dormant) nonzeroList[nonzeroCount++] = origI;
+            const k2 = pinv[origI];
+            if (k2 < 0) {
+              nonzeroFlag[origI] = settled;
+            } else if (workspace[origI] !== 0) {
+              nonzeroFlag[origI] = settled;
+              activeCount = heapPush(activeK, activeCount, k2);
+            } else {
+              nonzeroFlag[origI] = dormant;
             }
           }
         }
-      }
-
-      // Restore pivot-column indices before pivot selection. Encoded entries
-      // are all represented once in activeK, including fill-activated columns.
-      for (let t = 0; t < activeCount; t++) {
-        const k = activeK[t];
-        pinv[perm[k]] = k;
       }
 
       // === Step 3: THRESHOLD PIVOTING ===
@@ -613,6 +608,39 @@ function columnSingletonsFirst(
     rowPref[t] = nextRow;
   }
   return { colPerm, rowPref };
+}
+
+/** Insert `value` into the binary min-heap heap[0..count); returns the new count. */
+function heapPush(heap: Int32Array, count: number, value: number): number {
+  let i = count;
+  while (i > 0) {
+    const parent = (i - 1) >> 1;
+    const pv = heap[parent];
+    if (pv <= value) break;
+    heap[i] = pv;
+    i = parent;
+  }
+  heap[i] = value;
+  return count + 1;
+}
+
+/** Remove the minimum heap[0] from the binary min-heap heap[0..count); returns the new count. */
+function heapPopMin(heap: Int32Array, count: number): number {
+  const last = count - 1;
+  if (last === 0) return 0;
+  const value = heap[last];
+  let i = 0;
+  for (;;) {
+    let child = 2 * i + 1;
+    if (child >= last) break;
+    if (child + 1 < last && heap[child + 1] < heap[child]) child++;
+    const cv = heap[child];
+    if (cv >= value) break;
+    heap[i] = cv;
+    i = child;
+  }
+  heap[i] = value;
+  return last;
 }
 
 /**
