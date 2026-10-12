@@ -900,8 +900,15 @@ class ControlInterpreter {
               (entry.ac ?? []).map(value => value.imaginary),
               scale,
             );
-          for (const name of sensitivityVectorNames(entry.device, entry.parameter, ac)) {
-            plot.vectors.set(name, renamed(vector, name));
+          for (const { name, firstPointOnly } of sensitivityVectorNames(entry.device, entry.parameter, ac)) {
+            plot.vectors.set(name, firstPointOnly
+              ? complexVector(
+                name,
+                (entry.ac ?? []).map((value, index) => (index === 0 ? value.real : -0)),
+                (entry.ac ?? []).map((value, index) => (index === 0 ? value.imaginary : -0)),
+                scale,
+              )
+              : renamed(vector, name));
           }
         }
         return plot;
@@ -1145,17 +1152,27 @@ function gettokAt(text: string, start: number): { token: string; end: number } {
 /**
  * Names of a sensitivity vector in ngspice-47's `sens<n>` plot (cktsens.c names
  * each perturbed parameter `<device>` for its primary value, `<device>_<param>`
- * otherwise). A resistor's AC resistance defaults to its resistance, so ngspice
- * lists the same AC sensitivity as both `r1` and `r1_ac` (spice-ts rejects an
- * explicit `ac=` resistance in AC sensitivity).
+ * otherwise). A resistor's AC resistance defaults to its resistance, so in an
+ * AC plot `r1_ac` holds the AC sensitivity at every frequency. ngspice-47 also
+ * lists `r1`, whose perturbation only reaches the matrix at the first frequency:
+ * `r1` equals `r1_ac` at point 0 and is -0 at every later point (`firstPointOnly`).
+ * spice-ts rejects an explicit `ac=` resistance in AC sensitivity.
  */
-function sensitivityVectorNames(device: string, parameter: SensitivityEntry['parameter'], ac: boolean): string[] {
+function sensitivityVectorNames(
+  device: string,
+  parameter: SensitivityEntry['parameter'],
+  ac: boolean,
+): { name: string; firstPointOnly: boolean }[] {
   const name = device.toLowerCase();
+  const plain = (vectorName: string) => [{ name: vectorName, firstPointOnly: false }];
   switch (parameter) {
-    case 'resistance': return ac ? [name, `${name}_ac`] : [name];
-    case 'acMagnitude': return [`${name}_acmag`];
-    case 'gain': return [`${name}_gain`];
-    default: return [name];
+    case 'resistance':
+      return ac
+        ? [{ name, firstPointOnly: true }, { name: `${name}_ac`, firstPointOnly: false }]
+        : plain(name);
+    case 'acMagnitude': return plain(`${name}_acmag`);
+    case 'gain': return plain(`${name}_gain`);
+    default: return plain(name);
   }
 }
 

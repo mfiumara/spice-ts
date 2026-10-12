@@ -160,6 +160,59 @@ echo $&a $&b $&c $&f $&n
     expect(n).toBe(1);
   });
 
+  it('holds r<n> = r<n>_ac at the first point of a multi-point AC sweep and -0 after it', async () => {
+    // ngspice-47 `sens v(1) ac dec 2 1e5 1e7` on this deck (numdgt=15):
+    //   r1    = 4.006148015307697e-02 - 1.02300953294871e-02 j, then -0, -0, -0, -0
+    //   r1_ac = 4.006148015307697e-02 - 1.02300953294871e-02 j, 2.637868310858107e-02 - 2.48963885503349e-02 j,
+    //           -3.65663172030153e-03 - 1.58686503778222e-02 j, -2.20335796715557e-03 - 1.18390432170752e-03 j,
+    //           -2.60967917587457e-04 - 4.17990295190654e-05 j
+    //   (r2 / r2_ac follow the same pattern.)
+    const result = await simulate(`* rc2
+i1 0 1 dc=1.27 ac=42mA
+r1 1 2 1k
+r2 2 0 1k
+c1 1 0 100p
+.control
+set numdgt=15
+sens v(1) ac dec 2 1e5 1e7
+let n = length(r1)
+echo $&n
+let k = 0
+while k < n
+  let a = real(r1[k])
+  let b = imag(r1[k])
+  let c = real(r1_ac[k])
+  let d = imag(r1_ac[k])
+  let e = real(r2[k])
+  let f = real(r2_ac[k])
+  echo $&a $&b $&c $&d $&e $&f
+  let k = k + 1
+end
+.endc
+.end`);
+    const [count, ...rows] = result.control!.output;
+    expect(Number(count)).toBe(5);
+    const parsed = rows.map(row => row.split(' ').map(Number));
+    const ngspiceAc: [number, number][] = [
+      [4.006148015307697e-02, -1.02300953294871e-02],
+      [2.637868310858107e-02, -2.48963885503349e-02],
+      [-3.65663172030153e-03, -1.58686503778222e-02],
+      [-2.20335796715557e-03, -1.18390432170752e-03],
+      [-2.60967917587457e-04, -4.17990295190654e-05],
+    ];
+    parsed.forEach(([a, b, c, d, e, f], index) => {
+      const [re, im] = ngspiceAc[index];
+      expect(Math.abs(c - re)).toBeLessThan(1e-5 * Math.hypot(re, im));
+      expect(Math.abs(d - im)).toBeLessThan(1e-5 * Math.hypot(re, im));
+      expect(Math.abs(f - re)).toBeLessThan(1e-5 * Math.hypot(re, im));
+      if (index === 0) {
+        expect([a, b, e]).toEqual([c, d, f]);
+      } else {
+        expect([a, b, e].map(Math.abs)).toEqual([0, 0, 0]);
+      }
+    });
+  });
+
   it('records the sensitivity result as a control run and as the top-level field', async () => {
     const result = await simulate(`${rc}\n.control\nsens v(1) ac dec 2 1e3 1e4\n.endc\n.end`);
     expect(result.control!.runs.map(run => [run.plot, run.analysis])).toEqual([['sens1', 'sens']]);
