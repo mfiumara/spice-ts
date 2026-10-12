@@ -1,0 +1,8 @@
+LEVEL=260 NMOS drain sweep with body bias (ngspice-47 inpfindl.c: level > 99 becomes 1)
+VD d 0 DC 0
+VG g 0 DC 2
+VB b 0 DC -0.5
+M1 d g 0 b NE W=10U L=2U
+.MODEL NE NMOS (LEVEL=260 VTO=0.7 KP=110U GAMMA=0.4 PHI=0.65 LAMBDA=0.04)
+.DC VD -1 3 0.25
+.END

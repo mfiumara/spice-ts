@@ -477,7 +477,7 @@ function integrator(params: ResolvedXspiceParams): CodeModelBehavior {
     },
     truncate(call, truncation) {
       if (call.analysis !== 'tran' || call.integration === undefined) return Infinity;
-      const order = call.integration.method === 'euler' ? 1 : 2;
+      const order = truncation.order ?? (call.integration.method === 'euler' ? 1 : 2);
       if (historyLength < order + 1) return Infinity;
       const { deltas, reltol, abstol, chgtol, trtol } = truncation;
       const delta = deltas[0];

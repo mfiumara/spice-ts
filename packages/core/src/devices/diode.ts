@@ -801,8 +801,10 @@ export class Diode implements DeviceModel {
     const accepted = this.acceptedCharge;
     const previous = this.previousAcceptedCharge;
     if (!this.integratesTransientCharge || integration === undefined || accepted === undefined) return Infinity;
-    const secondOrder = integration.method === 'trapezoidal'
-      || (integration.method === 'gear2' && integration.prevDt !== undefined && previous !== undefined);
+    const secondOrder = truncation.order !== undefined
+      ? truncation.order === 2
+      : integration.method === 'trapezoidal'
+        || (integration.method === 'gear2' && integration.prevDt !== undefined && previous !== undefined);
     // Order 1 needs q(n+1), q(n), q(n-1); order 2 one point more.
     if (previous === undefined || (secondOrder && this.olderAcceptedCharge === undefined)) return Infinity;
     const [nA, nK] = this.nodes;

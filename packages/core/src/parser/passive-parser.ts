@@ -71,6 +71,23 @@ function parsePassiveValueAssignment(token: string, kind: 'C' | 'L'): number | u
   return parsePassiveNumber(valueToken, kind);
 }
 
+/**
+ * ngspice-47 inp2l.c / inp2c.c: an L or C card whose line ends at (or before)
+ * the second node is "not a valid inductor|capacitor instance line" and is
+ * ignored with a warning; no instance or node is created. Any token after the
+ * nodes (value, `L=`/`C=`, model name, parameter) keeps the card.
+ *
+ * Returns the warning text for a card to drop, or `undefined` to keep it.
+ */
+export function invalidPassiveInstanceLine(
+  tokens: readonly string[],
+  kind: 'C' | 'L',
+): string | undefined {
+  if (tokens.length > 3) return undefined;
+  const device = kind === 'C' ? 'capacitor' : 'inductor';
+  return `'${tokens.join(' ')}' is not a valid ${device} instance line, ignored!`;
+}
+
 export function parsePassiveElement(
   tokens: string[],
   startIdx: number,

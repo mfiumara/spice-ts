@@ -8,7 +8,7 @@ import {
   extractRFPort, extractSourceMultiplier, hasSourceMultiplier, parseSourceCardWaveform, parseInstanceParams,
   VOLTAGE_SOURCE_MULTIPLIER_ERROR,
 } from './waveform-parser.js';
-import { parsePassiveElement } from './passive-parser.js';
+import { invalidPassiveInstanceLine, parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
 import { parseBJTInstance } from './bjt-parser.js';
 import { parseJFETInstance } from './jfet-parser.js';
@@ -633,7 +633,7 @@ function parseDotCommand(
       assertSupportedModelType(tokens, lineNumber, context);
       assertSupportedResistorModel(tokens, lineNumber, context);
       const model = parseTransmissionLineModelCard(tokens, lineNumber)
-        ?? parseModelCard(tokens, lineNumber);
+        ?? parseModelCard(tokens, lineNumber, message => circuit.addParseWarning(message));
       circuit.addModel(model);
       break;
     }
@@ -1089,16 +1089,21 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       circuit.addResistor(name, tokens[1], tokens[2], parsed.value, parsed.params, parsed.modelName);
       break;
     }
-    case 'C': {
-      const parsed = parsePassiveElement(tokens, 3, 'C');
-      const { IC: ic, ...params } = parsed.params;
-      circuit.addCapacitor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, params, ic);
-      break;
-    }
+    case 'C':
     case 'L': {
-      const parsed = parsePassiveElement(tokens, 3, 'L');
+      const kind = type === 'C' ? 'C' : 'L';
+      const invalid = invalidPassiveInstanceLine(tokens, kind);
+      if (invalid !== undefined) {
+        circuit.addParseWarning(`${invalid} (line ${lineNumber})`);
+        break;
+      }
+      const parsed = parsePassiveElement(tokens, 3, kind);
       const { IC: ic, ...params } = parsed.params;
-      circuit.addInductor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, params, ic);
+      if (kind === 'C') {
+        circuit.addCapacitor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, params, ic);
+      } else {
+        circuit.addInductor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, params, ic);
+      }
       break;
     }
     case 'K': {

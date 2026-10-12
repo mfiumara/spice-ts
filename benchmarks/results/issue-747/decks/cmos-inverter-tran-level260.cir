@@ -1,0 +1,11 @@
+LEVEL=260 CMOS inverter transient, default model cards (ngspice-47 inpfindl.c: level > 99 becomes 1)
+VDD vdd 0 DC 3
+VIN in 0 PULSE(0 3 10N 5N 5N 100N 220N)
+MP out in vdd vdd PM W=1U L=1U AD=1E-12 AS=1E-12 PS=2E-6 PD=2E-6
+MN out in 0 0 NM W=1U L=1U AD=1E-12 AS=1E-12 PS=2E-6 PD=2E-6
+CL out 0 0.1P
+RL out 0 1MEG
+.MODEL NM NMOS LEVEL=260 TNOM=27
+.MODEL PM PMOS LEVEL=260 TNOM=27
+.TRAN 1N 400N 0 1N
+.END
