@@ -38,8 +38,18 @@ describe('classic MOS transient convergence (issue #302)', () => {
     expect(transient.time.at(-1)).toBeCloseTo(10e-6, 12);
     // ngspice-47 (Homebrew, `-r` raw and `.print tran v(5)`) v(5) at 10 us,
     // settled after the 5 us edge, is 9.46397521 (9.463975 printed); spice-ts
-    // is 9.463972 with ngspice's CKTtrunc step control (#621), and was
-    // 9.463961 (1.4e-5 off) with the node-voltage LTE.
-    expect(Math.abs(transient.voltage('5').at(-1)! - 9.46397521)).toBeLessThan(1e-5);
+    // was 9.463972 with ngspice's CKTtrunc step control (#621), and 9.463961
+    // (1.4e-5 off) with the node-voltage LTE.
+    //
+    // That default-step ngspice value still carries ngspice's own
+    // discretisation error: with `.tran 0.1us 10us 0 10n` (or 2n, 1n) ngspice
+    // ends at 9.4639607061, its `.op` value with VIN = 0, 1.45e-5 below its
+    // default run. Since spice-ts retries Newton failures at order 1 with
+    // ngspice's 100-iteration limit (#804), it ends at 9.463964: 1.1e-5 from
+    // ngspice's default run, which is within that spread, and 3e-6 from the
+    // settled value.
+    const v5 = transient.voltage('5').at(-1)!;
+    expect(Math.abs(v5 - 9.46397521)).toBeLessThan(1.5e-5);
+    expect(Math.abs(v5 - 9.4639607061)).toBeLessThan(5e-6);
   });
 });
