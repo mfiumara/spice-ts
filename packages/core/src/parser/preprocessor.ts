@@ -63,9 +63,37 @@ export async function preprocessDeck(
   guard: ProtocolExecutionGuard | undefined,
   lineOffset: number,
 ): Promise<PreprocessedDeck> {
+  const steps = preprocessSteps(netlist, resolver !== undefined, guard, lineOffset);
+  let step = steps.next();
+  while (!step.done) step = steps.next(await resolver!(step.value));
+  return step.value;
+}
+
+/**
+ * @internal Synchronous {@link preprocessDeck} for `parse()` (#510): the same
+ * `.param`/`.func`/`.if` preprocessing, without `.include`/`.lib` file
+ * resolution, which reports that it needs `parseAsync()`.
+ */
+export function preprocessDeckSync(
+  netlist: string,
+  guard: ProtocolExecutionGuard | undefined,
+  lineOffset: number,
+): PreprocessedDeck {
+  const step = preprocessSteps(netlist, false, guard, lineOffset).next();
+  if (!step.done) throw new Error('preprocessDeckSync: unexpected include request without a resolver');
+  return step.value;
+}
+
+/** Preprocessing as a generator that yields each include path and resumes with its content. */
+function* preprocessSteps(
+  netlist: string,
+  hasResolver: boolean,
+  guard: ProtocolExecutionGuard | undefined,
+  lineOffset: number,
+): Generator<string, PreprocessedDeck, string> {
   const state = newCollectState();
   const { definitions, statements } = state;
-  await collectStatements(netlist, resolver, new Set(), [], 0, state, guard, lineOffset);
+  yield* collectStatements(netlist, hasResolver, new Set(), [], 0, state, guard, lineOffset);
   const unterminated = state.openBlocks[0];
   if (unterminated !== undefined) {
     const block = state.blocks[unterminated];
@@ -165,6 +193,19 @@ const CONDITIONAL_CARD = /^\.(elseif|else|endif|if)(?![\w])/i;
 const FUNC_DIRECTIVE = /^\.func(?![\w])/i;
 const CSPARAM_DIRECTIVE = /^\.csparam(?![\w])/i;
 const PARAM_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*(\{[^}]+\}|'[^']*'|"[^"]*"|\S+)/g;
+
+/**
+ * ngspice-47 reads the whole rest of a single-assignment `.param` card as the
+ * expression (`.param x = 1 + 2` is 3, `.param x = 1 +` is an error), not just
+ * its first token. Delimited values and multi-assignment cards keep their token.
+ */
+function singleParamValue(card: string, assignment: RegExpExecArray | RegExpMatchArray): string {
+  const value = assignment[2];
+  if (/^[{'"]/.test(value)) return value;
+  const body = card.slice(7).trim();
+  const rest = body.slice(assignment.index! + assignment[0].length - value.length);
+  return rest.slice(0, commentStart(rest)).trim() || value;
+}
 
 function paramDefinition(value: string, line: number, context: string): ParamDefinition {
   const delimited = value.length >= 2
@@ -515,16 +556,17 @@ function toParseError(error: unknown, line: number, context: string): ParseError
   return new ParseError(message, line, context);
 }
 
-async function collectStatements(
+/** Yields each `.include`/`.lib` path to fetch and resumes with the file content. */
+function* collectStatements(
   netlist: string,
-  resolver: IncludeResolver | undefined,
+  hasResolver: boolean,
   visited: Set<string>,
   chain: string[],
   depth: number,
   state: CollectState,
   guard?: ProtocolExecutionGuard,
   lineOffset = 0,
-): Promise<void> {
+): Generator<string, void, string> {
   guard?.maximum('maxIncludeDepth', depth, 'parse');
   if (depth > MAX_DEPTH) {
     throw new ParseError(`Include depth limit exceeded (${MAX_DEPTH})`, 0, '');
@@ -623,8 +665,11 @@ async function collectStatements(
 
     // .param at top level
     if (upper.startsWith('.PARAM ')) {
-      for (const assignment of trimmed.slice(7).trim().matchAll(PARAM_ASSIGNMENT)) {
-        definitions.set(assignment[1].toUpperCase(), paramDefinition(assignment[2], lineNumber, trimmed));
+      const assignments = [...trimmed.slice(7).trim().matchAll(PARAM_ASSIGNMENT)];
+      for (const assignment of assignments) {
+        definitions.set(assignment[1].toUpperCase(), paramDefinition(
+          assignments.length === 1 ? singleParamValue(trimmed, assignment) : assignment[2], lineNumber, trimmed,
+        ));
       }
       blank();
       continue;
@@ -647,7 +692,7 @@ async function collectStatements(
 
     // .include directive
     if (upper.startsWith('.INCLUDE ')) {
-      if (!resolver) {
+      if (!hasResolver) {
         throw new ParseError(
           '.include directive requires a resolver. Use parseAsync() with a resolveInclude option.',
           0, trimmed,
@@ -662,9 +707,9 @@ async function collectStatements(
         throw new CycleError([...chain, path]);
       }
       visited.add(path);
-      const content = await resolver(path);
-      await collectStatements(
-        content, resolver, visited, [...chain, path], depth + 1, state, guard,
+      const content = yield path;
+      yield* collectStatements(
+        content, hasResolver, visited, [...chain, path], depth + 1, state, guard,
       );
       visited.delete(path);
       continue;
@@ -674,7 +719,7 @@ async function collectStatements(
     if (upper.startsWith('.LIB ')) {
       const libTokens = trimmed.slice(5).trim().split(/\s+/);
       if (libTokens.length >= 2) {
-        if (!resolver) {
+        if (!hasResolver) {
           throw new ParseError(
             '.lib directive with file requires a resolver. Use parseAsync() with a resolveInclude option.',
             0, trimmed,
@@ -691,10 +736,10 @@ async function collectStatements(
           throw new CycleError([...chain, visitKey]);
         }
         visited.add(visitKey);
-        const content = await resolver(filePath);
+        const content = yield filePath;
         const extracted = extractLibSection(content, section);
-        await collectStatements(
-          extracted, resolver, visited, [...chain, visitKey], depth + 1, state, guard,
+        yield* collectStatements(
+          extracted, hasResolver, visited, [...chain, visitKey], depth + 1, state, guard,
         );
         visited.delete(visitKey);
         continue;
