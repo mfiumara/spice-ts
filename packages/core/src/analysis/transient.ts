@@ -4,26 +4,11 @@ import type {
 import type { CompiledCircuit } from '../circuit.js';
 import { TransientResult } from '../results.js';
 import { createDriverFromCompiled } from './transient-driver.js';
-import { maxTimestepOption } from './max-timestep.js';
+import { transientStepCap } from './max-timestep.js';
+
+export { runnableTransient } from './max-timestep.js';
 import { ColumnRecorder } from './transient-columns.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
-
-/**
- * The `.tran` analysis as the driver runs it. `.tran` TMAX is the step cap, as
- * in ngspice; without one, a caller `maxTimestep` option replaces the default
- * min(TSTEP, TSTOP/50) cap. A zero TSTEP runs at the cap, else TSTOP/50.
- * An option of 0 is unset; negative or non-finite options throw.
- */
-export function runnableTransient(
-  analysis: TransientAnalysis,
-  options?: Pick<SimulationOptions, 'maxTimestep'>,
-): TransientAnalysis {
-  const option = maxTimestepOption(options?.maxTimestep);
-  const maxTimestep = analysis.maxTimestep ?? option;
-  const capped = maxTimestep === undefined ? analysis : { ...analysis, maxTimestep };
-  if (capped.timestep > 0) return capped;
-  return { ...capped, timestep: maxTimestep ?? analysis.stopTime / 50 };
-}
 
 /**
  * Whether an accepted timepoint is part of the `.tran` output. Integration
@@ -51,7 +36,7 @@ export function solveTransient(
   const driver = createDriverFromCompiled(compiled, options, {
     stopTime: analysis.stopTime,
     timestep: analysis.timestep,
-    maxTimestep: analysis.maxTimestep ?? Math.min(analysis.timestep, analysis.stopTime / 50),
+    maxTimestep: transientStepCap(analysis),
     initialSolution,
     useInitialConditions: analysis.useInitialConditions,
     convergence,
