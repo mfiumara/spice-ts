@@ -255,7 +255,7 @@ describe('ComplexSparseSolver', () => {
       seed = (seed * 1103515245 + 12345) % 2147483648;
       return seed / 2147483648;
     };
-    for (let trial = 0; trial < 40; trial++) {
+    for (let trial = 0; trial < 120; trial++) {
       const n = 4 + Math.floor(rand() * 12);
       const G = new SparseMatrix(n);
       const C = new SparseMatrix(n);
@@ -270,7 +270,7 @@ describe('ComplexSparseSolver', () => {
       const p = Array.from({ length: n }, (_, i) => i).sort(() => rand() - 0.5);
       for (let i = 0; i < n; i++) put(i, p[i], 1 + rand(), rand() < 0.5 ? rand() * 1e-6 : 0);
       for (let i = 0; i < n; i++) put(i, i, rand() < 0.5 ? 1e-15 : 0, rand() < 0.5 ? 1e-12 * rand() : 0);
-      for (let e = 0; e < 2 * n; e++) {
+      for (let e = 0; e < (1 + (trial % 4)) * n; e++) {
         put(Math.floor(rand() * n), Math.floor(rand() * n), rand() - 0.5, rand() < 0.3 ? rand() * 1e-6 : 0);
       }
       const gCsc = toCsc(G).csc;
