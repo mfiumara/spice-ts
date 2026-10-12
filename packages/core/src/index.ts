@@ -85,6 +85,7 @@ export {
   UnsupportedModelVersionError,
   UnsupportedCircuitModelTypeError,
   ModelTypeMismatchError,
+  UnsupportedModelParameterError,
   UnsupportedTemperatureError,
 } from './errors.js';
 export { SUPPORTED_MODEL_TYPES, DEVICE_MODEL_TYPES, UnsupportedModelTypeError } from './parser/model-type.js';

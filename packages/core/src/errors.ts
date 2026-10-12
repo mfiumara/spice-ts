@@ -170,8 +170,8 @@ export class CycleError extends SpiceError {
 
 /**
  * Thrown when a MOSFET model card selects a `LEVEL` that spice-ts does not
- * implement (for example MOS2 `LEVEL=2`, MOS3 `LEVEL=3`, BSIM1 `LEVEL=4` or
- * BSIM2 `LEVEL=5`). Such cards used to run the Level-1 equations silently.
+ * implement (for example MOS2 `LEVEL=2` or MOS3 `LEVEL=3`). Such cards used
+ * to run the Level-1 equations silently.
  */
 export class UnsupportedModelLevelError extends InvalidCircuitError {
   /** Stable machine-readable error code. */
@@ -278,6 +278,34 @@ export class ModelTypeMismatchError extends InvalidCircuitError {
         + ` (expected: ${expectedTypes.join(', ')})`,
     );
     this.name = 'ModelTypeMismatchError';
+  }
+}
+
+/**
+ * Thrown when a device instance or its model card sets a parameter that the
+ * selected device model does not define, or whose ngspice-47 behaviour
+ * spice-ts has not ported. Such a parameter would otherwise be ignored
+ * silently.
+ */
+export class UnsupportedModelParameterError extends InvalidCircuitError {
+  /** Stable machine-readable error code. */
+  readonly code = 'UNSUPPORTED_MODEL_PARAMETER';
+
+  constructor(
+    /** Instance name, e.g. `M1` (empty when the model card itself is rejected) */
+    public readonly deviceName: string,
+    /** Model card name, when known */
+    public readonly modelName: string | undefined,
+    /** Device model, e.g. `BSIM1` */
+    public readonly model: string,
+    /** Parameter name as written */
+    public readonly parameter: string,
+  ) {
+    super(
+      `${model} ${modelName ? `model '${modelName}'` : `instance '${deviceName}'`}:`
+        + ` parameter '${parameter}' is not supported`,
+    );
+    this.name = 'UnsupportedModelParameterError';
   }
 }
 
