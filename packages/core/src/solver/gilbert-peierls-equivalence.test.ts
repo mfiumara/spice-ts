@@ -372,3 +372,74 @@ describe('GilbertPeierlsSolver numeric kernel equivalence (#669)', () => {
     expect(solver.pivotReuseFactorizations).toBe(0);
   });
 });
+
+/**
+ * Issue #727: full factorizations apply runs of consecutive L columns with
+ * nested patterns (supernodes) to a later column as one row-major block. The
+ * frozen kernel above stays the oracle: factors must stay bit-identical,
+ * which pins the per-entry subtraction order, the touched-row order that
+ * drives pivot ties and the L row order, and the skipping of members whose
+ * U entry is exactly zero.
+ */
+describe('GilbertPeierlsSolver supernodal updates (#727)', () => {
+  it('matches the frozen kernel on grids large enough to form supernodes, and uses them', () => {
+    for (const side of [24, 41]) {
+      for (const graded of [false, true]) {
+        const next = rng(side * 13 + (graded ? 1 : 0));
+        const A = gridMna(side, () => (graded ? 1e-3 * (1 + Math.floor(next() * 4)) : 1e-3));
+        const solver = new GilbertPeierlsSolver();
+        solver.analyzePattern(A);
+        expect(checkAgainstReference(solver, A, `grid ${side} graded=${graded}`)).toBe('ok');
+        expect(solver.supernodalUpdates, `grid ${side} supernodal updates`).toBeGreaterThan(side);
+      }
+    }
+  });
+
+  it('matches the frozen kernel when members cancel to exact zeros and pivots move', () => {
+    let supernodal = 0;
+    for (let seed = 1; seed <= 60; seed++) {
+      const next = rng(1000 + seed);
+      const side = 8 + Math.floor(next() * 14);
+      // Small-integer conductances on a grid with sparse random cross terms:
+      // exact cancellation zeroes U entries inside supernodes, explicit zeros
+      // keep stored structure, and a weak diagonal forces off-preference pivots.
+      const n = side * side;
+      const m = new SparseMatrix(n);
+      const pick = () => [-3, -2, -1, -1, 1, 1, 2, 3, 0.5, 4][Math.floor(next() * 10)];
+      const weak = seed % 2 === 0;
+      for (let r = 0; r < side; r++) {
+        for (let c = 0; c < side; c++) {
+          const i = r * side + c;
+          if (weak && next() < 0.2) m.touch(i, i);
+          else m.add(i, i, pick() * (weak ? 0.25 : 8));
+          for (const [r2, c2] of [[r, c + 1], [r + 1, c]]) {
+            if (r2 >= side || c2 >= side) continue;
+            const j = r2 * side + c2;
+            if (next() < 0.08) { m.touch(i, j); m.add(j, i, pick()); continue; }
+            m.add(i, j, pick());
+            m.add(j, i, pick());
+          }
+          if (next() < 0.03) m.add(i, Math.floor(next() * n), pick());
+        }
+      }
+      const A = toCsc(m).csc;
+      for (const ordering of ['amd', 'natural'] as const) {
+        const solver = new GilbertPeierlsSolver({ ordering });
+        solver.analyzePattern(A);
+        if (checkAgainstReference(solver, A, `seed ${seed} ${ordering}`) === 'ok') {
+          supernodal += solver.supernodalUpdates;
+        }
+        for (let round = 0; round < 3; round++) {
+          const values = A.values.slice();
+          for (let p = 0; p < values.length; p++) {
+            const r = next();
+            if (r < 0.1) values[p] = 0;
+            else if (r < 0.4) values[p] = pick();
+          }
+          checkAgainstReference(solver, withValues(A, values), `seed ${seed} ${ordering} round ${round}`);
+        }
+      }
+    }
+    expect(supernodal).toBeGreaterThan(1000);
+  });
+});
