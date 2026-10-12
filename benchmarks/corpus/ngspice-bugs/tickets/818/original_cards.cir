@@ -1,0 +1,12 @@
+.title pwr argument bug
+VIN VIN 0 1.0
+VCONTROL VCONTROL 0 1.0
+
+X_VRES VIN 0 VCONTROL 0  VC_RES
+.SUBCKT VC_RES 1 2 3 4
+    R_VAL 1 2 VALUE = { pwr(V(3,4), 0.685841) }
+.ENDS
+
+.dc VCONTROL 0.1 1.0 0.1
+.print dc i(VIN)
+.end

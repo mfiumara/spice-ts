@@ -1,0 +1,21 @@
+* discrepancy.cir
+V3 N004 0 9
+L2 N004 N005 250u
+R1 N005 N006 1m
+M2 N006 N008 0 0 IM
+D2 N006 Vout_Ideal DI
+C2 Vout_Ideal 0 1n
+R2 Vout_Ideal 0 4.7meg
+V4 N007 0 PULSE(0 24 0 1n 1n 10u 20u)
+R3 N007 N008 20
+.options savecurrents
+.tran 1n 15m 0 1n
+.model IM VDMOS(Kp=1 Vto=5 Rd=10m Rs=10m)
+*.model IM NMOS(Kp=1 Vto=5 Rd=10m Rs=10m)
+.model DI D
+.control
+	run
+	plot V(Vout_Ideal)
+	plot @L2[I]
+.endc
+.end

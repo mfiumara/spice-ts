@@ -1,0 +1,10 @@
+klu refactor crash
+.options klu
+vin in 0 dc 0 ac 1
+r1 in out 1k
+c1 out 0 159n
+.ac dec 4 1 1k
+.tran 1u 20u
+.ac dec 4 1 1k
+.print ac v(out)
+.end

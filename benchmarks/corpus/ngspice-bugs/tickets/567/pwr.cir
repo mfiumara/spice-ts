@@ -1,0 +1,6 @@
+*
+.tran 100n 10u uic
+.print tran v(1)
+b1 1 0 v = {pwr(v(2), 0.5)}
+v1 2 0 4
+.end

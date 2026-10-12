@@ -1,0 +1,12 @@
+* Test
+.PARAM f=1
+.TRAN {1/f/10000} {2/f} 0
+* Generate the sinusoidal V(T) signal
+VV1 T 0 SINE(0 1 {f})
+RR1 T 0 100
+* Generate a current I = V(T) but limited to [0; 5]A
+Gx1 U1 0 TABLE {V(T)} = (0,0) (5,5)
+Rx1 U1 0 1
+Gx2 U2 0 VALUE={LIMIT(V(T),0,5)}
+Rx2 U2 0 1
+.END

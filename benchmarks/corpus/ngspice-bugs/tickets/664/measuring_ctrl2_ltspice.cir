@@ -1,0 +1,56 @@
+* Simple measurement examples
+* transient simulation of two sine signals with different frequencies
+
+vac1   1 0 DC 0  sin(0 1   1.0k 0 0)
+vac2   2 0 DC 0  sin(0 1.2 0.9k 0 0)
+vout out 0 DC 0  sin(0 1.2 1.3k 0 0)
+v0    in 0 DC 0  sin(0 1.2 1.3k 0 100)
+R1    in 0 100
+
+.tran  10u 5m 0 10u
+
+** Fails because FROM .. TO sets an interval restriction while WHEN v(1)=-0.4 is (another, but) point one.
+** Minor: ngspice-40 does not give the cause of the failure (e.g. LTspice does).
+.measure tran exper  FIND v(2) WHEN v(1)=-0.4 FROM=1ms TO=1.1ms
+
+** there is no v(3), but we get a result: yeval2 = 0.9705079 . In LTspice this fails, as it should.
+.measure tran yeval2 FIND v(2) WHEN v(1)=v(3) FALL=2
+
+** Here ngspice fails to evaluate '0.9*v(2)' and apparently decides it is either '0.9' or 'v(2)'
+.measure tran yeval3 FIND v(2) WHEN v(1)=0.9*v(2)
+
+* This works in LTspice: In ngspice I think only a simple variable can be returned.
+* ngspice returns
+* yeval4              =  9.000000e-01
+.measure tran yeval4 FIND v(1) WHEN v(1)=0.9*v(2)
+
+** This overwrites the previous yeval3 (above) and it would be nice if that was reported.
+** In LTspice this is a serious error and the simulator refuses to execute any measurement.
+* .measure tran yeval3 FIND v(2) AT=2m
+* Changed to yeval5 to see what the result should have been:
+.measure tran yeval5 FIND v(2) AT=2m
+
+.end
+
+* ****************************************************************
+* LTspice result:
+* ****************************************************************
+* .measure tran exper find v(2) when v(1)=-0.4 from=1ms to=1.1ms
+*  Error: Both a point and interval trigger are specified.
+
+* Measurement "yeval2" FAIL'ed
+* yeval3: v(2)=0 at 0
+* yeval4: v(1)=0 at 0
+* yeval5: v(2)=-1.14088 at 0.002
+
+
+* ****************************************************************
+* NGSPICE vs 40 result:
+* ****************************************************************
+* Error: measure  exper  find(AT) : out of interval
+*  .measure tran exper find v(2) when v(1)=-0.4 from=1ms to=1.1ms failed!
+
+* yeval2              =  9.705079e-01
+* yeval3              =  1.014966e+00
+* yeval4              =  9.000000e-01
+* yeval3              =  -1.140899e+00

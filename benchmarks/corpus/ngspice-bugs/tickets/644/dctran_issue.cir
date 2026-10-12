@@ -1,0 +1,17 @@
+*** dctran.c issue for SHARED_MODULE ***
+
+V_V1 Net_2 0 DC=1 AC=0 0
+A_U3 Net_2 Net_4 Triangle_U
+R_R1 Net_4 0 47K
+
+.model Triangle_U triangle (
++ cntl_array = [-1.0 0.0 1.0]
++ freq_array = [1.0e4 1.0e3 1.0e4]
++ out_low = -1.0
++ out_high = 1.0
++ duty_cycle = 0.5
++ )
+
+.tran 1m 0.1 0
+
+.end

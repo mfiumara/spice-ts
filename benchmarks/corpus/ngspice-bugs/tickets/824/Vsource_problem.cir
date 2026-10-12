@@ -1,0 +1,16 @@
+.title KiCad schematic
+.save all
+.func soc()={max(min(V(Vsoc),0.99999),0.00001)}
+.func Voc(soc)={(0.6 - 25.693m*ln((1.0 - soc)/soc))}
+
+.tran 0.1 90
+.ic V(Vsoc)=0.0
+
+Rsd1 Vsoc 0 10k
+Rseries1 CELL+ Vcell 1
+BVbatt1 Vcell 0 v=Voc(soc())
+BIbatt1 Net-_BIbatt1-N+_ Vsoc I=((V(Vsoc) <= 1.0) && (I(BVbatt1) > 0.0)) || ((V(Vsoc) >= 0.0) && (I(BVbatt1) < 0.0)) ? I(BVbatt1) : 0.0
+Voff4 Net-_BIbatt1-N+_ 0 DC 0 
+Ccapacity1 Vsoc 0 0.5
+Vcharge1 CELL+ 0 PULSE( 0 1 1 100u 100u 40 80 ) 
+.end

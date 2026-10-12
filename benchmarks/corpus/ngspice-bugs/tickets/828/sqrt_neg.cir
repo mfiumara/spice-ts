@@ -1,0 +1,18 @@
+* sqrt(negative) repro (lt and ps modes).  For a negative argument:
+*   LTspice -> 0          (LTspice 26.0.2)
+*   PSpice  -> sqrt(|x|)  (PSpice 23.1.0: sqrt(-4)=2)
+* Vendor models cross 0 here (e.g. sqrt(VDS+Vbi)).  Vanilla ngspice-46
+* errors in every mode ("-4 out of range for sqrt" class), killing the deck.
+* The corrected sqrt_lt_ps.patch splits the two: lt -> 0, ps -> sqrt(-arg),
+* native -> domain error (sqrt_neg_native control).
+* This deck computes  3 + sqrt(v(a)-4)  with v(a)=0, i.e. 3 + sqrt(-4).  Expected
+* patched:
+*   lt  v(y) = 3.000000e+00   (3 + 0)
+*   ps  v(y) = 5.000000e+00   (3 + sqrt(4) = 3 + 2)
+va a 0 dc 0
+b1 y 0 v = 3 + sqrt(v(a) - 4)
+.control
+op
+print v(y)
+.endc
+.end
