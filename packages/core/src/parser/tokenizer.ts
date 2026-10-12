@@ -8,9 +8,10 @@ const SI_SCALE_EXPONENT: Record<string, number> = {
 };
 
 // Plain or suffixed number: 1e-14, 10k, 100n, 2.2meg. Ngspice ignores
-// alphabetic unit text after a number or scale factor.
+// alphabetic unit text after a number or scale factor; INPevaluate also skips
+// non-ASCII unit text such as `27°C` or `1kΩ` (#790).
 // Groups: sign, integer digits, fraction digits, exponent, scale factor.
-const SUFFIXED_NUMBER = /^([+-]?)(\d*)(?:\.(\d*))?(?:[eE]([+-]?\d+))?(meg|mil|[tgkmunpfa])?[a-z]*$/i;
+const SUFFIXED_NUMBER = /^([+-]?)(\d*)(?:\.(\d*))?(?:[eE]([+-]?\d+))?(meg|mil|[tgkmunpfa])?[a-z\u0080-\uffff]*$/i;
 // Embedded RKM notation (accepted as an extension): 3k3 = 3300.
 const EMBEDDED_NUMBER = /^([+-]?)(\d+)(meg|[tgkmunpfa])(\d+)[a-z]*$/i;
 

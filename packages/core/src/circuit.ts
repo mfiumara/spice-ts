@@ -58,7 +58,7 @@ import {
   type PreparedXspiceInstance,
 } from './devices/xspice/compile.js';
 import type { XspiceInstanceCard, XspiceModelCard } from './parser/xspice-parser.js';
-import { assertControlledSourceCard } from './parser/controlled-source.js';
+import { assertControlledSourceCard, withoutNodePairParentheses } from './parser/controlled-source.js';
 import type { ControlScript } from './parser/control/script.js';
 import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
@@ -3530,21 +3530,23 @@ export class Circuit {
           break;
         }
         case 'E': {
-          assertControlledSourceCard(tokens, lineNumber, raw);
-          const valStr = evalToken(tokens[5]);
+          const fields = withoutNodePairParentheses(tokens);
+          assertControlledSourceCard(fields, lineNumber, raw);
+          const valStr = evalToken(fields[5]);
           result.push({
             type: 'E', name: devName,
-            nodes: [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3]), mapNode(tokens[4])],
+            nodes: [mapNode(fields[1]), mapNode(fields[2]), mapNode(fields[3]), mapNode(fields[4])],
             value: parseNumber(valStr),
           });
           break;
         }
         case 'G': {
-          assertControlledSourceCard(tokens, lineNumber, raw);
-          const valStr = evalToken(tokens[5]);
+          const fields = withoutNodePairParentheses(tokens);
+          assertControlledSourceCard(fields, lineNumber, raw);
+          const valStr = evalToken(fields[5]);
           result.push({
             type: 'G', name: devName,
-            nodes: [mapNode(tokens[1]), mapNode(tokens[2]), mapNode(tokens[3]), mapNode(tokens[4])],
+            nodes: [mapNode(fields[1]), mapNode(fields[2]), mapNode(fields[3]), mapNode(fields[4])],
             value: parseNumber(valStr),
           });
           break;
@@ -3563,23 +3565,25 @@ export class Circuit {
           break;
         }
         case 'H': {
-          assertControlledSourceCard(tokens, lineNumber, raw);
-          const valStr = evalToken(tokens[4]);
+          const fields = withoutNodePairParentheses(tokens);
+          assertControlledSourceCard(fields, lineNumber, raw);
+          const valStr = evalToken(fields[4]);
           result.push({
             type: 'H', name: devName,
-            nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
-            controlSource: `${instanceName}.${tokens[3]}`,
+            nodes: [mapNode(fields[1]), mapNode(fields[2])],
+            controlSource: `${instanceName}.${fields[3]}`,
             value: parseNumber(valStr),
           });
           break;
         }
         case 'F': {
-          assertControlledSourceCard(tokens, lineNumber, raw);
-          const valStr = evalToken(tokens[4]);
+          const fields = withoutNodePairParentheses(tokens);
+          assertControlledSourceCard(fields, lineNumber, raw);
+          const valStr = evalToken(fields[4]);
           result.push({
             type: 'F', name: devName,
-            nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
-            controlSource: `${instanceName}.${tokens[3]}`,
+            nodes: [mapNode(fields[1]), mapNode(fields[2])],
+            controlSource: `${instanceName}.${fields[3]}`,
             value: parseNumber(valStr),
           });
           break;
