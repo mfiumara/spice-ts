@@ -10,6 +10,8 @@ export class Inductor implements DeviceModel {
     readonly branchIndex: number,
     public inductance: number,
     readonly ic?: number,
+    /** One element's inductance before the instance m (ngspice INDinduct). */
+    readonly unitInductance: number = inductance,
   ) {
     this.branches = [branchIndex];
   }
