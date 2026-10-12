@@ -11,7 +11,8 @@ published package. Findings and the go/no-go recommendation: [`docs/spikes/rust-
 | `build.sh` | Builds `rust/` (pure binary, napi-rs addon, wasm-bindgen WASM with `+simd128`). |
 | `bench.ts` | Per deck and backend (TS, Rust native, Rust WASM, pure Rust): symbolic / factor / solve / refactor medians, residual, bit-identity vs TS, memory; ngspice-47 OP timings for context. Writes `results/rust-lu-spike.json`. |
 | `op-swap.ts` | End-to-end DC OP with `GilbertPeierlsSolver` routed to the Rust backends (prototype patched in a child process only). Writes `results/rust-lu-op-swap.json`. |
-| `report.ts` | Renders the markdown tables in the doc from the two JSON files. |
+| `report.ts` | Renders the markdown tables in the doc from the two JSON files (`--dir=results/base-45d6ea7` for the equal-algorithm run). |
+| `results/` | Run against current `main`'s TS solver (`versions.gitHead`). `results/base-45d6ea7/` is the equal-algorithm run against the TS solver the Rust port was taken from. |
 | `fill-reference.py` | Optional context: SciPy SuperLU fill and factor time on the same matrices (needs a local `pip install scipy`; nothing is vendored). Output in `results/fill-reference.jsonl`. |
 
 ## Reproduce
