@@ -250,7 +250,7 @@ R2 2 0 1k
 
   it.each([
     '.temp 27\n.op',
-    '.control\nfft v(1)\n.endc',
+    '.control\nspec 10 1000 10 v(1)\n.endc',
   ])('rejects unsupported semantic/control directives: %s', netlist => {
     expect(() => parse(netlist)).toThrow();
   });
@@ -292,8 +292,8 @@ ${control}
     ['alterparam r = 2k', 'alterparam'],
     ['measure ac gain max vm(2)', 'measure'],
     ['remcirc', 'remcirc'],
-    ['fft v(2)', 'fft'],
-    ['linearize v(2)', 'linearize'],
+    ['spec 10 1000 10 v(2)', 'spec'],
+    ['cutout v(2)', 'cutout'],
   ])('rejects an unexecuted control command %s with a structured error at parse time', (control, command) => {
     let error: unknown;
     try {
