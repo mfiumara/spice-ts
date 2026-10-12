@@ -154,3 +154,84 @@ pnpm exec tsx benchmarks/xspice-553/compare-tran.ts
 spice-heavy pnpm exec tsx benchmarks/corpus/corpus-f/outcomes.ts \
   --corpus-f-fixture-child examples-xspice-original-examples-analog-models3-ac-deck
 ```
+
+# Slice 3: event-driven digital models and node bridges
+
+Adds the ngspice-47 XSPICE event-driven simulator (`src/xspice/evt`, digital
+node type `idn/idndig.c`) in `packages/core/src/devices/xspice/event-network.ts`
+and the code models in `digital-models.ts`:
+
+| Model | ngspice-47 source |
+|---|---|
+| `d_buffer`, `d_inverter`, `d_and`, `d_nand`, `d_or`, `d_nor`, `d_xor`, `d_xnor` | `icm/digital/<model>/cfunc.mod`: rise/fall delays, U output taking the delay of the edge it leaves, `inertial_delay=true` (cm_is_inertial with `digital_delay_type` unset) |
+| `adc_bridge` | thresholds, Schmitt trigger when in_low > in_high, single-input multi-bit converter |
+| `dac_bridge` | out_low/out_high/out_undef (mean when only low/high given), t_rise/t_fall ramps from T(1), breakpoints at input changes and at ramp ends, multi-bit converter |
+
+Engine semantics follow ngspice: `%d` ports with `~` inversion; 0/1/U states
+with strong/resistive/hi-Z/undetermined strengths and the idn_digital_resolve
+table for nodes with several drivers; EVTqueue_output (a new event cancels
+every later queued one); EVTop alternation for the operating point;
+before each analog step every event due at or before its end is processed and
+a dac_bridge breakpoint cuts the step (dctran.c); EVTbackup on a rejected
+step; EVTcall_hybrids after the truncation check (skipped on the first step)
+and EVTaccept. The analog halves of the bridges take no node truncation error
+(ngspice MIFtrunc only acts through cm_analog_integrate). Digital node values
+are exposed as `TransientResult.digital(node)`, like `eprint`.
+
+Still typed-unsupported: flip-flops/latches (`d_dff`, `d_jkff`, `d_tff`,
+`d_srff`, `d_dlatch`, `d_srlatch`), `d_fdiv`, `d_osc`, `d_tristate`, `d_ram`,
+`d_lut`/`d_genlut`, `d_pwm`, `d_source`, `d_state`, `d_cosim`, the real-node
+models, and automatic analog/digital bridging (a node used both ways is an
+`InvalidCircuitError`). Digital instances run in `.op` and `.tran` only (no
+UIC).
+
+## Evidence (ngspice-47, identical netlists)
+
+Unit tests (`packages/core/src/devices/xspice/xspice-digital.test.ts`), decks
+under `fixtures/digital-*.cir`:
+
+- `digital-gates.cir`: every output change of all eight gates (and an inverted
+  input/output `d_and`) equals ngspice `eprint` (numdgt=15) in state, strength
+  and time (1e-12 relative); both engines take 510 timepoints.
+- `digital-tran.cir`: inertial delay (a 0.5 us pulse swallowed by a 1 us
+  inertial buffer, passed by the transport one), two buffers driving one node
+  (resolved U), an inertial `d_xor`, a 2-bit adc_bridge into a 2-bit
+  dac_bridge, and dac ramps: all digital changes equal `eprint`, 24 dac
+  samples on ramps agree to 1e-9 V.
+- `digital-op.cir`: the operating point with `~` ports, out_undef and
+  multi-bit bridges equals ngspice to 1e-12.
+- RED on `origin/main` 089ef16c: 4 of 5 tests fail (`UnsupportedCodeModelError`).
+
+### corpus-f decks (identical bytes, `corpus-f-digital-after.json`)
+
+All 25 corpus-f fixtures whose `.model` cards use one of the new models were
+rerun with `--corpus-f-fixture-child <id>` through `spice-heavy` against a
+`pnpm build` of this branch. "Before" is `origin/main` 089ef16c (every one
+stopped at an unsupported code model or card).
+
+| Fixture | ngspice | before | after | Worst (signal) |
+|---|---|---|---|---|
+| `digital_invert.deck` | tran:218 | unsupported | **matched** (tran:218) | 3.5e-13 (v(17)) |
+| `digital_models1.deck` | tran:510 | unsupported | **matched** (tran:510) | 0 |
+| **LOSS** `digital_models.deck` | tran:71 | unsupported | **mismatch** | 1.0 (i(v1)) |
+| **LOSS** `mixed_ref.deck` | tran:108 | unsupported | **mismatch** | 0.0123 (v(1)) |
+| **LOSS** `mixed_io_size.deck` | tran:208 | unsupported | **mismatch** | 0.208 (v(4)) |
+| 20 others | | unsupported | unsupported (now at d_dff, d_dlatch, d_ram, d_osc, d_tristate, d_lut, d_pwm, d_to_real, UGATE, subcircuit A-cards, string .param) or both-failed | — |
+
+Totals over the 25 decks: matched 0 -> 2, mismatch 0 -> 3, unsupported
+22 -> 17, both-failed 3 -> 3.
+
+- **Loss, `digital_models`.** Not a digital error: the deck drives the adc
+  with `pulse(0 1 2e-8 1e-9 1e-9)`. ngspice-47 vsrcload.c sets PW = 0 when
+  only TR and TF are given (5 coefficients); spice-ts holds the pulse high
+  (PW = TSTOP), so v(1) differs from 2.2e-8 s on. Separate source bug.
+- **Loss, `mixed_ref`.** The same 1.23 % v(1) error appears on `origin/main`
+  with the digital lines removed (gain-only deck, 1209 vs 108 points): the
+  analog `gain` instances take node-voltage truncation that ngspice MIFtrunc
+  does not apply. The digital nodes themselves match.
+- **Loss, `mixed_io_size`.** The `summer` instance shares that analog
+  truncation gap, so spice-ts takes 829 points against 208. The adc_bridge
+  samples its input at accepted analog points, so the different steps move
+  the enable edge (1.0104e-4 s against ngspice's 1.03e-4 s) and every later
+  clock edge; the dac ramps then differ by up to 0.2 V. With node truncation
+  disabled spice-ts takes 223 points and the error drops to 0.09.

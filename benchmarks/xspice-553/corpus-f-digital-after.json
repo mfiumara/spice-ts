@@ -1,0 +1,472 @@
+[
+  {
+    "id": "examples-digital-auto-bridge-shared-line-cir",
+    "sha256": "86b6140d7f4682033fc1fae2564bc6bf3a93fbad0b0e657b4787bd77298c7391",
+    "ngspice": {
+      "status": "success",
+      "analyses": [],
+      "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 19: XSPICE code model 'd_tristate' (.model 'tristate') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-digital-auto-bridge-vcc-cir",
+    "sha256": "b304a66b63ec5fc32bf82b6f99f82ba0b1d7d89477ed0623dab6386fbd165716",
+    "ngspice": {
+      "status": "success",
+      "analyses": [],
+      "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 1: Unsupported device card: 'A' abuf in out buf"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-digital-digital-devices-xspice-c4-cir",
+    "sha256": "60e20a5870f9ba57abdbd4c958175e688e820f90692351d9063a40f11b1b8727",
+    "ngspice": {
+      "status": "failed",
+      "analyses": [],
+      "firstErrorLine": "ngspice exited SIGSEGV"
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 28: .model 'DLY_XYZ' has unsupported type 'UGATE' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL DLY_XYZ UGATE (TPLHMN=8US TPLHTY=10US TPLHMX=15"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "both-failed"
+  },
+  {
+    "id": "examples-numparam-strings-cir",
+    "sha256": "9deb2f65c32c95ef3e3d6cdb3cbf07dacddaa8a325dbc605b5ee02a7a92288d7",
+    "ngspice": {
+      "status": "success",
+      "analyses": [],
+      "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 7: XSPICE code model 'd_lut' (.model 'l_and') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-numparam-vector-param-cir",
+    "sha256": "530d53ee7dc4e9629e53e6b929f48649f3eaa890289bd51861888c4742ef6d82",
+    "ngspice": {
+      "status": "success",
+      "analyses": [],
+      "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 21: String-valued .param 'ACTUAL_VEC' is not supported: spice-ts parameters are numbers (ngspice string and vector parameters are not implemented) .param actual_vec=\"[1.3e-3 2e-3]\""
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-d-lut-mult4bit-spi",
+    "sha256": "7c8790bba42b97315b99232883a7ac10a0b524559e5b2924655dc6c8c6fe5f02",
+    "ngspice": {
+      "status": "success",
+      "analyses": [],
+      "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 24: .model 'todig_3v' has unsupported type 'ADC_BRIDGE' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL todig_3v adc_bridge(in_high=0.7 in_low=0."
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-d-process-checks-cir",
+    "sha256": "9b46841c9a075031a1c21f659c73a0260cd218f3d042754e0481127eb2a44d55",
+    "ngspice": {
+      "status": "failed",
+      "analyses": [],
+      "firstErrorLine": "Instance: ap0 Message: ERROR: d_process returned invalid version: 10"
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 8: XSPICE code model 'd_osc' (.model 'd_osc1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverte"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "both-failed"
+  },
+  {
+    "id": "examples-xspice-original-examples-bad-io-type-deck",
+    "sha256": "ef6b5efbeea4568a0e918c543637a8d7e44a09cefa7d2cc4489f0ab205b28ee8",
+    "ngspice": {
+      "status": "failed",
+      "analyses": [],
+      "firstErrorLine": "Error on line 15 or its substitute:"
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "XSPICE instance 'a1': Port type d is invalid"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "both-failed"
+  },
+  {
+    "id": "examples-xspice-original-examples-digital-invert-deck",
+    "sha256": "0323af524714dd104b293ade9cdb2475e320d2aaf62d187cad7d26275214f3f2",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:218"
+      ]
+    },
+    "spiceTs": {
+      "status": "success",
+      "analyses": [
+        "tran:218"
+      ]
+    },
+    "comparedSignals": 8,
+    "worstNormalizedError": 3.47e-13,
+    "worstSignal": "tran v(17)",
+    "outcome": "matched"
+  },
+  {
+    "id": "examples-xspice-original-examples-digital-models-deck",
+    "sha256": "7b387391ada84425ed1aa52a5208ca8cf0d3fe3e650ca1b5043d0ed4cc204be3",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:71"
+      ]
+    },
+    "spiceTs": {
+      "status": "success",
+      "analyses": [
+        "tran:67"
+      ]
+    },
+    "comparedSignals": 2,
+    "worstNormalizedError": 1,
+    "worstSignal": "tran i(v1)",
+    "outcome": "mismatch"
+  },
+  {
+    "id": "examples-xspice-original-examples-digital-models1-deck",
+    "sha256": "0d2ce8df2bdeca24aba0c4e70a67f1d9132b57665e67d411217c21ea90bf81d2",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:510"
+      ]
+    },
+    "spiceTs": {
+      "status": "success",
+      "analyses": [
+        "tran:510"
+      ]
+    },
+    "comparedSignals": 4,
+    "worstNormalizedError": 0,
+    "worstSignal": "tran i(v1)",
+    "outcome": "matched"
+  },
+  {
+    "id": "examples-xspice-original-examples-digital-models2-deck",
+    "sha256": "973b7016181689d18a2f7b16635b61a7b6e1bd33f1423eae0b4d005e0edfb0f7",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:722"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 40: XSPICE code model 'd_dff' (.model 'd_dff1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_invert"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-original-examples-digital-models3-deck",
+    "sha256": "f9b2004e9704cff4e50142d648a1c179337fcfd468e28da0b3eb033e75c58d22",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:1418"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 48: XSPICE code model 'd_dlatch' (.model 'd_dlatch1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-original-examples-digital-models4-deck",
+    "sha256": "995353e667e6cfcb6c46d2efb76515da66e59fbdb54b8a742874e091dcc8abcd",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:1535"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 66: XSPICE code model 'd_ram' (.model 'd_ram1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_invert"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-original-examples-hybrid-models1-dc-deck",
+    "sha256": "8630b6a5fc818ccbf51300a647cca45290161937822701af65ea25c2acb1fad2",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "op:1"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 14: XSPICE code model 'd_osc' (.model 'd_osc1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_invert"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-original-examples-hybrid-models1-transient-deck",
+    "sha256": "c0346f2330748b9cced12056dd321294169af5a66530ad9d2eecdd0dbcc5b74a",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:137"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 16: XSPICE code model 'd_osc' (.model 'd_osc1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_invert"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-original-examples-io-types-deck",
+    "sha256": "0189e07265ae019f9865827c2d8cc339051adf1c0f65cb546053fd3f82662476",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:114"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 19: XSPICE code model 'd_to_real' (.model 'node_bridge2') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-original-examples-mixed-io-size-deck",
+    "sha256": "b7e0c4f1cba688e670d1543d44c6dcd93cd3bad459c963d08b37dd57c776817d",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:208"
+      ]
+    },
+    "spiceTs": {
+      "status": "success",
+      "analyses": [
+        "tran:829"
+      ]
+    },
+    "comparedSignals": 7,
+    "worstNormalizedError": 0.208,
+    "worstSignal": "tran v(4)",
+    "outcome": "mismatch"
+  },
+  {
+    "id": "examples-xspice-original-examples-mixed-mode-deck",
+    "sha256": "56bfc9e39bf4c2fe8df65a76cff52bab2e3924edd9199017c1abc3a9a14eb721",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:195"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 28: XSPICE code model 'd_dff' (.model 'dff') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter,"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-original-examples-mixed-ref-deck",
+    "sha256": "92d242e6e738727f8a735e81b2e65163892f095ed763c02b531b4b321a01565f",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:108"
+      ]
+    },
+    "spiceTs": {
+      "status": "success",
+      "analyses": [
+        "tran:1209"
+      ]
+    },
+    "comparedSignals": 9,
+    "worstNormalizedError": 0.0123,
+    "worstSignal": "tran v(1)",
+    "outcome": "mismatch"
+  },
+  {
+    "id": "examples-xspice-original-examples-user-defined-nodes-deck",
+    "sha256": "8ba69ecec48433a4a4f238a5dae05e3b9c643c562b2a117a3b602eaa1536660a",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:114"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 19: XSPICE code model 'd_to_real' (.model 'node_bridge2') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-pwm-osc-fmcw-dosc-cir",
+    "sha256": "08a8cfed77481f5691ddbc0700e375ff295d527317d18d608500a8182090d087",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:128054"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 15: XSPICE code model 'd_osc' (.model 'var_clock') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inv"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-pwm-osc-pwm-sin-cir",
+    "sha256": "337645cecf1f123e1437ec759db59ab5724cc061bcd955f94abf11a7407e9db8",
+    "ngspice": {
+      "status": "success",
+      "analyses": [],
+      "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 6: XSPICE code model 'd_pwm' (.model 'pwm') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter, "
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-various-ro-nand-digi-cir",
+    "sha256": "838c082eb4ce44b061d45cd989938fc0ddb7071f819f1e7f08cdea6ec62e95a4",
+    "ngspice": {
+      "status": "success",
+      "analyses": [],
+      "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 17: .model 'CM_NAND0' has unsupported type 'D_NAND' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model CM_NAND0 d_nand ( rise_delay= {riseDelay} fal"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-various-xspice-c3-cir",
+    "sha256": "481bf6b74dabefdb7f38863482892e4e19860db9d5fd5c1bd6e46a4a0f0f43f2",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:205"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 28: XSPICE code model 'd_dff' (.model 'dff') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter,"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  }
+]

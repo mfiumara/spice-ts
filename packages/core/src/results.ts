@@ -1,3 +1,4 @@
+import type { DigitalNodeEvent } from './devices/xspice/event-network.js';
 import type { ConvergenceTelemetry, SimulationWarning } from './types.js';
 
 /**
@@ -59,7 +60,27 @@ export class TransientResult {
     public readonly time: number[],
     private readonly voltageArrays: Map<string, number[]>,
     private readonly currentArrays: Map<string, number[]>,
+    private readonly digitalHistories: Map<string, DigitalNodeEvent[]> = new Map(),
   ) {}
+
+  /**
+   * Get the value changes of an XSPICE digital (event-driven) node: its
+   * operating-point value at time 0, then one entry per accepted change,
+   * like ngspice `eprint`.
+   *
+   * @param node - Digital node name as it appears in the netlist
+   * @throws Error if the node is not a digital node of the circuit
+   */
+  digital(node: string): DigitalNodeEvent[] {
+    const events = this.digitalHistories.get(node);
+    if (events === undefined) throw new Error(`Unknown digital node: ${node}`);
+    return events;
+  }
+
+  /** Copy of every digital node's value changes as a Map. */
+  get digitalNodes(): Map<string, DigitalNodeEvent[]> {
+    return new Map(this.digitalHistories);
+  }
 
   /**
    * Get the voltage waveform at a node over time.

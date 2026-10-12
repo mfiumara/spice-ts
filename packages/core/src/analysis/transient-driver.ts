@@ -20,7 +20,9 @@ import { Inductor } from '../devices/inductor.js';
 import { maxTimestepOption, runnableTransient, transientStepCap } from './max-timestep.js';
 import { chargeTruncatedNodes } from './transient-node-truncation.js';
 import { LinearReactiveTruncation } from './transient-reactive-truncation.js';
-import type { ChargeIntegration, DeviceModel, TransientBreakpointSink } from '../devices/device.js';
+import type {
+  ChargeIntegration, DeviceModel, EventDrivenNetwork, TransientBreakpointSink,
+} from '../devices/device.js';
 
 /**
  * Smallest allowed timestep (femtosecond). Must be small enough that LTE can
@@ -280,6 +282,8 @@ class TransientSimImpl implements TransientSim {
    */
   private startsFromUICSeed = false;
   private progress: TransientProgressMonitor;
+  /** The XSPICE event-driven network, when the circuit has digital code models. */
+  private readonly events: EventDrivenNetwork | undefined;
 
   constructor(compiled: CompiledCircuit, options: ResolvedOptions, config: InternalTransientConfig) {
     this.compiled = compiled;
@@ -319,6 +323,7 @@ class TransientSimImpl implements TransientSim {
     this.prevDt = this.dt;
     this.prevPrevDt = this.dt;
     this.integrationMethod = options.integrationMethod;
+    this.events = compiled.devices.find(device => device.eventDriven !== undefined)?.eventDriven;
 
     this.assembler = this.createAssembler();
 
@@ -358,6 +363,7 @@ class TransientSimImpl implements TransientSim {
     const prevSol = new Float64Array(this.assembler.solution);
     let discontinuityRecoveryAttempted = false;
     this.selectStep();
+    this.processEvents();
 
     while (true) {
       // Guard against dt=0 when caller advance()s past a done simulation.
@@ -379,6 +385,8 @@ class TransientSimImpl implements TransientSim {
         nextTime = nextBreak;
       }
       const actualDt = nextTime - this.time;
+      // ngspice EVTbackup: a retried step drops the events processed past its end.
+      this.events?.backup(nextTime);
 
       this.assembler.solution.set(prevSol);
       const result = attemptStep(
@@ -466,12 +474,16 @@ class TransientSimImpl implements TransientSim {
         continue;
       }
       this.lteRejectCount = 0;
+      const firstStep = this.firstStepPending;
       const next = this.orderAfterAcceptedStep(actualDt, integration, chargeBound);
 
       // Device-owned histories must observe only committed solutions. In
       // particular, NR/LTE retries and the stampPrevB restamp below are not
       // accepted timepoints and must remain side-effect free.
       this.acceptTransientStep(nextTime, integration);
+      // dctran.c: EVTcall_hybrids after the truncation check (not on the
+      // first step, which skips it), then EVTaccept.
+      this.events?.acceptStep(nextTime, !firstStep);
       // Update trapezoidal history.
       if (this.integrationMethod === 'trapezoidal') {
         this.stampPrevB();
@@ -566,6 +578,31 @@ class TransientSimImpl implements TransientSim {
     ) {
       this.saveDelta = this.dt;
       this.dt = (target - this.time) / 2;
+    }
+  }
+
+  /**
+   * dctran.c event solution before a step: process every event due at or
+   * before the step's end; when an instance set a breakpoint inside the
+   * step (a dac_bridge input change), cut the step to it, and process only
+   * the events up to the new end.
+   */
+  private processEvents(): void {
+    const events = this.events;
+    if (!events) return;
+    for (;;) {
+      const eventTime = events.nextEventTime();
+      if (!(eventTime <= this.time + this.dt)) return;
+      events.processEvents(eventTime, this.time);
+      const breakpoint = this.nextBreakTarget();
+      if (
+        breakpoint < this.time + this.dt
+        && breakpoint > this.time + MIN_BREAK
+        && breakpoint >= eventTime
+      ) {
+        this.saveDelta = this.dt;
+        this.dt = breakpoint - this.time;
+      }
     }
   }
 
@@ -691,6 +728,12 @@ class TransientSimImpl implements TransientSim {
    */
   private acceptInitialPoint(): void {
     this.acceptTransientStep(this.time);
+    if (this.events) {
+      if (this.config.useInitialConditions) {
+        throw new InvalidCircuitError('XSPICE event-driven instances are not supported with transient UIC');
+      }
+      this.events.beginTransient(time => this.breakpoints?.insert(time, this.time), MIN_BREAK);
+    }
     this.startsFromUICSeed = this.config.useInitialConditions === true;
     if (this.startsFromUICSeed) this.prevB = undefined;
     else this.stampPrevB();
