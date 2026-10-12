@@ -66,15 +66,15 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 18,
-      "failed": 2,
+      "success": 19,
+      "failed": 1,
       "unsupported": 5
     },
     "outcomes": {
-      "matched": 17,
+      "matched": 18,
       "mismatch": 1,
       "not-compared": 0,
-      "spice-ts-loss": 7,
+      "spice-ts-loss": 6,
       "ngspice-failed": 0,
       "both-failed": 0
     },
@@ -88,10 +88,10 @@
         "both-failed": 0
       },
       "vacask": {
-        "matched": 9,
+        "matched": 10,
         "mismatch": 1,
         "not-compared": 0,
-        "spice-ts-loss": 2,
+        "spice-ts-loss": 1,
         "ngspice-failed": 0,
         "both-failed": 0
       }
@@ -127,15 +127,6 @@
         "vacask-test-spice-subckt-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/837"
-    },
-    {
-      "bucket": "harness: spice-ts child exhausts the V8 heap on a long transient",
-      "fixtures": 1,
-      "ngspiceSuccess": 1,
-      "ids": [
-        "vacask-benchmark-vadistiller-bjtring-xyce-runme-sim"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/839"
     }
   ],
   "fixtures": [
@@ -549,9 +540,9 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 7,
-      "worstNormalizedError": 0.0392,
+      "worstNormalizedError": 0.000563,
       "worstSignal": "tran i(vs)",
-      "outcome": "mismatch",
+      "outcome": "matched",
       "gapBucket": null
     },
     {
@@ -598,16 +589,17 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "<--- Last few GCs --->"
+        "status": "success",
+        "analyses": [
+          "tran:1000024"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "harness: spice-ts child exhausts the V8 heap on a long transient"
+      "comparedAnalyses": 1,
+      "comparedSignals": 20,
+      "worstNormalizedError": 2.19,
+      "worstSignal": "tran v(3)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "vacask-test-spice-cccs-cir",
@@ -833,5 +825,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "c20af5496a780b1461fe93da395173b28fa562b9332facd77776bccde43fb08f"
+  "outcomeSha256": "3a9364fd4ef021c6295604aa9f9d271aa0526ff2d7bb3e79128ab54949602a46"
 }

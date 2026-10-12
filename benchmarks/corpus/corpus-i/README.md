@@ -6,16 +6,16 @@ Every deck below is byte-identical to its pinned upstream revision (esim `1a25a4
 
 ## Totals
 
-- Fixtures: 25. Outcome SHA-256: `c20af5496a780b1461fe93da395173b28fa562b9332facd77776bccde43fb08f`.
+- Fixtures: 25. Outcome SHA-256: `3a9364fd4ef021c6295604aa9f9d271aa0526ff2d7bb3e79128ab54949602a46`.
 - ngspice (ngspice-47): 25 success, 0 failed, 0 unsupported.
-- spice-ts (0.3.0): 18 success, 2 failed, 5 unsupported.
-- Outcomes: matched 17, mismatch 1, not-compared 0, spice-ts-loss 7, ngspice-failed 0, both-failed 0.
-- Of the 25 decks ngspice runs successfully, spice-ts matches 17, mismatches 1, produces no comparable result for 0 and fails 7.
+- spice-ts (0.3.0): 19 success, 1 failed, 5 unsupported.
+- Outcomes: matched 18, mismatch 1, not-compared 0, spice-ts-loss 6, ngspice-failed 0, both-failed 0.
+- Of the 25 decks ngspice runs successfully, spice-ts matches 18, mismatches 1, produces no comparable result for 0 and fails 6.
 
 | Source | Fixtures | Matched | Mismatch | Not compared | spice-ts loss | ngspice failed | Both failed |
 |---|---|---|---|---|---|---|---|
 | `esim` | 13 | 8 | 0 | 0 | 5 | 0 | 0 |
-| `vacask` | 12 | 9 | 1 | 0 | 2 | 0 | 0 |
+| `vacask` | 12 | 10 | 1 | 0 | 1 | 0 | 0 |
 
 ## Method
 
@@ -41,9 +41,8 @@ Grouped from spice-ts's own first error line (corpus-i rules, then corpus-h, cor
 | device: XSPICE code models not yet implemented (d_jkff, lcouple, zener, ...) | 4 | 4 | https://github.com/mfiumara/spice-ts/issues/553 |
 | analysis: .ac with XSPICE event-driven digital instances | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/838 |
 | expression: bare .param names as R/C/L values (R1 a b rval) | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/837 |
-| harness: spice-ts child exhausts the V8 heap on a long transient | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/839 |
 
-## Losses (8)
+## Losses (7)
 
 Every fixture that is not matched: spice-ts failures, mismatches above the threshold, and results that could not be compared.
 
@@ -54,11 +53,10 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | [esim/Examples/JK_Flipflop/JK_Flipflop.cir.out](fixtures/esim/Examples/JK_Flipflop/JK_Flipflop.cir.out) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 30: XSPICE code model 'd_jkff' (.model 'u9') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter, |
 | [esim/Examples/Transformer/Transformer.cir.out](fixtures/esim/Examples/Transformer/Transformer.cir.out) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 13: XSPICE code model 'lcouple' (.model 'u1_primary') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_ |
 | [esim/Examples/Zener_Characteristic/Zener_Characteristic.cir.out](fixtures/esim/Examples/Zener_Characteristic/Zener_Characteristic.cir.out) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 11: XSPICE code model 'zener' (.model 'u1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter, adc_bridge, dac_bridge, d_buffer, d_inverter,  |
-| [vacask/benchmark/mul/xyce/runme.sim](fixtures/vacask/benchmark/mul/xyce/runme.sim) | success | success | mismatch | 0.0392 | tran i(vs) |  |
-| [vacask/benchmark/vadistiller/bjtring/xyce/runme.sim](fixtures/vacask/benchmark/vadistiller/bjtring/xyce/runme.sim) | success | failed | spice-ts-loss |  |  | spice-ts: <--- Last few GCs ---> |
+| [vacask/benchmark/vadistiller/bjtring/xyce/runme.sim](fixtures/vacask/benchmark/vadistiller/bjtring/xyce/runme.sim) | success | success | mismatch | 2.19 | tran v(3) |  |
 | [vacask/test/spice_subckt.cir](fixtures/vacask/test/spice_subckt.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Capacitor 'X1.C1' references unknown model 'cval' |
 
-## Wins (17)
+## Wins (18)
 
 Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every common signal.
 
@@ -73,6 +71,7 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [esim/Examples/RLC/RLC.cir.out](fixtures/esim/Examples/RLC/RLC.cir.out) | success | success | matched | 2.26e-13 | tran i(v1) |  |
 | [esim/Examples/Series_Resonance/Series_Resonance.cir.out](fixtures/esim/Examples/Series_Resonance/Series_Resonance.cir.out) | success | success | matched | 7.65e-15 | ac v(out) |  |
 | [vacask/benchmark/graetz/xyce/runme.sim](fixtures/vacask/benchmark/graetz/xyce/runme.sim) | success | success | matched | 2.1e-7 | tran i(vs) |  |
+| [vacask/benchmark/mul/xyce/runme.sim](fixtures/vacask/benchmark/mul/xyce/runme.sim) | success | success | matched | 0.000563 | tran i(vs) |  |
 | [vacask/benchmark/rc/xyce/runme.sim](fixtures/vacask/benchmark/rc/xyce/runme.sim) | success | success | matched | 1.11e-10 | tran i(vs) |  |
 | [vacask/test/spice_cccs.cir](fixtures/vacask/test/spice_cccs.cir) | success | success | matched | 0 | tran i(vin) |  |
 | [vacask/test/spice_diode.cir](fixtures/vacask/test/spice_diode.cir) | success | success | matched | 0.000193 | tran v(2) |  |
