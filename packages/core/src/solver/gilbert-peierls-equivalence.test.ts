@@ -271,6 +271,7 @@ describe('GilbertPeierlsSolver numeric kernel equivalence (#669)', () => {
 
   it('matches the frozen kernel on random nonsymmetric matrices, including refactorization', () => {
     let factored = 0;
+    let reused = 0;
     for (let seed = 1; seed <= 120; seed++) {
       const next = rng(seed);
       const n = 4 + Math.floor(next() * 40);
@@ -280,19 +281,94 @@ describe('GilbertPeierlsSolver numeric kernel equivalence (#669)', () => {
         const solver = new GilbertPeierlsSolver({ ordering });
         solver.analyzePattern(A);
         if (checkAgainstReference(solver, A, `seed ${seed} ${ordering}`) === 'ok') factored++;
-        // Refactorize the same solver with perturbed values on the same pattern.
-        for (let round = 0; round < 3; round++) {
+        // Refactorize the same solver with perturbed values on the same pattern:
+        // small relative changes (the pivot-reuse path) and zeroing/rescaling
+        // that changes pivots and patterns (the full-factorization fallback).
+        for (let round = 0; round < 6; round++) {
           const values = A.values.slice();
           for (let p = 0; p < values.length; p++) {
             const r = next();
-            if (r < 0.2) values[p] = 0;
-            else if (r < 0.6) values[p] = Math.round(values[p] * (1 + next()) * 4) / 4;
+            if (round % 2 === 0) {
+              if (values[p] !== 0) values[p] *= 1 + (next() - 0.5) * 1e-3;
+            } else if (r < 0.2) {
+              values[p] = 0;
+            } else if (r < 0.6) {
+              values[p] = Math.round(values[p] * (1 + next()) * 4) / 4;
+            }
           }
           checkAgainstReference(solver, withValues(A, values), `seed ${seed} ${ordering} round ${round}`);
         }
+        reused += solver.pivotReuseFactorizations;
       }
     }
-    // The suite must exercise mostly nonsingular systems to be meaningful.
+    // The suite must exercise mostly nonsingular systems to be meaningful,
+    // and both the pivot-reuse path and its fallback.
     expect(factored).toBeGreaterThan(150);
+    expect(reused).toBeGreaterThan(100);
+  });
+
+  it('reuses pivots across timestep-like value changes on a grid, bit-identically', () => {
+    const A = gridMna(20, () => 1e-3);
+    const solver = new GilbertPeierlsSolver();
+    solver.analyzePattern(A);
+    expect(checkAgainstReference(solver, A, 'grid step 0')).toBe('ok');
+    const diagonal: number[] = [];
+    for (let j = 0; j < A.size; j++) {
+      for (let p = A.colPtr[j]; p < A.colPtr[j + 1]; p++) if (A.rowIdx[p] === j && A.values[p] !== 0) diagonal.push(p);
+    }
+    for (let step = 1; step <= 5; step++) {
+      // A companion conductance G = C/h added on every node diagonal.
+      const values = A.values.slice();
+      for (const p of diagonal) values[p] += 1e-12 / (1e-9 * step);
+      expect(checkAgainstReference(solver, withValues(A, values), `grid step ${step}`)).toBe('ok');
+    }
+    expect(solver.pivotReuseFactorizations).toBe(5);
+  });
+
+  it('falls back to a full factorization when the reused pivot would no longer be chosen', () => {
+    // 2x2 with the preferred diagonal pivot in column 0; shrinking it below
+    // the 0.1 threshold makes the kernel swap rows.
+    const m = new SparseMatrix(2);
+    m.add(0, 0, 4); m.add(0, 1, 1);
+    m.add(1, 0, 1); m.add(1, 1, 3);
+    const A = toCsc(m).csc;
+    const solver = new GilbertPeierlsSolver({ ordering: 'natural' });
+    solver.analyzePattern(A);
+    expect(checkAgainstReference(solver, A, 'initial')).toBe('ok');
+    const values = A.values.slice();
+    values[0] = 0.05; // A[0][0]
+    expect(checkAgainstReference(solver, withValues(A, values), 'swapped')).toBe('ok');
+    expect(solver.pivotReuseFactorizations).toBe(0);
+    expect(Array.from((solver as unknown as SolverInternals).perm)).toEqual([1, 0]);
+  });
+
+  it('falls back when a swapped-out preferred pivot passes the threshold again', () => {
+    const m = new SparseMatrix(2);
+    m.add(0, 0, 0.05); m.add(0, 1, 1);
+    m.add(1, 0, 1); m.add(1, 1, 3);
+    const A = toCsc(m).csc;
+    const solver = new GilbertPeierlsSolver({ ordering: 'natural' });
+    solver.analyzePattern(A);
+    expect(checkAgainstReference(solver, A, 'swapped')).toBe('ok');
+    expect(Array.from((solver as unknown as SolverInternals).perm)).toEqual([1, 0]);
+    const values = A.values.slice();
+    values[0] = 0.5; // row 1 is still the column maximum, but row 0 now passes 0.1·max
+    expect(checkAgainstReference(solver, withValues(A, values), 'preferred again')).toBe('ok');
+    expect(solver.pivotReuseFactorizations).toBe(0);
+    expect(Array.from((solver as unknown as SolverInternals).perm)).toEqual([0, 1]);
+  });
+
+  it('falls back when an L entry becomes exactly zero', () => {
+    const m = new SparseMatrix(3);
+    m.add(0, 0, 4); m.add(1, 0, 1); m.add(2, 0, 1);
+    m.add(0, 1, 1); m.add(1, 1, 4); m.add(2, 2, 4); m.add(1, 2, 1);
+    const A = toCsc(m).csc;
+    const solver = new GilbertPeierlsSolver({ ordering: 'natural' });
+    solver.analyzePattern(A);
+    expect(checkAgainstReference(solver, A, 'initial')).toBe('ok');
+    const values = A.values.slice();
+    values[A.colPtr[0] + 2] = 0; // A[2][0]: the stored entry stays, L[2][0] vanishes
+    expect(checkAgainstReference(solver, withValues(A, values), 'zero L entry')).toBe('ok');
+    expect(solver.pivotReuseFactorizations).toBe(0);
   });
 });
