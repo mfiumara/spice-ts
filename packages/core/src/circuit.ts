@@ -3692,7 +3692,7 @@ export class Circuit {
           // Nested subcircuit instance — recursively expand
           const call = locateSubcircuitCall(tokens);
           const nestedSubcktName = tokens[call.nameIndex];
-          const nestedPorts = tokens.slice(1, call.nameIndex).map(mapNode);
+          const nestedPorts = call.ports.map(mapNode);
           const evaluatedTokens = tokens.map(t => evalToken(t));
           const nestedParams = parseInstanceParams(evaluatedTokens, call.paramStart);
 

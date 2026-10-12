@@ -31,7 +31,7 @@ export function parseSubcircuitHeader(raw: string): SubcircuitHeader {
   const text = raw.trim().replace(/^\.subckt\s+/i, '');
   const nameMatch = /^\S+/.exec(text);
   const name = nameMatch ? nameMatch[0] : '';
-  let rest = text.slice(name.length);
+  let rest = withoutPortListParens(text.slice(name.length));
 
   // Ports run until the first `params:` or `name=` (spaces around `=` allowed).
   const ports: string[] = [];
@@ -53,6 +53,21 @@ export function parseSubcircuitHeader(raw: string): SubcircuitHeader {
     params[key.toUpperCase()] = defaultValue(value);
   }
   return { name, ports, params };
+}
+
+/**
+ * ngspice-47 inpcom.c (`inp_fix_macro_param_func_paren_io`) rewrites
+ * `.subckt name (1 2 3)` to `.subckt name 1 2 3`: when the port list (the
+ * text after the subcircuit name) starts with `(`, that `(` and the first `)`
+ * after it become spaces. Nothing else on the card is touched (#864).
+ */
+function withoutPortListParens(afterName: string): string {
+  const open = afterName.search(/\S/);
+  if (open < 0 || afterName[open] !== '(') return afterName;
+  const close = afterName.indexOf(')', open + 1);
+  return close < 0
+    ? ' ' + afterName.slice(open + 1)
+    : ' ' + afterName.slice(open + 1, close) + ' ' + afterName.slice(close + 1);
 }
 
 function defaultValue(value: string): number | string {
@@ -98,6 +113,8 @@ export interface SubcircuitCall {
   nameIndex: number;
   /** Index of the first parameter token (after any `params:` keyword). */
   paramStart: number;
+  /** Port (actual node) tokens, without a parenthesised port list's `(` and `)`. */
+  ports: string[];
 }
 
 /**
@@ -108,8 +125,20 @@ export interface SubcircuitCall {
 export function locateSubcircuitCall(tokens: readonly string[]): SubcircuitCall {
   let index = tokens.length - 1;
   while (index > 1 && tokens[index].includes('=')) index--;
-  if (index > 1 && PARAMS_KEYWORD.test(tokens[index])) return { nameIndex: index - 1, paramStart: index + 1 };
-  return { nameIndex: index, paramStart: index + 1 };
+  const nameIndex = index > 1 && PARAMS_KEYWORD.test(tokens[index]) ? index - 1 : index;
+  return { nameIndex, paramStart: index + 1, ports: callPorts(tokens.slice(1, nameIndex)) };
+}
+
+/**
+ * ngspice-47 inpcom.c (`inp_fix_macro_param_func_paren_io`) rewrites
+ * `x1 (1 2 3) name` to `x1 1 2 3 name`: when the token after the instance
+ * name opens with `(`, that `(` and the first `)` after it are dropped (#864).
+ * The tokenizer splits parentheses into their own tokens.
+ */
+function callPorts(tokens: string[]): string[] {
+  if (tokens[0] !== '(') return tokens;
+  const close = tokens.indexOf(')', 1);
+  return close < 0 ? tokens.slice(1) : [...tokens.slice(1, close), ...tokens.slice(close + 1)];
 }
 
 /** A subcircuit body with its directly nested `.subckt` blocks split out. */
