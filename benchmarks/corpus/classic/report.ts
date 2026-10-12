@@ -483,9 +483,10 @@ function distortionAnalyses(distortion: {
 }
 
 /**
- * `parseFirst` (default, used by the classic and aggregate reports) calls the stricter `parse()`
- * before `simulate()`. `parse()` does not expand `.param`, so corpora that must report what
- * `simulate()` itself does (corpus-f) pass `parseFirst: false`.
+ * `parseFirst` (default, used by the classic and aggregate reports) calls `parse()` before
+ * `simulate()`. Since #510 `parse()` runs the same `.param` preprocessing as `simulate()`, so the
+ * pre-check reports the same parse error; corpus-f still passes `parseFirst: false` to report
+ * exactly what `simulate()` itself does.
  */
 export async function runNativeSpiceTs(
   input: Buffer,

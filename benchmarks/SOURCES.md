@@ -699,3 +699,7 @@ Local paths are relative to `benchmarks/corpus/xyce-spice3/`; full SHA-256 value
 
     pnpm exec tsx benchmarks/translate/xyce-to-spice3.ts --check
     pnpm exec tsx --test benchmarks/translate/xyce-to-spice3.test.ts
+
+## bsim3-charge-626 (#626, #582)
+
+- `benchmarks/bsim3-charge-626/`: project-authored BSIM3v3.3.0 charge-model cards and decks (MIT, this repository), plus the #589 cards from `benchmarks/bsim3-dc-589/cards.ts` (which read corpus-f cards at run time; provenance and licence in `benchmarks/corpus/corpus-f/SOURCES.md`). The NAND deck reuses the subcircuit and default model cards of corpus-f `examples/snapshot/adder_mos_circ.cir` (ngspice examples, see that SOURCES.md). References are generated with ngspice-47 by `reference.ts` and `transient-reference.ts`.

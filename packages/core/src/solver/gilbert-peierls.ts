@@ -75,6 +75,16 @@ export class GilbertPeierlsSolver implements SparseSolver {
   private factoredColPtr: Int32Array | null = null;
   private factoredRowIdx: Int32Array | null = null;
   private numericCount = 0;
+  private refactorCount = 0;
+
+  // Pivot reuse (see refactorWithPivots). Valid only for the structure arrays
+  // the last full factorization ran on; cleared by analyzePattern.
+  private pivotsColPtr: Int32Array | null = null;
+  private pivotsRowIdx: Int32Array | null = null;
+  private scatterPos = new Int32Array(0); // elimination position of each A entry's row
+  private natPos!: Int32Array;            // final position of step j's preferred row
+  private zeroPtr!: Int32Array;           // CSC pointers into zeroRows per column
+  private zeroRows = new Int32Array(16);  // touched positions whose value was exactly zero
 
   private readonly pivotThreshold = 0.1;
 
@@ -132,17 +142,26 @@ export class GilbertPeierlsSolver implements SparseSolver {
     this.nonzeroFlag = new Int32Array(n);
     this.nonzeroList = new Int32Array(n);
     this.activeK = new Int32Array(n);
+    this.natPos = new Int32Array(n);
+    this.zeroPtr = new Int32Array(n + 1);
     this.workspaceDirty = false;
 
     this.analyzed = true;
     this.factorized = false;
     this.factoredColPtr = null;
     this.factoredRowIdx = null;
+    this.pivotsColPtr = null;
+    this.pivotsRowIdx = null;
   }
 
   /** Numeric factorizations performed, excluding skipped identical ones. Diagnostics only. */
   get numericFactorizations(): number {
     return this.numericCount;
+  }
+
+  /** Numeric factorizations that reused the previous pivot sequence. Diagnostics only. */
+  get pivotReuseFactorizations(): number {
+    return this.refactorCount;
   }
 
   /**
@@ -207,6 +226,24 @@ export class GilbertPeierlsSolver implements SparseSolver {
     // iterations of a converged OP) yields bit-identical factors. Keep them.
     if (this.matchesFactoredInput(A)) return;
 
+    // Values changed on the same structure: first try to reuse the previous
+    // pivot sequence and factor pattern (ngspice: spFactor / klu_refactor
+    // after the first spOrderAndFactor / klu_factor). The attempt only
+    // succeeds when this kernel would have made exactly the same choices, so
+    // the result is bit-identical to a full factorization.
+    if (
+      A.colPtr === this.pivotsColPtr &&
+      A.rowIdx === this.pivotsRowIdx &&
+      this.refactorWithPivots(A)
+    ) {
+      this.workspaceDirty = false;
+      this.factorized = true;
+      this.numericCount++;
+      this.refactorCount++;
+      this.recordFactoredInput(A);
+      return;
+    }
+
     const n = this.n;
     const perm = this.perm;
     const colPerm = this.colPerm;
@@ -221,10 +258,15 @@ export class GilbertPeierlsSolver implements SparseSolver {
     const nonzeroFlag = this.nonzeroFlag;
     const nonzeroList = this.nonzeroList;
     const activeK = this.activeK;
+    const natPos = this.natPos;
+    const zeroPtr = this.zeroPtr;
+    let zeroRows = this.zeroRows;
 
     // Freshly allocated and successfully factorized workspaces are already
     // zero. Only solve() or a failed numeric pass can leave values behind.
     this.factorized = false;
+    this.pivotsColPtr = null;
+    this.pivotsRowIdx = null;
     if (this.workspaceDirty) workspace.fill(0);
     this.workspaceDirty = true;
 
@@ -237,6 +279,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
     let lp = 0;
     let up = 0;
+    let zp = 0;
 
     for (let j = 0; j < n; j++) {
       let nonzeroCount = 0;
@@ -244,49 +287,58 @@ export class GilbertPeierlsSolver implements SparseSolver {
       lColPtr[j] = lp;
       uColPtr[j] = up;
 
+      // Per-row state for this column, stamped so no per-column reset is needed:
+      //   settled  — touched, and either not yet pivoted (an L/pivot candidate)
+      //              or a pivoted row already queued as an active column;
+      //   dormant  — touched pivoted row whose value is currently exactly zero,
+      //              so its column is not (yet) active;
+      //   anything else — not touched in this column.
+      // Only the rare non-settled rows take the slow path in the update loop.
+      const settled = 2 * j + 1;
+      const dormant = 2 * j;
+
       // === Step 1: SCATTER column colPerm[j] of A into workspace (original row space) ===
       const col = colPerm[j];
       for (let p = A.colPtr[col]; p < A.colPtr[col + 1]; p++) {
         const origRow = A.rowIdx[p];
         workspace[origRow] = A.values[p];
-        if (nonzeroFlag[origRow] !== j) {
-          nonzeroFlag[origRow] = j;
+        // Stamps only grow, so anything below `dormant` is untouched here.
+        if (nonzeroFlag[origRow] < dormant) {
+          nonzeroFlag[origRow] = dormant;
           nonzeroList[nonzeroCount++] = origRow;
         }
       }
 
       // === Step 2: LEFT-LOOKING sparse triangular solve ===
-      // For each column k < j (in order), if workspace[perm[k]] != 0,
+      // For each column k < j in ascending order with workspace[perm[k]] != 0,
       // record U[k,j] and subtract L[:,k] * U[k,j] from the workspace.
       //
-      // We build the active set from nonzeroList: for each nonzero workspace
-      // position that is a previously-used pivot row, find its column k.
-      // Then process in sorted column order.
-
-      // Build sorted list of active columns
+      // The active columns are pivoted rows with a nonzero workspace value.
+      // They live in a binary min-heap (activeK[0..activeCount)), so fill that
+      // activates a later column is queued in O(log active) and columns are
+      // still processed in strictly ascending k. That order fixes the
+      // floating-point summation order of every workspace entry.
       let activeCount = 0;
       for (let t = 0; t < nonzeroCount; t++) {
         const origRow = nonzeroList[t];
         const k = pinv[origRow];
-        if (k >= 0 && k < j && workspace[origRow] !== 0) {
+        if (k < 0) {
+          nonzeroFlag[origRow] = settled;
+        } else if (workspace[origRow] !== 0) {
+          nonzeroFlag[origRow] = settled;
           activeK[activeCount++] = k;
-          // Encode active state in the pivot entry until this column finishes.
-          // -1 remains the unused-row sentinel; active k is stored as -k - 2.
-          pinv[origRow] = -k - 2;
+        } else {
+          nonzeroFlag[origRow] = dormant;
         }
       }
-      // Sort active columns
+      // An ascending array is a valid min-heap.
       sortInt32Prefix(activeK, activeCount);
 
-      // Process active columns in order. New non-zeros from fill-in may create
-      // additional active columns that need processing.
-      let ki = 0;
-      while (ki < activeCount) {
-        const k = activeK[ki];
-        ki++;
+      while (activeCount > 0) {
+        const k = activeK[0];
+        activeCount = heapPopMin(activeK, activeCount);
 
-        const pr = perm[k];
-        const ukj = workspace[pr];
+        const ukj = workspace[perm[k]];
         if (ukj === 0) continue;
 
         // Store U[k,j]
@@ -299,42 +351,28 @@ export class GilbertPeierlsSolver implements SparseSolver {
         uValues[up] = ukj;
         up++;
 
-        // Apply L column k: subtract L[i,k] * U[k,j] from workspace
-        for (let p = lColPtr[k]; p < lColPtr[k + 1]; p++) {
+        // Apply L column k: subtract L[i,k] * U[k,j] from workspace. Every
+        // L[:,k] row was unpivoted at step k, so a pivoted row met here has
+        // its pivot column strictly between k and j.
+        const pEnd = lColPtr[k + 1];
+        for (let p = lColPtr[k]; p < pEnd; p++) {
           const origI = lRows[p];
-          const lik = lValues[p];
-          workspace[origI] -= lik * ukj;
+          workspace[origI] -= lValues[p] * ukj;
 
-          if (nonzeroFlag[origI] !== j) {
-            nonzeroFlag[origI] = j;
-            nonzeroList[nonzeroCount++] = origI;
-          }
-
-          // A structural zero may already be in nonzeroList but become active
-          // only after this update. Track activation separately from structure.
-          const k2 = pinv[origI];
-          if (k2 > k && k2 < j && workspace[origI] !== 0) {
-            pinv[origI] = -k2 - 2;
-            activeK[activeCount] = k2;
-            activeCount++;
-            for (let q = activeCount - 1; q > ki; q--) {
-              if (activeK[q] < activeK[q - 1]) {
-                const tmp = activeK[q];
-                activeK[q] = activeK[q - 1];
-                activeK[q - 1] = tmp;
-              } else {
-                break;
-              }
+          const state = nonzeroFlag[origI];
+          if (state !== settled) {
+            if (state !== dormant) nonzeroList[nonzeroCount++] = origI;
+            const k2 = pinv[origI];
+            if (k2 < 0) {
+              nonzeroFlag[origI] = settled;
+            } else if (workspace[origI] !== 0) {
+              nonzeroFlag[origI] = settled;
+              activeCount = heapPush(activeK, activeCount, k2);
+            } else {
+              nonzeroFlag[origI] = dormant;
             }
           }
         }
-      }
-
-      // Restore pivot-column indices before pivot selection. Encoded entries
-      // are all represented once in activeK, including fill-activated columns.
-      for (let t = 0; t < activeCount; t++) {
-        const k = activeK[t];
-        pinv[perm[k]] = k;
       }
 
       // === Step 3: THRESHOLD PIVOTING ===
@@ -359,6 +397,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
       // Prefer the natural diagonal candidate (perm[j]) if sufficiently large
       const natOrigRow = perm[j];
+      natPos[j] = natOrigRow;
       let chosenOrigRow: number;
       if (pinv[natOrigRow] < 0 && Math.abs(workspace[natOrigRow]) >= this.pivotThreshold * maxVal) {
         chosenOrigRow = natOrigRow;
@@ -400,9 +439,20 @@ export class GilbertPeierlsSolver implements SparseSolver {
       // store L[i,j] = workspace[origRow] / pivotVal.
       // Row indices remain in ORIGINAL row space until the factorization ends;
       // the triangular solve in subsequent columns reads them from lRows.
+      // Touched rows whose final value is exactly zero (unpivoted rows that
+      // stay out of L, pivoted rows whose column was never applied) are
+      // recorded for the pivot-reuse check in refactorWithPivots().
+      zeroPtr[j] = zp;
       for (let t = 0; t < nonzeroCount; t++) {
         const origRow = nonzeroList[t];
-        if (origRow !== chosenOrigRow && pinv[origRow] < 0 && workspace[origRow] !== 0) {
+        if (origRow === chosenOrigRow) continue;
+        if (workspace[origRow] === 0) {
+          if (zp === zeroRows.length) {
+            this.growZeroRows(zp + 1);
+            zeroRows = this.zeroRows;
+          }
+          zeroRows[zp++] = origRow;
+        } else if (pinv[origRow] < 0) {
           if (lp === lValues.length) {
             this.growLFactors(lp + 1);
             lRows = this.lRows;
@@ -422,6 +472,7 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
     lColPtr[n] = lp;
     uColPtr[n] = up;
+    zeroPtr[n] = zp;
 
     // === Step 6: Convert L row indices from original rows to elimination positions ===
     // The final permutation is now fully determined. Convert L's original row
@@ -433,10 +484,132 @@ export class GilbertPeierlsSolver implements SparseSolver {
       lRows[p] = pinv[lRows[p]];
     }
 
+    // Pivot-reuse data, in elimination positions: zero rows, the preferred
+    // row of every step, and the position each stored entry of A scatters to.
+    for (let p = 0; p < zp; p++) zeroRows[p] = pinv[zeroRows[p]];
+    for (let k = 0; k < n; k++) natPos[k] = pinv[natPos[k]];
+    const nnzA = A.colPtr[n];
+    if (this.scatterPos.length < nnzA) this.scatterPos = new Int32Array(nnzA);
+    const scatterPos = this.scatterPos;
+    for (let p = 0; p < nnzA; p++) scatterPos[p] = pinv[A.rowIdx[p]];
+    this.pivotsColPtr = A.colPtr;
+    this.pivotsRowIdx = A.rowIdx;
+
     this.workspaceDirty = false;
     this.factorized = true;
     this.numericCount++;
     this.recordFactoredInput(A);
+  }
+
+  /**
+   * Refactorize A on the pivot sequence and L/U pattern of the last full
+   * factorization, in place — ngspice's spFactor / klu_refactor reuse of the
+   * previous ordering. Unlike ngspice, which keeps a reused pivot until it
+   * fails a size test, this succeeds only when the full kernel would make
+   * exactly the same decisions on these values:
+   *
+   *  - every reused U entry is nonzero (the kernel skips zero U[k,j], which
+   *    would change which L columns are applied);
+   *  - every touched row recorded as zero is still exactly zero, and every L
+   *    row is nonzero (same L/U patterns, hence the same touched rows in the
+   *    same order for later columns);
+   *  - the threshold-pivoting rule selects the same row: the preferred row
+   *    still passes the threshold, or the off-preference pivot is still the
+   *    strict maximum and the preferred row still fails.
+   *
+   * Under those conditions every workspace entry sees the same operations in
+   * the same order as in factorize(), so the factors are bit-identical. On
+   * any mismatch it returns false with the workspace dirty and partially
+   * overwritten factors; the caller then runs the full factorization.
+   */
+  private refactorWithPivots(A: CscMatrix): boolean {
+    const n = this.n;
+    const colPerm = this.colPerm;
+    const x = this.workspace;
+    const lColPtr = this.lColPtr;
+    const lRows = this.lRows;
+    const lValues = this.lValues;
+    const uColPtr = this.uColPtr;
+    const uRows = this.uRows;
+    const uValues = this.uValues;
+    const natPos = this.natPos;
+    const zeroPtr = this.zeroPtr;
+    const zeroRows = this.zeroRows;
+    const scatterPos = this.scatterPos;
+    const aColPtr = A.colPtr;
+    const aValues = A.values;
+    const threshold = this.pivotThreshold;
+
+    this.factorized = false;
+    if (this.workspaceDirty) x.fill(0);
+    this.workspaceDirty = true;
+
+    for (let j = 0; j < n; j++) {
+      // Scatter column colPerm[j] of A in elimination-position space.
+      const col = colPerm[j];
+      for (let p = aColPtr[col]; p < aColPtr[col + 1]; p++) {
+        x[scatterPos[p]] = aValues[p];
+      }
+
+      // Apply the stored U pattern in ascending k (the U diagonal is last).
+      const uStart = uColPtr[j];
+      const uDiag = uColPtr[j + 1] - 1;
+      for (let q = uStart; q < uDiag; q++) {
+        const k = uRows[q];
+        const ukj = x[k];
+        if (ukj === 0) return false;
+        x[k] = 0;
+        uValues[q] = ukj;
+        const pEnd = lColPtr[k + 1];
+        for (let p = lColPtr[k]; p < pEnd; p++) {
+          x[lRows[p]] -= lValues[p] * ukj;
+        }
+      }
+
+      for (let z = zeroPtr[j]; z < zeroPtr[j + 1]; z++) {
+        if (x[zeroRows[z]] !== 0) return false;
+      }
+
+      // Threshold pivot test over the candidates (pivot row and L rows).
+      // L values are written speculatively; a failed test discards them.
+      const pivotVal = x[j];
+      x[j] = 0;
+      const lStart = lColPtr[j];
+      const lEnd = lColPtr[j + 1];
+      const nat = natPos[j];
+      let natAbs = 0;
+      let maxL = 0;
+      for (let p = lStart; p < lEnd; p++) {
+        const row = lRows[p];
+        const v = x[row];
+        if (v === 0) return false;
+        x[row] = 0;
+        lValues[p] = v / pivotVal;
+        const a = Math.abs(v);
+        if (a > maxL) maxL = a;
+        if (row === nat) natAbs = a;
+      }
+      const absPivot = Math.abs(pivotVal);
+      if (nat === j) {
+        const maxVal = absPivot > maxL ? absPivot : maxL;
+        if (!(maxVal >= 1e-18) || !(absPivot >= threshold * maxVal)) return false;
+      } else {
+        // The preferred row is a later pivot: an L row or untouched (zero).
+        if (!(absPivot > maxL) || natAbs >= threshold * absPivot) return false;
+      }
+      if (!(absPivot >= 1e-18)) return false;
+      uValues[uDiag] = pivotVal;
+
+      for (let z = zeroPtr[j]; z < zeroPtr[j + 1]; z++) x[zeroRows[z]] = 0;
+    }
+    return true;
+  }
+
+  private growZeroRows(required: number): void {
+    const capacity = Math.max(required, this.zeroRows.length * 2);
+    const rows = new Int32Array(capacity);
+    rows.set(this.zeroRows);
+    this.zeroRows = rows;
   }
 
   private growLFactors(required: number): void {
@@ -613,6 +786,39 @@ function columnSingletonsFirst(
     rowPref[t] = nextRow;
   }
   return { colPerm, rowPref };
+}
+
+/** Insert `value` into the binary min-heap heap[0..count); returns the new count. */
+function heapPush(heap: Int32Array, count: number, value: number): number {
+  let i = count;
+  while (i > 0) {
+    const parent = (i - 1) >> 1;
+    const pv = heap[parent];
+    if (pv <= value) break;
+    heap[i] = pv;
+    i = parent;
+  }
+  heap[i] = value;
+  return count + 1;
+}
+
+/** Remove the minimum heap[0] from the binary min-heap heap[0..count); returns the new count. */
+function heapPopMin(heap: Int32Array, count: number): number {
+  const last = count - 1;
+  if (last === 0) return 0;
+  const value = heap[last];
+  let i = 0;
+  for (;;) {
+    let child = 2 * i + 1;
+    if (child >= last) break;
+    if (child + 1 < last && heap[child + 1] < heap[child]) child++;
+    const cv = heap[child];
+    if (cv >= value) break;
+    heap[i] = cv;
+    i = child;
+  }
+  heap[i] = value;
+  return last;
 }
 
 /**

@@ -31,7 +31,7 @@ export {
 export type {
   SimulationResult, StepResult, PoleZeroValue, SensitivityEntry, ComplexSensitivityValue,
   ComplexDistortionValue, ComplexValue, DistortionOrder, DistortionIntermodulationProduct, DistortionProduct,
-  ControlScriptResult, ControlScriptRun,
+  ControlScriptResult, ControlScriptRun, MeasurementResult,
 } from './results.js';
 export type {
   SimulationOptions,
@@ -88,6 +88,7 @@ export {
   UnsupportedCircuitModelTypeError,
   ModelTypeMismatchError,
   UnsupportedTemperatureError,
+  UnsupportedModelParameterError,
 } from './errors.js';
 export { SUPPORTED_MODEL_TYPES, DEVICE_MODEL_TYPES, UnsupportedModelTypeError } from './parser/model-type.js';
 export { UnsupportedSourceWaveformError } from './parser/waveform-parser.js';
@@ -95,6 +96,7 @@ export type { ConvergenceFailureKind } from './errors.js';
 export { UnsupportedCodeModelError } from './parser/xspice-parser.js';
 export { UnsupportedResistorParameterError } from './parser/resistor-parser.js';
 export { UnsupportedModelFlagError } from './parser/model-flags.js';
+export { UnsupportedMeasureError } from './measure/errors.js';
 export {
   UnsupportedControlCommandError, ControlScriptError, ControlScriptExitError,
 } from './parser/control/errors.js';

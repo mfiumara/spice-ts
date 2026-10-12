@@ -17,7 +17,7 @@ import {
   parseTransmissionLineModelCard,
   parseTxlLine,
 } from './transmission-line-parser.js';
-import { preprocessDeck } from './preprocessor.js';
+import { preprocessDeck, preprocessDeckSync } from './preprocessor.js';
 import { lowerControlScript } from './control-block.js';
 import { extractControlBlocks, type ControlSourceBlock, type ControlSourceLine } from './control/source.js';
 import {
@@ -31,6 +31,9 @@ import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
 import type { AnalysisDirective, IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
+import { measureCard } from '../measure/dot-measure.js';
+import { addMeasureCard, measureCards } from '../measure/registry.js';
+import { UnsupportedMeasureError } from '../measure/errors.js';
 
 export { parseSourceWaveform } from './waveform-parser.js';
 export { SUPPORTED_MODEL_TYPES, UnsupportedModelTypeError } from './model-type.js';
@@ -47,8 +50,10 @@ export { UnsupportedModelFlagError } from './model-flags.js';
  *
  * Handles device lines (R, C, L, V, I, D, Q, J, M, E, G, H, F, X),
  * dot commands (`.op`, `.dc`, `.tran`, `.ac`, `.model`, `.subckt`),
- * and subcircuit definitions. Does not resolve `.include` or `.lib`
- * directives -- use {@link parseAsync} for netlists with file includes.
+ * and subcircuit definitions. Runs the same `.param`/`.func`/`.if`
+ * preprocessing as {@link parseAsync} and `simulate()`, so a deck that
+ * `simulate()` accepts also parses here. Does not resolve `.include` or `.lib`
+ * file directives -- use {@link parseAsync} for netlists with file includes.
  *
  * @param netlist - SPICE netlist text (may include line continuations with `+`)
  * @returns A {@link Circuit} ready for compilation and simulation
@@ -65,7 +70,9 @@ export { UnsupportedModelFlagError } from './model-flags.js';
  * ```
  */
 export function parse(netlist: string): Circuit {
-  return parseNetlist(netlist, true);
+  const { title, control } = splitTitledDeck(netlist);
+  const preprocessed = preprocessDeckSync(control.netlist, undefined, 1);
+  return parseNetlist(`${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters);
 }
 
 /**
@@ -76,7 +83,21 @@ export function parse(netlist: string): Circuit {
  * standard SPICE title line.
  */
 export function parseTitleless(netlist: string): Circuit {
-  return parseNetlist(netlist, false);
+  const control = extractControlBlocks(netlist, false);
+  const preprocessed = preprocessDeckSync(control.netlist, undefined, 0);
+  return parseNetlist(preprocessed.text, false, undefined, control.blocks, preprocessed.parameters);
+}
+
+/**
+ * Split off the title line and take out the control blocks, which must not
+ * reach `.param` preprocessing: it would read their `{$var}` references as
+ * numparam expressions. The body starts on line 2 of the caller's netlist.
+ */
+function splitTitledDeck(netlist: string): { title: string; control: ReturnType<typeof extractControlBlocks> } {
+  const newline = netlist.indexOf('\n');
+  const title = newline < 0 ? netlist : netlist.slice(0, newline);
+  const body = newline < 0 ? '' : netlist.slice(newline + 1);
+  return { title, control: extractControlBlocks(body, false, 1) };
 }
 
 function parseNetlist(
@@ -320,13 +341,7 @@ export async function parseAsync(
   netlist: string,
   resolver?: IncludeResolver,
 ): Promise<Circuit> {
-  const newline = netlist.indexOf('\n');
-  const title = newline < 0 ? netlist : netlist.slice(0, newline);
-  const body = newline < 0 ? '' : netlist.slice(newline + 1);
-  // Control blocks are taken out before .param preprocessing, which would
-  // read their `{$var}` references as numparam expressions.
-  // The body starts on line 2 of the caller's netlist (after the title).
-  const control = extractControlBlocks(body, false, 1);
+  const { title, control } = splitTitledDeck(netlist);
   const preprocessed = await preprocessDeck(control.netlist, resolver, undefined, 1);
   return parseNetlist(`${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters);
 }
@@ -344,6 +359,9 @@ export async function parseTitlelessAsync(
 
 const OUTPUT_ONLY_OPTION_FLAGS = new Set([
   'nopage', 'acct', 'noacct', 'list', 'node', 'post', 'trans', 'noinit', 'seedinfo',
+  // ngspice-47 spiceif.c if_option: ft_nomod only skips com_showmod in the
+  // printed operating-point report (dotcards.c).
+  'nomod',
 ]);
 const BEHAVIOR_CHANGING_GNUCAP_OPTIONS = new Set([
   'cstray', 'dampstrategy', 'itermin', 'nobypass', 'noincmode', 'rstray', 'trsteporder',
@@ -612,8 +630,10 @@ function parseDotCommand(
     case '.OPTIONS': {
       const optionTokens = tokens.slice(1);
       const temperature = takeCircuitTemperatureOption(optionTokens, lineNumber, context);
+      const xspiceTrtol = takeXspiceTrtolOption(optionTokens, lineNumber, context);
       circuit.setSimulationOptions(parseSimulationOptions(optionTokens, lineNumber, context));
       if (temperature !== undefined) circuit.setTemperature(temperature);
+      if (xspiceTrtol !== undefined) circuit.setXspiceTrtol(xspiceTrtol);
       break;
     }
     case '.LIST':
@@ -646,6 +666,27 @@ function parseDotCommand(
       // spice-ts returns all computed vectors through its result API, so these
       // ngspice output-selection and formatting directives are metadata-only.
       break;
+    case '.MEAS':
+    case '.MEASURE': {
+      // Evaluated after the analyses run (ngspice do_measure); ngspice numbers
+      // the par() B-sources deck-wide.
+      const firstPar = measureCards(circuit).reduce((count, card) => count + card.parSources.length, 0);
+      const card = measureCard(context, lineNumber, firstPar);
+      for (const source of card.parSources) {
+        try {
+          const parsed = parseBehavioralSourceCard(source, lineNumber);
+          circuit.addBehavioralVoltageSource(parsed.name, parsed.nodes[0], parsed.nodes[1], parsed.expression, parsed.params);
+        } catch (error) {
+          throw new UnsupportedMeasureError(
+            `the par() operand needs the B-source '${source}', which spice-ts cannot build: ${(error as Error).message}`,
+            lineNumber,
+            context,
+          );
+        }
+      }
+      addMeasureCard(circuit, card);
+      break;
+    }
     case '.PROBE':
       if (tokens.length === 1) {
         throw new ParseError('Unsupported empty .probe output request', lineNumber, context);
@@ -770,6 +811,37 @@ function takeCircuitTemperatureOption(
     tokens.splice(index, 1);
   }
   return temperature;
+}
+
+/**
+ * Remove ngspice `XTRTOL=<n>` fields from `.options` tokens (in place) and
+ * return the last value. ngspice-47 inp.c turns every `.options` field into a
+ * circuit variable; cktdojob.c reads `xtrtol` with cp_getvar(CP_NUM), which
+ * truncates a real value to int, as the trtol of a circuit with 'A' devices.
+ * A value that truncates below 1 (ngspice then runs with trtol 0 and fails) or
+ * is not a number (ngspice silently falls back to 1) is rejected.
+ */
+function takeXspiceTrtolOption(
+  tokens: string[],
+  lineNumber: number,
+  context: string,
+): number | undefined {
+  if (tokens[0]?.toLowerCase() === 'timeint') return undefined;
+  let trtol: number | undefined;
+  for (let index = tokens.length - 1; index >= 0; index -= 1) {
+    const token = tokens[index];
+    const separator = token.indexOf('=');
+    const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
+    if (name !== 'xtrtol') continue;
+    const rawValue = separator < 0 ? '' : token.slice(separator + 1);
+    const value = rawValue === '' ? Number.NaN : Math.trunc(parseNumber(rawValue));
+    if (!Number.isFinite(value) || value < 1) {
+      throw new ParseError(`Invalid .options xtrtol value: '${rawValue}'`, lineNumber, context);
+    }
+    trtol ??= value;
+    tokens.splice(index, 1);
+  }
+  return trtol;
 }
 
 function parseSimulationOptions(

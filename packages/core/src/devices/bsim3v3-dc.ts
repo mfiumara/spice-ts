@@ -30,6 +30,30 @@ export function createDCResult(): BSIM3v3DCResult {
 }
 
 /**
+ * The b3ld.c DC-section quantities its charge section (capMod 0-3) reads,
+ * at the same normal-mode bias as the {@link BSIM3v3DCResult}.
+ */
+export interface BSIM3v3ChargeInputs {
+  Vbseff: number; dVbseff_dVb: number;
+  Phis: number; dPhis_dVb: number;
+  sqrtPhis: number; dsqrtPhis_dVb: number;
+  n: number; dn_dVd: number; dn_dVb: number;
+  Vgs_eff: number; dVgs_eff_dVg: number;
+  Vth: number; dVth_dVb: number; dVth_dVd: number;
+  Vgst: number;
+  Abulk0: number; dAbulk0_dVb: number;
+}
+
+/** Fresh charge-input record for {@link evaluateDC}. */
+export function createChargeInputs(): BSIM3v3ChargeInputs {
+  return {
+    Vbseff: 0, dVbseff_dVb: 0, Phis: 0, dPhis_dVb: 0, sqrtPhis: 0, dsqrtPhis_dVb: 0,
+    n: 0, dn_dVd: 0, dn_dVb: 0, Vgs_eff: 0, dVgs_eff_dVg: 0,
+    Vth: 0, dVth_dVb: 0, dVth_dVd: 0, Vgst: 0, Abulk0: 0, dAbulk0_dVb: 0,
+  };
+}
+
+/**
  * Evaluate the BSIM3v3.3.0 DC drain current and its derivatives, a direct
  * port of ngspice-47 b3ld.c from "if (vds >= 0.0)" through the substrate
  * current. Voltages are in the NMOS convention (multiplied by type) and in
@@ -43,6 +67,7 @@ export function evaluateDC(
   Vds: number,
   Vbs: number,
   out: BSIM3v3DCResult = createDCResult(),
+  charge?: BSIM3v3ChargeInputs,
 ): BSIM3v3DCResult {
   let T0: number, T1: number, T2: number, T3: number, T4: number, T5: number;
   let T6: number, T7: number, T8: number, T9: number, T10: number;
@@ -59,13 +84,17 @@ export function evaluateDC(
   const dVbseff_dVb = 0.5 * (1.0 + T0 / T1);
   if (Vbseff < Vbs) Vbseff = Vbs;
 
-  let sqrtPhis: number, dsqrtPhis_dVb: number;
+  let Phis: number, dPhis_dVb: number, sqrtPhis: number, dsqrtPhis_dVb: number;
   if (Vbseff > 0.0) {
     T0 = p.phi / (p.phi + Vbseff);
+    Phis = p.phi * T0;
+    dPhis_dVb = -T0 * T0;
     sqrtPhis = p.phis3 / (p.phi + 0.5 * Vbseff);
     dsqrtPhis_dVb = -0.5 * sqrtPhis * sqrtPhis / p.phis3;
   } else {
-    sqrtPhis = Math.sqrt(p.phi - Vbseff);
+    Phis = p.phi - Vbseff;
+    dPhis_dVb = -1.0;
+    sqrtPhis = Math.sqrt(Phis);
     dsqrtPhis_dVb = -0.5 / sqrtPhis;
   }
   const Xdep = p.Xdep0 * sqrtPhis / p.sqrtPhi;
@@ -694,6 +723,17 @@ export function evaluateDC(
     Gbb += Gbg * dVgsteff_dVb;
     Gbg *= dVgsteff_dVg;
     Gbb *= dVbseff_dVb;
+  }
+
+  if (charge !== undefined) {
+    charge.Vbseff = Vbseff; charge.dVbseff_dVb = dVbseff_dVb;
+    charge.Phis = Phis; charge.dPhis_dVb = dPhis_dVb;
+    charge.sqrtPhis = sqrtPhis; charge.dsqrtPhis_dVb = dsqrtPhis_dVb;
+    charge.n = n; charge.dn_dVd = dn_dVd; charge.dn_dVb = dn_dVb;
+    charge.Vgs_eff = Vgs_eff; charge.dVgs_eff_dVg = dVgs_eff_dVg;
+    charge.Vth = Vth; charge.dVth_dVb = dVth_dVb; charge.dVth_dVd = dVth_dVd;
+    charge.Vgst = Vgst;
+    charge.Abulk0 = Abulk0; charge.dAbulk0_dVb = dAbulk0_dVb;
   }
 
   out.Ids = Ids;

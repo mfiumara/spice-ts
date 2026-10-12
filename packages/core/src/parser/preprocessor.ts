@@ -63,9 +63,37 @@ export async function preprocessDeck(
   guard: ProtocolExecutionGuard | undefined,
   lineOffset: number,
 ): Promise<PreprocessedDeck> {
+  const steps = preprocessSteps(netlist, resolver !== undefined, guard, lineOffset);
+  let step = steps.next();
+  while (!step.done) step = steps.next(await resolver!(step.value));
+  return step.value;
+}
+
+/**
+ * @internal Synchronous {@link preprocessDeck} for `parse()` (#510): the same
+ * `.param`/`.func`/`.if` preprocessing, without `.include`/`.lib` file
+ * resolution, which reports that it needs `parseAsync()`.
+ */
+export function preprocessDeckSync(
+  netlist: string,
+  guard: ProtocolExecutionGuard | undefined,
+  lineOffset: number,
+): PreprocessedDeck {
+  const step = preprocessSteps(netlist, false, guard, lineOffset).next();
+  if (!step.done) throw new Error('preprocessDeckSync: unexpected include request without a resolver');
+  return step.value;
+}
+
+/** Preprocessing as a generator that yields each include path and resumes with its content. */
+function* preprocessSteps(
+  netlist: string,
+  hasResolver: boolean,
+  guard: ProtocolExecutionGuard | undefined,
+  lineOffset: number,
+): Generator<string, PreprocessedDeck, string> {
   const state = newCollectState();
   const { definitions, statements } = state;
-  await collectStatements(netlist, resolver, new Set(), [], 0, state, guard, lineOffset);
+  yield* collectStatements(netlist, hasResolver, new Set(), [], 0, state, guard, lineOffset);
   const unterminated = state.openBlocks[0];
   if (unterminated !== undefined) {
     const block = state.blocks[unterminated];
@@ -95,8 +123,9 @@ export async function preprocessDeck(
       evaluateParamExpression(definition, scopes.numparam, state.functionScopes[0].functions);
     }
   }
+  const measureNames = new Set(statements.flatMap(statement => measureName(statement.text)));
   const text = statements.map(statement => statement.substitute
-    ? substituteStatement(statement, scopes)
+    ? substituteStatement(statement, scopes, measureNames)
     : statement.text).join('\n');
   const parameters: Record<string, number> = {};
   for (const name of definitions.keys()) {
@@ -165,6 +194,19 @@ const CONDITIONAL_CARD = /^\.(elseif|else|endif|if)(?![\w])/i;
 const FUNC_DIRECTIVE = /^\.func(?![\w])/i;
 const CSPARAM_DIRECTIVE = /^\.csparam(?![\w])/i;
 const PARAM_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*(\{[^}]+\}|'[^']*'|"[^"]*"|\S+)/g;
+
+/**
+ * ngspice-47 reads the whole rest of a single-assignment `.param` card as the
+ * expression (`.param x = 1 + 2` is 3, `.param x = 1 +` is an error), not just
+ * its first token. Delimited values and multi-assignment cards keep their token.
+ */
+function singleParamValue(card: string, assignment: RegExpExecArray | RegExpMatchArray): string {
+  const value = assignment[2];
+  if (/^[{'"]/.test(value)) return value;
+  const body = card.slice(7).trim();
+  const rest = body.slice(assignment.index! + assignment[0].length - value.length);
+  return rest.slice(0, commentStart(rest)).trim() || value;
+}
 
 function paramDefinition(value: string, line: number, context: string): ParamDefinition {
   const delimited = value.length >= 2
@@ -426,9 +468,10 @@ function evaluateParamExpression(
   }
 }
 
-function substituteStatement(statement: PendingStatement, scopes: ParamScopes): string {
+function substituteStatement(statement: PendingStatement, scopes: ParamScopes, measureNames: ReadonlySet<string>): string {
   const preserveOutputFunctions = /^\.PRINT(?:\s|$)/i.test(statement.text.trim());
   try {
+    if (MEASURE_CARD.test(statement.text)) return substituteMeasureCard(statement.text, scopes, measureNames);
     const behavioralResistor = behavioralResistorAsBSource(statement.text);
     const text = behavioralResistor ?? statement.text;
     if (/^\s*b/i.test(text)) {
@@ -441,6 +484,102 @@ function substituteStatement(statement: PendingStatement, scopes: ParamScopes): 
   } catch (error) {
     if (error instanceof ParseError) throw error;
     throw toParseError(error, statement.line, statement.text.trim());
+  }
+}
+
+const MEASURE_CARD = /^\s*\.meas/i;
+
+/** Result name of a `.meas` card (upper-cased like `.param` names), if the line is one. */
+function measureName(text: string): string[] {
+  if (!MEASURE_CARD.test(text)) return [];
+  const name = text.trim().split(/\s+/)[2];
+  return name ? [name.toUpperCase()] : [];
+}
+
+/**
+ * numparam for a `.meas` card, following ngspice-47's deck preparation:
+ * inpcom.c wraps the bare right-hand side of every `name=value` in braces
+ * (except `v(...)`/`i(...)`, numbers and `last`), and subckt.c leaves a card
+ * that mentions `param` for after the other measurements, because it may read
+ * their results. Those cards keep their expression; only `.param` names that are
+ * not measurement results are replaced by their values here. `par('expr')`
+ * operands are B-source expressions and are left for the measure code.
+ */
+function substituteMeasureCard(text: string, scopes: ParamScopes, measureNames: ReadonlySet<string>): string {
+  const end = commentStart(text);
+  const operands: string[] = [];
+  let card = protectParOperands(text.slice(0, end), operands);
+  if (/param/i.test(card)) {
+    const assignment = /\b(?:param|expr)\s*=/i.exec(card);
+    const from = assignment ? assignment.index + assignment[0].length : card.length;
+    const expression = card.slice(from).replace(/\b([A-Za-z_]\w*)\b(?!\s*\()/g, (match: string, name: string, offset: number, whole: string) => {
+      const upper = name.toUpperCase();
+      if (/[\d.]/.test(whole[offset - 1] ?? '') || measureNames.has(upper) || !(upper in scopes.numparam)) return match;
+      return `(${formatNumber(scopes.numparam[upper])})`;
+    });
+    card = card.slice(0, from) + expression;
+  } else {
+    card = substituteExpressions(bracedMeasureValues(quotedExpressionsAsBraces(card)), scopes.numparam);
+  }
+  return card.replace(/\u0000(\d+)\u0000/g, (_match, index: string) => parOperandWithParams(operands[Number(index)], scopes));
+}
+
+/** A `par('expr')` operand becomes a B-source expression: substitute `.param` names as on a B-card. */
+function parOperandWithParams(operand: string, scopes: ParamScopes): string {
+  const inner = /^par\(\s*(?:'([^']*)'|\{([^{}]*)\})\s*\)$/i.exec(operand);
+  if (!inner) return operand;
+  const head = 'bpar 0 0 v=';
+  return `par('${substituteBehavioralParameters(head + (inner[1] ?? inner[2]), scopes.params).slice(head.length)}')`;
+}
+
+/** Replace each `par(...)` operand by a placeholder, collecting the originals. */
+function protectParOperands(text: string, operands: string[]): string {
+  let output = '';
+  let index = 0;
+  for (;;) {
+    const start = text.slice(index).search(/par\(/i);
+    if (start < 0) return output + text.slice(index);
+    const open = index + start + 3;
+    let depth = 0;
+    let close = open;
+    let quoted = false;
+    for (; close < text.length; close++) {
+      const character = text[close];
+      if (character === "'") quoted = !quoted;
+      if (quoted) continue;
+      if (character === '(') depth++;
+      else if (character === ')' && --depth === 0) break;
+    }
+    if (close >= text.length) return output + text.slice(index);
+    output += text.slice(index, index + start) + `\u0000${operands.length}\u0000`;
+    operands.push(text.slice(index + start, close + 1));
+    index = close + 1;
+  }
+}
+
+/** inpcom.c (inp_fix_param_values): brace the bare right-hand side of each `.meas` assignment. */
+function bracedMeasureValues(card: string): string {
+  let output = '';
+  let index = 0;
+  for (;;) {
+    let equals = card.indexOf('=', index);
+    while (equals >= 0 && (card[equals + 1] === '=' || /[!<>]/.test(card[equals - 1] ?? ''))) {
+      equals = card.indexOf('=', card[equals + 1] === '=' ? equals + 2 : equals + 1);
+    }
+    if (equals < 0) return output + card.slice(index);
+    let start = equals + 1;
+    while (/\s/.test(card[start] ?? '')) start++;
+    let stop = start;
+    let parens = 0;
+    while (stop < card.length && (!/\s/.test(card[stop]) || parens > 0)) {
+      if (card[stop] === '(') parens++;
+      if (card[stop] === ')') parens--;
+      stop++;
+    }
+    const value = card.slice(start, stop);
+    const keep = value === '' || /^[vi]\(/i.test(value) || /^(?:[\d{.\"[<\u0000]|[+-]\.?\d|true|false|last$)/i.test(value);
+    output += card.slice(index, start) + (keep ? value : `{${value}}`);
+    index = stop;
   }
 }
 
@@ -515,16 +654,17 @@ function toParseError(error: unknown, line: number, context: string): ParseError
   return new ParseError(message, line, context);
 }
 
-async function collectStatements(
+/** Yields each `.include`/`.lib` path to fetch and resumes with the file content. */
+function* collectStatements(
   netlist: string,
-  resolver: IncludeResolver | undefined,
+  hasResolver: boolean,
   visited: Set<string>,
   chain: string[],
   depth: number,
   state: CollectState,
   guard?: ProtocolExecutionGuard,
   lineOffset = 0,
-): Promise<void> {
+): Generator<string, void, string> {
   guard?.maximum('maxIncludeDepth', depth, 'parse');
   if (depth > MAX_DEPTH) {
     throw new ParseError(`Include depth limit exceeded (${MAX_DEPTH})`, 0, '');
@@ -623,8 +763,11 @@ async function collectStatements(
 
     // .param at top level
     if (upper.startsWith('.PARAM ')) {
-      for (const assignment of trimmed.slice(7).trim().matchAll(PARAM_ASSIGNMENT)) {
-        definitions.set(assignment[1].toUpperCase(), paramDefinition(assignment[2], lineNumber, trimmed));
+      const assignments = [...trimmed.slice(7).trim().matchAll(PARAM_ASSIGNMENT)];
+      for (const assignment of assignments) {
+        definitions.set(assignment[1].toUpperCase(), paramDefinition(
+          assignments.length === 1 ? singleParamValue(trimmed, assignment) : assignment[2], lineNumber, trimmed,
+        ));
       }
       blank();
       continue;
@@ -647,7 +790,7 @@ async function collectStatements(
 
     // .include directive
     if (upper.startsWith('.INCLUDE ')) {
-      if (!resolver) {
+      if (!hasResolver) {
         throw new ParseError(
           '.include directive requires a resolver. Use parseAsync() with a resolveInclude option.',
           0, trimmed,
@@ -662,9 +805,9 @@ async function collectStatements(
         throw new CycleError([...chain, path]);
       }
       visited.add(path);
-      const content = await resolver(path);
-      await collectStatements(
-        content, resolver, visited, [...chain, path], depth + 1, state, guard,
+      const content = yield path;
+      yield* collectStatements(
+        content, hasResolver, visited, [...chain, path], depth + 1, state, guard,
       );
       visited.delete(path);
       continue;
@@ -674,7 +817,7 @@ async function collectStatements(
     if (upper.startsWith('.LIB ')) {
       const libTokens = trimmed.slice(5).trim().split(/\s+/);
       if (libTokens.length >= 2) {
-        if (!resolver) {
+        if (!hasResolver) {
           throw new ParseError(
             '.lib directive with file requires a resolver. Use parseAsync() with a resolveInclude option.',
             0, trimmed,
@@ -691,10 +834,10 @@ async function collectStatements(
           throw new CycleError([...chain, visitKey]);
         }
         visited.add(visitKey);
-        const content = await resolver(filePath);
+        const content = yield filePath;
         const extracted = extractLibSection(content, section);
-        await collectStatements(
-          extracted, resolver, visited, [...chain, visitKey], depth + 1, state, guard,
+        yield* collectStatements(
+          extracted, hasResolver, visited, [...chain, visitKey], depth + 1, state, guard,
         );
         visited.delete(visitKey);
         continue;

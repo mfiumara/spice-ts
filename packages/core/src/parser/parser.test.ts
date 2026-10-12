@@ -444,11 +444,13 @@ describe('SPICE netlist parser', () => {
 
   describe('.include/.lib guards in sync parse', () => {
     it('throws ParseError on .include', () => {
-      expect(() => parse(`.include 'models.lib'\n.op`)).toThrow('async');
+      expect(() => parse(`.include 'models.lib'\n.op`)).toThrow(ParseError);
+      expect(() => parse(`.include 'models.lib'\n.op`)).toThrow('parseAsync()');
     });
 
     it('throws ParseError on .lib with file', () => {
-      expect(() => parse(`.lib 'models.lib' TT\n.op`)).toThrow('async');
+      expect(() => parse(`.lib 'models.lib' TT\n.op`)).toThrow(ParseError);
+      expect(() => parse(`.lib 'models.lib' TT\n.op`)).toThrow('parseAsync()');
     });
   });
 

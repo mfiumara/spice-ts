@@ -99,11 +99,8 @@ describe('diode NS sidewall emission coefficient like ngspice-47 (#642)', () => 
   describe('when IBV is below Isat*BV/vt (diotemp.c xbv = tBV)', () => {
     // ngspice-47 diotemp.c:221-228 raises cbv and puts the breakdown knee at
     // tBV itself; iterating the log law there would give a NaN knee.
-    // ngspice's reverse currents include CKTgmin*vd through the junction, which
-    // the spice-ts diode keeps out of its DC current (#643), so it is removed
-    // from the references below.
-    const GMIN = 1e-12;
-    const withoutGmin = (ngspiceCurrent: number, out: number) => ngspiceCurrent - GMIN * Math.abs(out);
+    // ngspice's reverse currents include CKTgmin*vd through the junction, as
+    // the spice-ts diode does since #643.
 
     it('solves a reverse-biased NS diode with PJ=0 (review repro 1)', async () => {
       // ngspice-47: v(out) = -9.999999989900e-01, i(v1) = 1.0099998615232e-12
@@ -112,7 +109,7 @@ describe('diode NS sidewall emission coefficient like ngspice-47 (#642)', () => 
         { source: -1, pj: 0 },
       );
       expectNear(out, -0.99999999899, NGSPICE_NEWTON_RESIDUAL);
-      const expected = withoutGmin(1.0099998615232e-12, out);
+      const expected = 1.0099998615232e-12;
       expect(Math.abs(current - expected) / expected).toBeLessThan(1e-4);
     });
 
@@ -128,7 +125,7 @@ describe('diode NS sidewall emission coefficient like ngspice-47 (#642)', () => 
       for (const reference of cases) {
         const { out, current } = await operatingPoint(model, { source: reference.source, pj: 1 });
         expectNear(out, reference.out, NGSPICE_NEWTON_RESIDUAL);
-        const expected = withoutGmin(reference.current, out);
+        const expected = reference.current;
         expect(Math.abs(current - expected) / expected).toBeLessThan(1e-5);
       }
     });

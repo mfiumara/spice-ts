@@ -1,5 +1,5 @@
 import type {
-  ChargeIntegration, ChargeTruncation, DeviceModel, StampContext,
+  ChargeIntegration, ChargeTruncation, ConvergenceTolerances, DeviceModel, StampContext,
 } from './device.js';
 import {
   depletionCharge, stampChargeBranch, stampChargeCurrent, TransientChargeState,
@@ -562,6 +562,11 @@ export class BJT implements DeviceModel {
     collectorCurrent: 0, baseCurrent: 0, gmForward: 0, gmReverse: 0, gpi: 0, gmu: 0, qb: 1,
   };
   private readonly charge: BaseCharge = { qb: 1, dqbdve: 0, dqbdvc: 0 };
+  /** Linearisation point of the last stamp (ngspice CKTstate0 vbe/vbc/cc/cb/gm/go/gpi/gmu) for bjtconv.c. */
+  private readonly lastLoad = {
+    vBE: 0, vBC: 0, collectorCurrent: 0, baseCurrent: 0,
+    gmForward: 0, gmReverse: 0, gpi: 0, gmu: 0, transient: false,
+  };
   /**
    * Bias-dependent base resistance (RBM != RB, see
    * {@link hasBiasDependentBaseResistance}): the device stamps gx itself
@@ -801,6 +806,30 @@ export class BJT implements DeviceModel {
     return point;
   }
 
+  /**
+   * ngspice-47 bjtconv.c: the collector and base currents predicted at the new
+   * Newton solution from the last load's linearisation must match the loaded
+   * currents within RELTOL*max + ABSTOL. Applied to the operating point; the
+   * transient load adds charge currents this DC-only check does not model.
+   */
+  convergenceTest(solution: Float64Array, tolerances: ConvergenceTolerances): boolean {
+    const load = this.lastLoad;
+    if (load.transient) return true;
+    const { polarity } = this.params;
+    const [nC, nB, nE] = this.nodes;
+    const voltage = (node: number): number => (node >= 0 ? solution[node] : 0);
+    const deltaVBE = polarity * (voltage(nB) - voltage(nE)) - load.vBE;
+    const deltaVBC = polarity * (voltage(nB) - voltage(nC)) - load.vBC;
+    const cc = load.collectorCurrent;
+    const cchat = cc + load.gmForward * deltaVBE - load.gmReverse * deltaVBC;
+    if (Math.abs(cchat - cc) > tolerances.reltol * Math.max(Math.abs(cchat), Math.abs(cc)) + tolerances.abstol) {
+      return false;
+    }
+    const cb = load.baseCurrent;
+    const cbhat = cb + load.gpi * deltaVBE + load.gmu * deltaVBC;
+    return Math.abs(cbhat - cb) <= tolerances.reltol * Math.max(Math.abs(cbhat), Math.abs(cb)) + tolerances.abstol;
+  }
+
   noiseOperatingPoint(solution: Float64Array): {
     collectorNode: number;
     baseNode: number;
@@ -845,6 +874,16 @@ export class BJT implements DeviceModel {
     const gm_r = dc.gmReverse;
     const go_be = dc.gpi;
     const go_bc = dc.gmu;
+    const load = this.lastLoad;
+    load.vBE = vBE;
+    load.vBC = vBC;
+    load.collectorCurrent = IC;
+    load.baseCurrent = IB;
+    load.gmForward = gm_f;
+    load.gmReverse = gm_r;
+    load.gpi = go_be;
+    load.gmu = go_bc;
+    load.transient = ctx.dt > 0;
 
     // Equivalent currents for Newton-Raphson companion model
     // For IC: IC_eq = IC - gm_f * vBE + gm_r * vBC

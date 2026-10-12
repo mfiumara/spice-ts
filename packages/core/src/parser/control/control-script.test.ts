@@ -555,12 +555,12 @@ end
   it('rejects an unexecuted command anywhere in the script at parse time, with its line', () => {
     let error: unknown;
     try {
-      parse(`deck\n${divider}\n.control\nop\nif 0\n  meas dc x max v(2)\nend\n.endc`);
+      parse(`deck\n${divider}\n.control\nop\nif 0\n  fft v(2)\nend\n.endc`);
     } catch (caught) {
       error = caught;
     }
     expect(error).toBeInstanceOf(UnsupportedControlCommandError);
-    expect((error as UnsupportedControlCommandError).command).toBe('meas');
+    expect((error as UnsupportedControlCommandError).command).toBe('fft');
     expect((error as UnsupportedControlCommandError).line).toBe(8);
     expect(() => parseTitleless('.control\nif 1\nop\n.endc')).toThrow("block is missing its closing 'end'");
   });
