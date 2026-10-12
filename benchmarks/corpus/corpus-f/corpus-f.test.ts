@@ -438,6 +438,9 @@ describe('corpus-f sp/sens plots and streamed references (#694)', () => {
     assert.deepEqual(sensitivity.series, { grid: [0], signals: { 'v(r1)': [{ re: 0.042, im: 0 }], 'v(i1)': [{ re: 1000, im: 0 }], 'v(e1_gain)': [{ re: 2, im: 0 }] } });
     assert.equal(sensitivitySignalName({ device: 'R1', parameter: 'resistance' }, 'ac'), 'v(r1_ac)');
     assert.equal(sensitivitySignalName({ device: 'V1', parameter: 'acMagnitude' }, 'ac'), 'v(v1_acmag)');
+    // #760: instance multiplier and scale, named like ngspice-47 writes them to a raw file.
+    assert.equal(sensitivitySignalName({ device: 'R1', parameter: 'multiplier' }, 'dc'), 'v(r1_m)');
+    assert.equal(sensitivitySignalName({ device: 'C1', parameter: 'scale' }, 'ac'), 'v(c1_scale)');
     assert.deepEqual(controlPlotAnalyses({}, ['sp', 'sens']), []);
   });
 

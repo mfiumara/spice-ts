@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest';
 import { simulate } from '../../simulate.js';
 import { frequencyGrid } from '../../analysis/frequency-grid.js';
 import { parse } from '../index.js';
-import { ControlScriptError, ControlScriptExitError } from './errors.js';
 
 /**
  * `sp` and `sens` analysis commands inside `.control` (#750), and the
@@ -224,19 +223,13 @@ end
     ['tests/regression/sens/sens-ac-1.cir', 'INFO: 0 of 3 tests failed'],
     ['tests/regression/sens/sens-ac-2.cir', 'INFO: 0 of 6 tests failed'],
     ['tests/regression/sens/sens-dc-2.cir', 'INFO: 0 of 7 tests failed'],
+    // i1, i1_m, r1, r1_m and r1_scale: multiplier/scale sensitivities (#760).
+    ['tests/regression/sens/sens-dc-1.cir', 'INFO: 0 of 5 tests failed'],
   ])('passes the ngspice regression deck %s against its golden values', async (path, verdict) => {
     const result = await simulate(fixture(path));
     expect(result.control!.quit).toBe(true);
     expect(result.control!.output).toEqual([verdict]);
     expect(result.control!.runs.map(run => run.plot)).toEqual(['sens1']);
-  });
-
-  it('stops sens-dc-1.cir at the multiplier sensitivity spice-ts does not produce', async () => {
-    // ngspice-47 also lists i1_m, r1_m and r1_scale; the bounded .sens slice covers primary values only.
-    const run = simulate(fixture('tests/regression/sens/sens-dc-1.cir'));
-    await expect(run).rejects.toBeInstanceOf(ControlScriptError);
-    await expect(run).rejects.toThrow("no such vector 'i1_m' in plot 'sens1'");
-    await expect(run).rejects.not.toBeInstanceOf(ControlScriptExitError);
   });
 });
 

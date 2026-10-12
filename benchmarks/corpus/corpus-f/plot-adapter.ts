@@ -13,7 +13,9 @@ interface CoreComplex { real: number; imaginary: number }
 interface SParameters { frequencies: number[]; vectors: Map<string, CoreComplex[]> }
 interface SensitivityEntry {
   device: string;
-  parameter: 'resistance' | 'capacitance' | 'inductance' | 'dc' | 'acMagnitude' | 'gain';
+  parameter:
+    | 'resistance' | 'capacitance' | 'inductance' | 'dc' | 'acMagnitude' | 'gain'
+    | 'multiplier' | 'scale';
   dc?: number;
   ac?: CoreComplex[];
 }
@@ -47,6 +49,8 @@ export function sensitivitySignalName(entry: Pick<SensitivityEntry, 'device' | '
     case 'resistance': return mode === 'ac' ? `v(${device}_ac)` : `v(${device})`;
     case 'gain': return `v(${device}_gain)`;
     case 'acMagnitude': return `v(${device}_acmag)`;
+    case 'multiplier': return `v(${device}_m)`;
+    case 'scale': return `v(${device}_scale)`;
     default: return `v(${device})`;
   }
 }
