@@ -39,7 +39,7 @@ import {
   type BehavioralSourceKind,
 } from './parser/behavioral-expression.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
-import { isSupportedBsim3Version, SUPPORTED_BSIM3_VERSIONS } from './devices/bsim3v3-params.js';
+import { bsim3SeriesResistances, isSupportedBsim3Version, SUPPORTED_BSIM3_VERSIONS } from './devices/bsim3v3-params.js';
 import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
 import { CCCS } from './devices/cccs.js';
@@ -2654,6 +2654,25 @@ export class Circuit {
           const kind = level === 4 ? 'BSIM1' : 'BSIM2';
           const instance = resolveClassicBsimInstance(kind, desc.name, desc.params);
           const series = classicBsimSeriesResistances(model.params.RSH ?? 0, instance);
+          let [drain, gate, source] = desc.nodes;
+          const bulk = desc.nodes[3] ?? source;
+          if (series.drain !== 0) {
+            const prime = internalNodeName(desc.name, 'drain');
+            result.push({ type: 'R', name: `${desc.name}.RD`, nodes: [drain, prime], value: series.drain });
+            drain = prime;
+          }
+          if (series.source !== 0) {
+            const prime = internalNodeName(desc.name, 'source');
+            result.push({ type: 'R', name: `${desc.name}.RS`, nodes: [source, prime], value: series.source });
+            source = prime;
+          }
+          result.push({ ...desc, nodes: [drain, gate, source, bulk] });
+          continue;
+        }
+        if (model && (level === 8 || level === 49) && isSupportedBsim3Version(model.version)) {
+          // BSIM3, every revision (b3set.c/b3v32set.c, acmMod = 0): RSH*NRD and RSH*NRS,
+          // NRD = NRS = 1 square by default, in front of drain/source prime nodes (#691).
+          const series = bsim3SeriesResistances(desc.name, model.params, desc.params);
           let [drain, gate, source] = desc.nodes;
           const bulk = desc.nodes[3] ?? source;
           if (series.drain !== 0) {

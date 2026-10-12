@@ -22,6 +22,8 @@
  * the DC evaluator reads like b3ld.c.
  */
 
+import { UnsupportedModelParameterError } from '../errors.js';
+
 /** b3temp.c / b3ld.c physical constants. */
 export const EPSOX = 3.453133e-11;
 export const EPSSI = 1.03594e-10;
@@ -474,4 +476,46 @@ export function computeBsim3Size(
 function saturationCurrent(model: BSIM3Model, area: number, perimeter: number): number {
   if (area <= 0.0 && perimeter <= 0.0) return 1.0e-14;
   return area * model.jctTempSatCurDensity + perimeter * model.jctSidewallTempSatCurDensity;
+}
+
+/**
+ * Drain/source series resistances of one BSIM3 instance (every revision),
+ * from b3set.c / b3v32set.c and b3temp.c / b3v32temp.c with acmMod = 0:
+ * NRD and NRS default to 1 square, the resistances are RSH * NRD and
+ * RSH * NRS, and a prime node exists only when one is non-zero. b3ld.c stamps
+ * `m * drainConductance`, so the parallel multiplier divides the resistance.
+ * A non-positive product gives no conductance in b3temp.c and, here, no
+ * resistor. Card ACM > 0 (ACM_SourceDrainResistances, with NRD = NRS = 0
+ * defaults) is not implemented and is rejected instead of silently
+ * simulating acmMod = 0.
+ */
+export function bsim3SeriesResistances(
+  deviceName: string,
+  card: Readonly<Record<string, number>>,
+  inst: Readonly<Record<string, number | undefined>> | undefined,
+): { drain: number; source: number } {
+  const lookup = (record: Readonly<Record<string, number | undefined>>, key: string): number | undefined => {
+    for (const [k, v] of Object.entries(record)) if (k.toLowerCase() === key) return v;
+    return undefined;
+  };
+  const acmMod = lookup(card, 'acm') ?? 0;
+  if (acmMod !== 0) {
+    throw new UnsupportedModelParameterError(
+      deviceName, 'ACM',
+      'the BSIM3 ACM source/drain resistance and junction model (ACM > 0) is not implemented; '
+        + 'spice-ts would simulate ACM=0 instead',
+      { model: 'BSIM3' },
+    );
+  }
+  const instance = inst ?? {};
+  const sheetResistance = lookup(card, 'rsh') ?? 0;
+  const m = lookup(instance, 'm') ?? 1;
+  const resistance = (squares: number): number => {
+    const value = sheetResistance * squares;
+    return value > 0 ? value / m : 0;
+  };
+  return {
+    drain: resistance(lookup(instance, 'nrd') ?? 1),
+    source: resistance(lookup(instance, 'nrs') ?? 1),
+  };
 }
