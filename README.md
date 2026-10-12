@@ -200,7 +200,7 @@ The resolver is platform-agnostic — use `fetch()` in the browser, `readFile()`
 | `vntol` | `1e-6` | Absolute voltage tolerance (V) |
 | `reltol` | `1e-3` | Relative tolerance |
 | `maxIterations` | `100` | Max Newton-Raphson iterations (DC) |
-| `maxTransientIterations` | `50` | Max NR iterations per timestep |
+| `maxTransientIterations` | `100` | Max NR iterations per timestep (ngspice-47 floor) |
 | `integrationMethod` | `'trapezoidal'` | `'euler'` or `'trapezoidal'` |
 | `simulator` | `'spice-ts'` | Built-in TypeScript solver, `'ngspice-wasm'`, or a custom simulator adapter |
 | `resolveInclude` | — | Async callback `(path: string) => Promise<string>` for `.include`/`.lib` |

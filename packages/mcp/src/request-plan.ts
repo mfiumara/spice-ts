@@ -51,7 +51,7 @@ export function resolvedOptions(request: SimulationRequestV1, plan: RequestPlan)
     vntol: requested?.vntol ?? netlist.vntol ?? 1e-6,
     reltol: requested?.reltol ?? netlist.reltol ?? 1e-3,
     maxIterations: requested?.maxIterations ?? netlist.maxIterations ?? 100,
-    maxTransientIterations: requested?.maxTransientIterations ?? netlist.maxTransientIterations ?? 50,
+    maxTransientIterations: requested?.maxTransientIterations ?? netlist.maxTransientIterations ?? 100,
     maxTimestep: transientMaxTimestep(plan.analyses, requested?.maxTimestep || undefined),
     integrationMethod: requested?.integrationMethod ?? netlist.integrationMethod ?? 'trapezoidal',
     trtol: requested?.trtol ?? netlist.trtol ?? 7,
