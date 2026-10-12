@@ -357,3 +357,18 @@ After #784 the M2 decks were re-run on main against ngspice-47 KLU (identical de
 - **Measured and not kept:** filling the element-name map lazily gave 2.3-2.9x on mesh compile but made the MOS chain 10k transient 4-5% slower (0.96x, 7/7 pairs) through heap placement of the device objects; bisect in `issue-796/lazy-map-bisect/`.
 
 ngspice-47 KLU still wins the resistor mesh (1.65-3.3x across both unpaired runs), the RC ladder at 1k / 10k and the 1k MOS chain. Tables, profiles, JSONL, corpus comparison, mutants and remaining scope are in `benchmarks/performance/results/issue-796/README.md`.
+
+## Follow-up: MOS1 Newton step limiting on the CMOS inverter chain OP ([#830](https://github.com/mfiumara/spice-ts/issues/830))
+
+The #802 spike measured LU at only 3-6% of OP time on the MOS1 inverter chain, so the rest of the OP was profiled on the M2 `cmos-inverter-chain-tran` deck with `.tran` replaced by `.op` (`benchmarks/performance/profile-cmos-op.mjs`, categorised by `profile-breakdown.mjs`). The top hot path was not the stamp. It was `MOSFET.limitNewtonStep`, called once per MOSFET per Newton iteration, which destructured `this.nodes` twice and created four closures per call: 17.2% of self time at 10k and 34.2% at 50k (100k MOSFETs, 1,110 gmin-stepping iterations), plus the GC it caused. Device load (`batchStamp` + `mos1BulkJunctions`, evaluation and stamping, which V8 inlines together) took 27-28%.
+
+The step limit is now one allocation-free scalar function. `applyDeviceStepLimits` evaluates every plain MOS1 instance from a per-list typed-array batch (nodes, polarity, von from the shared state store) and takes the same `Math.min`. The results are bit-identical: OP digests match in all 20 samples, transient waveform hashes in all 15, and a new test compares against a frozen copy of the pre-#830 implementation with `Object.is` (7/7 mutants killed).
+
+Wall clock, median of 5 interleaved rounds (in-process `simulate()` for spice-ts, fresh `ngspice -b` for ngspice-47, identical netlists):
+
+| deck | before | after | speedup | ngspice-47 wall | Newton iterations spice-ts / ngspice |
+|---|---|---|---|---|---|
+| cmos-chain-10k OP | 624 ms | 544 ms | 1.15x (pairs 1.12-1.21) | 1580 ms | 226 / 637 |
+| cmos-chain-50k OP | 12.88 s | 9.08 s | 1.42x (pairs 1.38-1.49) | 50.2 s | 1110 / 2360 |
+
+After the change, device load is the largest category (31.6% / 46.9% at 10k / 50k), then sparse LU (18.9% / 20.1%) and GC (11.5% / 13.1%). spice-ts reads faster than ngspice-47 on these two OP decks, mostly because it takes 2-3x fewer Newton iterations. Per iteration at 10k the engines are about even. This is not claimed as an engine-level win (shared host, different stepping schedules, two decks). The cmos-chain-tran 10k control is 1.06x faster, from its initial OP. Replacing the array destructuring in `convergenceTest` with indexed reads was measured and not kept (no change within noise). Profiles, JSONL, ngspice acct output, mutants and remaining scope are in `benchmarks/performance/results/issue-830/README.md`.

@@ -1,0 +1,7 @@
+KILLED (reverse ? prevD : prevS) -> (reverse ? prevS : prevD)
+KILLED const reverse = !(previousVds >= 0); -> const reverse = previousVds <= 0;
+KILLED if (delta === 0) return Math.min(terminalScale, 1); -> if (delta === 0) return 1;
+KILLED state[stateBases[m] + STATE_VON], -> state[stateBases[m] + STATE_VBS],
+KILLED previous, candidate, nodes[q], nodes[q + 1], nodes[q + 2], -> previous, candidate, nodes[q], nodes[q + 1], nodes[q + 1],
+KILLED const candS = nS >= 0 ? candidate[nS] : 0; -> const candS = nS > 0 ? candidate[nS] : 0;
+KILLED largestStep > MAX_NEWTON_TERMINAL_STEP -> largestStep >= MAX_NEWTON_TERMINAL_STEP * 2
