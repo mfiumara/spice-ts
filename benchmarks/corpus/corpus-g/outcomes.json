@@ -43,15 +43,15 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 103,
+      "success": 104,
       "failed": 6,
-      "unsupported": 19
+      "unsupported": 18
     },
     "outcomes": {
-      "matched": 85,
-      "mismatch": 18,
+      "matched": 87,
+      "mismatch": 17,
       "not-compared": 0,
-      "spice-ts-loss": 25,
+      "spice-ts-loss": 24,
       "ngspice-failed": 0,
       "both-failed": 0
     }
@@ -124,15 +124,6 @@
       "ngspiceSuccess": 1,
       "ids": [
         "bjt-ic-bjt-ic-nonzero-cir"
-      ],
-      "issue": null
-    },
-    {
-      "bucket": "device: K-element",
-      "fixtures": 1,
-      "ngspiceSuccess": 1,
-      "ids": [
-        "tl1x-tl1x-mpi-cir"
       ],
       "issue": null
     },
@@ -346,9 +337,9 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 8,
-      "worstNormalizedError": 1,
+      "worstNormalizedError": 0.00032,
       "worstSignal": "tran i(bf)",
-      "outcome": "mismatch",
+      "outcome": "matched",
       "gapBucket": null
     },
     {
@@ -3359,16 +3350,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 14: Unsupported device card: 'K' KM12 L1 L2 2.229e-01"
+        "status": "success",
+        "analyses": [
+          "tran:3007"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "device: K-element"
+      "comparedAnalyses": 1,
+      "comparedSignals": 84,
+      "worstNormalizedError": 0.0000718,
+      "worstSignal": "tran i(vslow)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "transline-errormessagetest2-cir",
@@ -3734,5 +3726,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "cc41c469fee6732450a8c9615e34a2c40a94aefd2221536d26bcf542550f7891"
+  "outcomeSha256": "8766e08970e041f09ef52c18f5bed7c6d9a0dbbbe50d4d29d3156e59eb5c9b44"
 }

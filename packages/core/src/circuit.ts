@@ -101,6 +101,7 @@ import {
   UnsupportedTemperatureError,
 } from './errors.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
+import { CaseFoldedNameSet, CaseInsensitiveMap } from './case-fold.js';
 
 /**
  * MOSFET model levels with a spice-ts implementation: MOS1, MOS2, MOS3, BSIM1 (4), BSIM2 (5), MOS6,
@@ -767,7 +768,7 @@ export class Circuit {
   private _xspiceTrtol: number | undefined;
   private _initialConditions: NodeInitialState[] = [];
   private _nodeSets: NodeInitialState[] = [];
-  private nodeSet = new Set<string>();
+  private nodeSet = new CaseFoldedNameSet();
   private _controlScript?: ControlScript;
   private _parseWarnings: string[] = [];
 
@@ -990,7 +991,7 @@ export class Circuit {
   getNodeIndex(name: string): number {
     if (name === GROUND_NODE) return -1;
     const nodes = [...this.nodeSet].filter(n => n !== GROUND_NODE).sort();
-    return nodes.indexOf(name);
+    return nodes.indexOf(this.nodeSet.canonical(name));
   }
 
   /**
@@ -2020,13 +2021,15 @@ export class Circuit {
 
     // Only flattened device nodes belong in the matrix. In particular, a
     // .global name can override a formal port and leave its actual node unused.
-    const canonicalNode = (name: string): string => globalNodes.get(name.toUpperCase()) ?? name;
+    // Node names fold case as in ngspice (#728): the first spelling is kept.
+    const globalNode = (name: string): string => globalNodes.get(name.toUpperCase()) ?? name;
     this.nodeSet.clear();
     for (const desc of expandedDescriptors) {
       for (const n of desc.nodes) {
-        this.nodeSet.add(canonicalNode(n));
+        this.nodeSet.add(globalNode(n));
       }
     }
+    const canonicalNode = (name: string): string => this.nodeSet.canonical(globalNode(name));
 
     const nodeNames = [...this.nodeSet].filter(n => n !== GROUND_NODE).sort();
     const nodeIndexMap = new Map<string, number>();
@@ -2064,7 +2067,8 @@ export class Circuit {
     };
 
     const devices: DeviceModel[] = [];
-    const deviceMap = new Map<string, DeviceModel>();
+    // Element names fold case as in ngspice: K, F/H, W and i() references (#754).
+    const deviceMap = new CaseInsensitiveMap<DeviceModel>();
     // One random stream per compiled circuit for its TRNOISE/TRRANDOM sources (ngspice has one per process).
     const noiseContext = new TransientNoiseContext(this._simulationOptions.seed);
     const pendingCurrentSwitches: { device: CurrentSwitch; controlSource: string }[] = [];

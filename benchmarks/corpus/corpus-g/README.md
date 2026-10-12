@@ -6,11 +6,11 @@ Every deck below is byte-identical to Xyce_Regression `7bb7e98f0ed3a81a7d1cf1d10
 
 ## Totals
 
-- Fixtures: 128. Outcome SHA-256: `cc41c469fee6732450a8c9615e34a2c40a94aefd2221536d26bcf542550f7891`.
+- Fixtures: 128. Outcome SHA-256: `8766e08970e041f09ef52c18f5bed7c6d9a0dbbbe50d4d29d3156e59eb5c9b44`.
 - ngspice (ngspice-47): 128 success, 0 failed, 0 unsupported.
-- spice-ts (0.3.0): 103 success, 6 failed, 19 unsupported.
-- Outcomes: matched 85, mismatch 18, not-compared 0, spice-ts-loss 25, ngspice-failed 0, both-failed 0.
-- Of the 128 decks ngspice runs successfully, spice-ts matches 85, mismatches 18, produces no comparable result for 0 and fails 25.
+- spice-ts (0.3.0): 104 success, 6 failed, 18 unsupported.
+- Outcomes: matched 87, mismatch 17, not-compared 0, spice-ts-loss 24, ngspice-failed 0, both-failed 0.
+- Of the 128 decks ngspice runs successfully, spice-ts matches 87, mismatches 17, produces no comparable result for 0 and fails 24.
 
 ## Method
 
@@ -42,18 +42,16 @@ Grouped from spice-ts's own first error line (corpus-g rules, then corpus-f rule
 | deck: element-free deck (ngspice runs an empty analysis) | 2 | 2 | none filed |
 | convergence | 1 | 1 | none filed |
 | device: BJT instance IC= initial conditions | 1 | 1 | none filed |
-| device: K-element | 1 | 1 | none filed |
 | device: lossless T-line NL=/F= electrical-length form | 1 | 1 | none filed |
 | directive: .four | 1 | 1 | none filed |
 
-## Losses (43)
+## Losses (41)
 
 Every fixture that is not matched: spice-ts failures, mismatches above the threshold, and results that could not be compared.
 
 | Fixture | ngspice | spice-ts | Outcome | Worst | Worst signal | First error line (ngspice / spice-ts) |
 |---|---|---|---|---|---|---|
 | [ABM_FREQ/RC_simple_hertz.cir](fixtures/ABM_FREQ/RC_simple_hertz.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 7: Undefined parameter 'hertz' R1 1 0 {hertz} |
-| [ABM_FUNC/func.cir](fixtures/ABM_FUNC/func.cir) | success | success | mismatch | 1 | tran i(bf) |  |
 | [ABM/ddt.cir](fixtures/ABM/ddt.cir) | success | success | mismatch | 0.5 | tran i(v1) |  |
 | [BJT_IC/bjt_ic_nonzero.cir](fixtures/BJT_IC/bjt_ic_nonzero.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 21: Unsupported BJT instance parameter: 'IC=1' in 'Q1 7 3 5 BFT92 IC=1 0' Q1 7 3 5 BFT92 IC=1 0 |
 | [BJT_OFF/bjt_off.cir](fixtures/BJT_OFF/bjt_off.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Unsupported BJT model parameter: 'PTF' (excess phase is not implemented) |
@@ -90,13 +88,12 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | [SOLN_DEP_RES/multSolDepRes.cir](fixtures/SOLN_DEP_RES/multSolDepRes.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 10: Unsupported parameter 'M=10' on behavioral resistor 'R2': a resistor whose value depends on v() or i() is simulated as an ngspice B-source, which carries only tc1= and tc2= R2 2 0 R={1.0+scalar*V(cntl)} M=10 |
 | [SUBCKT/subckt_a0.cir](fixtures/SUBCKT/subckt_a0.cir) | success | success | mismatch | 0.246 | tran i(vdddev) |  |
 | [TIA/ERROROPTION/erroroption.cir](fixtures/TIA/ERROROPTION/erroroption.cir) | success | success | mismatch | 0.225 | tran i(vin1) |  |
-| [TL1X/TL1X_mpi.cir](fixtures/TL1X/TL1X_mpi.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 14: Unsupported device card: 'K' KM12 L1 L2 2.229e-01 |
 | [TRANSLINE/ErrorMessageTest2.cir](fixtures/TRANSLINE/ErrorMessageTest2.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 19: Unsupported lossless transmission line parameter; only Z0 and TD are supported (F/NL/IC/REL/ABS are unsupported) TLINE1 2 0 3 0 Z0=50 NL=10 |
 | [VANOISE/commonEmitterBjt_mextram.cir](fixtures/VANOISE/commonEmitterBjt_mextram.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Unsupported bounded BJT model parameter: 'DTA' |
 | [VSTARTEST/vstarTest.cir](fixtures/VSTARTEST/vstarTest.cir) | success | success | mismatch | 0.202 | tran v(vout) |  |
 | [WAMPDE/BLOCKING/simple_single_channel.cir](fixtures/WAMPDE/BLOCKING/simple_single_channel.cir) | success | success | mismatch | 2.45 | tran i(l2) |  |
 
-## Wins (85)
+## Wins (87)
 
 Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every common signal.
 
@@ -107,6 +104,7 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [ABM_ATAN_TAN/atan_tan.cir](fixtures/ABM_ATAN_TAN/atan_tan.cir) | success | success | matched | 0.000347 | tran i(b2) |  |
 | [ABM_DB/dbTest.cir](fixtures/ABM_DB/dbTest.cir) | success | success | matched | 4.73e-16 | ac i(v1) |  |
 | [ABM_EXPLN/exp_ln.cir](fixtures/ABM_EXPLN/exp_ln.cir) | success | success | matched | 0.000766 | tran i(b2) |  |
+| [ABM_FUNC/func.cir](fixtures/ABM_FUNC/func.cir) | success | success | matched | 0.00032 | tran i(bf) |  |
 | [ABM_INT_FLOOR_CEIL/int_floor_ceil.cir](fixtures/ABM_INT_FLOOR_CEIL/int_floor_ceil.cir) | success | success | matched | 1.96e-13 | tran i(v1) |  |
 | [ABM_LOG/log.cir](fixtures/ABM_LOG/log.cir) | success | success | matched | 0.000312 | tran i(b3) |  |
 | [ABM_NINT_FMOD/fmod.cir](fixtures/ABM_NINT_FMOD/fmod.cir) | success | success | matched | 0 | dc i(v1) |  |
@@ -178,6 +176,7 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [SEMIC_RESISTOR/semic_resistor.cir](fixtures/SEMIC_RESISTOR/semic_resistor.cir) | success | success | matched | 8.67e-17 | dc i(vin) |  |
 | [SUPERNODE/supernode1.cir](fixtures/SUPERNODE/supernode1.cir) | success | success | matched | 0 | dc i(v1) |  |
 | [TESTJAC/testjac_comp.cir](fixtures/TESTJAC/testjac_comp.cir) | success | success | matched | 1.39e-7 | dc v(2) |  |
+| [TL1X/TL1X_mpi.cir](fixtures/TL1X/TL1X_mpi.cir) | success | success | matched | 0.0000718 | tran i(vslow) |  |
 | [TwoLevelAPI/resInnerTran.cir](fixtures/TwoLevelAPI/resInnerTran.cir) | success | success | matched | 2.78e-16 | tran i(vconnect0000) |  |
 | [USERS_GUIDE/DiodeClipper.cir](fixtures/USERS_GUIDE/DiodeClipper.cir) | success | success | matched | 4.42e-8 | tran i(vcc) |  |
 | [Verilog_POWER/power_juncap200_gear.cir](fixtures/Verilog_POWER/power_juncap200_gear.cir) | success | success | matched | 0.000493 | tran v(5) |  |
