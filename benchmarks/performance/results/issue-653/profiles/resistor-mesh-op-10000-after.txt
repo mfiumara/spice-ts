@@ -1,0 +1,29 @@
+resistor-mesh-op-10000.cpuprofile (prof-after): 172 samples, 539.8 ms sampled
+
+Top self time
+     144.7 ms  26.8%  factorize packages/core/dist/chunk-FDMSLAUY.js:20328
+      60.0 ms  11.1%  amdOrdering packages/core/dist/chunk-FDMSLAUY.js:20012
+      50.9 ms   9.4%  (garbage collector)
+      25.8 ms   4.8%  analyzePattern packages/core/dist/chunk-FDMSLAUY.js:20232
+      22.8 ms   4.2%  compile packages/core/dist/chunk-FDMSLAUY.js:16277
+      19.8 ms   3.7%  newtonRaphson packages/core/dist/chunk-FDMSLAUY.js:21218
+      18.8 ms   3.5%  lockTopology packages/core/dist/chunk-FDMSLAUY.js:20744
+      12.4 ms   2.3%  (program)
+      11.6 ms   2.2%  addPosition packages/core/dist/chunk-FDMSLAUY.js:20786
+      11.6 ms   2.1%  addResistor packages/core/dist/chunk-FDMSLAUY.js:15549
+      10.5 ms   2.0%  simulate packages/core/dist/chunk-FDMSLAUY.js:27716
+       9.8 ms   1.8%  collectStatements packages/core/dist/chunk-FDMSLAUY.js:17918
+
+Top inclusive time
+     539.8 ms 100.0%  (root)
+     400.3 ms  74.2%  simulate packages/core/dist/chunk-FDMSLAUY.js:27716
+     327.2 ms  60.6%  solveCompiledAnalyses packages/core/dist/chunk-FDMSLAUY.js:27753
+     323.8 ms  60.0%  solveDCOperatingPoint packages/core/dist/chunk-FDMSLAUY.js:21462
+     322.6 ms  59.8%  newtonRaphson packages/core/dist/chunk-FDMSLAUY.js:21218
+     149.4 ms  27.7%  factorize packages/core/dist/chunk-FDMSLAUY.js:20328
+      88.4 ms  16.4%  analyzePattern packages/core/dist/chunk-FDMSLAUY.js:20232
+      88.4 ms  16.4%  getSparseSolver packages/core/dist/chunk-FDMSLAUY.js:20871
+      60.5 ms  11.2%  parseAsync packages/core/dist/chunk-FDMSLAUY.js:18888
+      60.0 ms  11.1%  amdOrdering packages/core/dist/chunk-FDMSLAUY.js:20012
+      50.9 ms   9.4%  (garbage collector)
+      38.4 ms   7.1%  compile packages/core/dist/chunk-FDMSLAUY.js:16277

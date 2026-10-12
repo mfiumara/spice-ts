@@ -1,0 +1,29 @@
+resistor-mesh-op-10000.cpuprofile (prof-before): 192 samples, 595.7 ms sampled
+
+Top self time
+     168.5 ms  28.3%  factorize packages/core/dist/chunk-5X6YM5GK.js:20118
+      71.4 ms  12.0%  amdOrdering packages/core/dist/chunk-5X6YM5GK.js:19802
+      50.3 ms   8.4%  (garbage collector)
+      19.5 ms   3.3%  resolveResistor packages/core/dist/chunk-5X6YM5GK.js:863
+      19.2 ms   3.2%  compileSourceTextModule node:internal/modules/esm/utils:344
+      18.6 ms   3.1%  compile packages/core/dist/chunk-5X6YM5GK.js:16067
+      18.1 ms   3.0%  preprocessLines packages/core/dist/chunk-5X6YM5GK.js:17435
+      16.0 ms   2.7%  lockTopology packages/core/dist/chunk-5X6YM5GK.js:20534
+      12.9 ms   2.2%  stampWith packages/core/dist/chunk-5X6YM5GK.js:1278
+      11.6 ms   2.0%  columnSingletonsFirst packages/core/dist/chunk-5X6YM5GK.js:20345
+      10.4 ms   1.7%  addPosition packages/core/dist/chunk-5X6YM5GK.js:20576
+      10.0 ms   1.7%  addResistor packages/core/dist/chunk-5X6YM5GK.js:15339
+
+Top inclusive time
+     595.7 ms 100.0%  (root)
+     439.5 ms  73.8%  simulate packages/core/dist/chunk-5X6YM5GK.js:27506
+     350.7 ms  58.9%  solveDCOperatingPoint packages/core/dist/chunk-5X6YM5GK.js:21252
+     350.7 ms  58.9%  solveCompiledAnalyses packages/core/dist/chunk-5X6YM5GK.js:27543
+     346.1 ms  58.1%  newtonRaphson packages/core/dist/chunk-5X6YM5GK.js:21008
+     169.0 ms  28.4%  factorize packages/core/dist/chunk-5X6YM5GK.js:20118
+      94.1 ms  15.8%  getSparseSolver packages/core/dist/chunk-5X6YM5GK.js:20661
+      92.7 ms  15.6%  analyzePattern packages/core/dist/chunk-5X6YM5GK.js:20022
+      77.8 ms  13.1%  parseAsync packages/core/dist/chunk-5X6YM5GK.js:18678
+      71.4 ms  12.0%  amdOrdering packages/core/dist/chunk-5X6YM5GK.js:19802
+      55.0 ms   9.2%  compile packages/core/dist/chunk-5X6YM5GK.js:16067
+      50.3 ms   8.4%  (garbage collector)
