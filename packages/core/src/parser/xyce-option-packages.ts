@@ -92,7 +92,12 @@ export interface XyceOptionPackageSplit {
   readonly warning?: string;
 }
 
-function isNgspiceOptionField(token: string): boolean {
+/**
+ * Whether ngspice-47 reads this `.options` field (an OPTtbl name, a cp_getvar()
+ * name or an option-line substring scan). Every other field is silently
+ * ignored by ngspice-47 (#713, #790).
+ */
+export function isNgspiceOptionField(token: string): boolean {
   const lower = token.toLowerCase();
   const separator = lower.indexOf('=');
   const name = separator < 0 ? lower : lower.slice(0, separator);
@@ -103,7 +108,8 @@ function isNgspiceOptionField(token: string): boolean {
 /**
  * Split the tokens after `.options` into the fields ngspice-47 applies and the
  * ones it ignores. Cards without a leading Xyce package keyword are returned
- * unchanged, so the strict handling of plain `.options` cards is untouched.
+ * unchanged; the option parser ignores their unrecognised names with the same
+ * isNgspiceOptionField() rule (#790).
  */
 export function splitXyceOptionPackage(tokens: readonly string[]): XyceOptionPackageSplit {
   const packageName = tokens[0];

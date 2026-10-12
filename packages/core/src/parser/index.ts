@@ -1,5 +1,5 @@
 import { Circuit } from '../circuit.js';
-import { assertControlledSourceCard } from './controlled-source.js';
+import { assertControlledSourceCard, withoutNodePairParentheses } from './controlled-source.js';
 import { ParseError } from '../errors.js';
 import { tokenizeNetlist, tokenizeLine, parseNumber, type ParsedLine } from './tokenizer.js';
 import { fixGndName, hasGndToken } from './gnd-alias.js';
@@ -38,7 +38,7 @@ import { parseZInstance } from './z-device-parser.js';
 import { locateSubcircuitCall, parseSubcircuitHeader, type SubcircuitHeader } from './subcircuit-syntax.js';
 import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
-import { splitXyceOptionPackage } from './xyce-option-packages.js';
+import { isNgspiceOptionField, splitXyceOptionPackage } from './xyce-option-packages.js';
 import type { AnalysisDirective, IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { measureCard } from '../measure/dot-measure.js';
@@ -389,6 +389,8 @@ const OUTPUT_ONLY_OPTION_FLAGS = new Set([
   // printed operating-point report (dotcards.c).
   'nomod',
 ]);
+/** ngspice's default TNOM (REFTEMP) in degrees Celsius. */
+const DEFAULT_NOMINAL_TEMPERATURE = 27;
 const BEHAVIOR_CHANGING_GNUCAP_OPTIONS = new Set([
   'cstray', 'dampstrategy', 'itermin', 'nobypass', 'noincmode', 'rstray', 'trsteporder',
 ]);
@@ -731,12 +733,21 @@ function parseDotCommand(
       break;
     }
     case '.PROBE':
-      if (tokens.length === 1) {
-        throw new ParseError('Unsupported empty .probe output request', lineNumber, context);
-      }
-      // .probe selects raw-file vectors in ngspice. spice-ts returns every
-      // computed vector through its result API, so the request does not narrow results.
+      // .probe selects raw-file vectors in ngspice, and ngspice-47 treats a
+      // bare .probe as `.probe alli` (#790). spice-ts returns every computed
+      // vector through its result API, so the request does not narrow results.
       break;
+    case '.FOUR':
+    case '.FOURIER': {
+      // ngspice-47 `.four f0 ov1 [ov2 ...]` prints a Fourier table of the
+      // transient outputs to stdout (and skips it when writing a rawfile); the
+      // analysis vectors are unchanged. A card without a frequency or an output
+      // only draws "no nodes given" and the deck still runs (#790).
+      circuit.addParseWarning(
+        `.four Fourier analysis is not computed: spice-ts returns the transient vectors, and ngspice-47 only prints the table (line ${lineNumber})`,
+      );
+      break;
+    }
     case '.INCLUDE':
       throw new ParseError(
         '.include directive requires async parsing. Use parseAsync() with a resolveInclude option.',
@@ -933,6 +944,7 @@ function parseSimulationOptions(
   const optionTokens = tokens.filter(value => value !== '(' && value !== ')');
 
   const options: SimulationOptions = {};
+  const unrecognised: string[] = [];
   const obsoleteNumericFields = new Set(['limpts', 'itl5', 'lvlcod']);
 
   for (const token of optionTokens) {
@@ -949,11 +961,36 @@ function parseSimulationOptions(
         context,
       );
     }
+    if (!isNgspiceOptionField(token)) {
+      // ngspice-47 if_option() silently returns for a name outside OPTtbl
+      // that no cp_getvar() reads (WRspice `ysep`, ...), so the card runs (#790).
+      unrecognised.push(token);
+      continue;
+    }
+    if (name === 'interp' && separator < 0) {
+      // ngspice-47 interpolates the transient rawfile output onto the TSTEP
+      // grid; the solution and the accepted timepoints are unchanged.
+      hooks.warn?.(
+        '.options interp is output-only: ngspice-47 interpolates its transient rawfile onto the TSTEP grid, '
+        + 'spice-ts returns its accepted timepoints',
+      );
+      continue;
+    }
     if (separator <= 0 || separator === token.length - 1) {
       throw new ParseError(`Unsupported .options field: '${token}'`, lineNumber, context);
     }
 
     const rawValue = token.slice(separator + 1);
+    if (name === 'tnom') {
+      // ngspice-47 cktsopt.c: TNOM sets the default nominal temperature of every
+      // model. Only its default, 27 C, is implemented circuit-wide.
+      if (parseNumber(rawValue) === DEFAULT_NOMINAL_TEMPERATURE) continue;
+      throw new ParseError(
+        `Unsupported .options field: 'tnom' (spice-ts implements the default TNOM = 27 C only; got '${rawValue}')`,
+        lineNumber,
+        context,
+      );
+    }
     if (name === 'warn' || name === 'maxwarns' || name === 'bypass') {
       const value = parseNumber(rawValue);
       if (!Number.isInteger(value) || (name === 'bypass' && value < 0)) {
@@ -1057,6 +1094,9 @@ function parseSimulationOptions(
     Object.assign(options, { [target]: value });
   }
 
+  if (unrecognised.length > 0) {
+    hooks.warn?.(`Ignored .options fields ngspice-47 does not recognise: ${unrecognised.join(' ')}`);
+  }
   return options;
 }
 
@@ -1073,6 +1113,8 @@ function parseNodeInitialState(
   tokens: string[],
   lineNumber: number,
 ): void {
+  // ngspice-47 runs a deck with a bare `.ic` or `.nodeset` card unchanged (#790).
+  if (tokens.length === 1) return;
   if (tokens.length < 6 || (tokens.length - 1) % 5 !== 0) {
     throw new ParseError(`Invalid .${kind} node-voltage assignment`, lineNumber, tokens.join(' '));
   }
@@ -1224,28 +1266,16 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       circuit.addSubcircuitInstance(name, ports, subcktName, xParams);
       break;
     }
-    case 'E': {
-      assertControlledSourceCard(tokens, lineNumber, raw);
-      const gain = parseNumber(tokens[5]);
-      circuit.addVCVS(name, tokens[1], tokens[2], tokens[3], tokens[4], gain);
-      break;
-    }
-    case 'G': {
-      assertControlledSourceCard(tokens, lineNumber, raw);
-      const gm = parseNumber(tokens[5]);
-      circuit.addVCCS(name, tokens[1], tokens[2], tokens[3], tokens[4], gm);
-      break;
-    }
-    case 'H': {
-      assertControlledSourceCard(tokens, lineNumber, raw);
-      const gain = parseNumber(tokens[4]);
-      circuit.addCCVS(name, tokens[1], tokens[2], tokens[3], gain);
-      break;
-    }
+    case 'E':
+    case 'G':
+    case 'H':
     case 'F': {
-      assertControlledSourceCard(tokens, lineNumber, raw);
-      const gain = parseNumber(tokens[4]);
-      circuit.addCCCS(name, tokens[1], tokens[2], tokens[3], gain);
+      const fields = withoutNodePairParentheses(tokens);
+      assertControlledSourceCard(fields, lineNumber, raw);
+      if (type === 'E') circuit.addVCVS(name, fields[1], fields[2], fields[3], fields[4], parseNumber(fields[5]));
+      else if (type === 'G') circuit.addVCCS(name, fields[1], fields[2], fields[3], fields[4], parseNumber(fields[5]));
+      else if (type === 'H') circuit.addCCVS(name, fields[1], fields[2], fields[3], parseNumber(fields[4]));
+      else circuit.addCCCS(name, fields[1], fields[2], fields[3], parseNumber(fields[4]));
       break;
     }
     case 'B': {

@@ -59,10 +59,15 @@ describe('ngspice option directives', () => {
 
   it.each([
     '.options noacct=1\n.op',
-    '.options noacct yes\n.op',
     '.options noincmode nobypass noacct\n.op',
   ])('does not broaden report-only NOACCT into behavior-changing forms: %s', netlist => {
     expect(() => parse(netlist)).toThrow(ParseError);
+  });
+
+  it('ignores a stray word after NOACCT that ngspice-47 does not recognise (#790)', () => {
+    const circuit = parse('.options noacct yes\n.op');
+    expect(circuit.simulationOptions).toEqual({});
+    expect(circuit.parseWarnings).toEqual(['Ignored .options fields ngspice-47 does not recognise: yes']);
   });
 
   it('maps only solver-backed ngspice options to SimulationOptions', () => {
@@ -114,8 +119,6 @@ R1 in 0 1k
   });
 
   it.each([
-    '.options unsupported_option=1\n.op',
-    '.options unsupported_flag\n.op',
     '.options method=euler\n.op',
     '.options reltol=not-a-number\n.op',
     '.options reltol=-1m\n.op',
@@ -124,6 +127,16 @@ R1 in 0 1k
     '.options itl5=-1\n.op',
   ])('rejects unsupported or invalid option semantics: %s', netlist => {
     expect(() => parse(netlist)).toThrow();
+  });
+
+  // ngspice-47 if_option() silently returns for names it does not know (#790).
+  it.each([
+    ['.options unsupported_option=1\n.op', 'unsupported_option=1'],
+    ['.options unsupported_flag\n.op', 'unsupported_flag'],
+  ])('ignores option names ngspice-47 does not recognise with a warning: %s', (netlist, field) => {
+    const circuit = parse(netlist);
+    expect(circuit.simulationOptions).toEqual({});
+    expect(circuit.parseWarnings).toEqual([`Ignored .options fields ngspice-47 does not recognise: ${field}`]);
   });
 });
 
@@ -200,13 +213,17 @@ R2 2 0 1k
     expect([...result.ac!.currents.keys()]).toEqual(['V1']);
   });
 
+  // ngspice-47 treats a bare .probe as `.probe alli`, and if_option() ignores
+  // POST/TRANS (with or without a value) and any other name it does not know (#790).
   it.each([
-    '.probe',
-    '.options post=1\n.op',
-    '.options trans=1\n.op',
-    '.options post enabled\n.op',
-  ])('rejects unclassified output-control forms: %s', netlist => {
-    expect(() => parse(netlist)).toThrow(ParseError);
+    ['.probe', []],
+    ['.options post=1\n.op', ['Ignored .options fields ngspice-47 does not recognise: post=1']],
+    ['.options trans=1\n.op', ['Ignored .options fields ngspice-47 does not recognise: trans=1']],
+    ['.options post enabled\n.op', ['Ignored .options fields ngspice-47 does not recognise: enabled']],
+  ])('accepts output-control forms ngspice-47 runs: %s', (netlist, warnings) => {
+    const circuit = parse(netlist);
+    expect(circuit.simulationOptions).toEqual({});
+    expect(circuit.parseWarnings).toEqual(warnings);
   });
 
   it('accepts only bare POST and TRANS reporting flags', () => {

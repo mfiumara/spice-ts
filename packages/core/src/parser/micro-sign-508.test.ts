@@ -78,8 +78,9 @@ describe('micro sign scale suffix (#508)', () => {
 
   it('keeps the title line untouched and does not translate the Greek mu U+03BC', async () => {
     expect(() => parse('title 2µ\nV1 a 0 1\nR1 a 0 1k\n.op')).not.toThrow();
-    // ngspice-47 leaves U+03BC alone; spice-ts keeps rejecting it loudly
-    // rather than reading `2μk` as micro.
-    await expect(simulate('greek\nV1 a 0 1\nR1 a 0 2\u03bck\n.op')).rejects.toThrow(/2\u03bck/);
+    // ngspice-47 leaves U+03BC alone, and INPevaluate stops at it: `2μk` is a
+    // 2 ohm resistor there (v1#branch = -0.5 with `ngspice -b`), not micro (#790).
+    const result = await simulate('greek\nV1 a 0 1\nR1 a 0 2\u03bck\n.op');
+    expect(result.dc?.current('V1')).toBeCloseTo(-0.5, 12);
   });
 });
