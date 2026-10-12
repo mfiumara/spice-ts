@@ -86,13 +86,13 @@ describe('corpus-g reference selection', () => {
 });
 
 describe('corpus-g gap buckets', () => {
-  it('leaves BSIM4 levels to the corpus-f BSIM4 bucket and groups the other unsupported MOSFET levels (#747)', () => {
+  it('leaves BSIM4 levels to the corpus-f BSIM4 bucket and names B3SOI LEVEL=10 on its own (#747)', () => {
     const line = (level: number) => `MOSFET 'M1' (model 'n') uses unsupported model LEVEL=${level} (supported MOSFET levels: 1, 2, 3)`;
     assert.equal(gapBucket(line(54), 'unsupported'), 'model: BSIM4 (LEVEL=14/54)');
     assert.equal(gapBucket(line(14), 'unsupported'), 'model: BSIM4 (LEVEL=14/54)');
-    for (const level of [10, 102, 103, 260]) {
-      assert.equal(gapBucket(line(level), 'unsupported'), 'model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)', String(level));
-    }
+    assert.equal(gapBucket(line(10), 'unsupported'), 'model: compact MOSFET model B3SOI (LEVEL=10)');
+    // PSP/EKV levels select MOS1 now (#747); any other unsupported level is not labelled B3SOI.
+    assert.notEqual(gapBucket(line(102), 'unsupported'), 'model: compact MOSFET model B3SOI (LEVEL=10)');
   });
 });
 

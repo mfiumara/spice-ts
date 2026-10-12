@@ -1,0 +1,30 @@
+{
+  "id": "vanoise-commonemitterbjt-mextram-cir",
+  "sourcePath": "Netlists/VANOISE/commonEmitterBjt_mextram.cir",
+  "sha256": "60084d89571f491bb82e47223a7e1d0eb5345fbcd4e191cdd06e3c507397ab9c",
+  "analyses": [
+    "noise"
+  ],
+  "unmappedAnalyses": [],
+  "sameNameAs": [],
+  "ngspice": {
+    "status": "success",
+    "analyses": [
+      "noise:1",
+      "noise:167"
+    ]
+  },
+  "spiceTs": {
+    "status": "success",
+    "analyses": [
+      "noise:1",
+      "noise:167"
+    ]
+  },
+  "comparedAnalyses": 2,
+  "comparedSignals": 4,
+  "worstNormalizedError": 0.285,
+  "worstSignal": "noise v(inoise_total)",
+  "outcome": "mismatch",
+  "gapBucket": null
+}

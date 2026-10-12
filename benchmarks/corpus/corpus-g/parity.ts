@@ -75,7 +75,7 @@ export const GAP_ISSUES: Record<string, string> = {
   'device: JFET forms (PJF model type, instance TEMP=, J card)': 'https://github.com/mfiumara/spice-ts/issues/717',
   'expression: branch-current i() references in B-source expressions': 'https://github.com/mfiumara/spice-ts/issues/718',
   'model: BSIM4 (LEVEL=14/54)': 'https://github.com/mfiumara/spice-ts/issues/3',
-  'model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)': 'https://github.com/mfiumara/spice-ts/issues/747',
+  'model: compact MOSFET model B3SOI (LEVEL=10)': 'https://github.com/mfiumara/spice-ts/issues/747',
 };
 
 /** Findings beyond the gap buckets (correctness mismatches and harness defects) exposed by this batch. */
