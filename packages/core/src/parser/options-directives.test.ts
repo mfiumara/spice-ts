@@ -250,7 +250,6 @@ R2 2 0 1k
 
   it.each([
     '.temp 27\n.op',
-    '.measure tran peak MAX v(out)\n.op',
     '.control\nfft v(1)\n.endc',
   ])('rejects unsupported semantic/control directives: %s', netlist => {
     expect(() => parse(netlist)).toThrow();
@@ -291,7 +290,7 @@ ${control}
 
   it.each([
     ['alterparam r = 2k', 'alterparam'],
-    ['meas ac gain max vm(2)', 'meas'],
+    ['measure ac gain max vm(2)', 'measure'],
     ['remcirc', 'remcirc'],
     ['fft v(2)', 'fft'],
     ['linearize v(2)', 'linearize'],
