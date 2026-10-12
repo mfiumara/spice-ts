@@ -14,6 +14,13 @@ import { resolveZModel } from './devices/z-device.js';
 const fixture = (name: string): string => readFileSync(
   new URL(`../../../benchmarks/mesfet-hfet-500/fixtures/${name}`, import.meta.url), 'utf8');
 
+function interpolate(time: readonly number[], values: readonly number[], t: number): number {
+  let lo = 0;
+  while (lo < time.length - 2 && time[lo + 1] < t) lo++;
+  const f = (t - time[lo]) / (time[lo + 1] - time[lo]);
+  return values[lo] + f * (values[lo + 1] - values[lo]);
+}
+
 type Probe = { kind: 'dc-current'; source: string } | { kind: 'dc-voltage'; node: string } | { kind: 'ac-voltage'; node: string };
 
 // [point index, ngspice-47 value]; AC values are |V|.
@@ -56,6 +63,65 @@ describe('issue #500: NMF/NHFET Z-card levels vs ngspice-47', () => {
       expect(Math.abs(values[index] - expected), `point ${index}: ${values[index]} vs ${expected}`)
         .toBeLessThanOrEqual(tolerance);
     }
+  }, 60_000);
+
+  it('MES level 1 inverse mode (vds < 0) matches ngspice-47 (authored-mes-inverse.cir)', async () => {
+    // .dc vds -2 2 0.02 vgs -1 0.4 0.2: point = 201 * vgsIndex + vdsIndex.
+    // vds <= -1 is the saturated inverse branch (-vds >= 3/ALPHA), -1 < vds < 0
+    // the linear inverse branch; the vds > 0 points are normal mode.
+    // [point, vds, ngspice-47 i(vds)]
+    const reference: [number, number, number][] = [
+      [25, -1.5, 0.007656660456], [50, -1, 0.004277784096], [75, -0.5, 0.001450863567],
+      [95, -0.1, 9.529436353e-05], [150, 1, -1.751350735e-04],
+      [628, -1.5, 0.1015236433], [653, -1, 0.008115802663], [678, -0.5, 0.003984270302],
+      [698, -0.1, 0.0006489076815], [753, 1, -2.163980772e-03],
+      [1502, -0.1, 0.001661416597], [1607, 2, -7.120755717e-03],
+    ];
+    const sweep = (await simulate(fixture('authored-mes-inverse.cir'))).dcSweep!;
+    const vds = [...sweep.sweepValues];
+    const ids = [...sweep.current('vds')];
+    expect(ids).toHaveLength(1608);
+    for (const [index, drive, expected] of reference) {
+      expect(vds[index]).toBeCloseTo(drive, 9);
+      expect(Math.abs(ids[index] - expected), `point ${index}: ${ids[index]} vs ${expected}`)
+        .toBeLessThanOrEqual(5e-4 * Math.abs(expected) + 1e-12);
+    }
+  });
+
+  it('MES level 1 gate charge in transient matches ngspice-47 (authored-mes-tran.cir)', async () => {
+    // [time, ngspice-47 v(d), ngspice-47 v(gi)] at ngspice output timepoints;
+    // spice-ts is linearly interpolated (its accepted timepoints differ).
+    const reference: [number, number, number][] = [
+      [2e-09, 2.394013547, -0.320055715], [2.525e-09, 0.3865663456, -0.08356769049],
+      [3.025e-09, 0.2535828696, -0.008299032411], [4.025e-09, 0.2424055003, -7.459715325e-05],
+      [6.025e-09, 0.2423058631, -5.996026779e-09], [8.005e-09, 0.7982544102, -1.882243794],
+      [9.025e-09, 2.568212677, -1.978321736], [1.0025e-08, 2.911751773, -1.995570786],
+      [1.2025e-08, 2.996307182, -1.999814669], [1.5025e-08, 0.2535814704, -0.008298020694],
+      [2e-08, 0.7852313565, -1.876078688], [2.5e-08, 2.999213913, -1.999960549],
+      [2.9025e-08, 0.2423067501, -6.701485771e-07],
+    ];
+    const tran = (await simulate(fixture('authored-mes-tran.cir'))).transient!;
+    const time = [...tran.time];
+    const vd = [...tran.voltage('d')];
+    const vgi = [...tran.voltage('gi')];
+    for (const [t, drain, gate] of reference) {
+      // Edges move ~1 mV per ps of timestep placement; 2.5 mV is < 0.1 % of
+      // the 3 V swing (benchmark worst over all 638 points: 0.18 % of peak).
+      expect(Math.abs(interpolate(time, vd, t) - drain), `v(d) at ${t}`).toBeLessThanOrEqual(2.5e-3);
+      expect(Math.abs(interpolate(time, vgi, t) - gate), `v(gi) at ${t}`).toBeLessThanOrEqual(2.5e-3);
+    }
+    // After the gate step, v(gi) relaxes through RG = 50 ohm into the Statz
+    // gate charge: the 4.025 ns -> 6.025 ns decay is set by qgs/qgd alone.
+    const decay = (t0: number, t1: number) =>
+      Math.log(interpolate(time, vgi, t0) / interpolate(time, vgi, t1));
+    const ngspiceDecay = Math.log(-7.459715325e-05 / -5.996026779e-09);
+    expect(Math.abs(decay(4.025e-9, 6.025e-9) / ngspiceDecay - 1)).toBeLessThanOrEqual(0.01);
+    // Without CGS/CGD the gate node follows the source through RG with no
+    // memory, so the charge path is what produces that tail.
+    const chargeless = (await simulate(fixture('authored-mes-tran.cir').replace('cgs=1p cgd=0.3p', 'cgs=0 cgd=0')))
+      .transient!;
+    expect(Math.abs(interpolate([...chargeless.time], [...chargeless.voltage('gi')], 4.025e-9)))
+      .toBeLessThan(1e-9);
   }, 60_000);
 
   it('makes the mesgout output conductance frequency dependent (LAMBDA=0 below FL, LAMBDAHF above)', async () => {
