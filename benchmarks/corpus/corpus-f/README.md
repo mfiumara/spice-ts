@@ -6,7 +6,7 @@ Every deck below is byte-identical to ngspice `3ef069fb1f04177a153f342a32d941fc2
 
 ## Totals
 
-- Fixtures: 336. Outcome SHA-256: `2b52c67b190defa60283888fca3bc04c1340cdb666abdb561cc56e70efb85216`.
+- Fixtures: 336. Outcome SHA-256: `fc1ee9574cb2ca08a237ca5da9311ad71cd4764f49549bcd6d0abfd13ba64331`.
 - ngspice (ngspice-47): 306 success, 18 failed, 12 unsupported.
 - spice-ts (0.3.0): 122 success, 21 failed, 193 unsupported.
 - Outcomes: matched 51, mismatch 15, not-compared 56, spice-ts-loss 184, ngspice-failed 0, both-failed 30.
@@ -186,9 +186,9 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 | [examples/tclspice/tcl/diffpair.cir](fixtures/examples/tclspice/tcl/diffpair.cir) † | failed | unsupported | both-failed |  |  | ngspice: no raw analysis data produced / spice-ts: Parse error at line 27: Unsupported .sens form; expected '.sens v(node)' or '.sens v(node) ac dec points start stop' .sens v ( 5 4 ) |
 | [examples/transient-noise/noi-sc-tr.cir](fixtures/examples/transient-noise/noi-sc-tr.cir) | success | unsupported | spice-ts-loss |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare / spice-ts: Parse error at line 41: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option,  |
 | [examples/transient-noise/noise_vnoi.cir](fixtures/examples/transient-noise/noise_vnoi.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 21: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option,  |
-| [examples/transient-noise/rts-1.cir](fixtures/examples/transient-noise/rts-1.cir) | success | success | mismatch | 1.53 | tran v(21) |  |
+| [examples/transient-noise/rts-1.cir](fixtures/examples/transient-noise/rts-1.cir) | success | success | mismatch | 1.48 | tran v(9) |  |
 | [examples/transient-noise/shot_ng.cir](fixtures/examples/transient-noise/shot_ng.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 3: Unsupported behavioral expression: branch current i(...) references BI 1 3 I=sqrt(2*abs(i(v1))*1.6e-19*1e7)*v(11) |
-| [examples/transient-noise/simple-noise.cir](fixtures/examples/transient-noise/simple-noise.cir) | success | success | mismatch | 3.83 | tran v(3) |  |
+| [examples/transient-noise/simple-noise.cir](fixtures/examples/transient-noise/simple-noise.cir) | success | success | mismatch | 1.59 | tran v(3) |  |
 | [examples/TransmissionLines/cpl_ibm1.sp](fixtures/examples/TransmissionLines/cpl_ibm1.sp) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
 | [examples/TransmissionLines/cpl_ibm1a.sp](fixtures/examples/TransmissionLines/cpl_ibm1a.sp) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
 | [examples/TransmissionLines/cpl_ibm2.sp](fixtures/examples/TransmissionLines/cpl_ibm2.sp) | success | success | not-compared |  |  | ngspice note: ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare |
@@ -408,7 +408,7 @@ Grouped from spice-ts's own first error line. "ngspice ok" counts the fixtures i
 
 This supplement supersedes the historical batch-1 rows above for every `.control` deck. The original `outcomes.json` is deliberately unchanged.
 
-Measured with core tree `870175c62378cc792dff59e6aba78cf3b53eafdb` (`git rev-parse HEAD:packages/core`), ngspice-47, Node v22.23.1, darwin/arm64, Apple M5 Pro.
+Measured with core tree `a7e5c7cf880e23b95926dd0d64ae4a7aff5ddd36` (`git rev-parse HEAD:packages/core`), ngspice-47, Node v22.23.1, darwin/arm64, Apple M5 Pro.
 `pnpm build && pnpm exec tsx benchmarks/corpus/corpus-f/control-vectors.ts > control-receipt.json` regenerates this section and prints the full receipt. Add `--check` to rerun without changing files; `--jobs N` controls parallelism.
 
 Every reference comes only from `ngspice -b wrapper.cir`. In a fresh temporary directory, the wrapper first runs `alias quit echo ...` and `alias exit echo ...` (#528), so a deck whose control block calls `quit`/`exit` runs that block to completion exactly as written while ngspice stays alive for the export, then runs `source fixture.cir`, then `setplot <type>1` and `write <type>.raw all` for each declared analysis type. `fixture.cir` is a byte-identical copy, verified against the manifest. No rewritten decks or `-r` reference fallback.
@@ -494,9 +494,9 @@ Bucket “loss” includes numerical mismatches and typed-unsupported/failed spi
 | [examples/tclspice/tcl-testbench2/example.cir](fixtures/examples/tclspice/tcl-testbench2/example.cir) | no reference | both-failed | — | — | https://github.com/mfiumara/spice-ts/issues/694 | Error: no such plot named tran1 / Device 'MNA0' uses unsupported model parameter 'NQSMOD': the BSIM3 non-quasi-static (NQS) charge model is not implemented; spice-ts would simulate the quasi-static model (NQSMOD=0) instead |
 | [examples/transient-noise/noi-sc-tr.cir](fixtures/examples/transient-noise/noi-sc-tr.cir) | no reference | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/488 | source/write wrapper exported no reference vectors: tran.raw (Invalid string length) could not be loaded as one string (e.g. larger than the Node string limit) / Parse error at line 41: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option,  |
 | [examples/transient-noise/noise_vnoi.cir](fixtures/examples/transient-noise/noise_vnoi.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/488 | Parse error at line 21: Unsupported .control command 'linearize': vector re-interpolation onto a linear scale is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option,  |
-| [examples/transient-noise/rts-1.cir](fixtures/examples/transient-noise/rts-1.cir) | loss | mismatch | 1.54 | tran v(9) | https://github.com/mfiumara/spice-ts/issues/511 | — |
+| [examples/transient-noise/rts-1.cir](fixtures/examples/transient-noise/rts-1.cir) | loss | mismatch | 1.71 | tran v(9) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/transient-noise/shot_ng.cir](fixtures/examples/transient-noise/shot_ng.cir) | loss | spice-ts-loss | — | — | https://github.com/mfiumara/spice-ts/issues/495 | Parse error at line 3: Unsupported behavioral expression: branch current i(...) references BI 1 3 I=sqrt(2*abs(i(v1))*1.6e-19*1e7)*v(11) |
-| [examples/transient-noise/simple-noise.cir](fixtures/examples/transient-noise/simple-noise.cir) | loss | mismatch | 8.38 | tran v(3) | https://github.com/mfiumara/spice-ts/issues/511 | — |
+| [examples/transient-noise/simple-noise.cir](fixtures/examples/transient-noise/simple-noise.cir) | loss | mismatch | 4.46 | tran v(3) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/TransmissionLines/cpl_ibm1.sp](fixtures/examples/TransmissionLines/cpl_ibm1.sp) | loss | mismatch | 0.293 | tran v(x8.5) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/TransmissionLines/cpl_ibm1a.sp](fixtures/examples/TransmissionLines/cpl_ibm1a.sp) | loss | mismatch | 0.293 | tran v(x8.5) | https://github.com/mfiumara/spice-ts/issues/511 | — |
 | [examples/TransmissionLines/cpl_ibm2.sp](fixtures/examples/TransmissionLines/cpl_ibm2.sp) | match | matched | 0.00669 | tran v(v4) | — | — |

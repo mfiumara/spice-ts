@@ -2361,7 +2361,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:243374"
+          "tran:243923"
         ]
       },
       "spiceTs": {
@@ -3647,7 +3647,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:2993"
+          "tran:3100"
         ]
       },
       "spiceTs": {
@@ -3658,8 +3658,8 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 10,
-      "worstNormalizedError": 1.53,
-      "worstSignal": "tran v(21)",
+      "worstNormalizedError": 1.48,
+      "worstSignal": "tran v(9)",
       "outcome": "mismatch",
       "gapBucket": null
     },
@@ -3713,7 +3713,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 5,
-      "worstNormalizedError": 3.83,
+      "worstNormalizedError": 1.59,
       "worstSignal": "tran v(3)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -9541,5 +9541,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "2b52c67b190defa60283888fca3bc04c1340cdb666abdb561cc56e70efb85216"
+  "outcomeSha256": "fc1ee9574cb2ca08a237ca5da9311ad71cd4764f49549bcd6d0abfd13ba64331"
 }

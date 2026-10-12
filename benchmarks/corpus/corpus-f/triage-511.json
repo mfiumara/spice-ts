@@ -166,16 +166,16 @@
     {
       "id": "examples-transient-noise-simple-noise-cir",
       "issueTable": null,
-      "current": { "outcome": "mismatch", "worst": 3.83, "signal": "tran v(3)" },
+      "current": { "outcome": "mismatch", "worst": 1.59, "signal": "tran v(3)" },
       "rootCauses": ["stochastic-sources"],
-      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 4.71 on 4bdbe0c2, a triage-detail rerun gave 3.75, the b3f04506 regeneration gave 2.5 the 03706cc7 regeneration 5.44 the b1a1ff58 regeneration 1.49 (v(4)) the e2c73b29 regeneration 7.12 (v(3)) the dc7cc4a3 regeneration 3.49 (v(3)) and the 3b9c836f regeneration 3.83 (v(3)). The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
+      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 4.71 on 4bdbe0c2, a triage-detail rerun gave 3.75, the b3f04506 regeneration gave 2.5 the 03706cc7 regeneration 5.44 the b1a1ff58 regeneration 1.49 (v(4)) the e2c73b29 regeneration 7.12 (v(3)) the dc7cc4a3 regeneration 3.49 (v(3)) the 3b9c836f regeneration 3.83 (v(3)) and the dd4e58be regeneration 1.59 (v(3)). The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
     },
     {
       "id": "examples-transient-noise-rts-1-cir",
       "issueTable": null,
-      "current": { "outcome": "mismatch", "worst": 1.53, "signal": "tran v(21)" },
+      "current": { "outcome": "mismatch", "worst": 1.48, "signal": "tran v(9)" },
       "rootCauses": ["stochastic-sources"],
-      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 1.55 (v(9)) on 4bdbe0c2, a triage-detail rerun gave 1.45, the b3f04506 regeneration gave 1.36 (v(21)) the 03706cc7 regeneration 1.14 (v(9)) the b1a1ff58 and e2c73b29 regenerations 1.52 (v(21)) the dc7cc4a3 regeneration 1.37 (v(21)) and the 3b9c836f regeneration 1.53 (v(21)). The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
+      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 1.55 (v(9)) on 4bdbe0c2, a triage-detail rerun gave 1.45, the b3f04506 regeneration gave 1.36 (v(21)) the 03706cc7 regeneration 1.14 (v(9)) the b1a1ff58 and e2c73b29 regenerations 1.52 (v(21)) the dc7cc4a3 regeneration 1.37 (v(21)) the 3b9c836f regeneration 1.53 (v(21)) and the dd4e58be regeneration 1.48 (v(9)). The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
     }
   ],
   "deferredMismatches": {
