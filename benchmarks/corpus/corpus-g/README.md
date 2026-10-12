@@ -6,17 +6,17 @@ Every deck below is byte-identical to Xyce_Regression `7bb7e98f0ed3a81a7d1cf1d10
 
 ## Totals
 
-- Fixtures: 128. Outcome SHA-256: `cc41c469fee6732450a8c9615e34a2c40a94aefd2221536d26bcf542550f7891`.
+- Fixtures: 128. Outcome SHA-256: `60bd12e121c340ab4c1b483aa7106d3419002aad2a3a735c3459b9df7f27d704`.
 - ngspice (ngspice-47): 128 success, 0 failed, 0 unsupported.
-- spice-ts (0.3.0): 103 success, 6 failed, 19 unsupported.
-- Outcomes: matched 85, mismatch 18, not-compared 0, spice-ts-loss 25, ngspice-failed 0, both-failed 0.
-- Of the 128 decks ngspice runs successfully, spice-ts matches 85, mismatches 18, produces no comparable result for 0 and fails 25.
+- spice-ts (0.3.0): 104 success, 6 failed, 18 unsupported.
+- Outcomes: matched 86, mismatch 18, not-compared 0, spice-ts-loss 24, ngspice-failed 0, both-failed 0.
+- Of the 128 decks ngspice runs successfully, spice-ts matches 86, mismatches 18, produces no comparable result for 0 and fails 24.
 
 ## Method
 
 - ngspice: `ngspice -b -r <raw> <identical-fixture> (HOME=<tmp> with .spiceinit "set filetype=ascii")`. Status success means exit 0 and at least one op/dc/ac/tran/pz/noise/disto plot in the raw file; failed/unsupported is classified from ngspice's own output.
 - spice-ts: `@spice-ts/core simulate(<identical-fixture>) in a bounded child process (no parse() pre-check)`. The runner and metric are corpus-f's (`benchmarks/corpus/corpus-f/{outcomes,lib}.ts`), imported unchanged. Gap buckets apply the corpus-g rules in `lib.ts` first, then the corpus-f rules.
-- matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, 1e-12). Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).
+- matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, floor). The floor is uniform per quantity (#593): 0.0001 V for node voltages v(...) and 1e-10 A for branch currents i(...), so a signal whose ngspice peak is zero or tiny matches when the absolute difference is at most the ngspice-47 default VNTOL (0.000001 V) or ABSTOL (1e-12 A); every other quantity (pole/zero roots, noise spectra) keeps 1e-12. Deck .options tolerances are not consulted. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).
 - "worst" is that normalised error for the worst signal.
 - Bounds: ngspice 600 s, spice-ts 120 s per fixture. The outcome hash excludes environment, tools.node, ngspice.analyses, spiceTs.analyses.
 - Regenerate: `pnpm build && spice-heavy pnpm exec tsx benchmarks/corpus/corpus-g/parity.ts`; verify without writing: `spice-heavy pnpm exec tsx benchmarks/corpus/corpus-g/parity.ts --check`.
@@ -37,16 +37,16 @@ Grouped from spice-ts's own first error line (corpus-g rules, then corpus-f rule
 | Bucket | Fixtures | ngspice ok | Issue |
 |---|---|---|---|
 | parse: other unsupported syntax | 10 | 10 | none filed |
-| model: other MOSFET levels (LEVEL=10, LEVEL=260) | 5 | 5 | none filed |
+| model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260) | 4 | 4 | https://github.com/mfiumara/spice-ts/issues/747 |
 | execution: other failure | 3 | 3 | none filed |
 | deck: element-free deck (ngspice runs an empty analysis) | 2 | 2 | none filed |
 | convergence | 1 | 1 | none filed |
 | device: BJT instance IC= initial conditions | 1 | 1 | none filed |
-| device: K-element | 1 | 1 | none filed |
 | device: lossless T-line NL=/F= electrical-length form | 1 | 1 | none filed |
 | directive: .four | 1 | 1 | none filed |
+| model: BSIM4 (LEVEL=14/54) | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/3 |
 
-## Losses (43)
+## Losses (42)
 
 Every fixture that is not matched: spice-ts failures, mismatches above the threshold, and results that could not be compared.
 
@@ -90,13 +90,12 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | [SOLN_DEP_RES/multSolDepRes.cir](fixtures/SOLN_DEP_RES/multSolDepRes.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 10: Unsupported parameter 'M=10' on behavioral resistor 'R2': a resistor whose value depends on v() or i() is simulated as an ngspice B-source, which carries only tc1= and tc2= R2 2 0 R={1.0+scalar*V(cntl)} M=10 |
 | [SUBCKT/subckt_a0.cir](fixtures/SUBCKT/subckt_a0.cir) | success | success | mismatch | 0.246 | tran i(vdddev) |  |
 | [TIA/ERROROPTION/erroroption.cir](fixtures/TIA/ERROROPTION/erroroption.cir) | success | success | mismatch | 0.225 | tran i(vin1) |  |
-| [TL1X/TL1X_mpi.cir](fixtures/TL1X/TL1X_mpi.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 14: Unsupported device card: 'K' KM12 L1 L2 2.229e-01 |
 | [TRANSLINE/ErrorMessageTest2.cir](fixtures/TRANSLINE/ErrorMessageTest2.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 19: Unsupported lossless transmission line parameter; only Z0 and TD are supported (F/NL/IC/REL/ABS are unsupported) TLINE1 2 0 3 0 Z0=50 NL=10 |
 | [VANOISE/commonEmitterBjt_mextram.cir](fixtures/VANOISE/commonEmitterBjt_mextram.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Unsupported bounded BJT model parameter: 'DTA' |
 | [VSTARTEST/vstarTest.cir](fixtures/VSTARTEST/vstarTest.cir) | success | success | mismatch | 0.202 | tran v(vout) |  |
 | [WAMPDE/BLOCKING/simple_single_channel.cir](fixtures/WAMPDE/BLOCKING/simple_single_channel.cir) | success | success | mismatch | 2.45 | tran i(l2) |  |
 
-## Wins (85)
+## Wins (86)
 
 Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every common signal.
 
@@ -178,6 +177,7 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [SEMIC_RESISTOR/semic_resistor.cir](fixtures/SEMIC_RESISTOR/semic_resistor.cir) | success | success | matched | 8.67e-17 | dc i(vin) |  |
 | [SUPERNODE/supernode1.cir](fixtures/SUPERNODE/supernode1.cir) | success | success | matched | 0 | dc i(v1) |  |
 | [TESTJAC/testjac_comp.cir](fixtures/TESTJAC/testjac_comp.cir) | success | success | matched | 1.39e-7 | dc v(2) |  |
+| [TL1X/TL1X_mpi.cir](fixtures/TL1X/TL1X_mpi.cir) | success | success | matched | 0.0000718 | tran i(vslow) |  |
 | [TwoLevelAPI/resInnerTran.cir](fixtures/TwoLevelAPI/resInnerTran.cir) | success | success | matched | 2.78e-16 | tran i(vconnect0000) |  |
 | [USERS_GUIDE/DiodeClipper.cir](fixtures/USERS_GUIDE/DiodeClipper.cir) | success | success | matched | 4.42e-8 | tran i(vcc) |  |
 | [Verilog_POWER/power_juncap200_gear.cir](fixtures/Verilog_POWER/power_juncap200_gear.cir) | success | success | matched | 0.000493 | tran v(5) |  |
