@@ -2417,7 +2417,7 @@
       },
       "comparedAnalyses": 2,
       "comparedSignals": 4,
-      "worstNormalizedError": 5.53e-7,
+      "worstNormalizedError": 8.51e-8,
       "worstSignal": "noise v(onoise_total)",
       "outcome": "matched",
       "gapBucket": null
@@ -3734,5 +3734,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "6359a422909ed1dd9089cf4a2f579a14d2b41041d54c06943265843e8602da83"
+  "outcomeSha256": "bffd50633e187249e2708536084264182346fe5e3aaf5fc69504b0c61e10f3bf"
 }

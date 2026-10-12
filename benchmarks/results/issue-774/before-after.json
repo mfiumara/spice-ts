@@ -1,0 +1,383 @@
+{
+  "issue": "https://github.com/mfiumara/spice-ts/issues/774",
+  "matchThreshold": 0.01,
+  "ngspice": "ngspice-47",
+  "head": "e94a7debdfaf5814828795522f7457fa08d05f6c",
+  "selection": "every corpus-f/corpus-g fixture whose declared, unmapped or committed spice-ts analyses mention noise (the only analysis type for which ngspice emits two plots)",
+  "results": [
+    {
+      "corpus": "corpus-f",
+      "id": "examples-noise-baker-252-gain-cir",
+      "sourcePath": "examples/noise/baker-252-gain.cir",
+      "committedOutcome": "spice-ts-loss",
+      "committedWorst": null,
+      "committedWorstSignal": null,
+      "ngspice": "success",
+      "spiceTs": "unsupported",
+      "runFixture": {
+        "outcome": "spice-ts-loss",
+        "worst": null,
+        "worstSignal": null,
+        "comparedSignals": 0
+      },
+      "note": "not scored (an engine did not succeed): metric change cannot apply",
+      "spiceTsError": "Parse error at line 7: Unsupported .control command 'set': variable 'sqrnoise': noise spectra in V^2/Hz are not produced set sqrnoise"
+    },
+    {
+      "corpus": "corpus-f",
+      "id": "examples-noise-bipolar-noise-cir",
+      "sourcePath": "examples/noise/bipolar-noise.cir",
+      "committedOutcome": "spice-ts-loss",
+      "committedWorst": null,
+      "committedWorstSignal": null,
+      "ngspice": "success",
+      "spiceTs": "success",
+      "runFixture": {
+        "outcome": "not-compared",
+        "worst": null,
+        "worstSignal": null,
+        "comparedSignals": 0
+      },
+      "comparedSignals": 0,
+      "before": {
+        "worst": null,
+        "worstSignal": null,
+        "outcome": "not-compared"
+      },
+      "after": {
+        "worst": null,
+        "worstSignal": null,
+        "outcome": "not-compared"
+      },
+      "changedSignals": []
+    },
+    {
+      "corpus": "corpus-f",
+      "id": "examples-noise-resdiv-gain-cir",
+      "sourcePath": "examples/noise/resdiv_gain.cir",
+      "committedOutcome": "not-compared",
+      "committedWorst": null,
+      "committedWorstSignal": null,
+      "ngspice": "success",
+      "spiceTs": "success",
+      "runFixture": {
+        "outcome": "not-compared",
+        "worst": null,
+        "worstSignal": null,
+        "comparedSignals": 0
+      },
+      "comparedSignals": 0,
+      "before": {
+        "worst": null,
+        "worstSignal": null,
+        "outcome": "not-compared"
+      },
+      "after": {
+        "worst": null,
+        "worstSignal": null,
+        "outcome": "not-compared"
+      },
+      "changedSignals": []
+    },
+    {
+      "corpus": "corpus-f",
+      "id": "examples-noise-resdiv-cir",
+      "sourcePath": "examples/noise/resdiv.cir",
+      "committedOutcome": "not-compared",
+      "committedWorst": null,
+      "committedWorstSignal": null,
+      "ngspice": "success",
+      "spiceTs": "success",
+      "runFixture": {
+        "outcome": "not-compared",
+        "worst": null,
+        "worstSignal": null,
+        "comparedSignals": 0
+      },
+      "comparedSignals": 0,
+      "before": {
+        "worst": null,
+        "worstSignal": null,
+        "outcome": "not-compared"
+      },
+      "after": {
+        "worst": null,
+        "worstSignal": null,
+        "outcome": "not-compared"
+      },
+      "changedSignals": []
+    },
+    {
+      "corpus": "corpus-f",
+      "id": "examples-various-bjtnoise-cir",
+      "sourcePath": "examples/various/bjtnoise.cir",
+      "committedOutcome": "spice-ts-loss",
+      "committedWorst": null,
+      "committedWorstSignal": null,
+      "ngspice": "success",
+      "spiceTs": "success",
+      "runFixture": {
+        "outcome": "matched",
+        "worst": 1.51e-7,
+        "worstSignal": "noise inoise_spectrum",
+        "comparedSignals": 4
+      },
+      "comparedSignals": 4,
+      "before": {
+        "worst": 0.00000154,
+        "worstSignal": "noise v(onoise_total)",
+        "outcome": "matched"
+      },
+      "after": {
+        "worst": 1.51e-7,
+        "worstSignal": "noise inoise_spectrum",
+        "outcome": "matched"
+      },
+      "changedSignals": [
+        {
+          "signal": "noise v(onoise_total)",
+          "absoluteMax": 1.54e-10,
+          "before": {
+            "ngspicePeak": 0,
+            "normalized": 0.00000154
+          },
+          "after": {
+            "ngspicePeak": 0.00103,
+            "normalized": 1.5e-7
+          }
+        }
+      ]
+    },
+    {
+      "corpus": "corpus-f",
+      "id": "examples-various-tmp-noise-cir",
+      "sourcePath": "examples/various/tmp-noise.cir",
+      "committedOutcome": "spice-ts-loss",
+      "committedWorst": null,
+      "committedWorstSignal": null,
+      "ngspice": "success",
+      "spiceTs": "unsupported",
+      "runFixture": {
+        "outcome": "spice-ts-loss",
+        "worst": null,
+        "worstSignal": null,
+        "comparedSignals": 0
+      },
+      "note": "not scored (an engine did not succeed): metric change cannot apply",
+      "spiceTsError": "Parse error at line 12: Unsupported dot command: '.temp' .temp 127.0"
+    },
+    {
+      "corpus": "corpus-f",
+      "id": "examples-vdmos-100w-sp",
+      "sourcePath": "examples/vdmos/100W.sp",
+      "committedOutcome": "spice-ts-loss",
+      "committedWorst": null,
+      "committedWorstSignal": null,
+      "ngspice": "success",
+      "spiceTs": "unsupported",
+      "runFixture": {
+        "outcome": "spice-ts-loss",
+        "worst": null,
+        "worstSignal": null,
+        "comparedSignals": 0
+      },
+      "note": "not scored (an engine did not succeed): metric change cannot apply",
+      "spiceTsError": "Parse error at line 67: Unsupported .control command 'fourier': Fourier analysis of vectors is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, al"
+    },
+    {
+      "corpus": "corpus-f",
+      "id": "examples-xspice-noise-noise-gain-cir",
+      "sourcePath": "examples/xspice/noise/noise_gain.cir",
+      "committedOutcome": "spice-ts-loss",
+      "committedWorst": null,
+      "committedWorstSignal": null,
+      "ngspice": "success",
+      "spiceTs": "failed",
+      "runFixture": {
+        "outcome": "spice-ts-loss",
+        "worst": null,
+        "worstSignal": null,
+        "comparedSignals": 0
+      },
+      "note": "not scored (an engine did not succeed): metric change cannot apply",
+      "spiceTsError": "XSPICE gain instance 'a1' has noise_voltage/noise_current; gain noise sources are not supported in .noise"
+    },
+    {
+      "corpus": "corpus-f",
+      "id": "examples-xspice-noise-ota-noise-test1-cir",
+      "sourcePath": "examples/xspice/noise/ota_noise_test1.cir",
+      "committedOutcome": "spice-ts-loss",
+      "committedWorst": null,
+      "committedWorstSignal": null,
+      "ngspice": "success",
+      "spiceTs": "unsupported",
+      "runFixture": {
+        "outcome": "spice-ts-loss",
+        "worst": null,
+        "worstSignal": null,
+        "comparedSignals": 0
+      },
+      "note": "not scored (an engine did not succeed): metric change cannot apply",
+      "spiceTsError": "Parse error at line 7: XSPICE code model 'ota' (.model 'newota') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .mode"
+    },
+    {
+      "corpus": "corpus-f",
+      "id": "tests-regression-misc-test-noise-2-cir",
+      "sourcePath": "tests/regression/misc/test-noise-2.cir",
+      "committedOutcome": "spice-ts-loss",
+      "committedWorst": null,
+      "committedWorstSignal": null,
+      "ngspice": "success",
+      "spiceTs": "unsupported",
+      "runFixture": {
+        "outcome": "spice-ts-loss",
+        "worst": null,
+        "worstSignal": null,
+        "comparedSignals": 0
+      },
+      "note": "not scored (an engine did not succeed): metric change cannot apply",
+      "spiceTsError": "Parse error at line 6: Unsupported dot command: '.temp' .temp 25"
+    },
+    {
+      "corpus": "corpus-f",
+      "id": "tests-regression-misc-test-noise-3-cir",
+      "sourcePath": "tests/regression/misc/test-noise-3.cir",
+      "committedOutcome": "spice-ts-loss",
+      "committedWorst": null,
+      "committedWorstSignal": null,
+      "ngspice": "success",
+      "spiceTs": "unsupported",
+      "runFixture": {
+        "outcome": "spice-ts-loss",
+        "worst": null,
+        "worstSignal": null,
+        "comparedSignals": 0
+      },
+      "note": "not scored (an engine did not succeed): metric change cannot apply",
+      "spiceTsError": "Parse error at line 5: Unsupported dot command: '.temp' .temp 25"
+    },
+    {
+      "corpus": "corpus-f",
+      "id": "tests-vbic-noise-scale-test-cir",
+      "sourcePath": "tests/vbic/noise_scale_test.cir",
+      "committedOutcome": "spice-ts-loss",
+      "committedWorst": null,
+      "committedWorstSignal": null,
+      "ngspice": "success",
+      "spiceTs": "unsupported",
+      "runFixture": {
+        "outcome": "spice-ts-loss",
+        "worst": null,
+        "worstSignal": null,
+        "comparedSignals": 0
+      },
+      "note": "not scored (an engine did not succeed): metric change cannot apply",
+      "spiceTsError": "Unsupported bounded VBIC DC model parameter: 'KFN'"
+    },
+    {
+      "corpus": "corpus-g",
+      "id": "message-device-core-safebarrier-1-cir",
+      "sourcePath": "Netlists/Message/Device/Core_SafeBarrier_1.cir",
+      "committedOutcome": "spice-ts-loss",
+      "committedWorst": null,
+      "committedWorstSignal": null,
+      "ngspice": "success",
+      "spiceTs": "failed",
+      "runFixture": {
+        "outcome": "spice-ts-loss",
+        "worst": null,
+        "worstSignal": null,
+        "comparedSignals": 0
+      },
+      "note": "not scored (an engine did not succeed): metric change cannot apply",
+      "spiceTsError": ".noise output node '13' does not exist"
+    },
+    {
+      "corpus": "corpus-g",
+      "id": "multiplicity-factor-bjt-diffpair-noise-baseline-net",
+      "sourcePath": "Netlists/MULTIPLICITY_FACTOR/bjt_diffpair_noise_baseline.net",
+      "committedOutcome": "matched",
+      "committedWorst": 0.0000332,
+      "committedWorstSignal": "noise onoise_spectrum",
+      "ngspice": "success",
+      "spiceTs": "success",
+      "runFixture": {
+        "outcome": "matched",
+        "worst": 0.0000332,
+        "worstSignal": "noise onoise_spectrum",
+        "comparedSignals": 4
+      },
+      "comparedSignals": 4,
+      "before": {
+        "worst": 0.0000332,
+        "worstSignal": "noise onoise_spectrum",
+        "outcome": "matched"
+      },
+      "after": {
+        "worst": 0.0000332,
+        "worstSignal": "noise onoise_spectrum",
+        "outcome": "matched"
+      },
+      "changedSignals": []
+    },
+    {
+      "corpus": "corpus-g",
+      "id": "noise-cascodebjtnoise-cir",
+      "sourcePath": "Netlists/NOISE/cascodeBjtNOISE.cir",
+      "committedOutcome": "matched",
+      "committedWorst": 5.53e-7,
+      "committedWorstSignal": "noise v(onoise_total)",
+      "ngspice": "success",
+      "spiceTs": "success",
+      "runFixture": {
+        "outcome": "matched",
+        "worst": 8.51e-8,
+        "worstSignal": "noise v(onoise_total)",
+        "comparedSignals": 4
+      },
+      "comparedSignals": 4,
+      "before": {
+        "worst": 5.53e-7,
+        "worstSignal": "noise v(onoise_total)",
+        "outcome": "matched"
+      },
+      "after": {
+        "worst": 8.51e-8,
+        "worstSignal": "noise v(onoise_total)",
+        "outcome": "matched"
+      },
+      "changedSignals": [
+        {
+          "signal": "noise v(onoise_total)",
+          "absoluteMax": 5.53e-11,
+          "before": {
+            "ngspicePeak": 0,
+            "normalized": 5.53e-7
+          },
+          "after": {
+            "ngspicePeak": 0.00065,
+            "normalized": 8.51e-8
+          }
+        }
+      ]
+    },
+    {
+      "corpus": "corpus-g",
+      "id": "vanoise-commonemitterbjt-mextram-cir",
+      "sourcePath": "Netlists/VANOISE/commonEmitterBjt_mextram.cir",
+      "committedOutcome": "spice-ts-loss",
+      "committedWorst": null,
+      "committedWorstSignal": null,
+      "ngspice": "success",
+      "spiceTs": "unsupported",
+      "runFixture": {
+        "outcome": "spice-ts-loss",
+        "worst": null,
+        "worstSignal": null,
+        "comparedSignals": 0
+      },
+      "note": "not scored (an engine did not succeed): metric change cannot apply",
+      "spiceTsError": "Unsupported bounded BJT model parameter: 'DTA'"
+    }
+  ]
+}

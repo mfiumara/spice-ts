@@ -6,7 +6,7 @@ Every deck below is byte-identical to Xyce_Regression `7bb7e98f0ed3a81a7d1cf1d10
 
 ## Totals
 
-- Fixtures: 128. Outcome SHA-256: `6359a422909ed1dd9089cf4a2f579a14d2b41041d54c06943265843e8602da83`.
+- Fixtures: 128. Outcome SHA-256: `bffd50633e187249e2708536084264182346fe5e3aaf5fc69504b0c61e10f3bf`.
 - ngspice (ngspice-47): 128 success, 0 failed, 0 unsupported.
 - spice-ts (0.3.0): 106 success, 7 failed, 15 unsupported.
 - Outcomes: matched 92, mismatch 14, not-compared 0, spice-ts-loss 22, ngspice-failed 0, both-failed 0.
@@ -157,7 +157,7 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [NMESFET/nmesfet.cir](fixtures/NMESFET/nmesfet.cir) | success | success | matched | 8.52e-8 | dc i(vds) |  |
 | [NMOS_ANALYTIC/mosfet_level1.cir](fixtures/NMOS_ANALYTIC/mosfet_level1.cir) | success | success | matched | 1.73e-9 | tran i(vcc) |  |
 | [NMOS3_DC/mos3_dc.cir](fixtures/NMOS3_DC/mos3_dc.cir) | success | success | matched | 1.26e-15 | dc i(vds) |  |
-| [NOISE/cascodeBjtNOISE.cir](fixtures/NOISE/cascodeBjtNOISE.cir) | success | success | matched | 5.53e-7 | noise v(onoise_total) |  |
+| [NOISE/cascodeBjtNOISE.cir](fixtures/NOISE/cascodeBjtNOISE.cir) | success | success | matched | 8.51e-8 | noise v(onoise_total) |  |
 | [Nonlinear/ConvergenceTests/NLStrategy1.cir](fixtures/Nonlinear/ConvergenceTests/NLStrategy1.cir) | success | success | matched | 0.00034 | tran v(9) |  |
 | [OP/comparator_op.cir](fixtures/OP/comparator_op.cir) | success | success | matched | 0.00034 | tran v(9) |  |
 | [Output/AC/ac-csv.cir](fixtures/Output/AC/ac-csv.cir) | success | success | matched | 8.15e-16 | ac i(v1) |  |
