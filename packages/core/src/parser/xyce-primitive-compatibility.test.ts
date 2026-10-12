@@ -78,9 +78,11 @@ describe('Xyce primitive parser compatibility', () => {
     expect(() => parse(input.toString('utf8'))).not.toThrow();
   });
 
-  it('keeps capacitor3 NEWLTE explicitly unsupported', () => {
-    expect(() => parse(fixture('CAPACITOR/capacitor3.cir')))
-      .toThrow(/Unsupported \.options TIMEINT field: 'newlte'/);
+  it('ignores capacitor3 NEWLTE like ngspice-47, which does not know the name', () => {
+    const circuit = parse(fixture('CAPACITOR/capacitor3.cir'));
+
+    expect(circuit.simulationOptions).toEqual({ reltol: 1e-6, abstol: 1e-6 });
+    expect(circuit.parseWarnings.join('\n')).toContain('ignored option names it does not recognise: newlte=2');
   });
 
   for (const [id, path] of [

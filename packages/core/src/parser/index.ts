@@ -35,6 +35,7 @@ import { parseZInstance } from './z-device-parser.js';
 import { locateSubcircuitCall, parseSubcircuitHeader, type SubcircuitHeader } from './subcircuit-syntax.js';
 import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
+import { splitXyceOptionPackage } from './xyce-option-packages.js';
 import type { AnalysisDirective, IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { measureCard } from '../measure/dot-measure.js';
@@ -235,6 +236,7 @@ function parseNetlist(
   if (controlBlocks.length > 0) {
     attachControlScript(circuit, parseControlScript(controlBlocks), controlAnalysisIndex, hasStepAnalysis);
   }
+  assertMaxOrderIsNoOp(circuit);
 
   return circuit;
 }
@@ -322,7 +324,7 @@ export function parseControlAnalysisCard(tokens: string[], lineNumber: number, c
 /** @internal Parse `.options` tokens for the control-language `option`/`set` commands. */
 export function parseControlOptions(tokens: string[], lineNumber: number, context: string): SimulationOptions {
   try {
-    return parseSimulationOptions(tokens, lineNumber, context);
+    return parseSimulationOptions(splitXyceOptionPackage(tokens).fields, lineNumber, context);
   } catch (e) {
     if (e instanceof ParseError) throw e;
     throw new ParseError((e as Error).message, lineNumber, context);
@@ -640,10 +642,17 @@ function parseDotCommand(
     case '.OPT':
     case '.OPTION':
     case '.OPTIONS': {
-      const optionTokens = tokens.slice(1);
+      const { fields: optionTokens, warning } = splitXyceOptionPackage(tokens.slice(1));
+      if (warning !== undefined) circuit.addParseWarning(warning);
       const temperature = takeCircuitTemperatureOption(optionTokens, lineNumber, context);
       const xspiceTrtol = takeXspiceTrtolOption(optionTokens, lineNumber, context);
-      circuit.setSimulationOptions(parseSimulationOptions(optionTokens, lineNumber, context));
+      circuit.setSimulationOptions(parseSimulationOptions(optionTokens, lineNumber, context, {
+        warn: message => circuit.addParseWarning(message),
+        maxOrder: order => {
+          if (order > 2) pendingMaxOrders.set(circuit, { order, lineNumber, context });
+          else pendingMaxOrders.delete(circuit);
+        },
+      }));
       if (temperature !== undefined) circuit.setTemperature(temperature);
       if (xspiceTrtol !== undefined) circuit.setXspiceTrtol(xspiceTrtol);
       break;
@@ -806,7 +815,6 @@ function takeCircuitTemperatureOption(
   lineNumber: number,
   context: string,
 ): number | undefined {
-  if (tokens[0]?.toLowerCase() === 'timeint') return undefined;
   let temperature: number | undefined;
   for (let index = tokens.length - 1; index >= 0; index -= 1) {
     const token = tokens[index];
@@ -838,7 +846,6 @@ function takeXspiceTrtolOption(
   lineNumber: number,
   context: string,
 ): number | undefined {
-  if (tokens[0]?.toLowerCase() === 'timeint') return undefined;
   let trtol: number | undefined;
   for (let index = tokens.length - 1; index >= 0; index -= 1) {
     const token = tokens[index];
@@ -856,15 +863,52 @@ function takeXspiceTrtolOption(
   return trtol;
 }
 
+interface SimulationOptionHooks {
+  /** Receive a non-fatal parse diagnostic. */
+  warn?(message: string): void;
+  /**
+   * Receive an accepted ngspice MAXORD (2..6). Without this hook, orders above
+   * 2 are rejected because their effect depends on the deck's final METHOD.
+   */
+  maxOrder?(order: number): void;
+}
+
+interface PendingMaxOrder {
+  readonly order: number;
+  readonly lineNumber: number;
+  readonly context: string;
+}
+
+/** The last MAXORD above 2 of each circuit being parsed, checked after the last card. */
+const pendingMaxOrders = new WeakMap<Circuit, PendingMaxOrder>();
+
+/**
+ * ngspice-47 dctran.c raises the trapezoidal order only from 1 to 2, so any
+ * MAXORD >= 2 leaves METHOD=TRAP unchanged. With METHOD=GEAR, MAXORD above 2
+ * enables Gear orders spice-ts does not implement (its gear2 is ngspice's
+ * default GEAR with MAXORD=2).
+ */
+function assertMaxOrderIsNoOp(circuit: Circuit): void {
+  const pending = pendingMaxOrders.get(circuit);
+  pendingMaxOrders.delete(circuit);
+  if (pending === undefined || circuit.simulationOptions.integrationMethod !== 'gear2') return;
+  throw new ParseError(
+    `Unsupported .options maxord=${pending.order} with method=gear (spice-ts implements Gear order 2 only)`,
+    pending.lineNumber,
+    pending.context,
+  );
+}
+
+/** cp_setparse() reads a numeric word as a number, which the string METHOD option rejects. */
+const NUMERIC_OPTION_VALUE = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i;
+
 function parseSimulationOptions(
   tokens: string[],
   lineNumber: number,
   context: string,
+  hooks: SimulationOptionHooks = {},
 ): SimulationOptions {
   const optionTokens = tokens.filter(value => value !== '(' && value !== ')');
-  if (optionTokens[0]?.toLowerCase() === 'timeint') {
-    return parseXyceTimeintOptions(optionTokens.slice(1));
-  }
 
   const options: SimulationOptions = {};
   const obsoleteNumericFields = new Set(['limpts', 'itl5', 'lvlcod']);
@@ -922,6 +966,12 @@ function parseSimulationOptions(
       continue;
     }
     if (name === 'method') {
+      if (NUMERIC_OPTION_VALUE.test(rawValue)) {
+        // ngspice-47 if_option(): METHOD is IF_STRING, so a numeric value
+        // (Xyce TIMEINT METHOD=7) is a "bad type" and the method is unchanged.
+        hooks.warn?.(`Ignored .options method=${rawValue}: ngspice-47 rejects a numeric METHOD and keeps the current method`);
+        continue;
+      }
       const methods: Record<string, IntegrationMethod> = {
         trap: 'trapezoidal',
         gear: 'gear2',
@@ -929,6 +979,35 @@ function parseSimulationOptions(
       const method = methods[rawValue.toLowerCase()];
       if (!method) throw new Error(`Unsupported .options method: '${rawValue}'`);
       options.integrationMethod = method;
+      continue;
+    }
+    if (name === 'maxord') {
+      const value = parseNumber(rawValue);
+      if (!Number.isFinite(value)) throw new Error(`Invalid .options maxord value: '${rawValue}'`);
+      // ngspice-47 if_option() rounds a real value; cktsopt.c clamps to 1..6.
+      const order = Math.min(6, Math.max(1, Math.floor(value + 0.5)));
+      if (order < 2) {
+        throw new ParseError(
+          `Unsupported .options maxord value: '${rawValue}' (order-1-only integration is not implemented)`,
+          lineNumber,
+          context,
+        );
+      }
+      if (order > 2 && hooks.maxOrder === undefined) {
+        throw new ParseError(
+          `Unsupported .options maxord=${order} outside a netlist .options card`,
+          lineNumber,
+          context,
+        );
+      }
+      if (order > 2 && options.integrationMethod === 'gear2') {
+        throw new ParseError(
+          `Unsupported .options maxord=${order} with method=gear (spice-ts implements Gear order 2 only)`,
+          lineNumber,
+          context,
+        );
+      }
+      hooks.maxOrder?.(order);
       continue;
     }
 
@@ -987,75 +1066,6 @@ function parseNodeInitialState(
     }
     circuit.addInitialState(kind, { node, value: parseNumber(valueToken) });
   }
-}
-
-function parseXyceTimeintOptions(tokens: string[]): SimulationOptions {
-  const options: SimulationOptions = {};
-  let newbpstepping: string | undefined;
-
-  for (const token of tokens) {
-    const separator = token.indexOf('=');
-    const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
-    if (separator <= 0 || separator === token.length - 1) {
-      if (name === 'newbpstepping') {
-        const rawValue = separator < 0 ? undefined : token.slice(separator + 1);
-        throw new Error(rawValue === undefined
-          ? "Invalid .options TIMEINT NEWBPSTEPPING field: 'newbpstepping'"
-          : `Invalid .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
-      }
-      throw new Error(`Unsupported .options TIMEINT field: '${name || token.toLowerCase()}'`);
-    }
-
-    const rawValue = token.slice(separator + 1);
-    if (name === 'newbpstepping') {
-      if (newbpstepping !== undefined && newbpstepping !== rawValue) {
-        throw new Error(`Conflicting .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
-      }
-      newbpstepping = rawValue;
-      if (rawValue === '0') continue;
-      let numericValue: number;
-      try {
-        numericValue = parseNumber(rawValue);
-      } catch {
-        throw new Error(`Invalid .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
-      }
-      if (!Number.isFinite(numericValue)) {
-        throw new Error(`Invalid .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
-      }
-      throw new Error(`Unsupported .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
-    }
-    if (name === 'method') {
-      const methods: Record<string, IntegrationMethod> = {
-        trap: 'trapezoidal',
-        '7': 'trapezoidal',
-        gear: 'gear2',
-        '8': 'gear2',
-      };
-      const method = methods[rawValue.toLowerCase()];
-      if (!method) throw new Error(`Unsupported .options TIMEINT method: '${rawValue}'`);
-      options.integrationMethod = method;
-      continue;
-    }
-
-    if (name !== 'reltol' && name !== 'abstol') {
-      throw new Error(`Unsupported .options TIMEINT field: '${name}'`);
-    }
-
-    const value = parseNumber(rawValue);
-    if (!Number.isFinite(value) || value < 0) {
-      throw new Error(`Invalid .options TIMEINT ${name} value: '${rawValue}'`);
-    }
-    if (name === 'abstol') {
-      // Xyce uses one TIMEINT ABSTOL for both voltage and current solution
-      // components; spice-ts represents those tolerances separately.
-      options.abstol = value;
-      options.vntol = value;
-    } else {
-      options.reltol = value;
-    }
-  }
-
-  return options;
 }
 
 function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw: string): void {
