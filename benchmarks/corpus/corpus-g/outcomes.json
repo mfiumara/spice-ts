@@ -43,15 +43,15 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 64,
+      "success": 67,
       "failed": 5,
-      "unsupported": 59
+      "unsupported": 56
     },
     "outcomes": {
-      "matched": 50,
+      "matched": 53,
       "mismatch": 14,
       "not-compared": 0,
-      "spice-ts-loss": 64,
+      "spice-ts-loss": 61,
       "ngspice-failed": 0,
       "both-failed": 0
     }
@@ -147,17 +147,6 @@
         "soln-dep-res-multsoldepres-cir"
       ],
       "issue": null
-    },
-    {
-      "bucket": "device: JFET forms (PJF model type, instance TEMP=, J card)",
-      "fixtures": 3,
-      "ngspiceSuccess": 3,
-      "ids": [
-        "measure-bad-dot-measure-line5-cir",
-        "pjfet-dc-pjfet-2108-cir",
-        "pjfet-switch-pjfet-tran-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/717"
     },
     {
       "bucket": "deck: element-free deck (ngspice runs an empty analysis)",
@@ -2103,16 +2092,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 2: Unsupported device card: 'J' J1 Vout Vin Nsource J2N3819"
+        "status": "success",
+        "analyses": [
+          "tran:107"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "device: JFET forms (PJF model type, instance TEMP=, J card)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.000363,
+      "worstSignal": "tran i(vdd)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "message-device-core-safebarrier-1-cir",
@@ -2710,16 +2700,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 17: Unsupported JFET instance parameter: 'TEMP=27' Jtest 1a 2a 3 SA2108 TEMP=27"
+        "status": "success",
+        "analyses": [
+          "dc:64"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "device: JFET forms (PJF model type, instance TEMP=, J card)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 10,
+      "worstNormalizedError": 0.00000775,
+      "worstSignal": "dc i(vismon)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "pjfet-switch-pjfet-tran-cir",
@@ -2737,16 +2728,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 8: .model '2N5114' has unsupported type 'PJF' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL 2N5114 PJF VTO = -5.288 BETA = 2.1897M LAMBDA = 9.946M R"
+        "status": "success",
+        "analyses": [
+          "tran:707"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "device: JFET forms (PJF model type, instance TEMP=, J card)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.0000136,
+      "worstSignal": "tran i(vds)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "polyg-polyg-cir",
@@ -3763,5 +3755,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "f7badf6ab0644fe88a2db2dcf3fa705fe16842392594f92950bc3f14799b0831"
+  "outcomeSha256": "398942e0156cdda30d7de2894c87eb5298cbf1269d535ad7969d93358b15c7c5"
 }

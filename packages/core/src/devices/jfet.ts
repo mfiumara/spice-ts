@@ -33,7 +33,10 @@ export const NJF_LEVEL2_PARAMETERS = new Set<keyof JFETParams>([
   'CGS', 'CGD', 'PB', 'IS', 'FC', 'KF', 'AF',
 ]);
 
-const THERMAL_VOLTAGE = 0.02585;
+// ngspice-47 jfettemp.c/jfet2temp.c: vt = temp * CONSTKoverQ at 300.15 K, with
+// const.h CONSTboltz and CHARGE (the old 0.02585 V put a forward-biased gate
+// junction ~1% off ngspice, #717).
+const THERMAL_VOLTAGE = (27 + 273.15) * 1.38064852e-23 / 1.6021766208e-19;
 const GMIN = 1e-12;
 
 export function resolveNJFETParams(params: Record<string, number>): JFETParams {
@@ -87,10 +90,16 @@ export class JFET implements DeviceModel {
   private readonly charges = new TransientChargeState(2);
   private readonly junction = { charge: 0, capacitance: 0 };
 
+  /**
+   * @param polarity - +1 for NJF, -1 for PJF. As in ngspice jfetload.c and
+   *   jfet2load.c (`type`), every branch voltage is multiplied by the polarity
+   *   before the n-channel equations and every current/charge by it after.
+   */
   constructor(
     readonly name: string,
     readonly nodes: number[],
     params: Record<string, number>,
+    readonly polarity: 1 | -1 = 1,
   ) {
     this.params = resolveNJFETParams(params);
     this.storesCharge = this.params.CGS !== 0 || this.params.CGD !== 0;
@@ -101,9 +110,10 @@ export class JFET implements DeviceModel {
     let nD = this.nodes[0];
     const nG = this.nodes[1];
     let nS = this.nodes[2];
-    const vD = nD >= 0 ? ctx.getVoltage(nD) : 0;
-    const vG = nG >= 0 ? ctx.getVoltage(nG) : 0;
-    const vS = nS >= 0 ? ctx.getVoltage(nS) : 0;
+    const p = this.polarity;
+    const vD = p * (nD >= 0 ? ctx.getVoltage(nD) : 0);
+    const vG = p * (nG >= 0 ? ctx.getVoltage(nG) : 0);
+    const vS = p * (nS >= 0 ? ctx.getVoltage(nS) : 0);
 
     this.stampGateJunction(ctx, nG, this.nodes[0], vG - vD);
     this.stampGateJunction(ctx, nG, this.nodes[2], vG - vS);
@@ -117,7 +127,7 @@ export class JFET implements DeviceModel {
     }
 
     const { current, gm, gds } = channelCurrent(vGS, vDS, this.params);
-    const ieq = current - gm * vGS - gds * vDS;
+    const ieq = p * (current - gm * vGS - gds * vDS);
 
     if (nD >= 0) {
       if (nG >= 0) ctx.stampG(nD, nG, gm);
@@ -135,9 +145,10 @@ export class JFET implements DeviceModel {
 
   stampDynamic(ctx: StampContext): void {
     const [nD, nG, nS] = this.nodes;
-    const vD = nD >= 0 ? ctx.getVoltage(nD) : 0;
-    const vG = nG >= 0 ? ctx.getVoltage(nG) : 0;
-    const vS = nS >= 0 ? ctx.getVoltage(nS) : 0;
+    const p = this.polarity;
+    const vD = p * (nD >= 0 ? ctx.getVoltage(nD) : 0);
+    const vG = p * (nG >= 0 ? ctx.getVoltage(nG) : 0);
+    const vS = p * (nS >= 0 ? ctx.getVoltage(nS) : 0);
     this.stampJunctionCapacitance(ctx, nG, nD, vG - vD, this.params.CGD);
     this.stampJunctionCapacitance(ctx, nG, nS, vG - vS, this.params.CGS);
   }
@@ -162,9 +173,9 @@ export class JFET implements DeviceModel {
     const vG = nG >= 0 ? ctx.getVoltage(nG) : 0;
     const vGD = vG - (nD >= 0 ? ctx.getVoltage(nD) : 0);
     const vGS = vG - (nS >= 0 ? ctx.getVoltage(nS) : 0);
-    this.gateJunctionCharge(vGD, this.params.CGD);
+    this.circuitJunctionCharge(vGD, this.params.CGD);
     this.charges.accept(GATE_DRAIN, this.junction.charge);
-    this.gateJunctionCharge(vGS, this.params.CGS);
+    this.circuitJunctionCharge(vGS, this.params.CGS);
     this.charges.accept(GATE_SOURCE, this.junction.charge);
     this.charges.commit();
   }
@@ -188,11 +199,25 @@ export class JFET implements DeviceModel {
     if (zeroBiasCapacitance === 0) return;
     const voltage = (gate >= 0 ? ctx.getVoltage(gate) : 0)
       - (terminal >= 0 ? ctx.getVoltage(terminal) : 0);
-    const { charge, capacitance } = this.gateJunctionCharge(voltage, zeroBiasCapacitance);
+    const { charge, capacitance } = this.circuitJunctionCharge(voltage, zeroBiasCapacitance);
     const charges = this.charges;
     stampChargeBranch(
       ctx, gate, terminal, charges.current(index, charge), charges.factor * capacitance, voltage,
     );
+  }
+
+  /**
+   * Gate charge and capacitance at circuit-frame branch voltage `voltage`:
+   * the n-channel charge at `polarity * voltage`, signed by the polarity
+   * (ngspice jfetload.c `type`); the capacitance is polarity-independent.
+   */
+  private circuitJunctionCharge(
+    voltage: number,
+    zeroBiasCapacitance: number,
+  ): { charge: number; capacitance: number } {
+    const result = this.gateJunctionCharge(this.polarity * voltage, zeroBiasCapacitance);
+    result.charge *= this.polarity;
+    return result;
   }
 
   /**
@@ -236,7 +261,7 @@ export class JFET implements DeviceModel {
     const exponential = Math.exp(Math.min(voltage / THERMAL_VOLTAGE, 40));
     const current = this.params.IS * (exponential - 1) + GMIN * voltage;
     const conductance = this.params.IS * exponential / THERMAL_VOLTAGE + GMIN;
-    const ieq = current - conductance * voltage;
+    const ieq = this.polarity * (current - conductance * voltage);
     stampTwoTerminal(ctx, anode, cathode, conductance, ieq);
   }
 
