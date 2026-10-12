@@ -282,6 +282,28 @@ export class ModelTypeMismatchError extends InvalidCircuitError {
 }
 
 /**
+ * Thrown when a device model card sets a parameter that ngspice-47 honours but
+ * spice-ts does not implement, e.g. the diode sidewall resistance `RSW`.
+ * Such parameters used to be accepted and silently ignored.
+ */
+export class UnsupportedModelParameterError extends InvalidCircuitError {
+  /** Stable machine-readable error code. */
+  readonly code = 'UNSUPPORTED_MODEL_PARAMETER';
+
+  constructor(
+    /** Instance name, e.g. `D1` */
+    public readonly deviceName: string,
+    /** Model parameter as written on the model card, upper-cased */
+    public readonly parameter: string,
+    /** What the parameter does in ngspice and why it cannot be simulated */
+    public readonly reason: string,
+  ) {
+    super(`Device '${deviceName}' uses unsupported model parameter '${parameter}': ${reason}`);
+    this.name = 'UnsupportedModelParameterError';
+  }
+}
+
+/**
  * Thrown when a circuit temperature other than the nominal one (`.options
  * TEMP`, `.step TEMP`) reaches a device, or a model parameter, whose ngspice
  * temperature law spice-ts does not implement. Such devices used to run at
