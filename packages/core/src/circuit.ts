@@ -74,6 +74,7 @@ import { parseZInstance } from './parser/z-device-parser.js';
 import { parseSwitchInstance } from './parser/switch-parser.js';
 import { DEVICE_GMIN } from './devices/device.js';
 import { parseBJTInstance, type BJTInstanceParams } from './parser/bjt-parser.js';
+import { parseJFETInstance, type JFETInstanceParams } from './parser/jfet-parser.js';
 import {
   formatCplModelCard,
   parseCplLines,
@@ -1399,13 +1400,25 @@ export class Circuit {
     this.descriptors.push({ type: 'Q', name, nodes, modelName, ...(params ? { params } : {}) });
   }
 
-  /** Add a bounded level-1 N-channel junction field-effect transistor. */
-  addJFET(name: string, nodeDrain: string, nodeGate: string, nodeSource: string, modelName: string): void {
+  /**
+   * Add a bounded level-1/level-2 junction field-effect transistor
+   * (`.model NJF` or `.model PJF`). `instanceParams.TEMP` is the ngspice
+   * instance temperature; only the nominal 27 C is supported.
+   */
+  addJFET(
+    name: string,
+    nodeDrain: string,
+    nodeGate: string,
+    nodeSource: string,
+    modelName: string,
+    instanceParams?: JFETInstanceParams,
+  ): void {
     this.nodeSet.add(nodeDrain);
     this.nodeSet.add(nodeGate);
     this.nodeSet.add(nodeSource);
     this.descriptors.push({
       type: 'J', name, nodes: [nodeDrain, nodeGate, nodeSource], modelName,
+      ...(instanceParams?.TEMP === undefined ? {} : { params: { TEMP: instanceParams.TEMP } }),
     });
   }
 
@@ -2150,10 +2163,16 @@ export class Circuit {
         }
         case 'J': {
           const model = this.requireModel('JFET', desc);
-          if (model.type !== 'NJF') {
+          if (model.type !== 'NJF' && model.type !== 'PJF') {
             throw new Error(`Unsupported JFET model type: '${model.type}'`);
           }
-          devices.push(new JFET(desc.name, nodeIndices, model.params));
+          // ngspice jfettemp.c/jfet2temp.c scale nothing at TEMP = TNOM = 27 C;
+          // spice-ts has no JFET temperature law for any other value.
+          const instanceTemperature = desc.params?.TEMP;
+          if (instanceTemperature !== undefined && instanceTemperature !== NOMINAL_TEMPERATURE_C) {
+            throw new UnsupportedTemperatureError(desc.name, instanceTemperature);
+          }
+          devices.push(new JFET(desc.name, nodeIndices, model.params, model.type === 'PJF' ? -1 : 1));
           break;
         }
         case 'Z': {
@@ -2688,7 +2707,7 @@ export class Circuit {
         const modelName = desc.modelName!;
         const model = this._models.get(modelName);
         if (!model) throw new InvalidCircuitError(`JFET '${desc.name}' references unknown model '${modelName}'`);
-        if (model.type !== 'NJF') {
+        if (model.type !== 'NJF' && model.type !== 'PJF') {
           throw new Error(`Unsupported JFET model type: '${model.type}'`);
         }
         const params = resolveNJFETParams(model.params);
@@ -3226,6 +3245,17 @@ export class Circuit {
             nodes: nodes.map(mapNode),
             modelName: instance.modelName,
             ...(params ? { params } : {}),
+          });
+          break;
+        }
+        case 'J': {
+          // TEMP may be a {param}; node and model tokens are never braced.
+          const instance = parseJFETInstance(tokens.map(t => evalToken(t)), lineNumber);
+          result.push({
+            type: 'J', name: devName,
+            nodes: [instance.drain, instance.gate, instance.source].map(mapNode),
+            modelName: instance.modelName,
+            ...(instance.params ? { params: { ...instance.params } } : {}),
           });
           break;
         }

@@ -8,7 +8,7 @@ import { ModelTypeMismatchError, ParseError, UnsupportedCircuitModelTypeError } 
 export const SUPPORTED_MODEL_TYPES: ReadonlySet<string> = new Set([
   'D',
   'NPN', 'PNP',
-  'NJF',
+  'NJF', 'PJF',
   'NMOS', 'PMOS',
   'VDMOS', 'VDMOSN', 'VDMOSP',
   'NHFET', 'NMF',
@@ -28,7 +28,7 @@ export const DEVICE_MODEL_TYPES: Readonly<Record<string, readonly string[]>> = {
   L: ['L'],
   D: ['D'],
   Q: ['NPN', 'PNP'],
-  J: ['NJF'],
+  J: ['NJF', 'PJF'],
   M: ['NMOS', 'PMOS', 'VDMOS', 'VDMOSN', 'VDMOSP'],
   Z: ['NHFET', 'NMF'],
   S: ['SW'],
@@ -62,7 +62,7 @@ export function assertDeviceModelType(
 
 /**
  * Thrown when a `.model` card declares a type that no spice-ts device
- * implements (for example `PJF` or `URC`).
+ * implements (for example `PHFET` or `URC`).
  */
 export class UnsupportedModelTypeError extends ParseError {
   /** Stable machine-readable error code. */
