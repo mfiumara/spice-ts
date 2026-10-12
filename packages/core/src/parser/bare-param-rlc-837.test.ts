@@ -14,8 +14,9 @@ import { braceBareParameters } from './numparam.js';
 //   C top level, v(o) at 1 ms:      vt = 6.321234e-01  (tran 10u 1m)
 //   L top level, v(o) at 1 us:      vt = 3.680650e-01  (tran 10n 2u)
 //   .model rv R(rsh=1), R1 in o rv l=1k w=1 (model alone gives 1k, v(o)=0.5): v(o) = 2.500000e-01
-//   .model rv R(tc1=0.01), .options temp=127 (model would make R1 6k, v(o)=0.1429): v(o) = 2.500000e-01
-//   .model cval C(cj=2), C1 o 0 cval l=1m w=1m (model alone gives 2u): vt = 6.321234e-01
+//   .model rv R(tc1=0.01), .options temp=127: v(o) = 2.500000e-01 (with `R1 in o rv r=3k` and no
+//   .param, the model applies: v(o) = 1.428571e-01)
+//   .model cval C(cj=2), C1 o 0 cval l=1m w=1m: vt = 6.321234e-01 (model alone, 2 uF: vt = 3.934698e-01)
 //   subckt default on a `+` header line, subckt-local .param (before or after use), top-level .param in a
 //   subckt body: v(o) = 2.500000e-01 each
 //   R1 in o rv 2k (rv=3k): v(o) = 3.333333e-01; the braced value is followed by an unlabeled
