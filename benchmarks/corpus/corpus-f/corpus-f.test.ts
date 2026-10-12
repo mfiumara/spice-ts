@@ -382,6 +382,8 @@ describe('corpus-f sp/sens plots and streamed references (#694)', () => {
     assert.equal(issue("Parse error at line 14: Unsupported .control command 'sp': S-parameter analysis is not implemented"), '750');
     assert.equal(issue("Parse error at line 18: Unsupported .control command 'sens': control-language sensitivity"), '750');
     assert.equal(issue("Control script error at line 15: no such vector 's_1_1' in plot 'sp1'"), '751');
+    assert.equal(issue("Control script error at line 50: no such vector 'i1_m' in plot 'sens1'"), '760');
+    assert.equal(issue("Control script error at line 50: no such vector 'r1_scale' in plot 'sens1'"), '760');
     assert.equal(issue("Parse error at line 41: Unsupported .control command 'linearize': vector re-interpolation"), '752');
     assert.equal(issue("Parse error at line 9: XSPICE code model 'cpline' (.model 'CPLINE1') is not supported"), '553');
   });
@@ -424,6 +426,27 @@ describe('corpus-f sp/sens plots and streamed references (#694)', () => {
     // dv(1)/dR1 = 42 mA and dv(1)/dI1 = 1 k; ngspice's finite difference gives 0.04199996 for the former.
     assert.ok(Math.abs(sens.execution.analyses[0].series.signals['v(r1)'][0].re / 0.042 - 1) < 1e-5);
     assert.ok(Math.abs(sens.execution.analyses[0].series.signals['v(i1)'][0].re / 1000 - 1) < 1e-5);
+  });
+
+  it('scores sp and sens control commands against ngspice on identical bytes (#750)', { skip: !HAS_NGSPICE || !HAS_CORE_DIST }, async () => {
+    const directory = await mkdtemp(resolve(tmpdir(), 'corpus-f-750-'));
+    try {
+      const decks = {
+        sp: 'sp command\nV1 in 0 dc 0 ac 1 portnum 1 z0 50\nC1 in 0 1n\nR1 in out 20\nV2 out 0 dc 0 ac 0 portnum 2 z0 50\n.control\nsp lin 5 1e6 1e8\n.endc\n.end\n',
+        sens: 'sens command\ni1 0 1 dc=1.27 ac=42mA\nr1 1 0 1k\nc1 1 0 100p\n.control\nsens v(1) ac lin 1 1e6 1.1e6\nquit\n.endc\n.end\n',
+      };
+      for (const [type, text] of Object.entries(decks)) {
+        const bytes = Buffer.from(text);
+        const localPath = resolve(directory, `${type}.cir`);
+        await writeFile(localPath, bytes);
+        const circuit = { id: type, sourcePath: `toy/${type}.cir`, localPath, sha256: sha256(bytes), analyses: [], unmappedAnalyses: [type], sameNameAs: [] } as unknown as CorpusFManifest['circuits'][number];
+        const fixture = await runFixture({ ...circuit, analyses: scoredPlotTypes(circuit) }, runControlReference);
+        assert.equal(fixture.outcome, 'matched', JSON.stringify(fixture));
+        assert.ok(fixture.comparedSignals >= (type === 'sp' ? 12 : 3), `${type}: compared ${fixture.comparedSignals}`);
+      }
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
   });
 
   it('scores a dot-card .sp deck run from .control against ngspice (identical bytes)', { skip: !HAS_NGSPICE || !HAS_CORE_DIST }, async () => {
