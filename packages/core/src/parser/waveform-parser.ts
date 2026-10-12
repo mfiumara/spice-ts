@@ -1,10 +1,61 @@
 import { parseNumber } from './tokenizer.js';
+import { ParseError } from '../errors.js';
 import type {
   ACExcitation, DistortionExcitation, SourceWaveform, PulseSource, SinSource, PWLSource, RFPort,
+  TransientNoiseSource, TransientRandomSource,
 } from '../types.js';
 
-const UNSUPPORTED_WAVEFORMS = new Set(['EXP', 'SFFM', 'AM', 'TRNOISE', 'EXTERNAL']);
-const TRANSIENT_WAVEFORMS = new Set(['PULSE', 'SIN', 'SINE', 'PWL', ...UNSUPPORTED_WAVEFORMS]);
+const UNSUPPORTED_WAVEFORMS = new Set(['EXP', 'SFFM', 'AM', 'EXTERNAL']);
+const TRANSIENT_WAVEFORMS = new Set(['PULSE', 'SIN', 'SINE', 'PWL', 'TRNOISE', 'TRRANDOM', ...UNSUPPORTED_WAVEFORMS]);
+
+/** Why each unsupported source waveform keyword is rejected. */
+const UNSUPPORTED_WAVEFORM_REASONS: Record<string, string> = {
+  EXTERNAL: 'ngspice-47 accepts EXTERNAL only in its shared-library build, where the host supplies'
+    + ' the value through a callback; the ngspice executable rejects it as an unknown parameter',
+};
+
+/**
+ * Thrown while parsing a V/I card whose waveform keyword spice-ts does not
+ * implement. {@link UnsupportedSourceWaveformError} adds the card's line.
+ */
+export class UnsupportedWaveformKeyword extends Error {
+  constructor(readonly keyword: string) {
+    const reason = UNSUPPORTED_WAVEFORM_REASONS[keyword];
+    super(`Unsupported source waveform '${keyword}'${reason ? `: ${reason}` : ''}`);
+    this.name = 'UnsupportedWaveformKeyword';
+  }
+}
+
+/** A V/I card uses a source waveform keyword (`EXP`, `SFFM`, `AM`, `EXTERNAL`) spice-ts does not implement. */
+export class UnsupportedSourceWaveformError extends ParseError {
+  /** Stable machine-readable error code. */
+  readonly code = 'UNSUPPORTED_SOURCE_WAVEFORM';
+
+  constructor(
+    /** Upper-cased waveform keyword, e.g. `EXTERNAL`. */
+    readonly keyword: string,
+    message: string,
+    line: number,
+    context: string,
+  ) {
+    super(message, line, context);
+    this.name = 'UnsupportedSourceWaveformError';
+  }
+}
+
+/** {@link parseSourceWaveform} for a netlist card: unsupported keywords become {@link UnsupportedSourceWaveformError}. */
+export function parseSourceCardWaveform(
+  tokens: string[], startIdx: number, line: number, context: string,
+): SourceWaveform {
+  try {
+    return parseSourceWaveform(tokens, startIdx);
+  } catch (error) {
+    if (error instanceof UnsupportedWaveformKeyword) {
+      throw new UnsupportedSourceWaveformError(error.keyword, error.message, line, context);
+    }
+    throw error;
+  }
+}
 const RF_PORT_KEYWORDS = new Set(['PORTNUM', 'Z0', 'PWR', 'FREQ', 'PHASE']);
 
 /**
@@ -101,6 +152,8 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
     || token === 'SIN'
     || token === 'SINE'
     || token === 'PWL'
+    || token === 'TRNOISE'
+    || token === 'TRRANDOM'
     || UNSUPPORTED_WAVEFORMS.has(token));
   const ac = acIdx >= 0 ? parseACExcitation(tokens, startIdx + acIdx) : undefined;
   const dc = parseOperatingPoint(tokens, startIdx, dcIdx, acIdx, waveformOffset);
@@ -177,11 +230,65 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
     } satisfies PWLSource;
   }
 
+  if (keyword === 'TRNOISE' || keyword === 'TRRANDOM') {
+    const args = parseWaveformArguments(
+      tokens, waveformIdx, acIdx >= 0 ? startIdx + acIdx : -1, keyword === 'TRNOISE' ? 7 : 5, keyword,
+    );
+    return {
+      ...(dc !== undefined ? { dc } : {}),
+      ...(ac ? { ac } : {}),
+      ...(keyword === 'TRNOISE' ? transientNoiseWaveform(args) : transientRandomWaveform(args)),
+    };
+  }
+
   if (UNSUPPORTED_WAVEFORMS.has(keyword)) {
-    throw new Error(`Unsupported source waveform '${keyword}'`);
+    throw new UnsupportedWaveformKeyword(keyword);
   }
 
   return { type: 'dc', value: parseNumber(tokens[startIdx]) };
+}
+
+/**
+ * TRNOISE coefficients `NA TS [NALPHA [NAMP [RTSAM [RTSCAPT [RTSEMT]]]]]`
+ * as ngspice-47 vsrcpar.c/isrcpar.c read them: NAMP only counts with a
+ * nonzero NALPHA, RTSCAPT/RTSEMT only with a nonzero RTSAM.
+ */
+export function transientNoiseWaveform(args: readonly number[]): TransientNoiseSource {
+  if (args.length < 2 || args.length > 7) {
+    throw new Error(`TRNOISE source needs 2 to 7 values (NA TS [NALPHA NAMP RTSAM RTSCAPT RTSEMT]), got ${args.length}`);
+  }
+  const [amplitude, ts, alpha = 0] = args;
+  const rtsAmplitude = args[4] ?? 0;
+  if (!(ts >= 0)) throw new Error(`TRNOISE TS must be non-negative, got ${ts}`);
+  return {
+    type: 'trnoise',
+    amplitude,
+    ts,
+    alpha,
+    oneOverFAmplitude: alpha !== 0 ? args[3] ?? 0 : 0,
+    rtsAmplitude,
+    rtsCaptureTime: rtsAmplitude !== 0 ? args[5] ?? 0 : 0,
+    rtsEmissionTime: rtsAmplitude !== 0 ? args[6] ?? 0 : 0,
+  };
+}
+
+/** TRRANDOM coefficients `TYPE TS [TD [PARAM1 [PARAM2]]]` as ngspice-47 vsrcpar.c/isrcpar.c read them. */
+export function transientRandomWaveform(args: readonly number[]): TransientRandomSource {
+  if (args.length < 2 || args.length > 5) {
+    throw new Error(`TRRANDOM source needs 2 to 5 values (TYPE TS [TD PARAM1 PARAM2]), got ${args.length}`);
+  }
+  const ts = args[1];
+  // ngspice divides by TS (isrcacct.c) or never advances (vsrcacct.c) when TS <= 0.
+  if (!(ts > 0)) throw new Error(`TRRANDOM TS must be positive, got ${ts}`);
+  return {
+    type: 'trrandom',
+    // ngspice: (int)coeffs[0].
+    distribution: Math.trunc(args[0]),
+    ts,
+    td: args[2] ?? 0,
+    param1: args[3] ?? 1,
+    param2: args[4] ?? 0,
+  };
 }
 
 function parseWaveformArguments(
@@ -241,7 +348,7 @@ function parseOperatingPoint(
 }
 
 const SOURCE_KEYWORDS = new Set([
-  'DC', 'AC', 'PULSE', 'SIN', 'SINE', 'PWL', 'DISTOF1', 'DISTOF2',
+  'DC', 'AC', 'PULSE', 'SIN', 'SINE', 'PWL', 'TRNOISE', 'TRRANDOM', 'DISTOF1', 'DISTOF2',
   ...UNSUPPORTED_WAVEFORMS,
 ]);
 

@@ -1,0 +1,29 @@
+<dir>/prof-before/resistor-mesh-op-10000.cpuprofile: 223 samples, 716.7 ms sampled
+
+Top self time
+     209.7 ms  29.3%  factorize packages/core/dist/chunk-RGG6CVFQ.js:18247
+      90.6 ms  12.6%  amdOrdering packages/core/dist/chunk-RGG6CVFQ.js:17931
+      75.3 ms  10.5%  (garbage collector)
+      28.6 ms   4.0%  newtonRaphson packages/core/dist/chunk-RGG6CVFQ.js:19099
+      26.0 ms   3.6%  analyzePattern packages/core/dist/chunk-RGG6CVFQ.js:18151
+      25.1 ms   3.5%  resolveResistor packages/core/dist/chunk-RGG6CVFQ.js:847
+      23.1 ms   3.2%  compile packages/core/dist/chunk-RGG6CVFQ.js:14488
+      19.8 ms   2.8%  lockTopology packages/core/dist/chunk-RGG6CVFQ.js:18663
+      14.9 ms   2.1%  stampWith packages/core/dist/chunk-RGG6CVFQ.js:1262
+      14.6 ms   2.0%  addPosition packages/core/dist/chunk-RGG6CVFQ.js:18705
+      14.2 ms   2.0%  collectStatements packages/core/dist/chunk-RGG6CVFQ.js:15873
+      13.8 ms   1.9%  extractControlBlocks packages/core/dist/chunk-RGG6CVFQ.js:16380
+
+Top inclusive time
+     716.7 ms 100.0%  (root)
+     528.1 ms  73.7%  simulate packages/core/dist/chunk-RGG6CVFQ.js:25534
+     443.0 ms  61.8%  solveDCOperatingPoint packages/core/dist/chunk-RGG6CVFQ.js:19343
+     443.0 ms  61.8%  solveCompiledAnalyses packages/core/dist/chunk-RGG6CVFQ.js:25571
+     437.4 ms  61.0%  newtonRaphson packages/core/dist/chunk-RGG6CVFQ.js:19099
+     212.4 ms  29.6%  factorize packages/core/dist/chunk-RGG6CVFQ.js:18247
+     121.2 ms  16.9%  getSparseSolver packages/core/dist/chunk-RGG6CVFQ.js:18790
+     118.1 ms  16.5%  analyzePattern packages/core/dist/chunk-RGG6CVFQ.js:18151
+      90.6 ms  12.6%  amdOrdering packages/core/dist/chunk-RGG6CVFQ.js:17931
+      75.3 ms  10.5%  (garbage collector)
+      72.7 ms  10.1%  parseAsync packages/core/dist/chunk-RGG6CVFQ.js:16810
+      60.3 ms   8.4%  compile packages/core/dist/chunk-RGG6CVFQ.js:14488

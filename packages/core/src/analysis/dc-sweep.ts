@@ -13,7 +13,7 @@ import {
   createConvergenceTelemetry, snapshotConvergenceTelemetry,
 } from '../convergence-telemetry.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
-import { directedLinearPointCount, directedLinearPointValue } from './directed-linear-grid.js';
+import { accumulatedLinearGrid } from './directed-linear-grid.js';
 
 export function solveDCSweep(
   compiled: CompiledCircuit,
@@ -36,10 +36,12 @@ export function solveDCSweep(
 
   const originalWaveform = source.waveform;
   const secondaryOriginalWaveform = secondarySource?.waveform;
-  const primaryPoints = sweepPointCount(analysis);
-  const secondaryPoints = analysis.secondary === undefined
-    ? 1
-    : sweepPointCount(analysis.secondary);
+  // ngspice-47 dctrcurv.c accumulates each level by `+= step` and resets inner levels to start,
+  // so every outer value reuses the same accumulated inner grid.
+  const primaryGrid = sweepGrid(analysis);
+  const secondaryGrid = analysis.secondary === undefined ? [undefined] : sweepGrid(analysis.secondary);
+  const primaryPoints = primaryGrid.length;
+  const secondaryPoints = secondaryGrid.length;
   const numPoints = primaryPoints * secondaryPoints;
 
   // Pre-allocate result arrays
@@ -60,20 +62,14 @@ export function solveDCSweep(
 
   try {
     for (let outer = 0; outer < secondaryPoints; outer++) {
-      const secondarySweepValue = analysis.secondary === undefined
-        ? undefined
-        : directedLinearPointValue(
-          analysis.secondary.start, analysis.secondary.stop, analysis.secondary.step, outer,
-        );
+      const secondarySweepValue = secondaryGrid[outer];
       if (secondarySource !== undefined && secondarySweepValue !== undefined) {
         secondarySource.waveform = { type: 'dc', value: secondarySweepValue };
       }
       for (let inner = 0; inner < primaryPoints; inner++) {
         guard?.recordResultPoint();
         const i = outer * primaryPoints + inner;
-        const sweepValue = directedLinearPointValue(
-          analysis.start, analysis.stop, analysis.step, inner,
-        );
+        const sweepValue = primaryGrid[inner]!;
         sweepValues[i] = sweepValue;
         if (secondarySweepValues !== undefined) {
           secondarySweepValues[i] = secondarySweepValue!;
@@ -161,8 +157,8 @@ function resolveSweepSource(
   return matchingSources[0]!;
 }
 
-function sweepPointCount(sweep: DCSweepDimension): number {
-  return directedLinearPointCount(sweep.start, sweep.stop, sweep.step);
+function sweepGrid(sweep: DCSweepDimension): number[] {
+  return accumulatedLinearGrid(sweep.start, sweep.stop, sweep.step);
 }
 
 function assertDCSweepDimension(sweep: DCSweepDimension): void {

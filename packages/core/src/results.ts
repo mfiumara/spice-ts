@@ -422,6 +422,13 @@ export interface SimulationResult {
   /** Parametric sweep results (from .step). When present, top-level result fields are empty. */
   steps?: StepResult[];
   /**
+   * `.meas`/`.measure` results, evaluated like ngspice-47 after each `.tran`,
+   * `.ac` and `.dc` analysis, in card order. A measurement ngspice fails
+   * (out of interval, bad syntax, unknown vector, ...) is listed with
+   * `status: 'failed'` and ngspice's reason.
+   */
+  measurements?: MeasurementResult[];
+  /**
    * Execution record of an interpreted ngspice `.control` script. When present,
    * each top-level analysis field holds the latest run of that analysis type:
    * the deck's own dot-card run that ngspice performs after the script (unless
@@ -432,6 +439,34 @@ export interface SimulationResult {
   warnings: SimulationWarning[];
   /** Native-solver convergence counters. External adapters may omit them. */
   convergence?: ConvergenceTelemetry;
+}
+
+/** One evaluated `.meas` card. Names follow ngspice: lower-cased as in the deck. */
+export interface MeasurementResult {
+  /** Result name (second word of the card), lower-cased. */
+  name: string;
+  /** Analysis the card measures: `tran`, `ac` or `dc`. */
+  analysis: string;
+  /** Measure function as written (third word), lower-cased: `trig`, `find`, `when`, `avg`, `param`, ... */
+  function: string;
+  /** 1-based netlist line of the card. */
+  line: number;
+  /** `failed` when ngspice-47 reports the measurement as failed. */
+  status: 'ok' | 'failed';
+  /** Measured value (`targ - trig` for TRIG/TARG, the x position for MIN_AT/MAX_AT). */
+  value?: number;
+  /** TRIG/TARG: trigger and target positions on the analysis scale. */
+  trig?: number;
+  targ?: number;
+  /** MIN/MAX: scale position of the extremum. */
+  at?: number;
+  /** MIN_AT/MAX_AT: the extremum value. */
+  with?: number;
+  /** AVG/RMS/INTEG/PP: the window ngspice reports. */
+  from?: number;
+  to?: number;
+  /** Why the measurement failed, in ngspice-47's words. */
+  error?: string;
 }
 
 /** One analysis run by an ngspice `.control` script. */
@@ -452,4 +487,6 @@ export interface ControlScriptResult {
   output: string[];
   /** True when the script ended with `quit`/`exit` status 0, so the deck's own analyses were not run afterwards. */
   quit: boolean;
+  /** Every `meas` command the script ran, in order (failed ones with ngspice's reason). */
+  measurements: MeasurementResult[];
 }

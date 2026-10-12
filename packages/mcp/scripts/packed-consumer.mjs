@@ -53,7 +53,9 @@ const { EventEmitter } = require('node:events');
 const { Client } = require('@modelcontextprotocol/sdk/client/index.js');
 const { InMemoryTransport } = require('@modelcontextprotocol/sdk/inMemory.js');
 const { sha256CanonicalJson } = require('@spice-ts/protocol');
-const { createMcpServer, createToolExecutor, executeTool } = require('@spice-ts/mcp');
+const {
+  createMcpServer, createToolExecutor, DEFAULT_MCP_STREAM_LIMITS, executeTool,
+} = require('@spice-ts/mcp');
 
 class ManualClock {
   constructor() {
@@ -96,14 +98,30 @@ function containsExactString(value, target) {
   return false;
 }
 
+// A real job runs in a freshly spawned worker thread that must load the packed
+// core bundle before it emits anything, so readiness depends on host load. The
+// server itself guarantees a running job leaves 'running' within
+// runningJobTtlMs (it then fails with RESOURCE_LIMIT), so poll on wall-clock
+// time up to that contract plus a grace period instead of a fixed attempt
+// count, and report what was observed if the contract is ever broken.
+const READY_DEADLINE_MS = DEFAULT_MCP_STREAM_LIMITS.runningJobTtlMs + 5000;
+
 async function readWhenReady(jobId, cursor, maxPoints) {
-  for (let attempt = 0; attempt < 100; attempt++) {
-    const response = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints });
-    if (response.structuredContent.status !== 'running'
-      || response.structuredContent.events.length > 0) return response;
-    await new Promise((resolve) => setTimeout(resolve, 1));
+  const startedAt = Date.now();
+  let attempts = 0;
+  let last;
+  for (let delayMs = 1; ; delayMs = Math.min(delayMs * 2, 50)) {
+    attempts++;
+    last = await executeTool('spice_simulation_read', { jobId, cursor, maxPoints });
+    if (last.structuredContent.status !== 'running'
+      || last.structuredContent.events.length > 0) return last;
+    if (Date.now() - startedAt >= READY_DEADLINE_MS) break;
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
   }
-  throw new Error('Packed simulation job did not produce events');
+  throw new Error('Packed simulation job did not produce events: ' + JSON.stringify({
+    jobId, attempts, elapsedMs: Date.now() - startedAt, deadlineMs: READY_DEADLINE_MS,
+    lastStatus: last.structuredContent.status, isError: last.isError === true,
+  }));
 }
 
 (async () => {

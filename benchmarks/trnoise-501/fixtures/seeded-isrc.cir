@@ -1,0 +1,10 @@
+seeded I-source RTS and TRRANDOM
+.option seed=11
+I3 3 0 DC 0 trnoise(0 0 0 0 1m 30u 10u)
+R3 3 0 1k
+I4 4 0 DC 0 TRRANDOM(1 10u 0 2 1)
+R4 4 0 1k
+I7 7 0 TRRANDOM(2 10u 0 1m 0)
+R7 7 0 1k
+.tran 1u 200u
+.end

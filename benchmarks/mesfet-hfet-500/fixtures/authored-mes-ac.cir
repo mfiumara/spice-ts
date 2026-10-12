@@ -1,0 +1,10 @@
+MES level-1 small signal (issue #500, project-authored)
+vdd 1 0 dc 3
+rl 1 d 1k
+vin g 0 dc -0.5 ac 1
+rg g gi 50
+z1 d gi 0 mm area=2
+.model mm nmf vto=-1.5 beta=2e-3 lambda=0.05 alpha=2.5 b=0.3 rd=10 rs=10
++ cgs=1p cgd=0.3p pb=0.8 is=1e-13
+.ac dec 10 1e6 1e11
+.end

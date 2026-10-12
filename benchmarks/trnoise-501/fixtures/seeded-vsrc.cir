@@ -1,0 +1,12 @@
+seeded V-source RTS and TRRANDOM
+.option seed=7
+V1 1 0 DC 0 trnoise(0 0 0 0 1 20u 40u)
+R1 1 0 1k
+V2 2 0 DC 0.5 TRRANDOM(2 10u 0 1 0)
+R2 2 0 1k
+V5 5 0 TRRANDOM(3 10u 15u 1 0)
+R5 5 0 1k
+V6 6 0 TRRANDOM(4 10u 0 3 0)
+R6 6 0 1k
+.tran 1u 200u
+.end

@@ -99,9 +99,12 @@ C1 out 0 1u
     expect(onEdge).toBeLessThan(steps.length - 1);
     const dtBefore = steps[onEdge].time - steps[onEdge - 1].time;
     const dtAfter = steps[onEdge + 1].time - steps[onEdge].time;
-    // Before the breakpoint the driver was taking up-to-1µs steps (.tran 1u …).
-    // Post-breakpoint must be at least 10× smaller.
-    expect(dtAfter).toBeLessThan(dtBefore / 5); // be a bit lenient: ngspice's /10 + LTE growth
+    // ngspice-47 (identical deck, method=gear): 4.9u corner, then 10n, 20n,
+    // equalised 35n + 35n onto 5u, then 0.1 x CKTsaveDelta (70n, the step
+    // before the snap) = 7n (#608). The step after the edge is cut relative
+    // to the pre-snap step, not to the snapped one.
+    expect(Math.abs(dtBefore - 35e-9)).toBeLessThan(1e-18);
+    expect(Math.abs(dtAfter - 7e-9)).toBeLessThan(1e-18);
     sim.dispose();
   });
 
