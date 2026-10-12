@@ -1,5 +1,5 @@
 import type { BSIM3Model, BSIM3Size } from './bsim3v3-params.js';
-import { EPSSI, EXP_THRESHOLD, MAX_EXP, MIN_EXP } from './bsim3v3-params.js';
+import { BSIM3_REVISION, EPSSI, EXP_THRESHOLD, MAX_EXP, MIN_EXP } from './bsim3v3-params.js';
 import type { BSIM3v3ChargeInputs, BSIM3v3DCResult } from './bsim3v3-dc.js';
 import { createChargeInputs, createDCResult, evaluateDC } from './bsim3v3-dc.js';
 
@@ -14,6 +14,8 @@ const DELTA_4 = 0.02;
  * zero-bias junction capacitances with their b3temp.c temperature laws.
  */
 export interface BSIM3ChargeParams {
+  /** BSIM3_REVISION of the model card (3.2.x follow bsim3v32/b3v32ld.c). */
+  readonly revision: number;
   readonly capMod: number;
   readonly xpart: number;
   readonly cox: number;
@@ -32,7 +34,9 @@ export interface BSIM3ChargeParams {
 
 export function chargeParams(model: BSIM3Model, size: BSIM3Size): BSIM3ChargeParams {
   const m = model.values;
-  // b3temp.c junction capacitance temperature dependence.
+  // b3temp.c junction capacitance temperature dependence. b3v32temp.c (3.2,
+  // 3.2.2) scales the card values in place instead of into the *TempJctCap
+  // fields; for the one temperature update of a run the values are the same.
   const delTemp = model.temp - model.tnom;
   const tempCap = (unit: number, tc: number): number => {
     const t0 = tc * delTemp;
@@ -51,6 +55,7 @@ export function chargeParams(model: BSIM3Model, size: BSIM3Size): BSIM3ChargePar
   const [czbdsw, czbdswg] = sidewall(size.drainPerimeter);
   const [czbssw, czbsswg] = sidewall(size.sourcePerimeter);
   return {
+    revision: model.revision,
     capMod: m.capmod,
     xpart: m.xpart,
     cox: model.cox,
@@ -595,8 +600,8 @@ export function evaluateIntrinsicCharge(
     let dVdseffCV_dVg = T3;
     const dVdseffCV_dVd = T1;
     let dVdseffCV_dVb = -T3 * VdsatCV * dAbulkCV_dVb;
-    // Added to eliminate non-zero VdseffCV at Vds=0.0
-    if (Vds === 0.0) {
+    // Added to eliminate non-zero VdseffCV at Vds=0.0 (b3v32ld.c: not in revision 3.2)
+    if (Vds === 0.0 && cp.revision >= BSIM3_REVISION.V322) {
       VdseffCV = 0.0;
       dVdseffCV_dVg = 0.0;
       dVdseffCV_dVb = 0.0;
@@ -767,12 +772,20 @@ export function evaluateIntrinsicCharge(
     const dDeltaPhi_dVg = 2.0 * vtm * (T1 - T0) / (Denomi + T1 * Vgsteff);
     // End of delta Phis
 
-    // VgDP = Vgsteff - DeltaPhi
-    T0 = Vgsteff - DeltaPhi - 0.001;
-    dT0_dVg = 1.0 - dDeltaPhi_dVg;
-    T1 = Math.sqrt(T0 * T0 + Vgsteff * 0.004);
-    const VgDP = 0.5 * (T0 + T1);
-    const dVgDP_dVg = 0.5 * (dT0_dVg + (T0 * dT0_dVg + 0.002) / T1);
+    // VgDP = Vgsteff - DeltaPhi. b3v32ld.c (3.2.x) uses Vgsteff - DeltaPhi
+    // unsmoothed, with derivative 1 - dDeltaPhi_dVg in every place below.
+    const v32 = cp.revision < BSIM3_REVISION.V330;
+    let VgDP: number, dVgDP_dVg: number;
+    if (v32) {
+      VgDP = Vgsteff - DeltaPhi;
+      dVgDP_dVg = 1.0 - dDeltaPhi_dVg;
+    } else {
+      T0 = Vgsteff - DeltaPhi - 0.001;
+      dT0_dVg = 1.0 - dDeltaPhi_dVg;
+      T1 = Math.sqrt(T0 * T0 + Vgsteff * 0.004);
+      VgDP = 0.5 * (T0 + T1);
+      dVgDP_dVg = 0.5 * (dT0_dVg + (T0 * dT0_dVg + 0.002) / T1);
+    }
 
     T3 = 4.0 * (cv.Vth - cp.vfbzb - p.phi);
     Tox += Tox;
@@ -791,9 +804,16 @@ export function evaluateIntrinsicCharge(
     T2 = 0.7 * tmp / (T0 * Tox);
     Tcen = 1.9e-9 / T1;
     dTcen_dVg = -1.9e-9 * T2 / T1 / T1;
-    let dTcen_dVd = Tox * dTcen_dVg;
-    dTcen_dVb = dTcen_dVd * dT0_dVb;
-    dTcen_dVd *= dT0_dVd;
+    let dTcen_dVd: number;
+    if (cp.revision === BSIM3_REVISION.V32) {
+      // b3v32ld.c revision 3.2: the 4 * dVth terms also when T3 < 0.
+      dTcen_dVd = dTcen_dVg * (4.0 * dVth_dVd + dVgsteff_dVd);
+      dTcen_dVb = dTcen_dVg * (4.0 * cv.dVth_dVb + dVgsteff_dVb);
+    } else {
+      dTcen_dVd = Tox * dTcen_dVg;
+      dTcen_dVb = dTcen_dVd * dT0_dVb;
+      dTcen_dVd *= dT0_dVd;
+    }
     dTcen_dVg *= dVgsteff_dVg;
 
     Ccen = EPSSI / Tcen;
@@ -807,32 +827,45 @@ export function evaluateIntrinsicCharge(
     CoxWLcen = CoxWL * Coxeff / Cox;
 
     const VdsatCV = VgDP / AbulkCV;
-    T0 = VdsatCV - Vds - DELTA_4;
-    dT0_dVg = dVgDP_dVg / AbulkCV;
-    dT0_dVb = -VdsatCV * dAbulkCV_dVb / AbulkCV;
-    T1 = Math.sqrt(T0 * T0 + 4.0 * DELTA_4 * VdsatCV);
-    let dT1_dVg = (T0 + DELTA_4 + DELTA_4) / T1;
-    const dT1_dVd = -T0 / T1;
-    const dT1_dVb = dT1_dVg * dT0_dVb;
-    dT1_dVg *= dT0_dVg;
     let VdseffCV: number, dVdseffCV_dVg: number, dVdseffCV_dVd: number, dVdseffCV_dVb: number;
-    if (T0 >= 0.0) {
-      VdseffCV = VdsatCV - 0.5 * (T0 + T1);
-      dVdseffCV_dVg = 0.5 * (dT0_dVg - dT1_dVg);
-      dVdseffCV_dVd = 0.5 * (1.0 - dT1_dVd);
-      dVdseffCV_dVb = 0.5 * (dT0_dVb - dT1_dVb);
+    if (v32) {
+      // b3v32ld.c: the capMod 2 VdseffCV smoothing of VdsatCV.
+      const V4 = VdsatCV - Vds - DELTA_4;
+      T0 = Math.sqrt(V4 * V4 + 4.0 * DELTA_4 * VdsatCV);
+      VdseffCV = VdsatCV - 0.5 * (V4 + T0);
+      T1 = 0.5 * (1.0 + V4 / T0);
+      T2 = DELTA_4 / T0;
+      T3 = (1.0 - T1 - T2) / AbulkCV;
+      dVdseffCV_dVg = T3 * dVgDP_dVg;
+      dVdseffCV_dVd = T1;
+      dVdseffCV_dVb = -T3 * VdsatCV * dAbulkCV_dVb;
     } else {
-      T3 = (DELTA_4 + DELTA_4) / (T1 - T0);
-      T4 = 1.0 - T3;
-      T5 = VdsatCV * T3 / (T1 - T0);
-      VdseffCV = VdsatCV * T4;
-      dVdseffCV_dVg = dT0_dVg * T4 + T5 * (dT1_dVg - dT0_dVg);
-      dVdseffCV_dVd = T5 * (dT1_dVd + 1.0);
-      dVdseffCV_dVb = dT0_dVb * (1.0 - T5) + T5 * dT1_dVb;
+      T0 = VdsatCV - Vds - DELTA_4;
+      dT0_dVg = dVgDP_dVg / AbulkCV;
+      dT0_dVb = -VdsatCV * dAbulkCV_dVb / AbulkCV;
+      T1 = Math.sqrt(T0 * T0 + 4.0 * DELTA_4 * VdsatCV);
+      let dT1_dVg = (T0 + DELTA_4 + DELTA_4) / T1;
+      const dT1_dVd = -T0 / T1;
+      const dT1_dVb = dT1_dVg * dT0_dVb;
+      dT1_dVg *= dT0_dVg;
+      if (T0 >= 0.0) {
+        VdseffCV = VdsatCV - 0.5 * (T0 + T1);
+        dVdseffCV_dVg = 0.5 * (dT0_dVg - dT1_dVg);
+        dVdseffCV_dVd = 0.5 * (1.0 - dT1_dVd);
+        dVdseffCV_dVb = 0.5 * (dT0_dVb - dT1_dVb);
+      } else {
+        T3 = (DELTA_4 + DELTA_4) / (T1 - T0);
+        T4 = 1.0 - T3;
+        T5 = VdsatCV * T3 / (T1 - T0);
+        VdseffCV = VdsatCV * T4;
+        dVdseffCV_dVg = dT0_dVg * T4 + T5 * (dT1_dVg - dT0_dVg);
+        dVdseffCV_dVd = T5 * (dT1_dVd + 1.0);
+        dVdseffCV_dVb = dT0_dVb * (1.0 - T5) + T5 * dT1_dVb;
+      }
     }
 
-    // Added to eliminate non-zero VdseffCV at Vds=0.0
-    if (Vds === 0.0) {
+    // Added to eliminate non-zero VdseffCV at Vds=0.0 (b3v32ld.c: not in revision 3.2)
+    if (Vds === 0.0 && cp.revision >= BSIM3_REVISION.V322) {
       VdseffCV = 0.0;
       dVdseffCV_dVg = 0.0;
       dVdseffCV_dVb = 0.0;

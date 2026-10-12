@@ -2119,7 +2119,7 @@ export class Circuit {
           const level = modelParams.LEVEL ?? 1;
 
           if (level === 49 || level === 8) {
-            // #503: VERSION=3.0/3.1/3.2.x select other BSIM3 revisions in ngspice; never run them as 3.3.
+            // #503/#594: VERSION=3.2.x runs the bsim3v32 revisions; 3.0/3.1 (BSIM3v0/v1) are not implemented.
             if (!isSupportedBsim3Version(model.version)) {
               throw new UnsupportedModelVersionError(
                 desc.name, desc.modelName, level, model.version!, SUPPORTED_BSIM3_VERSIONS,
@@ -2134,7 +2134,7 @@ export class Circuit {
               resolveNode(bulkNode),
             ];
             // Instance W/L/AD/AS/PD/PS/DELVTO/MULU0/M; b3set.c supplies the defaults.
-            devices.push(new BSIM3v3(desc.name, nodeIdxs, modelParams, desc.params ?? {}, polarity));
+            devices.push(new BSIM3v3(desc.name, nodeIdxs, modelParams, desc.params ?? {}, polarity, model.version));
           } else if (level === 6) {
             // MOS6 (Sakurai-Newton n-th power law) — 4-terminal, bulk defaults to source.
             const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];
@@ -2292,8 +2292,8 @@ export class Circuit {
    * Only devices whose temperature model follows ngspice-47 are accepted:
    * resistors (TC1/TC2 around TNOM), the bounded VBIC (vbictemp.c mapping),
    * B sources (asrctemp.c tc1/tc2 and `temper`), diodes (diotemp.c), the
-   * Gummel-Poon BJT (bjttemp.c) and MOS level 1 (mos1temp.c).
-   * Every other temperature-dependent element is rejected instead of silently
+   * Gummel-Poon BJT (bjttemp.c), MOS level 1 (mos1temp.c) and BSIM3 (b3temp.c,
+   * b3v32temp.c). Every other temperature-dependent element is rejected instead of silently
    * running at 27 C.
    */
   private applyCircuitTemperature(
@@ -2323,7 +2323,8 @@ export class Circuit {
 
     for (const device of devices) {
       if (device instanceof Resistor || device instanceof VBIC || device instanceof BehavioralSource
-        || device instanceof Diode || device instanceof BJT || device instanceof MOSFET) {
+        || device instanceof Diode || device instanceof BJT || device instanceof MOSFET
+        || device instanceof BSIM3v3) {
         device.setTemperature(temperature);
       } else if (device.isNonlinear) {
         throw new UnsupportedTemperatureError(device.name, temperature);

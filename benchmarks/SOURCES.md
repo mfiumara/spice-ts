@@ -721,3 +721,7 @@ Local paths are relative to `benchmarks/corpus/xyce-spice3/`; full SHA-256 value
 ## bsim3-charge-626 (#626, #582)
 
 - `benchmarks/bsim3-charge-626/`: project-authored BSIM3v3.3.0 charge-model cards and decks (MIT, this repository), plus the #589 cards from `benchmarks/bsim3-dc-589/cards.ts` (which read corpus-f cards at run time; provenance and licence in `benchmarks/corpus/corpus-f/SOURCES.md`). The NAND deck reuses the subcircuit and default model cards of corpus-f `examples/snapshot/adder_mos_circ.cir` (ngspice examples, see that SOURCES.md). References are generated with ngspice-47 by `reference.ts` and `transient-reference.ts`.
+
+## bsim3v32-594 (#594)
+
+- `benchmarks/bsim3v32-594/`: the #589 and #626 BSIM3 cards (`benchmarks/bsim3-dc-589/cards.ts`, `benchmarks/bsim3-charge-626/cards.ts`; MIT, this repository) with VERSION= set to a 3.2.x revision, plus the TSMC 0.25u `Nmod`/`Pmod` VERSION = 3.2.2 cards and MNA0/MPA0 geometry, copied at run time from corpus-f `examples/tclspice/tcl-testbench4/example.cir` (ngspice `3ef069fb`, BSD-3-Clause; provenance in `benchmarks/corpus/corpus-f/SOURCES.md`). The three-stage inverter-chain deck is project-authored (MIT) and uses those unchanged cards. The parity decks add `NRD=0 NRS=0` to the TSMC instances because spice-ts does not model the RSH series resistance (#691). References are generated with ngspice-47 by `reference.ts`.
