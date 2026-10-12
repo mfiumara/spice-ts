@@ -71,7 +71,7 @@ import {
   transientNoiseWaveform, transientRandomWaveform, VOLTAGE_SOURCE_MULTIPLIER_ERROR,
 } from './parser/waveform-parser.js';
 import { invalidPassiveInstanceLine, parsePassiveElement } from './parser/passive-parser.js';
-import { locateSubcircuitCall } from './parser/subcircuit-syntax.js';
+import { locateSubcircuitCall, splitNestedSubcircuits } from './parser/subcircuit-syntax.js';
 import { parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
 import { parseSwitchInstance } from './parser/switch-parser.js';
@@ -3259,6 +3259,7 @@ export class Circuit {
     globalNodes: ReadonlyMap<string, string>,
     guard?: ProtocolExecutionGuard,
     depth = 1,
+    scopes: readonly ReadonlyMap<string, SubcktDefinition>[] = [],
   ): DeviceDescriptor[] {
     guard?.maximum('maxSubcircuitDepth', depth, 'compile');
     const key = subcktName.toUpperCase();
@@ -3267,7 +3268,12 @@ export class Circuit {
       throw new CycleError([...visited, key]);
     }
 
-    const def = this._subcircuits.get(key);
+    // Resolve innermost-first through the definitions nested in the enclosing
+    // subcircuits (#826), then the top level. A nested definition sees the
+    // scopes it was defined in.
+    const scopeIndex = scopes.findIndex(scope => scope.has(key));
+    const def = scopeIndex >= 0 ? scopes[scopeIndex].get(key) : this._subcircuits.get(key);
+    const definitionScopes = scopeIndex >= 0 ? scopes.slice(scopeIndex) : [];
     if (!def) {
       throw new Error(`Undefined subcircuit '${subcktName}'`);
     }
@@ -3345,8 +3351,9 @@ export class Circuit {
 
     const result: DeviceDescriptor[] = [];
 
-    // Tokenize body lines
-    const parsedLines = tokenizeNetlist(def.body.join('\n'));
+    // Tokenize body lines; nested .subckt blocks are definitions, not devices.
+    const { lines: parsedLines, definitions } = splitNestedSubcircuits(tokenizeNetlist(def.body.join('\n')));
+    const bodyScopes = definitions.size > 0 ? [definitions, ...definitionScopes] : definitionScopes;
 
     for (const { tokens, lineNumber, raw } of parsedLines) {
       guard?.checkpoint('compile:device');
@@ -3675,6 +3682,7 @@ export class Circuit {
             globalNodes,
             guard,
             depth + 1,
+            bodyScopes,
           );
           result.push(...nested);
           break;
