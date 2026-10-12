@@ -4,13 +4,15 @@
  * results/rust-lu-spike.json (bench.ts) and results/rust-lu-op-swap.json
  * (op-swap.ts). No measurement happens here.
  *
- * Usage: pnpm exec tsx benchmarks/rust-lu-spike/report.ts
+ * Usage: pnpm exec tsx benchmarks/rust-lu-spike/report.ts [--dir=results/base-45d6ea7]
  */
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
+const dirArg = process.argv.find(a => a.startsWith('--dir='))?.slice('--dir='.length);
+const resultsDir = dirArg ? join(here, dirArg) : join(here, 'results');
 interface Med { symbolic: number; factor: number; solve: number; refactor: number; refactorPerturbed: number; marshal?: number }
 interface Cell {
   backend: string; deck: string; n: number; nnz: number; luNnz: number; median: Med;
@@ -29,8 +31,8 @@ interface OpCell {
   vsTs?: { nodes: number; bitIdentical: number; maxAbsDiffV: number };
 }
 
-const bench = JSON.parse(readFileSync(join(here, 'results/rust-lu-spike.json'), 'utf8')) as Bench;
-const op = JSON.parse(readFileSync(join(here, 'results/rust-lu-op-swap.json'), 'utf8')) as { cells: OpCell[] };
+const bench = JSON.parse(readFileSync(join(resultsDir, 'rust-lu-spike.json'), 'utf8')) as Bench;
+const op = JSON.parse(readFileSync(join(resultsDir, 'rust-lu-op-swap.json'), 'utf8')) as { cells: OpCell[] };
 
 const f = (v: number | undefined, d = 3): string => (v === undefined ? '-' : v < 0.01 ? v.toExponential(1) : v.toFixed(d));
 const x = (a: number, b: number): string => `${(a / b).toFixed(1)}x`;

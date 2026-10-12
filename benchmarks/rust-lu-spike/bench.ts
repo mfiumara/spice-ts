@@ -412,6 +412,8 @@ async function parent(): Promise<void> {
     versions: {
       node: process.version, ngspice: ngVersion,
       rustc: spawnSync('rustc', ['--version'], { encoding: 'utf8' }).stdout.trim(),
+      // Commit whose packages/core/src/solver the TS backend ran.
+      gitHead: spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8', cwd: root }).stdout.trim(),
     },
     methodology: {
       runs, warmups, statistic: 'median of timed runs (raw samples retained)',

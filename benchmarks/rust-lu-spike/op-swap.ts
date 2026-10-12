@@ -200,7 +200,12 @@ async function parent(): Promise<void> {
     generatedAt: new Date().toISOString(),
     command: `spice-heavy pnpm exec tsx benchmarks/rust-lu-spike/op-swap.ts ${args.join(' ')}`.trim(),
     machine: { platform: `${process.platform} ${process.arch}`, cpu: cpus()[0]?.model, logicalCpus: cpus().length },
-    versions: { node: process.version, rustc: spawnSync('rustc', ['--version'], { encoding: 'utf8' }).stdout.trim() },
+    versions: {
+      node: process.version,
+      rustc: spawnSync('rustc', ['--version'], { encoding: 'utf8' }).stdout.trim(),
+      // Commit whose packages/core (solver, devices, Newton loop) the run used.
+      gitHead: spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8', cwd: root }).stdout.trim(),
+    },
     methodology: {
       runs, warmups, statistic: 'median',
       totalMs: 'parseAsync + simulate of the OP deck in a fresh child process per backend/deck',
