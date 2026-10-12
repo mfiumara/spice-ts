@@ -341,6 +341,7 @@ export function finalSelection(
  */
 export const CORPUS_H_RULES: ReadonlyArray<readonly [RegExp, string]> = [
   [/Unsupported \.control command '(?:edit|#\S*)'/i, 'control: edit command and # comment lines inside .control'],
+  [/Control script error at line \d+: no such plot/i, 'control: failed setplot aborts the script (ngspice-47 continues)'],
   [/Unsupported \.options field/i, 'directive: other .options fields ngspice-47 accepts (INTERP, ysep, ...)'],
   [/Cannot parse number: '[A-Za-z_][A-Za-z0-9_]*'(?:\s|$)/, 'expression: bare parameter names as values (X-card R=R1, M = 10)'],
   [/Cannot read properties of (?:undefined|null)/, 'crash: uncaught TypeError instead of a structured error'],

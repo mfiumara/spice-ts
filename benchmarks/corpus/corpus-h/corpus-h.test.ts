@@ -100,6 +100,7 @@ describe('corpus-h static rules', () => {
 describe('corpus-h gap buckets', () => {
   it('names corpus-h failures from the spice-ts error line alone, then falls back to the corpus-g/f rules', () => {
     assert.equal(gapBucket("Parse error at line 21: Unsupported .control command '#': it is not", 'unsupported'), 'control: edit command and # comment lines inside .control');
+    assert.equal(gapBucket("Control script error at line 18: no such plot '-1' setplot -1", 'failed'), 'control: failed setplot aborts the script (ngspice-47 continues)');
     assert.equal(gapBucket("Parse error at line 5: Unsupported .options field: 'INTERP' .option INTERP", 'unsupported'), 'directive: other .options fields ngspice-47 accepts (INTERP, ysep, ...)');
     assert.equal(gapBucket("Cannot parse number: 'R1'", 'unsupported'), 'expression: bare parameter names as values (X-card R=R1, M = 10)');
     assert.equal(gapBucket("Cannot parse number: '27°C' .options TEMP = 27°C", 'unsupported'), 'syntax: non-ASCII unit suffixes on numbers (27°C)');

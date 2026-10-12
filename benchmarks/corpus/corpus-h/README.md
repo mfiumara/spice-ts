@@ -6,19 +6,19 @@ Every deck below is byte-identical to its pinned upstream revision (ahkab `1e893
 
 ## Totals
 
-- Fixtures: 52. Outcome SHA-256: `cc828106a2f9b505c00ceace57fa4124539aea73cd2ef9821fccc0209d59861c`.
+- Fixtures: 52. Outcome SHA-256: `dc66ab513c0e607988ac2b5e4520b4488b6c9ec1041313b8a7c42451f081c05a`.
 - ngspice (ngspice-47): 52 success, 0 failed, 0 unsupported.
-- spice-ts (0.3.0): 23 success, 6 failed, 23 unsupported.
-- Outcomes: matched 20, mismatch 3, not-compared 0, spice-ts-loss 29, ngspice-failed 0, both-failed 0.
-- Of the 52 decks ngspice runs successfully, spice-ts matches 20, mismatches 3, produces no comparable result for 0 and fails 29.
+- spice-ts (0.3.0): 39 success, 1 failed, 12 unsupported.
+- Outcomes: matched 32, mismatch 7, not-compared 0, spice-ts-loss 13, ngspice-failed 0, both-failed 0.
+- Of the 52 decks ngspice runs successfully, spice-ts matches 32, mismatches 7, produces no comparable result for 0 and fails 13.
 
 | Source | Fixtures | Matched | Mismatch | Not compared | spice-ts loss | ngspice failed | Both failed |
 |---|---|---|---|---|---|---|---|
-| `kicad` | 5 | 1 | 0 | 0 | 4 | 0 | 0 |
+| `kicad` | 5 | 2 | 2 | 0 | 1 | 0 | 0 |
 | `pyspice` | 8 | 4 | 0 | 0 | 4 | 0 | 0 |
 | `spicelib` | 2 | 2 | 0 | 0 | 0 | 0 | 0 |
-| `spicesharpparser` | 24 | 12 | 3 | 0 | 9 | 0 | 0 |
-| `xictools` | 13 | 1 | 0 | 0 | 12 | 0 | 0 |
+| `spicesharpparser` | 24 | 14 | 4 | 0 | 6 | 0 | 0 |
+| `xictools` | 13 | 10 | 1 | 0 | 2 | 0 | 0 |
 
 ## Method
 
@@ -33,7 +33,10 @@ Every deck below is byte-identical to its pinned upstream revision (ahkab `1e893
 
 ## Follow-up issues
 
-- https://github.com/mfiumara/spice-ts/issues/791: triage of the 3 decks where both engines succeed but spice-ts exceeds the 1% parity threshold.
+- https://github.com/mfiumara/spice-ts/issues/791: triage of the 3 SpiceSharpParser cookbook decks (astable-led-flasher, bjt-relay-driver, transmission-line-termination) where both engines succeed but spice-ts exceeds the 1% parity threshold.
+- https://github.com/mfiumara/spice-ts/issues/797: SpiceSharpParser example01.cir op mismatch (comma-separated subcircuit instance parameter lists), runnable since #789.
+- https://github.com/mfiumara/spice-ts/issues/804: WRspice mosamp2.cir residual transient mismatch after the MOS LEVEL=2 fix for #799 (transient step sequence across a fast edge).
+- https://github.com/mfiumara/spice-ts/issues/809: KiCad QA tlines.spice and legacy_sources.spice mismatches, runnable since GND reads as ground (#772).
 
 ## spice-ts gap buckets
 
@@ -41,63 +44,50 @@ Grouped from spice-ts's own first error line (corpus-h rules, then corpus-g and 
 
 | Bucket | Fixtures | ngspice ok | Issue |
 |---|---|---|---|
-| control: edit command and # comment lines inside .control | 11 | 11 | https://github.com/mfiumara/spice-ts/issues/787 |
 | expression: bare parameter names as values (X-card R=R1, M = 10) | 5 | 5 | https://github.com/mfiumara/spice-ts/issues/788 |
-| convergence | 3 | 3 | https://github.com/mfiumara/spice-ts/issues/772 |
-| crash: uncaught TypeError instead of a structured error | 3 | 3 | https://github.com/mfiumara/spice-ts/issues/789 |
 | directive: bare .probe card | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/790 |
 | directive: other .options fields ngspice-47 accepts (INTERP, ysep, ...) | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/790 |
+| control: failed setplot aborts the script (ngspice-47 continues) | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/798 |
 | directive: .four | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/790 |
 | syntax: non-ASCII unit suffixes on numbers (27°C) | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/790 |
 | syntax: parenthesised node pairs on controlled-source cards | 1 | 1 | https://github.com/mfiumara/spice-ts/issues/790 |
 
-## Losses (32)
+## Losses (20)
 
 Every fixture that is not matched: spice-ts failures, mismatches above the threshold, and results that could not be compared.
 
 | Fixture | ngspice | spice-ts | Outcome | Worst | Worst signal | First error line (ngspice / spice-ts) |
 |---|---|---|---|---|---|---|
-| [kicad/qa/data/eeschema/issue13162.spice](fixtures/kicad/qa/data/eeschema/issue13162.spice) | success | failed | spice-ts-loss |  |  | spice-ts: Timestep too small at t=0: dt=9.313225746154787e-16 |
 | [kicad/qa/data/eeschema/issue13431.spice](fixtures/kicad/qa/data/eeschema/issue13431.spice) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 5: Unsupported .options field: 'INTERP' .option INTERP |
-| [kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice) | success | failed | spice-ts-loss |  |  | spice-ts: Singular matrix: zero pivot at matrix column 17 (nodes: /vtrrandom) |
-| [kicad/qa/data/eeschema/spice_netlists/tlines/tlines.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/tlines/tlines.spice) | success | failed | spice-ts-loss |  |  | spice-ts: Singular matrix: zero pivot at matrix column 0 (nodes: /rlgc_in) |
+| [kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice) | success | success | mismatch | 2.94 | tran v(/itrrandom) |  |
+| [kicad/qa/data/eeschema/spice_netlists/tlines/tlines.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/tlines/tlines.spice) | success | success | mismatch | 0.0453 | tran v(/z0_out) |  |
 | [pyspice/examples/spice-examples/operational-amplifier-model-1.cir](fixtures/pyspice/examples/spice-examples/operational-amplifier-model-1.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 30: Unsupported empty .probe output request .PROBE |
 | [pyspice/examples/spice-examples/operational-amplifier-model-2.cir](fixtures/pyspice/examples/spice-examples/operational-amplifier-model-2.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 55: Unsupported empty .probe output request .PROBE |
 | [pyspice/examples/spice-examples/small-signal-amplifier.cir](fixtures/pyspice/examples/spice-examples/small-signal-amplifier.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 9: Cannot parse number: '(' E1 (amp_out 0) (amp_in 0) -10 |
 | [pyspice/issues/issue-172.cir](fixtures/pyspice/issues/issue-172.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 5: Cannot parse number: '27°C' .options TEMP = 27°C |
-| [spicesharpparser/circuits/cookbook/pure-spice/astable-led-flasher/astable-led-flasher.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/astable-led-flasher/astable-led-flasher.cir) | success | success | mismatch | 1.27 | tran v(base1) |  |
+| [spicesharpparser/circuits/cookbook/pure-spice/astable-led-flasher/astable-led-flasher.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/astable-led-flasher/astable-led-flasher.cir) | success | success | mismatch | 1.27 | tran v(base2) |  |
 | [spicesharpparser/circuits/cookbook/pure-spice/bjt-audio-preamplifier/bjt-audio-preamplifier.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/bjt-audio-preamplifier/bjt-audio-preamplifier.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 35: Unsupported dot command: '.FOUR' .FOUR 1k V ( output ) |
-| [spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir) | success | success | mismatch | 0.0184 | tran v(collector) |  |
+| [spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir) | success | success | mismatch | 0.0224 | tran v(collector) |  |
 | [spicesharpparser/circuits/cookbook/pure-spice/transmission-line-termination/transmission-line-termination.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/transmission-line-termination/transmission-line-termination.cir) | success | success | mismatch | 0.0625 | tran v(open_out) |  |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Cannot parse number: 'R1' |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Cannot parse number: 'R1' |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_reversed.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_reversed.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Cannot parse number: 'R1' |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example05.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example05.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Cannot parse number: 'R1' |
-| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01.cir) | success | failed | spice-ts-loss |  |  | spice-ts: Cannot read properties of undefined (reading 'startsWith') |
-| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_stringwriter.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_stringwriter.cir) | success | failed | spice-ts-loss |  |  | spice-ts: Cannot read properties of undefined (reading 'startsWith') |
-| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_without_params.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_without_params.cir) | success | failed | spice-ts-loss |  |  | spice-ts: Cannot read properties of undefined (reading 'startsWith') |
+| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01.cir) | success | success | mismatch | 1.15 | op v(n1) |  |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example02.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example02.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Cannot parse number: 'R1' |
-| [xictools/wrspice/devlib/obsolete/bsim1tst.cir](fixtures/xictools/wrspice/devlib/obsolete/bsim1tst.cir) † | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 111: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, set |
-| [xictools/wrspice/devlib/obsolete/bsim2tst.cir](fixtures/xictools/wrspice/devlib/obsolete/bsim2tst.cir) † | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 83: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp |
-| [xictools/wrspice/examples/bjtnoise.cir](fixtures/xictools/wrspice/examples/bjtnoise.cir) † | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 21: Unsupported .control command '#': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot |
-| [xictools/wrspice/examples/diodisto.cir](fixtures/xictools/wrspice/examples/diodisto.cir) † | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 22: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp |
-| [xictools/wrspice/examples/mos6inv.cir](fixtures/xictools/wrspice/examples/mos6inv.cir) † | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 111: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, set |
-| [xictools/wrspice/examples/mosamp2.cir](fixtures/xictools/wrspice/examples/mosamp2.cir) † | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 46: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp |
-| [xictools/wrspice/examples/mosmem.cir](fixtures/xictools/wrspice/examples/mosmem.cir) † | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 32: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp |
-| [xictools/wrspice/examples/pz2.cir](fixtures/xictools/wrspice/examples/pz2.cir) † | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 30: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp |
-| [xictools/wrspice/examples/pzt.cir](fixtures/xictools/wrspice/examples/pzt.cir) † | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 29: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp |
-| [xictools/wrspice/examples/resnoise.cir](fixtures/xictools/wrspice/examples/resnoise.cir) † | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 12: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp |
+| [xictools/wrspice/examples/diodisto.cir](fixtures/xictools/wrspice/examples/diodisto.cir) † | success | failed | spice-ts-loss |  |  | spice-ts: Control script error at line 18: no such plot '-1' setplot -1 |
+| [xictools/wrspice/examples/mosamp2.cir](fixtures/xictools/wrspice/examples/mosamp2.cir) † | success | success | mismatch | 0.0161 | tran v(6) |  |
 | [xictools/wrspice/examples/schmitt.cir](fixtures/xictools/wrspice/examples/schmitt.cir) † | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 26: Unsupported .options field: 'ysep' .options ysep |
-| [xictools/wrspice/examples/simplepz.cir](fixtures/xictools/wrspice/examples/simplepz.cir) † | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 12: Unsupported .control command '#edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, set |
 
-## Wins (20)
+## Wins (32)
 
 Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every common signal.
 
 | Fixture | ngspice | spice-ts | Outcome | Worst | Worst signal | First error line (ngspice / spice-ts) |
 |---|---|---|---|---|---|---|
+| [kicad/qa/data/eeschema/issue13162.spice](fixtures/kicad/qa/data/eeschema/issue13162.spice) | success | success | matched | 3.65e-13 | tran i(vin1) |  |
 | [kicad/qa/data/eeschema/spice_netlists/legacy_pspice/legacy_pspice.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/legacy_pspice/legacy_pspice.spice) | success | success | matched | 3.3e-7 | ac v(net-_c4-pad2_) |  |
-| [pyspice/examples/c-examples/ngspice_cb/examples/adder_mos.cir](fixtures/pyspice/examples/c-examples/ngspice_cb/examples/adder_mos.cir) † | success | success | matched | 3.44e-13 | tran v(5) |  |
+| [pyspice/examples/c-examples/ngspice_cb/examples/adder_mos.cir](fixtures/pyspice/examples/c-examples/ngspice_cb/examples/adder_mos.cir) † | success | success | matched | 1.7e-13 | tran v(1) |  |
 | [pyspice/examples/spice-examples/ac-coupled-transistor-amplifier.cir](fixtures/pyspice/examples/spice-examples/ac-coupled-transistor-amplifier.cir) | success | success | matched | 0.00000806 | tran v(emit) |  |
 | [pyspice/examples/spice-examples/low-pass-rc-filter.cir](fixtures/pyspice/examples/spice-examples/low-pass-rc-filter.cir) | success | success | matched | 4.1e-16 | ac v(out) |  |
 | [pyspice/examples/spice-examples/voltage-divider.cir](fixtures/pyspice/examples/spice-examples/voltage-divider.cir) | success | success | matched | 0 | op i(vinput) |  |
@@ -114,5 +104,16 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example08.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example08.cir) | success | success | matched | 1.5e-13 | tran v(out) |  |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example09.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example09.cir) | success | success | matched | 2.16e-16 | ac v(1) |  |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example10.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example10.cir) | success | success | matched | 7.52e-12 | dc i(v1) |  |
+| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_stringwriter.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_stringwriter.cir) | success | success | matched | 2.03e-8 | op v(n1) |  |
+| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_without_params.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_without_params.cir) | success | success | matched | 2.03e-8 | op v(n1) |  |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example03.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example03.cir) | success | success | matched | 0.00000303 | dc i(v1) |  |
 | [xictools/wrspice/devlib/jfet2/docs/id.cir](fixtures/xictools/wrspice/devlib/jfet2/docs/id.cir) | success | success | matched | 9.18e-10 | dc i(vgs) |  |
+| [xictools/wrspice/devlib/obsolete/bsim1tst.cir](fixtures/xictools/wrspice/devlib/obsolete/bsim1tst.cir) † | success | success | matched | 9.46e-9 | dc i(v4) |  |
+| [xictools/wrspice/devlib/obsolete/bsim2tst.cir](fixtures/xictools/wrspice/devlib/obsolete/bsim2tst.cir) † | success | success | matched | 8.17e-12 | dc i(v1) |  |
+| [xictools/wrspice/examples/bjtnoise.cir](fixtures/xictools/wrspice/examples/bjtnoise.cir) † | success | success | matched | 1.51e-7 | noise onoise_spectrum |  |
+| [xictools/wrspice/examples/mos6inv.cir](fixtures/xictools/wrspice/examples/mos6inv.cir) † | success | success | matched | 0.00798 | tran v(xndinv4.14) |  |
+| [xictools/wrspice/examples/mosmem.cir](fixtures/xictools/wrspice/examples/mosmem.cir) † | success | success | matched | 0.000636 | tran i(vdd) |  |
+| [xictools/wrspice/examples/pz2.cir](fixtures/xictools/wrspice/examples/pz2.cir) † | success | success | matched | 1.72e-16 | pz v(pole(3)) |  |
+| [xictools/wrspice/examples/pzt.cir](fixtures/xictools/wrspice/examples/pzt.cir) † | success | success | matched | 1.82e-13 | pz v(pole(1)) |  |
+| [xictools/wrspice/examples/resnoise.cir](fixtures/xictools/wrspice/examples/resnoise.cir) † | success | success | matched | 1.74e-7 | noise onoise_spectrum |  |
+| [xictools/wrspice/examples/simplepz.cir](fixtures/xictools/wrspice/examples/simplepz.cir) † | success | success | matched | 1.19e-16 | pz v(pole(1)) |  |
