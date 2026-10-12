@@ -236,6 +236,20 @@ const PSWITCH: XspiceCodeModelSpec = {
   ],
 };
 
+/** xtradev/aswitch/ifspec.ifs */
+const ASWITCH: XspiceCodeModelSpec = {
+  name: 'aswitch',
+  connections: [
+    input('cntl_in'),
+    { name: 'out', direction: 'inout', defaultType: 'gd', allowedTypes: ['gd'], vector: false, nullAllowed: false },
+  ],
+  params: [
+    real('cntl_off', 0.0), real('cntl_on', 1.0),
+    boolean('log', true), real('r_off', 1.0e12),
+    real('r_on', 1.0), boolean('limit', false),
+  ],
+};
+
 /** slew/ifspec.ifs */
 const SLEW: XspiceCodeModelSpec = {
   name: 'slew',
@@ -341,7 +355,7 @@ export const XSPICE_DIGITAL_CODE_MODELS: ReadonlySet<string> = new Set([
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
     GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT,
-    CLIMIT, HYST, ILIMIT, SLEW, SINE, CMETER, LMETER, PSWITCH,
+    CLIMIT, HYST, ILIMIT, SLEW, SINE, CMETER, LMETER, PSWITCH, ASWITCH,
     ADC_BRIDGE, DAC_BRIDGE,
     unaryGate('d_buffer'), unaryGate('d_inverter'),
     naryGate('d_and'), naryGate('d_nand'), naryGate('d_or'), naryGate('d_nor'), naryGate('d_xor'), naryGate('d_xnor'),

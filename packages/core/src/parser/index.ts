@@ -38,7 +38,7 @@ import { parseZInstance } from './z-device-parser.js';
 import { locateSubcircuitCall, parseSubcircuitHeader, type SubcircuitHeader } from './subcircuit-syntax.js';
 import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
-import { isPspiceVswitchModel, translatePspiceVswitchModel } from './pspice-switch.js';
+import { isPspiceSwitchModel, translatePspiceSwitchModel } from './pspice-switch.js';
 import { isNgspiceOptionField, splitXyceOptionPackage } from './xyce-option-packages.js';
 import type { AnalysisDirective, IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -173,8 +173,8 @@ function parseNetlist(
           // Subcircuit bodies are compiled later; reject unsupported model types now,
           // while the source line is still known.
           if (first === '.MODEL') {
-            if (isPspiceVswitchModel(tokens)) {
-              translatePspiceVswitchModel(raw, lineNumber);
+            if (isPspiceSwitchModel(tokens)) {
+              translatePspiceSwitchModel(raw, lineNumber);
             } else {
               assertSupportedModelType(tokens, lineNumber, raw);
               assertSupportedResistorModel(tokens, lineNumber, raw);
@@ -645,9 +645,9 @@ function parseDotCommand(
     }
     case '.MODEL': {
       let modelTokens = tokens;
-      if (isPspiceVswitchModel(tokens)) {
-        const translated = translatePspiceVswitchModel(context, lineNumber);
-        if (translated.kind === 'pswitch') {
+      if (isPspiceSwitchModel(tokens)) {
+        const translated = translatePspiceSwitchModel(context, lineNumber);
+        if (translated.kind === 'xspice') {
           circuit.addXspiceModel(translated.card);
           break;
         }

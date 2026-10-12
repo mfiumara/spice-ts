@@ -64,7 +64,7 @@ import type { ControlScript } from './parser/control/script.js';
 import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeLine, tokenizeNetlist } from './parser/tokenizer.js';
-import { isPspiceVswitchModel, translatePspiceVswitchModel } from './parser/pspice-switch.js';
+import { isPspiceSwitchModel, translatePspiceSwitchModel } from './parser/pspice-switch.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
 import {
@@ -2092,11 +2092,19 @@ export class Circuit {
     // XSPICE A instances: their nodes follow from the code model's port table.
     const xspiceInstances = new Map<DeviceDescriptor, PreparedXspiceInstance>();
     for (const desc of expandedDescriptors) {
-      if (desc.type === 'S') {
-        // A PSpice VSWITCH switch: ngspice-47 inpcompat.c rewrites the S card
-        // into `a<name> %gd(nc+ nc-) %gd(n+ n-) a<model>`, a pswitch instance.
+      if (desc.type === 'S' || desc.type === 'W') {
+        // A PSpice VSWITCH (ISWITCH) switch: ngspice-47 inpcompat.c rewrites the S (W)
+        // card into a pswitch (aswitch) instance, see pspiceSwitchInstance.
         const switchModel = this._xspiceModels.get(desc.modelName!.toUpperCase());
-        if (!switchModel?.pspiceVswitch) continue;
+        if (!switchModel?.pspiceSwitch) continue;
+        if (switchModel.pspiceSwitch !== desc.type) {
+          // ngspice rewrites only the matching letter and renames the model to
+          // a<name>, so the other switch letter finds no model of that name.
+          throw new InvalidCircuitError(
+            `${desc.type === 'S' ? 'Switch' : 'Current switch'} '${desc.name}': model '${desc.modelName}' is a PSpice `
+              + `${switchModel.pspiceSwitch === 'S' ? 'VSWITCH (S instances only)' : 'ISWITCH (W instances only)'}`,
+          );
+        }
         xspiceInstances.set(desc, prepareXspiceInstance(pspiceSwitchInstance(desc), switchModel, false, GROUND_NODE));
         continue;
       }
@@ -2104,8 +2112,8 @@ export class Circuit {
       const model = this._xspiceModels.get(desc.modelName!.toUpperCase());
       const prepared = prepareXspiceInstance(
         desc.xspice!,
-        model?.pspiceVswitch ? undefined : model,
-        this._models.has(desc.modelName!) || model?.pspiceVswitch === true,
+        model?.pspiceSwitch ? undefined : model,
+        this._models.has(desc.modelName!) || model?.pspiceSwitch !== undefined,
         GROUND_NODE,
       );
       desc.nodes = [...prepared.nodes];
@@ -2522,10 +2530,10 @@ export class Circuit {
         }
         case 'S':
         case 'W': {
-          const pswitch = xspiceInstances.get(desc);
-          if (pswitch) {
-            devices.push(createXspiceDevice(pswitch, resolveNode, () => {
-              throw new Error(`pswitch '${desc.name}' has no branch`);
+          const codeModelSwitch = xspiceInstances.get(desc);
+          if (codeModelSwitch) {
+            devices.push(createXspiceDevice(codeModelSwitch, resolveNode, () => {
+              throw new Error(`switch '${desc.name}' has no branch`);
             })!);
             break;
           }
@@ -3380,9 +3388,9 @@ export class Circuit {
       // Handle .model inside subcircuit — register locally AND globally
       if (first === '.MODEL') {
         let modelTokens = tokens;
-        if (isPspiceVswitchModel(tokens)) {
-          const translated = translatePspiceVswitchModel(raw, lineNumber);
-          if (translated.kind === 'pswitch') {
+        if (isPspiceSwitchModel(tokens)) {
+          const translated = translatePspiceSwitchModel(raw, lineNumber);
+          if (translated.kind === 'xspice') {
             this._xspiceModels.set(translated.card.name.toUpperCase(), translated.card);
             continue;
           }
@@ -3725,20 +3733,24 @@ export class Circuit {
 
 /**
  * The A card ngspice-47 inpcompat.c writes for an S instance of a PSpice
- * VSWITCH model: `a<name> %gd(nc+ nc-) %gd(n+ n-) a<model>` (the instance
- * keeps its S name here).
+ * VSWITCH model, `a<name> %gd(nc+ nc-) %gd(n+ n-) a<model>`, or for a W
+ * instance of a PSpice ISWITCH model, `a<name> %vnam(<vcontrol>) %gd(n+ n-) a<model>`
+ * (the instance keeps its S/W name here).
  */
 function pspiceSwitchInstance(desc: DeviceDescriptor): XspiceInstanceCard {
   const [nodePos, nodeNeg, ctrlPos, ctrlNeg] = desc.nodes;
-  const port = (positive: string, negative: string) => [
-    { kind: 'percent', text: '%' }, { kind: 'string', text: 'gd' },
-    { kind: 'string', text: positive }, { kind: 'string', text: negative },
+  const port = (type: string, ...names: string[]) => [
+    { kind: 'percent', text: '%' }, { kind: 'string', text: type },
+    ...names.map(text => ({ kind: 'string', text }) as const),
   ] as const;
+  const control = desc.type === 'W'
+    ? { tokens: port('vnam', desc.controlSource!), raw: `%vnam(${desc.controlSource})` }
+    : { tokens: port('gd', ctrlPos, ctrlNeg), raw: `%gd(${ctrlPos} ${ctrlNeg})` };
   return {
     name: desc.name,
-    connectionTokens: [...port(ctrlPos, ctrlNeg), ...port(nodePos, nodeNeg)],
+    connectionTokens: [...control.tokens, ...port('gd', nodePos, nodeNeg)],
     modelName: desc.modelName!,
-    raw: `a${desc.name} %gd(${ctrlPos} ${ctrlNeg}) %gd(${nodePos} ${nodeNeg}) a${desc.modelName}`,
+    raw: `a${desc.name} ${control.raw} %gd(${nodePos} ${nodeNeg}) a${desc.modelName}`,
     line: 0,
   };
 }
