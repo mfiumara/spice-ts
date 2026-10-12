@@ -37,7 +37,7 @@ Adding a resistor from an open switch terminal to a defined node does not change
 |---|---|---|
 | ngspice-47 | error | original: "Timestep too small; time = 1e-20 ... trouble with node net-_r9-pad2_", aborted after 2 rows; NetlistAddResistor: completes, 108 rows. Same in LTPS mode. |
 | ngspice master | error | original: "Timestep too small; time = 2.00001e-11 ... node net-_d5-k_", aborted after 4 rows; NetlistAddResistor completes (108 rows). Same in LTPS. [ngspice pre-master-48 HEAD 3ef069fb, same command as 47, default and LTPS] |
-| spice-ts | unsupported | ParseError: Unsupported .options field: 'rshunt' |
+| spice-ts | unsupported | Error: Unsupported bounded diode breakdown-temperature model parameter: 'TRS1' (the SnapLED150.mod diode has RS with TRS1/TRS2 and TNOM=25; https://github.com/mfiumara/spice-ts/issues/829). .options rshunt is accepted since #824. [spice-ts with .options rshunt (#824), simulate() on the same *.local.cir bytes with a filesystem include resolver] |
 
 Reproduces on ngspice-47: yes. Check: original aborts at t=1e-20 s; NetlistAddResistor completes.
 

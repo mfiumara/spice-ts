@@ -6,6 +6,7 @@ import type {
 import type { CircuitIR } from './ir/types.js';
 import { buildIR } from './ir/builder.js';
 import { Resistor } from './devices/resistor.js';
+import { NodeShunt } from './devices/node-shunt.js';
 import { resolveResistor } from './devices/resistor-model.js';
 import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
@@ -1962,6 +1963,7 @@ export class Circuit {
       ['integrationMethod', 'method', value => value === 'trapezoidal' ? 'trap' : value === 'gear2' ? 'gear' : String(value)],
       ['trtol', 'trtol', String],
       ['chgtol', 'chgtol', String],
+      ['rshunt', 'rshunt', String],
     ];
     const serializedOptions = optionNames.flatMap(([key, name, format]) => {
       const value = this._simulationOptions[key];
@@ -2557,6 +2559,24 @@ export class Circuit {
     }
 
     if (eventNetwork) devices.push(eventNetwork.network);
+    // ngspice-47 loads the RSHUNT conductances after every device (cktload.c).
+    const rshunt = this._simulationOptions.rshunt;
+    if (rshunt !== undefined) {
+      if (!Number.isFinite(rshunt) || rshunt <= 1e-30) {
+        throw new InvalidCircuitError(`Invalid rshunt: ${rshunt} (must be a finite resistance above 1e-30 ohm)`);
+      }
+      const line = expandedDescriptors.find(desc => desc.type === 'T' || desc.type === 'O');
+      if (line) {
+        // ngspice-47 trasetup.c (T: i1, i2, int1, int2) and ltraset.c (O: i1,
+        // i2) make the line's internal rows with CKTmkVolt, so RSHUNT shunts
+        // them too; spice-ts's line models have no such node rows.
+        throw new InvalidCircuitError(
+          `Unsupported .options rshunt with transmission line '${line.name}': `
+          + 'ngspice-47 also shunts the internal rows of T and O (LTRA) lines, which the spice-ts line models do not have',
+        );
+      }
+      devices.push(new NodeShunt(rshunt));
+    }
     bindXspiceSources(devices, deviceMap);
     for (const instances of bsim3ModelInstances.values()) BSIM3v3.linkBsim3v32SizeRecordReuse(instances);
     for (const { device, controlSource } of pendingCurrentSwitches) {
@@ -2772,7 +2792,11 @@ export class Circuit {
         const hasJunctionCharge = isPositiveFinite(junctionCapacitance)
           || (isPositiveFinite(sidewallCapacitance) && effectivePerimeter > 0)
           || isPositiveFinite(transitTime);
-        if (isPositiveFinite(seriesResistance) && hasJunctionCharge) {
+        // ngspice-47 diosetup.c gives every RS > 0 a prime node; spice-ts folds
+        // it into a two-terminal diode unless the junction stores charge or
+        // RSHUNT must shunt that node to ground too (#824).
+        const needsPrimeNode = hasJunctionCharge || this._simulationOptions.rshunt !== undefined;
+        if (isPositiveFinite(seriesResistance) && needsPrimeNode) {
           const [anode, cathode] = desc.nodes;
           const junction = internalNodeName(desc.name, 'rs');
           result.push({

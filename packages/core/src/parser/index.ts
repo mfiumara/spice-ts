@@ -1040,6 +1040,16 @@ function parseSimulationOptions(
       options.integrationMethod = method;
       continue;
     }
+    if (name === 'rshunt') {
+      // ngspice-47 cktsopt.c OPT_ENH_RSHUNT: a value above 1e-30 enables the
+      // node-to-ground shunts; anything else is ignored with a warning and
+      // leaves an earlier RSHUNT in place.
+      const value = parseNumber(rawValue);
+      if (!Number.isFinite(value)) throw new Error(`Invalid .options rshunt value: '${rawValue}'`);
+      if (value > 1e-30) options.rshunt = value;
+      else hooks.warn?.(`Ignored .options rshunt=${rawValue}: ngspice-47 ignores an RSHUNT of at most 1e-30 ("Rshunt option too small")`);
+      continue;
+    }
     if (name === 'maxord') {
       const value = parseNumber(rawValue);
       if (!Number.isFinite(value)) throw new Error(`Invalid .options maxord value: '${rawValue}'`);
