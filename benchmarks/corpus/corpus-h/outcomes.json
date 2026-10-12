@@ -76,15 +76,15 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 39,
+      "success": 50,
       "failed": 1,
-      "unsupported": 12
+      "unsupported": 1
     },
     "outcomes": {
-      "matched": 32,
-      "mismatch": 7,
+      "matched": 39,
+      "mismatch": 11,
       "not-compared": 0,
-      "spice-ts-loss": 13,
+      "spice-ts-loss": 2,
       "ngspice-failed": 0,
       "both-failed": 0
     },
@@ -98,10 +98,10 @@
         "both-failed": 0
       },
       "pyspice": {
-        "matched": 4,
+        "matched": 8,
         "mismatch": 0,
         "not-compared": 0,
-        "spice-ts-loss": 4,
+        "spice-ts-loss": 0,
         "ngspice-failed": 0,
         "both-failed": 0
       },
@@ -114,18 +114,18 @@
         "both-failed": 0
       },
       "spicesharpparser": {
-        "matched": 14,
-        "mismatch": 4,
+        "matched": 16,
+        "mismatch": 7,
         "not-compared": 0,
-        "spice-ts-loss": 6,
+        "spice-ts-loss": 1,
         "ngspice-failed": 0,
         "both-failed": 0
       },
       "xictools": {
-        "matched": 10,
-        "mismatch": 1,
+        "matched": 11,
+        "mismatch": 2,
         "not-compared": 0,
-        "spice-ts-loss": 2,
+        "spice-ts-loss": 0,
         "ngspice-failed": 0,
         "both-failed": 0
       }
@@ -133,73 +133,22 @@
   },
   "gapBuckets": [
     {
-      "bucket": "expression: bare parameter names as values (X-card R=R1, M = 10)",
-      "fixtures": 5,
-      "ngspiceSuccess": 5,
-      "ids": [
-        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-cir",
-        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-nested-cir",
-        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-reversed-cir",
-        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example05-cir",
-        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example02-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/788"
-    },
-    {
-      "bucket": "directive: bare .probe card",
-      "fixtures": 2,
-      "ngspiceSuccess": 2,
-      "ids": [
-        "pyspice-examples-spice-examples-operational-amplifier-model-1-cir",
-        "pyspice-examples-spice-examples-operational-amplifier-model-2-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/790"
-    },
-    {
-      "bucket": "directive: other .options fields ngspice-47 accepts (INTERP, ysep, ...)",
-      "fixtures": 2,
-      "ngspiceSuccess": 2,
-      "ids": [
-        "kicad-qa-data-eeschema-issue13431-spice",
-        "xictools-wrspice-examples-schmitt-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/790"
-    },
-    {
-      "bucket": "control: failed setplot aborts the script (ngspice-47 continues)",
+      "bucket": "execution: other failure",
       "fixtures": 1,
       "ngspiceSuccess": 1,
       "ids": [
-        "xictools-wrspice-examples-diodisto-cir"
+        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-nested-cir"
       ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/798"
+      "issue": null
     },
     {
-      "bucket": "directive: .four",
+      "bucket": "model: VDMOS power MOSFET",
       "fixtures": 1,
       "ngspiceSuccess": 1,
       "ids": [
-        "spicesharpparser-circuits-cookbook-pure-spice-bjt-audio-preamplifier-bjt-audio-preamplifier-cir"
+        "kicad-qa-data-eeschema-issue13431-spice"
       ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/790"
-    },
-    {
-      "bucket": "syntax: non-ASCII unit suffixes on numbers (27°C)",
-      "fixtures": 1,
-      "ngspiceSuccess": 1,
-      "ids": [
-        "pyspice-issues-issue-172-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/790"
-    },
-    {
-      "bucket": "syntax: parenthesised node pairs on controlled-source cards",
-      "fixtures": 1,
-      "ngspiceSuccess": 1,
-      "ids": [
-        "pyspice-examples-spice-examples-small-signal-amplifier-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/790"
+      "issue": null
     }
   ],
   "fixtures": [
@@ -249,14 +198,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 5: Unsupported .options field: 'INTERP' .option INTERP"
+        "firstErrorLine": "Parse error at line 22: .model 'ctest' has unsupported type 'CMETER' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model ctest cmeter(gain=1.0)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: other .options fields ngspice-47 accepts (INTERP, ysep, ...)"
+      "gapBucket": "model: VDMOS power MOSFET"
     },
     {
       "id": "kicad-qa-data-eeschema-spice-netlists-legacy-pspice-legacy-pspice-spice",
@@ -309,7 +258,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 27,
-      "worstNormalizedError": 2.94,
+      "worstNormalizedError": 2.49,
       "worstSignal": "tran v(/itrrandom)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -445,16 +394,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 30: Unsupported empty .probe output request .PROBE"
+        "status": "success",
+        "analyses": [
+          "ac:41"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: bare .probe card"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 2.96e-16,
+      "worstSignal": "ac v(3)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "pyspice-examples-spice-examples-operational-amplifier-model-2-cir",
@@ -474,16 +424,18 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 55: Unsupported empty .probe output request .PROBE"
+        "status": "success",
+        "analyses": [
+          "ac:41",
+          "tran:67"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: bare .probe card"
+      "comparedAnalyses": 2,
+      "comparedSignals": 34,
+      "worstNormalizedError": 0.000193,
+      "worstSignal": "tran v(xop.8)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "pyspice-examples-spice-examples-small-signal-amplifier-cir",
@@ -501,16 +453,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 9: Cannot parse number: '(' E1 (amp_out 0) (amp_in 0) -10"
+        "status": "success",
+        "analyses": [
+          "tran:10009"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "syntax: parenthesised node pairs on controlled-source cards"
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 4.9e-14,
+      "worstSignal": "tran i(vin)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "pyspice-examples-spice-examples-voltage-divider-cir",
@@ -556,16 +509,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 5: Cannot parse number: '27°C' .options TEMP = 27°C"
+        "status": "success",
+        "analyses": [
+          "tran:20008"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "syntax: non-ASCII unit suffixes on numbers (27°C)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 2.47e-21,
+      "worstSignal": "tran i(bsource)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "spicelib-examples-testfiles-dc-rawtest-net",
@@ -730,16 +684,19 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 35: Unsupported dot command: '.FOUR' .FOUR 1k V ( output )"
+        "status": "success",
+        "analyses": [
+          "ac:281",
+          "op:1",
+          "tran:10008"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: .four"
+      "comparedAnalyses": 3,
+      "comparedSignals": 18,
+      "worstNormalizedError": 0.000574,
+      "worstSignal": "tran v(output)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "spicesharpparser-circuits-cookbook-pure-spice-bjt-relay-driver-bjt-relay-driver-cir",
@@ -959,16 +916,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Cannot parse number: 'R1'"
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "expression: bare parameter names as values (X-card R=R1, M = 10)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 1,
+      "worstNormalizedError": 0.7,
+      "worstSignal": "op i(v1)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-nested-cir",
@@ -986,16 +944,16 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
+        "status": "failed",
         "analyses": [],
-        "firstErrorLine": "Cannot parse number: 'R1'"
+        "firstErrorLine": "Undefined subcircuit 'resistor'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "expression: bare parameter names as values (X-card R=R1, M = 10)"
+      "gapBucket": "execution: other failure"
     },
     {
       "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-reversed-cir",
@@ -1013,16 +971,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Cannot parse number: 'R1'"
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "expression: bare parameter names as values (X-card R=R1, M = 10)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 1,
+      "worstNormalizedError": 0.7,
+      "worstSignal": "op i(v1)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example05-cir",
@@ -1040,16 +999,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Cannot parse number: 'R1'"
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "expression: bare parameter names as values (X-card R=R1, M = 10)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 1,
+      "worstNormalizedError": 0.7,
+      "worstSignal": "op i(v1)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example06-cir",
@@ -1266,16 +1226,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Cannot parse number: 'R1'"
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "expression: bare parameter names as values (X-card R=R1, M = 10)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 1,
+      "worstNormalizedError": 0,
+      "worstSignal": "op v(out)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example03-cir",
@@ -1446,16 +1407,19 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "Control script error at line 18: no such plot '-1' setplot -1"
+        "status": "success",
+        "analyses": [
+          "disto:101",
+          "disto:101",
+          "disto:101"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "control: failed setplot aborts the script (ngspice-47 continues)"
+      "comparedAnalyses": 3,
+      "comparedSignals": 15,
+      "worstNormalizedError": 0.000162,
+      "worstSignal": "disto i(vcc)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "xictools-wrspice-examples-mos6inv-cir",
@@ -1662,16 +1626,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 26: Unsupported .options field: 'ysep' .options ysep"
+        "status": "success",
+        "analyses": [
+          "tran:145"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: other .options fields ngspice-47 accepts (INTERP, ysep, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 10,
+      "worstNormalizedError": 0.708,
+      "worstSignal": "tran i(vin)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "xictools-wrspice-examples-simplepz-cir",
@@ -1705,5 +1670,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "dc66ab513c0e607988ac2b5e4520b4488b6c9ec1041313b8a7c42451f081c05a"
+  "outcomeSha256": "62d21e64fb18949ccf02cc540ea2eb846129d767c6c1517e004d1e87e428276e"
 }

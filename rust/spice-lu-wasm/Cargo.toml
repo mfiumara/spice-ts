@@ -1,0 +1,15 @@
+[package]
+name = "spice-lu-wasm"
+description = "Issue #802 spike: wasm-bindgen build of spice-lu"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+spice-lu = { path = "../spice-lu" }
+# Pinned to the installed wasm-bindgen CLI (the CLI and crate must match).
+wasm-bindgen = "=0.2.128"

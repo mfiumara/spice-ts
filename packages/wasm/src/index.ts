@@ -544,7 +544,7 @@ function resolvedOptions(request: SimulationRequestV1, backend: BackendV1): Reso
   return {
     backend, abstol: options?.abstol ?? 1e-12, vntol: options?.vntol ?? 1e-6,
     reltol: options?.reltol ?? 1e-3, maxIterations: options?.maxIterations ?? 100,
-    maxTransientIterations: options?.maxTransientIterations ?? 50,
+    maxTransientIterations: options?.maxTransientIterations ?? 100,
     maxTimestep: options?.maxTimestep ?? Number.MAX_VALUE,
     integrationMethod: options?.integrationMethod ?? 'trapezoidal', trtol: options?.trtol ?? 7,
     gmin: options?.gmin ?? 0, determinism: options?.determinism ?? 'strict',

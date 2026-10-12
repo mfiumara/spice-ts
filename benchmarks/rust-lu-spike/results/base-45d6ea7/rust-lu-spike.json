@@ -1,0 +1,2773 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-12T16:00:02.301Z",
+  "command": "spice-heavy pnpm exec tsx benchmarks/rust-lu-spike/bench.ts",
+  "machine": {
+    "platform": "darwin arm64",
+    "cpu": "Apple M5 Pro",
+    "logicalCpus": 18,
+    "memoryBytes": 51539607552,
+    "osRelease": "27.0.0"
+  },
+  "versions": {
+    "node": "v22.23.1",
+    "ngspice": "ngspice-47",
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)"
+  },
+  "methodology": {
+    "runs": 5,
+    "warmups": 10,
+    "statistic": "median of timed runs (raw samples retained)",
+    "tsSolver": "packages/core/src/solver/gilbert-peierls.ts loaded from source via tsx",
+    "rustNative": "napi-rs cdylib, zero-copy typed-array borrows",
+    "rustWasm": "wasm-bindgen --target nodejs, wasm32-unknown-unknown +simd128, slices copied into linear memory per call",
+    "rustPure": "rust/target/release/spice-lu-bench, no Node (1 warm-up run)",
+    "refactor": "factorize() of the refactor matrix (last OP Newton matrix, or a perturbed first matrix for linear decks) on the same pattern; refactorReusedPivots tells whether pivot reuse succeeded or the kernel fell back to a full factorization",
+    "refactorPerturbed": "factorize() of the first matrix with a deterministic +-3e-6 relative perturbation right after factoring the first matrix: isolates the pivot-reuse kernel",
+    "ngspice": "ngspice -b on the OP deck, option klu|sparse via .spiceinit, Total analysis time and matrix phases from .options acct"
+  },
+  "opProfile": [
+    {
+      "deck": "rc-ladder-1k",
+      "circuit": "rc-ladder-tran",
+      "requestedNodes": 1000,
+      "actualNodes": 1000,
+      "n": 1001,
+      "nnz": 3000,
+      "factorizeCalls": 1,
+      "numericFactorizations": 1,
+      "pivotReuseFactorizations": 0,
+      "opWallMs": 24.476166999999975,
+      "solverMs": 1.0402090000000044,
+      "copyMs": 0.01325000000002774,
+      "solverShareOfOp": 0.04249885204656454,
+      "lastDiffersFromFirst": false,
+      "refactorSource": "first matrix, deterministic 1e-6 perturbation"
+    },
+    {
+      "deck": "rc-ladder-10k",
+      "circuit": "rc-ladder-tran",
+      "requestedNodes": 10000,
+      "actualNodes": 10000,
+      "n": 10001,
+      "nnz": 30000,
+      "factorizeCalls": 1,
+      "numericFactorizations": 1,
+      "pivotReuseFactorizations": 0,
+      "opWallMs": 96.52024999999998,
+      "solverMs": 7.4300420000000145,
+      "copyMs": 0.07412500000003774,
+      "solverShareOfOp": 0.07697910024062325,
+      "lastDiffersFromFirst": false,
+      "refactorSource": "first matrix, deterministic 1e-6 perturbation"
+    },
+    {
+      "deck": "rc-ladder-50k",
+      "circuit": "rc-ladder-tran",
+      "requestedNodes": 50000,
+      "actualNodes": 50000,
+      "n": 50001,
+      "nnz": 150000,
+      "factorizeCalls": 1,
+      "numericFactorizations": 1,
+      "pivotReuseFactorizations": 0,
+      "opWallMs": 449.069375,
+      "solverMs": 20.133333000000107,
+      "copyMs": 0.20437500000002728,
+      "solverShareOfOp": 0.044833458082061614,
+      "lastDiffersFromFirst": false,
+      "refactorSource": "first matrix, deterministic 1e-6 perturbation"
+    },
+    {
+      "deck": "resistor-mesh-1k",
+      "circuit": "resistor-mesh-op",
+      "requestedNodes": 1000,
+      "actualNodes": 1024,
+      "n": 1025,
+      "nnz": 4994,
+      "factorizeCalls": 2,
+      "numericFactorizations": 1,
+      "pivotReuseFactorizations": 0,
+      "opWallMs": 24.96558399999992,
+      "solverMs": 10.406376000000137,
+      "copyMs": 0.023331999999982145,
+      "solverShareOfOp": 0.4168288632863613,
+      "lastDiffersFromFirst": false,
+      "refactorSource": "first matrix, deterministic 1e-6 perturbation"
+    },
+    {
+      "deck": "resistor-mesh-10k",
+      "circuit": "resistor-mesh-op",
+      "requestedNodes": 10000,
+      "actualNodes": 10000,
+      "n": 10001,
+      "nnz": 49602,
+      "factorizeCalls": 2,
+      "numericFactorizations": 1,
+      "pivotReuseFactorizations": 0,
+      "opWallMs": 132.92591700000048,
+      "solverMs": 40.15637599999991,
+      "copyMs": 0.14183299999967858,
+      "solverShareOfOp": 0.3020959110630003,
+      "lastDiffersFromFirst": false,
+      "refactorSource": "first matrix, deterministic 1e-6 perturbation"
+    },
+    {
+      "deck": "resistor-mesh-50k",
+      "circuit": "resistor-mesh-op",
+      "requestedNodes": 50000,
+      "actualNodes": 50176,
+      "n": 50177,
+      "nnz": 249986,
+      "factorizeCalls": 2,
+      "numericFactorizations": 1,
+      "pivotReuseFactorizations": 0,
+      "opWallMs": 1071.120542,
+      "solverMs": 589.5211690000006,
+      "copyMs": 0.4842079999998532,
+      "solverShareOfOp": 0.5503779881760503,
+      "lastDiffersFromFirst": false,
+      "refactorSource": "first matrix, deterministic 1e-6 perturbation"
+    },
+    {
+      "deck": "cmos-chain-1k",
+      "circuit": "cmos-inverter-chain-tran",
+      "requestedNodes": 1000,
+      "actualNodes": 1000,
+      "n": 1002,
+      "nnz": 3998,
+      "factorizeCalls": 143,
+      "numericFactorizations": 143,
+      "pivotReuseFactorizations": 91,
+      "opWallMs": 249.11183100000426,
+      "solverMs": 12.307203999995636,
+      "copyMs": 0.6847099999959028,
+      "solverShareOfOp": 0.049404333590223684,
+      "lastDiffersFromFirst": true,
+      "refactorSource": "last Newton matrix"
+    },
+    {
+      "deck": "cmos-chain-10k",
+      "circuit": "cmos-inverter-chain-tran",
+      "requestedNodes": 10000,
+      "actualNodes": 10000,
+      "n": 10002,
+      "nnz": 39998,
+      "factorizeCalls": 232,
+      "numericFactorizations": 232,
+      "pivotReuseFactorizations": 131,
+      "opWallMs": 3091.2225899999903,
+      "solverMs": 150.97109099999307,
+      "copyMs": 8.070785000009892,
+      "solverShareOfOp": 0.048838634748717184,
+      "lastDiffersFromFirst": true,
+      "refactorSource": "last Newton matrix"
+    },
+    {
+      "deck": "cmos-chain-50k",
+      "circuit": "cmos-inverter-chain-tran",
+      "requestedNodes": 50000,
+      "actualNodes": 50000,
+      "n": 50002,
+      "nnz": 199998,
+      "factorizeCalls": 1123,
+      "numericFactorizations": 1123,
+      "pivotReuseFactorizations": 975,
+      "opWallMs": 70737.1538549997,
+      "solverMs": 2161.959916000139,
+      "copyMs": 172.45564500030014,
+      "solverShareOfOp": 0.030563286733755565,
+      "lastDiffersFromFirst": true,
+      "refactorSource": "last Newton matrix"
+    }
+  ],
+  "cells": [
+    {
+      "backend": "ts",
+      "deck": "rc-ladder-1k",
+      "n": 1001,
+      "nnz": 3000,
+      "luNnz": 3000,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        0.239167000000009,
+        0.26054199999998673,
+        0.22849999999999682,
+        0.23441700000000765,
+        0.226791999999989
+      ],
+      "factorMs": [
+        0.07691599999998289,
+        0.07879199999996445,
+        0.07608400000003712,
+        0.07741599999997106,
+        0.07695899999998801
+      ],
+      "solveMs": [
+        0.014707999999984622,
+        0.01954200000000128,
+        0.019499999999993634,
+        0.014542000000005828,
+        0.01958299999995461
+      ],
+      "refactorMs": [
+        0.027458000000024185,
+        0.028125000000045475,
+        0.02779099999997925,
+        0.027791999999976724,
+        0.02754099999998516
+      ],
+      "refactorPerturbedMs": [
+        0.027250000000037744,
+        0.027416000000016538,
+        0.02716600000002245,
+        0.026834000000008018,
+        0.027208000000030097
+      ],
+      "median": {
+        "symbolic": 0.23441700000000765,
+        "factor": 0.07695899999998801,
+        "solve": 0.019499999999993634,
+        "refactor": 0.02779099999997925,
+        "refactorPerturbed": 0.027208000000030097
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 5.741285153589189e-13,
+      "syntheticRhs": true,
+      "solverHeapBytes": 180168,
+      "peakRssMiB": 116.828125,
+      "colPermSha": "4cb35176bd7a3419298d285c92305c9ba92566e3e8848865371063dec39bba3f"
+    },
+    {
+      "backend": "rust-native",
+      "deck": "rc-ladder-1k",
+      "n": 1001,
+      "nnz": 3000,
+      "luNnz": 3000,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        0.09241700000001174,
+        0.09566699999999173,
+        0.09395799999998644,
+        0.09199999999998454,
+        0.09350000000000591
+      ],
+      "factorMs": [
+        0.04187500000000455,
+        0.04262499999998681,
+        0.04208400000004531,
+        0.0422500000000241,
+        0.04179199999998673
+      ],
+      "solveMs": [
+        0.012124999999969077,
+        0.012291000000004715,
+        0.01212500000002592,
+        0.012083999999958905,
+        0.012166999999976724
+      ],
+      "refactorMs": [
+        0.01316700000000992,
+        0.013833999999974367,
+        0.01316700000000992,
+        0.01391599999999471,
+        0.01675000000000182
+      ],
+      "refactorPerturbedMs": [
+        0.01333399999998619,
+        0.01295799999996916,
+        0.01274999999998272,
+        0.013082999999994627,
+        0.017958000000021457
+      ],
+      "median": {
+        "symbolic": 0.09350000000000591,
+        "factor": 0.04208400000004531,
+        "solve": 0.01212500000002592,
+        "refactor": 0.013833999999974367,
+        "refactorPerturbed": 0.013082999999994627,
+        "marshal": 0.0005830000000059954
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 5.741285153589189e-13,
+      "syntheticRhs": true,
+      "solverHeapBytes": 180188,
+      "peakRssMiB": 107.859375,
+      "colPermSha": "4cb35176bd7a3419298d285c92305c9ba92566e3e8848865371063dec39bba3f"
+    },
+    {
+      "backend": "rust-wasm",
+      "deck": "rc-ladder-1k",
+      "n": 1001,
+      "nnz": 3000,
+      "luNnz": 3000,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        0.1717909999999847,
+        0.17070799999999053,
+        0.174082999999996,
+        0.17225000000001955,
+        0.17304199999995262
+      ],
+      "factorMs": [
+        0.1164590000000203,
+        0.11604099999999562,
+        0.11670800000001691,
+        0.12291599999997516,
+        0.12108299999999872
+      ],
+      "solveMs": [
+        0.012707999999975073,
+        0.011374999999986812,
+        0.011874999999974989,
+        0.011083999999982552,
+        0.010667000000012195
+      ],
+      "refactorMs": [
+        0.0432920000000081,
+        0.04441700000000992,
+        0.04362500000002001,
+        0.04424999999997681,
+        0.04399999999998272
+      ],
+      "refactorPerturbedMs": [
+        0.043166000000042004,
+        0.04195900000001984,
+        0.04216600000000881,
+        0.0413340000000062,
+        0.0413340000000062
+      ],
+      "median": {
+        "symbolic": 0.17225000000001955,
+        "factor": 0.11670800000001691,
+        "solve": 0.011374999999986812,
+        "refactor": 0.04399999999998272,
+        "refactorPerturbed": 0.04195900000001984,
+        "marshal": 0.0008750000000077307
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 5.741285153589189e-13,
+      "syntheticRhs": true,
+      "solverHeapBytes": 180188,
+      "wasmLinearMemoryBytes": 1376256,
+      "peakRssMiB": 115.375,
+      "colPermSha": "4cb35176bd7a3419298d285c92305c9ba92566e3e8848865371063dec39bba3f"
+    },
+    {
+      "backend": "rust-pure",
+      "deck": "rc-ladder-1k",
+      "n": 1001,
+      "nnz": 3000,
+      "luNnz": 3000,
+      "runs": 5,
+      "warmups": 1,
+      "symbolicMs": [
+        0.084541,
+        0.08125,
+        0.080667,
+        0.078208,
+        0.082834
+      ],
+      "factorMs": [
+        0.036292,
+        0.035917,
+        0.035917,
+        0.035625,
+        0.03575
+      ],
+      "solveMs": [
+        0.009792,
+        0.00975,
+        0.009834,
+        0.00975,
+        0.009917
+      ],
+      "refactorMs": [
+        0.011583,
+        0.011583,
+        0.014167,
+        0.011459,
+        0.011459
+      ],
+      "refactorPerturbedMs": [
+        0.011667,
+        0.011292,
+        0.011958,
+        0.011416,
+        0.012042
+      ],
+      "median": {
+        "symbolic": 0.08125,
+        "factor": 0.035917,
+        "solve": 0.009792,
+        "refactor": 0.011583,
+        "refactorPerturbed": 0.011667
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 5.741285153589189e-13,
+      "syntheticRhs": true,
+      "solverHeapBytes": 180188
+    },
+    {
+      "backend": "ts",
+      "deck": "rc-ladder-10k",
+      "n": 10001,
+      "nnz": 30000,
+      "luNnz": 30000,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        2.000249999999994,
+        1.9473749999999654,
+        2.01641699999999,
+        1.9556670000000054,
+        2.2561249999999973
+      ],
+      "factorMs": [
+        0.7649159999999711,
+        0.6518750000000182,
+        0.6669160000000147,
+        0.6550420000000372,
+        0.36366700000002083
+      ],
+      "solveMs": [
+        0.18108399999999847,
+        0.122333000000026,
+        0.12274999999999636,
+        0.12187499999998863,
+        0.1052090000000021
+      ],
+      "refactorMs": [
+        0.2613340000000335,
+        0.25279199999999946,
+        0.2599169999999731,
+        0.32429100000001654,
+        0.25833299999999326
+      ],
+      "refactorPerturbedMs": [
+        0.24725000000000819,
+        0.2465410000000361,
+        0.2539579999999546,
+        0.24970899999999574,
+        0.2461659999999597
+      ],
+      "median": {
+        "symbolic": 2.000249999999994,
+        "factor": 0.6550420000000372,
+        "solve": 0.122333000000026,
+        "refactor": 0.2599169999999731,
+        "refactorPerturbed": 0.24725000000000819
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 7.151023366271572e-11,
+      "syntheticRhs": true,
+      "solverHeapBytes": 1800168,
+      "peakRssMiB": 153.125,
+      "colPermSha": "7cc1933221fe0dda180e493cc071638b6672bdf4c958c8b4558eff3f4ebe5332"
+    },
+    {
+      "backend": "rust-native",
+      "deck": "rc-ladder-10k",
+      "n": 10001,
+      "nnz": 30000,
+      "luNnz": 30000,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        0.7701670000000149,
+        0.8343330000000151,
+        0.7957499999999982,
+        0.8280419999999822,
+        0.7991250000000036
+      ],
+      "factorMs": [
+        0.43329199999999446,
+        0.41454200000003993,
+        0.4289999999999736,
+        0.4227920000000154,
+        0.4259169999999699
+      ],
+      "solveMs": [
+        0.11375000000003865,
+        0.11308400000001484,
+        0.11304100000000972,
+        0.11366600000002336,
+        0.11291700000003857
+      ],
+      "refactorMs": [
+        0.1841670000000022,
+        0.1764999999999759,
+        0.18266599999998334,
+        0.18045900000004167,
+        0.17891700000001265
+      ],
+      "refactorPerturbedMs": [
+        0.1790409999999838,
+        0.18099999999998317,
+        0.17862500000001091,
+        0.1824579999999969,
+        0.18074999999998909
+      ],
+      "median": {
+        "symbolic": 0.7991250000000036,
+        "factor": 0.4259169999999699,
+        "solve": 0.11308400000001484,
+        "refactor": 0.18045900000004167,
+        "refactorPerturbed": 0.18074999999998909,
+        "marshal": 0.0005840000000034706
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 7.151023366271572e-11,
+      "syntheticRhs": true,
+      "solverHeapBytes": 1800188,
+      "peakRssMiB": 121.765625,
+      "colPermSha": "7cc1933221fe0dda180e493cc071638b6672bdf4c958c8b4558eff3f4ebe5332"
+    },
+    {
+      "backend": "rust-wasm",
+      "deck": "rc-ladder-10k",
+      "n": 10001,
+      "nnz": 30000,
+      "luNnz": 30000,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        1.0211659999999938,
+        0.9943749999999909,
+        1.0283749999999827,
+        1.0344589999999698,
+        1.0077499999999873
+      ],
+      "factorMs": [
+        0.5293749999999591,
+        0.5230830000000424,
+        0.529707999999971,
+        0.6158750000000168,
+        0.5285000000000082
+      ],
+      "solveMs": [
+        0.12566599999996697,
+        0.12687500000004093,
+        0.169208000000026,
+        0.148083999999983,
+        0.13162499999998545
+      ],
+      "refactorMs": [
+        0.18087500000001455,
+        0.17808400000001257,
+        0.1877499999999941,
+        0.17983300000003055,
+        0.18737500000003138
+      ],
+      "refactorPerturbedMs": [
+        0.1754579999999919,
+        0.1739170000000172,
+        0.17687499999999545,
+        0.17858300000000327,
+        0.177250000000015
+      ],
+      "median": {
+        "symbolic": 1.0211659999999938,
+        "factor": 0.5293749999999591,
+        "solve": 0.13162499999998545,
+        "refactor": 0.18087500000001455,
+        "refactorPerturbed": 0.17687499999999545,
+        "marshal": 0.006582999999977801
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 7.151023366271572e-11,
+      "syntheticRhs": true,
+      "solverHeapBytes": 1800188,
+      "wasmLinearMemoryBytes": 3342336,
+      "peakRssMiB": 130.609375,
+      "colPermSha": "7cc1933221fe0dda180e493cc071638b6672bdf4c958c8b4558eff3f4ebe5332"
+    },
+    {
+      "backend": "rust-pure",
+      "deck": "rc-ladder-10k",
+      "n": 10001,
+      "nnz": 30000,
+      "luNnz": 30000,
+      "runs": 5,
+      "warmups": 1,
+      "symbolicMs": [
+        0.86125,
+        0.798166,
+        0.779333,
+        0.792167,
+        0.78475
+      ],
+      "factorMs": [
+        0.428667,
+        0.422417,
+        0.428958,
+        0.42575,
+        0.415541
+      ],
+      "solveMs": [
+        0.204125,
+        0.112125,
+        0.185125,
+        0.11225,
+        0.111958
+      ],
+      "refactorMs": [
+        0.189333,
+        0.182167,
+        0.18725,
+        0.18325,
+        0.183125
+      ],
+      "refactorPerturbedMs": [
+        0.185541,
+        0.180917,
+        0.188541,
+        0.181708,
+        0.180833
+      ],
+      "median": {
+        "symbolic": 0.792167,
+        "factor": 0.42575,
+        "solve": 0.11225,
+        "refactor": 0.18325,
+        "refactorPerturbed": 0.181708
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 7.151023366271572e-11,
+      "syntheticRhs": true,
+      "solverHeapBytes": 1800188
+    },
+    {
+      "backend": "ts",
+      "deck": "rc-ladder-50k",
+      "n": 50001,
+      "nnz": 150000,
+      "luNnz": 150000,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        11.605749999999944,
+        8.891208000000006,
+        10.934124999999995,
+        10.747125000000096,
+        10.854750000000081
+      ],
+      "factorMs": [
+        4.264332999999965,
+        3.442957999999976,
+        4.1216249999999945,
+        3.4436660000000074,
+        3.6004590000000007
+      ],
+      "solveMs": [
+        0.8692919999999731,
+        0.8568339999999353,
+        0.8091670000000022,
+        0.7462090000000217,
+        0.8422089999999116
+      ],
+      "refactorMs": [
+        1.1158339999999498,
+        1.6667919999999867,
+        1.5706660000000738,
+        1.328290999999922,
+        1.504083000000037
+      ],
+      "refactorPerturbedMs": [
+        1.4723749999999427,
+        1.5884169999999358,
+        0.6918329999999742,
+        1.4249999999999545,
+        1.611250000000041
+      ],
+      "median": {
+        "symbolic": 10.854750000000081,
+        "factor": 3.6004590000000007,
+        "solve": 0.8422089999999116,
+        "refactor": 1.504083000000037,
+        "refactorPerturbed": 1.4723749999999427
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.2556727749904737e-9,
+      "syntheticRhs": true,
+      "solverHeapBytes": 9000168,
+      "peakRssMiB": 213.5,
+      "colPermSha": "aac94957ae305b3b91e85255d45fcdcf34afe8a5bdb32ef6f87c2f3040314fbc"
+    },
+    {
+      "backend": "rust-native",
+      "deck": "rc-ladder-50k",
+      "n": 50001,
+      "nnz": 150000,
+      "luNnz": 150000,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        3.477041999999983,
+        3.9409169999998994,
+        3.4697079999999687,
+        2.9328340000000708,
+        3.4225419999999076
+      ],
+      "factorMs": [
+        2.0540829999999914,
+        1.9198749999999336,
+        1.827374999999961,
+        1.953125,
+        2.035333000000037
+      ],
+      "solveMs": [
+        0.7009580000000142,
+        0.8488749999999072,
+        0.9258750000000191,
+        0.9200839999999744,
+        0.6971250000000282
+      ],
+      "refactorMs": [
+        0.8208329999999933,
+        0.8503329999999778,
+        0.858208999999988,
+        0.8498329999999896,
+        0.8258749999999964
+      ],
+      "refactorPerturbedMs": [
+        0.8165420000000267,
+        0.8536249999999654,
+        0.8484589999999343,
+        0.8584170000000313,
+        0.8236249999999927
+      ],
+      "median": {
+        "symbolic": 3.4697079999999687,
+        "factor": 1.953125,
+        "solve": 0.8488749999999072,
+        "refactor": 0.8498329999999896,
+        "refactorPerturbed": 0.8484589999999343,
+        "marshal": 0.0005000000001018634
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.2556727749904737e-9,
+      "syntheticRhs": true,
+      "solverHeapBytes": 9000188,
+      "peakRssMiB": 186.875,
+      "colPermSha": "aac94957ae305b3b91e85255d45fcdcf34afe8a5bdb32ef6f87c2f3040314fbc"
+    },
+    {
+      "backend": "rust-wasm",
+      "deck": "rc-ladder-50k",
+      "n": 50001,
+      "nnz": 150000,
+      "luNnz": 150000,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        5.100749999999948,
+        5.068083999999999,
+        5.227125000000001,
+        5.122417000000041,
+        5.109375
+      ],
+      "factorMs": [
+        2.8894169999999804,
+        2.719041000000061,
+        2.7288330000000087,
+        2.725584000000026,
+        3.016166999999996
+      ],
+      "solveMs": [
+        0.5675420000000031,
+        0.6371669999999767,
+        0.6134579999999232,
+        0.6112080000000333,
+        0.5810840000000326
+      ],
+      "refactorMs": [
+        1.0412079999999833,
+        0.9339159999999538,
+        0.9575839999999971,
+        1.111167000000023,
+        1.1062499999999318
+      ],
+      "refactorPerturbedMs": [
+        0.949416000000042,
+        0.9221670000000586,
+        0.9246249999999918,
+        1.0108749999999418,
+        0.9825829999999769
+      ],
+      "median": {
+        "symbolic": 5.109375,
+        "factor": 2.7288330000000087,
+        "solve": 0.6112080000000333,
+        "refactor": 1.0412079999999833,
+        "refactorPerturbed": 0.949416000000042,
+        "marshal": 0.031000000000062755
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.2556727749904737e-9,
+      "syntheticRhs": true,
+      "solverHeapBytes": 9000188,
+      "wasmLinearMemoryBytes": 12320768,
+      "peakRssMiB": 193.421875,
+      "colPermSha": "aac94957ae305b3b91e85255d45fcdcf34afe8a5bdb32ef6f87c2f3040314fbc"
+    },
+    {
+      "backend": "rust-pure",
+      "deck": "rc-ladder-50k",
+      "n": 50001,
+      "nnz": 150000,
+      "luNnz": 150000,
+      "runs": 5,
+      "warmups": 1,
+      "symbolicMs": [
+        4.164167,
+        4.097667,
+        4.521291,
+        4.339917,
+        4.394417
+      ],
+      "factorMs": [
+        2.193709,
+        2.207959,
+        2.381291,
+        2.54325,
+        2.2125
+      ],
+      "solveMs": [
+        0.603042,
+        0.769084,
+        0.700584,
+        1.076458,
+        0.625417
+      ],
+      "refactorMs": [
+        0.949583,
+        0.947625,
+        0.826584,
+        0.948583,
+        0.9455
+      ],
+      "refactorPerturbedMs": [
+        0.959417,
+        0.817542,
+        0.756333,
+        0.943458,
+        0.9495
+      ],
+      "median": {
+        "symbolic": 4.339917,
+        "factor": 2.2125,
+        "solve": 0.700584,
+        "refactor": 0.947625,
+        "refactorPerturbed": 0.943458
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.2556727749904737e-9,
+      "syntheticRhs": true,
+      "solverHeapBytes": 9000188
+    },
+    {
+      "backend": "ts",
+      "deck": "resistor-mesh-1k",
+      "n": 1025,
+      "nnz": 4994,
+      "luNnz": 23088,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        0.7777920000000051,
+        0.7319999999999709,
+        0.4285419999999931,
+        0.6719999999999686,
+        0.6425839999999994
+      ],
+      "factorMs": [
+        1.5569170000000554,
+        1.5091670000000477,
+        1.4399999999999977,
+        1.4513330000000337,
+        1.3715420000000336
+      ],
+      "solveMs": [
+        0.04345800000004374,
+        0.038833000000011,
+        0.03841699999998127,
+        0.03833300000002282,
+        0.03766600000000153
+      ],
+      "refactorMs": [
+        0.34216700000001765,
+        0.3240000000000123,
+        0.33354200000002265,
+        0.33079200000003084,
+        0.3315830000000233
+      ],
+      "refactorPerturbedMs": [
+        0.32670799999999645,
+        0.2011669999999981,
+        0.3203330000000051,
+        0.32008299999995415,
+        0.3250419999999963
+      ],
+      "median": {
+        "symbolic": 0.6719999999999686,
+        "factor": 1.4513330000000337,
+        "solve": 0.03841699999998127,
+        "refactor": 0.3315830000000233,
+        "refactorPerturbed": 0.3203330000000051
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.2878295615395561e-17,
+      "syntheticRhs": false,
+      "solverHeapBytes": 640984,
+      "peakRssMiB": 124.34375,
+      "colPermSha": "787049e27803b39162db7f318557a01031a1ee736980a15f6c88829fcb62c968"
+    },
+    {
+      "backend": "rust-native",
+      "deck": "resistor-mesh-1k",
+      "n": 1025,
+      "nnz": 4994,
+      "luNnz": 23088,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        0.2506249999999852,
+        0.2507500000000107,
+        0.24074999999999136,
+        0.24025000000000318,
+        0.21487500000000637
+      ],
+      "factorMs": [
+        0.6555000000000177,
+        0.6721249999999941,
+        0.6535409999999899,
+        0.6342909999999904,
+        0.5743329999999958
+      ],
+      "solveMs": [
+        0.022833000000019865,
+        0.022582999999997355,
+        0.022125000000016826,
+        0.02041700000000901,
+        0.02041699999998059
+      ],
+      "refactorMs": [
+        0.2449579999999969,
+        0.24604099999999107,
+        0.2428340000000162,
+        0.21754200000000878,
+        0.21775000000002365
+      ],
+      "refactorPerturbedMs": [
+        0.24404200000000742,
+        0.2424999999999784,
+        0.2415420000000097,
+        0.2162089999999921,
+        0.2172079999999994
+      ],
+      "median": {
+        "symbolic": 0.24074999999999136,
+        "factor": 0.6535409999999899,
+        "solve": 0.022125000000016826,
+        "refactor": 0.2428340000000162,
+        "refactorPerturbed": 0.2415420000000097,
+        "marshal": 0.0003749999999911324
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.2878295615395561e-17,
+      "syntheticRhs": false,
+      "solverHeapBytes": 633316,
+      "peakRssMiB": 107.890625,
+      "colPermSha": "787049e27803b39162db7f318557a01031a1ee736980a15f6c88829fcb62c968"
+    },
+    {
+      "backend": "rust-wasm",
+      "deck": "resistor-mesh-1k",
+      "n": 1025,
+      "nnz": 4994,
+      "luNnz": 23088,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        0.38733300000001236,
+        0.4311660000000188,
+        0.47708299999999326,
+        0.5052499999999895,
+        0.4508329999999887
+      ],
+      "factorMs": [
+        0.9112920000000031,
+        0.8683340000000044,
+        1.4341249999999945,
+        0.9984589999999969,
+        0.9080419999999947
+      ],
+      "solveMs": [
+        0.04129100000000108,
+        0.03254200000000651,
+        0.04454100000000949,
+        0.03533400000000597,
+        0.03125
+      ],
+      "refactorMs": [
+        0.27037500000000136,
+        0.29137499999998795,
+        0.27429200000000264,
+        0.24987500000000296,
+        0.2407090000000096
+      ],
+      "refactorPerturbedMs": [
+        0.2716670000000079,
+        0.23629199999999173,
+        0.24345900000000142,
+        0.24395800000002055,
+        0.23445899999998687
+      ],
+      "median": {
+        "symbolic": 0.4508329999999887,
+        "factor": 0.9112920000000031,
+        "solve": 0.03533400000000597,
+        "refactor": 0.27037500000000136,
+        "refactorPerturbed": 0.24345900000000142,
+        "marshal": 0.0009589999999946031
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.2878295615395561e-17,
+      "syntheticRhs": false,
+      "solverHeapBytes": 633316,
+      "wasmLinearMemoryBytes": 2031616,
+      "peakRssMiB": 114.890625,
+      "colPermSha": "787049e27803b39162db7f318557a01031a1ee736980a15f6c88829fcb62c968"
+    },
+    {
+      "backend": "rust-pure",
+      "deck": "resistor-mesh-1k",
+      "n": 1025,
+      "nnz": 4994,
+      "luNnz": 23088,
+      "runs": 5,
+      "warmups": 1,
+      "symbolicMs": [
+        0.383875,
+        0.363125,
+        0.330459,
+        0.30725,
+        0.291292
+      ],
+      "factorMs": [
+        0.919167,
+        0.854416,
+        0.785959,
+        0.761291,
+        0.735667
+      ],
+      "solveMs": [
+        0.027667,
+        0.024334,
+        0.023583,
+        0.022834,
+        0.022542
+      ],
+      "refactorMs": [
+        0.220334,
+        0.215,
+        0.215958,
+        0.215375,
+        0.215167
+      ],
+      "refactorPerturbedMs": [
+        0.230875,
+        0.215209,
+        0.214708,
+        0.214125,
+        0.215375
+      ],
+      "median": {
+        "symbolic": 0.330459,
+        "factor": 0.785959,
+        "solve": 0.023583,
+        "refactor": 0.215375,
+        "refactorPerturbed": 0.215209
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.2878295615395561e-17,
+      "syntheticRhs": false,
+      "solverHeapBytes": 633316
+    },
+    {
+      "backend": "ts",
+      "deck": "resistor-mesh-10k",
+      "n": 10001,
+      "nnz": 49602,
+      "luNnz": 396986,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        8.463250000000016,
+        8.535624999999982,
+        8.517875000000004,
+        8.679542000000083,
+        7.904750000000149
+      ],
+      "factorMs": [
+        41.67404099999999,
+        41.34641599999986,
+        43.80450000000019,
+        40.62137500000017,
+        40.535041999999976
+      ],
+      "solveMs": [
+        0.5467499999999745,
+        0.4910409999999956,
+        0.4564580000001115,
+        0.49566699999991215,
+        0.5231659999999465
+      ],
+      "refactorMs": [
+        12.497625000000198,
+        12.369957999999997,
+        11.895750000000135,
+        11.829541999999947,
+        12.439583000000084
+      ],
+      "refactorPerturbedMs": [
+        12.285333000000037,
+        12.177457999999888,
+        12.370916999999963,
+        12.125166000000036,
+        12.57333299999982
+      ],
+      "median": {
+        "symbolic": 8.517875000000004,
+        "factor": 41.34641599999986,
+        "solve": 0.49566699999991215,
+        "refactor": 12.369957999999997,
+        "refactorPerturbed": 12.285333000000037
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 4.518146698598799e-17,
+      "syntheticRhs": false,
+      "solverHeapBytes": 8254968,
+      "peakRssMiB": 190.1875,
+      "colPermSha": "4c15d2df9d5a58ce1899e61b4fb27d6a62f27ce373d9ca2ea11437304974af68"
+    },
+    {
+      "backend": "rust-native",
+      "deck": "resistor-mesh-10k",
+      "n": 10001,
+      "nnz": 49602,
+      "luNnz": 396986,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        3.1975419999999986,
+        3.2366670000000113,
+        3.200458000000026,
+        2.8035830000000033,
+        3.1351250000000164
+      ],
+      "factorMs": [
+        20.09008300000005,
+        19.586584000000016,
+        19.758249999999975,
+        19.151542000000063,
+        19.447916000000077
+      ],
+      "solveMs": [
+        0.35808300000007875,
+        0.2826660000000629,
+        0.2825000000000273,
+        0.31837500000006,
+        0.28558399999997164
+      ],
+      "refactorMs": [
+        7.219959000000017,
+        7.224000000000046,
+        7.1372499999999945,
+        7.21245799999997,
+        7.197291999999948
+      ],
+      "refactorPerturbedMs": [
+        7.177084000000036,
+        7.210250000000087,
+        6.929916000000048,
+        7.108417000000031,
+        7.147917000000007
+      ],
+      "median": {
+        "symbolic": 3.1975419999999986,
+        "factor": 19.586584000000016,
+        "solve": 0.28558399999997164,
+        "refactor": 7.21245799999997,
+        "refactorPerturbed": 7.147917000000007,
+        "marshal": 0.0003749999999627107
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 4.518146698598799e-17,
+      "syntheticRhs": false,
+      "solverHeapBytes": 8176580,
+      "peakRssMiB": 143.21875,
+      "colPermSha": "4c15d2df9d5a58ce1899e61b4fb27d6a62f27ce373d9ca2ea11437304974af68"
+    },
+    {
+      "backend": "rust-wasm",
+      "deck": "resistor-mesh-10k",
+      "n": 10001,
+      "nnz": 49602,
+      "luNnz": 396986,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        3.8147089999999935,
+        3.794332999999938,
+        3.7612080000000105,
+        3.7685840000000326,
+        3.8139999999999645
+      ],
+      "factorMs": [
+        21.1595420000001,
+        21.09166700000003,
+        21.06337499999995,
+        21.159209000000033,
+        21.084166000000096
+      ],
+      "solveMs": [
+        0.3815839999999753,
+        0.33629099999996015,
+        0.3367920000000595,
+        0.3387079999999969,
+        0.3381249999999909
+      ],
+      "refactorMs": [
+        8.922915999999987,
+        8.741915999999947,
+        8.745374999999967,
+        8.734666999999945,
+        8.772958000000017
+      ],
+      "refactorPerturbedMs": [
+        8.673750000000041,
+        8.74795800000004,
+        8.755291000000057,
+        8.682333000000085,
+        8.712999999999965
+      ],
+      "median": {
+        "symbolic": 3.794332999999938,
+        "factor": 21.09166700000003,
+        "solve": 0.3381249999999909,
+        "refactor": 8.745374999999967,
+        "refactorPerturbed": 8.712999999999965,
+        "marshal": 0.006459000000177184
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 4.518146698598799e-17,
+      "syntheticRhs": false,
+      "solverHeapBytes": 8176580,
+      "wasmLinearMemoryBytes": 12517376,
+      "peakRssMiB": 147.125,
+      "colPermSha": "4c15d2df9d5a58ce1899e61b4fb27d6a62f27ce373d9ca2ea11437304974af68"
+    },
+    {
+      "backend": "rust-pure",
+      "deck": "resistor-mesh-10k",
+      "n": 10001,
+      "nnz": 49602,
+      "luNnz": 396986,
+      "runs": 5,
+      "warmups": 1,
+      "symbolicMs": [
+        3.099625,
+        3.109625,
+        3.119833,
+        3.105375,
+        3.204958
+      ],
+      "factorMs": [
+        19.131959,
+        19.068167,
+        18.952041,
+        19.208,
+        19.060375
+      ],
+      "solveMs": [
+        0.281291,
+        0.285791,
+        0.341542,
+        0.355833,
+        0.278666
+      ],
+      "refactorMs": [
+        7.498917,
+        8.082,
+        7.494166,
+        7.518583,
+        7.496292
+      ],
+      "refactorPerturbedMs": [
+        7.500875,
+        7.5,
+        7.466666,
+        7.529167,
+        7.530583
+      ],
+      "median": {
+        "symbolic": 3.109625,
+        "factor": 19.068167,
+        "solve": 0.285791,
+        "refactor": 7.498917,
+        "refactorPerturbed": 7.500875
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 4.518146698598799e-17,
+      "syntheticRhs": false,
+      "solverHeapBytes": 8176580
+    },
+    {
+      "backend": "ts",
+      "deck": "resistor-mesh-50k",
+      "n": 50177,
+      "nnz": 249986,
+      "luNnz": 2988840,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        76.6663750000007,
+        80.91458299999977,
+        77.25233300000036,
+        69.29220799999894,
+        70.24137500000143
+      ],
+      "factorMs": [
+        618.8833750000013,
+        779.0339590000003,
+        611.9870419999988,
+        562.393250000001,
+        554.3924589999988
+      ],
+      "solveMs": [
+        3.123458000000028,
+        4.4302910000005795,
+        3.2002920000013546,
+        2.8089580000014394,
+        3.100041000001511
+      ],
+      "refactorMs": [
+        183.79574999999932,
+        254.15350000000035,
+        184.50845900000058,
+        182.19795799999702,
+        183.90333399999872
+      ],
+      "refactorPerturbedMs": [
+        187.98462499999914,
+        221.97945900000013,
+        184.04379100000006,
+        183.2444170000017,
+        184.20070900000064
+      ],
+      "median": {
+        "symbolic": 76.6663750000007,
+        "factor": 611.9870419999988,
+        "solve": 3.123458000000028,
+        "refactor": 183.90333399999872,
+        "refactorPerturbed": 184.20070900000064
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.123029424770398e-16,
+      "syntheticRhs": false,
+      "solverHeapBytes": 56007928,
+      "peakRssMiB": 371.703125,
+      "colPermSha": "fceaf060c55e34c05fedcb8f1c453fea628b031f3b5db011a34178f6e55d2702"
+    },
+    {
+      "backend": "rust-native",
+      "deck": "resistor-mesh-50k",
+      "n": 50177,
+      "nnz": 249986,
+      "luNnz": 2988840,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        36.12416699999994,
+        29.316375000000335,
+        64.81420799999978,
+        29.04975000000013,
+        28.001249999999345
+      ],
+      "factorMs": [
+        434.0167500000007,
+        480.01791700000103,
+        470.2630829999998,
+        349.9987920000003,
+        399.2954580000005
+      ],
+      "solveMs": [
+        4.640792000000147,
+        5.223458000000392,
+        4.722582999998849,
+        4.498625000000175,
+        4.153292000000874
+      ],
+      "refactorMs": [
+        183.90991700000086,
+        192.70900000000074,
+        174.27620800000113,
+        157.38141600000017,
+        164.332124999999
+      ],
+      "refactorPerturbedMs": [
+        163.65349999999853,
+        216.73616700000093,
+        157.01479199999994,
+        155.60850000000028,
+        159.69554100000096
+      ],
+      "median": {
+        "symbolic": 29.316375000000335,
+        "factor": 434.0167500000007,
+        "solve": 4.640792000000147,
+        "refactor": 174.27620800000113,
+        "refactorPerturbed": 159.69554100000096,
+        "marshal": 0.0003749999996216502
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.123029424770398e-16,
+      "syntheticRhs": false,
+      "solverHeapBytes": 55610116,
+      "peakRssMiB": 636.890625,
+      "colPermSha": "fceaf060c55e34c05fedcb8f1c453fea628b031f3b5db011a34178f6e55d2702"
+    },
+    {
+      "backend": "rust-wasm",
+      "deck": "resistor-mesh-50k",
+      "n": 50177,
+      "nnz": 249986,
+      "luNnz": 2988840,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        24.471459000000323,
+        24.24145900000076,
+        24.229291999999987,
+        23.45062499999949,
+        24.268208999999842
+      ],
+      "factorMs": [
+        317.66720799999894,
+        303.5305420000004,
+        303.7157079999997,
+        304.342584,
+        302.33479199999965
+      ],
+      "solveMs": [
+        2.678125000000364,
+        2.400292000000263,
+        2.377209000000221,
+        2.7429159999992407,
+        2.7217920000002778
+      ],
+      "refactorMs": [
+        145.65845799999988,
+        144.3715000000011,
+        144.296957999999,
+        144.48549999999886,
+        144.4529160000002
+      ],
+      "refactorPerturbedMs": [
+        143.66187499999978,
+        148.62895799999933,
+        144.21545800000058,
+        141.08350000000064,
+        144.58191700000134
+      ],
+      "median": {
+        "symbolic": 24.24145900000076,
+        "factor": 303.7157079999997,
+        "solve": 2.678125000000364,
+        "refactor": 144.4529160000002,
+        "refactorPerturbed": 144.21545800000058,
+        "marshal": 0.035165999999662745
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.123029424770398e-16,
+      "syntheticRhs": false,
+      "solverHeapBytes": 55610116,
+      "wasmLinearMemoryBytes": 76873728,
+      "peakRssMiB": 249.671875,
+      "colPermSha": "fceaf060c55e34c05fedcb8f1c453fea628b031f3b5db011a34178f6e55d2702"
+    },
+    {
+      "backend": "rust-pure",
+      "deck": "resistor-mesh-50k",
+      "n": 50177,
+      "nnz": 249986,
+      "luNnz": 2988840,
+      "runs": 5,
+      "warmups": 1,
+      "symbolicMs": [
+        21.308208,
+        20.604917,
+        20.581291,
+        20.733541,
+        20.692625
+      ],
+      "factorMs": [
+        274.305083,
+        275.679375,
+        273.945709,
+        268.0435,
+        275.758541
+      ],
+      "solveMs": [
+        3.142083,
+        2.6695,
+        3.093667,
+        3.277542,
+        3.153708
+      ],
+      "refactorMs": [
+        121.594459,
+        121.323041,
+        120.785584,
+        120.484833,
+        122.414708
+      ],
+      "refactorPerturbedMs": [
+        121.15025,
+        121.541833,
+        122.125167,
+        121.805042,
+        122.166959
+      ],
+      "median": {
+        "symbolic": 20.692625,
+        "factor": 274.305083,
+        "solve": 3.142083,
+        "refactor": 121.323041,
+        "refactorPerturbed": 121.805042
+      },
+      "refactorReusedPivots": true,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.123029424770398e-16,
+      "syntheticRhs": false,
+      "solverHeapBytes": 55610116
+    },
+    {
+      "backend": "ts",
+      "deck": "cmos-chain-1k",
+      "n": 1002,
+      "nnz": 3998,
+      "luNnz": 2999,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        0.15737500000000182,
+        0.14979199999999082,
+        0.15029200000000742,
+        0.16541699999999082,
+        0.15441699999999514
+      ],
+      "factorMs": [
+        0.07974999999999,
+        0.06045899999998028,
+        0.08341699999999719,
+        0.059166000000004715,
+        0.05500000000000682
+      ],
+      "solveMs": [
+        0.0060829999999896245,
+        0.0060829999999896245,
+        0.006000000000000227,
+        0.0060829999999896245,
+        0.006000000000000227
+      ],
+      "refactorMs": [
+        0.06662499999998772,
+        0.05733399999999733,
+        0.07979100000000017,
+        0.056290999999987434,
+        0.0534590000000037
+      ],
+      "refactorPerturbedMs": [
+        0.014333999999990965,
+        0.014125000000007049,
+        0.014166999999986274,
+        0.013791999999995141,
+        0.013957999999973936
+      ],
+      "median": {
+        "symbolic": 0.15441699999999514,
+        "factor": 0.06045899999998028,
+        "solve": 0.0060829999999896245,
+        "refactor": 0.05733399999999733,
+        "refactorPerturbed": 0.014125000000007049
+      },
+      "refactorReusedPivots": false,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 7.510799961981491e-23,
+      "syntheticRhs": false,
+      "solverHeapBytes": 216256,
+      "peakRssMiB": 123.9375,
+      "colPermSha": "5043925482231124412af7f63cf4338a64f3df1c37b644e2f43e92189e721f00"
+    },
+    {
+      "backend": "rust-native",
+      "deck": "cmos-chain-1k",
+      "n": 1002,
+      "nnz": 3998,
+      "luNnz": 2999,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        0.054457999999982576,
+        0.05404199999998127,
+        0.05375000000000796,
+        0.05354200000002152,
+        0.05379199999998718
+      ],
+      "factorMs": [
+        0.034667000000013104,
+        0.034874999999999545,
+        0.034458000000000766,
+        0.03462500000000546,
+        0.034791999999981726
+      ],
+      "solveMs": [
+        0.004707999999993717,
+        0.004708000000022139,
+        0.004708000000022139,
+        0.005625000000009095,
+        0.003166999999990594
+      ],
+      "refactorMs": [
+        0.035542000000020835,
+        0.03545800000000554,
+        0.03845899999998892,
+        0.037709000000006654,
+        0.03583399999999415
+      ],
+      "refactorPerturbedMs": [
+        0.008208999999993694,
+        0.008250000000003865,
+        0.008709000000010292,
+        0.008250000000003865,
+        0.008665999999976748
+      ],
+      "median": {
+        "symbolic": 0.05379199999998718,
+        "factor": 0.034667000000013104,
+        "solve": 0.004708000000022139,
+        "refactor": 0.03583399999999415,
+        "refactorPerturbed": 0.008250000000003865,
+        "marshal": 0.0002499999999940883
+      },
+      "refactorReusedPivots": false,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 7.510799961981491e-23,
+      "syntheticRhs": false,
+      "solverHeapBytes": 212296,
+      "peakRssMiB": 104.84375,
+      "colPermSha": "5043925482231124412af7f63cf4338a64f3df1c37b644e2f43e92189e721f00"
+    },
+    {
+      "backend": "rust-wasm",
+      "deck": "cmos-chain-1k",
+      "n": 1002,
+      "nnz": 3998,
+      "luNnz": 2999,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        0.13358300000001577,
+        0.13341600000001108,
+        0.13900000000001,
+        0.13208300000002282,
+        0.1309169999999824
+      ],
+      "factorMs": [
+        0.04550000000000409,
+        0.04449999999999932,
+        0.04495899999997732,
+        0.04491600000000062,
+        0.0449169999999981
+      ],
+      "solveMs": [
+        0.006041999999979453,
+        0.005540999999993801,
+        0.005541999999991276,
+        0.005459000000001879,
+        0.005458000000004404
+      ],
+      "refactorMs": [
+        0.04704200000000469,
+        0.046750000000002956,
+        0.04650000000000887,
+        0.046708999999992784,
+        0.04662500000000591
+      ],
+      "refactorPerturbedMs": [
+        0.013332999999988715,
+        0.012875000000008185,
+        0.012917000000015832,
+        0.01012499999998795,
+        0.030000000000001137
+      ],
+      "median": {
+        "symbolic": 0.13341600000001108,
+        "factor": 0.0449169999999981,
+        "solve": 0.005540999999993801,
+        "refactor": 0.046708999999992784,
+        "refactorPerturbed": 0.012917000000015832,
+        "marshal": 0.0005409999999983484
+      },
+      "refactorReusedPivots": false,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 7.510799961981491e-23,
+      "syntheticRhs": false,
+      "solverHeapBytes": 212296,
+      "wasmLinearMemoryBytes": 1376256,
+      "peakRssMiB": 111.921875,
+      "colPermSha": "5043925482231124412af7f63cf4338a64f3df1c37b644e2f43e92189e721f00"
+    },
+    {
+      "backend": "rust-pure",
+      "deck": "cmos-chain-1k",
+      "n": 1002,
+      "nnz": 3998,
+      "luNnz": 2999,
+      "runs": 5,
+      "warmups": 1,
+      "symbolicMs": [
+        0.054959,
+        0.055333,
+        0.054625,
+        0.055416,
+        0.056333
+      ],
+      "factorMs": [
+        0.033334,
+        0.034833,
+        0.03575,
+        0.034709,
+        0.035791
+      ],
+      "solveMs": [
+        0.004333,
+        0.00325,
+        0.004417,
+        0.004458,
+        0.004334
+      ],
+      "refactorMs": [
+        0.034792,
+        0.033334,
+        0.035333,
+        0.035208,
+        0.036333
+      ],
+      "refactorPerturbedMs": [
+        0.008708,
+        0.007417,
+        0.007958,
+        0.008417,
+        0.009917
+      ],
+      "median": {
+        "symbolic": 0.055333,
+        "factor": 0.034833,
+        "solve": 0.004334,
+        "refactor": 0.035208,
+        "refactorPerturbed": 0.008417
+      },
+      "refactorReusedPivots": false,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 7.510799961981491e-23,
+      "syntheticRhs": false,
+      "solverHeapBytes": 212296
+    },
+    {
+      "backend": "ts",
+      "deck": "cmos-chain-10k",
+      "n": 10002,
+      "nnz": 39998,
+      "luNnz": 29999,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        1.1793749999999932,
+        1.1994169999999826,
+        1.2460839999999962,
+        1.2940000000000111,
+        1.163375000000002
+      ],
+      "factorMs": [
+        0.7064580000000262,
+        0.7072910000000263,
+        0.7508750000000077,
+        0.6787909999999897,
+        0.6847500000000082
+      ],
+      "solveMs": [
+        0.057959000000010974,
+        0.058625000000006366,
+        0.05983299999999758,
+        0.05829199999999446,
+        0.0574579999999969
+      ],
+      "refactorMs": [
+        0.6675409999999999,
+        0.8644579999999848,
+        0.7464160000000106,
+        0.702791000000019,
+        0.6658749999999998
+      ],
+      "refactorPerturbedMs": [
+        0.1485839999999996,
+        0.14812499999999318,
+        0.14074999999999704,
+        0.149249999999995,
+        0.14641699999998536
+      ],
+      "median": {
+        "symbolic": 1.1994169999999826,
+        "factor": 0.7064580000000262,
+        "solve": 0.05829199999999446,
+        "refactor": 0.702791000000019,
+        "refactorPerturbed": 0.14812499999999318
+      },
+      "refactorReusedPivots": false,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.164670302474663e-22,
+      "syntheticRhs": false,
+      "solverHeapBytes": 2185708,
+      "peakRssMiB": 157.96875,
+      "colPermSha": "0da7952150415cd9704e09d22ed5ba22579fc0355cf92d1cbb75b73e5cef0926"
+    },
+    {
+      "backend": "rust-native",
+      "deck": "cmos-chain-10k",
+      "n": 10002,
+      "nnz": 39998,
+      "luNnz": 29999,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        0.5256249999999909,
+        0.517124999999993,
+        0.5142919999999833,
+        0.5144169999999804,
+        0.5120829999999899
+      ],
+      "factorMs": [
+        0.41341699999998127,
+        0.42124999999998636,
+        0.4133339999999919,
+        0.4158749999999998,
+        0.41816599999998516
+      ],
+      "solveMs": [
+        0.03174999999998818,
+        0.03204100000002086,
+        0.03158400000000938,
+        0.03145900000001234,
+        0.02820799999997803
+      ],
+      "refactorMs": [
+        0.43524999999999636,
+        0.42449999999999477,
+        0.42020800000000236,
+        0.4450420000000008,
+        0.42099999999999227
+      ],
+      "refactorPerturbedMs": [
+        0.09600000000000364,
+        0.09145900000001461,
+        0.09758399999998346,
+        0.09616600000001085,
+        0.09391700000000469
+      ],
+      "median": {
+        "symbolic": 0.5144169999999804,
+        "factor": 0.4158749999999998,
+        "solve": 0.03158400000000938,
+        "refactor": 0.42449999999999477,
+        "refactorPerturbed": 0.09600000000000364,
+        "marshal": 0.0002499999999940883
+      },
+      "refactorReusedPivots": false,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.164670302474663e-22,
+      "syntheticRhs": false,
+      "solverHeapBytes": 2145748,
+      "peakRssMiB": 131.515625,
+      "colPermSha": "0da7952150415cd9704e09d22ed5ba22579fc0355cf92d1cbb75b73e5cef0926"
+    },
+    {
+      "backend": "rust-wasm",
+      "deck": "cmos-chain-10k",
+      "n": 10002,
+      "nnz": 39998,
+      "luNnz": 29999,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        0.5995409999999879,
+        0.626041999999984,
+        0.5815839999999923,
+        0.6019999999999754,
+        0.6009579999999914
+      ],
+      "factorMs": [
+        0.6034580000000176,
+        0.5649160000000109,
+        0.5572080000000028,
+        0.5551669999999831,
+        0.5520829999999819
+      ],
+      "solveMs": [
+        0.04925000000000068,
+        0.03925000000000978,
+        0.037750000000016826,
+        0.04454099999998107,
+        0.04495800000000827
+      ],
+      "refactorMs": [
+        0.602499999999992,
+        0.5840409999999849,
+        0.5587079999999958,
+        0.5896250000000123,
+        0.5792090000000201
+      ],
+      "refactorPerturbedMs": [
+        0.14291699999998286,
+        0.13879199999999514,
+        0.1475420000000156,
+        0.14737500000001091,
+        0.14020800000000122
+      ],
+      "median": {
+        "symbolic": 0.6009579999999914,
+        "factor": 0.5572080000000028,
+        "solve": 0.04454099999998107,
+        "refactor": 0.5840409999999849,
+        "refactorPerturbed": 0.14291699999998286,
+        "marshal": 0.003958000000011452
+      },
+      "refactorReusedPivots": false,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.164670302474663e-22,
+      "syntheticRhs": false,
+      "solverHeapBytes": 2145748,
+      "wasmLinearMemoryBytes": 3735552,
+      "peakRssMiB": 138.9375,
+      "colPermSha": "0da7952150415cd9704e09d22ed5ba22579fc0355cf92d1cbb75b73e5cef0926"
+    },
+    {
+      "backend": "rust-pure",
+      "deck": "cmos-chain-10k",
+      "n": 10002,
+      "nnz": 39998,
+      "luNnz": 29999,
+      "runs": 5,
+      "warmups": 1,
+      "symbolicMs": [
+        0.591917,
+        0.590459,
+        0.593125,
+        0.59825,
+        0.566584
+      ],
+      "factorMs": [
+        0.427833,
+        0.466792,
+        0.441916,
+        0.456875,
+        0.433541
+      ],
+      "solveMs": [
+        0.043917,
+        0.045542,
+        0.042416,
+        0.04375,
+        0.041417
+      ],
+      "refactorMs": [
+        0.441041,
+        0.461292,
+        0.454,
+        0.449541,
+        0.459667
+      ],
+      "refactorPerturbedMs": [
+        0.0915,
+        0.100917,
+        0.087041,
+        0.096083,
+        0.084167
+      ],
+      "median": {
+        "symbolic": 0.591917,
+        "factor": 0.441916,
+        "solve": 0.04375,
+        "refactor": 0.454,
+        "refactorPerturbed": 0.0915
+      },
+      "refactorReusedPivots": false,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.164670302474663e-22,
+      "syntheticRhs": false,
+      "solverHeapBytes": 2145748
+    },
+    {
+      "backend": "ts",
+      "deck": "cmos-chain-50k",
+      "n": 50002,
+      "nnz": 199998,
+      "luNnz": 149999,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        8.473875000000021,
+        8.530791000000022,
+        8.520999999999958,
+        8.537209000000075,
+        8.48033399999997
+      ],
+      "factorMs": [
+        5.719208000000094,
+        5.8373750000000655,
+        5.700375000000008,
+        5.831625000000031,
+        5.761875000000032
+      ],
+      "solveMs": [
+        0.3990000000000009,
+        0.3976670000000695,
+        0.39954199999999673,
+        0.4017079999999851,
+        0.39991699999995944
+      ],
+      "refactorMs": [
+        5.998917000000006,
+        5.9777919999999085,
+        5.892582999999945,
+        5.976333999999952,
+        5.8562500000000455
+      ],
+      "refactorPerturbedMs": [
+        1.055250000000001,
+        1.0842499999999973,
+        1.0411659999999756,
+        1.1110829999998941,
+        1.2587499999999636
+      ],
+      "median": {
+        "symbolic": 8.520999999999958,
+        "factor": 5.761875000000032,
+        "solve": 0.39954199999999673,
+        "refactor": 5.976333999999952,
+        "refactorPerturbed": 1.0842499999999973
+      },
+      "refactorReusedPivots": false,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.5984570505872716e-19,
+      "syntheticRhs": false,
+      "solverHeapBytes": 10862328,
+      "peakRssMiB": 246.265625,
+      "colPermSha": "2f53b7245f0b055d87bac7bbd4d36a1e5051019314206aa63cb9a727a60e34e6"
+    },
+    {
+      "backend": "rust-native",
+      "deck": "cmos-chain-50k",
+      "n": 50002,
+      "nnz": 199998,
+      "luNnz": 149999,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        3.2569579999999974,
+        3.423667000000023,
+        3.436749999999961,
+        3.5989589999999794,
+        3.4516669999999294
+      ],
+      "factorMs": [
+        3.1304999999999836,
+        3.2212499999999977,
+        3.008457999999962,
+        3.0433329999999614,
+        2.9403750000000173
+      ],
+      "solveMs": [
+        0.24458400000003166,
+        0.2988330000000019,
+        0.2928749999999809,
+        0.268416000000002,
+        0.26387499999998454
+      ],
+      "refactorMs": [
+        3.1636250000000246,
+        3.2636249999999905,
+        3.0997920000000363,
+        3.02374999999995,
+        3.0285410000000184
+      ],
+      "refactorPerturbedMs": [
+        0.6896249999999782,
+        0.5735000000000241,
+        0.5657080000000292,
+        0.5799170000000231,
+        0.5757089999999607
+      ],
+      "median": {
+        "symbolic": 3.436749999999961,
+        "factor": 3.0433329999999614,
+        "solve": 0.268416000000002,
+        "refactor": 3.0997920000000363,
+        "refactorPerturbed": 0.5757089999999607,
+        "marshal": 0.0003749999999627107
+      },
+      "refactorReusedPivots": false,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.5984570505872716e-19,
+      "syntheticRhs": false,
+      "solverHeapBytes": 10662368,
+      "peakRssMiB": 196.515625,
+      "colPermSha": "2f53b7245f0b055d87bac7bbd4d36a1e5051019314206aa63cb9a727a60e34e6"
+    },
+    {
+      "backend": "rust-wasm",
+      "deck": "cmos-chain-50k",
+      "n": 50002,
+      "nnz": 199998,
+      "luNnz": 149999,
+      "runs": 5,
+      "warmups": 10,
+      "symbolicMs": [
+        3.888959,
+        3.8990420000000086,
+        4.1509170000000495,
+        3.9164579999999205,
+        3.9340830000001006
+      ],
+      "factorMs": [
+        4.0672499999999445,
+        4.0424580000000105,
+        4.240916999999968,
+        4.03816699999993,
+        4.088250000000016
+      ],
+      "solveMs": [
+        0.26670799999999417,
+        0.25595799999996416,
+        0.2837089999999307,
+        0.25758399999995163,
+        0.28379199999994853
+      ],
+      "refactorMs": [
+        4.22666700000002,
+        4.165333999999916,
+        4.249208000000067,
+        4.269415999999978,
+        4.303124999999909
+      ],
+      "refactorPerturbedMs": [
+        1.1057910000000675,
+        0.8614999999999782,
+        0.9905420000000049,
+        0.9064590000000408,
+        1.0782090000000153
+      ],
+      "median": {
+        "symbolic": 3.9164579999999205,
+        "factor": 4.0672499999999445,
+        "solve": 0.26670799999999417,
+        "refactor": 4.249208000000067,
+        "refactorPerturbed": 0.9905420000000049,
+        "marshal": 0.031082999999966887
+      },
+      "refactorReusedPivots": false,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.5984570505872716e-19,
+      "syntheticRhs": false,
+      "solverHeapBytes": 10662368,
+      "wasmLinearMemoryBytes": 14286848,
+      "peakRssMiB": 201.15625,
+      "colPermSha": "2f53b7245f0b055d87bac7bbd4d36a1e5051019314206aa63cb9a727a60e34e6"
+    },
+    {
+      "backend": "rust-pure",
+      "deck": "cmos-chain-50k",
+      "n": 50002,
+      "nnz": 199998,
+      "luNnz": 149999,
+      "runs": 5,
+      "warmups": 1,
+      "symbolicMs": [
+        3.916083,
+        3.881209,
+        3.932833,
+        4.152791,
+        3.796666
+      ],
+      "factorMs": [
+        3.320958,
+        3.259875,
+        3.3755,
+        3.273875,
+        3.264541
+      ],
+      "solveMs": [
+        0.254,
+        0.315709,
+        0.296083,
+        0.285042,
+        0.260375
+      ],
+      "refactorMs": [
+        3.345667,
+        3.267041,
+        3.303208,
+        3.351833,
+        3.329959
+      ],
+      "refactorPerturbedMs": [
+        0.602292,
+        0.683584,
+        0.684542,
+        0.703166,
+        0.637458
+      ],
+      "median": {
+        "symbolic": 3.916083,
+        "factor": 3.273875,
+        "solve": 0.285042,
+        "refactor": 3.329959,
+        "refactorPerturbed": 0.683584
+      },
+      "refactorReusedPivots": false,
+      "refactorPerturbedReusedPivots": true,
+      "relResidual": 1.5984570505872716e-19,
+      "syntheticRhs": false,
+      "solverHeapBytes": 10662368
+    }
+  ],
+  "accuracy": [
+    {
+      "deck": "rc-ladder-1k",
+      "backend": "rust-native",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 1001,
+      "n": 1001
+    },
+    {
+      "deck": "rc-ladder-1k",
+      "backend": "rust-wasm",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 1001,
+      "n": 1001
+    },
+    {
+      "deck": "rc-ladder-10k",
+      "backend": "rust-native",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 10001,
+      "n": 10001
+    },
+    {
+      "deck": "rc-ladder-10k",
+      "backend": "rust-wasm",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 10001,
+      "n": 10001
+    },
+    {
+      "deck": "rc-ladder-50k",
+      "backend": "rust-native",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 50001,
+      "n": 50001
+    },
+    {
+      "deck": "rc-ladder-50k",
+      "backend": "rust-wasm",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 50001,
+      "n": 50001
+    },
+    {
+      "deck": "resistor-mesh-1k",
+      "backend": "rust-native",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 1025,
+      "n": 1025
+    },
+    {
+      "deck": "resistor-mesh-1k",
+      "backend": "rust-wasm",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 1025,
+      "n": 1025
+    },
+    {
+      "deck": "resistor-mesh-10k",
+      "backend": "rust-native",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 10001,
+      "n": 10001
+    },
+    {
+      "deck": "resistor-mesh-10k",
+      "backend": "rust-wasm",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 10001,
+      "n": 10001
+    },
+    {
+      "deck": "resistor-mesh-50k",
+      "backend": "rust-native",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 50177,
+      "n": 50177
+    },
+    {
+      "deck": "resistor-mesh-50k",
+      "backend": "rust-wasm",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 50177,
+      "n": 50177
+    },
+    {
+      "deck": "cmos-chain-1k",
+      "backend": "rust-native",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 1002,
+      "n": 1002
+    },
+    {
+      "deck": "cmos-chain-1k",
+      "backend": "rust-wasm",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 1002,
+      "n": 1002
+    },
+    {
+      "deck": "cmos-chain-10k",
+      "backend": "rust-native",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 10002,
+      "n": 10002
+    },
+    {
+      "deck": "cmos-chain-10k",
+      "backend": "rust-wasm",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 10002,
+      "n": 10002
+    },
+    {
+      "deck": "cmos-chain-50k",
+      "backend": "rust-native",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 50002,
+      "n": 50002
+    },
+    {
+      "deck": "cmos-chain-50k",
+      "backend": "rust-wasm",
+      "colPermMatchesTs": true,
+      "maxRelDiff": 0,
+      "bitIdentical": 50002,
+      "n": 50002
+    }
+  ],
+  "ngspice": [
+    {
+      "deck": "rc-ladder-1k",
+      "solver": "klu",
+      "runs": 5,
+      "totalAnalysisMs": [
+        2.379,
+        2.637,
+        2.233,
+        2.4250000000000003,
+        2.312
+      ],
+      "median": {
+        "total": 2.379,
+        "reorder": 0.094,
+        "factor": 0.018000000000000002,
+        "solve": 0.043000000000000003,
+        "load": 0.055
+      }
+    },
+    {
+      "deck": "rc-ladder-1k",
+      "solver": "sparse",
+      "runs": 5,
+      "totalAnalysisMs": [
+        1.581,
+        1.2899999999999998,
+        1.15,
+        1.4220000000000002,
+        1.368
+      ],
+      "median": {
+        "total": 1.368,
+        "reorder": 0.0809999,
+        "factor": 0.017,
+        "solve": 0.02,
+        "load": 0.07100000000000001
+      }
+    },
+    {
+      "deck": "rc-ladder-10k",
+      "solver": "klu",
+      "runs": 5,
+      "totalAnalysisMs": [
+        18.553,
+        18.845,
+        19.532,
+        17.945,
+        18.767
+      ],
+      "median": {
+        "total": 18.767,
+        "reorder": 0.8099999999999999,
+        "factor": 0.201,
+        "solve": 0.47800000000000004,
+        "load": 0.6880000000000001
+      }
+    },
+    {
+      "deck": "rc-ladder-10k",
+      "solver": "sparse",
+      "runs": 5,
+      "totalAnalysisMs": [
+        7.7749999999999995,
+        6.2509999999999994,
+        6.6899999999999995,
+        7.672,
+        7.577999999999999
+      ],
+      "median": {
+        "total": 7.577999999999999,
+        "reorder": 0.915,
+        "factor": 0.232,
+        "solve": 0.194,
+        "load": 0.921
+      }
+    },
+    {
+      "deck": "rc-ladder-50k",
+      "solver": "klu",
+      "runs": 5,
+      "totalAnalysisMs": [
+        93.631,
+        94.943,
+        92.717,
+        88.874,
+        84.055
+      ],
+      "median": {
+        "total": 92.717,
+        "reorder": 4.099,
+        "factor": 1.0050000000000001,
+        "solve": 1.935,
+        "load": 3.261
+      }
+    },
+    {
+      "deck": "rc-ladder-50k",
+      "solver": "sparse",
+      "runs": 5,
+      "totalAnalysisMs": [
+        27.208,
+        27.643,
+        25.034,
+        25.971,
+        27.654
+      ],
+      "median": {
+        "total": 27.208,
+        "reorder": 2.904,
+        "factor": 0.7969999999999999,
+        "solve": 0.907,
+        "load": 4.175
+      }
+    },
+    {
+      "deck": "resistor-mesh-1k",
+      "solver": "klu",
+      "runs": 5,
+      "totalAnalysisMs": [
+        3.5820000000000003,
+        3.356,
+        3.463,
+        3.659,
+        3.408
+      ],
+      "median": {
+        "total": 3.463,
+        "reorder": 0.787,
+        "factor": 0.175,
+        "solve": 0.063,
+        "load": 0.0670002
+      }
+    },
+    {
+      "deck": "resistor-mesh-1k",
+      "solver": "sparse",
+      "runs": 5,
+      "totalAnalysisMs": [
+        14.362,
+        14.513,
+        14.546999999999999,
+        14.503,
+        14.51
+      ],
+      "median": {
+        "total": 14.51,
+        "reorder": 12.116999999999999,
+        "factor": 1.034,
+        "solve": 0.133,
+        "load": 0.3
+      }
+    },
+    {
+      "deck": "resistor-mesh-10k",
+      "solver": "klu",
+      "runs": 5,
+      "totalAnalysisMs": [
+        44.617,
+        44.536,
+        42.916000000000004,
+        41.423,
+        42.582
+      ],
+      "median": {
+        "total": 42.916000000000004,
+        "reorder": 17.898,
+        "factor": 5.848,
+        "solve": 0.8260000000000001,
+        "load": 0.6930000000000001
+      }
+    },
+    {
+      "deck": "resistor-mesh-10k",
+      "solver": "sparse",
+      "runs": 5,
+      "totalAnalysisMs": [
+        1473.3,
+        1440.8799999999999,
+        1279.26,
+        1250.96,
+        1258.1599999999999
+      ],
+      "median": {
+        "total": 1279.26,
+        "reorder": 1148.97,
+        "factor": 112.388,
+        "solve": 9.044,
+        "load": 9.985000000000001
+      }
+    },
+    {
+      "deck": "resistor-mesh-50k",
+      "solver": "klu",
+      "runs": 5,
+      "totalAnalysisMs": [
+        422.34,
+        404.73199999999997,
+        537.755,
+        459.502,
+        427.98900000000003
+      ],
+      "median": {
+        "total": 427.98900000000003,
+        "reorder": 228.77100000000002,
+        "factor": 90.34599999999999,
+        "solve": 7.88,
+        "load": 4.356999999999999
+      }
+    },
+    {
+      "deck": "resistor-mesh-50k",
+      "solver": "sparse",
+      "runs": 5,
+      "totalAnalysisMs": [
+        68134.4,
+        92192.7,
+        72449.9,
+        67680.3,
+        46244.3
+      ],
+      "median": {
+        "total": 68134.4,
+        "reorder": 65135.4,
+        "factor": 3669.47,
+        "solve": 133.859,
+        "load": 127.917
+      }
+    },
+    {
+      "deck": "cmos-chain-1k",
+      "solver": "klu",
+      "runs": 5,
+      "totalAnalysisMs": [
+        44.706999999999994,
+        44.811,
+        45.369,
+        45.12,
+        44.668
+      ],
+      "median": {
+        "total": 44.811,
+        "reorder": 0.10500000000000001,
+        "factor": 4.890000000000001,
+        "solve": 4.322,
+        "load": 28.833000000000002
+      }
+    },
+    {
+      "deck": "cmos-chain-1k",
+      "solver": "sparse",
+      "runs": 5,
+      "totalAnalysisMs": [
+        43.9,
+        43.971999999999994,
+        45.778,
+        44.057,
+        44.755
+      ],
+      "median": {
+        "total": 44.057,
+        "reorder": 1.939,
+        "factor": 2.834,
+        "solve": 3.658,
+        "load": 31.16
+      }
+    },
+    {
+      "deck": "cmos-chain-10k",
+      "solver": "klu",
+      "runs": 5,
+      "totalAnalysisMs": [
+        1264.83,
+        1279.02,
+        1416.03,
+        1739.09,
+        1826.59
+      ],
+      "median": {
+        "total": 1416.03,
+        "reorder": 1.1039999999999999,
+        "factor": 88.35,
+        "solve": 72.88300000000001,
+        "load": 1128.8899999999999
+      }
+    },
+    {
+      "deck": "cmos-chain-10k",
+      "solver": "sparse",
+      "runs": 5,
+      "totalAnalysisMs": [
+        2225.16,
+        2315.09,
+        2541.44,
+        2351.09,
+        2476.08
+      ],
+      "median": {
+        "total": 2351.09,
+        "reorder": 280.50199999999995,
+        "factor": 62.364000000000004,
+        "solve": 76.102,
+        "load": 1571.19
+      }
+    },
+    {
+      "deck": "cmos-chain-50k",
+      "solver": "klu",
+      "runs": 5,
+      "totalAnalysisMs": [
+        43808.2,
+        39030.5,
+        38357.100000000006,
+        39161.200000000004,
+        55981.4
+      ],
+      "median": {
+        "total": 39161.200000000004,
+        "reorder": 9.065999999999999,
+        "factor": 1737.67,
+        "solve": 1100.1000000000001,
+        "load": 35016.5
+      }
+    },
+    {
+      "deck": "cmos-chain-50k",
+      "solver": "sparse",
+      "runs": 5,
+      "totalAnalysisMs": [
+        56618.1,
+        85066.3,
+        66918.09999999999,
+        63199.3,
+        79599.8
+      ],
+      "median": {
+        "total": 66918.09999999999,
+        "reorder": 9508.900000000001,
+        "factor": 1389.58,
+        "solve": 1485.43,
+        "load": 41277.700000000004
+      }
+    }
+  ]
+}

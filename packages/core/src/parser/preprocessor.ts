@@ -3,6 +3,7 @@ import { conditionExpression, expandUserFunctions, parseFuncCard, type FunctionS
 import { NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber } from './tokenizer.js';
 import { translateMicroSign } from './micro-sign.js';
+import { bracedSubcircuitCallValues } from './subcircuit-syntax.js';
 import { CycleError, ParseError } from '../errors.js';
 import type { IncludeResolver } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -699,6 +700,7 @@ function* collectStatements(
   let inSubckt = 0;
   let inControl = false;
   let inOutputCard = false;
+  let inSubcircuitCall = false;
 
   for (const [index, line] of lines.entries()) {
     guard?.checkpoint('parse:line');
@@ -716,7 +718,12 @@ function* collectStatements(
       continue;
     }
     // A `+` continuation (blank and comment lines may sit in between) belongs to the preceding card.
-    if (trimmed !== '' && !trimmed.startsWith('+')) inOutputCard = OUTPUT_CARD.test(trimmed);
+    if (trimmed !== '' && !trimmed.startsWith('+')) {
+      inOutputCard = OUTPUT_CARD.test(trimmed);
+      inSubcircuitCall = /^x/i.test(trimmed);
+    }
+    // An X card and its `+` continuations, with bare `name=value` values braced (#788).
+    const card = inSubcircuitCall ? bracedSubcircuitCallValues(line, commentStart(line)) : line;
 
     const conditional = inControl ? null : CONDITIONAL_CARD.exec(trimmed);
     if (conditional) {
@@ -767,7 +774,7 @@ function* collectStatements(
     if (inSubckt > 0) {
       let text: string;
       try {
-        text = behavioralCardAsBSource(line) ?? compactSubcircuitExpressions(line);
+        text = behavioralCardAsBSource(card) ?? compactSubcircuitExpressions(card);
       } catch (error) {
         throw toParseError(error, lineNumber, trimmed);
       }
@@ -885,7 +892,7 @@ function* collectStatements(
       continue;
     }
 
-    statements.push({ text: line, substitute: true, line: lineNumber, ...guarded });
+    statements.push({ text: card, substitute: true, line: lineNumber, ...guarded });
   }
 }
 

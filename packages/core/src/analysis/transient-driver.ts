@@ -439,6 +439,8 @@ class TransientSimImpl implements TransientSim {
           continue;
         }
         this.dt = this.dt / DT_CUT_FACTOR;
+        // ngspice dctran.c: a non-converged step is retried at CKTorder = 1.
+        this.orderOnePending = true;
         if (this.dt < MIN_TIMESTEP) {
           if (result.oscillated && !discontinuityRecoveryAttempted) {
             // A regenerative transition can create an implicit breakpoint

@@ -221,7 +221,7 @@ export interface SimulationOptions {
   reltol?: number;
   /** Max Newton-Raphson iterations (DC). Default: 100 */
   maxIterations?: number;
-  /** Max Newton-Raphson iterations per transient step. Default: 50 */
+  /** Max Newton-Raphson iterations per transient step. Default: 100 (ngspice-47 NIiter floor) */
   maxTransientIterations?: number;
   /**
    * Maximum timestep for transient analyses without a `.tran` TMAX (TMAX wins,
@@ -237,6 +237,13 @@ export interface SimulationOptions {
   chgtol?: number;
   /** Minimum conductance added to all node diagonals for gmin stepping. Default: 0 (disabled) */
   gmin?: number;
+  /**
+   * ngspice `.options rshunt=R` (ohms, above 1e-30): a noiseless resistor R
+   * from every node, device-internal nodes included, to ground in every
+   * analysis. Read from the circuit's own options (`.options` card or
+   * `Circuit.setSimulationOptions`) when it is compiled. Default: none.
+   */
+  rshunt?: number;
   /** Resolver for .include and .lib file directives */
   resolveInclude?: IncludeResolver;
   /**
@@ -316,7 +323,8 @@ export const DEFAULT_OPTIONS: ResolvedOptions = {
   vntol: 1e-6,
   reltol: 1e-3,
   maxIterations: 100,
-  maxTransientIterations: 50,
+  // ngspice-47 niiter.c raises any limit below 100 (default ITL4 = 10) to 100 (#804).
+  maxTransientIterations: 100,
   maxTimestep: Infinity,
   integrationMethod: 'trapezoidal',
   trtol: 7,

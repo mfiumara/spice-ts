@@ -65,6 +65,33 @@ function defaultValue(value: string): number | string {
   }
 }
 
+/**
+ * `name = value` on an X card whose value is a single bare token: not
+ * braced or quoted, and free of `,` (comma lists are a separate gap, #797).
+ */
+const CALL_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*([^\s{}'",=]+)(?=\s|$)/g;
+
+/**
+ * ngspice-47 inpcom.c (`inp_fix_param_values`) wraps the bare right-hand side
+ * of every `name=value` on an X card in braces unless it is a number, so
+ * numparam evaluates `R=R1` (or `R=RB*2`) as `R={R1}` against the visible
+ * `.param` and subcircuit parameters (#788). Applied to the comment-free part
+ * of an X card or one of its `+` continuation lines; numbers are left as-is.
+ */
+export function bracedSubcircuitCallValues(line: string, commentStart: number): string {
+  const card = line.slice(0, commentStart);
+  if (!card.includes('=')) return line;
+  const braced = card.replace(CALL_ASSIGNMENT, (match, name: string, value: string) => {
+    try {
+      parseNumber(value);
+      return match;
+    } catch {
+      return `${name}={${value}}`;
+    }
+  });
+  return braced + line.slice(commentStart);
+}
+
 export interface SubcircuitCall {
   /** Index of the subcircuit-name token. */
   nameIndex: number;

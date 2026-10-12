@@ -85,6 +85,8 @@ export const FOLLOW_UP_ISSUES: ReadonlyArray<{ url: string; scope: string }> = [
   { url: 'https://github.com/mfiumara/spice-ts/issues/797', scope: 'SpiceSharpParser example01.cir op mismatch (comma-separated subcircuit instance parameter lists), runnable since #789' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/804', scope: 'WRspice mosamp2.cir residual transient mismatch after the MOS LEVEL=2 fix for #799 (transient step sequence across a fast edge)' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/809', scope: 'KiCad QA tlines.spice and legacy_sources.spice mismatches, runnable since GND reads as ground (#772)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/810', scope: 'SpiceSharpParser Example04.cir, Example04_reversed.cir and Example05.cir op mismatch (X-card `M = 10` multiplicity is ignored), runnable since #788' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/826', scope: 'SpiceSharpParser Example04_nested.cir: a .subckt defined inside another .subckt is not visible (Undefined subcircuit), runnable past parsing since #788' },
 ];
 
 const OUTCOMES: Outcome[] = ['matched', 'mismatch', 'not-compared', 'spice-ts-loss', 'ngspice-failed', 'both-failed'];
