@@ -36,11 +36,11 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 6,
-      "worstNormalizedError": 3390,
+      "worstNormalizedError": 0.0000339,
       "worstSignal": "ac v(vdd)",
-      "outcome": "mismatch",
+      "outcome": "matched",
       "gapBucket": null,
-      "wallMs": 388
+      "wallMs": 333
     },
     {
       "id": "comparator-comparator-cir",
@@ -69,7 +69,7 @@
       "worstSignal": "tran v(9)",
       "outcome": "matched",
       "gapBucket": null,
-      "wallMs": 411
+      "wallMs": 363
     },
     {
       "id": "model-binning-comparatorbaseline-forglobal-cir",
@@ -98,7 +98,7 @@
       "worstSignal": "tran v(9)",
       "outcome": "matched",
       "gapBucket": null,
-      "wallMs": 419
+      "wallMs": 371
     },
     {
       "id": "mos13-ic-invert42-mos3-cir",
@@ -127,7 +127,7 @@
       "worstSignal": "tran v(vout)",
       "outcome": "mismatch",
       "gapBucket": null,
-      "wallMs": 5373
+      "wallMs": 5913
     },
     {
       "id": "nmos3-dc-mos3-dc-cir",
@@ -156,7 +156,7 @@
       "worstSignal": "dc i(vds)",
       "outcome": "matched",
       "gapBucket": null,
-      "wallMs": 366
+      "wallMs": 370
     },
     {
       "id": "op-comparator-op-cir",
@@ -188,7 +188,7 @@
       "worstSignal": "tran v(9)",
       "outcome": "matched",
       "gapBucket": null,
-      "wallMs": 355
+      "wallMs": 398
     },
     {
       "id": "subckt-subckt-a0-cir",
@@ -217,7 +217,7 @@
       "worstSignal": "tran i(vdddev)",
       "outcome": "mismatch",
       "gapBucket": null,
-      "wallMs": 412
+      "wallMs": 492
     }
   ]
 }

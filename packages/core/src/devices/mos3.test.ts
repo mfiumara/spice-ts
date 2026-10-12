@@ -259,8 +259,10 @@ describe.skipIf(!hasCorpusG)('corpus-g MOS3/MOS9 decks vs ngspice-47 (issue #715
   it.each([
     ['MOS13_IC/invert42_mos3.cir', 'VOUT', 4.782500],
     ['SUBCKT/subckt_a0.cir', 'OUT', 4.806048],
-  ])('%s: MOS3 initial operating point', async (path, node, expected) => {
-    const result = await simulate(readFileSync(fixture(path), 'utf8'));
-    expect(result.transient!.voltage(node)[0]).toBeCloseTo(expected, 5);
-  }, 60_000);
+  ])('%s: MOS3 operating point (the deck with .op in place of .tran)', async (path, node, expected) => {
+    // The 30 us transient takes minutes under coverage; the t = 0 point is this operating point.
+    const deck = readFileSync(fixture(path), 'utf8').replace(/^\.tran .*$/im, '.op');
+    const result = await simulate(deck);
+    expect(result.dc!.voltage(node)).toBeCloseTo(expected, 5);
+  }, 30_000);
 });

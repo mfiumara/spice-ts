@@ -10,7 +10,8 @@ both reproduced: mos9temp.c rejects an effective length/width below 1 µm, and m
 
 Byte-identical corpus-g (#711) fixtures through ngspice-47 and spice-ts with the corpus-f runner,
 metric and 1% threshold (`runFixture`; worst |error| divided by the ngspice peak of that signal).
-No per-circuit tuning. Receipts: `receipts/parity-before.json` (main b04bc1ee), `receipts/parity-after.json`.
+No per-circuit tuning. Receipts: `receipts/parity-before.json` (main b04bc1ee), `receipts/parity-after.json` (this branch merged
+with main 45d6ea73, which includes the #705 VNTOL/ABSTOL peak floor).
 
 | Fixture | Analysis | Before | After | Worst signal (after) |
 |---|---|---|---|---|
@@ -18,18 +19,19 @@ No per-circuit tuning. Receipts: `receipts/parity-before.json` (main b04bc1ee), 
 | OP/comparator_op.cir | op + tran | unsupported | matched, 3.4e-4 | tran v(9) |
 | COMPARATOR/comparator.cir | tran | unsupported | matched, 3.4e-4 | v(9) |
 | MODEL_BINNING/comparatorBaseline_forGlobal.cir | tran | unsupported | matched, 3.4e-4 | v(9) |
-| ACtests/bsim3/gain-stage.cir | ac | unsupported | **mismatch, 3390** | v(vdd) |
+| ACtests/bsim3/gain-stage.cir | ac | unsupported | matched, 3.39e-5 | v(vdd) |
 | SUBCKT/subckt_a0.cir | tran | unsupported | **mismatch, 0.246** | i(vdddev) |
 | MOS13_IC/invert42_mos3.cir | tran | unsupported | **mismatch, 0.838** | v(vout) |
 
-4 of 7 match; 3 losses remain, none of them a MOS3/MOS9 equation error:
+5 of 7 match. The 2 remaining losses do not come from the MOS3/MOS9 equations; the gain-stage note
+explains its worst signal:
 
 - **gain-stage.cir** — `v(vdd)` is an ideal source node: ngspice prints exactly 0 V, spice-ts
   1.7e-9 to 3.4e-9 V of solver rounding (the values are multiples of 2^-69 × 1e12, which suggests one
-  ulp divided by the 1e-12 AC gmin; not investigated further), so the peak-normalised metric divides
-  by the 1e-12 floor. The circuit output `v(3)` agrees to 3.4e-9 V absolute (1.1e-8 of its 0.298 V
+  ulp divided by the 1e-12 AC gmin; not investigated further), so before #705 the peak-normalised metric
+  divided by a 1e-12 floor (3390); with #705's VNTOL floor the score is 3.39e-5. The circuit output `v(3)` agrees to 3.4e-9 V absolute (1.1e-8 of its 0.298 V
   peak) over all 71 points. The same deck with LEVEL=2 (MOS2 on main) shows the identical residual.
-  Metric class tracked in #593.
+  Metric class fixed by #705 (#593).
 - **subckt_a0.cir**, **invert42_mos3.cir** — the DC operating points agree (v(OUT) 4.806048 V,
   v(VOUT) 4.782500 V at t = 0) and so does every output edge on average; the error is edge-time
   scatter from step control. `edges.ts` measures the 2.5 V crossings on the identical deck:
@@ -51,7 +53,7 @@ NFS, THETA, ETA, KAPPA, XJ, body bias and inverse mode; 6.3e-15 PMOS with WD/XL/
 series-resistance decks to the Newton tolerance (<1e-4 relative), and a CMOS inverter transient
 with RD/RS, RSH×NRD, Meyer and junction charges at a 0.05 ns step bound to 0.2 mV worst over the
 run (5 V swing), for both LEVEL=3 and LEVEL=9. The corpus-g checks in the same file run when the
-corpus-g fixtures are on disk (after #722 merges).
+corpus-g fixtures are on disk (on main since #722).
 
 ## Not ported (unchanged behaviour)
 
