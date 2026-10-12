@@ -16,12 +16,12 @@ import {
 // an M or D instance could reference a supported model of the wrong device kind
 // (`.model q1 npn` on an M card simulated as an NMOS). ngspice-47 rejects both.
 
-function pjfCircuit(): Circuit {
+function phfetCircuit(): Circuit {
   const c = new Circuit();
   c.addVoltageSource('vd', 'd', '0', { type: 'dc', value: -5 });
   c.addVoltageSource('vg', 'g', '0', { type: 'dc', value: -5 });
-  c.addModel({ name: 'p1', type: 'PJF', params: { VTO: -1.2, BETA: 1e-4 } });
-  c.addJFET('j1', 'd', 'g', '0', 'p1');
+  c.addModel({ name: 'p1', type: 'PHFET', params: { VTO: -1.2, BETA: 1e-4 } });
+  c.addZDevice('z1', 'd', 'g', '0', 'p1');
   c.addAnalysis('op');
   return c;
 }
@@ -37,16 +37,16 @@ function failure(run: () => unknown): unknown {
 
 describe('model types through the Circuit API (#544)', () => {
   it('rejects an unsupported model type in addModel with a typed error', () => {
-    const error = failure(pjfCircuit);
+    const error = failure(phfetCircuit);
     expect(error).toBeInstanceOf(UnsupportedCircuitModelTypeError);
     expect(error).toBeInstanceOf(InvalidCircuitError);
     expect(error).toMatchObject({
       name: 'UnsupportedCircuitModelTypeError',
       code: 'UNSUPPORTED_MODEL_TYPE',
       modelName: 'p1',
-      modelType: 'PJF',
+      modelType: 'PHFET',
     });
-    expect((error as Error).message).toContain(".model 'p1' has unsupported type 'PJF'");
+    expect((error as Error).message).toContain(".model 'p1' has unsupported type 'PHFET'");
   });
 
   it('rejects an unsupported model type declared inside an API subcircuit body', async () => {
@@ -145,7 +145,7 @@ describe('model/device-kind mismatch (#544)', () => {
   });
 
   it('keeps the parser-time UnsupportedModelTypeError for netlists', () => {
-    const error = failure(() => root.parse('t\nj1 d g s p1\n.model p1 pjf\n.op\n.end\n'));
+    const error = failure(() => root.parse('t\nj1 d g s p1\n.model p1 phfet\n.op\n.end\n'));
     expect(error).toBeInstanceOf(root.UnsupportedModelTypeError);
     expect(error).toBeInstanceOf(ParseError);
     expect(root.SUPPORTED_MODEL_TYPES.has('NMOS')).toBe(true);
@@ -177,7 +177,7 @@ describe('model types through the JSON protocol (#544)', () => {
 
   it('returns a structured ok:false diagnostic for an unsupported model type', async () => {
     const envelope = await executeProtocolV1(documentRequest(
-      { name: 'P1', type: 'PJF' },
+      { name: 'P1', type: 'PHFET' },
       { type: 'D', id: 'D1', name: 'D1', ports: [{ name: 'anode', net: 'a' }, { name: 'cathode', net: '0' }], params: {}, model: 'P1' },
     ));
     expect(envelope.ok).toBe(false);
@@ -186,7 +186,7 @@ describe('model types through the JSON protocol (#544)', () => {
       code: 'UNSUPPORTED_FEATURE',
       phase: 'validation',
       retryable: false,
-      details: { reason: 'UNSUPPORTED_MODEL_TYPE', modelName: 'P1', modelType: 'PJF' },
+      details: { reason: 'UNSUPPORTED_MODEL_TYPE', modelName: 'P1', modelType: 'PHFET' },
     });
   });
 

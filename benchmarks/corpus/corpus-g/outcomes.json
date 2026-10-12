@@ -43,15 +43,15 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 95,
+      "success": 103,
       "failed": 6,
-      "unsupported": 27
+      "unsupported": 19
     },
     "outcomes": {
-      "matched": 77,
+      "matched": 85,
       "mismatch": 18,
       "not-compared": 0,
-      "spice-ts-loss": 33,
+      "spice-ts-loss": 25,
       "ngspice-failed": 0,
       "both-failed": 0
     }
@@ -76,20 +76,6 @@
       "issue": null
     },
     {
-      "bucket": "source: EXP/SFFM/AM waveforms and PWL TD=",
-      "fixtures": 6,
-      "ngspiceSuccess": 6,
-      "ids": [
-        "iexp-iexp-cir",
-        "isffm-isffm-cir",
-        "tl1x-tl1x-mpi-cir",
-        "vexp-vexp-cir",
-        "vpwl-vpwl-cir",
-        "vsffm-vsffm-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/716"
-    },
-    {
       "bucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)",
       "fixtures": 5,
       "ngspiceSuccess": 5,
@@ -101,17 +87,6 @@
         "sens-bsim4-issue694-fd-cir"
       ],
       "issue": null
-    },
-    {
-      "bucket": "device: JFET forms (PJF model type, instance TEMP=, J card)",
-      "fixtures": 3,
-      "ngspiceSuccess": 3,
-      "ids": [
-        "measure-bad-dot-measure-line5-cir",
-        "pjfet-dc-pjfet-2108-cir",
-        "pjfet-switch-pjfet-tran-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/717"
     },
     {
       "bucket": "execution: other failure",
@@ -149,6 +124,15 @@
       "ngspiceSuccess": 1,
       "ids": [
         "bjt-ic-bjt-ic-nonzero-cir"
+      ],
+      "issue": null
+    },
+    {
+      "bucket": "device: K-element",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "tl1x-tl1x-mpi-cir"
       ],
       "issue": null
     },
@@ -614,7 +598,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 10,
-      "worstNormalizedError": 9.34e-16,
+      "worstNormalizedError": 1.25e-15,
       "worstSignal": "ac v(v1_r1)",
       "outcome": "matched",
       "gapBucket": null
@@ -642,8 +626,8 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 6,
-      "worstNormalizedError": 0.0000339,
-      "worstSignal": "ac v(vdd)",
+      "worstNormalizedError": 8.04e-16,
+      "worstSignal": "ac i(vdd1)",
       "outcome": "matched",
       "gapBucket": null
     },
@@ -1230,7 +1214,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 6,
-      "worstNormalizedError": 3.83e-11,
+      "worstNormalizedError": 7.82e-12,
       "worstSignal": "ac i(vin)",
       "outcome": "matched",
       "gapBucket": null
@@ -1395,8 +1379,8 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 7,
-      "worstNormalizedError": 1.19e-15,
-      "worstSignal": "ac v(1c)",
+      "worstNormalizedError": 1.92e-15,
+      "worstSignal": "ac v(1b)",
       "outcome": "matched",
       "gapBucket": null
     },
@@ -1530,16 +1514,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 17: Unsupported source waveform 'EXP' IEXP 0 1 EXP(1A 5A 1S 0.2S 2S 0.5S)"
+        "status": "success",
+        "analyses": [
+          "tran:58"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 6.09e-11,
+      "worstSignal": "tran i(vmon)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "inductor-errormessagetest-cir",
@@ -1696,16 +1681,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 14: Unsupported source waveform 'SFFM' ISSFM 0 1 SFFM(0 5 10KHZ 3 1KHZ)"
+        "status": "success",
+        "analyses": [
+          "tran:207"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 0.000818,
+      "worstSignal": "tran i(vmon)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "isin-isin-cir",
@@ -2061,16 +2047,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 2: Unsupported device card: 'J' J1 Vout Vin Nsource J2N3819"
+        "status": "success",
+        "analyses": [
+          "tran:107"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "device: JFET forms (PJF model type, instance TEMP=, J card)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.000363,
+      "worstSignal": "tran i(vdd)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "message-device-core-safebarrier-1-cir",
@@ -2680,16 +2667,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 17: Unsupported JFET instance parameter: 'TEMP=27' Jtest 1a 2a 3 SA2108 TEMP=27"
+        "status": "success",
+        "analyses": [
+          "dc:64"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "device: JFET forms (PJF model type, instance TEMP=, J card)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 10,
+      "worstNormalizedError": 0.00000775,
+      "worstSignal": "dc i(vismon)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "pjfet-switch-pjfet-tran-cir",
@@ -2707,16 +2695,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 8: .model '2N5114' has unsupported type 'PJF' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL 2N5114 PJF VTO = -5.288 BETA = 2.1897M LAMBDA = 9.946M R"
+        "status": "success",
+        "analyses": [
+          "tran:707"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "device: JFET forms (PJF model type, instance TEMP=, J card)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.0000136,
+      "worstSignal": "tran i(vds)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "polyg-polyg-cir",
@@ -3372,14 +3361,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: Unsupported source waveform 'EXP' VSLOW 1 22 DC 0 EXP(0v 10v 3ms 10ms 200ms 10ms)"
+        "firstErrorLine": "Parse error at line 14: Unsupported device card: 'K' KM12 L1 L2 2.229e-01"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+      "gapBucket": "device: K-element"
     },
     {
       "id": "transline-errormessagetest2-cir",
@@ -3536,16 +3525,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 14: Unsupported source waveform 'EXP' VEXP 1 0 EXP(0V 5V 1US 1US 1S)"
+        "status": "success",
+        "analyses": [
+          "tran:58"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+      "comparedAnalyses": 1,
+      "comparedSignals": 2,
+      "worstNormalizedError": 0.000355,
+      "worstSignal": "tran i(vexp)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "vpulse-vpulse-cir",
@@ -3591,16 +3581,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 40: Unsupported PWL source parameters: 'TD=1' VPWL4 4 0 PWL(0S 0V 2S 3V 3S 2V 4S 2V 4.01V 5V 4.5S 5V 4.51S -2V 7S 1V 9S -1V 9.01S 4V 10S 3V) TD=1"
+        "status": "success",
+        "analyses": [
+          "tran:3145"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+      "comparedAnalyses": 1,
+      "comparedSignals": 12,
+      "worstNormalizedError": 7.11e-13,
+      "worstSignal": "tran i(vpwl6)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "vsffm-vsffm-cir",
@@ -3618,16 +3609,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 14: Unsupported source waveform 'SFFM' VSSFM 1 0 SFFM(0 1 1MEG 2 250K)"
+        "status": "success",
+        "analyses": [
+          "tran:1007"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+      "comparedAnalyses": 1,
+      "comparedSignals": 2,
+      "worstNormalizedError": 0.000043,
+      "worstSignal": "tran i(vssfm)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "vsin-bug1679-cir",
@@ -3742,5 +3734,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "2a95fe8c48ed3e27874b9e741997cc81e4e3d6f19e8705e09454051b896d9e47"
+  "outcomeSha256": "cc41c469fee6732450a8c9615e34a2c40a94aefd2221536d26bcf542550f7891"
 }

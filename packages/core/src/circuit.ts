@@ -74,6 +74,7 @@ import { parseZInstance } from './parser/z-device-parser.js';
 import { parseSwitchInstance } from './parser/switch-parser.js';
 import { DEVICE_GMIN } from './devices/device.js';
 import { parseBJTInstance, type BJTInstanceParams } from './parser/bjt-parser.js';
+import { parseJFETInstance, type JFETInstanceParams } from './parser/jfet-parser.js';
 import {
   formatCplModelCard,
   parseCplLines,
@@ -398,6 +399,25 @@ function withRFPortNodes(descriptors: DeviceDescriptor[]): DeviceDescriptor[] {
     : desc));
 }
 
+/**
+ * Positional waveform coefficients up to the last given one. An omitted one
+ * before it is written as the value ngspice reads the same as omitted; one
+ * without such a value (a TSTOP-derived default) cannot be written.
+ */
+function positionalCoefficients(keyword: string, coefficients: Array<[number | undefined, number?]>): string {
+  let last = coefficients.length - 1;
+  while (last > 0 && coefficients[last][0] === undefined) last--;
+  return coefficients.slice(0, last + 1).map(([value, omitted], index) => {
+    if (value !== undefined) return formatNumber(value);
+    if (omitted === undefined) {
+      throw new InvalidCircuitError(
+        `${keyword} coefficient ${index + 1} is omitted before a given one; its default cannot be written on a netlist card`,
+      );
+    }
+    return formatNumber(omitted);
+  }).join(' ');
+}
+
 function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string {
   if (!wf) return 'DC 0';
   let base: string;
@@ -440,6 +460,28 @@ function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string 
           .flatMap(point => [point.time, point.value])
           .map(formatNumber)
           .join(' ')})`;
+        if (wf.delay !== undefined) base += ` TD=${formatNumber(wf.delay)}`;
+        if (wf.repeat !== undefined) base += ` R=${formatNumber(wf.repeat)}`;
+        break;
+      case 'exp':
+        // ngspice reads a zero TD1/TAU1/TD2/TAU2 as omitted.
+        base = `EXP(${positionalCoefficients('EXP', [
+          [wf.v1 ?? 0], [wf.v2 ?? 0], [wf.td1, 0], [wf.tau1, 0], [wf.td2, 0], [wf.tau2, 0],
+        ])})`;
+        break;
+      case 'sffm':
+        // An omitted FC defaults from TSTOP, which no explicit value writes; a zero FM is omitted.
+        base = `SFFM(${positionalCoefficients('SFFM', [
+          [wf.offset ?? 0], [wf.amplitude ?? 0], [wf.carrierFrequency], [wf.modulationIndex, 90],
+          [wf.signalFrequency, 0], [wf.delay, 0], [wf.signalPhase, 0], [wf.carrierPhase, 0],
+        ])})`;
+        break;
+      case 'am':
+        // Omitted FM and FC default from TSTOP, which no explicit value writes.
+        base = `AM(${positionalCoefficients('AM', [
+          [wf.offset ?? 0], [wf.carrierAmplitude ?? 0], [wf.modulationAmplitude, 1], [wf.modulationFrequency],
+          [wf.carrierFrequency], [wf.delay, 0], [wf.modulationPhase, 0], [wf.carrierPhase, 0],
+        ])})`;
         break;
       case 'trnoise':
         base = `TRNOISE(${[
@@ -1421,13 +1463,25 @@ export class Circuit {
     this.descriptors.push({ type: 'Q', name, nodes, modelName, ...(params ? { params } : {}) });
   }
 
-  /** Add a bounded level-1 N-channel junction field-effect transistor. */
-  addJFET(name: string, nodeDrain: string, nodeGate: string, nodeSource: string, modelName: string): void {
+  /**
+   * Add a bounded level-1/level-2 junction field-effect transistor
+   * (`.model NJF` or `.model PJF`). `instanceParams.TEMP` is the ngspice
+   * instance temperature; only the nominal 27 C is supported.
+   */
+  addJFET(
+    name: string,
+    nodeDrain: string,
+    nodeGate: string,
+    nodeSource: string,
+    modelName: string,
+    instanceParams?: JFETInstanceParams,
+  ): void {
     this.nodeSet.add(nodeDrain);
     this.nodeSet.add(nodeGate);
     this.nodeSet.add(nodeSource);
     this.descriptors.push({
       type: 'J', name, nodes: [nodeDrain, nodeGate, nodeSource], modelName,
+      ...(instanceParams?.TEMP === undefined ? {} : { params: { TEMP: instanceParams.TEMP } }),
     });
   }
 
@@ -2172,10 +2226,16 @@ export class Circuit {
         }
         case 'J': {
           const model = this.requireModel('JFET', desc);
-          if (model.type !== 'NJF') {
+          if (model.type !== 'NJF' && model.type !== 'PJF') {
             throw new Error(`Unsupported JFET model type: '${model.type}'`);
           }
-          devices.push(new JFET(desc.name, nodeIndices, model.params));
+          // ngspice jfettemp.c/jfet2temp.c scale nothing at TEMP = TNOM = 27 C;
+          // spice-ts has no JFET temperature law for any other value.
+          const instanceTemperature = desc.params?.TEMP;
+          if (instanceTemperature !== undefined && instanceTemperature !== NOMINAL_TEMPERATURE_C) {
+            throw new UnsupportedTemperatureError(desc.name, instanceTemperature);
+          }
+          devices.push(new JFET(desc.name, nodeIndices, model.params, model.type === 'PJF' ? -1 : 1));
           break;
         }
         case 'Z': {
@@ -2710,7 +2770,7 @@ export class Circuit {
         const modelName = desc.modelName!;
         const model = this._models.get(modelName);
         if (!model) throw new InvalidCircuitError(`JFET '${desc.name}' references unknown model '${modelName}'`);
-        if (model.type !== 'NJF') {
+        if (model.type !== 'NJF' && model.type !== 'PJF') {
           throw new Error(`Unsupported JFET model type: '${model.type}'`);
         }
         const params = resolveNJFETParams(model.params);
@@ -3271,6 +3331,17 @@ export class Circuit {
             nodes: nodes.map(mapNode),
             modelName: instance.modelName,
             ...(params ? { params } : {}),
+          });
+          break;
+        }
+        case 'J': {
+          // TEMP may be a {param}; node and model tokens are never braced.
+          const instance = parseJFETInstance(tokens.map(t => evalToken(t)), lineNumber);
+          result.push({
+            type: 'J', name: devName,
+            nodes: [instance.drain, instance.gate, instance.source].map(mapNode),
+            modelName: instance.modelName,
+            ...(instance.params ? { params: { ...instance.params } } : {}),
           });
           break;
         }

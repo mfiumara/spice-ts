@@ -251,7 +251,8 @@ describe('ngspice parenthesised and extended source waveforms (#492)', () => {
 
   it.each([
     ['V1 1 0 PULSE(0 1 0 0.1 0.1 0.3 1 2 7)', /Unsupported PULSE source parameters: '7'/],
-    ['V1 1 0 PWL(0 0 1 1) R=1u', /Unsupported PWL source parameters: 'R=1u'/],
+    ['V1 1 0 PWL(0 0 1 1) R=1u', /PWL repeat start time 0.000001 does not match any time point/],
+    ['V1 1 0 PWL(0 0 1 1) X=1u', /Unsupported PWL source parameters: 'X=1u'/],
     ['V1 1 0 (PULSE 0 1 0 0.1 0.1 0.3 1) TD=1', /Unsupported PULSE source parameters: 'TD=1'/],
   ])('keeps strict structured diagnostics for %s', (card, diagnostic) => {
     try {

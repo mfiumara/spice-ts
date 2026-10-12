@@ -11,6 +11,7 @@ import {
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
 import { parseBJTInstance } from './bjt-parser.js';
+import { parseJFETInstance } from './jfet-parser.js';
 import { parsePoleZero } from './pole-zero-parser.js';
 import { parseSensitivity } from './sensitivity-parser.js';
 import {
@@ -1171,15 +1172,13 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       );
       break;
     }
-    case 'J':
-      if (tokens.length !== 5) {
-        throw new ParseError(
-          `Unsupported JFET instance parameter: '${tokens.slice(5).join(' ')}'`,
-          lineNumber, tokens.join(' '),
-        );
-      }
-      circuit.addJFET(name, tokens[1], tokens[2], tokens[3], tokens[4]);
+    case 'J': {
+      const instance = parseJFETInstance(tokens, lineNumber);
+      circuit.addJFET(
+        name, instance.drain, instance.gate, instance.source, instance.modelName, instance.params,
+      );
       break;
+    }
     case 'M': {
       // SPICE MOSFET: M name D G S [B] modelName [W=x L=y ...]
       // tokens[4] is either the body node (4-terminal) or the model name (3-terminal).

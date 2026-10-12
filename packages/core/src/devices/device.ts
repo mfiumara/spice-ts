@@ -231,8 +231,12 @@ export interface DeviceModel {
    * flag) re-initialises it here.
    */
   beginOperatingPoint?(): void;
-  /** Receive the transient TSTEP used by SPICE waveform defaults (e.g. zero PULSE TR/TF). */
-  setTransientTimestep?(timestep: number): void;
+  /**
+   * Receive the transient TSTEP and TSTOP (ngspice CKTstep/CKTfinalTime) used
+   * by SPICE waveform defaults (e.g. zero PULSE TR/TF, SFFM/AM frequencies).
+   * `stopTime` is undefined for an open-ended stepping run.
+   */
+  setTransientTimestep?(timestep: number, stopTime?: number): void;
   /** Clear device-owned transient history before restarting at t=0. */
   resetTransient?(): void;
   /** Whether this device requires Newton-Raphson iteration (nonlinear). */
