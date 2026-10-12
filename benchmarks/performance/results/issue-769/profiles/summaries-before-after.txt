@@ -1,0 +1,180 @@
+cmos-inverter-chain-tran-10000.cpuprofile: 1712 samples, 6625.0 ms sampled
+
+Top self time
+    1707.7 ms  25.8%  batchStamp packages/core/dist/chunk.js:7409
+     601.4 ms   9.1%  (garbage collector)
+     508.6 ms   7.7%  limitNewtonStep packages/core/dist/chunk.js:7034
+     464.7 ms   7.0%  mos1BulkJunctions packages/core/dist/chunk.js:6607
+     458.1 ms   6.9%  convergenceTest packages/core/dist/chunk.js:7211
+     266.7 ms   4.0%  factorize packages/core/dist/chunk.js:30159
+     262.8 ms   4.0%  refactorWithPivots packages/core/dist/chunk.js:30644
+     248.5 ms   3.8%  chargeTruncationTimestep packages/core/dist/chunk.js:33239
+     159.3 ms   2.4%  newtonRaphson packages/core/dist/chunk.js:31566
+     130.6 ms   2.0%  attemptStep packages/core/dist/chunk.js:32186
+     128.3 ms   1.9%  buildCompanionSystem packages/core/dist/chunk.js:31989
+     120.2 ms   1.8%  solve packages/core/dist/chunk.js:30739
+
+Top inclusive time
+    6625.0 ms 100.0%  (root)
+    5902.6 ms  89.1%  simulate packages/core/dist/chunk.js:39128
+    5665.9 ms  85.5%  solveCompiledAnalyses packages/core/dist/chunk.js:39183
+    3709.2 ms  56.0%  solveTransient packages/core/dist/chunk.js:33590
+    3587.6 ms  54.2%  advanceSolution packages/core/dist/chunk.js:32848
+    2458.8 ms  37.1%  attemptStep packages/core/dist/chunk.js:32186
+    2291.8 ms  34.6%  batchStamp packages/core/dist/chunk.js:7409
+    1956.7 ms  29.5%  solveDCOperatingPoint packages/core/dist/chunk.js:31793
+    1956.7 ms  29.5%  transientInitialSolution packages/core/dist/chunk.js:39578
+    1938.8 ms  29.3%  newtonRaphson packages/core/dist/chunk.js:31566
+    1670.7 ms  25.2%  dynamicGminStepping packages/core/dist/chunk.js:31865
+    1670.7 ms  25.2%  gminSteppingHomotopy packages/core/dist/chunk.js:31837
+
+rc-ladder-ac-10000.cpuprofile: 167 samples, 599.5 ms sampled
+
+Top self time
+      99.3 ms  16.6%  (garbage collector)
+      86.6 ms  14.5%  solveAC packages/core/dist/chunk.js:34282
+      80.0 ms  13.4%  factorize packages/core/dist/chunk.js:33865
+      24.6 ms   4.1%  hashResult benchmarks/performance/results/issue-740/scripts/sample.mjs:24
+      23.7 ms   3.9%  toCsc packages/core/dist/chunk.js:33641
+      19.9 ms   3.3%  solve packages/core/dist/chunk.js:34069
+      18.9 ms   3.2%  analyzePattern packages/core/dist/chunk.js:30037
+      14.9 ms   2.5%  collectStatements packages/core/dist/chunk.js:26157
+      14.9 ms   2.5%  simulate packages/core/dist/chunk.js:39128
+      14.8 ms   2.5%  compileSourceTextModule node:internal/modules/esm/utils:344
+      11.3 ms   1.9%  compile packages/core/dist/chunk.js:24215
+      11.0 ms   1.8%  lockTopology packages/core/dist/chunk.js:31018
+
+Top inclusive time
+     599.5 ms 100.0%  (root)
+     413.3 ms  69.0%  simulate packages/core/dist/chunk.js:39128
+     318.5 ms  53.1%  solveCompiledAnalyses packages/core/dist/chunk.js:39183
+     234.5 ms  39.1%  solveAC packages/core/dist/chunk.js:34282
+     106.7 ms  17.8%  solve packages/core/dist/chunk.js:34275
+      99.3 ms  16.6%  (garbage collector)
+      80.0 ms  13.4%  factorize packages/core/dist/chunk.js:33865
+      79.0 ms  13.2%  solveDCOperatingPoint packages/core/dist/chunk.js:31793
+      78.9 ms  13.2%  newtonRaphson packages/core/dist/chunk.js:31566
+      73.7 ms  12.3%  (anonymous) benchmarks/performance/results/issue-740/scripts/sample.mjs:1
+      61.9 ms  10.3%  parseAsync packages/core/dist/chunk.js:28558
+      41.2 ms   6.9%  createLinearizedFrequencySystem packages/core/dist/chunk.js:34234
+
+rc-ladder-tran-10000.cpuprofile: 351 samples, 1070.9 ms sampled
+
+Top self time
+     112.9 ms  10.5%  (garbage collector)
+      98.3 ms   9.2%  buildCompanionSystem packages/core/dist/chunk.js:31989
+      79.2 ms   7.4%  attemptStep packages/core/dist/chunk.js:32186
+      56.6 ms   5.3%  evaluate packages/core/dist/chunk.js:32637
+      53.6 ms   5.0%  flush packages/core/dist/chunk.js:33572
+      50.8 ms   4.7%  compile packages/core/dist/chunk.js:24215
+      44.8 ms   4.2%  stampStaticDevices packages/core/dist/chunk.js:31481
+      35.7 ms   3.3%  acceptAll packages/core/dist/chunk.js:3178
+      33.2 ms   3.1%  lockTopology packages/core/dist/chunk.js:31018
+      28.0 ms   2.6%  factorize packages/core/dist/chunk.js:30159
+      25.9 ms   2.4%  refactorWithPivots packages/core/dist/chunk.js:30644
+      25.3 ms   2.4%  stampPrevB packages/core/dist/chunk.js:33118
+
+Top inclusive time
+    1070.9 ms 100.0%  (root)
+     875.6 ms  81.8%  simulate packages/core/dist/chunk.js:39128
+     727.1 ms  67.9%  solveCompiledAnalyses packages/core/dist/chunk.js:39183
+     631.0 ms  58.9%  solveTransient packages/core/dist/chunk.js:33590
+     521.7 ms  48.7%  advanceSolution packages/core/dist/chunk.js:32848
+     338.1 ms  31.6%  attemptStep packages/core/dist/chunk.js:32186
+     156.7 ms  14.6%  buildCompanionSystem packages/core/dist/chunk.js:31989
+     112.9 ms  10.5%  (garbage collector)
+     104.9 ms   9.8%  parseAsync packages/core/dist/chunk.js:28558
+      96.0 ms   9.0%  solveDCOperatingPoint packages/core/dist/chunk.js:31793
+      96.0 ms   9.0%  transientInitialSolution packages/core/dist/chunk.js:39578
+      91.4 ms   8.5%  compile packages/core/dist/chunk.js:24215
+
+rc-mesh-ac-10000-after.cpuprofile: 294 samples, 1099.5 ms sampled
+
+Top self time
+     369.9 ms  33.6%  refactorWithPivots packages/core/dist/chunk.js:34162
+     166.4 ms  15.1%  factorize packages/core/dist/chunk.js:33901
+      78.9 ms   7.2%  (garbage collector)
+      52.1 ms   4.7%  factorize packages/core/dist/chunk.js:30159
+      46.0 ms   4.2%  amdOrdering packages/core/dist/chunk.js:29736
+      29.1 ms   2.6%  compile packages/core/dist/chunk.js:24215
+      23.0 ms   2.1%  solveAC packages/core/dist/chunk.js:34506
+      21.5 ms   2.0%  toCsc packages/core/dist/chunk.js:33641
+      20.0 ms   1.8%  analyzePattern packages/core/dist/chunk.js:30037
+      19.3 ms   1.8%  newtonRaphson packages/core/dist/chunk.js:31566
+      18.8 ms   1.7%  solve packages/core/dist/chunk.js:34275
+      16.4 ms   1.5%  lockTopology packages/core/dist/chunk.js:31018
+
+Top inclusive time
+    1099.5 ms 100.0%  (root)
+     938.2 ms  85.3%  simulate packages/core/dist/chunk.js:39352
+     830.3 ms  75.5%  solveCompiledAnalyses packages/core/dist/chunk.js:39407
+     655.7 ms  59.6%  solveAC packages/core/dist/chunk.js:34506
+     561.5 ms  51.1%  solve packages/core/dist/chunk.js:34499
+     537.8 ms  48.9%  factorize packages/core/dist/chunk.js:33901
+     369.9 ms  33.6%  refactorWithPivots packages/core/dist/chunk.js:34162
+     169.6 ms  15.4%  solveDCOperatingPoint packages/core/dist/chunk.js:31793
+     164.6 ms  15.0%  newtonRaphson packages/core/dist/chunk.js:31566
+      78.9 ms   7.2%  (garbage collector)
+      74.8 ms   6.8%  parseAsync packages/core/dist/chunk.js:28558
+      71.2 ms   6.5%  createLinearizedFrequencySystem packages/core/dist/chunk.js:34458
+
+rc-mesh-ac-10000.cpuprofile: 836 samples, 2854.0 ms sampled
+
+Top self time
+    2153.0 ms  75.4%  factorize packages/core/dist/chunk.js:33865
+      87.0 ms   3.0%  (garbage collector)
+      54.4 ms   1.9%  amdOrdering packages/core/dist/chunk.js:29736
+      48.3 ms   1.7%  factorize packages/core/dist/chunk.js:30159
+      43.1 ms   1.5%  applySupernode packages/core/dist/chunk.js:30521
+      31.2 ms   1.1%  solve packages/core/dist/chunk.js:34069
+      31.0 ms   1.1%  newtonRaphson packages/core/dist/chunk.js:31566
+      30.3 ms   1.1%  solveAC packages/core/dist/chunk.js:34282
+      28.0 ms   1.0%  analyzePattern packages/core/dist/chunk.js:30037
+      28.0 ms   1.0%  toCsc packages/core/dist/chunk.js:33641
+      17.8 ms   0.6%  solve packages/core/dist/chunk.js:34275
+      14.9 ms   0.5%  compile packages/core/dist/chunk.js:24215
+
+Top inclusive time
+    2854.0 ms 100.0%  (root)
+    2679.9 ms  93.9%  simulate packages/core/dist/chunk.js:39128
+    2558.3 ms  89.6%  solveCompiledAnalyses packages/core/dist/chunk.js:39183
+    2339.6 ms  82.0%  solveAC packages/core/dist/chunk.js:34282
+    2202.6 ms  77.2%  solve packages/core/dist/chunk.js:34275
+    2153.6 ms  75.5%  factorize packages/core/dist/chunk.js:33865
+     217.6 ms   7.6%  newtonRaphson packages/core/dist/chunk.js:31566
+     217.6 ms   7.6%  solveDCOperatingPoint packages/core/dist/chunk.js:31793
+     101.6 ms   3.6%  createLinearizedFrequencySystem packages/core/dist/chunk.js:34234
+      99.2 ms   3.5%  factorize packages/core/dist/chunk.js:30159
+      87.0 ms   3.0%  (garbage collector)
+      82.6 ms   2.9%  parseAsync packages/core/dist/chunk.js:28558
+
+resistor-mesh-op-10000.cpuprofile: 201 samples, 612.8 ms sampled
+
+Top self time
+      74.5 ms  12.2%  applySupernode packages/core/dist/chunk.js:30521
+      57.4 ms   9.4%  factorize packages/core/dist/chunk.js:30159
+      55.1 ms   9.0%  amdOrdering packages/core/dist/chunk.js:29736
+      49.3 ms   8.0%  (garbage collector)
+      31.5 ms   5.1%  lockTopology packages/core/dist/chunk.js:31018
+      30.2 ms   4.9%  collectStatements packages/core/dist/chunk.js:26157
+      25.2 ms   4.1%  compile packages/core/dist/chunk.js:24215
+      23.3 ms   3.8%  resolveResistor packages/core/dist/chunk.js:1392
+      20.9 ms   3.4%  preprocessSteps packages/core/dist/chunk.js:25790
+      18.2 ms   3.0%  extractControlBlocks packages/core/dist/chunk.js:26720
+      17.5 ms   2.9%  analyzePattern packages/core/dist/chunk.js:30037
+      14.9 ms   2.4%  tokenizeLine packages/core/dist/chunk.js:537
+
+Top inclusive time
+     612.8 ms 100.0%  (root)
+     475.5 ms  77.6%  simulate packages/core/dist/chunk.js:39128
+     322.7 ms  52.7%  solveDCOperatingPoint packages/core/dist/chunk.js:31793
+     322.7 ms  52.7%  solveCompiledAnalyses packages/core/dist/chunk.js:39183
+     320.0 ms  52.2%  newtonRaphson packages/core/dist/chunk.js:31566
+     138.8 ms  22.7%  parseAsync packages/core/dist/chunk.js:28558
+     138.5 ms  22.6%  factorize packages/core/dist/chunk.js:30159
+      82.5 ms  13.5%  getSparseSolver packages/core/dist/chunk.js:31146
+      81.7 ms  13.3%  analyzePattern packages/core/dist/chunk.js:30037
+      80.7 ms  13.2%  (anonymous) benchmarks/performance/profile-scaling-m2.mjs:1
+      74.5 ms  12.2%  applySupernode packages/core/dist/chunk.js:30521
+      71.1 ms  11.6%  compile packages/core/dist/chunk.js:24215
+

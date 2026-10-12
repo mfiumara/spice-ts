@@ -238,6 +238,20 @@ describe('XSPICE event-driven digital models against ngspice-47 (#553 slice 3)',
     for (const [node, value] of Object.entries(expected)) expect(dc!.voltage(node)).toBeCloseTo(value, 12);
   });
 
+  it('resolves digital() node names case-insensitively like ngspice eprint', async () => {
+    const transient = (await simulate([
+      'digital case', 'v1 1 0 PULSE(0 1 1n 1n 1n 5n 20n)', 'r1 1 0 1k',
+      'a1 [1] [DIN] adc', '.model adc adc_bridge (in_low=0.3 in_high=0.7)',
+      'a2 din DOUT inv', '.model inv d_inverter',
+      '.tran 1n 10n', '.end',
+    ].join('\n'))).transient!;
+    expect([...transient.digitalNodes.keys()]).toEqual(['DIN', 'DOUT']);
+    expect(transient.digital('Dout').length).toBeGreaterThan(1);
+    expect(transient.digital('din')).toEqual(transient.digital('DIN'));
+    expect(transient.digital('Dout')).toEqual(transient.digital('DOUT'));
+    expect(() => transient.digital('nope')).toThrow(/Unknown digital node/);
+  });
+
   it('keeps the other digital code models typed-unsupported', async () => {
     await expect(simulate([
       'dff', 'v1 1 0 1', 'a1 [1] [d] adc', '.model adc adc_bridge',

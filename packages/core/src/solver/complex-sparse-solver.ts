@@ -87,6 +87,20 @@ export class ComplexSparseSolver {
   private swaps = 0;
   private variables: readonly MatrixVariableIdentity[] = [];
 
+  // Pivot-reuse data of the last successful full factorization (#769), in
+  // elimination positions; null pattern references mean "nothing to reuse".
+  private pivotsG: CscMatrix | null = null;
+  private pivotsC: CscMatrix | null = null;
+  private gScatterPos: Int32Array = new Int32Array(0); // position each stored G entry scatters to
+  private cScatterPos: Int32Array = new Int32Array(0); // position each stored C entry scatters to
+  private natPos!: Int32Array;             // final position of step j's preferred row
+  private pivotRank!: Int32Array;          // L rows of column j found before its pivot row
+  private zeroPtr!: Int32Array;            // CSC pointers into zeroRows per column
+  private zeroRows = new Int32Array(16);   // touched rows whose value was exactly zero
+  private workspaceDirty = false;
+  private numericCount = 0;
+  private refactorCount = 0;
+
   /** ngspice-47 CKTpivotRelTol default (`cktntask.c`), Sparse RelThreshold. */
   private readonly pivotRelThreshold = 1e-3;
   /** ngspice-47 CKTpivotAbsTol default (`cktntask.c`), Sparse AbsThreshold. */
@@ -155,9 +169,28 @@ export class ComplexSparseSolver {
     this.nonzeroList = new Int32Array(n);
     this.activeK = new Int32Array(n);
     this.activeMark = new Int32Array(n);
+    this.natPos = new Int32Array(n);
+    this.pivotRank = new Int32Array(n);
+    this.zeroPtr = new Int32Array(n + 1);
 
     this.analyzed = true;
     this.factorized = false;
+    this.workspaceDirty = false;
+    this.pivotsG = null;
+    this.pivotsC = null;
+  }
+
+  /** Numeric factorizations performed (full or pivot reuse). Diagnostics only. */
+  get numericFactorizations(): number {
+    return this.numericCount;
+  }
+
+  /**
+   * Numeric factorizations that reused the pivot sequence and L/U pattern of
+   * the previous full factorization. Diagnostics only.
+   */
+  get pivotReuseFactorizations(): number {
+    return this.refactorCount;
   }
 
   /**
@@ -195,6 +228,24 @@ export class ComplexSparseSolver {
       throw new Error('Must call analyzePattern before factorize');
     }
 
+    // Same structure as the last full factorization (the next frequency of a
+    // sweep): first try to reuse its pivot sequence and L/U pattern, as
+    // ngspice NIacIter does (SMPcReorder once, then SMPcLUfac) and KLU does
+    // with klu_refactor. The attempt only succeeds when this kernel would
+    // have made exactly the same choices, so the result is bit-identical to
+    // a full factorization.
+    if (
+      this.pivotsG !== null && this.pivotsC !== null
+      && sameStructure(G, this.pivotsG) && sameStructure(C, this.pivotsC)
+      && this.refactorWithPivots(G, C, omega)
+    ) {
+      this.workspaceDirty = false;
+      this.factorized = true;
+      this.numericCount++;
+      this.refactorCount++;
+      return;
+    }
+
     const n = this.n;
     const perm = this.perm;
     const colPerm = this.colPerm;
@@ -215,11 +266,22 @@ export class ComplexSparseSolver {
     const nonzeroList = this.nonzeroList;
     const activeK = this.activeK;
     const activeMark = this.activeMark;
+    const natPos = this.natPos;
+    const pivotRank = this.pivotRank;
+    const zeroPtr = this.zeroPtr;
+    let zeroRows = this.zeroRows;
 
     // Initialize the row permutation to the preferred pivot rows: the forced
     // row of each leading column singleton, then the symmetrically permuted
     // diagonal.
     this.factorized = false;
+    this.pivotsG = null;
+    this.pivotsC = null;
+    if (this.workspaceDirty) {
+      wsRe.fill(0);
+      wsIm.fill(0);
+      this.workspaceDirty = false;
+    }
     perm.set(this.rowPref);
     pivotOrigRow.fill(-1);
     pinv.fill(-1);
@@ -229,6 +291,7 @@ export class ComplexSparseSolver {
 
     let lp = 0;
     let up = 0;
+    let zp = 0;
 
     for (let j = 0; j < n; j++) {
       let nonzeroCount = 0;
@@ -363,6 +426,7 @@ export class ComplexSparseSolver {
       // results depend on card order. When no candidate passes, Sparse falls
       // back to the largest element (spSMALL_PIVOT), which is maxOrigRow here.
       const natOrigRow = perm[j];
+      natPos[j] = natOrigRow;
       let chosenOrigRow = maxOrigRow;
       if (pinv[natOrigRow] < 0) {
         const natMag = Math.abs(wsRe[natOrigRow]) + Math.abs(wsIm[natOrigRow]);
@@ -407,10 +471,25 @@ export class ComplexSparseSolver {
       // === Step 4: STORE L column j ===
       // L[i,j] = workspace[origRow] / pivot (complex division)
       // (a+bi) / (c+di) = ((ac+bd) + (bc-ad)i) / (c^2+d^2)
+      // Touched rows whose final value is exactly zero (unpivoted rows that
+      // stay out of L, pivoted rows whose column was never applied) are
+      // recorded for the pivot-reuse check in refactorWithPivots(), and so is
+      // how many L rows precede the pivot row in discovery order (the order
+      // that resolves magnitude ties in the column-maximum search).
+      zeroPtr[j] = zp;
       for (let t = 0; t < nonzeroCount; t++) {
         const origRow = nonzeroList[t];
-        if (origRow !== chosenOrigRow && pinv[origRow] < 0 &&
-            (wsRe[origRow] !== 0 || wsIm[origRow] !== 0)) {
+        if (origRow === chosenOrigRow) {
+          pivotRank[j] = lp - lColPtr[j];
+          continue;
+        }
+        if (wsRe[origRow] === 0 && wsIm[origRow] === 0) {
+          if (zp === zeroRows.length) {
+            this.growZeroRows(zp + 1);
+            zeroRows = this.zeroRows;
+          }
+          zeroRows[zp++] = origRow;
+        } else if (pinv[origRow] < 0) {
           const aRe = wsRe[origRow];
           const aIm = wsIm[origRow];
           if (lp === lRe.length) {
@@ -448,8 +527,168 @@ export class ComplexSparseSolver {
       lRows[p] = pinv[lTempOrigRows[p]];
     }
 
+    // Pivot-reuse data, in elimination positions: zero rows, the preferred
+    // row of every step, and the position each stored entry of G and C
+    // scatters to.
+    zeroPtr[n] = zp;
+    for (let p = 0; p < zp; p++) zeroRows[p] = pinv[zeroRows[p]];
+    for (let k = 0; k < n; k++) natPos[k] = pinv[natPos[k]];
+    this.gScatterPos = scatterPositions(G, pinv, this.gScatterPos);
+    this.cScatterPos = scatterPositions(C, pinv, this.cScatterPos);
+    this.pivotsG = G;
+    this.pivotsC = C;
+
     this.swaps = swaps;
     this.factorized = true;
+    this.numericCount++;
+  }
+
+  /**
+   * Refactorize G + jwC on the pivot sequence and L/U pattern of the last
+   * full factorization, in place: ngspice's SMPcLUfac / klu_refactor reuse of
+   * the previous ordering between AC frequency points. Unlike ngspice, which
+   * keeps a reused pivot until it is singular, this succeeds only when the
+   * full kernel would make exactly the same decisions on these values:
+   *
+   *  - every reused U entry is nonzero (the kernel skips a zero U[k,j], which
+   *    would change which L columns are applied);
+   *  - every touched row recorded as zero is still exactly zero, and every L
+   *    row is nonzero (same L/U patterns, hence the same touched rows for
+   *    later columns);
+   *  - the ngspice-47 acceptance test selects the same row: the preferred row
+   *    still passes it, or the off-preference pivot is still the first
+   *    column maximum in discovery order and the preferred row still fails.
+   *
+   * Under those conditions every workspace entry sees the same operations in
+   * the same order as in factorize(), so the factors are bit-identical (the
+   * same argument as GilbertPeierlsSolver.refactorWithPivots, #486). On any
+   * mismatch it returns false with the workspace dirty and partially
+   * overwritten factors; the caller then runs the full factorization.
+   */
+  private refactorWithPivots(G: CscMatrix, C: CscMatrix, omega: number): boolean {
+    const n = this.n;
+    const colPerm = this.colPerm;
+    const xRe = this.workspaceRe;
+    const xIm = this.workspaceIm;
+    const lColPtr = this.lColPtr;
+    const lRows = this.lRows;
+    const lRe = this.lValuesRe;
+    const lIm = this.lValuesIm;
+    const uColPtr = this.uColPtr;
+    const uRows = this.uRows;
+    const uRe = this.uValuesRe;
+    const uIm = this.uValuesIm;
+    const natPos = this.natPos;
+    const pivotRank = this.pivotRank;
+    const zeroPtr = this.zeroPtr;
+    const zeroRows = this.zeroRows;
+    const gScatterPos = this.gScatterPos;
+    const cScatterPos = this.cScatterPos;
+    const gColPtr = G.colPtr;
+    const gValues = G.values;
+    const cColPtr = C.colPtr;
+    const cValues = C.values;
+    const absThreshold = this.pivotAbsThreshold;
+    const relThreshold = this.pivotRelThreshold;
+
+    this.factorized = false;
+    if (this.workspaceDirty) {
+      xRe.fill(0);
+      xIm.fill(0);
+    }
+    this.workspaceDirty = true;
+
+    for (let j = 0; j < n; j++) {
+      // Scatter column colPerm[j] of G + jwC in elimination-position space.
+      const col = colPerm[j];
+      for (let p = gColPtr[col]; p < gColPtr[col + 1]; p++) {
+        xRe[gScatterPos[p]] = gValues[p];
+      }
+      for (let p = cColPtr[col]; p < cColPtr[col + 1]; p++) {
+        xIm[cScatterPos[p]] = omega * cValues[p];
+      }
+
+      // Apply the stored U pattern in ascending k (the U diagonal is last).
+      const uDiag = uColPtr[j + 1] - 1;
+      for (let q = uColPtr[j]; q < uDiag; q++) {
+        const k = uRows[q];
+        const ukjRe = xRe[k];
+        const ukjIm = xIm[k];
+        if (ukjRe === 0 && ukjIm === 0) return false;
+        xRe[k] = 0;
+        xIm[k] = 0;
+        uRe[q] = ukjRe;
+        uIm[q] = ukjIm;
+        const pEnd = lColPtr[k + 1];
+        for (let p = lColPtr[k]; p < pEnd; p++) {
+          const i = lRows[p];
+          const likRe = lRe[p];
+          const likIm = lIm[p];
+          xRe[i] -= likRe * ukjRe - likIm * ukjIm;
+          xIm[i] -= likRe * ukjIm + likIm * ukjRe;
+        }
+      }
+
+      for (let z = zeroPtr[j]; z < zeroPtr[j + 1]; z++) {
+        if (xRe[zeroRows[z]] !== 0 || xIm[zeroRows[z]] !== 0) return false;
+      }
+
+      // Pivot acceptance over the candidates (pivot row and L rows). L values
+      // are written speculatively; a failed test discards them.
+      const pivRe = xRe[j];
+      const pivIm = xIm[j];
+      xRe[j] = 0;
+      xIm[j] = 0;
+      const pivMag2 = pivRe * pivRe + pivIm * pivIm;
+      const nat = natPos[j];
+      const lStart = lColPtr[j];
+      const rankEnd = lStart + pivotRank[j];
+      let natMag = 0;
+      let maxBefore = 0; // largest L candidate found before the pivot row
+      let maxL = 0;
+      for (let p = lStart; p < lColPtr[j + 1]; p++) {
+        const row = lRows[p];
+        const aRe = xRe[row];
+        const aIm = xIm[row];
+        if (aRe === 0 && aIm === 0) return false;
+        xRe[row] = 0;
+        xIm[row] = 0;
+        lRe[p] = (aRe * pivRe + aIm * pivIm) / pivMag2;
+        lIm[p] = (aIm * pivRe - aRe * pivIm) / pivMag2;
+        const mag = Math.abs(aRe) + Math.abs(aIm);
+        if (mag > maxL) maxL = mag;
+        if (p < rankEnd && mag > maxBefore) maxBefore = mag;
+        if (row === nat) natMag = mag;
+      }
+      const pivMag = Math.abs(pivRe) + Math.abs(pivIm);
+      if (nat === j) {
+        // The preferred row was accepted: it must still pass.
+        const maxMag = pivMag > maxL ? pivMag : maxL;
+        if (!(maxMag >= 1e-18) || !(pivMag > absThreshold && pivMag > relThreshold * maxMag)) return false;
+      } else {
+        // The column maximum was taken: it must still be the first maximum
+        // in discovery order (L rows keep that order, and the pivot row came
+        // after pivotRank[j] of them), and the preferred row, an L row or
+        // untouched (zero), must still fail the test.
+        if (!(pivMag >= maxL) || !(pivMag > maxBefore) || !(pivMag >= 1e-18)) return false;
+        if (natMag > absThreshold && natMag > relThreshold * pivMag) return false;
+      }
+      uRe[uDiag] = pivRe;
+      uIm[uDiag] = pivIm;
+
+      for (let z = zeroPtr[j]; z < zeroPtr[j + 1]; z++) {
+        xRe[zeroRows[z]] = 0;
+        xIm[zeroRows[z]] = 0;
+      }
+    }
+    return true;
+  }
+
+  private growZeroRows(required: number): void {
+    const capacity = Math.max(required, this.zeroRows.length * 2);
+    const rows = new Int32Array(capacity);
+    rows.set(this.zeroRows);
+    this.zeroRows = rows;
   }
 
   /**
@@ -568,6 +807,33 @@ export function complexPivotPreorder(
     for (let j = 0; j < union.size; j++) order[j] = j;
   }
   return columnSingletonsFirst(union, order);
+}
+
+/**
+ * True when two CSC matrices have the same size and the same stored
+ * structure (column pointers and row indices). Shared arrays short-circuit;
+ * a rebuilt CSC (AC with frequency-dependent devices) is compared entry by
+ * entry, which costs O(nnz), far less than a factorization.
+ */
+function sameStructure(a: CscMatrix, b: CscMatrix): boolean {
+  if (a.size !== b.size) return false;
+  if (a.colPtr !== b.colPtr) {
+    if (a.colPtr.length !== b.colPtr.length) return false;
+    for (let j = 0; j <= a.size; j++) if (a.colPtr[j] !== b.colPtr[j]) return false;
+  }
+  if (a.rowIdx !== b.rowIdx) {
+    const nnz = a.colPtr[a.size];
+    for (let p = 0; p < nnz; p++) if (a.rowIdx[p] !== b.rowIdx[p]) return false;
+  }
+  return true;
+}
+
+/** Elimination position of every stored entry's row, into a reused buffer. */
+function scatterPositions(m: CscMatrix, pinv: Int32Array, buffer: Int32Array): Int32Array {
+  const nnz = m.colPtr[m.size];
+  const out = buffer.length < nnz ? new Int32Array(nnz) : buffer;
+  for (let p = 0; p < nnz; p++) out[p] = pinv[m.rowIdx[p]];
+  return out;
 }
 
 /**

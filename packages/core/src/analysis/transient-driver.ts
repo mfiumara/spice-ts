@@ -384,7 +384,12 @@ class TransientSimImpl implements TransientSim {
         // other side.
         nextTime = nextBreak;
       }
-      const actualDt = nextTime - this.time;
+      // ngspice dctran.c integrates with CKTdelta and advances CKTtime by it.
+      // `(time + dt) - time` is not always `dt` in floating point; using the
+      // difference drifts accepted times by ulps from ngspice's, which moves
+      // TXL/CPL `(int)(CKTtime * 1e12)` history points by 1 ps (#708). Only a
+      // stop-time clamp or breakpoint snap integrates the actual gap.
+      const actualDt = nextTime === this.time + this.dt ? this.dt : nextTime - this.time;
       // ngspice EVTbackup: a retried step drops the events processed past its end.
       this.events?.backup(nextTime);
 

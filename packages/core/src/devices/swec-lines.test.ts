@@ -42,7 +42,9 @@ type Reference = ReadonlyArray<readonly number[]>;
 // ngspice: one truncation step at 32.11 ns differs, the order-1 restart of
 // #561); cpl_ibm2 5.2e-4; 4-line 0.0038; lossless/shunt-G v(b) 0.0067 (same
 // grid as ngspice, the far-end edge of Y1 is 1 % lower) and v(d) 7e-8;
-// complex-pole + short TXL 7.2e-4.
+// complex-pole + short TXL 7.2e-4. That 1 % was the 1 ps TXL history shift
+// of `nextTime - time` ulp drift; since the step integrates CKTdelta (#708)
+// lossless/shunt-G matches ngspice to rounding (transient-cktdelta-708.test.ts).
 const TXL1_BOUND = 0.065;
 const IBM2_BOUND = 6e-4;
 const LIN4_BOUND = 0.005;

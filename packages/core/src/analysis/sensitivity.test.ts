@@ -209,7 +209,8 @@ R2 out 0 1k
   it.each([
     '.sens V(out,ref)',
     '.sens I(V1)',
-    '.sens V(out) AC LIN 3 1 10',
+    '.sens V(out) AC LOG 3 1 10',
+    '.sens V(out) DC 1',
     '.sens V(out) TRAN 1u 1m',
     '.sens V(out) AC DEC 0 1 10',
   ])('rejects forms outside the bounded slice: %s', directive => {
@@ -235,7 +236,7 @@ R1 out 0 1k
   it('rejects invalid programmatic forms and stepped sensitivity', () => {
     const circuit = new Circuit();
     expect(() => circuit.addAnalysis('sens', {
-      outputNode: 'out', mode: 'ac', variation: 'lin', points: 2,
+      outputNode: 'out', mode: 'ac', variation: 'log', points: 2,
       startFreq: 1, stopFreq: 10,
     } as never)).toThrow(InvalidCircuitError);
     expect(() => circuit.addAnalysis('sens', {

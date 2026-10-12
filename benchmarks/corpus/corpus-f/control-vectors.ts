@@ -19,6 +19,12 @@ import { readNgspiceRawFile, type RawPlot } from './raw-stream.js';
 export { CONTROL_SECTION };
 const CHILD = '--control-vector-child';
 const TIMEOUT_MS = 600_000;
+/**
+ * Child heap (MB). Since #752, noi-sc-tr.cir runs end to end in spice-ts. Scoring its
+ * 2.5-million-point transient against the streamed ngspice reference needs about 8.7 GB
+ * resident, which is more than Node's default ~4 GB heap. The limit changes nothing that is scored.
+ */
+const CHILD_HEAP_MB = 12_288;
 
 export function hasControlBlock(text: string): boolean {
   return /^\s*\.control\b/im.test(text.split(/\r?\n/).slice(1).join('\n'));
@@ -113,6 +119,7 @@ export function noReferenceNote(circuit: Pick<CorpusFCircuit, 'analyses' | 'unma
 export const CONTROL_GAP_ISSUES: ReadonlyArray<readonly [RegExp, number]> = [
   [/Unsupported \.control command '(?:sp|sens)'/i, 750],
   [/no such vector 's_\d+_\d+' in plot 'sp\d+'/i, 751],
+  [/no such vector '\w+_(?:m|scale)' in plot 'sens\d+'/i, 760],
   [/Unsupported \.control command '(?:linearize|fft|psd)'/i, 752],
   [/XSPICE code model '/i, 553],
 ];
@@ -156,7 +163,7 @@ export function renderControlSection(fixtures: FixtureOutcome[], head: string, v
 
 async function child(id: string): Promise<FixtureOutcome> {
   return new Promise((resolvePromise, reject) => {
-    const processChild = spawn(process.execPath, [...process.execArgv, fileURLToPath(import.meta.url), CHILD, id], { stdio: ['ignore', 'pipe', 'pipe'] });
+    const processChild = spawn(process.execPath, [`--max-old-space-size=${CHILD_HEAP_MB}`, ...process.execArgv, fileURLToPath(import.meta.url), CHILD, id], { stdio: ['ignore', 'pipe', 'pipe'] });
     let stdout = ''; let stderr = '';
     processChild.stdout.on('data', chunk => { stdout += chunk; });
     processChild.stderr.on('data', chunk => { stderr += chunk; });
