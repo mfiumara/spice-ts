@@ -76,6 +76,13 @@ export interface ChargeTruncation {
   /** Charge tolerance (C). */
   readonly chgtol: number;
   readonly trtol: number;
+  /**
+   * Integration order CKTterr evaluates the error at (ngspice CKTorder).
+   * Absent: the order of the step's own rule. ngspice dctran.c repeats
+   * CKTtrunc at order 2 after an accepted order-1 step to decide whether to
+   * raise the order.
+   */
+  readonly order?: 1 | 2;
 }
 
 /** Newton convergence tolerances (ngspice RELTOL, ABSTOL, VNTOL). */
