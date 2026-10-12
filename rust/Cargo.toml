@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = ["spice-lu", "spice-lu-node", "spice-lu-wasm"]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2021"
+license = "MIT"
+publish = false
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"

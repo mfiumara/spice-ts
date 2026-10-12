@@ -1,0 +1,9 @@
+[package]
+name = "spice-lu"
+description = "Issue #802 spike: port of the spice-ts Gilbert-Peierls sparse LU (pure Rust, no dependencies)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]

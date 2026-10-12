@@ -1,0 +1,18 @@
+[package]
+name = "spice-lu-node"
+description = "Issue #802 spike: napi-rs Node addon around spice-lu"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+spice-lu = { path = "../spice-lu" }
+napi = { version = "2", default-features = false, features = ["napi4"] }
+napi-derive = "2"
+
+[build-dependencies]
+napi-build = "2"

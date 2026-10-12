@@ -1,0 +1,54 @@
+rc-ladder-1k ts: {"symbolic":0.14083300000001486,"factor":0.04004199999999969,"solve":0.006957999999997355,"refactor":0.013374999999996362,"refactorPerturbed":0.01300000000000523}
+rc-ladder-1k rust-native: {"symbolic":0.05479200000002038,"factor":0.023500000000012733,"solve":0.006042000000007874,"refactor":0.006833000000000311,"refactorPerturbed":0.006458000000009179,"marshal":0.0002910000000042601}
+rc-ladder-1k rust-wasm: {"symbolic":0.12604100000001495,"factor":0.07370800000001054,"solve":0.009709000000015067,"refactor":0.027792000000005146,"refactorPerturbed":0.027457999999995764,"marshal":0.0004999999999881766}
+rc-ladder-1k rust-pure: {"symbolic":0.046833,"factor":0.020542,"solve":0.005792,"refactor":0.0075,"refactorPerturbed":0.007167}
+rc-ladder-1k ngspice klu: {"total":1.4189999999999998,"reorder":0.0550001,"factor":0.011,"solve":0.026000099999999998,"load":0.028}
+rc-ladder-1k ngspice sparse: {"total":0.8310000000000001,"reorder":0.048,"factor":0.00899995,"solve":0.0100001,"load":0.037}
+rc-ladder-10k ts: {"symbolic":1.1597919999999817,"factor":0.3840419999999938,"solve":0.06929200000001856,"refactor":0.14479199999999537,"refactorPerturbed":0.14249999999998408}
+rc-ladder-10k rust-native: {"symbolic":0.4949589999999944,"factor":0.2308749999999975,"solve":0.05687500000001933,"refactor":0.09270899999998505,"refactorPerturbed":0.09037499999999454,"marshal":0.0002920000000017353}
+rc-ladder-10k rust-wasm: {"symbolic":0.6589999999999918,"factor":0.32704100000000835,"solve":0.06595799999999485,"refactor":0.09299999999998931,"refactorPerturbed":0.09091599999999289,"marshal":0.003417000000013104}
+rc-ladder-10k rust-pure: {"symbolic":0.435209,"factor":0.216958,"solve":0.059292,"refactor":0.097292,"refactorPerturbed":0.091791}
+rc-ladder-10k ngspice klu: {"total":10.968,"reorder":0.486,"factor":0.11900000000000001,"solve":0.281,"load":0.40299999999999997}
+rc-ladder-10k ngspice sparse: {"total":4.397,"reorder":0.439,"factor":0.12300000000000001,"solve":0.11299999999999999,"load":0.585}
+rc-ladder-50k ts: {"symbolic":6.1539169999999785,"factor":2.049000000000035,"solve":0.4097500000000309,"refactor":0.805041000000017,"refactorPerturbed":0.7993749999999977}
+rc-ladder-50k rust-native: {"symbolic":2.4859579999999823,"factor":1.3279589999999644,"solve":0.5502920000000131,"refactor":0.5195840000000089,"refactorPerturbed":0.5356670000000463,"marshal":0.0003329999999550637}
+rc-ladder-50k rust-wasm: {"symbolic":3.5957910000000197,"factor":2.4106670000000463,"solve":0.33216700000002675,"refactor":0.48649999999997817,"refactorPerturbed":0.4951660000000402,"marshal":0.01841699999999946}
+rc-ladder-50k rust-pure: {"symbolic":2.223375,"factor":1.176917,"solve":0.312,"refactor":0.518417,"refactorPerturbed":0.517416}
+rc-ladder-50k ngspice klu: {"total":63.07699999999999,"reorder":2.7390000000000003,"factor":0.674,"solve":1.306,"load":2.42}
+rc-ladder-50k ngspice sparse: {"total":21.506,"reorder":2.296,"factor":0.571,"solve":0.65,"load":3.75}
+resistor-mesh-1k ts: {"symbolic":0.5201250000000073,"factor":1.029875000000004,"solve":0.025333999999986645,"refactor":0.23229100000000358,"refactorPerturbed":0.22112500000000068}
+resistor-mesh-1k rust-native: {"symbolic":0.21179100000000517,"factor":0.5541249999999991,"solve":0.016708999999991647,"refactor":0.13220799999999144,"refactorPerturbed":0.13095799999999258,"marshal":0.0002920000000017353}
+resistor-mesh-1k rust-wasm: {"symbolic":0.31466700000001424,"factor":0.71712500000001,"solve":0.023500000000012733,"refactor":0.1652909999999963,"refactorPerturbed":0.1605000000000132,"marshal":0.0007090000000005148}
+resistor-mesh-1k rust-pure: {"symbolic":0.278417,"factor":0.608208,"solve":0.018541,"refactor":0.164542,"refactorPerturbed":0.147583}
+resistor-mesh-1k ngspice klu: {"total":2.837,"reorder":0.603,"factor":0.132,"solve":0.049,"load":0.0640001}
+resistor-mesh-1k ngspice sparse: {"total":11.686,"reorder":9.583,"factor":0.812,"solve":0.11699999999999999,"load":0.258}
+resistor-mesh-10k ts: {"symbolic":6.540708999999879,"factor":31.958417000000054,"solve":0.3678749999999127,"refactor":9.578915999999936,"refactorPerturbed":9.549209000000019}
+resistor-mesh-10k rust-native: {"symbolic":3.0025000000000546,"factor":18.151250000000005,"solve":0.25891699999999673,"refactor":6.550959000000034,"refactorPerturbed":6.379790999999955,"marshal":0.00029200000005857873}
+resistor-mesh-10k rust-wasm: {"symbolic":4.066209000000072,"factor":23.687749999999937,"solve":0.362166000000002,"refactor":8.90183300000001,"refactorPerturbed":8.869166999999948,"marshal":0.005999999999971806}
+resistor-mesh-10k rust-pure: {"symbolic":2.961042,"factor":18.039834,"solve":0.275792,"refactor":7.151458,"refactorPerturbed":7.147583}
+resistor-mesh-10k ngspice klu: {"total":40.527,"reorder":17.180999999999997,"factor":5.6,"solve":0.882,"load":0.725}
+resistor-mesh-10k ngspice sparse: {"total":1347.89,"reorder":1207.5,"factor":113.322,"solve":11.383000000000001,"load":14.568}
+resistor-mesh-50k ts: {"symbolic":87.3700000000008,"factor":651.5187079999996,"solve":3.690834000000905,"refactor":205.57887499999924,"refactorPerturbed":204.81841600000007}
+resistor-mesh-50k rust-native: {"symbolic":22.284332999999606,"factor":270.5075419999994,"solve":3.1347500000001673,"refactor":109.82783399999971,"refactorPerturbed":115.17016700000022,"marshal":0.0003749999996216502}
+resistor-mesh-50k rust-wasm: {"symbolic":22.21533400000044,"factor":277.4027500000011,"solve":2.2457089999988966,"refactor":130.14516599999843,"refactorPerturbed":129.7221669999999,"marshal":0.03312499999992724}
+resistor-mesh-50k rust-pure: {"symbolic":22.195042,"factor":280.945167,"solve":3.2225,"refactor":126.10625,"refactorPerturbed":126.802916}
+resistor-mesh-50k ngspice klu: {"total":384.222,"reorder":205.36499999999998,"factor":80.878,"solve":7.325,"load":3.93}
+resistor-mesh-50k ngspice sparse: {"total":68751.7,"reorder":65559.79999999999,"factor":2624.38,"solve":121.923,"load":107.21600000000001}
+cmos-chain-1k ts: {"symbolic":0.1471249999999884,"factor":0.06133400000001643,"solve":0.006500000000016826,"refactor":0.06379200000000651,"refactorPerturbed":0.014959000000004608}
+cmos-chain-1k rust-native: {"symbolic":0.06491599999998243,"factor":0.04070899999999256,"solve":0.004958000000016227,"refactor":0.037749999999988404,"refactorPerturbed":0.006790999999992664,"marshal":0.00020800000001486296}
+cmos-chain-1k rust-wasm: {"symbolic":0.15825000000000955,"factor":0.06087499999998158,"solve":0.004874999999998408,"refactor":0.04991700000002197,"refactorPerturbed":0.015917000000001735,"marshal":0.0006669999999928677}
+cmos-chain-1k rust-pure: {"symbolic":0.05925,"factor":0.037375,"solve":0.004667,"refactor":0.037917,"refactorPerturbed":0.009083}
+cmos-chain-1k ngspice klu: {"total":51.214000000000006,"reorder":0.127,"factor":5.483,"solve":4.7330000000000005,"load":32.775}
+cmos-chain-1k ngspice sparse: {"total":50.866,"reorder":2.2369999999999997,"factor":3.226,"solve":4.063,"load":35.513999999999996}
+cmos-chain-10k ts: {"symbolic":1.3613749999999527,"factor":0.7887079999999855,"solve":0.0650410000000079,"refactor":0.7987919999999917,"refactorPerturbed":0.16512499999998909}
+cmos-chain-10k rust-native: {"symbolic":0.6395410000000084,"factor":0.49516700000000924,"solve":0.031208999999989828,"refactor":0.47512499999999136,"refactorPerturbed":0.09241600000001426,"marshal":0.0002920000000017353}
+cmos-chain-10k rust-wasm: {"symbolic":0.7559579999999926,"factor":0.6937079999999867,"solve":0.04550000000000409,"refactor":0.6090000000000089,"refactorPerturbed":0.15154200000000628,"marshal":0.004166999999995369}
+cmos-chain-10k rust-pure: {"symbolic":0.553334,"factor":0.458958,"solve":0.048375,"refactor":0.471792,"refactorPerturbed":0.095125}
+cmos-chain-10k ngspice klu: {"total":1378.58,"reorder":1.131,"factor":89.053,"solve":74.753,"load":1091.3200000000002}
+cmos-chain-10k ngspice sparse: {"total":1685.91,"reorder":225.221,"factor":50.931,"solve":63.125,"load":1087.5300000000002}
+cmos-chain-50k ts: {"symbolic":6.8287090000000035,"factor":4.558125000000018,"solve":0.3190829999999778,"refactor":4.6825000000000045,"refactorPerturbed":0.8429579999999532}
+cmos-chain-50k rust-native: {"symbolic":3.1295829999999683,"factor":2.790916999999979,"solve":0.2353750000000332,"refactor":2.651916999999969,"refactorPerturbed":0.5039170000000013,"marshal":0.0002910000000042601}
+cmos-chain-50k rust-wasm: {"symbolic":4.831124999999929,"factor":4.762125000000026,"solve":0.22879100000000108,"refactor":3.593584000000021,"refactorPerturbed":0.8058330000000069,"marshal":0.021665999999981977}
+cmos-chain-50k rust-pure: {"symbolic":3.216,"factor":2.703458,"solve":0.237792,"refactor":2.740875,"refactorPerturbed":0.506708}
+cmos-chain-50k ngspice klu: {"total":42402.6,"reorder":9.996,"factor":1945.8,"solve":1226.77,"load":37599}
+cmos-chain-50k ngspice sparse: {"total":59107.6,"reorder":6372.56,"factor":1247.21,"solve":1246.47,"load":38232.700000000004}

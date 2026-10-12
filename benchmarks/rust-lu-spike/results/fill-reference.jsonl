@@ -1,0 +1,12 @@
+{"deck": "rc-ladder-10k", "n": 10001, "nnz": 30000, "ordering": "COLAMD", "luNnzExclUnitDiag": 30002, "factorMsMedian": 1.3697079848498106, "scipy": "1.18.1"}
+{"deck": "rc-ladder-10k", "n": 10001, "nnz": 30000, "ordering": "MMD_AT_PLUS_A", "luNnzExclUnitDiag": 30000, "factorMsMedian": 1.1578330304473639, "scipy": "1.18.1"}
+{"deck": "rc-ladder-50k", "n": 50001, "nnz": 150000, "ordering": "COLAMD", "luNnzExclUnitDiag": 150002, "factorMsMedian": 7.336750044487417, "scipy": "1.18.1"}
+{"deck": "rc-ladder-50k", "n": 50001, "nnz": 150000, "ordering": "MMD_AT_PLUS_A", "luNnzExclUnitDiag": 150000, "factorMsMedian": 5.971957987640053, "scipy": "1.18.1"}
+{"deck": "resistor-mesh-10k", "n": 10001, "nnz": 49602, "ordering": "COLAMD", "luNnzExclUnitDiag": 702182, "factorMsMedian": 16.290917003061622, "scipy": "1.18.1"}
+{"deck": "resistor-mesh-10k", "n": 10001, "nnz": 49602, "ordering": "MMD_AT_PLUS_A", "luNnzExclUnitDiag": 372298, "factorMsMedian": 10.366750007960945, "scipy": "1.18.1"}
+{"deck": "resistor-mesh-50k", "n": 50177, "nnz": 249986, "ordering": "COLAMD", "luNnzExclUnitDiag": 5706226, "factorMsMedian": 141.0287919570692, "scipy": "1.18.1"}
+{"deck": "resistor-mesh-50k", "n": 50177, "nnz": 249986, "ordering": "MMD_AT_PLUS_A", "luNnzExclUnitDiag": 2816214, "factorMsMedian": 92.71608298877254, "scipy": "1.18.1"}
+{"deck": "cmos-chain-10k", "n": 10002, "nnz": 39998, "ordering": "COLAMD", "luNnzExclUnitDiag": 29999, "factorMsMedian": 1.1819169740192592, "scipy": "1.18.1"}
+{"deck": "cmos-chain-10k", "n": 10002, "nnz": 39998, "ordering": "MMD_AT_PLUS_A", "luNnzExclUnitDiag": 29999, "factorMsMedian": 677.712332981173, "scipy": "1.18.1"}
+{"deck": "cmos-chain-50k", "n": 50002, "nnz": 199998, "ordering": "COLAMD", "luNnzExclUnitDiag": 149999, "factorMsMedian": 7.625332975294441, "scipy": "1.18.1"}
+{"deck": "cmos-chain-50k", "n": 50002, "nnz": 199998, "ordering": "MMD_AT_PLUS_A", "luNnzExclUnitDiag": 149999, "factorMsMedian": 15845.815291977488, "scipy": "1.18.1"}
