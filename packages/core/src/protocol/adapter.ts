@@ -705,12 +705,15 @@ function waveform(params: JsonObject): Partial<SourceWaveform> & { dc?: number }
     case 'pulse': return { type: 'pulse', v1: numberParam(params, 'v1'), v2: numberParam(params, 'v2'), delay: numberParam(params, 'delay'), rise: numberParam(params, 'rise'), fall: numberParam(params, 'fall'), width: numberParam(params, 'width'), period: numberParam(params, 'period') };
     case 'pwl': {
       const points = params.points;
-      if (typeof points === 'string') return { type: 'pwl', points: parseIrPwlPoints(points) };
+      const delay = optionalNumber(params, 'delay');
+      const repeat = optionalNumber(params, 'repeat');
+      const options = { ...(delay !== undefined ? { delay } : {}), ...(repeat !== undefined ? { repeat } : {}) };
+      if (typeof points === 'string') return { type: 'pwl', points: parseIrPwlPoints(points), ...options };
       if (Array.isArray(points)) return { type: 'pwl', points: points.map((point, index) => {
         if (typeof point !== 'object' || point === null || Array.isArray(point)) throw new InvalidCircuitError(`Native PWL point ${index} is invalid`);
         const entry = point as JsonObject;
         return { time: numberParam(entry, 'time'), value: numberParam(entry, 'value') };
-      }) };
+      }), ...options };
       throw new InvalidCircuitError("Native PWL parameter 'points' must be an array or CircuitIR string");
     }
     default: throw new InvalidCircuitError(`Unsupported native source waveform '${kind}'`);

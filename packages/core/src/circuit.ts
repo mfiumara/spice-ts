@@ -362,6 +362,25 @@ function withRFPortNodes(descriptors: DeviceDescriptor[]): DeviceDescriptor[] {
     : desc));
 }
 
+/**
+ * Positional waveform coefficients up to the last given one. An omitted one
+ * before it is written as the value ngspice reads the same as omitted; one
+ * without such a value (a TSTOP-derived default) cannot be written.
+ */
+function positionalCoefficients(keyword: string, coefficients: Array<[number | undefined, number?]>): string {
+  let last = coefficients.length - 1;
+  while (last > 0 && coefficients[last][0] === undefined) last--;
+  return coefficients.slice(0, last + 1).map(([value, omitted], index) => {
+    if (value !== undefined) return formatNumber(value);
+    if (omitted === undefined) {
+      throw new InvalidCircuitError(
+        `${keyword} coefficient ${index + 1} is omitted before a given one; its default cannot be written on a netlist card`,
+      );
+    }
+    return formatNumber(omitted);
+  }).join(' ');
+}
+
 function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string {
   if (!wf) return 'DC 0';
   let base: string;
@@ -404,6 +423,28 @@ function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string 
           .flatMap(point => [point.time, point.value])
           .map(formatNumber)
           .join(' ')})`;
+        if (wf.delay !== undefined) base += ` TD=${formatNumber(wf.delay)}`;
+        if (wf.repeat !== undefined) base += ` R=${formatNumber(wf.repeat)}`;
+        break;
+      case 'exp':
+        // ngspice reads a zero TD1/TAU1/TD2/TAU2 as omitted.
+        base = `EXP(${positionalCoefficients('EXP', [
+          [wf.v1 ?? 0], [wf.v2 ?? 0], [wf.td1, 0], [wf.tau1, 0], [wf.td2, 0], [wf.tau2, 0],
+        ])})`;
+        break;
+      case 'sffm':
+        // An omitted FC defaults from TSTOP, which no explicit value writes; a zero FM is omitted.
+        base = `SFFM(${positionalCoefficients('SFFM', [
+          [wf.offset ?? 0], [wf.amplitude ?? 0], [wf.carrierFrequency], [wf.modulationIndex, 90],
+          [wf.signalFrequency, 0], [wf.delay, 0], [wf.signalPhase, 0], [wf.carrierPhase, 0],
+        ])})`;
+        break;
+      case 'am':
+        // Omitted FM and FC default from TSTOP, which no explicit value writes.
+        base = `AM(${positionalCoefficients('AM', [
+          [wf.offset ?? 0], [wf.carrierAmplitude ?? 0], [wf.modulationAmplitude, 1], [wf.modulationFrequency],
+          [wf.carrierFrequency], [wf.delay, 0], [wf.modulationPhase, 0], [wf.carrierPhase, 0],
+        ])})`;
         break;
       case 'trnoise':
         base = `TRNOISE(${[

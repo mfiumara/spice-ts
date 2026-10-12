@@ -65,7 +65,9 @@ describe('ngspice PWL source parity', () => {
   it('rejects malformed PWL point lists', () => {
     expect(() => parse('V1 in 0 PWL(0 0 1u)')).toThrow(/PWL.*time\/value pairs/i);
     expect(() => parse('V1 in 0 PWL(1u 1 0 0)')).toThrow(/PWL.*non-decreasing/i);
-    expect(() => parse('V1 in 0 PWL(0 0 1u 1) R=1u')).toThrow(/Unsupported PWL source parameters/i);
+    expect(() => parse('V1 in 0 PWL(0 0 1u 1) R=0.5u')).toThrow(/PWL repeat start time .* does not match any time point/i);
+    expect(() => parse('V1 in 0 PWL(0 0 1u 1) R=1u')).toThrow(/PWL repeat start time .* must be smaller than the final time point/i);
+    expect(() => parse('V1 in 0 PWL(0 0 1u 1) X=1u')).toThrow(/Unsupported PWL source parameters: 'X=1u'/i);
   });
 
   it('preserves PWL data through netlist and IR serialization', () => {
@@ -81,7 +83,7 @@ describe('ngspice PWL source parity', () => {
     });
   });
 
-  it.each(['EXP', 'SFFM', 'AM', 'EXTERNAL'])(
+  it.each(['EXTERNAL'])(
     'explicitly rejects unsupported %s sources',
     keyword => {
       expect(() => parse(`V1 in 0 ${keyword}(0 1)`)).toThrow(
