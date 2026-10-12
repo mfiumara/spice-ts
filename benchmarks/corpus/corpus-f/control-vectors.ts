@@ -10,11 +10,11 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { arch, cpus, platform, tmpdir } from 'node:os';
 import { basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseNgspiceRaw } from '../../comparison-harness.js';
 import { analysisType, type EngineAnalysis } from '../classic/report.js';
 import type { CorpusFCircuit, CorpusFManifest } from './ingest.js';
-import { CONTROL_SECTION, CORPUS_ROOT, MATCH_THRESHOLD, classifyNgspiceFailure, firstNgspiceErrorLine, gapBucket, scrub } from './lib.js';
-import { GAP_ISSUES, runFixture, runNgspice, summarize, type FixtureOutcome } from './outcomes.js';
+import { CONTROL_SECTION, CORPUS_ROOT, MATCH_THRESHOLD, classifyNgspiceFailure, corpusFPlotType, firstNgspiceErrorLine, gapBucket, scoredPlotTypes, scrub } from './lib.js';
+import { GAP_ISSUES, runFixture, runNgspice, summarize, type FixtureOutcome, type ReferenceSelection } from './outcomes.js';
+import { readNgspiceRawFile, type RawPlot } from './raw-stream.js';
 
 export { CONTROL_SECTION };
 const CHILD = '--control-vector-child';
@@ -37,13 +37,23 @@ export function controlWrapperDeck(types: readonly string[]): string {
     '.endc', '.end', ''].join('\n');
 }
 
-/** A missing setplot leaves the previous plot selected: never mislabel that plot as another type. */
-export async function runControlReference(input: Buffer, circuit: CorpusFCircuit): Promise<Awaited<ReturnType<typeof runNgspice>>> {
+/**
+ * A missing setplot leaves the previous plot selected: never mislabel that plot as another type.
+ * Every declared plot type is exported, including `sp` and `sens` (#694). Raw files are read line
+ * by line and keep only the signals `select` names (those spice-ts produced, so the only ones that
+ * can be scored); a reference larger than the Node string limit still loads.
+ */
+export async function runControlReference(
+  input: Buffer,
+  circuit: Pick<CorpusFCircuit, 'analyses' | 'unmappedAnalyses'>,
+  select?: ReferenceSelection,
+): Promise<Awaited<ReturnType<typeof runNgspice>>> {
+  const types = scoredPlotTypes(circuit);
   const directory = await mkdtemp(resolve(tmpdir(), 'corpus-f-control-'));
   try {
     await writeFile(resolve(directory, 'fixture.cir'), input);
     await writeFile(resolve(directory, '.spiceinit'), 'set filetype=ascii\n');
-    await writeFile(resolve(directory, 'wrapper.cir'), controlWrapperDeck(circuit.analyses));
+    await writeFile(resolve(directory, 'wrapper.cir'), controlWrapperDeck(types));
     const env: NodeJS.ProcessEnv = { ...process.env, HOME: directory };
     delete env.DISPLAY;
     const run = spawnSync('ngspice', ['-b', 'wrapper.cir'], {
@@ -59,22 +69,27 @@ export async function runControlReference(input: Buffer, circuit: CorpusFCircuit
     }
     const analyses: EngineAnalysis[] = [];
     const unreadable: string[] = [];
-    for (const type of new Set(circuit.analyses)) {
-      let raw: string;
-      try { raw = await readFile(resolve(directory, `${type}.raw`), 'utf8'); } catch (readError) {
+    for (const type of types) {
+      let plots: RawPlot[];
+      try {
+        plots = await readNgspiceRawFile(resolve(directory, `${type}.raw`),
+          select && ((plotName, signal) => corpusFPlotType(plotName, analysisType) !== type || select(type, signal)));
+      } catch (readError) {
         const code = (readError as NodeJS.ErrnoException).code;
         if (code !== 'ENOENT') unreadable.push(`${type}.raw (${code ?? (readError as Error).message})`);
         continue;
       }
-      for (const plot of parseNgspiceRaw(raw)) {
-        const actualType = analysisType(plot.plotName);
-        if (actualType === type) analyses.push({ type: actualType, plotName: plot.plotName, series: { grid: plot.grid, signals: plot.signals } });
+      for (const plot of plots) {
+        // The shared adapter's type union predates sp/sens; compareExecutions only reads it as a key.
+        if (corpusFPlotType(plot.plotName, analysisType) === type) {
+          analyses.push({ type: type as EngineAnalysis['type'], plotName: plot.plotName, series: { grid: plot.grid, signals: plot.signals } });
+        }
       }
     }
     if (analyses.length === 0 && error) return { status: classifyNgspiceFailure(output), firstErrorLine: error,
       execution: { status: 'failed', convergence: 'failed', analyses: [], error } };
     return { status: 'success', execution: { status: 'success', convergence: 'converged', analyses },
-      ...(analyses.length === 0 ? { note: noReferenceNote(circuit, unreadable) } : {}) };
+      ...(analyses.length === 0 ? { note: noReferenceNote({ ...circuit, analyses: types }, unreadable) } : {}) };
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
@@ -87,9 +102,20 @@ export function noReferenceNote(circuit: Pick<CorpusFCircuit, 'analyses' | 'unma
     const unmapped = [...new Set(circuit.unmappedAnalyses ?? [])];
     return `${prefix}: the deck runs only ${unmapped.length > 0 ? unmapped.join('/') : 'no'} analyses, which the comparison adapter does not map to a scored analysis type`;
   }
-  if (unreadable.length > 0) return `${prefix}: ${unreadable.join(', ')} could not be loaded as one string (e.g. larger than the Node string limit)`;
+  if (unreadable.length > 0) return `${prefix}: ${unreadable.join(', ')} could not be read`;
   return `${prefix}: no plot of a declared analysis type was left to write`;
 }
+
+/**
+ * Narrower issues for spice-ts errors whose batch-1 gap bucket points at a closed umbrella issue
+ * (#487/#489) or at #511. Matched against spice-ts's own first error line; reporting only.
+ */
+export const CONTROL_GAP_ISSUES: ReadonlyArray<readonly [RegExp, number]> = [
+  [/Unsupported \.control command '(?:sp|sens)'/i, 750],
+  [/no such vector 's_\d+_\d+' in plot 'sp\d+'/i, 751],
+  [/Unsupported \.control command '(?:linearize|fft|psd)'/i, 752],
+  [/XSPICE code model '/i, 553],
+];
 
 /** Reporting links only. No issue mapping changes execution, scoring, or tolerances. */
 export function trackingIssue(fixture: FixtureOutcome): string {
@@ -100,8 +126,9 @@ export function trackingIssue(fixture: FixtureOutcome): string {
     if (/\/ltra\d/.test(fixture.sourcePath)) issue = 595;
     else if (fixture.sourcePath.endsWith('/inv_vdmos.sp')) issue = 596;
   } else {
+    const narrower = CONTROL_GAP_ISSUES.find(([pattern]) => pattern.test(fixture.spiceTs.firstErrorLine ?? ''));
     const bucket = gapBucket(fixture.spiceTs.firstErrorLine, fixture.spiceTs.status);
-    issue = (bucket && GAP_ISSUES[bucket]) || 511;
+    issue = narrower?.[1] ?? ((bucket && GAP_ISSUES[bucket]) || 511);
   }
   return typeof issue === 'number' ? `https://github.com/mfiumara/spice-ts/issues/${issue}` : issue;
 }
@@ -113,8 +140,8 @@ export function renderControlSection(fixtures: FixtureOutcome[], head: string, v
     'This supplement supersedes the historical batch-1 rows above for every `.control` deck. The original `outcomes.json` is deliberately unchanged.', '',
     `Measured with core tree \`${head}\` (\`git rev-parse HEAD:packages/core\`), ${version}, Node ${process.version}, ${platform()}/${arch()}, ${cpus()[0]?.model ?? 'unknown'}.`,
     '`pnpm build && pnpm exec tsx benchmarks/corpus/corpus-f/control-vectors.ts > control-receipt.json` regenerates this section and prints the full receipt. Add `--check` to rerun without changing files; `--jobs N` controls parallelism.', '',
-    'Every reference comes only from `ngspice -b wrapper.cir`. In a fresh temporary directory, the wrapper first runs `alias quit echo ...` and `alias exit echo ...` (#528), so a deck whose control block calls `quit`/`exit` runs that block to completion exactly as written while ngspice stays alive for the export, then runs `source fixture.cir`, then `setplot <type>1` and `write <type>.raw all` for each declared analysis type. `fixture.cir` is a byte-identical copy, verified against the manifest. No rewritten decks or `-r` reference fallback.',
-    `Scoring reuses \`runFixture\`, \`compareExecutions\` and \`normalizedSignalErrors\` with MATCH_THRESHOLD = ${MATCH_THRESHOLD}. There is no per-circuit tuning. Only the first plot of each type is compared, matching the existing adapter; repeated analyses are not independently scored. A failed \`setplot\` cannot be mistaken for the requested analysis. Decks that leave no plot of a declared type (for example they \`destroy\` it) remain unscored, not matches.`, '',
+    'Every reference comes only from `ngspice -b wrapper.cir`. In a fresh temporary directory, the wrapper first runs `alias quit echo ...` and `alias exit echo ...` (#528), so a deck whose control block calls `quit`/`exit` runs that block to completion exactly as written while ngspice stays alive for the export, then runs `source fixture.cir`, then `setplot <type>1` and `write <type>.raw all` for each declared analysis type, including S-parameter (`sp`) and sensitivity (`sens`) plots (#694). `fixture.cir` is a byte-identical copy, verified against the manifest. No rewritten decks or `-r` reference fallback.',
+    `Scoring reuses \`runFixture\`, \`compareExecutions\` and \`normalizedSignalErrors\` with MATCH_THRESHOLD = ${MATCH_THRESHOLD}. There is no per-circuit tuning. Only the first plot of each type is compared, matching the existing adapter; repeated analyses are not independently scored. A failed \`setplot\` cannot be mistaken for the requested analysis. Decks that leave no plot of a declared type (for example they \`destroy\` it) remain unscored, not matches. Raw files are read line by line and keep only the vectors spice-ts produced (the only ones that can be compared), so a 680 MB transient-noise reference loads. A sensitivity is normalised with the generic peak floor, not the node-voltage floor its \`v(...)\` raw name would imply.`, '',
     `All ${fixtures.length} control decks: ${Object.entries(totals.outcomes).map(([name, count]) => `${name} ${count}`).join(', ')}.`,
     'Bucket “loss” includes numerical mismatches and typed-unsupported/failed spice-ts executions with an ngspice reference. “No reference” and “not compared” are explicitly unscored. Worst error/signal is — where no comparison exists. #511 tracks untriaged numerical losses; #694 tracks the remaining reference/export limitations. Links do not affect scoring.', '',
     '| Fixture | Bucket | Outcome | Worst normalized error | Worst signal | Tracking issue | Diagnostic |',
@@ -148,7 +175,8 @@ async function main(): Promise<void> {
   if (process.argv[2] === CHILD) {
     const circuit = manifest.circuits.find(candidate => candidate.id === process.argv[3]);
     if (!circuit) throw new Error(`Unknown fixture: ${process.argv[3]}`);
-    console.log(JSON.stringify(await runFixture(circuit, runControlReference)));
+    // sp/sens plots (#694) are scored like every other declared plot type.
+    console.log(JSON.stringify(await runFixture({ ...circuit, analyses: scoredPlotTypes(circuit) }, runControlReference)));
     return;
   }
   const versionRun = spawnSync('ngspice', ['--version'], { encoding: 'utf8' });

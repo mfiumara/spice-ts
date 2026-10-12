@@ -42,7 +42,9 @@ export const CURRENT_PEAK_FLOOR = 1e-10;
  * harness also names `v(pole(n))`/`v(zero(n))` but which are frequencies) PEAK_FLOOR.
  */
 export function peakFloor(analysis: string, signal: string): number {
-  if (analysis === 'pz') return PEAK_FLOOR;
+  // ngspice writes sensitivities as `v(<device>)` because they carry the output's unit; they are
+  // derivatives, not node voltages, so they get the generic floor like `.pz` roots.
+  if (analysis === 'pz' || analysis === 'sens') return PEAK_FLOOR;
   if (/^v\(/i.test(signal)) return VOLTAGE_PEAK_FLOOR;
   if (/^i\(/i.test(signal)) return CURRENT_PEAK_FLOOR;
   return PEAK_FLOOR;
@@ -62,6 +64,35 @@ const UNMAPPED_ANALYSES = ['sens', 'tf', 'pss', 'sp'] as const;
 const ANALYSIS_WORDS = [...MAPPED_ANALYSES, ...UNMAPPED_ANALYSES].join('|');
 const DOT_ANALYSIS = new RegExp(`^\\.(${ANALYSIS_WORDS})\\b`, 'i');
 const CONTROL_ANALYSIS = new RegExp(`^(${ANALYSIS_WORDS})\\b`, 'i');
+
+/**
+ * ngspice plot types the control-vector supplement scores beyond the shared adapter's types
+ * (#694): S-parameter (`SP Analysis`) and sensitivity (`Sensitivity Analysis`) plots. The batch-1
+ * manifest keeps them in `unmappedAnalyses`; only control-vectors.ts adds them to a deck's types.
+ */
+export const CONTROL_PLOT_TYPES = ['sp', 'sens'] as const;
+export type ControlPlotType = typeof CONTROL_PLOT_TYPES[number];
+export type CorpusFPlotType = ClassicAnalysisType | ControlPlotType;
+
+export function isControlPlotType(type: string): type is ControlPlotType {
+  return (CONTROL_PLOT_TYPES as readonly string[]).includes(type);
+}
+
+/** Every plot type the control-vector supplement exports and scores for a deck, in declared order. */
+export function scoredPlotTypes(circuit: { analyses: readonly string[]; unmappedAnalyses?: readonly string[] }): CorpusFPlotType[] {
+  return [...new Set([
+    ...circuit.analyses as CorpusFPlotType[],
+    ...(circuit.unmappedAnalyses ?? []).filter(isControlPlotType),
+  ])];
+}
+
+/** Plot type of an ngspice plot name: the shared adapter's mapping plus `sp` and `sens`. */
+export function corpusFPlotType(plotName: string, classic: (plotName: string) => ClassicAnalysisType | null): CorpusFPlotType | null {
+  const name = plotName.toLowerCase();
+  if (name.includes('sp analysis')) return 'sp';
+  if (name.includes('sensitivity analysis')) return 'sens';
+  return classic(plotName);
+}
 
 export interface DeclaredAnalyses {
   /** Mapped analyses, in first-seen order; handed to the shared spice-ts adapter. */
