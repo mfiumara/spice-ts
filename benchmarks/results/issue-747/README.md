@@ -52,18 +52,17 @@ stashed for that run, only the new untracked test file was present, hence `packa
 
 ## Corpus-g totals (outcomes.json regenerated on this branch)
 
-`spice-heavy pnpm exec tsx benchmarks/corpus/corpus-g/parity.ts --jobs 3` at 4f448db1:
+`spice-heavy pnpm exec tsx benchmarks/corpus/corpus-g/parity.ts --jobs 3`, run on this branch merged
+with main 6af7c51c:
 
-| | matched | mismatch | spice-ts-loss |
-|---|---|---|---|
-| main 25bcf5b4 (committed outcomes.json) | 85 | 18 | 25 |
-| this branch | 88 | 19 | 21 |
+| | matched | mismatch | spice-ts-loss | outcome SHA-256 |
+|---|---|---|---|---|
+| main 6af7c51c (committed outcomes.json) | 86 | 18 | 24 | `60bd12e1...` |
+| this branch | 88 | 19 | 21 | `e6a41100...` |
 
-4 fixtures changed outcome. 3 come from this change: EKV26 and PSP102 now match, and PSP103 is a
-mismatch. The fourth, TL1X/TL1X_mpi.cir (loss → matched, 7.18e-5), is not from this change. It is
-the #739 + #716 result already on main (see `benchmarks/results/issue-739/README.md`), which the
-committed outcomes.json had not picked up yet. The "other MOSFET levels" gap bucket now holds
-LEVEL=10 (B3SOI) and LEVEL=54 (`SENS/bsim4_issue694_fd.cir`).
+Exactly three fixtures change, all from this rule: EKV26 and PSP102 now match, and PSP103 becomes a
+mismatch. The #747 gap bucket ("compact MOSFET models ...") now holds only
+BSIMSOI3/b3soiTranDefaults.cir (LEVEL=10).
 
 ## Unit tests against ngspice-47
 
