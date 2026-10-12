@@ -6,7 +6,7 @@ Every deck below is byte-identical to Xyce_Regression `7bb7e98f0ed3a81a7d1cf1d10
 
 ## Totals
 
-- Fixtures: 128. Outcome SHA-256: `0f1c3982496ddc804ab14b9f301d408cdd02bf9708e481bf65e7a2ee3bd8fb83`.
+- Fixtures: 128. Outcome SHA-256: `1f27c5f0e5ab53b173603c5255aa6ba3538902f3646bb30ee8f8b1ca6ee7b4ab`.
 - ngspice (ngspice-47): 128 success, 0 failed, 0 unsupported.
 - spice-ts (0.3.0): 62 success, 5 failed, 61 unsupported.
 - Outcomes: matched 48, mismatch 14, not-compared 0, spice-ts-loss 66, ngspice-failed 0, both-failed 0.
@@ -25,7 +25,7 @@ Every deck below is byte-identical to Xyce_Regression `7bb7e98f0ed3a81a7d1cf1d10
 
 ## Follow-up issues
 
-- none
+- https://github.com/mfiumara/spice-ts/issues/719: triage of the 14 decks where both engines succeed but spice-ts exceeds the 1% parity threshold.
 
 ## spice-ts gap buckets
 
@@ -33,15 +33,15 @@ Grouped from spice-ts's own first error line (corpus-g rules, then corpus-f rule
 
 | Bucket | Fixtures | ngspice ok | Issue |
 |---|---|---|---|
-| directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...) | 22 | 22 | none filed |
-| output: expressions and output variables in .print lines | 11 | 11 | none filed |
-| model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9) | 7 | 7 | none filed |
-| source: EXP/SFFM/AM waveforms and PWL TD= | 6 | 6 | none filed |
+| directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...) | 22 | 22 | https://github.com/mfiumara/spice-ts/issues/713 |
+| output: expressions and output variables in .print lines | 11 | 11 | https://github.com/mfiumara/spice-ts/issues/714 |
+| model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9) | 7 | 7 | https://github.com/mfiumara/spice-ts/issues/715 |
+| source: EXP/SFFM/AM waveforms and PWL TD= | 6 | 6 | https://github.com/mfiumara/spice-ts/issues/716 |
 | parse: other unsupported syntax | 5 | 5 | none filed |
-| device: JFET forms (PJF model type, instance TEMP=, J card) | 3 | 3 | none filed |
+| device: JFET forms (PJF model type, instance TEMP=, J card) | 3 | 3 | https://github.com/mfiumara/spice-ts/issues/717 |
 | deck: element-free deck (ngspice runs an empty analysis) | 2 | 2 | none filed |
 | execution: other failure | 2 | 2 | none filed |
-| expression: branch-current i() references in B-source expressions | 2 | 2 | none filed |
+| expression: branch-current i() references in B-source expressions | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/718 |
 | model: other MOSFET levels (LEVEL=10, LEVEL=260) | 2 | 2 | none filed |
 | convergence | 1 | 1 | none filed |
 | device: BJT instance IC= initial conditions | 1 | 1 | none filed |

@@ -59,37 +59,25 @@ export interface CorpusGReport {
 }
 
 /**
- * Gap issues for corpus-g buckets. Existing issues are reused where the bucket is the same missing
- * capability as in corpus-f; new buckets get the issues filed for #711.
+ * Gap issues for corpus-g buckets, filed for #711 after searching open and closed issues. The
+ * corpus-f issues for similarly named buckets are closed, so a corpus-g failure in such a bucket is
+ * a residual and is not linked to them. Buckets with fewer than three fixtures may stay unfiled;
+ * they are listed in the README with "none filed".
  */
 export const GAP_ISSUES: Record<string, string> = {
-  'device: XSPICE A-element code models': 'https://github.com/mfiumara/spice-ts/issues/487',
-  'control: ngspice control-language scripting (set/let/save/foreach/meas/...)': 'https://github.com/mfiumara/spice-ts/issues/488',
-  'control: analysis commands inside .control (tran/dc/op/ac/...)': 'https://github.com/mfiumara/spice-ts/issues/489',
-  'device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)': 'https://github.com/mfiumara/spice-ts/issues/490',
-  'device: P/Y-element lossy multiconductor lines (CPL, TXL)': 'https://github.com/mfiumara/spice-ts/issues/491',
-  'source: parenthesised and extended waveform syntax': 'https://github.com/mfiumara/spice-ts/issues/492',
-  'expression: quoted/brace expressions in values (TEMPER, functions)': 'https://github.com/mfiumara/spice-ts/issues/493',
-  'directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)': 'https://github.com/mfiumara/spice-ts/issues/494',
-  'expression: B-source V= and expression functions/operators': 'https://github.com/mfiumara/spice-ts/issues/495',
-  'directive: numparam extensions (.func, .csparam, .if, string/vector .param)': 'https://github.com/mfiumara/spice-ts/issues/496',
-  'device: R-card forms (r=, ac=, noisy=, resistor models)': 'https://github.com/mfiumara/spice-ts/issues/498',
-  'model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card)': 'https://github.com/mfiumara/spice-ts/issues/500',
-  'source: TRNOISE/EXTERNAL waveforms': 'https://github.com/mfiumara/spice-ts/issues/501',
-  'directive: .global': 'https://github.com/mfiumara/spice-ts/issues/502',
-  'model: VERSION= strings on BSIM model cards': 'https://github.com/mfiumara/spice-ts/issues/503',
-  'model: BSIM3 revisions other than 3.3 (VERSION=3.0/3.1/3.2.x)': 'https://github.com/mfiumara/spice-ts/issues/594',
-  'model: BSIM3 non-quasi-static model (NQSMOD=1)': 'https://github.com/mfiumara/spice-ts/issues/692',
+  'directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)': 'https://github.com/mfiumara/spice-ts/issues/713',
+  'output: expressions and output variables in .print lines': 'https://github.com/mfiumara/spice-ts/issues/714',
+  'model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)': 'https://github.com/mfiumara/spice-ts/issues/715',
+  'source: EXP/SFFM/AM waveforms and PWL TD=': 'https://github.com/mfiumara/spice-ts/issues/716',
+  'device: JFET forms (PJF model type, instance TEMP=, J card)': 'https://github.com/mfiumara/spice-ts/issues/717',
+  'expression: branch-current i() references in B-source expressions': 'https://github.com/mfiumara/spice-ts/issues/718',
   'model: BSIM4 (LEVEL=14/54)': 'https://github.com/mfiumara/spice-ts/issues/3',
-  'analysis: .pz beyond ideal R, L, C': 'https://github.com/mfiumara/spice-ts/issues/504',
-  'directive: .measure': 'https://github.com/mfiumara/spice-ts/issues/505',
-  'model: VDMOS power MOSFET': 'https://github.com/mfiumara/spice-ts/issues/506',
-  'device: S/W-element switches': 'https://github.com/mfiumara/spice-ts/issues/507',
-  'directive: .temp / .options temp': 'https://github.com/mfiumara/spice-ts/issues/459',
 };
 
 /** Findings beyond the gap buckets (correctness mismatches and harness defects) exposed by this batch. */
-export const FOLLOW_UP_ISSUES: ReadonlyArray<{ url: string; scope: string }> = [];
+export const FOLLOW_UP_ISSUES: ReadonlyArray<{ url: string; scope: string }> = [
+  { url: 'https://github.com/mfiumara/spice-ts/issues/719', scope: 'triage of the 14 decks where both engines succeed but spice-ts exceeds the 1% parity threshold' },
+];
 
 const OUTCOMES: Outcome[] = ['matched', 'mismatch', 'not-compared', 'spice-ts-loss', 'ngspice-failed', 'both-failed'];
 const STATUSES: EngineStatus[] = ['success', 'failed', 'unsupported'];

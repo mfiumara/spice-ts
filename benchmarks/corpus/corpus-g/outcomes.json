@@ -85,7 +85,7 @@
         "tia-erroroption-erroroption-cir",
         "twolevelapi-resinnertran-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/713"
     },
     {
       "bucket": "output: expressions and output variables in .print lines",
@@ -104,7 +104,7 @@
         "vanoise-commonemitterbjt-mextram-cir",
         "verilog-power-power-juncap200-gear-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/714"
     },
     {
       "bucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)",
@@ -119,7 +119,7 @@
         "op-comparator-op-cir",
         "subckt-subckt-a0-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/715"
     },
     {
       "bucket": "source: EXP/SFFM/AM waveforms and PWL TD=",
@@ -133,7 +133,7 @@
         "vpwl-vpwl-cir",
         "vsffm-vsffm-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/716"
     },
     {
       "bucket": "parse: other unsupported syntax",
@@ -157,7 +157,7 @@
         "pjfet-dc-pjfet-2108-cir",
         "pjfet-switch-pjfet-tran-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/717"
     },
     {
       "bucket": "deck: element-free deck (ngspice runs an empty analysis)",
@@ -187,7 +187,7 @@
         "sandler1-sandler1-cir",
         "sandler2-sandler2-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/718"
     },
     {
       "bucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)",
@@ -3771,5 +3771,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "0f1c3982496ddc804ab14b9f301d408cdd02bf9708e481bf65e7a2ee3bd8fb83"
+  "outcomeSha256": "1f27c5f0e5ab53b173603c5255aa6ba3538902f3646bb30ee8f8b1ca6ee7b4ab"
 }

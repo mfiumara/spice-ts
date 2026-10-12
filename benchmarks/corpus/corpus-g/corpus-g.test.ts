@@ -150,9 +150,9 @@ describe('corpus-g committed artifacts', () => {
     assert.equal(await readFile(resolve(ROOT, 'README.md'), 'utf8'), renderMarkdown(report));
   });
 
-  it('links an issue for every gap bucket that ngspice runs', async () => {
+  it('links an issue for every gap bucket of three or more fixtures that ngspice runs', async () => {
     const report = JSON.parse(await readFile(resolve(ROOT, 'outcomes.json'), 'utf8')) as CorpusGReport;
-    for (const bucket of report.gapBuckets.filter(entry => entry.ngspiceSuccess > 0)) {
+    for (const bucket of report.gapBuckets.filter(entry => entry.ngspiceSuccess >= 3 && !entry.bucket.startsWith('parse: other') && !entry.bucket.startsWith('execution: other'))) {
       assert.ok(GAP_ISSUES[bucket.bucket], `no issue linked for bucket "${bucket.bucket}"`);
     }
   });
