@@ -6,18 +6,18 @@ Every deck below is byte-identical to its pinned upstream revision (ahkab `1e893
 
 ## Totals
 
-- Fixtures: 52. Outcome SHA-256: `62d21e64fb18949ccf02cc540ea2eb846129d767c6c1517e004d1e87e428276e`.
+- Fixtures: 52. Outcome SHA-256: `7716492cb1a4771ded806943b2245e5cba98ab4abaa858a66d1a50228708af53`.
 - ngspice (ngspice-47): 52 success, 0 failed, 0 unsupported.
-- spice-ts (0.3.0): 50 success, 1 failed, 1 unsupported.
-- Outcomes: matched 39, mismatch 11, not-compared 0, spice-ts-loss 2, ngspice-failed 0, both-failed 0.
-- Of the 52 decks ngspice runs successfully, spice-ts matches 39, mismatches 11, produces no comparable result for 0 and fails 2.
+- spice-ts (0.3.0): 51 success, 0 failed, 1 unsupported.
+- Outcomes: matched 39, mismatch 12, not-compared 0, spice-ts-loss 1, ngspice-failed 0, both-failed 0.
+- Of the 52 decks ngspice runs successfully, spice-ts matches 39, mismatches 12, produces no comparable result for 0 and fails 1.
 
 | Source | Fixtures | Matched | Mismatch | Not compared | spice-ts loss | ngspice failed | Both failed |
 |---|---|---|---|---|---|---|---|
 | `kicad` | 5 | 2 | 2 | 0 | 1 | 0 | 0 |
 | `pyspice` | 8 | 8 | 0 | 0 | 0 | 0 | 0 |
 | `spicelib` | 2 | 2 | 0 | 0 | 0 | 0 | 0 |
-| `spicesharpparser` | 24 | 16 | 7 | 0 | 1 | 0 | 0 |
+| `spicesharpparser` | 24 | 16 | 8 | 0 | 0 | 0 | 0 |
 | `xictools` | 13 | 11 | 2 | 0 | 0 | 0 | 0 |
 
 ## Method
@@ -37,8 +37,7 @@ Every deck below is byte-identical to its pinned upstream revision (ahkab `1e893
 - https://github.com/mfiumara/spice-ts/issues/797: SpiceSharpParser example01.cir op mismatch (comma-separated subcircuit instance parameter lists), runnable since #789.
 - https://github.com/mfiumara/spice-ts/issues/804: WRspice mosamp2.cir residual transient mismatch after the MOS LEVEL=2 fix for #799 (transient step sequence across a fast edge).
 - https://github.com/mfiumara/spice-ts/issues/809: KiCad QA tlines.spice and legacy_sources.spice mismatches, runnable since GND reads as ground (#772).
-- https://github.com/mfiumara/spice-ts/issues/810: SpiceSharpParser Example04.cir, Example04_reversed.cir and Example05.cir op mismatch (X-card `M = 10` multiplicity is ignored), runnable since #788.
-- https://github.com/mfiumara/spice-ts/issues/826: SpiceSharpParser Example04_nested.cir: a .subckt defined inside another .subckt is not visible (Undefined subcircuit), runnable past parsing since #788.
+- https://github.com/mfiumara/spice-ts/issues/810: SpiceSharpParser Example04.cir, Example04_reversed.cir, Example05.cir and Example04_nested.cir op mismatch (X-card `M = 10` multiplicity is ignored), runnable since #788 (Example04_nested.cir since nested .subckt scoping, #826).
 
 ## spice-ts gap buckets
 
@@ -46,7 +45,6 @@ Grouped from spice-ts's own first error line (corpus-h rules, then corpus-g and 
 
 | Bucket | Fixtures | ngspice ok | Issue |
 |---|---|---|---|
-| execution: other failure | 1 | 1 | none filed |
 | model: VDMOS power MOSFET | 1 | 1 | none filed |
 
 ## Losses (13)
@@ -62,7 +60,7 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | [spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir) | success | success | mismatch | 0.0224 | tran v(collector) |  |
 | [spicesharpparser/circuits/cookbook/pure-spice/transmission-line-termination/transmission-line-termination.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/transmission-line-termination/transmission-line-termination.cir) | success | success | mismatch | 0.0625 | tran v(open_out) |  |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04.cir) | success | success | mismatch | 0.7 | op i(v1) |  |
-| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir) | success | failed | spice-ts-loss |  |  | spice-ts: Undefined subcircuit 'resistor' |
+| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir) | success | success | mismatch | 0.7 | op i(v1) |  |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_reversed.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_reversed.cir) | success | success | mismatch | 0.7 | op i(v1) |  |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example05.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example05.cir) | success | success | mismatch | 0.7 | op i(v1) |  |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01.cir) | success | success | mismatch | 1.15 | op v(n1) |  |
