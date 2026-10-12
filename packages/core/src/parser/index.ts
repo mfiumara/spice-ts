@@ -1,6 +1,8 @@
 import { Circuit } from '../circuit.js';
+import { assertControlledSourceCard } from './controlled-source.js';
 import { ParseError } from '../errors.js';
-import { tokenizeNetlist, parseNumber } from './tokenizer.js';
+import { tokenizeNetlist, tokenizeLine, parseNumber, type ParsedLine } from './tokenizer.js';
+import { fixGndName, hasGndToken } from './gnd-alias.js';
 import { parseModelCard } from './model-parser.js';
 import { assertSupportedModelType } from './model-type.js';
 import { assertSupportedResistorModel, parseResistorElement } from './resistor-parser.js';
@@ -8,9 +10,10 @@ import {
   extractRFPort, extractSourceMultiplier, hasSourceMultiplier, parseSourceCardWaveform, parseInstanceParams,
   VOLTAGE_SOURCE_MULTIPLIER_ERROR,
 } from './waveform-parser.js';
-import { parsePassiveElement } from './passive-parser.js';
+import { invalidPassiveInstanceLine, parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
 import { parseBJTInstance } from './bjt-parser.js';
+import { parseJFETInstance } from './jfet-parser.js';
 import { parsePoleZero } from './pole-zero-parser.js';
 import { parseSensitivity } from './sensitivity-parser.js';
 import {
@@ -35,6 +38,7 @@ import { parseZInstance } from './z-device-parser.js';
 import { locateSubcircuitCall, parseSubcircuitHeader, type SubcircuitHeader } from './subcircuit-syntax.js';
 import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
+import { splitXyceOptionPackage } from './xyce-option-packages.js';
 import type { AnalysisDirective, IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { measureCard } from '../measure/dot-measure.js';
@@ -120,9 +124,12 @@ function parseNetlist(
   const extracted = extractControlBlocks(translateMicroSign(netlist, firstLineIsTitle), firstLineIsTitle);
   const controlBlocks = [...extractedBlocks, ...extracted.blocks];
   const controlStartLine = controlBlocks[0]?.startLine;
-  const lines = tokenizeNetlist(extracted.netlist, { firstLineIsTitle });
+  const lines = tokenizeNetlist(extracted.netlist, { firstLineIsTitle }).map(withGndAsGround);
   const circuit = new Circuit();
   circuit.setParameters(parameters);
+  // ngspice-47 inserts `.global gnd`; it only matters for a `gnd` that
+  // inp_fix_gnd_name left in place (#772).
+  if (lines.some(line => hasGndToken(line.tokens))) circuit.addGlobalNodes(['gnd']);
   for (const warning of [...controlWarnings, ...extracted.warnings]) circuit.addParseWarning(warning.message);
 
   let subcktCollector: (SubcircuitHeader & { body: string[]; depth: number }) | null = null;
@@ -235,8 +242,15 @@ function parseNetlist(
   if (controlBlocks.length > 0) {
     attachControlScript(circuit, parseControlScript(controlBlocks), controlAnalysisIndex, hasStepAnalysis);
   }
+  assertMaxOrderIsNoOp(circuit);
 
   return circuit;
+}
+
+/** A joined card with node `gnd` renamed to ground as ngspice-47 does (#772). */
+function withGndAsGround(line: ParsedLine): ParsedLine {
+  const raw = fixGndName(line.raw);
+  return raw === line.raw ? line : { ...line, raw, tokens: tokenizeLine(raw) };
 }
 
 /**
@@ -322,7 +336,7 @@ export function parseControlAnalysisCard(tokens: string[], lineNumber: number, c
 /** @internal Parse `.options` tokens for the control-language `option`/`set` commands. */
 export function parseControlOptions(tokens: string[], lineNumber: number, context: string): SimulationOptions {
   try {
-    return parseSimulationOptions(tokens, lineNumber, context);
+    return parseSimulationOptions(splitXyceOptionPackage(tokens).fields, lineNumber, context);
   } catch (e) {
     if (e instanceof ParseError) throw e;
     throw new ParseError((e as Error).message, lineNumber, context);
@@ -630,7 +644,7 @@ function parseDotCommand(
       assertSupportedModelType(tokens, lineNumber, context);
       assertSupportedResistorModel(tokens, lineNumber, context);
       const model = parseTransmissionLineModelCard(tokens, lineNumber)
-        ?? parseModelCard(tokens, lineNumber);
+        ?? parseModelCard(tokens, lineNumber, message => circuit.addParseWarning(message));
       circuit.addModel(model);
       break;
     }
@@ -640,10 +654,17 @@ function parseDotCommand(
     case '.OPT':
     case '.OPTION':
     case '.OPTIONS': {
-      const optionTokens = tokens.slice(1);
+      const { fields: optionTokens, warning } = splitXyceOptionPackage(tokens.slice(1));
+      if (warning !== undefined) circuit.addParseWarning(warning);
       const temperature = takeCircuitTemperatureOption(optionTokens, lineNumber, context);
       const xspiceTrtol = takeXspiceTrtolOption(optionTokens, lineNumber, context);
-      circuit.setSimulationOptions(parseSimulationOptions(optionTokens, lineNumber, context));
+      circuit.setSimulationOptions(parseSimulationOptions(optionTokens, lineNumber, context, {
+        warn: message => circuit.addParseWarning(message),
+        maxOrder: order => {
+          if (order > 2) pendingMaxOrders.set(circuit, { order, lineNumber, context });
+          else pendingMaxOrders.delete(circuit);
+        },
+      }));
       if (temperature !== undefined) circuit.setTemperature(temperature);
       if (xspiceTrtol !== undefined) circuit.setXspiceTrtol(xspiceTrtol);
       break;
@@ -673,10 +694,20 @@ function parseDotCommand(
       );
       break;
     case '.SAVE':
+      // spice-ts returns all computed vectors through its result API, so this
+      // ngspice output-selection directive is metadata-only.
+      break;
     case '.PRINT':
     case '.PLOT':
-      // spice-ts returns all computed vectors through its result API, so these
-      // ngspice output-selection and formatting directives are metadata-only.
+      // Metadata-only like .save. ngspice-47 numparam leaves their braces
+      // unsubstituted and its print command cannot parse them either, so the
+      // analyses run unchanged; each brace expression is reported (#714).
+      for (const expression of context.match(/\{[^}]*\}/g) ?? []) {
+        circuit.addParseWarning(
+          `.print/.plot expression '${expression}' is not evaluated: spice-ts returns every computed vector, ` +
+          'and ngspice-47 does not substitute braces on output cards either',
+        );
+      }
       break;
     case '.MEAS':
     case '.MEASURE': {
@@ -806,7 +837,6 @@ function takeCircuitTemperatureOption(
   lineNumber: number,
   context: string,
 ): number | undefined {
-  if (tokens[0]?.toLowerCase() === 'timeint') return undefined;
   let temperature: number | undefined;
   for (let index = tokens.length - 1; index >= 0; index -= 1) {
     const token = tokens[index];
@@ -838,7 +868,6 @@ function takeXspiceTrtolOption(
   lineNumber: number,
   context: string,
 ): number | undefined {
-  if (tokens[0]?.toLowerCase() === 'timeint') return undefined;
   let trtol: number | undefined;
   for (let index = tokens.length - 1; index >= 0; index -= 1) {
     const token = tokens[index];
@@ -856,15 +885,52 @@ function takeXspiceTrtolOption(
   return trtol;
 }
 
+interface SimulationOptionHooks {
+  /** Receive a non-fatal parse diagnostic. */
+  warn?(message: string): void;
+  /**
+   * Receive an accepted ngspice MAXORD (2..6). Without this hook, orders above
+   * 2 are rejected because their effect depends on the deck's final METHOD.
+   */
+  maxOrder?(order: number): void;
+}
+
+interface PendingMaxOrder {
+  readonly order: number;
+  readonly lineNumber: number;
+  readonly context: string;
+}
+
+/** The last MAXORD above 2 of each circuit being parsed, checked after the last card. */
+const pendingMaxOrders = new WeakMap<Circuit, PendingMaxOrder>();
+
+/**
+ * ngspice-47 dctran.c raises the trapezoidal order only from 1 to 2, so any
+ * MAXORD >= 2 leaves METHOD=TRAP unchanged. With METHOD=GEAR, MAXORD above 2
+ * enables Gear orders spice-ts does not implement (its gear2 is ngspice's
+ * default GEAR with MAXORD=2).
+ */
+function assertMaxOrderIsNoOp(circuit: Circuit): void {
+  const pending = pendingMaxOrders.get(circuit);
+  pendingMaxOrders.delete(circuit);
+  if (pending === undefined || circuit.simulationOptions.integrationMethod !== 'gear2') return;
+  throw new ParseError(
+    `Unsupported .options maxord=${pending.order} with method=gear (spice-ts implements Gear order 2 only)`,
+    pending.lineNumber,
+    pending.context,
+  );
+}
+
+/** cp_setparse() reads a numeric word as a number, which the string METHOD option rejects. */
+const NUMERIC_OPTION_VALUE = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i;
+
 function parseSimulationOptions(
   tokens: string[],
   lineNumber: number,
   context: string,
+  hooks: SimulationOptionHooks = {},
 ): SimulationOptions {
   const optionTokens = tokens.filter(value => value !== '(' && value !== ')');
-  if (optionTokens[0]?.toLowerCase() === 'timeint') {
-    return parseXyceTimeintOptions(optionTokens.slice(1));
-  }
 
   const options: SimulationOptions = {};
   const obsoleteNumericFields = new Set(['limpts', 'itl5', 'lvlcod']);
@@ -922,6 +988,12 @@ function parseSimulationOptions(
       continue;
     }
     if (name === 'method') {
+      if (NUMERIC_OPTION_VALUE.test(rawValue)) {
+        // ngspice-47 if_option(): METHOD is IF_STRING, so a numeric value
+        // (Xyce TIMEINT METHOD=7) is a "bad type" and the method is unchanged.
+        hooks.warn?.(`Ignored .options method=${rawValue}: ngspice-47 rejects a numeric METHOD and keeps the current method`);
+        continue;
+      }
       const methods: Record<string, IntegrationMethod> = {
         trap: 'trapezoidal',
         gear: 'gear2',
@@ -929,6 +1001,35 @@ function parseSimulationOptions(
       const method = methods[rawValue.toLowerCase()];
       if (!method) throw new Error(`Unsupported .options method: '${rawValue}'`);
       options.integrationMethod = method;
+      continue;
+    }
+    if (name === 'maxord') {
+      const value = parseNumber(rawValue);
+      if (!Number.isFinite(value)) throw new Error(`Invalid .options maxord value: '${rawValue}'`);
+      // ngspice-47 if_option() rounds a real value; cktsopt.c clamps to 1..6.
+      const order = Math.min(6, Math.max(1, Math.floor(value + 0.5)));
+      if (order < 2) {
+        throw new ParseError(
+          `Unsupported .options maxord value: '${rawValue}' (order-1-only integration is not implemented)`,
+          lineNumber,
+          context,
+        );
+      }
+      if (order > 2 && hooks.maxOrder === undefined) {
+        throw new ParseError(
+          `Unsupported .options maxord=${order} outside a netlist .options card`,
+          lineNumber,
+          context,
+        );
+      }
+      if (order > 2 && options.integrationMethod === 'gear2') {
+        throw new ParseError(
+          `Unsupported .options maxord=${order} with method=gear (spice-ts implements Gear order 2 only)`,
+          lineNumber,
+          context,
+        );
+      }
+      hooks.maxOrder?.(order);
       continue;
     }
 
@@ -989,75 +1090,6 @@ function parseNodeInitialState(
   }
 }
 
-function parseXyceTimeintOptions(tokens: string[]): SimulationOptions {
-  const options: SimulationOptions = {};
-  let newbpstepping: string | undefined;
-
-  for (const token of tokens) {
-    const separator = token.indexOf('=');
-    const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
-    if (separator <= 0 || separator === token.length - 1) {
-      if (name === 'newbpstepping') {
-        const rawValue = separator < 0 ? undefined : token.slice(separator + 1);
-        throw new Error(rawValue === undefined
-          ? "Invalid .options TIMEINT NEWBPSTEPPING field: 'newbpstepping'"
-          : `Invalid .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
-      }
-      throw new Error(`Unsupported .options TIMEINT field: '${name || token.toLowerCase()}'`);
-    }
-
-    const rawValue = token.slice(separator + 1);
-    if (name === 'newbpstepping') {
-      if (newbpstepping !== undefined && newbpstepping !== rawValue) {
-        throw new Error(`Conflicting .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
-      }
-      newbpstepping = rawValue;
-      if (rawValue === '0') continue;
-      let numericValue: number;
-      try {
-        numericValue = parseNumber(rawValue);
-      } catch {
-        throw new Error(`Invalid .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
-      }
-      if (!Number.isFinite(numericValue)) {
-        throw new Error(`Invalid .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
-      }
-      throw new Error(`Unsupported .options TIMEINT NEWBPSTEPPING value: '${rawValue}'`);
-    }
-    if (name === 'method') {
-      const methods: Record<string, IntegrationMethod> = {
-        trap: 'trapezoidal',
-        '7': 'trapezoidal',
-        gear: 'gear2',
-        '8': 'gear2',
-      };
-      const method = methods[rawValue.toLowerCase()];
-      if (!method) throw new Error(`Unsupported .options TIMEINT method: '${rawValue}'`);
-      options.integrationMethod = method;
-      continue;
-    }
-
-    if (name !== 'reltol' && name !== 'abstol') {
-      throw new Error(`Unsupported .options TIMEINT field: '${name}'`);
-    }
-
-    const value = parseNumber(rawValue);
-    if (!Number.isFinite(value) || value < 0) {
-      throw new Error(`Invalid .options TIMEINT ${name} value: '${rawValue}'`);
-    }
-    if (name === 'abstol') {
-      // Xyce uses one TIMEINT ABSTOL for both voltage and current solution
-      // components; spice-ts represents those tolerances separately.
-      options.abstol = value;
-      options.vntol = value;
-    } else {
-      options.reltol = value;
-    }
-  }
-
-  return options;
-}
-
 function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw: string): void {
   const name = tokens[0];
   const type = name[0].toUpperCase();
@@ -1068,16 +1100,21 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       circuit.addResistor(name, tokens[1], tokens[2], parsed.value, parsed.params, parsed.modelName);
       break;
     }
-    case 'C': {
-      const parsed = parsePassiveElement(tokens, 3, 'C');
-      const { IC: ic, ...params } = parsed.params;
-      circuit.addCapacitor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, params, ic);
-      break;
-    }
+    case 'C':
     case 'L': {
-      const parsed = parsePassiveElement(tokens, 3, 'L');
+      const kind = type === 'C' ? 'C' : 'L';
+      const invalid = invalidPassiveInstanceLine(tokens, kind);
+      if (invalid !== undefined) {
+        circuit.addParseWarning(`${invalid} (line ${lineNumber})`);
+        break;
+      }
+      const parsed = parsePassiveElement(tokens, 3, kind);
       const { IC: ic, ...params } = parsed.params;
-      circuit.addInductor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, params, ic);
+      if (kind === 'C') {
+        circuit.addCapacitor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, params, ic);
+      } else {
+        circuit.addInductor(name, tokens[1], tokens[2], parsed.value, parsed.modelName, params, ic);
+      }
       break;
     }
     case 'K': {
@@ -1151,15 +1188,13 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       );
       break;
     }
-    case 'J':
-      if (tokens.length !== 5) {
-        throw new ParseError(
-          `Unsupported JFET instance parameter: '${tokens.slice(5).join(' ')}'`,
-          lineNumber, tokens.join(' '),
-        );
-      }
-      circuit.addJFET(name, tokens[1], tokens[2], tokens[3], tokens[4]);
+    case 'J': {
+      const instance = parseJFETInstance(tokens, lineNumber);
+      circuit.addJFET(
+        name, instance.drain, instance.gate, instance.source, instance.modelName, instance.params,
+      );
       break;
+    }
     case 'M': {
       // SPICE MOSFET: M name D G S [B] modelName [W=x L=y ...]
       // tokens[4] is either the body node (4-terminal) or the model name (3-terminal).
@@ -1190,21 +1225,25 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       break;
     }
     case 'E': {
+      assertControlledSourceCard(tokens, lineNumber, raw);
       const gain = parseNumber(tokens[5]);
       circuit.addVCVS(name, tokens[1], tokens[2], tokens[3], tokens[4], gain);
       break;
     }
     case 'G': {
+      assertControlledSourceCard(tokens, lineNumber, raw);
       const gm = parseNumber(tokens[5]);
       circuit.addVCCS(name, tokens[1], tokens[2], tokens[3], tokens[4], gm);
       break;
     }
     case 'H': {
+      assertControlledSourceCard(tokens, lineNumber, raw);
       const gain = parseNumber(tokens[4]);
       circuit.addCCVS(name, tokens[1], tokens[2], tokens[3], gain);
       break;
     }
     case 'F': {
+      assertControlledSourceCard(tokens, lineNumber, raw);
       const gain = parseNumber(tokens[4]);
       circuit.addCCCS(name, tokens[1], tokens[2], tokens[3], gain);
       break;

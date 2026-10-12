@@ -76,6 +76,13 @@ export interface ChargeTruncation {
   /** Charge tolerance (C). */
   readonly chgtol: number;
   readonly trtol: number;
+  /**
+   * Integration order CKTterr evaluates the error at (ngspice CKTorder).
+   * Absent: the order of the step's own rule. ngspice dctran.c repeats
+   * CKTtrunc at order 2 after an accepted order-1 step to decide whether to
+   * raise the order.
+   */
+  readonly order?: 1 | 2;
 }
 
 /** Newton convergence tolerances (ngspice RELTOL, ABSTOL, VNTOL). */
@@ -231,8 +238,12 @@ export interface DeviceModel {
    * flag) re-initialises it here.
    */
   beginOperatingPoint?(): void;
-  /** Receive the transient TSTEP used by SPICE waveform defaults (e.g. zero PULSE TR/TF). */
-  setTransientTimestep?(timestep: number): void;
+  /**
+   * Receive the transient TSTEP and TSTOP (ngspice CKTstep/CKTfinalTime) used
+   * by SPICE waveform defaults (e.g. zero PULSE TR/TF, SFFM/AM frequencies).
+   * `stopTime` is undefined for an open-ended stepping run.
+   */
+  setTransientTimestep?(timestep: number, stopTime?: number): void;
   /** Clear device-owned transient history before restarting at t=0. */
   resetTransient?(): void;
   /** Whether this device requires Newton-Raphson iteration (nonlinear). */
@@ -256,4 +267,33 @@ export interface DeviceModel {
    * should omit this method.
    */
   getBreakpoints?(stopTime: number): number[];
+  /**
+   * The XSPICE event-driven network of the circuit (ngspice evt/), present on
+   * one compiled device when the circuit has digital code-model instances.
+   */
+  readonly eventDriven?: EventDrivenNetwork;
+}
+
+/**
+ * How the analog solvers drive the XSPICE event-driven network: the
+ * operating point (ngspice EVTop) and the transient coordination of
+ * dctran.c (EVTnext_time/EVTdequeue/EVTiter before a step, EVTbackup on a
+ * rejected step, EVTcall_hybrids and EVTaccept after an accepted one).
+ */
+export interface EventDrivenNetwork {
+  /**
+   * Alternate event iterations with `solveAnalog` (the analog operating
+   * point; `first` is the first solve) until no event output changes.
+   */
+  operatingPoint(solveAnalog: (first: boolean) => void): void;
+  /** Start transient event processing after the operating point; `breakpoint` is CKTsetBreak. */
+  beginTransient(breakpoint: (time: number) => void, minBreak: number): void;
+  /** EVTnext_time: the earliest queued event, or Infinity. */
+  nextEventTime(): number;
+  /** EVTdequeue + EVTiter at event time `time`; `now` is the last accepted analog time (CKTtime). */
+  processEvents(time: number, now: number): void;
+  /** EVTbackup: drop every event processed after `time`. */
+  backup(time: number): void;
+  /** An accepted point: EVTcall_hybrids (unless the first step), then EVTaccept. */
+  acceptStep(time: number, callHybrids: boolean): void;
 }

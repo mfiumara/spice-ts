@@ -1,5 +1,7 @@
 import type { ACRHSContribution, DeviceModel, StampContext, TransientBreakpointSink } from './device.js';
-import type { SourceWaveform, PulseSource, SinSource, PWLSource, RFPort } from '../types.js';
+import type {
+  SourceWaveform, PulseSource, SinSource, PWLSource, ExpSource, SffmSource, AmSource, RFPort,
+} from '../types.js';
 import { InvalidCircuitError } from '../errors.js';
 import { TransientNoiseContext, type NoiseHandle } from './transient-noise.js';
 
@@ -7,10 +9,19 @@ export class VoltageSource implements DeviceModel {
   readonly branches: number[];
   readonly isNonlinear = false;
   private transientTimestep = 0;
+  /** Transient TSTOP (ngspice CKTfinalTime), used by SFFM/AM frequency defaults. */
+  private transientStopTime: number | undefined;
   /** TRNOISE/TRRANDOM state (ngspice VSRCtrnoise_state/VSRCtrrandom_state). */
   private readonly noise?: NoiseHandle;
-  /** Present only for TRNOISE/TRRANDOM, so other sources stay off the accept pass. */
+  /** Present only for TRNOISE/TRRANDOM and PWL with TD=/R=, so other sources stay off the accept pass. */
   readonly acceptTransientStep?: (ctx: StampContext, breakpoints?: TransientBreakpointSink) => void;
+  /**
+   * False for a PWL: its accept hook only schedules breakpoints,
+   * so it must not put its nodes under the node-voltage LTE.
+   */
+  readonly storesCharge?: boolean;
+  /** ngspice accept-time PWL corners (vsrcacct.c). */
+  private readonly pwlSchedule?: PwlBreakpointSchedule;
 
   /**
    * @param nodes - `[+, -]`, or `[+, -, res]` for an RF port, whose ideal
@@ -32,6 +43,14 @@ export class VoltageSource implements DeviceModel {
       const noise = (noiseContext ?? new TransientNoiseContext()).register('V', name, waveform);
       this.noise = noise;
       this.acceptTransientStep = (ctx, breakpoints) => noise.accept(ctx.time, breakpoints);
+    } else if (waveform.type === 'pwl') {
+      const schedule = new PwlBreakpointSchedule(waveform);
+      this.pwlSchedule = schedule;
+      this.storesCharge = false;
+      this.acceptTransientStep = (ctx, breakpoints) => {
+        const next = schedule.next(ctx.time, this.transientStopTime ?? Infinity, this.transientTimestep);
+        if (next !== undefined) breakpoints?.schedule(next);
+      };
     }
   }
 
@@ -83,6 +102,12 @@ export class VoltageSource implements DeviceModel {
         return evaluateSin(this.waveform, time);
       case 'pwl':
         return evaluatePwl(this.waveform, time);
+      case 'exp':
+        return evaluateExp(this.waveform, time, this.transientTimestep);
+      case 'sffm':
+        return evaluateSffm(this.waveform, time, this.transientStopTime);
+      case 'am':
+        return evaluateAm(this.waveform, time, this.transientStopTime);
       case 'trnoise':
       case 'trrandom':
         // ngspice-47 vsrcload.c adds the DC value when one is given.
@@ -137,8 +162,10 @@ export class VoltageSource implements DeviceModel {
     throw new InvalidCircuitError(`Voltage source '${this.name}' has no sweepable DC value`);
   }
 
-  setTransientTimestep(timestep: number): void {
+  setTransientTimestep(timestep: number, stopTime?: number): void {
+    requireStopTimeForDefaults(this.name, this.waveform, stopTime);
     this.transientTimestep = timestep;
+    this.transientStopTime = stopTime;
   }
 
   getBreakpoints(stopTime: number): number[] {
@@ -146,7 +173,7 @@ export class VoltageSource implements DeviceModel {
       return pulseBreakpoints(effectivePulse(this.waveform, this.transientTimestep), stopTime);
     }
     if (this.waveform.type === 'pwl') {
-      return pwlBreakpoints(this.waveform, stopTime);
+      return pwlBreakpoints(this.waveform, stopTime, this.transientTimestep);
     }
     if (this.noise) return this.noise.breakpoints(stopTime);
     return [];
@@ -154,6 +181,7 @@ export class VoltageSource implements DeviceModel {
 
   resetTransient(): void {
     this.noise?.resetTransient();
+    this.pwlSchedule?.reset();
   }
 }
 
@@ -214,20 +242,90 @@ function pulseTrainEnd(p: PulseSource): number {
   return pulses * period;
 }
 
-/** Return PWL corners in [0, stopTime], preserving their declared times. */
-export function pwlBreakpoints(pwl: PWLSource, stopTime: number): number[] {
-  return pwl.points
-    .map(point => point.time)
-    .filter(time => time >= 0 && time <= stopTime);
+/**
+ * The first PWL corner ngspice requests as a breakpoint, if within
+ * [0, stopTime]. Later corners are scheduled on accept
+ * ({@link PwlBreakpointSchedule}), as ngspice-47 vsrcacct.c does.
+ */
+export function pwlBreakpoints(pwl: PWLSource, stopTime: number, transientTimestep = 0): number[] {
+  const first = new PwlBreakpointSchedule(pwl).next(0, stopTime, transientTimestep);
+  return first !== undefined && first <= stopTime ? [first] : [];
+}
+
+/**
+ * ngspice-47 vsrcacct.c/isrcacct.c PWL breakpoints. On each accepted time
+ * `T` at or past the pending break, the source maps `T - TD` into the
+ * (repeating) waveform and requests the next corner at `(T + corner) - mapped`.
+ * That floating-point chain, not `corner + TD + n * period`, decides on which
+ * side of a repeat's wrap-around discontinuity ngspice samples, and even
+ * without TD=/R= it can put the breakpoint one ulp off the corner, where the
+ * step then lands, so spice-ts reproduces it for every PWL. `minBreak` is ngspice's CKTminBreak, 10 * CKTdelmin =
+ * 1e-10 * CKTmaxStep in an XSPICE build, with the default CKTmaxStep
+ * `min(TSTEP, TSTOP / 50)`.
+ */
+export class PwlBreakpointSchedule {
+  /** ngspice VSRCbreak_time, -1 before the first accept (vsrcset.c). */
+  private breakTime = -1;
+
+  constructor(private readonly pwl: PWLSource) {}
+
+  reset(): void {
+    this.breakTime = -1;
+  }
+
+  /** Accept `time`; return the breakpoint ngspice would request, if any. */
+  next(time: number, stopTime: number, transientTimestep: number): number | undefined {
+    if (time < this.breakTime) return undefined;
+    const mapped = pwlLocalTime(this.pwl, time);
+    if (mapped === undefined) {
+      this.breakTime = Infinity;
+      return undefined;
+    }
+    const maxStep = Math.min(transientTimestep > 0 ? transientTimestep : Infinity, stopTime / 50);
+    // An open-ended run without TSTEP has no CKTmaxStep; only rounding is absorbed then.
+    const minBreak = Number.isFinite(maxStep) ? 1e-10 * maxStep : 0;
+    const after = mapped + minBreak;
+    const corner = this.pwl.points.find(point => point.time > after);
+    if (!corner) return undefined;
+    const breakpoint = time + corner.time - mapped;
+    this.breakTime = breakpoint - minBreak;
+    return breakpoint;
+  }
+}
+
+/**
+ * Waveform-local time of a PWL source at circuit time `time`: shifted by
+ * `TD=` and, past the last point with `R=`, folded back into the repeated
+ * section (ngspice-47 vsrcload.c/vsrcacct.c). Undefined past the last point
+ * of a non-repeating waveform.
+ */
+function pwlLocalTime(pwl: PWLSource, time: number): number | undefined {
+  const { points } = pwl;
+  time -= pwl.delay ?? 0;
+  const end = points[points.length - 1].time;
+  if (time > end) {
+    const period = end - (pwl.repeat ?? end);
+    // A non-positive period (no R=, or one the parser would reject) holds the last value.
+    if (pwl.repeat === undefined || !(period > 0)) return undefined;
+    time -= pwl.repeat;
+    time -= period * Math.floor(time / period);
+    time += pwl.repeat;
+  }
+  return time;
 }
 
 /**
  * Evaluate a PWL waveform with ngspice endpoint and duplicate-time semantics.
  * Values are held outside the declared range. At equal-time points, the final
  * value at that time wins, which represents an instantaneous discontinuity.
+ * `TD=` shifts the waveform; `R=` repeats it from the repeat point once time
+ * passes the last point (ngspice-47 vsrcload.c/isrcload.c PWL).
  */
 export function evaluatePwl(pwl: PWLSource, time: number): number {
   const { points } = pwl;
+  const local = pwlLocalTime(pwl, time);
+  if (local === undefined) return points[points.length - 1].value;
+  time = local;
   if (time < points[0].time) return points[0].value;
 
   let left = points[0];
@@ -271,7 +369,85 @@ export function evaluatePulse(pulse: PulseSource, time: number, transientTimeste
   return v2 + (v1 - v2) * (t - rise - width) / fall;
 }
 
-function evaluateSin(s: SinSource, time: number): number {
+/** Whether `value` is a given, nonzero coefficient (ngspice's `coeffs[i] != 0.0` defaults test). */
+function nonzero(value: number | undefined): value is number {
+  return value !== undefined && value !== 0;
+}
+
+/**
+ * Evaluate EXP with ngspice-47 vsrcload.c/isrcload.c semantics: an omitted or
+ * zero TD1, TAU1 or TAU2 is the transient TSTEP and TD2 is TD1 + TSTEP.
+ * ngspice-47 registers no breakpoints for EXP (vsrcacct.c), and neither does
+ * spice-ts.
+ */
+export function evaluateExp(e: ExpSource, time: number, transientTimestep = 0): number {
+  const td1 = nonzero(e.td1) ? e.td1 : transientTimestep;
+  const tau1 = nonzero(e.tau1) ? e.tau1 : transientTimestep;
+  const td2 = nonzero(e.td2) ? e.td2 : td1 + transientTimestep;
+  const tau2 = nonzero(e.tau2) ? e.tau2 : transientTimestep;
+  if (time <= td1) return e.v1;
+  const rise = e.v1 + (e.v2 - e.v1) * (1 - Math.exp(-(time - td1) / tau1));
+  if (time <= td2) return rise;
+  return rise + (e.v1 - e.v2) * (1 - Math.exp(-(time - td2) / tau2));
+}
+
+/**
+ * Evaluate SFFM with ngspice-47 vsrcload.c/isrcload.c semantics, including
+ * the value 0 (not VO) at and before TD, the `5/TSTOP` and `500/TSTOP`
+ * frequency defaults and the MDI clamp to [0, FC/FM].
+ */
+export function evaluateSffm(s: SffmSource, time: number, stopTime: number | undefined): number {
+  const t = time - (s.delay ?? 0);
+  if (t <= 0) return 0;
+  const carrier = s.carrierFrequency ?? 5 / stopTime!;
+  const signal = nonzero(s.signalFrequency) ? s.signalFrequency : 500 / stopTime!;
+  let index = s.modulationIndex ?? 90;
+  if (index > carrier / signal) index = carrier / signal;
+  else if (index < 0) index = 0;
+  const carrierPhase = (s.carrierPhase ?? 0) * Math.PI / 180;
+  const signalPhase = (s.signalPhase ?? 0) * Math.PI / 180;
+  return s.offset + s.amplitude * Math.sin(
+    (2 * Math.PI * carrier * t + carrierPhase) + index * Math.sin(2 * Math.PI * signal * t + signalPhase),
+  );
+}
+
+/**
+ * Evaluate AM with ngspice-47 vsrcload.c/isrcload.c semantics, including the
+ * value 0 (not VO) at and before TD and the `5/TSTOP` (FM) and `500/TSTOP`
+ * (FC) frequency defaults.
+ */
+export function evaluateAm(a: AmSource, time: number, stopTime: number | undefined): number {
+  const t = time - (a.delay ?? 0);
+  if (t <= 0) return 0;
+  const modulationFrequency = a.modulationFrequency ?? 5 / stopTime!;
+  const carrierFrequency = a.carrierFrequency ?? 500 / stopTime!;
+  const modulationPhase = (a.modulationPhase ?? 0) * Math.PI / 180;
+  const carrierPhase = (a.carrierPhase ?? 0) * Math.PI / 180;
+  return a.offset
+    + (a.carrierAmplitude + (a.modulationAmplitude ?? 1) * Math.sin(2 * Math.PI * modulationFrequency * t + modulationPhase))
+    * Math.sin(2 * Math.PI * carrierFrequency * t + carrierPhase);
+}
+
+/**
+ * SFFM/AM default an omitted frequency from the transient TSTOP. A transient
+ * run without a stop time (an open-ended stepping session) has none, so such a
+ * source must state its frequencies.
+ */
+export function requireStopTimeForDefaults(name: string, waveform: SourceWaveform, stopTime: number | undefined): void {
+  if (stopTime !== undefined) return;
+  const missing = waveform.type === 'sffm'
+    ? waveform.carrierFrequency === undefined || !nonzero(waveform.signalFrequency)
+    : waveform.type === 'am'
+      ? waveform.modulationFrequency === undefined || waveform.carrierFrequency === undefined
+      : false;
+  if (missing) {
+    throw new InvalidCircuitError(
+      `Source '${name}': ${waveform.type.toUpperCase()} frequencies default from the transient stop time, which this run does not have; give them explicitly`,
+    );
+  }
+}
+
+export function evaluateSin(s: SinSource, time: number): number {
   const delay = s.delay ?? 0;
   const damping = s.damping ?? 0;
   const phase = s.phase ?? 0;

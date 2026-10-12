@@ -49,11 +49,13 @@ describe('ngspice PWL source parity', () => {
     expect(source.getCurrentAtTime(2.5e-6)).toBeCloseTo(-0.5, 12);
   });
 
-  it('collects each PWL corner as a transient breakpoint', async () => {
+  it('lands on each PWL corner as a transient breakpoint', async () => {
     const sim = await createTransientSim(PWL_NETLIST);
     const breakpoints = (sim as unknown as { breakpointTimes(): readonly number[] }).breakpointTimes();
 
-    expect(breakpoints).toEqual([1e-6, 2e-6, 3e-6]);
+    // ngspice-47 vsrcacct.c: only the first corner is queued up front; each
+    // later corner is requested when the step at the previous one is accepted.
+    expect(breakpoints).toEqual([1e-6]);
 
     const steps = sim.advanceUntil(3e-6);
     for (const [time, expected] of [[1e-6, 1], [2e-6, -1], [3e-6, 0]] as const) {
@@ -65,7 +67,9 @@ describe('ngspice PWL source parity', () => {
   it('rejects malformed PWL point lists', () => {
     expect(() => parse('V1 in 0 PWL(0 0 1u)')).toThrow(/PWL.*time\/value pairs/i);
     expect(() => parse('V1 in 0 PWL(1u 1 0 0)')).toThrow(/PWL.*non-decreasing/i);
-    expect(() => parse('V1 in 0 PWL(0 0 1u 1) R=1u')).toThrow(/Unsupported PWL source parameters/i);
+    expect(() => parse('V1 in 0 PWL(0 0 1u 1) R=0.5u')).toThrow(/PWL repeat start time .* does not match any time point/i);
+    expect(() => parse('V1 in 0 PWL(0 0 1u 1) R=1u')).toThrow(/PWL repeat start time .* must be smaller than the final time point/i);
+    expect(() => parse('V1 in 0 PWL(0 0 1u 1) X=1u')).toThrow(/Unsupported PWL source parameters: 'X=1u'/i);
   });
 
   it('preserves PWL data through netlist and IR serialization', () => {
@@ -81,7 +85,7 @@ describe('ngspice PWL source parity', () => {
     });
   });
 
-  it.each(['EXP', 'SFFM', 'AM', 'EXTERNAL'])(
+  it.each(['EXTERNAL'])(
     'explicitly rejects unsupported %s sources',
     keyword => {
       expect(() => parse(`V1 in 0 ${keyword}(0 1)`)).toThrow(

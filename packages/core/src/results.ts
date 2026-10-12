@@ -1,3 +1,5 @@
+import { getCaseInsensitive } from './case-fold.js';
+import type { DigitalNodeEvent } from './devices/xspice/event-network.js';
 import type { ConvergenceTelemetry, SimulationWarning } from './types.js';
 
 /**
@@ -19,7 +21,7 @@ export class DCResult {
    * @throws Error if the node name is not found in the result
    */
   voltage(node: string): number {
-    const v = this.voltageMap.get(node);
+    const v = getCaseInsensitive(this.voltageMap, node);
     if (v === undefined) throw new Error(`Unknown node: ${node}`);
     return v;
   }
@@ -32,7 +34,7 @@ export class DCResult {
    * @throws Error if the branch name is not found in the result
    */
   current(source: string): number {
-    const i = this.currentMap.get(source);
+    const i = getCaseInsensitive(this.currentMap, source);
     if (i === undefined) throw new Error(`Unknown branch: ${source}`);
     return i;
   }
@@ -59,7 +61,27 @@ export class TransientResult {
     public readonly time: number[],
     private readonly voltageArrays: Map<string, number[]>,
     private readonly currentArrays: Map<string, number[]>,
+    private readonly digitalHistories: Map<string, DigitalNodeEvent[]> = new Map(),
   ) {}
+
+  /**
+   * Get the value changes of an XSPICE digital (event-driven) node: its
+   * operating-point value at time 0, then one entry per accepted change,
+   * like ngspice `eprint`.
+   *
+   * @param node - Digital node name as it appears in the netlist
+   * @throws Error if the node is not a digital node of the circuit
+   */
+  digital(node: string): DigitalNodeEvent[] {
+    const events = getCaseInsensitive(this.digitalHistories, node);
+    if (events === undefined) throw new Error(`Unknown digital node: ${node}`);
+    return events;
+  }
+
+  /** Copy of every digital node's value changes as a Map. */
+  get digitalNodes(): Map<string, DigitalNodeEvent[]> {
+    return new Map(this.digitalHistories);
+  }
 
   /**
    * Get the voltage waveform at a node over time.
@@ -69,7 +91,7 @@ export class TransientResult {
    * @throws Error if the node name is not found in the result
    */
   voltage(node: string): number[] {
-    const v = this.voltageArrays.get(node);
+    const v = getCaseInsensitive(this.voltageArrays, node);
     if (v === undefined) throw new Error(`Unknown node: ${node}`);
     return v;
   }
@@ -82,7 +104,7 @@ export class TransientResult {
    * @throws Error if the branch name is not found in the result
    */
   current(source: string): number[] {
-    const i = this.currentArrays.get(source);
+    const i = getCaseInsensitive(this.currentArrays, source);
     if (i === undefined) throw new Error(`Unknown branch: ${source}`);
     return i;
   }
@@ -119,7 +141,7 @@ export class ACResult {
    * @throws Error if the node name is not found in the result
    */
   voltage(node: string): { magnitude: number; phase: number }[] {
-    const v = this.voltageArrays.get(node);
+    const v = getCaseInsensitive(this.voltageArrays, node);
     if (v === undefined) throw new Error(`Unknown node: ${node}`);
     return v;
   }
@@ -132,7 +154,7 @@ export class ACResult {
    * @throws Error if the branch name is not found in the result
    */
   current(source: string): { magnitude: number; phase: number }[] {
-    const i = this.currentArrays.get(source);
+    const i = getCaseInsensitive(this.currentArrays, source);
     if (i === undefined) throw new Error(`Unknown branch: ${source}`);
     return i;
   }
@@ -245,7 +267,7 @@ export class DistortionResult {
   voltage(node: string, product: DistortionProduct): ComplexDistortionValue[] {
     const arrays = this.voltageArrays.get(product);
     if (!arrays) throw new Error(`Distortion product ${product} is unavailable for this analysis`);
-    const values = arrays.get(node);
+    const values = getCaseInsensitive(arrays, node);
     if (!values) throw new Error(`Unknown node: ${node}`);
     return values.map(value => ({ ...value }));
   }
@@ -253,7 +275,7 @@ export class DistortionResult {
   current(branch: string, product: DistortionProduct): ComplexDistortionValue[] {
     const arrays = this.currentArrays.get(product);
     if (!arrays) throw new Error(`Distortion product ${product} is unavailable for this analysis`);
-    const values = arrays.get(branch);
+    const values = getCaseInsensitive(arrays, branch);
     if (!values) throw new Error(`Unknown branch: ${branch}`);
     return values.map(value => ({ ...value }));
   }
@@ -301,10 +323,16 @@ export interface ComplexSensitivityValue {
   imaginary: number;
 }
 
-/** Sensitivity to one non-zero primary device parameter. */
+/**
+ * Sensitivity to one device parameter: a non-zero primary value, or the instance
+ * multiplier `m` (ngspice `<dev>_m`) or `scale` (ngspice `<dev>_scale`) of a
+ * resistor, capacitor, inductor or current source (`scale`: R, C and L only).
+ */
 export interface SensitivityEntry {
   device: string;
-  parameter: 'resistance' | 'capacitance' | 'inductance' | 'dc' | 'acMagnitude' | 'gain';
+  parameter:
+    | 'resistance' | 'capacitance' | 'inductance' | 'dc' | 'acMagnitude' | 'gain'
+    | 'multiplier' | 'scale';
   dc?: number;
   ac?: ComplexSensitivityValue[];
 }
@@ -342,7 +370,7 @@ export class DCSweepResult {
    * @throws Error if the node name is not found in the result
    */
   voltage(node: string): Float64Array {
-    const v = this.voltageArrays.get(node);
+    const v = getCaseInsensitive(this.voltageArrays, node);
     if (v === undefined) throw new Error(`Unknown node: ${node}`);
     return v;
   }
@@ -355,7 +383,7 @@ export class DCSweepResult {
    * @throws Error if the branch name is not found in the result
    */
   current(source: string): Float64Array {
-    const i = this.currentArrays.get(source);
+    const i = getCaseInsensitive(this.currentArrays, source);
     if (i === undefined) throw new Error(`Unknown branch: ${source}`);
     return i;
   }

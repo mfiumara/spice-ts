@@ -1,0 +1,1333 @@
+{
+  "schemaVersion": "spice-ts-corpus-h-ngspice-probe/v1",
+  "revisions": {
+    "ahkab": "1e8939194b689909b8184ce7eba478b485ff9e3a",
+    "kicad": "240efadec4b408919fef7e79deb54ac7c1269597",
+    "pyspice": "fe08718d5a1a9af94576b5aef1fa81910f09b037",
+    "spicelib": "d8f8ecceeb361741f1f660f03b03ac49697f8700",
+    "spicesharpparser": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+    "xictools": "c1244c23a99118843db48cee9860218befe98753",
+    "xschem": "ca3e6c9a3e43873d2c367fcfcb3394fd5bedbf41"
+  },
+  "ngspice": "ngspice-47",
+  "command": "ngspice -b -r <raw> <identical-deck> (HOME=<tmp> with .spiceinit \"set filetype=ascii\")",
+  "timeoutMs": 60000,
+  "probes": [
+    {
+      "sourcePath": "ahkab/tests/bfpss1/bfpss1.ckt",
+      "sha256": "3661cfbbc17d0312f2c4baf6401376a81246e792c710148975dbaba472ec5a9d",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error: unknown subckt: x1 name={cwstage} nacp=1a ngnd=0 nacm=1b oacp=2a ognd=2g oacm=2b"
+    },
+    {
+      "sourcePath": "ahkab/tests/fisource/fisource.ckt",
+      "sha256": "2046511bdfb2eddb5fbbad9e5901c26b046b209b6f7bc43754ea9936aa665ba4",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 3, new internal line no. 2:"
+    },
+    {
+      "sourcePath": "ahkab/tests/fourier_ckt/fourier_ckt.ckt",
+      "sha256": "c2644adedbc6cda32cda2e3296b27448d61846122e10a3ba46f7360fd26817b2",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 3, new internal line no. 2:"
+    },
+    {
+      "sourcePath": "ahkab/tests/gisource/gisource.ckt",
+      "sha256": "11ee74a73e2b03071c4127dd8c6e46e92982ef6b79e58fe9fe65e979828bfe0b",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 3, new internal line no. 2:"
+    },
+    {
+      "sourcePath": "ahkab/tests/miller/miller.ckt",
+      "sha256": "aa54f5f32e148e80279fbfa0df6ef9db7e12a23d7a41326332bcc53966193b0c",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 3, new internal line no. 2:"
+    },
+    {
+      "sourcePath": "ahkab/tests/pz_spice/pz_spice1.ckt",
+      "sha256": "aeac811db67bc5d3ef5739d853277c3d2e2557141393804bde85c8a03810e4e9",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 9, new internal line no. 8:"
+    },
+    {
+      "sourcePath": "ahkab/tests/pz_spice/pz_spice2.ckt",
+      "sha256": "a6571d49f05f68f1d1509873e1afe681ed388b210f4ce35b353dd99726a65a55",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 9, new internal line no. 10:"
+    },
+    {
+      "sourcePath": "ahkab/tests/pz_spice/pz_spice3.ckt",
+      "sha256": "2130ad31362649a4de1dea9f2f6d2ee74fa4f197ef45acdb4e4de1278dccbda1",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 11, new internal line no. 11:"
+    },
+    {
+      "sourcePath": "ahkab/tests/pz_spice/pz_spice4.ckt",
+      "sha256": "f8e8db0d6783fb2d27b08668b9542f7212d586d48c8c1c91194188a46ae502c7",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 13, new internal line no. 13:"
+    },
+    {
+      "sourcePath": "ahkab/tests/pz_spice/pz_spice5.ckt",
+      "sha256": "cb3b6ee6fbe670b300d51b556b651206a21c206a8be014bc0132e5d6a32fcb34",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: too few nodes: rlx=75"
+    },
+    {
+      "sourcePath": "ahkab/tests/ring3mosq/ring3mosq.ckt",
+      "sha256": "640523ffdb36bc18d92efe90af66ddb8d5546aa6f0cd509ebbc2a7a991e5dca0",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error: unknown subckt: x1 name={inv1} in=1 out=3 psupply=2 nsupply=0"
+    },
+    {
+      "sourcePath": "ahkab/tests/rout/rout.ckt",
+      "sha256": "9d1fbd0c10d64473b7138573696f28fe82db4a462a385a23c5b5cd5bf59aa5a9",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 5, new internal line no. 4:"
+    },
+    {
+      "sourcePath": "ahkab/tests/rtest1/rtest1.ckt",
+      "sha256": "c607c2bad01f28c80d0e862ad964c0ec0288b72a11e64a564ab59c60ce9e9dc9",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 3, new internal line no. 3:"
+    },
+    {
+      "sourcePath": "ahkab/tests/sffmckt/sffmckt.ckt",
+      "sha256": "12a49c45bf24a967a90edee8d89f999aab2ccce7ffd8bd6b672ee1e5308af3f4",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 3, new internal line no. 2:"
+    },
+    {
+      "sourcePath": "ahkab/tests/shooting1/shooting1.ckt",
+      "sha256": "7e62a7c364401eba09924696c16ea49e720b0475f719406f8be69719ee24c1f9",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error: unknown subckt: x1 name={cwstage} nacp=1a ngnd=0 nacm=1b oacp=2a ognd=2g oacm=2b"
+    },
+    {
+      "sourcePath": "ahkab/tests/t1/t1.ckt",
+      "sha256": "932170a238fa070af717e226b9c5ee7b08f76aa0eded9053d91170d9bf0bfd6c",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 5, new internal line no. 7:"
+    },
+    {
+      "sourcePath": "ahkab/tests/t1off/t1off.ckt",
+      "sha256": "fbc44027ee66a4a163595414d6d3680745cd10ca649148e5afa2090e3bc86361",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 5, new internal line no. 7:"
+    },
+    {
+      "sourcePath": "ahkab/tests/t2/t2.ckt",
+      "sha256": "be64707aa8a02294c77c6490595dc4a60eb83f3bad941b42d48f7b2e24047e91",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 5, new internal line no. 7:"
+    },
+    {
+      "sourcePath": "ahkab/tests/t2off/t2off.ckt",
+      "sha256": "5aa8772d2e3749e8e59e8b4d7a5eb95c1d04bc5ece0176ffa97411de00f87afc",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 5, new internal line no. 7:"
+    },
+    {
+      "sourcePath": "ahkab/tests/t3/t3.ckt",
+      "sha256": "d2e0cd61eddfc3b212fc8d8a50fdd27b9fc6923bbdf415c3873a3136caba242a",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 6, new internal line no. 8:"
+    },
+    {
+      "sourcePath": "ahkab/tests/t3n/t3n.ckt",
+      "sha256": "9b0605834a9a82dab590d13d8e57b80d9f9b8f880d1e7689bd8e29b1cd02df07",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 6, new internal line no. 8:"
+    },
+    {
+      "sourcePath": "ahkab/tests/t3np/t3np.ckt",
+      "sha256": "7da054e52eb7ce2b7007163fc2d2d0973e02e9d22a189915a6573d200b98eb0c",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 6, new internal line no. 8:"
+    },
+    {
+      "sourcePath": "ahkab/tests/t3p/t3p.ckt",
+      "sha256": "e649f1d5fbb02e04566e4a627d81a027c5862cc20515220c147ddafdeca9eeb6",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 6, new internal line no. 8:"
+    },
+    {
+      "sourcePath": "ahkab/tests/tran_ie/tran_ie.ckt",
+      "sha256": "3983b60cd9e3c75ca509160098c13aa8c1595db2e2f81f362f9dda745966f4ad",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 3, new internal line no. 2:"
+    },
+    {
+      "sourcePath": "ahkab/tests/v2/v2.ckt",
+      "sha256": "c68a616c5105bd4df18c6b1b6dbe4e66e32af9501a3d9772edc461b942dd5a32",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 3, new internal line no. 2:"
+    },
+    {
+      "sourcePath": "kicad/qa/data/eeschema/issue13162.spice",
+      "sha256": "0fe414d936c62c274d205d2f483efccaf2b8bb52105a21c7b8b1a39ae07e9174",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "kicad/qa/data/eeschema/issue13431.spice",
+      "sha256": "330cd1daa5e4af0fa5237c316dad081321c77aef236f8087604fd47a7e389948",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "kicad/qa/data/eeschema/spice_netlists/legacy_pspice/legacy_pspice.spice",
+      "sha256": "f9057681926a7f78ec248d60055355a1fb26bf0e6febbd893ece8c79befae4ca",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice",
+      "sha256": "85619cbd3858b7bb1a3a8cdb1badfc2386117eb8c40e40b4ac481ec9bf0265a7",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "kicad/qa/data/eeschema/spice_netlists/sources/sources.spice",
+      "sha256": "40ba44f5100e67d4a8e00eaf0c73fbd781da103d56cf3988e18023ec3ad0af82",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "kicad/qa/data/eeschema/spice_netlists/tlines/tlines.spice",
+      "sha256": "8cbd1265d3c87d146235c09fcb58f979c6296409478cd06d5cf0e2799cfb2344",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "pyspice/examples/analyses/test_pole_zero.cir",
+      "sha256": "03ca780859e9b9ea558dfc82064e705fb81c2f570a39e1fce5d1a3b1bdccf804",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "pyspice/examples/c-examples/ngspice_cb/examples/adder_mos.cir",
+      "sha256": "82df854b51d103cc1bb507865afa3762b488c1a477fadbf2af890a130da12969",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "pyspice/examples/spice-examples/ac-coupled-amplifier.cir",
+      "sha256": "0c6d827248ebe0960316da0361615b55881baabbca718ddadf15a617ad48939a",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 8 or its substitute:"
+    },
+    {
+      "sourcePath": "pyspice/examples/spice-examples/ac-coupled-transistor-amplifier.cir",
+      "sha256": "b3bdba6edebee403f495ca760ecd4f3e98d4505e32e172fad2e299ec68d729fd",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "pyspice/examples/spice-examples/astable.cir",
+      "sha256": "4d62fdc60105bad0d13e7ebcecbad14637422f75aa459ed3090305b7faec198d",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "doAnalyses: TRAN: Timestep too small; time = 0.000111852, timestep = 1.25e-18: cause unrecorded."
+    },
+    {
+      "sourcePath": "pyspice/examples/spice-examples/low-pass-rc-filter.cir",
+      "sha256": "6f61ebadedc6dcd99cb1c4debec2b07eb64f601fa8cf1b50b7ca375b7439d455",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "pyspice/examples/spice-examples/operational-amplifier-model-1.cir",
+      "sha256": "8b1ba729ac2df7d79f53ad46680e7b7381e6108deb59fe62eeeb7520bc7cf542",
+      "status": "success",
+      "plots": [
+        "ac"
+      ]
+    },
+    {
+      "sourcePath": "pyspice/examples/spice-examples/operational-amplifier-model-2.cir",
+      "sha256": "86259aa55c4a6e850b627c9a83013fddea95552989a08844bac1004ff2eeb105",
+      "status": "success",
+      "plots": [
+        "ac",
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "pyspice/examples/spice-examples/resistor-bridge.cir",
+      "sha256": "6638e739efd55e0905f70aa78e19c8ce93f2e75485ec861cb6091136ea6580ab",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "pyspice/examples/spice-examples/small-signal-amplifier-with-diodes.cir",
+      "sha256": "925719da67460f6da088b331ff62b769035d9bd7e2dfa6e8c85aa9ccfa09b16f",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 12 or its substitute:"
+    },
+    {
+      "sourcePath": "pyspice/examples/spice-examples/small-signal-amplifier.cir",
+      "sha256": "e2e996e8262d1048ea4911437efed6f03159f2e663ee73c5dbc0a894d5adbf9e",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "pyspice/examples/spice-examples/transistor.cir",
+      "sha256": "0f1da0df9c80cfb33ae5d2b04b9b4704c36ad517b4538b24c569c784ed859386",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 6 or its substitute:"
+    },
+    {
+      "sourcePath": "pyspice/examples/spice-examples/voltage-divider.cir",
+      "sha256": "fd7daf7060f65816809ceb244d1f4dc4630ec5e9099f69d07906bc23bd6aed8a",
+      "status": "success",
+      "plots": [
+        "op"
+      ]
+    },
+    {
+      "sourcePath": "pyspice/issues/issue-172.cir",
+      "sha256": "465d388920c7345a6a8607b3718cf2d89916b9cb027b673543b0dbb5617c30cc",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "spicelib/examples/testfiles/DC op point - STEP.net",
+      "sha256": "f31dbebaabc7c1098c6467d887e6985bd6787da0066f045c9a7525ae5a100b4c",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 6, new internal line no. 4:"
+    },
+    {
+      "sourcePath": "spicelib/examples/testfiles/DC op point.net",
+      "sha256": "a9e67edf2313bc31c710fd14cefbb6aae55cfbda2e5cfa6f08edbd64a0a05a88",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 6 or its substitute:"
+    },
+    {
+      "sourcePath": "spicelib/examples/testfiles/Noise.net",
+      "sha256": "b9759e102964fa1e7d077733fee3b92697f6432a4705f645d2c32863d0fa49cd",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 7 or its substitute:"
+    },
+    {
+      "sourcePath": "spicelib/examples/testfiles/Noise_updated.net",
+      "sha256": "1d58c58c930324a99673e2dbca08673c9345e0f126f8ff9cda9d10472fd0c9c2",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 6 or its substitute:"
+    },
+    {
+      "sourcePath": "spicelib/examples/testfiles/ac_rawtest.net",
+      "sha256": "e6e98a5a3f5536846f743974350c5ac38fb348bc2d393857279078ba62342dc2",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 6 or its substitute:"
+    },
+    {
+      "sourcePath": "spicelib/examples/testfiles/dc_rawtest.net",
+      "sha256": "8fde2b889c8e11897f8f14fc786c862255b1ffa264970e89f337935d165f14a1",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "spicelib/examples/testfiles/ngsteps.net",
+      "sha256": "68b0ca2e2eba7d8e59942ce491b91b44c003d6c8f87c3abbd28cbd04bdfde8ea",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 44 or its substitute:"
+    },
+    {
+      "sourcePath": "spicelib/examples/testfiles/sens_ngspice_rawtest.net",
+      "sha256": "561115941ce8997a21386c15fec66def353eef9aea22460f89b9eb75afe28918",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Fatal error: pmos: Nsub < Ni"
+    },
+    {
+      "sourcePath": "spicelib/examples/testfiles/sens_xyce_rawtest.net",
+      "sha256": "b79673b990bf9ac0b0be7020997cab26dcb412472366164449a3dfd073d4025f",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 11, new internal line no. 10:"
+    },
+    {
+      "sourcePath": "spicelib/examples/testfiles/test_kicad_nets.cir",
+      "sha256": "5a124dc0286910a59a8782d0094a9bf8a57507a9c864090b6745ef4230b88f7f",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "spicelib/examples/testfiles/testfile.net",
+      "sha256": "75de71a537e6889eab36ab33ad2db1551d8f7a59299b70e8d15c3156fa9f0ec4",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 6 or its substitute:"
+    },
+    {
+      "sourcePath": "spicelib/examples/testfiles/testfile_ngspice.net",
+      "sha256": "7309314f21c23a924c15e6066cbab7ba54278333024782a33f686654e1d19ec9",
+      "status": "success",
+      "plots": [
+        "op"
+      ]
+    },
+    {
+      "sourcePath": "spicelib/examples/testfiles/top_circuit.net",
+      "sha256": "4a66adf3b0a4e7a75ae2258d03b6b74b6f12c64ebbf487167742e5f9ecd005f2",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 20 or its substitute:"
+    },
+    {
+      "sourcePath": "spicelib/examples/testfiles/tran_rawtest.net",
+      "sha256": "fd9800b396c7d5a9a628ddb991a9337ee657ce4acaafd26ac5bb92716f572241",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 11 or its substitute:"
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/a-devices/clock-divider.cir",
+      "sha256": "46785a9acadef21a91c8f14c99f9999e6774b36a58263b6bf2518c809ba17cef",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 6 or its substitute:"
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/a-devices/controlled-clamp-varistor.cir",
+      "sha256": "2fd0325400b0fcbf641cb592a262b2db790435cb023066ae69402f31eb2db35b",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 7 or its substitute:"
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/a-devices/edge-capture-dff.cir",
+      "sha256": "73be54f60495068e0b578c5fffd36f4a3e6bc14194e377646b641b4934a5f33d",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 8 or its substitute:"
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/a-devices/fm-modulator.cir",
+      "sha256": "3b92619ee8c5d496162d74a3a1992a57558148f436385b63b8d0560d665c1872",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 7 or its substitute:"
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/a-devices/non-ground-common-latch.cir",
+      "sha256": "9d1c9e9bdf4b35118ae86adfbf66a0dd16923aadc9bddc82f18d634a987c0f30",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 8 or its substitute:"
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/a-devices/ota-current-limiter.cir",
+      "sha256": "be70720fd2ca337d4ab660cacf1822c563d932aab66d8be0ba81fc38c6fc3bbd",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 9 or its substitute:"
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/a-devices/phase-detector.cir",
+      "sha256": "6c779b3f2fe7971bd2749c6912fa60bd9a4a621333b656bf26820ccd0f5302d9",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 7 or its substitute:"
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/a-devices/sample-and-hold-sensor.cir",
+      "sha256": "aae914c122cdec4119a231d7be889177488acc31669282db9dc355299f6caf05",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 7 or its substitute:"
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/cookbook/custom-components/ideal-diode-power-or/ideal-diode-power-or.cir",
+      "sha256": "04c3cf748eb3f49d1372ad0927621d3823902544cb3574958457aab80bccb4dc",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/cookbook/custom-components/simple-pll/simple-pll.cir",
+      "sha256": "ae639d3543054e4513a6e38d08ffb2c853e3fc35e2886dd200eb1be078afed0e",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error: no such function 'if' at line 19"
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/active-anti-alias-filter/active-anti-alias-filter.cir",
+      "sha256": "73a0815308cd164de18f2cd0c1edbd1bdc49ffceb0867a49d86ed88e586c28d5",
+      "status": "success",
+      "plots": [
+        "ac",
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/astable-led-flasher/astable-led-flasher.cir",
+      "sha256": "1763083434377613e91e23646532c7f3e27ad687ae60f420b9e7cf5562823fba",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/bjt-audio-preamplifier/bjt-audio-preamplifier.cir",
+      "sha256": "f9b1dac0411cf8922f6a6a50afbc69d489ac7784dbd75dfe1c64b1d4b4f9bf7c",
+      "status": "success",
+      "plots": [
+        "ac",
+        "op",
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir",
+      "sha256": "228c90873b8e558a10d4613ad39dd695d94b6f03852eb9480f95b6ddea32bdc4",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/diode-envelope-detector/diode-envelope-detector.cir",
+      "sha256": "1df18775cc845f80e30bceddbc14af01adb2b226d1f9c8cc39e0b2834fea5986",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/loaded-voltage-divider/loaded-voltage-divider.cir",
+      "sha256": "dc737ae3c563f04c80bec31a5b554b7fc7d08a30fb3535e2e2de90216e179d5d",
+      "status": "success",
+      "plots": [
+        "op",
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/pwm-dac/pwm-dac.cir",
+      "sha256": "cab6a0d71e1622e0b2ab8d2cf12fb53ec557ef7fdef1e98e43867ebee9d732c2",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/rc-sensor-input-filter/rc-sensor-input-filter.cir",
+      "sha256": "bdb824c83e5d8185847cf8787f4e63dc4e74f0c04a48b05e5ea4a4903f8b42b2",
+      "status": "success",
+      "plots": [
+        "ac",
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/rectifier-power-supply/rectifier-power-supply.cir",
+      "sha256": "c926a8bce62e8db4a6771e33af5a7d398fedc81bc67f23d7ba4ab70c4f9c7406",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/transmission-line-termination/transmission-line-termination.cir",
+      "sha256": "4599777f6a0e037f3ae1fc477d7436d700c651fada5a9205f916262433b85cb0",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04.cir",
+      "sha256": "c681df5a0ea6a0ea1775ac1df5d75669a8a0ffa0609622e8ea6b93e5f50232ab",
+      "status": "success",
+      "plots": [
+        "op"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir",
+      "sha256": "8641b833bf11ff88c1e856e1ac2a57e6342876604c6cf571fa45bf9ad80818b6",
+      "status": "success",
+      "plots": [
+        "op"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_reversed.cir",
+      "sha256": "5de9f37daa0fcc096723019a175886df5890c53fd84176fc5f8db9bb639f928b",
+      "status": "success",
+      "plots": [
+        "op"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example05.cir",
+      "sha256": "3f56cfce00cee8df8e2348b751664a55319e6beaeb9e70a52c924a51af27b3de",
+      "status": "success",
+      "plots": [
+        "op"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example06.cir",
+      "sha256": "c2643ae6341c6fdf1c52990dd9e1cc9920bb0c32ff9812f96c304f4590b1c721",
+      "status": "success",
+      "plots": [
+        "op"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example08.cir",
+      "sha256": "6e35639ef02931e608c44d9a8ce95627782c98497c86cb7738f20336c565566a",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example09.cir",
+      "sha256": "3a56f7847abe23fae8e2eb925d2c77b0aa5f2615acfd72acf947393134536e68",
+      "status": "success",
+      "plots": [
+        "ac",
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example10.cir",
+      "sha256": "1a30a8af9c8f8d1814471b8d5b449db429f05955e276b8244ad8fa0c7dcd9d8c",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example12.cir",
+      "sha256": "8468ec6664ab4d9249880f0bac6fcb399524b81d78fff58712ff1bdc26c0c14f",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 3, new internal line no. 2:"
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/band-pass_1.cir",
+      "sha256": "8a0a1412fc81e9bbd9dd275f9c940dd3b4511a7019453160d606dd4deb8f07a8",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 5, new internal line no. 3:"
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/band-pass_2.cir",
+      "sha256": "f3aa8d1724051cbc95f06133948e6c96cc46ee37e81eff591d4e882beabfeeaf",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 5, new internal line no. 3:"
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01.cir",
+      "sha256": "e27cfb536b337101510c6317c701c9649f71fe756d07f2d7edd36d584c160e1f",
+      "status": "success",
+      "plots": [
+        "op"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_stringwriter.cir",
+      "sha256": "d90dda49ba85ad794ccdf838abe0a5a22cbe6fb61124366acebbaf995882b875",
+      "status": "success",
+      "plots": [
+        "op"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_without_params.cir",
+      "sha256": "5979031b71cc3661c0eac4a89185f5743811c7f717c004bb0eb65b1b0d4f910a",
+      "status": "success",
+      "plots": [
+        "op"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example02.cir",
+      "sha256": "bff1a675c68390c0bd321c3003eaeca3298b8e04e48e78091c543ad5fca3ca7b",
+      "status": "success",
+      "plots": [
+        "op"
+      ]
+    },
+    {
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example03.cir",
+      "sha256": "4874bdc5864748502ab27ff39d36530c968ae9c683faf6f51f67b67388c3398e",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/adms/examples.old/bsimcmg/tests/cfrgeo.sp",
+      "sha256": "246459844c4b139a423ef05879d41ac577cf2159f5ab74c2a63890a861338709",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error: unknown subckt: x1 supply gate 0 bulk nmos2 tfin=10n l=30n nfin=1 fpitch=20n lrsd=40n"
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/adms/examples.old/bsimcmg/tests/rdsgeo.sp",
+      "sha256": "29af29c354effa9086f6d1bfecee6eb87449b8a99d7f5dad192e841587cf8d05",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error: unknown subckt: xn1 supply gate 0 bulk nmos2 tfin=15n l=30n nfin=10 fpitch={fp} sdterm=0 lrsd=20n"
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/adms/examples.old/cap/tests/test.sp",
+      "sha256": "1aae53249ce22d484afc9cfe4570bed53a6d6be3bae59a69aadf982253b89d69",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/adms/examples.old/ind/tests/test.sp",
+      "sha256": "837b0f7d903dce9954c9a004eadce379f3108bba1886fd45c409c735f8241fdf",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 4 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/adms/examples.old/jj/tests/jjac.cir",
+      "sha256": "2126b08b5582a70d707dafc074b035e0f0802260c2ea40c85105242b4c1d547b",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 12 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/adms/examples.old/jj/tests/jjdc.cir",
+      "sha256": "90ffd0e322e55ec25f9c289ce818b619aac201075391a4905fc332fb7c78dfa4",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 3 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/adms/examples.old/jj/tests/jjiv.cir",
+      "sha256": "93cbad35eeaba6e1c73812efe6afd3d62aabab26193119a1124634d83fdb7492",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 7 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/adms/examples.old/mextram/tests/mex_gum.sp",
+      "sha256": "163825a26f3674bfe6b5223412cd91608e0f7b11174c0360b295b7960ba1b0bc",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 6 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/adms/examples.old/mextram/tests/mex_out.sp",
+      "sha256": "1d6df606c32e24d700acfdac6331e328776c17316a2090abedb783929b3b062b",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 21 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/adms/examples.old/psp102/tests/psp_out.sp",
+      "sha256": "97b461b8f351cd399b5ca376c85a59c2bdd61de31ccb9316bb9ffffcb0a8b461",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 7 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/adms/examples.old/psp102/tests/psp_tran.sp",
+      "sha256": "6c7265e3a78c3455babe6b372032fb02d13f2d7c3be86f62c96009ab7f7e9893",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 7 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/adms/examples/tjm/tests/jjac.cir",
+      "sha256": "cc72516e42a70e33dcee87e9eaada3fd6498ea508a23d88e235b258fc6b04665",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 12 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/adms/examples/tjm/tests/jjdc.cir",
+      "sha256": "59df915bda86f6187a33ef32296df09a47be491bf700245bd0901333f62dd2de",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 3 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/adms/examples/tjm/tests/jjiv.cir",
+      "sha256": "b2c5a15c07c728daf9ca473b266f8d73fd6e8a0f1e4e667c58aaf1825c615a64",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 7 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/jfet2/docs/id.cir",
+      "sha256": "c6f8adb6babdc5d5bf6e3e6186bb3ab5627331d7bf6f04912fde72b47648b1bb",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/obsolete/bsim1tst.cir",
+      "sha256": "ee3baca7155790baf959f4f72f82d0855d0e27d07df2ced9d67e9432d0a93e6a",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/obsolete/bsim2tst.cir",
+      "sha256": "b2525d03cef81244e4ffac8f3ce48fef61e84e7a6dec0e31af4d2ff6f6530cd0",
+      "status": "success",
+      "plots": [
+        "dc"
+      ]
+    },
+    {
+      "sourcePath": "xictools/wrspice/devlib/obsolete/stag/docs/example.cir",
+      "sha256": "71cb795df793eee3a4a90ff1fc092e3f6d0e0bfd61f60f44f71aec79e47bcbbc",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 38 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/ex8.cir",
+      "sha256": "c1f9a3b18de863abc9334dc9db1b7fe9cffa14e5bfce25f76ab2b45292a27213",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 18, new internal line no. 16:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjac.cir",
+      "sha256": "f8d2eacf73f4717e60a21e401bf566cedc69b1b0adc3af6a0a8c949c00dcefee",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 26 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjbadmut.cir",
+      "sha256": "ebcff7e2a0fe3c319dcc26f50a17fd308e68da7d56056486b623e8994dd53a96",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 16, new internal line no. 14:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjcntr.cir",
+      "sha256": "c56739effb72e6f2451bdda5f7acb451c88e972fa11b1249875ec00500fe0e10",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: Bad sytax in netlist line .if dcop"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjdc.cir",
+      "sha256": "e66191e84b55499990d84e3d431ac3513545588d451bdabd3aeea287c1d24b5e",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 20 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjintr.cir",
+      "sha256": "b6751b9e0080452d9fbe68206d8bf637196356fc4600a3671dc0178b5d55b01b",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: Bad sytax in netlist line .if dcop"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjiv.cir",
+      "sha256": "8c4eb18f94d9d4fb840252dcd235a09440add28658853170ba69a34834ba65a7",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: Bad sytax in netlist line .if dcop"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjiv4.cir",
+      "sha256": "1717fc0443a96b0cb4b258ac6a19facc7825ab01ac1146ac987fa9eb08b322fc",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 11, new internal line no. 9:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjloop.cir",
+      "sha256": "3704d3b99b0c8bb4e867b1c8e252eb9a017e8ca2b84ac4f8304a6495e2a5f717",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: Bad sytax in netlist line .if dcop"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjloop1.cir",
+      "sha256": "b8e7e053cee31d744c99974efd871738f877b112ce90e9e1c25d0aab36544803",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: Bad sytax in netlist line .if dcop"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjloop2.cir",
+      "sha256": "f272765bc8b7334108e1ca967010747b77e40a93772ca1e4ee07febb3d25ac18",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ERROR: mal formed B source instance: b1 1 0 100 jj1"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjmc.cir",
+      "sha256": "7f26c4b268f16dc27605a70e6d6171ff3185cbf105d0af89586f0ec794cfa12d",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: not enough parameters in line"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjoprng.cir",
+      "sha256": "979700765568b83bade0217bf98f1b2a0ed24f7e791daedb07b856baeea6bad0",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: bad syntax of line"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjoprng1.cir",
+      "sha256": "62eb2e81843d0003315d1b141fc63278bccd20609358fc026007d849fb3bacc7",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: bad syntax of line"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjoprng2.cir",
+      "sha256": "17fa951cb1ce742aaaef5a1288a8cbf36abe940d0dc6b22eca86a291701ec2b2",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: bad syntax of line"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjprbs.cir",
+      "sha256": "cf0b795ec9d408b45f48036db69a3dcc1ac56ed418913cc649fc8ae76b526869",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: Bad sytax in netlist line .if dcop"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/jjpulse.cir",
+      "sha256": "6c82d735ebe71c7b00a8ac58c8e9a8ac18ed2329be2e557ea43c4854eacc55dc",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ERROR: mal formed B source instance: b1 1 0 100 jj1"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/nor_mc.cir",
+      "sha256": "178b519d98e66e6659428ff43d1589cc34712bb92079d27e0a5931a58e2e52df",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 21 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/nor_op.cir",
+      "sha256": "93ce86ccfa26f4531c0db6d3b18c8c8ad3c26d2218b279e6f2917846a90af0b5",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 21 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/nor_vamc.cir",
+      "sha256": "4acbbecf2d478b8caca84c1a4f79901b2968a62aeb20bc6f5feafb9708f0f109",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error in line initial"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/sfq.cir",
+      "sha256": "72f5b3a923994d869e9d18f9018593b5984f01ee94735f97d5b06737e8768fec",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 46 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/shutop.cir",
+      "sha256": "1fd7307903386b494bf01a0d437a664dfd2e799a52ab4215a2badb62afa3fd88",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: bad syntax of line"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/shuttle.cir",
+      "sha256": "8ee6721706fe26859b11b59def3ee2d328f1393eb8f10c2377302b609e9617fb",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ERROR: mal formed B source instance: b1 2 0 100 jj1"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/shuttlea.cir",
+      "sha256": "3f20e2a4a9fc2a36e319cc849ffd8dfa79b9ede9e0a64f0c2aa45cc0fbb3d9cd",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ERROR: mal formed B source instance: b1 2 0 100 jj1"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/sk.cir",
+      "sha256": "9d7b9cbe8f966a5de9875ed31cfb1a0acdb85f974de832e95d780762faf83f0d",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: Bad sytax in netlist line .if dcop"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples/sk03.cir",
+      "sha256": "c401712d6764aaeab22d9bb7c521ce07a99420602ff34d35b28186e1b0f90176",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: Bad sytax in netlist line .if dcop"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/exjjintr.cir",
+      "sha256": "0beacc1cfec8e476beb332528e0330c7e48cbab1cb73ce3bb04537556b76980d",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ERROR: mal formed B source instance: b1 1 0 100 jj1"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/jjcntr.cir",
+      "sha256": "235d798e01864a3756f30f2eabb674239ed93b642e084e57f5f7dde39e958dac",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ERROR: mal formed B source instance: b1 3 0 6 jj1"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/jjiv.cir",
+      "sha256": "665df08d36db6146719c49b43ecf5d2e399f130443dd519ff16adc35eeb0a4f2",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ERROR: mal formed B source instance: b1 1 0 100 jj1"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/jjiv4.cir",
+      "sha256": "87368de2a4935b190517e166cc09ef14a2c58584ea334c6587e94811bbedd5d4",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error in netlist line no. 8, new internal line no. 7:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/jjloop.cir",
+      "sha256": "0ae31a172cfaf10bb8bcfc822fc1fd78de5c6f594bf5f40f23c138cd5a2d689d",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ERROR: mal formed B source instance: b1 1 0 100 jj1"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/jjloop1.cir",
+      "sha256": "5c28e7f4a179aaf0d2298926ef060f3ca2c6cc3c3b2a9c133e2d6549759e6991",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ERROR: mal formed B source instance: b1 1 0 100 jj1"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/jjloop2.cir",
+      "sha256": "99d9e92de39fdb93bd8c4ed44b6381ff36e14932b51fa72d73d8a3812d2ccb8f",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ERROR: mal formed B source instance: b1 1 0 100 jj1"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/jjmc.cir",
+      "sha256": "a4a643339f85566a4913f43872f8035ad7b44492d0c8ffc37d55422212586e18",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: not enough parameters in line"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/jjoprng.cir",
+      "sha256": "af92e06c7f8744947e65f847d626d6f98a328dc4c59e5dc7f7264e9da3021ba6",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: bad syntax of line"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/jjpulse.cir",
+      "sha256": "786912e753ae7f8da58ca535ddecf7ce150ca7f5ffe449d83ddc092aac9907ca",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ERROR: mal formed B source instance: b1 1 0 100 jj1"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/mvtltest.cir",
+      "sha256": "f3eaa13387abcda60b8cf0177902ce6181fc99a8fc582aba6a5029499b2f6d9f",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: bad syntax of line"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/sfq.cir",
+      "sha256": "6996b78d308ad39bd8cf608f922bbaf7262712d1180994864552605cdee03778",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 27 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/shutop.cir",
+      "sha256": "fd42ac1beba95585b7b1f5de02dcab87f49a39ab44eb873392a4acda14fe676a",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: bad syntax of line"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/shuttle.cir",
+      "sha256": "8db8bbc8fa1e23e857143bffe3ffb2a653cea135d0238c3e572b0e7b9bcbfd50",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ERROR: mal formed B source instance: b1 2 0 100 jj1"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/JJexamples_old/shuttlea.cir",
+      "sha256": "28d2610745a06507375e1c4ed0890ba89f004b7e3b32fcc187b8bf84aecb0bdf",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "ERROR: mal formed B source instance: b1 2 0 100 jj1"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/bjtnoise.cir",
+      "sha256": "a61f0cfd20102a2f88b664b072e68b982c337dca3a4591886f54e6af5a9651cf",
+      "status": "success",
+      "plots": [
+        "noise",
+        "noise"
+      ]
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/diffpair.cir",
+      "sha256": "bc7e41b96f09ebd57e5998e3637fec9fdc4adb0dd93c38b0ebef0db801454674",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error: no such function as zo,"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/diodisto.cir",
+      "sha256": "d7d51deccf8bc61d2f8b99d9086c231dd27b0d9caebeadbf80637cff08a2dc58",
+      "status": "success",
+      "plots": [
+        "disto",
+        "disto",
+        "disto"
+      ]
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/fftdemo.cir",
+      "sha256": "a9a58d47ebac64d29981c0f737dcc3de6ee8d66976cb68685e59073c8a503b02",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/ltra_1.cir",
+      "sha256": "f6d128ddeff62899a15b7af1d6b37f3ef7d8aaa0befa879c9e1206713afc7616",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 28 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/ltra_2.cir",
+      "sha256": "6c85bdd1be98b48ab811bf0feef75fa9d51a1f9b73ec343d4e47e0ee70b7e75f",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 47 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/ltra_3.cir",
+      "sha256": "144a5f7b978bfc6f638ea157b0bf4db2ca1ea371b192db9277579c6414d070db",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 415 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/mixdisto.cir",
+      "sha256": "a98c38b3fd943f114f636dc46889d04c45965e8fc1d377f26ecd7ff2705be227",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error: Bad sytax in netlist line .if harmonic==1"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/mos6inv.cir",
+      "sha256": "87afb7b07f742570587d93d0fc344d1a8ab5bea69f2ceb0026480ae9665b47a1",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/mosamp2.cir",
+      "sha256": "fac18d275011a4555d1ab2ce99a7749d9759f256fdeb291b72f9858b0e8975a4",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/mosmem.cir",
+      "sha256": "f5f459b7d90100abcdd098bb1a175153612ce1da6416579a6fc8c35d1d6155e0",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/noise.cir",
+      "sha256": "6ac60293a93229455c43a8136bdcb6625f562f1cf2a337b1146ab3b27c37d3eb",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 37 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/prbs.cir",
+      "sha256": "fc7cbf9f70d2fe44f95eb28a0c1c3af5932ffa2529b2f7c19bb7dbd36977fe6b",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error in line integer cnt"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/precision.cir",
+      "sha256": "1e2a22dc455516ebf60bd5ca4516d51205d89def6d7d712bdb77764ef26f1ab7",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/pz2.cir",
+      "sha256": "6183ce1578e1537baafc2923683257ebd82d349d1beb2b9a0c953311c6cfa068",
+      "status": "success",
+      "plots": [
+        "pz"
+      ]
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/pzt.cir",
+      "sha256": "35f1eb8d1389114a76ac098c1215c177c09e469e0260d2db9ccce84ab725a987",
+      "status": "success",
+      "plots": [
+        "pz"
+      ]
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/rc.cir",
+      "sha256": "bff3d58734b954db13eb89ed43a4669f7e522e45d497e0e2fbe64122851666f0",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/rca3040.cir",
+      "sha256": "b216ea80f3c0d8e224fed6bab41bc4f5a5409b2c989e6c3195a736212e7f578b",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/resnoise.cir",
+      "sha256": "0bf66302e7065245720d3dc35d16b19d4bc0d3f3cd5f096d1513cea96a6eb4a4",
+      "status": "success",
+      "plots": [
+        "noise",
+        "noise"
+      ]
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/rtlinv.cir",
+      "sha256": "81340b2ec6c03339165f0c5c2c752927344a16d25414c693ddd5c1868dade3ba",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/schmitt.cir",
+      "sha256": "849dc5a811fce0a7da19dfe6b922768abb17cdde29f4eb6980ced6d548a169f7",
+      "status": "success",
+      "plots": [
+        "tran"
+      ]
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/senstest.cir",
+      "sha256": "ef3cee4930d81499dbb21ba6b73d9c68bc396e939f2c740236aa64876aec4050",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "no raw analysis data produced"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/simplepz.cir",
+      "sha256": "6fcb21f97f01325cd6da2793d34ac1955bc693caac00176a410dc40a95cbefa6",
+      "status": "success",
+      "plots": [
+        "pz"
+      ]
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/tab.cir",
+      "sha256": "e2c21553941e12d513e016d915fcd7a139431ba5c60e493486502e3db5b5a7f8",
+      "status": "failed",
+      "plots": [],
+      "firstErrorLine": "Error on line 9 or its substitute:"
+    },
+    {
+      "sourcePath": "xictools/wrspice/examples/trapcheck.cir",
+      "sha256": "4e15b2f5996cea60392f352b6c90fee9c58f06973c6d2238e0a3ce9e43e1b3bb",
+      "status": "unsupported",
+      "plots": [],
+      "firstErrorLine": "Error on line 22 or its substitute:"
+    }
+  ]
+}

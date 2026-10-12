@@ -1,0 +1,9 @@
+mesh1024 run 1: Using KLU as Direct Linear Solver;Total analysis time (seconds) = 0.002381;Matrix load time = 4.39999E-05;Matrix reorder time = 0.000556;Matrix factor time = 0.000123;Matrix solve time = 4.3E-05;
+mesh1024 run 2: Using KLU as Direct Linear Solver;Total analysis time (seconds) = 0.00221;Matrix load time = 4.10002E-05;Matrix reorder time = 0.000511;Matrix factor time = 0.000115;Matrix solve time = 4.19999E-05;
+mesh1024 run 3: Using KLU as Direct Linear Solver;Total analysis time (seconds) = 0.002177;Matrix load time = 4E-05;Matrix reorder time = 0.00049;Matrix factor time = 0.000109;Matrix solve time = 4.10001E-05;
+mesh10000 run 1: Using KLU as Direct Linear Solver;Total analysis time (seconds) = 0.031525;Matrix load time = 0.00047;Matrix reorder time = 0.013478;Matrix factor time = 0.004575;Matrix solve time = 0.000584;
+mesh10000 run 2: Using KLU as Direct Linear Solver;Total analysis time (seconds) = 0.03154;Matrix load time = 0.000476;Matrix reorder time = 0.013266;Matrix factor time = 0.004536;Matrix solve time = 0.000592;
+mesh10000 run 3: Using KLU as Direct Linear Solver;Total analysis time (seconds) = 0.031389;Matrix load time = 0.00049;Matrix reorder time = 0.013167;Matrix factor time = 0.004507;Matrix solve time = 0.0006;
+mesh50176 run 1: Using KLU as Direct Linear Solver;Total analysis time (seconds) = 0.301636;Matrix load time = 0.003525;Matrix reorder time = 0.160882;Matrix factor time = 0.063697;Matrix solve time = 0.005684;
+mesh50176 run 2: Using KLU as Direct Linear Solver;Total analysis time (seconds) = 0.301932;Matrix load time = 0.003131;Matrix reorder time = 0.161657;Matrix factor time = 0.064647;Matrix solve time = 0.005774;
+mesh50176 run 3: Using KLU as Direct Linear Solver;Total analysis time (seconds) = 0.302363;Matrix load time = 0.003731;Matrix reorder time = 0.161102;Matrix factor time = 0.064543;Matrix solve time = 0.005658;

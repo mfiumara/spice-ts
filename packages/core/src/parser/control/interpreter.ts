@@ -1,5 +1,5 @@
-import type { AnalysisDirective } from '../../types.js';
-import type { MeasurementResult, SimulationResult } from '../../results.js';
+import type { AnalysisDirective, TransientAnalysis } from '../../types.js';
+import type { MeasurementResult, SensitivityEntry, SimulationResult } from '../../results.js';
 import { getMeasure2, type MeasurePlot } from '../../measure/measure2.js';
 import { gettokWords } from '../../measure/dot-measure.js';
 import { inpEvaluate } from '../../measure/numparse.js';
@@ -11,6 +11,7 @@ import {
   ExpressionError, UnsupportedExpressionFeature, evaluateVectorExpression, parseControlNumber, parseVectorExpression,
   type ExpressionEnvironment, type ExpressionNode,
 } from './vector-expression.js';
+import { ngspiceFft, ngspiceLinearInterpolate, ngspicePsd, spectrumWindow } from './spectrum.js';
 import {
   complexVector, formatVector, isTrue, realVector, renamed, scalar, type ControlVector,
 } from './vector.js';
@@ -60,6 +61,8 @@ export interface ControlScriptOutcome {
   quit: boolean;
   /** Every `meas` command the script ran, in order; ngspice prints a failed one and continues. */
   measurements: MeasurementResult[];
+  /** Non-fatal warnings ngspice-47 prints while running the script (batch-mode `edit`). */
+  warnings: string[];
 }
 
 interface Plot {
@@ -74,6 +77,9 @@ interface Plot {
 type VariableValue = string | string[] | true;
 
 type Flow = 'next' | 'break' | 'continue';
+
+/** ngspice-47's batch-mode `edit` message ("Warning: " prefix dropped). */
+const EDIT_DISABLED_WARNING = "`edit' is disabled because 'interactive' has not been set";
 
 class QuitSignal {
   constructor(readonly status: number, readonly line: ControlSourceLine) {}
@@ -107,8 +113,6 @@ const RESULT_AFFECTING_VARIABLES: Record<string, string> = {
   polydegree: 'polynomial interpolation settings are not implemented',
   polysteps: 'polynomial interpolation settings are not implemented',
   interp: 'raw-file interpolation is not implemented',
-  specwindow: 'spectral windows are not implemented',
-  specwindoworder: 'spectral windows are not implemented',
   strict_errorhandling: 'ngspice error-handling modes are not implemented',
 };
 
@@ -147,8 +151,15 @@ class ControlInterpreter {
   private readonly runs: ControlAnalysisRun[] = [];
   private readonly output: string[] = [];
   private readonly measurements: MeasurementResult[] = [];
+  private readonly warnings: string[] = [];
   /** inpcom.c `replaceno`: numbers the `vexprint<n>` vectors of `meas` operands. */
   private measureExpressionCount = 1;
+  /**
+   * The `.tran` job of the circuit's current task (ngspice `ci_curTask`), read
+   * by `linearize` (spiceif.c if_tranparams): the last `tran` command, or the
+   * deck's `.tran` card after `run`; undefined after any other analysis.
+   */
+  private transientTask: TransientAnalysis | undefined;
 
   constructor(private readonly host: ControlHost) {}
 
@@ -158,9 +169,9 @@ class ControlInterpreter {
     } catch (signal) {
       if (!(signal instanceof QuitSignal)) throw signal;
       if (signal.status !== 0) throw new ControlScriptExitError(signal.status, signal.line.lineNumber, this.output);
-      return { runs: this.runs, output: this.output, quit: true, measurements: this.measurements };
+      return { runs: this.runs, output: this.output, quit: true, measurements: this.measurements, warnings: this.warnings };
     }
-    return { runs: this.runs, output: this.output, quit: false, measurements: this.measurements };
+    return { runs: this.runs, output: this.output, quit: false, measurements: this.measurements, warnings: this.warnings };
   }
 
   // -------------------------------------------------------------------------
@@ -236,16 +247,24 @@ class ControlInterpreter {
     const text = this.substitute(line.text, line);
     const rest = text.slice(/^\s*[^\s=(]*/.exec(text)![0].length).trim();
     switch (name) {
-      case 'op': case 'dc': case 'ac': case 'tran': case 'noise': {
+      case 'op': case 'dc': case 'ac': case 'tran': case 'noise': case 'sp': case 'sens': {
         const tokens = tokenizeNetlist(text)[0]?.tokens ?? [];
-        this.recordRun(this.host.runAnalysis([`.${name.toUpperCase()}`, ...tokens.slice(1)], line));
+        const run = this.host.runAnalysis([`.${name.toUpperCase()}`, ...tokens.slice(1)], line);
+        this.recordRun(run);
+        this.transientTask = run.directive.type === 'tran' ? run.directive : undefined;
         return;
       }
       case 'run':
         if (rest !== '') {
           throw new UnsupportedControlCommandError('run', 'writing a raw file from run is not supported', line.lineNumber, line.text);
         }
-        for (const run of this.host.runDeck(line)) this.recordRun(run);
+        {
+          const runs = this.host.runDeck(line);
+          for (const run of runs) this.recordRun(run);
+          this.transientTask = runs.map(run => run.directive).find(
+            (directive): directive is TransientAnalysis => directive.type === 'tran',
+          );
+        }
         return;
       case 'let': return this.let(rest, line);
       case 'unlet':
@@ -272,6 +291,9 @@ class ControlInterpreter {
       case 'compose': return this.compose(rest, line);
       case 'strcmp': return this.strcmp(rest, line);
       case 'meas': return this.meas(rest, line);
+      case 'linearize': return this.linearize(rest, line);
+      case 'fft': return this.spectrum('fft', rest, line);
+      case 'psd': return this.spectrum('psd', rest, line);
       case 'setscale': {
         if (rest === '') return;
         this.current.scale = this.vector(rest, line);
@@ -279,6 +301,15 @@ class ControlInterpreter {
       }
       case 'echo':
         this.output.push(withoutRedirection(splitWords(rest)).map(unquote).join(' '));
+        return;
+      case 'edit':
+        // ngspice-47 batch mode: edit only opens an editor once `interactive` is set.
+        if (this.variables.has('interactive')) {
+          throw new UnsupportedControlCommandError(
+            'edit', 'the interactive netlist editor is not available', line.lineNumber, line.text,
+          );
+        }
+        this.warnings.push(EDIT_DISABLED_WARNING);
         return;
       case 'save':
         for (const word of splitWords(rest)) if (word.startsWith('@')) this.savedDeviceVectors.add(word.toLowerCase());
@@ -613,10 +644,161 @@ class ControlInterpreter {
     return undefined;
   }
 
+  /**
+   * `linearize [np=n] [vec ...]`: ngspice-47 com_linearize (frontend/linear.c).
+   * Re-interpolates the current transient plot onto `tstart, tstart+tstep, ...`
+   * (`(tstop-tstart)/tstep + 1.5` points, accumulated by repeated addition)
+   * with the current task's `.tran` parameters, or the scale's range and
+   * `range/length` when there is none, overridden by `lin-tstart`, `lin-tstop`
+   * and `lin-tstep` vectors of the plot. The new plot `tran<n>` becomes
+   * current. Complex, scalar and short vectors are not copied (lincopy).
+   */
+  private linearize(rest: string, line: ControlSourceLine): void {
+    const fail = (message: string): never => {
+      throw new ControlScriptError(`linearize: ${message}`, line.lineNumber, line.text);
+    };
+    const old = this.current;
+    if (!old.name.startsWith('tran')) fail('plot must be a transient analysis');
+    const oldTime = old.scale;
+    if (!oldTime || old.vectors.size === 0) fail('no vectors available');
+    if (oldTime!.im) fail(`non-real time scale for ${old.name}`);
+    let tstart: number;
+    let tstop: number;
+    let tstep: number;
+    if (this.transientTask) {
+      tstart = this.transientTask.startTime ?? 0;
+      tstop = this.transientTask.stopTime;
+      tstep = this.transientTask.timestep;
+    } else {
+      const length = oldTime!.re.length;
+      if (length < 1) fail('no data in vector');
+      tstart = oldTime!.re[0];
+      tstop = oldTime!.re[length - 1];
+      tstep = (tstop - tstart) / length;
+    }
+    tstart = old.vectors.get('lin-tstart')?.re[0] ?? tstart;
+    tstop = old.vectors.get('lin-tstop')?.re[0] ?? tstop;
+    tstep = old.vectors.get('lin-tstep')?.re[0] ?? tstep;
+    if ((tstop - tstart) * tstep <= 0.0 || tstop - tstart < tstep) {
+      fail(`bad parameters -- start = ${tstart}, stop = ${tstop}, step = ${tstep}`);
+    }
+
+    const words = splitWords(rest);
+    const npWord = words.find(word => word.toLowerCase().startsWith('np='));
+    let length: number;
+    if (npWord !== undefined) {
+      const text = npWord.slice(3);
+      length = Math.trunc(Number(/^\s*[+-]?\d+/.exec(text)?.[0] ?? 0));
+      if (length === 0 && text.toLowerCase().startsWith('auto2n')) {
+        length = 2 ** roundHalfAway(Math.log2((tstop - tstart) / tstep));
+      }
+    } else {
+      length = Math.trunc((tstop - tstart) / tstep + 1.5);
+    }
+    if (!(length >= 2)) fail(`cannot interpolate onto ${length} points`);
+
+    const grid = new Float64Array(length);
+    for (let index = 0, time = tstart; index < length; index++, time += tstep) grid[index] = time;
+    const time = realVector(oldTime!.name, grid);
+    const plot = this.newPlot('tran', `${old.title} (linearized)`, time, old.unproducedSaves);
+    this.current = plot;
+
+    const names = words.filter(word => !word.toLowerCase().startsWith('np='));
+    const sources: [string, ControlVector][] = names.length > 0
+      ? names.map(name => {
+        const found = this.plotVector(old, name);
+        if (!found) fail(`no such vector ${name}`);
+        return found!;
+      })
+      : [...old.vectors].filter(([, vector]) => vector !== oldTime);
+    for (const [key, vector] of sources) {
+      // lincopy skips these with a warning.
+      if (vector.im || vector.re.length === 1 || vector.re.length < oldTime!.re.length) continue;
+      const values = ngspiceLinearInterpolate(vector.re.subarray(0, oldTime!.re.length), oldTime!.re, grid);
+      if (!values) fail(`can't interpolate ${vector.name}`);
+      plot.vectors.set(key, { name: vector.name, re: values!, scale: time });
+    }
+  }
+
+  /**
+   * `fft vec ...` (com_fft) and `psd npts vec ...` (com_psd), ngspice-47 with
+   * FFTW: a new `sp<n>` plot with a `frequency` scale and one complex vector
+   * per input, under the input's name. The window is `specwindow` (default
+   * `hanning`) of order `specwindoworder` (default and minimum 2).
+   */
+  private spectrum(command: 'fft' | 'psd', rest: string, line: ControlSourceLine): void {
+    const fail = (message: string): never => {
+      throw new ControlScriptError(`${command}: ${message}`, line.lineNumber, line.text);
+    };
+    const source = this.current;
+    const scale = source.scale;
+    if (!scale) fail('no vectors loaded');
+    if (scale!.im || scale!.name !== 'time') fail('fft needs real time scale');
+    const time = scale!.re;
+    const length = time.length;
+    if (length < 2) fail('fft needs more than one time point, check the tran simulation!');
+
+    let words = splitWords(rest);
+    let smooth = 1;
+    if (command === 'psd') {
+      if (words.length === 0) fail('missing number of averaged data points');
+      const value = parseControlNumber(words[0]);
+      smooth = value === undefined || !(value >= 1) ? 1 : Math.trunc(value);
+      words = words.slice(1);
+    }
+
+    const windowSetting = this.variables.get('specwindow');
+    const window = typeof windowSetting === 'string' ? windowSetting : 'hanning';
+    const orderSetting = Number(this.variables.get('specwindoworder'));
+    const order = Number.isFinite(orderSetting) ? Math.max(2, Math.trunc(orderSetting)) : 2;
+    const maxt = time[length - 1];
+    const span = command === 'fft'
+      ? time[length - 1] - time[0] + time[length - 1] - time[length - 2]
+      : time[length - 1] - time[0];
+    const weights = spectrumWindow(window, time, maxt, span, order);
+    if (!weights) fail(`unknown window type ${window}`);
+
+    const inputs: { name: string; values: Float64Array }[] = [];
+    for (const word of words) {
+      const vector = this.evaluate(word, line);
+      if (vector.re.length !== length) {
+        fail(`lengths of ${word} vectors don't match: ${vector.re.length}, ${length}`);
+      }
+      if (vector.im) fail(`${word} isn't real!`);
+      if (vector === scale) continue;
+      const key = [...source.vectors].find(([, candidate]) => candidate === vector)?.[0] ?? word.toLowerCase();
+      inputs.push({ name: key, values: vector.re });
+    }
+    if (inputs.length === 0) fail('no vectors to transform');
+
+    const values = inputs.map(input => input.values);
+    const result = command === 'fft' ? ngspiceFft(time, values, weights!) : ngspicePsd(time, values, weights!, smooth);
+    const frequency = realVector('frequency', result.frequency);
+    const plot = this.newPlot('sp', command === 'fft' ? 'Spectrum' : 'PSD', frequency, source.unproducedSaves);
+    inputs.forEach((input, index) => {
+      const { re, im } = result.vectors[index];
+      plot.vectors.set(input.name, complexVector(input.name, re, im, frequency));
+    });
+    this.current = plot;
+  }
+
+  /** ngspice vec_fromplot: a vector of one plot by name, `v(node)` or `i(device)`, with its key. */
+  private plotVector(plot: Plot, rawName: string): [string, ControlVector] | undefined {
+    const name = rawName.toLowerCase();
+    const voltage = /^v\((.+)\)$/.exec(name);
+    const current = /^i\((.+)\)$/.exec(name);
+    for (const candidate of [name, voltage?.[1], current ? `${current[1]}#branch` : undefined]) {
+      if (candidate === undefined) continue;
+      const vector = plot.vectors.get(candidate);
+      if (vector) return [candidate, vector];
+    }
+    return undefined;
+  }
+
   // -------------------------------------------------------------------------
   // Plots
 
-  private newPlot(type: string, title: string, scale: ControlVector | undefined, unproducedSaves = new Set<string>()): Plot {
+  private newPlot(type: string, title: string, scale: ControlVector | undefined, unproducedSaves: ReadonlySet<string> = new Set<string>()): Plot {
     while (this.plots.some(plot => plot.name === `${type}${this.plotNumber}`)) this.plotNumber++;
     const plot: Plot = { name: `${type}${this.plotNumber}`, title, vectors: new Map(), scale, unproducedSaves };
     if (scale) plot.vectors.set(scale.name, scale);
@@ -701,6 +883,47 @@ class ControlInterpreter {
           for (const [node, values] of ac.voltages) plot.vectors.set(node.toLowerCase(), phasors(node, values));
           for (const [branch, values] of ac.currents) {
             plot.vectors.set(`${branch.toLowerCase()}#branch`, phasors(`${branch}#branch`, values));
+          }
+        }
+        return plot;
+      }
+      case 'sp': {
+        // span.c: plot `sp<n>` with a `frequency` scale and one complex vector per S/Y/Z
+        // (and, with donoise, Cy/NF/SOpt/NFmin/Rn) result, under its ngspice name.
+        const sp = result.sParameters;
+        const scale = realVector('frequency', sp ? sp.frequencies : []);
+        const plot = this.newPlot('sp', 'SP Analysis', scale, saves);
+        for (const [name, values] of sp?.vectors ?? []) {
+          plot.vectors.set(name.toLowerCase(), complexVector(
+            name, values.map(value => value.real), values.map(value => value.imaginary), scale,
+          ));
+        }
+        return plot;
+      }
+      case 'sens': {
+        const sens = result.sensitivity;
+        const ac = directive.mode === 'ac';
+        // cktsens.c: an AC plot has a `frequency` scale; a DC plot holds one value per vector.
+        const scale = ac ? realVector('frequency', sens ? sens.frequencies : []) : undefined;
+        const plot = this.newPlot('sens', 'Sensitivity Analysis', scale, saves);
+        for (const entry of sens?.entries ?? []) {
+          const vector = entry.dc !== undefined
+            ? scalar(entry.dc, entry.device)
+            : complexVector(
+              entry.device,
+              (entry.ac ?? []).map(value => value.real),
+              (entry.ac ?? []).map(value => value.imaginary),
+              scale,
+            );
+          for (const { name, firstPointOnly } of sensitivityVectorNames(entry.device, entry.parameter, ac)) {
+            plot.vectors.set(name, firstPointOnly
+              ? complexVector(
+                name,
+                (entry.ac ?? []).map((value, index) => (index === 0 ? value.real : -0)),
+                (entry.ac ?? []).map((value, index) => (index === 0 ? value.imaginary : -0)),
+                scale,
+              )
+              : renamed(vector, name));
           }
         }
         return plot;
@@ -939,6 +1162,40 @@ function gettokAt(text: string, start: number): { token: string; end: number } {
   let end = text.indexOf(token, start) + token.length;
   while (end < text.length && (/\s/.test(text[end]) || text[end] === ',')) end++;
   return { token, end };
+}
+
+/**
+ * Names of a sensitivity vector in ngspice-47's `sens<n>` plot (cktsens.c names
+ * each perturbed parameter `<device>` for its primary value, `<device>_<param>`
+ * otherwise). A resistor's AC resistance defaults to its resistance, so in an
+ * AC plot `r1_ac` holds the AC sensitivity at every frequency. ngspice-47 also
+ * lists `r1`, whose perturbation only reaches the matrix at the first frequency:
+ * `r1` equals `r1_ac` at point 0 and is -0 at every later point (`firstPointOnly`).
+ * spice-ts rejects an explicit `ac=` resistance in AC sensitivity.
+ */
+function sensitivityVectorNames(
+  device: string,
+  parameter: SensitivityEntry['parameter'],
+  ac: boolean,
+): { name: string; firstPointOnly: boolean }[] {
+  const name = device.toLowerCase();
+  const plain = (vectorName: string) => [{ name: vectorName, firstPointOnly: false }];
+  switch (parameter) {
+    case 'resistance':
+      return ac
+        ? [{ name, firstPointOnly: true }, { name: `${name}_ac`, firstPointOnly: false }]
+        : plain(name);
+    case 'acMagnitude': return plain(`${name}_acmag`);
+    case 'gain': return plain(`${name}_gain`);
+    case 'multiplier': return plain(`${name}_m`);
+    case 'scale': return plain(`${name}_scale`);
+    default: return plain(name);
+  }
+}
+
+/** C `round()`: halves away from zero. */
+function roundHalfAway(value: number): number {
+  return Math.sign(value) * Math.round(Math.abs(value));
 }
 
 /** C `printf("%e")`. */

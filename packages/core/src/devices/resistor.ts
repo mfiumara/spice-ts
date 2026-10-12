@@ -37,13 +37,17 @@ export class Resistor implements DeviceModel {
   private temperature = 27;
   readonly modelWarnings?: readonly string[];
 
+  private readonly parameters: ResistorParameters;
+
   constructor(
     readonly name: string,
     readonly nodes: number[],
     resistance: number,
     readonly branchIndex?: number,
-    private readonly parameters: ResistorParameters = {},
+    parameters: ResistorParameters = {},
   ) {
+    // Own copy: `.sens` perturbs the instance M and SCALE in place.
+    this.parameters = { ...parameters };
     this.branches = branchIndex === undefined ? [] : [branchIndex];
     this.nominalResistance = resistance;
     if (parameters.warnings?.length) this.modelWarnings = parameters.warnings;
@@ -70,6 +74,26 @@ export class Resistor implements DeviceModel {
 
   getParameter(): number {
     return this.nominalResistance;
+  }
+
+  /** Instance parallel multiplier `M` (ngspice RESm). */
+  get multiplier(): number {
+    return this.parameters.multiplier ?? 1;
+  }
+
+  setMultiplier(value: number): void {
+    this.parameters.multiplier = value;
+    this.applyTemperature();
+  }
+
+  /** Instance `SCALE` factor (ngspice RESscale). */
+  get scale(): number {
+    return this.parameters.scale ?? 1;
+  }
+
+  setScale(value: number): void {
+    this.parameters.scale = value;
+    this.applyTemperature();
   }
 
   setTemperature(value: number): void {

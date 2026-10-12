@@ -1,0 +1,1723 @@
+{
+  "schemaVersion": "spice-ts-corpus-h-outcomes/v1",
+  "sources": [
+    {
+      "key": "ahkab",
+      "revision": "1e8939194b689909b8184ce7eba478b485ff9e3a",
+      "license": "GPL-2.0-only"
+    },
+    {
+      "key": "kicad",
+      "revision": "240efadec4b408919fef7e79deb54ac7c1269597",
+      "license": "GPL-3.0-or-later"
+    },
+    {
+      "key": "pyspice",
+      "revision": "fe08718d5a1a9af94576b5aef1fa81910f09b037",
+      "license": "GPL-3.0-or-later"
+    },
+    {
+      "key": "spicelib",
+      "revision": "d8f8ecceeb361741f1f660f03b03ac49697f8700",
+      "license": "GPL-3.0-only"
+    },
+    {
+      "key": "spicesharpparser",
+      "revision": "8fc01560fe303eeebaeb5cbf5edfe77bf635e1c7",
+      "license": "MIT"
+    },
+    {
+      "key": "xictools",
+      "revision": "c1244c23a99118843db48cee9860218befe98753",
+      "license": "Apache-2.0"
+    },
+    {
+      "key": "xschem",
+      "revision": "ca3e6c9a3e43873d2c367fcfcb3394fd5bedbf41",
+      "license": "GPL-2.0-or-later"
+    }
+  ],
+  "manifestSha256": "d4b4f9908ba59491a156a646aeb214b7b76b43f95492d17ab4e8ca645e4b0889",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "spiceTs": "0.3.0",
+    "node": "v22.23.1"
+  },
+  "environment": {
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro"
+  },
+  "commands": {
+    "generate": "pnpm build && spice-heavy pnpm exec tsx benchmarks/corpus/corpus-h/parity.ts",
+    "verify": "spice-heavy pnpm exec tsx benchmarks/corpus/corpus-h/parity.ts --check",
+    "ngspice": "ngspice -b -r <raw> <identical-fixture> (HOME=<tmp> with .spiceinit \"set filetype=ascii\")",
+    "spiceTs": "@spice-ts/core simulate(<identical-fixture>) in a bounded child process (no parse() pre-check)"
+  },
+  "policy": {
+    "input": "byte-identical fixture for both engines",
+    "fixtureAdaptation": "none",
+    "perCircuitToleranceTuning": false,
+    "matchThreshold": 0.01,
+    "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, floor), with the corpus-f floor: 0.0001 V for node voltages, 1e-10 A for branch currents, 1e-12 otherwise. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
+    "deterministicHashExcludes": [
+      "environment",
+      "tools.node",
+      "ngspice.analyses",
+      "spiceTs.analyses"
+    ]
+  },
+  "totals": {
+    "fixtures": 52,
+    "ngspice": {
+      "success": 52,
+      "failed": 0,
+      "unsupported": 0
+    },
+    "spiceTs": {
+      "success": 23,
+      "failed": 6,
+      "unsupported": 23
+    },
+    "outcomes": {
+      "matched": 20,
+      "mismatch": 3,
+      "not-compared": 0,
+      "spice-ts-loss": 29,
+      "ngspice-failed": 0,
+      "both-failed": 0
+    },
+    "bySource": {
+      "kicad": {
+        "matched": 1,
+        "mismatch": 0,
+        "not-compared": 0,
+        "spice-ts-loss": 4,
+        "ngspice-failed": 0,
+        "both-failed": 0
+      },
+      "pyspice": {
+        "matched": 4,
+        "mismatch": 0,
+        "not-compared": 0,
+        "spice-ts-loss": 4,
+        "ngspice-failed": 0,
+        "both-failed": 0
+      },
+      "spicelib": {
+        "matched": 2,
+        "mismatch": 0,
+        "not-compared": 0,
+        "spice-ts-loss": 0,
+        "ngspice-failed": 0,
+        "both-failed": 0
+      },
+      "spicesharpparser": {
+        "matched": 12,
+        "mismatch": 3,
+        "not-compared": 0,
+        "spice-ts-loss": 9,
+        "ngspice-failed": 0,
+        "both-failed": 0
+      },
+      "xictools": {
+        "matched": 1,
+        "mismatch": 0,
+        "not-compared": 0,
+        "spice-ts-loss": 12,
+        "ngspice-failed": 0,
+        "both-failed": 0
+      }
+    }
+  },
+  "gapBuckets": [
+    {
+      "bucket": "control: edit command and # comment lines inside .control",
+      "fixtures": 11,
+      "ngspiceSuccess": 11,
+      "ids": [
+        "xictools-wrspice-devlib-obsolete-bsim1tst-cir",
+        "xictools-wrspice-devlib-obsolete-bsim2tst-cir",
+        "xictools-wrspice-examples-bjtnoise-cir",
+        "xictools-wrspice-examples-diodisto-cir",
+        "xictools-wrspice-examples-mos6inv-cir",
+        "xictools-wrspice-examples-mosamp2-cir",
+        "xictools-wrspice-examples-mosmem-cir",
+        "xictools-wrspice-examples-pz2-cir",
+        "xictools-wrspice-examples-pzt-cir",
+        "xictools-wrspice-examples-resnoise-cir",
+        "xictools-wrspice-examples-simplepz-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/787"
+    },
+    {
+      "bucket": "expression: bare parameter names as values (X-card R=R1, M = 10)",
+      "fixtures": 5,
+      "ngspiceSuccess": 5,
+      "ids": [
+        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-cir",
+        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-nested-cir",
+        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-reversed-cir",
+        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example05-cir",
+        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example02-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/788"
+    },
+    {
+      "bucket": "convergence",
+      "fixtures": 3,
+      "ngspiceSuccess": 3,
+      "ids": [
+        "kicad-qa-data-eeschema-issue13162-spice",
+        "kicad-qa-data-eeschema-spice-netlists-legacy-sources-legacy-sources-spice",
+        "kicad-qa-data-eeschema-spice-netlists-tlines-tlines-spice"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/772"
+    },
+    {
+      "bucket": "crash: uncaught TypeError instead of a structured error",
+      "fixtures": 3,
+      "ngspiceSuccess": 3,
+      "ids": [
+        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example01-cir",
+        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example01-stringwriter-cir",
+        "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example01-without-params-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/789"
+    },
+    {
+      "bucket": "directive: bare .probe card",
+      "fixtures": 2,
+      "ngspiceSuccess": 2,
+      "ids": [
+        "pyspice-examples-spice-examples-operational-amplifier-model-1-cir",
+        "pyspice-examples-spice-examples-operational-amplifier-model-2-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/790"
+    },
+    {
+      "bucket": "directive: other .options fields ngspice-47 accepts (INTERP, ysep, ...)",
+      "fixtures": 2,
+      "ngspiceSuccess": 2,
+      "ids": [
+        "kicad-qa-data-eeschema-issue13431-spice",
+        "xictools-wrspice-examples-schmitt-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/790"
+    },
+    {
+      "bucket": "directive: .four",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "spicesharpparser-circuits-cookbook-pure-spice-bjt-audio-preamplifier-bjt-audio-preamplifier-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/790"
+    },
+    {
+      "bucket": "syntax: non-ASCII unit suffixes on numbers (27°C)",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "pyspice-issues-issue-172-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/790"
+    },
+    {
+      "bucket": "syntax: parenthesised node pairs on controlled-source cards",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "pyspice-examples-spice-examples-small-signal-amplifier-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/790"
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "kicad-qa-data-eeschema-issue13162-spice",
+      "sourcePath": "kicad/qa/data/eeschema/issue13162.spice",
+      "sha256": "0fe414d936c62c274d205d2f483efccaf2b8bb52105a21c7b8b1a39ae07e9174",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:508"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Timestep too small at t=0: dt=9.313225746154787e-16"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "convergence"
+    },
+    {
+      "id": "kicad-qa-data-eeschema-issue13431-spice",
+      "sourcePath": "kicad/qa/data/eeschema/issue13431.spice",
+      "sha256": "330cd1daa5e4af0fa5237c316dad081321c77aef236f8087604fd47a7e389948",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:2000"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 5: Unsupported .options field: 'INTERP' .option INTERP"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: other .options fields ngspice-47 accepts (INTERP, ysep, ...)"
+    },
+    {
+      "id": "kicad-qa-data-eeschema-spice-netlists-legacy-pspice-legacy-pspice-spice",
+      "sourcePath": "kicad/qa/data/eeschema/spice_netlists/legacy_pspice/legacy_pspice.spice",
+      "sha256": "f9057681926a7f78ec248d60055355a1fb26bf0e6febbd893ece8c79befae4ca",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:501"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:501"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 16,
+      "worstNormalizedError": 3.3e-7,
+      "worstSignal": "ac v(net-_c4-pad2_)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "kicad-qa-data-eeschema-spice-netlists-legacy-sources-legacy-sources-spice",
+      "sourcePath": "kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice",
+      "sha256": "85619cbd3858b7bb1a3a8cdb1badfc2386117eb8c40e40b4ac481ec9bf0265a7",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:19506"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Singular matrix: zero pivot at matrix column 17 (nodes: /vtrrandom)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "convergence"
+    },
+    {
+      "id": "kicad-qa-data-eeschema-spice-netlists-tlines-tlines-spice",
+      "sourcePath": "kicad/qa/data/eeschema/spice_netlists/tlines/tlines.spice",
+      "sha256": "8cbd1265d3c87d146235c09fcb58f979c6296409478cd06d5cf0e2799cfb2344",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1126"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Singular matrix: zero pivot at matrix column 0 (nodes: /rlgc_in)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "convergence"
+    },
+    {
+      "id": "pyspice-examples-c-examples-ngspice-cb-examples-adder-mos-cir",
+      "sourcePath": "pyspice/examples/c-examples/ngspice_cb/examples/adder_mos.cir",
+      "sha256": "82df854b51d103cc1bb507865afa3762b488c1a477fadbf2af890a130da12969",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/corpus-f/fixtures/examples/digital/compare/adder_mos.cir",
+        "benchmarks/corpus/corpus-f/fixtures/examples/mos/adder_mos.cir"
+      ],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:18073"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:18073"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 8,
+      "worstNormalizedError": 3.44e-13,
+      "worstSignal": "tran v(5)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "pyspice-examples-spice-examples-ac-coupled-transistor-amplifier-cir",
+      "sourcePath": "pyspice/examples/spice-examples/ac-coupled-transistor-amplifier.cir",
+      "sha256": "b3bdba6edebee403f495ca760ecd4f3e98d4505e32e172fad2e299ec68d729fd",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:10008"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:10008"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 7,
+      "worstNormalizedError": 0.00000806,
+      "worstSignal": "tran v(emit)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "pyspice-examples-spice-examples-low-pass-rc-filter-cir",
+      "sourcePath": "pyspice/examples/spice-examples/low-pass-rc-filter.cir",
+      "sha256": "6f61ebadedc6dcd99cb1c4debec2b07eb64f601fa8cf1b50b7ca375b7439d455",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:5"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:5"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 2,
+      "worstNormalizedError": 4.1e-16,
+      "worstSignal": "ac v(out)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "pyspice-examples-spice-examples-operational-amplifier-model-1-cir",
+      "sourcePath": "pyspice/examples/spice-examples/operational-amplifier-model-1.cir",
+      "sha256": "8b1ba729ac2df7d79f53ad46680e7b7381e6108deb59fe62eeeb7520bc7cf542",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:41"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 30: Unsupported empty .probe output request .PROBE"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: bare .probe card"
+    },
+    {
+      "id": "pyspice-examples-spice-examples-operational-amplifier-model-2-cir",
+      "sourcePath": "pyspice/examples/spice-examples/operational-amplifier-model-2.cir",
+      "sha256": "86259aa55c4a6e850b627c9a83013fddea95552989a08844bac1004ff2eeb105",
+      "analyses": [
+        "tran",
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:41",
+          "tran:67"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 55: Unsupported empty .probe output request .PROBE"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: bare .probe card"
+    },
+    {
+      "id": "pyspice-examples-spice-examples-small-signal-amplifier-cir",
+      "sourcePath": "pyspice/examples/spice-examples/small-signal-amplifier.cir",
+      "sha256": "e2e996e8262d1048ea4911437efed6f03159f2e663ee73c5dbc0a894d5adbf9e",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:10009"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 9: Cannot parse number: '(' E1 (amp_out 0) (amp_in 0) -10"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "syntax: parenthesised node pairs on controlled-source cards"
+    },
+    {
+      "id": "pyspice-examples-spice-examples-voltage-divider-cir",
+      "sourcePath": "pyspice/examples/spice-examples/voltage-divider.cir",
+      "sha256": "fd7daf7060f65816809ceb244d1f4dc4630ec5e9099f69d07906bc23bd6aed8a",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 0,
+      "worstSignal": "op i(vinput)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "pyspice-issues-issue-172-cir",
+      "sourcePath": "pyspice/issues/issue-172.cir",
+      "sha256": "465d388920c7345a6a8607b3718cf2d89916b9cb027b673543b0dbb5617c30cc",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:20008"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 5: Cannot parse number: '27°C' .options TEMP = 27°C"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "syntax: non-ASCII unit suffixes on numbers (27°C)"
+    },
+    {
+      "id": "spicelib-examples-testfiles-dc-rawtest-net",
+      "sourcePath": "spicelib/examples/testfiles/dc_rawtest.net",
+      "sha256": "8fde2b889c8e11897f8f14fc786c862255b1ffa264970e89f337935d165f14a1",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:6"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:6"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 2,
+      "worstNormalizedError": 0,
+      "worstSignal": "dc i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "spicelib-examples-testfiles-testfile-ngspice-net",
+      "sourcePath": "spicelib/examples/testfiles/testfile_ngspice.net",
+      "sha256": "7309314f21c23a924c15e6066cbab7ba54278333024782a33f686654e1d19ec9",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 0,
+      "worstSignal": "op i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-circuits-cookbook-custom-components-ideal-diode-power-or-ideal-diode-power-or-cir",
+      "sourcePath": "spicesharpparser/circuits/cookbook/custom-components/ideal-diode-power-or/ideal-diode-power-or.cir",
+      "sha256": "04c3cf748eb3f49d1372ad0927621d3823902544cb3574958457aab80bccb4dc",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:12018"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:12018"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 0.0000642,
+      "worstSignal": "tran v(primary_input)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-circuits-cookbook-pure-spice-active-anti-alias-filter-active-anti-alias-filter-cir",
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/active-anti-alias-filter/active-anti-alias-filter.cir",
+      "sha256": "73a0815308cd164de18f2cd0c1edbd1bdc49ffceb0867a49d86ed88e586c28d5",
+      "analyses": [
+        "ac",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:301",
+          "tran:60022"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:301",
+          "tran:60022"
+        ]
+      },
+      "comparedAnalyses": 2,
+      "comparedSignals": 10,
+      "worstNormalizedError": 8.67e-13,
+      "worstSignal": "tran v(source)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-circuits-cookbook-pure-spice-astable-led-flasher-astable-led-flasher-cir",
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/astable-led-flasher/astable-led-flasher.cir",
+      "sha256": "1763083434377613e91e23646532c7f3e27ad687ae60f420b9e7cf5562823fba",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:51206"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:51318"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 1.27,
+      "worstSignal": "tran v(base1)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-circuits-cookbook-pure-spice-bjt-audio-preamplifier-bjt-audio-preamplifier-cir",
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/bjt-audio-preamplifier/bjt-audio-preamplifier.cir",
+      "sha256": "f9b1dac0411cf8922f6a6a50afbc69d489ac7784dbd75dfe1c64b1d4b4f9bf7c",
+      "analyses": [
+        "op",
+        "ac",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:281",
+          "op:1",
+          "tran:10008"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 35: Unsupported dot command: '.FOUR' .FOUR 1k V ( output )"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: .four"
+    },
+    {
+      "id": "spicesharpparser-circuits-cookbook-pure-spice-bjt-relay-driver-bjt-relay-driver-cir",
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir",
+      "sha256": "228c90873b8e558a10d4613ad39dd695d94b6f03852eb9480f95b6ddea32bdc4",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:11363"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:11367"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 0.0184,
+      "worstSignal": "tran v(collector)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-circuits-cookbook-pure-spice-diode-envelope-detector-diode-envelope-detector-cir",
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/diode-envelope-detector/diode-envelope-detector.cir",
+      "sha256": "1df18775cc845f80e30bceddbc14af01adb2b226d1f9c8cc39e0b2834fea5986",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:30014"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:30015"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 0.000146,
+      "worstSignal": "tran v(diode_input)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-circuits-cookbook-pure-spice-loaded-voltage-divider-loaded-voltage-divider-cir",
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/loaded-voltage-divider/loaded-voltage-divider.cir",
+      "sha256": "dc737ae3c563f04c80bec31a5b554b7fc7d08a30fb3535e2e2de90216e179d5d",
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1",
+          "tran:3012"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "op:1",
+          "tran:3012"
+        ]
+      },
+      "comparedAnalyses": 2,
+      "comparedSignals": 8,
+      "worstNormalizedError": 0.0000168,
+      "worstSignal": "tran v(buffered)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-circuits-cookbook-pure-spice-pwm-dac-pwm-dac-cir",
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/pwm-dac/pwm-dac.cir",
+      "sha256": "cab6a0d71e1622e0b2ab8d2cf12fb53ec557ef7fdef1e98e43867ebee9d732c2",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:47452"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:47612"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 0.00033,
+      "worstSignal": "tran v(pole1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-circuits-cookbook-pure-spice-rc-sensor-input-filter-rc-sensor-input-filter-cir",
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/rc-sensor-input-filter/rc-sensor-input-filter.cir",
+      "sha256": "bdb824c83e5d8185847cf8787f4e63dc4e74f0c04a48b05e5ea4a4903f8b42b2",
+      "analyses": [
+        "ac",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:201",
+          "tran:11039"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:201",
+          "tran:11039"
+        ]
+      },
+      "comparedAnalyses": 2,
+      "comparedSignals": 4,
+      "worstNormalizedError": 0.00000306,
+      "worstSignal": "tran v(filtered)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-circuits-cookbook-pure-spice-rectifier-power-supply-rectifier-power-supply-cir",
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/rectifier-power-supply/rectifier-power-supply.cir",
+      "sha256": "c926a8bce62e8db4a6771e33af5a7d398fedc81bc67f23d7ba4ab70c4f9c7406",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:15043"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:15038"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 0.00236,
+      "worstSignal": "tran v(output)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-circuits-cookbook-pure-spice-transmission-line-termination-transmission-line-termination-cir",
+      "sourcePath": "spicesharpparser/circuits/cookbook/pure-spice/transmission-line-termination/transmission-line-termination.cir",
+      "sha256": "4599777f6a0e037f3ae1fc477d7436d700c651fada5a9205f916262433b85cb0",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:819"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:929"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.0625,
+      "worstSignal": "tran v(open_out)",
+      "outcome": "mismatch",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04.cir",
+      "sha256": "c681df5a0ea6a0ea1775ac1df5d75669a8a0ffa0609622e8ea6b93e5f50232ab",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Cannot parse number: 'R1'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "expression: bare parameter names as values (X-card R=R1, M = 10)"
+    },
+    {
+      "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-nested-cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir",
+      "sha256": "8641b833bf11ff88c1e856e1ac2a57e6342876604c6cf571fa45bf9ad80818b6",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Cannot parse number: 'R1'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "expression: bare parameter names as values (X-card R=R1, M = 10)"
+    },
+    {
+      "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-reversed-cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_reversed.cir",
+      "sha256": "5de9f37daa0fcc096723019a175886df5890c53fd84176fc5f8db9bb639f928b",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Cannot parse number: 'R1'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "expression: bare parameter names as values (X-card R=R1, M = 10)"
+    },
+    {
+      "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example05-cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example05.cir",
+      "sha256": "3f56cfce00cee8df8e2348b751664a55319e6beaeb9e70a52c924a51af27b3de",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Cannot parse number: 'R1'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "expression: bare parameter names as values (X-card R=R1, M = 10)"
+    },
+    {
+      "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example06-cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example06.cir",
+      "sha256": "c2643ae6341c6fdf1c52990dd9e1cc9920bb0c32ff9812f96c304f4590b1c721",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 1,
+      "worstNormalizedError": 0,
+      "worstSignal": "op v(1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example08-cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example08.cir",
+      "sha256": "6e35639ef02931e608c44d9a8ce95627782c98497c86cb7738f20336c565566a",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1011"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:1012"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 1,
+      "worstNormalizedError": 1.5e-13,
+      "worstSignal": "tran v(out)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example09-cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example09.cir",
+      "sha256": "3a56f7847abe23fae8e2eb925d2c77b0aa5f2615acfd72acf947393134536e68",
+      "analyses": [
+        "tran",
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:1000",
+          "tran:59"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:1000",
+          "tran:59"
+        ]
+      },
+      "comparedAnalyses": 2,
+      "comparedSignals": 2,
+      "worstNormalizedError": 2.16e-16,
+      "worstSignal": "ac v(1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example10-cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example10.cir",
+      "sha256": "1a30a8af9c8f8d1814471b8d5b449db429f05955e276b8244ad8fa0c7dcd9d8c",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:201"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:201"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 1,
+      "worstNormalizedError": 7.52e-12,
+      "worstSignal": "dc i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example01-cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01.cir",
+      "sha256": "e27cfb536b337101510c6317c701c9649f71fe756d07f2d7edd36d584c160e1f",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Cannot read properties of undefined (reading 'startsWith')"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "crash: uncaught TypeError instead of a structured error"
+    },
+    {
+      "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example01-stringwriter-cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_stringwriter.cir",
+      "sha256": "d90dda49ba85ad794ccdf838abe0a5a22cbe6fb61124366acebbaf995882b875",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Cannot read properties of undefined (reading 'startsWith')"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "crash: uncaught TypeError instead of a structured error"
+    },
+    {
+      "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example01-without-params-cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01_without_params.cir",
+      "sha256": "5979031b71cc3661c0eac4a89185f5743811c7f717c004bb0eb65b1b0d4f910a",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "failed",
+        "analyses": [],
+        "firstErrorLine": "Cannot read properties of undefined (reading 'startsWith')"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "crash: uncaught TypeError instead of a structured error"
+    },
+    {
+      "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example02-cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example02.cir",
+      "sha256": "bff1a675c68390c0bd321c3003eaeca3298b8e04e48e78091c543ad5fca3ca7b",
+      "analyses": [
+        "op"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Cannot parse number: 'R1'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "expression: bare parameter names as values (X-card R=R1, M = 10)"
+    },
+    {
+      "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example03-cir",
+      "sourcePath": "spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example03.cir",
+      "sha256": "4874bdc5864748502ab27ff39d36530c968ae9c683faf6f51f67b67388c3398e",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:201"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:201"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 1,
+      "worstNormalizedError": 0.00000303,
+      "worstSignal": "dc i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "xictools-wrspice-devlib-jfet2-docs-id-cir",
+      "sourcePath": "xictools/wrspice/devlib/jfet2/docs/id.cir",
+      "sha256": "c6f8adb6babdc5d5bf6e3e6186bb3ab5627331d7bf6f04912fde72b47648b1bb",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:305"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:305"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 9.18e-10,
+      "worstSignal": "dc i(vgs)",
+      "outcome": "matched",
+      "gapBucket": null
+    },
+    {
+      "id": "xictools-wrspice-devlib-obsolete-bsim1tst-cir",
+      "sourcePath": "xictools/wrspice/devlib/obsolete/bsim1tst.cir",
+      "sha256": "ee3baca7155790baf959f4f72f82d0855d0e27d07df2ced9d67e9432d0a93e6a",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/bsim1tst.cir"
+      ],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:501"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 111: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, set"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "control: edit command and # comment lines inside .control"
+    },
+    {
+      "id": "xictools-wrspice-devlib-obsolete-bsim2tst-cir",
+      "sourcePath": "xictools/wrspice/devlib/obsolete/bsim2tst.cir",
+      "sha256": "b2525d03cef81244e4ffac8f3ce48fef61e84e7a6dec0e31af4d2ff6f6530cd0",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/bsim2tst.cir"
+      ],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:501"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 83: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "control: edit command and # comment lines inside .control"
+    },
+    {
+      "id": "xictools-wrspice-examples-bjtnoise-cir",
+      "sourcePath": "xictools/wrspice/examples/bjtnoise.cir",
+      "sha256": "a61f0cfd20102a2f88b664b072e68b982c337dca3a4591886f54e6af5a9651cf",
+      "analyses": [
+        "noise"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/bjtnoise.cir",
+        "benchmarks/corpus/corpus-f/fixtures/examples/various/bjtnoise.cir"
+      ],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "noise:1",
+          "noise:41"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 21: Unsupported .control command '#': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "control: edit command and # comment lines inside .control"
+    },
+    {
+      "id": "xictools-wrspice-examples-diodisto-cir",
+      "sourcePath": "xictools/wrspice/examples/diodisto.cir",
+      "sha256": "d7d51deccf8bc61d2f8b99d9086c231dd27b0d9caebeadbf80637cff08a2dc58",
+      "analyses": [
+        "disto"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/diodisto.cir"
+      ],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "disto:101",
+          "disto:101",
+          "disto:101"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 22: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "control: edit command and # comment lines inside .control"
+    },
+    {
+      "id": "xictools-wrspice-examples-mos6inv-cir",
+      "sourcePath": "xictools/wrspice/examples/mos6inv.cir",
+      "sha256": "87afb7b07f742570587d93d0fc344d1a8ab5bea69f2ceb0026480ae9665b47a1",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/mos6inv.cir",
+        "benchmarks/corpus/ngspice/fixtures/tests/mos6/mos6inv.cir"
+      ],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:315"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 111: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, set"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "control: edit command and # comment lines inside .control"
+    },
+    {
+      "id": "xictools-wrspice-examples-mosamp2-cir",
+      "sourcePath": "xictools/wrspice/examples/mosamp2.cir",
+      "sha256": "fac18d275011a4555d1ab2ce99a7749d9759f256fdeb291b72f9858b0e8975a4",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/mosamp2.cir"
+      ],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:2602"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 46: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "control: edit command and # comment lines inside .control"
+    },
+    {
+      "id": "xictools-wrspice-examples-mosmem-cir",
+      "sourcePath": "xictools/wrspice/examples/mosmem.cir",
+      "sha256": "f5f459b7d90100abcdd098bb1a175153612ce1da6416579a6fc8c35d1d6155e0",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/mosmem.cir",
+        "benchmarks/corpus/corpus-f/fixtures/tests/general/mosmem.cir"
+      ],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:150"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 32: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "control: edit command and # comment lines inside .control"
+    },
+    {
+      "id": "xictools-wrspice-examples-pz2-cir",
+      "sourcePath": "xictools/wrspice/examples/pz2.cir",
+      "sha256": "6183ce1578e1537baafc2923683257ebd82d349d1beb2b9a0c953311c6cfa068",
+      "analyses": [
+        "pz"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/pz2.cir",
+        "benchmarks/corpus/corpus-f/fixtures/tests/polezero/pz2.cir"
+      ],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "pz:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 30: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "control: edit command and # comment lines inside .control"
+    },
+    {
+      "id": "xictools-wrspice-examples-pzt-cir",
+      "sourcePath": "xictools/wrspice/examples/pzt.cir",
+      "sha256": "35f1eb8d1389114a76ac098c1215c177c09e469e0260d2db9ccce84ab725a987",
+      "analyses": [
+        "pz"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/pzt.cir",
+        "benchmarks/corpus/corpus-f/fixtures/tests/polezero/pzt.cir"
+      ],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "pz:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 29: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "control: edit command and # comment lines inside .control"
+    },
+    {
+      "id": "xictools-wrspice-examples-resnoise-cir",
+      "sourcePath": "xictools/wrspice/examples/resnoise.cir",
+      "sha256": "0bf66302e7065245720d3dc35d16b19d4bc0d3f3cd5f096d1513cea96a6eb4a4",
+      "analyses": [
+        "noise"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/resnoise.cir"
+      ],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "noise:1",
+          "noise:41"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 12: Unsupported .control command 'edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setp"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "control: edit command and # comment lines inside .control"
+    },
+    {
+      "id": "xictools-wrspice-examples-schmitt-cir",
+      "sourcePath": "xictools/wrspice/examples/schmitt.cir",
+      "sha256": "849dc5a811fce0a7da19dfe6b922768abb17cdde29f4eb6980ced6d548a169f7",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/schmitt.cir",
+        "benchmarks/corpus/ngspice/fixtures/tests/general/schmitt.cir"
+      ],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:135"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 26: Unsupported .options field: 'ysep' .options ysep"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "directive: other .options fields ngspice-47 accepts (INTERP, ysep, ...)"
+    },
+    {
+      "id": "xictools-wrspice-examples-simplepz-cir",
+      "sourcePath": "xictools/wrspice/examples/simplepz.cir",
+      "sha256": "6fcb21f97f01325cd6da2793d34ac1955bc693caac00176a410dc40a95cbefa6",
+      "analyses": [
+        "pz"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [
+        "benchmarks/corpus/classic/fixtures/spice3f5/simplepz.cir",
+        "benchmarks/corpus/corpus-f/fixtures/tests/polezero/simplepz.cir"
+      ],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "pz:1"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 12: Unsupported .control command '#edit': it is not an ngspice control-language command spice-ts executes; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, set"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "control: edit command and # comment lines inside .control"
+    }
+  ],
+  "outcomeSha256": "cc828106a2f9b505c00ceace57fa4124539aea73cd2ef9821fccc0209d59861c"
+}

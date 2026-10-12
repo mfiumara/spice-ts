@@ -6,7 +6,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { arch, cpus, platform, release } from 'node:os';
 import { compareExecutions } from '../aggregate-report.js';
 import { runNativeNgspice, runNativeSpiceTs, type ClassicCircuit, type EngineExecution } from '../corpus/classic/report.js';
-import { normalizedSignalErrors } from '../corpus/corpus-f/lib.js';
+import { normalizedSignalErrors, pairedReferenceSeries } from '../corpus/corpus-f/lib.js';
 
 async function main(): Promise<void> {
   const rows = [];
@@ -25,7 +25,7 @@ async function main(): Promise<void> {
     const spiceTs = await runNativeSpiceTs(input, circuit);
     const end = performance.now();
     const comparisons = compareExecutions(spiceTs, ngspice);
-    const normalized = normalizedSignalErrors(comparisons, type => ngspice.analyses.find(a => a.type === type)?.series);
+    const normalized = normalizedSignalErrors(comparisons, pairedReferenceSeries(spiceTs, ngspice));
     const summarize = (execution: EngineExecution) => ({
       status: execution.status, convergence: execution.convergence, error: execution.error,
       analyses: execution.analyses.map(a => ({

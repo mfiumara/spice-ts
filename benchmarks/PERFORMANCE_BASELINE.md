@@ -251,3 +251,97 @@ Against ngspice-47 KLU in the unpaired after run (5 samples), spice-ts analysis 
 | MOS1 chain | 1.02x slower | 0.73x | 0.56x |
 
 Most of the drop since the #693 table comes from #689's step-count change, not this PR. The paired A/B above is this PR's attribution. The MOS chain 10k/50k cells read spice-ts faster, and the probe agrees to 1.1e-3. They are not a claimed win: the engines were not load-paired, and ngspice's own time on that cell has varied by 20% across runs. The mesh OP is now the deck furthest behind KLU. Profiles, JSONL, the ngspice table and remaining scope (mesh `factorize` kernel layout, fused companion passes, a batched MOSFET truncation path, a load-paired engine run) are in `benchmarks/performance/results/issue-702/README.md`.
+
+## Follow-up: reusing the converged Newton iterate on linear transients ([#710](https://github.com/mfiumara/spice-ts/issues/710))
+
+After #704, the companion build was the largest cost inside the transient Newton loop on the RC ladder: `buildCompanionSystem` was 20.5% / 24.9% of `simulate()` inclusive at 10k / 50k nodes, against 6-7% for the LU factor and solve. The ladder is linear, but every accepted step ran two Newton iterations: 236 companion builds for 119 points at 50k. The second iteration rebuilt the same system, skipped the factorisation as unchanged, solved it to the same `x`, and then passed the convergence test with a zero delta.
+
+`attemptStep` now returns that converged result directly when every device is a plain resistor, capacitor or independent source (not TRNOISE/TRRANDOM), whose stamps never read the Newton iterate: same solution bits, same `iterations` count, the guard checkpoint still runs. Any other device, subclass or instance override keeps the full loop. The BE / trapezoidal / Gear-2 history terms in `buildCompanionSystem` are also fused into one column pass, with the same additions in the same order. Results are bit-identical:
+
+- a new test compares with `Object.is` against the same circuits with the shortcut disabled (attempt results, solve counts, and full waveforms for trap, Gear-2 and a UIC/0 Ω deck), and against a frozen copy of the pre-#710 companion fast path on MOS1 and diode/inductor decks;
+- waveform hashes match in all 114 A/B samples;
+- 100/100 aggregate corpus digests are identical;
+- `accuracy.ts --ci` passes.
+
+Paired concurrent A/B results (7 rounds at 1k/10k, 5 at 50k, heavily shared machine): the RC ladder is 1.21x / 1.16x / 1.20x faster wall at 1k / 10k / 50k (1.08x / 1.10x / 1.20x CPU). The MOS1 chain is not iteration-invariant and is unchanged at 1.00-1.01x. The mesh OP control reads 0.95x / 1.03x / 1.01x wall; its 1k cell (26-40 ms samples, 0.89..1.30 spread) is load noise around 1.00x.
+
+Against ngspice-47 KLU in the unpaired after run (5 samples), spice-ts analysis time is:
+
+| deck | 1k | 10k | 50k |
+|---|---|---|---|
+| RC ladder | 1.36x slower | 1.22x slower | 1.33x slower |
+| mesh OP | 2.49x slower | 2.18x slower | 2.42x slower |
+| MOS1 chain | 1.33x slower | 1.12x slower | 0.43x |
+
+These ratios are not load-paired and moved with machine load: ngspice's own 10k RC analysis time was 140 ms in the #702 run and 109 ms here. The MOS chain reads slower at 1k / 10k than in the #702 table although this PR leaves it unchanged in paired A/B; #703 (MOS1 device convergence test) landed on main in between. Its 50k cell reads spice-ts faster but is not a claimed win (unpaired; spice-ts's own paired samples on it ranged 26.9-37.8 s in this card). The mesh OP is still the deck furthest behind KLU. Profiles, JSONL, the ngspice table and remaining scope (mesh `factorize` kernel layout, the trapezoidal `stampPrevB` restamp on linear decks, MOS1 stamping, a load-paired engine run) are in `benchmarks/performance/results/issue-710/README.md`.
+
+## Follow-up: supernodal block updates in the sparse LU ([#727](https://github.com/mfiumara/spice-ts/issues/727))
+
+After #710 the RC ladder has no frame above 8% self time. The largest single frame on any M2 deck was the Gilbert-Peierls `factorize` on the resistor mesh: 50.3% of the 50k profile (22.9% at 10k) for one full factorization, 218 M multiply-subtracts at about 2.9 ns each. The mesh OP was also the deck furthest behind ngspice-47 KLU. 96% of those operations come from runs of consecutive L columns with nested patterns (supernodes), but the stored row order differs between linked columns in 89% of the links, so the existing columns cannot be walked together.
+
+A full factorization now packs each such run into a row-major block as it is produced and applies the block to later columns in one pass: rows are first touched in the same order, members whose U entry is exactly zero are skipped as before, and every row receives the same subtractions in the same order (in a register, four rows at a time), running the same zero-activation step. The pivot-reuse refactorization, the solve, AMD and the singleton pre-ordering are unchanged. Results are bit-identical:
+
+- new cases in `gilbert-peierls-equivalence.test.ts` compare factors with `Object.is` against the frozen pre-#669 kernel on grids of side 24/41 and 60 random grid-shaped matrices with exact cancellation, explicit zeros and off-preference pivots, and assert that supernodes are actually used; 9/9 mutants of the new code fail them;
+- waveform hashes match in every paired A/B sample;
+- 100/100 aggregate corpus digests are identical;
+- `accuracy.ts --ci` passes.
+
+Paired concurrent A/B (before/after, >1 = faster): the mesh OP is 1.13x (1.10..1.18, 5 pairs, load 8-12) and 1.19x (1.18..1.21, 7 pairs, load 3-7) faster wall at 50k, 1.06x / 1.07x at 10k; CPU 1.12x / 1.15x at 50k. The factorization kernel alone is about 1.5x faster on a 224 x 224 grid (main 594-637 ms, branch 388-398 ms per call). Everything else is unchanged within noise: mesh 1k 0.99x (CPU 0.94x on 23 ms fresh-process samples; in-process steady state is equal), RC ladder 0.99x / 1.00x / 0.98-1.00x (its factors have no supernodes), MOS chain 0.97x / 1.00x / 1.00x.
+
+Against ngspice-47 KLU (two unpaired runs, 5 samples each), spice-ts analysis time is:
+
+| deck | 1k | 10k | 50k |
+|---|---|---|---|
+| RC ladder | 1.34x / 1.72x slower | 1.54x / 1.61x slower | 2.31x slower / 0.66x |
+| mesh OP | 2.72x / 2.24x slower | 2.10x / 3.55x slower | 1.84x / 1.77x slower |
+| MOS1 chain | 1.23x / 1.18x slower | 1.12x slower / 0.69x | 0.46x / 0.56x |
+
+The mesh OP is still slower than KLU at every size and still the deck furthest behind; its 50k cell moved from 2.42x (#710 run) to 1.77-1.84x, in the direction of the paired gain, but the engines were not load-paired. The RC 50k and MOS 10k cells flip between runs with load (ngspice's own RC 50k samples ranged 738-1456 ms) and are not claimed as wins; the MOS 50k cell reads spice-ts faster in both runs but spice-ts's own samples there ranged 26.7-51.6 s. Profiles, JSONL, digests, both ngspice tables, the kernel micro-benchmark and remaining scope (the pivot-reuse path and small supernodes, AMD ordering and GC on the mesh, MOS1 stamping, a load-paired engine run) are in `benchmarks/performance/results/issue-727/README.md`.
+
+## Follow-up: fill-reducing column ordering for the complex AC LU ([#740](https://github.com/mfiumara/spice-ts/issues/740))
+
+The complex AC LU (AC, noise, distortion) factored `G + jωC` in natural MNA order. It now orders columns like the real sparse LU: AMD on the union pattern of G and C once per topology, structural column singletons first, the permuted diagonal as preferred pivot, and the #732 ngspice-47 pivot acceptance unchanged. Results agree within round-off, not bit-for-bit: against a frozen copy of the old kernel and dense elimination the backward error stays at most 3.5e-16 on 240 random MNA systems and at most 9.0e-16 on every AC system of six corpus decks (12/12 mutants killed). 91/100 aggregate corpus digests are bit-identical; the 9 AC/noise/disto fixtures move by at most 1.75e-13 of their analysis peak, with no status, grid or signal-list change. Against ngspice-47 on identical decks the probe error is unchanged in order (≤ 1.2e-11 of the sweep peak).
+
+Paired fresh-process A/B (before/after, >1 = faster), generated decks `rc-ladder-ac`, `rc-mesh-ac` (#426 shapes with an AC source) and the #732 `vcvs-ladder-ac`:
+
+| deck | 1k | 10k | 50k |
+|---|---|---|---|
+| RC ladder AC | **0.93x** wall (loss), 0.96x CPU | 1.10x | 1.07x |
+| RC mesh AC | 3.57x | 14.47x (19.7 s to 1.30 s) | about 34x, unpaired (528 s to 15.7 s) |
+| VCVS ladder AC (2000 stages) | 1.35x wall, **0.86x CPU** (loss) | - | - |
+
+In-process steady state the 1k ladder (15 to 12 ms) and the VCVS ladder (254 to 122 ms) are faster too; the fresh-process losses are published as measured. The existing AC generators (`rcChainAC`, BJT/MOS amplifiers, cascode, folded cascode) show no change beyond noise. ngspice-47 KLU still wins every cell: spice-ts is 1.6x / 2.3x / 2.7x slower on the RC ladder, 2.9x / 4.2x / 4.6x on the mesh (before: 64x and 155x at 10k and 50k), and 2.2x on the VCVS ladder, in wall time against a fresh `ngspice -b`. Method, tables, receipts and remaining scope (pivot reuse across frequencies like `NIacIter`, supernodes in the complex kernel) are in `benchmarks/performance/results/issue-740/README.md`.
+
+## Follow-up: pivot reuse across frequencies in the complex AC LU ([#769](https://github.com/mfiumara/spice-ts/issues/769))
+
+After #762 and #758 the scaling comparison was re-run on identical decks: the #426 M2 decks (DC/transient) and the #740 AC decks, at 1k / 10k / 50k nodes. The deck furthest behind ngspice-47 KLU was the RC mesh AC sweep (4.2x / 4.6x wall at 10k / 50k in the #740 receipts), and in its 10k profile the complex `factorize` was 75.4% of self time: a full factorization at every frequency, with the activation, fill-marker, sort and column-maximum bookkeeping that implies. ngspice orders once and then refactors with the same pivots at every later frequency (`NIacIter`: `SMPcReorder`, then `SMPcLUfac`); KLU uses `klu_refactor`.
+
+`ComplexSparseSolver.factorize` now first refactors on the pivot sequence, L/U pattern and scatter positions of its last full factorization, when G and C keep their structure. Unlike ngspice, which keeps a reused pivot until it is singular, the reuse is accepted only when the full kernel would make exactly the same decisions: every reused U and L entry is nonzero, every recorded zero row is still zero, and the ngspice-47 pivot acceptance picks the same row (including magnitude ties, which go to the row found first). Otherwise it falls back to the full factorization. Results are bit-identical:
+
+- a new test compares with `Object.is` against a full factorization at every frequency of 60 random MNA sweeps (3,604 reused, 236 full factorizations, pivot changes in every sweep), an RC mesh sweep, U/L cancellation, tie and pattern-change cases, and every AC/noise system of six corpus decks and the #732 VCVS ladder; 14/14 mutants fail it;
+- 100/100 aggregate corpus digests are identical, and every A/B sample has the same result hash;
+- the probe error against ngspice-47 on the AC decks is unchanged from the #740 receipts (at most 1.2e-11 of the sweep peak).
+
+Paired fresh-process A/B (before/after, >1 = faster):
+
+| deck | 1k | 10k | 50k |
+|---|---|---|---|
+| RC mesh AC | 1.00x wall, **0.81x CPU** (loss) | **2.24x** wall, 1.84x CPU | **2.74x** wall (23.3 s to 8.2 s), 2.60x CPU |
+| RC ladder AC | 1.02x wall, **0.87x CPU** (loss) | 1.06x wall, 0.98x CPU | 1.11x wall, 1.00x CPU |
+| VCVS ladder AC (2000 stages) | 1.28x wall, 1.54x CPU | - | - |
+
+The two 1k CPU losses are fresh-process cost; in-process steady state both decks are faster (RC mesh 1k 37-39 ms to 20-21 ms, RC ladder 1k 13 ms to 11-12 ms). They stay published. Against ngspice-47 KLU wall, spice-ts is now 2.3x / 2.2x / 2.4x slower on the RC mesh AC at 1k / 10k / 50k (was 2.9x / 4.2x / 4.6x in the unpaired #740 run), 1.5x / 1.4x / 1.7x on the RC ladder AC and 1.6x on the VCVS ladder: ngspice still wins every AC cell.
+
+The M2 DC and transient decks never reach the complex solver; their re-run is a control (unpaired, 3 samples each). spice-ts/KLU analysis time after: RC ladder 1.57x / 1.31x / 1.00x, resistor mesh OP 2.88x / 2.44x / 2.02x, MOS1 chain 1.41x / 0.62x / 0.81x at 1k / 10k / 50k, with identical spice-ts probe values before and after. The MOS chain 10k / 50k and RC 50k cells are not claimed as wins: they are unpaired and inside both engines' historical spread (ngspice's own 10k MOS analysis time moved from 3.38 s to 4.80 s between the two runs). The resistor mesh OP and the RC mesh AC are now the decks furthest behind KLU. Tables, profiles, JSONL, the M2 JSON, corpus comparison, mutants and remaining scope (supernodal updates in the complex kernel, the real LU on the 2-D mesh OP) are in `benchmarks/performance/results/issue-769/README.md`.
+
+## Follow-up: check-free supernodal updates in the real LU ([#779](https://github.com/mfiumara/spice-ts/issues/779))
+
+After #773 the #426 M2 decks were re-run on main against ngspice-47 KLU (identical decks, 1k / 10k / 50k nodes). The resistor mesh OP was still furthest behind (2.5x / 3.2x / 1.8x analysis time in that loaded run). In process, its one full sparse LU (`factorize`) was the largest phase at 10k and 50k (21 of 53 ms, 266 of 504 ms), with the #727 supernodal block update `applySupernode` the largest JavaScript self-time frame.
+
+`applySupernode` now runs the zero-activation test of a four-row group only until all four rows are settled (normally after the first member), then applies the remaining members with plain multiply-subtracts, reading consecutive member slots directly when no member was skipped; the members' own U entries are computed row by row over the contiguous block row. Every workspace entry receives the same subtractions in the same order, so the factors are bit-identical: the frozen-kernel equivalence tests pass with three new cases (pivot reuse after a member U entry cancels, perturbed refactorizations of cancelling grids, L·U products that underflow to zero), 8/8 mutants of the new code fail them, 100/100 aggregate corpus digests are identical, and every A/B sample has the same result hash.
+
+- Kernel (fresh solver, full factorization of a grid MNA): 1.41x at 224 x 224 (219 ms to 155 ms), 1.24x at 100 x 100, no change at 32 x 32.
+- In `simulate()`: mesh `factorize` 266 to 200 ms at 50k, 21 to 17 ms at 10k; whole `simulate()` 1.04-1.10x, because compile, AMD and assembly are unchanged.
+- Paired fresh-process A/B: mesh 50k **1.14x** wall (1.10..1.27), 1.12x CPU; mesh 10k 1.02x and 1k 1.01x (noise); MOS chain 1.00x. **Loss published:** RC ladder 10k 0.98x wall (0.96..1.03), 0.99x CPU; it has no supernodes, so this reads as noise, but it is what was measured.
+
+ngspice-47 KLU still wins the resistor mesh (1.9x / 2.3x / 2.3x at 50k / 10k / 1k in the unpaired after-run), the RC ladder and the 1k MOS chain. On the 50k mesh spice-ts's AMD plus factorization (about 255 ms) is now within about 1.1x of KLU's reorder plus two refactorizations (about 225 ms); the remaining gap is `Circuit.compile` (case-folded name maps), AMD and assembly. Tables, profiles, JSONL, corpus comparison, mutants and remaining scope are in `benchmarks/performance/results/issue-779/README.md`.

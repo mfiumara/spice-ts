@@ -20,7 +20,9 @@ import { Inductor } from '../devices/inductor.js';
 import { maxTimestepOption, runnableTransient, transientStepCap } from './max-timestep.js';
 import { chargeTruncatedNodes } from './transient-node-truncation.js';
 import { LinearReactiveTruncation } from './transient-reactive-truncation.js';
-import type { ChargeIntegration, DeviceModel, TransientBreakpointSink } from '../devices/device.js';
+import type {
+  ChargeIntegration, DeviceModel, EventDrivenNetwork, TransientBreakpointSink,
+} from '../devices/device.js';
 
 /**
  * Smallest allowed timestep (femtosecond). Must be small enough that LTE can
@@ -94,6 +96,12 @@ const IMPLICIT_BREAK_DT_CUT = 5;
  * step is rejected (ngspice dctran.c: `newdelta > .9 * CKTdelta` accepts).
  */
 const CHARGE_LTE_ACCEPT_FRACTION = 0.9;
+
+/**
+ * ngspice dctran.c raises the order after an order-1 step only when the
+ * order-2 truncation bound exceeds this multiple of the step.
+ */
+const RAISE_ORDER_FRACTION = 1.05;
 
 /** Assembler stamp-pass kind of the trapezoidal history restamp (stampPrevB). */
 const HISTORY_STAMP_PASS = 1;
@@ -260,6 +268,12 @@ class TransientSimImpl implements TransientSim {
    */
   private orderOnePending = false;
   /**
+   * The next accepted point is the first of the run (ngspice dctran.c
+   * `firsttime`). ngspice accepts it without CKTtrunc: CKTdelta is kept for
+   * the second step and the order stays 1 (#742, #561).
+   */
+  private firstStepPending = false;
+  /**
    * The previous accepted point is the UIC seed (#560). Its algebraic node
    * voltages violate KCL, so it is neither trapezoidal history nor a point
    * of the node-voltage LTE predictor. ngspice-47 keeps only device states
@@ -268,13 +282,15 @@ class TransientSimImpl implements TransientSim {
    */
   private startsFromUICSeed = false;
   private progress: TransientProgressMonitor;
+  /** The XSPICE event-driven network, when the circuit has digital code models. */
+  private readonly events: EventDrivenNetwork | undefined;
 
   constructor(compiled: CompiledCircuit, options: ResolvedOptions, config: InternalTransientConfig) {
     this.compiled = compiled;
     this.options = options;
     this.config = config;
     this.convergenceTelemetry = config.convergence ?? createConvergenceTelemetry();
-    for (const device of compiled.devices) device.setTransientTimestep?.(config.timestep);
+    for (const device of compiled.devices) device.setTransientTimestep?.(config.timestep, config.stopTime);
     // Voltage-dependent capacitances stamped as C(v) need charge state, which
     // the C-matrix companion does not keep. Preserve their established
     // companion history while using the exact static residual for constant-C
@@ -307,6 +323,7 @@ class TransientSimImpl implements TransientSim {
     this.prevDt = this.dt;
     this.prevPrevDt = this.dt;
     this.integrationMethod = options.integrationMethod;
+    this.events = compiled.devices.find(device => device.eventDriven !== undefined)?.eventDriven;
 
     this.assembler = this.createAssembler();
 
@@ -346,6 +363,7 @@ class TransientSimImpl implements TransientSim {
     const prevSol = new Float64Array(this.assembler.solution);
     let discontinuityRecoveryAttempted = false;
     this.selectStep();
+    this.processEvents();
 
     while (true) {
       // Guard against dt=0 when caller advance()s past a done simulation.
@@ -366,7 +384,14 @@ class TransientSimImpl implements TransientSim {
         // other side.
         nextTime = nextBreak;
       }
-      const actualDt = nextTime - this.time;
+      // ngspice dctran.c integrates with CKTdelta and advances CKTtime by it.
+      // `(time + dt) - time` is not always `dt` in floating point; using the
+      // difference drifts accepted times by ulps from ngspice's, which moves
+      // TXL/CPL `(int)(CKTtime * 1e12)` history points by 1 ps (#708). Only a
+      // stop-time clamp or breakpoint snap integrates the actual gap.
+      const actualDt = nextTime === this.time + this.dt ? this.dt : nextTime - this.time;
+      // ngspice EVTbackup: a retried step drops the events processed past its end.
+      this.events?.backup(nextTime);
 
       this.assembler.solution.set(prevSol);
       const result = attemptStep(
@@ -454,11 +479,16 @@ class TransientSimImpl implements TransientSim {
         continue;
       }
       this.lteRejectCount = 0;
+      const firstStep = this.firstStepPending;
+      const next = this.orderAfterAcceptedStep(actualDt, integration, chargeBound);
 
       // Device-owned histories must observe only committed solutions. In
       // particular, NR/LTE retries and the stampPrevB restamp below are not
       // accepted timepoints and must remain side-effect free.
       this.acceptTransientStep(nextTime, integration);
+      // dctran.c: EVTcall_hybrids after the truncation check (not on the
+      // first step, which skips it), then EVTaccept.
+      this.events?.acceptStep(nextTime, !firstStep);
       // Update trapezoidal history.
       if (this.integrationMethod === 'trapezoidal') {
         this.stampPrevB();
@@ -470,7 +500,7 @@ class TransientSimImpl implements TransientSim {
       this.prevPrevDt = this.prevDt;
       this.prevDt = actualDt;
       this.time = nextTime;
-      this.orderOnePending = false;
+      this.orderOnePending = next.orderOne;
       this.convergenceTelemetry.transient.acceptedSteps++;
       const minimum = this.convergenceTelemetry.transient.minimumAcceptedTimestep;
       this.convergenceTelemetry.transient.minimumAcceptedTimestep = minimum === null
@@ -511,7 +541,7 @@ class TransientSimImpl implements TransientSim {
       // ngspice CKTtrunc: the next step is at most the charge truncation bound.
       // After a breakpoint the grown step is limited by CKTsaveDelta in
       // selectStep (#608), not cut from the snapped step.
-      const dtBase = Math.min(actualDt * growFactor, chargeBound);
+      const dtBase = Math.min(actualDt * growFactor, next.bound);
       this.dt = Math.min(dtBase, this.config.maxTimestep, remaining);
 
       return sol;
@@ -553,6 +583,31 @@ class TransientSimImpl implements TransientSim {
     ) {
       this.saveDelta = this.dt;
       this.dt = (target - this.time) / 2;
+    }
+  }
+
+  /**
+   * dctran.c event solution before a step: process every event due at or
+   * before the step's end; when an instance set a breakpoint inside the
+   * step (a dac_bridge input change), cut the step to it, and process only
+   * the events up to the new end.
+   */
+  private processEvents(): void {
+    const events = this.events;
+    if (!events) return;
+    for (;;) {
+      const eventTime = events.nextEventTime();
+      if (!(eventTime <= this.time + this.dt)) return;
+      events.processEvents(eventTime, this.time);
+      const breakpoint = this.nextBreakTarget();
+      if (
+        breakpoint < this.time + this.dt
+        && breakpoint > this.time + MIN_BREAK
+        && breakpoint >= eventTime
+      ) {
+        this.saveDelta = this.dt;
+        this.dt = breakpoint - this.time;
+      }
     }
   }
 
@@ -628,6 +683,7 @@ class TransientSimImpl implements TransientSim {
   private collectBreakpoints(): BreakpointQueue {
     const stop = this.config.stopTime;
     this.orderOnePending = false;
+    this.firstStepPending = false;
     // ngspice dctran.c: CKTsaveDelta = CKTfinalTime / 50 before the first step.
     this.saveDelta = stop === undefined ? Infinity : stop / SAVE_DELTA_STOP_DIVISOR;
     const times: number[] = [];
@@ -643,11 +699,19 @@ class TransientSimImpl implements TransientSim {
     }
     const queue = new BreakpointQueue(times, MIN_BREAK);
     this.orderOnePending = true;
+    this.firstStepPending = true;
     const { timestep, maxTimestep } = this.config;
     const firstGap = queue.peek() ?? stop;
     const initial = Math.min(Math.min(stop / INITIAL_STEP_STOP_DIVISOR, timestep) / INITIAL_STEP_DIVISOR, maxTimestep);
     const limited = Math.min(initial, START_BREAK_GAP_FRACTION * Math.min(this.saveDelta, firstGap));
-    this.dt = Math.max(limited / POST_BREAK_DT_CUT, 2 * DELMIN_FRACTION * maxTimestep, MIN_TIMESTEP);
+    // No femtosecond floor here: ngspice-47 (XSPICE build) takes this step as
+    // computed. Clamped to MIN_TIMESTEP, a sub-1e-13 TSTEP took Backward
+    // Euler steps 10x ngspice's, each damping an LC tank (#742).
+    this.dt = Math.max(limited / POST_BREAK_DT_CUT, 2 * DELMIN_FRACTION * maxTimestep);
+    // ngspice dctran.c, at the first timepoint with UIC: "set a breakpoint to
+    // reduce ringing of current in devices" at TSTEP, after the first step
+    // was limited by the next breakpoint (#742).
+    if (this.config.useInitialConditions) queue.insert(timestep, 0);
     return queue;
   }
 
@@ -669,6 +733,12 @@ class TransientSimImpl implements TransientSim {
    */
   private acceptInitialPoint(): void {
     this.acceptTransientStep(this.time);
+    if (this.events) {
+      if (this.config.useInitialConditions) {
+        throw new InvalidCircuitError('XSPICE event-driven instances are not supported with transient UIC');
+      }
+      this.events.beginTransient(time => this.breakpoints?.insert(time, this.time), MIN_BREAK);
+    }
     this.startsFromUICSeed = this.config.useInitialConditions === true;
     if (this.startsFromUICSeed) this.prevB = undefined;
     else this.stampPrevB();
@@ -776,13 +846,38 @@ class TransientSimImpl implements TransientSim {
   }
 
   /**
+   * ngspice dctran.c order control at an accepted point: the bound on the
+   * next step and whether that step stays at order 1 (trapezoidal runs).
+   *
+   * The first timepoint of the run is accepted without CKTtrunc ("no check
+   * on first time point"): CKTdelta is kept and the order stays 1. After any
+   * other order-1 step CKTtrunc is repeated at order 2; the order is raised
+   * only if MIN(2 x CKTdelta, that bound) exceeds 1.05 x CKTdelta, and the
+   * next step is that order-2 bound either way. Otherwise the bound is
+   * `chargeBound`, the CKTtrunc of the step just taken.
+   */
+  private orderAfterAcceptedStep(
+    dt: number, integration: ChargeIntegration, chargeBound: number,
+  ): { bound: number; orderOne: boolean } {
+    const trapezoidal = this.integrationMethod === 'trapezoidal';
+    if (this.firstStepPending) {
+      this.firstStepPending = false;
+      return { bound: dt, orderOne: trapezoidal };
+    }
+    if (!trapezoidal || integration.method !== 'euler') return { bound: chargeBound, orderOne: false };
+    const bound = this.chargeTruncationTimestep(dt, integration, 2);
+    return { bound, orderOne: Math.min(2 * dt, bound) <= RAISE_ORDER_FRACTION * dt };
+  }
+
+  /**
    * ngspice CKTtrunc: the smallest next timestep CKTterr allows on any
    * device charge (DEVtrunc, plus CAPtrunc/INDtrunc on the linear C and L) at the
    * converged trial solution held by the assembler. Infinity when no device
    * bounds the step. Gated like the voltage LTE so the reject-bypass and the
-   * femtosecond floor still terminate stiff shrink loops.
+   * femtosecond floor still terminate stiff shrink loops. `order` evaluates
+   * CKTterr at that order instead of the step's own (the order-raise trial).
    */
-  private chargeTruncationTimestep(dt: number, integration: ChargeIntegration): number {
+  private chargeTruncationTimestep(dt: number, integration: ChargeIntegration, order?: 2): number {
     if (
       (this.truncatingDevices.length === 0 && this.reactiveTruncation.isEmpty)
       || dt <= MIN_LTE_TIMESTEP
@@ -793,7 +888,7 @@ class TransientSimImpl implements TransientSim {
     const ctx = this.assembler.getStampContext();
     const { reltol, abstol, chgtol, trtol } = this.options;
     const truncation = {
-      deltas: [dt, this.prevDt, this.prevPrevDt] as const, reltol, abstol, chgtol, trtol,
+      deltas: [dt, this.prevDt, this.prevPrevDt] as const, reltol, abstol, chgtol, trtol, order,
     };
     let bound = this.reactiveTruncation.timestep(this.assembler.solution, integration, truncation);
     for (const device of this.truncatingDevices) {

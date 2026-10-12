@@ -1,0 +1,12 @@
+noise gain below ngspice N_MINGAIN (issue 767)
+v1 in 0 dc 0 ac 1
+r1 in out 1e11
+r2 out 0 1
+.control
+set numdgt=12
+noise v(out) v1 dec 1 1k 10k
+print onoise_total inoise_total
+setplot noise1
+print onoise_spectrum inoise_spectrum
+.endc
+.end

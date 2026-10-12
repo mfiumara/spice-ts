@@ -3,10 +3,11 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { describe, it } from 'node:test';
-import { outcomeDigest } from '../corpus-f/outcomes.js';
+import { peakFloor } from '../corpus-f/lib.js';
+import { MATCH_RULE as CORPUS_F_MATCH_RULE, outcomeDigest } from '../corpus-f/outcomes.js';
 import { type CorpusGManifest, existingCorpusIdentity, type ProbeReceipt, renderSources } from './ingest.js';
 import { type Candidate, finalSelection, gapBucket, type ProbeRecord, staticSelection, staticVerdict, stripTerminalNewline, suiteDirectory } from './lib.js';
-import { type CorpusGReport, GAP_ISSUES, renderMarkdown, summarize } from './parity.js';
+import { type CorpusGReport, GAP_ISSUES, MATCH_RULE, renderMarkdown, summarize } from './parity.js';
 
 const ROOT = 'benchmarks/corpus/corpus-g';
 
@@ -81,6 +82,32 @@ describe('corpus-g reference selection', () => {
   it('refuses a probe recorded for different bytes', () => {
     const stale = new Map([[a1.sourcePath, { ...probe(a1, 'success'), sha256: '0'.repeat(64) }]]);
     assert.throws(() => finalSelection([a1], stale, new Map()), /no ngspice probe for these bytes/);
+  });
+});
+
+describe('corpus-g gap buckets', () => {
+  it('leaves BSIM4 levels to the corpus-f BSIM4 bucket and names B3SOI LEVEL=10 on its own (#747)', () => {
+    const line = (level: number) => `MOSFET 'M1' (model 'n') uses unsupported model LEVEL=${level} (supported MOSFET levels: 1, 2, 3)`;
+    assert.equal(gapBucket(line(54), 'unsupported'), 'model: BSIM4 (LEVEL=14/54)');
+    assert.equal(gapBucket(line(14), 'unsupported'), 'model: BSIM4 (LEVEL=14/54)');
+    assert.equal(gapBucket(line(10), 'unsupported'), 'model: compact MOSFET model B3SOI (LEVEL=10)');
+    // PSP/EKV levels select MOS1 now (#747); any other unsupported level is not labelled B3SOI.
+    assert.notEqual(gapBucket(line(102), 'unsupported'), 'model: compact MOSFET model B3SOI (LEVEL=10)');
+  });
+});
+
+describe('corpus-g match rule', () => {
+  it('describes the per-quantity peak floor that the shared corpus-f metric applies (#705)', () => {
+    for (const [analysis, signal] of [['tran', 'v(out)'], ['tran', 'i(v1)'], ['pz', 'v(pole(1))']] as const) {
+      assert.ok(MATCH_RULE.includes(String(peakFloor(analysis, signal))), `${analysis} ${signal}: floor ${peakFloor(analysis, signal)} missing from the match rule`);
+    }
+    assert.equal(MATCH_RULE, CORPUS_F_MATCH_RULE);
+  });
+
+  it('publishes that rule in the committed outcomes.json and README.md', async () => {
+    const report = JSON.parse(await readFile(resolve(ROOT, 'outcomes.json'), 'utf8')) as CorpusGReport;
+    assert.equal(report.policy.matchRule, MATCH_RULE);
+    assert.ok((await readFile(resolve(ROOT, 'README.md'), 'utf8')).includes(`- ${MATCH_RULE}`));
   });
 });
 

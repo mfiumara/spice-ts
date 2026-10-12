@@ -63,14 +63,14 @@ describe('XSPICE A-card and .model parsing', () => {
   it('rejects a code model spice-ts does not implement with a typed error', () => {
     let error: unknown;
     try {
-      parse(['digital', 'a1 [1] [2] adc1', '.model adc1 adc_bridge (in_low=0.3 in_high=0.7)', '.tran 1n 1u'].join('\n'));
+      parse(['digital', 'a1 1 2 osc1', '.model osc1 d_osc (cntl_array=[0 1] freq_array=[1e6 2e6])', '.tran 1n 1u'].join('\n'));
     } catch (caught) {
       error = caught;
     }
     expect(error).toBeInstanceOf(UnsupportedCodeModelError);
     expect(error).toBeInstanceOf(ParseError);
     expect((error as UnsupportedCodeModelError).code).toBe('UNSUPPORTED_XSPICE_CODE_MODEL');
-    expect((error as UnsupportedCodeModelError).codeModel).toBe('adc_bridge');
+    expect((error as UnsupportedCodeModelError).codeModel).toBe('d_osc');
   });
 
   it('rejects malformed values as ParseError', () => {

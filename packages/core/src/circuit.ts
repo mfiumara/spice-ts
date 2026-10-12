@@ -18,6 +18,7 @@ import { BJT, hasBiasDependentBaseResistance } from './devices/bjt.js';
 import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
 import { MOS2, resolveMOS2Model } from './devices/mos2.js';
+import { MOS3, mos3SeriesResistances, resolveMOS3Model } from './devices/mos3.js';
 import { MOS6, resolveMOS6Model } from './devices/mos6.js';
 import { createBSIM1, resolveBSIM1Model } from './devices/bsim1.js';
 import { createBSIM2, resolveBSIM2Model } from './devices/bsim2.js';
@@ -51,11 +52,13 @@ import { LossyTransmissionLine, LtraModelState } from './devices/lossy-transmiss
 import {
   assertXspiceAnalyses,
   bindXspiceSources,
+  buildXspiceEventNetwork,
   createXspiceDevice,
   prepareXspiceInstance,
   type PreparedXspiceInstance,
 } from './devices/xspice/compile.js';
 import type { XspiceInstanceCard, XspiceModelCard } from './parser/xspice-parser.js';
+import { assertControlledSourceCard } from './parser/controlled-source.js';
 import type { ControlScript } from './parser/control/script.js';
 import { DEFAULT_OPTIONS, GROUND_NODE } from './types.js';
 import { evaluateExpression } from './parser/expression.js';
@@ -66,13 +69,14 @@ import {
   extractRFPort, extractSourceMultiplier, hasSourceMultiplier, parseSourceWaveform, parseInstanceParams,
   transientNoiseWaveform, transientRandomWaveform, VOLTAGE_SOURCE_MULTIPLIER_ERROR,
 } from './parser/waveform-parser.js';
-import { parsePassiveElement } from './parser/passive-parser.js';
+import { invalidPassiveInstanceLine, parsePassiveElement } from './parser/passive-parser.js';
 import { locateSubcircuitCall } from './parser/subcircuit-syntax.js';
 import { parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
 import { parseSwitchInstance } from './parser/switch-parser.js';
 import { DEVICE_GMIN } from './devices/device.js';
 import { parseBJTInstance, type BJTInstanceParams } from './parser/bjt-parser.js';
+import { parseJFETInstance, type JFETInstanceParams } from './parser/jfet-parser.js';
 import {
   formatCplModelCard,
   parseCplLines,
@@ -99,9 +103,13 @@ import {
   UnsupportedTemperatureError,
 } from './errors.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
+import { CaseFoldedNameSet, CaseInsensitiveMap } from './case-fold.js';
 
-/** MOSFET model levels with a spice-ts implementation: MOS1, MOS2, BSIM1 (4), BSIM2 (5), MOS6 and BSIM3v3 (8/49). */
-const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 2, 4, 5, 6, 8, 49];
+/**
+ * MOSFET model levels with a spice-ts implementation: MOS1, MOS2, MOS3, BSIM1 (4), BSIM2 (5), MOS6,
+ * BSIM3v3 (8/49) and MOS9.
+ */
+const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 2, 3, 4, 5, 6, 8, 9, 49];
 /** ngspice's default circuit temperature (and TNOM) in degrees Celsius. */
 const NOMINAL_TEMPERATURE_C = 27;
 /** ngspice CONSTCtoK. */
@@ -274,6 +282,42 @@ function behavioralDescriptor(
   };
 }
 
+/**
+ * Bind every B-source `i(vsource)` to its source's MNA branch (ngspice
+ * PT_CURRENT via CKTfndBranch). As in ngspice, only elements that own a
+ * branch current (V, E, H, L and V= B-sources) can be referenced; names
+ * match case-insensitively, as ngspice lower-cases the whole deck.
+ */
+function bindBehavioralControlBranches(
+  sources: readonly BehavioralSource[],
+  deviceMap: ReadonlyMap<string, DeviceModel>,
+): void {
+  if (sources.length === 0) return;
+  const byLowerName = new Map<string, DeviceModel>();
+  for (const [name, device] of deviceMap) {
+    if (!byLowerName.has(name.toLowerCase())) byLowerName.set(name.toLowerCase(), device);
+  }
+  for (const device of sources) {
+    device.bindControlBranches(device.expression.sources.map(source => {
+      const control = deviceMap.get(source) ?? byLowerName.get(source.toLowerCase());
+      if (!control) {
+        throw new InvalidCircuitError(
+          `B-source '${device.name}' references i(${source}), but '${source}' is not a source in the circuit`,
+        );
+      }
+      const ownsBranch = control instanceof VoltageSource || control instanceof VCVS || control instanceof CCVS
+        || control instanceof Inductor || control instanceof BehavioralVoltageSource;
+      if (!ownsBranch) {
+        throw new InvalidCircuitError(
+          `B-source '${device.name}' references i(${source}), but '${source}' has no branch current `
+          + '(only V, E, H, L and V= B elements can be referenced)',
+        );
+      }
+      return control.branches[0];
+    }));
+  }
+}
+
 function formatBehavioralSource(desc: DeviceDescriptor): string {
   const { kind, params } = desc.behavioral!;
   const assignment = `${kind === 'voltage' ? 'V' : 'I'}=${formatBehavioralExpression(desc.expression!)}`;
@@ -282,8 +326,85 @@ function formatBehavioralSource(desc: DeviceDescriptor): string {
   return [desc.name, desc.nodes[0], desc.nodes[1], assignment, ...instance].join(' ');
 }
 
-function formatNumber(value: number): string {
-  return Number.isFinite(value) ? value.toString() : String(value);
+/**
+ * The shortest literal that the netlist parser reads back as exactly `value`.
+ * Literals are read as ngspice-47 INPevaluate does (#749): an integer
+ * mantissa M times pow(10, E) (times 25.4 first for `mil`), which is not
+ * always the correctly rounded value, so Number#toString does not always
+ * round-trip (0.30000000000000004, the parsed `0.3`, prints back as `0.3`,
+ * and `30u` is 2.9999999999999997e-5, which no plain decimal reads back to).
+ * For each precision this tries the plain decimal, then the integer-mantissa
+ * form `<M>e<E>` (`30e-6`), which is built exactly as the parser builds the
+ * value; then the `mil` form (`74mil` is 74 * 25.4 * 1e-6, which no decimal
+ * reaches); then mantissas next to the rounded one.
+ *
+ * @internal Exported for the round-trip tests.
+ */
+export function formatNumber(value: number): string {
+  if (!Number.isFinite(value)) return String(value);
+  if (value === 0) return Object.is(value, -0) ? '-0' : '0';
+  for (let digits = 1; digits <= 17; digits++) {
+    const text = Number(value.toPrecision(digits)).toString();
+    if (readsBackAs(text, value)) return text;
+    const integerForm = roundedMantissaForm(value, digits, DECIMAL);
+    if (readsBackAs(integerForm, value)) return integerForm;
+  }
+  for (let digits = 1; digits <= 17; digits++) {
+    const milForm = roundedMantissaForm(value, digits, MIL);
+    if (readsBackAs(milForm, value)) return milForm;
+  }
+  return nearestMantissaForm(value, DECIMAL) ?? nearestMantissaForm(value, MIL) ?? value.toString();
+}
+
+/** How INPevaluate scales the mantissa for a literal ending in `suffix`. */
+interface MantissaUnit { suffix: string; factor: number; exponentOffset: number }
+const DECIMAL: MantissaUnit = { suffix: '', factor: 1, exponentOffset: 0 };
+const MIL: MantissaUnit = { suffix: 'mil', factor: 25.4, exponentOffset: 6 };
+
+function mantissaLiteral(sign: string, mantissa: string, scale: number, unit: MantissaUnit): string {
+  const exponent = scale + unit.exponentOffset;
+  return `${sign}${mantissa}${exponent === 0 ? '' : `e${exponent}`}${unit.suffix}`;
+}
+
+/** `value` rounded to `digits` significant digits, written as `<M>e<E><unit>` with integer M. */
+function roundedMantissaForm(value: number, digits: number, unit: MantissaUnit): string {
+  const [mantissa, exponent] = (Math.abs(value) / unit.factor).toExponential(digits - 1).split('e');
+  return mantissaLiteral(value < 0 ? '-' : '', mantissa.replace('.', ''), Number(exponent) - (digits - 1), unit);
+}
+
+/**
+ * A `<M>e<E><unit>` literal for `value` when no rounded mantissa reads back
+ * to it: integer mantissas next to `value / pow(10, E)`, from 17 digits (one
+ * mantissa step is about one ulp of the product) up to 23 digits, where
+ * accumulating the digits rounds and the extra digits pick the rounding.
+ */
+function nearestMantissaForm(value: number, unit: MantissaUnit): string | undefined {
+  const magnitude = Math.abs(value) / unit.factor;
+  const sign = value < 0 ? '-' : '';
+  const topScale = Math.floor(Math.log10(magnitude)) - 16;
+  for (let scale = topScale + 1; scale >= topScale - 6; scale--) {
+    const rounded = Math.round(magnitude / Number(`1e${scale}`));
+    if (!Number.isFinite(rounded)) continue; // pow(10, E) underflows to 0 for subnormal values
+    const nearest = BigInt(rounded);
+    for (let step = 0n; step <= MANTISSA_SEARCH_STEPS; step++) {
+      for (const mantissa of step === 0n ? [nearest] : [nearest - step, nearest + step]) {
+        if (mantissa <= 0n) continue;
+        const text = mantissaLiteral(sign, mantissa.toString(), scale, unit);
+        if (readsBackAs(text, value)) return text;
+      }
+    }
+  }
+  return undefined;
+}
+
+const MANTISSA_SEARCH_STEPS = 64n;
+
+function readsBackAs(text: string, value: number): boolean {
+  try {
+    return Object.is(parseNumber(text), value);
+  } catch {
+    return false; // e.g. `Infinity` from rounding a value near Number.MAX_VALUE
+  }
 }
 
 function formatParams(params?: Record<string, number>): string {
@@ -358,6 +479,25 @@ function withRFPortNodes(descriptors: DeviceDescriptor[]): DeviceDescriptor[] {
     : desc));
 }
 
+/**
+ * Positional waveform coefficients up to the last given one. An omitted one
+ * before it is written as the value ngspice reads the same as omitted; one
+ * without such a value (a TSTOP-derived default) cannot be written.
+ */
+function positionalCoefficients(keyword: string, coefficients: Array<[number | undefined, number?]>): string {
+  let last = coefficients.length - 1;
+  while (last > 0 && coefficients[last][0] === undefined) last--;
+  return coefficients.slice(0, last + 1).map(([value, omitted], index) => {
+    if (value !== undefined) return formatNumber(value);
+    if (omitted === undefined) {
+      throw new InvalidCircuitError(
+        `${keyword} coefficient ${index + 1} is omitted before a given one; its default cannot be written on a netlist card`,
+      );
+    }
+    return formatNumber(omitted);
+  }).join(' ');
+}
+
 function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string {
   if (!wf) return 'DC 0';
   let base: string;
@@ -400,6 +540,28 @@ function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string 
           .flatMap(point => [point.time, point.value])
           .map(formatNumber)
           .join(' ')})`;
+        if (wf.delay !== undefined) base += ` TD=${formatNumber(wf.delay)}`;
+        if (wf.repeat !== undefined) base += ` R=${formatNumber(wf.repeat)}`;
+        break;
+      case 'exp':
+        // ngspice reads a zero TD1/TAU1/TD2/TAU2 as omitted.
+        base = `EXP(${positionalCoefficients('EXP', [
+          [wf.v1 ?? 0], [wf.v2 ?? 0], [wf.td1, 0], [wf.tau1, 0], [wf.td2, 0], [wf.tau2, 0],
+        ])})`;
+        break;
+      case 'sffm':
+        // An omitted FC defaults from TSTOP, which no explicit value writes; a zero FM is omitted.
+        base = `SFFM(${positionalCoefficients('SFFM', [
+          [wf.offset ?? 0], [wf.amplitude ?? 0], [wf.carrierFrequency], [wf.modulationIndex, 90],
+          [wf.signalFrequency, 0], [wf.delay, 0], [wf.signalPhase, 0], [wf.carrierPhase, 0],
+        ])})`;
+        break;
+      case 'am':
+        // Omitted FM and FC default from TSTOP, which no explicit value writes.
+        base = `AM(${positionalCoefficients('AM', [
+          [wf.offset ?? 0], [wf.carrierAmplitude ?? 0], [wf.modulationAmplitude, 1], [wf.modulationFrequency],
+          [wf.carrierFrequency], [wf.delay, 0], [wf.modulationPhase, 0], [wf.carrierPhase, 0],
+        ])})`;
         break;
       case 'trnoise':
         base = `TRNOISE(${[
@@ -601,6 +763,37 @@ function internalNodeName(deviceName: string, suffix: string): string {
 }
 
 /**
+ * MOS1 drain/source series resistances as ngspice-47 mos1set.c/mos1temp.c
+ * resolve them: 0 when the terminal has no prime node (shorted), `Infinity`
+ * when the prime node exists but its conductance is 0 (open terminal), else
+ * the resistance.
+ *
+ * mos1set.c creates the drain prime node when RD != 0 || (RSH != 0 && NRD != 0)
+ * (NRD = NRS = 1 square by default). mos1temp.c then sets the conductance to
+ * M / RD when RD is given (0 when RD = 0), else M / (RSH * NRD) when RSH is
+ * non-zero; the source likewise with RS and NRS. RD = 0 given with RSH != 0 and
+ * NRD != 0 thus leaves the drain open (#757). With RD not given, RSH != 0 and
+ * NRD = 0 ngspice divides by zero and its operating point fails; spice-ts keeps
+ * that zero-square terminal shorted.
+ */
+function mos1SeriesResistances(
+  card: Readonly<Record<string, number | undefined>>,
+  instance: Readonly<Record<string, number | undefined>> | undefined,
+): { drain: number; source: number } {
+  const m = instance?.M ?? 1;
+  const sheet = card.RSH ?? 0;
+  const resistance = (given: number | undefined, squares: number): number => {
+    if ((given ?? 0) === 0 && (sheet === 0 || squares === 0)) return 0;
+    const conductance = given !== undefined ? (given !== 0 ? m / given : 0) : m / (sheet * squares);
+    return conductance !== 0 ? 1 / conductance : Infinity;
+  };
+  return {
+    drain: resistance(card.RD, instance?.NRD ?? 1),
+    source: resistance(card.RS, instance?.NRS ?? 1),
+  };
+}
+
+/**
  * `.model` registry keyed case-insensitively, as in ngspice: `M1 ... PMOS`
  * must resolve `.model pmos pmos ...`. A miss silently falls back to default
  * device parameters, so a case mismatch would otherwise change the circuit.
@@ -663,7 +856,7 @@ export class Circuit {
   private _xspiceTrtol: number | undefined;
   private _initialConditions: NodeInitialState[] = [];
   private _nodeSets: NodeInitialState[] = [];
-  private nodeSet = new Set<string>();
+  private nodeSet = new CaseFoldedNameSet();
   private _controlScript?: ControlScript;
   private _parseWarnings: string[] = [];
 
@@ -886,7 +1079,7 @@ export class Circuit {
   getNodeIndex(name: string): number {
     if (name === GROUND_NODE) return -1;
     const nodes = [...this.nodeSet].filter(n => n !== GROUND_NODE).sort();
-    return nodes.indexOf(name);
+    return nodes.indexOf(this.nodeSet.canonical(name));
   }
 
   /**
@@ -1359,13 +1552,25 @@ export class Circuit {
     this.descriptors.push({ type: 'Q', name, nodes, modelName, ...(params ? { params } : {}) });
   }
 
-  /** Add a bounded level-1 N-channel junction field-effect transistor. */
-  addJFET(name: string, nodeDrain: string, nodeGate: string, nodeSource: string, modelName: string): void {
+  /**
+   * Add a bounded level-1/level-2 junction field-effect transistor
+   * (`.model NJF` or `.model PJF`). `instanceParams.TEMP` is the ngspice
+   * instance temperature; only the nominal 27 C is supported.
+   */
+  addJFET(
+    name: string,
+    nodeDrain: string,
+    nodeGate: string,
+    nodeSource: string,
+    modelName: string,
+    instanceParams?: JFETInstanceParams,
+  ): void {
     this.nodeSet.add(nodeDrain);
     this.nodeSet.add(nodeGate);
     this.nodeSet.add(nodeSource);
     this.descriptors.push({
       type: 'J', name, nodes: [nodeDrain, nodeGate, nodeSource], modelName,
+      ...(instanceParams?.TEMP === undefined ? {} : { params: { TEMP: instanceParams.TEMP } }),
     });
   }
 
@@ -1506,7 +1711,7 @@ export class Circuit {
     | { outputSource: string; inputSource: string }): void;
   addAnalysis(type: 'pz', params: { inputPositive: string; inputNegative: string; outputPositive: string; outputNegative: string; inputType: 'cur' | 'vol'; mode: 'pol' | 'zer' | 'pz' }): void;
   addAnalysis(type: 'sens', params: { outputNode: string; mode: 'dc' }): void;
-  addAnalysis(type: 'sens', params: { outputNode: string; mode: 'ac'; variation: 'dec'; points: number; startFreq: number; stopFreq: number }): void;
+  addAnalysis(type: 'sens', params: { outputNode: string; mode: 'ac'; variation: 'dec' | 'oct' | 'lin'; points: number; startFreq: number; stopFreq: number }): void;
   addAnalysis(type: string, params?: Record<string, unknown>): void {
     switch (type) {
       case 'op':
@@ -1904,11 +2109,28 @@ export class Circuit {
 
     // Only flattened device nodes belong in the matrix. In particular, a
     // .global name can override a formal port and leave its actual node unused.
-    const canonicalNode = (name: string): string => globalNodes.get(name.toUpperCase()) ?? name;
+    // Node names fold case as in ngspice (#728): the first spelling is kept.
+    const globalNode = (name: string): string => globalNodes.get(name.toUpperCase()) ?? name;
     this.nodeSet.clear();
     for (const desc of expandedDescriptors) {
       for (const n of desc.nodes) {
-        this.nodeSet.add(canonicalNode(n));
+        this.nodeSet.add(globalNode(n));
+      }
+    }
+    const canonicalNode = (name: string): string => this.nodeSet.canonical(globalNode(name));
+
+    // XSPICE digital nodes live in the event-driven network, not the matrix.
+    // ngspice-47 would insert bridges where a digital node also touches an
+    // analog device (evtcheck_nodes.c); that auto-bridging is not supported.
+    const eventNetwork = buildXspiceEventNetwork([...xspiceInstances.values()]);
+    if (eventNetwork) {
+      const analogNodes = new Set([...this.nodeSet].map(n => n.toLowerCase()));
+      for (const name of eventNetwork.network.nodeNames) {
+        if (name === GROUND_NODE || analogNodes.has(name.toLowerCase())) {
+          throw new InvalidCircuitError(
+            `XSPICE digital node '${name}' is also an analog node; automatic analog/digital bridging is not supported`,
+          );
+        }
       }
     }
 
@@ -1948,13 +2170,16 @@ export class Circuit {
     };
 
     const devices: DeviceModel[] = [];
-    const deviceMap = new Map<string, DeviceModel>();
+    // Element names fold case as in ngspice: K, F/H, W and i() references (#754).
+    const deviceMap = new CaseInsensitiveMap<DeviceModel>();
     // One random stream per compiled circuit for its TRNOISE/TRRANDOM sources (ngspice has one per process).
     const noiseContext = new TransientNoiseContext(this._simulationOptions.seed);
     const pendingCurrentSwitches: { device: CurrentSwitch; controlSource: string }[] = [];
+    const pendingBehavioralSources: BehavioralSource[] = [];
     const ltraStates = new Map<string, LtraModelState>();
     // BSIM3 instances per ngspice model, in netlist order (b3v32temp.c pParam reuse, #700).
     const bsim3ModelInstances = new Map<string, BSIM3v3[]>();
+    const pendingCouplings: DeviceDescriptor[] = [];
 
     for (const desc of expandedDescriptors) {
       guard?.checkpoint('compile:device');
@@ -1994,8 +2219,8 @@ export class Circuit {
           if (desc.modelName && !model) {
             throw new InvalidCircuitError(`Capacitor '${desc.name}' references unknown model '${desc.modelName}'`);
           }
-          const { value, unitValue } = resolveCapacitance(desc.value, model, desc.params);
-          devices.push(new Capacitor(desc.name, nodeIndices, value, desc.ic, unitValue));
+          const { value, unitValue, multiplier, scale } = resolveCapacitance(desc.value, model, desc.params);
+          devices.push(new Capacitor(desc.name, nodeIndices, value, desc.ic, unitValue, multiplier, scale));
           break;
         }
         case 'L': {
@@ -2003,19 +2228,20 @@ export class Circuit {
           if (desc.modelName && !model) {
             throw new InvalidCircuitError(`Inductor '${desc.name}' references unknown model '${desc.modelName}'`);
           }
-          const { value, unitValue } = resolveInductance(desc.value, model, desc.params);
+          const { value, unitValue, multiplier, scale } = resolveInductance(desc.value, model, desc.params);
           const bi = branchIndex++;
           branchNames.push(desc.name);
-          devices.push(new Inductor(desc.name, nodeIndices, bi, value, desc.ic, unitValue));
+          devices.push(new Inductor(desc.name, nodeIndices, bi, value, desc.ic, unitValue, multiplier, scale));
           break;
         }
         case 'K': {
           const indA = deviceMap.get(desc.coupledA!);
           const indB = deviceMap.get(desc.coupledB!);
           if (!(indA instanceof Inductor) || !(indB instanceof Inductor)) {
-            throw new Error(
-              `K-element '${desc.name}' references unknown or non-inductor device(s): ${desc.coupledA}, ${desc.coupledB}`,
-            );
+            // ngspice binds K after every instance exists (MUTsetup), so the
+            // inductors may follow the K card; resolve those after the loop.
+            pendingCouplings.push(desc);
+            break;
           }
           devices.push(new MutualInductor(desc.name, indA, indB, desc.value!));
           break;
@@ -2109,10 +2335,16 @@ export class Circuit {
         }
         case 'J': {
           const model = this.requireModel('JFET', desc);
-          if (model.type !== 'NJF') {
+          if (model.type !== 'NJF' && model.type !== 'PJF') {
             throw new Error(`Unsupported JFET model type: '${model.type}'`);
           }
-          devices.push(new JFET(desc.name, nodeIndices, model.params));
+          // ngspice jfettemp.c/jfet2temp.c scale nothing at TEMP = TNOM = 27 C;
+          // spice-ts has no JFET temperature law for any other value.
+          const instanceTemperature = desc.params?.TEMP;
+          if (instanceTemperature !== undefined && instanceTemperature !== NOMINAL_TEMPERATURE_C) {
+            throw new UnsupportedTemperatureError(desc.name, instanceTemperature);
+          }
+          devices.push(new JFET(desc.name, nodeIndices, model.params, model.type === 'PJF' ? -1 : 1));
           break;
         }
         case 'Z': {
@@ -2131,6 +2363,10 @@ export class Circuit {
             devices.push(new BehavioralVoltageSource(desc.name, nodeIndices, bi, compiledExpression, params));
           } else {
             devices.push(new BehavioralCurrentSource(desc.name, nodeIndices, compiledExpression, params));
+          }
+          // i() sources may be declared after the B-source; bind their branches below.
+          if (compiledExpression.sources.length > 0) {
+            pendingBehavioralSources.push(devices[devices.length - 1] as BehavioralSource);
           }
           break;
         }
@@ -2207,6 +2443,13 @@ export class Circuit {
               resolveMOS2Model(desc.modelName!, modelParams, polarity),
               desc.params ?? {},
             ));
+          } else if (level === 3 || level === 9) {
+            // MOS3 / MOS9 (ngspice mos3, mos9); expandPassiveParasitics gave [D', G, S', B].
+            devices.push(new MOS3(
+              desc.name, desc.nodes.map(resolveNode),
+              resolveMOS3Model(desc.modelName!, modelParams, polarity, level),
+              desc.params ?? {},
+            ));
           } else if (level === 1) {
             // Level 1 (ngspice mos1); bulk defaults to source.
             const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];
@@ -2276,10 +2519,12 @@ export class Circuit {
           break;
         }
         case 'A': {
-          devices.push(createXspiceDevice(xspiceInstances.get(desc)!, resolveNode, branchName => {
+          const prepared = xspiceInstances.get(desc)!;
+          const device = createXspiceDevice(prepared, resolveNode, branchName => {
             branchNames.push(branchName);
             return branchIndex++;
-          }));
+          }, eventNetwork?.analogHalves.get(prepared));
+          if (device) devices.push(device);
           break;
         }
         default:
@@ -2291,6 +2536,19 @@ export class Circuit {
       }
     }
 
+    for (const desc of pendingCouplings) {
+      const indA = deviceMap.get(desc.coupledA!);
+      const indB = deviceMap.get(desc.coupledB!);
+      if (!(indA instanceof Inductor) || !(indB instanceof Inductor)) {
+        throw new Error(
+          `K-element '${desc.name}' references unknown or non-inductor device(s): ${desc.coupledA}, ${desc.coupledB}`,
+        );
+      }
+      devices.push(new MutualInductor(desc.name, indA, indB, desc.value!));
+      deviceMap.set(desc.name, devices[devices.length - 1]);
+    }
+
+    if (eventNetwork) devices.push(eventNetwork.network);
     bindXspiceSources(devices, deviceMap);
     for (const instances of bsim3ModelInstances.values()) BSIM3v3.linkBsim3v32SizeRecordReuse(instances);
     for (const { device, controlSource } of pendingCurrentSwitches) {
@@ -2302,6 +2560,7 @@ export class Circuit {
       }
       device.bindControlBranch(control.branches[0]);
     }
+    bindBehavioralControlBranches(pendingBehavioralSources, deviceMap);
 
     if (this._temperature !== undefined && this._temperature !== NOMINAL_TEMPERATURE_C) {
       this.applyCircuitTemperature(this._temperature, expandedDescriptors, devices);
@@ -2635,7 +2894,7 @@ export class Circuit {
         const modelName = desc.modelName!;
         const model = this._models.get(modelName);
         if (!model) throw new InvalidCircuitError(`JFET '${desc.name}' references unknown model '${modelName}'`);
-        if (model.type !== 'NJF') {
+        if (model.type !== 'NJF' && model.type !== 'PJF') {
           throw new Error(`Unsupported JFET model type: '${model.type}'`);
         }
         const params = resolveNJFETParams(model.params);
@@ -2699,6 +2958,52 @@ export class Circuit {
           if (series.source !== 0) {
             const prime = internalNodeName(desc.name, 'source');
             result.push({ type: 'R', name: `${desc.name}.RS`, nodes: [source, prime], value: series.source });
+            source = prime;
+          }
+          result.push({ ...desc, nodes: [drain, gate, source, bulk] });
+          continue;
+        }
+        if (model && (level === 3 || level === 9)) {
+          // mos3set.c/mos9set.c: RD/RS (or RSH*NRD, RSH*NRS) in front of prime nodes, conductance M/R.
+          const series = mos3SeriesResistances(model.params, desc.params);
+          let [drain, gate, source] = desc.nodes;
+          const bulk = desc.nodes[3] ?? source;
+          if (series.drain !== 0) {
+            const prime = internalNodeName(desc.name, 'drain');
+            result.push({ type: 'R', name: `${desc.name}.RD`, nodes: [drain, prime], value: series.drain });
+            drain = prime;
+          }
+          if (series.source !== 0) {
+            const prime = internalNodeName(desc.name, 'source');
+            result.push({ type: 'R', name: `${desc.name}.RS`, nodes: [source, prime], value: series.source });
+            source = prime;
+          }
+          result.push({ ...desc, nodes: [drain, gate, source, bulk] });
+          continue;
+        }
+        if (model && (level === undefined || level === 1)) {
+          // MOS1 (mos1set.c/mos1temp.c): RD/RS in front of the drain/source prime nodes, or
+          // RSH*NRD / RSH*NRS (one square by default) when RD/RS are not given (#719). An open
+          // terminal (#757) keeps its prime node but gets no resistor.
+          const series = mos1SeriesResistances(model.params, desc.params);
+          let [drain, gate, source] = desc.nodes;
+          const bulk = desc.nodes[3] ?? source;
+          if (series.drain === 0 && series.source === 0) {
+            result.push(desc);
+            continue;
+          }
+          if (series.drain !== 0) {
+            const prime = internalNodeName(desc.name, 'drain');
+            if (Number.isFinite(series.drain)) {
+              result.push({ type: 'R', name: `${desc.name}.RD`, nodes: [drain, prime], value: series.drain });
+            }
+            drain = prime;
+          }
+          if (series.source !== 0) {
+            const prime = internalNodeName(desc.name, 'source');
+            if (Number.isFinite(series.source)) {
+              result.push({ type: 'R', name: `${desc.name}.RS`, nodes: [source, prime], value: series.source });
+            }
             source = prime;
           }
           result.push({ ...desc, nodes: [drain, gate, source, bulk] });
@@ -2887,6 +3192,24 @@ export class Circuit {
     return model;
   }
 
+  /**
+   * ngspice-47 inp2l.c / inp2c.c applied to an expanded subcircuit card: a
+   * value-less L/C line is ignored with a warning. Returns true to drop it.
+   * The warning is recorded once even when compile() runs repeatedly.
+   */
+  private dropInvalidPassiveInstance(
+    devName: string,
+    tokens: readonly string[],
+    mapNode: (node: string) => string,
+    kind: 'C' | 'L',
+  ): boolean {
+    const expanded = [devName, ...tokens.slice(1).map(node => mapNode(node))];
+    const warning = invalidPassiveInstanceLine(expanded, kind);
+    if (warning === undefined) return false;
+    if (!this._parseWarnings.includes(warning)) this._parseWarnings.push(warning);
+    return true;
+  }
+
   private expandSubcircuit(
     instanceName: string,
     connectedPorts: string[],
@@ -2993,7 +3316,7 @@ export class Circuit {
       // Handle .model inside subcircuit — register locally AND globally
       if (first === '.MODEL') {
         const modelParams = parseTransmissionLineModelCard(tokens, 0)
-          ?? parseModelCard(tokens, 0);
+          ?? parseModelCard(tokens, 0, message => this.addParseWarning(message));
         // Register in the circuit's global model map so compile() can find it
         this.registerModel(modelParams);
         this._subcircuitModelNames.add(modelParams.name.toUpperCase());
@@ -3039,6 +3362,7 @@ export class Circuit {
           break;
         }
         case 'C': {
+          if (this.dropInvalidPassiveInstance(devName, tokens, mapNode, 'C')) break;
           const evaluatedTokens = tokens.map(t => evalToken(t));
           const parsed = parsePassiveElement(evaluatedTokens, 3, 'C');
           // IC= is the initial condition, as on a top-level card.
@@ -3054,6 +3378,7 @@ export class Circuit {
           break;
         }
         case 'L': {
+          if (this.dropInvalidPassiveInstance(devName, tokens, mapNode, 'L')) break;
           const evaluatedTokens = tokens.map(t => evalToken(t));
           const parsed = parsePassiveElement(evaluatedTokens, 3, 'L');
           // IC= is the initial condition, as on a top-level card.
@@ -3158,6 +3483,17 @@ export class Circuit {
           });
           break;
         }
+        case 'J': {
+          // TEMP may be a {param}; node and model tokens are never braced.
+          const instance = parseJFETInstance(tokens.map(t => evalToken(t)), lineNumber);
+          result.push({
+            type: 'J', name: devName,
+            nodes: [instance.drain, instance.gate, instance.source].map(mapNode),
+            modelName: instance.modelName,
+            ...(instance.params ? { params: { ...instance.params } } : {}),
+          });
+          break;
+        }
         case 'Z': {
           const evaluatedTokens = tokens.map(t => evalToken(t));
           const parsed = parseZInstance(evaluatedTokens, lineNumber, raw);
@@ -3194,6 +3530,7 @@ export class Circuit {
           break;
         }
         case 'E': {
+          assertControlledSourceCard(tokens, lineNumber, raw);
           const valStr = evalToken(tokens[5]);
           result.push({
             type: 'E', name: devName,
@@ -3203,6 +3540,7 @@ export class Circuit {
           break;
         }
         case 'G': {
+          assertControlledSourceCard(tokens, lineNumber, raw);
           const valStr = evalToken(tokens[5]);
           result.push({
             type: 'G', name: devName,
@@ -3219,12 +3557,13 @@ export class Circuit {
             mapNode(card.nodes[0]),
             mapNode(card.nodes[1]),
             card.kind,
-            mapBehavioralNodes(card.expression, mapNode),
+            mapBehavioralNodes(card.expression, mapNode, source => `${instanceName}.${source}`),
             card.params,
           ));
           break;
         }
         case 'H': {
+          assertControlledSourceCard(tokens, lineNumber, raw);
           const valStr = evalToken(tokens[4]);
           result.push({
             type: 'H', name: devName,
@@ -3235,12 +3574,27 @@ export class Circuit {
           break;
         }
         case 'F': {
+          assertControlledSourceCard(tokens, lineNumber, raw);
           const valStr = evalToken(tokens[4]);
           result.push({
             type: 'F', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             controlSource: `${instanceName}.${tokens[3]}`,
             value: parseNumber(valStr),
+          });
+          break;
+        }
+        case 'K': {
+          // ngspice prefixes the coupled inductor names with the instance path,
+          // so a K card only reaches inductors of its own instance (#739).
+          if (tokens.length < 4) {
+            throw new ParseError(`K-element '${tokens[0]}' needs two inductors and a coupling`, lineNumber, raw);
+          }
+          result.push({
+            type: 'K', name: devName, nodes: [],
+            value: parseNumber(evalToken(tokens[3])),
+            coupledA: `${instanceName}.${tokens[1]}`,
+            coupledB: `${instanceName}.${tokens[2]}`,
           });
           break;
         }

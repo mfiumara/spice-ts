@@ -252,6 +252,40 @@ function randomMatrix(n: number, density: number, next: () => number, weakDiagon
   return toCsc(m).csc;
 }
 
+function smallIntegerPicker(next: () => number): () => number {
+  return () => [-3, -2, -1, -1, 1, 1, 2, 3, 0.5, 4][Math.floor(next() * 10)];
+}
+
+/**
+ * Small-integer conductances on a grid with sparse random cross terms:
+ * exact cancellation zeroes U entries inside supernodes, explicit zeros keep
+ * stored structure, and a weak diagonal (even seeds) forces off-preference
+ * pivots. `entry` draws the off-diagonal values.
+ */
+function cancellingGrid(seed: number, next: () => number, entry: () => number): CscMatrix {
+  const side = 8 + Math.floor(next() * 14);
+  const n = side * side;
+  const m = new SparseMatrix(n);
+  const pick = smallIntegerPicker(next);
+  const weak = seed % 2 === 0;
+  for (let r = 0; r < side; r++) {
+    for (let c = 0; c < side; c++) {
+      const i = r * side + c;
+      if (weak && next() < 0.2) m.touch(i, i);
+      else m.add(i, i, pick() * (weak ? 0.25 : 8));
+      for (const [r2, c2] of [[r, c + 1], [r + 1, c]]) {
+        if (r2 >= side || c2 >= side) continue;
+        const j = r2 * side + c2;
+        if (next() < 0.08) { m.touch(i, j); m.add(j, i, entry()); continue; }
+        m.add(i, j, entry());
+        m.add(j, i, entry());
+      }
+      if (next() < 0.03) m.add(i, Math.floor(next() * n), entry());
+    }
+  }
+  return toCsc(m).csc;
+}
+
 function withValues(A: CscMatrix, values: Float64Array): CscMatrix {
   return { size: A.size, colPtr: A.colPtr, rowIdx: A.rowIdx, values };
 }
@@ -371,4 +405,140 @@ describe('GilbertPeierlsSolver numeric kernel equivalence (#669)', () => {
     expect(checkAgainstReference(solver, withValues(A, values), 'zero L entry')).toBe('ok');
     expect(solver.pivotReuseFactorizations).toBe(0);
   });
+});
+
+/**
+ * Issue #727: full factorizations apply runs of consecutive L columns with
+ * nested patterns (supernodes) to a later column as one row-major block. The
+ * frozen kernel above stays the oracle: factors must stay bit-identical,
+ * which pins the per-entry subtraction order, the touched-row order that
+ * drives pivot ties and the L row order, and the skipping of members whose
+ * U entry is exactly zero.
+ */
+describe('GilbertPeierlsSolver supernodal updates (#727)', () => {
+  // Each case runs the unbounded frozen kernel on hundreds of matrices; under
+  // CI coverage instrumentation that takes several seconds.
+  it('matches the frozen kernel on grids large enough to form supernodes, and uses them', () => {
+    for (const side of [24, 41]) {
+      for (const graded of [false, true]) {
+        const next = rng(side * 13 + (graded ? 1 : 0));
+        const A = gridMna(side, () => (graded ? 1e-3 * (1 + Math.floor(next() * 4)) : 1e-3));
+        const solver = new GilbertPeierlsSolver();
+        solver.analyzePattern(A);
+        expect(checkAgainstReference(solver, A, `grid ${side} graded=${graded}`)).toBe('ok');
+        expect(solver.supernodalUpdates, `grid ${side} supernodal updates`).toBeGreaterThan(side);
+      }
+    }
+  }, 60_000);
+
+  it('matches the frozen kernel when members cancel to exact zeros and pivots move', () => {
+    let supernodal = 0;
+    for (let seed = 1; seed <= 60; seed++) {
+      const next = rng(1000 + seed);
+      const pick = smallIntegerPicker(next);
+      const A = cancellingGrid(seed, next, pick);
+      for (const ordering of ['amd', 'natural'] as const) {
+        const solver = new GilbertPeierlsSolver({ ordering });
+        solver.analyzePattern(A);
+        if (checkAgainstReference(solver, A, `seed ${seed} ${ordering}`) === 'ok') {
+          supernodal += solver.supernodalUpdates;
+        }
+        for (let round = 0; round < 3; round++) {
+          const values = A.values.slice();
+          for (let p = 0; p < values.length; p++) {
+            const r = next();
+            if (r < 0.1) values[p] = 0;
+            else if (r < 0.4) values[p] = pick();
+          }
+          checkAgainstReference(solver, withValues(A, values), `seed ${seed} ${ordering} round ${round}`);
+        }
+      }
+    }
+    expect(supernodal).toBeGreaterThan(1000);
+  }, 60_000);
+});
+
+/**
+ * Issue #779: applySupernode skips the zero-activation test for rows that
+ * are already settled, reads consecutive member slots directly when no
+ * member was skipped, and computes the members' U entries row by row. These
+ * cases pin the paths that only matter on unusual values: exact cancellation
+ * of a member's U entry followed by a pivot-reusing refactorization, and
+ * L*U products that underflow to exactly zero.
+ */
+describe('GilbertPeierlsSolver supernodal fast paths (#779)', () => {
+  it('re-factorizes on reused pivots after supernode members cancel, bit-identically', () => {
+    let reused = 0;
+    let supernodal = 0;
+    for (let seed = 1; seed <= 60; seed++) {
+      const next = rng(7790 + seed);
+      const pick = smallIntegerPicker(next);
+      const A = cancellingGrid(seed, next, pick);
+      for (const ordering of ['amd', 'natural'] as const) {
+        const solver = new GilbertPeierlsSolver({ ordering });
+        solver.analyzePattern(A);
+        if (checkAgainstReference(solver, A, `seed ${seed} ${ordering}`) !== 'ok') continue;
+        supernodal += solver.supernodalUpdates;
+        for (let round = 0; round < 3; round++) {
+          // Same structure arrays, slightly different values: exact
+          // cancellations no longer cancel, and pivot reuse is attempted.
+          const values = A.values.slice();
+          for (let p = 0; p < values.length; p++) {
+            if (next() < 0.5) values[p] *= 1 + 2 ** -30;
+          }
+          checkAgainstReference(solver, withValues(A, values), `seed ${seed} ${ordering} perturbed ${round}`);
+        }
+        reused += solver.pivotReuseFactorizations;
+      }
+    }
+    expect(supernodal).toBeGreaterThan(1000);
+    expect(reused).toBeGreaterThan(0);
+  }, 60_000);
+
+  it('records a member U entry that cancels to zero, so pivot reuse falls back when it no longer does', () => {
+    // Natural order: columns 0..3 form one supernode (nested L patterns) and
+    // column 4 is updated by it. U[1,4] = A[1,4] - L[1,0] * U[0,4]
+    // = 1 - 0.25 * 4 cancels to exactly zero while A[1,4] is nonzero.
+    const m = new SparseMatrix(5);
+    for (let i = 0; i < 5; i++) m.add(i, i, 4);
+    for (let i = 1; i < 5; i++) { m.add(i, 0, 1); m.add(0, i, 1); }
+    for (let i = 2; i < 4; i++) { m.add(i, 1, 1); m.add(1, i, 1); }
+    m.add(0, 4, 3); // with A[0,1..3] = 1 above: A[0,4] = 4
+    m.add(1, 4, 1);
+    const A = toCsc(m).csc;
+    const solver = new GilbertPeierlsSolver({ ordering: 'natural' });
+    solver.analyzePattern(A);
+    expect(checkAgainstReference(solver, A, 'cancelling member')).toBe('ok');
+    expect(solver.supernodalUpdates).toBeGreaterThan(0);
+    const internals = solver as unknown as SolverInternals;
+    // U[1,4] was skipped: column 4 of U holds row 0 and its diagonal only.
+    const uCol4 = Array.from(internals.uRows.subarray(internals.uColPtr[4], internals.uColPtr[5]));
+    expect(uCol4).not.toContain(1);
+    // Perturb A[1,4]: U[1,4] is now nonzero, so the full kernel applies L[:,1]
+    // and the pivot sequence of the cancelled pattern must not be reused.
+    const values = A.values.slice();
+    for (let p = A.colPtr[4]; p < A.colPtr[5]; p++) if (A.rowIdx[p] === 1) values[p] = 1 + 2 ** -30;
+    expect(checkAgainstReference(solver, withValues(A, values), 'cancelling member perturbed')).toBe('ok');
+    expect(solver.pivotReuseFactorizations).toBe(0);
+  });
+
+  it('activates rows whose supernodal update underflows to exactly zero', () => {
+    let supernodal = 0;
+    for (let seed = 1; seed <= 60; seed++) {
+      const next = rng(77900 + seed);
+      const pick = smallIntegerPicker(next);
+      // About half of the off-diagonal entries are ~1e-170, so the product of
+      // two of them (an L entry times a U entry) underflows to zero.
+      const tiny = () => (next() < 0.5 ? pick() * 1e-170 : pick());
+      const A = cancellingGrid(seed, next, tiny);
+      for (const ordering of ['amd', 'natural'] as const) {
+        const solver = new GilbertPeierlsSolver({ ordering });
+        solver.analyzePattern(A);
+        if (checkAgainstReference(solver, A, `seed ${seed} ${ordering}`) === 'ok') {
+          supernodal += solver.supernodalUpdates;
+        }
+      }
+    }
+    expect(supernodal).toBeGreaterThan(1000);
+  }, 60_000);
 });

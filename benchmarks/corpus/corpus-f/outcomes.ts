@@ -26,9 +26,9 @@ import {
   type ClassicCircuit,
   type EngineAnalysis,
   type EngineExecution,
-  runNativeSpiceTs,
 } from '../classic/report.js';
 import type { CorpusFCircuit, CorpusFManifest } from './ingest.js';
+import { runCorpusFSpiceTs } from './plot-adapter.js';
 import {
   classifyNgspiceFailure,
   CONTROL_SECTION,
@@ -41,6 +41,7 @@ import {
   NGSPICE_ABSTOL,
   NGSPICE_VNTOL,
   normalizedSignalErrors,
+  pairedReferenceSeries,
   type Outcome,
   outcome,
   CURRENT_PEAK_FLOOR,
@@ -49,6 +50,9 @@ import {
   sig3,
   VOLTAGE_PEAK_FLOOR,
 } from './lib.js';
+
+/** The published match rule: the per-quantity peak floor (#593) applied by normalizedSignalErrors. Shared with corpus-g. */
+export const MATCH_RULE = `matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= ${MATCH_THRESHOLD} x max(peak |ngspice signal|, floor). The floor is uniform per quantity (#593): ${VOLTAGE_PEAK_FLOOR} V for node voltages v(...) and ${CURRENT_PEAK_FLOOR} A for branch currents i(...), so a signal whose ngspice peak is zero or tiny matches when the absolute difference is at most the ngspice-47 default VNTOL (${NGSPICE_VNTOL} V) or ABSTOL (${NGSPICE_ABSTOL} A); every other quantity (pole/zero roots, noise spectra) keeps ${PEAK_FLOOR}. Deck .options tolerances are not consulted. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).`;
 
 export const REPORT_SCHEMA = 'spice-ts-corpus-f-outcomes/v1' as const;
 const MANIFEST_PATH = resolve(CORPUS_ROOT, 'manifest.json');
@@ -315,18 +319,39 @@ function producedAnalyses(execution: EngineExecution): string[] {
   return execution.analyses.map(analysis => `${analysis.type}:${analysis.series.grid.length}`).sort();
 }
 
+/** Which ngspice reference signals can be scored: exactly those spice-ts produced, per plot type. */
+export type ReferenceSelection = (type: string, signal: string) => boolean;
+
+/**
+ * Every signal spice-ts produced, per plot type. A type can have several plots (noise: spectrum
+ * and integrated) and compareExecutions may pair any of them, so the selection is their union.
+ */
+export function referenceSelection(execution: Pick<EngineExecution, 'analyses'>): ReferenceSelection {
+  const produced = new Map<string, Set<string>>();
+  for (const analysis of execution.analyses) {
+    const signals = produced.get(analysis.type) ?? new Set<string>();
+    for (const signal of Object.keys(analysis.series.signals)) signals.add(signal);
+    produced.set(analysis.type, signals);
+  }
+  return (type, signal) => produced.get(type)?.has(signal) ?? false;
+}
+
 /** Runs one fixture through both engines and reduces it to its published outcome. */
-export async function runFixture(circuit: CorpusFCircuit, reference = runNgspice): Promise<FixtureOutcome> {
+export async function runFixture(
+  circuit: CorpusFCircuit,
+  reference: (input: Buffer, circuit: CorpusFCircuit, select: ReferenceSelection) => ReturnType<typeof runNgspice> = runNgspice,
+): Promise<FixtureOutcome> {
   const input = await readFile(resolve(circuit.localPath));
   if (sha256(input) !== circuit.sha256) throw new Error(`${circuit.id}: fixture SHA-256 mismatch`);
-  const ngspice = await reference(input, circuit);
+  // spice-ts runs first so a reference reader may keep only the signals that can be compared
+  // (#694): compareExecutions scores common signals only, so the outcome is the same either way.
   const spiceTs = { execution: await runBoundedSimulate(input, asClassic(circuit)) };
+  const ngspice = await reference(input, circuit, referenceSelection(spiceTs.execution));
   const spiceTsStatus: EngineStatus = spiceTs.execution.status;
   const comparisons = ngspice.status === 'success' && spiceTsStatus === 'success'
     ? compareExecutions(spiceTs.execution, ngspice.execution)
     : [];
-  const { errors, missing } = normalizedSignalErrors(comparisons, analysis =>
-    ngspice.execution.analyses.find(candidate => candidate.type === analysis)?.series);
+  const { errors, missing } = normalizedSignalErrors(comparisons, pairedReferenceSeries(spiceTs.execution, ngspice.execution));
   const worst = errors.reduce<typeof errors[number] | null>((current, error) =>
     current === null || error.normalized > current.normalized ? error : current, null);
   const spiceTsError = firstSpiceTsErrorLine(spiceTs.execution.error);
@@ -474,7 +499,7 @@ export async function buildReport(manifest: CorpusFManifest, jobs: number, only?
       fixtureAdaptation: 'none',
       perCircuitToleranceTuning: false,
       matchThreshold: MATCH_THRESHOLD,
-      matchRule: `matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= ${MATCH_THRESHOLD} x max(peak |ngspice signal|, floor). The floor is uniform per quantity (#593): ${VOLTAGE_PEAK_FLOOR} V for node voltages v(...) and ${CURRENT_PEAK_FLOOR} A for branch currents i(...), so a signal whose ngspice peak is zero or tiny matches when the absolute difference is at most the ngspice-47 default VNTOL (${NGSPICE_VNTOL} V) or ABSTOL (${NGSPICE_ABSTOL} A); every other quantity (pole/zero roots, noise spectra) keeps ${PEAK_FLOOR}. Deck .options tolerances are not consulted. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).`,
+      matchRule: MATCH_RULE,
       deterministicHashExcludes: ['environment', 'tools.node', 'ngspice.analyses', 'spiceTs.analyses'],
     },
     ...summarize(results),
@@ -619,7 +644,7 @@ if (process.argv[2] === SPICE_TS_CHILD_FLAG) {
   (async () => {
     const [inputPath, circuitPath, outputPath] = process.argv.slice(3);
     const circuit = JSON.parse(await readFile(circuitPath, 'utf8')) as ClassicCircuit;
-    await writeFile(outputPath, serialize(packExecution(await runNativeSpiceTs(await readFile(inputPath), circuit, { parseFirst: false }))));
+    await writeFile(outputPath, serialize(packExecution(await runCorpusFSpiceTs(await readFile(inputPath), circuit))));
   })().catch(error => {
     console.error(error);
     process.exitCode = 1;

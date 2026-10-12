@@ -7,6 +7,12 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 let transport: StdioClientTransport | undefined;
 
+// Hang guard only (same policy as the examples, #411/#424): this test cold-starts
+// `node --import tsx src/stdio.ts`, which already took 4.7-5.0 s of vitest's 5 s
+// default on loaded CI runners under coverage. Loaded runners make it slower,
+// never wrong; assertions are unchanged.
+const STDIO_HANG_GUARD_MS = 60_000;
+
 afterEach(async () => {
   await transport?.close();
   transport = undefined;
@@ -35,8 +41,9 @@ describe('stdio transport', () => {
       structuredContent: {
         protocolVersion: '1',
         streaming: {
+          maxConcurrentJobs: 2,
           runningJobTtlMs: 30_000,
-          terminalJobTtlMs: 60_000,
+          terminalJobTtlMs: 300_000,
           maxUnreadEvents: 256,
           maxUnreadBytes: 1024 * 1024,
         },
@@ -153,7 +160,7 @@ describe('stdio transport', () => {
       structuredContent: { error: { code: 'RESOURCE_LIMIT', details: { limit: 'maxResultPoints' } } },
     });
     expect(containsExactString([streamed, first, cancelled, bounded, malformed, rejectedStart], 'spice-ts')).toBe(false);
-  });
+  }, STDIO_HANG_GUARD_MS);
 });
 
 function containsExactString(value: unknown, target: string): boolean {

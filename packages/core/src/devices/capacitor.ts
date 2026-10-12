@@ -11,6 +11,10 @@ export class Capacitor implements DeviceModel {
     readonly ic?: number,
     /** One element's capacitance before the instance m (ngspice CAPcapac). */
     readonly unitCapacitance: number = capacitance,
+    /** Instance parallel multiplier `m` (ngspice CAPm), already folded into `capacitance`. */
+    readonly multiplier: number = 1,
+    /** Instance `SCALE` factor (ngspice CAPscale), already folded into both values. */
+    readonly scale: number = 1,
   ) {}
 
   setParameter(value: number): void {

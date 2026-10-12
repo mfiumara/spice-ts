@@ -1,0 +1,162 @@
+{
+  "schema": "spice-ts-issue-747-parity/v1",
+  "label": "before",
+  "git": {
+    "commit": "25bcf5b4ded91473d2280c1b21e6cc9874aee052",
+    "packagesDirty": true
+  },
+  "rule": "ngspice-47 inpfindl.c: model level rounded, < 0 or > 99 replaced by 1",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "node": "v22.23.1"
+  },
+  "policy": {
+    "input": "byte-identical corpus-g fixture for both engines",
+    "metric": "corpus-f runFixture worst |error| / ngspice signal peak",
+    "matchThreshold": 0.01,
+    "perCircuitTuning": false
+  },
+  "fixtures": [
+    {
+      "id": "ekv26-inverter-transient-ekv26-cir",
+      "sourcePath": "Netlists/EKV26/inverter_transient_ekv26.cir",
+      "sha256": "c23703254e36b5454a2f02463e84cf16e6bb64a6b2a557b3a901486cdbe2dd98",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:508"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'Xinv1.Mp1' (model 'pmos1') uses unsupported model LEVEL=260 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "parse: other unsupported syntax",
+      "wallMs": 294
+    },
+    {
+      "id": "psp102-idvg0-id-t27-pmos-cir",
+      "sourcePath": "Netlists/PSP102/idvg0_Id_T27_pmos.cir",
+      "sha256": "7135f800d6d6dfb8720d81e4ef7e576e702fbfe9a28b077b9c48e09c037a4c92",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:221"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'x1.m1' (model 'mymodel') uses unsupported model LEVEL=102 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "parse: other unsupported syntax",
+      "wallMs": 298
+    },
+    {
+      "id": "psp103-invert-psp-testdta0-cir",
+      "sourcePath": "Netlists/PSP103/invert_psp_testDTA0.cir",
+      "sha256": "cae412b9ac52fbb9c544c3a013080634a9e404a1c4f1858c5c05e202f31925ba",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:2067"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'XINV1.MN1' (model 'pspqan') uses unsupported model LEVEL=103 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "parse: other unsupported syntax",
+      "wallMs": 303
+    },
+    {
+      "id": "mextram-acfreq-gbb-noflip-p-cir",
+      "sourcePath": "Netlists/MEXTRAM/acFreq_Gbb_noFlip_P.cir",
+      "sha256": "7a63f982cea7ece66c9139af6e18f48ad4f86c56321da2fdfda886eafd19788d",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:4"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Unsupported bounded BJT model parameter: 'DTA'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "parse: other unsupported syntax",
+      "wallMs": 291
+    },
+    {
+      "id": "vanoise-commonemitterbjt-mextram-cir",
+      "sourcePath": "Netlists/VANOISE/commonEmitterBjt_mextram.cir",
+      "sha256": "60084d89571f491bb82e47223a7e1d0eb5345fbcd4e191cdd06e3c507397ab9c",
+      "analyses": [
+        "noise"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "noise:1",
+          "noise:167"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Unsupported bounded BJT model parameter: 'DTA'"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "parse: other unsupported syntax",
+      "wallMs": 294
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+main resistor-mesh-op:1024 median of 60: parse 2.14 | simulate 3.46 | compile 1.35 | lockTopology 0.28 | analyzePattern 0.42 | factorize 0.79 | solve 0.04 | other 0.52
+main resistor-mesh-op:10000 median of 15: parse 23.47 | simulate 52.50 | compile 14.31 | lockTopology 4.38 | analyzePattern 5.82 | factorize 21.19 | solve 0.66 | other 6.23
+main resistor-mesh-op:50176 median of 5: parse 130.02 | simulate 504.21 | compile 104.20 | lockTopology 25.52 | analyzePattern 73.58 | factorize 265.72 | solve 4.80 | other 35.91
+branch resistor-mesh-op:1024 median of 60: parse 2.19 | simulate 3.49 | compile 1.36 | lockTopology 0.28 | analyzePattern 0.43 | factorize 0.78 | solve 0.04 | other 0.54
+branch resistor-mesh-op:10000 median of 15: parse 23.43 | simulate 50.52 | compile 15.03 | lockTopology 4.20 | analyzePattern 6.20 | factorize 17.07 | solve 0.71 | other 6.00
+branch resistor-mesh-op:50176 median of 5: parse 132.54 | simulate 484.74 | compile 113.60 | lockTopology 51.22 | analyzePattern 55.50 | factorize 200.24 | solve 5.09 | other 35.40
+main resistor-mesh-op:1024 median of 60: parse 2.31 | simulate 3.89 | compile 1.52 | lockTopology 0.30 | analyzePattern 0.45 | factorize 0.85 | solve 0.05 | other 0.64
+main resistor-mesh-op:10000 median of 15: parse 23.67 | simulate 54.21 | compile 14.93 | lockTopology 4.38 | analyzePattern 5.88 | factorize 21.16 | solve 0.68 | other 5.93
+main resistor-mesh-op:50176 median of 5: parse 128.09 | simulate 508.02 | compile 103.33 | lockTopology 41.97 | analyzePattern 51.48 | factorize 267.94 | solve 5.05 | other 40.16
+branch resistor-mesh-op:1024 median of 60: parse 2.13 | simulate 3.45 | compile 1.39 | lockTopology 0.28 | analyzePattern 0.44 | factorize 0.77 | solve 0.04 | other 0.54
+branch resistor-mesh-op:10000 median of 15: parse 23.02 | simulate 49.07 | compile 14.57 | lockTopology 4.13 | analyzePattern 5.76 | factorize 17.19 | solve 0.65 | other 5.93
+branch resistor-mesh-op:50176 median of 5: parse 130.03 | simulate 473.69 | compile 116.56 | lockTopology 47.43 | analyzePattern 54.09 | factorize 201.29 | solve 5.91 | other 39.49

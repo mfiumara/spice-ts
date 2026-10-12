@@ -105,7 +105,7 @@ describe('Gnucap independent-source value forms', () => {
     ['V1 1 0 DC=', /Cannot parse number/],
     ['V1 1 0 DC PULSE(0 1 0 .01 .01 1 1) AC 1 extra', /Cannot parse number/],
     ['I1 1 0 PWL 0 5 .1', /PWL.*complete time\/value pairs/i],
-    ['I1 1 0 PWL(0 5 .1 0) R=1u', /Unsupported PWL source parameters/],
+    ['I1 1 0 PWL(0 5 .1 0) R=1u', /PWL repeat start time .* does not match any time point/],
   ])('keeps malformed source diagnostics strict for %s', (card, diagnostic) => {
     try {
       parse(`Malformed Gnucap source\n${card}`);

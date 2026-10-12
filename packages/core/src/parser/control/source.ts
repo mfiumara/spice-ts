@@ -35,7 +35,8 @@ export interface ExtractedControlBlocks {
  * the netlist tokenizer treats as comments and the `.param` preprocessor as
  * numparam expressions, so they must be read from the original text.
  *
- * Comments follow ngspice's input reader: whole-line `*` comments, and
+ * Comments follow ngspice's input reader: whole-line `*` and `#` comments
+ * (a `#` later on a line is command text: ngspice-47 `echo a#b` prints `a#b`), and
  * end-of-line comments started by `;`, by `$` between whitespace, or by `//`
  * after whitespace (never inside double quotes).
  *
@@ -89,7 +90,7 @@ export function extractControlBlocks(
       continue;
     }
     const text = stripControlComment(raw).trim();
-    if (text === '' || text.startsWith('*')) continue;
+    if (text === '' || text.startsWith('*') || text.startsWith('#')) continue;
     const previous = current.lines.at(-1);
     if (text.startsWith('+') && previous) {
       previous.text = `${previous.text} ${text.slice(1).trim()}`.trim();

@@ -42,12 +42,19 @@ type Reference = ReadonlyArray<readonly number[]>;
 // ngspice: one truncation step at 32.11 ns differs, the order-1 restart of
 // #561); cpl_ibm2 5.2e-4; 4-line 0.0038; lossless/shunt-G v(b) 0.0067 (same
 // grid as ngspice, the far-end edge of Y1 is 1 % lower) and v(d) 7e-8;
-// complex-pole + short TXL 7.2e-4.
-const TXL1_BOUND = 0.065;
-const IBM2_BOUND = 6e-4;
+// complex-pole + short TXL 7.2e-4. That 1 % was the 1 ps TXL history shift
+// of `nextTime - time` ulp drift; since the step integrates CKTdelta (#708)
+// lossless/shunt-G matches ngspice to rounding (transient-cktdelta-708.test.ts).
+// With ngspice's first-step / order-1 restart (#742) and CKTdelta (#708) the
+// grid after t=0 follows ngspice (#561) and every bound is back below its
+// pre-#545 value: txl1 0.0011 / 0.0111 (was 0.0181 / 0.0380), cpl_ibm2
+// 1.6e-5 (4.3e-4), 4-line 0.0045 (0.0211), lossless/shunt-G 6e-15 (3.1e-3),
+// complex-pole + short TXL 7.2e-4 (1.8e-3).
+const TXL1_BOUND = 0.015;
+const IBM2_BOUND = 3e-5;
 const LIN4_BOUND = 0.005;
-const LOSSLESS_BOUND = 0.007;
-const COMPLEX_SHORT_BOUND = 1e-3;
+const LOSSLESS_BOUND = 1e-9;
+const COMPLEX_SHORT_BOUND = 8e-4;
 
 function rel(actual: number, expected: number): number {
   return Math.abs(actual - expected) / Math.max(Math.abs(expected), 1e-300);

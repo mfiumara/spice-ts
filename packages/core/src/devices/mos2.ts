@@ -1,5 +1,6 @@
 import {
-  DEVICE_GMIN, type ChargeIntegration, type ChargeTruncation, type DeviceModel, type StampContext,
+  DEVICE_GMIN, type ChargeIntegration, type ChargeTruncation, type ConvergenceTolerances, type DeviceModel,
+  type StampContext,
 } from './device.js';
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import {
@@ -250,6 +251,26 @@ export interface MOS2Channel {
   vdsat: number;
 }
 
+/** Linearisation of the last load, read by the mos2conv.c convergence test (polarity domain). */
+interface MOS2Load {
+  vbs: number;
+  vbd: number;
+  vgs: number;
+  vds: number;
+  mode: number;
+  /** MOS2cd = mode * cdrain - cbd (minus cqbd in transient). */
+  cd: number;
+  cbs: number;
+  cbd: number;
+  gm: number;
+  gds: number;
+  gmbs: number;
+  gbs: number;
+  gbd: number;
+  /** mos2load.c Check: DEVpnjlim limited a junction (CKTnoncon). */
+  limited: boolean;
+}
+
 /** Reused scratch buffer for the Meyer half capacitances; consumed immediately. */
 const halfScratch = new Float64Array(3);
 
@@ -295,6 +316,10 @@ export class MOS2 implements DeviceModel {
   /** MOS2gm / MOS2gmbs of the previous load (moseq2 keeps them on one subthreshold path). */
   private lastGm = 0;
   private lastGmbs = 0;
+  private readonly lastLoad: MOS2Load = {
+    vbs: 0, vbd: 0, vgs: 0, vds: 0, mode: 1, cd: 0, cbs: 0, cbd: 0, gm: 0, gds: 0, gmbs: 0, gbs: 0, gbd: 0,
+    limited: false,
+  };
   /** Transient gate and bulk-junction charges (ngspice MOS2qgs..MOS2qbd), integrated by the device. */
   readonly integratesTransientCharge = true;
   readonly storesCharge: boolean;
@@ -898,11 +923,15 @@ export class MOS2 implements DeviceModel {
     // mos2load.c junction limiting against the previous load.
     let vbs = vbsRaw;
     let vbd = vbs - vds;
+    let limited: boolean;
     if (vds >= 0) {
       vbs = pnjlim(vbs, this.lastVbs, vt, sourceVcrit);
+      limited = vbs !== vbsRaw;
       vbd = vbs - vds;
     } else {
+      const vbdRaw = vbd;
       vbd = pnjlim(vbd, this.lastVbd, vt, drainVcrit);
+      limited = vbd !== vbdRaw;
       vbs = vbd + vds;
     }
     this.lastVbs = vbs;
@@ -934,6 +963,21 @@ export class MOS2 implements DeviceModel {
     const { mode, cdrain, gm, gds, gmbs } = channel;
     this.lastGm = gm;
     this.lastGmbs = gmbs;
+    const load = this.lastLoad;
+    load.vbs = vbs;
+    load.vbd = vbd;
+    load.vgs = vgs;
+    load.vds = vds;
+    load.mode = mode;
+    load.cd = mode * cdrain - cbd;
+    load.cbs = cbs;
+    load.cbd = cbd;
+    load.gm = gm;
+    load.gds = gds;
+    load.gmbs = gmbs;
+    load.gbs = gbs;
+    load.gbd = gbd;
+    load.limited = limited;
 
     const ceqbs = type * (cbs - gbs * vbs);
     const ceqbd = type * (cbd - gbd * vbd);
@@ -964,6 +1008,41 @@ export class MOS2 implements DeviceModel {
     g(nS, nG, -(xnrm - xrev) * gm);
     g(nS, nB, -gbs - (xnrm - xrev) * gmbs);
     g(nS, nD, -gds - xrev * (gm + gmbs));
+  }
+
+  /**
+   * Whether the last stamp limited a bulk junction with DEVpnjlim. As in
+   * ngspice (mos2load.c Check), Newton cannot converge on such an iterate.
+   */
+  limitedLastStamp(): boolean {
+    return this.lastLoad.limited;
+  }
+
+  /**
+   * ngspice-47 mos2conv.c: the drain current and the bulk junction currents
+   * predicted at the new Newton solution from the last load's linearisation
+   * must match the loaded currents within RELTOL * max + ABSTOL.
+   */
+  convergenceTest(solution: Float64Array, tolerances: ConvergenceTolerances): boolean {
+    const load = this.lastLoad;
+    const [vgs, vds, vbs] = this.terminalVoltages(node => (node >= 0 ? solution[node] : 0));
+    const vbd = vbs - vds;
+    const vgd = vgs - vds;
+    const delvbs = vbs - load.vbs;
+    const delvbd = vbd - load.vbd;
+    const delvgs = vgs - load.vgs;
+    const delvds = vds - load.vds;
+    const delvgd = vgd - (load.vgs - load.vds);
+    const cdhat = load.mode >= 0
+      ? load.cd - load.gbd * delvbd + load.gmbs * delvbs + load.gm * delvgs + load.gds * delvds
+      : load.cd - (load.gbd - load.gmbs) * delvbd - load.gm * delvgd + load.gds * delvds;
+    const { reltol, abstol } = tolerances;
+    if (Math.abs(cdhat - load.cd) >= reltol * Math.max(Math.abs(cdhat), Math.abs(load.cd)) + abstol) {
+      return false;
+    }
+    const cb = load.cbs + load.cbd;
+    const cbhat = cb + load.gbd * delvbd + load.gbs * delvbs;
+    return Math.abs(cbhat - cb) <= reltol * Math.max(Math.abs(cbhat), Math.abs(cb)) + abstol;
   }
 
   /** Meyer half capacitances [gs, gd, gb] at the given solution. */
@@ -1022,11 +1101,29 @@ export class MOS2 implements DeviceModel {
         const effective = charges.factor * charges.incrementalCapacitance(index, capacitance, true);
         stampChargeBranch(ctx, positive, negative, charges.current(index, charge), effective, voltage);
       } else {
-        stampChargeBranch(
-          ctx, positive, negative, charges.current(index, junctionCharges[index]),
-          charges.factor * capacitance, voltage,
-        );
+        const current = charges.current(index, junctionCharges[index]);
+        const conductance = charges.factor * capacitance;
+        stampChargeBranch(ctx, positive, negative, current, conductance, voltage);
+        this.foldJunctionChargeCurrent(index, current, conductance);
       }
+    }
+  }
+
+  /**
+   * mos2load.c folds the bulk junction charge currents into the junction
+   * currents the convergence test reads: cbd += cqbd, cd -= cqbd, gbd += geq
+   * (and cbs, gbs for the source junction). `current` is node-domain.
+   */
+  private foldJunctionChargeCurrent(index: number, current: number, conductance: number): void {
+    const load = this.lastLoad;
+    const deviceCurrent = this.model.polarity * current;
+    if (index === BULK_SOURCE) {
+      load.cbs += deviceCurrent;
+      load.gbs += conductance;
+    } else {
+      load.cbd += deviceCurrent;
+      load.cd -= deviceCurrent;
+      load.gbd += conductance;
     }
   }
 

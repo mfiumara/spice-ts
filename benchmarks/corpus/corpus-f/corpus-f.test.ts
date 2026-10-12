@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { describe, it } from 'node:test';
 import { resolve } from 'node:path';
 import { deserialize, serialize } from 'node:v8';
@@ -14,22 +16,32 @@ import {
   fixtureId,
   gapBucket,
   hostCommand,
+  corpusFPlotType,
   CURRENT_PEAK_FLOOR,
   MATCH_THRESHOLD,
   needsExternalInput,
   NGSPICE_ABSTOL,
   NGSPICE_VNTOL,
   normalizedSignalErrors,
+  pairedReferenceSeries,
   outcome,
   PEAK_FLOOR,
+  peakFloor,
+  scoredPlotTypes,
   VOLTAGE_PEAK_FLOOR,
   thirdPartyNotice,
 } from './lib.js';
-import { mergeReadme, outcomeDigest, packExecution, renderMarkdown, summarize, unpackExecution, type CorpusFReport } from './outcomes.js';
-import { CONTROL_SECTION, controlWrapperDeck, hasControlBlock, noReferenceNote, runControlReference } from './control-vectors.js';
+import { mergeReadme, outcomeDigest, packExecution, referenceSelection, renderMarkdown, runFixture, summarize, unpackExecution, type CorpusFReport } from './outcomes.js';
+import { controlPlotAnalyses, sensitivitySignalName } from './plot-adapter.js';
+import { parseRawLines } from './raw-stream.js';
+import { parseNgspiceRaw } from '../../comparison-harness.js';
+import { analysisType, type EngineExecution } from '../classic/report.js';
+import { compareExecutions } from '../../aggregate-report.js';
+import { CONTROL_SECTION, controlWrapperDeck, hasControlBlock, noReferenceNote, runControlReference, trackingIssue } from './control-vectors.js';
 
 const ROOT = 'benchmarks/corpus/corpus-f';
 const HAS_NGSPICE = spawnSync('ngspice', ['--version'], { encoding: 'utf8' }).status === 0;
+const HAS_CORE_DIST = existsSync('packages/core/dist/index.js');
 
 describe('corpus-f control wrapper (#521)', () => {
   it('sources a separate unchanged fixture and exports each declared type once', () => {
@@ -72,7 +84,7 @@ describe('corpus-f control wrapper (#521)', () => {
   });
   it('names why a successful ngspice run left no reference (#528)', () => {
     assert.match(noReferenceNote({ analyses: [], unmappedAnalyses: ['sens', 'sens'] }), /runs only sens analyses, which the comparison adapter does not map/);
-    assert.match(noReferenceNote({ analyses: ['tran'], unmappedAnalyses: [] }, ['tran.raw (ERR_STRING_TOO_LONG)']), /tran\.raw \(ERR_STRING_TOO_LONG\) could not be loaded/);
+    assert.match(noReferenceNote({ analyses: ['tran'], unmappedAnalyses: [] }, ['tran.raw (ERR_STRING_TOO_LONG)']), /tran\.raw \(ERR_STRING_TOO_LONG\) could not be read/);
     assert.match(noReferenceNote({ analyses: ['op'], unmappedAnalyses: [] }), /no plot of a declared analysis type was left to write/);
   });
   it('reports ngspice source failures rather than inventing a reference', { skip: !HAS_NGSPICE }, async () => {
@@ -209,6 +221,39 @@ describe('corpus-f outcome rules', () => {
     assert.equal(outcome({ ...base, ngspice: 'failed', spiceTs: 'failed', worstNormalized: null }), 'both-failed');
   });
 
+  it('normalises .noise integrated totals by their own ngspice value, not the floor (#774)', () => {
+    // ngspice-47 .noise emits two plots of type noise; the totals exist only in the second one.
+    const complex = (values: number[]) => values.map(re => ({ re, im: 0 }));
+    const spectrum = (scale: number) => ({ grid: [1, 10], signals: { inoise_spectrum: complex([2e-6 * scale, 1e-6 * scale]), onoise_spectrum: complex([3e-9 * scale, 2e-9 * scale]) } });
+    const totals = (input: number, output: number) => ({ grid: [0], signals: { 'v(inoise_total)': complex([input]), 'v(onoise_total)': complex([output]) } });
+    const ngspice = { analyses: [
+      { type: 'noise' as const, plotName: 'Noise Spectral Density Curves', series: spectrum(1) },
+      { type: 'noise' as const, plotName: 'Integrated Noise', series: totals(163.7749495863544, 2.5e-3) },
+    ] };
+    const relative = 1.74e-7;
+    const spiceTs = { analyses: [
+      { type: 'noise' as const, plotName: 'Noise Spectral Density Curves', series: spectrum(1 + relative) },
+      { type: 'noise' as const, plotName: 'Integrated Noise', series: totals(163.7749495863544 * (1 + relative), 2.5e-3 * (1 + relative)) },
+    ] };
+    const comparisons = compareExecutions(
+      { status: 'success', analyses: spiceTs.analyses } as unknown as EngineExecution,
+      { status: 'success', analyses: ngspice.analyses } as unknown as EngineExecution,
+    );
+    assert.equal(comparisons.length, 2);
+    const { errors, missing } = normalizedSignalErrors(comparisons, pairedReferenceSeries(spiceTs, ngspice));
+    assert.equal(missing, 0);
+    const scored = Object.fromEntries(errors.map(error => [error.signal, error]));
+    assert.deepEqual(Object.keys(scored).sort(), ['inoise_spectrum', 'onoise_spectrum', 'v(inoise_total)', 'v(onoise_total)']);
+    // Every signal, totals included, is scored relative to its own ngspice value: about 1.74e-7.
+    for (const error of errors) assert.ok(Math.abs(error.normalized - relative) < 1e-12, `${error.signal}: ${error.normalized}`);
+    assert.equal(scored['v(inoise_total)'].ngspicePeak, 163.7749495863544);
+    assert.equal(scored['v(onoise_total)'].ngspicePeak, 2.5e-3);
+    // The pre-#774 first-plot-of-type lookup divided the 2.85e-5 total error by the 1e-4 floor.
+    const firstPlot = normalizedSignalErrors(comparisons, analysis => ngspice.analyses.find(candidate => candidate.type === analysis)?.series);
+    const before = firstPlot.errors.find(error => error.signal === 'v(inoise_total)');
+    assert.ok(before && before.ngspicePeak === 0 && before.normalized > MATCH_THRESHOLD, JSON.stringify(before));
+  });
+
   it('scores zero and near-zero ngspice peaks against the ngspice VNTOL/ABSTOL absolute floor (#593)', () => {
     const zeros = [{ re: 0, im: 0 }, { re: 0, im: 0 }];
     const tiny = [{ re: 0, im: 0 }, { re: 1e-4, im: 0 }];
@@ -301,5 +346,160 @@ describe('corpus-f committed artifacts', () => {
     }
     assert.deepEqual(rows.map(row => /^\| \[([^\]]+)\]/.exec(row)?.[1]), expected);
     for (const row of rows.filter(line => line.includes(' | loss | '))) assert.match(row, /https:\/\/github.com\/mfiumara\/spice-ts\/issues\/\d+/);
+  });
+});
+
+describe('corpus-f sp/sens plots and streamed references (#694)', () => {
+  const RAW = [
+    'Title: toy', 'Date: today', 'Plotname: Transient Analysis', 'Flags: real', 'No. Variables: 3', 'No. Points: 3',
+    'Variables:', '\t0\ttime\ttime', '\t1\tV(1)\tvoltage', '\t2\ti(v1)\tcurrent', 'Values:',
+    ' 0\t0.000000e+00', '\t1.0', '\t-1e-3', '', ' 1\t1e-9', '\t2.5', '\t-2e-3', ' 2\t2e-9', '\t3', '\t-3e-3',
+    'Title: toy', 'Date: today', 'Plotname: SP Analysis', 'Flags: complex', 'No. Variables: 3', 'No. Points: 2',
+    'Variables:', '\t0\tfrequency\tfrequency grid=3', '\t1\ts_1_1\ts-param', '\t2\ti(cy_1_1)\tcurrent', 'Values:',
+    ' 0\t1.0e+06,0.0e+00', '\t0.5,-0.25', '\t1e-20,0', ' 1\t2.0e+06,0.0e+00', '\t0.4,-0.3', '\t2e-20,0',
+    'Title: toy', 'Plotname: Sensitivity Analysis', 'Flags: real', 'No. Variables: 2', 'No. Points: 1',
+    'Variables:', '\t0\tv(r1)\tvoltage', '\t1\tfail_count\tnotype', 'Values:', ' 0\t4.2e-02', '\t0',
+  ];
+
+  it('streams the same plots as parseNgspiceRaw, LF or CRLF', async () => {
+    const reference = parseNgspiceRaw(`${RAW.join('\n')}\n`);
+    for (const eol of ['\n', '\r\n']) {
+      const lines = RAW.join(eol).split(/\r?\n/);
+      const streamed = (await parseRawLines(lines)).map(({ points: _points, ...plot }) => plot);
+      assert.deepEqual(streamed, reference, JSON.stringify(eol));
+    }
+    // A truncated values section is padded like parseNgspiceRaw (Number('') = 0).
+    const truncated = RAW.slice(0, 17);
+    assert.deepEqual((await parseRawLines(truncated)).map(({ points: _points, ...plot }) => plot), parseNgspiceRaw(truncated.join('\n')));
+  });
+
+  it('keeps the grid and only the selected signals', async () => {
+    const plots = await parseRawLines(RAW, (plotName, signal) => plotName === 'SP Analysis' && signal === 's_1_1');
+    assert.deepEqual(plots.map(plot => [plot.plotName, plot.points, plot.grid, Object.keys(plot.signals)]), [
+      ['Transient Analysis', 3, [0, 1e-9, 2e-9], []],
+      ['SP Analysis', 2, [1e6, 2e6], ['s_1_1']],
+      ['Sensitivity Analysis', 1, [0], []],
+    ]);
+    assert.deepEqual(plots[1].signals.s_1_1, [{ re: 0.5, im: -0.25 }, { re: 0.4, im: -0.3 }]);
+  });
+
+  it('selects the union of signals over every spice-ts plot of a type', () => {
+    const series = (...names: string[]) => ({ grid: [1], signals: Object.fromEntries(names.map(name => [name, [{ re: 1, im: 0 }]])) });
+    const select = referenceSelection({ analyses: [
+      { type: 'noise', plotName: 'Noise Spectral Density Curves', series: series('onoise_spectrum') },
+      { type: 'noise', plotName: 'Integrated Noise', series: series('onoise_total') },
+      { type: 'ac', plotName: 'AC Analysis', series: series('v(1)') },
+    ] });
+    assert.equal(select('noise', 'onoise_spectrum'), true);
+    assert.equal(select('noise', 'onoise_total'), true);
+    assert.equal(select('noise', 'v(1)'), false);
+    assert.equal(select('ac', 'v(1)'), true);
+    assert.equal(select('tran', 'v(1)'), false);
+    assert.equal(referenceSelection({ analyses: [] })('op', 'v(1)'), false);
+  });
+
+  it('maps SP and sensitivity plots and scores them on the control decks only', () => {
+    assert.equal(corpusFPlotType('SP Analysis', analysisType), 'sp');
+    assert.equal(corpusFPlotType('Sensitivity Analysis', analysisType), 'sens');
+    assert.equal(corpusFPlotType('AC Analysis', analysisType), 'ac');
+    assert.equal(corpusFPlotType('Transfer Function', analysisType), null);
+    assert.deepEqual(scoredPlotTypes({ analyses: ['ac'], unmappedAnalyses: ['sp', 'tf', 'sens', 'sp'] }), ['ac', 'sp', 'sens']);
+    assert.deepEqual(scoredPlotTypes({ analyses: [], unmappedAnalyses: ['tf', 'pss'] }), []);
+    // Sensitivities are written as v(<device>) but are derivatives, not node voltages.
+    assert.equal(peakFloor('sens', 'v(r1)'), PEAK_FLOOR);
+    assert.equal(peakFloor('sp', 'v(in)'), VOLTAGE_PEAK_FLOOR);
+    assert.equal(peakFloor('sp', 's_1_1'), PEAK_FLOOR);
+  });
+
+  it('links the new sp/sens/linearize losses to their own issues (reporting only)', () => {
+    const loss = (firstErrorLine: string) => ({ outcome: 'spice-ts-loss', sourcePath: 'x.cir', ngspice: { status: 'success', analyses: ['sp:3'] }, spiceTs: { status: 'unsupported', analyses: [], firstErrorLine } }) as unknown as Parameters<typeof trackingIssue>[0];
+    const issue = (line: string) => trackingIssue(loss(line)).split('/').at(-1);
+    assert.equal(issue("Parse error at line 14: Unsupported .control command 'sp': S-parameter analysis is not implemented"), '750');
+    assert.equal(issue("Parse error at line 18: Unsupported .control command 'sens': control-language sensitivity"), '750');
+    assert.equal(issue("Control script error at line 15: no such vector 's_1_1' in plot 'sp1'"), '751');
+    assert.equal(issue("Control script error at line 50: no such vector 'i1_m' in plot 'sens1'"), '760');
+    assert.equal(issue("Control script error at line 50: no such vector 'r1_scale' in plot 'sens1'"), '760');
+    assert.equal(issue("Parse error at line 41: Unsupported .control command 'linearize': vector re-interpolation"), '752');
+    assert.equal(issue("Parse error at line 9: XSPICE code model 'cpline' (.model 'CPLINE1') is not supported"), '553');
+  });
+
+  it('names spice-ts sp/sens vectors as ngspice writes them and takes the first control run', () => {
+    const c = (real: number, imaginary = 0) => ({ real, imaginary });
+    const first = { sParameters: { frequencies: [1e6], vectors: new Map([['S_1_1', [c(0.5, -0.25)]], ['Cy_1_1', [c(1e-20)]], ['NF', [c(3)]]]) } };
+    const later = { sParameters: { frequencies: [2e6], vectors: new Map([['S_1_1', [c(0.1)]]]) } };
+    const sens = { mode: 'dc' as const, frequencies: [], entries: [
+      { device: 'R1', parameter: 'resistance' as const, dc: 0.042 },
+      { device: 'I1', parameter: 'dc' as const, dc: 1000 },
+      { device: 'E1', parameter: 'gain' as const, dc: 2 },
+    ] };
+    const result = { ...later, sensitivity: sens, control: { runs: [{ plot: 'sp1', analysis: 'sp', result: first }, { plot: 'sp2', analysis: 'sp', result: later }] } };
+    const [sp, sensitivity] = controlPlotAnalyses(result, ['sp', 'sens']);
+    assert.deepEqual(sp.series, { grid: [1e6], signals: { s_1_1: [{ re: 0.5, im: -0.25 }], 'i(cy_1_1)': [{ re: 1e-20, im: 0 }], nf: [{ re: 3, im: 0 }] } });
+    assert.deepEqual(sensitivity.series, { grid: [0], signals: { 'v(r1)': [{ re: 0.042, im: 0 }], 'v(i1)': [{ re: 1000, im: 0 }], 'v(e1_gain)': [{ re: 2, im: 0 }] } });
+    assert.equal(sensitivitySignalName({ device: 'R1', parameter: 'resistance' }, 'ac'), 'v(r1_ac)');
+    assert.equal(sensitivitySignalName({ device: 'V1', parameter: 'acMagnitude' }, 'ac'), 'v(v1_acmag)');
+    // #760: instance multiplier and scale, named like ngspice-47 writes them to a raw file.
+    assert.equal(sensitivitySignalName({ device: 'R1', parameter: 'multiplier' }, 'dc'), 'v(r1_m)');
+    assert.equal(sensitivitySignalName({ device: 'C1', parameter: 'scale' }, 'ac'), 'v(c1_scale)');
+    assert.deepEqual(controlPlotAnalyses({}, ['sp', 'sens']), []);
+  });
+
+  it('exports sp and sens plots from .control and keeps only selected signals', { skip: !HAS_NGSPICE }, async () => {
+    const sp = Buffer.from('sp toy\nV1 in 0 dc 0 ac 1 portnum 1 z0 50\nR1 in out 50\nV2 out 0 dc 0 ac 0 portnum 2 z0 50\n.control\nsp lin 3 1e6 3e6\nquit\n.endc\n.end\n');
+    const circuit = { analyses: [], unmappedAnalyses: ['sp'] };
+    const full = await runControlReference(sp, circuit);
+    assert.equal(full.status, 'success');
+    assert.deepEqual(full.execution.analyses.map(analysis => [analysis.type, analysis.series.grid]), [['sp', [1e6, 2e6, 3e6]]]);
+    const s21 = full.execution.analyses[0].series.signals.s_2_1;
+    assert.ok(Math.abs(s21[0].re - 2 / 3) < 1e-9, `S21 of a 50 ohm series resistor between 50 ohm ports is 2/3, got ${s21[0].re}`);
+    const selected = await runControlReference(sp, circuit, (type, signal) => type === 'sp' && signal === 's_1_1');
+    assert.deepEqual(Object.keys(selected.execution.analyses[0].series.signals), ['s_1_1']);
+    const none = await runControlReference(sp, circuit, () => false);
+    assert.equal(none.status, 'success');
+    assert.deepEqual(none.execution.analyses[0].series, { grid: [1e6, 2e6, 3e6], signals: {} });
+
+    const sens = await runControlReference(Buffer.from('sens toy\ni1 0 1 dc=42mA\nr1 1 0 1k\n.control\nsens v(1) dc\n.endc\n.end\n'), { analyses: [], unmappedAnalyses: ['sens'] });
+    assert.equal(sens.status, 'success');
+    assert.equal(sens.execution.analyses[0].type, 'sens');
+    // dv(1)/dR1 = 42 mA and dv(1)/dI1 = 1 k; ngspice's finite difference gives 0.04199996 for the former.
+    assert.ok(Math.abs(sens.execution.analyses[0].series.signals['v(r1)'][0].re / 0.042 - 1) < 1e-5);
+    assert.ok(Math.abs(sens.execution.analyses[0].series.signals['v(i1)'][0].re / 1000 - 1) < 1e-5);
+  });
+
+  it('scores sp and sens control commands against ngspice on identical bytes (#750)', { skip: !HAS_NGSPICE || !HAS_CORE_DIST }, async () => {
+    const directory = await mkdtemp(resolve(tmpdir(), 'corpus-f-750-'));
+    try {
+      const decks = {
+        sp: 'sp command\nV1 in 0 dc 0 ac 1 portnum 1 z0 50\nC1 in 0 1n\nR1 in out 20\nV2 out 0 dc 0 ac 0 portnum 2 z0 50\n.control\nsp lin 5 1e6 1e8\n.endc\n.end\n',
+        sens: 'sens command\ni1 0 1 dc=1.27 ac=42mA\nr1 1 0 1k\nc1 1 0 100p\n.control\nsens v(1) ac lin 1 1e6 1.1e6\nquit\n.endc\n.end\n',
+      };
+      for (const [type, text] of Object.entries(decks)) {
+        const bytes = Buffer.from(text);
+        const localPath = resolve(directory, `${type}.cir`);
+        await writeFile(localPath, bytes);
+        const circuit = { id: type, sourcePath: `toy/${type}.cir`, localPath, sha256: sha256(bytes), analyses: [], unmappedAnalyses: [type], sameNameAs: [] } as unknown as CorpusFManifest['circuits'][number];
+        const fixture = await runFixture({ ...circuit, analyses: scoredPlotTypes(circuit) }, runControlReference);
+        assert.equal(fixture.outcome, 'matched', JSON.stringify(fixture));
+        assert.ok(fixture.comparedSignals >= (type === 'sp' ? 12 : 3), `${type}: compared ${fixture.comparedSignals}`);
+      }
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it('scores a dot-card .sp deck run from .control against ngspice (identical bytes)', { skip: !HAS_NGSPICE || !HAS_CORE_DIST }, async () => {
+    const directory = await mkdtemp(resolve(tmpdir(), 'corpus-f-694-'));
+    try {
+      const bytes = Buffer.from('sp e2e\nV1 in 0 dc 0 ac 1 portnum 1 z0 50\nC1 in 0 1n\nR1 in out 20\nV2 out 0 dc 0 ac 0 portnum 2 z0 50\n.sp lin 5 1e6 1e8\n.control\nrun\n.endc\n.end\n');
+      const localPath = resolve(directory, 'sp-e2e.cir');
+      await writeFile(localPath, bytes);
+      const circuit = { id: 'sp-e2e', sourcePath: 'toy/sp-e2e.cir', localPath, sha256: sha256(bytes), analyses: [], unmappedAnalyses: ['sp'], sameNameAs: [] } as unknown as CorpusFManifest['circuits'][number];
+      const fixture = await runFixture({ ...circuit, analyses: scoredPlotTypes(circuit) }, runControlReference);
+      assert.equal(fixture.outcome, 'matched', JSON.stringify(fixture));
+      assert.ok(fixture.comparedSignals >= 12, `S/Y/Z vectors compared, got ${fixture.comparedSignals}`);
+      assert.equal(sha256(await readFile(localPath)), sha256(bytes));
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
   });
 });

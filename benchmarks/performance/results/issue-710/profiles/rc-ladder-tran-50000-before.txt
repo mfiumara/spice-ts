@@ -1,0 +1,29 @@
+/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//p710before/rc-ladder-tran-50000.cpuprofile: 881 samples, 3063.7 ms sampled
+
+Top self time
+     299.2 ms   9.8%  attemptStep packages/core/dist/chunk-S7ERMMP5.js:30102
+     290.0 ms   9.5%  (garbage collector)
+     260.5 ms   8.5%  stampStaticDevices packages/core/dist/chunk-S7ERMMP5.js:29418
+     234.0 ms   7.6%  buildCompanionSystem packages/core/dist/chunk-S7ERMMP5.js:29926
+     207.7 ms   6.8%  stampDynamicDevices packages/core/dist/chunk-S7ERMMP5.js:29459
+     203.3 ms   6.6%  evaluate packages/core/dist/chunk-S7ERMMP5.js:30525
+     107.8 ms   3.5%  flush packages/core/dist/chunk-S7ERMMP5.js:31426
+      95.8 ms   3.1%  lockTopology packages/core/dist/chunk-S7ERMMP5.js:28955
+      94.0 ms   3.1%  compile packages/core/dist/chunk-S7ERMMP5.js:22898
+      58.6 ms   1.9%  factorize packages/core/dist/chunk-S7ERMMP5.js:28377
+      57.3 ms   1.9%  refactorWithPivots packages/core/dist/chunk-S7ERMMP5.js:28594
+      51.1 ms   1.7%  acceptAll packages/core/dist/chunk-S7ERMMP5.js:2947
+
+Top inclusive time
+    3063.7 ms 100.0%  (root)
+    2606.0 ms  85.1%  simulate packages/core/dist/chunk-S7ERMMP5.js:36368
+    2274.7 ms  74.2%  solveCompiledAnalyses packages/core/dist/chunk-S7ERMMP5.js:36423
+    2043.2 ms  66.7%  solveTransient packages/core/dist/chunk-S7ERMMP5.js:31444
+    1814.9 ms  59.2%  advanceSolution packages/core/dist/chunk-S7ERMMP5.js:30729
+    1371.7 ms  44.8%  attemptStep packages/core/dist/chunk-S7ERMMP5.js:30102
+     762.0 ms  24.9%  buildCompanionSystem packages/core/dist/chunk-S7ERMMP5.js:29926
+     370.6 ms  12.1%  stampStaticDevices packages/core/dist/chunk-S7ERMMP5.js:29418
+     290.0 ms   9.5%  (garbage collector)
+     242.5 ms   7.9%  stampDynamicDevices packages/core/dist/chunk-S7ERMMP5.js:29459
+     229.2 ms   7.5%  parseAsync packages/core/dist/chunk-S7ERMMP5.js:26818
+     222.0 ms   7.2%  solveDCOperatingPoint packages/core/dist/chunk-S7ERMMP5.js:29730

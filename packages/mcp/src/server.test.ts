@@ -33,11 +33,41 @@ describe('bounded protocol-v1 tools', () => {
         defaultChunkPoints: 256,
         maxChunkPoints: 1024,
         maxRetainedJobs: 16,
+        maxConcurrentJobs: 2,
         runningJobTtlMs: 30_000,
-        terminalJobTtlMs: 60_000,
+        terminalJobTtlMs: 300_000,
         maxUnreadEvents: 256,
         maxUnreadBytes: 1024 * 1024,
       },
+    });
+  });
+
+  it('reports exactly the limits published in the architecture doc (#792)', async () => {
+    const doc = await readFile(
+      fileURLToPath(new URL('../../../docs/architecture/ai-native-api.md', import.meta.url)),
+      'utf8',
+    );
+    const documented = new Map<string, number>();
+    for (const match of doc.matchAll(/^\| `((?:limits|streaming)\.[A-Za-z]+)` \| ([\d,]+) /gm)) {
+      documented.set(match[1]!, Number(match[2]!.replaceAll(',', '')));
+    }
+    const reported = (await executeTool('spice_capabilities', {})).structuredContent as {
+      limits: Record<string, number>;
+      streaming: Record<string, number>;
+    };
+    const effective = new Map<string, number>([
+      ...Object.entries(reported.limits).map(([key, value]) => [`limits.${key}`, value] as const),
+      ...Object.entries(reported.streaming).map(([key, value]) => [`streaming.${key}`, value] as const),
+    ]);
+
+    expect(Object.fromEntries(documented)).toEqual(Object.fromEntries(effective));
+  });
+
+  it('reports configured stream limits, including the concurrent-job quota', async () => {
+    const execute = createToolExecutor({ streamLimits: { maxConcurrentJobs: 5, terminalJobTtlMs: 7 } });
+    const reported = await execute('spice_capabilities', {});
+    expect(reported.structuredContent).toMatchObject({
+      streaming: { maxConcurrentJobs: 5, terminalJobTtlMs: 7, runningJobTtlMs: 30_000 },
     });
   });
 
@@ -711,7 +741,11 @@ describe('bounded protocol-v1 tools', () => {
   it('bounds retained unfinished jobs and evicts the oldest terminal job', async () => {
     const request = await fixture<SimulationRequestV1>('simulate-request.json');
     const result = await fixture<SimulationResultV1>('simulate-response.json');
-    const execute = createToolExecutor({ simulate: async () => result });
+    // Lift the running quota to the retention cap so retention, not concurrency, binds.
+    const execute = createToolExecutor({
+      simulate: async () => result,
+      streamLimits: { maxConcurrentJobs: 16 },
+    });
     const starts = [];
     for (let index = 0; index < 16; index++) {
       starts.push(await execute('spice_simulation_start', { request }));
@@ -935,6 +969,146 @@ describe('bounded protocol-v1 tools', () => {
       isError: true,
       structuredContent: { error: { code: 'INVALID_REQUEST' } },
     });
+  });
+});
+
+describe('concurrent running-job quota (#792)', () => {
+  const quotaFailure = (observed: number, configured = 2) => ({
+    isError: true,
+    structuredContent: {
+      error: {
+        code: 'RESOURCE_LIMIT', phase: 'transport', retryable: true,
+        details: {
+          limit: 'maxConcurrentJobs',
+          configured, observed, maximum: configured, actual: observed,
+        },
+      },
+    },
+  });
+
+  /** A simulate stub whose calls stay pending until released one by one. */
+  function pendingSimulations(result: SimulationResultV1) {
+    const resolvers: Array<(outcome: SimulationResultV1 | Error) => void> = [];
+    const simulate = vi.fn(() => new Promise<SimulationResultV1>((resolve, reject) => {
+      resolvers.push(outcome => outcome instanceof Error ? reject(outcome) : resolve(outcome));
+    }));
+    return {
+      simulate,
+      complete: (index: number) => resolvers[index]!(result),
+      fail: (index: number) => resolvers[index]!(new Error('private failure')),
+    };
+  }
+
+  it('rejects a third concurrent start with a structured RESOURCE_LIMIT', async () => {
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const result = await fixture<SimulationResultV1>('simulate-response.json');
+    const { simulate } = pendingSimulations(result);
+    const execute = createToolExecutor({ simulate });
+
+    const first = await execute('spice_simulation_start', { request });
+    const second = await execute('spice_simulation_start', { request });
+    const third = await execute('spice_simulation_start', { request });
+
+    expect(first.isError).not.toBe(true);
+    expect(second.isError).not.toBe(true);
+    expect(third).toMatchObject(quotaFailure(3));
+    expect(simulate).toHaveBeenCalledTimes(2);
+  });
+
+  it('frees a slot when a running job is cancelled or completes', async () => {
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const result = await fixture<SimulationResultV1>('simulate-response.json');
+    const { simulate, complete } = pendingSimulations(result);
+    const execute = createToolExecutor({ simulate });
+
+    const first = await execute('spice_simulation_start', { request });
+    await execute('spice_simulation_start', { request });
+    expect(await execute('spice_simulation_start', { request })).toMatchObject(quotaFailure(3));
+
+    await execute('spice_simulation_cancel', { jobId: (first.structuredContent as { jobId: string }).jobId });
+    const afterCancel = await execute('spice_simulation_start', { request });
+    expect(afterCancel.isError).not.toBe(true);
+    expect(await execute('spice_simulation_start', { request })).toMatchObject(quotaFailure(3));
+
+    complete(1);
+    await flushMicrotasks();
+    const afterCompletion = await execute('spice_simulation_start', { request });
+    expect(afterCompletion.isError).not.toBe(true);
+    expect(await execute('spice_simulation_start', { request })).toMatchObject(quotaFailure(3));
+  });
+
+  it('frees a slot when a running job fails or its running TTL expires', async () => {
+    const clock = new ManualClock();
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const result = await fixture<SimulationResultV1>('simulate-response.json');
+    const { simulate, fail } = pendingSimulations(result);
+    const execute = createToolExecutor({
+      clock, simulate, streamLimits: { runningJobTtlMs: 40 },
+    });
+
+    await execute('spice_simulation_start', { request });
+    clock.advanceBy(10);
+    await execute('spice_simulation_start', { request });
+    fail(1);
+    await flushMicrotasks();
+    expect((await execute('spice_simulation_start', { request })).isError).not.toBe(true);
+    expect(await execute('spice_simulation_start', { request })).toMatchObject(quotaFailure(3));
+
+    clock.advanceBy(30);
+    expect((await execute('spice_simulation_start', { request })).isError).not.toBe(true);
+  });
+
+  it('counts one-shot spice_simulate calls against the same quota', async () => {
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const result = await fixture<SimulationResultV1>('simulate-response.json');
+    const { simulate, complete } = pendingSimulations(result);
+    const execute = createToolExecutor({ simulate });
+
+    await execute('spice_simulation_start', { request });
+    const oneShot = execute('spice_simulate', { request });
+    await vi.waitFor(() => expect(simulate).toHaveBeenCalledTimes(2));
+    expect(await execute('spice_simulate', { request })).toMatchObject(quotaFailure(3));
+    expect(await execute('spice_simulation_start', { request })).toMatchObject(quotaFailure(3));
+
+    complete(1);
+    expect((await oneShot).structuredContent).toEqual(result);
+    const next = execute('spice_simulate', { request });
+    await vi.waitFor(() => expect(simulate).toHaveBeenCalledTimes(3));
+    complete(2);
+    expect((await next).structuredContent).toEqual(result);
+  });
+
+  it('frees a one-shot slot when the simulation fails', async () => {
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const result = await fixture<SimulationResultV1>('simulate-response.json');
+    const { simulate, fail } = pendingSimulations(result);
+    const execute = createToolExecutor({ simulate, streamLimits: { maxConcurrentJobs: 1 } });
+
+    const failing = execute('spice_simulate', { request });
+    await vi.waitFor(() => expect(simulate).toHaveBeenCalledOnce());
+    expect(await execute('spice_simulation_start', { request })).toMatchObject(quotaFailure(2, 1));
+    fail(0);
+    expect((await failing).isError).toBe(true);
+    expect((await execute('spice_simulation_start', { request })).isError).not.toBe(true);
+  });
+
+  it('does not count validation or rejected requests as running jobs', async () => {
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const result = await fixture<SimulationResultV1>('simulate-response.json');
+    const { simulate } = pendingSimulations(result);
+    const validate = vi.fn(async () => ({
+      status: 'valid', nodeCount: 2, branchCount: 1, analysisCount: 1,
+    })) as never;
+    const execute = createToolExecutor({ simulate, validate });
+
+    for (let index = 0; index < 3; index++) {
+      expect((await execute('spice_validate', { request })).isError).not.toBe(true);
+      expect(await execute('spice_simulation_start', {
+        request: { ...request, options: { limits: { maxResultPoints: 0 } } },
+      })).toMatchObject({ structuredContent: { error: { details: { limit: 'maxResultPoints' } } } });
+    }
+    expect((await execute('spice_simulation_start', { request })).isError).not.toBe(true);
+    expect((await execute('spice_simulation_start', { request })).isError).not.toBe(true);
   });
 });
 

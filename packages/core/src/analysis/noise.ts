@@ -7,6 +7,7 @@ import { Diode } from '../devices/diode.js';
 import { HFET1 } from '../devices/hfet1.js';
 import { JFET } from '../devices/jfet.js';
 import { MOS2 } from '../devices/mos2.js';
+import { MOS3 } from '../devices/mos3.js';
 import { MOSFET } from '../devices/mosfet.js';
 import { Resistor } from '../devices/resistor.js';
 import { SwitchBase } from '../devices/switch.js';
@@ -22,9 +23,27 @@ import type { NoiseAnalysis, ResolvedOptions } from '../types.js';
 const BOLTZMANN_CONSTANT = 1.380649e-23;
 const ELEMENTARY_CHARGE = 1.602176634e-19;
 const DEFAULT_TEMPERATURE_KELVIN = 273.15 + 27;
+/** ngspice-47 noisedef.h: the smallest |gain|^2 input-referred noise divides by (#767). */
+const N_MINGAIN = 1e-20;
+/**
+ * BJT model parameters whose effect on .noise matches ngspice-47. bjtnoise.c
+ * sources are RC/RB/RE thermal, cc/cb shot and KF/AF flicker noise; everything
+ * else here only shapes the operating point (cc, cb) or the bjtacld.c
+ * small-signal transfer (capacitances, transit times, Early voltages), which
+ * the DC solve and the AC stamp already model (#736). The substrate diode has
+ * no bjtnoise.c source and no bjtacld.c conductance, so ISS/NS and the CJS
+ * junction only act through the operating point and the substrate capacitance;
+ * TNOM, XTI, XTB and EG only move the bjttemp.c parameters those solves use,
+ * and Circuit rejects .options TEMP with .noise (27 C sources) (#767).
+ * RBM/IRB (bias-dependent gx noise) stay rejected.
+ */
 const BJT_NOISE_MODEL_PARAMETERS = new Set([
-  'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'IKF', 'ISE', 'NE', 'RB', 'RC', 'RE',
-  'KF', 'AF', 'polarity',
+  'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'VA', 'IKF', 'IK', 'ISE', 'C2', 'NE',
+  'VAR', 'VB', 'IKR', 'ISC', 'C4', 'NC', 'NKF', 'NK', 'RB', 'RC', 'RE', 'KF', 'AF',
+  'CJE', 'VJE', 'PE', 'MJE', 'ME', 'TF', 'XTF', 'VTF', 'ITF',
+  'CJC', 'VJC', 'PC', 'MJC', 'MC', 'XCJC', 'TR', 'FC',
+  'XTI', 'XTB', 'EG', 'polarity',
+  'ISS', 'NS', 'CJS', 'CSUB', 'CCS', 'VJS', 'PS', 'MJS', 'MS', 'SUBS', 'TNOM', 'TREF',
 ]);
 
 /** Reject devices whose noise sources are not part of the bounded slice. */
@@ -57,6 +76,8 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
     else if (device instanceof ClassicBsimMosfet) kind = `MOSFET ${device.setup.kind}`;
     // mos2noi.c is not ported; reject rather than treat the MOS2 channel as noiseless.
     else if (device instanceof MOS2) kind = 'MOSFET level 2';
+    // mos3noi.c / mos9noi.c are not ported either.
+    else if (device instanceof MOS3) kind = `MOSFET level ${device.model.level}`;
     // ngspice HFETA has no noise routine, so its RD/RS are noiseless; reject
     // rather than add thermal noise from the expanded series resistors.
     else if (device instanceof HFET1) kind = 'HFET';
@@ -195,8 +216,8 @@ export function solveNoise(
     .filter((device): device is MOSFET => device instanceof MOSFET)
     .flatMap(mosfet => {
       const operatingPoint = mosfet.noiseOperatingPoint(dcSolution);
-      const { W, KF, AF, TOX } = mosfet.params;
-      // mos1noi.c: the flicker density divides by W * (L - 2*LD).
+      const { W, KF, AF, TOX, M } = mosfet.params;
+      // mos1noi.c (NLEV=2): KF * gm^2 / M over W * (L - 2*LD); gm already carries M.
       const L = mosfet.effectiveLength;
       const oxideCapacitance = 3.9 * 8.854214871e-12 / (TOX ?? 1e-7);
       const sources = [{
@@ -211,7 +232,7 @@ export function solveNoise(
           negative: operatingPoint.sourceNode,
           currentPowerDensity: (frequency: number) => KF
             * operatingPoint.transconductance * operatingPoint.transconductance
-            / (Math.pow(frequency, AF) * W * L * oxideCapacitance),
+            / (M * Math.pow(frequency, AF) * W * L * oxideCapacitance),
         });
       }
       return sources;
@@ -299,7 +320,8 @@ export function solveNoise(
         `.noise input source '${analysis.inputSource}' has zero gain to '${outputName}'`,
       );
     }
-    gainSquaredInverse.push(1 / (gain * gain));
+    // ngspice-47 noisean.c: GainSqInv = 1 / MAX(|gain|^2, N_MINGAIN).
+    gainSquaredInverse.push(1 / Math.max(gain * gain, N_MINGAIN));
 
     let outputPowerDensity = 0;
     for (let index = 0; index < noiseSources.length; index++) {
@@ -332,7 +354,7 @@ export function solveNoise(
 
     const outputDensity = Math.sqrt(outputPowerDensity);
     outputNoiseDensity.push(outputDensity);
-    inputNoiseDensity.push(outputDensity / gain);
+    inputNoiseDensity.push(outputDensity * Math.sqrt(gainSquaredInverse[gainSquaredInverse.length - 1]));
   }
 
   const integratedOutputNoise = hasIntegratedTotals
@@ -367,6 +389,7 @@ function isSemiconductorNoiseDevice(device: CompiledCircuit['devices'][number]):
     || device instanceof JFET
     || device instanceof MOSFET
     || device instanceof MOS2
+    || device instanceof MOS3
     || device instanceof BSIM3v3;
 }
 

@@ -13,6 +13,10 @@ export interface ResolvedPassiveValue {
    * load. The XSPICE cmeter/lmeter read this, as cmmeters.c does.
    */
   unitValue: number;
+  /** Instance parallel multiplier m as the load applies it (ngspice CAPm / INDm). */
+  multiplier: number;
+  /** Instance SCALE, already folded into `value` and `unitValue`. */
+  scale: number;
   params: Record<string, number>;
 }
 
@@ -218,6 +222,8 @@ export function resolveCapacitorModel(
   return {
     value: capacitance,
     unitValue: cUnit * factor,
+    multiplier: m,
+    scale: s,
     capacitance,
     seriesResistance: resolveCapacitorSeriesResistance(capacitance, params),
     seriesInductance: scaledCapSeries(firstParam(params, ['ESL', 'LSER', 'LS']), params),
@@ -232,7 +238,13 @@ export function resolveCapacitance(
   instanceParams?: Record<string, number>,
 ): ResolvedPassiveValue {
   const resolved = resolveCapacitorModel(instanceValue, model, instanceParams);
-  return { value: resolved.capacitance, unitValue: resolved.unitValue, params: resolved.params };
+  return {
+    value: resolved.capacitance,
+    unitValue: resolved.unitValue,
+    multiplier: resolved.multiplier,
+    scale: resolved.scale,
+    params: resolved.params,
+  };
 }
 
 export function resolveInductorModel(
@@ -278,6 +290,8 @@ export function resolveInductorModel(
   return {
     value: inductance,
     unitValue: lUnit * factor,
+    multiplier: divisor,
+    scale: s,
     inductance,
     seriesResistance: resolveInductorSeriesResistance(inductance, params),
     parallelResistance: resolveInductorParallelResistance(params),
@@ -292,5 +306,11 @@ export function resolveInductance(
   instanceParams?: Record<string, number>,
 ): ResolvedPassiveValue {
   const resolved = resolveInductorModel(instanceValue, model, instanceParams);
-  return { value: resolved.inductance, unitValue: resolved.unitValue, params: resolved.params };
+  return {
+    value: resolved.inductance,
+    unitValue: resolved.unitValue,
+    multiplier: resolved.multiplier,
+    scale: resolved.scale,
+    params: resolved.params,
+  };
 }

@@ -27,7 +27,11 @@ export interface GilbertPeierlsOptions {
  * circuit topology while numeric factorization runs every Newton-Raphson step.
  *
  * The factorization uses a left-looking column-Crout algorithm with a dense
- * workspace vector of length n (instead of an n*n dense matrix). The symbolic
+ * workspace vector of length n (instead of an n*n dense matrix). Runs of
+ * consecutive L columns with nested patterns (supernodes, the separators of
+ * mesh-like circuits) are packed into row-major blocks as they are produced
+ * and applied to later columns a block at a time, with the same operations
+ * in the same order as column by column. The symbolic
  * phase sizes the initial factor buffers from the CSC structure. Numeric fill
  * and row pivoting can exceed that estimate, so those arrays grow on demand and
  * retain their enlarged capacity for pattern reuse.
@@ -85,6 +89,26 @@ export class GilbertPeierlsSolver implements SparseSolver {
   private natPos!: Int32Array;            // final position of step j's preferred row
   private zeroPtr!: Int32Array;           // CSC pointers into zeroRows per column
   private zeroRows = new Int32Array(16);  // touched positions whose value was exactly zero
+
+  // Supernodes of L built during a full factorization (see startSupernode).
+  // Indexed by the first column s0 of a supernode; valid for one factorize().
+  private snStart!: Int32Array;           // first column of the supernode holding column k
+  private snEnd!: Int32Array;             // last packed column of a supernode, or -1
+  private snRowPtr!: Int32Array;          // offset of its rows (those of L[:,s0]) in snRows
+  private snLen!: Int32Array;             // number of those rows
+  private snWidth!: Int32Array;           // value slots per block row (>= members)
+  private snValPtr!: Int32Array;          // offset of its row-major value block in snValues
+  private snMark!: Int32Array;            // row stamps for the supernode link test
+  private snPos!: Int32Array;             // row -> block row, while a block is built
+  private snApplied!: Int32Array;         // members applied to the current column
+  private snAppliedU!: Float64Array;      // their U values
+  private snRows = new Int32Array(16);
+  private snValues = new Float64Array(16);
+  private snRowsUsed = 0;
+  private snValuesUsed = 0;
+  private supernodeCount = 0;
+  // [up, nonzeroCount, activeCount] handed between factorize and applySupernode
+  private readonly kernelState = new Int32Array(3);
 
   private readonly pivotThreshold = 0.1;
 
@@ -144,6 +168,16 @@ export class GilbertPeierlsSolver implements SparseSolver {
     this.activeK = new Int32Array(n);
     this.natPos = new Int32Array(n);
     this.zeroPtr = new Int32Array(n + 1);
+    this.snStart = new Int32Array(n);
+    this.snEnd = new Int32Array(n);
+    this.snRowPtr = new Int32Array(n);
+    this.snLen = new Int32Array(n);
+    this.snWidth = new Int32Array(n);
+    this.snValPtr = new Int32Array(n);
+    this.snMark = new Int32Array(n);
+    this.snPos = new Int32Array(n);
+    this.snApplied = new Int32Array(n);
+    this.snAppliedU = new Float64Array(n);
     this.workspaceDirty = false;
 
     this.analyzed = true;
@@ -162,6 +196,15 @@ export class GilbertPeierlsSolver implements SparseSolver {
   /** Numeric factorizations that reused the previous pivot sequence. Diagnostics only. */
   get pivotReuseFactorizations(): number {
     return this.refactorCount;
+  }
+
+  /**
+   * Supernodal column updates in the last full factorization: times a run of
+   * two or more consecutive L columns with nested patterns was applied to a
+   * later column as one block. Diagnostics only.
+   */
+  get supernodalUpdates(): number {
+    return this.supernodeCount;
   }
 
   /**
@@ -276,6 +319,15 @@ export class GilbertPeierlsSolver implements SparseSolver {
     perm.set(this.rowPref);
     pinv.fill(-1);
     nonzeroFlag.fill(-1);
+    const snStart = this.snStart;
+    const snEnd = this.snEnd;
+    const snMark = this.snMark;
+    const kernelState = this.kernelState;
+    snEnd.fill(-1);
+    snMark.fill(-1);
+    this.snRowsUsed = 0;
+    this.snValuesUsed = 0;
+    this.supernodeCount = 0;
 
     let lp = 0;
     let up = 0;
@@ -340,6 +392,26 @@ export class GilbertPeierlsSolver implements SparseSolver {
 
         const ukj = workspace[perm[k]];
         if (ukj === 0) continue;
+
+        // Column k starts the remaining packed members of a supernode: apply
+        // them as one block (bit-identical to applying them one by one here).
+        const snLast = snEnd[snStart[k]];
+        if (snLast > k) {
+          // Every key in (k, snLast] is a member; the block applies them.
+          while (activeCount > 0 && activeK[0] <= snLast) {
+            activeCount = heapPopMin(activeK, activeCount);
+          }
+          kernelState[0] = up;
+          kernelState[1] = nonzeroCount;
+          kernelState[2] = activeCount;
+          this.applySupernode(k, snLast, settled, dormant);
+          up = kernelState[0];
+          nonzeroCount = kernelState[1];
+          activeCount = kernelState[2];
+          uRows = this.uRows;
+          uValues = this.uValues;
+          continue;
+        }
 
         // Store U[k,j]
         if (up === uValues.length) {
@@ -473,6 +545,33 @@ export class GilbertPeierlsSolver implements SparseSolver {
         }
       }
 
+      // Supernode bookkeeping: column j extends the supernode of column j-1
+      // when L[:,j-1] holds exactly the new pivot row plus the rows of L[:,j].
+      // The supernode's block is packed as it grows, so later columns (from
+      // j+1 on) can apply it whether or not it grows further.
+      let linked = false;
+      if (j > 0) {
+        const prevStart = lColPtr[j - 1];
+        const prevEnd = lColPtr[j];
+        if (prevEnd - prevStart === lp - prevEnd + 1) {
+          for (let p = prevStart; p < prevEnd; p++) snMark[lRows[p]] = j;
+          if (snMark[chosenOrigRow] === j) {
+            linked = true;
+            for (let p = prevEnd; p < lp; p++) {
+              if (snMark[lRows[p]] !== j) { linked = false; break; }
+            }
+          }
+        }
+      }
+      if (linked) {
+        const s0 = snStart[j - 1];
+        snStart[j] = s0;
+        if (s0 === j - 1) this.startSupernode(s0);
+        this.extendSupernode(s0, j, lp);
+      } else {
+        snStart[j] = j;
+      }
+
       // === Step 5: CLEAR workspace (only touched positions) ===
       for (let t = 0; t < nonzeroCount; t++) {
         workspace[nonzeroList[t]] = 0;
@@ -508,6 +607,278 @@ export class GilbertPeierlsSolver implements SparseSolver {
     this.factorized = true;
     this.numericCount++;
     this.recordFactoredInput(A);
+  }
+
+  /**
+   * Start packing the supernode whose first column is s0, from L[:,s0].
+   *
+   * A supernode is a run of columns s0..last whose L columns are nested:
+   * L[:,s0+m] is L[:,s0] without the pivot rows of columns s0+1..s0+m. Its
+   * block holds the rows of L[:,s0] row-major, `snWidth[s0]` slots per row
+   * (slot m = the entry in column s0+m). The rows below the supernode come
+   * first, in any order; the pivot row of member m is row len - m. Slots of a
+   * member row at or after its own column are never read.
+   */
+  private startSupernode(s0: number): void {
+    const lColPtr = this.lColPtr;
+    const lRows = this.lRows;
+    const lValues = this.lValues;
+    const pos = this.snPos;
+    const len = lColPtr[s0 + 1] - lColPtr[s0];
+    const width = Math.min(len + 1, 4);
+    const rowPtr = this.snRowsUsed;
+    const valPtr = this.snValuesUsed;
+    this.reserveSupernode(rowPtr + len, valPtr + len * width);
+    const snRows = this.snRows;
+    const snValues = this.snValues;
+    for (let i = 0, p = lColPtr[s0]; i < len; i++, p++) {
+      const row = lRows[p];
+      snRows[rowPtr + i] = row;
+      pos[row] = i;
+      snValues[valPtr + i * width] = lValues[p];
+    }
+    this.snEnd[s0] = s0;
+    this.snRowPtr[s0] = rowPtr;
+    this.snLen[s0] = len;
+    this.snValPtr[s0] = valPtr;
+    this.snWidth[s0] = width;
+    this.snRowsUsed = rowPtr + len;
+    this.snValuesUsed = valPtr + len * width;
+  }
+
+  /**
+   * Append column c to supernode s0. Only the most recently started
+   * supernode can grow, so its block is the tail of the pools.
+   */
+  private extendSupernode(s0: number, c: number, columnEnd: number): void {
+    const m = c - s0;
+    const len = this.snLen[s0];
+    const rowPtr = this.snRowPtr[s0];
+    const valPtr = this.snValPtr[s0];
+    let width = this.snWidth[s0];
+    if (m >= width) {
+      // Widen in place, last row first, so no row overwrites an unread one.
+      const wider = Math.min(len + 1, 2 * width);
+      this.reserveSupernode(rowPtr + len, valPtr + len * wider);
+      const values = this.snValues;
+      for (let i = len - 1; i >= 0; i--) {
+        for (let slot = m - 1; slot >= 0; slot--) {
+          values[valPtr + i * wider + slot] = values[valPtr + i * width + slot];
+        }
+      }
+      width = wider;
+      this.snWidth[s0] = width;
+      this.snValuesUsed = valPtr + len * width;
+    }
+    const snRows = this.snRows;
+    const snValues = this.snValues;
+    const pos = this.snPos;
+
+    // Swap the new member's pivot row into its slot, the last row below.
+    const pivotRow = this.perm[c];
+    const from = pos[pivotRow];
+    const to = len - m;
+    if (from !== to) {
+      const other = snRows[rowPtr + to];
+      snRows[rowPtr + to] = pivotRow;
+      snRows[rowPtr + from] = other;
+      pos[pivotRow] = to;
+      pos[other] = from;
+      for (let slot = 0; slot < m; slot++) {
+        const a = valPtr + from * width + slot;
+        const b = valPtr + to * width + slot;
+        const value = snValues[a];
+        snValues[a] = snValues[b];
+        snValues[b] = value;
+      }
+    }
+
+    const lColPtr = this.lColPtr;
+    const lRows = this.lRows;
+    const lValues = this.lValues;
+    for (let p = lColPtr[c]; p < columnEnd; p++) {
+      snValues[valPtr + pos[lRows[p]] * width + m] = lValues[p];
+    }
+    this.snEnd[s0] = c;
+  }
+
+  private reserveSupernode(rows: number, values: number): void {
+    if (rows > this.snRows.length) {
+      const grown = new Int32Array(Math.max(rows, this.snRows.length * 2));
+      grown.set(this.snRows.subarray(0, this.snRowsUsed));
+      this.snRows = grown;
+    }
+    if (values > this.snValues.length) {
+      const grown = new Float64Array(Math.max(values, this.snValues.length * 2));
+      grown.set(this.snValues.subarray(0, this.snValuesUsed));
+      this.snValues = grown;
+    }
+  }
+
+  /**
+   * Apply members first..last of a supernode to the current column of
+   * factorize(), with kernelState = [up, nonzeroCount, activeCount] in and
+   * out. The result is bit-identical to popping the members one at a time:
+   *
+   *  - Rows are first touched by column `first`, so they are appended to the
+   *    touched list in its L order before any arithmetic, as there.
+   *  - A member is applied iff its pivot row value is nonzero once the
+   *    earlier members are applied; its U entry is that value (the
+   *    triangular part, in ascending member order).
+   *  - Each row below the supernode receives the same subtractions in the
+   *    same ascending member order, held in a register, and runs the same
+   *    activation step whenever a subtraction starts from zero. Only the
+   *    order of heap insertions changes, which does not change pop order.
+   *  - Member rows are not activated: their keys are consumed here, and
+   *    later L columns never contain them.
+   */
+  private applySupernode(first: number, last: number, settled: number, dormant: number): void {
+    const s0 = this.snStart[first];
+    const size = last - s0 + 1;
+    const workspace = this.workspace;
+    const perm = this.perm;
+    const pinv = this.pinv;
+    const nonzeroFlag = this.nonzeroFlag;
+    const nonzeroList = this.nonzeroList;
+    const activeK = this.activeK;
+    const lColPtr = this.lColPtr;
+    const lRows = this.lRows;
+    const snValues = this.snValues;
+    const snRows = this.snRows;
+    const applied = this.snApplied;
+    const appliedU = this.snAppliedU;
+    const state = this.kernelState;
+    const width = this.snWidth[s0];
+    const len = this.snLen[s0];
+    const below = len - (size - 1);
+    const valPtr = this.snValPtr[s0];
+    const rowPtr = this.snRowPtr[s0];
+
+    // First touches, in the order applying column `first` alone would make them.
+    let nonzeroCount = state[1];
+    for (let p = lColPtr[first]; p < lColPtr[first + 1]; p++) {
+      const row = lRows[p];
+      if (nonzeroFlag[row] < dormant) {
+        nonzeroFlag[row] = dormant;
+        nonzeroList[nonzeroCount++] = row;
+      }
+    }
+    state[1] = nonzeroCount;
+
+    // Triangular part: U entries of the members and their mutual updates.
+    // Row-oriented: member m receives the updates of the earlier applied
+    // members in ascending order (the order the column-oriented form applies
+    // them in), accumulated in a register over its contiguous block row.
+    let up = state[0];
+    let count = 0;
+    for (let m = first - s0; m < size; m++) {
+      const row = perm[s0 + m];
+      const base = valPtr + (len - m) * width;
+      let u = workspace[row];
+      for (let t = 0; t < count; t++) u -= snValues[base + applied[t]] * appliedU[t];
+      workspace[row] = u;
+      if (u === 0) continue;
+      if (up === this.uValues.length) this.growUFactors(up + 1);
+      this.uRows[up] = s0 + m;
+      this.uValues[up] = u;
+      up++;
+      applied[count] = m;
+      appliedU[count] = u;
+      count++;
+    }
+    state[0] = up;
+    this.supernodeCount++;
+
+    // Rows below the supernode. Each row is one dependent chain of
+    // subtractions, so four rows advance together to keep the FPU busy.
+    //
+    // The zero-activation step is a no-op for a settled row, and a settled
+    // row stays settled for the rest of the column. So each group runs the
+    // checked loop only until all of its rows are settled (normally after
+    // the first member, which settles the rows this column touches for the
+    // first time), then the same subtractions without any checks. When every
+    // member is applied, their slots are consecutive and need no lookup.
+    // The arithmetic and its order are unchanged.
+    let activeCount = state[2];
+    const firstSlot = first - s0;
+    const allApplied = count === size - firstSlot;
+    let r = 0;
+    for (; r + 4 <= below; r += 4) {
+      const row0 = snRows[rowPtr + r];
+      const row1 = snRows[rowPtr + r + 1];
+      const row2 = snRows[rowPtr + r + 2];
+      const row3 = snRows[rowPtr + r + 3];
+      const base0 = valPtr + r * width;
+      const base1 = base0 + width;
+      const base2 = base1 + width;
+      const base3 = base2 + width;
+      let v0 = workspace[row0];
+      let v1 = workspace[row1];
+      let v2 = workspace[row2];
+      let v3 = workspace[row3];
+      let t = 0;
+      for (; t < count; t++) {
+        if (
+          nonzeroFlag[row0] === settled && nonzeroFlag[row1] === settled
+          && nonzeroFlag[row2] === settled && nonzeroFlag[row3] === settled
+        ) break;
+        const m = applied[t];
+        const u = appliedU[t];
+        const n0 = v0 - snValues[base0 + m] * u;
+        const n1 = v1 - snValues[base1 + m] * u;
+        const n2 = v2 - snValues[base2 + m] * u;
+        const n3 = v3 - snValues[base3 + m] * u;
+        if (v0 === 0 || v1 === 0 || v2 === 0 || v3 === 0) {
+          if (v0 === 0) activeCount = activateRow(row0, n0, settled, dormant, nonzeroFlag, pinv, activeK, activeCount);
+          if (v1 === 0) activeCount = activateRow(row1, n1, settled, dormant, nonzeroFlag, pinv, activeK, activeCount);
+          if (v2 === 0) activeCount = activateRow(row2, n2, settled, dormant, nonzeroFlag, pinv, activeK, activeCount);
+          if (v3 === 0) activeCount = activateRow(row3, n3, settled, dormant, nonzeroFlag, pinv, activeK, activeCount);
+        }
+        v0 = n0;
+        v1 = n1;
+        v2 = n2;
+        v3 = n3;
+      }
+      if (allApplied) {
+        // Slot of member t is firstSlot + t.
+        for (let s = firstSlot + t, sEnd = firstSlot + count; s < sEnd; s++, t++) {
+          const u = appliedU[t];
+          v0 -= snValues[base0 + s] * u;
+          v1 -= snValues[base1 + s] * u;
+          v2 -= snValues[base2 + s] * u;
+          v3 -= snValues[base3 + s] * u;
+        }
+      } else {
+        for (; t < count; t++) {
+          const m = applied[t];
+          const u = appliedU[t];
+          v0 -= snValues[base0 + m] * u;
+          v1 -= snValues[base1 + m] * u;
+          v2 -= snValues[base2 + m] * u;
+          v3 -= snValues[base3 + m] * u;
+        }
+      }
+      workspace[row0] = v0;
+      workspace[row1] = v1;
+      workspace[row2] = v2;
+      workspace[row3] = v3;
+    }
+    for (; r < below; r++) {
+      const row = snRows[rowPtr + r];
+      const base = valPtr + r * width;
+      let value = workspace[row];
+      let t = 0;
+      for (; t < count && nonzeroFlag[row] !== settled; t++) {
+        const before = value;
+        value = before - snValues[base + applied[t]] * appliedU[t];
+        if (before === 0) {
+          activeCount = activateRow(row, value, settled, dormant, nonzeroFlag, pinv, activeK, activeCount);
+        }
+      }
+      for (; t < count; t++) value -= snValues[base + applied[t]] * appliedU[t];
+      workspace[row] = value;
+    }
+    state[2] = activeCount;
   }
 
   /**
@@ -795,6 +1166,36 @@ function columnSingletonsFirst(
     rowPref[t] = nextRow;
   }
   return { colPerm, rowPref };
+}
+
+/**
+ * factorize()'s activation step for a touched row whose value was exactly
+ * zero before the subtraction that produced `value`: an unpivoted row
+ * becomes a settled L/pivot candidate; a pivoted row becomes an active column
+ * (heap insert) if `value` is nonzero, else stays dormant. Returns the new
+ * heap count.
+ */
+function activateRow(
+  row: number,
+  value: number,
+  settled: number,
+  dormant: number,
+  nonzeroFlag: Int32Array,
+  pinv: Int32Array,
+  activeK: Int32Array,
+  activeCount: number,
+): number {
+  if (nonzeroFlag[row] === settled) return activeCount;
+  const k = pinv[row];
+  if (k < 0) {
+    nonzeroFlag[row] = settled;
+  } else if (value !== 0) {
+    nonzeroFlag[row] = settled;
+    return heapPush(activeK, activeCount, k);
+  } else {
+    nonzeroFlag[row] = dormant;
+  }
+  return activeCount;
 }
 
 /** Insert `value` into the binary min-heap heap[0..count); returns the new count. */

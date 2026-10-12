@@ -1,0 +1,34 @@
+digital tran
+v1 1 0 DC 0 PWL(0 0 1u 0 1.001u 1 1.5u 1 1.501u 0 4u 0 4.001u 1 7u 1 7.001u 0)
+v2 2 0 DC 0 PWL(0 0 2u 0 2.001u 1 6u 1 6.001u 0)
+r1 1 0 1k
+r2 2 0 1k
+a1 [1 2] [a b] adc
+.model adc adc_bridge (rise_delay=1n fall_delay=1n)
+a2 a pin buf_inertial
+.model buf_inertial d_buffer (rise_delay=1u fall_delay=1u inertial_delay=true)
+a3 a ptr buf_transport
+.model buf_transport d_buffer (rise_delay=1u fall_delay=1u)
+a4 a x drv
+a5 b x drv
+.model drv d_buffer (rise_delay=10n fall_delay=10n)
+a6 [a b] y xo
+.model xo d_xor (rise_delay=20n fall_delay=30n inertial_delay=true)
+v3 3 0 DC 0 PWL(0 0 10u 1)
+a7 [3] [m0 m1] adcm
+.model adcm adc_bridge (in_low=0 in_high=1 rise_delay=5n fall_delay=5n)
+a8 [m0 m1] [20] dacm
+.model dacm dac_bridge (out_low=0 out_high=3 t_rise=200n t_fall=100n)
+r20 20 0 1k
+a9 [pin ptr x] [30 31 32] dac
+.model dac dac_bridge (t_rise=50n t_fall=50n)
+r30 30 0 1k
+r31 31 0 1k
+r32 32 0 1k
+.control
+set numdgt=15
+tran 10n 10u
+eprint a b pin ptr x y m0 m1
+wrdata digital-tran.dat v(20) v(30) v(31) v(32)
+.endc
+.end

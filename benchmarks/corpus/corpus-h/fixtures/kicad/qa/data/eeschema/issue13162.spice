@@ -1,0 +1,9 @@
+KiCad schematic
+.save all
+.probe alli
+.tran 100u 50m
+C2 out in 0.33u
+R1 in out 390k
+Rload1 out GND 8
+Vin1 in GND dc 0 ac 1 sin(0 0.5 100 20m)
+.end

@@ -194,6 +194,8 @@ function newCollectState(): CollectState {
 const CONDITIONAL_CARD = /^\.(elseif|else|endif|if)(?![\w])/i;
 const FUNC_DIRECTIVE = /^\.func(?![\w])/i;
 const CSPARAM_DIRECTIVE = /^\.csparam(?![\w])/i;
+/** Output cards whose text ngspice-47 numparam never substitutes (#714). */
+const OUTPUT_CARD = /^\.(?:print|plot)(?![\w])/i;
 const PARAM_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*(\{[^}]+\}|'[^']*'|"[^"]*"|\S+)/g;
 
 /**
@@ -470,18 +472,17 @@ function evaluateParamExpression(
 }
 
 function substituteStatement(statement: PendingStatement, scopes: ParamScopes, measureNames: ReadonlySet<string>): string {
-  const preserveOutputFunctions = /^\.PRINT(?:\s|$)/i.test(statement.text.trim());
   try {
     if (MEASURE_CARD.test(statement.text)) return substituteMeasureCard(statement.text, scopes, measureNames);
-    const behavioralResistor = behavioralResistorAsBSource(statement.text);
-    const text = behavioralResistor ?? statement.text;
+    const behavioralCard = behavioralCardAsBSource(statement.text);
+    const text = behavioralCard ?? statement.text;
     if (/^\s*b/i.test(text)) {
       // B-cards: `'...'`, `{...}` and bare `.param` names are substituted by
       // the B-card front end; `temper` stays a live ASRC variable.
-      const substituted = substituteExpressions(text, scopes.params, preserveOutputFunctions, true);
+      const substituted = substituteExpressions(text, scopes.params, true);
       return substituteBehavioralParameters(substituted, scopes.params);
     }
-    return substituteExpressions(quotedExpressionsAsBraces(text), scopes.numparam, preserveOutputFunctions);
+    return substituteExpressions(quotedExpressionsAsBraces(text), scopes.numparam);
   } catch (error) {
     if (error instanceof ParseError) throw error;
     throw toParseError(error, statement.line, statement.text.trim());
@@ -649,6 +650,28 @@ function behavioralResistorAsBSource(line: string): string | undefined {
   return `b${name} ${positive} ${negative} i = v(${positive}, ${negative})/(${expression})${coefficients} reciproctc=1`;
 }
 
+const BEHAVIORAL_CONTROLLED_SOURCE = /^\s*([eg]\S*)\s+(\S+)\s+(\S+)\s+(value|vol|cur)\s*=\s*(\S.*?)\s*$/i;
+
+/**
+ * ngspice (inpcom.c inp_compat) runs a behavioural E/G card as an ASRC:
+ * `Exxx n1 n2 value={expr}` / `vol={expr}` drives v(n1,n2) = expr and
+ * `Gxxx n1 n2 value={expr}` / `cur={expr}` sinks i = expr from n1 to n2.
+ * Returns the equivalent B-card, or undefined when the line is not one.
+ */
+function behavioralControlledSourceAsBSource(line: string): string | undefined {
+  const card = BEHAVIORAL_CONTROLLED_SOURCE.exec(line.slice(0, commentStart(line)));
+  if (!card) return undefined;
+  const [, name, positive, negative, keyword, expression] = card;
+  const voltage = /^e/i.test(name);
+  if (keyword.toLowerCase() === (voltage ? 'cur' : 'vol')) return undefined;
+  return `b${name} ${positive} ${negative} ${voltage ? 'v' : 'i'} = ${expression}`;
+}
+
+/** Behavioural R/E/G cards that ngspice rewrites to B-sources, as their B-card. */
+function behavioralCardAsBSource(line: string): string | undefined {
+  return behavioralResistorAsBSource(line) ?? behavioralControlledSourceAsBSource(line);
+}
+
 function toParseError(error: unknown, line: number, context: string): ParseError {
   const message = (error as Error).message
     .replace(/^Undefined variable '([^']*)'$/, "Undefined parameter '$1'");
@@ -675,6 +698,7 @@ function* collectStatements(
   const lines = netlist.split('\n');
   let inSubckt = 0;
   let inControl = false;
+  let inOutputCard = false;
 
   for (const [index, line] of lines.entries()) {
     guard?.checkpoint('parse:line');
@@ -691,6 +715,8 @@ function* collectStatements(
       passThrough();
       continue;
     }
+    // A `+` continuation (blank and comment lines may sit in between) belongs to the preceding card.
+    if (trimmed !== '' && !trimmed.startsWith('+')) inOutputCard = OUTPUT_CARD.test(trimmed);
 
     const conditional = inControl ? null : CONDITIONAL_CARD.exec(trimmed);
     if (conditional) {
@@ -737,11 +763,11 @@ function* collectStatements(
     }
 
     // Inside a subcircuit — expressions are evaluated per instance later.
-    // A resistor whose value reads v()/i() becomes a B-source here too.
+    // A resistor whose value reads v()/i(), or a value= E/G card, becomes a B-source here too.
     if (inSubckt > 0) {
       let text: string;
       try {
-        text = behavioralResistorAsBSource(line) ?? compactSubcircuitExpressions(line);
+        text = behavioralCardAsBSource(line) ?? compactSubcircuitExpressions(line);
       } catch (error) {
         throw toParseError(error, lineNumber, trimmed);
       }
@@ -851,33 +877,30 @@ function* collectStatements(
       continue;
     }
 
+    // ngspice-47 numparam leaves `.print`/`.plot` cards and their `+`
+    // continuations verbatim: brace text is handed to the frontend print
+    // command, never evaluated as a parameter expression (#714).
+    if (inOutputCard) {
+      statements.push({ text: line, substitute: false, line: lineNumber, scope, ...guarded });
+      continue;
+    }
+
     statements.push({ text: line, substitute: true, line: lineNumber, ...guarded });
   }
 }
 
-// Output vectors are evaluated after simulation, not as scalar parameters.
 // `keepNodeDependent` leaves B-card `{...}` that read v()/i() to the B-card
 // front end, which keeps them as ASRC sub-expressions.
 function substituteExpressions(
   line: string,
   params: Record<string, number>,
-  preserveOutputFunctions = false,
   keepNodeDependent = false,
 ): string {
   return line.replace(/\{([^}]+)\}/g, (match, expr: string) => {
-    if (preserveOutputFunctions && isVoltageOrCurrentOutputExpression(expr)) return match;
     if (keepNodeDependent && NODE_DEPENDENT_EXPRESSION.test(expr)) return match;
     const value = evaluateExpression(expr, params);
     return formatNumber(value);
   });
-}
-
-function isVoltageOrCurrentOutputExpression(expression: string): boolean {
-  const functions = [...expression.matchAll(/([A-Za-z_]\w*)\s*\(/g)]
-    .map(match => match[1].toUpperCase());
-  if (functions.length === 0 || functions.some(name => name !== 'V' && name !== 'I')) return false;
-  const arithmetic = expression.replace(/\b[vi]\s*\([^()]*\)/gi, '0');
-  return /^[\d.eE+\-*/()\s]+$/.test(arithmetic);
 }
 
 function formatNumber(value: number): string {

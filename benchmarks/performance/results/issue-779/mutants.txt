@@ -1,0 +1,8 @@
+break-on-first-settled: killed
+skip-checked-phase: killed
+always-consecutive: killed
+consecutive-off-by-one: killed
+indirect-reverse-order: killed
+tail-rows-check-once: killed
+triangular-no-writeback: killed
+triangular-reverse-order: killed

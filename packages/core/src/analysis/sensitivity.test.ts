@@ -56,13 +56,20 @@ describe('.sens analysis', () => {
 
     expect(first.sensitivity).toBeInstanceOf(SensitivityResult);
     expect(first.sensitivity).toEqual(second.sensitivity);
-    expect(first.sensitivity!.entries.map(entry => entry.device)).toEqual(['R1', 'R2', 'V1']);
-    expect(first.sensitivity!.entries.map(entry => entry.parameter)).toEqual([
-      'resistance', 'resistance', 'dc',
+    // Each resistor also carries its instance m and scale sensitivity (#760).
+    expect(first.sensitivity!.entries.map(entry => `${entry.device}.${entry.parameter}`)).toEqual([
+      'R1.resistance', 'R1.multiplier', 'R1.scale',
+      'R2.resistance', 'R2.multiplier', 'R2.scale',
+      'V1.dc',
     ]);
-    expect(first.sensitivity!.entries[0].dc).toBeCloseTo(-2.222222222e-4, 10);
-    expect(first.sensitivity!.entries[1].dc).toBeCloseTo(1.111111111e-4, 10);
-    expect(first.sensitivity!.entries[2].dc).toBeCloseTo(2 / 3, 8);
+    const dc = Object.fromEntries(first.sensitivity!.entries.map(entry =>
+      [`${entry.device}.${entry.parameter}`, entry.dc!]));
+    expect(dc['R1.resistance']).toBeCloseTo(-2.222222222e-4, 10);
+    expect(dc['R2.resistance']).toBeCloseTo(1.111111111e-4, 10);
+    expect(dc['V1.dc']).toBeCloseTo(2 / 3, 8);
+    // R_eff = R * scale / m: d/dscale = R dV/dR, d/dm = -R dV/dR.
+    expect(dc['R1.scale']).toBeCloseTo(1000 * -2.222222222e-4, 8);
+    expect(dc['R1.multiplier']).toBeCloseTo(-1000 * -2.222222222e-4, 8);
   });
 
   it('returns deterministic complex AC sensitivities for RLC primary values', async () => {
@@ -73,8 +80,12 @@ describe('.sens analysis', () => {
       mode: 'ac',
       frequencies: [10, 31.622776601683796, 100, 316.2277660168379, 1000],
     });
-    expect(result.sensitivity!.entries.map(entry => entry.device)).toEqual([
-      'C1', 'L1', 'R1', 'R2', 'V1',
+    expect(result.sensitivity!.entries.map(entry => `${entry.device}.${entry.parameter}`)).toEqual([
+      'C1.capacitance', 'C1.multiplier', 'C1.scale',
+      'L1.inductance', 'L1.multiplier', 'L1.scale',
+      'R1.resistance', 'R1.multiplier', 'R1.scale',
+      'R2.resistance', 'R2.multiplier', 'R2.scale',
+      'V1.acMagnitude',
     ]);
     for (const entry of result.sensitivity!.entries) {
       expect(entry.ac).toHaveLength(result.sensitivity!.frequencies.length);
@@ -89,9 +100,11 @@ describe('.sens analysis', () => {
 
     expect(first.sensitivity).toEqual(second.sensitivity);
     expect(first.sensitivity!.entries.map(entry => `${entry.device}.${entry.parameter}`)).toEqual([
-      'C1.capacitance', 'I1.acMagnitude', 'R1.resistance',
+      'C1.capacitance', 'C1.multiplier', 'C1.scale',
+      'I1.acMagnitude', 'I1.multiplier',
+      'R1.resistance', 'R1.multiplier', 'R1.scale',
     ]);
-    const sourceSensitivity = first.sensitivity!.entries[1].ac!;
+    const sourceSensitivity = first.sensitivity!.entries[3].ac!;
     expect(sourceSensitivity[0].real).toBeGreaterThan(1900);
     expect(sourceSensitivity.at(-1)!.imaginary).toBeLessThan(-100);
     expect(sourceSensitivity.every(value =>
@@ -106,7 +119,9 @@ R1 out 0 1k
 .sens V(out) AC DEC 1 10 100
 .end`);
 
-    expect(result.sensitivity!.entries.map(entry => entry.device)).toEqual(['G1', 'R1', 'V1']);
+    expect(result.sensitivity!.entries.map(entry => `${entry.device}.${entry.parameter}`)).toEqual([
+      'G1.gain', 'R1.resistance', 'R1.multiplier', 'R1.scale', 'V1.acMagnitude',
+    ]);
     for (const value of result.sensitivity!.entries[0].ac!) {
       expect(value.real).toBeCloseTo(-1000, 5);
       expect(value.imaginary).toBeCloseTo(0, 10);
@@ -209,7 +224,8 @@ R2 out 0 1k
   it.each([
     '.sens V(out,ref)',
     '.sens I(V1)',
-    '.sens V(out) AC LIN 3 1 10',
+    '.sens V(out) AC LOG 3 1 10',
+    '.sens V(out) DC 1',
     '.sens V(out) TRAN 1u 1m',
     '.sens V(out) AC DEC 0 1 10',
   ])('rejects forms outside the bounded slice: %s', directive => {
@@ -235,7 +251,7 @@ R1 out 0 1k
   it('rejects invalid programmatic forms and stepped sensitivity', () => {
     const circuit = new Circuit();
     expect(() => circuit.addAnalysis('sens', {
-      outputNode: 'out', mode: 'ac', variation: 'lin', points: 2,
+      outputNode: 'out', mode: 'ac', variation: 'log', points: 2,
       startFreq: 1, stopFreq: 10,
     } as never)).toThrow(InvalidCircuitError);
     expect(() => circuit.addAnalysis('sens', {

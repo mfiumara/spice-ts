@@ -36,16 +36,17 @@ describe('parseNumber', () => {
     });
 
     it('parses mil as one thousandth of an inch', () => {
-      expect(parseNumber('1mil')).toBe(25.4e-6);
-      expect(parseNumber('10MIL')).toBe(254e-6);
+      // ngspice-47 INPevaluate: mantissa * 25.4 * pow(10, -6) (#749).
+      expect(parseNumber('1mil')).toBe(25.4 * 1e-6);
+      expect(parseNumber('10MIL')).toBe(254 * 1e-6);
     });
 
     it('parses u as micro (1e-6)', () => {
-      expect(parseNumber('100u')).toBe(100e-6);
+      expect(parseNumber('100u')).toBe(100 * 1e-6);
     });
 
     it('parses n as nano (1e-9)', () => {
-      expect(parseNumber('100n')).toBe(100e-9);
+      expect(parseNumber('100n')).toBe(100 * 1e-9);
     });
 
     it('parses p as pico (1e-12)', () => {
@@ -115,6 +116,8 @@ describe('tokenizeNetlist', () => {
 // passing unchanged; the reference copies below are that implementation
 // verbatim, used as a differential oracle. Deliberate semantic changes since:
 // #496 keeps whitespace-free `{...}` groups whole (see referenceTokenizeNetlist).
+// #749 builds accepted values as ngspice-47 INPevaluate does (see
+// referenceParseNumber); which tokens are accepted is unchanged.
 // ---------------------------------------------------------------------------
 
 const REFERENCE_SI_SUFFIX_MAP: Record<string, string> = {
@@ -122,11 +125,65 @@ const REFERENCE_SI_SUFFIX_MAP: Record<string, string> = {
   u: 'e-6', n: 'e-9', p: 'e-12', f: 'e-15', a: 'e-18',
 };
 
+/**
+ * Character-by-character port of ngspice-47 INPevaluate
+ * (src/spicelib/parser/inpeval.c), with INPevaluateRKM_*'s digits after the
+ * scale factor when `rkm` is set. `10 * mantis + *here` is rounded once, as
+ * in the fused multiply-add the reference arm64 build compiles it to.
+ */
+function cInpEvaluate(token: string, rkm: boolean): number {
+  let i = 0;
+  let mantis = 0;
+  let expo1 = 0;
+  let expo2 = 0;
+  let sign = 1;
+  let expsgn = 1;
+  const isDigit = (c: string | undefined) => c !== undefined && c >= '0' && c <= '9';
+  const accumulate = (m: number, c: string) =>
+    Number.isFinite(m) ? Number(BigInt(m) * 10n + BigInt(c.charCodeAt(0))) - 48 : m;
+  if (token[i] === '+') i++;
+  else if (token[i] === '-') { i++; sign = -1; }
+  while (isDigit(token[i])) mantis = accumulate(mantis, token[i++]);
+  if (token[i] === '.') {
+    i++;
+    while (isDigit(token[i])) { mantis = accumulate(mantis, token[i++]); expo1--; }
+  }
+  // Legacy spice-ts grammar (kept by #749): `e` starts an exponent only when
+  // digits follow; otherwise it is unit text (ngspice would still read a
+  // scale factor after it, e.g. '12eu').
+  if ((token[i] === 'e' || token[i] === 'E') && /^[eE][+-]?\d/.test(token.slice(i))) {
+    i++;
+    if (token[i] === '+') i++;
+    else if (token[i] === '-') { i++; expsgn = -1; }
+    while (isDigit(token[i])) expo2 = 10 * expo2 + token.charCodeAt(i++) - 48;
+  }
+  const scale = token.slice(i).toLowerCase();
+  const exponents: Record<string, number> = { t: 12, g: 9, k: 3, m: -3, u: -6, n: -9, p: -12, f: -15, a: -18 };
+  if (scale.startsWith('meg')) {
+    expo1 += 6;
+    i += 2;
+  } else if (scale.startsWith('mil')) {
+    expo1 -= 6;
+    mantis *= 25.4;
+  } else if (scale[0] in exponents) {
+    expo1 += exponents[scale[0]];
+  }
+  if (rkm) {
+    i++;
+    let deci = 0;
+    let expo3 = 0;
+    while (isDigit(token[i])) { deci = 10 * deci + token.charCodeAt(i++) - 48; expo3--; }
+    mantis = mantis + deci * Number(`1e${expo3}`);
+  }
+  // pow(10, e) of the C library is the correctly rounded power: `1e<e>`.
+  return sign * mantis * Number(`1e${expo1 + expsgn * expo2}`);
+}
+
 function referenceParseNumber(token: string): number {
   const trimmed = token.trim();
   const plain = Number(trimmed);
   if (!isNaN(plain) && /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(trimmed)) {
-    return plain;
+    return cInpEvaluate(trimmed, false);
   }
   const embeddedMatch = trimmed.match(/^([+-]?\d+)(meg|[tgkmunpfa])(\d+)[a-z]*$/i);
   if (embeddedMatch) {
@@ -134,7 +191,7 @@ function referenceParseNumber(token: string): number {
     const suffix = embeddedMatch[2].toLowerCase();
     const exp = suffix === 'meg' ? 'e6' : REFERENCE_SI_SUFFIX_MAP[suffix];
     const val = Number(numStr + exp);
-    if (!isNaN(val)) return val;
+    if (!isNaN(val)) return cInpEvaluate(trimmed, true);
   }
   const suffixMatch = trimmed.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)(meg|mil|[tgkmunpfa])?([a-z]*)$/i);
   if (suffixMatch) {
@@ -143,7 +200,7 @@ function referenceParseNumber(token: string): number {
     const val = suffix === 'mil'
       ? Number(suffixMatch[1]) * 25.4e-6
       : Number(suffixMatch[1] + exp);
-    if (!isNaN(val)) return val;
+    if (!isNaN(val)) return cInpEvaluate(trimmed, false);
   }
   throw new Error(`Cannot parse number: '${token}'`);
 }
@@ -214,12 +271,15 @@ function outcome(fn: () => number): { value: number } | { error: string } {
 }
 
 describe('parseNumber behavior pins (#369)', () => {
-  it('returns the exact double Number() gives for the decimal-exponent spelling', () => {
-    expect(parseNumber('1.1m')).toBe(Number('1.1e-3'));
-    expect(parseNumber('0.1k')).toBe(Number('0.1e3'));
-    expect(parseNumber('3.3u')).toBe(Number('3.3e-6'));
-    expect(parseNumber('4.7meg')).toBe(Number('4.7e6'));
-    expect(parseNumber('2n2')).toBe(Number('2.2e-9'));
+  it('returns the same double for the scale-factor and decimal-exponent spellings (#749)', () => {
+    // Both are mantissa * pow(10, e) with the same mantissa and exponent.
+    expect(parseNumber('1.1m')).toBe(parseNumber('1.1e-3'));
+    expect(parseNumber('1.1m')).toBe(11 * 1e-4);
+    expect(parseNumber('0.1k')).toBe(parseNumber('0.1e3'));
+    expect(parseNumber('3.3u')).toBe(parseNumber('3.3e-6'));
+    expect(parseNumber('3.3u')).toBe(33 * 1e-7);
+    expect(parseNumber('4.7meg')).toBe(parseNumber('4.7e6'));
+    expect(parseNumber('2n2')).toBe((2 + 2 * 1e-1) * 1e-9);
     expect(parseNumber('1a')).toBe(1e-18);
   });
 
@@ -238,7 +298,7 @@ describe('parseNumber behavior pins (#369)', () => {
     // therefore rejected. Changing that is a behavior change outside #369.
     expect(() => parseNumber('1e3k')).toThrow("Cannot parse number: '1e3k'");
     expect(() => parseNumber('1E+2meg')).toThrow("Cannot parse number: '1E+2meg'");
-    expect(parseNumber('1e3mil')).toBe(1e3 * 25.4e-6);
+    expect(parseNumber('1e3mil')).toBe(25.4 * 1e-3);
     expect(parseNumber('1e3V')).toBe(1000);
     expect(parseNumber('1e400')).toBe(Infinity);
     expect(parseNumber('1e')).toBe(1);
@@ -247,8 +307,8 @@ describe('parseNumber behavior pins (#369)', () => {
   });
 
   it('gives meg and mil priority over single-letter m, case-insensitively', () => {
-    expect(parseNumber('1MILLI')).toBe(25.4e-6);
-    expect(parseNumber('1mils')).toBe(25.4e-6);
+    expect(parseNumber('1MILLI')).toBe(25.4 * 1e-6);
+    expect(parseNumber('1mils')).toBe(25.4 * 1e-6);
     expect(parseNumber('1megk')).toBe(1e6);
     expect(parseNumber('1Meter')).toBe(1e-3);
     expect(parseNumber('1me')).toBe(1e-3);

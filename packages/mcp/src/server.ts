@@ -29,6 +29,8 @@ export interface McpLimits {
 }
 
 export interface McpStreamLimits {
+  /** Jobs solving at once per server: live stream jobs plus in-flight `spice_simulate` calls. */
+  maxConcurrentJobs: number;
   runningJobTtlMs: number;
   terminalJobTtlMs: number;
   maxUnreadEvents: number;
@@ -95,9 +97,14 @@ export const DEFAULT_MCP_LIMITS: Readonly<McpLimits> = Object.freeze({
 export const DEFAULT_STREAM_CHUNK_POINTS = 256;
 export const MAX_STREAM_CHUNK_POINTS = 1024;
 export const MAX_RETAINED_STREAM_JOBS = 16;
+/**
+ * Server stream/job defaults, mirrored in docs/architecture/ai-native-api.md section 8
+ * (a test parses that table and compares it with `spice_capabilities`).
+ */
 export const DEFAULT_MCP_STREAM_LIMITS: Readonly<McpStreamLimits> = Object.freeze({
+  maxConcurrentJobs: 2,
   runningJobTtlMs: 30_000,
-  terminalJobTtlMs: 60_000,
+  terminalJobTtlMs: 300_000,
   maxUnreadEvents: 256,
   maxUnreadBytes: 1024 * 1024,
 });
@@ -128,13 +135,14 @@ const capabilitiesOutputSchema = {
     streaming: {
       type: 'object',
       required: [
-        'defaultChunkPoints', 'maxChunkPoints', 'maxRetainedJobs',
+        'defaultChunkPoints', 'maxChunkPoints', 'maxRetainedJobs', 'maxConcurrentJobs',
         'runningJobTtlMs', 'terminalJobTtlMs', 'maxUnreadEvents', 'maxUnreadBytes',
       ],
       properties: {
         defaultChunkPoints: { const: DEFAULT_STREAM_CHUNK_POINTS },
         maxChunkPoints: { const: MAX_STREAM_CHUNK_POINTS },
         maxRetainedJobs: { const: MAX_RETAINED_STREAM_JOBS },
+        maxConcurrentJobs: { type: 'integer', minimum: 0 },
         runningJobTtlMs: { type: 'integer', minimum: 0 },
         terminalJobTtlMs: { type: 'integer', minimum: 0 },
         maxUnreadEvents: { type: 'integer', minimum: 0 },
@@ -314,11 +322,16 @@ async function executeToolWithStore(
     if (name === 'spice_simulation_start') {
       return success(streamStore.start(bounded, plan, effective, options));
     }
-    const result = options.simulate
-      ? await boundedCall(() => options.simulate!(bounded), effective.maxWallTimeMs, options.signal)
-      : await runInWorker<SimulationResultV1>('simulate', bounded, effective.maxWallTimeMs, options);
-    enforceResultBounds(result, effective);
-    return success(result);
+    const release = streamStore.acquireOneShotSlot();
+    try {
+      const result = options.simulate
+        ? await boundedCall(() => options.simulate!(bounded), effective.maxWallTimeMs, options.signal)
+        : await runInWorker<SimulationResultV1>('simulate', bounded, effective.maxWallTimeMs, options);
+      enforceResultBounds(result, effective);
+      return success(result);
+    } finally {
+      release();
+    }
   } catch (error) {
     return failure(publicError(error));
   }
@@ -358,6 +371,7 @@ interface StreamJob {
 class StreamStore {
   private readonly jobs = new Map<string, StreamJob>();
   private nextJobId = 1;
+  private runningOneShots = 0;
 
   private readonly limits: McpStreamLimits;
 
@@ -381,16 +395,18 @@ class StreamStore {
     limits: McpLimits,
     options: ToolExecutionOptions,
   ): JsonObject {
-    if (this.jobs.size >= MAX_RETAINED_STREAM_JOBS) {
-      const completed = [...this.jobs].find(([, job]) => job.terminal !== undefined);
-      if (completed) this.delete(completed[0], completed[1]);
-    }
-    if (this.jobs.size >= MAX_RETAINED_STREAM_JOBS) {
+    const evictable = this.jobs.size >= MAX_RETAINED_STREAM_JOBS
+      ? [...this.jobs].find(([, job]) => job.terminal !== undefined)
+      : undefined;
+    if (this.jobs.size >= MAX_RETAINED_STREAM_JOBS && !evictable) {
       throw apiError('RESOURCE_LIMIT', 'The retained stream-job limit was exceeded', 'transport', {
         limit: 'maxRetainedStreamJobs', maximum: MAX_RETAINED_STREAM_JOBS,
         actual: this.jobs.size + 1,
       });
     }
+    // Check the running quota before evicting, so a rejected start leaves retained jobs intact.
+    this.enforceConcurrentJobs();
+    if (evictable) this.delete(evictable[0], evictable[1]);
     const jobId = `job-${this.nextJobId++}`;
     const cursor = streamCursor(jobId, 0);
     const job: StreamJob = {
@@ -415,6 +431,41 @@ class StreamStore {
     );
     void this.solve(jobId, job, limits, options);
     return { jobId, status: 'running', cursor };
+  }
+
+  /** Reserve a running slot for a one-shot `spice_simulate`; call the returned release exactly once. */
+  acquireOneShotSlot(): () => void {
+    this.enforceConcurrentJobs();
+    this.runningOneShots++;
+    let released = false;
+    return () => {
+      if (released) return;
+      released = true;
+      this.runningOneShots--;
+    };
+  }
+
+  /**
+   * A job holds a running slot from start until it turns terminal (completion, failure,
+   * cancellation or running-TTL expiry); unread terminal data does not hold a slot.
+   */
+  private runningJobs(): number {
+    let running = this.runningOneShots;
+    for (const job of this.jobs.values()) if (job.terminalAt === undefined) running++;
+    return running;
+  }
+
+  private enforceConcurrentJobs(): void {
+    const configured = this.limits.maxConcurrentJobs;
+    const observed = this.runningJobs() + 1;
+    if (observed > configured) {
+      throw {
+        ...apiError('RESOURCE_LIMIT', 'The concurrent running-job limit was exceeded', 'transport', {
+          limit: 'maxConcurrentJobs', configured, observed, maximum: configured, actual: observed,
+        }),
+        retryable: true,
+      } satisfies SpiceApiErrorV1;
+    }
   }
 
   read(args: StreamReadArgs): SimulationReadDataV1 {

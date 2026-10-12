@@ -1,0 +1,26 @@
+{
+ "schema": "spice-ts-issue-747-reference/v1",
+ "deck": "decks/npn-op-level260.cir",
+ "deckSha256": "d1672d2e6f7d27216a7e01d8a47514d0c7e4c681ece8ce526d75c1f242e885d3",
+ "ngspice": "ngspice-47",
+ "command": "ngspice -b -r <raw> decks/npn-op-level260.cir (HOME=<tmp> with .spiceinit \"set filetype=ascii\")",
+ "levelNotice": true,
+ "plot": "Operating Point",
+ "grid": [
+  0
+ ],
+ "signals": {
+  "v(vcc)": [
+   5
+  ],
+  "v(b)": [
+   0.701452889231553
+  ],
+  "v(c)": [
+   2.527782140008601
+  ],
+  "i(vcc)": [
+   -0.001246105551183533
+  ]
+ }
+}

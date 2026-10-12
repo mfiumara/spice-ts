@@ -6,7 +6,11 @@ import { Inductor } from '../inductor.js';
 import { VoltageSource } from '../voltage-source.js';
 import { resolveXspiceConnections, resolveXspiceParams, type XspiceConnection } from './connections.js';
 import { LIMITER_BEHAVIORS } from './limiter-models.js';
-import { XSPICE_BEHAVIORS, type BehaviorFactory, type XspiceNetlistProbe } from './models.js';
+import { DIGITAL_MODELS } from './digital-models.js';
+import { XspiceEventNetwork, type EventPort } from './event-network.js';
+import {
+  XSPICE_BEHAVIORS, type BehaviorFactory, type CodeModelBehavior, type XspiceNetlistProbe,
+} from './models.js';
 import { OSCILLATOR_BEHAVIORS } from './oscillator-models.js';
 import { XSPICE_CODE_MODEL_SPECS, type XspiceParamValue } from './spec.js';
 import { XspiceDevice, type XspiceInputPort, type XspiceOutputPort } from './xspice-device.js';
@@ -22,8 +26,10 @@ export interface PreparedXspiceInstance {
   readonly model: XspiceModelCard;
   readonly connections: readonly XspiceConnection[];
   readonly params: ReadonlyMap<string, readonly XspiceParamValue[]>;
-  /** Circuit nodes the instance connects to, in connection order. */
+  /** Analog circuit nodes the instance connects to, in connection order. */
   readonly nodes: readonly string[];
+  /** Digital (`%d`) nodes the instance connects to, in connection order. */
+  readonly digitalNodes: readonly string[];
 }
 
 /**
@@ -46,26 +52,76 @@ export function prepareXspiceInstance(
   const connections = resolveXspiceConnections(card, spec, ground);
   const params = resolveXspiceParams(card.name, model, spec, connections);
   const nodes: string[] = [];
+  const digitalNodes: string[] = [];
   for (const connection of connections) {
     for (const port of connection.ports) {
+      if (port.type === 'd') {
+        digitalNodes.push(port.positive!);
+        continue;
+      }
       if (port.positive !== undefined) nodes.push(port.positive);
       if (port.negative !== undefined) nodes.push(port.negative);
     }
   }
-  return { card, model, connections, params, nodes };
+  return { card, model, connections, params, nodes, digitalNodes };
 }
 
-/** Build the device, allocating a branch per voltage output and per current input. */
+/** The event-driven network of a circuit and the analog halves of its hybrid instances. */
+export interface XspiceEventNetworkBuild {
+  readonly network: XspiceEventNetwork;
+  readonly analogHalves: ReadonlyMap<PreparedXspiceInstance, CodeModelBehavior>;
+}
+
+/**
+ * Build the event-driven network from the digital instances (ngspice
+ * EVTinit/EVTtermInsert, in instance order). Undefined when there are none.
+ */
+export function buildXspiceEventNetwork(
+  instances: readonly PreparedXspiceInstance[],
+): XspiceEventNetworkBuild | undefined {
+  const digital = instances.filter(instance => DIGITAL_MODELS.has(instance.model.codeModel));
+  if (digital.length === 0) return undefined;
+  const network = new XspiceEventNetwork();
+  const analogHalves = new Map<PreparedXspiceInstance, CodeModelBehavior>();
+  for (const prepared of digital) {
+    const { card, model, connections, params } = prepared;
+    const digitalModel = DIGITAL_MODELS.get(model.codeModel)!(params, { connections, given: new Set(model.params.keys()) });
+    const inputs: EventPort[] = [];
+    const outputs: EventPort[] = [];
+    let hybrid = false;
+    for (const connection of connections) {
+      for (const port of connection.ports) {
+        if (port.type !== 'd') {
+          hybrid = true;
+          continue;
+        }
+        (connection.direction === 'in' ? inputs : outputs).push({ node: port.positive!, invert: port.invert === true });
+      }
+    }
+    const view = network.addInstance({ name: card.name, behavior: digitalModel.event, inputs, outputs, hybrid });
+    if (digitalModel.analog) analogHalves.set(prepared, digitalModel.analog(view));
+  }
+  return { network, analogHalves };
+}
+
+/**
+ * Build the device, allocating a branch per voltage output and per current
+ * input. `analogHalf` is the analog behavior of a hybrid digital instance;
+ * an instance without analog ports gets no device.
+ */
 export function createXspiceDevice(
   prepared: PreparedXspiceInstance,
   resolveNode: (name: string) => number,
   allocateBranch: (name: string) => number,
-): XspiceDevice {
+  analogHalf?: CodeModelBehavior,
+): XspiceDevice | undefined {
   const { card, model, connections, params } = prepared;
+  if (DIGITAL_MODELS.has(model.codeModel) && analogHalf === undefined) return undefined;
   const inputs: XspiceInputPort[] = [];
   const outputs: XspiceOutputPort[] = [];
   connections.forEach((connection, c) => {
     connection.ports.forEach((port, p) => {
+      if (port.type === 'd') return;
       const positive = port.positive === undefined ? -1 : resolveNode(port.positive);
       const negative = port.negative === undefined ? -1 : resolveNode(port.negative);
       if (connection.direction !== 'out') {
@@ -88,9 +144,12 @@ export function createXspiceDevice(
     });
   });
   const firstPort = connections[0]?.ports[0];
-  const netlist = new NetlistProbe(firstPort?.positive === undefined ? -1 : resolveNode(firstPort.positive));
-  const behavior = BEHAVIORS.get(model.codeModel)!(params, { connections, netlist });
-  const device = new XspiceDevice(card.name, model.codeModel, inputs, outputs, behavior, model.warnings);
+  const metered = firstPort?.positive === undefined || firstPort.type === 'd' ? -1 : resolveNode(firstPort.positive);
+  const netlist = new NetlistProbe(metered);
+  const behavior = analogHalf ?? BEHAVIORS.get(model.codeModel)!(params, { connections, netlist });
+  const device = new XspiceDevice(
+    card.name, model.codeModel, inputs, outputs, behavior, model.warnings, analogHalf !== undefined,
+  );
   netlistProbes.set(device, netlist);
   return device;
 }
@@ -175,6 +234,13 @@ export function assertXspiceAnalyses(
   if (instances.length === 0) return;
   if (analyses.includes('disto')) {
     throw new InvalidCircuitError('XSPICE A devices do not support .disto (no distortion terms)');
+  }
+  const digital = instances.find(instance => DIGITAL_MODELS.has(instance.model.codeModel));
+  const unsupportedEvent = digital && analyses.find(analysis => analysis !== 'op' && analysis !== 'tran');
+  if (digital && unsupportedEvent) {
+    throw new InvalidCircuitError(
+      `XSPICE event-driven instance '${digital.card.name}' (${digital.model.codeModel}) is supported in .op and .tran only, not .${unsupportedEvent}`,
+    );
   }
   for (const instance of instances) {
     const { codeModel } = instance.model;

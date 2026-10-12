@@ -20,10 +20,13 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SPICE_TS_TIMEOUT_MS } from '../../aggregate-report.js';
 import type { CorpusFCircuit } from '../corpus-f/ingest.js';
-import { type EngineStatus, MATCH_THRESHOLD, type Outcome, PEAK_FLOOR, scrub } from '../corpus-f/lib.js';
-import { CONTROL_ONLY_NOTE, type FixtureOutcome, outcomeDigest, runFixture, stableReport } from '../corpus-f/outcomes.js';
+import { type EngineStatus, MATCH_THRESHOLD, type Outcome, scrub } from '../corpus-f/lib.js';
+import { CONTROL_ONLY_NOTE, MATCH_RULE as CORPUS_F_MATCH_RULE, type FixtureOutcome, outcomeDigest, runFixture, stableReport } from '../corpus-f/outcomes.js';
 import type { CorpusGManifest } from './ingest.js';
 import { CORPUS_ROOT, gapBucket } from './lib.js';
+
+/** corpus-f's published rule, so the text always describes the floor runFixture applies (#705). */
+export const MATCH_RULE = CORPUS_F_MATCH_RULE;
 
 export const REPORT_SCHEMA = 'spice-ts-corpus-g-outcomes/v1' as const;
 const MANIFEST_PATH = resolve(CORPUS_ROOT, 'manifest.json');
@@ -72,11 +75,15 @@ export const GAP_ISSUES: Record<string, string> = {
   'device: JFET forms (PJF model type, instance TEMP=, J card)': 'https://github.com/mfiumara/spice-ts/issues/717',
   'expression: branch-current i() references in B-source expressions': 'https://github.com/mfiumara/spice-ts/issues/718',
   'model: BSIM4 (LEVEL=14/54)': 'https://github.com/mfiumara/spice-ts/issues/3',
+  'model: compact MOSFET model B3SOI (LEVEL=10)': 'https://github.com/mfiumara/spice-ts/issues/747',
 };
 
 /** Findings beyond the gap buckets (correctness mismatches and harness defects) exposed by this batch. */
 export const FOLLOW_UP_ISSUES: ReadonlyArray<{ url: string; scope: string }> = [
-  { url: 'https://github.com/mfiumara/spice-ts/issues/719', scope: 'triage of the 14 decks where both engines succeed but spice-ts exceeds the 1% parity threshold' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/719', scope: 'triage of the 14 decks where both engines succeed but spice-ts exceeds the 1% parity threshold (TRIAGE-719.md)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/728', scope: 'node names are case-sensitive (ABM_FUNC/func.cir)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/733', scope: 'value-less L card: ngspice drops it and reports a floating node (INDUCTOR/ErrorMessageTest.cir)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/734', scope: 'unstable DC equilibrium decides the oscillator phase (WAMPDE/BLOCKING/simple_single_channel.cir)' },
 ];
 
 const OUTCOMES: Outcome[] = ['matched', 'mismatch', 'not-compared', 'spice-ts-loss', 'ngspice-failed', 'both-failed'];
@@ -180,7 +187,7 @@ export async function buildReport(manifest: CorpusGManifest, manifestSha256: str
       fixtureAdaptation: 'none',
       perCircuitToleranceTuning: false,
       matchThreshold: MATCH_THRESHOLD,
-      matchRule: `matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= ${MATCH_THRESHOLD} x max(peak |ngspice signal|, ${PEAK_FLOOR}). Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).`,
+      matchRule: MATCH_RULE,
       deterministicHashExcludes: ['environment', 'tools.node', 'ngspice.analyses', 'spiceTs.analyses'],
     },
     ...summarize(results),

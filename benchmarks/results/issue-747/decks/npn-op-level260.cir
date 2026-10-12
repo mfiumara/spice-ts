@@ -1,0 +1,8 @@
+LEVEL=260 NPN operating point (ngspice-47 inpfindl.c: level > 99 becomes 1, Gummel-Poon)
+VCC vcc 0 DC 5
+RB vcc b 430K
+RC vcc c 2K
+Q1 c b 0 QN
+.MODEL QN NPN (LEVEL=260 BF=120 IS=2E-15 VAF=60)
+.OP
+.END

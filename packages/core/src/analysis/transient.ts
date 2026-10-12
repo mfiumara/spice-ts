@@ -1,3 +1,4 @@
+import { XspiceEventNetwork } from '../devices/xspice/event-network.js';
 import type {
   ConvergenceTelemetry, ResolvedOptions, SimulationOptions, TransientAnalysis,
 } from '../types.js';
@@ -85,5 +86,6 @@ export function solveTransient(
   }
   recorder.flush();
 
-  return new TransientResult(timePoints, voltageArrays, currentArrays);
+  const events = compiled.devices.find(device => device instanceof XspiceEventNetwork) as XspiceEventNetwork | undefined;
+  return new TransientResult(timePoints, voltageArrays, currentArrays, events?.nodeHistories());
 }

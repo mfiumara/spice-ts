@@ -1,0 +1,29 @@
+/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//p710before/rc-ladder-tran-1000.cpuprofile: 69 samples, 199.0 ms sampled
+
+Top self time
+      28.5 ms  14.3%  buildCompanionSystem packages/core/dist/chunk-S7ERMMP5.js:29926
+      18.0 ms   9.0%  compileSourceTextModule node:internal/modules/esm/utils:344
+      14.7 ms   7.4%  (garbage collector)
+      11.7 ms   5.9%  attemptStep packages/core/dist/chunk-S7ERMMP5.js:30102
+      10.4 ms   5.2%  advanceSolution packages/core/dist/chunk-S7ERMMP5.js:30729
+      10.1 ms   5.1%  newtonRaphson packages/core/dist/chunk-S7ERMMP5.js:29503
+       7.1 ms   3.6%  truncationTimestepAll packages/core/dist/chunk-S7ERMMP5.js:2969
+       7.0 ms   3.5%  evaluate packages/core/dist/chunk-S7ERMMP5.js:30525
+       6.3 ms   3.2%  (program)
+       5.9 ms   3.0%  timestep packages/core/dist/chunk-S7ERMMP5.js:30513
+       5.2 ms   2.6%  stampPrevB packages/core/dist/chunk-S7ERMMP5.js:30995
+       5.0 ms   2.5%  preprocessSteps packages/core/dist/chunk-S7ERMMP5.js:24379
+
+Top inclusive time
+     199.0 ms 100.0%  (root)
+     150.0 ms  75.4%  simulate packages/core/dist/chunk-S7ERMMP5.js:36368
+     126.5 ms  63.5%  solveCompiledAnalyses packages/core/dist/chunk-S7ERMMP5.js:36423
+     114.1 ms  57.3%  solveTransient packages/core/dist/chunk-S7ERMMP5.js:31444
+     106.5 ms  53.5%  advanceSolution packages/core/dist/chunk-S7ERMMP5.js:30729
+      60.7 ms  30.5%  attemptStep packages/core/dist/chunk-S7ERMMP5.js:30102
+      37.8 ms  19.0%  buildCompanionSystem packages/core/dist/chunk-S7ERMMP5.js:29926
+      20.2 ms  10.1%  getModuleJobForImport node:internal/modules/esm/loader:319
+      18.0 ms   9.0%  compileSourceTextModule node:internal/modules/esm/utils:344
+      18.0 ms   9.0%  moduleStrategy node:internal/modules/esm/translators:102
+      18.0 ms   9.0%  #translate node:internal/modules/esm/loader:550
+      18.0 ms   9.0%  afterLoad node:internal/modules/esm/loader:610

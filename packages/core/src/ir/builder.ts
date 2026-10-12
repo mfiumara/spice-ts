@@ -121,11 +121,16 @@ function flattenWaveform(wf: Partial<SourceWaveform> & { dc?: number } | undefin
         return {
           waveform: 'pwl',
           points: points.map(point => `${point.time}:${point.value}`).join(','),
+          ...(typed.delay !== undefined ? { delay: typed.delay as number } : {}),
+          ...(typed.repeat !== undefined ? { repeat: typed.repeat as number } : {}),
         };
       }
+      case 'exp':
+      case 'sffm':
+      case 'am':
       case 'trnoise':
       case 'trrandom': {
-        // Every TRNOISE/TRRANDOM coefficient is numeric; keep them all (and the DC term).
+        // Every EXP/SFFM/AM/TRNOISE/TRRANDOM coefficient is numeric; keep the given ones (and the DC term).
         const result: Record<string, number | string> = { waveform: typed.type as string };
         for (const [key, value] of Object.entries(typed)) {
           if (typeof value === 'number') result[key] = value;
@@ -167,6 +172,12 @@ function waveformDisplayValue(params: Record<string, number | string>): string {
       return `PULSE ${params.v1}/${params.v2}`;
     case 'pwl':
       return `PWL ${(params.points as string).split(',').length} points`;
+    case 'exp':
+      return `EXP ${params.v1}/${params.v2}`;
+    case 'sffm':
+      return `SFFM ${params.amplitude}`;
+    case 'am':
+      return `AM ${params.carrierAmplitude}`;
     case 'trnoise':
       return `TRNOISE ${params.amplitude}`;
     case 'trrandom':

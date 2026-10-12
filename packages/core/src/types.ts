@@ -171,12 +171,12 @@ export interface DCSensitivityAnalysis {
   mode: 'dc';
 }
 
-/** DEC small-signal AC sensitivity (`.sens v(node) ac dec ...`). */
+/** Small-signal AC sensitivity (`.sens v(node) ac {dec|oct|lin} ...`). */
 export interface ACSensitivityAnalysis {
   type: 'sens';
   outputNode: string;
   mode: 'ac';
-  variation: 'dec';
+  variation: 'dec' | 'oct' | 'lin';
   points: number;
   startFreq: number;
   stopFreq: number;
@@ -464,6 +464,95 @@ export interface PWLSource {
   dc?: number;
   /** Ordered time/value pairs. Equal adjacent times describe a discontinuity. */
   points: PWLPoint[];
+  /** `TD=`: delay in seconds that shifts every point (ngspice VSRCrdelay). */
+  delay?: number;
+  /**
+   * `R=`: repeat start time. After the last point the waveform repeats from
+   * the point at this time (ngspice VSRCr; `R=0` repeats the whole waveform).
+   * Must equal one of the point times and be before the last one.
+   */
+  repeat?: number;
+}
+
+/**
+ * Exponential source waveform (`EXP(V1 V2 [TD1 [TAU1 [TD2 [TAU2]]]])`).
+ * Omitted or zero times default as in ngspice-47 vsrcload.c: TD1, TAU1 and
+ * TAU2 to the transient TSTEP, TD2 to TD1 + TSTEP.
+ */
+export interface ExpSource {
+  type: 'exp';
+  /** Explicit DC operating-point value declared before the waveform. */
+  dc?: number;
+  /** Initial value */
+  v1: number;
+  /** Pulsed value */
+  v2: number;
+  /** Rise delay time in seconds */
+  td1?: number;
+  /** Rise time constant in seconds */
+  tau1?: number;
+  /** Fall delay time in seconds */
+  td2?: number;
+  /** Fall time constant in seconds */
+  tau2?: number;
+}
+
+/**
+ * Single-frequency FM source waveform
+ * (`SFFM(VO VA [FC [MDI [FM [TD [PHASEM [PHASEC]]]]]])`), ngspice-47
+ * semantics: 0 until TD, then `VO + VA*sin(2*pi*FC*t + PHASEC + MDI*sin(2*pi*FM*t + PHASEM))`
+ * with `t` measured from TD. Omitted FC and FM default to `5/TSTOP` and
+ * `500/TSTOP` (FM also when zero), MDI to 90, and MDI is clamped to [0, FC/FM].
+ */
+export interface SffmSource {
+  type: 'sffm';
+  /** Explicit DC operating-point value declared before the waveform. */
+  dc?: number;
+  /** Offset */
+  offset: number;
+  /** Amplitude */
+  amplitude: number;
+  /** Carrier frequency in Hz */
+  carrierFrequency?: number;
+  /** Modulation index */
+  modulationIndex?: number;
+  /** Signal (modulating) frequency in Hz */
+  signalFrequency?: number;
+  /** Delay in seconds */
+  delay?: number;
+  /** Modulating-signal phase in degrees */
+  signalPhase?: number;
+  /** Carrier phase in degrees */
+  carrierPhase?: number;
+}
+
+/**
+ * Amplitude-modulated source waveform
+ * (`AM(VO VMO [VMA [FM [FC [TD [PHASEM [PHASEC]]]]]])`), ngspice-47
+ * semantics: 0 until TD, then
+ * `VO + (VMO + VMA*sin(2*pi*FM*t + PHASEM)) * sin(2*pi*FC*t + PHASEC)` with `t`
+ * measured from TD. Omitted VMA, FM and FC default to 1, `5/TSTOP` and `500/TSTOP`.
+ */
+export interface AmSource {
+  type: 'am';
+  /** Explicit DC operating-point value declared before the waveform. */
+  dc?: number;
+  /** Offset */
+  offset: number;
+  /** Carrier amplitude (modulation offset) */
+  carrierAmplitude: number;
+  /** Modulation amplitude */
+  modulationAmplitude?: number;
+  /** Modulating frequency in Hz */
+  modulationFrequency?: number;
+  /** Carrier frequency in Hz */
+  carrierFrequency?: number;
+  /** Delay in seconds */
+  delay?: number;
+  /** Modulating-signal phase in degrees */
+  modulationPhase?: number;
+  /** Carrier phase in degrees */
+  carrierPhase?: number;
 }
 
 /**
@@ -582,7 +671,8 @@ export interface RFPort {
 
 /** Union of all source waveform types. Discriminated on the `type` field. */
 export type SourceWaveform =
-  (DCSource | PulseSource | SinSource | PWLSource | TransientNoiseSource | TransientRandomSource | ACSource)
+  (DCSource | PulseSource | SinSource | PWLSource | ExpSource | SffmSource | AmSource
+    | TransientNoiseSource | TransientRandomSource | ACSource)
   & SourceACTerm & SourceDistortionTerms;
 
 /** Warning collected during simulation (non-fatal). */
