@@ -10,6 +10,10 @@
  * edge detection whenever the inner sweep returns to its first value
  * (lines 495-521), and parameter words are cut by C `strtok`, which edits the
  * word in place for later parsing passes.
+ *
+ * One deliberate exception: a WHEN crossing between the first two points of
+ * the plot is measured (ngspice-47 counts but drops it, ngspice ticket #574;
+ * spice-ts #811), see measureWhen.
  */
 import type { ControlVector } from '../parser/control/vector.js';
 import { ftNumparse, inpEvaluate } from './numparse.js';
@@ -535,6 +539,9 @@ function measureWhen(meas: Measure, plot: MeasurePlot): string | undefined {
   let first = 0;
   let pending = false;
   let initMeasured = true;
+  // True while `first === 1` comes from a .dc inner-sweep restart, where the
+  // previous point belongs to the previous sweep and is not a neighbour.
+  let restarted = false;
 
   for (let i = 0; i < d.re.length; i++) {
     const value = sample(meas, d, i, ac || sp);
@@ -553,10 +560,15 @@ function measureWhen(meas: Measure, plot: MeasurePlot): string | undefined {
     }
 
     // DC: the inner sweep jumped back to its first value.
-    if (first > 1 && dc && meas.td === scaleValue) first = 1;
+    restarted = false;
+    if (first > 1 && dc && meas.td === scaleValue) {
+      first = 1;
+      restarted = true;
+    }
 
     const reference = hasD2 ? value2 : meas.val;
     const prevReference = hasD2 ? prevValue2 : meas.val;
+    let firstIntervalCrossing = false;
     if (first === 1) {
       crossCnt = 0;
       if (value < reference) {
@@ -564,14 +576,22 @@ function measureWhen(meas: Measure, plot: MeasurePlot): string | undefined {
         if (prevValue >= prevReference) {
           fallCnt = 1;
           crossCnt = 1;
+          if (meas.rise !== MEASURE_LAST_TRANSITION) firstIntervalCrossing = true;
         }
       } else {
         above = true;
         if (prevValue < prevReference) {
           riseCnt = 1;
           crossCnt = 1;
+          if (meas.fall !== MEASURE_LAST_TRANSITION) firstIntervalCrossing = true;
         }
       }
+      // Deliberate divergence from ngspice-47 (#811, ngspice ticket #574):
+      // ngspice counts a crossing between the first two points of the plot
+      // but never measures it, so `.dc v1 0 1 0.05` cannot find v(1)=0.05.
+      // Measure it like any later crossing. A .dc restart is excluded: its
+      // previous point is the end of the previous inner sweep.
+      if (firstIntervalCrossing && !restarted) pending = true;
     }
 
     if (first > 1) {
@@ -586,6 +606,9 @@ function measureWhen(meas: Measure, plot: MeasurePlot): string | undefined {
         fallCnt++;
         if (meas.rise !== MEASURE_LAST_TRANSITION) pending = true;
       }
+    }
+
+    if (first > 1 || pending) {
       const crossing = hasD2
         ? prevScale + ((prevValue2 - prevValue) * (scaleValue - prevScale)) / (value - prevValue - value2 + prevValue2)
         : prevScale + ((meas.val - prevValue) * (scaleValue - prevScale)) / (value - prevValue);
