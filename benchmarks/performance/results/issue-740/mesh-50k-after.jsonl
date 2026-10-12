@@ -1,0 +1,3 @@
+{"circuit":"rc-mesh-ac","nodes":50000,"ms":16707.587875,"cpuMs":17291.605,"points":13,"sha256":"a564a726255867d56c35f6e971d12794211e28d66fe36b6138e040c736933275","probe":"n223_223","variant":"after","round":1}
+{"circuit":"rc-mesh-ac","nodes":50000,"ms":15689.789667000001,"cpuMs":16390.607,"points":13,"sha256":"a564a726255867d56c35f6e971d12794211e28d66fe36b6138e040c736933275","probe":"n223_223","variant":"after","round":2}
+{"circuit":"rc-mesh-ac","nodes":50000,"ms":15710.45725,"cpuMs":16418.764,"points":13,"sha256":"a564a726255867d56c35f6e971d12794211e28d66fe36b6138e040c736933275","probe":"n223_223","variant":"after","round":3}

@@ -1,0 +1,1 @@
+{"circuit":"rc-mesh-ac","nodes":50000,"ms":528393.0768329999,"cpuMs":526548.292,"points":13,"sha256":"f4675d9d67088fe1ae978f28319d957f115b434e77982dfece51b8af5674cd86","probe":"n223_223","variant":"before","round":1,"note":"single unpaired sample, --no-warmup, bounded at 1500 s"}

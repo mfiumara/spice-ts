@@ -297,3 +297,17 @@ Against ngspice-47 KLU (two unpaired runs, 5 samples each), spice-ts analysis ti
 | MOS1 chain | 1.23x / 1.18x slower | 1.12x slower / 0.69x | 0.46x / 0.56x |
 
 The mesh OP is still slower than KLU at every size and still the deck furthest behind; its 50k cell moved from 2.42x (#710 run) to 1.77-1.84x, in the direction of the paired gain, but the engines were not load-paired. The RC 50k and MOS 10k cells flip between runs with load (ngspice's own RC 50k samples ranged 738-1456 ms) and are not claimed as wins; the MOS 50k cell reads spice-ts faster in both runs but spice-ts's own samples there ranged 26.7-51.6 s. Profiles, JSONL, digests, both ngspice tables, the kernel micro-benchmark and remaining scope (the pivot-reuse path and small supernodes, AMD ordering and GC on the mesh, MOS1 stamping, a load-paired engine run) are in `benchmarks/performance/results/issue-727/README.md`.
+
+## Follow-up: fill-reducing column ordering for the complex AC LU ([#740](https://github.com/mfiumara/spice-ts/issues/740))
+
+The complex AC LU (AC, noise, distortion) factored `G + jωC` in natural MNA order. It now orders columns like the real sparse LU: AMD on the union pattern of G and C once per topology, structural column singletons first, the permuted diagonal as preferred pivot, and the #732 ngspice-47 pivot acceptance unchanged. Results agree within round-off, not bit-for-bit: against a frozen copy of the old kernel and dense elimination the backward error stays at most 3.5e-16 on 240 random MNA systems and at most 9.0e-16 on every AC system of six corpus decks (12/12 mutants killed). 91/100 aggregate corpus digests are bit-identical; the 9 AC/noise/disto fixtures move by at most 1.75e-13 of their analysis peak, with no status, grid or signal-list change. Against ngspice-47 on identical decks the probe error is unchanged in order (≤ 1.2e-11 of the sweep peak).
+
+Paired fresh-process A/B (before/after, >1 = faster), generated decks `rc-ladder-ac`, `rc-mesh-ac` (#426 shapes with an AC source) and the #732 `vcvs-ladder-ac`:
+
+| deck | 1k | 10k | 50k |
+|---|---|---|---|
+| RC ladder AC | **0.93x** wall (loss), 0.96x CPU | 1.10x | 1.07x |
+| RC mesh AC | 3.57x | 14.47x (19.7 s to 1.30 s) | about 34x, unpaired (528 s to 15.7 s) |
+| VCVS ladder AC (2000 stages) | 1.35x wall, **0.86x CPU** (loss) | - | - |
+
+In-process steady state the 1k ladder (15 to 12 ms) and the VCVS ladder (254 to 122 ms) are faster too; the fresh-process losses are published as measured. The existing AC generators (`rcChainAC`, BJT/MOS amplifiers, cascode, folded cascode) show no change beyond noise. ngspice-47 KLU still wins every cell: spice-ts is 1.6x / 2.3x / 2.7x slower on the RC ladder, 2.9x / 4.2x / 4.6x on the mesh (before: 64x and 155x at 10k and 50k), and 2.2x on the VCVS ladder, in wall time against a fresh `ngspice -b`. Method, tables, receipts and remaining scope (pivot reuse across frequencies like `NIacIter`, supernodes in the complex kernel) are in `benchmarks/performance/results/issue-740/README.md`.

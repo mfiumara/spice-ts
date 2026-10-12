@@ -578,6 +578,23 @@ Strategy references used by the audit, not copied into the fixtures:
 
 - CI gate: `benchmarks/performance/scaling-m2.test.ts` runs in CI (`build` job) and in `pnpm test`. It takes about a second and needs no ngspice. It checks determinism, node counts, deck directives, the ngspice output parser, and that the generator, the receipt and this table agree on all nine hashes. The timing matrix itself (`pnpm bench:scaling:m2`, about 56 minutes, machine-dependent) is excluded from CI and run by hand; its JSON receipt is the evidence of record.
 
+## AC generated scaling decks, issue #740
+
+- Generator: `benchmarks/performance/results/issue-740/scripts/ac-fixture.mjs` (`rc-ladder-ac`, `rc-mesh-ac`, `vcvs-ladder-ac`). Harness, methodology and published results, losses included: `benchmarks/performance/results/issue-740/README.md` and the #740 section of `benchmarks/PERFORMANCE_BASELINE.md`.
+- Origin: original material generated for this repository. `rc-ladder-ac` and `rc-mesh-ac` are the #426 RC ladder and resistor mesh with an AC source (and 1 pF per mesh node); `vcvs-ladder-ac` is rebuilt from the deck description in issue #740 / #732 (the original deck was not committed). No third-party circuit or model card is used.
+- Licence: MIT, under the repository [licence](../LICENSE). The decks are regenerated deterministically and are not committed as files.
+- Adaptation: none. Each circuit/size yields one byte-identical deck given unchanged to spice-ts and ngspice-47; the ngspice solver (`option klu` / `option sparse`) and print precision (`set numdgt=15`) are set outside the deck by a per-run `.spiceinit`.
+
+| Circuit | Requested size | Emitted nodes | AC points | Deck SHA-256 |
+|---|---|---|---|---|
+| `rc-ladder-ac` | 1000 | 1000 | 71 | `e37ab2a1c1f197c3d872bb293cf0e01b2a2acacf7947839839b669365fe50bef` |
+| `rc-ladder-ac` | 10000 | 10000 | 71 | `90be29fac51cf5f87cca6e9fc4ffaebd50ad10a7e2c443ceb2be06c4a641f0eb` |
+| `rc-ladder-ac` | 50000 | 50000 | 71 | `2b94f30a25ac5772ec89d103d5bbb246899cd74a9826d03f826fd194b64c989e` |
+| `rc-mesh-ac` | 1000 | 1024 | 13 | `b91fae5efb87b9f111c8f068978931b16ec9227d640a01cdbee3f256142ef028` |
+| `rc-mesh-ac` | 10000 | 10000 | 13 | `48df2c984867fdf9611cd5d3ba1d96ec6951ff4073b12cff5bbc5d058b52774b` |
+| `rc-mesh-ac` | 50000 | 50176 | 13 | `2bdba0e73cd47299d6ba5914bfc67733895f98c88f27ec135da10188a80a961f` |
+| `vcvs-ladder-ac` | 2000 stages | 2121 | 451 | `6d50413f0510255e0eabab2dd3c68c4d70b7c0d692a199dbfadbfef73913e327` |
+
 ## Gnucap public corpus E
 
 - Repository: https://github.com/gnucap/gnucap

@@ -1,0 +1,13 @@
+killed       solve skips the column unpermute
+killed       factorize scatters natural columns
+killed       row permutation starts at identity
+killed       default ordering is natural
+killed       no column singletons first
+killed       union pattern ignores C
+killed       union pattern ignores G
+killed       singleton claims the first row, claimed or not
+killed       preferred rows not symmetric (lowest unclaimed)
+killed       backward substitution uses y not z
+killed       relative pivot threshold dropped
+killed       row-swap counter never increments
+12/12 mutants killed
