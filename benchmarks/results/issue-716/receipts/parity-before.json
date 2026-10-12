@@ -1,0 +1,167 @@
+{
+  "source": "committed corpus-g outcomes.json (#711) on main 9048f8cf, the 6 fixtures of bucket \"source: EXP/SFFM/AM waveforms and PWL TD=\"",
+  "fixtures": [
+    {
+      "id": "iexp-iexp-cir",
+      "sourcePath": "Netlists/IEXP/iexp.cir",
+      "sha256": "57d0bdd0174c4b85802549e631962e6f4b7f9d46b5d0e3bdd14c9efc2a4551af",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:59"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 17: Unsupported source waveform 'EXP' IEXP 0 1 EXP(1A 5A 1S 0.2S 2S 0.5S)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+    },
+    {
+      "id": "isffm-isffm-cir",
+      "sourcePath": "Netlists/ISFFM/isffm.cir",
+      "sha256": "37d7d5c249263956fd028472938a244ddbf8a56c371d5b512d5b44639afc2f67",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:208"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 14: Unsupported source waveform 'SFFM' ISSFM 0 1 SFFM(0 5 10KHZ 3 1KHZ)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+    },
+    {
+      "id": "tl1x-tl1x-mpi-cir",
+      "sourcePath": "Netlists/TL1X/TL1X_mpi.cir",
+      "sha256": "ac276aea0d49801729d251cfda311fcd4f35f7fc70eeb980f5a87fe17a7c0057",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:3008"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 6: Unsupported source waveform 'EXP' VSLOW 1 22 DC 0 EXP(0v 10v 3ms 10ms 200ms 10ms)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+    },
+    {
+      "id": "vexp-vexp-cir",
+      "sourcePath": "Netlists/VEXP/vexp.cir",
+      "sha256": "69847ed11e03e8c810d376ac1f5e116c5c4f461012dccd29c21c3cb9e823b3ea",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:59"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 14: Unsupported source waveform 'EXP' VEXP 1 0 EXP(0V 5V 1US 1US 1S)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+    },
+    {
+      "id": "vpwl-vpwl-cir",
+      "sourcePath": "Netlists/VPWL/vpwl.cir",
+      "sha256": "2566eaf4e46da8225face26c0bb756866cbf164d5e3dc5451beee09436bdd12d",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:3146"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 40: Unsupported PWL source parameters: 'TD=1' VPWL4 4 0 PWL(0S 0V 2S 3V 3S 2V 4S 2V 4.01V 5V 4.5S 5V 4.51S -2V 7S 1V 9S -1V 9.01S 4V 10S 3V) TD=1"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+    },
+    {
+      "id": "vsffm-vsffm-cir",
+      "sourcePath": "Netlists/VSFFM/vsffm.cir",
+      "sha256": "abe707a6983674c1a7d44375ae08db94a6f57ac82cf507f1676a91413aca733e",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1008"
+        ]
+      },
+      "spiceTs": {
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "Parse error at line 14: Unsupported source waveform 'SFFM' VSSFM 1 0 SFFM(0 1 1MEG 2 250K)"
+      },
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "source: EXP/SFFM/AM waveforms and PWL TD="
+    }
+  ]
+}
