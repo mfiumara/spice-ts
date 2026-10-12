@@ -210,8 +210,8 @@ export function solveNoise(
     .filter((device): device is MOSFET => device instanceof MOSFET)
     .flatMap(mosfet => {
       const operatingPoint = mosfet.noiseOperatingPoint(dcSolution);
-      const { W, KF, AF, TOX } = mosfet.params;
-      // mos1noi.c: the flicker density divides by W * (L - 2*LD).
+      const { W, KF, AF, TOX, M } = mosfet.params;
+      // mos1noi.c (NLEV=2): KF * gm^2 / M over W * (L - 2*LD); gm already carries M.
       const L = mosfet.effectiveLength;
       const oxideCapacitance = 3.9 * 8.854214871e-12 / (TOX ?? 1e-7);
       const sources = [{
@@ -226,7 +226,7 @@ export function solveNoise(
           negative: operatingPoint.sourceNode,
           currentPowerDensity: (frequency: number) => KF
             * operatingPoint.transconductance * operatingPoint.transconductance
-            / (Math.pow(frequency, AF) * W * L * oxideCapacitance),
+            / (M * Math.pow(frequency, AF) * W * L * oxideCapacitance),
         });
       }
       return sources;
