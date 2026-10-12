@@ -944,34 +944,62 @@ function applyForwardKnee(
   };
 }
 
-/**
- * Recently solved breakdown knees, keyed on every input of
- * {@link solveBreakdownKneeVoltage}. ngspice-47 solves the knee once per
- * temperature in diotemp.c (tBrkdwnV); spice-ts used to re-run the 26-log fixed
- * point on every junction evaluation, which was the top self-time frame on
- * diode-heavy transient decks (#549). The fit is a pure function of these five
- * numbers, so a hit returns the identical double.
+function breakdownKneeVoltage(
+  breakdown: BreakdownParams,
+  saturationCurrent: number,
+): number {
+  const { voltage, current, thermalVoltage, junctionThermalVoltage } = breakdown;
+  // ngspice-47 diotemp.c:231-235: the log term scales with NBV*vt, while the
+  // linear reverse-leakage term -xbv/vt uses plain vt.
+  const slot = findCachedKnee(voltage, current, thermalVoltage, junctionThermalVoltage, saturationCurrent);
+  if (slot >= 0) return kneeCacheValues[slot];
+  let knee = voltage - thermalVoltage * Math.log1p(current / saturationCurrent);
+  for (let iteration = 0; iteration < 25; iteration++) {
+    knee = voltage - thermalVoltage
+      * Math.log(current / saturationCurrent + 1 - knee / junctionThermalVoltage);
+  }
+  return cacheKnee(voltage, current, thermalVoltage, junctionThermalVoltage, saturationCurrent, knee);
+}
+
+/*
+ * Recently solved breakdown knees, keyed on every input of the fit above.
+ * ngspice-47 solves the knee once per temperature in diotemp.c (tBrkdwnV);
+ * spice-ts used to re-run the 26-log fixed point on every junction evaluation,
+ * which was the top self-time frame on diode-heavy transient decks (#549). The
+ * fit is a pure function of these five numbers, so a hit returns the identical
+ * double.
  */
 const KNEE_CACHE_SIZE = 16;
 const kneeCacheKeys = new Float64Array(KNEE_CACHE_SIZE * 5).fill(Number.NaN);
 const kneeCacheValues = new Float64Array(KNEE_CACHE_SIZE);
 let kneeCacheNext = 0;
 
-/** @internal Exported for the memo transparency test. */
-export function breakdownKneeVoltage(
-  breakdown: BreakdownParams,
+function findCachedKnee(
+  voltage: number,
+  current: number,
+  thermalVoltage: number,
+  junctionThermalVoltage: number,
   saturationCurrent: number,
 ): number {
-  const { voltage, current, thermalVoltage, junctionThermalVoltage } = breakdown;
   for (let entry = 0, key = 0; entry < KNEE_CACHE_SIZE; entry++, key += 5) {
     if (kneeCacheKeys[key] === voltage && kneeCacheKeys[key + 1] === current
         && kneeCacheKeys[key + 2] === thermalVoltage
         && kneeCacheKeys[key + 3] === junctionThermalVoltage
         && kneeCacheKeys[key + 4] === saturationCurrent) {
-      return kneeCacheValues[entry];
+      return entry;
     }
   }
-  const knee = solveBreakdownKneeVoltage(breakdown, saturationCurrent);
+  return -1;
+}
+
+function cacheKnee(
+  voltage: number,
+  current: number,
+  thermalVoltage: number,
+  junctionThermalVoltage: number,
+  saturationCurrent: number,
+  knee: number,
+): number {
   const key = kneeCacheNext * 5;
   kneeCacheKeys[key] = voltage;
   kneeCacheKeys[key + 1] = current;
@@ -983,21 +1011,14 @@ export function breakdownKneeVoltage(
   return knee;
 }
 
-/** @internal ngspice-47 diotemp.c breakdown knee fit, uncached. */
-export function solveBreakdownKneeVoltage(
-  breakdown: BreakdownParams,
-  saturationCurrent: number,
-): number {
-  const { voltage, current, thermalVoltage, junctionThermalVoltage } = breakdown;
-  // ngspice-47 diotemp.c:231-235: the log term scales with NBV*vt, while the
-  // linear reverse-leakage term -xbv/vt uses plain vt.
-  let knee = voltage - thermalVoltage * Math.log1p(current / saturationCurrent);
-  for (let iteration = 0; iteration < 25; iteration++) {
-    knee = voltage - thermalVoltage
-      * Math.log(current / saturationCurrent + 1 - knee / junctionThermalVoltage);
-  }
-  return knee;
-}
+/** @internal Test hook: the knee as the memo returns it, and a cache reset. */
+export const breakdownKneeMemoForTest = {
+  knee: breakdownKneeVoltage,
+  clear(): void {
+    kneeCacheKeys.fill(Number.NaN);
+    kneeCacheNext = 0;
+  },
+};
 
 /**
  * ngspice-47 dioload.c junction limiting: DEVpnjlim on the forward junction,
