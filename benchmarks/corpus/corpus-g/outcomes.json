@@ -43,15 +43,15 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 104,
+      "success": 107,
       "failed": 6,
-      "unsupported": 18
+      "unsupported": 15
     },
     "outcomes": {
-      "matched": 86,
-      "mismatch": 18,
+      "matched": 88,
+      "mismatch": 19,
       "not-compared": 0,
-      "spice-ts-loss": 24,
+      "spice-ts-loss": 21,
       "ngspice-failed": 0,
       "both-failed": 0
     }
@@ -74,18 +74,6 @@
         "vanoise-commonemitterbjt-mextram-cir"
       ],
       "issue": null
-    },
-    {
-      "bucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)",
-      "fixtures": 4,
-      "ngspiceSuccess": 4,
-      "ids": [
-        "bsimsoi3-b3soitrandefaults-cir",
-        "ekv26-inverter-transient-ekv26-cir",
-        "psp102-idvg0-id-t27-pmos-cir",
-        "psp103-invert-psp-testdta0-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/747"
     },
     {
       "bucket": "execution: other failure",
@@ -152,6 +140,15 @@
         "sens-bsim4-issue694-fd-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/3"
+    },
+    {
+      "bucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "bsimsoi3-b3soitrandefaults-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/747"
     }
   ],
   "fixtures": [
@@ -1262,16 +1259,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'Xinv1.Mp1' (model 'pmos1') uses unsupported model LEVEL=260 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
+        "status": "success",
+        "analyses": [
+          "tran:507"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 0.00225,
+      "worstSignal": "tran i(vdd)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "embedded-printline-for-embedded-cmosinverter-cir",
@@ -2831,16 +2829,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'x1.m1' (model 'mymodel') uses unsupported model LEVEL=102 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
+        "status": "success",
+        "analyses": [
+          "dc:221"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 16,
+      "worstNormalizedError": 1.08e-15,
+      "worstSignal": "dc i(v_s)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "psp103-invert-psp-testdta0-cir",
@@ -2858,16 +2857,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'XINV1.MN1' (model 'pspqan') uses unsupported model LEVEL=103 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
+        "status": "success",
+        "analyses": [
+          "tran:2071"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.0102,
+      "worstSignal": "tran v(vout)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "resistor-td-temp-dep-cir",
@@ -3734,5 +3734,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "60bd12e121c340ab4c1b483aa7106d3419002aad2a3a735c3459b9df7f27d704"
+  "outcomeSha256": "e6a41100022d780f6ec3bc69f6d04d82e541b9c40e63664fb5d5b76a9de3d706"
 }

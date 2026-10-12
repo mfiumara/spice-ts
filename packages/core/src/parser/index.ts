@@ -633,7 +633,7 @@ function parseDotCommand(
       assertSupportedModelType(tokens, lineNumber, context);
       assertSupportedResistorModel(tokens, lineNumber, context);
       const model = parseTransmissionLineModelCard(tokens, lineNumber)
-        ?? parseModelCard(tokens, lineNumber);
+        ?? parseModelCard(tokens, lineNumber, message => circuit.addParseWarning(message));
       circuit.addModel(model);
       break;
     }
