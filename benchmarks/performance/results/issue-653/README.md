@@ -188,6 +188,53 @@ moments and load, so compare shares, not ms):
 | MOS 1k | `batchStamp` | 648.5 (42.8%) | 495.7 (38.3%) |
 | MOS 1k | total sampled | 1517.0 | 1294.2 |
 
+## 3b. Re-run after merging main `3d38158` (`ab-concurrent-main-3d38158.jsonl`)
+
+Main moved 14 commits while this PR waited, among them #664 (MOS1 bulk
+junction limiting now blocks Newton convergence, mos1load.c icheck ->
+CKTnoncon), #658 (MOS2), #661 (BSIM3 charge model), #665 and #671. The merge
+keeps #664's semantics in the batched path: `mos1BulkJunctions` also returns
+whether DEVpnjlim changed the junction voltage, and both `stamp` and
+`batchStamp` store it in a fourth `MosfetStateStore` slot that
+`limitedLastStamp()` reads. `mosfet-batch-state.test.ts` now also checks
+that `limitedLastStamp()` agrees between batched and per-device stamping on
+every pass (dropping the `batchStamp` write fails it and #664's
+`mosfet-junction-noncon.test.ts`).
+
+Same method as section 3: `ab.mjs <main-3d38158-dist> <merge-dist> 9 ...
+--concurrent`, 9 rounds, merge commit `a46b713` against main `3d38158`.
+Same machine, still shared with other lanes.
+
+Process CPU time:
+
+| cell | n | before median (min) CPU ms | after median (min) CPU ms | median speedup | paired ratio median (min..max) | hash identical |
+|---|---:|---:|---:|---:|---:|---|
+| rc-ladder-tran:1000 (control) | 9 | 245 (176) | 246 (178) | 1.00x | 1.00x (0.98..1.00) | yes ac5d6929fc25a221, 235 pts |
+| rc-ladder-tran:10000 (control) | 9 | 923 (745) | 944 (717) | 0.98x | 0.99x (0.98..1.06) | yes e59b4235d4c157c7, 235 pts |
+| resistor-mesh-op:10000 (control) | 9 | 387 (299) | 378 (303) | 1.02x | 1.00x (0.96..1.04) | yes 73da68241f2c6ad6, 1 pts |
+| cmos-inverter-chain-tran:1000 | 9 | 915 (758) | 800 (653) | 1.14x | 1.17x (1.09..1.32) | yes 04a9fa4f0f067778, 654 pts |
+| cmos-inverter-chain-tran:10000 | 9 | 9479 (8841) | 6827 (5503) | 1.39x | 1.44x (1.27..1.61) | yes a3f30d5252ca3690, 654 pts |
+
+Wall time:
+
+| cell | n | before median (min) ms | after median (min) ms | median speedup | paired ratio median (min..max) | hash identical |
+|---|---:|---:|---:|---:|---:|---|
+| rc-ladder-tran:1000 (control) | 9 | 97.4 (69.0) | 95.7 (71.0) | 1.02x | 1.00x (0.97..1.02) | yes ac5d6929fc25a221, 235 pts |
+| rc-ladder-tran:10000 (control) | 9 | 607 (495) | 621 (486) | 0.98x | 0.99x (0.97..1.03) | yes e59b4235d4c157c7, 235 pts |
+| resistor-mesh-op:10000 (control) | 9 | 236 (189) | 242 (189) | 0.98x | 1.00x (0.97..1.01) | yes 73da68241f2c6ad6, 1 pts |
+| cmos-inverter-chain-tran:1000 | 9 | 684 (561) | 569 (469) | 1.20x | 1.20x (1.12..1.51) | yes 04a9fa4f0f067778, 654 pts |
+| cmos-inverter-chain-tran:10000 | 9 | 9007 (8442) | 6300 (5023) | 1.43x | 1.51x (1.22..1.68) | yes a3f30d5252ca3690, 654 pts |
+
+Every sample of both builds hashes the same per cell, and the hashes equal
+the section 2 hashes: #664 does not change these decks' waveforms. The MOS
+chain wins are larger than in section 3 (1k: 1.17x CPU paired vs 1.04x;
+10k: 1.44x vs 1.27x). That difference was not profiled, and the spread is
+wide under shared load, so read it as "at least as good as section 3", not
+as a new number to quote. The controls are 0.99x-1.00x
+(paired medians); rc-ladder 10k is a 1% loss on both CPU and wall, within its
+0.97..1.06 spread. The 50k MOS cell and the ngspice tables (section 4) were
+not re-run after the merge.
+
 ## 4. spice-ts vs ngspice-47 (KLU), same machine, same decks, 1k/10k/50k
 
 `pnpm bench:scaling:m2` harness, run as
