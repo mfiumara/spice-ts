@@ -1,0 +1,3246 @@
+{
+  "schemaVersion": 1,
+  "issue": "https://github.com/mfiumara/spice-ts/issues/834",
+  "redistributionDecision": "Allowed per source under its repository-wide licence (table below); each source's licence files are retained byte-identical under licenses/<key>/. The decks are redistributed verbatim as separate benchmark data files: test inputs, not linked into or distributed with any MIT-licensed spice-ts package. Decks that carry their own copyright or licence notice are excluded and not committed.",
+  "mechanicalAdaptation": "None. Every fixture is byte-identical to its pinned upstream revision (SHA-256 pinned per file), and both engines read the same bytes.",
+  "sources": [
+    {
+      "key": "esim",
+      "name": "FOSSEE eSim example circuits",
+      "repository": "https://github.com/FOSSEE/eSim",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "license": "GPL-3.0-only",
+      "licenseBasis": "Repository-wide GNU GPL v3 (`LICENSE`; README \"eSim is licensed under the GNU General Public License v3.0\"). The only nested licence file (`src/converter/LTSpiceToKiCadConverter/LICENSE`) is outside the `Examples/` root.",
+      "licenseFiles": [
+        {
+          "sourcePath": "LICENSE",
+          "sourceUrl": "https://github.com/FOSSEE/eSim/blob/1a25a46ce15e0ccc35296dd513f40249c089a5a7/LICENSE",
+          "localPath": "benchmarks/corpus/corpus-i/licenses/esim/LICENSE",
+          "sha256": "12ac5047f2af0522f06798b1589ffc4599bc29c91f954d7874e0320634e777c0"
+        }
+      ],
+      "roots": [
+        "Examples/"
+      ],
+      "skippedPrefixes": [],
+      "candidates": 175,
+      "selected": 13
+    },
+    {
+      "key": "kicad",
+      "name": "KiCad EDA simulation demos",
+      "repository": "https://gitlab.com/kicad/code/kicad",
+      "revision": "240efadec4b408919fef7e79deb54ac7c1269597",
+      "license": "CC-BY-SA-4.0",
+      "licenseBasis": "`LICENSE.README`: \"Licensed under CC BY-SA 4.0: All the demo files provided in demos/*\". CC BY-SA 4.0 permits verbatim redistribution with attribution; the licence text is retained. Only SPICE text committed upstream is a candidate: `.kicad_sch` schematics are not netlists, and a kicad-cli export would be an adaptation.",
+      "licenseFiles": [
+        {
+          "sourcePath": "LICENSE.README",
+          "sourceUrl": "https://gitlab.com/kicad/code/kicad/-/blob/240efadec4b408919fef7e79deb54ac7c1269597/LICENSE.README",
+          "localPath": "benchmarks/corpus/corpus-i/licenses/kicad/LICENSE.README",
+          "sha256": "05ed7ad379869c36a12a7c3702cc37e620d75c8532943ce9cf577b9b04a7f270"
+        },
+        {
+          "sourcePath": "LICENSE.CC-BY-SA-4.0",
+          "sourceUrl": "https://gitlab.com/kicad/code/kicad/-/blob/240efadec4b408919fef7e79deb54ac7c1269597/LICENSE.CC-BY-SA-4.0",
+          "localPath": "benchmarks/corpus/corpus-i/licenses/kicad/LICENSE.CC-BY-SA-4.0",
+          "sha256": "00ba11b9a22d453aed299954eaca389d8efef441a4673d84e2dc4ae10ebc7ca5"
+        }
+      ],
+      "roots": [
+        "demos/simulation/"
+      ],
+      "skippedPrefixes": [],
+      "candidates": 1,
+      "selected": 0
+    },
+    {
+      "key": "ngspice-cmos",
+      "name": "ngspice-cmos (NGSPICE simulation of CMOS circuits, FreePDK45)",
+      "repository": "https://github.com/Teddy-van-Jerry/ngspice-cmos",
+      "revision": "9f470c6d2558dc3d63fc21681dbdc131a7fea095",
+      "license": "MIT",
+      "licenseBasis": "Repository-wide MIT licence (`LICENSE`, \"Copyright (c) 2023 Wuqiong Zhao (Teddy van Jerry)\"; README \"distributed by an MIT license\"), retained as the MIT notice requires.",
+      "licenseFiles": [
+        {
+          "sourcePath": "LICENSE",
+          "sourceUrl": "https://github.com/Teddy-van-Jerry/ngspice-cmos/blob/9f470c6d2558dc3d63fc21681dbdc131a7fea095/LICENSE",
+          "localPath": "benchmarks/corpus/corpus-i/licenses/ngspice-cmos/LICENSE",
+          "sha256": "f0c29838b394194d8158d03dbeb17494f128301dafffbf82a403a180f2848611"
+        }
+      ],
+      "roots": [
+        ""
+      ],
+      "skippedPrefixes": [],
+      "candidates": 8,
+      "selected": 0
+    },
+    {
+      "key": "rioslinares",
+      "name": "ngspice-examples (gEDA/ngspice RC low-pass examples)",
+      "repository": "https://github.com/danielrioslinares/ngspice-examples",
+      "revision": "a8f956378acff356a071d974df894c70b37067b0",
+      "license": "GPL-3.0-only",
+      "licenseBasis": "Repository-wide GNU GPL v3 (`LICENSE`, GitHub licence metadata gpl-3.0).",
+      "licenseFiles": [
+        {
+          "sourcePath": "LICENSE",
+          "sourceUrl": "https://github.com/danielrioslinares/ngspice-examples/blob/a8f956378acff356a071d974df894c70b37067b0/LICENSE",
+          "localPath": "benchmarks/corpus/corpus-i/licenses/rioslinares/LICENSE",
+          "sha256": "589ed823e9a84c56feb95ac58e7cf384626b9cbf4fda2a907bc36e103de1bad2"
+        }
+      ],
+      "roots": [
+        ""
+      ],
+      "skippedPrefixes": [],
+      "candidates": 12,
+      "selected": 0
+    },
+    {
+      "key": "vacask",
+      "name": "VACASK simulator benchmarks and demos",
+      "repository": "https://codeberg.org/arpadbuermen/VACASK",
+      "revision": "fb8cc2055a4f10cff1de8017b554d22ea57ce448",
+      "license": "AGPL-3.0-only",
+      "licenseBasis": "Repository-wide GNU AGPL v3 (`LICENSE`; README \"free software released under the GNU Affero General Public License 3.0\"). The `benchmark/<circuit>/ngspice*/` decks are VACASK's own ngspice reference netlists; the VACASK, Xyce and Gnucap variants are candidates too and are decided by the ngspice probe.",
+      "licenseFiles": [
+        {
+          "sourcePath": "LICENSE",
+          "sourceUrl": "https://codeberg.org/arpadbuermen/VACASK/src/commit/fb8cc2055a4f10cff1de8017b554d22ea57ce448/LICENSE",
+          "localPath": "benchmarks/corpus/corpus-i/licenses/vacask/LICENSE",
+          "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0"
+        }
+      ],
+      "roots": [
+        ""
+      ],
+      "skippedPrefixes": [],
+      "candidates": 271,
+      "selected": 12
+    }
+  ],
+  "selection": {
+    "deckExtensions": "\\.(cir|sp|net|ckt|spi|deck|cki|spice|sim|cir\\.out)$",
+    "perDirectoryCap": 16,
+    "probe": {
+      "tool": "ngspice-47",
+      "timeoutMs": 60000,
+      "receipt": "benchmarks/corpus/corpus-i/ngspice-probe.json",
+      "receiptSha256": "fc45a55721a5ba6552880b6a6df5b685ea01b2fde0c2910c4187f70ecb2be462"
+    },
+    "candidates": 467,
+    "selected": 25,
+    "excluded": {
+      "skipped-path": 0,
+      "already-in-corpus": 0,
+      "duplicate-content": 31,
+      "licence": 1,
+      "not-utf8": 0,
+      "host-command": 8,
+      "not-self-contained": 195,
+      "no-analysis": 190,
+      "ngspice-no-reference": 17,
+      "directory-cap": 0
+    },
+    "licences": {
+      "GPL-3.0-only": 13,
+      "AGPL-3.0-only": 12
+    },
+    "rules": [
+      "Candidates: every git-tracked file at the pinned revision of each source, under the listed roots, whose name ends in .cir, .sp, .net, .ckt, .spi, .deck, .cki, .spice, .sim or .cir.out.",
+      "skipped-path: the path is under a prefix the source table skips, with the reason given there.",
+      "already-in-corpus: the bytes (or the bytes without a terminal newline) hash-match a fixture of an existing public corpus (every other directory under benchmarks/corpus, including corpus-h and ngspice-bugs).",
+      "duplicate-content: the bytes hash-match an earlier candidate (sources in key order, paths sorted); the first is kept.",
+      "licence: the deck carries a copyright or licence notice that the repository-wide licence cannot be assumed to cover (corpus-f rule, unchanged). Not committed.",
+      "not-utf8: the bytes are not lossless UTF-8, so spice-ts cannot receive the identical deck through its string API.",
+      "host-command: the deck runs shell or gnuplot commands on the host.",
+      "not-self-contained: the deck loads another file (.include/.lib/OSDI/source) or names a sibling upstream file, so it cannot run unchanged in an isolated directory.",
+      "no-analysis: no analysis card or control-block analysis command.",
+      "ngspice-no-reference: ngspice-47 run on the identical bytes (batch mode, 60 s bound) did not exit 0 with at least one op/dc/ac/tran/pz/noise/disto plot in its raw file, so there is no reference to compare against. The probe result and ngspice's first error line are recorded in ngspice-probe.json. spice-ts is not run during selection.",
+      "directory-cap: at most 16 decks per upstream directory (per source), first in path order, among decks that passed every rule above. Capped decks are listed below for later batches."
+    ]
+  },
+  "circuits": [
+    {
+      "id": "esim-examples-4-bit-jk-ff-4-bit-jk-ff-cir-out",
+      "source": "esim",
+      "upstreamPath": "Examples/4_bit_JK_ff/4_bit_JK_ff.cir.out",
+      "sourcePath": "esim/Examples/4_bit_JK_ff/4_bit_JK_ff.cir.out",
+      "sourceUrl": "https://github.com/FOSSEE/eSim/blob/1a25a46ce15e0ccc35296dd513f40249c089a5a7/Examples/4_bit_JK_ff/4_bit_JK_ff.cir.out",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/esim/Examples/4_bit_JK_ff/4_bit_JK_ff.cir.out",
+      "sha256": "27f0e501541885e458a9eb8c74b5437a0b6caf594ba83d9a317bdeb80ab15666",
+      "bytes": 4578,
+      "licence": "GPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "esim-examples-basicgates-basicgates-cir-out",
+      "source": "esim",
+      "upstreamPath": "Examples/BasicGates/BasicGates.cir.out",
+      "sourcePath": "esim/Examples/BasicGates/BasicGates.cir.out",
+      "sourceUrl": "https://github.com/FOSSEE/eSim/blob/1a25a46ce15e0ccc35296dd513f40249c089a5a7/Examples/BasicGates/BasicGates.cir.out",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/esim/Examples/BasicGates/BasicGates.cir.out",
+      "sha256": "0fb66c6f57e97417a7a4b8558e002ba1a536fec33a7b5721904ebdde68652dc2",
+      "bytes": 2224,
+      "licence": "GPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "esim-examples-fulladder-half-adder-cir-out",
+      "source": "esim",
+      "upstreamPath": "Examples/FullAdder/half_adder.cir.out",
+      "sourcePath": "esim/Examples/FullAdder/half_adder.cir.out",
+      "sourceUrl": "https://github.com/FOSSEE/eSim/blob/1a25a46ce15e0ccc35296dd513f40249c089a5a7/Examples/FullAdder/half_adder.cir.out",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/esim/Examples/FullAdder/half_adder.cir.out",
+      "sha256": "59a2cd60854b17cdb9174145553f4757568fcc85a77b8904726c0bde004a91a6",
+      "bytes": 533,
+      "licence": "GPL-3.0-only",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "esim-examples-high-pass-filter-high-pass-filter-cir-out",
+      "source": "esim",
+      "upstreamPath": "Examples/High_Pass_Filter/High_Pass_Filter.cir.out",
+      "sourcePath": "esim/Examples/High_Pass_Filter/High_Pass_Filter.cir.out",
+      "sourceUrl": "https://github.com/FOSSEE/eSim/blob/1a25a46ce15e0ccc35296dd513f40249c089a5a7/Examples/High_Pass_Filter/High_Pass_Filter.cir.out",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/esim/Examples/High_Pass_Filter/High_Pass_Filter.cir.out",
+      "sha256": "4d22d93f19021b4fff7c08f7a8f5d2ac01e5794ae7768d34390d6726c1fc4351",
+      "bytes": 334,
+      "licence": "GPL-3.0-only",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "esim-examples-jk-flipflop-jk-flipflop-cir-out",
+      "source": "esim",
+      "upstreamPath": "Examples/JK_Flipflop/JK_Flipflop.cir.out",
+      "sourcePath": "esim/Examples/JK_Flipflop/JK_Flipflop.cir.out",
+      "sourceUrl": "https://github.com/FOSSEE/eSim/blob/1a25a46ce15e0ccc35296dd513f40249c089a5a7/Examples/JK_Flipflop/JK_Flipflop.cir.out",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/esim/Examples/JK_Flipflop/JK_Flipflop.cir.out",
+      "sha256": "0e302d54e56d2fe0015711913f25b5aec1fa78a35266bc53bb9dfde46920b224",
+      "bytes": 1931,
+      "licence": "GPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "esim-examples-low-pass-filter-low-pass-filter-cir-out",
+      "source": "esim",
+      "upstreamPath": "Examples/Low_Pass_Filter/Low_Pass_Filter.cir.out",
+      "sourcePath": "esim/Examples/Low_Pass_Filter/Low_Pass_Filter.cir.out",
+      "sourceUrl": "https://github.com/FOSSEE/eSim/blob/1a25a46ce15e0ccc35296dd513f40249c089a5a7/Examples/Low_Pass_Filter/Low_Pass_Filter.cir.out",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/esim/Examples/Low_Pass_Filter/Low_Pass_Filter.cir.out",
+      "sha256": "a05d40a505bfdc22a5816a355e362816e9b221692a3a731b33e8736fecd8e807",
+      "bytes": 334,
+      "licence": "GPL-3.0-only",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "esim-examples-parallel-resonance-parallel-resonance-cir-out",
+      "source": "esim",
+      "upstreamPath": "Examples/Parallel_Resonance/Parallel_Resonance.cir.out",
+      "sourcePath": "esim/Examples/Parallel_Resonance/Parallel_Resonance.cir.out",
+      "sourceUrl": "https://github.com/FOSSEE/eSim/blob/1a25a46ce15e0ccc35296dd513f40249c089a5a7/Examples/Parallel_Resonance/Parallel_Resonance.cir.out",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/esim/Examples/Parallel_Resonance/Parallel_Resonance.cir.out",
+      "sha256": "565f24d0cc1becff6a8b53aef2a893699717e613c9b922eee37e8ef4cc9b7e7f",
+      "bytes": 341,
+      "licence": "GPL-3.0-only",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "esim-examples-rc-rc-cir-out",
+      "source": "esim",
+      "upstreamPath": "Examples/RC/RC.cir.out",
+      "sourcePath": "esim/Examples/RC/RC.cir.out",
+      "sourceUrl": "https://github.com/FOSSEE/eSim/blob/1a25a46ce15e0ccc35296dd513f40249c089a5a7/Examples/RC/RC.cir.out",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/esim/Examples/RC/RC.cir.out",
+      "sha256": "16ad099fa0137e0ff9d3baf55342de52b63252b6c6c0e645aaf81bd23c194593",
+      "bytes": 310,
+      "licence": "GPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "esim-examples-rl-rl-cir-out",
+      "source": "esim",
+      "upstreamPath": "Examples/RL/RL.cir.out",
+      "sourcePath": "esim/Examples/RL/RL.cir.out",
+      "sourceUrl": "https://github.com/FOSSEE/eSim/blob/1a25a46ce15e0ccc35296dd513f40249c089a5a7/Examples/RL/RL.cir.out",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/esim/Examples/RL/RL.cir.out",
+      "sha256": "6de917c92ca113be2ec027c23e749327f196b699f9f777145f79ae15fdacc93e",
+      "bytes": 311,
+      "licence": "GPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "esim-examples-rlc-rlc-cir-out",
+      "source": "esim",
+      "upstreamPath": "Examples/RLC/RLC.cir.out",
+      "sourcePath": "esim/Examples/RLC/RLC.cir.out",
+      "sourceUrl": "https://github.com/FOSSEE/eSim/blob/1a25a46ce15e0ccc35296dd513f40249c089a5a7/Examples/RLC/RLC.cir.out",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/esim/Examples/RLC/RLC.cir.out",
+      "sha256": "599e0fb1530011b74f1b77ce08508e9801a37c237304f1cfed4b5f5922b074a2",
+      "bytes": 326,
+      "licence": "GPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "esim-examples-series-resonance-series-resonance-cir-out",
+      "source": "esim",
+      "upstreamPath": "Examples/Series_Resonance/Series_Resonance.cir.out",
+      "sourcePath": "esim/Examples/Series_Resonance/Series_Resonance.cir.out",
+      "sourceUrl": "https://github.com/FOSSEE/eSim/blob/1a25a46ce15e0ccc35296dd513f40249c089a5a7/Examples/Series_Resonance/Series_Resonance.cir.out",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/esim/Examples/Series_Resonance/Series_Resonance.cir.out",
+      "sha256": "39af0e0b85b1f1aff937533fa922220a28e026318e897c47d09ecbf69d1be49b",
+      "bytes": 338,
+      "licence": "GPL-3.0-only",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "esim-examples-transformer-transformer-cir-out",
+      "source": "esim",
+      "upstreamPath": "Examples/Transformer/Transformer.cir.out",
+      "sourcePath": "esim/Examples/Transformer/Transformer.cir.out",
+      "sourceUrl": "https://github.com/FOSSEE/eSim/blob/1a25a46ce15e0ccc35296dd513f40249c089a5a7/Examples/Transformer/Transformer.cir.out",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/esim/Examples/Transformer/Transformer.cir.out",
+      "sha256": "2b16dd3f061b359955841e545caeea050dfb5ad28779186da7b11acbd5de8f07",
+      "bytes": 874,
+      "licence": "GPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "esim-examples-zener-characteristic-zener-characteristic-cir-out",
+      "source": "esim",
+      "upstreamPath": "Examples/Zener_Characteristic/Zener_Characteristic.cir.out",
+      "sourcePath": "esim/Examples/Zener_Characteristic/Zener_Characteristic.cir.out",
+      "sourceUrl": "https://github.com/FOSSEE/eSim/blob/1a25a46ce15e0ccc35296dd513f40249c089a5a7/Examples/Zener_Characteristic/Zener_Characteristic.cir.out",
+      "revision": "1a25a46ce15e0ccc35296dd513f40249c089a5a7",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/esim/Examples/Zener_Characteristic/Zener_Characteristic.cir.out",
+      "sha256": "f5e26f798363fd041ce1b0b5cf6bcea22c4ab74f86dfbac9664a9d1cdadb275e",
+      "bytes": 531,
+      "licence": "GPL-3.0-only",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "vacask-benchmark-graetz-xyce-runme-sim",
+      "source": "vacask",
+      "upstreamPath": "benchmark/graetz/xyce/runme.sim",
+      "sourcePath": "vacask/benchmark/graetz/xyce/runme.sim",
+      "sourceUrl": "https://codeberg.org/arpadbuermen/VACASK/src/commit/fb8cc2055a4f10cff1de8017b554d22ea57ce448/benchmark/graetz/xyce/runme.sim",
+      "revision": "fb8cc2055a4f10cff1de8017b554d22ea57ce448",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/vacask/benchmark/graetz/xyce/runme.sim",
+      "sha256": "4b343ae26516665e4dd9f454a098b3f26f1968d5fc53939c04ee789aa83c1162",
+      "bytes": 644,
+      "licence": "AGPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "vacask-benchmark-mul-xyce-runme-sim",
+      "source": "vacask",
+      "upstreamPath": "benchmark/mul/xyce/runme.sim",
+      "sourcePath": "vacask/benchmark/mul/xyce/runme.sim",
+      "sourceUrl": "https://codeberg.org/arpadbuermen/VACASK/src/commit/fb8cc2055a4f10cff1de8017b554d22ea57ce448/benchmark/mul/xyce/runme.sim",
+      "revision": "fb8cc2055a4f10cff1de8017b554d22ea57ce448",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/vacask/benchmark/mul/xyce/runme.sim",
+      "sha256": "5b115709df18072e2c49ec52614cc8c3d0620237e69f6b4fee57cfbc800ea0a2",
+      "bytes": 533,
+      "licence": "AGPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "vacask-benchmark-rc-xyce-runme-sim",
+      "source": "vacask",
+      "upstreamPath": "benchmark/rc/xyce/runme.sim",
+      "sourcePath": "vacask/benchmark/rc/xyce/runme.sim",
+      "sourceUrl": "https://codeberg.org/arpadbuermen/VACASK/src/commit/fb8cc2055a4f10cff1de8017b554d22ea57ce448/benchmark/rc/xyce/runme.sim",
+      "revision": "fb8cc2055a4f10cff1de8017b554d22ea57ce448",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/vacask/benchmark/rc/xyce/runme.sim",
+      "sha256": "1f328abf869a649d4d4b0dc0edd653c16ad5e3b4bf2788ad15b09bdae6abc682",
+      "bytes": 353,
+      "licence": "AGPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "vacask-benchmark-vadistiller-bjtring-xyce-runme-sim",
+      "source": "vacask",
+      "upstreamPath": "benchmark/vadistiller/bjtring/xyce/runme.sim",
+      "sourcePath": "vacask/benchmark/vadistiller/bjtring/xyce/runme.sim",
+      "sourceUrl": "https://codeberg.org/arpadbuermen/VACASK/src/commit/fb8cc2055a4f10cff1de8017b554d22ea57ce448/benchmark/vadistiller/bjtring/xyce/runme.sim",
+      "revision": "fb8cc2055a4f10cff1de8017b554d22ea57ce448",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/vacask/benchmark/vadistiller/bjtring/xyce/runme.sim",
+      "sha256": "3b326fc2e8babd3496f56c2b8554621341d2a8ecd377451363516d4ee0d39af9",
+      "bytes": 645,
+      "licence": "AGPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "vacask-test-spice-cccs-cir",
+      "source": "vacask",
+      "upstreamPath": "test/spice_cccs.cir",
+      "sourcePath": "vacask/test/spice_cccs.cir",
+      "sourceUrl": "https://codeberg.org/arpadbuermen/VACASK/src/commit/fb8cc2055a4f10cff1de8017b554d22ea57ce448/test/spice_cccs.cir",
+      "revision": "fb8cc2055a4f10cff1de8017b554d22ea57ce448",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/vacask/test/spice_cccs.cir",
+      "sha256": "b4da520e9728fbd46a5442813c0d25ae70d5a30b436aff04e5ce7d46007907c7",
+      "bytes": 544,
+      "licence": "AGPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "vacask-test-spice-diode-cir",
+      "source": "vacask",
+      "upstreamPath": "test/spice_diode.cir",
+      "sourcePath": "vacask/test/spice_diode.cir",
+      "sourceUrl": "https://codeberg.org/arpadbuermen/VACASK/src/commit/fb8cc2055a4f10cff1de8017b554d22ea57ce448/test/spice_diode.cir",
+      "revision": "fb8cc2055a4f10cff1de8017b554d22ea57ce448",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/vacask/test/spice_diode.cir",
+      "sha256": "6a7cea2f6075b74a9f54b9766d3eb02df657124d342fb94174ed7a3631ac757c",
+      "bytes": 202,
+      "licence": "AGPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "vacask-test-spice-mos-cir",
+      "source": "vacask",
+      "upstreamPath": "test/spice_mos.cir",
+      "sourcePath": "vacask/test/spice_mos.cir",
+      "sourceUrl": "https://codeberg.org/arpadbuermen/VACASK/src/commit/fb8cc2055a4f10cff1de8017b554d22ea57ce448/test/spice_mos.cir",
+      "revision": "fb8cc2055a4f10cff1de8017b554d22ea57ce448",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/vacask/test/spice_mos.cir",
+      "sha256": "2de58e92deb8b3b884331f719fe990689dcb4dca7dfa1295bfa1cef7094f306d",
+      "bytes": 332,
+      "licence": "AGPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "vacask-test-spice-rc-cir",
+      "source": "vacask",
+      "upstreamPath": "test/spice_rc.cir",
+      "sourcePath": "vacask/test/spice_rc.cir",
+      "sourceUrl": "https://codeberg.org/arpadbuermen/VACASK/src/commit/fb8cc2055a4f10cff1de8017b554d22ea57ce448/test/spice_rc.cir",
+      "revision": "fb8cc2055a4f10cff1de8017b554d22ea57ce448",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/vacask/test/spice_rc.cir",
+      "sha256": "f0f2f85520cd113569641377e5659e401cae5f5645174aa7c708a52e01d3b818",
+      "bytes": 106,
+      "licence": "AGPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "vacask-test-spice-regressions-cir",
+      "source": "vacask",
+      "upstreamPath": "test/spice_regressions.cir",
+      "sourcePath": "vacask/test/spice_regressions.cir",
+      "sourceUrl": "https://codeberg.org/arpadbuermen/VACASK/src/commit/fb8cc2055a4f10cff1de8017b554d22ea57ce448/test/spice_regressions.cir",
+      "revision": "fb8cc2055a4f10cff1de8017b554d22ea57ce448",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/vacask/test/spice_regressions.cir",
+      "sha256": "75ad7c7f93e9246b369df93d3a7e27e36ab6d042d2fb1e52e1b91868533a590e",
+      "bytes": 390,
+      "licence": "AGPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "vacask-test-spice-subckt-cir",
+      "source": "vacask",
+      "upstreamPath": "test/spice_subckt.cir",
+      "sourcePath": "vacask/test/spice_subckt.cir",
+      "sourceUrl": "https://codeberg.org/arpadbuermen/VACASK/src/commit/fb8cc2055a4f10cff1de8017b554d22ea57ce448/test/spice_subckt.cir",
+      "revision": "fb8cc2055a4f10cff1de8017b554d22ea57ce448",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/vacask/test/spice_subckt.cir",
+      "sha256": "6eaeac5f149ec5ca3f2ccd51fe7ddf7c4a539a86cf64eb03d49185e01ecfb43e",
+      "bytes": 320,
+      "licence": "AGPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "vacask-test-spice-vcvs-cir",
+      "source": "vacask",
+      "upstreamPath": "test/spice_vcvs.cir",
+      "sourcePath": "vacask/test/spice_vcvs.cir",
+      "sourceUrl": "https://codeberg.org/arpadbuermen/VACASK/src/commit/fb8cc2055a4f10cff1de8017b554d22ea57ce448/test/spice_vcvs.cir",
+      "revision": "fb8cc2055a4f10cff1de8017b554d22ea57ce448",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/vacask/test/spice_vcvs.cir",
+      "sha256": "11a5bd3eedbec2e3cf378deb1deb75b9cef067e832f09c435d36a9d6b1e285ba",
+      "bytes": 199,
+      "licence": "AGPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    },
+    {
+      "id": "vacask-test-spice-warnonly-cir",
+      "source": "vacask",
+      "upstreamPath": "test/spice_warnonly.cir",
+      "sourcePath": "vacask/test/spice_warnonly.cir",
+      "sourceUrl": "https://codeberg.org/arpadbuermen/VACASK/src/commit/fb8cc2055a4f10cff1de8017b554d22ea57ce448/test/spice_warnonly.cir",
+      "revision": "fb8cc2055a4f10cff1de8017b554d22ea57ce448",
+      "localPath": "benchmarks/corpus/corpus-i/fixtures/vacask/test/spice_warnonly.cir",
+      "sha256": "a6d688122c4a8fb8979671f808592256b5a588e93367626ec8d9df57cbcaa4e6",
+      "bytes": 376,
+      "licence": "AGPL-3.0-only",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": []
+    }
+  ],
+  "exclusions": [
+    {
+      "sourcePath": "esim/Examples/4_bit_JK_ff/4_bit_JK_ff.cir",
+      "sha256": "de3f370a28f20055666c32b7eb828034aa4af2381176d4225faf4de9d188979b",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/7805VoltageRegulator/7805VoltageRegulator.cir",
+      "sha256": "251fb83ebd77f1a03de4f777dcfe97bcf9444ffa695502e8a9e991fdba83294c",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/7805VoltageRegulator/7805VoltageRegulator.cir.out",
+      "sha256": "b67d8d60fe03cb8a85e1b6e60dc60f6cb7696d0e325993f5c77b00b024b8470a",
+      "reason": "not-self-contained",
+      "detail": ".include lm7805.sub; references Examples/7805VoltageRegulator/D.lib; references Examples/7805VoltageRegulator/lm7805.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/7805VoltageRegulator/lm7805.cir",
+      "sha256": "8d5b878acef1e278c4e40f07b7109b04653188daacbb696725c7d3699f0016fc",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/7805VoltageRegulator/lm7805.cir.out",
+      "sha256": "18e0e26a18e8d80b455f2169cd5ca2ec4511f3e751a1dc7243c1159806e0c3af",
+      "reason": "not-self-contained",
+      "detail": ".include PNP.lib; references Examples/7805VoltageRegulator/NPN.lib; references Examples/7805VoltageRegulator/PNP.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/7812VoltageRegulator/7812VoltageRegulator.cir",
+      "sha256": "30dcbabfb95707aeaa91623e842fcaa5c4768611d74b1e657310463e15095bee",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/7812VoltageRegulator/7812VoltageRegulator.cir.out",
+      "sha256": "d49bc3fd921129bcd2a1ee4e31da4ad1cb1db0a5ce435a5839ae7cc83060b5c3",
+      "reason": "not-self-contained",
+      "detail": ".include LM7812.sub; references Examples/7812VoltageRegulator/D.lib; references Examples/7812VoltageRegulator/LM7812.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/7812VoltageRegulator/LM7812.cir",
+      "sha256": "1221a0e9384ceab066590ba091cae954c1edcb3382f248174d4105d271be15a5",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/7812VoltageRegulator/LM7812.cir.out",
+      "sha256": "eee2941e4c3e6528c6df8598c22d3927e4d041d1cb70e3c58db7e8a92b8ee94d",
+      "reason": "not-self-contained",
+      "detail": ".include PNP.lib; references Examples/7812VoltageRegulator/NPN.lib; references Examples/7812VoltageRegulator/PNP.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/3_Input_NAND_Characteristics.cir",
+      "sha256": "8fd5c67c78acf6236b00a23c09eb70ee4aff6f301f1e91bb2e5cc9c5c698d958",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/3_Input_NAND_Characteristics.cir.out",
+      "sha256": "48670b974c34fd80ce9f64fd114de4fc0f7323ade6142ec785ebafc11c6cf767",
+      "reason": "not-self-contained",
+      "detail": ".include 4023.sub; references Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/4023.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/3_and.cir",
+      "sha256": "69b3d9066b09bf79236f5fbec968a84bc4008313a96d705bbe05c72554c1113f",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/3_and.cir.out",
+      "sha256": "a23359aea162244af92aaf4411b05cb73dc0e30a9f89d81a342077b20adbdd86",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: Error on line 12 or its substitute:"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/4023.cir",
+      "sha256": "1f1d978d0c135d91ed9c6dd48fa4d13652d8b55d55b411ac6d297f3a4ca78533",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/4023.cir.out",
+      "sha256": "c0fdc12b2466a8f0257ecc80645540d6ae417333adbba430d6f8885d5db8a4d9",
+      "reason": "not-self-contained",
+      "detail": ".include 3_and.sub; references Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/3_and.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4002_test/4002.cir",
+      "sha256": "c30f187f7b6477134d35220313a0eb2856d870d1eabb68077acc9baeaff4842d",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4002_test/4002.cir.out",
+      "sha256": "5cf83413bd88d4b0d2a7c539e1c3560689739117a5baa9d29128214f4b35428c",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: Error on line 28 or its substitute:"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4002_test/4002_test.cir",
+      "sha256": "1864a195c6321c0e57ba73d332b0b2ac3f3c7af84675aa0ed356323d6b10ada8",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4002_test/4002_test.cir.out",
+      "sha256": "4a8054404dc3d8582174d60c6a273144577dcaee19aee900960ad701a059ae5f",
+      "reason": "not-self-contained",
+      "detail": ".include 4002.sub; references Examples/Analysis_Of_Digital_IC/4002_test/4002.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4012_test/4012.cir",
+      "sha256": "318f50225da7749c6bf19829a7e1459851a8241cbcf4b9b8fd1dce4d83d40bdd",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4012_test/4012.cir.out",
+      "sha256": "d11124197c56490616d23ba5fc166a9a6f29025df6b1d33530427f8fc2113cec",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: Error on line 36 or its substitute:"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4012_test/4012_test.cir",
+      "sha256": "72cd08b60937a2ae76d2dd49e00ac9d26ec2b831e4525dccec4dd636659d226d",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4012_test/4012_test.cir.out",
+      "sha256": "4a239b997138bad33c1b549940333ced11207adfd83c19d816b14dd155ee8a96",
+      "reason": "not-self-contained",
+      "detail": ".include 4012.sub; references Examples/Analysis_Of_Digital_IC/4012_test/4012.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4023_test/3_and.cir",
+      "sha256": "69b3d9066b09bf79236f5fbec968a84bc4008313a96d705bbe05c72554c1113f",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/3_and.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4023_test/3_and.cir.out",
+      "sha256": "a23359aea162244af92aaf4411b05cb73dc0e30a9f89d81a342077b20adbdd86",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/3_and.cir.out"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4023_test/4023.cir",
+      "sha256": "1f1d978d0c135d91ed9c6dd48fa4d13652d8b55d55b411ac6d297f3a4ca78533",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/4023.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4023_test/4023.cir.out",
+      "sha256": "c0fdc12b2466a8f0257ecc80645540d6ae417333adbba430d6f8885d5db8a4d9",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/4023.cir.out"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4023_test/4023_test.cir",
+      "sha256": "8fd5c67c78acf6236b00a23c09eb70ee4aff6f301f1e91bb2e5cc9c5c698d958",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/3_Input_NAND_Characteristics.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4023_test/4023_test.cir.out",
+      "sha256": "d9e4c97a852f366db5d0005e911603508e3b28df184291ce0e60c9d34590bce3",
+      "reason": "not-self-contained",
+      "detail": ".include 4023.sub; references Examples/Analysis_Of_Digital_IC/4023_test/4023.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4073_test/3_and.cir",
+      "sha256": "69b3d9066b09bf79236f5fbec968a84bc4008313a96d705bbe05c72554c1113f",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/3_and.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4073_test/3_and.cir.out",
+      "sha256": "a23359aea162244af92aaf4411b05cb73dc0e30a9f89d81a342077b20adbdd86",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Analysis_Of_Digital_IC/3_Input_NAND_Characteristics/3_and.cir.out"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4073_test/4073.cir",
+      "sha256": "c111aa3b77a9fad5634c74102414f90c19932ef0b1ca6a91b237fb6403f9265a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4073_test/4073.cir.out",
+      "sha256": "53d392d4244e49cdb0f98bef599d1d7ad18344416be8f022015217fd834fa757",
+      "reason": "not-self-contained",
+      "detail": ".include 3_and.sub; references Examples/Analysis_Of_Digital_IC/4073_test/3_and.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4073_test/4073_test.cir",
+      "sha256": "233ca9082ae78cb1b02a07bd811228d973981fb56054eaa38557d642b5c116fb",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4073_test/4073_test.cir.out",
+      "sha256": "133c1070c15024d68cdaae733c21c12ab8d303f7dc1fd0b524946931455ece4c",
+      "reason": "not-self-contained",
+      "detail": ".include 4073.sub; references Examples/Analysis_Of_Digital_IC/4073_test/4073.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4_Input_NAND_Charcateristics/4012.cir",
+      "sha256": "318f50225da7749c6bf19829a7e1459851a8241cbcf4b9b8fd1dce4d83d40bdd",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Analysis_Of_Digital_IC/4012_test/4012.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4_Input_NAND_Charcateristics/4012.cir.out",
+      "sha256": "d11124197c56490616d23ba5fc166a9a6f29025df6b1d33530427f8fc2113cec",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Analysis_Of_Digital_IC/4012_test/4012.cir.out"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4_Input_NAND_Charcateristics/4_Input_NAND_Charcateristics.cir",
+      "sha256": "72cd08b60937a2ae76d2dd49e00ac9d26ec2b831e4525dccec4dd636659d226d",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Analysis_Of_Digital_IC/4012_test/4012_test.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4_Input_NAND_Charcateristics/4_Input_NAND_Charcateristics.cir.out",
+      "sha256": "d52d619fb08db3864e1f6d8a2439d8e81b5a8955e3cd204435e31b1bd251ca49",
+      "reason": "not-self-contained",
+      "detail": ".include 4012.sub; references Examples/Analysis_Of_Digital_IC/4_Input_NAND_Charcateristics/4012.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4_Input_NOR_Characteristics/4002.cir",
+      "sha256": "c30f187f7b6477134d35220313a0eb2856d870d1eabb68077acc9baeaff4842d",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Analysis_Of_Digital_IC/4002_test/4002.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4_Input_NOR_Characteristics/4002.cir.out",
+      "sha256": "5cf83413bd88d4b0d2a7c539e1c3560689739117a5baa9d29128214f4b35428c",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Analysis_Of_Digital_IC/4002_test/4002.cir.out"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4_Input_NOR_Characteristics/4_Input_NOR_Characteristics.cir",
+      "sha256": "1864a195c6321c0e57ba73d332b0b2ac3f3c7af84675aa0ed356323d6b10ada8",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Analysis_Of_Digital_IC/4002_test/4002_test.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/4_Input_NOR_Characteristics/4_Input_NOR_Characteristics.cir.out",
+      "sha256": "4a8054404dc3d8582174d60c6a273144577dcaee19aee900960ad701a059ae5f",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Analysis_Of_Digital_IC/4002_test/4002_test.cir.out"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/74LS04-test/74LS04-test.cir",
+      "sha256": "6bc9cc2b0af39f9bd85f1d3a4d34e5947609a6e0603c46b9c2497754158cab5d",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/74LS04-test/74LS04-test.cir.out",
+      "sha256": "1f2af1831984a9589e67d6eb6af7e8b9d271238104bce85a6d793e4486d7fcad",
+      "reason": "not-self-contained",
+      "detail": ".include 74LS04.sub; references Examples/Analysis_Of_Digital_IC/74LS04-test/74LS04.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/74LS04-test/74LS04.cir",
+      "sha256": "5d806b5eb6ff412b8258f50f0066dc1afc5216ac96a652588a5ed85639429041",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/74LS04-test/74LS04.cir.out",
+      "sha256": "063c2eed8461bff6ffc9bff6eb8f42b103b838ca1339edcaf7c8c6d89fb8ee92",
+      "reason": "not-self-contained",
+      "detail": ".include Ideal_npn1.lib; references Examples/Analysis_Of_Digital_IC/74LS04-test/Ideal_npn1.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/BCDToDecimalDecoder/4028.cir",
+      "sha256": "91275d60c63133357cd4daf07f60acbf411bc8475b4c85db09c5dc38c7e5599a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/BCDToDecimalDecoder/4028.cir.out",
+      "sha256": "949b00adba3544629703c5256308f35a3c91b864444946a026caa3e27738c6ba",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: Error on line 88 or its substitute:"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/BCDToDecimalDecoder/BCDToDecimalDecoder.cir",
+      "sha256": "9d7fc2d0efbdaa0e680857211f3dfe9a3a564d23f04046a0c2e7377038503707",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Analysis_Of_Digital_IC/BCDToDecimalDecoder/BCDToDecimalDecoder.cir.out",
+      "sha256": "738b2e3ffe95ae5fa391b9239ebcd88a7fdad4a3efc24aeb4fd4b2efa8112167",
+      "reason": "not-self-contained",
+      "detail": ".include 4028.sub; references Examples/Analysis_Of_Digital_IC/BCDToDecimalDecoder/4028.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Astable555/Astable555.cir",
+      "sha256": "961ad64aadafc80656776a38c8cde7afb64e0561ae86b8710c751213b509bf8a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Astable555/Astable555.cir.out",
+      "sha256": "66a7ddce5b6f42d560218ab9d6ff87ece1b131d18c80317fccbfb48a3e6f5d53",
+      "reason": "not-self-contained",
+      "detail": ".include lm555n.sub; references Examples/Astable555/lm555n.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Astable555/lm555n.cir",
+      "sha256": "99dcf2a7f04d5f81fcb8d3ad061c4d18a117f3166aab51cb56c15633cf94dce6",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Astable555/lm555n.cir.out",
+      "sha256": "5969afca043acb080a56c024b406a070f4ae0c2f506de93bab9c44ae2966315f",
+      "reason": "not-self-contained",
+      "detail": ".include npn_1.lib; references Examples/Astable555/npn_1.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/BJT_Biascircuit/BJT_Biascircuit.cir",
+      "sha256": "f02d34e645379a4877cf2f8c15e172833d85049e81757b3232284cb968e884f4",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/BJT_Biascircuit/BJT_Biascircuit.cir.out",
+      "sha256": "bff3fed9388187df43ec97cbc4c714d56bda48c3c1d0db3155b011488764aff0",
+      "reason": "not-self-contained",
+      "detail": ".include NPN.lib; references Examples/BJT_Biascircuit/NPN.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/BJT_CB_config/BJT_CB_config.cir",
+      "sha256": "8467af731f4c4d4c09762bb2178fd6ee558ce60e75bbea7755767c746a1b1cd4",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/BJT_CB_config/BJT_CB_config.cir.out",
+      "sha256": "32019d5ac848e37e9dd76aa71b8e20e951716f7eb27a222a156130fddb4f10cc",
+      "reason": "not-self-contained",
+      "detail": ".include NPN.lib; references Examples/BJT_CB_config/NPN.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/BJT_CE_config/BJT_CE_config.cir",
+      "sha256": "6efbcfa11063692af6ac2fe8f30ac9a7c936d69e7966ebeb83465e7798e12741",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/BJT_CE_config/BJT_CE_config.cir.out",
+      "sha256": "f8ccdb9e8df1de7bdd2e3c5b26d7bfd73960f215e910f3f1e5aec19ad7fe74b5",
+      "reason": "not-self-contained",
+      "detail": ".include NPN.lib; references Examples/BJT_CE_config/NPN.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/BJT_Frequency_Response/BJT_Frequency_Response.cir",
+      "sha256": "f232d3c7c9eba01d31ba63d6236784903f2e9468726b650f8d2d585fe3f55e2a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/BJT_Frequency_Response/BJT_Frequency_Response.cir.out",
+      "sha256": "fd8891b7b669dd45c73db78757079ff75bd73287f71e87825f88ef729257436b",
+      "reason": "not-self-contained",
+      "detail": ".include NPN.lib; references Examples/BJT_Frequency_Response/NPN.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/BJT_amplifier/BJT_amplifier.cir",
+      "sha256": "b456659c9e2b45cab2d1d645e338eedd88f7dfe97eb6e3d20d7690be06b75cac",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/BJT_amplifier/BJT_amplifier.cir.out",
+      "sha256": "33ecb6305b260fbfcf7f084c94ae59ffa4f56e9d316884cb1599baee6fb759e8",
+      "reason": "not-self-contained",
+      "detail": ".include NPN.lib; references Examples/BJT_amplifier/NPN.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/BasicGates/BasicGates.cir",
+      "sha256": "fc576d9e5fad79f91bf518485d3643e1d152e5ebd9f21c0a921024f2eb208676",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/CMOS_NAND_Gate/CMOS_NAND.cir",
+      "sha256": "a2b475d5d01cf81a902c44915151876882bcdd6bf310e501f6e23c4241485d7c",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/CMOS_NAND_Gate/CMOS_NAND.cir.out",
+      "sha256": "571db2a853562b83e96f6b2fa8e0f5b6cbcb6ce76724725d636563f1b408c719",
+      "reason": "not-self-contained",
+      "detail": ".include NMOS-180nm.lib; references Examples/CMOS_NAND_Gate/NMOS-180nm.lib; references Examples/CMOS_NAND_Gate/PMOS-180nm.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/CMOS_NAND_Gate/CMOS_NAND_Gate.cir",
+      "sha256": "4c9fffade59daea0c96815c4c551ee4e027f924cf1054119dd40a9fc731d18d9",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/CMOS_NAND_Gate/CMOS_NAND_Gate.cir.out",
+      "sha256": "3e64086dd20e3008ad1568f42e8777ce13148827fb04f3d9557df87da975600a",
+      "reason": "not-self-contained",
+      "detail": ".include CMOS_NAND.sub; references Examples/CMOS_NAND_Gate/CMOS_NAND.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Clampercircuit/Clampercircuit.cir",
+      "sha256": "f00ad57edc1fdb5717ea4bde3199b1a6dd72ed55492c18328c58450077e09bfc",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Clampercircuit/Clampercircuit.cir.out",
+      "sha256": "43c83c560c1e7143ea2d6d7da7543c70e2ca59d3a9915d2340115a08841d4e9d",
+      "reason": "not-self-contained",
+      "detail": ".include D.lib; references Examples/Clampercircuit/D.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/Clippercircuit/Clippercircuit.cir",
+      "sha256": "61e0d925db033f8155562f3b8831a777fde0b97c32c90c865fdef9b66b192aba",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Clippercircuit/Clippercircuit.cir.out",
+      "sha256": "39fed8c4d2267e0d49e46c632cbb092b0fc4bef8c662b8c86e2bf36c80d9aada",
+      "reason": "not-self-contained",
+      "detail": ".include D.lib; references Examples/Clippercircuit/D.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/Differentiator/Differentiator.cir",
+      "sha256": "c6b83d6b51abe557772f1c99e11c2945e7ffaf572c654de8b5a9693e2f2e29d5",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Differentiator/Differentiator.cir.out",
+      "sha256": "273aa3dc41cadfef08c0437ed30ad3f3a32a1e532e6b4c54bc00f6c9df2b6c5d",
+      "reason": "not-self-contained",
+      "detail": ".include lm_741.sub; references Examples/Differentiator/lm_741.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Differentiator/lm_741.cir",
+      "sha256": "6620270b68d67f59511f47b8ad19e18eb78ab8546ac2d52c493d42a12707b07f",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Differentiator/lm_741.cir.out",
+      "sha256": "8f1a75550c65b7a63c17242113a34896f037bce81cba59263ca69e3cab9419d4",
+      "reason": "not-self-contained",
+      "detail": ".include npn_1.lib; references Examples/Differentiator/npn_1.lib; references Examples/Differentiator/pnp_1.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/Diode_characteristics/Diode_characteristics.cir",
+      "sha256": "c6cfad90c04c7df74fbf1f2e50081b958d26ac265a9f85e9e20c679708e7d5c4",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Diode_characteristics/Diode_characteristics.cir.out",
+      "sha256": "5185a0d6450e1d269aca8370b75603e9defb395fde8d6b8968cfb4f26f2f4e94",
+      "reason": "not-self-contained",
+      "detail": ".include D.lib; references Examples/Diode_characteristics/D.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/FET_Amplifier/FET_Amplifier.cir",
+      "sha256": "c791d486d447ba27ad78c6458256be6fd8e21ce6085b05859dec91de66409ee6",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/FET_Amplifier/FET_Amplifier.cir.out",
+      "sha256": "da03b62ac93b2f1fa0f6be21bd65a208b4bd197f0f0834b87d6ddf2af801c7b9",
+      "reason": "not-self-contained",
+      "detail": ".include NJF.lib; references Examples/FET_Amplifier/NJF.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/FET_Characteristic/FET_Characteristic.cir",
+      "sha256": "b70d6c04968e5443681a6a6f1c72ceca50b6cd27a2621ace4ba07bc4bcc780cf",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/FET_Characteristic/FET_Characteristic.cir.out",
+      "sha256": "5f646d7df75ff328ca88a77061290c4638fa70c4d3841d48d59bcb52e3a31597",
+      "reason": "not-self-contained",
+      "detail": ".include NJF.lib; references Examples/FET_Characteristic/NJF.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/FrequencyResponse_JFET/FrequencyResponse_JFET.cir",
+      "sha256": "ba983b8cac68807d6174f9b09c76182d5909b21fed681beedc621cce2782efe2",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/FrequencyResponse_JFET/FrequencyResponse_JFET.cir.out",
+      "sha256": "135d7c5943a539099de33fc5bf08fff6671cef1457f9166308c1ddce42d7ae82",
+      "reason": "not-self-contained",
+      "detail": ".include NJF.lib; references Examples/FrequencyResponse_JFET/NJF.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/FullAdder/FullAdder.cir",
+      "sha256": "453d3f399df2a5db2f1086824c9d7c34b34d065ce6fe6b9ecc6fb01a53406e72",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/FullAdder/FullAdder.cir.out",
+      "sha256": "36a3af0f0aeb92c9dc439baff2e39580f29ba3705daa0eae6ebf65ed9f77e50d",
+      "reason": "not-self-contained",
+      "detail": ".include full_adder.sub; references Examples/FullAdder/full_adder.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/FullAdder/full_adder.cir",
+      "sha256": "bc35d4e83eaea948d637d8be80a8dfd20fc82d6e5a1c6ceda2e8bff2e8077f27",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/FullAdder/full_adder.cir.out",
+      "sha256": "cc750e6daf0c520d00999af5e6660090a6a81d87614369770cc0d04281d240f0",
+      "reason": "not-self-contained",
+      "detail": ".include half_adder.sub; references Examples/FullAdder/half_adder.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/FullAdder/half_adder.cir",
+      "sha256": "584cd5a5276175676c7d7bff6f2297b3a763c7e6c1e7c8be61756c404f79ad22",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/FullwaveRectifier_SCR/FullwaveRectifier_SCR.cir",
+      "sha256": "127e86fad60f235c156619a1bf256063cf0e1c645cedb19d329f0ff4406c1a2f",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/FullwaveRectifier_SCR/FullwaveRectifier_SCR.cir.out",
+      "sha256": "7ece0464be49d390ce7dc757623e4e9645663e8ed599d5d507f043a122cb31ef",
+      "reason": "not-self-contained",
+      "detail": ".include scr.sub; references Examples/FullwaveRectifier_SCR/PowerDiode.lib; references Examples/FullwaveRectifier_SCR/scr.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/FullwaveRectifier_SCR/scr.cir",
+      "sha256": "336d6a6cf420500f8cd35c90cfac10ef708ff6336a7747089ab9876bb2043c85",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/FullwaveRectifier_SCR/scr.cir.out",
+      "sha256": "5b69c453309248510aa7d025714f881ca90afc2c7050d626406556451987ad0f",
+      "reason": "not-self-contained",
+      "detail": ".include PowerDiode.lib; references Examples/FullwaveRectifier_SCR/PowerDiode.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/Fullwavebridgerectifier/Fullwavebridgerectifier.cir",
+      "sha256": "44515714b0a5d7b4b00884089c9755b59a0be027435da97cfcb317567659580a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Fullwavebridgerectifier/Fullwavebridgerectifier.cir.out",
+      "sha256": "8b56dd95d2a742042c4b3411076171d98fa8b3daa193c5231fe0920245c50f37",
+      "reason": "not-self-contained",
+      "detail": ".include D.lib; references Examples/Fullwavebridgerectifier/D.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/Half_Adder/Half_Adder.cir",
+      "sha256": "8211ed80a7b4da05b9eecb7c4296b9b2700ce92c7b70111a9c3d1eaccf7c39de",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Half_Adder/Half_Adder.cir.out",
+      "sha256": "7c09cbf2ebbcac0204589885ff77303daeb150af23ba477ba4fa211fd5a5a2d5",
+      "reason": "not-self-contained",
+      "detail": ".include half_adder.sub; references Examples/Half_Adder/half_adder.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/HalfwaveRectifier_SCR/HalfwaveRectifier_SCR.cir",
+      "sha256": "9a64705a08f15ac6d143a54f544195390d129c71fafcb3189886c0404082b963",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/HalfwaveRectifier_SCR/HalfwaveRectifier_SCR.cir.out",
+      "sha256": "1af3e23eb1f394b725dc825add2f462a3764bd371f27ac637eae891ad4021f2e",
+      "reason": "not-self-contained",
+      "detail": ".include scr.sub; references Examples/HalfwaveRectifier_SCR/scr.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/HalfwaveRectifier_SCR/scr.cir",
+      "sha256": "336d6a6cf420500f8cd35c90cfac10ef708ff6336a7747089ab9876bb2043c85",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/FullwaveRectifier_SCR/scr.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/HalfwaveRectifier_SCR/scr.cir.out",
+      "sha256": "5b69c453309248510aa7d025714f881ca90afc2c7050d626406556451987ad0f",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/FullwaveRectifier_SCR/scr.cir.out"
+    },
+    {
+      "sourcePath": "esim/Examples/Halfwave_Rectifier/Halfwave_Rectifier.cir",
+      "sha256": "5bd95effebfb800fd3259014ccd4590256c788a270e15c52faaa625ed4193f19",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Halfwave_Rectifier/Halfwave_Rectifier.cir.out",
+      "sha256": "5a125f2a3ad6df448472c0460ca7e16dbfedfe3d590442b33f294546ff2ebab0",
+      "reason": "not-self-contained",
+      "detail": ".include D.lib; references Examples/Halfwave_Rectifier/D.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/High_Pass_Filter/High_Pass_Filter.cir",
+      "sha256": "c7e71b4c63825601d63821be9454359c5c311ea48834779bdbc63a0b41aba6f6",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Integrator_LM_741/Integrator_LM_741.cir",
+      "sha256": "e81878470405168d231f357affdc170f99aae4ce617554532cb89f1314ded929",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Integrator_LM_741/Integrator_LM_741.cir.out",
+      "sha256": "3ca6b200e4442441cad15a799972575fe2037c8db020e751c487043719291a40",
+      "reason": "not-self-contained",
+      "detail": ".include lm_741.sub; references Examples/Integrator_LM_741/lm_741.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Integrator_LM_741/lm_741.cir",
+      "sha256": "6b777f758705513a29a598c3d11f433b04993e1015f715d2b30c9f7a85c8a9d4",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Integrator_LM_741/lm_741.cir.out",
+      "sha256": "f32739e45059a7d687274ad8788e29e79dbac66caa43c96e63b5227a0cef9a31",
+      "reason": "not-self-contained",
+      "detail": ".include npn_1.lib; references Examples/Integrator_LM_741/npn_1.lib; references Examples/Integrator_LM_741/pnp_1.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/InvertingAmplifier/InvertingAmplifier.cir",
+      "sha256": "c27134762215dab78b9bff4457fa81adb4c532f442609191101b41d52abeafb1",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/InvertingAmplifier/InvertingAmplifier.cir.out",
+      "sha256": "6827b02d57c4ad27ea1f34f9c29afc4c9a63af787ef1ead48aea893b0873cb19",
+      "reason": "not-self-contained",
+      "detail": ".include lm_741.sub; references Examples/InvertingAmplifier/lm_741.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/InvertingAmplifier/lm_741.cir",
+      "sha256": "6620270b68d67f59511f47b8ad19e18eb78ab8546ac2d52c493d42a12707b07f",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Differentiator/lm_741.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/InvertingAmplifier/lm_741.cir.out",
+      "sha256": "8f1a75550c65b7a63c17242113a34896f037bce81cba59263ca69e3cab9419d4",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Differentiator/lm_741.cir.out"
+    },
+    {
+      "sourcePath": "esim/Examples/JK_Flipflop/JK_Flipflop.cir",
+      "sha256": "8b9639dcbf3e03632b9eae0d78d1e1bcfbf30c0e1c6b34dafd78666386697f6a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Low_Pass_Filter/Low_Pass_Filter.cir",
+      "sha256": "70f3519ae77f4081e80e01c13763766a99ee86888ecf93cf79397060039093a3",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/Cmosinverter/Cmosinverter.cir",
+      "sha256": "72b544455d2e78c501e7d7929a9f74ac529a70b831563b9b9b955840ee3b4206",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/Cmosinverter/Cmosinverter.cir.out",
+      "sha256": "46ddae1a38c86ee5695991ed279fa8955dc13dbb2cc931ec9d858c49da249459",
+      "reason": "not-self-contained",
+      "detail": ".include INVCMOS.sub; references Examples/Mixed_Signal/Cmosinverter/INVCMOS.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/Cmosinverter/INVCMOS.cir",
+      "sha256": "a8081b0493bda90f97eb5b953380491dc0a212835d556557c04d57bd85dfba6e",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/Cmosinverter/INVCMOS.cir.out",
+      "sha256": "c7946fee70798d4b8743b0a967e775b3f443a101932483f215599779a0098788",
+      "reason": "not-self-contained",
+      "detail": ".include NMOS-180nm.lib; references Examples/Mixed_Signal/Cmosinverter/NMOS-180nm.lib; references Examples/Mixed_Signal/Cmosinverter/PMOS-180nm.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/PWM_Decremental/PWM_Decremental.cir",
+      "sha256": "46535e34573a9e941a9148abef664a119fdeef076d26f16e36030e8e26a029d6",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/PWM_Decremental/PWM_Decremental.cir.out",
+      "sha256": "d5b1c661b6d974aea3dee127235cf2f2e25abe16ff691714c4c2bdf4f4e9331a",
+      "reason": "not-self-contained",
+      "detail": ".include lm_741.sub; references Examples/Mixed_Signal/PWM_Decremental/lm_741.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/PWM_Decremental/lm_741.cir",
+      "sha256": "6620270b68d67f59511f47b8ad19e18eb78ab8546ac2d52c493d42a12707b07f",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Differentiator/lm_741.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/PWM_Decremental/lm_741.cir.out",
+      "sha256": "8f1a75550c65b7a63c17242113a34896f037bce81cba59263ca69e3cab9419d4",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Differentiator/lm_741.cir.out"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/PWM_Incremental/PWM_Incremental.cir",
+      "sha256": "4c4efc3fd75a377af60897d48639d44605faa1e37b79d7ad66c2a2b497a016b6",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/PWM_Incremental/PWM_Incremental.cir.out",
+      "sha256": "38efac288cfa0c3358d1b781b0e826692ea1f222b81cab2d8d6849b67a9d5601",
+      "reason": "not-self-contained",
+      "detail": ".include lm_741.sub; references Examples/Mixed_Signal/PWM_Incremental/lm_741.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/PWM_Incremental/lm_741.cir",
+      "sha256": "6620270b68d67f59511f47b8ad19e18eb78ab8546ac2d52c493d42a12707b07f",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Differentiator/lm_741.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/PWM_Incremental/lm_741.cir.out",
+      "sha256": "8f1a75550c65b7a63c17242113a34896f037bce81cba59263ca69e3cab9419d4",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Differentiator/lm_741.cir.out"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/custom_mixed_signal/custom_mixed_signal.cir",
+      "sha256": "aaf753d54c1e02ac185c4573fd36c4993b4e3cdf5a013091000cb9c84f2f3308",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/custom_mixed_signal/custom_mixed_signal.cir.out",
+      "sha256": "3f847b37b7c9dc965f3bb1f38869ccc17bebbb84ebd497c13b31b6086c2481f6",
+      "reason": "not-self-contained",
+      "detail": ".include lm_741.sub; references Examples/Mixed_Signal/custom_mixed_signal/lm_741.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/custom_mixed_signal/lm_741.cir",
+      "sha256": "6620270b68d67f59511f47b8ad19e18eb78ab8546ac2d52c493d42a12707b07f",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Differentiator/lm_741.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/Mixed_Signal/custom_mixed_signal/lm_741.cir.out",
+      "sha256": "8f1a75550c65b7a63c17242113a34896f037bce81cba59263ca69e3cab9419d4",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Differentiator/lm_741.cir.out"
+    },
+    {
+      "sourcePath": "esim/Examples/Monostable555/Monostable555.cir",
+      "sha256": "8f40f260858981375007f85db1cb099277f19930e2858455d5ce52466a05bc8b",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Monostable555/Monostable555.cir.out",
+      "sha256": "ac471d1bc17894b3958d81511035800e54a72d456450cde3aff0e81ee7fc60bd",
+      "reason": "not-self-contained",
+      "detail": ".include lm555n.sub; references Examples/Monostable555/lm555n.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Monostable555/lm555n.cir",
+      "sha256": "99dcf2a7f04d5f81fcb8d3ad061c4d18a117f3166aab51cb56c15633cf94dce6",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Astable555/lm555n.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/Monostable555/lm555n.cir.out",
+      "sha256": "5969afca043acb080a56c024b406a070f4ae0c2f506de93bab9c44ae2966315f",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Astable555/lm555n.cir.out"
+    },
+    {
+      "sourcePath": "esim/Examples/Parallel_Resonance/Parallel_Resonance.cir",
+      "sha256": "b40f365675eb2cc1f7accba25a0ea2f887c03a5303c107dca3d59fc3898e31d8",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Phase_Locked_Loop/Chargepump/Chargepump.cir",
+      "sha256": "9bcbd0a868948a1b8ca9300ad2a0ad1270c2ec52cafb52ad4cf54a7e6ce91d3b",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Phase_Locked_Loop/Chargepump/Chargepump.cir.out",
+      "sha256": "5d8bf9b1c31f2cbaff5ac629a77c44e58609cbad27fff102640a3df6a69a766f",
+      "reason": "not-self-contained",
+      "detail": ".lib /home/fossee/ihp/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOShv.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/Phase_Locked_Loop/PFD/PFD.cir",
+      "sha256": "d7a860f476d6782ed4a8eb86371a4a111264e29bdb9c5f096fdfb3810708ef42",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Phase_Locked_Loop/PFD/PFD.cir.out",
+      "sha256": "b8f12c67f1eb2b446681a7244a32dc3259b044e15d04e1eba78b1fe1cc3aeb20",
+      "reason": "not-self-contained",
+      "detail": ".lib /home/fossee/ihp/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/Phase_Locked_Loop/PFD/sg13g2_stdcell.spice",
+      "sha256": "2b6d4e3cb169bdbb1350e01e213ffe7bb4bad261821a51a2fe38a5c92211975a",
+      "reason": "licence",
+      "detail": "Copyright 2023 IHP PDK Authors"
+    },
+    {
+      "sourcePath": "esim/Examples/Phase_Locked_Loop/PLL/PLL.cir",
+      "sha256": "40a189bf021afc78d9b8114ad9657ed60dfd7b8b87ad4925cf871ac2b0271da6",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Phase_Locked_Loop/PLL/PLL.cir.out",
+      "sha256": "1ff2df25cece0c8f04005ecd363461bf8f56546a344041beb774b7fe80f453c9",
+      "reason": "not-self-contained",
+      "detail": ".lib /home/fossee/ihp/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/Phase_Locked_Loop/PLL/sg13g2_stdcell.spice",
+      "sha256": "2b6d4e3cb169bdbb1350e01e213ffe7bb4bad261821a51a2fe38a5c92211975a",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Phase_Locked_Loop/PFD/sg13g2_stdcell.spice"
+    },
+    {
+      "sourcePath": "esim/Examples/Phase_Locked_Loop/VCO_2/VCO_2.cir",
+      "sha256": "c99c4d41a760a6578d0123e69a02c310a64ce50b57c0989c837aba5d75550dbb",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Phase_Locked_Loop/VCO_2/VCO_2.cir.out",
+      "sha256": "f7c8a0c998ef25230fd0c487c15477155026406f05f3e6a72780e9bd3ed1b8e2",
+      "reason": "not-self-contained",
+      "detail": ".lib /home/fossee/ihp/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOShv.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/Phase_Locked_Loop/freq_divider/freq_divider.cir",
+      "sha256": "d061c3b3461182c5f9650845a1e4a6c59172c8cc761dbd6135bb1eb503707e81",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Phase_Locked_Loop/freq_divider/freq_divider.cir.out",
+      "sha256": "3f66739290ea030bfe1c5c26ee94ef6c9afad6e5625f5a66f8623b278fc2b4a1",
+      "reason": "not-self-contained",
+      "detail": ".lib /home/fossee/ihp/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib"
+    },
+    {
+      "sourcePath": "esim/Examples/Phase_Locked_Loop/freq_divider/sg13g2_stdcell.spice",
+      "sha256": "2b6d4e3cb169bdbb1350e01e213ffe7bb4bad261821a51a2fe38a5c92211975a",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Phase_Locked_Loop/PFD/sg13g2_stdcell.spice"
+    },
+    {
+      "sourcePath": "esim/Examples/Precision_Rectifiers_using_LM741/Precision_Rectifiers_using_LM741.cir",
+      "sha256": "1f0a3e9d70ee1b92374d54190d265f6d13958146c700f224d1cee8800d6ad54c",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Precision_Rectifiers_using_LM741/Precision_Rectifiers_using_LM741.cir.out",
+      "sha256": "68b555f445d8164bf56e5e473207db6824289106849a9de33b420c8e39eb303f",
+      "reason": "not-self-contained",
+      "detail": ".include lm_741.sub; references Examples/Precision_Rectifiers_using_LM741/D.lib; references Examples/Precision_Rectifiers_using_LM741/lm_741.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Precision_Rectifiers_using_LM741/lm_741.cir",
+      "sha256": "6620270b68d67f59511f47b8ad19e18eb78ab8546ac2d52c493d42a12707b07f",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Differentiator/lm_741.cir"
+    },
+    {
+      "sourcePath": "esim/Examples/Precision_Rectifiers_using_LM741/lm_741.cir.out",
+      "sha256": "8f1a75550c65b7a63c17242113a34896f037bce81cba59263ca69e3cab9419d4",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to esim/Examples/Differentiator/lm_741.cir.out"
+    },
+    {
+      "sourcePath": "esim/Examples/RC/RC.cir",
+      "sha256": "b2349c53a853713069eaccd5db11b8b30c5b64529bc65f4c51b777d8d06643c7",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/RL/RL.cir",
+      "sha256": "28f8807a7c44187c1ed15419c893883ebed11d7fd505028ef450fc03616441da",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/RLC/RLC.cir",
+      "sha256": "d46237d3708e62cc5513a2768e7ddb376182d31f29a7053b9e5b6828fb81bb82",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Series_Resonance/Series_Resonance.cir",
+      "sha256": "d2c83cbd6dd96601f39a88632371d04fac7d1543a8cc5472377f63e57df449a1",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/Transformer/Transformer.cir",
+      "sha256": "337942df6708a6d2d9bd078ab51d4fbf1686b66b56b87ed3a78235279f9c0fed",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/UJT_Relaxation_Oscillator/UJT_Relaxation_Oscillator.cir",
+      "sha256": "3d0b99146a4403f823b03290043183939b574faf31eab0bc44ab08a89e6ff218",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "esim/Examples/UJT_Relaxation_Oscillator/UJT_Relaxation_Oscillator.cir.out",
+      "sha256": "df8fc8948b6bb7d247e850a0b2699d012ca11bd4830ff7a52b7697296ba0df44",
+      "reason": "not-self-contained",
+      "detail": ".include ujt.sub; references Examples/UJT_Relaxation_Oscillator/ujt.sub"
+    },
+    {
+      "sourcePath": "esim/Examples/Zener_Characteristic/Zener_Characteristic.cir",
+      "sha256": "4261f098ffbc5103da4c4e5a00dae29ecac6a12daa580198af59ee3bd8864c03",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "kicad/demos/simulation/power_supplies/hv_converter/hv_converter.cir",
+      "sha256": "3300cb91708aa866f35bdba1ddddc1c042da71bba09aea4aefb6c240871f00e2",
+      "reason": "not-self-contained",
+      "detail": ".include \"GaN_PSpice_GS-065-018-2-L_L1V3P3.lib\"; references demos/simulation/power_supplies/hv_converter/GaN_PSpice_GS-065-018-2-L_L1V3P3.lib; references demos/simulation/power_supplies/hv_converter/ST_SILICON_CARBIDE_SCHOTTKY_V9.LIB"
+    },
+    {
+      "sourcePath": "ngspice-cmos/SR_latch_clk.cir",
+      "sha256": "1471f52d2c6de92b3a6a836f6b1024d1fc1c09c1fa608b3f2692fb9041f1de6b",
+      "reason": "host-command",
+      "detail": "shell Start fig/plot_sr_latch_wl_t.svg"
+    },
+    {
+      "sourcePath": "ngspice-cmos/and2.cir",
+      "sha256": "351f1ad6833881353b2beaded31093a9477ec8fabfdd0acb5771da14264ad163",
+      "reason": "host-command",
+      "detail": "shell Start fig/plot_and2_t.svg"
+    },
+    {
+      "sourcePath": "ngspice-cmos/and8a.cir",
+      "sha256": "15d2c08dede623d7e3774c550332d472b916ffbd3f976d5b293e7769476c7e9f",
+      "reason": "host-command",
+      "detail": "shell Start fig/plot_and8a_t.svg"
+    },
+    {
+      "sourcePath": "ngspice-cmos/and8b.cir",
+      "sha256": "192bfc79e41bf5526a5ec49daf0f9081e7c1fceebd26e9a7abe0184e8ae1be7f",
+      "reason": "host-command",
+      "detail": "shell Start fig/plot_and8b_t.svg"
+    },
+    {
+      "sourcePath": "ngspice-cmos/and8c.cir",
+      "sha256": "8a9722a0fa6509cfbf5586bff03084974bc8aafc4b6390d3856cadddc715268c",
+      "reason": "host-command",
+      "detail": "shell Start fig/plot_and8c_t.svg"
+    },
+    {
+      "sourcePath": "ngspice-cmos/inv.cir",
+      "sha256": "0d756acd384209de582c944df51c66483b2c7a09ca21aaf955523bbe9d2f04b6",
+      "reason": "host-command",
+      "detail": "shell Start fig/plot_inv_t.svg"
+    },
+    {
+      "sourcePath": "ngspice-cmos/nand2.cir",
+      "sha256": "e2b1aba3486c5577b00503e1521d819cd042036f917980847c591a2ed281f8a0",
+      "reason": "host-command",
+      "detail": "shell Start fig/plot_nand2_t.svg"
+    },
+    {
+      "sourcePath": "ngspice-cmos/nor2.cir",
+      "sha256": "fa25b5e184c64ce70fa653766fef08f7e0dbb88ff813835e71eb916819a4f1ba",
+      "reason": "host-command",
+      "detail": "shell Start fig/plot_nor2_t.svg"
+    },
+    {
+      "sourcePath": "rioslinares/lpflt_rc/circuits/ac.cir",
+      "sha256": "c0eabf99952cec373b65ddcddc09e3060f05fc6955c1f5fb2b1f29bb97fe06e3",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: no raw analysis data produced"
+    },
+    {
+      "sourcePath": "rioslinares/lpflt_rc/circuits/dc.cir",
+      "sha256": "889756d24ed70f0867d3c5459c8f897a0e003a161ff618e25ab7e4874f155937",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: no raw analysis data produced"
+    },
+    {
+      "sourcePath": "rioslinares/lpflt_rc/circuits/pz.cir",
+      "sha256": "5be70f832939c12c9d29298b006c3dde711611b5b686ff7094fcb46709febd58",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: no raw analysis data produced"
+    },
+    {
+      "sourcePath": "rioslinares/lpflt_rc/circuits/tr.cir",
+      "sha256": "66def2fd1f2f898c7693a9c6d4b46f06df883cef5f40a424bea47dc45977a753",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: no raw analysis data produced"
+    },
+    {
+      "sourcePath": "rioslinares/lpflt_rc/netlists/ac.net",
+      "sha256": "1b2848965a23db0bcf57047f35d4987e6e0aa9f56a6a248141aa94ef896fe3d6",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "rioslinares/lpflt_rc/netlists/dc.net",
+      "sha256": "b19d940c23867e4e8cfa8fc21eba191c0ca5375fb904068d180783e05f60db7f",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "rioslinares/lpflt_rc/netlists/pz.net",
+      "sha256": "8ceb248ac0e83b68e057c0f32ba8f48a029f4b127b8a2c4f7259bdc1f0b6e856",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "rioslinares/lpflt_rc/netlists/tr.net",
+      "sha256": "904dadca9cc3946963a8ea3890ee36aa9785e62687adc0b1f191690096595f3a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "rioslinares/lpflt_rc/simulations/ac.sim",
+      "sha256": "13469093951483a1067438991b614d80b20dc29c27898badecc96df928df0d02",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "rioslinares/lpflt_rc/simulations/dc.sim",
+      "sha256": "31f387d46ba6d86617411e279372843fb62cd92c704c5816a14c1e50d6258755",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "rioslinares/lpflt_rc/simulations/pz.sim",
+      "sha256": "90da1771fbc2233a9519ef8a3fb4113e09ce36cdc1ac6fc8f70fc1b07e1e3871",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "rioslinares/lpflt_rc/simulations/tr.sim",
+      "sha256": "aac5a932c9389f2838f38bc2bb4624c0da1dd0665a6c5fdeeed77b4a467952f8",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/benchmark/c6288/ngspice-sparse/runme.sim",
+      "sha256": "14d86e2e8251d1b150d179dbd8cbfc133f32ab9da20ec3e6701e00b9a1a22ee3",
+      "reason": "not-self-contained",
+      "detail": ".include \"models.inc\"; references benchmark/c6288/ngspice-sparse/models.inc; references benchmark/c6288/ngspice-sparse/multiplier.inc"
+    },
+    {
+      "sourcePath": "vacask/benchmark/c6288/ngspice/runme.sim",
+      "sha256": "a2d519799a8a7c5c5dafca5c5bb12901940ac3a7ff0456706b47e7e1caa4a17c",
+      "reason": "not-self-contained",
+      "detail": ".include \"models.inc\"; references benchmark/c6288/ngspice/models.inc; references benchmark/c6288/ngspice/multiplier.inc"
+    },
+    {
+      "sourcePath": "vacask/benchmark/c6288/vacask-ieb/runme.sim",
+      "sha256": "4929bcb6b18bd4a84d9169f51d843590290a8e963ee86ea7a30700b4976a5649",
+      "reason": "not-self-contained",
+      "detail": "OSDI device name needs a compiled .osdi library; references benchmark/c6288/vacask-ieb/models.inc; references benchmark/c6288/vacask-ieb/multiplier.inc"
+    },
+    {
+      "sourcePath": "vacask/benchmark/c6288/vacask-nocb/runme.sim",
+      "sha256": "fc14db0ac26fccb0733666f5053267333cb08f677d982b82359c6c6db4196123",
+      "reason": "not-self-contained",
+      "detail": "OSDI device name needs a compiled .osdi library; references benchmark/c6288/vacask-nocb/models.inc; references benchmark/c6288/vacask-nocb/multiplier.inc"
+    },
+    {
+      "sourcePath": "vacask/benchmark/c6288/vacask-nortc/runme.sim",
+      "sha256": "1bd256ffedef8720f4c5c65c17541ce7e522c386f0dacdab269b16a7c5cf6ade",
+      "reason": "not-self-contained",
+      "detail": "OSDI device name needs a compiled .osdi library; references benchmark/c6288/vacask-nortc/models.inc; references benchmark/c6288/vacask-nortc/multiplier.inc"
+    },
+    {
+      "sourcePath": "vacask/benchmark/c6288/vacask/runme.sim",
+      "sha256": "76054af9c13cd1a68337bf0b4ca840fe33beec9177c98d9f2a797ec4138402bb",
+      "reason": "not-self-contained",
+      "detail": "OSDI device name needs a compiled .osdi library; references benchmark/c6288/vacask/models.inc; references benchmark/c6288/vacask/multiplier.inc"
+    },
+    {
+      "sourcePath": "vacask/benchmark/c6288/xyce/runme.sim",
+      "sha256": "bb6e66429c8f53f2df37873cc258af9dc276c9ea2af733a0d14bec387deb67d4",
+      "reason": "not-self-contained",
+      "detail": ".include \"models.inc\"; references benchmark/c6288/xyce/models.inc; references benchmark/c6288/xyce/multiplier.inc"
+    },
+    {
+      "sourcePath": "vacask/benchmark/graetz/gnucap/runme.sim",
+      "sha256": "ddbf372cd30ca2a25b5ea913ce47a7dda84563b60f931ae91b65700191e46c64",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: Error on line 8 or its substitute:"
+    },
+    {
+      "sourcePath": "vacask/benchmark/graetz/ngspice/runme.sim",
+      "sha256": "37ed7035a5537773fa2e22ef24b355501c98454db2dba57694f8115c4084e918",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: no raw analysis data produced"
+    },
+    {
+      "sourcePath": "vacask/benchmark/graetz/vacask/runme.sim",
+      "sha256": "562ca8cba49fef88cd099b6531e249d94ff9473e7a7a08e6ea7271059e23767b",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/benchmark/mul/gnucap/runme.sim",
+      "sha256": "12ddd74612d812dab886dd91d8a7dc4a717d80fa62c0a664845b65a52e29b4c2",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: Error on line 8 or its substitute:"
+    },
+    {
+      "sourcePath": "vacask/benchmark/mul/ngspice/runme.sim",
+      "sha256": "263fff6f07f2065223b50a3d5f191815b0e63fbee2945d36cb8ecdba19937416",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: no raw analysis data produced"
+    },
+    {
+      "sourcePath": "vacask/benchmark/mul/vacask/runme.sim",
+      "sha256": "e51ecb9a758591596ad2f4cf2d0bbf387bf6482fee0cecf4faa516199867ae0c",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/benchmark/rc/gnucap/runme.sim",
+      "sha256": "b79222c182952cdf4c538d489f88bfd6d6406adde20fce2f17ae6a3d9cb86ac1",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: Error on line 5 or its substitute:"
+    },
+    {
+      "sourcePath": "vacask/benchmark/rc/ngspice/runme.sim",
+      "sha256": "7dafd9855c85680857428c16e1b7aea45f9879361fc99ff03710a5633aff8e1f",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: no raw analysis data produced"
+    },
+    {
+      "sourcePath": "vacask/benchmark/rc/vacask/runme.sim",
+      "sha256": "551af67bce0fce65a2de50cf8b5835da267a6a22399e4aa686f2bb5f2a5617cb",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/benchmark/ring/ngspice/runme.sim",
+      "sha256": "3b0bd2356de8417abc5b31241b02e69baeb62d00f1a8c922e9eb4b5f23d0be47",
+      "reason": "not-self-contained",
+      "detail": ".include \"models.inc\"; references benchmark/ring/ngspice/models.inc"
+    },
+    {
+      "sourcePath": "vacask/benchmark/ring/vacask/runme.sim",
+      "sha256": "7b0b6f1d2e7345c38175e5a982207a857e18e8b5c8b7d54a1908e6a2ce093745",
+      "reason": "not-self-contained",
+      "detail": "references benchmark/ring/vacask/models.inc"
+    },
+    {
+      "sourcePath": "vacask/benchmark/ring/xyce/runme.sim",
+      "sha256": "fedbf4554c6f2356ce447532d58824fcdf13036464bf68a4f1260a2704edb771",
+      "reason": "not-self-contained",
+      "detail": ".include \"models.inc\"; references benchmark/ring/xyce/models.inc"
+    },
+    {
+      "sourcePath": "vacask/benchmark/vadistiller/bjtring/ngspice/runme.sim",
+      "sha256": "08ff0758c44e397dae226649150fb4ea2112657cffb056b590873c3c4c100d9d",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: no raw analysis data produced"
+    },
+    {
+      "sourcePath": "vacask/benchmark/vadistiller/bjtring/ngspiceva/runme.sim",
+      "sha256": "59daaf810de315b322b60f46ffc0243a3fdd020d56f819a37641c4921335c32b",
+      "reason": "not-self-contained",
+      "detail": "pre_osdi bjt.osdi"
+    },
+    {
+      "sourcePath": "vacask/benchmark/vadistiller/bjtring/vacask/runme.sim",
+      "sha256": "b75cc5b8ad8cc4d9180951db9f0856d3d46942c9259c014958650f128cd4e6b9",
+      "reason": "not-self-contained",
+      "detail": "OSDI device ne=2.5 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/benchmark/vadistiller/c6288/ngspice/runme.sim",
+      "sha256": "f2909ce1ee0e67a6999cca3b0a243df1ff67befb4906e7f7f96453f1d0eed484",
+      "reason": "not-self-contained",
+      "detail": ".include \"models.inc\"; references benchmark/vadistiller/c6288/ngspice/models.inc; references benchmark/vadistiller/c6288/ngspice/multiplier.inc"
+    },
+    {
+      "sourcePath": "vacask/benchmark/vadistiller/c6288/ngspicecg/runme.sim",
+      "sha256": "b85cbf56e6a65bc5d27343112bea5e1e6f0796bdc860f043b1446d44af3524de",
+      "reason": "not-self-contained",
+      "detail": ".include \"models.inc\"; references benchmark/vadistiller/c6288/ngspicecg/models.inc; references benchmark/vadistiller/c6288/ngspicecg/multiplier.inc"
+    },
+    {
+      "sourcePath": "vacask/benchmark/vadistiller/c6288/ngspiceva/runme.sim",
+      "sha256": "b85cbf56e6a65bc5d27343112bea5e1e6f0796bdc860f043b1446d44af3524de",
+      "reason": "duplicate-content",
+      "detail": "identical bytes to vacask/benchmark/vadistiller/c6288/ngspicecg/runme.sim"
+    },
+    {
+      "sourcePath": "vacask/benchmark/vadistiller/c6288/vacask/runme.sim",
+      "sha256": "9d785fa5d05a1a7e85a304621e64a1ce61cf0b0ce7d739bdba5249785e604f0f",
+      "reason": "not-self-contained",
+      "detail": "OSDI device name needs a compiled .osdi library; references benchmark/vadistiller/c6288/vacask/models.inc; references benchmark/vadistiller/c6288/vacask/multiplier.inc"
+    },
+    {
+      "sourcePath": "vacask/benchmark/vadistiller/c6288/vacaskcg/runme.sim",
+      "sha256": "8e664d7fea37204af62ec2f0e9784a390172e6ff6263ce3fe707d671157c7f44",
+      "reason": "not-self-contained",
+      "detail": "OSDI device name needs a compiled .osdi library; references benchmark/vadistiller/c6288/vacaskcg/models.inc; references benchmark/vadistiller/c6288/vacaskcg/multiplier.inc"
+    },
+    {
+      "sourcePath": "vacask/benchmark/vadistiller/jfetring/ngspice/runme.sim",
+      "sha256": "58e6d378848a055bfe5fcecd57836d2ac1f63b6e53ce093d1addaffce68169e2",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: no raw analysis data produced"
+    },
+    {
+      "sourcePath": "vacask/benchmark/vadistiller/jfetring/ngspiceva/runme.sim",
+      "sha256": "5d385f6ed9e807356ae5222031dd80301b4d3f38d02dd7357cc4d3eeefd61246",
+      "reason": "not-self-contained",
+      "detail": "pre_osdi jfet1.osdi"
+    },
+    {
+      "sourcePath": "vacask/benchmark/vadistiller/jfetring/vacask/runme.sim",
+      "sha256": "386b3ebce42d5eb850766e989cb91b6fad4fece1ed0c92b34fd63ca035f7c1b5",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/benchmark/vadistiller/mul/ngspice/runme.sim",
+      "sha256": "a56fc9ac598c457fd27e6cb0b3904ec7f6f2c281fb54827a171af4c2e92b98ba",
+      "reason": "ngspice-no-reference",
+      "detail": "ngspice failed: no raw analysis data produced"
+    },
+    {
+      "sourcePath": "vacask/benchmark/vadistiller/mul/ngspiceva/runme.sim",
+      "sha256": "e1013ec0ed7dd332bf6f5376dada0d8b1a71824ee4a7d5cce39b51397e1c21b2",
+      "reason": "not-self-contained",
+      "detail": "pre_osdi diode.osdi"
+    },
+    {
+      "sourcePath": "vacask/benchmark/vadistiller/mul/vacask/runme.sim",
+      "sha256": "0b7491d6d46ae66c67d650c456bb7571fb04b5afe67016932ee99eca439646ab",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/behavioral/lightbulb.sim",
+      "sha256": "2b24aa51feca36dd8d114a49ced3d8f294259cdee8991a7a03eb350db31b515f",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/bsim3-ptm-amp/toplevel.sim",
+      "sha256": "5d148c8878d43a013cc9e5304ab41442071753394d135fa7f857d0faf0c96c39",
+      "reason": "not-self-contained",
+      "detail": "references demo/bsim3-ptm-amp/miller.inc; references demo/cmos180n.lib"
+    },
+    {
+      "sourcePath": "vacask/demo/bsim3-ptm/amp.sim",
+      "sha256": "dbfcadaa1ccdb178dfe44eb41d6dbaf7467a039c41f45651d372a1875bdb4fc4",
+      "reason": "not-self-contained",
+      "detail": "references demo/cmos180n.lib; references demo/mosmm.inc"
+    },
+    {
+      "sourcePath": "vacask/demo/bsim3-ptm/characteristic.sim",
+      "sha256": "7b74198a60365d671ba94dad06cc97cc2b960cfdc94228307f770e9a87c968dd",
+      "reason": "not-self-contained",
+      "detail": "references demo/cmos180n.lib"
+    },
+    {
+      "sourcePath": "vacask/demo/bsim3-ptm/diffpair.sim",
+      "sha256": "ab80da15ed60469d9e30b654f071159a542d2364b8f5a995548400167b2d2509",
+      "reason": "not-self-contained",
+      "detail": "references demo/cmos180n.lib; references demo/mosmm.inc"
+    },
+    {
+      "sourcePath": "vacask/demo/bsim3-ptm/mirror.sim",
+      "sha256": "1b5192773ee5dabd15d3a21019077fe71e9d0ad774d66cb540ce26d52f7147d7",
+      "reason": "not-self-contained",
+      "detail": "references demo/cmos180n.lib; references demo/mosmm.inc"
+    },
+    {
+      "sourcePath": "vacask/demo/control/initfatal.sim",
+      "sha256": "9185a87375c59d996455b4e3b7c0e0c94f751fde68e710b5dfc1eb9e6077aae4",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/control/output.sim",
+      "sha256": "bf4914495897daf263871cee4e7126949a5280caf640a5feabea7e2e9e63349e",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/control/runfatal.sim",
+      "sha256": "a99d099c90ecc3e8438dfc13d581ade16e574a5bb4b61fafb218262dbe15aea4",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/control/runfinish.sim",
+      "sha256": "d481e1a326cde7153277d268914b32f95d2176fa1c13ea76451ac5f7bd1a59e0",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/control/runstop.sim",
+      "sha256": "8da731c83db86eefdbff7ecfc71eb1de752ce1e308ffa73405b95916e16f7ecc",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/control/uncondfatal.sim",
+      "sha256": "1878db137e9d83c7d249f6a42e24adcd0177f65c132ce8af33e07f87a8307587",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/delay/tline.sim",
+      "sha256": "636b6f4d51f266fb837646ef54e1eb9250240e6f5d425dc7951db730e1642eb2",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/eye/eye.sim",
+      "sha256": "04a4154edc0be7bbb9dc725c896b7b46f90d0c8b12966bef729e6b0f4dfb2bb7",
+      "reason": "not-self-contained",
+      "detail": "OSDI device ndx needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/gf180mcu/mos.sim",
+      "sha256": "50884296ed9f70d63c1eed4a534735271ec811f1bde9073a16a5b0ef093de174",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/gilbert/gilbert.sim",
+      "sha256": "821dd9789294a14c8feafd1ff0105d0b3c13ded551bd14d5ef4b6fe81b94b352",
+      "reason": "not-self-contained",
+      "detail": "references demo/gilbert/models.inc"
+    },
+    {
+      "sourcePath": "vacask/demo/hierarchy/hier.sim",
+      "sha256": "7e7845be12fd143742915044adf2e358bf3f870c89b70602b2b9e14ee55b4308",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/ihp-sg13g2/cmim.sim",
+      "sha256": "53ed273a543a42d1f1dd8dcf0f36b7d7f7e4f4757498e1b9399aa854ffc69c71",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/ihp-sg13g2/hbt.sim",
+      "sha256": "0d55aa35ba48460bda84166efd1b31967975460d41ccebbad581c000cf346d23",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/ihp-sg13g2/mos.sim",
+      "sha256": "e7cd2e748c61a4d13531fb12544a83630e5df6e9dfcd6da8cf2d677349224359",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/ihp-sg13g2/stdcell.sim",
+      "sha256": "1e8ae02041f23c62239ffc41a3c253bef95524928e437eb8e1d343cae3cc3d22",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/limiting/builtin.sim",
+      "sha256": "c8707c20fe4a8739069bd94c1688e8f4e087f0615a61de9b0c9d14a7d98b2177",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/limiting/custom.sim",
+      "sha256": "d3c88ccd96e200eae2f55926dc6af7e0ed572dbed3b63a6d3036bee11f4ea1cf",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/mc/miller_ihp.sim",
+      "sha256": "8a80969c2e33793a8afdf082afb7d8c556922200cc4fa69eb36663c54c9ca065",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nsamples needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/multiplier/adders.sim",
+      "sha256": "e67d671e5711a8e4ce35c4db2d0c480daf5585c808d49b16c34621333070053c",
+      "reason": "not-self-contained",
+      "detail": "references demo/multiplier/models.inc; references demo/multiplier/mul8.inc"
+    },
+    {
+      "sourcePath": "vacask/demo/multiplier/mul.sim",
+      "sha256": "55552978788ddfaaa6703c35ce4f46ad2ae78a101b544e34efdb8be178211f37",
+      "reason": "not-self-contained",
+      "detail": "OSDI device n needs a compiled .osdi library; references demo/multiplier/models.inc; references demo/multiplier/mul128.inc; references demo/multiplier/mul16.inc; references demo/multiplier/mul256.inc; references demo/multiplier/mul32.inc; references demo/multiplier/mul64.inc; references demo/multiplier/mul8.inc"
+    },
+    {
+      "sourcePath": "vacask/demo/natures/ddt.sim",
+      "sha256": "2ef9154b4bddf23b5d70c888d037df23256f70edab69c89d3d7c0caaa0425fb9",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/natures/ibrictl.sim",
+      "sha256": "803287068f4613b1127b196025b95ef2a55cefb5186e157473d54d72bfab8e72",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/natures/idt.sim",
+      "sha256": "33e2cc65c4eb1e85342d892947184847e7309b0f96e1d3680babeb517bec49b4",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/natures/switchbr.sim",
+      "sha256": "d92ecb05dcf33ffb9c9ee5d5a3a373a3a5fb7fbfd18e23367e6aa235e0f3a366",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/natures/vbr.sim",
+      "sha256": "b591c5e7eb86bbd07ca69ef7ad62b387cd4da591727a71a8afb1e68d9116ace9",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/rpn/parser.sim",
+      "sha256": "978bb63e00302ebee06132514291bbf41a3fa6cd96450677fae8446b0dd8b9ef",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/rpn/sipfx.sim",
+      "sha256": "846c40fe6a781e3757ed977019387f03ef6f319427382a186b43322999539502",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/sc/lpfilter.sim",
+      "sha256": "f91117adf9e4e6cc1ec7c5b6fca400c11ade4e70be6aa7d9508758659152fa1c",
+      "reason": "not-self-contained",
+      "detail": "references demo/sc/models.inc"
+    },
+    {
+      "sourcePath": "vacask/demo/sc/opamp.sim",
+      "sha256": "c6d11713c4387138b2eebcb8fc1db23dfb3e0be4674a438e8dc5026425aa3882",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/sc/swtest.sim",
+      "sha256": "1460b0d54a33607c3688abe5ec7674560078b63f2e4120728baa41be9f123308",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/sp/amp.sim",
+      "sha256": "eaf3bf4e33bb3a4695a9260841a378ca574439cef12b8e94a78eb53f9acd716c",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/bjt.sim",
+      "sha256": "c6612d60f55e95ec57aa2f577daff69dcabd04ffe6365b22f5a2b143de4550df",
+      "reason": "not-self-contained",
+      "detail": "OSDI device ne=2.5 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/bjtamp.sim",
+      "sha256": "9fc86893dde9155d26e2772179aec856e036aa890e74b285e9c432c60f5891ba",
+      "reason": "not-self-contained",
+      "detail": "OSDI device ne=2.5 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/bjtinv.sim",
+      "sha256": "f21b47302f52e25d489f3325328c6aa7806de9081c5cd3ca6ca8379226d61222",
+      "reason": "not-self-contained",
+      "detail": "OSDI device ne=2.5 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/bjtnqs.sim",
+      "sha256": "a4c8ed33436e79b636f1226397bae67f0fb2356ef2ce1b26b6365915eac76468",
+      "reason": "not-self-contained",
+      "detail": "OSDI device ne=2.5 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/bsim3v3.sim",
+      "sha256": "0b7a1ab927f4d9ecb0ee935047afa5dd092851951c8348885e26cf4a8ba9740a",
+      "reason": "not-self-contained",
+      "detail": "references demo/spice/bsim3v3.inc"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/bsim3v3amp.sim",
+      "sha256": "ff85b7e6429cc3f2f905956226a68e1a502232f4b5c1c747d773c48d241a2b0f",
+      "reason": "not-self-contained",
+      "detail": "references demo/spice/bsim3v3.inc"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/bsim3v3inv.sim",
+      "sha256": "da805b3dc9cde3f242845bd832ccbc5b52df722861cbfdfacbb430848ad0337c",
+      "reason": "not-self-contained",
+      "detail": "references demo/spice/bsim3v3.inc"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/bsim3v3nqs.sim",
+      "sha256": "367d2b3da70118c7163d22bda6dc2cd8f040beaf3973f6850f2503011dd5e575",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/bsim4v8.sim",
+      "sha256": "ddb94197d665d18266f5dbf5af79356a563b13895eba9375fbd6aaadf9801c08",
+      "reason": "not-self-contained",
+      "detail": "references demo/spice/bsim4v82.inc"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/bsim4v8amp.sim",
+      "sha256": "271b88b74d900ba161aec4ddb3ae7874f5388ab090216aaba3346daaf8340cfa",
+      "reason": "not-self-contained",
+      "detail": "references demo/spice/bsim4v82.inc"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/bsim4v8inv.sim",
+      "sha256": "20248d5359671dfced3d5cb85179587563355f2d2b705a1b598416c1018b50cb",
+      "reason": "not-self-contained",
+      "detail": "references demo/spice/bsim4v82.inc"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/bsim4v8nqs.sim",
+      "sha256": "bde2f0203f85e4e3de38fe5b1698d08b83f971066f0602864b86f7e88b688790",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/dio.sim",
+      "sha256": "a01ab48b816cf3f1338d85a7c1f708f169f35fc034fa0f2e93df6a07f446740f",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/jfet1.sim",
+      "sha256": "2432e9ba573ecd7481767dae15ba775a091371100de5dc4ff76620e9bbb747c7",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/jfet1amp.sim",
+      "sha256": "6975718fa6e01aa859020c400072c4f2210ebae15ebd9ea1c897bc755db78d09",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/jfet1inv.sim",
+      "sha256": "e14886d1d9914298321a2eae37239cb50a6493cafb7b0851f3583d348bd26f2f",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/jfet2.sim",
+      "sha256": "2fe6dd8c4e6e6d8d71c4b3b72a13abd6e1b94a6001c99c5bb0b71f8180399e6a",
+      "reason": "not-self-contained",
+      "detail": "OSDI device n=1.15 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/jfet2amp.sim",
+      "sha256": "5faa2cf3e89ceaace9ec70ebe70731a0aaca5d15eacc26fe0434f4ec115b2c86",
+      "reason": "not-self-contained",
+      "detail": "OSDI device n=1.15 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/jfet2inv.sim",
+      "sha256": "598d61b7efa0a8783322da593521ebd195a301b8944067a968a74cdeb196504e",
+      "reason": "not-self-contained",
+      "detail": "OSDI device n=1.15 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mes1.sim",
+      "sha256": "f6afabc9ad2b15173a8d0026a8cdcb96123e84daa97a91ab5989d0bbc216d53b",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mes1amp.sim",
+      "sha256": "c6e70763b1ff38f8f9e7e5f5a483b33a70d59121891d103b1b7b9cd40c4831e5",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mes1inv.sim",
+      "sha256": "c76897b8fe0c2ae47d0179a7ffb58d58a8f951e6a69d1e41e9f4a597c973ca04",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos1.sim",
+      "sha256": "225c0dbebfb0b15a307f55eb9bf3daaf5accb7cb80fd79e5e3882a684fce8267",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nsub=35e14 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos1amp.sim",
+      "sha256": "c43faab18121a9038045ff6b11111a8ca4e1b4c5b7cc9fc9bed39d9b3a57ce8b",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nsub=35e14 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos1inv.sim",
+      "sha256": "b3ceb076d1a687bcdec16306be5802518804c8a8ab4258ea11b57318d9918f79",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nsub=35e14 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos2.sim",
+      "sha256": "efa047120566a2ca9129f0bfacf0779026329d612025b5f8a5e4d66e6ae4f2ce",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos2amp.sim",
+      "sha256": "73fa59b84522f216fa179bf2d13f187fbed35dc84e234ae2587f049a5a85672c",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos2inv.sim",
+      "sha256": "fd0ebf7fb1df0439f306b0426f212b2b6c14e40142732078d259e3f780fef684",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos3.sim",
+      "sha256": "21cfe3c07b7e98a6febf7c84181d7ffb9d4ba4f888025487ccbba5df6939d07f",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nfs=5.0000e+12 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos3amp.sim",
+      "sha256": "0e21d57921186381a38bc48b68191c98e0f8c45850e366266b910f52fb7deb1f",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nfs=5.0000e+12 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos3inv.sim",
+      "sha256": "7911beb82fef4aa9ec72c0a275b914d95ab9301ebf804e148f1cb949ae294bc0",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nfs=5.0000e+12 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos6.sim",
+      "sha256": "d5f3564a59af5a31474c7deba49f5f0c96e7db80ec23901d0d2d928f511c823b",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos6amp.sim",
+      "sha256": "50e9aaaba5ffc35761f7d4cbc3918f0d3f81f148de6992deb7e6cd674a141c65",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos6inv.sim",
+      "sha256": "f36d99aa1b9ae6c0fccaf4e6c387d5091b2cb3d779a562d9152dda67da31c1ac",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos9.sim",
+      "sha256": "cb3f42bf5564da2949dc4f92b60609ba97fee18442f69018a95acf5f2be230ed",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nfs=5.0000e+12 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos9amp.sim",
+      "sha256": "0ddf8d414365f3fc869abee4b428bbe96d1002e31936ce301fc0595a6c3f419d",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nfs=5.0000e+12 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mos9inv.sim",
+      "sha256": "4d98fcbfe8240af787df9f56f5cdb53a5687deeb25da3a2a1407a43d0aee8c4f",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nfs=5.0000e+12 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/mutual.sim",
+      "sha256": "d15c6af0aa6503cfde2bae4bc6f6c68fb6d8808b48ec39682444afc88a0c9c7c",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/rcl.sim",
+      "sha256": "f0077ab3aa0067e4425115ee1e7cbfbed8c2d651d80c7c390f6b592f78c11962",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/vdmos.sim",
+      "sha256": "ad51b0f855be3fb91dd39f9869c6d9583ed40099e842c1a5e33bef8459010741",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/vdmosamp.sim",
+      "sha256": "3b54fcf21883a8400659e945218b8c26b840bdb7df243fba5f2ad4e7a8f7833f",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/vdmosinv.sim",
+      "sha256": "4d6f17cc8ae83c98ee8f6abae5dbac93e9a53e74a2036c56a9b2c8dd583c1a88",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/vdmosrr.sim",
+      "sha256": "6616a3cc2f9df4836194c3212729a44b811125ee3b4048a37eb0121542e2b898",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/spice/vdmossh.sim",
+      "sha256": "01159bdac60546068b946f58b28d27fbd667382865d1280a7947e244e1bb6a51",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/stb/osc.sim",
+      "sha256": "bad38cd5d24063ddd1784ab225d309f1f4b9b251ae68a37fd346f22c131cfc7d",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/trannoise/osc.sim",
+      "sha256": "944cd0cdc1f6d482bcf375efc5909ae13a95c223765223acfabeb986e50f932b",
+      "reason": "not-self-contained",
+      "detail": "OSDI device noisefmax=fmax needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/demo/ts/inductor-tap.sim",
+      "sha256": "bb8c7f2d41933c0e32d0a7e9cad86958f27e8741b2c673b5dfa10285e036dcfa",
+      "reason": "not-self-contained",
+      "detail": "OSDI device network needs a compiled .osdi library; references demo/ts/inductor-tap.inc; references demo/ts/inductor-tap.s3p"
+    },
+    {
+      "sourcePath": "vacask/demo/ts/inductor.sim",
+      "sha256": "ba79fa6d70b6d954a36a3eccbe63e54f96aee21378d8d41b1665cc08f14ab1ee",
+      "reason": "not-self-contained",
+      "detail": "OSDI device network needs a compiled .osdi library; references demo/ts/inductor.inc; references demo/ts/inductor.s2p"
+    },
+    {
+      "sourcePath": "vacask/demo/veriloga/bug-tempres.sim",
+      "sha256": "fda712cb36d4dc40eb8f021d4688ba19d62bd7156e9bf1d827c7776a9045312f",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/veriloga/e001-absdelay.sim",
+      "sha256": "f44393817082e0ed75b41ea0b37320fe665bcc2d8dcf336dda8b941249d06a40",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/veriloga/e002-indirect.sim",
+      "sha256": "f56f9d82fd21a471af8aac195ee151d2c7f48aa8decb970c6c5372429d0d385a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/veriloga/e003-bus.sim",
+      "sha256": "3cb844587ef5d2c545b8799507feed12a3ebfe4475eddf69fd988c751175efdd",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/veriloga/e004-laplace.sim",
+      "sha256": "b2cba425eafac4ff42d40195c1cc4f77018c65d7e5b1ba21c3805c4bfd4fcf81",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/demo/veriloga/e005-hierarchy.sim",
+      "sha256": "eb1dd554d8a44d0de497054f32e4ec939d00e5bf17412747112e32cd84c0e451",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/lang_include_models.cir",
+      "sha256": "389baf316a925f4ade4d1ac2ab3aec67b00c796de7dc812ac992c9e80a8c52b6",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/resonator.sim",
+      "sha256": "91129d94d77cb0c87a18ded8bb85055c999b9e648c277095cccc2b9a9e4665e6",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/spice_behavioral_res.cir",
+      "sha256": "8e91cdd8c2f973017d8c757836c0ea4907dd729fe25d5ddaba383a54d22d5c9b",
+      "reason": "not-self-contained",
+      "detail": "references test/test_spice_behavioral_res.sim"
+    },
+    {
+      "sourcePath": "vacask/test/spice_binned_mos.cir",
+      "sha256": "158bb4adb68eb0e324750650bdebd8d521fa50f28a769bd094a7f5ebe187eaa6",
+      "reason": "not-self-contained",
+      "detail": ".include 'spice_binned_mos_models.cir'; references test/spice_binned_mos_models.cir"
+    },
+    {
+      "sourcePath": "vacask/test/spice_binned_mos_boundary.cir",
+      "sha256": "d8348e95c1df28e97de36c7db71a5cc64970ee28a08b9451fa60430bf772f29f",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/spice_binned_mos_indirect.cir",
+      "sha256": "746e51e6a59d51bde655e163782ccf3ffe5a4956fd46cc2561c287b423406c06",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/spice_binned_mos_models.cir",
+      "sha256": "9413bd55a6a987495a514f1d333c470c782c6577caefdb1f2c0be7441fde1be8",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/spice_bjt.cir",
+      "sha256": "f8fce22d5b2c18e9ab04b889138cf12f26bab5e13e1abb81517a538feb63d4ed",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/spice_bsim4_version.cir",
+      "sha256": "4d5881accab2e69375de13e26c9949ae13d199d5aaae5bd8e0a83fd1ef4213ba",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/spice_bsource.cir",
+      "sha256": "8c08aa6367b5e42d007224c8fb615864ef37a5d4a3882d0bfcb17bd4c070911c",
+      "reason": "not-self-contained",
+      "detail": "references test/test_spice_bsource.sim"
+    },
+    {
+      "sourcePath": "vacask/test/spice_diode_params.cir",
+      "sha256": "5354081e006b3539ee2cb7ad94668c4d6d66e96fdd9cb3daab55a971dae3719a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/spice_include_load.cir",
+      "sha256": "160a893a8614d9fc54acf6d2e0f6bd9dc4e74c738a8af195aa67b88ee9587a10",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/spice_include_models.cir",
+      "sha256": "a120caa704296182413e9527d633d7d62d81ff73787d96b91b1f1a1089f63d7a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/spice_mfactor.cir",
+      "sha256": "f0ebe7caf10caaef2df487ff9255561368543a5a5f43ad0ecddeb25f1f96fce0",
+      "reason": "not-self-contained",
+      "detail": "references test/test_spice_mfactor.sim"
+    },
+    {
+      "sourcePath": "vacask/test/spice_model_subckt_namespace.cir",
+      "sha256": "b1e10c3bdedacc6b8bea6f9c655c8e9cacee11179015bbd51a006aa573181e58",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/spice_models.spice",
+      "sha256": "c348b0bb79e609fc12fe0e72dec078c7e66257dd9cda9f2b535dcb5dc79e4288",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/spice_nested_include.cir",
+      "sha256": "8aec574ca0a21f2efdaeaa94771d05925cfc54f197affdf97d45672c2b79ba88",
+      "reason": "not-self-contained",
+      "detail": ".include \"spice_models.spice\"; references test/spice_models.spice"
+    },
+    {
+      "sourcePath": "vacask/test/spice_pwr.cir",
+      "sha256": "80c8f3b33a59caaba71e16536a872e6b065d758e939aebe2ef612f5068fd99c9",
+      "reason": "not-self-contained",
+      "detail": "references test/test_spice_pwr.sim"
+    },
+    {
+      "sourcePath": "vacask/test/spice_res_model.cir",
+      "sha256": "774f88f00af1dece4abbaaebf9cd8d3a551fdc9a183078046cfb628139aa0a25",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/spice_temper.cir",
+      "sha256": "4cfa964fc999f7e48559fda57b36a1f2f482f8dd18b314c20cd94486f7af353c",
+      "reason": "not-self-contained",
+      "detail": "references test/test_spice_temper.sim"
+    },
+    {
+      "sourcePath": "vacask/test/spice_temper_shadow.cir",
+      "sha256": "1119845c41658aae999cb71430e152a3badc0850320d36406b950e9ee0c2f120",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/spice_unknown_param.cir",
+      "sha256": "7bbd5d4fa08fa489ffd22b761b8e50c14acdc40761202ecfa8cc77741378f267",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_ac.sim",
+      "sha256": "a7526e2d1ff87c601f9ac9e785423f7c8a9bc26056fd24f3be41ecaa0871bc16",
+      "reason": "not-self-contained",
+      "detail": "references test/simdio.va"
+    },
+    {
+      "sourcePath": "vacask/test/test_acsp.sim",
+      "sha256": "094097894bb38f4dda820912fa6abee7cf098d19b637f92ee2fb2122af1f5cb7",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_acstb.sim",
+      "sha256": "a3263048952b7d835e676099d4a82a5129567cf8c8e883790f32de33abc69dc3",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_acxf.sim",
+      "sha256": "2923dfdaa2b4fad36de976d8a18079081cbb7b6d9a6b6e2a51333f616ebdbcfa",
+      "reason": "not-self-contained",
+      "detail": "references test/simdio.va"
+    },
+    {
+      "sourcePath": "vacask/test/test_behav.sim",
+      "sha256": "bc652b3962bfc1eaf428b9e2454da13b681c9b64199292871b1a62277920683e",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_behavexpr.sim",
+      "sha256": "608cbdfea4b1e11d512f7a6d9d324c4a3d08bede433f4daaf6be7a5fb7e8c1e1",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_behavnoise.sim",
+      "sha256": "e1d73d04607d3129303695d8f04df042b3384756b29ab7792eb0c02e8ac74a13",
+      "reason": "not-self-contained",
+      "detail": "OSDI device noise1 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_behavop.sim",
+      "sha256": "79919f11c86588bc95120904895884a9ae00a0920f5fb40e4d2e96152d11d1ec",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_behavsym.sim",
+      "sha256": "d8ca009ecbe666a7ee99f9d89ae2454b790a2c19a8c55c3a652f16f266307eb4",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_build.sim",
+      "sha256": "cf5040e4fb726644ade320f4f7ad9b85fa1c1e34733bc193ec267ad49a401800",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_capacitor.sim",
+      "sha256": "5b902ab7c993c5765e086c2448ded7616c90c6a10125b5166077783465f8946b",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_cblock.sim",
+      "sha256": "7af03267fad1131c81bca48327f6b01a3cab0b95ff899c074c492f1069824cbc",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_cblocksweep.sim",
+      "sha256": "7f5f674035fab78f2121044c9b4c50c46aa5034c3aeec55f1fa52fffb9355588",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_ctlsrc.sim",
+      "sha256": "d6ea1c666d7865c8f1368983533bee33c2b8a561511e8389986b59325150ed6d",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_dcinc.sim",
+      "sha256": "6591b08b0e27da92082457abdaa33a0fb3710b8ac940b70d32d4be08a6ec778d",
+      "reason": "not-self-contained",
+      "detail": "references test/simdio.va"
+    },
+    {
+      "sourcePath": "vacask/test/test_dcxf.sim",
+      "sha256": "2e6c609f45c8cbc5c4381368f063388c6cb657cfaf63ec74bff5a33682bd2d30",
+      "reason": "not-self-contained",
+      "detail": "references test/simdio.va"
+    },
+    {
+      "sourcePath": "vacask/test/test_delay.sim",
+      "sha256": "3489f3e57dab3d2421516b4d91691970e140c513167c7be2433341518c40b068",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_delayhb.sim",
+      "sha256": "2502b4f9f93dd6ac999b94e7696447b691b6124a3181bcc8229d469ec6f22b61",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nl1 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_delayhbac.sim",
+      "sha256": "33b28c0d9775377751153d13ad7903b4731c481b1960edbb93c2a0e2429044d6",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nl1 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_delayvar.sim",
+      "sha256": "15c0ea8b6fef879ab3d68876bd9c82e87261d3b05355a25cb694e4ca7652831e",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_diode.sim",
+      "sha256": "f8391ff94587559c2d903d550bc7fb5835b705464a0ae7794e7737f38df5ea34",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_hb1.sim",
+      "sha256": "a508e36d00234bb316c540f374442f6680760ec173bc64330fce1c4bb363e783",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nl1 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_hb2.sim",
+      "sha256": "613cac10caa8de34476a327ab9d336ded428af32374981ce25313b13cff603cd",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nl1 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_hb3.sim",
+      "sha256": "42722dd0c19324010c282022c98c5d106df6b97cdd6c42e195d61f819a23941b",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_hb4.sim",
+      "sha256": "63a35d7feacef8e0a683af8382fb5119c7373b5916c0877ba7c0e710ffa92dca",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_hb5.sim",
+      "sha256": "00d4af6dd8c2da6809da53ba50d46528b455948c8e99c6b09d0ba52caac0e34d",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_hb6.sim",
+      "sha256": "d2fee5c1bfd91803a6fc0861eff92298039b1a69d58678be128f8b155d0eaf0a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_hbac1.sim",
+      "sha256": "4a59f917f394ce4c480b986d85a041bf0b7c841ff24e8cefe4df8a31f4b2805a",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nl1 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_hbnoise1.sim",
+      "sha256": "eff99b534660723b10cb8fefc27fe1efc426c7b1ad259ec2410a8f885e4fae60",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nr1 needs a compiled .osdi library; references test/test_trannoise4.sim"
+    },
+    {
+      "sourcePath": "vacask/test/test_hbnoise2.sim",
+      "sha256": "df94d4a1c3e7ef5faa5e1c4676ba5545d7f58868fea29011c20c4308f3429110",
+      "reason": "not-self-contained",
+      "detail": "OSDI device n1 needs a compiled .osdi library; references test/test_hbnoise1.sim"
+    },
+    {
+      "sourcePath": "vacask/test/test_hbnoise3.sim",
+      "sha256": "558c467f12e7440d290dd1157f67e66dacc6966c2260072bd7071d871644ec9a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_hbsolve.sim",
+      "sha256": "5912948b9f41e580767bea79e4e0c0edb9e3048ef8bf743b17c531618b5c07b2",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nl1 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_hbsolve_incomplete_error.sim",
+      "sha256": "9437a2a9721525f4dd415fd55c7c22a49371511aee8be48383e31ee30602776d",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nl1 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_hbsolvewrite.sim",
+      "sha256": "642d0ad7b7548408090b6092e005a6e8f2ac37fb9ce995def82c87cd055a6bf5",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nl1 needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_inductor.sim",
+      "sha256": "fb714713d9785d4b325401999945afdc61eaf13e65bfe2a6424df17cb0070906",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_inverter.sim",
+      "sha256": "b1ef5af1c5dab0f163b5881834469fe01e5b74763713eba03c1c9f1e23303e10",
+      "reason": "not-self-contained",
+      "detail": "references test/bsimbulk106.inc"
+    },
+    {
+      "sourcePath": "vacask/test/test_lang_include.sim",
+      "sha256": "19724164961b09771d88617d4878d2adfd57b778c2828b42292ade2ec9421195",
+      "reason": "not-self-contained",
+      "detail": "references test/lang_include_models.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_lang_override.sim",
+      "sha256": "0e7b652536b677ede01871eacd0570ce67ce4631ce4a756834495fe5b07efa81",
+      "reason": "not-self-contained",
+      "detail": "references test/lang_override_models.scs; references test/test_lang_include.sim"
+    },
+    {
+      "sourcePath": "vacask/test/test_mc.sim",
+      "sha256": "b30e66cc94343aeef1baa202eac9fc15a0f6fa799ca6a41f9f11186833ddeed9",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nsamples needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_mutual.sim",
+      "sha256": "3cab852581a357499e5f9ee679849defc69535beebdd9408282f50be628a0553",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_noise.sim",
+      "sha256": "15a735b93e1fb83c532e15b87bbc226bf2c498134807dcd63c49a69f17c4de6b",
+      "reason": "not-self-contained",
+      "detail": "OSDI device noise1 needs a compiled .osdi library; references test/simdio.va"
+    },
+    {
+      "sourcePath": "vacask/test/test_op.sim",
+      "sha256": "fc5e4404450202022d49e897eb5f9aee2a2314ddb7bc54059141d236a8f36213",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_opnl.sim",
+      "sha256": "3917b7b510da1b2982ace675fbd4a7ed600f703045176254a6343a9a20e0a571",
+      "reason": "not-self-contained",
+      "detail": "references test/simdio.va"
+    },
+    {
+      "sourcePath": "vacask/test/test_opnodeset.sim",
+      "sha256": "da4cad62bb79515b4363514647f1708f71f4ab0c16b9ea3d2f160184bace5919",
+      "reason": "not-self-contained",
+      "detail": "references test/bsimbulk106.inc"
+    },
+    {
+      "sourcePath": "vacask/test/test_opsolve.sim",
+      "sha256": "4f384a0c5702111fa61fa36a6187097e351ee11d50951498f71569eec9473c58",
+      "reason": "not-self-contained",
+      "detail": "references test/simdio.va"
+    },
+    {
+      "sourcePath": "vacask/test/test_opsolve_incomplete_error.sim",
+      "sha256": "c5a09b6183531db6b6703cd34e1fb6d70fb3192f6c2eff4073c1e35f939e9a7c",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_opsolvewrite.sim",
+      "sha256": "61ee2ae5aac637e529b65d7c38115933b3f987a3da5623c1c9393981497db508",
+      "reason": "not-self-contained",
+      "detail": "OSDI device n needs a compiled .osdi library; references test/simdio.va"
+    },
+    {
+      "sourcePath": "vacask/test/test_opstore.sim",
+      "sha256": "834fb9fc205bd07a9a9e22154a137a94e2b08f8d31132c9ebf271c4ac004918a",
+      "reason": "not-self-contained",
+      "detail": "references test/bsimbulk106.inc"
+    },
+    {
+      "sourcePath": "vacask/test/test_opsweep.sim",
+      "sha256": "70b17aca33710a2c6f5da8d1a2d7556f136591a9537ed9643d9687d26613a2e2",
+      "reason": "not-self-contained",
+      "detail": "references test/simdio.va"
+    },
+    {
+      "sourcePath": "vacask/test/test_optpar.sim",
+      "sha256": "2f14dfed2d7f31d23eb8da3ad2f1e49d60ea25db7f2e8b7bd4ef732f55c6a180",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_pac1.sim",
+      "sha256": "4280e49f4a888a87e7d53ac3852d5055fc6737019c2dc101bc5eb420c808eefd",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nl1 needs a compiled .osdi library; references test/test_hbac1.sim"
+    },
+    {
+      "sourcePath": "vacask/test/test_pnoise1.sim",
+      "sha256": "3fbe2498f99c0e18c0a407eb838f9d3af9337780dfd0b99c9869d4f0d10e1d96",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nr1 needs a compiled .osdi library; references test/test_hbnoise1.sim; references test/test_trannoise4.sim"
+    },
+    {
+      "sourcePath": "vacask/test/test_pnoise2.sim",
+      "sha256": "5589154856997f70448b27500d8886810adac47fda104878d53b60c78d3aec48",
+      "reason": "not-self-contained",
+      "detail": "OSDI device n1 needs a compiled .osdi library; references test/test_pnoise1.sim"
+    },
+    {
+      "sourcePath": "vacask/test/test_pnoise3.sim",
+      "sha256": "252cfed8c2c4d40c72d9de99ad0cee10c2ac0f4235a49272eca6d9e8eb5ba529",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_pss1.sim",
+      "sha256": "8919094a57916e9805b02dc367ae0aed2b97b4981c5c2542d78899c307de2e4d",
+      "reason": "not-self-contained",
+      "detail": "OSDI device nl1 needs a compiled .osdi library; references test/test_hb1.sim"
+    },
+    {
+      "sourcePath": "vacask/test/test_pss2.sim",
+      "sha256": "b5faf1a32d55e1d322db2c38ebce971ddd675f39131510eb167331f983393ab6",
+      "reason": "not-self-contained",
+      "detail": "OSDI device n_half needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_pss3.sim",
+      "sha256": "a5fbacd9fde8128a43ea19dbe5b6970fcbe0a8208c342143e3579ad40a64e395",
+      "reason": "not-self-contained",
+      "detail": "OSDI device n_half needs a compiled .osdi library; references test/test_hb3.sim"
+    },
+    {
+      "sourcePath": "vacask/test/test_pssosc1.sim",
+      "sha256": "f7eccd0d9fc1cf01476ae9454c095f97490844b4a5868f9537013560d705c0c8",
+      "reason": "not-self-contained",
+      "detail": "OSDI device n_panels needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_pssosc2.sim",
+      "sha256": "2da7bf1d96398813f7cf0f6eae3f016fbb709436700e6c037c29f86176f01403",
+      "reason": "not-self-contained",
+      "detail": "OSDI device n_half needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_pssosc3.sim",
+      "sha256": "82422b4ad0232cb08f411da8a1a4304cd050d02a471f00be0a9045e249083ee8",
+      "reason": "not-self-contained",
+      "detail": "OSDI device n_panels needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_pssosc4.sim",
+      "sha256": "32dd5dfcecce7cb8f1af62ef5a3f6560395ca129e15dd7db8c74a488cbd0a99d",
+      "reason": "not-self-contained",
+      "detail": "OSDI device n_panels needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_pssosc5.sim",
+      "sha256": "9ccaf498aa7f0f1357022402c30e55128ae6efd8b3b22fe4461d6d168a9401a6",
+      "reason": "not-self-contained",
+      "detail": "OSDI device n_panels needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_relreflte.sim",
+      "sha256": "6aaf80c3fb8ca07487cb24e0a8e587aff2b599016a3655b3930d6163f41eea5b",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_resistor.sim",
+      "sha256": "8394fc6f64c7a58e493fd2f154bf08ab06c355c997d2e1f23150bca4c4d46644",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_spectre_bad_include.sim",
+      "sha256": "51fd278366ca9ca73e7dbb519cf0d85f0d3cd3c1c655c4a0c320bd5c8ee61b01",
+      "reason": "not-self-contained",
+      "detail": "references test/spectre_bad_include.scs"
+    },
+    {
+      "sourcePath": "vacask/test/test_spectre_include.sim",
+      "sha256": "9e0996092f793b601dd52277e461f2fbc53a27ea9e61004d9e32d3eec7654886",
+      "reason": "not-self-contained",
+      "detail": "references test/spectre_rc_inc.scs"
+    },
+    {
+      "sourcePath": "vacask/test/test_spectre_rc.sim",
+      "sha256": "a1934cf5c20e7c9ce784c867069c0c856ca9399e14687bc86888c2cbb1a1f9ac",
+      "reason": "not-self-contained",
+      "detail": "references test/spectre_rc.scs"
+    },
+    {
+      "sourcePath": "vacask/test/test_spectre_subckt.sim",
+      "sha256": "de09286e1fa2468034ae635f55d306cf68d1a14d21616f6573573b038e2d914c",
+      "reason": "not-self-contained",
+      "detail": "references test/spectre_nested.scs"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_behavioral_res.sim",
+      "sha256": "078446914ffe8c176b386242d7bc60b04c8649f3b0a84b08d8746d1bf4415565",
+      "reason": "not-self-contained",
+      "detail": "OSDI device noise needs a compiled .osdi library; references test/spice_behavioral_res.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_binned_mos.sim",
+      "sha256": "258780c0fa39ffa52783dacea67526a74f41c44be418351037f99333474019c0",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_binned_mos.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_binned_mos_at_max.sim",
+      "sha256": "2563d7040d4aea8142ee1be20cf7f96ade3b8a67b65bbe59903c4dbe348c6b5f",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_binned_mos_boundary.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_binned_mos_below_min.sim",
+      "sha256": "bdc9b8aabac99984cc3341b618115b64c50f1b264b0636feccb81719b9a1007c",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_binned_mos_boundary.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_binned_mos_boundary.sim",
+      "sha256": "7447a610f471dc1f1eb28ea69c246de2614c70d50534558ba2a86f3e89bb55a4",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_binned_mos_boundary.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_binned_mos_indirect.sim",
+      "sha256": "f5c01e3d4ef860c7be1a55f03634f4280f0820197f55b6b4490658774b2acb86",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_binned_mos_indirect.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_binned_mos_section.sim",
+      "sha256": "99a47b175bf33deec94e49e632f9b7f6d6f704802d5b14a9de0d596eba641910",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_binned_mos_section.lib"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_bjt.sim",
+      "sha256": "3893d44632ab2d02bd2738f17a19eeffb02119e536c29449db86399324815a30",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_bjt.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_bsim4_version.sim",
+      "sha256": "258519b106d490e7cd25f8cf96e813b92f204487c900dcbb9838f041bd0ad2c0",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_bsim4_version.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_bsource.sim",
+      "sha256": "00b4feec0b348492d869b1e936f4504d1f1c53d10c7a9d82789fc9a4a0af88cd",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_bsource.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_cccs.sim",
+      "sha256": "9df48d76e01ed4357a6701fb25653eed54f0df3e40a995c8ee5e0922163d429a",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_cccs.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_diode.sim",
+      "sha256": "3b447357e9c4fa91facf92f1e476b9fe0835f5bad5a6e09eaa581741d76a0890",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_diode.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_diode_params.sim",
+      "sha256": "4e3ce6076a5fe287e033ab1e9790dfb23a7a440f8e620842281c0635628b572c",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_diode_params.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_include.sim",
+      "sha256": "79b0ce66f526c635fe7f4c167b81015f1567a20c3d5fe328d453eea5d43137bd",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_include_load.cir; references test/spice_include_models.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_include_section.sim",
+      "sha256": "90a72266e43c703036c8ee7d7f0e1381a06609d59704c72a5829b45e2b23a82a",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_include_corners.lib; references test/test_lang_include.sim"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_mfactor.sim",
+      "sha256": "d5efb8817cf5dc0c8016bb4f7366b6ac1e1e93ff83af03e33e00c0a9e880d736",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_mfactor.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_model_subckt_namespace.sim",
+      "sha256": "408a28226c2213392bc68caf8377e3c7a29b76954cf470625f18f8d81ae943de",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_model_subckt_namespace.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_mos.sim",
+      "sha256": "7717998c94f7f7e46dc9a284b2f5e176c571931756176a26d39581914cae970e",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_mos.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_nested_include.sim",
+      "sha256": "f3da2ac07d8e84b984da97bfc01fc2af2a0bb77b8f38192740079cbff2e03120",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_nested_include.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_pwr.sim",
+      "sha256": "312d0c6e35801a81a41c4910f0afb41a4a6ab6029c53c54623223c19c9474b5b",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_pwr.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_rc.sim",
+      "sha256": "fbf1408f6fd592e9e14807ffde5c9bc3dc5dbff6557585330f7ef3d7b329aaaf",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_rc.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_regressions.sim",
+      "sha256": "573be67a7cb2c474801d6316690eacc32fde676b11e2df227ff3be1cbe8b34d0",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_regressions.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_res_model.sim",
+      "sha256": "e5931a84b8b38e99247fdfbeeeb79a2be7c8be93509f03eb2b0feb59d7572c83",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_res_model.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_subckt.sim",
+      "sha256": "e0b39a4a288819156bd62b0948673fc752a717496b19c1c932a2dfa57e430239",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_subckt.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_temper.sim",
+      "sha256": "5db3bb496469c2a1bdf0be4dd63caab0344ca04ada4ee633fc3a133fb5298592",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_temper.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_temper_shadow.sim",
+      "sha256": "45ebb15ada94f43cec5e0184356b6ced96ea85fb127e83bacd499c027e482eb0",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_temper_shadow.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_unknown_param.sim",
+      "sha256": "5768cbdeaafe4736f806692c9dc0713ceb8193d79525e328b4c7d7582b9e3842",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_unknown_param.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_unknown_param_error.sim",
+      "sha256": "5143fede8032f5b20a593d56f9eb557da560424af9390c32c777a332d4352c89",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_unknown_param.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_unknown_param_warn.sim",
+      "sha256": "d75d61711671352c16aabfb36a418121fcdb32fa8eff3a9f8f4eabdc4cf35d5b",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_unknown_param.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_vcvs.sim",
+      "sha256": "c68643c96faf00ae7dce42e43511e12e44748cfc8b57a66f2318b75aed6a93e2",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_vcvs.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_spice_warnonly.sim",
+      "sha256": "2e57eb5071250f547689d21f031c6d6af5eeea3a24ce84ded01f84b8d3d93df5",
+      "reason": "not-self-contained",
+      "detail": "references test/spice_warnonly.cir"
+    },
+    {
+      "sourcePath": "vacask/test/test_sweep.sim",
+      "sha256": "a0b86bc26b6923b83c439557e1f6aa6f1034ddd21d532ef73a2c91028a0cd2d6",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_sweeppar.sim",
+      "sha256": "b8de1c4b05421c61c9c1224b17591a8916cdeff4154ee2d41c702187c610854f",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_sweepvar.sim",
+      "sha256": "925abe4ecbd26bdfa335f480772995cfcebba9d46c7068c19bf9768b1c29c8ee",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_sweepvec.sim",
+      "sha256": "d9eaabd2c604e2b6065f1853c9487677da6565af421ae8d45c5d911e05973c6d",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_tran.sim",
+      "sha256": "857dc01bdc7c83af4d08a65771d5d77a6c231dfb06aa9514f0419a1599f557eb",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_tranic.sim",
+      "sha256": "3c24c7034a0c107e4a0353b59154fc18098211d3434a05c1c55c8b1b252291f6",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_trannoise1.sim",
+      "sha256": "d5c1401c46a26cd5352a7f02a19bccab19d873c4d5c5fbf20e558a786c28ef28",
+      "reason": "not-self-contained",
+      "detail": "OSDI device noise needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_trannoise2.sim",
+      "sha256": "48aba678fe8639161580f8e6974db8e565f1e5ad27a5de082148716aad277a69",
+      "reason": "not-self-contained",
+      "detail": "OSDI device noise needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_trannoise3.sim",
+      "sha256": "8d5b8b551acb3412bdf8e04162632f355b5541d707ab9618da65488f2c88ee8e",
+      "reason": "not-self-contained",
+      "detail": "OSDI device noise needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_trannoise4.sim",
+      "sha256": "6560f357df0b88651b77586a7b755ec541d7b6b1f120b1c36daccea09ac6ef2b",
+      "reason": "not-self-contained",
+      "detail": "OSDI device noise needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_vipwl.sim",
+      "sha256": "9731ab2d1c9c3c20f24ebd91073f877da3bd203d46f960b97560679c7cab0e4a",
+      "reason": "not-self-contained",
+      "detail": "OSDI device ndx needs a compiled .osdi library"
+    },
+    {
+      "sourcePath": "vacask/test/test_visrc.sim",
+      "sha256": "9234bc657c048ec2c425da52f40caca30841f823dfbe255e802ade59e14d0244",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/test_viwfm.sim",
+      "sha256": "e10c9ff8982582e9f757a6e8776550187bf71c86f86922c657e330db7ad78f7c",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    },
+    {
+      "sourcePath": "vacask/test/timestep.sim",
+      "sha256": "88383d477272ac917d7bebf495475f5dc4963151fcb1188cbb9299dac09d275a",
+      "reason": "no-analysis",
+      "detail": "no analysis card or control-block analysis command"
+    }
+  ]
+}

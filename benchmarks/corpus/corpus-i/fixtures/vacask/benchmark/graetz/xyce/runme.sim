@@ -1,0 +1,25 @@
+Full-wave rectifier with smoothing and load
+
+.model d1n4007 d is=76.9p rs=42.0m bv=1.00k ibv=5.00u cjo=26.5p  m=0.333 n=1.45 
+* tt=4.32u
+
+vs inp inn 0 sin 0.0 20 50.0
+
+d1 inp outp d1n4007
+d2 outn inp d1n4007
+d3 inn outp d1n4007
+d4 outn inn d1n4007
+cl outp outn 100u
+rl outp outn 1k
+rgnd1 inn 0 1meg
+rgnd2 outn 0 1meg
+
+.options timeint method=gear maxord=2
+* .print tran file=xy.tran1.raw format=raw v(inp) v(inn) v(outp) v(outn)
+.tran 1u 1 0 1u
+
+*.print tran file=out.dat format=std v(inp) v(inn) v(outp) v(outn)
+*.tran 0.1m 200m 0
+* gnuplot -e "plot \"out.dat\" using 2:(\$5-\$6) with lines, \"out.dat\" using 2:(\$3-\$4) with lines" -p
+
+.end

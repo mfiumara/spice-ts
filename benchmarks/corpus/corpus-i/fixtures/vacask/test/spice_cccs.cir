@@ -1,0 +1,17 @@
+* spice_cccs.cir - CCCS (F-source) E2E test
+* Convention: F1 pos neg Vsense gain
+*   ctlinst=Vsense, ctlnode="flow(br)" (default in VACASK cccs)
+* Topology:
+*   Vin=1V DC -> Rsense=1k -> Vsense(0V sense) -> 0
+*   F1 (gain=5) draws 5*I_sense from node 2 to 0
+*   Rload=1k from node 2 to 0
+* Analysis: I_sense = 1mA (flowing into Vsense+ terminal)
+*   F1 flowResidual = 5 * 1mA = 5mA draining from node 2
+*   KCL at 2: V(2)/1k + 5mA = 0 -> V(2) = -5 V
+Vin 1 0 DC 1
+Rsense 1 sp 1k
+Vsense sp 0 DC 0
+F1 2 0 Vsense 5.0
+Rload 2 0 1k
+.tran 1u 10m
+.end
