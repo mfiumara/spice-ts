@@ -274,3 +274,26 @@ Against ngspice-47 KLU in the unpaired after run (5 samples), spice-ts analysis 
 | MOS1 chain | 1.33x slower | 1.12x slower | 0.43x |
 
 These ratios are not load-paired and moved with machine load: ngspice's own 10k RC analysis time was 140 ms in the #702 run and 109 ms here. The MOS chain reads slower at 1k / 10k than in the #702 table although this PR leaves it unchanged in paired A/B; #703 (MOS1 device convergence test) landed on main in between. Its 50k cell reads spice-ts faster but is not a claimed win (unpaired; spice-ts's own paired samples on it ranged 26.9-37.8 s in this card). The mesh OP is still the deck furthest behind KLU. Profiles, JSONL, the ngspice table and remaining scope (mesh `factorize` kernel layout, the trapezoidal `stampPrevB` restamp on linear decks, MOS1 stamping, a load-paired engine run) are in `benchmarks/performance/results/issue-710/README.md`.
+
+## Follow-up: supernodal block updates in the sparse LU ([#727](https://github.com/mfiumara/spice-ts/issues/727))
+
+After #710 the RC ladder has no frame above 8% self time. The largest single frame on any M2 deck was the Gilbert-Peierls `factorize` on the resistor mesh: 50.3% of the 50k profile (22.9% at 10k) for one full factorization, 218 M multiply-subtracts at about 2.9 ns each. The mesh OP was also the deck furthest behind ngspice-47 KLU. 96% of those operations come from runs of consecutive L columns with nested patterns (supernodes), but the stored row order differs between linked columns in 89% of the links, so the existing columns cannot be walked together.
+
+A full factorization now packs each such run into a row-major block as it is produced and applies the block to later columns in one pass: rows are first touched in the same order, members whose U entry is exactly zero are skipped as before, and every row receives the same subtractions in the same order (in a register, four rows at a time), running the same zero-activation step. The pivot-reuse refactorization, the solve, AMD and the singleton pre-ordering are unchanged. Results are bit-identical:
+
+- new cases in `gilbert-peierls-equivalence.test.ts` compare factors with `Object.is` against the frozen pre-#669 kernel on grids of side 24/41 and 60 random grid-shaped matrices with exact cancellation, explicit zeros and off-preference pivots, and assert that supernodes are actually used; 9/9 mutants of the new code fail them;
+- waveform hashes match in every paired A/B sample;
+- 100/100 aggregate corpus digests are identical;
+- `accuracy.ts --ci` passes.
+
+Paired concurrent A/B (before/after, >1 = faster): the mesh OP is 1.13x (1.10..1.18, 5 pairs, load 8-12) and 1.19x (1.18..1.21, 7 pairs, load 3-7) faster wall at 50k, 1.06x / 1.07x at 10k; CPU 1.12x / 1.15x at 50k. The factorization kernel alone is about 1.5x faster on a 224 x 224 grid (main 594-637 ms, branch 388-398 ms per call). Everything else is unchanged within noise: mesh 1k 0.99x (CPU 0.94x on 23 ms fresh-process samples; in-process steady state is equal), RC ladder 0.99x / 1.00x / 0.98-1.00x (its factors have no supernodes), MOS chain 0.97x / 1.00x / 1.00x.
+
+Against ngspice-47 KLU (two unpaired runs, 5 samples each), spice-ts analysis time is:
+
+| deck | 1k | 10k | 50k |
+|---|---|---|---|
+| RC ladder | 1.34x / 1.72x slower | 1.54x / 1.61x slower | 2.31x slower / 0.66x |
+| mesh OP | 2.72x / 2.24x slower | 2.10x / 3.55x slower | 1.84x / 1.77x slower |
+| MOS1 chain | 1.23x / 1.18x slower | 1.12x slower / 0.69x | 0.46x / 0.56x |
+
+The mesh OP is still slower than KLU at every size and still the deck furthest behind; its 50k cell moved from 2.42x (#710 run) to 1.77-1.84x, in the direction of the paired gain, but the engines were not load-paired. The RC 50k and MOS 10k cells flip between runs with load (ngspice's own RC 50k samples ranged 738-1456 ms) and are not claimed as wins; the MOS 50k cell reads spice-ts faster in both runs but spice-ts's own samples there ranged 26.7-51.6 s. Profiles, JSONL, digests, both ngspice tables, the kernel micro-benchmark and remaining scope (the pivot-reuse path and small supernodes, AMD ordering and GC on the mesh, MOS1 stamping, a load-paired engine run) are in `benchmarks/performance/results/issue-727/README.md`.

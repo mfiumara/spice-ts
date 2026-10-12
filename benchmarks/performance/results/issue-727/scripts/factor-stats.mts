@@ -19,9 +19,9 @@ const cells = process.argv.slice(2).length > 0 ? process.argv.slice(2) : [
 
 type Internals = {
   n: number; lColPtr: Int32Array; uColPtr: Int32Array; uRows: Int32Array;
-  numericFactorizations: number;
+  numericFactorizations: number; supernodalUpdates?: number;
 };
-let last: { n: number; nnzA: number; nnzL: number; nnzU: number; flops: number } | null = null;
+let last: { n: number; nnzA: number; nnzL: number; nnzU: number; flops: number; supernodal: number | string } | null = null;
 let calls = 0;
 let numeric = 0;
 const original = GilbertPeierlsSolver.prototype.factorize;
@@ -41,15 +41,15 @@ GilbertPeierlsSolver.prototype.factorize = function (this: GilbertPeierlsSolver,
       flops += lColPtr[k + 1] - lColPtr[k];
     }
   }
-  last = { n, nnzA: A.colPtr[n], nnzL: lColPtr[n], nnzU: uColPtr[n], flops };
+  last = { n, nnzA: A.colPtr[n], nnzL: lColPtr[n], nnzU: uColPtr[n], flops, supernodal: self.supernodalUpdates ?? 'n/a' };
 };
 
-console.log('| cell | n | nnz(A) | nnz(L) | nnz(U) | fill (L+U)/A | update mult-subs | factorize() calls | numeric |');
-console.log('|---|---:|---:|---:|---:|---:|---:|---:|---:|');
+console.log('| cell | n | nnz(A) | nnz(L) | nnz(U) | fill (L+U)/A | update mult-subs | factorize() calls | numeric | supernodal block updates (last full) |');
+console.log('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|');
 for (const cell of cells) {
   const [circuit, nodes] = cell.split(':');
   calls = 0; numeric = 0; last = null;
   await simulate(m2Netlist(circuit, Number(nodes)).netlist);
   const s = last!;
-  console.log(`| ${cell} | ${s.n} | ${s.nnzA} | ${s.nnzL} | ${s.nnzU} | ${((s.nnzL + s.nnzU) / s.nnzA).toFixed(1)} | ${s.flops} | ${calls} | ${numeric} |`);
+  console.log(`| ${cell} | ${s.n} | ${s.nnzA} | ${s.nnzL} | ${s.nnzU} | ${((s.nnzL + s.nnzU) / s.nnzA).toFixed(1)} | ${s.flops} | ${calls} | ${numeric} | ${s.supernodal} |`);
 }
