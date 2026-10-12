@@ -1,0 +1,321 @@
+{
+  "ngspice": "ngspice-47 : Circuit level simulation program",
+  "generatedBy": "benchmarks/mesfet-hfet-500/compare.ts",
+  "results": [
+    {
+      "fixture": "hfet-id_vgs.cir",
+      "origin": "ngspice",
+      "sha256": "2cce395d923c90cd58b158545b5efdbf46238e69e9492f9885cde1b9a9be03d3",
+      "analysis": "dc",
+      "worst": 3.61e-8,
+      "perVector": {
+        "i(vds)": {
+          "points": {
+            "ngspice": 101,
+            "spiceTs": 101
+          },
+          "peakNgspice": 0.000210801,
+          "maxAbsError": 7.61e-12,
+          "maxErrorOverPeak": 3.61e-8
+        }
+      }
+    },
+    {
+      "fixture": "mes-subth.cir",
+      "origin": "ngspice",
+      "sha256": "77154dbb92e2fa254137d5dfbbb855081441276c3916b36eac176d5090e09889",
+      "analysis": "dc",
+      "worst": 3.59e-8,
+      "perVector": {
+        "i(vids)": {
+          "points": {
+            "ngspice": 61,
+            "spiceTs": 61
+          },
+          "peakNgspice": 0.000457537,
+          "maxAbsError": 1.64e-11,
+          "maxErrorOverPeak": 3.59e-8
+        }
+      }
+    },
+    {
+      "fixture": "mesa-mesa13.cir",
+      "origin": "ngspice",
+      "sha256": "bff7b0dd9fb90a86fac72dc322e12719f1e58259668e7add44f72d28431c1a99",
+      "analysis": "dc",
+      "worst": 0.000362,
+      "perVector": {
+        "i(vig)": {
+          "points": {
+            "ngspice": 69,
+            "spiceTs": 69
+          },
+          "peakNgspice": 0.000732469,
+          "maxAbsError": 2.65e-7,
+          "maxErrorOverPeak": 0.000362
+        }
+      }
+    },
+    {
+      "fixture": "mesa-mesa15.cir",
+      "origin": "ngspice",
+      "sha256": "f88285748f33c3629675529f92af3029f1ea7c56833ef0b0721a1839187d55fb",
+      "analysis": "dc",
+      "worst": 0.000136,
+      "perVector": {
+        "i(vids)": {
+          "points": {
+            "ngspice": 61,
+            "spiceTs": 61
+          },
+          "peakNgspice": 0.00412486,
+          "maxAbsError": 5.63e-7,
+          "maxErrorOverPeak": 0.000136
+        }
+      }
+    },
+    {
+      "fixture": "mesa-mesa21.cir",
+      "origin": "ngspice",
+      "sha256": "659e8cb68c74f95192f8aa6a6de2ac85935a45002b097e5abd4b35cf1498ec97",
+      "analysis": "dc",
+      "worst": 1.28e-16,
+      "perVector": {
+        "i(vids)": {
+          "points": {
+            "ngspice": 405,
+            "spiceTs": 405
+          },
+          "peakNgspice": 0.27027,
+          "maxAbsError": 3.47e-17,
+          "maxErrorOverPeak": 1.28e-16
+        }
+      }
+    },
+    {
+      "fixture": "mesa-mesgout.cir",
+      "origin": "ngspice",
+      "sha256": "86e50503a32796d169714fec770be64c62b71e50c34163c9d32e34c0050c164c",
+      "analysis": "ac",
+      "worst": 0.00000185,
+      "perVector": {
+        "v(3)": {
+          "points": {
+            "ngspice": 91,
+            "spiceTs": 91
+          },
+          "peakNgspice": 0.00179686,
+          "maxAbsError": 3.32e-9,
+          "maxErrorOverPeak": 0.00000185
+        }
+      }
+    },
+    {
+      "fixture": "mesa-mesinv.cir",
+      "origin": "ngspice",
+      "sha256": "13a9dd2e20185e09fdf7370592edbb62a8c35731b9f2fe4be5a8cd53f07d3f26",
+      "analysis": "dc",
+      "worst": 0.0000149,
+      "perVector": {
+        "v(70)": {
+          "points": {
+            "ngspice": 101,
+            "spiceTs": 101
+          },
+          "peakNgspice": 0.592432,
+          "maxAbsError": 0.00000881,
+          "maxErrorOverPeak": 0.0000149
+        }
+      }
+    },
+    {
+      "fixture": "authored-hfet-rsi.cir",
+      "origin": "authored",
+      "sha256": "d7fd267a70925f609752d4aea13ba0c983c28a364c7a5e6d00518c5b5f80c0a9",
+      "analysis": "dc",
+      "worst": 1.07e-8,
+      "perVector": {
+        "i(vds)": {
+          "points": {
+            "ngspice": 204,
+            "spiceTs": 204
+          },
+          "peakNgspice": 0.000864925,
+          "maxAbsError": 9.27e-12,
+          "maxErrorOverPeak": 1.07e-8
+        }
+      }
+    },
+    {
+      "fixture": "authored-mes-inverse.cir",
+      "origin": "authored",
+      "sha256": "01a85c0b2fcc66c1f5cac872d4aeda5940f256f091c4f632c30ceb6827764aec",
+      "analysis": "dc",
+      "worst": 0.00000954,
+      "perVector": {
+        "i(vds)": {
+          "points": {
+            "ngspice": 1608,
+            "spiceTs": 1608
+          },
+          "peakNgspice": 0.478837,
+          "maxAbsError": 0.00000438,
+          "maxErrorOverPeak": 0.00000915
+        },
+        "i(vgs)": {
+          "points": {
+            "ngspice": 1608,
+            "spiceTs": 1608
+          },
+          "peakNgspice": 0.471904,
+          "maxAbsError": 0.0000045,
+          "maxErrorOverPeak": 0.00000954
+        }
+      }
+    },
+    {
+      "fixture": "authored-mes-ac.cir",
+      "origin": "authored",
+      "sha256": "9225d79ae42a0a45e9d3307eb3d004a7684ab66fb418af7a243fb09af27ab911",
+      "analysis": "ac",
+      "worst": 1.11e-10,
+      "perVector": {
+        "v(d)": {
+          "points": {
+            "ngspice": 51,
+            "spiceTs": 51
+          },
+          "peakNgspice": 1.17117,
+          "maxAbsError": 1.3e-10,
+          "maxErrorOverPeak": 1.11e-10
+        },
+        "v(gi)": {
+          "points": {
+            "ngspice": 51,
+            "spiceTs": 51
+          },
+          "peakNgspice": 0.999999,
+          "maxAbsError": 5.85e-12,
+          "maxErrorOverPeak": 5.85e-12
+        }
+      }
+    },
+    {
+      "fixture": "authored-mes-tran.cir",
+      "origin": "authored",
+      "sha256": "407a62bc66fc1754431a311c53abaa69e75ae8d460a0c7365b9b0b08fb6618aa",
+      "analysis": "tran",
+      "worst": 0.00179,
+      "perVector": {
+        "v(d)": {
+          "points": {
+            "ngspice": 638,
+            "spiceTs": 877
+          },
+          "peakNgspice": 3.51407,
+          "maxAbsError": 0.0045,
+          "maxErrorOverPeak": 0.00128
+        },
+        "v(gi)": {
+          "points": {
+            "ngspice": 638,
+            "spiceTs": 877
+          },
+          "peakNgspice": 2,
+          "maxAbsError": 0.00357,
+          "maxErrorOverPeak": 0.00179
+        }
+      }
+    },
+    {
+      "fixture": "authored-mesa-alpha-ac.cir",
+      "origin": "authored",
+      "sha256": "98d3a8903ec5b80dcb616e979de0c9d721f0082046de32997c7ade9e5ce94e90",
+      "analysis": "ac",
+      "worst": 7.24e-15,
+      "perVector": {
+        "v(d)": {
+          "points": {
+            "ngspice": 81,
+            "spiceTs": 81
+          },
+          "peakNgspice": 3.06806,
+          "maxAbsError": 2.22e-14,
+          "maxErrorOverPeak": 7.24e-15
+        }
+      }
+    },
+    {
+      "fixture": "authored-mesa-rirf-tran.cir",
+      "origin": "authored",
+      "sha256": "5e2d797547747b6dabf3b20676f2980e3e591c1f039629ab19920a71a9b579d0",
+      "analysis": "tran",
+      "worst": 0.00286,
+      "perVector": {
+        "v(d)": {
+          "points": {
+            "ngspice": 1238,
+            "spiceTs": 1392
+          },
+          "peakNgspice": 1.60146,
+          "maxAbsError": 0.000745,
+          "maxErrorOverPeak": 0.000465
+        },
+        "i(vin)": {
+          "points": {
+            "ngspice": 1238,
+            "spiceTs": 1392
+          },
+          "peakNgspice": 0.00176678,
+          "maxAbsError": 0.00000505,
+          "maxErrorOverPeak": 0.00286
+        }
+      }
+    },
+    {
+      "fixture": "authored-mesa3-ac.cir",
+      "origin": "authored",
+      "sha256": "377ba6dd369305109d7646f5ae0956bb18284752c201f33761d13de6e1f394fd",
+      "analysis": "ac",
+      "worst": 5.75e-14,
+      "perVector": {
+        "v(d)": {
+          "points": {
+            "ngspice": 81,
+            "spiceTs": 81
+          },
+          "peakNgspice": 3.50941,
+          "maxAbsError": 2.02e-13,
+          "maxErrorOverPeak": 5.75e-14
+        }
+      }
+    },
+    {
+      "fixture": "authored-mesa3-tran.cir",
+      "origin": "authored",
+      "sha256": "69a8d5088e9a0d8a1eb544d6a835d0793684c41faff2acc474cabdcb8f7313fd",
+      "analysis": "tran",
+      "worst": 0.138,
+      "perVector": {
+        "v(d)": {
+          "points": {
+            "ngspice": 1032,
+            "spiceTs": 1301
+          },
+          "peakNgspice": 2.00959,
+          "maxAbsError": 0.0401,
+          "maxErrorOverPeak": 0.02
+        },
+        "i(vin)": {
+          "points": {
+            "ngspice": 1032,
+            "spiceTs": 1301
+          },
+          "peakNgspice": 0.00107371,
+          "maxAbsError": 0.000149,
+          "maxErrorOverPeak": 0.138
+        }
+      }
+    }
+  ]
+}

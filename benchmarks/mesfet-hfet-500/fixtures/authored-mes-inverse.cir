@@ -1,0 +1,7 @@
+MES level-1 normal and inverse mode (issue #500, project-authored)
+vds d 0 dc 0
+vgs g 0 dc 0
+z1 d g 0 mm area=1.5
+.model mm nmf level=1 vto=-1.2 beta=3e-3 lambda=0.08 alpha=3 b=0.5 rd=5 rs=8
+.dc vds -2 2 0.02 vgs -1 0.4 0.2
+.end

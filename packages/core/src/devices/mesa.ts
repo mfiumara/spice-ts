@@ -4,14 +4,22 @@ import type {
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import {
   evaluateMESA,
+  mesaACConductance,
+  mesaInstanceState,
   MESA_JUNCTION_GMIN,
   type MESAInstanceParams,
+  type MESAInstanceState,
   type MESAModel,
+  type MESASmallSignalTerms,
 } from './mesa-model.js';
 
 /**
- * Intrinsic ngspice MESA level-2 (`NMF`) MESFET between drain', gate and
- * source'. External RD/RS are expanded to series resistors at compile time.
+ * Intrinsic ngspice MESA (`NMF` level 2/3) MESFET. Nodes are
+ * `[drain', gate', source', source'', drain'']`: the channel and the gate
+ * junctions sit between gate', drain' and source'; the gate charges qgs/qgd
+ * between gate' and the RI/RF nodes source''/drain'' (which coincide with
+ * source'/drain' when RI/RF are 0, as in mesasetup.c). External RD/RS/RG and
+ * RI/RF are expanded to series resistors at compile time.
  */
 export class MESA implements DeviceModel {
   readonly branches: number[] = [];
@@ -22,6 +30,9 @@ export class MESA implements DeviceModel {
    */
   readonly integratesTransientCharge = true;
   private readonly charges = new TransientChargeState(2);
+  private readonly state: MESAInstanceState;
+  /** Channel terms of the last conducting load (ngspice instance fields for MESAacLoad). */
+  private small: MESASmallSignalTerms | undefined;
 
   constructor(
     readonly name: string,
@@ -29,21 +40,29 @@ export class MESA implements DeviceModel {
     readonly model: MESAModel,
     readonly instance: MESAInstanceParams,
     readonly junctionGmin = MESA_JUNCTION_GMIN,
-  ) {}
+  ) {
+    this.state = mesaInstanceState(model, instance);
+  }
+
+  private terminals(): [number, number, number, number, number] {
+    const [drain, gate, source] = this.nodes;
+    return [drain, gate, source, this.nodes[3] ?? source, this.nodes[4] ?? drain];
+  }
 
   private evaluate(ctx: StampContext) {
-    const [drain, gate, source] = this.nodes;
-    const vD = voltage(ctx, drain);
+    const [drain, gate, source, sourceCharge, drainCharge] = this.terminals();
     const vG = voltage(ctx, gate);
-    const vS = voltage(ctx, source);
-    const vgs = vG - vS;
-    const vgd = vG - vD;
-    return { vgs, vgd, point: evaluateMESA(vgs, vgd, this.model, this.instance, this.junctionGmin) };
+    const vgs = vG - voltage(ctx, source);
+    const vgd = vG - voltage(ctx, drain);
+    const vgspp = vG - voltage(ctx, sourceCharge);
+    const vgdpp = vG - voltage(ctx, drainCharge);
+    return { vgs, vgd, vgspp, vgdpp, point: evaluateMESA(vgs, vgd, this.state, this.junctionGmin) };
   }
 
   stamp(ctx: StampContext): void {
-    const [drain, gate, source] = this.nodes;
+    const [drain, gate, source] = this.terminals();
     const { vgs, vgd, point } = this.evaluate(ctx);
+    if (point.small) this.small = point.small;
     const vds = vgs - vgd;
     // ngspice MESAload stamps the forward-orientation gm/gds against the
     // signed vgs/vds, with a matching equivalent current.
@@ -60,35 +79,79 @@ export class MESA implements DeviceModel {
     }
   }
 
+  /**
+   * ngspice MESAacLoad: gate junction conductances of the operating point and
+   * gm/gds rebuilt from the stored channel terms at LAMBDA. The
+   * frequency-dependent part (LAMBDAHF dispersion) is
+   * {@link stampFrequencyConductance}. A channel that never conducted keeps
+   * ngspice's zero-initialised terms, so gm = gds = 0.
+   */
+  stampSmallSignal(ctx: StampContext): void {
+    const [drain, gate, source] = this.terminals();
+    const { vgs, vgd, point } = this.evaluate(ctx);
+    // The MODEINITSMSIG load re-evaluates the channel at the operating point.
+    if (point.small) this.small = point.small;
+    const { gm, gds } = this.acConductance(vgs - vgd, null);
+    stampChannel(ctx, drain, gate, source, gm, gds, 0);
+    stampJunction(ctx, gate, source, point.gateSourceConductance, 0);
+    stampJunction(ctx, gate, drain, point.gateDrainConductance, 0);
+  }
+
+  /** Whether MESAacLoad's gm/gds depend on frequency (DELFO != 0). */
+  get frequencyDependent(): boolean {
+    return this.state.delf !== 0;
+  }
+
+  /**
+   * Add gm(f) - gm(LAMBDA) and gds(f) - gds(LAMBDA) at angular frequency
+   * `omega`, on top of {@link stampSmallSignal}.
+   */
+  stampFrequencyConductance(ctx: StampContext, omega: number): void {
+    if (!this.frequencyDependent) return;
+    const [drain, gate, source] = this.terminals();
+    const vds = voltage(ctx, drain) - voltage(ctx, source);
+    const base = this.acConductance(vds, null);
+    const atFrequency = this.acConductance(vds, omega / 2 / Math.PI);
+    stampChannel(ctx, drain, gate, source, atFrequency.gm - base.gm, atFrequency.gds - base.gds, 0);
+  }
+
+  private acConductance(vds: number, frequency: number | null): { gm: number; gds: number } {
+    if (!this.small) return { gm: 0, gds: 0 };
+    if (frequency === null) {
+      return mesaACConductance({ ...this.state, delf: 0 }, this.small, vds, 0);
+    }
+    return mesaACConductance(this.state, this.small, vds, frequency);
+  }
+
   stampDynamic(ctx: StampContext): void {
-    const [drain, gate, source] = this.nodes;
+    const [, gate, , sourceCharge, drainCharge] = this.terminals();
     const { point } = this.evaluate(ctx);
-    stampCapacitance(ctx, gate, source, point.capGS);
-    stampCapacitance(ctx, gate, drain, point.capGD);
+    stampCapacitance(ctx, gate, sourceCharge, point.capGS);
+    stampCapacitance(ctx, gate, drainCharge, point.capGD);
   }
 
   stampTransientCharge(ctx: StampContext, integration: ChargeIntegration): void {
-    const [drain, gate, source] = this.nodes;
-    const { vgs, vgd, point } = this.evaluate(ctx);
+    const [, gate, , sourceCharge, drainCharge] = this.terminals();
+    const { vgspp, vgdpp, point } = this.evaluate(ctx);
     const charges = this.charges;
     charges.begin(integration);
-    const qgs = charges.incrementalCharge(GATE_SOURCE, vgs, point.capGS);
-    const qgd = charges.incrementalCharge(GATE_DRAIN, vgd, point.capGD);
-    stampChargeBranch(ctx, gate, source, charges.current(GATE_SOURCE, qgs), charges.factor * point.capGS, vgs);
-    stampChargeBranch(ctx, gate, drain, charges.current(GATE_DRAIN, qgd), charges.factor * point.capGD, vgd);
+    const qgs = charges.incrementalCharge(GATE_SOURCE, vgspp, point.capGS);
+    const qgd = charges.incrementalCharge(GATE_DRAIN, vgdpp, point.capGD);
+    stampChargeBranch(ctx, gate, sourceCharge, charges.current(GATE_SOURCE, qgs), charges.factor * point.capGS, vgspp);
+    stampChargeBranch(ctx, gate, drainCharge, charges.current(GATE_DRAIN, qgd), charges.factor * point.capGD, vgdpp);
   }
 
   stampAcceptedChargeCurrent(ctx: StampContext): void {
-    const [drain, gate, source] = this.nodes;
-    stampChargeCurrent(ctx, gate, source, this.charges.acceptedChargeCurrent(GATE_SOURCE));
-    stampChargeCurrent(ctx, gate, drain, this.charges.acceptedChargeCurrent(GATE_DRAIN));
+    const [, gate, , sourceCharge, drainCharge] = this.terminals();
+    stampChargeCurrent(ctx, gate, sourceCharge, this.charges.acceptedChargeCurrent(GATE_SOURCE));
+    stampChargeCurrent(ctx, gate, drainCharge, this.charges.acceptedChargeCurrent(GATE_DRAIN));
   }
 
   acceptTransientStep(ctx: StampContext): void {
-    const { vgs, vgd, point } = this.evaluate(ctx);
+    const { vgspp, vgdpp, point } = this.evaluate(ctx);
     const charges = this.charges;
-    charges.accept(GATE_SOURCE, charges.incrementalCharge(GATE_SOURCE, vgs, point.capGS), vgs, point.capGS);
-    charges.accept(GATE_DRAIN, charges.incrementalCharge(GATE_DRAIN, vgd, point.capGD), vgd, point.capGD);
+    charges.accept(GATE_SOURCE, charges.incrementalCharge(GATE_SOURCE, vgspp, point.capGS), vgspp, point.capGS);
+    charges.accept(GATE_DRAIN, charges.incrementalCharge(GATE_DRAIN, vgdpp, point.capGD), vgdpp, point.capGD);
     charges.commit();
   }
 
@@ -109,7 +172,12 @@ function voltage(ctx: StampContext, node: number): number {
   return node >= 0 ? ctx.getVoltage(node) : 0;
 }
 
-function stampChannel(
+/**
+ * Stamp a three-terminal FET channel current (drain to source) with
+ * transconductance `gm` (gate-source) and output conductance `gds`, as
+ * ngspice MESAload/MESload do.
+ */
+export function stampChannel(
   ctx: StampContext,
   drain: number,
   gate: number,
@@ -132,7 +200,8 @@ function stampChannel(
   }
 }
 
-function stampJunction(
+/** Stamp a two-terminal nonlinear conductance with its equivalent current. */
+export function stampJunction(
   ctx: StampContext,
   positive: number,
   negative: number,
@@ -153,7 +222,8 @@ function stampJunction(
   }
 }
 
-function stampCapacitance(
+/** Stamp a capacitance between two nodes into the dynamic matrix. */
+export function stampCapacitance(
   ctx: StampContext,
   positive: number,
   negative: number,

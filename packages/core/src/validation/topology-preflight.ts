@@ -2,6 +2,7 @@ import type { CompiledCircuit } from '../circuit.js';
 import type { DeviceModel } from '../devices/device.js';
 import { BJT } from '../devices/bjt.js';
 import { BSIM3v3 } from '../devices/bsim3v3.js';
+import { ClassicBsimMosfet } from '../devices/bsim12-load.js';
 import { CCCS } from '../devices/cccs.js';
 import { CCVS } from '../devices/ccvs.js';
 import { Capacitor } from '../devices/capacitor.js';
@@ -136,7 +137,10 @@ function dcConnectionGroups(device: DeviceModel): number[][] {
     return [device.nodes.slice(0, 2)];
   }
 
-  if (device instanceof MOSFET || device instanceof MOS2 || device instanceof MOS6 || device instanceof BSIM3v3) {
+  if (
+    device instanceof MOSFET || device instanceof MOS2 || device instanceof MOS6 || device instanceof BSIM3v3
+    || device instanceof ClassicBsimMosfet
+  ) {
     return [[device.nodes[0]!, device.nodes[2]!, device.nodes[3] ?? device.nodes[2]!]];
   }
 
