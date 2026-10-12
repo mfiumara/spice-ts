@@ -14,6 +14,10 @@ import { MutualInductor } from '../devices/mutual-inductor.js';
  * (ngspice INDflux). The charges are recorded at every accepted point with the
  * integration rule the companion used for that step, so their capacitor
  * currents (ngspice CKTstate[ccap]) follow the same rule.
+ *
+ * Both run once per trial or accepted timepoint over every capacitor, so the
+ * charges are computed into one reused buffer and handed to the charge state
+ * in a single batched call, with no per-charge closure or dispatch (#702).
  */
 export class LinearReactiveTruncation {
   private readonly capacitors: readonly Capacitor[];
@@ -22,6 +26,8 @@ export class LinearReactiveTruncation {
   private readonly couplings: readonly { mutual: MutualInductor; a: number; b: number }[];
   private readonly state: TransientChargeState;
   private readonly flux: Float64Array;
+  /** Charges of the point being recorded or measured: capacitors, then inductor fluxes. */
+  private readonly charges: Float64Array;
 
   constructor(devices: readonly DeviceModel[], private readonly nodeCount: number) {
     this.capacitors = devices.filter((device): device is Capacitor => device instanceof Capacitor);
@@ -33,6 +39,7 @@ export class LinearReactiveTruncation {
       .filter(({ a, b }) => a >= 0 && b >= 0);
     this.state = new TransientChargeState(this.capacitors.length + this.inductors.length);
     this.flux = new Float64Array(this.inductors.length);
+    this.charges = new Float64Array(this.capacitors.length + this.inductors.length);
   }
 
   get isEmpty(): boolean {
@@ -46,41 +53,52 @@ export class LinearReactiveTruncation {
   accept(solution: Float64Array, integration: ChargeIntegration | undefined): void {
     if (this.isEmpty) return;
     if (integration !== undefined) this.state.begin(integration);
-    this.record(solution);
+    this.state.acceptAll(this.evaluate(solution));
   }
 
   /** Smallest next timestep CKTterr allows on these charges at the converged trial `solution`. */
   timestep(solution: Float64Array, integration: ChargeIntegration, truncation: ChargeTruncation): number {
     if (this.isEmpty) return Infinity;
     this.state.begin(integration);
-    return this.state.truncationTimestep(truncation, () => this.record(solution));
+    return this.state.truncationTimestepAll(truncation, this.evaluate(solution));
   }
 
   reset(): void {
     this.state.reset();
   }
 
-  private record(solution: Float64Array): void {
-    const voltage = (node: number): number => (node >= 0 ? solution[node] : 0);
-    const current = (inductor: Inductor): number => solution[this.nodeCount + inductor.branchIndex];
+  /**
+   * Every capacitor charge, then every inductor flux, at `solution`, into the
+   * reused {@link charges} buffer (the charge order of {@link state}).
+   */
+  private evaluate(solution: Float64Array): Float64Array {
+    const charges = this.charges;
     const capacitors = this.capacitors;
-    for (let index = 0; index < capacitors.length; index++) {
-      const [positive, negative] = capacitors[index].nodes;
-      this.state.accept(index, capacitors[index].capacitance * (voltage(positive) - voltage(negative)));
+    const capacitorCount = capacitors.length;
+    for (let index = 0; index < capacitorCount; index++) {
+      const capacitor = capacitors[index];
+      const nodes = capacitor.nodes;
+      const positive = nodes[0];
+      const negative = nodes[1];
+      const vPositive = positive >= 0 ? solution[positive] : 0;
+      const vNegative = negative >= 0 ? solution[negative] : 0;
+      charges[index] = capacitor.capacitance * (vPositive - vNegative);
     }
     const inductors = this.inductors;
+    if (inductors.length === 0) return charges;
+    const nodeCount = this.nodeCount;
     const flux = this.flux;
     for (let index = 0; index < inductors.length; index++) {
-      flux[index] = inductors[index].inductance * current(inductors[index]);
+      flux[index] = inductors[index].inductance * solution[nodeCount + inductors[index].branchIndex];
     }
     for (const { mutual, a, b } of this.couplings) {
       const m = mutual.coupling * Math.sqrt(mutual.indA.inductance * mutual.indB.inductance);
-      flux[a] += m * current(mutual.indB);
-      flux[b] += m * current(mutual.indA);
+      flux[a] += m * solution[nodeCount + mutual.indB.branchIndex];
+      flux[b] += m * solution[nodeCount + mutual.indA.branchIndex];
     }
     for (let index = 0; index < inductors.length; index++) {
-      this.state.accept(capacitors.length + index, flux[index]);
+      charges[capacitorCount + index] = flux[index];
     }
-    this.state.commit();
+    return charges;
   }
 }
