@@ -31,10 +31,13 @@ type Reference = ReadonlyArray<readonly number[]>;
 // takes its own LTE-controlled steps, ngspice's are not reproduced. Before the
 // ngspice first-step change (#545) these were cpl_ibm2 4.3e-4, 4-line 0.0211 and
 // complex/short 0.0018; the step grid after t=0 still differs from ngspice (#561).
+// With the ngspice CKTsaveDelta step after breakpoints (#608) lossless/shunt-G
+// moves to 0.0044 on these samples while on every ngspice timepoint it improves
+// (max |err| v(b) 5.16e-3 -> 4.44e-3, v(d) 5.84e-3 -> 4.43e-3).
 const TXL1_BOUND = 0.04;
 const IBM2_BOUND = 7e-4;
 const LIN4_BOUND = 0.055;
-const LOSSLESS_BOUND = 0.004;
+const LOSSLESS_BOUND = 0.0047;
 const COMPLEX_SHORT_BOUND = 0.0035;
 
 function rel(actual: number, expected: number): number {

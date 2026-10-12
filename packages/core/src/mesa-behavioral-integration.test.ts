@@ -98,10 +98,9 @@ describe('B-source load and NMF level-2 MESFET (issue #340)', () => {
   }, 180_000);
 
   it.each([
-    ['.ac dec 1 1k 10k', 'vin 2 0 dc 0.4 ac 1'],
     ['.noise v(3) vin dec 1 1k 10k', 'vin 2 0 dc 0.4 ac 1'],
     ['.tf v(3) vin', 'vin 2 0 dc 0.4'],
-  ])('rejects %s for NMF devices outside the bounded OP/DC/TRAN contract', async (analysis, source) => {
+  ])('rejects %s for NMF devices outside the bounded OP/DC/TRAN/AC contract', async (analysis, source) => {
     const netlist = [
       'nmf small-signal',
       mesinv,
@@ -114,7 +113,7 @@ describe('B-source load and NMF level-2 MESFET (issue #340)', () => {
     ].join('\n');
     await expect(simulate(netlist)).rejects.toMatchObject({
       name: 'InvalidCircuitError',
-      message: expect.stringContaining('NMF level-2 MESFET'),
+      message: expect.stringContaining('NMF MESFET supports only .op, .dc, .tran and .ac'),
     });
   });
 });

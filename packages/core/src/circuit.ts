@@ -19,14 +19,13 @@ import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
 import { MOS2, resolveMOS2Model } from './devices/mos2.js';
 import { MOS6, resolveMOS6Model } from './devices/mos6.js';
+import { createBSIM1, resolveBSIM1Model } from './devices/bsim1.js';
+import { createBSIM2, resolveBSIM2Model } from './devices/bsim2.js';
+import { classicBsimSeriesResistances, resolveClassicBsimInstance } from './devices/bsim12-load.js';
 import { VDMOS } from './devices/vdmos.js';
 import { isVdmosModelType, resolveVdmosModel } from './devices/vdmos-model.js';
 import { JFET, resolveNJFETParams } from './devices/jfet.js';
-import { HFET1 } from './devices/hfet1.js';
-import { resolveHFET1Instance } from './devices/hfet1-model.js';
-import { MESA } from './devices/mesa.js';
-import { MESA_JUNCTION_GMIN, resolveMESAInstance } from './devices/mesa-model.js';
-import { resolveZModel } from './devices/z-device.js';
+import { createZDevice, expandZDevice, resolveZModel } from './devices/z-device.js';
 import { BehavioralCurrentSource, BehavioralSource, BehavioralVoltageSource } from './devices/behavioral-source.js';
 import {
   behavioralControlNodes,
@@ -100,8 +99,8 @@ import {
 } from './errors.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
-/** MOSFET model levels with a spice-ts implementation: MOS1, MOS2, MOS6 and BSIM3v3 (8/49). */
-const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 2, 6, 8, 49];
+/** MOSFET model levels with a spice-ts implementation: MOS1, MOS2, BSIM1 (4), BSIM2 (5), MOS6 and BSIM3v3 (8/49). */
+const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 2, 4, 5, 6, 8, 49];
 /** ngspice's default circuit temperature (and TNOM) in degrees Celsius. */
 const NOMINAL_TEMPERATURE_C = 27;
 /** ngspice CONSTCtoK. */
@@ -1802,10 +1801,11 @@ export class Circuit {
       const unsupported = this._poleZeroAnalyses.length > 0
         ? 'pz'
         : this._analyses.find(analysis =>
-          analysis.type !== 'op' && analysis.type !== 'dc' && analysis.type !== 'tran')?.type;
+          analysis.type !== 'op' && analysis.type !== 'dc' && analysis.type !== 'tran'
+          && analysis.type !== 'ac')?.type;
       if (unsupported) {
         throw new InvalidCircuitError(
-          `NMF level-2 MESFET supports only .op, .dc and .tran analyses; '.${unsupported}' is unsupported`,
+          `NMF MESFET supports only .op, .dc, .tran and .ac analyses; '.${unsupported}' is unsupported`,
         );
       }
     }
@@ -2073,23 +2073,9 @@ export class Circuit {
         }
         case 'Z': {
           const model = this.requireModel('Z-card', desc);
-          const resolved = resolveZModel(model);
-          if (resolved.kind === 'hfet') {
-            devices.push(new HFET1(
-              desc.name,
-              nodeIndices,
-              resolved.model,
-              resolveHFET1Instance(desc.params),
-            ));
-          } else {
-            devices.push(new MESA(
-              desc.name,
-              nodeIndices,
-              resolved.model,
-              resolveMESAInstance(desc.params),
-              this._simulationOptions.gmin ?? MESA_JUNCTION_GMIN,
-            ));
-          }
+          devices.push(createZDevice(
+            desc.name, nodeIndices, resolveZModel(model), desc.params, this._simulationOptions.gmin,
+          ));
           break;
         }
         case 'B': {
@@ -2149,6 +2135,12 @@ export class Circuit {
               resolveMOS6Model(desc.modelName!, modelParams, polarity),
               desc.params ?? {},
             ));
+          } else if (level === 4 || level === 5) {
+            // BSIM1 (LEVEL=4) / BSIM2 (LEVEL=5); expandPassiveParasitics gave [D', G, S', B].
+            const nodeIdxs = desc.nodes.map(resolveNode);
+            devices.push(level === 4
+              ? createBSIM1(desc.name, nodeIdxs, resolveBSIM1Model(desc.modelName!, modelParams, polarity), desc.params)
+              : createBSIM2(desc.name, nodeIdxs, resolveBSIM2Model(desc.modelName!, modelParams, polarity), desc.params));
           } else if (level === 2) {
             // MOS2 (Grove-Frohman, ngspice mos2) — 4-terminal, bulk defaults to source.
             const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];
@@ -2618,32 +2610,39 @@ export class Circuit {
           result.push(this.expandVdmosDescriptor(desc, model));
           continue;
         }
+        const level = model?.params.LEVEL;
+        if (model && (level === 4 || level === 5)) {
+          // BSIM1/BSIM2 (b1set.c/b2set.c): RSH*NRD and RSH*NRS in front of prime nodes.
+          const kind = level === 4 ? 'BSIM1' : 'BSIM2';
+          const instance = resolveClassicBsimInstance(kind, desc.name, desc.params);
+          const series = classicBsimSeriesResistances(model.params.RSH ?? 0, instance);
+          let [drain, gate, source] = desc.nodes;
+          const bulk = desc.nodes[3] ?? source;
+          if (series.drain !== 0) {
+            const prime = internalNodeName(desc.name, 'drain');
+            result.push({ type: 'R', name: `${desc.name}.RD`, nodes: [drain, prime], value: series.drain });
+            drain = prime;
+          }
+          if (series.source !== 0) {
+            const prime = internalNodeName(desc.name, 'source');
+            result.push({ type: 'R', name: `${desc.name}.RS`, nodes: [source, prime], value: series.source });
+            source = prime;
+          }
+          result.push({ ...desc, nodes: [drain, gate, source, bulk] });
+          continue;
+        }
       }
 
       if (desc.type === 'Z') {
         const modelName = desc.modelName!;
         const model = this._models.get(modelName);
         if (!model) throw new InvalidCircuitError(`Z-card '${desc.name}' references unknown model '${modelName}'`);
-        const resolved = resolveZModel(model);
-        if (resolved.kind === 'hfet') resolveHFET1Instance(desc.params);
-        else resolveMESAInstance(desc.params);
-        const params = resolved.model;
-        let [drain, gate, source] = desc.nodes;
-        if (params.RD > 0) {
-          const drainPrime = internalNodeName(desc.name, 'rd');
-          result.push({
-            type: 'R', name: `${desc.name}.RD`, nodes: [drain, drainPrime], value: params.RD,
-          });
-          drain = drainPrime;
-        }
-        if (params.RS > 0) {
-          const sourcePrime = internalNodeName(desc.name, 'rs');
-          result.push({
-            type: 'R', name: `${desc.name}.RS`, nodes: [source, sourcePrime], value: params.RS,
-          });
-          source = sourcePrime;
-        }
-        result.push({ ...desc, nodes: [drain, gate, source] });
+        const expansion = expandZDevice(
+          desc.name, [desc.nodes[0], desc.nodes[1], desc.nodes[2]], resolveZModel(model), desc.params,
+          suffix => internalNodeName(desc.name, suffix),
+        );
+        for (const resistor of expansion.resistors) result.push({ type: 'R', ...resistor });
+        result.push({ ...desc, nodes: expansion.nodes });
         continue;
       }
 
