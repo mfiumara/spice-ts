@@ -43,15 +43,15 @@
       "unsupported": 12
     },
     "spiceTs": {
-      "success": 101,
-      "failed": 23,
-      "unsupported": 212
+      "success": 114,
+      "failed": 24,
+      "unsupported": 198
     },
     "outcomes": {
-      "matched": 32,
-      "mismatch": 16,
+      "matched": 43,
+      "mismatch": 18,
       "not-compared": 53,
-      "spice-ts-loss": 205,
+      "spice-ts-loss": 192,
       "ngspice-failed": 0,
       "both-failed": 30
     }
@@ -59,8 +59,8 @@
   "gapBuckets": [
     {
       "bucket": "parse: other unsupported syntax",
-      "fixtures": 72,
-      "ngspiceSuccess": 67,
+      "fixtures": 69,
+      "ngspiceSuccess": 63,
       "ids": [
         "examples-control-structs-foreach-bjt-ft-sp",
         "examples-digital-auto-bridge-shared-line-cir",
@@ -69,9 +69,8 @@
         "examples-loops-instance-loop-cir",
         "examples-loops-loop-instance-cir",
         "examples-loops-loop-model-cir",
-        "examples-measure-inv-meas-tran-auto-sp",
-        "examples-measure-inv-meas-tran-sp",
-        "examples-measure-rc-meas-ac-sp",
+        "examples-measure-mos-meas-dc-control-sp",
+        "examples-measure-mos-meas-dc-sp",
         "examples-memristor-memristor-x-sp",
         "examples-mos-nmos-out-bsim330-plainwrite-sp",
         "examples-numparam-vector-param-cir",
@@ -130,8 +129,6 @@
         "examples-xspice-various-xspice-c3-cir",
         "examples-xspice-verilator-delay-cir",
         "examples-xspice-verilator-pwm-cir",
-        "tests-bsim1-test-cir",
-        "tests-bsim2-test-cir",
         "tests-regression-func-func-1-cir",
         "tests-vbic-noise-scale-test-cir"
       ],
@@ -184,19 +181,16 @@
     },
     {
       "bucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)",
-      "fixtures": 32,
-      "ngspiceSuccess": 28,
+      "fixtures": 28,
+      "ngspiceSuccess": 26,
       "ids": [
         "examples-control-structs-new-check-4-sp",
         "examples-control-structs-s-param-cir",
         "examples-digital-compare-adder-mos-cir",
         "examples-loops-loop-param-cir",
-        "examples-measure-mos-meas-dc-control-file-sp",
-        "examples-measure-mos-meas-dc-control-sp",
         "examples-monte-carlo-mc-ring-sp",
         "examples-monte-carlo-montecarlo-sp",
         "examples-mos-adder-mos-cir",
-        "examples-mos-ro-17-4-cir",
         "examples-noise-baker-252-gain-cir",
         "examples-plot-inv-chain-pyplot-cir",
         "examples-rf-hbosc-examples-hb-osc-cir",
@@ -207,7 +201,6 @@
         "examples-rf-pss-vdp-osc-pss-ctrl-cir",
         "examples-transient-noise-noi-sc-tr-cir",
         "examples-transient-noise-noise-vnoi-cir",
-        "examples-transient-noise-shot-ng-cir",
         "examples-various-3d-loop-sp",
         "examples-various-alterparam-sp",
         "examples-various-cutout1-cir",
@@ -224,10 +217,11 @@
     },
     {
       "bucket": "execution: other failure",
-      "fixtures": 17,
+      "fixtures": 18,
       "ngspiceSuccess": 15,
       "ids": [
         "examples-control-structs-if-test-1-cir",
+        "examples-measure-mos-meas-dc-control-file-sp",
         "examples-memristor-memristor-sp",
         "examples-noise-bipolar-noise-cir",
         "examples-rf-sp-tschebyschef-lp-cir",
@@ -283,36 +277,6 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/459"
     },
     {
-      "bucket": "expression: quoted/brace expressions in values (TEMPER, functions)",
-      "fixtures": 7,
-      "ngspiceSuccess": 6,
-      "ids": [
-        "examples-measure-buggy-meas-tran-sp",
-        "examples-measure-meas-expression-cir",
-        "examples-monte-carlo-opwien-sp",
-        "examples-monte-carlo-rand-numb-test-cir",
-        "examples-rf-sp-file-cir",
-        "examples-vdmos-dcdc-sp",
-        "tests-regression-parser-bxpressn-1-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/493"
-    },
-    {
-      "bucket": "model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card)",
-      "fixtures": 7,
-      "ngspiceSuccess": 7,
-      "ids": [
-        "tests-hfet-id-vgs-cir",
-        "tests-mes-subth-cir",
-        "tests-mesa-mesa13-cir",
-        "tests-mesa-mesa15-cir",
-        "tests-mesa-mesa21-cir",
-        "tests-mesa-mesgout-cir",
-        "tests-mesa-mesinv-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/500"
-    },
-    {
       "bucket": "control: analysis commands inside .control (tran/dc/op/ac/...)",
       "fixtures": 6,
       "ngspiceSuccess": 6,
@@ -325,6 +289,33 @@
         "tests-regression-sens-sens-dc-2-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/489"
+    },
+    {
+      "bucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)",
+      "fixtures": 6,
+      "ngspiceSuccess": 6,
+      "ids": [
+        "examples-measure-inv-meas-tran-auto-sp",
+        "examples-measure-inv-meas-tran-control-sp",
+        "examples-measure-inv-meas-tran-sp",
+        "examples-mos-ro-17-4-cir",
+        "examples-mos-ro-meas-cir",
+        "examples-p-to-n-examples-switch-oscillators-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/494"
+    },
+    {
+      "bucket": "convergence",
+      "fixtures": 5,
+      "ngspiceSuccess": 3,
+      "ids": [
+        "examples-measure-rc-meas-ac-sp",
+        "examples-transmissionlines-cpl3-4-line-sp",
+        "tests-mesa-mesa-12-cir",
+        "tests-mesa-mesa12-cir",
+        "tests-transmission-cpl3-4-line-cir"
+      ],
+      "issue": null
     },
     {
       "bucket": "device: XSPICE A-element code models",
@@ -340,16 +331,17 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/487"
     },
     {
-      "bucket": "convergence",
-      "fixtures": 4,
-      "ngspiceSuccess": 2,
+      "bucket": "expression: quoted/brace expressions in values (TEMPER, functions)",
+      "fixtures": 5,
+      "ngspiceSuccess": 4,
       "ids": [
-        "examples-transmissionlines-cpl3-4-line-sp",
-        "tests-mesa-mesa-12-cir",
-        "tests-mesa-mesa12-cir",
-        "tests-transmission-cpl3-4-line-cir"
+        "examples-monte-carlo-opwien-sp",
+        "examples-monte-carlo-rand-numb-test-cir",
+        "examples-rf-sp-file-cir",
+        "examples-vdmos-dcdc-sp",
+        "tests-regression-parser-bxpressn-1-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/493"
     },
     {
       "bucket": "device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)",
@@ -375,15 +367,15 @@
       "issue": null
     },
     {
-      "bucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)",
+      "bucket": "expression: B-source V= and expression functions/operators",
       "fixtures": 3,
-      "ngspiceSuccess": 3,
+      "ngspiceSuccess": 1,
       "ids": [
-        "examples-measure-inv-meas-tran-control-sp",
-        "examples-mos-ro-meas-cir",
-        "examples-p-to-n-examples-switch-oscillators-cir"
+        "examples-ddt-ddt-test2-cir",
+        "examples-p-to-n-examples-logic-cir",
+        "examples-transient-noise-shot-ng-cir"
       ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/494"
+      "issue": "https://github.com/mfiumara/spice-ts/issues/495"
     },
     {
       "bucket": "harness: analysis result not produced or not mapped",
@@ -408,26 +400,6 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/3"
     },
     {
-      "bucket": "directive: .measure",
-      "fixtures": 2,
-      "ngspiceSuccess": 2,
-      "ids": [
-        "examples-measure-func-cap-sp",
-        "examples-measure-mos-meas-dc-sp"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/505"
-    },
-    {
-      "bucket": "expression: B-source V= and expression functions/operators",
-      "fixtures": 2,
-      "ngspiceSuccess": 0,
-      "ids": [
-        "examples-ddt-ddt-test2-cir",
-        "examples-p-to-n-examples-logic-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/495"
-    },
-    {
       "bucket": "model: BSIM3 revisions other than 3.3 (VERSION=3.0/3.1/3.2.x)",
       "fixtures": 2,
       "ngspiceSuccess": 2,
@@ -446,16 +418,6 @@
         "examples-xspice-see-set1-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/492"
-    },
-    {
-      "bucket": "timeout: spice-ts exceeded the 120 s bound",
-      "fixtures": 2,
-      "ngspiceSuccess": 2,
-      "ids": [
-        "examples-digital-compare-adder-bip-cir",
-        "examples-transmissionlines-cpl-ibm1a-sp"
-      ],
-      "issue": null
     },
     {
       "bucket": "model: string-valued model parameters (MFG= and similar)",
@@ -483,6 +445,15 @@
         "tests-regression-misc-convergence-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/508"
+    },
+    {
+      "bucket": "timeout: spice-ts exceeded the 120 s bound",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "examples-transmissionlines-cpl-ibm1a-sp"
+      ],
+      "issue": null
     }
   ],
   "fixtures": [
@@ -1857,16 +1828,17 @@
         ]
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "spice-ts exceeded the 120000 ms aggregate execution bound"
+        "status": "success",
+        "analyses": [
+          "tran:106289"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "timeout: spice-ts exceeded the 120 s bound"
+      "comparedAnalyses": 1,
+      "comparedSignals": 13,
+      "worstNormalizedError": 0.0242,
+      "worstSignal": "tran v(10)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "examples-digital-compare-adder-mos-cir",
@@ -2041,16 +2013,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 30: Unknown function 'v' .measure tran vtest find par('v(2)*v(1)') AT=2.3m"
+        "status": "success",
+        "analyses": [
+          "tran:510"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "expression: quoted/brace expressions in values (TEMPER, functions)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.0012,
+      "worstSignal": "tran v(pa_00)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "examples-measure-func-cap-sp",
@@ -2068,16 +2041,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 10: Unsupported dot command: '.measure' .measure tran capacitance param=9.797958971132712"
+        "status": "success",
+        "analyses": [
+          "tran:107"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: .measure"
+      "comparedAnalyses": 1,
+      "comparedSignals": 2,
+      "worstNormalizedError": 0.5,
+      "worstSignal": "tran i(vdd)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "examples-measure-inv-meas-tran-auto-sp",
@@ -2097,14 +2071,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 85: Undefined parameter 'inv_delay' .meas tran delay_chk param='(inv_delay < 100ps) ? 1 : 0'"
+        "firstErrorLine": "Parse error at line 30: Unsupported .options field: 'autostop' .option autostop"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-measure-inv-meas-tran-control-sp",
@@ -2150,14 +2124,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 85: Undefined parameter 'inv_delay' .meas tran delay_chk param='(inv_delay < 100ps) ? 1 : 0'"
+        "firstErrorLine": "Parse error at line 31: Unsupported .options field: 'scale' .option scale = 1e-6"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-measure-meas-expression-cir",
@@ -2175,16 +2149,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 10: Unknown function 'v' .measure tran yeval1 FIND v(2) WHEN v(1)=par('0.9*v(2)')"
+        "status": "success",
+        "analyses": [
+          "tran:510"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "expression: quoted/brace expressions in values (TEMPER, functions)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.00048,
+      "worstSignal": "tran v(1)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "examples-measure-mos-meas-dc-control-file-sp",
@@ -2201,16 +2176,16 @@
         "firstErrorLine": "Error: measure vd_diff2 trig(TARG) : out of interval"
       },
       "spiceTs": {
-        "status": "unsupported",
+        "status": "failed",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 21: Unsupported .control command 'meas': control-language measurements are not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, c"
+        "firstErrorLine": "Control script error at line 18: 'inputdir': no such variable set file = $inputdir/meas.out"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "execution: other failure"
     },
     {
       "id": "examples-measure-mos-meas-dc-control-sp",
@@ -2229,14 +2204,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 19: Unsupported .control command 'meas': control-language measurements are not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, c"
+        "firstErrorLine": "MOSFET 'm1' references unknown model 'nch'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "both-failed",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-measure-mos-meas-dc-sp",
@@ -2256,14 +2231,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 19: Unsupported dot command: '.meas' .meas dc is_at FIND i ( vs ) AT=1"
+        "firstErrorLine": "MOSFET 'm1' references unknown model 'nch'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: .measure"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-measure-rc-meas-ac-sp",
@@ -2281,16 +2256,16 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
+        "status": "failed",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 40: Undefined parameter 'vout_diff' .meas ac bw_chk param='(vout_diff < 100k) ? 1 : 0'"
+        "firstErrorLine": "Singular matrix: zero pivot at matrix column 3 (nodes: out)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "convergence"
     },
     {
       "id": "examples-memristor-memristor-x-sp",
@@ -2389,7 +2364,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 52: Unsupported .control command 'meas': control-language measurements are not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, c"
+        "firstErrorLine": "Parse error at line 42: Unsupported .control command 'alter': vector function 'sunif()' is not evaluated by spice-ts alter c1 = unif(1e-09, 0.1)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -2410,7 +2385,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:243884"
+          "tran:243283"
         ]
       },
       "spiceTs": {
@@ -2521,7 +2496,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "MOSFET 'M1' (model 'n1') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 6, 8, 49)"
+        "firstErrorLine": "MOSFET 'M1' (model 'n1') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -2602,14 +2577,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 58: Unsupported .control command 'meas': control-language measurements are not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, c"
+        "firstErrorLine": "Parse error at line 50: Unsupported .options field: 'xmu' option xmu = 0.49"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "examples-mos-ro-meas-cir",
@@ -3249,7 +3224,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 25: Unsupported .control command 'meas': control-language measurements are not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, c"
+        "firstErrorLine": "Parse error at line 28: Unsupported .control command 'reset': circuit reset between analyses is not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -3460,13 +3435,13 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:2123"
+          "tran:1667"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 90,
-      "worstNormalizedError": 1.54,
-      "worstSignal": "tran v(x1.x2.x1.x8.net.1)",
+      "worstNormalizedError": 0.755,
+      "worstSignal": "tran i(vin3a)",
       "outcome": "mismatch",
       "gapBucket": null
     },
@@ -3696,7 +3671,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:3039"
+          "tran:3042"
         ]
       },
       "spiceTs": {
@@ -3707,8 +3682,8 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 10,
-      "worstNormalizedError": 1.36,
-      "worstSignal": "tran v(21)",
+      "worstNormalizedError": 1.14,
+      "worstSignal": "tran v(9)",
       "outcome": "mismatch",
       "gapBucket": null
     },
@@ -3730,14 +3705,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 24: Unsupported .control command 'meas': control-language measurements are not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, c"
+        "firstErrorLine": "Parse error at line 3: Unsupported behavioral expression: branch current i(...) references BI 1 3 I=sqrt(2*abs(i(v1))*1.6e-19*1e7)*v(11)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
+      "gapBucket": "expression: B-source V= and expression functions/operators"
     },
     {
       "id": "examples-transient-noise-simple-noise-cir",
@@ -3762,7 +3737,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 5,
-      "worstNormalizedError": 2.5,
+      "worstNormalizedError": 5.44,
       "worstSignal": "tran v(3)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -3784,7 +3759,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:25295"
+          "tran:26350"
         ]
       },
       "comparedAnalyses": 0,
@@ -3864,7 +3839,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:13385"
+          "tran:14554"
         ]
       },
       "comparedAnalyses": 0,
@@ -3891,7 +3866,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:8795"
+          "tran:8397"
         ]
       },
       "comparedAnalyses": 0,
@@ -3918,7 +3893,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:3118"
+          "tran:2523"
         ]
       },
       "comparedAnalyses": 0,
@@ -3971,7 +3946,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:12224"
+          "tran:12037"
         ]
       },
       "comparedAnalyses": 0,
@@ -4079,7 +4054,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:2153"
+          "tran:2203"
         ]
       },
       "comparedAnalyses": 0,
@@ -4106,7 +4081,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:2441"
+          "tran:2472"
         ]
       },
       "comparedAnalyses": 0,
@@ -4133,7 +4108,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:1029"
+          "tran:1021"
         ]
       },
       "comparedAnalyses": 0,
@@ -4160,7 +4135,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:3079"
+          "tran:4876"
         ]
       },
       "comparedAnalyses": 0,
@@ -4214,7 +4189,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:684"
+          "tran:666"
         ]
       },
       "comparedAnalyses": 0,
@@ -4268,7 +4243,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:2510"
+          "tran:2499"
         ]
       },
       "comparedAnalyses": 0,
@@ -4295,7 +4270,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:614"
+          "tran:574"
         ]
       },
       "comparedAnalyses": 0,
@@ -4588,7 +4563,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "MOSFET 'M1' (model 'N1') uses unsupported model LEVEL=14 (supported MOSFET levels: 1, 6, 8, 49)"
+        "firstErrorLine": "MOSFET 'M1' (model 'N1') uses unsupported model LEVEL=14 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -4615,7 +4590,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 41: Unsupported .control command 'meas': control-language measurements are not implemented; spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, option, setplot/destroy, c"
+        "firstErrorLine": "Parse error at line 30: Unsupported .control command 'let': vector function 'integ()' is not evaluated by spice-ts let int1 = integ(Vm1#branch)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -4673,8 +4648,8 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 3,
-      "worstNormalizedError": 1.49e-16,
-      "worstSignal": "dc i(vdd)",
+      "worstNormalizedError": 7.63e-17,
+      "worstSignal": "dc v(2)",
       "outcome": "matched",
       "gapBucket": null
     },
@@ -5047,7 +5022,7 @@
         "status": "success",
         "analyses": [
           "dc:101",
-          "tran:1864"
+          "tran:1880"
         ]
       },
       "comparedAnalyses": 0,
@@ -5101,7 +5076,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "dc:5409"
+          "dc:5400"
         ]
       },
       "comparedAnalyses": 0,
@@ -7600,16 +7575,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'MN1' (model 'NMOS') uses unsupported model LEVEL=4 (supported MOSFET levels: 1, 6, 8, 49)"
+        "status": "success",
+        "analyses": [
+          "dc:501"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "comparedAnalyses": 1,
+      "comparedSignals": 24,
+      "worstNormalizedError": 9.46e-9,
+      "worstSignal": "dc i(v4)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "tests-bsim2-test-cir",
@@ -7627,16 +7603,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'MN1' (model 'NMOS') uses unsupported model LEVEL=5 (supported MOSFET levels: 1, 6, 8, 49)"
+        "status": "success",
+        "analyses": [
+          "dc:501"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "comparedAnalyses": 1,
+      "comparedSignals": 24,
+      "worstNormalizedError": 8.17e-12,
+      "worstSignal": "dc i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "tests-general-diffpair-cir",
@@ -7756,8 +7733,8 @@
       },
       "comparedAnalyses": 3,
       "comparedSignals": 63,
-      "worstNormalizedError": 0.0511,
-      "worstSignal": "tran v(1)",
+      "worstNormalizedError": 0.0564,
+      "worstSignal": "ac v(2)",
       "outcome": "mismatch",
       "gapBucket": null
     },
@@ -7810,16 +7787,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Unsupported NHFET level-5 model parameter: 'RDI'"
+        "status": "success",
+        "analyses": [
+          "dc:101"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 4.2e-7,
+      "worstSignal": "dc i(vgs)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "tests-mes-subth-cir",
@@ -7837,16 +7815,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 7: Unsupported Z-card instance parameter: 'AREA' z1 2 3 0 mesmod area=1.4"
+        "status": "success",
+        "analyses": [
+          "dc:61"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 3.59e-8,
+      "worstSignal": "dc i(vds)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "tests-mesa-mesa-12-cir",
@@ -7929,7 +7908,7 @@
       },
       "comparedAnalyses": 2,
       "comparedSignals": 12,
-      "worstNormalizedError": 1.8e-15,
+      "worstNormalizedError": 1.51e-15,
       "worstSignal": "dc i(vgs)",
       "outcome": "matched",
       "gapBucket": null
@@ -7977,16 +7956,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Unsupported NMF level-2 model parameter: 'RG'"
+        "status": "success",
+        "analyses": [
+          "dc:69"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 0.000362,
+      "worstSignal": "dc i(vgs)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "tests-mesa-mesa14-cir",
@@ -8032,16 +8012,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 8: Unsupported Z-card instance parameter: 'TS' z1 2 3 0 mesmod l=1u w=20u ts=400 td=400"
+        "status": "success",
+        "analyses": [
+          "dc:61"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.000136,
+      "worstSignal": "dc i(vds)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "tests-mesa-mesa21-cir",
@@ -8059,16 +8040,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Unsupported NMF model level: 3"
+        "status": "success",
+        "analyses": [
+          "dc:405"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 9.24e-16,
+      "worstSignal": "dc i(vgs)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "tests-mesa-mesgout-cir",
@@ -8086,16 +8068,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Unsupported NMF level-2 model parameter: 'DELFO'"
+        "status": "success",
+        "analyses": [
+          "ac:91"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 8,
+      "worstNormalizedError": 0.00000569,
+      "worstSignal": "ac v(1)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "tests-mesa-mesinv-cir",
@@ -8113,16 +8096,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Unsupported NMF level-2 model parameter: 'RI'"
+        "status": "success",
+        "analyses": [
+          "dc:101"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 14,
+      "worstNormalizedError": 0.00048,
+      "worstSignal": "dc v(50)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "tests-polezero-filt-bridge-t-cir",
@@ -8742,7 +8726,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "MOSFET 'mx1' (model 'nmos0v7') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 6, 8, 49)"
+        "firstErrorLine": "MOSFET 'mx1' (model 'nmos0v7') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -9452,7 +9436,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:684"
+          "tran:666"
         ]
       },
       "comparedAnalyses": 1,
@@ -9573,5 +9557,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "832172f09e69e8e5c7d5ef4782c5361abc85687f13afc380cc921411fd076082"
+  "outcomeSha256": "97a565c5b8ec823ea179eb3552dca517d0802192d3bd1a5ed5da06710351729e"
 }
