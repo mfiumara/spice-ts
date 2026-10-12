@@ -288,6 +288,75 @@ describe('evaluateExpression', () => {
       });
     });
 
+    describe('minus after a binary operator negates the next number literal (#578, ngspice-47 xpressn.c formula())', () => {
+      // ngspice-47 formula() does not negate the operand after `op -`: it sets
+      // a `negate` flag that the next number literal *of the same (sub-)formula*
+      // consumes (fetchnumber branch). Names, function calls and parenthesised
+      // sub-formulas do not consume it, so the sign moves to a later literal, or
+      // the formula fails with "wrongly determined negation" if none follows.
+      // Expected values: ngspice-47 operating point of the one-card deck
+      // `.param x=2` / `v1 1 0 {expr}` / `r1 1 0 1` (ngspice -b, .print op v(1)).
+      it.each([
+        ['3*-x^2', 0.75],
+        ['3*-x**2', 0.75],
+        ['1+-x^2', 1.25],
+        ['2*-(x)^2', 0.5],
+        ['3*-(2)^2', 0.75],
+        ['3*-x*2', -12],
+        ['3*-2*x', -12],
+        ['x*-1', -2],
+        ['-x^-2', -0.25],
+        ['-(x)^2', -4],
+        ['(-x)^2', 4],
+        ['-(-x)^2', -4],
+        ['x-(-x)^2', -2],
+        ['-x**2', -4],
+        ['-2**2', -4],
+        ['-(2)**2', -4],
+        ['3*-2**2', 12],
+        ['2**3**2', 64],
+        ['2**-1', 0.5],
+        ['1--1', 2],
+        ['5+2/-4', 4.5],
+        ['3*--2', -6],
+        ['+-2', -2],
+        ['-!0', -1],
+        ['3*-!0', 3],
+        ['3*-x+1', 5],
+        ['1?-x:0', 2],
+        ['1?-x^2:3', 0.25],
+        ['0?1:-x^2', 0.25],
+        ['x>-1', 1],
+        ['x<-x^2', 0],
+        ['x*-1e3', -2000],
+        ['x*-2k', -4000],
+      ])('evaluates %s', (expression, expected) => {
+        expect(evaluateExpression(expression, { X: 2 })).toBeCloseTo(expected, 12);
+      });
+
+      it.each([
+        '3*-x',
+        '2*-(3)',
+        '2*-sqrt(4)',
+        '1+-x',
+        '2^-x',
+        '2**-x',
+        'x^-x',
+        '1- -x',
+        '-x*-x',
+        '5*-pwr(2,2)',
+        '2* -x',
+        '3/-x',
+        'max(3*-x,1)',
+      ])('rejects %s like ngspice ("wrongly determined negation")', expression => {
+        expect(() => evaluateExpression(expression, { X: 2 })).toThrow(/wrongly determined negation/);
+      });
+
+      it.each(['3*+x^2', '3*-+2', '-+2', '!-2'])('rejects %s like ngspice ("Misplaced operator")', expression => {
+        expect(() => evaluateExpression(expression, { X: 2 })).toThrow(/Misplaced operator/);
+      });
+    });
+
     it('evaluates the corpus-f TEMPER ternary from todo-temper-3.cir', () => {
       const expression = 'temper >= 25 ? 1e-10 : (temper+1)*1e-11';
       expect(evaluateExpression(expression, { TEMPER: 27 })).toBe(1e-10);

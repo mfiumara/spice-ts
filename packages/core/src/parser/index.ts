@@ -4,7 +4,7 @@ import { tokenizeNetlist, parseNumber } from './tokenizer.js';
 import { parseModelCard } from './model-parser.js';
 import { assertSupportedModelType } from './model-type.js';
 import { assertSupportedResistorModel, parseResistorElement } from './resistor-parser.js';
-import { extractRFPort, parseSourceWaveform, parseInstanceParams } from './waveform-parser.js';
+import { extractRFPort, parseSourceCardWaveform, parseInstanceParams } from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
 import { parseBJTInstance } from './bjt-parser.js';
@@ -17,7 +17,7 @@ import {
   parseTransmissionLineModelCard,
   parseTxlLine,
 } from './transmission-line-parser.js';
-import { preprocess, preprocessLines } from './preprocessor.js';
+import { preprocessDeck } from './preprocessor.js';
 import { lowerControlScript } from './control-block.js';
 import { extractControlBlocks, type ControlSourceBlock, type ControlSourceLine } from './control/source.js';
 import {
@@ -26,13 +26,18 @@ import {
 import { UnsupportedControlCommandError } from './control/errors.js';
 import { parseBehavioralSourceCard } from './behavioral-expression.js';
 import { parseZInstance } from './z-device-parser.js';
+import { locateSubcircuitCall, parseSubcircuitHeader, type SubcircuitHeader } from './subcircuit-syntax.js';
 import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
 import type { AnalysisDirective, IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
+import { measureCard } from '../measure/dot-measure.js';
+import { addMeasureCard, measureCards } from '../measure/registry.js';
+import { UnsupportedMeasureError } from '../measure/errors.js';
 
 export { parseSourceWaveform } from './waveform-parser.js';
 export { SUPPORTED_MODEL_TYPES, UnsupportedModelTypeError } from './model-type.js';
+export { UnsupportedSourceWaveformError } from './waveform-parser.js';
 export { UnsupportedResistorParameterError } from './resistor-parser.js';
 
 /**
@@ -81,6 +86,7 @@ function parseNetlist(
   firstLineIsTitle: boolean,
   guard?: ProtocolExecutionGuard,
   extractedBlocks: ControlSourceBlock[] = [],
+  parameters: Record<string, number> = {},
 ): Circuit {
   // ngspice control-language lines are not netlist cards; read them from the raw text.
   const extracted = extractControlBlocks(netlist, firstLineIsTitle);
@@ -88,8 +94,9 @@ function parseNetlist(
   const controlStartLine = controlBlocks[0]?.startLine;
   const lines = tokenizeNetlist(extracted.netlist, { firstLineIsTitle });
   const circuit = new Circuit();
+  circuit.setParameters(parameters);
 
-  let subcktCollector: { name: string; ports: string[]; params: Record<string, number>; body: string[]; depth: number } | null = null;
+  let subcktCollector: (SubcircuitHeader & { body: string[]; depth: number }) | null = null;
   let hasNoiseAnalysis = false;
   let hasPoleZeroAnalysis = false;
   let hasSensitivityAnalysis = false;
@@ -138,18 +145,7 @@ function parseNetlist(
       }
 
       if (first === '.SUBCKT') {
-        const subcktName = tokens[1];
-        const ports: string[] = [];
-        const params: Record<string, number> = {};
-        for (let i = 2; i < tokens.length; i++) {
-          const eqIdx = tokens[i].indexOf('=');
-          if (eqIdx > 0) {
-            params[tokens[i].slice(0, eqIdx).toUpperCase()] = parseNumber(tokens[i].slice(eqIdx + 1));
-          } else {
-            ports.push(tokens[i]);
-          }
-        }
-        subcktCollector = { name: subcktName, ports, params, body: [], depth: 0 };
+        subcktCollector = { ...parseSubcircuitHeader(raw), body: [], depth: 0 };
         continue;
       }
 
@@ -333,8 +329,8 @@ export async function parseAsync(
   // read their `{$var}` references as numparam expressions.
   // The body starts on line 2 of the caller's netlist (after the title).
   const control = extractControlBlocks(body, false, 1);
-  const preprocessed = await preprocessLines(control.netlist, resolver, undefined, 1);
-  return parseNetlist(`${title}\n${preprocessed}`, true, undefined, control.blocks);
+  const preprocessed = await preprocessDeck(control.netlist, resolver, undefined, 1);
+  return parseNetlist(`${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters);
 }
 
 /** Parse and preprocess a title-less SPICE fragment. */
@@ -344,12 +340,15 @@ export async function parseTitlelessAsync(
   guard?: ProtocolExecutionGuard,
 ): Promise<Circuit> {
   const control = extractControlBlocks(netlist, false);
-  const preprocessed = await preprocess(control.netlist, resolver, guard);
-  return parseNetlist(preprocessed, false, guard, control.blocks);
+  const preprocessed = await preprocessDeck(control.netlist, resolver, guard, 0);
+  return parseNetlist(preprocessed.text, false, guard, control.blocks, preprocessed.parameters);
 }
 
 const OUTPUT_ONLY_OPTION_FLAGS = new Set([
   'nopage', 'acct', 'noacct', 'list', 'node', 'post', 'trans', 'noinit', 'seedinfo',
+  // ngspice-47 spiceif.c if_option: ft_nomod only skips com_showmod in the
+  // printed operating-point report (dotcards.c).
+  'nomod',
 ]);
 const BEHAVIOR_CHANGING_GNUCAP_OPTIONS = new Set([
   'cstray', 'dampstrategy', 'itermin', 'nobypass', 'noincmode', 'rstray', 'trsteporder',
@@ -618,8 +617,10 @@ function parseDotCommand(
     case '.OPTIONS': {
       const optionTokens = tokens.slice(1);
       const temperature = takeCircuitTemperatureOption(optionTokens, lineNumber, context);
+      const xspiceTrtol = takeXspiceTrtolOption(optionTokens, lineNumber, context);
       circuit.setSimulationOptions(parseSimulationOptions(optionTokens, lineNumber, context));
       if (temperature !== undefined) circuit.setTemperature(temperature);
+      if (xspiceTrtol !== undefined) circuit.setXspiceTrtol(xspiceTrtol);
       break;
     }
     case '.LIST':
@@ -652,6 +653,27 @@ function parseDotCommand(
       // spice-ts returns all computed vectors through its result API, so these
       // ngspice output-selection and formatting directives are metadata-only.
       break;
+    case '.MEAS':
+    case '.MEASURE': {
+      // Evaluated after the analyses run (ngspice do_measure); ngspice numbers
+      // the par() B-sources deck-wide.
+      const firstPar = measureCards(circuit).reduce((count, card) => count + card.parSources.length, 0);
+      const card = measureCard(context, lineNumber, firstPar);
+      for (const source of card.parSources) {
+        try {
+          const parsed = parseBehavioralSourceCard(source, lineNumber);
+          circuit.addBehavioralVoltageSource(parsed.name, parsed.nodes[0], parsed.nodes[1], parsed.expression, parsed.params);
+        } catch (error) {
+          throw new UnsupportedMeasureError(
+            `the par() operand needs the B-source '${source}', which spice-ts cannot build: ${(error as Error).message}`,
+            lineNumber,
+            context,
+          );
+        }
+      }
+      addMeasureCard(circuit, card);
+      break;
+    }
     case '.PROBE':
       if (tokens.length === 1) {
         throw new ParseError('Unsupported empty .probe output request', lineNumber, context);
@@ -778,6 +800,37 @@ function takeCircuitTemperatureOption(
   return temperature;
 }
 
+/**
+ * Remove ngspice `XTRTOL=<n>` fields from `.options` tokens (in place) and
+ * return the last value. ngspice-47 inp.c turns every `.options` field into a
+ * circuit variable; cktdojob.c reads `xtrtol` with cp_getvar(CP_NUM), which
+ * truncates a real value to int, as the trtol of a circuit with 'A' devices.
+ * A value that truncates below 1 (ngspice then runs with trtol 0 and fails) or
+ * is not a number (ngspice silently falls back to 1) is rejected.
+ */
+function takeXspiceTrtolOption(
+  tokens: string[],
+  lineNumber: number,
+  context: string,
+): number | undefined {
+  if (tokens[0]?.toLowerCase() === 'timeint') return undefined;
+  let trtol: number | undefined;
+  for (let index = tokens.length - 1; index >= 0; index -= 1) {
+    const token = tokens[index];
+    const separator = token.indexOf('=');
+    const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
+    if (name !== 'xtrtol') continue;
+    const rawValue = separator < 0 ? '' : token.slice(separator + 1);
+    const value = rawValue === '' ? Number.NaN : Math.trunc(parseNumber(rawValue));
+    if (!Number.isFinite(value) || value < 1) {
+      throw new ParseError(`Invalid .options xtrtol value: '${rawValue}'`, lineNumber, context);
+    }
+    trtol ??= value;
+    tokens.splice(index, 1);
+  }
+  return trtol;
+}
+
 function parseSimulationOptions(
   tokens: string[],
   lineNumber: number,
@@ -827,6 +880,20 @@ function parseSimulationOptions(
       }
       // LIMPTS limits legacy printed/plotted points, ITL5 is documented as
       // unimplemented in SPICE3, and LVLCOD selected CDC matrix codegen.
+      continue;
+    }
+    if (name === 'seed') {
+      // ngspice-47 inp.c: `seed=N` (atoi, N > 0) re-seeds the random streams;
+      // `seed=random` seeds from the clock, which would make runs unrepeatable.
+      const value = Number(rawValue);
+      if (!Number.isInteger(value) || value <= 0 || value > 0x7fffffff) {
+        throw new ParseError(
+          `Unsupported .options seed value: '${rawValue}' (spice-ts needs a positive integer seed)`,
+          lineNumber,
+          context,
+        );
+      }
+      options.seed = value;
       continue;
     }
     if (name === 'method') {
@@ -1022,12 +1089,12 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
     }
     case 'V': {
       const { tokens: sourceTokens, port } = extractRFPort(tokens, 3);
-      const waveform = parseSourceWaveform(sourceTokens, 3);
+      const waveform = parseSourceCardWaveform(sourceTokens, 3, lineNumber, raw);
       circuit.addVoltageSource(name, tokens[1], tokens[2], waveform, port);
       break;
     }
     case 'I': {
-      const waveform = parseSourceWaveform(tokens, 3);
+      const waveform = parseSourceCardWaveform(tokens, 3, lineNumber, raw);
       circuit.addCurrentSource(name, tokens[1], tokens[2], waveform);
       break;
     }
@@ -1084,14 +1151,11 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       break;
     }
     case 'X': {
-      // X<name> <port1> <port2> ... <subcktName> [param=val ...]
-      let subcktIdx = tokens.length - 1;
-      while (subcktIdx > 1 && tokens[subcktIdx].includes('=')) {
-        subcktIdx--;
-      }
-      const subcktName = tokens[subcktIdx];
-      const ports = tokens.slice(1, subcktIdx);
-      const xParams = parseInstanceParams(tokens, subcktIdx + 1);
+      // X<name> <port1> <port2> ... <subcktName> [params:] [param=val ...]
+      const call = locateSubcircuitCall(tokens);
+      const subcktName = tokens[call.nameIndex];
+      const ports = tokens.slice(1, call.nameIndex);
+      const xParams = parseInstanceParams(tokens, call.paramStart);
       circuit.addSubcircuitInstance(name, ports, subcktName, xParams);
       break;
     }

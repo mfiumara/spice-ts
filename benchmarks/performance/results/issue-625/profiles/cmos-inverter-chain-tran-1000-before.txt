@@ -1,0 +1,29 @@
+<dir>/prof-before/cmos-inverter-chain-tran-1000.cpuprofile: 747 samples, 2641.1 ms sampled
+
+Top self time
+     374.4 ms  14.2%  stampG packages/core/dist/chunk-RGG6CVFQ.js:18853
+     321.7 ms  12.2%  evaluateBulkJunctions packages/core/dist/chunk-RGG6CVFQ.js:4663
+     313.5 ms  11.9%  stamp packages/core/dist/chunk-RGG6CVFQ.js:4771
+     283.5 ms  10.7%  factorize packages/core/dist/chunk-RGG6CVFQ.js:18247
+     278.7 ms  10.6%  batchStamp packages/core/dist/chunk-RGG6CVFQ.js:4973
+     167.2 ms   6.3%  stampStaticDevices packages/core/dist/chunk-RGG6CVFQ.js:19025
+      86.3 ms   3.3%  buildCompanionSystem packages/core/dist/chunk-RGG6CVFQ.js:19547
+      79.2 ms   3.0%  (garbage collector)
+      75.5 ms   2.9%  limitNewtonStep packages/core/dist/chunk-RGG6CVFQ.js:4724
+      75.4 ms   2.9%  attemptStep packages/core/dist/chunk-RGG6CVFQ.js:19723
+      61.6 ms   2.3%  getVoltage packages/core/dist/chunk-RGG6CVFQ.js:18862
+      57.4 ms   2.2%  stampB packages/core/dist/chunk-RGG6CVFQ.js:18856
+
+Top inclusive time
+    2641.1 ms 100.0%  (root)
+    2504.8 ms  94.8%  simulate packages/core/dist/chunk-RGG6CVFQ.js:25534
+    2469.9 ms  93.5%  solveCompiledAnalyses packages/core/dist/chunk-RGG6CVFQ.js:25571
+    1813.6 ms  68.7%  solveTransient packages/core/dist/chunk-RGG6CVFQ.js:20779
+    1766.0 ms  66.9%  advanceSolution packages/core/dist/chunk-RGG6CVFQ.js:20183
+    1142.7 ms  43.3%  stampStaticDevices packages/core/dist/chunk-RGG6CVFQ.js:19025
+     998.3 ms  37.8%  attemptStep packages/core/dist/chunk-RGG6CVFQ.js:19723
+     887.9 ms  33.6%  stamp packages/core/dist/chunk-RGG6CVFQ.js:4771
+     728.5 ms  27.6%  stampPrevB packages/core/dist/chunk-RGG6CVFQ.js:20414
+     656.3 ms  24.9%  solveDCOperatingPoint packages/core/dist/chunk-RGG6CVFQ.js:19343
+     656.3 ms  24.9%  transientInitialSolution packages/core/dist/chunk-RGG6CVFQ.js:25942
+     652.4 ms  24.7%  newtonRaphson packages/core/dist/chunk-RGG6CVFQ.js:19099

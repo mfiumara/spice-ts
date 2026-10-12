@@ -137,3 +137,47 @@ describe('numparam ^ and ** precedence against ngspice-47 (#493)', () => {
     }
   });
 });
+
+/**
+ * #578: a minus after a binary operator negates the next number literal of
+ * its (sub-)formula (ngspice-47 xpressn.c formula()). Expected values are the
+ * ngspice-47 operating point of this identical deck:
+ *   HOME=<tmp with .spiceinit "set filetype=ascii"> ngspice -b -r neg.raw neg.cir
+ */
+const NEGATION_DECK = `minus after an operator negates the next number literal (#578)
+.param x = 2
+.param pa = '3*-x^2'
+.func f(a) = {1+-a^2}
+vn1 n1 0 {pa}
+vn2 n2 0 {3*-x*2}
+vn3 n3 0 {2*-(x)^2}
+vn4 n4 0 {f(x)}
+vn5 n5 0 '1?-x^2:3'
+vn6 n6 0 {x*-2k}
+.op
+.end
+`;
+
+const NGSPICE_NEGATION_VOLTAGES: Record<string, number> = {
+  n1: 0.75,
+  n2: -12,
+  n3: 0.5,
+  n4: 1.25,
+  n5: 0.25,
+  n6: -4000,
+};
+
+describe('numparam minus after an operator against ngspice-47 (#578)', () => {
+  it('matches the ngspice operating point of the negation deck', async () => {
+    const result = await simulate(NEGATION_DECK);
+    const op = result.dc!;
+    for (const [node, expected] of Object.entries(NGSPICE_NEGATION_VOLTAGES)) {
+      expect(op.voltage(node), `v(${node})`).toBeCloseTo(expected, 12);
+    }
+  });
+
+  it('rejects {3*-x} like ngspice ("wrongly determined negation")', async () => {
+    const deck = 'reject\n.param x = 2\nv1 1 0 {3*-x}\nr1 1 0 1\n.op\n.end\n';
+    await expect(simulate(deck)).rejects.toThrow(/wrongly determined negation/);
+  });
+});

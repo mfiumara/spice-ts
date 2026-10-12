@@ -139,7 +139,9 @@ dc  v1 0 60 0.1
     expect(result.control!.runs.map(run => run.plot)).toEqual(['dc1', 'dc2']);
     expect(result.control!.runs[0].result.dcSweep!.sweepValues).toHaveLength(101);
     // The top-level field holds the latest run of the type, like ngspice's current plot.
-    expect(result.dcSweep!.sweepValues).toHaveLength(601);
+    // ngspice-47 accumulates `+= 0.1` to 60.00000000000058, past its 1e3*DBL_EPSILON stop
+    // tolerance, so `dc v1 0 60 0.1` has 600 points ending at 59.90000000000058 (#654).
+    expect(result.dcSweep!.sweepValues).toHaveLength(600);
 
     // A dot card plus a control command of the same type: the control run, then
     // ngspice's own run of the deck's dot cards after the script.
@@ -150,8 +152,6 @@ dc  v1 0 60 0.1
   });
 
   it.each([
-    // examples/measure/mos-meas-dc-control.sp
-    ['dc v1 0 3.5 0.05\nmeas dc is_max max i(vs)', 'meas'],
     // examples/rf/pss/vackar_osc_pss_ctrl.cir
     ['tran 10n 20u\nlinearize v(4)', 'linearize'],
     ['tran 10n 20u\nfft v(4)', 'fft'],

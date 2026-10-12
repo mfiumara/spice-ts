@@ -1,0 +1,345 @@
+{
+  "schemaVersion": "spice-ts-bsim3-dc-compare/v1",
+  "reference": "ngspice-47",
+  "core": "packages/core/dist/index.js",
+  "node": "v22.23.1",
+  "generatedAt": "2026-10-11T20:26:14.218Z",
+  "cases": [
+    {
+      "name": "issue-589-nmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 147743.26974594736,
+          "at": "Vgs=0.5 Vds=1.8 Vbs=-0.9: spice-ts -5.315526e-6 vs ngspice -3.597788e-11",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 3.0902074258787833,
+          "at": "VD=1.80: spice-ts -2.693039e-4 vs ngspice -6.584113e-5",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "issue-582-pmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 113537.95842540468,
+          "at": "Vgs=0.5 Vds=1.8 Vbs=-0.9: spice-ts 3.960112e-6 vs ngspice 3.487888e-11",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 3.1192342325281714,
+          "at": "VD=-1.80: spice-ts 2.119841e-4 vs ngspice 5.146201e-5",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "validation-nmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 3260.413112618604,
+          "at": "Vgs=0.3 Vds=1.8 Vbs=-0.9: spice-ts -3.380513e-7 vs ngspice -1.036518e-10",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 2.2848349245367445,
+          "at": "VD=1.80: spice-ts -5.386077e-3 vs ngspice -1.639680e-3",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "defaults-nmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 1453926297.52984,
+          "at": "Vgs=1 Vds=-0.6 Vbs=-0.9: spice-ts 1.453926e-3 vs ngspice 3.544197e-14",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 891015795.1938194,
+          "at": "VD=1.00: spice-ts -8.945056e-4 vs ngspice -1.003917e-12",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "defaults-pmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 2205717105.889081,
+          "at": "Vgs=0.7 Vds=-0.6 Vbs=-0.9: spice-ts -2.205717e-3 vs ngspice 3.011517e-13",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 2194286305.661222,
+          "at": "VD=-1.00: spice-ts 2.236264e-3 vs ngspice 1.019130e-12",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "defaults-nmos-no-wl",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 110472464.39027461,
+          "at": "Vgs=0.7 Vds=-0.6 Vbs=-0.9: spice-ts 1.104725e-4 vs ngspice -3.026008e-13",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 105536828.45437115,
+          "at": "VD=0.80: spice-ts -1.055368e-4 vs ngspice -9.472437e-13",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "bsim330-nmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 1402573.5474242156,
+          "at": "Vgs=0 Vds=1.8 Vbs=-0.9: spice-ts -3.833300e-6 vs ngspice -2.733045e-12",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 2.6027016836984327,
+          "at": "VD=1.80: spice-ts -7.415893e-4 vs ngspice -2.058425e-4",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "bsim330-pmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 1816131.2468331298,
+          "at": "Vgs=0 Vds=1.8 Vbs=0: spice-ts 7.237468e-6 vs ngspice 3.985100e-12",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 7.470732752084834,
+          "at": "VD=-1.80: spice-ts 7.417431e-4 vs ngspice 8.756540e-5",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "mc-ring-nmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 1,
+          "at": "Vgs=0 Vds=0.05 Vbs=0: spice-ts -6.310887e-30 vs ngspice -6.410260e-10",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 0.8937852854937147,
+          "at": "VD=0.60: spice-ts -1.934996e-5 vs ngspice -1.821777e-4",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "mc-ring-pmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 0.9999999999995446,
+          "at": "Vgs=0 Vds=0.3 Vbs=-0.9: spice-ts 5.471336e-25 vs ngspice 1.201194e-12",
+          "within1Percent": 1
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 0.30917173964243316,
+          "at": "VD=-0.60: spice-ts 7.781979e-5 vs ngspice 1.126471e-4",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "stress-nmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 19.98813659348254,
+          "at": "Vgs=1.8 Vds=-0.6 Vbs=0: spice-ts 9.240162e-3 vs ngspice 4.402564e-4",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 24.098142384667174,
+          "at": "VD=-0.50: spice-ts 4.970137e-3 vs ngspice 1.980281e-4",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "stress-pmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 5414642.401974702,
+          "at": "Vgs=0.7 Vds=1.8 Vbs=-0.9: spice-ts 1.783390e-5 vs ngspice 3.293642e-12",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 5.445076472366514,
+          "at": "VD=-1.80: spice-ts 1.254355e-4 vs ngspice 1.946221e-5",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "gamma1-nmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 22663804.83255565,
+          "at": "Vgs=1 Vds=1.8 Vbs=-0.9: spice-ts -7.383493e-5 vs ngspice -3.257834e-12",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 62.39160260722296,
+          "at": "VD=1.80: spice-ts -1.327148e-4 vs ngspice -2.093570e-6",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "corner-nmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 652318.669098049,
+          "at": "Vgs=0 Vds=-0.6 Vbs=-0.9: spice-ts 8.940606e-7 vs ngspice 1.370587e-12",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 0.7262700555569302,
+          "at": "VD=1.80: spice-ts -5.119750e-4 vs ngspice -1.870365e-3",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "corner2-nmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 4603817.987136948,
+          "at": "Vgs=0.3 Vds=1.8 Vbs=-0.9: spice-ts -1.469403e-5 vs ngspice -3.191704e-12",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 135.48785149079114,
+          "at": "VD=-0.40: spice-ts 4.858811e-4 vs ngspice 3.559885e-6",
+          "within1Percent": 1
+        }
+      }
+    },
+    {
+      "name": "corner-pmos",
+      "operatingPoints": {
+        "count": 70,
+        "failures": 0,
+        "terminalIvd": {
+          "maxRelative": 306888536.3119354,
+          "at": "Vgs=1.8 Vds=-0.6 Vbs=0: spice-ts -3.068885e-4 vs ngspice -7.643414e-13",
+          "within1Percent": 0
+        }
+      },
+      "sweep": {
+        "status": "compared",
+        "count": 25,
+        "terminalIvd": {
+          "maxRelative": 193243187.31588355,
+          "at": "VD=0.60: spice-ts -1.932432e-4 vs ngspice -6.000000e-13",
+          "within1Percent": 1
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+<dir>/prof-before/rc-ladder-tran-10000.cpuprofile: 320 samples, 1064.6 ms sampled
+
+Top self time
+     187.5 ms  17.6%  factorize packages/core/dist/chunk-RGG6CVFQ.js:18247
+     153.8 ms  14.4%  attemptStep packages/core/dist/chunk-RGG6CVFQ.js:19723
+     128.4 ms  12.1%  buildCompanionSystem packages/core/dist/chunk-RGG6CVFQ.js:19547
+      67.0 ms   6.3%  stampPrevB packages/core/dist/chunk-RGG6CVFQ.js:20414
+      63.2 ms   5.9%  (garbage collector)
+      41.1 ms   3.9%  flush packages/core/dist/chunk-RGG6CVFQ.js:20754
+      36.8 ms   3.5%  compile packages/core/dist/chunk-RGG6CVFQ.js:14488
+      31.1 ms   2.9%  stampStaticDevices packages/core/dist/chunk-RGG6CVFQ.js:19025
+      27.1 ms   2.5%  lockTopology packages/core/dist/chunk-RGG6CVFQ.js:18663
+      22.9 ms   2.2%  stampDynamicDevices packages/core/dist/chunk-RGG6CVFQ.js:19055
+      19.7 ms   1.8%  checkLTE packages/core/dist/chunk-RGG6CVFQ.js:20468
+      18.2 ms   1.7%  solveLinearized packages/core/dist/chunk-RGG6CVFQ.js:19815
+
+Top inclusive time
+    1064.6 ms 100.0%  (root)
+     925.4 ms  86.9%  simulate packages/core/dist/chunk-RGG6CVFQ.js:25534
+     851.7 ms  80.0%  solveCompiledAnalyses packages/core/dist/chunk-RGG6CVFQ.js:25571
+     781.9 ms  73.4%  solveTransient packages/core/dist/chunk-RGG6CVFQ.js:20779
+     693.1 ms  65.1%  advanceSolution packages/core/dist/chunk-RGG6CVFQ.js:20183
+     604.8 ms  56.8%  attemptStep packages/core/dist/chunk-RGG6CVFQ.js:19723
+     217.5 ms  20.4%  solveLinearized packages/core/dist/chunk-RGG6CVFQ.js:19815
+     204.7 ms  19.2%  buildCompanionSystem packages/core/dist/chunk-RGG6CVFQ.js:19547
+     199.6 ms  18.7%  factorize packages/core/dist/chunk-RGG6CVFQ.js:18247
+      81.5 ms   7.7%  stampPrevB packages/core/dist/chunk-RGG6CVFQ.js:20414
+      69.8 ms   6.6%  solveDCOperatingPoint packages/core/dist/chunk-RGG6CVFQ.js:19343
+      69.8 ms   6.6%  transientInitialSolution packages/core/dist/chunk-RGG6CVFQ.js:25942
