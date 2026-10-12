@@ -219,4 +219,85 @@ describe('ComplexSparseSolver', () => {
     expect(xRe[1]).toBeCloseTo(2, 10);
     expect(xIm[1]).toBeCloseTo(0, 10);
   });
+
+  it('rejects a diagonal that collapses by cancellation (#732 threshold pivoting)', () => {
+    // Column 1 of the reduced matrix after eliminating column 0 is
+    // [1 + 1e-14 - 1, 1] = [~1e-14, 1]: the natural diagonal survives the old
+    // ">= 1e-18" test but is 1e-14 of the column maximum.
+    const G = new SparseMatrix(3);
+    G.add(0, 0, 1); G.add(0, 1, 1);
+    G.add(1, 0, 1); G.add(1, 1, 1 + 1e-14); G.add(1, 2, 1);
+    G.add(2, 1, 1); G.add(2, 2, 1);
+    const C = new SparseMatrix(3);
+    const gCsc = toCsc(G).csc;
+    const cCsc = toCsc(C).csc;
+    const solver = new ComplexSparseSolver();
+    solver.analyzePattern(gCsc, cCsc);
+    solver.factorize(gCsc, cCsc, 1);
+    const b = [0.3, 0.7, 1.9];
+    const [xRe, xIm] = solver.solve(new Float64Array(b), new Float64Array(3));
+    // Exact, with e = (1 + 1e-14) - 1: x1 = (b1 - b0 - b2) / (e - 1), x0 = b0 - x1, x2 = b2 - x1.
+    // Keeping the 1e-14 pivot gives x1 = 1.49444 (error 5.6e-3).
+    const e = (1 + 1e-14) - 1;
+    const x1 = (b[1] - b[0] - b[2]) / (e - 1);
+    const exact = [b[0] - x1, x1, b[2] - x1];
+    for (let i = 0; i < 3; i++) {
+      expect(Math.abs(xRe[i] - exact[i]), `x${i}`).toBeLessThan(1e-12);
+      expect(xIm[i]).toBe(0);
+    }
+  });
+
+  it('matches a dense pivoted solve on random sparse systems with weak diagonals', () => {
+    // Off-pattern pivots create fill the symbolic phase did not predict; the
+    // factor buffers must grow instead of silently dropping entries.
+    let seed = 12345;
+    const rand = (): number => {
+      seed = (seed * 1103515245 + 12345) % 2147483648;
+      return seed / 2147483648;
+    };
+    for (let trial = 0; trial < 120; trial++) {
+      const n = 4 + Math.floor(rand() * 12);
+      const G = new SparseMatrix(n);
+      const C = new SparseMatrix(n);
+      const dense: Array<Array<[number, number]>> =
+        Array.from({ length: n }, () => Array.from({ length: n }, (): [number, number] => [0, 0]));
+      const omega = 10 ** (rand() * 8);
+      const put = (i: number, j: number, g: number, c: number): void => {
+        G.add(i, j, g); C.add(i, j, c);
+        dense[i][j][0] += g; dense[i][j][1] += omega * c;
+      };
+      // A random permutation guarantees structural non-singularity.
+      const p = Array.from({ length: n }, (_, i) => i).sort(() => rand() - 0.5);
+      for (let i = 0; i < n; i++) put(i, p[i], 1 + rand(), rand() < 0.5 ? rand() * 1e-6 : 0);
+      for (let i = 0; i < n; i++) put(i, i, rand() < 0.5 ? 1e-15 : 0, rand() < 0.5 ? 1e-12 * rand() : 0);
+      for (let e = 0; e < (1 + (trial % 4)) * n; e++) {
+        put(Math.floor(rand() * n), Math.floor(rand() * n), rand() - 0.5, rand() < 0.3 ? rand() * 1e-6 : 0);
+      }
+      const gCsc = toCsc(G).csc;
+      const cCsc = toCsc(C).csc;
+      const solver = new ComplexSparseSolver();
+      solver.analyzePattern(gCsc, cCsc);
+      const bRe = Float64Array.from({ length: n }, () => rand() - 0.5);
+      const bIm = Float64Array.from({ length: n }, () => rand() - 0.5);
+      try {
+        solver.factorize(gCsc, cCsc, omega);
+      } catch (error) {
+        expect(error).toBeInstanceOf(SingularMatrixError);
+        continue;
+      }
+      const [xRe, xIm] = solver.solve(bRe, bIm);
+      let xNorm = 0;
+      for (let i = 0; i < n; i++) xNorm = Math.max(xNorm, Math.hypot(xRe[i], xIm[i]));
+      for (let i = 0; i < n; i++) {
+        let rRe = -bRe[i], rIm = -bIm[i], rowNorm = 0;
+        for (let j = 0; j < n; j++) {
+          const [aRe, aIm] = dense[i][j];
+          rRe += aRe * xRe[j] - aIm * xIm[j];
+          rIm += aRe * xIm[j] + aIm * xRe[j];
+          rowNorm += Math.hypot(aRe, aIm);
+        }
+        expect(Math.hypot(rRe, rIm), `trial ${trial} row ${i}`).toBeLessThan(1e-9 * (rowNorm * xNorm + 1));
+      }
+    }
+  });
 });
