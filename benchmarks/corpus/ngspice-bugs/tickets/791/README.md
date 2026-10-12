@@ -32,7 +32,7 @@ undetermined: vendor macromodels; the AC operating point may genuinely be hard. 
 |---|---|---|
 | ngspice-47 | error | "Transient op failed, timestep too small"; "AC: Timestep too small; frequency = 0: trouble with xu188:dx-instance d.xu188.d7", aborted; same in LTPS mode. |
 | ngspice master | error | "Transient op failed, timestep too small"; "AC: Timestep too small; frequency = 0: trouble with xu188:dx-instance d.xu188.d7", aborted. Same in LTPS. [ngspice pre-master-48 HEAD 3ef069fb, same command as 47, default and LTPS] |
-| spice-ts | unsupported | UnsupportedModelTypeError: .model 'Rdmod' has unsupported type 'RES' (vendor PSpice library) |
+| spice-ts | unsupported | PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1a' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it to an XSPICE aswitch in LTPS mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rdmod' has unsupported type 'RES' (vendor PSpice library) |
 
 Reproduces on ngspice-47: yes. Check: AC operating point aborts with Timestep too small.
 

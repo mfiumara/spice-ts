@@ -152,9 +152,10 @@ export function parseResistorElement(
   return { value, modelName, params };
 }
 
-/** Reject `.model R` parameters that spice-ts does not simulate. */
+/** Reject `.model R` (or PSpice `RES`) parameters that spice-ts does not simulate. */
 export function assertSupportedResistorModel(tokens: string[], lineNumber: number, context: string): void {
-  if (tokens[2]?.toUpperCase() !== 'R') return;
+  const type = tokens[2]?.toUpperCase();
+  if (type !== 'R' && type !== 'RES') return;
   const unsupported: string[] = [];
   for (const token of tokens.slice(3)) {
     if (isExpression(token)) {

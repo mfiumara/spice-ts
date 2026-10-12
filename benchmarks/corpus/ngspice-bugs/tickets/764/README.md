@@ -38,7 +38,7 @@ The two netlists are electrically equivalent (series split of an element / extra
 |---|---|---|
 | ngspice-47 | hang | Both variants exceed the 120 s bound (exit 142) in default and LTPS mode; the ticket reports only the split variant timing out on ngspice-43. |
 | ngspice master | not-run | not re-run on master: the defect does not reproduce on ngspice-47 |
-| spice-ts | unsupported | UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library) |
+| spice-ts | unsupported | PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it to an XSPICE aswitch in LTPS mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library) |
 
 Reproduces on ngspice-47: partially. Check: Both decks run past 120 s.
 
