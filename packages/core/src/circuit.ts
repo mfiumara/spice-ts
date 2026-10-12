@@ -67,7 +67,7 @@ import {
   extractRFPort, extractSourceMultiplier, hasSourceMultiplier, parseSourceWaveform, parseInstanceParams,
   transientNoiseWaveform, transientRandomWaveform, VOLTAGE_SOURCE_MULTIPLIER_ERROR,
 } from './parser/waveform-parser.js';
-import { parsePassiveElement } from './parser/passive-parser.js';
+import { invalidPassiveInstanceLine, parsePassiveElement } from './parser/passive-parser.js';
 import { locateSubcircuitCall } from './parser/subcircuit-syntax.js';
 import { parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
@@ -3077,6 +3077,24 @@ export class Circuit {
     return model;
   }
 
+  /**
+   * ngspice-47 inp2l.c / inp2c.c applied to an expanded subcircuit card: a
+   * value-less L/C line is ignored with a warning. Returns true to drop it.
+   * The warning is recorded once even when compile() runs repeatedly.
+   */
+  private dropInvalidPassiveInstance(
+    devName: string,
+    tokens: readonly string[],
+    mapNode: (node: string) => string,
+    kind: 'C' | 'L',
+  ): boolean {
+    const expanded = [devName, ...tokens.slice(1).map(node => mapNode(node))];
+    const warning = invalidPassiveInstanceLine(expanded, kind);
+    if (warning === undefined) return false;
+    if (!this._parseWarnings.includes(warning)) this._parseWarnings.push(warning);
+    return true;
+  }
+
   private expandSubcircuit(
     instanceName: string,
     connectedPorts: string[],
@@ -3229,6 +3247,7 @@ export class Circuit {
           break;
         }
         case 'C': {
+          if (this.dropInvalidPassiveInstance(devName, tokens, mapNode, 'C')) break;
           const evaluatedTokens = tokens.map(t => evalToken(t));
           const parsed = parsePassiveElement(evaluatedTokens, 3, 'C');
           // IC= is the initial condition, as on a top-level card.
@@ -3244,6 +3263,7 @@ export class Circuit {
           break;
         }
         case 'L': {
+          if (this.dropInvalidPassiveInstance(devName, tokens, mapNode, 'L')) break;
           const evaluatedTokens = tokens.map(t => evalToken(t));
           const parsed = parsePassiveElement(evaluatedTokens, 3, 'L');
           // IC= is the initial condition, as on a top-level card.
