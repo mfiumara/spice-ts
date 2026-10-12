@@ -1,0 +1,327 @@
+{
+  "engine": "ngspice-47",
+  "rows": [
+    {
+      "case": "Nmod 3.2.2  a,b,a",
+      "device": "M0 NM a",
+      "ngspice": -0.00859431431226714,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 0.10866178073453903
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a",
+      "device": "M1 NM b",
+      "ngspice": -0.00197819696830126,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 5.612297675183174e-14
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a",
+      "device": "M2 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a,b",
+      "device": "M0 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a,b",
+      "device": "M1 NM b",
+      "ngspice": -0.00173652204337141,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 0.1391718152110271
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a,b",
+      "device": "M2 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a,b",
+      "device": "M3 NM b",
+      "ngspice": -0.00197819696830126,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 5.612297675183174e-14
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a,a",
+      "device": "M0 NM a",
+      "ngspice": -0.00859431431226714,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 0.10866178073453903
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a,a",
+      "device": "M1 NM b",
+      "ngspice": -0.00197819696830126,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 5.612297675183174e-14
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a,a",
+      "device": "M2 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a,a",
+      "device": "M3 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.2.2  a,a,b,c,b",
+      "device": "M0 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.2.2  a,a,b,c,b",
+      "device": "M1 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.2.2  a,a,b,c,b",
+      "device": "M2 NM b",
+      "ngspice": -0.00174363821982647,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 0.13452260096606786
+    },
+    {
+      "case": "Nmod 3.2.2  a,a,b,c,b",
+      "device": "M3 NM c",
+      "ngspice": -0.00399479701059824,
+      "spiceTs": -0.003994797010607898,
+      "relativeError": 2.4176630068756688e-12
+    },
+    {
+      "case": "Nmod 3.2.2  a,a,b,c,b",
+      "device": "M4 NM b",
+      "ngspice": -0.00197819696830126,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 5.612297675183174e-14
+    },
+    {
+      "case": "Nmod 3.2    a,b,a,b",
+      "device": "M0 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.2    a,b,a,b",
+      "device": "M1 NM b",
+      "ngspice": -0.00173652204337141,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 0.1391718152110271
+    },
+    {
+      "case": "Nmod 3.2    a,b,a,b",
+      "device": "M2 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.2    a,b,a,b",
+      "device": "M3 NM b",
+      "ngspice": -0.00197819696830126,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 5.612297675183174e-14
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a DELVTO",
+      "device": "M0 NM a DELVTO=0.05",
+      "ngspice": -0.00802214643723473,
+      "spiceTs": -0.007120552104468214,
+      "relativeError": 0.11238816691026395
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a DELVTO",
+      "device": "M1 NM b",
+      "ngspice": -0.00197819696830126,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 5.612297675183174e-14
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a DELVTO",
+      "device": "M2 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a subckt",
+      "device": "X0 NM a",
+      "ngspice": -0.00859431431226714,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 0.10866178073453903
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a subckt",
+      "device": "M1 NM b",
+      "ngspice": -0.00197819696830126,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 5.612297675183174e-14
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a subckt",
+      "device": "X2 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a local model x2",
+      "device": "X1.M0 NM a",
+      "ngspice": -0.00859431431226714,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 0.10866178073453903
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a local model x2",
+      "device": "X1.M1 NM b",
+      "ngspice": -0.00197819696830126,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 5.612297675183174e-14
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a local model x2",
+      "device": "X1.M2 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a local model x2",
+      "device": "X2.M0 NM a",
+      "ngspice": -0.00859431431226714,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 0.10866178073453903
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a local model x2",
+      "device": "X2.M1 NM b",
+      "ngspice": -0.00197819696830126,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 5.612297675183174e-14
+    },
+    {
+      "case": "Nmod 3.2.2  a,b,a local model x2",
+      "device": "X2.M2 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod+Pmod 3.2.2 interleaved",
+      "device": "M0 NM a",
+      "ngspice": -0.00859431431226714,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 0.10866178073453903
+    },
+    {
+      "case": "Nmod+Pmod 3.2.2 interleaved",
+      "device": "M1 PM b",
+      "ngspice": 0.0006553768710008551,
+      "spiceTs": 0.0006616681471261487,
+      "relativeError": 0.009599478412605417
+    },
+    {
+      "case": "Nmod+Pmod 3.2.2 interleaved",
+      "device": "M2 NM b",
+      "ngspice": -0.00197819696830126,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 5.612297675183174e-14
+    },
+    {
+      "case": "Nmod+Pmod 3.2.2 interleaved",
+      "device": "M3 PM a",
+      "ngspice": 0.003145695425978878,
+      "spiceTs": 0.003145695425980588,
+      "relativeError": 5.436011548740509e-13
+    },
+    {
+      "case": "Nmod+Pmod 3.2.2 interleaved",
+      "device": "M4 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod+Pmod 3.2.2 interleaved",
+      "device": "M5 PM b",
+      "ngspice": 0.0006616681471262471,
+      "spiceTs": 0.0006616681471261487,
+      "relativeError": 1.4862002572064634e-13
+    },
+    {
+      "case": "Nmod 3.2.4  a,b,a,b (control)",
+      "device": "M0 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.2.4  a,b,a,b (control)",
+      "device": "M1 NM b",
+      "ngspice": -0.00197819696830126,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 5.612297675183174e-14
+    },
+    {
+      "case": "Nmod 3.2.4  a,b,a,b (control)",
+      "device": "M2 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.2.4  a,b,a,b (control)",
+      "device": "M3 NM b",
+      "ngspice": -0.00197819696830126,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 5.612297675183174e-14
+    },
+    {
+      "case": "Nmod 3.3.0  a,b,a,b (control)",
+      "device": "M0 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.3.0  a,b,a,b (control)",
+      "device": "M1 NM b",
+      "ngspice": -0.00197819696830126,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 5.612297675183174e-14
+    },
+    {
+      "case": "Nmod 3.3.0  a,b,a,b (control)",
+      "device": "M2 NM a",
+      "ngspice": -0.00766044081396175,
+      "spiceTs": -0.007660440814903857,
+      "relativeError": 1.229834582631626e-10
+    },
+    {
+      "case": "Nmod 3.3.0  a,b,a,b (control)",
+      "device": "M3 NM b",
+      "ngspice": -0.00197819696830126,
+      "spiceTs": -0.001978196968301371,
+      "relativeError": 5.612297675183174e-14
+    }
+  ]
+}
