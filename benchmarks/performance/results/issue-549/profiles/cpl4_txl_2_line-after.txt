@@ -1,0 +1,55 @@
+cpl4_txl_2_line-after.cpuprofile: 876 samples, 3887.5 ms sampled
+
+Top self time
+     664.3 ms  17.1%  factorize packages/core/dist/chunk-UV4ISJBJ.js:18953
+     456.3 ms  11.7%  stampG packages/core/dist/chunk-UV4ISJBJ.js:19559
+     223.4 ms   5.7%  buildCompanionSystem packages/core/dist/chunk-UV4ISJBJ.js:20253
+     212.0 ms   5.5%  stampStaticDevices packages/core/dist/chunk-UV4ISJBJ.js:19731
+     191.8 ms   4.9%  evaluateCharges packages/core/dist/chunk-UV4ISJBJ.js:3317
+     186.0 ms   4.8%  (garbage collector)
+     172.8 ms   4.4%  attemptStep packages/core/dist/chunk-UV4ISJBJ.js:20429
+     139.4 ms   3.6%  getVoltage packages/core/dist/chunk-UV4ISJBJ.js:19568
+     135.7 ms   3.5%  solveLinearized packages/core/dist/chunk-UV4ISJBJ.js:20521
+     133.4 ms   3.4%  depletionCharge2 packages/core/dist/chunk-UV4ISJBJ.js:2635
+     129.2 ms   3.3%  stamp packages/core/dist/chunk-UV4ISJBJ.js:2100
+     121.0 ms   3.1%  stampTransientCharge packages/core/dist/chunk-UV4ISJBJ.js:3067
+     120.0 ms   3.1%  stampB packages/core/dist/chunk-UV4ISJBJ.js:19562
+     110.7 ms   2.8%  abruptJunctionCharge2 packages/core/dist/chunk-UV4ISJBJ.js:2652
+     101.3 ms   2.6%  stamp packages/core/dist/chunk-UV4ISJBJ.js:3236
+      62.3 ms   1.6%  evaluateLoad packages/core/dist/chunk-UV4ISJBJ.js:13284
+      52.1 ms   1.3%  limitJunctionStep packages/core/dist/chunk-UV4ISJBJ.js:2394
+      49.9 ms   1.3%  junctionCurrent packages/core/dist/chunk-UV4ISJBJ.js:2338
+      49.7 ms   1.3%  stamp packages/core/dist/chunk-UV4ISJBJ.js:13127
+      47.2 ms   1.2%  chargeTruncation packages/core/dist/chunk-UV4ISJBJ.js:2577
+      35.1 ms   0.9%  stampPrevB packages/core/dist/chunk-UV4ISJBJ.js:21145
+      35.1 ms   0.9%  acceptTransientStep packages/core/dist/chunk-UV4ISJBJ.js:3124
+      34.9 ms   0.9%  junctionCharge packages/core/dist/chunk-UV4ISJBJ.js:2209
+      30.1 ms   0.8%  accept packages/core/dist/chunk-UV4ISJBJ.js:2505
+      28.9 ms   0.7%  advanceSolution packages/core/dist/chunk-UV4ISJBJ.js:20914
+
+Top inclusive time
+    3887.5 ms 100.0%  (root)
+    3682.2 ms  94.7%  (anonymous) benchmarks/performance/results/issue-549/scripts/run-deck.mjs:1
+    3662.1 ms  94.2%  simulate packages/core/dist/chunk-UV4ISJBJ.js:26285
+    3662.1 ms  94.2%  once benchmarks/performance/results/issue-549/scripts/run-deck.mjs:59
+    3652.1 ms  93.9%  solveCompiledAnalyses packages/core/dist/chunk-UV4ISJBJ.js:26322
+    3630.7 ms  93.4%  solveTransient packages/core/dist/chunk-UV4ISJBJ.js:21511
+    3589.0 ms  92.3%  advanceSolution packages/core/dist/chunk-UV4ISJBJ.js:20914
+    2949.0 ms  75.9%  attemptStep packages/core/dist/chunk-UV4ISJBJ.js:20429
+    1956.0 ms  50.3%  buildCompanionSystem packages/core/dist/chunk-UV4ISJBJ.js:20253
+    1301.5 ms  33.5%  stampStaticDevices packages/core/dist/chunk-UV4ISJBJ.js:19731
+     815.0 ms  21.0%  solveLinearized packages/core/dist/chunk-UV4ISJBJ.js:20521
+     684.3 ms  17.6%  factorize packages/core/dist/chunk-UV4ISJBJ.js:18953
+     512.3 ms  13.2%  stampTransientCharge packages/core/dist/chunk-UV4ISJBJ.js:3067
+     486.3 ms  12.5%  evaluateCharges packages/core/dist/chunk-UV4ISJBJ.js:3317
+     456.3 ms  11.7%  stampG packages/core/dist/chunk-UV4ISJBJ.js:19559
+     414.9 ms  10.7%  stamp packages/core/dist/chunk-UV4ISJBJ.js:2100
+     324.4 ms   8.3%  acceptTransientStep packages/core/dist/chunk-UV4ISJBJ.js:3124
+     271.2 ms   7.0%  stamp packages/core/dist/chunk-UV4ISJBJ.js:3236
+     255.9 ms   6.6%  chargeTruncationTimestep packages/core/dist/chunk-UV4ISJBJ.js:21226
+     250.9 ms   6.5%  (anonymous) packages/core/dist/chunk-UV4ISJBJ.js:3138
+     250.9 ms   6.5%  truncationTimestep packages/core/dist/chunk-UV4ISJBJ.js:2556
+     250.9 ms   6.5%  truncateTransientStep packages/core/dist/chunk-UV4ISJBJ.js:3137
+     244.1 ms   6.3%  depletionCharge2 packages/core/dist/chunk-UV4ISJBJ.js:2635
+     242.8 ms   6.2%  stampPrevB packages/core/dist/chunk-UV4ISJBJ.js:21145
+     209.5 ms   5.4%  stamp packages/core/dist/chunk-UV4ISJBJ.js:13127

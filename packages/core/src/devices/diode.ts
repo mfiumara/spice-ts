@@ -944,7 +944,47 @@ function applyForwardKnee(
   };
 }
 
-function breakdownKneeVoltage(
+/**
+ * Recently solved breakdown knees, keyed on every input of
+ * {@link solveBreakdownKneeVoltage}. ngspice-47 solves the knee once per
+ * temperature in diotemp.c (tBrkdwnV); spice-ts used to re-run the 26-log fixed
+ * point on every junction evaluation, which was the top self-time frame on
+ * diode-heavy transient decks (#549). The fit is a pure function of these five
+ * numbers, so a hit returns the identical double.
+ */
+const KNEE_CACHE_SIZE = 16;
+const kneeCacheKeys = new Float64Array(KNEE_CACHE_SIZE * 5).fill(Number.NaN);
+const kneeCacheValues = new Float64Array(KNEE_CACHE_SIZE);
+let kneeCacheNext = 0;
+
+/** @internal Exported for the memo transparency test. */
+export function breakdownKneeVoltage(
+  breakdown: BreakdownParams,
+  saturationCurrent: number,
+): number {
+  const { voltage, current, thermalVoltage, junctionThermalVoltage } = breakdown;
+  for (let entry = 0, key = 0; entry < KNEE_CACHE_SIZE; entry++, key += 5) {
+    if (kneeCacheKeys[key] === voltage && kneeCacheKeys[key + 1] === current
+        && kneeCacheKeys[key + 2] === thermalVoltage
+        && kneeCacheKeys[key + 3] === junctionThermalVoltage
+        && kneeCacheKeys[key + 4] === saturationCurrent) {
+      return kneeCacheValues[entry];
+    }
+  }
+  const knee = solveBreakdownKneeVoltage(breakdown, saturationCurrent);
+  const key = kneeCacheNext * 5;
+  kneeCacheKeys[key] = voltage;
+  kneeCacheKeys[key + 1] = current;
+  kneeCacheKeys[key + 2] = thermalVoltage;
+  kneeCacheKeys[key + 3] = junctionThermalVoltage;
+  kneeCacheKeys[key + 4] = saturationCurrent;
+  kneeCacheValues[kneeCacheNext] = knee;
+  kneeCacheNext = (kneeCacheNext + 1) % KNEE_CACHE_SIZE;
+  return knee;
+}
+
+/** @internal ngspice-47 diotemp.c breakdown knee fit, uncached. */
+export function solveBreakdownKneeVoltage(
   breakdown: BreakdownParams,
   saturationCurrent: number,
 ): number {
