@@ -43,15 +43,15 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 103,
+      "success": 107,
       "failed": 6,
-      "unsupported": 19
+      "unsupported": 15
     },
     "outcomes": {
-      "matched": 85,
-      "mismatch": 18,
+      "matched": 88,
+      "mismatch": 19,
       "not-compared": 0,
-      "spice-ts-loss": 25,
+      "spice-ts-loss": 21,
       "ngspice-failed": 0,
       "both-failed": 0
     }
@@ -72,19 +72,6 @@
         "resistor-defaultvaluewarning-cir",
         "soln-dep-res-multsoldepres-cir",
         "vanoise-commonemitterbjt-mextram-cir"
-      ],
-      "issue": null
-    },
-    {
-      "bucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)",
-      "fixtures": 5,
-      "ngspiceSuccess": 5,
-      "ids": [
-        "bsimsoi3-b3soitrandefaults-cir",
-        "ekv26-inverter-transient-ekv26-cir",
-        "psp102-idvg0-id-t27-pmos-cir",
-        "psp103-invert-psp-testdta0-cir",
-        "sens-bsim4-issue694-fd-cir"
       ],
       "issue": null
     },
@@ -110,6 +97,16 @@
       "issue": null
     },
     {
+      "bucket": "model: other MOSFET levels (LEVEL=10, LEVEL=54)",
+      "fixtures": 2,
+      "ngspiceSuccess": 2,
+      "ids": [
+        "bsimsoi3-b3soitrandefaults-cir",
+        "sens-bsim4-issue694-fd-cir"
+      ],
+      "issue": null
+    },
+    {
       "bucket": "convergence",
       "fixtures": 1,
       "ngspiceSuccess": 1,
@@ -124,15 +121,6 @@
       "ngspiceSuccess": 1,
       "ids": [
         "bjt-ic-bjt-ic-nonzero-cir"
-      ],
-      "issue": null
-    },
-    {
-      "bucket": "device: K-element",
-      "fixtures": 1,
-      "ngspiceSuccess": 1,
-      "ids": [
-        "tl1x-tl1x-mpi-cir"
       ],
       "issue": null
     },
@@ -822,7 +810,7 @@
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)"
+      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=54)"
     },
     {
       "id": "bsrc-bsrc-a1-cir",
@@ -1263,16 +1251,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'Xinv1.Mp1' (model 'pmos1') uses unsupported model LEVEL=260 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
+        "status": "success",
+        "analyses": [
+          "tran:507"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 0.00225,
+      "worstSignal": "tran i(vdd)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "embedded-printline-for-embedded-cmosinverter-cir",
@@ -2832,16 +2821,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'x1.m1' (model 'mymodel') uses unsupported model LEVEL=102 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
+        "status": "success",
+        "analyses": [
+          "dc:221"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 16,
+      "worstNormalizedError": 1.08e-15,
+      "worstSignal": "dc i(v_s)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "psp103-invert-psp-testdta0-cir",
@@ -2859,16 +2849,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'XINV1.MN1' (model 'pspqan') uses unsupported model LEVEL=103 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
+        "status": "success",
+        "analyses": [
+          "tran:2071"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.0102,
+      "worstSignal": "tran v(vout)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "resistor-td-temp-dep-cir",
@@ -3202,7 +3193,7 @@
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)"
+      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=54)"
     },
     {
       "id": "soln-dep-res-multsoldepres-cir",
@@ -3359,16 +3350,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 14: Unsupported device card: 'K' KM12 L1 L2 2.229e-01"
+        "status": "success",
+        "analyses": [
+          "tran:3007"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "device: K-element"
+      "comparedAnalyses": 1,
+      "comparedSignals": 84,
+      "worstNormalizedError": 0.0000718,
+      "worstSignal": "tran i(vslow)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "transline-errormessagetest2-cir",
@@ -3734,5 +3726,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "cc41c469fee6732450a8c9615e34a2c40a94aefd2221536d26bcf542550f7891"
+  "outcomeSha256": "d9007df12b381cbef8b304cf826f66da8ae1f34f8c3eb56a4a9f4d0e4026befd"
 }

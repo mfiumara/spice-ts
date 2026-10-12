@@ -240,7 +240,7 @@ const CORPUS_G_RULES: ReadonlyArray<readonly [RegExp, string]> = [
   [/Unsupported \.options (?:\S+ )?field/i, 'directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)'],
   [/(?:Unknown function|Undefined parameter) '[^']*' (?:\.print\b|\+)/i, 'output: expressions and output variables in .print lines'],
   [/uses unsupported model LEVEL=(?:3|9)\b/i, 'model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)'],
-  [/uses unsupported model LEVEL=\d+/i, 'model: other MOSFET levels (LEVEL=10, LEVEL=260)'],
+  [/uses unsupported model LEVEL=\d+/i, 'model: other MOSFET levels (LEVEL=10, LEVEL=54)'],
   [/Unsupported source waveform '(?:EXP|SFFM|AM)'|Unsupported PWL source parameters/i, 'source: EXP/SFFM/AM waveforms and PWL TD='],
   [/JFET|'PJF'|Unsupported device card: 'J'/, 'device: JFET forms (PJF model type, instance TEMP=, J card)'],
   [/Unsupported BJT instance parameter: 'IC=/i, 'device: BJT instance IC= initial conditions'],

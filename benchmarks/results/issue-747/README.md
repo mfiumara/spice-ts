@@ -50,6 +50,21 @@ stashed for that run, only the new untracked test file was present, hence `packa
   spice-ts rejects the MEXTRAM-only `DTA` parameter on a Gummel-Poon card, which ngspice-47 accepts.
   That is a separate BJT parameter gap, not a level issue.
 
+## Corpus-g totals (outcomes.json regenerated on this branch)
+
+`spice-heavy pnpm exec tsx benchmarks/corpus/corpus-g/parity.ts --jobs 3` at 4f448db1:
+
+| | matched | mismatch | spice-ts-loss |
+|---|---|---|---|
+| main 25bcf5b4 (committed outcomes.json) | 85 | 18 | 25 |
+| this branch | 88 | 19 | 21 |
+
+4 fixtures changed outcome. 3 come from this change: EKV26 and PSP102 now match, and PSP103 is a
+mismatch. The fourth, TL1X/TL1X_mpi.cir (loss → matched, 7.18e-5), is not from this change. It is
+the #739 + #716 result already on main (see `benchmarks/results/issue-739/README.md`), which the
+committed outcomes.json had not picked up yet. The "other MOSFET levels" gap bucket now holds
+LEVEL=10 (B3SOI) and LEVEL=54 (`SENS/bsim4_issue694_fd.cir`).
+
 ## Unit tests against ngspice-47
 
 `packages/core/src/parser/model-level-limit-747.test.ts` reads the decks in `decks/` and the
