@@ -181,3 +181,68 @@ the far ends of the lines drive gates that feed back into the lines.
    sed 's/^tran 0.1ns 60ns 0 0.35N/tran 0.1ns 60ns 0 0.01n/' /tmp/cpl4_txl_2_line.sp > /tmp/cpl4_tmax.sp
    pnpm exec tsx benchmarks/txl-cpl/compare.ts /tmp/cpl4_tmax.sp
    ```
+
+## #549: the lines no longer drive the node-voltage LTE
+
+ngspice-47 TXL and CPL have no truncation routine (`txlinit.c` and
+`cplinit.c` set `.DEVtrunc = NULL`). CKTtrunc never sees the lines. They
+affect step control only by lowering CKTmaxStep to 0.9 tau in
+TXLload/CPLload. spice-ts counted them as charge-storing devices without a
+truncation port, so its node-voltage LTE (the stand-in for missing DEVtrunc
+ports, #638) ran on every line port and cut the step at each reflected edge.
+`TxlLine` and `CplLines` now declare `truncationCoversCharges`, so their
+CKTmaxStep bound is their whole contribution. A port node still gets the
+node-voltage LTE when another uncovered device shares it: BJT, diode, MOS1
+or a linear capacitor.
+
+Same machine (macOS arm64, Homebrew ngspice-47) and the same fixture bytes.
+Before = main `b1a1ff58`, after = this change. Metric and script as above
+(`benchmarks/txl-cpl/compare.ts`), worst max err / swing, points spice-ts / ngspice.
+
+| Fixture | before | points before | after | points after |
+|---|---|---|---|---|
+| cpl4_txl_2_line.sp (#549) | 26.914% | 11137 / 285 | **26.869%, still a LOSS** | 1908 / 285 |
+| cpl4_txl_2_line.sp at TMAX=0.01n | 1.49% | 13817 / 6026 | 1.18% | 6523 / 6026 |
+| cpl3_4_line.sp | `TimestepTooSmallError` at 2.33e-8 s | | **runs, 5.867% (LOSS)** | 1017 / 1018 |
+| tests/transmission/cpl3_4_line.cir | `TimestepTooSmallError` at 2.33e-8 s | | **runs, 5.867% (LOSS)** | 1017 / 1018 |
+| cpl_ibm1.sp / cpl_ibm1a.sp | 32.122% | 21896 / 392 | 15.057% (LOSS) | 4736 / 392 |
+| cpl_ibm2 (both) | 0.079% | 1168 / 217 | 0.076% | 216 / 217 |
+| cpl_ibm3.sp | 15.213% | 13792 / 124 | 15.187% (LOSS) | 9614 / 124 |
+| txl4_1_line.sp | 5.374% | 562 / 148 | 5.365% (LOSS) | 548 / 148 |
+| cpl1_4_line.sp | 18.861% | 9237 / 978 | 18.861%, unchanged | 9237 / 978 |
+| cpl2_2_line.sp | 8.794% | 3057 / 96 | 8.794%, unchanged | 3057 / 96 |
+| txl1_1_line (both) | 1.003% | 675 / 492 | 1.003%, unchanged | 675 / 492 |
+| txl2_3_line (both) | 1.495% | 939 / 493 | 1.495%, unchanged | 939 / 493 |
+| txl3_1_line.sp | 7.714% | 2506 / 263 | 7.714%, unchanged | 2506 / 263 |
+
+spice-ts wall time on cpl4_txl_2_line drops from about 1.0 s to 0.18 s
+(single runs, host shared with other jobs). The unchanged decks have a MOS1 or
+BJT device on every line port, so the node-voltage LTE still runs there.
+
+cpl4_txl_2_line stays a published 27% loss at the deck's own step. The cause
+is ngspice's step placement, not the line model:
+
+- ngspice-47's default-step run is 21.3% / 18.5% / 25.9% of swing (v(2) /
+  v(4) / v(5)) away from its own TMAX=0.01n run.
+- spice-ts's default-step run is 1.36% / 1.33% / 1.57% away from that
+  ngspice TMAX=0.01n run (1.51% / 1.01% / 1.15% before).
+- With both engines at TMAX=0.01n they agree within 1.18%.
+- A scratch run with the node-voltage LTE switched off everywhere took 266
+  points (ngspice 285) but landed 42% from ngspice's default run. Matching
+  ngspice's coarse answer needs its exact step sequence. That depends on the
+  BJT/diode/capacitor truncation ports, not on TXL/CPL.
+
+On the resistively terminated lossless/shunt-G unit deck
+(`swec-lines.test.ts`) both engines now take the same 520-point grid. The
+shunt-G line matches ngspice-47 to 7.2e-8 V (was 4.4e-3 V). The lossless line
+moves 4.4e-3 -> 6.7e-3 V (a LOSS): its delayed edge lands one picosecond late,
+because spice-ts accepts `nextTime - time` where ngspice adds CKTdelta, and
+the line history is keyed on integer picoseconds. Tracked in #708. A scratch
+run with CKTdelta arithmetic matched both lines to 1e-14 V.
+
+Raw output: `benchmarks/txl-cpl/results-549/` (`compare.ts` JSON lines for the
+16 P/Y corpus-f decks before/after, and the TMAX=0.01n cpl4 runs). Reproduce:
+
+```sh
+pnpm exec tsx benchmarks/txl-cpl/compare.ts $(grep -l -i -E '^\s*\.model\s+\S+\s+(txl|cpl)' -r benchmarks/corpus/corpus-f/fixtures | grep -v xspice | sort)
+```

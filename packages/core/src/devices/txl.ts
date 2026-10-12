@@ -442,6 +442,13 @@ interface TxlLoad {
 export class TxlLine implements DeviceModel {
   readonly branches: number[];
   readonly isNonlinear = false;
+  /**
+   * ngspice-47 TXL has no DEVtrunc (txlinit.c `.DEVtrunc = NULL`): the line
+   * never bounds CKTtrunc, it only lowers CKTmaxStep in TXLload, which
+   * {@link truncateTransientStep} reproduces. So the node-voltage LTE must
+   * not run on the port nodes on the line's account (#549).
+   */
+  readonly truncationCoversCharges = true;
   private readonly committed = new TxlState();
   private readonly trial = new TxlState();
   private readonly history = new SwecHistory(1);

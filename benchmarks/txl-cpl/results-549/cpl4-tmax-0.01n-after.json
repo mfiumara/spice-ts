@@ -1,0 +1,1 @@
+{"deck":"cpl4_tmax.sp","nodes":["2","4","5"],"controlTranMovedToCard":true,"ngspiceMs":88,"spiceTsMs":442,"perNode":{"2":{"maxAbsV":0.05352364930775468,"swingV":4.535663878},"4":{"maxAbsV":0.05802404671645883,"swingV":6.3839978},"5":{"maxAbsV":0.018570338261083674,"swingV":2.040059303}},"worstMaxErrOverSwingPct":1.18,"points":{"ngspice":6026,"spiceTs":6523}}
