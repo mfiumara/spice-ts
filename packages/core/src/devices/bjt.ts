@@ -346,6 +346,10 @@ export function resolveBJTParams(
   // bjtsetup.c: an ISE or ISC above 1e-4 is read as a multiple of IS.
   const leakageCurrent = (value: number | undefined) =>
     value === undefined ? 0 : value > 1e-4 ? saturationCurrent * value : value;
+  // bjttemp.c: an Early voltage or knee current of 0 (the bjtsetup.c default)
+  // means infinite; the inverse is 1/param only when param != 0 (#844).
+  const infiniteWhenZero = (value: number | undefined) =>
+    value === undefined || value === 0 ? Infinity : value;
   const baseResistance = params.RB ?? 0;
   const resolved: BJTParams = {
     LEVEL: params.LEVEL ?? 1,
@@ -354,12 +358,12 @@ export function resolveBJTParams(
     IS: saturationCurrent,
     NF: params.NF ?? 1,
     NR: params.NR ?? 1,
-    VAF: params.VAF ?? Infinity,
-    IKF: params.IKF ?? Infinity,
+    VAF: infiniteWhenZero(params.VAF),
+    IKF: infiniteWhenZero(params.IKF),
     ISE: leakageCurrent(params.ISE),
     NE: params.NE ?? 1.5,
-    VAR: params.VAR ?? Infinity,
-    IKR: params.IKR ?? Infinity,
+    VAR: infiniteWhenZero(params.VAR),
+    IKR: infiniteWhenZero(params.IKR),
     ISC: leakageCurrent(params.ISC),
     NC: params.NC ?? 2,
     // bjtsetup.c: NKF defaults to 0.5 (the square root) and is capped at 1.
