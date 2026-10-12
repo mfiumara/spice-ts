@@ -37,7 +37,7 @@ The two netlists are electrically equivalent (series split of an element / extra
 |---|---|---|
 | ngspice-47 | error | mycircuit: "Timestep too small; time = 1.1957e-10 ... trouble with node net-_q2-e_", aborted after 114 rows; mycircuitSplit (R2 split in two): completes, 1008 rows. Same in LTPS mode. |
 | ngspice master | error | mycircuit: "Timestep too small; time = 3.58009e-11 ... node net-_c1-pad2_", aborted after 51 rows; mycircuitSplit completes (1008 rows). Same in LTPS. [ngspice pre-master-48 HEAD 3ef069fb, same command as 47, default and LTPS] |
-| spice-ts | unsupported | UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library) |
+| spice-ts | unsupported | PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it to an XSPICE aswitch in LTPS mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library) |
 
 Reproduces on ngspice-47: yes. Check: mycircuit aborts (Timestep too small) while the equivalent mycircuitSplit completes.
 

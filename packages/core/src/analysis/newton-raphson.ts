@@ -6,16 +6,54 @@ import { MOSFET } from '../devices/mosfet.js';
 import { stampStaticDevices } from '../mna/linear-stamp.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 
+/**
+ * A device list's Newton step limiters: the plain MOS1 instances, whose limits
+ * {@link MOSFET.batchNewtonStepScale} evaluates from contiguous arrays, and
+ * every other device implementing `limitNewtonStep`.
+ */
+interface StepLimiters {
+  readonly length: number;
+  readonly mosfets: readonly MOSFET[];
+  readonly others: readonly DeviceModel[];
+}
+
+const stepLimiters = new WeakMap<readonly DeviceModel[], StepLimiters>();
+
+function stepLimitersFor(devices: readonly DeviceModel[]): StepLimiters {
+  const cached = stepLimiters.get(devices);
+  if (cached !== undefined && cached.length === devices.length) return cached;
+  const mosfets: MOSFET[] = [];
+  const others: DeviceModel[] = [];
+  for (const device of devices) {
+    if (!device.limitNewtonStep) continue;
+    if (
+      Object.getPrototypeOf(device) === MOSFET.prototype
+      && !Object.hasOwn(device, 'limitNewtonStep')
+    ) {
+      mosfets.push(device as MOSFET);
+    } else {
+      others.push(device);
+    }
+  }
+  const limiters = { length: devices.length, mosfets, others };
+  stepLimiters.set(devices, limiters);
+  return limiters;
+}
+
+/**
+ * Scale the Newton step by the smallest device step limit. The Math.min of
+ * the same per-device scales in any order, so grouping the MOS1 instances
+ * into one batch leaves the result bit-identical.
+ */
 function applyDeviceStepLimits(
   devices: readonly DeviceModel[],
   previous: Float64Array,
   candidate: Float64Array,
 ): void {
-  let scale = 1;
-  for (const device of devices) {
-    if (device.limitNewtonStep) {
-      scale = Math.min(scale, device.limitNewtonStep(previous, candidate));
-    }
+  const { mosfets, others } = stepLimitersFor(devices);
+  let scale = mosfets.length > 0 ? MOSFET.batchNewtonStepScale(mosfets, previous, candidate) : 1;
+  for (let i = 0; i < others.length; i++) {
+    scale = Math.min(scale, others[i].limitNewtonStep!(previous, candidate));
   }
   if (scale >= 1) return;
   for (let i = 0; i < candidate.length; i++) {

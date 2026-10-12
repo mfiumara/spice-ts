@@ -357,13 +357,16 @@ function isConvergedTransient(
   numNodes: number,
   options: ResolvedOptions,
 ): boolean {
-  // Auxiliary branch-current unknowns are outputs of the linear MNA solve and
-  // do not feed any nonlinear device stamp. At stiff C/dt ratios their last
-  // few bits can jitter above abstol after the nonlinear node state has
-  // converged, so only node voltages gate transient Newton convergence.
-  for (let i = 0; i < numNodes; i++) {
+  // ngspice-47 NIconvTest: every unknown, node voltages against RELTOL*max +
+  // VNTOL and branch currents against RELTOL*max + ABSTOL, with max the
+  // larger magnitude of the two iterates. Skipping the branch currents
+  // accepted iterates ngspice still refines (#818): the extra iteration moves
+  // the accepted point by microvolts, which a regenerative circuit amplifies
+  // into a different Newton outcome on its switching step.
+  for (let i = 0; i < current.length; i++) {
     const diff = Math.abs(current[i] - previous[i]);
-    const tol = options.vntol + options.reltol * Math.abs(current[i]);
+    const scale = Math.max(Math.abs(current[i]), Math.abs(previous[i]));
+    const tol = options.reltol * scale + (i < numNodes ? options.vntol : options.abstol);
     if (diff > tol) return false;
   }
   return true;

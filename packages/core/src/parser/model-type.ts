@@ -12,10 +12,17 @@ export const SUPPORTED_MODEL_TYPES: ReadonlySet<string> = new Set([
   'NMOS', 'PMOS',
   'VDMOS', 'VDMOSN', 'VDMOSP',
   'NHFET', 'NMF',
-  'R', 'C', 'L',
+  'R', 'RES', 'C', 'L',
   'LTRA', 'TXL', 'CPL',
   'SW', 'CSW',
 ]);
+
+/**
+ * Model type aliases, folded to the canonical type when a model is stored.
+ * ngspice-47 inpdomod.c maps the PSpice resistor type `res` to the same
+ * Resistor device (and res.c RESmPTable parameters) as `r` (#823).
+ */
+const MODEL_TYPE_ALIASES: Readonly<Record<string, string>> = { RES: 'R' };
 
 /**
  * Model types each model-referencing instance accepts, keyed by SPICE instance
@@ -36,15 +43,16 @@ export const DEVICE_MODEL_TYPES: Readonly<Record<string, readonly string[]>> = {
 };
 
 /**
- * Upper-case and validate a model registered outside the netlist parser
- * (Circuit API, subcircuit body, JSON protocol). Returns the normalized type.
+ * Upper-case and validate a model type for storage (netlist parser, Circuit
+ * API, subcircuit body, JSON protocol). Returns the canonical type, with
+ * aliases such as PSpice `RES` folded to `R`.
  */
 export function normalizeModelType(modelName: string, modelType: string): string {
   const upper = modelType.toUpperCase();
   if (!SUPPORTED_MODEL_TYPES.has(upper)) {
     throw new UnsupportedCircuitModelTypeError(modelName, upper, [...SUPPORTED_MODEL_TYPES]);
   }
-  return upper;
+  return MODEL_TYPE_ALIASES[upper] ?? upper;
 }
 
 /** Throw unless `modelType` belongs to the device kind of instance letter `kind`. */

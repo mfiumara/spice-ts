@@ -33,7 +33,7 @@ The two netlists are electrically equivalent (series split of an element / extra
 |---|---|---|
 | ngspice-47 | error | base_37: OP completes; variant_37: "Transient op failed, timestep too small ... trouble with xq190:dmos-instance m.xq190.m1" with nan node voltages, aborted. Same in LTPS mode. |
 | ngspice master | error | base_37 completes; variant_37 "Transient op failed, timestep too small ... trouble with xq191:dlim-instance d.xq191.d1" with nan node voltages, aborted. Same in LTPS. [ngspice pre-master-48 HEAD 3ef069fb, same command as 47, default and LTPS] |
-| spice-ts | unsupported | UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library) |
+| spice-ts | unsupported | PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it to an XSPICE aswitch in LTPS mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library) |
 
 Reproduces on ngspice-47: yes. Check: variant_37 OP aborts while base_37 completes.
 

@@ -6,19 +6,19 @@ Every deck below is byte-identical to its pinned upstream revision (ahkab `1e893
 
 ## Totals
 
-- Fixtures: 52. Outcome SHA-256: `6108026951e9d6be72c65798d23783a916080db4b0745d60c92ac4c8e006066a`.
+- Fixtures: 52. Outcome SHA-256: `7716492cb1a4771ded806943b2245e5cba98ab4abaa858a66d1a50228708af53`.
 - ngspice (ngspice-47): 52 success, 0 failed, 0 unsupported.
-- spice-ts (0.3.0): 50 success, 1 failed, 1 unsupported.
-- Outcomes: matched 40, mismatch 10, not-compared 0, spice-ts-loss 2, ngspice-failed 0, both-failed 0.
-- Of the 52 decks ngspice runs successfully, spice-ts matches 40, mismatches 10, produces no comparable result for 0 and fails 2.
+- spice-ts (0.3.0): 51 success, 0 failed, 1 unsupported.
+- Outcomes: matched 39, mismatch 12, not-compared 0, spice-ts-loss 1, ngspice-failed 0, both-failed 0.
+- Of the 52 decks ngspice runs successfully, spice-ts matches 39, mismatches 12, produces no comparable result for 0 and fails 1.
 
 | Source | Fixtures | Matched | Mismatch | Not compared | spice-ts loss | ngspice failed | Both failed |
 |---|---|---|---|---|---|---|---|
 | `kicad` | 5 | 2 | 2 | 0 | 1 | 0 | 0 |
 | `pyspice` | 8 | 8 | 0 | 0 | 0 | 0 | 0 |
 | `spicelib` | 2 | 2 | 0 | 0 | 0 | 0 | 0 |
-| `spicesharpparser` | 24 | 16 | 7 | 0 | 1 | 0 | 0 |
-| `xictools` | 13 | 12 | 1 | 0 | 0 | 0 | 0 |
+| `spicesharpparser` | 24 | 16 | 8 | 0 | 0 | 0 | 0 |
+| `xictools` | 13 | 11 | 2 | 0 | 0 | 0 | 0 |
 
 ## Method
 
@@ -37,8 +37,7 @@ Every deck below is byte-identical to its pinned upstream revision (ahkab `1e893
 - https://github.com/mfiumara/spice-ts/issues/797: SpiceSharpParser example01.cir op mismatch (comma-separated subcircuit instance parameter lists), runnable since #789.
 - https://github.com/mfiumara/spice-ts/issues/804: WRspice mosamp2.cir residual transient mismatch after the MOS LEVEL=2 fix for #799 (transient step sequence across a fast edge).
 - https://github.com/mfiumara/spice-ts/issues/809: KiCad QA tlines.spice and legacy_sources.spice mismatches, runnable since GND reads as ground (#772).
-- https://github.com/mfiumara/spice-ts/issues/810: SpiceSharpParser Example04.cir, Example04_reversed.cir and Example05.cir op mismatch (X-card `M = 10` multiplicity is ignored), runnable since #788.
-- https://github.com/mfiumara/spice-ts/issues/826: SpiceSharpParser Example04_nested.cir: a .subckt defined inside another .subckt is not visible (Undefined subcircuit), runnable past parsing since #788.
+- https://github.com/mfiumara/spice-ts/issues/810: SpiceSharpParser Example04.cir, Example04_reversed.cir, Example05.cir and Example04_nested.cir op mismatch (X-card `M = 10` multiplicity is ignored), runnable since #788 (Example04_nested.cir since nested .subckt scoping, #826).
 
 ## spice-ts gap buckets
 
@@ -46,29 +45,29 @@ Grouped from spice-ts's own first error line (corpus-h rules, then corpus-g and 
 
 | Bucket | Fixtures | ngspice ok | Issue |
 |---|---|---|---|
-| execution: other failure | 1 | 1 | none filed |
 | model: VDMOS power MOSFET | 1 | 1 | none filed |
 
-## Losses (12)
+## Losses (13)
 
 Every fixture that is not matched: spice-ts failures, mismatches above the threshold, and results that could not be compared.
 
 | Fixture | ngspice | spice-ts | Outcome | Worst | Worst signal | First error line (ngspice / spice-ts) |
 |---|---|---|---|---|---|---|
 | [kicad/qa/data/eeschema/issue13431.spice](fixtures/kicad/qa/data/eeschema/issue13431.spice) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 22: .model 'ctest' has unsupported type 'CMETER' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model ctest cmeter(gain=1.0) |
-| [kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice) | success | success | mismatch | 1.76 | tran v(/vtrnoise) |  |
+| [kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice) | success | success | mismatch | 2.49 | tran v(/itrrandom) |  |
 | [kicad/qa/data/eeschema/spice_netlists/tlines/tlines.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/tlines/tlines.spice) | success | success | mismatch | 0.0453 | tran v(/z0_out) |  |
 | [spicesharpparser/circuits/cookbook/pure-spice/astable-led-flasher/astable-led-flasher.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/astable-led-flasher/astable-led-flasher.cir) | success | success | mismatch | 1.27 | tran v(base2) |  |
 | [spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir) | success | success | mismatch | 0.0224 | tran v(collector) |  |
 | [spicesharpparser/circuits/cookbook/pure-spice/transmission-line-termination/transmission-line-termination.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/transmission-line-termination/transmission-line-termination.cir) | success | success | mismatch | 0.0625 | tran v(open_out) |  |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04.cir) | success | success | mismatch | 0.7 | op i(v1) |  |
-| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir) | success | failed | spice-ts-loss |  |  | spice-ts: Undefined subcircuit 'resistor' |
+| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_nested.cir) | success | success | mismatch | 0.7 | op i(v1) |  |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_reversed.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example04_reversed.cir) | success | success | mismatch | 0.7 | op i(v1) |  |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example05.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example05.cir) | success | success | mismatch | 0.7 | op i(v1) |  |
 | [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/example01.cir) | success | success | mismatch | 1.15 | op v(n1) |  |
-| [xictools/wrspice/examples/schmitt.cir](fixtures/xictools/wrspice/examples/schmitt.cir) † | success | success | mismatch | 0.723 | tran i(vin) |  |
+| [xictools/wrspice/examples/mosamp2.cir](fixtures/xictools/wrspice/examples/mosamp2.cir) † | success | success | mismatch | 0.0161 | tran v(6) |  |
+| [xictools/wrspice/examples/schmitt.cir](fixtures/xictools/wrspice/examples/schmitt.cir) † | success | success | mismatch | 0.708 | tran i(vin) |  |
 
-## Wins (40)
+## Wins (39)
 
 Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every common signal.
 
@@ -108,43 +107,8 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [xictools/wrspice/examples/bjtnoise.cir](fixtures/xictools/wrspice/examples/bjtnoise.cir) † | success | success | matched | 1.51e-7 | noise onoise_spectrum |  |
 | [xictools/wrspice/examples/diodisto.cir](fixtures/xictools/wrspice/examples/diodisto.cir) † | success | success | matched | 0.000162 | disto i(vcc) |  |
 | [xictools/wrspice/examples/mos6inv.cir](fixtures/xictools/wrspice/examples/mos6inv.cir) † | success | success | matched | 0.00798 | tran v(xndinv4.14) |  |
-| [xictools/wrspice/examples/mosamp2.cir](fixtures/xictools/wrspice/examples/mosamp2.cir) † | success | success | matched | 0.00627 | tran v(6) |  |
 | [xictools/wrspice/examples/mosmem.cir](fixtures/xictools/wrspice/examples/mosmem.cir) † | success | success | matched | 0.000636 | tran i(vdd) |  |
 | [xictools/wrspice/examples/pz2.cir](fixtures/xictools/wrspice/examples/pz2.cir) † | success | success | matched | 1.72e-16 | pz v(pole(3)) |  |
 | [xictools/wrspice/examples/pzt.cir](fixtures/xictools/wrspice/examples/pzt.cir) † | success | success | matched | 1.82e-13 | pz v(pole(1)) |  |
 | [xictools/wrspice/examples/resnoise.cir](fixtures/xictools/wrspice/examples/resnoise.cir) † | success | success | matched | 1.74e-7 | noise onoise_spectrum |  |
 | [xictools/wrspice/examples/simplepz.cir](fixtures/xictools/wrspice/examples/simplepz.cir) † | success | success | matched | 1.19e-16 | pz v(pole(1)) |  |
-
-## Transient fine-step reference (#592)
-
-- Fine-step reference (#592): ngspice-47 runs the same deck with every active .tran card rewritten to TMAX_fine = min(TSTEP, (TSTOP - TSTART)/50, deck TMAX if given) / 10, i.e. the ngspice default step ceiling divided by 10; TSTEP, TSTOP, TSTART, UIC and every other card are unchanged. The rule is the same for every transient fixture. No reference is generated when the deck has no parsable .tran card outside .control, or when TSTOP/TMAX_fine exceeds 1000000 steps; the ngspice run is bounded at 600 s. Each default run (spice-ts, ngspice) is scored by the same procedure: at the reference's output points, with the default run linearly interpolated onto them, over the transient signals of the headline comparison, normalised by the reference peak with the same per-quantity floors. The headline's one-sided breakpoint alignment applies at every default-run time point within ngspice's breakpoint merge distance (CKTminBreak = 0.00005 x TMAX_fine) of a reference time point; the headline matches breakpoints bit for bit, which here would favour ngspice, whose default run lands on its own reference's breakpoint times exactly while spice-ts's land a few ulps away. This charges each engine for its own published waveform, so a coarse output grid counts against whichever engine produced it. Status (matched/mismatch) is defined by the headline column only. One fine reference is not a convergence proof, and neither column is an accuracy ranking of the engines.
-- One fine reference is not a convergence proof: it is one more discretisation of the same circuit by the same engine. These columns are diagnostics of grid sensitivity, not an accuracy ranking and not a claim that either engine is more accurate. Status stays defined by the headline column.
-- Transient rows: 25; fine reference compared for 25, unavailable for 0. Above 0.01 among compared rows: headline (transient signals) 6, spice-ts vs fine 9, ngspice default vs fine 9.
-
-| Fixture | Status (headline) | Headline tran worst (vs ngspice default) | spice-ts vs fine | ngspice default vs fine | Fine TMAX | Note |
-|---|---|---|---|---|---|---|
-| [kicad/qa/data/eeschema/issue13162.spice](fixtures/kicad/qa/data/eeschema/issue13162.spice) | matched | 3.65e-13 (i(vin1)) | 0.561 (i(vin1)) | 0.561 (i(vin1)) | 0.00001 |  |
-| [kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/legacy_sources/legacy_sources.spice) | mismatch | 1.76 (v(/vtrnoise)) | 1.7 (v(/itrnoise)) | 3.22 (v(/itrrandom)) | 1e-10 |  |
-| [kicad/qa/data/eeschema/spice_netlists/tlines/tlines.spice](fixtures/kicad/qa/data/eeschema/spice_netlists/tlines/tlines.spice) | mismatch | 0.0453 (v(/z0_out)) | 0.00234 (v(/rlgc_out)) | 0.0433 (v(/rlgc_out)) | 1e-7 |  |
-| [pyspice/examples/c-examples/ngspice_cb/examples/adder_mos.cir](fixtures/pyspice/examples/c-examples/ngspice_cb/examples/adder_mos.cir) | matched | 1.7e-13 (v(1)) | 2.19e-13 (v(3)) | 3.39e-13 (v(4)) | 5e-11 |  |
-| [pyspice/examples/spice-examples/ac-coupled-transistor-amplifier.cir](fixtures/pyspice/examples/spice-examples/ac-coupled-transistor-amplifier.cir) | matched | 0.00000806 (v(emit)) | 0.00000845 (i(vin)) | 0.00000494 (i(vin)) | 1e-7 |  |
-| [pyspice/examples/spice-examples/operational-amplifier-model-2.cir](fixtures/pyspice/examples/spice-examples/operational-amplifier-model-2.cir) | matched | 0.000193 (v(xop.8)) | 0.000193 (v(xop.8)) | 1.56e-8 (v(xop.10)) | 1e-8 |  |
-| [pyspice/examples/spice-examples/small-signal-amplifier.cir](fixtures/pyspice/examples/spice-examples/small-signal-amplifier.cir) | matched | 4.9e-14 (i(vin)) | 0.0000127 (i(vin)) | 0.0000127 (i(vin)) | 1e-7 |  |
-| [pyspice/issues/issue-172.cir](fixtures/pyspice/issues/issue-172.cir) | matched | 2.47e-21 (i(bsource)) | 2.31e-13 (i(bsource)) | 2.31e-13 (i(bsource)) | 1e-7 |  |
-| [spicesharpparser/circuits/cookbook/custom-components/ideal-diode-power-or/ideal-diode-power-or.cir](fixtures/spicesharpparser/circuits/cookbook/custom-components/ideal-diode-power-or/ideal-diode-power-or.cir) | matched | 0.0000642 (v(primary_input)) | 0.00737 (v(primary_input)) | 0.00772 (v(primary_input)) | 1e-7 |  |
-| [spicesharpparser/circuits/cookbook/pure-spice/active-anti-alias-filter/active-anti-alias-filter.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/active-anti-alias-filter/active-anti-alias-filter.cir) | matched | 8.67e-13 (v(source)) | 0.0000136 (v(pole1)) | 0.0000136 (v(pole1)) | 1e-8 |  |
-| [spicesharpparser/circuits/cookbook/pure-spice/astable-led-flasher/astable-led-flasher.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/astable-led-flasher/astable-led-flasher.cir) | mismatch | 1.27 (v(base2)) | 1.27 (v(base2)) | 1.27 (v(base1)) | 0.00001 |  |
-| [spicesharpparser/circuits/cookbook/pure-spice/bjt-audio-preamplifier/bjt-audio-preamplifier.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/bjt-audio-preamplifier/bjt-audio-preamplifier.cir) | matched | 0.000574 (v(output)) | 0.000588 (v(output)) | 0.0000197 (v(source)) | 2e-7 |  |
-| [spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/bjt-relay-driver/bjt-relay-driver.cir) | mismatch | 0.0224 (v(collector)) | 0.467 (v(base)) | 0.385 (v(collector)) | 1e-7 |  |
-| [spicesharpparser/circuits/cookbook/pure-spice/diode-envelope-detector/diode-envelope-detector.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/diode-envelope-detector/diode-envelope-detector.cir) | matched | 0.000146 (v(diode_input)) | 0.5 (v(input)) | 0.000555 (v(envelope)) | 1e-7 |  |
-| [spicesharpparser/circuits/cookbook/pure-spice/loaded-voltage-divider/loaded-voltage-divider.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/loaded-voltage-divider/loaded-voltage-divider.cir) | matched | 0.0000168 (v(buffered)) | 0.000214 (v(buffered)) | 0.000205 (v(buffered)) | 1e-7 |  |
-| [spicesharpparser/circuits/cookbook/pure-spice/pwm-dac/pwm-dac.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/pwm-dac/pwm-dac.cir) | matched | 0.00033 (v(pole1)) | 0.0000034 (v(pole1)) | 0.000332 (v(pole1)) | 5e-8 |  |
-| [spicesharpparser/circuits/cookbook/pure-spice/rc-sensor-input-filter/rc-sensor-input-filter.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/rc-sensor-input-filter/rc-sensor-input-filter.cir) | matched | 0.00000306 (v(filtered)) | 0.00027 (v(filtered)) | 0.00027 (v(filtered)) | 1e-7 |  |
-| [spicesharpparser/circuits/cookbook/pure-spice/rectifier-power-supply/rectifier-power-supply.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/rectifier-power-supply/rectifier-power-supply.cir) | matched | 0.00236 (v(output)) | 0.000132 (v(output)) | 0.00236 (v(output)) | 0.000002 |  |
-| [spicesharpparser/circuits/cookbook/pure-spice/transmission-line-termination/transmission-line-termination.cir](fixtures/spicesharpparser/circuits/cookbook/pure-spice/transmission-line-termination/transmission-line-termination.cir) | mismatch | 0.0625 (v(open_out)) | 0.0271 (v(open_out)) | 0.0563 (v(open_out)) | 2.5e-11 |  |
-| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example08.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example08.cir) | matched | 1.5e-13 (v(out)) | 1.27e-10 (v(out)) | 1.27e-10 (v(out)) | 1e-9 |  |
-| [spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example09.cir](fixtures/spicesharpparser/src/SpiceSharpParser.IntegrationTests/Examples/Circuits/Example09.cir) | matched | 0 (v(1)) | 0 (v(1)) | 0 (v(1)) | 0.003 |  |
-| [xictools/wrspice/examples/mos6inv.cir](fixtures/xictools/wrspice/examples/mos6inv.cir) | matched | 0.00798 (v(xndinv4.14)) | 0.083 (i(vin)) | 0.0831 (i(vin)) | 5e-11 |  |
-| [xictools/wrspice/examples/mosamp2.cir](fixtures/xictools/wrspice/examples/mosamp2.cir) | matched | 0.00627 (v(6)) | 0.028 (v(6)) | 0.0273 (v(6)) | 1e-8 |  |
-| [xictools/wrspice/examples/mosmem.cir](fixtures/xictools/wrspice/examples/mosmem.cir) | matched | 0.000636 (i(vdd)) | 0.00265 (v(4)) | 0.00262 (v(4)) | 2e-9 |  |
-| [xictools/wrspice/examples/schmitt.cir](fixtures/xictools/wrspice/examples/schmitt.cir) | mismatch | 0.723 (i(vin)) | 0.362 (i(vin)) | 0.92 (i(vin)) | 1e-9 |  |
