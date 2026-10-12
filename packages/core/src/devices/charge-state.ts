@@ -163,7 +163,7 @@ export class TransientChargeState {
     if (integration === undefined || !this.hasAccepted) return Infinity;
     this.select(integration);
     // Order 1 needs q(n+1), q(n), q(n-1); order 2 one point more (CKTstates[0..order+1]).
-    if (this.historyLength < this.order() + 1) return Infinity;
+    if (this.historyLength < this.truncationOrder(truncation) + 1) return Infinity;
     this.truncation = truncation;
     this.truncationIndices = indices;
     this.truncationBound = Infinity;
@@ -210,13 +210,13 @@ export class TransientChargeState {
     const integration = this.pending;
     if (integration === undefined || !this.hasAccepted) return Infinity;
     this.select(integration);
-    if (this.historyLength < this.order() + 1) return Infinity;
+    if (this.historyLength < this.truncationOrder(truncation) + 1) return Infinity;
     // chargeTruncation() for every charge, with the rule and the tolerances
     // read once: the same expressions as current() and
     // chargeTruncationTimestep(), in the same order.
     const { deltas, reltol, abstol, chgtol, trtol } = truncation;
     const method = this.method;
-    const order = this.order();
+    const order = this.truncationOrder(truncation);
     const factor = this.factor;
     const a2 = this.a2;
     const a3 = this.a3;
@@ -260,6 +260,11 @@ export class TransientChargeState {
     return bound;
   }
 
+  /** Order CKTterr evaluates at: `truncation.order`, else that of the active rule. */
+  private truncationOrder(truncation: ChargeTruncation): 1 | 2 {
+    return truncation.order ?? this.order();
+  }
+
   /** Integration order of the active rule. */
   private order(): 1 | 2 {
     return this.method === 'euler' ? 1 : 2;
@@ -268,7 +273,7 @@ export class TransientChargeState {
   /** ngspice CKTterr for one charge at trial value `charge`. */
   private chargeTruncation(index: number, charge: number, truncation: ChargeTruncation): number {
     return chargeTruncationTimestep(
-      this.method, this.order(),
+      this.method, this.truncationOrder(truncation),
       charge, this.acceptedCharge[index], this.previousCharge[index], this.olderCharge[index],
       this.current(index, charge), this.acceptedCurrent[index], truncation,
     );
@@ -298,7 +303,9 @@ export class TransientChargeState {
  * local truncation error allows. `charge` is q(n+1) at the converged trial
  * point, then the accepted q(n), q(n-1) and q(n-2); `current` and
  * `acceptedCurrent` are its integrated capacitor currents at t(n+1) and t(n)
- * (ngspice CKTstate0/1[ccap]). `order` is the integration order of the step.
+ * (ngspice CKTstate0/1[ccap]). `order` is the order CKTterr evaluates at
+ * (ngspice CKTorder): the step's own, or 2 for the order-raise trial after
+ * an order-1 step (dctran.c).
  */
 export function chargeTruncationTimestep(
   method: ChargeIntegration['method'],

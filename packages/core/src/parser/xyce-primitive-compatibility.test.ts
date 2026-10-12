@@ -107,14 +107,17 @@ describe('Xyce primitive parser compatibility', () => {
     // (CAPtrunc, INDtrunc, DIOtrunc) instead of a node-voltage LTE, which had
     // taken 1814 and 326 points on the first two decks. ngspice-47 rejects
     // their TSTEP=0 cards (and rc_osc's `method=7`); with `.tran 4e-6 2e-4`
-    // and `.TRAN 10u 0.5ms` it takes 59 and 129 points, spice-ts 58 and 128.
-    ['capacitor-rc-oscillator', 'CAPACITOR/rc_osc.cir', 58],
-    ['diode-transient', 'DIODE/diode.cir', 128],
+    // and `.TRAN 10u 0.5ms` it takes 59 and 129 points. spice-ts took 58 and
+    // 128 until it repeated ngspice's first step once before growing (#742)
+    // and now takes ngspice's 59 and 129.
+    ['capacitor-rc-oscillator', 'CAPACITOR/rc_osc.cir', 59],
+    ['diode-transient', 'DIODE/diode.cir', 129],
     // Zero PULSE TR/TF use TSTEP (ngspice semantics, issue #375), adding the
     // 10 ms ramp corner at t=0.01 and its post-breakpoint steps. ngspice-47
     // takes 1019 points on the same deck; spice-ts took 1031 with the
-    // node-voltage LTE and takes 1014 with INDtrunc/CAPtrunc (#621).
-    ['rlc-transient', 'RLC/rlc.cir', 1014],
+    // node-voltage LTE, 1014 with INDtrunc/CAPtrunc (#621) and takes
+    // ngspice's 1019 with dctran's first-step and order control (#742).
+    ['rlc-transient', 'RLC/rlc.cir', 1019],
   ] as const) {
     it(`simulates unchanged ${id} with braced V/I output expressions`, async () => {
       const result = await simulate(fixture(path));
