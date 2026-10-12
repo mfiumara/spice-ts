@@ -1,0 +1,506 @@
+{
+  "total": 100,
+  "identical": 100,
+  "fixtures": {
+    "ngspice/vbic-fo": {
+      "before": "17a26f5d3252e72521cf79d521ba5ee2123ec594d126fcd4a4dc850647faacc9",
+      "after": "17a26f5d3252e72521cf79d521ba5ee2123ec594d126fcd4a4dc850647faacc9",
+      "identical": true
+    },
+    "ngspice/vbic-temperature": {
+      "before": "6e96221b2fa51c12f9afdffe057a87708e7c3994d6eb6c62dd42e0e8ba788c5b",
+      "after": "6e96221b2fa51c12f9afdffe057a87708e7c3994d6eb6c62dd42e0e8ba788c5b",
+      "identical": true
+    },
+    "ngspice/mos6-inverter-transient": {
+      "before": "7f7ba1322eff19a2fa3a47d95c4cfe38acece490b7fa1ec8834271c46351994f",
+      "after": "7f7ba1322eff19a2fa3a47d95c4cfe38acece490b7fa1ec8834271c46351994f",
+      "identical": true
+    },
+    "ngspice/jfet-vds-vgs": {
+      "before": "311ee0ab301c78f1e16c56c9d59c97172f2438ac59cbcccb8a61cfe3caaf9dec",
+      "after": "311ee0ab301c78f1e16c56c9d59c97172f2438ac59cbcccb8a61cfe3caaf9dec",
+      "identical": true
+    },
+    "ngspice/rc-lowpass-ac": {
+      "before": "bfbb2c2bcbd94e103f4e54f032a12d9b496722f92d4b075ed9a4d59c79347e0a",
+      "after": "bfbb2c2bcbd94e103f4e54f032a12d9b496722f92d4b075ed9a4d59c79347e0a",
+      "identical": true
+    },
+    "ngspice/ac-zero-frequency": {
+      "before": "72d3098ee69bc20b8fd8fb2edb103e45c51e307895afe799effbc10073fa95d9",
+      "after": "72d3098ee69bc20b8fd8fb2edb103e45c51e307895afe799effbc10073fa95d9",
+      "identical": true
+    },
+    "ngspice/vbic-common-emitter-ac": {
+      "before": "f43d19afdc1881318ce49dbc33ee3fa58ef7aea1699699e6e9783b6adb14d616",
+      "after": "f43d19afdc1881318ce49dbc33ee3fa58ef7aea1699699e6e9783b6adb14d616",
+      "identical": true
+    },
+    "ngspice/probe-ac": {
+      "before": "5577dcb9444cd0124506d2c49e8bec5c1cd43f03ee75d10d8f282c6a50c71c34",
+      "after": "5577dcb9444cd0124506d2c49e8bec5c1cd43f03ee75d10d8f282c6a50c71c34",
+      "identical": true
+    },
+    "ngspice/rc-transient": {
+      "before": "7abb345c2c7a24fa163b1fa6b0d8dee78b326443b2f46b20243c5ce9efc197b8",
+      "after": "7abb345c2c7a24fa163b1fa6b0d8dee78b326443b2f46b20243c5ce9efc197b8",
+      "identical": true
+    },
+    "ngspice/mos-amplifier-transient": {
+      "before": "ce44d6096af3fcc2674b96d91d986f07a22e9263290ead3ac5d4e620c15bbca5",
+      "after": "ce44d6096af3fcc2674b96d91d986f07a22e9263290ead3ac5d4e620c15bbca5",
+      "identical": true
+    },
+    "ngspice/mos6-simple-inverter-transient": {
+      "before": "c68166c36d8de1e943a5916d3f569b9c3f4eca55d7bc5477a75e9147063f4d3b",
+      "after": "c68166c36d8de1e943a5916d3f569b9c3f4eca55d7bc5477a75e9147063f4d3b",
+      "identical": true
+    },
+    "ngspice/ltra-line-transient": {
+      "before": "85531ddfa772aed6da87cc49a3042f5a7dbee9db336cb037ccb8829c9ef30f7c",
+      "after": "85531ddfa772aed6da87cc49a3042f5a7dbee9db336cb037ccb8829c9ef30f7c",
+      "identical": true
+    },
+    "ngspice/hfet-inverter": {
+      "before": "11b8002a17ad6616460c15dcfcf158da67f5a4dafbf444479c8c213b1c7f013e",
+      "after": "11b8002a17ad6616460c15dcfcf158da67f5a4dafbf444479c8c213b1c7f013e",
+      "identical": true
+    },
+    "ngspice/mesa-oscillator": {
+      "before": "1ea1ac8b4135cb12207ddc807b11af16d36fd07247dd5d1c0835d0a515ee3dc2",
+      "after": "1ea1ac8b4135cb12207ddc807b11af16d36fd07247dd5d1c0835d0a515ee3dc2",
+      "identical": true
+    },
+    "ngspice/jimi-fuzz": {
+      "before": "931310fbe814c7c1772580764e9f2b27cdee4dcd46f9d05f8eeb34c33526b7e5",
+      "after": "931310fbe814c7c1772580764e9f2b27cdee4dcd46f9d05f8eeb34c33526b7e5",
+      "identical": true
+    },
+    "ngspice/schmitt-trigger": {
+      "before": "a37e560438a8b20ef31656367acdd822cfaf68eab8781cb7277912b9eae07365",
+      "after": "a37e560438a8b20ef31656367acdd822cfaf68eab8781cb7277912b9eae07365",
+      "identical": true
+    },
+    "ngspice/inductive-positive-definite-2x2": {
+      "before": "b8d5668d23447990d948c300e7b0b3aac22e030223eb0200bd00fa5bd71a1689",
+      "after": "b8d5668d23447990d948c300e7b0b3aac22e030223eb0200bd00fa5bd71a1689",
+      "identical": true
+    },
+    "ngspice/inductive-positive-definite-3x3": {
+      "before": "596b0accb02938d9585bddaa3451275726327356a0d2b9df99afa599a215ec77",
+      "after": "596b0accb02938d9585bddaa3451275726327356a0d2b9df99afa599a215ec77",
+      "identical": true
+    },
+    "ngspice/inductive-positive-definite-4x4": {
+      "before": "00d52954fd6235c0b343238e01b3a52cc5f5d656fd9c460616e2298c9577d560",
+      "after": "00d52954fd6235c0b343238e01b3a52cc5f5d656fd9c460616e2298c9577d560",
+      "identical": true
+    },
+    "ngspice/inductive-positive-definite-ac": {
+      "before": "337ca88309eaa66be013eb96fe98b3cbaf760617b0941a02403efa7c1d7859aa",
+      "after": "337ca88309eaa66be013eb96fe98b3cbaf760617b0941a02403efa7c1d7859aa",
+      "identical": true
+    },
+    "classic/bjt-noise": {
+      "before": "6f9e9e4f01940f595c7b5b500cfc1509499eec531967a88ef21c567a96c622dc",
+      "after": "6f9e9e4f01940f595c7b5b500cfc1509499eec531967a88ef21c567a96c622dc",
+      "identical": true
+    },
+    "classic/bsim1-device-sweep": {
+      "before": "866f163bd87c5880e41e2eab8929c41fb8258d7e38dd4ad43ec895787ede9aed",
+      "after": "866f163bd87c5880e41e2eab8929c41fb8258d7e38dd4ad43ec895787ede9aed",
+      "identical": true
+    },
+    "classic/bsim2-device-sweep": {
+      "before": "633c569084cc8012fa65134a079e42390534b5e4c67479eeef7e3efff9b50a51",
+      "after": "633c569084cc8012fa65134a079e42390534b5e4c67479eeef7e3efff9b50a51",
+      "identical": true
+    },
+    "classic/bjt-differential-pair": {
+      "before": "d7c41c0722d9c0193f4243bcf238f98d49ee0eb1ab60052f100d1b99ede26358",
+      "after": "d7c41c0722d9c0193f4243bcf238f98d49ee0eb1ab60052f100d1b99ede26358",
+      "identical": true
+    },
+    "classic/diode-distortion": {
+      "before": "052a7d42a00dbde1c666e05fce31118926e8005ae22f2fa2c7de452334c6bbf2",
+      "after": "052a7d42a00dbde1c666e05fce31118926e8005ae22f2fa2c7de452334c6bbf2",
+      "identical": true
+    },
+    "classic/lossy-line-24-inch": {
+      "before": "eed37ee3007dfb393509632f2a222ab33150c1963684a3af94a38f74e39a3bff",
+      "after": "eed37ee3007dfb393509632f2a222ab33150c1963684a3af94a38f74e39a3bff",
+      "identical": true
+    },
+    "classic/lossy-line-aluminium": {
+      "before": "e9481d34e1c93294a7208100b626cb8b43373fb2fafe3b7ba21fbe99143417c2",
+      "after": "e9481d34e1c93294a7208100b626cb8b43373fb2fafe3b7ba21fbe99143417c2",
+      "identical": true
+    },
+    "classic/coupled-lossy-lines": {
+      "before": "3291d94c34c954252a8d915d9f74b9aa070bfc1563221bfc9c08ffd810196c40",
+      "after": "3291d94c34c954252a8d915d9f74b9aa070bfc1563221bfc9c08ffd810196c40",
+      "identical": true
+    },
+    "classic/bjt-mixer-distortion": {
+      "before": "68e1e12828ed2df15b2b332ee8c4c5703619c829c03d26a366fadb7599e794ea",
+      "after": "68e1e12828ed2df15b2b332ee8c4c5703619c829c03d26a366fadb7599e794ea",
+      "identical": true
+    },
+    "classic/mos6-inverter-chain": {
+      "before": "7f7ba1322eff19a2fa3a47d95c4cfe38acece490b7fa1ec8834271c46351994f",
+      "after": "7f7ba1322eff19a2fa3a47d95c4cfe38acece490b7fa1ec8834271c46351994f",
+      "identical": true
+    },
+    "classic/mos-amplifier": {
+      "before": "ce44d6096af3fcc2674b96d91d986f07a22e9263290ead3ac5d4e620c15bbca5",
+      "after": "ce44d6096af3fcc2674b96d91d986f07a22e9263290ead3ac5d4e620c15bbca5",
+      "identical": true
+    },
+    "classic/mos-memory-cell": {
+      "before": "50107caa1dc98107a524e434220a84515cf0f5e64b9270fd8e5edef4841e8a13",
+      "after": "50107caa1dc98107a524e434220a84515cf0f5e64b9270fd8e5edef4841e8a13",
+      "identical": true
+    },
+    "classic/pole-zero-four-stage": {
+      "before": "495ceb8f16c9b73a99d717b3b934b7488a7c0f44432720ee3fd72d54ebcd05b2",
+      "after": "495ceb8f16c9b73a99d717b3b934b7488a7c0f44432720ee3fd72d54ebcd05b2",
+      "identical": true
+    },
+    "classic/pole-zero-three-stage": {
+      "before": "c651fbd089b3e2347147dfeefd5cb5c56c7b4bbb1183ad8b5d014f9f76779fd4",
+      "after": "c651fbd089b3e2347147dfeefd5cb5c56c7b4bbb1183ad8b5d014f9f76779fd4",
+      "identical": true
+    },
+    "classic/rc-transient": {
+      "before": "7abb345c2c7a24fa163b1fa6b0d8dee78b326443b2f46b20243c5ce9efc197b8",
+      "after": "7abb345c2c7a24fa163b1fa6b0d8dee78b326443b2f46b20243c5ce9efc197b8",
+      "identical": true
+    },
+    "classic/rca3040-wideband-amplifier": {
+      "before": "801be92edfea24f9d14e5f8a7acce657e3dcc83f10a9a2d2c3d82577643b9855",
+      "after": "801be92edfea24f9d14e5f8a7acce657e3dcc83f10a9a2d2c3d82577643b9855",
+      "identical": true
+    },
+    "classic/resistor-noise": {
+      "before": "778753e92d1c59695f59ed77e4a93b20f3860a2b11a7d8612ad64fc7093341aa",
+      "after": "778753e92d1c59695f59ed77e4a93b20f3860a2b11a7d8612ad64fc7093341aa",
+      "identical": true
+    },
+    "classic/rtl-inverter-chain": {
+      "before": "a1a4a8688738381adf151b0c9e9f0675de0bfe8170b950c0ace2a341ba014ef7",
+      "after": "a1a4a8688738381adf151b0c9e9f0675de0bfe8170b950c0ace2a341ba014ef7",
+      "identical": true
+    },
+    "classic/ecl-schmitt-trigger": {
+      "before": "a37e560438a8b20ef31656367acdd822cfaf68eab8781cb7277912b9eae07365",
+      "after": "a37e560438a8b20ef31656367acdd822cfaf68eab8781cb7277912b9eae07365",
+      "identical": true
+    },
+    "classic/high-pass-pole-zero": {
+      "before": "6e26a86584f2a0aba4e90826be5fa2d8708bbc29560f01196cff5fb0959d88b4",
+      "after": "6e26a86584f2a0aba4e90826be5fa2d8708bbc29560f01196cff5fb0959d88b4",
+      "identical": true
+    },
+    "xyce/capacitor-rc-transient": {
+      "before": "49f9d67fe5750bfad9d2c97cbf03328804573a25a2fd4934b661a35c9a69e5bb",
+      "after": "49f9d67fe5750bfad9d2c97cbf03328804573a25a2fd4934b661a35c9a69e5bb",
+      "identical": true
+    },
+    "xyce/capacitor-rc-transient-newlte": {
+      "before": "49f9d67fe5750bfad9d2c97cbf03328804573a25a2fd4934b661a35c9a69e5bb",
+      "after": "49f9d67fe5750bfad9d2c97cbf03328804573a25a2fd4934b661a35c9a69e5bb",
+      "identical": true
+    },
+    "xyce/capacitor-rc-oscillator": {
+      "before": "5be012034cb34a460827d28f0eeb5229ebdbcd0a7e983628bf741eb40be2d48a",
+      "after": "5be012034cb34a460827d28f0eeb5229ebdbcd0a7e983628bf741eb40be2d48a",
+      "identical": true
+    },
+    "xyce/diode-level2-temperature-breakdown": {
+      "before": "fb14650c56054741f5f89399fa7c143a3a134b4a385f3f415a9c75172b1fe9bf",
+      "after": "fb14650c56054741f5f89399fa7c143a3a134b4a385f3f415a9c75172b1fe9bf",
+      "identical": true
+    },
+    "xyce/diode-zener-5229": {
+      "before": "ea99bc7a06214b90f1e5f0791bcc8aa2bf80bbb4ef492b46cc456c77a560c408",
+      "after": "ea99bc7a06214b90f1e5f0791bcc8aa2bf80bbb4ef492b46cc456c77a560c408",
+      "identical": true
+    },
+    "xyce/diode-transient": {
+      "before": "cb94453cd34450d1381b38beb33ccb367ed80b0c11623d72599e7c6e3f3a457c",
+      "after": "cb94453cd34450d1381b38beb33ccb367ed80b0c11623d72599e7c6e3f3a457c",
+      "identical": true
+    },
+    "xyce/diode-sidewall-dc": {
+      "before": "b92fa3c18716e6829e5f93967068056038215cc8840621818eed255484cc98e9",
+      "after": "b92fa3c18716e6829e5f93967068056038215cc8840621818eed255484cc98e9",
+      "identical": true
+    },
+    "xyce/inductor-transient": {
+      "before": "d460c62a78103ee12168b78601e4710bd543e27318da5a1ee6cd0256eb28cf6e",
+      "after": "d460c62a78103ee12168b78601e4710bd543e27318da5a1ee6cd0256eb28cf6e",
+      "identical": true
+    },
+    "xyce/njfet-2109-dc": {
+      "before": "d0870f54fd5f232b7daea33ef7fc348a6455a8d31c1fff50dfd0079e5b6146a6",
+      "after": "d0870f54fd5f232b7daea33ef7fc348a6455a8d31c1fff50dfd0079e5b6146a6",
+      "identical": true
+    },
+    "xyce/njfet-stepped-dc": {
+      "before": "7a4c757d9ae4bc2537756b173a15834001b8a52a4305e4ef2502364589ec95ac",
+      "after": "7a4c757d9ae4bc2537756b173a15834001b8a52a4305e4ef2502364589ec95ac",
+      "identical": true
+    },
+    "xyce/nmos-level1-dc": {
+      "before": "0d1f646668cc1517e83a03db9a5e69370646e0a6ac9c5e1aa5fe1dfc22bbab94",
+      "after": "0d1f646668cc1517e83a03db9a5e69370646e0a6ac9c5e1aa5fe1dfc22bbab94",
+      "identical": true
+    },
+    "xyce/npn-dc": {
+      "before": "1f64a91516efc97489d11ce372856c2c24dcd8506f33edd6615c14a99cff662f",
+      "after": "1f64a91516efc97489d11ce372856c2c24dcd8506f33edd6615c14a99cff662f",
+      "identical": true
+    },
+    "xyce/pmos-level1-dc": {
+      "before": "31f0cab597b6e25be80630547526ea75334cdae000e3dbc83b10b4df04c331f6",
+      "after": "31f0cab597b6e25be80630547526ea75334cdae000e3dbc83b10b4df04c331f6",
+      "identical": true
+    },
+    "xyce/pnp-dc": {
+      "before": "8e2a4a70f2b7dfc5c0ad4dd6f1ca6a75bf8e690db520b0e4b40e304a65c22655",
+      "after": "8e2a4a70f2b7dfc5c0ad4dd6f1ca6a75bf8e690db520b0e4b40e304a65c22655",
+      "identical": true
+    },
+    "xyce/resistor-dc": {
+      "before": "3b473b197bb78f756401c9a17fa5db75428efd29f9cffb43d3b3cfd802e2991c",
+      "after": "3b473b197bb78f756401c9a17fa5db75428efd29f9cffb43d3b3cfd802e2991c",
+      "identical": true
+    },
+    "xyce/resistor-level3-zero": {
+      "before": "e1f77453b3496c8520868728f0f9f9b0d47e7109a439c9f4eb0fcdd5932be481",
+      "after": "e1f77453b3496c8520868728f0f9f9b0d47e7109a439c9f4eb0fcdd5932be481",
+      "identical": true
+    },
+    "xyce/resistor-negative": {
+      "before": "8f68910d428b6d839ff16ad1728bac6ee052af67cd8a75dd40785c07447f9d70",
+      "after": "8f68910d428b6d839ff16ad1728bac6ee052af67cd8a75dd40785c07447f9d70",
+      "identical": true
+    },
+    "xyce/rlc-transient": {
+      "before": "1e4a17d481bfed39706757da48b900f5a25a6d44cb481e59508fc9abac88ee08",
+      "after": "1e4a17d481bfed39706757da48b900f5a25a6d44cb481e59508fc9abac88ee08",
+      "identical": true
+    },
+    "xyce/vccs-dc": {
+      "before": "706bda2cbbc5f148b6cff0fd6847d2a5e83b786f359fe7b1dfdba2caec3a7099",
+      "after": "706bda2cbbc5f148b6cff0fd6847d2a5e83b786f359fe7b1dfdba2caec3a7099",
+      "identical": true
+    },
+    "xyce/vcvs-dc": {
+      "before": "9a0618cb5b1bfe87352e8c81b28a586975a741cb8055f7aed00c48c5e99d649d",
+      "after": "9a0618cb5b1bfe87352e8c81b28a586975a741cb8055f7aed00c48c5e99d649d",
+      "identical": true
+    },
+    "corpus-d/ohms-law-op": {
+      "before": "6f594fc4b8561299d0a29b7e7a11f1aeae9585154c3c09167ad75dade8d3ad6d",
+      "after": "6f594fc4b8561299d0a29b7e7a11f1aeae9585154c3c09167ad75dade8d3ad6d",
+      "identical": true
+    },
+    "corpus-d/diode-operating-point": {
+      "before": "62c68079f6937873abaf9fb5be2e01ed23455e74a1f0ad7ed83d4e6940f65159",
+      "after": "62c68079f6937873abaf9fb5be2e01ed23455e74a1f0ad7ed83d4e6940f65159",
+      "identical": true
+    },
+    "corpus-d/ekv-bias-sweep": {
+      "before": "612736059c987b8c6bff0fe7f74f0276aa46b5dde8c9329ee1798be83181415d",
+      "after": "612736059c987b8c6bff0fe7f74f0276aa46b5dde8c9329ee1798be83181415d",
+      "identical": true
+    },
+    "corpus-d/downscaling-current-mirror": {
+      "before": "a2fd37b79b2d73b03a184e322ac46a7dfdb0279637eea73e6f12dc2155da2e0b",
+      "after": "a2fd37b79b2d73b03a184e322ac46a7dfdb0279637eea73e6f12dc2155da2e0b",
+      "identical": true
+    },
+    "corpus-d/transresistance-ac": {
+      "before": "2a04e22273c41bf15a3620396aa6116557761f825313056955d270b97840df04",
+      "after": "2a04e22273c41bf15a3620396aa6116557761f825313056955d270b97840df04",
+      "identical": true
+    },
+    "corpus-d/passive-pole-zero-ac": {
+      "before": "ff91f2fc7224f96f40f68a64ed29db9ab63bdad788ebeee153858812519b56de",
+      "after": "ff91f2fc7224f96f40f68a64ed29db9ab63bdad788ebeee153858812519b56de",
+      "identical": true
+    },
+    "corpus-d/resistor-voltage-ac": {
+      "before": "eba6497dba310161618e8c86256e4abef694f5e3681e091a4b4e32a8de274f43",
+      "after": "eba6497dba310161618e8c86256e4abef694f5e3681e091a4b4e32a8de274f43",
+      "identical": true
+    },
+    "corpus-d/series-resonance-ac": {
+      "before": "545a2f0adf030dab1366848707a9cd06a7241ac6f2232347cc46691cc5fdcaa4",
+      "after": "545a2f0adf030dab1366848707a9cd06a7241ac6f2232347cc46691cc5fdcaa4",
+      "identical": true
+    },
+    "corpus-d/am-source-transient": {
+      "before": "5b6dda43adee448e295b1bdc24bc2156a3169e424ec6cbeb06fa2ffe117cb2a5",
+      "after": "5b6dda43adee448e295b1bdc24bc2156a3169e424ec6cbeb06fa2ffe117cb2a5",
+      "identical": true
+    },
+    "corpus-d/fft-source-transient": {
+      "before": "3e4b991c712a2e9f0cce3936db2454de9abf5ccbada937c3f02131013e108cc3",
+      "after": "3e4b991c712a2e9f0cce3936db2454de9abf5ccbada937c3f02131013e108cc3",
+      "identical": true
+    },
+    "corpus-d/coupled-transformer-transient": {
+      "before": "15b02972aa72bb424ddc89fed3a5a6ce3691d531ebeb750a777d9ce68d29d117",
+      "after": "15b02972aa72bb424ddc89fed3a5a6ce3691d531ebeb750a777d9ce68d29d117",
+      "identical": true
+    },
+    "corpus-d/rlc-trapezoidal-transient": {
+      "before": "af8b95382fb0fc1b848d1d80b03a0cf329e072dd8606f205aab70edc70e1b6c3",
+      "after": "af8b95382fb0fc1b848d1d80b03a0cf329e072dd8606f205aab70edc70e1b6c3",
+      "identical": true
+    },
+    "corpus-d/diode-voltage-doubler": {
+      "before": "177b789b45afd14a671052e8a0ba19337568a37cff869664fe3b32f9c39a9d59",
+      "after": "177b789b45afd14a671052e8a0ba19337568a37cff869664fe3b32f9c39a9d59",
+      "identical": true
+    },
+    "corpus-d/ekv-ring-oscillator": {
+      "before": "d01165058eee635d7cbbdb721592423b2962df0e4ffc290f5bfa1a481986dcdf",
+      "after": "d01165058eee635d7cbbdb721592423b2962df0e4ffc290f5bfa1a481986dcdf",
+      "identical": true
+    },
+    "corpus-d/cockcroft-walton-x8": {
+      "before": "fe0762276a90518d84ccc72bd2303325be2f5d42a8b7e44b3d8a7af4a085386b",
+      "after": "fe0762276a90518d84ccc72bd2303325be2f5d42a8b7e44b3d8a7af4a085386b",
+      "identical": true
+    },
+    "corpus-d/pwm-switch": {
+      "before": "64ee9259ffde428a11db072e60203af6cbd9a4dbfe25aa1efd61548a8776187b",
+      "after": "64ee9259ffde428a11db072e60203af6cbd9a4dbfe25aa1efd61548a8776187b",
+      "identical": true
+    },
+    "corpus-d/rlc-gear3": {
+      "before": "af8b95382fb0fc1b848d1d80b03a0cf329e072dd8606f205aab70edc70e1b6c3",
+      "after": "af8b95382fb0fc1b848d1d80b03a0cf329e072dd8606f205aab70edc70e1b6c3",
+      "identical": true
+    },
+    "corpus-d/rlc-gear5": {
+      "before": "af8b95382fb0fc1b848d1d80b03a0cf329e072dd8606f205aab70edc70e1b6c3",
+      "after": "af8b95382fb0fc1b848d1d80b03a0cf329e072dd8606f205aab70edc70e1b6c3",
+      "identical": true
+    },
+    "corpus-d/rlc-gear6": {
+      "before": "af8b95382fb0fc1b848d1d80b03a0cf329e072dd8606f205aab70edc70e1b6c3",
+      "after": "af8b95382fb0fc1b848d1d80b03a0cf329e072dd8606f205aab70edc70e1b6c3",
+      "identical": true
+    },
+    "corpus-d/colpitts-oscillator": {
+      "before": "5b9380630f8e5c472bf872c13c2d4b7eb7957f34bd0b7669bf1ebd9af88c12d0",
+      "after": "5b9380630f8e5c472bf872c13c2d4b7eb7957f34bd0b7669bf1ebd9af88c12d0",
+      "identical": true
+    },
+    "corpus-e/cccs-mixed-analysis": {
+      "before": "b9f1656056a62c0ce6cb4b8550bbb5d4ee2d8fb30572ee604a5576f6121a79a0",
+      "after": "b9f1656056a62c0ce6cb4b8550bbb5d4ee2d8fb30572ee604a5576f6121a79a0",
+      "identical": true
+    },
+    "corpus-e/vcvs-operating-point": {
+      "before": "3d26085def39c6357ce83696b920ec9316fb908b4dffda7b9bfb5f6cc3c1ac6d",
+      "after": "3d26085def39c6357ce83696b920ec9316fb908b4dffda7b9bfb5f6cc3c1ac6d",
+      "identical": true
+    },
+    "corpus-e/diode-bias-sweep": {
+      "before": "18683ef725db7b56b5aec3f5bfb6ae2eeca33d3ed1ae732b0931fb1e8a2ca5cc",
+      "after": "18683ef725db7b56b5aec3f5bfb6ae2eeca33d3ed1ae732b0931fb1e8a2ca5cc",
+      "identical": true
+    },
+    "corpus-e/mos1-inverter-sweep": {
+      "before": "4aac874e3bf40ce3f9acb0bbe1ce24bcb7e842e82eedd17d7296f5ff7af9fe76",
+      "after": "4aac874e3bf40ce3f9acb0bbe1ce24bcb7e842e82eedd17d7296f5ff7af9fe76",
+      "identical": true
+    },
+    "corpus-e/transmission-line-ac": {
+      "before": "1b5f6f99ceb23313bb4e73b4c62a88da5bb46b3878d2000dd9a5e115e99efa92",
+      "after": "1b5f6f99ceb23313bb4e73b4c62a88da5bb46b3878d2000dd9a5e115e99efa92",
+      "identical": true
+    },
+    "corpus-e/mutual-inductance-ac": {
+      "before": "f44ba5801fde0d2750dd28d5afa20667caea716d6e2810c17d2f2632f3f29df0",
+      "after": "f44ba5801fde0d2750dd28d5afa20667caea716d6e2810c17d2f2632f3f29df0",
+      "identical": true
+    },
+    "corpus-e/bjt-diffpair-ac": {
+      "before": "33d432d7e643f5ac643433cfb137af263b3193d42424b98840136052563e3634",
+      "after": "33d432d7e643f5ac643433cfb137af263b3193d42424b98840136052563e3634",
+      "identical": true
+    },
+    "corpus-e/opamp-open-loop-ac": {
+      "before": "fb2b09a66c2d50d9cf25c71939ab7abccec895422336336326fa60eb9d8540cf",
+      "after": "fb2b09a66c2d50d9cf25c71939ab7abccec895422336336326fa60eb9d8540cf",
+      "identical": true
+    },
+    "corpus-e/capacitor-step-transient": {
+      "before": "f2db8da327031b42941660b8c4bba04979eeb6db070aab911a053afb8faa2f76",
+      "after": "f2db8da327031b42941660b8c4bba04979eeb6db070aab911a053afb8faa2f76",
+      "identical": true
+    },
+    "corpus-e/capacitor-initial-condition": {
+      "before": "fa3c6cb017ab349b2517bbac7f04891c1cc4b5cd941edc26036f57b1129780b1",
+      "after": "fa3c6cb017ab349b2517bbac7f04891c1cc4b5cd941edc26036f57b1129780b1",
+      "identical": true
+    },
+    "corpus-e/lc-oscillator-transient": {
+      "before": "8075329da1caf3a715b136d02e760362a561abc0a10f0873cd3601fa1c2f7dca",
+      "after": "8075329da1caf3a715b136d02e760362a561abc0a10f0873cd3601fa1c2f7dca",
+      "identical": true
+    },
+    "corpus-e/bjt-diffpair-transient": {
+      "before": "b1c91fff418a26e4d0d40f7740f98bc5b7afb180429e828cc09bd2f3fda17794",
+      "after": "b1c91fff418a26e4d0d40f7740f98bc5b7afb180429e828cc09bd2f3fda17794",
+      "identical": true
+    },
+    "corpus-e/bjt-schmitt-trigger": {
+      "before": "6a12108730fffaae22d5e40417ada29f9585b9a40b606ab3ac30488294cb3389",
+      "after": "6a12108730fffaae22d5e40417ada29f9585b9a40b606ab3ac30488294cb3389",
+      "identical": true
+    },
+    "corpus-e/diode-temperature-sweep": {
+      "before": "6eb7b4a995e065b4dfbea9a5806b8865dd3905a092b06178d28c4317b3f3cb21",
+      "after": "6eb7b4a995e065b4dfbea9a5806b8865dd3905a092b06178d28c4317b3f3cb21",
+      "identical": true
+    },
+    "corpus-e/mos1-nand-transient": {
+      "before": "3b65bc9b116447d87444e28a6b264cd44db9adbb9d4e0977a0d70188431b6487",
+      "after": "3b65bc9b116447d87444e28a6b264cd44db9adbb9d4e0977a0d70188431b6487",
+      "identical": true
+    },
+    "corpus-e/bjt-rtl-inverter-chain": {
+      "before": "39a011c0d0e519d8c3ea9e478a492f77da52fee64097a199296510f2d0c3dcfb",
+      "after": "39a011c0d0e519d8c3ea9e478a492f77da52fee64097a199296510f2d0c3dcfb",
+      "identical": true
+    },
+    "corpus-e/dual-lc-uic-rejection": {
+      "before": "bf631765ae277c2c495af6d719c836e7ccf1634e5b49ec8752558046088661a8",
+      "after": "bf631765ae277c2c495af6d719c836e7ccf1634e5b49ec8752558046088661a8",
+      "identical": true
+    },
+    "corpus-e/opamp-voltage-follower": {
+      "before": "09d5e721c248e199a6e95d3e1eb784d77a8d91795f111d78a775082f91f31fa2",
+      "after": "09d5e721c248e199a6e95d3e1eb784d77a8d91795f111d78a775082f91f31fa2",
+      "identical": true
+    },
+    "corpus-e/mos7-nand-no-bypass": {
+      "before": "a54c294264c6541c6bb84297e9fc1a01bc04c7fc70e00290541398112d571d51",
+      "after": "a54c294264c6541c6bb84297e9fc1a01bc04c7fc70e00290541398112d571d51",
+      "identical": true
+    },
+    "corpus-e/bjt-diffpair-current-source": {
+      "before": "d5f6d11db7cf532494fe769fdf8f31b0d3ec5086a0588511ed6c94d1eeb5d453",
+      "after": "d5f6d11db7cf532494fe769fdf8f31b0d3ec5086a0588511ed6c94d1eeb5d453",
+      "identical": true
+    }
+  }
+}

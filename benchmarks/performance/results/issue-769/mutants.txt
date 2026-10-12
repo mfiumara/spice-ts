@@ -1,0 +1,15 @@
+killed       reuse never attempted
+killed       zero U entry not rejected
+killed       recorded zero rows not checked
+killed       zero L row not rejected
+killed       preferred pivot: relative threshold dropped
+killed       swapped pivot: may fall below a later L row
+killed       swapped pivot: tie with an earlier L row accepted
+killed       swapped pivot: discovery rank ignored
+killed       swapped pivot: preferred row passing again not rejected
+killed       structure compared by colPtr only
+killed       analyzePattern keeps stale pivots
+killed       dirty workspace not cleared before a full factorization
+killed       C entries scatter to G positions
+killed       zero rows stay in original row space
+14/14 mutants killed
