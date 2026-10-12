@@ -110,6 +110,12 @@ export function parseResistorElement(
       const numeric = tryNumber(token);
       if (numeric !== undefined && value === undefined && params.R === undefined) {
         value = numeric;
+      } else if (numeric !== undefined && value !== undefined && params.R === undefined
+        && (index === 1 || (index === 2 && modelName !== undefined))) {
+        // inp2r.c: an unlabeled number where INPdevParse starts (after the
+        // value, or after value and model) is its "waslead" resistance and
+        // replaces the value, so `R1 a b 3k 2k` is 2 kOhm (#837).
+        value = numeric;
       } else if (numeric === undefined && modelName === undefined && index <= 1) {
         modelName = token;
       } else {
