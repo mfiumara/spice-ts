@@ -351,3 +351,54 @@ describe('diode TBV1 is ngspice-47 TCV: BV(T) = BV - TCV*(T-TNOM) (#429)', () =>
     expect(level2).toBe(nominal);
   });
 });
+
+/**
+ * Breakdown deck with an instance line, run verbatim by both simulators. The
+ * tight options take ngspice's Newton stopping residual (up to ~3e-4 V on
+ * these decks at default RELTOL) out of the comparison.
+ */
+async function breakdownInstanceDeck(model: string, instance: string): Promise<number> {
+  const result = await simulate(`diode breakdown instance parity
+    V1 in 0 -10
+    R1 in out 1k
+    D1 out 0 DJ ${instance}
+    .model DJ D ${model}
+    .options reltol=1e-9 vntol=1e-15 abstol=1e-20
+    .op
+    .end
+  `);
+  return result.dc!.voltage('out');
+}
+
+describe('diode breakdown current scales with instance M like ngspice-47 (#662)', () => {
+  // ngspice-47 diotemp.c:216-219: cbv = M*IBV (LEVEL=1), so M parallel copies
+  // keep the breakdown knee where one diode has it. AREA does not scale IBV.
+  const KNEE_PARITY = 1e-6;
+  it.each([
+    // [instance, ngspice-47 v(out)]
+    ['m=2', -5.082823921069],
+    ['m=3', -5.072391417746],
+    ['area=2 m=3', -5.072391417789],
+    ['area=2', -5.100658134843],
+    ['', -5.100658134800],
+  ])('matches ngspice with instance "%s"', async (instance, expected) => {
+    expectNear(
+      await breakdownInstanceDeck('IS=1e-15 BV=5 IBV=1e-4', instance),
+      expected,
+      KNEE_PARITY,
+    );
+  });
+
+  // diotemp.c:221-228: when cbv < IS*BV/vt the knee is pinned at BV instead of
+  // iterating (the log argument would go negative).
+  it.each([
+    ['', -5.219137309524],
+    ['m=2', -5.201305408023],
+  ])('pins the knee at BV when IBV is below IS*BV/vt (instance "%s")', async (instance, expected) => {
+    expectNear(
+      await breakdownInstanceDeck('IS=1e-6 BV=5 IBV=1e-5', instance),
+      expected,
+      KNEE_PARITY,
+    );
+  });
+});
