@@ -23,14 +23,19 @@ import type { NoiseAnalysis, ResolvedOptions } from '../types.js';
 const BOLTZMANN_CONSTANT = 1.380649e-23;
 const ELEMENTARY_CHARGE = 1.602176634e-19;
 const DEFAULT_TEMPERATURE_KELVIN = 273.15 + 27;
+/** ngspice-47 noisedef.h: the smallest |gain|^2 input-referred noise divides by (#767). */
+const N_MINGAIN = 1e-20;
 /**
  * BJT model parameters whose effect on .noise matches ngspice-47. bjtnoise.c
  * sources are RC/RB/RE thermal, cc/cb shot and KF/AF flicker noise; everything
  * else here only shapes the operating point (cc, cb) or the bjtacld.c
  * small-signal transfer (capacitances, transit times, Early voltages), which
- * the DC solve and the AC stamp already model (#736). RBM/IRB (bias-dependent
- * gx noise), the substrate diode and TNOM stay rejected; XTI/XTB/EG only act
- * away from TNOM, and Circuit rejects .options TEMP with .noise (27 C sources).
+ * the DC solve and the AC stamp already model (#736). The substrate diode has
+ * no bjtnoise.c source and no bjtacld.c conductance, so ISS/NS and the CJS
+ * junction only act through the operating point and the substrate capacitance;
+ * TNOM, XTI, XTB and EG only move the bjttemp.c parameters those solves use,
+ * and Circuit rejects .options TEMP with .noise (27 C sources) (#767).
+ * RBM/IRB (bias-dependent gx noise) stay rejected.
  */
 const BJT_NOISE_MODEL_PARAMETERS = new Set([
   'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'VA', 'IKF', 'IK', 'ISE', 'C2', 'NE',
@@ -38,6 +43,7 @@ const BJT_NOISE_MODEL_PARAMETERS = new Set([
   'CJE', 'VJE', 'PE', 'MJE', 'ME', 'TF', 'XTF', 'VTF', 'ITF',
   'CJC', 'VJC', 'PC', 'MJC', 'MC', 'XCJC', 'TR', 'FC',
   'XTI', 'XTB', 'EG', 'polarity',
+  'ISS', 'NS', 'CJS', 'CSUB', 'CCS', 'VJS', 'PS', 'MJS', 'MS', 'SUBS', 'TNOM', 'TREF',
 ]);
 
 /** Reject devices whose noise sources are not part of the bounded slice. */
@@ -314,7 +320,8 @@ export function solveNoise(
         `.noise input source '${analysis.inputSource}' has zero gain to '${outputName}'`,
       );
     }
-    gainSquaredInverse.push(1 / (gain * gain));
+    // ngspice-47 noisean.c: GainSqInv = 1 / MAX(|gain|^2, N_MINGAIN).
+    gainSquaredInverse.push(1 / Math.max(gain * gain, N_MINGAIN));
 
     let outputPowerDensity = 0;
     for (let index = 0; index < noiseSources.length; index++) {
@@ -347,7 +354,7 @@ export function solveNoise(
 
     const outputDensity = Math.sqrt(outputPowerDensity);
     outputNoiseDensity.push(outputDensity);
-    inputNoiseDensity.push(outputDensity / gain);
+    inputNoiseDensity.push(outputDensity * Math.sqrt(gainSquaredInverse[gainSquaredInverse.length - 1]));
   }
 
   const integratedOutputNoise = hasIntegratedTotals

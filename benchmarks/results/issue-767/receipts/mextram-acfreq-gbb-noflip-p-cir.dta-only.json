@@ -1,0 +1,28 @@
+{
+  "id": "mextram-acfreq-gbb-noflip-p-cir",
+  "sourcePath": "Netlists/MEXTRAM/acFreq_Gbb_noFlip_P.cir",
+  "sha256": "7a63f982cea7ece66c9139af6e18f48ad4f86c56321da2fdfda886eafd19788d",
+  "analyses": [
+    "ac"
+  ],
+  "unmappedAnalyses": [],
+  "sameNameAs": [],
+  "ngspice": {
+    "status": "success",
+    "analyses": [
+      "ac:4"
+    ]
+  },
+  "spiceTs": {
+    "status": "success",
+    "analyses": [
+      "ac:4"
+    ]
+  },
+  "comparedAnalyses": 1,
+  "comparedSignals": 16,
+  "worstNormalizedError": 220,
+  "worstSignal": "ac i(v_s_b)",
+  "outcome": "mismatch",
+  "gapBucket": null
+}

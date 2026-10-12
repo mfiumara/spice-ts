@@ -1,0 +1,18 @@
+mextram card read as Gummel-Poon (issue 767)
+V2 vcc 0 10
+R3 vc vcc 1.5k
+R4 0 ve 270
+R1 vb vcc 39k
+R2 0 vb 6.8k
+Q1 vc vb ve 0 mymodel
+.model mymodel npn level=504 tref=25.00 dta=0.000 exmod=1.000 ver=2.5 vef=44.0
++ is=22.0e-18 ik=0.1 bf=215.0 ibf=2.7e-15 re=5.0 rbc=23.0 cje=73.0e-015 vde=950.0e-003
++ pe=400.0e-003 cjc=78.0e-015 pc=500.0e-003 mc=500.0e-003 xcjc=32.0e-003 af=2.000 kf=20.0e-012
++ iss=48.0e-18 cjs=315.0e-015 ps=340.0e-003 mult=1.5
+.control
+set numdgt=12
+op
+print v(vc) v(vb) v(ve) i(v2)
+.endc
+
+.end

@@ -404,7 +404,7 @@ describe('.noise analysis', () => {
     );
   });
 
-  it.each(['RBM', 'IRB', 'ISS', 'TNOM'])(
+  it.each(['RBM', 'IRB'])(
     'rejects unsupported BJT noise model parameter %s explicitly',
     async parameter => {
       const deck = bjtFixture.replace('NR=1)', `NR=1 ${parameter}=1)`);

@@ -1,6 +1,7 @@
 import type { ModelParams } from '../types.js';
 import { parseNumber } from './tokenizer.js';
 import { parseVdmosModelCard, VDMOS_MODEL_TYPES } from '../devices/vdmos-model.js';
+import { isNgspiceBjtName, selectsNgspiceBjt } from '../devices/bjt-ngspice-parameters.js';
 import { classifyModelFlag, modelFlagParameters, UnsupportedModelFlagError } from './model-flags.js';
 
 function tryNumber(token: string): number | undefined {
@@ -117,6 +118,16 @@ export function parseModelCard(
     if (ngspiceLevel.outOfRange) {
       warn?.(`Model '${name}' (${type}): LEVEL=${writtenLevel} is outside ngspice-47's 0-99 range;`
         + ' level=1 assumed, as ngspice-47 does (inpfindl.c)');
+    }
+  }
+
+  if (selectsNgspiceBjt(type, level)) {
+    const unrecognized = Object.keys(params).filter((key) => !isNgspiceBjtName(key));
+    for (const key of unrecognized) delete params[key];
+    if (unrecognized.length > 0) {
+      warn?.(`Model '${name}' (${type}): `
+        + unrecognized.map((key) => `unrecognized parameter (${key.toLowerCase()}) - ignored`).join(', ')
+        + ', as ngspice-47 does (inpgmod.c)');
     }
   }
 

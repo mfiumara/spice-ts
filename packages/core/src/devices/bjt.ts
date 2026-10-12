@@ -856,6 +856,20 @@ export class BJT implements DeviceModel {
   }
 
   stamp(ctx: StampContext): void {
+    this.stampLoad(ctx, true);
+  }
+
+  /**
+   * AC, noise and pole-zero matrix (ngspice-47 bjtacld.c / bjtpzld.c): the
+   * bjtload.c conductances without the substrate diode. Neither routine stamps
+   * gdsub (not even its CKTgmin), so the substrate terminal only sees the
+   * substrate capacitance there, even with a forward-biased ISS junction (#767).
+   */
+  stampSmallSignal(ctx: StampContext): void {
+    this.stampLoad(ctx, false);
+  }
+
+  private stampLoad(ctx: StampContext, substrateJunction: boolean): void {
     const { polarity } = this.params;
     const [nC, nB, nE] = this.nodes;
 
@@ -955,7 +969,7 @@ export class BJT implements DeviceModel {
       const gx = baseResistanceConductance(this.params, IB, dc.qb);
       stampConductance(ctx, this.nodes[4], nB, gx);
     }
-    this.stampSubstrateJunction(ctx);
+    if (substrateJunction) this.stampSubstrateJunction(ctx);
   }
 
   /**
