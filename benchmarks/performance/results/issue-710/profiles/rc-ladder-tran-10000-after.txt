@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/i710/prof-after/rc-ladder-tran-10000.cpuprofile: 345 samples, 928.7 ms sampled
+
+Top self time
+      68.3 ms   7.4%  buildCompanionSystem packages/core/dist/chunk-AEZHCWLW.js:29926
+      53.8 ms   5.8%  stampStaticDevices packages/core/dist/chunk-AEZHCWLW.js:29418
+      51.5 ms   5.5%  (garbage collector)
+      47.6 ms   5.1%  acceptAll packages/core/dist/chunk-AEZHCWLW.js:2947
+      46.4 ms   5.0%  attemptStep packages/core/dist/chunk-AEZHCWLW.js:30123
+      36.3 ms   3.9%  flush packages/core/dist/chunk-AEZHCWLW.js:31475
+      36.3 ms   3.9%  compile packages/core/dist/chunk-AEZHCWLW.js:22898
+      34.0 ms   3.7%  lockTopology packages/core/dist/chunk-AEZHCWLW.js:28955
+      26.5 ms   2.8%  evaluate packages/core/dist/chunk-AEZHCWLW.js:30574
+      24.0 ms   2.6%  factorize packages/core/dist/chunk-AEZHCWLW.js:28377
+      22.8 ms   2.5%  compileSourceTextModule node:internal/modules/esm/utils:344
+      22.4 ms   2.4%  amdOrdering packages/core/dist/chunk-AEZHCWLW.js:28001
+
+Top inclusive time
+     928.7 ms 100.0%  (root)
+     792.4 ms  85.3%  simulate packages/core/dist/chunk-AEZHCWLW.js:36417
+     645.7 ms  69.5%  solveCompiledAnalyses packages/core/dist/chunk-AEZHCWLW.js:36472
+     542.1 ms  58.4%  solveTransient packages/core/dist/chunk-AEZHCWLW.js:31493
+     451.7 ms  48.6%  advanceSolution packages/core/dist/chunk-AEZHCWLW.js:30778
+     257.2 ms  27.7%  attemptStep packages/core/dist/chunk-AEZHCWLW.js:30123
+     116.7 ms  12.6%  buildCompanionSystem packages/core/dist/chunk-AEZHCWLW.js:29926
+     104.3 ms  11.2%  parseAsync packages/core/dist/chunk-AEZHCWLW.js:26818
+     103.5 ms  11.1%  transientInitialSolution packages/core/dist/chunk-AEZHCWLW.js:36867
+     100.0 ms  10.8%  stampPrevB packages/core/dist/chunk-AEZHCWLW.js:31044
+      98.5 ms  10.6%  solveDCOperatingPoint packages/core/dist/chunk-AEZHCWLW.js:29730
+      96.3 ms  10.4%  stampStaticDevices packages/core/dist/chunk-AEZHCWLW.js:29418

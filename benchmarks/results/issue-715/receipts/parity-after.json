@@ -1,0 +1,223 @@
+{
+  "schema": "spice-ts-issue-715-parity/v1",
+  "label": "after",
+  "bucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)",
+  "tools": {
+    "ngspice": "ngspice-47",
+    "node": "v22.23.1"
+  },
+  "policy": {
+    "input": "byte-identical corpus-g fixture for both engines",
+    "metric": "corpus-f runFixture worst |error| / ngspice signal peak",
+    "matchThreshold": 0.01,
+    "perCircuitTuning": false
+  },
+  "fixtures": [
+    {
+      "id": "actests-bsim3-gain-stage-cir",
+      "sourcePath": "Netlists/ACtests/bsim3/gain-stage.cir",
+      "sha256": "0e5aa7cbfeb8b34c75c98a4a8be6763d299170d7a08aaf611197a36c4a33532e",
+      "analyses": [
+        "ac"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "ac:71"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "ac:71"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.0000339,
+      "worstSignal": "ac v(vdd)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "wallMs": 333
+    },
+    {
+      "id": "comparator-comparator-cir",
+      "sourcePath": "Netlists/COMPARATOR/comparator.cir",
+      "sha256": "12c28f84973fc091f98103767334ac6d787dc2d6cff370982805bfdaffff1efa",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:121"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:120"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 16,
+      "worstNormalizedError": 0.00034,
+      "worstSignal": "tran v(9)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "wallMs": 363
+    },
+    {
+      "id": "model-binning-comparatorbaseline-forglobal-cir",
+      "sourcePath": "Netlists/MODEL_BINNING/comparatorBaseline_forGlobal.cir",
+      "sha256": "110cb1669e43d799654c8ca775e87f3fa59f9843c22e529c913f8da1d33c6931",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:121"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:120"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 16,
+      "worstNormalizedError": 0.00034,
+      "worstSignal": "tran v(9)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "wallMs": 371
+    },
+    {
+      "id": "mos13-ic-invert42-mos3-cir",
+      "sourcePath": "Netlists/MOS13_IC/invert42_mos3.cir",
+      "sha256": "030f8ba6e631357ded80674e653376d338d46b93cc84787d2f193009976367e4",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:5803"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:5863"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 47,
+      "worstNormalizedError": 0.838,
+      "worstSignal": "tran v(vout)",
+      "outcome": "mismatch",
+      "gapBucket": null,
+      "wallMs": 5913
+    },
+    {
+      "id": "nmos3-dc-mos3-dc-cir",
+      "sourcePath": "Netlists/NMOS3_DC/mos3_dc.cir",
+      "sha256": "27642aa865e437ab6d3ec158fecb4e546b1795e25909f9f7dd950e49211dafc7",
+      "analyses": [
+        "dc"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "dc:2404"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "dc:2404"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 1.26e-15,
+      "worstSignal": "dc i(vds)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "wallMs": 370
+    },
+    {
+      "id": "op-comparator-op-cir",
+      "sourcePath": "Netlists/OP/comparator_op.cir",
+      "sha256": "3201bb9089b74bc6546a97c3d4b169233837f0716f6603dc898e469f45db682f",
+      "analyses": [
+        "op",
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "op:1",
+          "tran:121"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "op:1",
+          "tran:120"
+        ]
+      },
+      "comparedAnalyses": 2,
+      "comparedSignals": 32,
+      "worstNormalizedError": 0.00034,
+      "worstSignal": "tran v(9)",
+      "outcome": "matched",
+      "gapBucket": null,
+      "wallMs": 398
+    },
+    {
+      "id": "subckt-subckt-a0-cir",
+      "sourcePath": "Netlists/SUBCKT/subckt_a0.cir",
+      "sha256": "c850223e654c3b3308b1488ed1fd2634d054f57a00b3c8a49c516ece1645de44",
+      "analyses": [
+        "tran"
+      ],
+      "unmappedAnalyses": [],
+      "sameNameAs": [],
+      "ngspice": {
+        "status": "success",
+        "analyses": [
+          "tran:1988"
+        ]
+      },
+      "spiceTs": {
+        "status": "success",
+        "analyses": [
+          "tran:2001"
+        ]
+      },
+      "comparedAnalyses": 1,
+      "comparedSignals": 7,
+      "worstNormalizedError": 0.246,
+      "worstSignal": "tran i(vdddev)",
+      "outcome": "mismatch",
+      "gapBucket": null,
+      "wallMs": 492
+    }
+  ]
+}

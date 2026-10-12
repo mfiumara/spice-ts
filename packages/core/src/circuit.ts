@@ -18,6 +18,7 @@ import { BJT, hasBiasDependentBaseResistance } from './devices/bjt.js';
 import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
 import { MOS2, resolveMOS2Model } from './devices/mos2.js';
+import { MOS3, mos3SeriesResistances, resolveMOS3Model } from './devices/mos3.js';
 import { MOS6, resolveMOS6Model } from './devices/mos6.js';
 import { createBSIM1, resolveBSIM1Model } from './devices/bsim1.js';
 import { createBSIM2, resolveBSIM2Model } from './devices/bsim2.js';
@@ -100,8 +101,11 @@ import {
 } from './errors.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
-/** MOSFET model levels with a spice-ts implementation: MOS1, MOS2, BSIM1 (4), BSIM2 (5), MOS6 and BSIM3v3 (8/49). */
-const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 2, 4, 5, 6, 8, 49];
+/**
+ * MOSFET model levels with a spice-ts implementation: MOS1, MOS2, MOS3, BSIM1 (4), BSIM2 (5), MOS6,
+ * BSIM3v3 (8/49) and MOS9.
+ */
+const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 2, 3, 4, 5, 6, 8, 9, 49];
 /** ngspice's default circuit temperature (and TNOM) in degrees Celsius. */
 const NOMINAL_TEMPERATURE_C = 27;
 /** ngspice CONSTCtoK. */
@@ -2229,6 +2233,13 @@ export class Circuit {
               resolveMOS2Model(desc.modelName!, modelParams, polarity),
               desc.params ?? {},
             ));
+          } else if (level === 3 || level === 9) {
+            // MOS3 / MOS9 (ngspice mos3, mos9); expandPassiveParasitics gave [D', G, S', B].
+            devices.push(new MOS3(
+              desc.name, desc.nodes.map(resolveNode),
+              resolveMOS3Model(desc.modelName!, modelParams, polarity, level),
+              desc.params ?? {},
+            ));
           } else if (level === 1) {
             // Level 1 (ngspice mos1); bulk defaults to source.
             const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];
@@ -2711,6 +2722,24 @@ export class Circuit {
           // BSIM3, every revision (b3set.c/b3v32set.c, acmMod = 0): RSH*NRD and RSH*NRS,
           // NRD = NRS = 1 square by default, in front of drain/source prime nodes (#691).
           const series = bsim3SeriesResistances(desc.name, model.params, desc.params);
+          let [drain, gate, source] = desc.nodes;
+          const bulk = desc.nodes[3] ?? source;
+          if (series.drain !== 0) {
+            const prime = internalNodeName(desc.name, 'drain');
+            result.push({ type: 'R', name: `${desc.name}.RD`, nodes: [drain, prime], value: series.drain });
+            drain = prime;
+          }
+          if (series.source !== 0) {
+            const prime = internalNodeName(desc.name, 'source');
+            result.push({ type: 'R', name: `${desc.name}.RS`, nodes: [source, prime], value: series.source });
+            source = prime;
+          }
+          result.push({ ...desc, nodes: [drain, gate, source, bulk] });
+          continue;
+        }
+        if (model && (level === 3 || level === 9)) {
+          // mos3set.c/mos9set.c: RD/RS (or RSH*NRD, RSH*NRS) in front of prime nodes, conductance M/R.
+          const series = mos3SeriesResistances(model.params, desc.params);
           let [drain, gate, source] = desc.nodes;
           const bulk = desc.nodes[3] ?? source;
           if (series.drain !== 0) {
