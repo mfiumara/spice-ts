@@ -1,5 +1,20 @@
 import type { CscMatrix } from './csc-matrix.js';
 import { SingularMatrixError, type MatrixVariableIdentity } from '../errors.js';
+import { amdOrdering } from './amd-ordering.js';
+import { columnSingletonsFirst, type PivotPreorder } from './column-singletons.js';
+
+/** Column ordering applied once per topology by {@link ComplexSparseSolver.analyzePattern}. */
+export type ComplexColumnOrdering = 'amd' | 'natural';
+
+export interface ComplexSparseSolverOptions {
+  /**
+   * Fill-reducing ordering of the union pattern of G and C. `'amd'` (default)
+   * permutes columns and preferred pivot rows symmetrically by an approximate
+   * minimum degree ordering of A + Aᵀ; `'natural'` keeps the MNA variable
+   * order. Either way, structural column singletons are pivoted first.
+   */
+  ordering?: ComplexColumnOrdering;
+}
 
 /**
  * Complex sparse LU solver for AC analysis.
@@ -8,19 +23,22 @@ import { SingularMatrixError, type MatrixVariableIdentity } from '../errors.js';
  * to a 2n*2n real system. This halves the matrix dimension and reduces
  * non-zeros by ~4x, giving roughly 8x faster factorization.
  *
- * The algorithm mirrors GilbertPeierlsSolver: left-looking column-Crout
- * with threshold partial pivoting. Every scalar operation is replaced with
- * its complex equivalent, and all value arrays are doubled (separate real
- * and imaginary Float64Arrays).
+ * The algorithm mirrors GilbertPeierlsSolver: PAQ = LU by left-looking
+ * column-Crout with threshold partial pivoting, where Q is a fill-reducing
+ * column order (#740: AMD on the union pattern of G and C, computed once per
+ * topology, structural column singletons first) and the preferred pivot of
+ * each step is the symmetrically permuted diagonal. Every scalar operation is
+ * replaced with its complex equivalent, and all value arrays are doubled
+ * (separate real and imaginary Float64Arrays).
  *
  * Pivot acceptance follows ngspice-47 Sparse 1.3 (`spOrderAndFactor`, used by
  * `SMPcReorder` in `NIacIter`): a candidate is acceptable when its magnitude
  * |re| + |im| (`ELEMENT_MAG`) exceeds both the absolute threshold
  * (CKTpivotAbsTol = 1e-13) and the relative threshold (CKTpivotRelTol = 1e-3)
- * times the largest magnitude in its column of the reduced matrix. The natural
- * diagonal is kept when acceptable; otherwise the column maximum is taken.
- * Row pivoting creates fill the symbolic phase does not predict, so the factor
- * buffers grow on demand, as in GilbertPeierlsSolver.
+ * times the largest magnitude in its column of the reduced matrix. The
+ * preferred diagonal is kept when acceptable; otherwise the column maximum is
+ * taken. Row pivoting and numeric fill are not predicted by the symbolic
+ * phase, so the factor buffers grow on demand, as in GilbertPeierlsSolver.
  *
  * Usage:
  *   const solver = new ComplexSparseSolver();
@@ -30,6 +48,12 @@ import { SingularMatrixError, type MatrixVariableIdentity } from '../errors.js';
  */
 export class ComplexSparseSolver {
   private n = 0;
+  private readonly ordering: ComplexColumnOrdering;
+
+  // colPerm[k] = j means original column j is factorized at step k
+  private colPerm!: Int32Array;
+  // rowPref[k] = i means original row i is the preferred pivot at step k
+  private rowPref!: Int32Array;
 
   // Pre-allocated L/U structure (CSC format) with split real/imag values
   private lColPtr!: Int32Array;
@@ -60,6 +84,7 @@ export class ComplexSparseSolver {
 
   private analyzed = false;
   private factorized = false;
+  private swaps = 0;
   private variables: readonly MatrixVariableIdentity[] = [];
 
   /** ngspice-47 CKTpivotRelTol default (`cktntask.c`), Sparse RelThreshold. */
@@ -67,9 +92,15 @@ export class ComplexSparseSolver {
   /** ngspice-47 CKTpivotAbsTol default (`cktntask.c`), Sparse AbsThreshold. */
   private readonly pivotAbsThreshold = 1e-13;
 
+  constructor(options: ComplexSparseSolverOptions = {}) {
+    this.ordering = options.ordering ?? 'amd';
+  }
+
   /**
    * Analyze the union sparsity pattern of G and C.
    * The complex matrix (G + jwC) has non-zeros wherever G or C has non-zeros.
+   * The column ordering depends only on that pattern, so it is computed here
+   * once per topology and reused by every factorize().
    */
   analyzePattern(
     G: CscMatrix,
@@ -80,81 +111,26 @@ export class ComplexSparseSolver {
     this.n = n;
     this.variables = variables;
 
-    // Build symmetric adjacency for the union pattern of G and C
-    const symAdj = buildUnionSymmetricAdjacency(G, C);
+    const union = unionPattern(G, C);
+    const pivots = complexPivotPreorder(union, this.ordering);
+    this.colPerm = pivots.colPerm;
+    this.rowPref = pivots.rowPref;
 
-    const lRowSets: number[][] = new Array(n);
-    const uRowSets: number[][] = new Array(n);
-
-    const parent = new Int32Array(n).fill(-1);
-    const visited = new Int32Array(n).fill(-1);
-
-    for (let j = 0; j < n; j++) {
-      const allRows = new Set<number>();
-
-      for (const i of symAdj[j]) {
-        allRows.add(i);
-      }
-
-      // Walk up elimination tree from each row < j to find U-part reachability
-      for (const startRow of symAdj[j]) {
-        let i = startRow;
-        while (i !== -1 && i < j && visited[i] !== j) {
-          visited[i] = j;
-          const p = parent[i];
-          if (p === -1) {
-            parent[i] = j;
-          }
-          i = p;
-        }
-      }
-
-      // Propagate fill-in
-      const uRowList: number[] = [];
-      for (const row of allRows) {
-        if (row < j) uRowList.push(row);
-      }
-      uRowList.sort((a, b) => a - b);
-
-      let qi = 0;
-      while (qi < uRowList.length) {
-        const k = uRowList[qi];
-        qi++;
-        if (lRowSets[k]) {
-          for (const row of lRowSets[k]) {
-            if (!allRows.has(row)) {
-              allRows.add(row);
-              if (row < j) {
-                uRowList.push(row);
-              }
-            }
-          }
-        }
-      }
-
-      // Rebuild sorted lists after fill-in propagation
-      uRowList.length = 0;
-      for (const row of allRows) {
-        if (row < j) uRowList.push(row);
-      }
-      uRowList.sort((a, b) => a - b);
-
-      const lRowList: number[] = [];
-      for (const row of allRows) {
-        if (row > j) lRowList.push(row);
-      }
-      lRowList.sort((a, b) => a - b);
-
-      uRowSets[j] = uRowList;
-      lRowSets[j] = lRowList;
-    }
-
-    // Compute total nnz for L and U
+    // Size the initial factors from the union's structural lower/upper parts
+    // in the natural order. The ordering moves entries between L and U, and
+    // fill adds more; the factor arrays grow on demand and keep their
+    // enlarged capacity across frequencies.
     let lNnz = 0;
     let uNnz = 0;
     for (let j = 0; j < n; j++) {
-      lNnz += lRowSets[j].length;
-      uNnz += uRowSets[j].length + 1; // +1 for diagonal
+      let hasDiagonal = false;
+      for (let p = union.colPtr[j]; p < union.colPtr[j + 1]; p++) {
+        const row = union.rowIdx[p];
+        if (row > j) lNnz++;
+        else uNnz++;
+        if (row === j) hasDiagonal = true;
+      }
+      if (!hasDiagonal) uNnz++;
     }
 
     // Pre-allocate all arrays
@@ -185,7 +161,32 @@ export class ComplexSparseSolver {
   }
 
   /**
-   * Factor (G + jwC) using left-looking column-Crout with complex arithmetic.
+   * Stored non-zeros of the last numeric factorization: strictly lower L plus
+   * U including its diagonal. Diagnostics only.
+   */
+  factorNonzeros(): number {
+    if (!this.factorized) {
+      throw new Error('Must call factorize before factorNonzeros');
+    }
+    return this.lColPtr[this.n] + this.uColPtr[this.n];
+  }
+
+  /**
+   * Row swaps in the last numeric factorization: steps whose pivot was not
+   * the row currently at that elimination position (the preferred row, or
+   * a row displaced there by an earlier swap), i.e. pivots forced off the
+   * diagonal by the acceptance test. Diagnostics only.
+   */
+  rowSwaps(): number {
+    if (!this.factorized) {
+      throw new Error('Must call factorize before rowSwaps');
+    }
+    return this.swaps;
+  }
+
+  /**
+   * Factor (G + jwC) using left-looking column-Crout with complex arithmetic,
+   * visiting original column colPerm[j] at step j.
    *
    * A_re[i,j] = G[i,j],  A_im[i,j] = omega * C[i,j]
    */
@@ -196,6 +197,7 @@ export class ComplexSparseSolver {
 
     const n = this.n;
     const perm = this.perm;
+    const colPerm = this.colPerm;
     const wsRe = this.workspaceRe;
     const wsIm = this.workspaceIm;
     const lColPtr = this.lColPtr;
@@ -214,12 +216,16 @@ export class ComplexSparseSolver {
     const activeK = this.activeK;
     const activeMark = this.activeMark;
 
-    // Initialize permutation and work arrays
-    for (let i = 0; i < n; i++) perm[i] = i;
+    // Initialize the row permutation to the preferred pivot rows: the forced
+    // row of each leading column singleton, then the symmetrically permuted
+    // diagonal.
+    this.factorized = false;
+    perm.set(this.rowPref);
     pivotOrigRow.fill(-1);
     pinv.fill(-1);
     nonzeroFlag.fill(-1);
     activeMark.fill(-1);
+    let swaps = 0;
 
     let lp = 0;
     let up = 0;
@@ -230,9 +236,10 @@ export class ComplexSparseSolver {
       lColPtr[j] = lp;
       uColPtr[j] = up;
 
-      // === Step 1: SCATTER column j of (G + jwC) into workspace ===
+      // === Step 1: SCATTER column colPerm[j] of (G + jwC) into workspace ===
+      const col = colPerm[j];
       // Real part from G
-      for (let p = G.colPtr[j]; p < G.colPtr[j + 1]; p++) {
+      for (let p = G.colPtr[col]; p < G.colPtr[col + 1]; p++) {
         const origRow = G.rowIdx[p];
         wsRe[origRow] = G.values[p];
         if (nonzeroFlag[origRow] !== j) {
@@ -241,7 +248,7 @@ export class ComplexSparseSolver {
         }
       }
       // Imaginary part from omega * C
-      for (let p = C.colPtr[j]; p < C.colPtr[j + 1]; p++) {
+      for (let p = C.colPtr[col]; p < C.colPtr[col + 1]; p++) {
         const origRow = C.rowIdx[p];
         wsIm[origRow] = omega * C.values[p];
         if (nonzeroFlag[origRow] !== j) {
@@ -340,16 +347,21 @@ export class ComplexSparseSolver {
       }
 
       if (maxMag < 1e-18) {
-        throw SingularMatrixError.atPivot(j, this.variables);
+        // Leave the workspace clean for a later factorize() on this solver.
+        for (let t = 0; t < nonzeroCount; t++) {
+          wsRe[nonzeroList[t]] = 0;
+          wsIm[nonzeroList[t]] = 0;
+        }
+        throw SingularMatrixError.atPivot(col, this.variables);
       }
 
-      // Keep the natural diagonal only when it passes ngspice's acceptance test
-      // (Sparse `spOrderAndFactor`: Mag > AbsThreshold && Mag > RelThreshold *
-      // LargestInCol). A diagonal that survives only as cancellation residue
-      // (#732: ~3e-12 against O(1) column entries) must not be used: it
-      // amplifies rounding error by 1/|pivot| and makes results depend on card
-      // order. When no candidate passes, Sparse falls back to the largest
-      // element (spSMALL_PIVOT), which is maxOrigRow here.
+      // Keep the preferred diagonal only when it passes ngspice's acceptance
+      // test (Sparse `spOrderAndFactor`: Mag > AbsThreshold && Mag >
+      // RelThreshold * LargestInCol). A diagonal that survives only as
+      // cancellation residue (#732: ~3e-12 against O(1) column entries) must
+      // not be used: it amplifies rounding error by 1/|pivot| and makes
+      // results depend on card order. When no candidate passes, Sparse falls
+      // back to the largest element (spSMALL_PIVOT), which is maxOrigRow here.
       const natOrigRow = perm[j];
       let chosenOrigRow = maxOrigRow;
       if (pinv[natOrigRow] < 0) {
@@ -369,6 +381,7 @@ export class ComplexSparseSolver {
 
       // Update perm
       if (chosenOrigRow !== perm[j]) {
+        swaps++;
         for (let i = j + 1; i < n; i++) {
           if (perm[i] === chosenOrigRow) {
             perm[i] = perm[j];
@@ -435,12 +448,13 @@ export class ComplexSparseSolver {
       lRows[p] = pinv[lTempOrigRows[p]];
     }
 
+    this.swaps = swaps;
     this.factorized = true;
   }
 
   /**
    * Solve (G + jwC)x = b using forward/backward substitution with complex arithmetic.
-   * Returns [xReal, xImag].
+   * Returns [xReal, xImag] in the original variable order.
    */
   solve(bReal: Float64Array, bImag: Float64Array): [Float64Array, Float64Array] {
     if (!this.factorized) {
@@ -449,6 +463,7 @@ export class ComplexSparseSolver {
 
     const n = this.n;
     const perm = this.perm;
+    const colPerm = this.colPerm;
     const lColPtr = this.lColPtr;
     const lRows = this.lRows;
     const lRe = this.lValuesRe;
@@ -481,8 +496,8 @@ export class ComplexSparseSolver {
       }
     }
 
-    // Backward substitution: Ux = y
-    // x[j] = y[j] / U[j,j]  (complex division)
+    // Backward substitution: Uz = y, then x = Qz (z[j] is variable colPerm[j]).
+    // z[j] = y[j] / U[j,j]  (complex division)
     const xRe = new Float64Array(n);
     const xIm = new Float64Array(n);
     for (let j = n - 1; j >= 0; j--) {
@@ -490,17 +505,19 @@ export class ComplexSparseSolver {
       const dRe = uRe[uDiagIdx[j]];
       const dIm = uIm[uDiagIdx[j]];
       const dMag2 = dRe * dRe + dIm * dIm;
-      xRe[j] = (yRe[j] * dRe + yIm[j] * dIm) / dMag2;
-      xIm[j] = (yIm[j] * dRe - yRe[j] * dIm) / dMag2;
+      const zRe = (yRe[j] * dRe + yIm[j] * dIm) / dMag2;
+      const zIm = (yIm[j] * dRe - yRe[j] * dIm) / dMag2;
+      xRe[colPerm[j]] = zRe;
+      xIm[colPerm[j]] = zIm;
 
-      // Update y: y[i] -= U[i,j] * x[j]
+      // Update y: y[i] -= U[i,j] * z[j]
       for (let p = uColPtr[j]; p < uColPtr[j + 1]; p++) {
         const i = uRows[p];
         if (i < j) {
           const uijRe = uRe[p];
           const uijIm = uIm[p];
-          yRe[i] -= uijRe * xRe[j] - uijIm * xIm[j];
-          yIm[i] -= uijRe * xIm[j] + uijIm * xRe[j];
+          yRe[i] -= uijRe * zRe - uijIm * zIm;
+          yIm[i] -= uijRe * zIm + uijIm * zRe;
         }
       }
     }
@@ -536,6 +553,24 @@ export class ComplexSparseSolver {
 }
 
 /**
+ * Column order and preferred pivot rows for the union pattern of G and C:
+ * AMD (or the natural MNA order), then structural column singletons first.
+ */
+export function complexPivotPreorder(
+  union: CscMatrix,
+  ordering: ComplexColumnOrdering = 'amd',
+): PivotPreorder {
+  let order: Int32Array;
+  if (ordering === 'amd') {
+    order = amdOrdering(union);
+  } else {
+    order = new Int32Array(union.size);
+    for (let j = 0; j < union.size; j++) order[j] = j;
+  }
+  return columnSingletonsFirst(union, order);
+}
+
+/**
  * Sort the first `count` elements of an Int32Array in ascending order (insertion sort).
  */
 function sortInt32Prefix(arr: Int32Array, count: number): void {
@@ -551,36 +586,34 @@ function sortInt32Prefix(arr: Int32Array, count: number): void {
 }
 
 /**
- * Build symmetric adjacency lists from the union of two CSC matrices.
- * For each column j, returns the set of rows i such that G[i,j] != 0 OR G[j,i] != 0
- * OR C[i,j] != 0 OR C[j,i] != 0.
+ * Union sparsity pattern of two CSC matrices of the same size, rows ascending
+ * per column. Values are 1 (pattern only); stored explicit zeros of G or C
+ * count as structure.
  */
-function buildUnionSymmetricAdjacency(G: CscMatrix, C: CscMatrix): number[][] {
+export function unionPattern(G: CscMatrix, C: CscMatrix): CscMatrix {
   const n = G.size;
-  const adj: Set<number>[] = new Array(n);
-  for (let j = 0; j < n; j++) adj[j] = new Set();
-
-  // Add entries from G
+  const colPtr = new Int32Array(n + 1);
+  const rowIdx = new Int32Array(G.colPtr[n] + C.colPtr[n]);
+  let nnz = 0;
   for (let j = 0; j < n; j++) {
-    for (let p = G.colPtr[j]; p < G.colPtr[j + 1]; p++) {
-      const i = G.rowIdx[p];
-      adj[j].add(i);
-      adj[i].add(j);
+    let p = G.colPtr[j];
+    let q = C.colPtr[j];
+    const pEnd = G.colPtr[j + 1];
+    const qEnd = C.colPtr[j + 1];
+    // Both inputs come from toCsc(), so rows are ascending: merge.
+    while (p < pEnd || q < qEnd) {
+      const gi = p < pEnd ? G.rowIdx[p] : n;
+      const ci = q < qEnd ? C.rowIdx[q] : n;
+      if (gi <= ci) {
+        rowIdx[nnz++] = gi;
+        p++;
+        if (gi === ci) q++;
+      } else {
+        rowIdx[nnz++] = ci;
+        q++;
+      }
     }
+    colPtr[j + 1] = nnz;
   }
-
-  // Add entries from C
-  for (let j = 0; j < n; j++) {
-    for (let p = C.colPtr[j]; p < C.colPtr[j + 1]; p++) {
-      const i = C.rowIdx[p];
-      adj[j].add(i);
-      adj[i].add(j);
-    }
-  }
-
-  const result: number[][] = new Array(n);
-  for (let j = 0; j < n; j++) {
-    result[j] = Array.from(adj[j]).sort((a, b) => a - b);
-  }
-  return result;
+  return { size: n, colPtr, rowIdx: rowIdx.slice(0, nnz), values: new Float64Array(nnz).fill(1) };
 }
