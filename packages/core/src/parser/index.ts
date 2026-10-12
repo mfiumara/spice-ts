@@ -18,6 +18,7 @@ import {
   parseTxlLine,
 } from './transmission-line-parser.js';
 import { preprocessDeck, preprocessDeckSync } from './preprocessor.js';
+import { translateMicroSign } from './micro-sign.js';
 import { lowerControlScript } from './control-block.js';
 import {
   extractControlBlocks, type ControlSourceBlock, type ControlSourceLine, type ControlSourceWarning,
@@ -87,7 +88,7 @@ export function parse(netlist: string): Circuit {
  * standard SPICE title line.
  */
 export function parseTitleless(netlist: string): Circuit {
-  const control = extractControlBlocks(netlist, false);
+  const control = extractControlBlocks(translateMicroSign(netlist), false);
   const preprocessed = preprocessDeckSync(control.netlist, undefined, 0);
   return parseNetlist(preprocessed.text, false, undefined, control.blocks, preprocessed.parameters, control.warnings);
 }
@@ -100,7 +101,7 @@ export function parseTitleless(netlist: string): Circuit {
 function splitTitledDeck(netlist: string): { title: string; control: ReturnType<typeof extractControlBlocks> } {
   const newline = netlist.indexOf('\n');
   const title = newline < 0 ? netlist : netlist.slice(0, newline);
-  const body = newline < 0 ? '' : netlist.slice(newline + 1);
+  const body = translateMicroSign(newline < 0 ? '' : netlist.slice(newline + 1));
   return { title, control: extractControlBlocks(body, false, 1) };
 }
 
@@ -113,7 +114,7 @@ function parseNetlist(
   controlWarnings: ControlSourceWarning[] = [],
 ): Circuit {
   // ngspice control-language lines are not netlist cards; read them from the raw text.
-  const extracted = extractControlBlocks(netlist, firstLineIsTitle);
+  const extracted = extractControlBlocks(translateMicroSign(netlist, firstLineIsTitle), firstLineIsTitle);
   const controlBlocks = [...extractedBlocks, ...extracted.blocks];
   const controlStartLine = controlBlocks[0]?.startLine;
   const lines = tokenizeNetlist(extracted.netlist, { firstLineIsTitle });
@@ -360,7 +361,7 @@ export async function parseTitlelessAsync(
   resolver?: IncludeResolver,
   guard?: ProtocolExecutionGuard,
 ): Promise<Circuit> {
-  const control = extractControlBlocks(netlist, false);
+  const control = extractControlBlocks(translateMicroSign(netlist), false);
   const preprocessed = await preprocessDeck(control.netlist, resolver, guard, 0);
   return parseNetlist(preprocessed.text, false, guard, control.blocks, preprocessed.parameters, control.warnings);
 }
