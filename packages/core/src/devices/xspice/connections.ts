@@ -1,16 +1,18 @@
 import { InvalidCircuitError } from '../../errors.js';
 import type { XspiceInstanceCard, XspiceModelCard, XspiceToken } from '../../parser/xspice-parser.js';
-import type { XspiceAnalogPortType, XspiceCodeModelSpec, XspiceParamValue } from './spec.js';
+import type { XspiceAnalogPortType, XspiceCodeModelSpec, XspiceParamValue, XspicePortType } from './spec.js';
 
-/** One analog port of an A instance after its port type was applied. */
+/** One port of an A instance after its port type was applied. */
 export interface XspicePort {
-  readonly type: XspiceAnalogPortType;
-  /** Positive node name (v, vd, i, id). */
+  readonly type: XspicePortType;
+  /** Positive node name (v, vd, i, id), or the digital node (d). */
   readonly positive?: string;
   /** Negative node name; ground for single-ended types. */
   readonly negative?: string;
   /** Controlling voltage source name (vnam). */
   readonly source?: string;
+  /** A `~` before a digital node: the port reads (or drives) the inverted state. */
+  readonly invert?: boolean;
 }
 
 export interface XspiceConnection {
@@ -54,6 +56,13 @@ export function resolveXspiceConnections(
   };
 
   const readPort = (type: string): XspicePort => {
+    if (type === 'd') {
+      const invert = next()?.kind === 'tilde';
+      if (invert) index++;
+      const node = tokens[index++];
+      if (node === undefined || node.kind !== 'string') return fail('Expected node/instance identifier');
+      return { type: 'd', positive: node.text, invert };
+    }
     if (next()?.kind === 'tilde') fail('Tilde not allowed on analog nodes');
     const first = tokens[index++];
     if (first === undefined || first.kind !== 'string') return fail('Expected node/instance identifier');
@@ -148,6 +157,11 @@ export function resolveXspiceParams(
       throw new InvalidCircuitError(`Null not allowed for parameter '${param.name}' on model '${model.name}'.`);
     }
     if (param.defaultValue === undefined) {
+      // ngspice MIFgetMod: a string parameter may stay NULL (PARAM_NULL).
+      if (param.type === 'string') {
+        resolved.set(param.name, []);
+        continue;
+      }
       throw new InvalidCircuitError(`Parameter '${param.name}' on model '${model.name}' has no default.`);
     }
     const size = param.vector

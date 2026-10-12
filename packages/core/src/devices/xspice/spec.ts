@@ -9,6 +9,9 @@
 /** Analog port types spice-ts can stamp (XSPICE `%v`, `%vd`, `%i`, `%id`, `%vnam`, `%g`, `%gd`). */
 export type XspiceAnalogPortType = 'v' | 'vd' | 'i' | 'id' | 'vnam' | 'g' | 'gd';
 
+/** Port types spice-ts resolves: the analog ones plus the event-driven digital `%d`. */
+export type XspicePortType = XspiceAnalogPortType | 'd';
+
 /** Every port type the XSPICE grammar accepts after a `%`. */
 export const XSPICE_PORT_TYPES: ReadonlySet<string> = new Set([
   'v', 'vd', 'i', 'id', 'vnam', 'g', 'gd', 'h', 'hd', 'd',
@@ -254,11 +257,80 @@ const CMETER: XspiceCodeModelSpec = { name: 'cmeter', connections: [METER_IN, ou
 /** xtradev/lmeter/ifspec.ifs */
 const LMETER: XspiceCodeModelSpec = { name: 'lmeter', connections: [METER_IN, output('out')], params: [real('gain', 1)] };
 
+/** A digital (`%d`) connection, the only type the digital port tables allow. */
+function digital(
+  name: string,
+  direction: 'in' | 'out',
+  vector = false,
+  vectorBounds?: readonly [number | undefined, number | undefined],
+): XspiceConnectionSpec {
+  return {
+    name, direction, defaultType: 'd', allowedTypes: ['d'], vector, nullAllowed: false,
+    ...(vectorBounds ? { vectorBounds } : {}),
+  };
+}
+
+function string(name: string): XspiceParamSpec {
+  return { name, type: 'string', vector: false, nullAllowed: true };
+}
+
+/** rise_delay/fall_delay of the digital gates and the adc_bridge: default 1 ns, at least 1 ps. */
+const DIGITAL_DELAYS: readonly XspiceParamSpec[] = [
+  real('rise_delay', 1e-9, { limits: [1e-12, undefined] }),
+  real('fall_delay', 1e-9, { limits: [1e-12, undefined] }),
+];
+
+/** The parameter table every digital gate shares (d_and/ifspec.ifs and siblings). */
+const GATE_PARAMS: readonly XspiceParamSpec[] = [
+  ...DIGITAL_DELAYS, real('input_load', 1e-12), string('family'), boolean('inertial_delay', false),
+];
+
+/** One-input gate (d_buffer, d_inverter). */
+function unaryGate(name: string): XspiceCodeModelSpec {
+  return { name, connections: [digital('in', 'in'), digital('out', 'out')], params: GATE_PARAMS };
+}
+
+/** n-input gate (d_and, d_nand, d_or, d_nor, d_xor, d_xnor): at least two inputs. */
+function naryGate(name: string): XspiceCodeModelSpec {
+  return { name, connections: [digital('in', 'in', true, [2, undefined]), digital('out', 'out')], params: GATE_PARAMS };
+}
+
+/** digital/adc_bridge/ifspec.ifs */
+const ADC_BRIDGE: XspiceCodeModelSpec = {
+  name: 'adc_bridge',
+  connections: [
+    { name: 'in', direction: 'in', defaultType: 'v', allowedTypes: ANALOG_IN, vector: true, nullAllowed: false },
+    digital('out', 'out', true),
+  ],
+  params: [real('in_low', 0.1), real('in_high', 0.9), ...DIGITAL_DELAYS, string('family')],
+};
+
+/** digital/dac_bridge/ifspec.ifs */
+const DAC_BRIDGE: XspiceCodeModelSpec = {
+  name: 'dac_bridge',
+  connections: [
+    digital('in', 'in', true),
+    { name: 'out', direction: 'out', defaultType: 'v', allowedTypes: ANALOG_OUT, vector: true, nullAllowed: false },
+  ],
+  params: [
+    real('out_low', 0.0), real('out_high', 1.0), real('out_undef', 0.5), real('input_load', 1e-12),
+    real('t_rise', 1e-9, { limits: [1e-12, undefined] }), real('t_fall', 1e-9, { limits: [1e-12, undefined] }),
+  ],
+};
+
+/** Implemented event-driven (digital) code models and node bridges. */
+export const XSPICE_DIGITAL_CODE_MODELS: ReadonlySet<string> = new Set([
+  'adc_bridge', 'dac_bridge', 'd_buffer', 'd_inverter', 'd_and', 'd_nand', 'd_or', 'd_nor', 'd_xor', 'd_xnor',
+]);
+
 /** Implemented code models keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
   [
     GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT,
     CLIMIT, HYST, ILIMIT, SLEW, SINE, CMETER, LMETER,
+    ADC_BRIDGE, DAC_BRIDGE,
+    unaryGate('d_buffer'), unaryGate('d_inverter'),
+    naryGate('d_and'), naryGate('d_nand'), naryGate('d_or'), naryGate('d_nor'), naryGate('d_xor'), naryGate('d_xnor'),
   ].map(spec => [spec.name, spec]),
 );
 

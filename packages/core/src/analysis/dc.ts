@@ -49,25 +49,49 @@ export function solveDCOperatingPoint(
   // a different operating point than ngspice (#622).
   const hasNonlinear = devices.some(d => d.isNonlinear);
   const initialGuess = new Float64Array(assembler.solution);
-  try {
-    newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames, convergence.dc, guard);
-  } catch (err) {
-    if (err instanceof ProtocolExecutionError) throw err;
-    // Fallbacks: gmin stepping homotopies (dynamic, then true gmin), then
-    // source stepping, as ngspice-47 CKTop runs them.
-    if (
-      !hasNonlinear
-      || !(
-        gminSteppingHomotopy(assembler, devices, options, nodeNames, convergence, guard)
-        || sourceStepping(assembler, devices, options, nodeNames, convergence, initialGuess, guard)
-      )
-    ) {
-      if (err instanceof ConvergenceError) {
-        convergence.dc.failure = err.kind;
-        err.convergence = snapshotConvergenceTelemetry(convergence);
+  const solveOperatingPoint = (): void => {
+    try {
+      newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames, convergence.dc, guard);
+    } catch (err) {
+      if (err instanceof ProtocolExecutionError) throw err;
+      // Fallbacks: gmin stepping homotopies (dynamic, then true gmin), then
+      // source stepping, as ngspice-47 CKTop runs them.
+      if (
+        !hasNonlinear
+        || !(
+          gminSteppingHomotopy(assembler, devices, options, nodeNames, convergence, guard)
+          || sourceStepping(assembler, devices, options, nodeNames, convergence, initialGuess, guard)
+        )
+      ) {
+        if (err instanceof ConvergenceError) {
+          convergence.dc.failure = err.kind;
+          err.convergence = snapshotConvergenceTelemetry(convergence);
+        }
+        throw err;
       }
-      throw err;
     }
+  };
+
+  const events = devices.find(device => device.eventDriven !== undefined)?.eventDriven;
+  if (events) {
+    // ngspice EVTop: CKTop first, then Newton from the last solution after
+    // each event iteration, falling back to CKTop when that fails.
+    events.operatingPoint(first => {
+      if (first) {
+        solveOperatingPoint();
+        return;
+      }
+      const previous = new Float64Array(assembler.solution);
+      try {
+        newtonRaphson(assembler, devices, options, options.maxIterations, nodeNames, convergence.dc, guard);
+      } catch (err) {
+        if (err instanceof ProtocolExecutionError) throw err;
+        assembler.solution.set(previous);
+        solveOperatingPoint();
+      }
+    });
+  } else {
+    solveOperatingPoint();
   }
 
   const voltageMap = new Map<string, number>();

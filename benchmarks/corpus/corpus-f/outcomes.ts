@@ -41,6 +41,7 @@ import {
   NGSPICE_ABSTOL,
   NGSPICE_VNTOL,
   normalizedSignalErrors,
+  pairedReferenceSeries,
   type Outcome,
   outcome,
   CURRENT_PEAK_FLOOR,
@@ -350,8 +351,7 @@ export async function runFixture(
   const comparisons = ngspice.status === 'success' && spiceTsStatus === 'success'
     ? compareExecutions(spiceTs.execution, ngspice.execution)
     : [];
-  const { errors, missing } = normalizedSignalErrors(comparisons, analysis =>
-    ngspice.execution.analyses.find(candidate => candidate.type === analysis)?.series);
+  const { errors, missing } = normalizedSignalErrors(comparisons, pairedReferenceSeries(spiceTs.execution, ngspice.execution));
   const worst = errors.reduce<typeof errors[number] | null>((current, error) =>
     current === null || error.normalized > current.normalized ? error : current, null);
   const spiceTsError = firstSpiceTsErrorLine(spiceTs.execution.error);

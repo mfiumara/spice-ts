@@ -23,6 +23,7 @@ import {
   NGSPICE_ABSTOL,
   NGSPICE_VNTOL,
   normalizedSignalErrors,
+  pairedReferenceSeries,
   outcome,
   PEAK_FLOOR,
   peakFloor,
@@ -34,7 +35,8 @@ import { mergeReadme, outcomeDigest, packExecution, referenceSelection, renderMa
 import { controlPlotAnalyses, sensitivitySignalName } from './plot-adapter.js';
 import { parseRawLines } from './raw-stream.js';
 import { parseNgspiceRaw } from '../../comparison-harness.js';
-import { analysisType } from '../classic/report.js';
+import { analysisType, type EngineExecution } from '../classic/report.js';
+import { compareExecutions } from '../../aggregate-report.js';
 import { CONTROL_SECTION, controlWrapperDeck, hasControlBlock, noReferenceNote, runControlReference, trackingIssue } from './control-vectors.js';
 
 const ROOT = 'benchmarks/corpus/corpus-f';
@@ -217,6 +219,39 @@ describe('corpus-f outcome rules', () => {
     assert.equal(outcome({ ...base, spiceTs: 'unsupported', worstNormalized: null }), 'spice-ts-loss');
     assert.equal(outcome({ ...base, ngspice: 'failed', worstNormalized: null }), 'ngspice-failed');
     assert.equal(outcome({ ...base, ngspice: 'failed', spiceTs: 'failed', worstNormalized: null }), 'both-failed');
+  });
+
+  it('normalises .noise integrated totals by their own ngspice value, not the floor (#774)', () => {
+    // ngspice-47 .noise emits two plots of type noise; the totals exist only in the second one.
+    const complex = (values: number[]) => values.map(re => ({ re, im: 0 }));
+    const spectrum = (scale: number) => ({ grid: [1, 10], signals: { inoise_spectrum: complex([2e-6 * scale, 1e-6 * scale]), onoise_spectrum: complex([3e-9 * scale, 2e-9 * scale]) } });
+    const totals = (input: number, output: number) => ({ grid: [0], signals: { 'v(inoise_total)': complex([input]), 'v(onoise_total)': complex([output]) } });
+    const ngspice = { analyses: [
+      { type: 'noise' as const, plotName: 'Noise Spectral Density Curves', series: spectrum(1) },
+      { type: 'noise' as const, plotName: 'Integrated Noise', series: totals(163.7749495863544, 2.5e-3) },
+    ] };
+    const relative = 1.74e-7;
+    const spiceTs = { analyses: [
+      { type: 'noise' as const, plotName: 'Noise Spectral Density Curves', series: spectrum(1 + relative) },
+      { type: 'noise' as const, plotName: 'Integrated Noise', series: totals(163.7749495863544 * (1 + relative), 2.5e-3 * (1 + relative)) },
+    ] };
+    const comparisons = compareExecutions(
+      { status: 'success', analyses: spiceTs.analyses } as unknown as EngineExecution,
+      { status: 'success', analyses: ngspice.analyses } as unknown as EngineExecution,
+    );
+    assert.equal(comparisons.length, 2);
+    const { errors, missing } = normalizedSignalErrors(comparisons, pairedReferenceSeries(spiceTs, ngspice));
+    assert.equal(missing, 0);
+    const scored = Object.fromEntries(errors.map(error => [error.signal, error]));
+    assert.deepEqual(Object.keys(scored).sort(), ['inoise_spectrum', 'onoise_spectrum', 'v(inoise_total)', 'v(onoise_total)']);
+    // Every signal, totals included, is scored relative to its own ngspice value: about 1.74e-7.
+    for (const error of errors) assert.ok(Math.abs(error.normalized - relative) < 1e-12, `${error.signal}: ${error.normalized}`);
+    assert.equal(scored['v(inoise_total)'].ngspicePeak, 163.7749495863544);
+    assert.equal(scored['v(onoise_total)'].ngspicePeak, 2.5e-3);
+    // The pre-#774 first-plot-of-type lookup divided the 2.85e-5 total error by the 1e-4 floor.
+    const firstPlot = normalizedSignalErrors(comparisons, analysis => ngspice.analyses.find(candidate => candidate.type === analysis)?.series);
+    const before = firstPlot.errors.find(error => error.signal === 'v(inoise_total)');
+    assert.ok(before && before.ngspicePeak === 0 && before.normalized > MATCH_THRESHOLD, JSON.stringify(before));
   });
 
   it('scores zero and near-zero ngspice peaks against the ngspice VNTOL/ABSTOL absolute floor (#593)', () => {

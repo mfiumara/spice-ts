@@ -1,0 +1,21 @@
+NPN noise with TNOM and a forward-biased ISS substrate junction (issue 767)
+vcc vcc 0 5
+vin in 0 dc 0 ac 1
+cin in b 1u
+rb vcc b 500k
+rc vcc c 2k
+re e 0 100
+vs s 0 4
+q1 c b e s qn
+.model qn npn (is=1e-15 bf=100 tnom=25 iss=1e-15 ns=1.1 cjs=1p vjs=0.6 mjs=0.4
++ rb=100 rc=10 re=1 cje=1p cjc=0.5p kf=1e-16 af=1)
+.control
+set numdgt=12
+op
+print v(c) i(vs)
+noise v(c) vin dec 2 10 1e8
+print onoise_total inoise_total
+setplot noise1
+print onoise_spectrum inoise_spectrum
+.endc
+.end

@@ -97,6 +97,7 @@ export { SUPPORTED_MODEL_TYPES, DEVICE_MODEL_TYPES, UnsupportedModelTypeError } 
 export { UnsupportedSourceWaveformError } from './parser/waveform-parser.js';
 export type { ConvergenceFailureKind } from './errors.js';
 export { UnsupportedCodeModelError } from './parser/xspice-parser.js';
+export type { DigitalNodeEvent } from './devices/xspice/event-network.js';
 export { UnsupportedResistorParameterError } from './parser/resistor-parser.js';
 export { UnsupportedModelFlagError } from './parser/model-flags.js';
 export { UnsupportedMeasureError } from './measure/errors.js';

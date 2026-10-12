@@ -4,7 +4,7 @@
  * Shared by `ingest.ts` (selection, provenance), `report.ts` (identical-input runs of ngspice-47
  * and spice-ts) and `report.test.ts`. Nothing here runs an engine or touches the filesystem.
  */
-import type { ClassicAnalysisType } from '../classic/report.js';
+import { type ClassicAnalysisType, type EngineAnalysis, findMatchingAnalysis } from '../classic/report.js';
 import type { ComparisonMetrics, SampleSeries } from '../../comparison-harness.js';
 
 export const CORPUS_ROOT = 'benchmarks/corpus/corpus-f';
@@ -313,20 +313,39 @@ export interface SignalError {
 }
 
 /**
+ * The ngspice series a compared signal was paired with (#774). `compareExecutions` pairs each
+ * spice-ts plot with an ngspice plot by `findMatchingAnalysis` (plot name, else first plot of the
+ * type). A `.noise` run emits two `noise` plots, and `inoise_total`/`onoise_total` live only in the
+ * second ("Integrated Noise"), so a first-plot-of-type lookup reads their peak as 0 and normalises
+ * them by the absolute floor. This resolves the same pairing per signal.
+ */
+export function pairedReferenceSeries(
+  spiceTs: { analyses: ReadonlyArray<Pick<EngineAnalysis, 'type' | 'plotName' | 'series'>> },
+  ngspice: { analyses: ReadonlyArray<EngineAnalysis> },
+): (analysis: string, signal: string) => SampleSeries | undefined {
+  return (analysis, signal) => {
+    const own = spiceTs.analyses.find(candidate => candidate.type === analysis && Object.hasOwn(candidate.series.signals, signal));
+    const paired = own ? findMatchingAnalysis(ngspice.analyses, own) : undefined;
+    return (paired ?? ngspice.analyses.find(candidate => candidate.type === analysis))?.series;
+  };
+}
+
+/**
  * Per-signal error normalised to the ngspice full-scale value of that signal, floored per
  * quantity by `peakFloor`. One uniform normalisation for every fixture: the threshold applied to
- * it is MATCH_THRESHOLD.
+ * it is MATCH_THRESHOLD. `ngspiceSeries` must return the ngspice plot the signal was compared
+ * against (see `pairedReferenceSeries`).
  */
 export function normalizedSignalErrors(
   comparisons: ReadonlyArray<{ analysis: string; metrics: ComparisonMetrics }>,
-  ngspiceSeries: (analysis: string) => SampleSeries | undefined,
+  ngspiceSeries: (analysis: string, signal: string) => SampleSeries | undefined,
 ): { errors: SignalError[]; missing: number } {
   const errors: SignalError[] = [];
   let missing = 0;
   for (const comparison of comparisons) {
-    const reference = ngspiceSeries(comparison.analysis);
     for (const [signal, metric] of Object.entries(comparison.metrics.signals)) {
       if (metric.status !== 'compared') { missing += 1; continue; }
+      const reference = ngspiceSeries(comparison.analysis, signal);
       const ngspicePeak = reference?.signals[signal] ? peak(reference.signals[signal]) : 0;
       errors.push({
         analysis: comparison.analysis,

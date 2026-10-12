@@ -1,0 +1,28 @@
+{
+  "id": "vanoise-commonemitterbjt-mextram-cir",
+  "sourcePath": "Netlists/VANOISE/commonEmitterBjt_mextram.cir",
+  "sha256": "60084d89571f491bb82e47223a7e1d0eb5345fbcd4e191cdd06e3c507397ab9c",
+  "analyses": [
+    "noise"
+  ],
+  "unmappedAnalyses": [],
+  "sameNameAs": [],
+  "ngspice": {
+    "status": "success",
+    "analyses": [
+      "noise:1",
+      "noise:167"
+    ]
+  },
+  "spiceTs": {
+    "status": "failed",
+    "analyses": [],
+    "firstErrorLine": ".noise does not support BJT model parameter 'TREF' for 'Q1'"
+  },
+  "comparedAnalyses": 0,
+  "comparedSignals": 0,
+  "worstNormalizedError": null,
+  "worstSignal": null,
+  "outcome": "spice-ts-loss",
+  "gapBucket": "execution: other failure"
+}
