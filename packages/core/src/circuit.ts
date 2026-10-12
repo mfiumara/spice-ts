@@ -2110,11 +2110,16 @@ export class Circuit {
     // Only flattened device nodes belong in the matrix. In particular, a
     // .global name can override a formal port and leave its actual node unused.
     // Node names fold case as in ngspice (#728): the first spelling is kept.
-    const globalNode = (name: string): string => globalNodes.get(name.toUpperCase()) ?? name;
+    const globalNode = globalNodes.size === 0
+      ? (name: string): string => name
+      : (name: string): string => globalNodes.get(name.toUpperCase()) ?? name;
     this.nodeSet.clear();
+    // Display spelling of every raw node reference, folded once per distinct
+    // raw string rather than once per reference (#796).
+    const canonicalByRaw = new Map<string, string>();
     for (const desc of expandedDescriptors) {
       for (const n of desc.nodes) {
-        this.nodeSet.add(globalNode(n));
+        if (!canonicalByRaw.has(n)) canonicalByRaw.set(n, this.nodeSet.addCanonical(globalNode(n)));
       }
     }
     const canonicalNode = (name: string): string => this.nodeSet.canonical(globalNode(name));
@@ -2143,9 +2148,12 @@ export class Circuit {
     let branchIndex = 0;
     const branchNames: string[] = [];
 
+    // A name that is itself a display spelling resolves directly: the other
+    // spellings fold onto it and `.global` keeps its fold (#796).
     const resolveNode = (name: string): number => {
       if (name === GROUND_NODE) return -1;
-      return nodeIndexMap.get(canonicalNode(name))!;
+      return nodeIndexMap.get(name)
+        ?? nodeIndexMap.get(canonicalByRaw.get(name) ?? canonicalNode(name))!;
     };
 
     const resolveWaveform = (wf?: Partial<SourceWaveform> & { dc?: number }): SourceWaveform => {

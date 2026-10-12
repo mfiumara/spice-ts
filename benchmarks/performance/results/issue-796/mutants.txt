@@ -1,0 +1,6 @@
+no-fold-fallback: killed
+memo-raw-spelling: killed
+no-global-map: killed
+addcanonical-latest: killed
+resistor-empty-instance: killed
+resistor-no-defaults: killed
