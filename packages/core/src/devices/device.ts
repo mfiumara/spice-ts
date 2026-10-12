@@ -173,6 +173,14 @@ export interface DeviceModel {
    */
   truncateTransientStep?(ctx: StampContext, truncation: ChargeTruncation): number;
   /**
+   * True when {@link truncateTransientStep} bounds every charge the device
+   * stores, as the device's ngspice DEVtrunc does. ngspice-47 controls the
+   * transient timestep with CKTtrunc alone (no node-voltage truncation), so
+   * the node-voltage LTE skips nodes on which every charge-storing device
+   * sets this.
+   */
+  readonly truncationCoversCharges?: boolean;
+  /**
    * True when the device limits every junction voltage it reads relative to
    * its previous Newton iterate (ngspice DEVpnjlim). Transient Newton leaves
    * the nodes of such devices undamped, because a damped node cannot follow
