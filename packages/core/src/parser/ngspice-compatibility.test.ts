@@ -17,6 +17,7 @@ const supportedFixtures: Fixture[] = [
   { feature: 'R/C/L', netlist: 'R1 in out 1kOhm\nC1 out 0 1uF\nL1 in 0 1mH\n.op' },
   { feature: 'independent DC source', netlist: 'V1 in 0 DC 1\nI1 in 0 DC 1m\n.op' },
   { feature: 'independent PULSE/SIN sources', netlist: 'V1 in 0 PULSE(0 1 0 1n 1n 1u 2u)\nI1 in 0 SIN(0 1m 1k)\n.tran 1n 2u' },
+  { feature: 'TRNOISE/TRRANDOM transient noise sources', netlist: 'V1 in 0 TRNOISE(1 1n)\nI1 in 0 TRRANDOM(2 1n)\n.tran 1n 10n' },
   { feature: 'independent PWL sources', netlist: 'V1 in 0 PWL(0 0 1n 1 2n 0)\nI1 out 0 PWL(0 0 1n 1m)\n.tran 0.1n 2n' },
   { feature: 'linear dependent sources', netlist: 'V1 in 0 1\nE1 e 0 in 0 2\nG1 g 0 in 0 1m\nF1 f 0 V1 2\nH1 h 0 V1 1k\n.op' },
   { feature: 'D/Q/M cards', netlist: '.model D1 D(IS=1e-14)\n.model N1 NPN(BF=100)\n.model M1 NMOS(VTO=1)\nD1a d 0 D1\nQ1 q b 0 N1\nM1a m g 0 0 M1\n.op' },
@@ -38,6 +39,7 @@ const supportedFixtures: Fixture[] = [
   { feature: 'B-source V= and I= expressions', netlist: 'V1 in 0 1\nB1 out 0 V=V(in)^2 > 0.5 ? 1 : 0\nB2 out 0 I=max(V(in),0) tc1=1m\n.op' },
   { feature: 'S/W switches', netlist: '.model SMOD SW(VT=1 VH=0.1)\n.model WMOD CSW IT=1m\nV1 c 0 1\nS1 out 0 c 0 SMOD ON\nW1 out 0 V1 WMOD\n.op' },
   { feature: 'bounded lossless transmission line', netlist: 'T1 in 0 out 0 Z0=50 TD=1n\n.tran 1n 10n' },
+  { feature: '.measure/.meas cards', netlist: 'V1 out 0 1\n.tran 1n 10n\n.measure tran peak MAX v(out)\n.meas tran t1 when v(out)=0.5' },
   { feature: 'ngspice control-language scripting', netlist: 'V1 in 0 1\nR1 in 0 1k\n.control\nlet x = 1\nop\n.endc' },
 ];
 
@@ -45,11 +47,8 @@ const unsupportedFixtures: Fixture[] = [
   { feature: 'EXP source waveform', netlist: 'V1 in 0 EXP(0 1 1n 1n)\n.tran 0.1n 1n' },
   { feature: 'SFFM source waveform', netlist: 'V1 in 0 SFFM(0 1 1k 1 10)\n.tran 1u 1m' },
   { feature: 'AM source waveform', netlist: 'V1 in 0 AM(1 1 1k 10k)\n.tran 1u 1m' },
-  { feature: 'trnoise source waveform', netlist: 'V1 in 0 TRNOISE(1 1n)\n.tran 1n 10n' },
   { feature: 'external source waveform', netlist: 'V1 in 0 EXTERNAL\n.tran 1n 10n' },
-  { feature: 'control-language measurements', netlist: '.control\nmeas tran peak max v(out)\n.endc' },
   { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
-  { feature: 'measurements', netlist: '.measure tran peak MAX v(out)\n.op' },
   { feature: 'PSPICE logic behavioral source', netlist: 'B1 out 0 V=~V(in)\n.op' },
   { feature: 'branch-current behavioral source', netlist: 'V1 in 0 1\nB1 out 0 V=I(V1)*2\n.op' },
 ];

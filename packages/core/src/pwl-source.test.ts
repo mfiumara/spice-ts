@@ -81,7 +81,7 @@ describe('ngspice PWL source parity', () => {
     });
   });
 
-  it.each(['EXP', 'SFFM', 'AM', 'TRNOISE', 'EXTERNAL'])(
+  it.each(['EXP', 'SFFM', 'AM', 'EXTERNAL'])(
     'explicitly rejects unsupported %s sources',
     keyword => {
       expect(() => parse(`V1 in 0 ${keyword}(0 1)`)).toThrow(

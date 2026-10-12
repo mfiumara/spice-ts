@@ -1,5 +1,6 @@
-import type { ACRHSContribution, DeviceModel, StampContext } from './device.js';
+import type { ACRHSContribution, DeviceModel, StampContext, TransientBreakpointSink } from './device.js';
 import type { SourceWaveform } from '../types.js';
+import { TransientNoiseContext, type NoiseHandle } from './transient-noise.js';
 import {
   effectivePulse, evaluatePulse, evaluatePwl, pulseBreakpoints, pwlBreakpoints,
 } from './voltage-source.js';
@@ -8,12 +9,27 @@ export class CurrentSource implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = false;
   private transientTimestep = 0;
+  /** TRNOISE/TRRANDOM state (ngspice ISRCtrnoise_state/ISRCtrrandom_state). */
+  private readonly noise?: NoiseHandle;
+  /** Present only for TRNOISE/TRRANDOM, so other sources stay off the accept pass. */
+  readonly acceptTransientStep?: (ctx: StampContext, breakpoints?: TransientBreakpointSink) => void;
 
+  /**
+   * @param noiseContext - shared random stream of the circuit's TRNOISE and
+   *   TRRANDOM sources; a private one is created when absent.
+   */
   constructor(
     readonly name: string,
     readonly nodes: number[],
     public waveform: SourceWaveform,
-  ) {}
+    noiseContext?: TransientNoiseContext,
+  ) {
+    if (waveform.type === 'trnoise' || waveform.type === 'trrandom') {
+      const noise = (noiseContext ?? new TransientNoiseContext()).register('I', name, waveform);
+      this.noise = noise;
+      this.acceptTransientStep = (ctx, breakpoints) => noise.accept(ctx.time, breakpoints);
+    }
+  }
 
   stamp(ctx: StampContext): void {
     const [nPlus, nMinus] = this.nodes;
@@ -42,6 +58,10 @@ export class CurrentSource implements DeviceModel {
       }
       case 'pwl':
         return evaluatePwl(this.waveform, time);
+      case 'trnoise':
+      case 'trrandom':
+        // ngspice-47 isrcload.c adds the DC value when one is given.
+        return (this.waveform.dc ?? 0) + this.noise!.value(time);
       case 'ac':
         return this.waveform.dc ?? 0;
     }
@@ -78,6 +98,11 @@ export class CurrentSource implements DeviceModel {
     if (this.waveform.type === 'pwl') {
       return pwlBreakpoints(this.waveform, stopTime);
     }
+    if (this.noise) return this.noise.breakpoints(stopTime);
     return [];
+  }
+
+  resetTransient(): void {
+    this.noise?.resetTransient();
   }
 }

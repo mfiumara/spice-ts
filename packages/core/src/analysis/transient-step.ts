@@ -156,10 +156,12 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
     for (const device of selfLimiting) device.observeTransientNewton?.(x);
 
     // Damp only nodes a nonlinear device reads (issue #376); see nonlinearTerminalNodes.
+    let damped = false;
     for (const i of dampedNodes) {
       const delta = rawDelta[i];
       if (Math.abs(delta) > voltageLimit) {
         x[i] = prev[i] + Math.sign(delta) * voltageLimit;
+        damped = true;
       }
     }
 
@@ -167,7 +169,13 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
 
     // ngspice CKTnoncon: an iterate a device had to limit was linearised at a
     // junction voltage the solution does not have, so it cannot converge.
-    const limited = selfLimiting.some(device => device.limitedLastStamp?.() === true);
+    // The same holds for a node the damping cap clipped: the clipped iterate
+    // is not the linear solve's answer and can violate KVL across linear
+    // branches (a 0 V source between a capped and an uncapped node, #650).
+    // Above |v| = voltageLimit / reltol the cap is inside the relative
+    // tolerance, so without this check such an iterate is accepted.
+    const limited = damped
+      || selfLimiting.some(device => device.limitedLastStamp?.() === true);
     if (
       !limited
       && isConvergedTransient(x, prev, nodeCount, options)
@@ -259,6 +267,11 @@ function convergenceTestedDevices(compiled: CompiledCircuit): readonly DeviceMod
  * junction, the junction keeps stepping away from the node, and Newton
  * ratchets to the timestep floor (the boost converter in
  * transient-driver-integration.test.ts).
+ *
+ * Nodes of devices ngspice neither limits nor damps (`undampedNodes`, the
+ * ASRC `B` sources) are not capped either: a capped B-source node cannot take
+ * the first-step jump from a UIC seed, e.g. 0 V to a 7 kV capacitor IC
+ * across a 0 V source (issue #649).
  */
 function nonlinearTerminalNodes(compiled: CompiledCircuit): TerminalNodes {
   let nodes = nonlinearTerminalCache.get(compiled);
@@ -270,7 +283,7 @@ function nonlinearTerminalNodes(compiled: CompiledCircuit): TerminalNodes {
       for (const node of device.nodes) {
         if (node < 0 || node >= compiled.nodeCount) continue;
         marked[node] = 1;
-        if (!device.limitsOwnJunctions) needsDamping[node] = 1;
+        if (!device.limitsOwnJunctions && !device.undampedNodes) needsDamping[node] = 1;
       }
     }
     const watched: number[] = [];

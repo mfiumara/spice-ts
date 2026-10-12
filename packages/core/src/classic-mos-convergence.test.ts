@@ -1,7 +1,6 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { UnsupportedModelLevelError } from './errors.js';
 import { simulate } from './simulate.js';
 
 const classicFixtureRoot = new URL('../../../benchmarks/corpus/classic/fixtures/spice3f5/', import.meta.url);
@@ -26,14 +25,18 @@ describe('classic MOS transient convergence (issue #302)', () => {
     });
   }
 
-  // mosamp2.cir uses LEVEL=2 (MOS2) cards. spice-ts has no MOS2 model, so since
-  // #530 it rejects the deck instead of running it through the Level-1 equations.
-  it('rejects the unchanged LEVEL=2 mosamp2.cir fixture with a typed error', async () => {
+  // mosamp2.cir uses LEVEL=2 (MOS2) cards: rejected since #530, run by the
+  // ngspice-47 mos2 port since #565.
+  it('completes the unchanged LEVEL=2 mosamp2.cir fixture with MOS2 and settles at the ngspice-47 v(5)', { timeout: 60_000 }, async () => {
     const bytes = readFileSync(new URL('mosamp2.cir', classicFixtureRoot));
     expect(bytes.byteLength).toBe(1_371);
     expect(createHash('sha256').update(bytes).digest('hex'))
       .toBe('d8b0e627f7742490ac6e841ffb176c9b02ffe6de1246bb57d1db793f58027469');
-    await expect(simulate(bytes.toString('utf8'))).rejects.toBeInstanceOf(UnsupportedModelLevelError);
-    await expect(simulate(bytes.toString('utf8'))).rejects.toMatchObject({ code: 'UNSUPPORTED_MODEL_LEVEL', level: 2 });
+    const result = await simulate(bytes.toString('utf8'));
+    expect(result.convergence!.transient.failure).toBeNull();
+    const transient = result.transient!;
+    expect(transient.time.at(-1)).toBeCloseTo(10e-6, 12);
+    // ngspice-47 v(5) at 10 us (settled after the 5 us edge) is 9.463960706.
+    expect(transient.voltage('5').at(-1)).toBeCloseTo(9.463960706, 6);
   });
 });

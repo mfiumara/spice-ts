@@ -1,0 +1,9 @@
+MESA level-3 transient (issue #500, project-authored)
+vdd 1 0 dc 2
+rl 1 d 500
+vin g 0 pulse(-1.5 0 0.5n 0.2n 0.2n 2n 5n)
+z1 d g 0 mf l=1u w=50u
+.model mf nmf level=3 rdi=2 rsi=2 mu=0.2 vto=-1 eta=1.5 lambda=0.05 sigma0=0.02
++ vsigma=0.1 vsigmat=1.0 delta=5 beta=0.0085 rd=5 rs=5
+.tran 0.01n 10n
+.end

@@ -81,6 +81,10 @@ const DECKS: Record<string, ParityDeck> = {
       27: { 'v(out)': 0.14203769021313 },
       100: { 'v(out)': 0.021794445985142 },
     },
+    // Since spice-ts follows the ngspice CKTop order (plain Newton first,
+    // #622) it, like ngspice, stops on the default reltol test; the iterate
+    // differs from ngspice's because the diode has no MODEINITJCT start yet.
+    tolerance: NGSPICE_NEWTON_RESIDUAL,
   },
   diode_breakdown: {
     deck: 'V1 in 0 -10\nR1 in out 1k\nD1 out 0 DZ\n.model DZ D IS=1e-14 BV=5 IBV=1m TCV=2m',

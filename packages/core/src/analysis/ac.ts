@@ -1,12 +1,14 @@
 import type { ResolvedOptions, ACAnalysis } from '../types.js';
 import type { CompiledCircuit } from '../circuit.js';
 import { createMatrixVariableIdentities, MNAAssembler } from '../mna/assembler.js';
-import { toCsc } from '../solver/csc-matrix.js';
+import { toCsc, type CscMatrix } from '../solver/csc-matrix.js';
+import { SparseMatrix } from '../solver/sparse-matrix.js';
 import { ComplexSparseSolver } from '../solver/complex-sparse-solver.js';
 import { ACResult } from '../results.js';
 import { frequencyGrid } from './frequency-grid.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { Diode } from '../devices/diode.js';
+import type { DeviceModel, StampContext } from '../devices/device.js';
 
 export interface ComplexACRHS {
   real: Float64Array;
@@ -51,6 +53,29 @@ export function buildACRHS(compiled: CompiledCircuit): ComplexACRHS {
   return { real, imaginary };
 }
 
+/**
+ * A device whose small-signal conductances depend on frequency (ngspice
+ * MESAacLoad with DELFO != 0: the output conductance moves from LAMBDA to
+ * LAMBDAHF). `stampFrequencyConductance` adds the difference to the
+ * frequency-independent stamp at angular frequency `omega`.
+ */
+interface FrequencyDependentConductance {
+  readonly frequencyDependent: boolean;
+  stampFrequencyConductance(ctx: StampContext, omega: number): void;
+}
+
+function isFrequencyDependent(device: DeviceModel): device is DeviceModel & FrequencyDependentConductance {
+  return 'stampFrequencyConductance' in device
+    && (device as DeviceModel & FrequencyDependentConductance).frequencyDependent;
+}
+
+function samePattern(a: CscMatrix, b: CscMatrix): boolean {
+  if (a.rowIdx.length !== b.rowIdx.length) return false;
+  for (let i = 0; i < a.colPtr.length; i++) if (a.colPtr[i] !== b.colPtr[i]) return false;
+  for (let i = 0; i < a.rowIdx.length; i++) if (a.rowIdx[i] !== b.rowIdx[i]) return false;
+  return true;
+}
+
 export function createLinearizedFrequencySystem(
   compiled: CompiledCircuit,
   options: ResolvedOptions,
@@ -75,17 +100,33 @@ export function createLinearizedFrequencySystem(
 
   const { csc: gCsc } = toCsc(assembler.G);
   const { csc: cCsc } = toCsc(assembler.C);
+  const variables = createMatrixVariableIdentities(nodeNames, branchNames);
   const solver = new ComplexSparseSolver();
-  solver.analyzePattern(
-    gCsc,
-    cCsc,
-    createMatrixVariableIdentities(nodeNames, branchNames),
-  );
+  solver.analyzePattern(gCsc, cCsc, variables);
+  let analyzedG = gCsc;
+
+  const dispersive = mode === 'standard' ? devices.filter(isFrequencyDependent) : [];
+  const conductanceAt = (omega: number): CscMatrix => {
+    if (dispersive.length === 0) return gCsc;
+    const delta = new MNAAssembler(nodeCount, branchCount);
+    delta.solution.set(dcSolution);
+    const deltaCtx = delta.getStampContext();
+    for (const device of dispersive) device.stampFrequencyConductance(deltaCtx, omega);
+    const merged = new SparseMatrix(nodeCount + branchCount);
+    merged.addMatrix(assembler.G, 1);
+    merged.addMatrix(delta.G, 1);
+    const { csc } = toCsc(merged);
+    if (!samePattern(csc, analyzedG)) {
+      solver.analyzePattern(csc, cCsc, variables);
+      analyzedG = csc;
+    }
+    return csc;
+  };
 
   return {
     size: nodeCount + branchCount,
     solve(omega, rhs) {
-      solver.factorize(gCsc, cCsc, omega);
+      solver.factorize(conductanceAt(omega), cCsc, omega);
       const [real, imaginary] = solver.solve(rhs.real, rhs.imaginary);
       return { real, imaginary };
     },
