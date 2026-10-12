@@ -45,22 +45,28 @@ describe('jimi-fuzz transient point growth', () => {
       convergence,
     });
 
+    // Each run stays below the trapezoidal NR retry budget that switches to
+    // Gear-2 (MAX_TRAP_NR_RETRIES), measured on its own share of the shared
+    // aggregate. ngspice-47 rejects 85 timepoints up to 0.1 s on this deck;
+    // with its CKTtrunc step control (#621) spice-ts takes a few NR retries too.
     const firstRun = createRun();
+    let firstRunRetries: number;
     try {
       for (let point = 1; point < 20_000; point++) firstRun.advance();
       expect(firstRun.simTime).toBeGreaterThan(0.1);
-      expect(firstRun.convergence.transient.nrRetries).toBe(0);
+      firstRunRetries = firstRun.convergence.transient.nrRetries;
+      expect(firstRunRetries).toBeLessThan(1_024);
     } finally {
       firstRun.dispose();
     }
 
     const secondRunStartRetries = convergence.transient.nrRetries;
+    expect(secondRunStartRetries).toBe(firstRunRetries);
     const secondRun = createRun();
     try {
-      expect(secondRun.convergence.transient.nrRetries).toBe(0);
       for (let point = 1; point < 20_000; point++) secondRun.advance();
       expect(secondRun.simTime).toBeGreaterThan(0.1);
-      expect(secondRun.convergence.transient.nrRetries - secondRunStartRetries).toBe(0);
+      expect(secondRun.convergence.transient.nrRetries - secondRunStartRetries).toBe(firstRunRetries);
     } finally {
       secondRun.dispose();
     }

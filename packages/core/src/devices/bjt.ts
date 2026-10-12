@@ -531,6 +531,8 @@ function validateChargeStorage(params: BJTParams, excessPhase: number): void {
 export class BJT implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (BJTtrunc: qbe, qbc, qsub). */
+  readonly truncationCoversCharges = true;
   readonly params: BJTParams;
   readonly suppliedParams: Readonly<Record<string, number>>;
   /** Instance-scaled parameters at TNOM; {@link params} holds them at the device temperature. */

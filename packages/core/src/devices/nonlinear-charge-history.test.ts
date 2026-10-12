@@ -114,16 +114,18 @@ function bsim3InverterChain(tran: string, options = ''): string {
 }
 
 // NHFET level-5 inverter chain (benchmarks/corpus/ngspice/fixtures/tests/hfet).
-// The reference is ngspice-47 v(4) on the same circuit run to convergence
-// (RELTOL=1e-6, TMAX=0.1 ps, hfet-inverter-converged.cir) across the
-// 1.0-1.2 ns rising edge. The Z cards there are listed driver first, which is
-// electrically identical but keeps ngspice's leaking HFET inverse flag (#448)
-// from selecting a different operating point; spice-ts is order independent.
+// The reference is ngspice-47 v(4) on the same circuit at the fixture's own
+// settings (`.tran 0.01n 3n`) across the 1.0-1.2 ns rising edge. The Z cards
+// there are listed driver first, which is electrically identical but keeps
+// ngspice's leaking HFET inverse flag (#448) from selecting a different
+// operating point; spice-ts is order independent. At these settings ngspice's
+// HFETAtrunc step control is 0.96 V off its own converged edge (RELTOL=1e-6,
+// TMAX=0.1 ps); spice-ts follows the same CKTtrunc control since #621.
 const HFET_EDGE_REFERENCE: ReadonlyArray<readonly [number, number]> = [
-  0.206341895, 0.0981934807, 0.0351273609, 0.0401224402, 0.0520986275, 0.0662495462,
-  0.0846217001, 0.113448054, 0.185603551, 1.03898952, 1.7374936, 1.87238645,
-  1.92876296, 1.95940602, 1.97650212, 1.98591888, 1.99102507, 1.99375824,
-  1.99520556, 1.99596494, 1.9963602,
+  0.206341895, 0.0862809756, 0.0292405972, 0.0410025096, 0.0538485303, 0.0691876982,
+  0.0888688582, 0.257379682, 1.15004205, 1.55551262, 1.7890128, 1.8805026,
+  1.93351019, 1.96409424, 1.97971377, 1.98847287, 1.99229914, 1.9948513,
+  1.99553003, 1.99644768, 1.99634101,
 ].map((value, index) => [1e-9 + index * 1e-11, value] as const);
 
 describe('nonlinear device charge integration matches ngspice-47 (#456)', () => {
@@ -133,13 +135,15 @@ describe('nonlinear device charge integration matches ngspice-47 (#456)', () => 
     expect(await maxDeviation(JFET_DECK, 'g', JFET_GATE_REFERENCE)).toBeLessThan(5e-3);
   });
 
-  it('follows the converged NHFET inverter-chain edge on the unchanged fixture', async () => {
+  it('follows the ngspice-47 NHFET inverter-chain edge on the unchanged fixture', async () => {
     const netlist = readFileSync(new URL(
       '../../../../benchmarks/corpus/ngspice/fixtures/tests/hfet/inverter.cir',
       import.meta.url,
     ), 'utf8');
-    // Before #456: 85.5 mV on this edge (spice-ts lagged the converged edge); after: 21.2 mV.
-    expect(await maxDeviation(netlist, '4', HFET_EDGE_REFERENCE)).toBeLessThan(4e-2);
+    // Against ngspice's converged edge: 85.5 mV before #456, 21.2 mV after it
+    // with the node-voltage LTE. Against ngspice-47 at the same settings that
+    // LTE put spice-ts 0.96 V off; with CKTtrunc step control (#621) 2.5 mV.
+    expect(await maxDeviation(netlist, '4', HFET_EDGE_REFERENCE)).toBeLessThan(1e-2);
   });
 
   it('integrates the JFET gate charge past the FC*PB forward-bias corner', async () => {

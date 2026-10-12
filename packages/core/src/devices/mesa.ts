@@ -24,6 +24,8 @@ import {
 export class MESA implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (MESAtrunc: qgs, qgd). */
+  readonly truncationCoversCharges = true;
   /**
    * Transient gate charges qgs and qgd, advanced as ngspice mesaload.c does:
    * q = q(n) + C(v) * (v - v(n)) and integrated with NIintegrate.

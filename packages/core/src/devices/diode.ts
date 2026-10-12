@@ -1,6 +1,9 @@
 import type { DiodeInstanceParams } from '../parser/diode-parser.js';
 import { InvalidCircuitError, UnsupportedModelParameterError } from '../errors.js';
-import { DEVICE_GMIN, type ChargeIntegration, type DeviceModel, type StampContext } from './device.js';
+import {
+  DEVICE_GMIN, type ChargeIntegration, type ChargeTruncation, type DeviceModel, type StampContext,
+} from './device.js';
+import { chargeTruncationTimestep } from './charge-state.js';
 import { assertNoUnsupportedTemperatureParameters, temperatureJunction } from './junction-temperature.js';
 
 export interface DiodeParams {
@@ -281,6 +284,8 @@ export class Diode implements DeviceModel {
    */
   private acceptedCharge: number | undefined;
   private previousAcceptedCharge: number | undefined;
+  /** q(n-2), the extra point the order-2 truncation error needs (ngspice CKTstate3). */
+  private olderAcceptedCharge: number | undefined;
   private acceptedChargeCurrent = 0;
   /** Integration rule of the most recent charge stamp, committed on acceptance. */
   private pendingIntegration: ChargeIntegration | undefined;
@@ -450,6 +455,7 @@ export class Diode implements DeviceModel {
     this.limited = false;
     this.acceptedCharge = undefined;
     this.previousAcceptedCharge = undefined;
+    this.olderAcceptedCharge = undefined;
     this.acceptedChargeCurrent = 0;
     this.pendingIntegration = undefined;
   }
@@ -769,12 +775,45 @@ export class Diode implements DeviceModel {
       // CKTstate0 into CKTstate1 with a zero capacitor current at MODEINITTRAN).
       this.acceptedCharge = charge;
       this.previousAcceptedCharge = undefined;
+      this.olderAcceptedCharge = undefined;
       this.acceptedChargeCurrent = 0;
       return;
     }
     this.acceptedChargeCurrent = this.integrateCharge(charge, capacitance, integration).current;
+    this.olderAcceptedCharge = this.previousAcceptedCharge;
     this.previousAcceptedCharge = this.acceptedCharge;
     this.acceptedCharge = charge;
+  }
+
+  /** The junction charge is truncated exactly as ngspice DIOtrunc does (#621). */
+  get truncationCoversCharges(): boolean {
+    return this.integratesTransientCharge;
+  }
+
+  /**
+   * ngspice DIOtrunc: CKTterr on the junction charge DIOcapCharge (bottom,
+   * sidewall and diffusion), evaluated at the converged trial solution in
+   * `ctx` against the accepted history. RSW and soft reverse recovery, the
+   * other DIOtrunc charges, are not supported.
+   */
+  truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
+    const integration = this.pendingIntegration;
+    const accepted = this.acceptedCharge;
+    const previous = this.previousAcceptedCharge;
+    if (!this.integratesTransientCharge || integration === undefined || accepted === undefined) return Infinity;
+    const secondOrder = integration.method === 'trapezoidal'
+      || (integration.method === 'gear2' && integration.prevDt !== undefined && previous !== undefined);
+    // Order 1 needs q(n+1), q(n), q(n-1); order 2 one point more.
+    if (previous === undefined || (secondOrder && this.olderAcceptedCharge === undefined)) return Infinity;
+    const [nA, nK] = this.nodes;
+    const voltage = (nA >= 0 ? ctx.getVoltage(nA) : 0) - (nK >= 0 ? ctx.getVoltage(nK) : 0);
+    const { charge, capacitance } = this.junctionCharge(voltage);
+    const { current } = this.integrateCharge(charge, capacitance, integration);
+    return chargeTruncationTimestep(
+      secondOrder ? integration.method : 'euler', secondOrder ? 2 : 1,
+      charge, accepted, previous, this.olderAcceptedCharge ?? 0,
+      current, this.acceptedChargeCurrent, truncation,
+    );
   }
 
   /** Depletion (bottom + sidewall) plus diffusion charge and dQ/dV (ngspice dioload.c). */

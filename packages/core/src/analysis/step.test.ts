@@ -414,10 +414,10 @@ describe('.step + .tran integration', () => {
 
     // At t=5ms (~5*tau for R=1k, ~0.5*tau for R=10k)
     // R=1k should be closer to 5V, R=10k should be lower
+    // The two runs have their own step grids, so compare their final points.
     const v1 = step1.transient!.voltage('2');
     const v2 = step2.transient!.voltage('2');
-    const lastIdx = v1.length - 1;
-    expect(v1[lastIdx]).toBeGreaterThan(v2[lastIdx]);
+    expect(v1.at(-1)).toBeGreaterThan(v2.at(-1)!);
   });
 });
 
