@@ -2,7 +2,7 @@
   "issue": "https://github.com/mfiumara/spice-ts/issues/774",
   "matchThreshold": 0.01,
   "ngspice": "ngspice-47",
-  "head": "e94a7debdfaf5814828795522f7457fa08d05f6c",
+  "head": "c8ea4bf6d0648d2fec42f6d33339ba852c34a1a6",
   "selection": "every corpus-f/corpus-g fixture whose declared, unmapped or committed spice-ts analyses mention noise (the only analysis type for which ngspice emits two plots)",
   "results": [
     {
@@ -119,31 +119,31 @@
       "runFixture": {
         "outcome": "matched",
         "worst": 1.51e-7,
-        "worstSignal": "noise inoise_spectrum",
+        "worstSignal": "noise onoise_spectrum",
         "comparedSignals": 4
       },
       "comparedSignals": 4,
       "before": {
-        "worst": 0.00000154,
+        "worst": 0.00000155,
         "worstSignal": "noise v(onoise_total)",
         "outcome": "matched"
       },
       "after": {
         "worst": 1.51e-7,
-        "worstSignal": "noise inoise_spectrum",
+        "worstSignal": "noise onoise_spectrum",
         "outcome": "matched"
       },
       "changedSignals": [
         {
           "signal": "noise v(onoise_total)",
-          "absoluteMax": 1.54e-10,
+          "absoluteMax": 1.55e-10,
           "before": {
             "ngspicePeak": 0,
-            "normalized": 0.00000154
+            "normalized": 0.00000155
           },
           "after": {
             "ngspicePeak": 0.00103,
-            "normalized": 1.5e-7
+            "normalized": 1.51e-7
           }
         }
       ]
@@ -325,38 +325,38 @@
       "id": "noise-cascodebjtnoise-cir",
       "sourcePath": "Netlists/NOISE/cascodeBjtNOISE.cir",
       "committedOutcome": "matched",
-      "committedWorst": 5.53e-7,
+      "committedWorst": 8.78e-8,
       "committedWorstSignal": "noise v(onoise_total)",
       "ngspice": "success",
       "spiceTs": "success",
       "runFixture": {
         "outcome": "matched",
-        "worst": 8.51e-8,
+        "worst": 8.78e-8,
         "worstSignal": "noise v(onoise_total)",
         "comparedSignals": 4
       },
       "comparedSignals": 4,
       "before": {
-        "worst": 5.53e-7,
+        "worst": 5.71e-7,
         "worstSignal": "noise v(onoise_total)",
         "outcome": "matched"
       },
       "after": {
-        "worst": 8.51e-8,
+        "worst": 8.78e-8,
         "worstSignal": "noise v(onoise_total)",
         "outcome": "matched"
       },
       "changedSignals": [
         {
           "signal": "noise v(onoise_total)",
-          "absoluteMax": 5.53e-11,
+          "absoluteMax": 5.71e-11,
           "before": {
             "ngspicePeak": 0,
-            "normalized": 5.53e-7
+            "normalized": 5.71e-7
           },
           "after": {
             "ngspicePeak": 0.00065,
-            "normalized": 8.51e-8
+            "normalized": 8.78e-8
           }
         }
       ]
@@ -365,19 +365,42 @@
       "corpus": "corpus-g",
       "id": "vanoise-commonemitterbjt-mextram-cir",
       "sourcePath": "Netlists/VANOISE/commonEmitterBjt_mextram.cir",
-      "committedOutcome": "spice-ts-loss",
-      "committedWorst": null,
-      "committedWorstSignal": null,
+      "committedOutcome": "matched",
+      "committedWorst": 1.74e-7,
+      "committedWorstSignal": "noise inoise_spectrum",
       "ngspice": "success",
-      "spiceTs": "unsupported",
+      "spiceTs": "success",
       "runFixture": {
-        "outcome": "spice-ts-loss",
-        "worst": null,
-        "worstSignal": null,
-        "comparedSignals": 0
+        "outcome": "matched",
+        "worst": 1.74e-7,
+        "worstSignal": "noise inoise_spectrum",
+        "comparedSignals": 4
       },
-      "note": "not scored (an engine did not succeed): metric change cannot apply",
-      "spiceTsError": "Unsupported bounded BJT model parameter: 'DTA'"
+      "comparedSignals": 4,
+      "before": {
+        "worst": 0.285,
+        "worstSignal": "noise v(inoise_total)",
+        "outcome": "mismatch"
+      },
+      "after": {
+        "worst": 1.74e-7,
+        "worstSignal": "noise inoise_spectrum",
+        "outcome": "matched"
+      },
+      "changedSignals": [
+        {
+          "signal": "noise v(inoise_total)",
+          "absoluteMax": 0.0000285,
+          "before": {
+            "ngspicePeak": 0,
+            "normalized": 0.285
+          },
+          "after": {
+            "ngspicePeak": 164,
+            "normalized": 1.74e-7
+          }
+        }
+      ]
     }
   ]
 }

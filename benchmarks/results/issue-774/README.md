@@ -19,26 +19,33 @@ hides one.
 and scores the same two executions with both lookups. The delta is the metric change alone. Raw
 output: `before-after.json`.
 
+Measured on the merge of main `51be0bfb` (#777, #767 BJT DTA/gdsub/N_MINGAIN) into this branch.
+`before-after.json` records the exact head it ran on.
+
 | Corpus | Fixture | Committed row | Signal | abs. error | before (peak 0, floor) | after (own ngspice value) | Outcome |
 |---|---|---|---|---|---|---|---|
-| corpus-g | Netlists/NOISE/cascodeBjtNOISE.cir | matched, 5.53e-7 | noise v(onoise_total) | 5.53e-11 | 5.53e-7 | 8.51e-8 (peak 6.50e-4) | matched → matched |
-| corpus-f | examples/various/bjtnoise.cir | spice-ts-loss (stale, see below) | noise v(onoise_total) | 1.54e-10 | 1.54e-6 | 1.50e-7 (peak 1.03e-3) | matched → matched |
+| corpus-g | Netlists/VANOISE/commonEmitterBjt_mextram.cir | matched, 1.74e-7 | noise v(inoise_total) | 2.85e-5 | 0.285 | 1.74e-7 (peak 164) | **mismatch → matched** |
+| corpus-g | Netlists/NOISE/cascodeBjtNOISE.cir | matched, 8.78e-8 | noise v(onoise_total) | 5.71e-11 | 5.71e-7 | 8.78e-8 (peak 6.50e-4) | matched → matched |
+| corpus-f | examples/various/bjtnoise.cir | spice-ts-loss (stale, see below) | noise v(onoise_total) | 1.55e-10 | 1.55e-6 | 1.51e-7 (peak 1.03e-3) | matched → matched |
+
+For VANOISE the worst signal after the fix is `noise inoise_spectrum` (1.74e-7), so the deck's
+worst error across all 4 compared signals is 1.74e-7. This is the #774 example (0.285 → 1.7e-7 per
+the issue). It became runnable in spice-ts with #767 (DTA), which landed on main as #777.
 
 - corpus-g `multiplicity-factor/bjt_diffpair_noise_baseline.net`: unchanged at 3.32e-5. Its worst
   signal is a spectrum, and none of its 4 normalised errors changes.
 - corpus-f `examples/noise/resdiv.cir`, `resdiv_gain.cir`, `bipolar_noise.cir`: not-compared
   before and after, because no common signal was scored.
-- The remaining 12 noise fixtures fail in spice-ts (unsupported or failed), so no metric applies.
-  Their first error lines are in `before-after.json`. corpus-g
-  `Netlists/VANOISE/commonEmitterBjt_mextram.cir` (the #774 example, 0.285 → 1.7e-7 per the issue)
-  is still a spice-ts loss on main until #767 (DTA) lands.
+- The remaining 9 of the 16 selected noise fixtures fail in spice-ts (unsupported or failed), so
+  no metric applies. Their first error lines are in `before-after.json`.
 
 ## Committed outcome tables
 
-- corpus-g `outcomes.json`/`README.md`: one value changed, cascodeBjtNOISE worst 5.53e-7 → 8.51e-8,
-  via `parity.ts --relabel`. The outcome is still matched and the totals are unchanged. A fresh
-  `runFixture` run on this head reproduces the row exactly (matched, 8.51e-8,
-  `noise v(onoise_total)`, 4 signals).
+- corpus-g `outcomes.json`/`README.md`: regenerated in full with `parity.ts` on the merge head
+  (ngspice-47, all 128 decks). Relative to main `51be0bfb` exactly two rows change, both metric-only:
+  VANOISE mextram mismatch 0.285 → matched 1.74e-7, and cascodeBjtNOISE matched 5.71e-7 → 8.78e-8.
+  Totals: matched 93 → 94, mismatch 15 → 14, spice-ts-loss 20 → 20. Outcome SHA-256
+  `7b94f007…` → `d405531c…`. #767's fixture changes on main are kept unchanged.
 - corpus-f `outcomes.json` is not edited here. Since that table was generated, simulator changes
   on main have moved `bjtnoise.cir` (committed spice-ts-loss, now matched 1.51e-7) and
   `bipolar_noise.cir` (committed spice-ts-loss, now not-compared). Those are simulator deltas,
