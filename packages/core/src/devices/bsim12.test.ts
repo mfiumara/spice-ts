@@ -108,6 +108,29 @@ describe('BSIM1/BSIM2 charge model (#657)', () => {
     }
   });
 
+  // b1.c:105 declares BSIM1 XPART as IF_FLAG: INPgetValue (inpgval.c:86-87)
+  // stores 1 without reading the number, so any XPART= (even XPART=0) selects
+  // 0/100 partitioning and only an absent XPART gives 40/60.
+  it.each([
+    // [XPART clause, ngspice-47 |i(vd)| at 1 GHz]
+    ['xpart=0', 5.1048683623e-04],
+    ['xpart=1', 5.1048683623e-04],
+    ['xpart=-2.5', 5.1048683623e-04],
+    ['', 1.2289311831e-03],
+  ] as const)('BSIM1 XPART is a flag (b1.c IF_FLAG): "%s"', async (xpart, magnitude) => {
+    const ac = (await simulate([
+      'bsim1 xpart flag',
+      'vd d 0 1',
+      'vg g 0 3 ac 1',
+      'vb b 0 -1',
+      'm1 d g 0 b nmos w=100u l=5u',
+      `.model nmos nmos level=4 tox=0.03 vfb=-1 phi=0.8 k1=1.3 muz=600 u0=0.05 n0=200 ${xpart}`,
+      '.ac lin 1 1g 1g',
+      '.end',
+    ].join('\n'))).ac!;
+    expectClose(ac.current('vd')[0].magnitude, magnitude, 1e-6, 0);
+  });
+
   it('BSIM1 resistor-load inverter transient', async () => {
     const tran = (await simulate(deck('benchmarks/bsim12-657/fixtures/bsim1-rload-tran.cir'))).transient!;
     const out = tran.voltage('out');

@@ -58,7 +58,11 @@ export interface BSIM1Model {
   cox: number;
   bulkJctPotential: number;
   sidewallJctPotential: number;
-  /** XPART flag (b1mpar.c: non-zero selects 0/100 partitioning). */
+  /**
+   * XPART flag. b1.c declares XPART as IF_FLAG, so INPgetValue (inpgval.c)
+   * stores 1 without reading the value (b1mpar.c): any XPART= on the card,
+   * including XPART=0, selects 0/100 partitioning; an absent XPART gives 40/60.
+   */
   chargePartition: boolean;
 }
 
@@ -89,7 +93,7 @@ export function resolveBSIM1Model(
     // b1temp.c limits PB and PBSW to at least 0.1 V.
     bulkJctPotential: Math.max(get('PB'), 0.1),
     sidewallJctPotential: Math.max(get('PBSW'), 0.1),
-    chargePartition: get('XPART') !== 0,
+    chargePartition: 'XPART' in values,
   };
 }
 
