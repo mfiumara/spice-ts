@@ -61,15 +61,14 @@ describe('corpus-E BJT Schmitt transient convergence (#139)', () => {
       expect(Math.max(...values)).toBeLessThan(1);
     }
 
+    // ngspice-47 runs this deck with `off` in place of `off=1` (88 points) and
+    // crosses the rising edge in one 20 ns step, 289.84 ns -> 309.84 ns, to
+    // v(6) = -0.0868354 V (#818). spice-ts takes the same step.
     const v6 = transient.voltage('6');
-    const edgeStart = v6.findIndex((value, index) => index > 0 && v6[index - 1]! < -0.9 && value >= -0.9);
-    const edgeEnd = v6.findIndex((value, index) => index > edgeStart && value >= -0.1);
-    expect(edgeStart).toBeGreaterThan(0);
-    expect(edgeEnd).toBeGreaterThan(edgeStart);
-    const edgeGaps = transient.time
-      .slice(edgeStart, edgeEnd + 1)
-      .map((time, index) => time - transient.time[edgeStart + index - 1]!);
-    expect(Math.max(...edgeGaps)).toBeLessThanOrEqual(5e-9);
+    const before = transient.time.findIndex(time => Math.abs(time - 289.84e-9) < 1e-15);
+    expect(before).toBeGreaterThan(0);
+    expect(transient.time[before + 1]).toBeCloseTo(309.84e-9, 15);
+    expect(Math.abs(v6[before + 1]! - -0.0868354)).toBeLessThan(1e-4);
 
     const telemetry = first.convergence!.transient;
     expect(telemetry.acceptedSteps).toBe(transient.time.length - 1);
