@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { ModelParams } from '../types.js';
-import { evaluateMESA, resolveMESAInstance, resolveMESAModel } from './mesa-model.js';
+import {
+  evaluateMESA, mesaInstanceState, resolveMESAInstance, resolveMESAModel,
+} from './mesa-model.js';
 
 // The ngspice/mesa-oscillator `driver` model without its external RD/RS,
 // so the terminal currents below are the intrinsic MESA level-2 device.
@@ -50,11 +52,12 @@ function expectRelative(actual: number, expected: number, label: string): void {
 describe('ngspice MESA level-2 (NMF) model', () => {
   const model = resolveMESAModel(intrinsicDriver);
   const instance = resolveMESAInstance({ L: 0.7e-6, W: 20e-6 });
+  const state = mesaInstanceState(model, instance);
 
   it.each(NGSPICE_47_OP_POINTS)(
     'matches ngspice-47 terminal currents and conductances at vgs=%d vds=%d',
     (vgs, vds, iVd, iVg, gm, gds, ggs, ggd) => {
-      const point = evaluateMESA(vgs, vgs - vds, model, instance);
+      const point = evaluateMESA(vgs, vgs - vds, state);
       // Source currents are measured into the + terminal of VD/VG.
       expectRelative(-(point.drainCurrent - point.gateDrainCurrent), iVd, 'i(vd)');
       expectRelative(-(point.gateSourceCurrent + point.gateDrainCurrent), iVg, 'i(vg)');
@@ -74,21 +77,23 @@ describe('ngspice MESA level-2 (NMF) model', () => {
       RDI: 0, RSI: 0, ASTAR: 4e4, GGR: 40, DEL: 0.04, N: 1, ZETA: 1, AG: 0,
     });
     expect(defaults.PHIB).toBeCloseTo(0.5, 15);
-    expect(resolveMESAInstance()).toEqual({ L: 1e-6, W: 20e-6 });
+    expect(resolveMESAInstance()).toEqual({ L: 1e-6, W: 20e-6, TS: 300.15, TD: 300.15 });
+    // mesaparam.c: TS/TD are given in Celsius.
+    expect(resolveMESAInstance({ TS: 400, TD: 100 })).toMatchObject({ TS: 673.15, TD: 373.15 });
   });
 
-  it('rejects fields outside the bounded NMF level-2 contract instead of ignoring them', () => {
-    expect(() => resolveMESAModel({ name: 'm', type: 'NMF', params: { LEVEL: 3 } }))
-      .toThrow('Unsupported NMF model level: 3');
+  it('rejects fields outside the supported NMF level-2/3 contract instead of ignoring them', () => {
+    expect(() => resolveMESAModel({ name: 'm', type: 'NMF', params: { LEVEL: 4 } }))
+      .toThrow('Unsupported NMF model level: 4');
     expect(() => resolveMESAModel({ name: 'm', type: 'PMF', params: {} }))
       .toThrow("Unsupported MESA model type: 'PMF'");
-    for (const name of ['TVTO', 'XTM0', 'RG', 'RI', 'RF', 'BETA', 'KS', 'FLO', 'NDU', 'GAMMA']) {
-      expect(() => resolveMESAModel({ name: 'm', type: 'NMF', params: { [name]: 1 } }))
+    for (const name of ['KS', 'VSG', 'IS']) {
+      expect(() => resolveMESAModel({ name: 'm', type: 'NMF', params: { LEVEL: 2, [name]: 1 } }))
         .toThrow(`Unsupported NMF level-2 model parameter: '${name}'`);
     }
     expect(() => resolveMESAInstance({ M: 2 }))
-      .toThrow("Unsupported NMF level-2 instance parameter: 'M'");
+      .toThrow("Unsupported NMF MESA instance parameter: 'M'");
     expect(() => resolveMESAInstance({ L: 0 }))
-      .toThrow('NMF level-2 instance L and W must be positive');
+      .toThrow('NMF MESA instance L and W must be positive');
   });
 });

@@ -1,6 +1,7 @@
 import type { CompiledCircuit } from '../circuit.js';
 import { BJT } from '../devices/bjt.js';
 import { BSIM3v3 } from '../devices/bsim3v3.js';
+import { ClassicBsimMosfet } from '../devices/bsim12-load.js';
 import { CurrentSource } from '../devices/current-source.js';
 import { Diode } from '../devices/diode.js';
 import { HFET1 } from '../devices/hfet1.js';
@@ -52,6 +53,8 @@ export function assertNoiseDevicesSupported(compiled: CompiledCircuit): void {
         }
       }
     } else if (device instanceof BSIM3v3) kind = 'MOSFET';
+    // b1noi.c / b2noi.c are not ported; reject rather than treat the channel as noiseless.
+    else if (device instanceof ClassicBsimMosfet) kind = `MOSFET ${device.setup.kind}`;
     // mos2noi.c is not ported; reject rather than treat the MOS2 channel as noiseless.
     else if (device instanceof MOS2) kind = 'MOSFET level 2';
     // ngspice HFETA has no noise routine, so its RD/RS are noiseless; reject

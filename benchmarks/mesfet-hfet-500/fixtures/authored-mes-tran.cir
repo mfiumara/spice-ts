@@ -1,0 +1,10 @@
+MES level-1 gate charge in transient (issue #500, project-authored)
+vdd 1 0 dc 3
+rl 1 d 1k
+vin g 0 pulse(-2 0 1n 1n 1n 5n 12n)
+rg g gi 50
+z1 d gi 0 mm area=2
+.model mm nmf level=1 vto=-1.5 beta=2e-3 lambda=0.05 alpha=2.5 b=0.3 rd=10 rs=10
++ cgs=1p cgd=0.3p pb=0.8 is=1e-13
+.tran 0.05n 30n
+.end
