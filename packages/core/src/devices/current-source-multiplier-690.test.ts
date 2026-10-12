@@ -105,10 +105,17 @@ describe('current source m= multiplier (#690)', () => {
     expect(circuit.parameterVector('I2', 'm')).toEqual([2]);
     expect(circuit.alterInstance('I2', 'm', [3])).toBeUndefined();
     expect(circuit.parameterVector('I2', 'm')).toEqual([3]);
-    const result = await simulate([...deck, '.control', 'op', 'alter I2 m=3', 'op', '.endc', '.end'].join('\n'));
+    // ngspice-47 isrcload.c ISRCcurrent = m * value: @i2[current] = 2e-3, then 3e-3.
+    const result = await simulate([
+      ...deck, '.control', 'op', 'let c1 = @i2[current]', 'echo c1 $&c1',
+      'alter I2 m=3', 'op', 'let c2 = @i2[current]', 'echo c2 $&c2', '.endc', '.end',
+    ].join('\n'));
     const [first, second] = result.control!.runs.map(run => run.result.dc!);
     expect(first.voltage('3')).toBeCloseTo(3.333333, 6);
     expect(second.voltage('3')).toBeCloseTo(4, 9);
+    const echoed = (name: string) => Number(result.control!.output.find(line => line.startsWith(`${name} `))!.split(' ')[1]);
+    expect(echoed('c1')).toBeCloseTo(2e-3, 12);
+    expect(echoed('c2')).toBeCloseTo(3e-3, 12);
   });
 
   it('keeps m when the circuit is written back with toNetlist()', async () => {
