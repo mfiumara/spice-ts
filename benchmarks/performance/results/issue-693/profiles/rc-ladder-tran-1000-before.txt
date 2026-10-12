@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/t693/prof-before/rc-ladder-tran-1000.cpuprofile: 60 samples, 175.7 ms sampled
+
+Top self time
+      34.3 ms  19.5%  (garbage collector)
+      23.0 ms  13.1%  flush packages/core/dist/chunk-3CJLQBVC.js:30691
+      19.2 ms  10.9%  buildCompanionSystem packages/core/dist/chunk-3CJLQBVC.js:29301
+      17.2 ms   9.8%  attemptStep packages/core/dist/chunk-3CJLQBVC.js:29477
+      14.9 ms   8.5%  compileSourceTextModule node:internal/modules/esm/utils:344
+      10.8 ms   6.1%  factorize packages/core/dist/chunk-3CJLQBVC.js:27754
+       6.9 ms   3.9%  advanceSolution packages/core/dist/chunk-3CJLQBVC.js:30014
+       6.0 ms   3.4%  stampPrevB packages/core/dist/chunk-3CJLQBVC.js:30278
+       5.4 ms   3.1%  stampDynamicDevices packages/core/dist/chunk-3CJLQBVC.js:28834
+       5.3 ms   3.0%  (program)
+       5.0 ms   2.8%  resolveCapacitorParallelResistance packages/core/dist/chunk-3CJLQBVC.js:1183
+       4.8 ms   2.8%  parseNetlist packages/core/dist/chunk-3CJLQBVC.js:26054
+
+Top inclusive time
+     175.7 ms 100.0%  (root)
+     116.5 ms  66.3%  simulate packages/core/dist/chunk-3CJLQBVC.js:35633
+     101.0 ms  57.5%  solveCompiledAnalyses packages/core/dist/chunk-3CJLQBVC.js:35688
+      96.0 ms  54.6%  solveTransient packages/core/dist/chunk-3CJLQBVC.js:30709
+      68.8 ms  39.2%  advanceSolution packages/core/dist/chunk-3CJLQBVC.js:30014
+      56.8 ms  32.3%  attemptStep packages/core/dist/chunk-3CJLQBVC.js:29477
+      34.3 ms  19.5%  (garbage collector)
+      27.1 ms  15.4%  buildCompanionSystem packages/core/dist/chunk-3CJLQBVC.js:29301
+      23.0 ms  13.1%  flush packages/core/dist/chunk-3CJLQBVC.js:30691
+      19.7 ms  11.2%  record packages/core/dist/chunk-3CJLQBVC.js:30681
+      19.7 ms  11.2%  save packages/core/dist/chunk-3CJLQBVC.js:30740
+      14.9 ms   8.5%  compileSourceTextModule node:internal/modules/esm/utils:344
