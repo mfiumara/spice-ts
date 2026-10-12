@@ -194,6 +194,13 @@ describe('simulate() evaluates .meas cards', () => {
     expect(result.measurements).toBeUndefined();
     expect(result.warnings).toContainEqual({ type: 'measure', message: '.meas ac cards were not evaluated: the deck runs no .ac analysis' });
   });
+
+  it('builds a par() operand that reads a branch current i(v1) as a B-source (#718)', async () => {
+    // ngspice-47 `ngspice -b`: x = -2.00000e-03.
+    const result = await simulate("t\nv1 1 0 1 ac 1\nr1 1 0 1k\n.tran 1u 10u\n.meas tran x find par('i(v1)*2') at=1u\n");
+    expect(result.measurements?.[0]).toMatchObject({ name: 'x', status: 'ok' });
+    expect(result.measurements?.[0].value).toBeCloseTo(-2e-3, 15);
+  });
 });
 
 describe('control-language meas', () => {
@@ -232,7 +239,7 @@ describe('control-language meas', () => {
 describe('unsupported .meas forms raise UnsupportedMeasureError', () => {
   it.each([
     ['.meas sp', '.sp lin 10 1 1k\n.meas sp x max s_1_1', /S-parameter/],
-    ['a par() operand spice-ts cannot build as a B-source', ".tran 1u 10u\n.meas tran x find par('i(v1)*2') at=1u", /B-source 'bpa_00 pa_00 0 v = i\(v1\)\*2'/],
+    ['a par() operand spice-ts cannot build as a B-source', ".tran 1u 10u\n.meas tran x find par('pwl(v(1),0,0,1,1)') at=1u", /B-source 'bpa_00 pa_00 0 v = pwl\(v\(1\),0,0,1,1\)'/],
   ])('%s', async (_label, cards, reason) => {
     const error = await simulate(`t\nv1 1 0 1 ac 1\nr1 1 0 1k\n${cards}\n`).catch((caught: unknown) => caught);
     expect(error).toBeInstanceOf(UnsupportedMeasureError);

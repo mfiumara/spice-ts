@@ -41,6 +41,7 @@ const supportedFixtures: Fixture[] = [
   { feature: 'bounded lossless transmission line', netlist: 'T1 in 0 out 0 Z0=50 TD=1n\n.tran 1n 10n' },
   { feature: '.measure/.meas cards', netlist: 'V1 out 0 1\n.tran 1n 10n\n.measure tran peak MAX v(out)\n.meas tran t1 when v(out)=0.5' },
   { feature: 'ngspice control-language scripting', netlist: 'V1 in 0 1\nR1 in 0 1k\n.control\nlet x = 1\nop\n.endc' },
+  { feature: 'branch-current behavioral source', netlist: 'V1 in 0 1\nB1 out 0 V=I(V1)*2\n.op' },
 ];
 
 const unsupportedFixtures: Fixture[] = [
@@ -50,7 +51,6 @@ const unsupportedFixtures: Fixture[] = [
   { feature: 'external source waveform', netlist: 'V1 in 0 EXTERNAL\n.tran 1n 10n' },
   { feature: 'circuit temperature', netlist: '.temp 27\n.op' },
   { feature: 'PSPICE logic behavioral source', netlist: 'B1 out 0 V=~V(in)\n.op' },
-  { feature: 'branch-current behavioral source', netlist: 'V1 in 0 1\nB1 out 0 V=I(V1)*2\n.op' },
 ];
 
 describe('ngspice parser compatibility fixtures', () => {

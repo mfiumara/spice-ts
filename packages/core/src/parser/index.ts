@@ -682,10 +682,20 @@ function parseDotCommand(
       );
       break;
     case '.SAVE':
+      // spice-ts returns all computed vectors through its result API, so this
+      // ngspice output-selection directive is metadata-only.
+      break;
     case '.PRINT':
     case '.PLOT':
-      // spice-ts returns all computed vectors through its result API, so these
-      // ngspice output-selection and formatting directives are metadata-only.
+      // Metadata-only like .save. ngspice-47 numparam leaves their braces
+      // unsubstituted and its print command cannot parse them either, so the
+      // analyses run unchanged; each brace expression is reported (#714).
+      for (const expression of context.match(/\{[^}]*\}/g) ?? []) {
+        circuit.addParseWarning(
+          `.print/.plot expression '${expression}' is not evaluated: spice-ts returns every computed vector, ` +
+          'and ngspice-47 does not substitute braces on output cards either',
+        );
+      }
       break;
     case '.MEAS':
     case '.MEASURE': {
