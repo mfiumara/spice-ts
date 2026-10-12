@@ -42,7 +42,8 @@ describe('TRNOISE / TRRANDOM source parsing', () => {
     const waveforms = circuit.toNetlist().split('\n').filter(line => /TRNOISE/i.test(line));
     expect(waveforms).toEqual([
       'V1 1 0 DC 0.5 TRNOISE(2e-8 5e-10 0 0 0.001 0.000002 0.000003)',
-      'V2 2 0 TRNOISE(0 0 0 0 0.005 0.000018 0.00003)',
+      // 30u is 30 * pow(10, -6) in ngspice-47 INPevaluate (#749).
+      'V2 2 0 TRNOISE(0 0 0 0 0.005 0.000018 0.000029999999999999997)',
       'I3 3 0 DC 0 TRNOISE(0.05 8e-12 1 0.001 0 0 0)',
       'V4 4 0 TRNOISE(1e-9 1e-9 1 1e-9 0 0 0)',
     ]);
@@ -154,7 +155,8 @@ describe('TRNOISE white and 1/f noise (ngspice-47 vsrcload.c/isrcload.c, 1-f-cod
 
   it('uses the explicit DC value for the operating point', async () => {
     const result = await simulate('op\nV1 1 0 DC 0.7 TRNOISE(1 1n 1 1 1 1u 1u)\nR1 1 0 1k\n.op\n.end');
-    expect(result.dc!.voltage('1')).toBe(0.7);
+    // 0.7 is 7 * pow(10, -1) in ngspice-47 INPevaluate (#749).
+    expect(result.dc!.voltage('1')).toBe(0.7000000000000001);
   });
 });
 

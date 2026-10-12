@@ -14,12 +14,16 @@ describe('TransientSim breakpoint collection', () => {
     // Expected PULSE edges (rising-edge start at t=0 is filtered):
     //   period 1: 100n, 4.9u, 5.0u
     //   period 2: 10u, 10.1u, 14.9u  (15.0u > stopTime, skipped)
-    expect(bps).toContain(100e-9);
-    expect(bps).toContain(0 + 100e-9 + 4.8e-6);          // 4.9e-6
-    expect(bps).toContain(0 + 100e-9 + 4.8e-6 + 100e-9); // ~5.0e-6
-    expect(bps).toContain(10e-6);
-    expect(bps).toContain(10e-6 + 100e-9);               // 10.1e-6
-    expect(bps).toContain(10e-6 + 100e-9 + 4.8e-6);      // 14.9e-6
+    // Card values as ngspice-47 INPevaluate reads them (#749): mantissa * pow(10, e).
+    const tr = 100 * 1e-9;
+    const pw = 48 * 1e-7;
+    const per = 10 * 1e-6;
+    expect(bps).toContain(tr);
+    expect(bps).toContain(0 + tr + pw);          // 4.9e-6
+    expect(bps).toContain(0 + tr + pw + tr);     // ~5.0e-6
+    expect(bps).toContain(per);
+    expect(bps).toContain(per + tr);             // 10.1e-6
+    expect(bps).toContain(per + tr + pw);        // 14.9e-6
     // Nothing past stopTime (allow MIN_BREAK = 1e-14 slack).
     for (const t of bps) expect(t).toBeLessThanOrEqual(15e-6 + 1e-14);
     sim.dispose();

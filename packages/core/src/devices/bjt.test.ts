@@ -80,7 +80,8 @@ describe('BJT Ebers-Moll', () => {
     `).compile();
     const bjt = compiled.devices.find(device => device.name === 'Q1');
     expect(bjt).toMatchObject({
-      params: { LEVEL: 1, IS: 1e-14, BF: 80, BR: 2, NF: 1.1, NR: 1.2, VAF: Infinity, IKF: Infinity, ISE: 0, NE: 1.5 },
+      // NF/NR as ngspice-47 INPevaluate reads 1.1 and 1.2: 11 * 0.1 and 12 * 0.1 (#749).
+      params: { LEVEL: 1, IS: 1e-14, BF: 80, BR: 2, NF: 11 * 0.1, NR: 12 * 0.1, VAF: Infinity, IKF: Infinity, ISE: 0, NE: 1.5 },
     });
   });
 

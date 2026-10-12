@@ -190,7 +190,8 @@ describe('DC Sweep via simulate()', () => {
     circuit.addResistor('R1', 'inner', 'outer', 1000);
     circuit.addAnalysis('dc', {
       source: 'Vinner', start: 0, stop: 5, step: 0.05,
-      secondary: { source: 'Vouter', start: 0.7, stop: 1, step: 0.05 },
+      // The deck's 0.7 reads as 7 * pow(10, -1) (ngspice-47 INPevaluate, #749).
+      secondary: { source: 'Vouter', start: 0.7000000000000001, stop: 1, step: 0.05 },
     });
     const programmaticResult = await simulate(circuit);
 
@@ -222,8 +223,9 @@ describe('DC Sweep via simulate()', () => {
     `);
 
     const sweep = result.dcSweep!;
-    expect([...sweep.sweepValues]).toEqual([0, 0.6, 0, 0.6]);
-    expect([...sweep.secondarySweepValues!]).toEqual([0, 0, 0.6, 0.6]);
+    // 0.6 reads as 6 * pow(10, -1) = 0.6000000000000001 (ngspice-47 INPevaluate, #749).
+    expect([...sweep.sweepValues]).toEqual([0, 0.6000000000000001, 0, 0.6000000000000001]);
+    expect([...sweep.secondarySweepValues!]).toEqual([0, 0, 0.6000000000000001, 0.6000000000000001]);
     expect([...sweep.sweepValues]).not.toContain(1.2);
     expect([...sweep.secondarySweepValues!]).not.toContain(1.2);
   });
