@@ -4,7 +4,10 @@ import { tokenizeNetlist, parseNumber } from './tokenizer.js';
 import { parseModelCard } from './model-parser.js';
 import { assertSupportedModelType } from './model-type.js';
 import { assertSupportedResistorModel, parseResistorElement } from './resistor-parser.js';
-import { extractRFPort, parseSourceCardWaveform, parseInstanceParams } from './waveform-parser.js';
+import {
+  extractRFPort, extractSourceMultiplier, hasSourceMultiplier, parseSourceCardWaveform, parseInstanceParams,
+  VOLTAGE_SOURCE_MULTIPLIER_ERROR,
+} from './waveform-parser.js';
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
 import { parseBJTInstance } from './bjt-parser.js';
@@ -1110,14 +1113,19 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       break;
     }
     case 'V': {
+      if (hasSourceMultiplier(tokens, 3)) {
+        // ngspice-47 vsrc has no `m`: "unknown parameter (m)" stops the run.
+        throw new ParseError(VOLTAGE_SOURCE_MULTIPLIER_ERROR, lineNumber, raw);
+      }
       const { tokens: sourceTokens, port } = extractRFPort(tokens, 3);
       const waveform = parseSourceCardWaveform(sourceTokens, 3, lineNumber, raw);
       circuit.addVoltageSource(name, tokens[1], tokens[2], waveform, port);
       break;
     }
     case 'I': {
-      const waveform = parseSourceCardWaveform(tokens, 3, lineNumber, raw);
-      circuit.addCurrentSource(name, tokens[1], tokens[2], waveform);
+      const { tokens: sourceTokens, multiplier } = extractSourceMultiplier(tokens, 3);
+      const waveform = parseSourceCardWaveform(sourceTokens, 3, lineNumber, raw);
+      circuit.addCurrentSource(name, tokens[1], tokens[2], waveform, multiplier);
       break;
     }
     case 'D':

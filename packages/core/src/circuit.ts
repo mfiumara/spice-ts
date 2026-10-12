@@ -63,7 +63,8 @@ import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
 import {
-  extractRFPort, parseSourceWaveform, parseInstanceParams, transientNoiseWaveform, transientRandomWaveform,
+  extractRFPort, extractSourceMultiplier, hasSourceMultiplier, parseSourceWaveform, parseInstanceParams,
+  transientNoiseWaveform, transientRandomWaveform, VOLTAGE_SOURCE_MULTIPLIER_ERROR,
 } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
 import { locateSubcircuitCall } from './parser/subcircuit-syntax.js';
@@ -167,6 +168,8 @@ interface DeviceDescriptor {
   xspice?: XspiceInstanceCard;
   /** RF port of a V source (`portnum`/`z0`/`pwr`/`freq`). */
   port?: RFPort;
+  /** I-source `m` multiplier (ngspice ISRCmValue); absent means 1. */
+  multiplier?: number;
 }
 
 /** PULSE coefficients in ngspice `@vsrc[pulse]` order. */
@@ -467,8 +470,10 @@ function formatDevice(desc: DeviceDescriptor): string {
         + `${desc.modelName ?? ''}${length}`;
     }
     case 'V':
-    case 'I':
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatSourceValue(desc)}${formatRFPort(desc.port)}`;
+    case 'I': {
+      const multiplier = desc.multiplier === undefined ? '' : ` m=${formatNumber(desc.multiplier)}`;
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatSourceValue(desc)}${formatRFPort(desc.port)}${multiplier}`;
+    }
     case 'D':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.modelName ?? ''}${tail}`.trim();
     case 'Q':
@@ -749,15 +754,17 @@ export class Circuit {
   snapshotControlState(): () => void {
     const descriptors = this.descriptors.map(descriptor => ({
       descriptor, value: descriptor.value, waveform: descriptor.waveform, params: descriptor.params,
+      multiplier: descriptor.multiplier,
     }));
     const models = Array.from(this._models.values(), model => ({ model, params: model.params }));
     const simulationOptions = this._simulationOptions;
     const temperature = this._temperature;
     return () => {
-      for (const { descriptor, value, waveform, params } of descriptors) {
+      for (const { descriptor, value, waveform, params, multiplier } of descriptors) {
         descriptor.value = value;
         descriptor.waveform = waveform;
         descriptor.params = params;
+        descriptor.multiplier = multiplier;
       }
       for (const { model, params } of models) model.params = params;
       this._simulationOptions = simulationOptions;
@@ -789,6 +796,13 @@ export class Circuit {
       const value = single();
       if (typeof value === 'string') return value;
       descriptor.value = value;
+      return undefined;
+    }
+    if (descriptor.type === 'I' && key === 'M') {
+      // ngspice-47 isrcpar.c: ISRC_M is settable.
+      const value = single();
+      if (typeof value === 'string') return value;
+      descriptor.multiplier = value;
       return undefined;
     }
     if (descriptor.type === 'V' || descriptor.type === 'I') {
@@ -831,6 +845,7 @@ export class Circuit {
     if (descriptor) {
       const primary: Record<string, string[]> = { R: ['R', 'RESISTANCE'], C: ['C', 'CAPACITANCE'], L: ['L', 'INDUCTANCE'] };
       if (primary[descriptor.type]?.includes(key)) return descriptor.value === undefined ? undefined : [descriptor.value];
+      if (descriptor.type === 'I' && key === 'M') return [descriptor.multiplier ?? 1];
       if (descriptor.type === 'V' || descriptor.type === 'I') return sourceParameter(descriptor.waveform, key);
       const value = descriptor.params?.[key];
       return value === undefined ? undefined : [value];
@@ -1059,14 +1074,20 @@ export class Circuit {
    * @param nodePos - Positive terminal node (current flows from pos to neg)
    * @param nodeNeg - Negative terminal node
    * @param waveform - Source waveform specification (DC, pulse, sine, or AC)
+   * @param multiplier - ngspice `m` instance multiplier: the DC, transient and
+   *   AC values are scaled by it (default 1); DISTOF terms are not.
    */
   addCurrentSource(
     name: string, nodePos: string, nodeNeg: string,
     waveform: Partial<SourceWaveform> & { dc?: number },
+    multiplier?: number,
   ): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
-    this.descriptors.push({ type: 'I', name, nodes: [nodePos, nodeNeg], waveform });
+    this.descriptors.push({
+      type: 'I', name, nodes: [nodePos, nodeNeg], waveform,
+      ...(multiplier === undefined ? {} : { multiplier }),
+    });
   }
 
   /**
@@ -1957,7 +1978,9 @@ export class Circuit {
           break;
         }
         case 'I':
-          devices.push(new CurrentSource(desc.name, nodeIndices, resolveWaveform(desc.waveform), noiseContext));
+          devices.push(new CurrentSource(
+            desc.name, nodeIndices, resolveWaveform(desc.waveform), noiseContext, desc.multiplier,
+          ));
           break;
         case 'C': {
           const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
@@ -3014,6 +3037,7 @@ export class Circuit {
           for (let i = 3; i < tokens.length; i++) {
             mappedTokens.push(evalToken(tokens[i]));
           }
+          if (hasSourceMultiplier(mappedTokens, 3)) throw new Error(VOLTAGE_SOURCE_MULTIPLIER_ERROR);
           const { tokens: sourceTokens, port } = extractRFPort(mappedTokens, 3);
           const waveform = parseSourceWaveform(sourceTokens, 3);
           result.push({
@@ -3029,11 +3053,13 @@ export class Circuit {
           for (let i = 3; i < tokens.length; i++) {
             mappedTokens.push(evalToken(tokens[i]));
           }
-          const waveform = parseSourceWaveform(mappedTokens, 3);
+          const { tokens: sourceTokens, multiplier } = extractSourceMultiplier(mappedTokens, 3);
+          const waveform = parseSourceWaveform(sourceTokens, 3);
           result.push({
             type: 'I', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             waveform,
+            ...(multiplier === undefined ? {} : { multiplier }),
           });
           break;
         }

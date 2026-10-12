@@ -19,12 +19,15 @@ export class CurrentSource implements DeviceModel {
   /**
    * @param noiseContext - shared random stream of the circuit's TRNOISE and
    *   TRRANDOM sources; a private one is created when absent.
+   * @param multiplier - ngspice `m` (ISRCmValue): isrcload.c and isrcacld.c
+   *   scale the DC, transient and AC loads by it; cktdisto.c does not.
    */
   constructor(
     readonly name: string,
     readonly nodes: number[],
     public waveform: SourceWaveform,
     noiseContext?: TransientNoiseContext,
+    readonly multiplier = 1,
   ) {
     if (waveform.type === 'trnoise' || waveform.type === 'trrandom') {
       const noise = (noiseContext ?? new TransientNoiseContext()).register('I', name, waveform);
@@ -35,7 +38,7 @@ export class CurrentSource implements DeviceModel {
 
   stamp(ctx: StampContext): void {
     const [nPlus, nMinus] = this.nodes;
-    const current = this.getValue(ctx) * ctx.sourceScale;
+    const current = this.multiplier * this.getValue(ctx) * ctx.sourceScale;
     this.lastCurrent = current;
 
     // SPICE defines positive current from the first node to the second.
@@ -85,7 +88,7 @@ export class CurrentSource implements DeviceModel {
       kind: 'node-pair',
       positiveNode,
       negativeNode,
-      magnitude: excitation.magnitude,
+      magnitude: this.multiplier * excitation.magnitude,
       phase: excitation.phase,
     };
   }

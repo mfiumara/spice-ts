@@ -30,6 +30,7 @@ import {
   UnsupportedCircuitModelTypeError,
 } from '../errors.js';
 import { parseTitlelessAsync } from '../parser/index.js';
+import { VOLTAGE_SOURCE_MULTIPLIER_ERROR } from '../parser/waveform-parser.js';
 import type { ACResult, DCSweepResult, DCResult, SimulationResult, StepResult, TransientResult } from '../results.js';
 import { simulate } from '../simulate.js';
 import type {
@@ -455,8 +456,12 @@ function addComponent(circuit: Circuit, component: CircuitComponentV1): void {
     case 'R': circuit.addResistor(component.name, named('p', 0), named('n', 1), numberParam(p, 'resistance')); break;
     case 'C': circuit.addCapacitor(component.name, named('p', 0), named('n', 1), optionalNumber(p, 'capacitance'), model, numberParamsExcept(p, ['capacitance', 'modelName'])); break;
     case 'L': circuit.addInductor(component.name, named('p', 0), named('n', 1), optionalNumber(p, 'inductance'), model, numberParamsExcept(p, ['inductance', 'modelName'])); break;
-    case 'V': circuit.addVoltageSource(component.name, named('p', 0), named('n', 1), waveform(p)); break;
-    case 'I': circuit.addCurrentSource(component.name, named('p', 0), named('n', 1), waveform(p)); break;
+    case 'V':
+      // ngspice-47 vsrc has no `m` ("unknown parameter (m)"), as in the SPICE parser.
+      if (p.m !== undefined) throw new InvalidCircuitError(VOLTAGE_SOURCE_MULTIPLIER_ERROR);
+      circuit.addVoltageSource(component.name, named('p', 0), named('n', 1), waveform(p));
+      break;
+    case 'I': circuit.addCurrentSource(component.name, named('p', 0), named('n', 1), waveform(p), optionalNumber(p, 'm')); break;
     case 'D': circuit.addDiode(component.name, named('anode', 0), named('cathode', 1), model); break;
     case 'Q': circuit.addBJT(component.name, named('collector', 0), named('base', 1), named('emitter', 2), required(model, 'model')); break;
     case 'M': circuit.addMOSFET(component.name, named('drain', 0), named('gate', 1), named('source', 2), required(model, 'model'), numberParamsExcept(p, ['modelName', 'channelType']), component.ports.find(port => port.name === 'bulk')?.net); break;
