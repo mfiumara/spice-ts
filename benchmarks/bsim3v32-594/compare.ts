@@ -2,7 +2,7 @@
 /**
  * Score a spice-ts build against the #594 ngspice-47 bsim3v32 reference.
  *
- *   pnpm exec tsx benchmarks/bsim3v32-594/compare.ts [--core <dist/index.js>] [--output <json>]
+ *   pnpm exec tsx benchmarks/bsim3v32-594/compare.ts [--core <dist/index.js>] [--label <text>] [--output <json>]
  *
  * Uses only the public simulate() API, so it runs against any build (main
  * rejects every VERSION=3.2.x deck, which is scored as a failure). Per case
@@ -159,7 +159,7 @@ async function main(): Promise<void> {
   const report = {
     schemaVersion: 'spice-ts-bsim3v32-compare/v1',
     engine: reference.engine,
-    core: arg('--core') ?? 'packages/core/dist/index.js',
+    core: arg('--label') ?? arg('--core') ?? 'packages/core/dist/index.js',
     threshold: THRESHOLD,
     totals,
     transient,

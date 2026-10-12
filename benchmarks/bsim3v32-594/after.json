@@ -1,0 +1,462 @@
+{
+ "schemaVersion": "spice-ts-bsim3v32-compare/v1",
+ "engine": "ngspice-47",
+ "core": "feat/594-bsim3v32 packages/core/dist",
+ "threshold": 0.01,
+ "totals": {
+  "within": 7576,
+  "total": 7576,
+  "casesMatched": 43,
+  "cases": 43
+ },
+ "transient": {
+  "v(n1)": 0.000097,
+  "v(n2)": 0.00012,
+  "v(out)": 0.000277,
+  "q(vdd)": 0.000275,
+  "points": 2031,
+  "seconds": 0.12
+ },
+ "cases": {
+  "tsmc025-322-nmos": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 5.51e-15,
+    "label": "i(VD) at {\"vgs\":0.5,\"vds\":0.05,\"vbs\":-0.9}: -1.0331224891625957e-7 vs -1.03312248916259e-7"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 0.00000181,
+    "label": "i(VD) at VD=-1.38777878078145e-16: 5.07157922510728e-19 vs 2.315907050046894e-18"
+   }
+  },
+  "tsmc025-322-pmos": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 6.8e-15,
+    "label": "i(VD) at {\"vgs\":0.7,\"vds\":0.05,\"vbs\":-0.9}: 0.00002043358023384411 vs 0.00002043358023384425"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 0.000309,
+    "label": "i(VD) at VD=-1.7: 0.004968081229525626 vs 0.00496961841586253"
+   }
+  },
+  "tsmc025-322-nmos-t25": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 5.96e-15,
+    "label": "i(VD) at {\"vgs\":0.5,\"vds\":0.9,\"vbs\":-0.9}: -2.933236621869307e-7 vs -2.93323662186929e-7"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 0.00000182,
+    "label": "i(VD) at VD=-1.38777878078145e-16: 5.103444183735741e-19 vs 2.329436218241463e-18"
+   }
+  },
+  "tsmc025-322-pmos-t25": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 2.31e-13,
+    "label": "i(VD) at {\"vgs\":0,\"vds\":1.8,\"vbs\":0}: 3.147524538368335e-10 vs 3.147524538369063e-10"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 0.000309,
+    "label": "i(VD) at VD=-1.7: 0.004965534453375916 vs 0.004967067142255102"
+   }
+  },
+  "tsmc025-322-nmos-t85": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 3.82e-15,
+    "label": "i(VD) at {\"vgs\":0.7,\"vds\":0.9,\"vbs\":-0.9}: -0.00011349638936825757 vs -0.000113496389368258"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 0.00000198,
+    "label": "i(VD) at VD=-1.38777878078145e-16: 1.6543181821125423e-26 vs 1.982921584757814e-18"
+   }
+  },
+  "corner-nmos-v3.2": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 1.83e-14,
+    "label": "i(VD) at {\"vgs\":0,\"vds\":-0.6,\"vbs\":-0.9}: 1.370586588583305e-12 vs 1.37058658858328e-12"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 4.03e-7,
+    "label": "i(VD) at VD=-1.38777878078145e-16: 1.0637235443194501e-19 vs 5.093298001331768e-19"
+   }
+  },
+  "corner-nmos-v3.2.2": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 1.83e-14,
+    "label": "i(VD) at {\"vgs\":0,\"vds\":-0.6,\"vbs\":-0.9}: 1.370586588583305e-12 vs 1.37058658858328e-12"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 4.03e-7,
+    "label": "i(VD) at VD=-1.38777878078145e-16: 1.0637235443194501e-19 vs 5.093298001331768e-19"
+   }
+  },
+  "corner2-nmos-v3.2": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 1.36e-8,
+    "label": "i(VD) at {\"vgs\":1.8,\"vds\":0,\"vbs\":-0.9}: -9.09999986362241e-13 vs -9.1e-13"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 1.3e-7,
+    "label": "i(VD) at VD=-1.38777878078145e-16: -5.64528334030339e-20 vs 7.40206290922798e-20"
+   }
+  },
+  "corner2-nmos-v3.2.3": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 7.19e-14,
+    "label": "i(VD) at {\"vgs\":0.7,\"vds\":0.9,\"vbs\":-0.9}: -2.7770233907779597e-7 vs -2.77702339077776e-7"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 7.4e-8,
+    "label": "i(VD) at VD=-1.38777878078145e-16: -5.64528334030339e-20 vs 1.75677956503881e-20"
+   }
+  },
+  "stress-nmos-v3.2": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 6.66e-15,
+    "label": "i(VD) at {\"vgs\":0.7,\"vds\":0.9,\"vbs\":-0.9}: -3.498186194722587e-7 vs -3.49818619472261e-7"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 4.65e-8,
+    "label": "i(VD) at VD=-1.38777878078145e-16: 1.2337852111338099e-20 vs 5.88550214111379e-20"
+   }
+  },
+  "stress-pmos-v3.2.4": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 3.23e-14,
+    "label": "i(VD) at {\"vgs\":1,\"vds\":0.05,\"vbs\":-0.9}: 1.0687212797711765e-10 vs 1.068721279771142e-10"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 0.000137,
+    "label": "i(VD) at VD=-1.7: 0.00001890901794017493 vs 0.00001890643369766658"
+   }
+  },
+  "corner-pmos-v3.2": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 2.81e-14,
+    "label": "i(VD) at {\"vgs\":1.8,\"vds\":-0.6,\"vbs\":0}: -7.64341376811803e-13 vs -7.64341376811831e-13"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 5.05e-16,
+    "label": "i(VD) at VD=0.4000000000000005: -4.000000000018245e-13 vs -4.00000000001825e-13"
+   }
+  },
+  "issue-589-nmos-v3.24": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 5.76e-15,
+    "label": "i(VD) at {\"vgs\":0.7,\"vds\":0.3,\"vbs\":-0.9}: -2.6565537041968748e-9 vs -2.65655370419689e-9"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 2.35e-8,
+    "label": "i(VD) at VD=-1.38777878078145e-16: 6.045083316406662e-21 vs 2.951210811382713e-20"
+   }
+  },
+  "stress-nmos-v3.3.0-t85": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 7.23e-15,
+    "label": "i(VD) at {\"vgs\":0.3,\"vds\":1.8,\"vbs\":0}: -6.7543976592283915e-9 vs -6.75439765922844e-9"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 3.76e-8,
+    "label": "i(VD) at VD=-1.38777878078145e-16: 9.908099796485113e-21 vs 4.748787864173354e-20"
+   }
+  },
+  "stress-pmos-v3.3.0-t-20": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 2.22e-14,
+    "label": "i(VD) at {\"vgs\":0.7,\"vds\":1.8,\"vbs\":0}: 5.588710743394594e-10 vs 5.588710743394469e-10"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 0.000166,
+    "label": "i(VD) at VD=-1.7: 0.000022052457784447135 vs 0.00002204879929735573"
+   }
+  },
+  "corner-nmos-v3.2.2-t60": {
+   "operatingPoints": {
+    "within": 84,
+    "total": 84,
+    "worst": 9.52e-15,
+    "label": "i(VD) at {\"vgs\":0,\"vds\":-0.6,\"vbs\":-0.9}: 2.307581904995947e-11 vs 2.307581904995925e-11"
+   },
+   "sweep": {
+    "within": 25,
+    "total": 25,
+    "worst": 3.9e-7,
+    "label": "i(VD) at VD=-1.38777878078145e-16: 1.0265250242521191e-19 vs 4.921928419288819e-19"
+   }
+  },
+  "charge:tsmc025-322-nmos": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 4.07e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1.8,\"vds\":0.9,\"vbs\":-0.9}: 1.3574057110283762e-14 vs 1.3574057110284314e-14"
+   }
+  },
+  "charge:tsmc025-322-pmos": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 6.01e-13,
+    "label": "d i(vg)/d vb at {\"vgs\":1.8,\"vds\":-0.6,\"vbs\":0}: -5.2911277029199483e-17 vs -5.2911277029167664e-17"
+   }
+  },
+  "charge:tsmc025-322-nmos-t25": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 7.68e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1.8,\"vds\":0.9,\"vbs\":0}: 1.378673897033188e-14 vs 1.378673897033294e-14"
+   }
+  },
+  "charge:tsmc025-322-pmos-t25": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 5.97e-13,
+    "label": "d i(vg)/d vb at {\"vgs\":1.8,\"vds\":-0.6,\"vbs\":0}: -3.59866114529293e-17 vs -3.5986611452907813e-17"
+   }
+  },
+  "charge:capmod0-xpart0-nmos-v3.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 3.01e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1,\"vds\":0.9,\"vbs\":0}: 7.65831665502711e-16 vs 7.65831665502688e-16"
+   }
+  },
+  "charge:capmod1-xpart0-nmos-v3.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 5.25e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1.8,\"vds\":0.9,\"vbs\":0}: 7.658316655026695e-16 vs 7.658316655026293e-16"
+   }
+  },
+  "charge:capmod1-xpart1-pmos-v3.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 1.54e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1.8,\"vds\":0.9,\"vbs\":0}: 3.5145570550269356e-16 vs 3.5145570550268813e-16"
+   }
+  },
+  "charge:capmod2-xpart1-nmos-v3.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 6.57e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1.8,\"vds\":0.9,\"vbs\":-0.9}: 3.639150079541842e-16 vs 3.6391500795420813e-16"
+   }
+  },
+  "charge:capmod2-xpart0-pmos-v3.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 1.37e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1,\"vds\":0.9,\"vbs\":0}: 9.535084286065209e-16 vs 9.535084286065339e-16"
+   }
+  },
+  "charge:capmod3-xpart1-nmos-v3.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 7.65e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1.8,\"vds\":0.9,\"vbs\":0}: 3.623274951510847e-16 vs 3.6232749515105697e-16"
+   }
+  },
+  "charge:capmod3-xpart05-pmos-v3.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 4.12e-14,
+    "label": "d i(vb)/d vg at {\"vgs\":1.8,\"vds\":0.05,\"vbs\":0}: 2.208753691111825e-17 vs 2.208753691111916e-17"
+   }
+  },
+  "charge:capmod3-dlc-nmos-v3.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 3.66e-14,
+    "label": "d i(vb)/d vg at {\"vgs\":1.8,\"vds\":0.05,\"vbs\":0}: 1.7607171862306456e-17 vs 1.76071718623071e-17"
+   }
+  },
+  "charge:capmod0-xpart0-nmos-v3.2.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 3.01e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1,\"vds\":0.9,\"vbs\":0}: 7.65831665502711e-16 vs 7.65831665502688e-16"
+   }
+  },
+  "charge:capmod1-xpart0-nmos-v3.2.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 5.25e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1.8,\"vds\":0.9,\"vbs\":0}: 7.658316655026695e-16 vs 7.658316655026293e-16"
+   }
+  },
+  "charge:capmod1-xpart1-pmos-v3.2.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 1.54e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1.8,\"vds\":0.9,\"vbs\":0}: 3.5145570550269356e-16 vs 3.5145570550268813e-16"
+   }
+  },
+  "charge:capmod2-xpart1-nmos-v3.2.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 6.57e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1.8,\"vds\":0.9,\"vbs\":-0.9}: 3.639150079541842e-16 vs 3.6391500795420813e-16"
+   }
+  },
+  "charge:capmod2-xpart0-pmos-v3.2.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 1.37e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1,\"vds\":0.9,\"vbs\":0}: 9.535084286065209e-16 vs 9.535084286065339e-16"
+   }
+  },
+  "charge:capmod3-xpart1-nmos-v3.2.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 7.65e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1.8,\"vds\":0.9,\"vbs\":0}: 3.623274951510847e-16 vs 3.6232749515105697e-16"
+   }
+  },
+  "charge:capmod3-xpart05-pmos-v3.2.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 4.12e-14,
+    "label": "d i(vb)/d vg at {\"vgs\":1.8,\"vds\":0.05,\"vbs\":0}: 2.208753691111825e-17 vs 2.208753691111916e-17"
+   }
+  },
+  "charge:capmod3-dlc-nmos-v3.2.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 3.66e-14,
+    "label": "d i(vb)/d vg at {\"vgs\":1.8,\"vds\":0.05,\"vbs\":0}: 1.7607171862306456e-17 vs 1.76071718623071e-17"
+   }
+  },
+  "charge:issue-589-nmos-v3.2.4": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 0.000679,
+    "label": "d i(vd)/d vb at {\"vgs\":-0.6,\"vds\":-0.6,\"vbs\":0}: -4.874349995903229e-25 vs 1.920572236779661e-25"
+   }
+  },
+  "charge:stress-pmos-v3.2.3": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 5.66e-15,
+    "label": "d i(vd)/d vg at {\"vgs\":1.8,\"vds\":0.9,\"vbs\":0}: 1.95127444211291e-15 vs 1.951274442112921e-15"
+   }
+  },
+  "charge:junction-temp-nmos-v3.2.2": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 5.39e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1.8,\"vds\":0.9,\"vbs\":0}: 7.442811840166376e-16 vs 7.442811840165974e-16"
+   }
+  },
+  "charge:junction-swg-pmos-v3.2.4": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 4.15e-13,
+    "label": "d i(vb)/d vg at {\"vgs\":1.8,\"vds\":0.05,\"vbs\":-0.9}: 6.643862272883163e-17 vs 6.643862272880403e-17"
+   }
+  },
+  "charge:junction-temp-nmos-v3.2.2-t90": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 2.49e-14,
+    "label": "d i(vg)/d vb at {\"vgs\":1.8,\"vds\":-0.6,\"vbs\":0}: 2.0398662484896447e-17 vs 2.039866248489594e-17"
+   }
+  },
+  "charge:junction-temp-nmos-v3.3.0-t90": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 4.11e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1.8,\"vds\":0.9,\"vbs\":0}: 7.42164425772086e-16 vs 7.421644257720555e-16"
+   }
+  },
+  "charge:capmod3-xpart1-nmos-v3.3.0-t-10": {
+   "ac": {
+    "within": 216,
+    "total": 216,
+    "worst": 9.9e-14,
+    "label": "d i(vd)/d vg at {\"vgs\":1.8,\"vds\":0.9,\"vbs\":-0.9}: 3.599199141941182e-16 vs 3.5991991419408255e-16"
+   }
+  }
+ }
+}

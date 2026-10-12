@@ -43,4 +43,21 @@ Not ported, and documented:
 
 ## Results (ngspice-47, identical netlists, 1% threshold)
 
-RESULTS_PLACEHOLDER
+| Check | main e2c73b29 | this branch |
+| --- | ---: | ---: |
+| DC terminal i(VD), 1344 operating points (16 cases) within 1% | 0 (every deck rejected) | 1344 / 1344, worst 1.4e-08 |
+| DC Id-Vds sweeps, 400 points | 0 | 400 / 400, worst 0.00031 |
+| AC terminal capacitance entries, 5832 (27 cases) | 0 | 5832 / 5832, worst 0.00068 |
+| b3v32ld.c Id/gm/gds/gmbs/Vth and charges/capacitances (device level, vitest) | n/a | 43 / 43 cases within 1% |
+| TSMC 3.2.2 inverter chain, TMAX 2 ps: v(n1) / v(n2) / v(out) / windowed q(vdd), max err ÷ peak | rejected (`UNSUPPORTED_MODEL_VERSION`) | 9.7e-05 / 0.00012 / 0.00028 / 0.00028 (2031 points; ngspice 2032) |
+
+`before.json` comes from `compare.ts --core <main e2c73b29 dist>`. Both receipts were taken on an Apple M5 Pro running Node 22.
+
+Corpus-f (identical fixtures, ngspice side unchanged at success, tran:37049):
+
+| Fixture | main | this branch |
+| --- | --- | --- |
+| examples/tclspice/tcl-testbench2/example.cir | unsupported: `LEVEL=8 VERSION=3.2.2` | unsupported: `NQSMOD` (BSIM3 NQS, #692) |
+| examples/tclspice/tcl-testbench4/example.cir | unsupported: `LEVEL=8 VERSION=3.2.2` | unsupported: `NQSMOD` (BSIM3 NQS, #692) |
+
+Published losses: both corpus-f decks of #594 are still spice-ts losses. Every one of their 96 transistors sets `NQSMOD=1`, which spice-ts does not implement (#692). Their TSMC cards also need the RSH series resistance (#691). With `NQSMOD=0` the decks compile and run, but that is not the identical deck, so no parity is claimed for it. The committed corpus-f `outcomes.json` is not regenerated here; the new `NQSMOD` gap bucket is added to `lib.ts` for the next corpus run.

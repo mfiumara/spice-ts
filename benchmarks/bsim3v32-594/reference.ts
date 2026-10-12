@@ -140,12 +140,12 @@ function acMatrix(c: Bsim3DcCase) {
     `print ${SOURCES.map(s => `i(${s})`).join(' ')}`,
   ]));
   const stdout = runBlocks(c, deck, blocks);
-  const blocks = blocksOf(stdout, 'AC', AC_GRID.length * SOURCES.length, c.name);
+  const results = blocksOf(stdout, 'AC', AC_GRID.length * SOURCES.length, c.name);
   const points = AC_GRID.map((bias, index) => ({
     ...bias,
     // c[excited][measured] = Im(i(measured)) / omega for 1 V on `excited`.
     c: Object.fromEntries(SOURCES.map((source, s) => [source, Object.fromEntries(SOURCES.map(measured => [
-      measured, imaginary(blocks[index * SOURCES.length + s], `i(${measured})`, `${c.name} ac ${index} ${source}`) / omega,
+      measured, imaginary(results[index * SOURCES.length + s], `i(${measured})`, `${c.name} ac ${index} ${source}`) / omega,
     ]))])),
   }));
   return { deck, deckSha256: sha256(deck), frequency: AC_FREQUENCY, points };
