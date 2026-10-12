@@ -3,6 +3,12 @@
 This file records the provenance and redistribution decision for benchmark fixtures.
 The machine-readable catalogue is `benchmarks/corpus/ngspice/manifest.json`.
 
+## Rust sparse LU spike (#802)
+
+- Source: matrices generated at run time by `benchmarks/rust-lu-spike/dump-matrices.ts` from the project-authored M2 scaling decks (`benchmarks/performance/scaling-m2-fixture.mjs`, MIT). Generated `.mtx` files are gitignored, not redistributed.
+- The Rust crate under `rust/` is an original port of spice-ts' own solver (MIT). No KLU/SuiteSparse code is used. SciPy (BSD) is an optional local reference for `fill-reference.py` only.
+- ngspice-47 receives the identical OP decks; commands, versions and raw samples are in `benchmarks/rust-lu-spike/results/*.json`.
+
 ## Global-node semantic probes (#502)
 
 - Source: original resistor-divider netlists authored in `benchmarks/global-nodes/compare.ts` in this repository (MIT, see `LICENSE`). No third-party fixture is copied or adapted.
