@@ -105,7 +105,9 @@ export function resolveBSIM2Model(
   for (const [key, value] of Object.entries(params)) {
     const upper = key.toUpperCase();
     if (!BSIM2_MODEL_PARAMETERS.has(upper)) {
-      throw new UnsupportedModelParameterError('', name, 'BSIM2', key);
+      throw new UnsupportedModelParameterError(
+        '', key, 'not a BSIM2 (b2par.c) model parameter', { modelName: name, model: 'BSIM2' },
+      );
     }
     if (value !== undefined) values[upper] = value;
   }

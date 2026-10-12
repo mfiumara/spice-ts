@@ -106,7 +106,9 @@ export function resolveClassicBsimInstance(
   const p = params ?? {};
   for (const key of Object.keys(p)) {
     if (!INSTANCE_PARAMETERS.has(key.toUpperCase())) {
-      throw new UnsupportedModelParameterError(deviceName, undefined, kind, key);
+      throw new UnsupportedModelParameterError(
+        deviceName, key, `not a ${kind} instance parameter`, { model: kind },
+      );
     }
   }
   return {

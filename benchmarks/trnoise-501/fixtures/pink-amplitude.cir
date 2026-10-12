@@ -1,0 +1,7 @@
+1/f-only TRNOISE amplitude (NAMP 1, alpha 1, TS 1u)
+V1 1 0 DC 0 TRNOISE(0 1u 1 1 0 0 0)
+R1 1 0 1k
+V2 2 0 DC 0 TRNOISE(0 1u 1.7 1 0 0 0)
+R2 2 0 1k
+.tran 1u 20m
+.end

@@ -1,6 +1,6 @@
 import { evaluateExpression } from './expression.js';
 import { conditionExpression, expandUserFunctions, parseFuncCard, type FunctionScope, type UserFunction } from './numparam.js';
-import { substituteBehavioralParameters } from './behavioral-expression.js';
+import { NODE_DEPENDENT_EXPRESSION, substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber } from './tokenizer.js';
 import { CycleError, ParseError } from '../errors.js';
 import type { IncludeResolver } from '../types.js';
@@ -42,6 +42,27 @@ export async function preprocessLines(
   guard: ProtocolExecutionGuard | undefined,
   lineOffset: number,
 ): Promise<string> {
+  return (await preprocessDeck(netlist, resolver, guard, lineOffset)).text;
+}
+
+export interface PreprocessedDeck {
+  /** The netlist with top-level parameters substituted. */
+  text: string;
+  /**
+   * Top-level `.param` values (upper-case names) for subcircuit expansion,
+   * which evaluates subcircuit expressions per instance (ngspice numparam
+   * global scope). Parameters whose value cannot be evaluated are omitted;
+   * referencing one from a subcircuit reports it as undefined.
+   */
+  parameters: Record<string, number>;
+}
+
+export async function preprocessDeck(
+  netlist: string,
+  resolver: IncludeResolver | undefined,
+  guard: ProtocolExecutionGuard | undefined,
+  lineOffset: number,
+): Promise<PreprocessedDeck> {
   const state = newCollectState();
   const { definitions, statements } = state;
   await collectStatements(netlist, resolver, new Set(), [], 0, state, guard, lineOffset);
@@ -74,9 +95,19 @@ export async function preprocessLines(
       evaluateParamExpression(definition, scopes.numparam, state.functionScopes[0].functions);
     }
   }
-  return statements.map(statement => statement.substitute
-    ? substituteStatement(statement, scopes)
+  const measureNames = new Set(statements.flatMap(statement => measureName(statement.text)));
+  const text = statements.map(statement => statement.substitute
+    ? substituteStatement(statement, scopes, measureNames)
     : statement.text).join('\n');
+  const parameters: Record<string, number> = {};
+  for (const name of definitions.keys()) {
+    try {
+      parameters[name] = scopes.numparam[name];
+    } catch {
+      // Unused by the top level, or reported there; see PreprocessedDeck.
+    }
+  }
+  return { text, parameters };
 }
 
 /** One `.if`/`.elseif`/`.else` branch; `condition` is absent for `.else`. */
@@ -396,21 +427,118 @@ function evaluateParamExpression(
   }
 }
 
-function substituteStatement(statement: PendingStatement, scopes: ParamScopes): string {
+function substituteStatement(statement: PendingStatement, scopes: ParamScopes, measureNames: ReadonlySet<string>): string {
   const preserveOutputFunctions = /^\.PRINT(?:\s|$)/i.test(statement.text.trim());
   try {
+    if (MEASURE_CARD.test(statement.text)) return substituteMeasureCard(statement.text, scopes, measureNames);
     const behavioralResistor = behavioralResistorAsBSource(statement.text);
     const text = behavioralResistor ?? statement.text;
     if (/^\s*b/i.test(text)) {
       // B-cards: `'...'`, `{...}` and bare `.param` names are substituted by
       // the B-card front end; `temper` stays a live ASRC variable.
-      const substituted = substituteExpressions(text, scopes.params, preserveOutputFunctions);
+      const substituted = substituteExpressions(text, scopes.params, preserveOutputFunctions, true);
       return substituteBehavioralParameters(substituted, scopes.params);
     }
     return substituteExpressions(quotedExpressionsAsBraces(text), scopes.numparam, preserveOutputFunctions);
   } catch (error) {
     if (error instanceof ParseError) throw error;
     throw toParseError(error, statement.line, statement.text.trim());
+  }
+}
+
+const MEASURE_CARD = /^\s*\.meas/i;
+
+/** Result name of a `.meas` card (upper-cased like `.param` names), if the line is one. */
+function measureName(text: string): string[] {
+  if (!MEASURE_CARD.test(text)) return [];
+  const name = text.trim().split(/\s+/)[2];
+  return name ? [name.toUpperCase()] : [];
+}
+
+/**
+ * numparam for a `.meas` card, following ngspice-47's deck preparation:
+ * inpcom.c wraps the bare right-hand side of every `name=value` in braces
+ * (except `v(...)`/`i(...)`, numbers and `last`), and subckt.c leaves a card
+ * that mentions `param` for after the other measurements, because it may read
+ * their results. Those cards keep their expression; only `.param` names that are
+ * not measurement results are replaced by their values here. `par('expr')`
+ * operands are B-source expressions and are left for the measure code.
+ */
+function substituteMeasureCard(text: string, scopes: ParamScopes, measureNames: ReadonlySet<string>): string {
+  const end = commentStart(text);
+  const operands: string[] = [];
+  let card = protectParOperands(text.slice(0, end), operands);
+  if (/param/i.test(card)) {
+    const assignment = /\b(?:param|expr)\s*=/i.exec(card);
+    const from = assignment ? assignment.index + assignment[0].length : card.length;
+    const expression = card.slice(from).replace(/\b([A-Za-z_]\w*)\b(?!\s*\()/g, (match: string, name: string, offset: number, whole: string) => {
+      const upper = name.toUpperCase();
+      if (/[\d.]/.test(whole[offset - 1] ?? '') || measureNames.has(upper) || !(upper in scopes.numparam)) return match;
+      return `(${formatNumber(scopes.numparam[upper])})`;
+    });
+    card = card.slice(0, from) + expression;
+  } else {
+    card = substituteExpressions(bracedMeasureValues(quotedExpressionsAsBraces(card)), scopes.numparam);
+  }
+  return card.replace(/\u0000(\d+)\u0000/g, (_match, index: string) => parOperandWithParams(operands[Number(index)], scopes));
+}
+
+/** A `par('expr')` operand becomes a B-source expression: substitute `.param` names as on a B-card. */
+function parOperandWithParams(operand: string, scopes: ParamScopes): string {
+  const inner = /^par\(\s*(?:'([^']*)'|\{([^{}]*)\})\s*\)$/i.exec(operand);
+  if (!inner) return operand;
+  const head = 'bpar 0 0 v=';
+  return `par('${substituteBehavioralParameters(head + (inner[1] ?? inner[2]), scopes.params).slice(head.length)}')`;
+}
+
+/** Replace each `par(...)` operand by a placeholder, collecting the originals. */
+function protectParOperands(text: string, operands: string[]): string {
+  let output = '';
+  let index = 0;
+  for (;;) {
+    const start = text.slice(index).search(/par\(/i);
+    if (start < 0) return output + text.slice(index);
+    const open = index + start + 3;
+    let depth = 0;
+    let close = open;
+    let quoted = false;
+    for (; close < text.length; close++) {
+      const character = text[close];
+      if (character === "'") quoted = !quoted;
+      if (quoted) continue;
+      if (character === '(') depth++;
+      else if (character === ')' && --depth === 0) break;
+    }
+    if (close >= text.length) return output + text.slice(index);
+    output += text.slice(index, index + start) + `\u0000${operands.length}\u0000`;
+    operands.push(text.slice(index + start, close + 1));
+    index = close + 1;
+  }
+}
+
+/** inpcom.c (inp_fix_param_values): brace the bare right-hand side of each `.meas` assignment. */
+function bracedMeasureValues(card: string): string {
+  let output = '';
+  let index = 0;
+  for (;;) {
+    let equals = card.indexOf('=', index);
+    while (equals >= 0 && (card[equals + 1] === '=' || /[!<>]/.test(card[equals - 1] ?? ''))) {
+      equals = card.indexOf('=', card[equals + 1] === '=' ? equals + 2 : equals + 1);
+    }
+    if (equals < 0) return output + card.slice(index);
+    let start = equals + 1;
+    while (/\s/.test(card[start] ?? '')) start++;
+    let stop = start;
+    let parens = 0;
+    while (stop < card.length && (!/\s/.test(card[stop]) || parens > 0)) {
+      if (card[stop] === '(') parens++;
+      if (card[stop] === ')') parens--;
+      stop++;
+    }
+    const value = card.slice(start, stop);
+    const keep = value === '' || /^[vi]\(/i.test(value) || /^(?:[\d{.\"[<\u0000]|[+-]\.?\d|true|false|last$)/i.test(value);
+    output += card.slice(index, start) + (keep ? value : `{${value}}`);
+    index = stop;
   }
 }
 
@@ -565,9 +693,16 @@ async function collectStatements(
       continue;
     }
 
-    // Inside a subcircuit — expressions are evaluated per instance later
+    // Inside a subcircuit — expressions are evaluated per instance later.
+    // A resistor whose value reads v()/i() becomes a B-source here too.
     if (inSubckt > 0) {
-      statements.push({ text: compactSubcircuitExpressions(line), substitute: false, line: lineNumber, scope });
+      let text: string;
+      try {
+        text = behavioralResistorAsBSource(line) ?? compactSubcircuitExpressions(line);
+      } catch (error) {
+        throw toParseError(error, lineNumber, trimmed);
+      }
+      statements.push({ text, substitute: false, line: lineNumber, scope });
       continue;
     }
 
@@ -675,13 +810,17 @@ async function collectStatements(
 }
 
 // Output vectors are evaluated after simulation, not as scalar parameters.
+// `keepNodeDependent` leaves B-card `{...}` that read v()/i() to the B-card
+// front end, which keeps them as ASRC sub-expressions.
 function substituteExpressions(
   line: string,
   params: Record<string, number>,
   preserveOutputFunctions = false,
+  keepNodeDependent = false,
 ): string {
   return line.replace(/\{([^}]+)\}/g, (match, expr: string) => {
     if (preserveOutputFunctions && isVoltageOrCurrentOutputExpression(expr)) return match;
+    if (keepNodeDependent && NODE_DEPENDENT_EXPRESSION.test(expr)) return match;
     const value = evaluateExpression(expr, params);
     return formatNumber(value);
   });

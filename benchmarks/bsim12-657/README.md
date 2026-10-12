@@ -66,8 +66,8 @@ so the device equations and charges match; the remaining i(vdd) difference
 is trapezoidal ringing, which ngspice shows too (its own i(vdd) alternates
 between about +1.1 mA and -5.4 mA on consecutive steps near 4.89 ns).
 
-AC: v(out) magnitude within 2.9e-9 (BSIM1) and 5.1e-7 (BSIM2) relative,
-phase within 1.4e-5 degrees, at all 71 frequencies.
+AC: v(out) magnitude within 2.9e-9 (BSIM1) and 5.7e-7 (BSIM2) relative,
+phase within 1.6e-5 degrees, at all 71 frequencies.
 
 ## Behaviour carried over from ngspice-47
 

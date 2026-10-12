@@ -52,9 +52,9 @@ describe('preprocessor', () => {
       await expect(preprocess(directive)).resolves.toBe(directive);
     });
 
-    it('does not reinterpret V/I calls in behavioral expressions', async () => {
-      await expect(preprocess('B1 out 0 V={V(in)}'))
-        .rejects.toThrow("Unknown function 'V'");
+    it('keeps V/I calls in behavioral {..} expressions as ASRC sub-expressions (#615)', async () => {
+      // ngspice-47 runs this card with v(out) = v(in) (inp_modify_exp).
+      await expect(preprocess('B1 out 0 V={V(in)}')).resolves.toBe('B1 out 0 V=(V(in))');
     });
 
     it.each([

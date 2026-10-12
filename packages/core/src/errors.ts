@@ -170,8 +170,8 @@ export class CycleError extends SpiceError {
 
 /**
  * Thrown when a MOSFET model card selects a `LEVEL` that spice-ts does not
- * implement (for example MOS2 `LEVEL=2` or MOS3 `LEVEL=3`). Such cards used
- * to run the Level-1 equations silently.
+ * implement (for example MOS3 `LEVEL=3`). Such cards used to run the
+ * Level-1 equations silently.
  */
 export class UnsupportedModelLevelError extends InvalidCircuitError {
   /** Stable machine-readable error code. */
@@ -282,29 +282,35 @@ export class ModelTypeMismatchError extends InvalidCircuitError {
 }
 
 /**
- * Thrown when a device instance or its model card sets a parameter that the
- * selected device model does not define, or whose ngspice-47 behaviour
- * spice-ts has not ported. Such a parameter would otherwise be ignored
- * silently.
+/**
+ * Thrown when a device instance or its model card sets a parameter that
+ * ngspice-47 honours (or that the selected device model does not define) but
+ * spice-ts does not implement, e.g. the diode sidewall resistance `RSW` or a
+ * BSIM1 card's `VTO`. Such parameters used to be accepted and silently ignored.
  */
 export class UnsupportedModelParameterError extends InvalidCircuitError {
   /** Stable machine-readable error code. */
   readonly code = 'UNSUPPORTED_MODEL_PARAMETER';
+  /** Model card name, when known */
+  public readonly modelName: string | undefined;
+  /** Device model, e.g. `BSIM1`, when known */
+  public readonly model: string | undefined;
 
   constructor(
-    /** Instance name, e.g. `M1` (empty when the model card itself is rejected) */
+    /** Instance name, e.g. `D1` (empty when the model card itself is rejected) */
     public readonly deviceName: string,
-    /** Model card name, when known */
-    public readonly modelName: string | undefined,
-    /** Device model, e.g. `BSIM1` */
-    public readonly model: string,
-    /** Parameter name as written */
+    /** Parameter name as written on the card */
     public readonly parameter: string,
+    /** What the parameter does in ngspice and why it cannot be simulated */
+    public readonly reason: string,
+    context: { modelName?: string; model?: string } = {},
   ) {
-    super(
-      `${model} ${modelName ? `model '${modelName}'` : `instance '${deviceName}'`}:`
-        + ` parameter '${parameter}' is not supported`,
-    );
+    const subject = deviceName
+      ? `Device '${deviceName}'`
+      : `${context.model ? `${context.model} ` : ''}model '${context.modelName ?? '?'}'`;
+    super(`${subject} uses unsupported model parameter '${parameter}': ${reason}`);
+    this.modelName = context.modelName;
+    this.model = context.model;
     this.name = 'UnsupportedModelParameterError';
   }
 }

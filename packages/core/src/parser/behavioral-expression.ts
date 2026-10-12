@@ -371,21 +371,33 @@ class Parser {
  * with their values and every bare `.param` name with its value (negative
  * values parenthesised so they keep their precedence). Function names,
  * `v()`/`i()` node lists and `name=` instance parameters are left alone.
+ * A `{...}`/`'...'` that reads `v()`/`i()` cannot be a number: as in
+ * ngspice-47 (`inp_modify_exp`), it stays part of the ASRC expression as a
+ * parenthesised sub-expression, with its parameters substituted.
  * `params` is keyed by upper-case name. Other cards are returned unchanged.
  */
 export function substituteBehavioralParameters(raw: string, params: Record<string, number>): string {
   const card = B_CARD_HEAD.exec(raw);
   if (!card) return raw;
-  const body = card[3];
+  return card[1] + card[2] + substituteBehavioralText(card[3], params);
+}
+
+/** Matches `v(` / `i(` (node voltage or branch current access). */
+export const NODE_DEPENDENT_EXPRESSION = /(?<![A-Za-z0-9_])[vi]\s*\(/i;
+
+function substituteBehavioralText(body: string, params: Record<string, number>): string {
   const format = (value: number) => (value < 0 ? `(${value})` : String(value));
-  let out = card[1] + card[2];
+  let out = '';
   let i = 0;
   while (i < body.length) {
     const char = body[i];
     if (char === '{' || char === "'") {
-      const close = body.indexOf(char === '{' ? '}' : "'", i + 1);
+      const close = char === '{' ? matchingBrace(body, i) : body.indexOf("'", i + 1);
       if (close < 0) throw new Error(`Unterminated ${char} expression in B-card`);
-      out += format(evaluateExpression(body.slice(i + 1, close), params));
+      const inner = body.slice(i + 1, close);
+      out += NODE_DEPENDENT_EXPRESSION.test(inner)
+        ? `(${substituteBehavioralText(inner, params)})`
+        : format(evaluateExpression(inner, params));
       i = close + 1;
       continue;
     }
@@ -414,6 +426,16 @@ export function substituteBehavioralParameters(raw: string, params: Record<strin
     }
   }
   return out;
+}
+
+/** Index of the `}` closing the `{` at `open`, or -1. */
+function matchingBrace(text: string, open: number): number {
+  let depth = 0;
+  for (let i = open; i < text.length; i++) {
+    if (text[i] === '{') depth++;
+    else if (text[i] === '}' && --depth === 0) return i;
+  }
+  return -1;
 }
 
 /** Rename every node referenced by `v()` (ground stays ground). */

@@ -75,7 +75,9 @@ export function resolveBSIM1Model(
   for (const [key, value] of Object.entries(params)) {
     const upper = key.toUpperCase();
     if (!BSIM1_MODEL_PARAMETERS.has(upper)) {
-      throw new UnsupportedModelParameterError('', name, 'BSIM1', key);
+      throw new UnsupportedModelParameterError(
+        '', key, 'not a BSIM1 (b1par.c) model parameter', { modelName: name, model: 'BSIM1' },
+      );
     }
     if (value !== undefined) values[upper] = value;
   }

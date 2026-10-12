@@ -70,7 +70,7 @@
         "i(v4)": {
           "peak": 0.000064124,
           "maxAbs": 4.973e-14,
-          "maxAbsOverPeak": 7.756e-10
+          "maxAbsOverPeak": 7.755e-10
         },
         "i(v5)": {
           "peak": 0.000061151,
@@ -193,8 +193,8 @@
       },
       "perVector": {
         "v(out)": {
-          "maxRelMagnitude": 5.083e-7,
-          "maxAbsPhaseDeg": 0.00001392
+          "maxRelMagnitude": 5.658e-7,
+          "maxAbsPhaseDeg": 0.00001551
         }
       }
     }
