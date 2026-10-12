@@ -258,3 +258,85 @@ pnpm exec tsx benchmarks/txl-cpl/compare.ts $(grep -l -i -E '^\s*\.model\s+\S+\s
 sed 's/^tran 0.1ns 60ns 0 0.35N/tran 0.1ns 60ns 0 0.01n/' benchmarks/corpus/corpus-f/fixtures/examples/TransmissionLines/cpl4_txl_2_line.sp > /tmp/cpl4_tmax.sp
 pnpm exec tsx benchmarks/txl-cpl/compare.ts /tmp/cpl4_tmax.sp
 ```
+
+## #561: step grid after t=0 (re-triage after #742/#758 and #708/#776)
+
+#561 had three acceptance points. All three hold on main `e94a7deb`. That main
+includes ngspice's first-step / order-1 restart (#742, PR #758) and the
+CKTdelta step integration (#708, PR #776). This PR changes no simulator code:
+it adds a regression test on the real corpus deck, tightens the unit-test
+bounds, and publishes the numbers.
+
+1. RC pulse deck from the issue: spice-ts takes ngspice-47's 520 points, and
+   the first 12 are the same (0, 0.2p, 0.4p, 0.8p, 1.6p, ... 82.8p).
+   `transient-order-control-742.test.ts` already pins the first 24.
+2. `cpl1_4_line.sp` runs to TSTOP. It takes the same 978 points as ngspice,
+   and the first 334 are identical (relative 1e-12, through the 15.9 ns PULSE
+   edge). Worst max err / swing is 0.549% (1.194% on `dd4e58be`). After #545
+   it stopped with `TimestepTooSmallError`. Pinned by
+   `packages/core/src/analysis/transient-step-grid-561.test.ts`, against
+   fixture `fixtures/ngspice47-cpl1-4-line-561.json` (ngspice-47, identical
+   netlist). The test fails on main before #758 (977 vs 978 points) and on
+   main before #776 (1.19% > 0.6%).
+3. swec-lines unit decks, max |err| in volts, before #545 -> now: txl1
+   0.0181 / 0.0380 -> 0.0011 / 0.0111; cpl_ibm2 4.3e-4 -> 1.6e-5; 4-line
+   0.0211 -> 0.0045; lossless/shunt-G 3.1e-3 -> 6e-15; complex-pole + short
+   TXL 1.8e-3 -> 7.2e-4. The bounds in `swec-lines.test.ts` are tightened to
+   these values.
+
+Corpus decks, `compare.ts`, worst max err / swing, points spice-ts / ngspice.
+Raw output: `results-561/corpus-main-e94a7deb.jsonl`. The "before" column is
+`results-549/corpus-main-dd4e58be.jsonl`. Several PRs merged between the two
+mains (#742, #708, the MOS/BJT work), so a row's change cannot be credited
+to one PR. Rows above 1% are **LOSS**.
+
+| Fixture | `dd4e58be` | `e94a7deb` | points ts / ng |
+|---|---|---|---|
+| cpl2_2_line.sp | 36.367% LOSS | **36.367% LOSS** | 97 / 96 |
+| cpl4_txl_2_line.sp (#549) | 26.869% LOSS | **26.848% LOSS** | 271 / 285 |
+| cpl3_4_line.sp | 5.867% LOSS | **6.209% LOSS** (worse) | 1018 / 1018 |
+| txl3_1_line.sp | 2.774% LOSS | **4.333% LOSS** (worse) | 267 / 263 |
+| cpl_ibm1 / cpl_ibm1a | 1.469% LOSS | **1.815% LOSS** (worse) | 390 / 392 |
+| cpl3_4_line.cir | 5.867% LOSS | **1.478% LOSS** | 1018 / 1018 |
+| cpl_ibm3.sp | 3.018% LOSS | **1.447% LOSS** | 124 / 124 |
+| txl2_3_line (both) | 2.236% LOSS | 0.768% | 493 / 493 |
+| txl1_1_line (both) | 3.792% LOSS | 0.735% | 492 / 492 |
+| cpl1_4_line.sp | 1.194% LOSS | 0.549% | 978 / 978 |
+| txl4_1_line.sp | 1.799% LOSS | 0.198% | 148 / 148 |
+| cpl_ibm2 (both) | 0.076% | 0.053% | 217 / 217 |
+
+Matched TMAX (`results-561/matched-tmax-main-e94a7deb.jsonl`): cpl4_txl_2_line
+at TMAX=0.01n is 0.036% (6026 / 6026 points). cpl2_2_line at TMAX=0.02n is
+0.603% (2412 / 2412).
+
+### What is left, and why it is not #561
+
+None of the remaining losses starts at the t=0 restart. The first accepted
+timepoint that differs from ngspice by more than 1e-9 relative is:
+
+| Deck | first differing point | size of the split |
+|---|---|---|
+| cpl_ibm1.sp | #8 (42 ps) | 4.5e-3 relative |
+| txl3_1_line.sp | #12 (1.016 ns, after the 1 ns edge) | 1e-6, 1.5e-4 by #15 |
+| cpl4_txl_2_line.sp | #16 (1.14 ns) | 7e-5 |
+| cpl2_2_line.sp | #29 (16 ns); within 1e-6 up to #46 (19.5 ns) | 1e-6 then 4e-4 |
+| cpl1_4_line.sp | #334 (16.17 ns) | below 1e-6 |
+
+These are splits in device-LTE step sizes, not dctran order control. The
+same ECL drivers without the CPL line (the P line replaced by six 50 ohm
+resistors) leave ngspice's grid only at #11, and by about 1e-6. cpl_ibm1 and
+cpl3_4_line are the two decks whose CPL setup coefficients differ from the
+FMA-built Homebrew ngspice by 1.2e-3 and 6.3e5 relative (table at the top).
+The decks where spice-ts is still far off are also decks where ngspice
+disagrees with itself. ngspice's own default run is 8.7% from its
+TMAX=0.02n run on cpl2_2_line, and 21-26% on cpl4_txl_2_line. Once both
+engines run at a fine TMAX, they agree to 0.6% and 0.036%. cpl4_txl_2_line
+stays on #549.
+
+Reproduce:
+
+```sh
+spice-heavy pnpm exec tsx benchmarks/txl-cpl/compare.ts benchmarks/corpus/corpus-f/fixtures/examples/TransmissionLines/*.sp benchmarks/corpus/corpus-f/fixtures/tests/transmission/*.cir
+node packages/core/src/analysis/fixtures/gen-ngspice47-cpl1-4-line-561.mjs   # regenerate the fixture
+pnpm -C packages/core exec vitest run src/analysis/transient-step-grid-561.test.ts src/devices/swec-lines.test.ts
+```
