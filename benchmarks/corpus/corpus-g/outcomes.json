@@ -27,7 +27,7 @@
     "fixtureAdaptation": "none",
     "perCircuitToleranceTuning": false,
     "matchThreshold": 0.01,
-    "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, 1e-12). Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
+    "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, floor). The floor is uniform per quantity (#593): 0.0001 V for node voltages v(...) and 1e-10 A for branch currents i(...), so a signal whose ngspice peak is zero or tiny matches when the absolute difference is at most the ngspice-47 default VNTOL (0.000001 V) or ABSTOL (1e-12 A); every other quantity (pole/zero roots, noise spectra) keeps 1e-12. Deck .options tolerances are not consulted. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
     "deterministicHashExcludes": [
       "environment",
       "tools.node",
@@ -43,15 +43,15 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 107,
+      "success": 104,
       "failed": 6,
-      "unsupported": 15
+      "unsupported": 18
     },
     "outcomes": {
-      "matched": 88,
-      "mismatch": 19,
+      "matched": 86,
+      "mismatch": 18,
       "not-compared": 0,
-      "spice-ts-loss": 21,
+      "spice-ts-loss": 24,
       "ngspice-failed": 0,
       "both-failed": 0
     }
@@ -76,6 +76,18 @@
       "issue": null
     },
     {
+      "bucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)",
+      "fixtures": 4,
+      "ngspiceSuccess": 4,
+      "ids": [
+        "bsimsoi3-b3soitrandefaults-cir",
+        "ekv26-inverter-transient-ekv26-cir",
+        "psp102-idvg0-id-t27-pmos-cir",
+        "psp103-invert-psp-testdta0-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/747"
+    },
+    {
       "bucket": "execution: other failure",
       "fixtures": 3,
       "ngspiceSuccess": 3,
@@ -93,16 +105,6 @@
       "ids": [
         "embedded-printline-for-embedded-cmosinverter-cir",
         "pce-ni-regression-printline-for-cmosinverter-regr-cir"
-      ],
-      "issue": null
-    },
-    {
-      "bucket": "model: other MOSFET levels (LEVEL=10, LEVEL=54)",
-      "fixtures": 2,
-      "ngspiceSuccess": 2,
-      "ids": [
-        "bsimsoi3-b3soitrandefaults-cir",
-        "sens-bsim4-issue694-fd-cir"
       ],
       "issue": null
     },
@@ -141,6 +143,15 @@
         "fourier-bad-dot-four-line1-cir"
       ],
       "issue": null
+    },
+    {
+      "bucket": "model: BSIM4 (LEVEL=14/54)",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "sens-bsim4-issue694-fd-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/3"
     }
   ],
   "fixtures": [
@@ -810,7 +821,7 @@
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=54)"
+      "gapBucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)"
     },
     {
       "id": "bsrc-bsrc-a1-cir",
@@ -1251,17 +1262,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:507"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'Xinv1.Mp1' (model 'pmos1') uses unsupported model LEVEL=260 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 5,
-      "worstNormalizedError": 0.00225,
-      "worstSignal": "tran i(vdd)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)"
     },
     {
       "id": "embedded-printline-for-embedded-cmosinverter-cir",
@@ -2821,17 +2831,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "dc:221"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'x1.m1' (model 'mymodel') uses unsupported model LEVEL=102 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 16,
-      "worstNormalizedError": 1.08e-15,
-      "worstSignal": "dc i(v_s)",
-      "outcome": "matched",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)"
     },
     {
       "id": "psp103-invert-psp-testdta0-cir",
@@ -2849,17 +2858,16 @@
         ]
       },
       "spiceTs": {
-        "status": "success",
-        "analyses": [
-          "tran:2071"
-        ]
+        "status": "unsupported",
+        "analyses": [],
+        "firstErrorLine": "MOSFET 'XINV1.MN1' (model 'pspqan') uses unsupported model LEVEL=103 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
       },
-      "comparedAnalyses": 1,
-      "comparedSignals": 6,
-      "worstNormalizedError": 0.0102,
-      "worstSignal": "tran v(vout)",
-      "outcome": "mismatch",
-      "gapBucket": null
+      "comparedAnalyses": 0,
+      "comparedSignals": 0,
+      "worstNormalizedError": null,
+      "worstSignal": null,
+      "outcome": "spice-ts-loss",
+      "gapBucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)"
     },
     {
       "id": "resistor-td-temp-dep-cir",
@@ -3193,7 +3201,7 @@
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=54)"
+      "gapBucket": "model: BSIM4 (LEVEL=14/54)"
     },
     {
       "id": "soln-dep-res-multsoldepres-cir",
@@ -3726,5 +3734,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "d9007df12b381cbef8b304cf826f66da8ae1f34f8c3eb56a4a9f4d0e4026befd"
+  "outcomeSha256": "60bd12e121c340ab4c1b483aa7106d3419002aad2a3a735c3459b9df7f27d704"
 }

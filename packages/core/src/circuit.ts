@@ -683,10 +683,18 @@ function internalNodeName(deviceName: string, suffix: string): string {
 }
 
 /**
- * MOS1 drain/source series resistances as ngspice-47 mos1temp.c computes them:
- * a given RD (RS) wins, and RD = 0 means none; otherwise RSH * NRD (RSH * NRS)
- * when RSH is given and non-zero, with NRD = NRS = 1 square by default
- * (mos1set.c). Both are divided by the instance multiplier M.
+ * MOS1 drain/source series resistances as ngspice-47 mos1set.c/mos1temp.c
+ * resolve them: 0 when the terminal has no prime node (shorted), `Infinity`
+ * when the prime node exists but its conductance is 0 (open terminal), else
+ * the resistance.
+ *
+ * mos1set.c creates the drain prime node when RD != 0 || (RSH != 0 && NRD != 0)
+ * (NRD = NRS = 1 square by default). mos1temp.c then sets the conductance to
+ * M / RD when RD is given (0 when RD = 0), else M / (RSH * NRD) when RSH is
+ * non-zero; the source likewise with RS and NRS. RD = 0 given with RSH != 0 and
+ * NRD != 0 thus leaves the drain open (#757). With RD not given, RSH != 0 and
+ * NRD = 0 ngspice divides by zero and its operating point fails; spice-ts keeps
+ * that zero-square terminal shorted.
  */
 function mos1SeriesResistances(
   card: Readonly<Record<string, number | undefined>>,
@@ -695,8 +703,9 @@ function mos1SeriesResistances(
   const m = instance?.M ?? 1;
   const sheet = card.RSH ?? 0;
   const resistance = (given: number | undefined, squares: number): number => {
-    if (given !== undefined) return given !== 0 ? given / m : 0;
-    return sheet !== 0 && squares !== 0 ? (sheet * squares) / m : 0;
+    if ((given ?? 0) === 0 && (sheet === 0 || squares === 0)) return 0;
+    const conductance = given !== undefined ? (given !== 0 ? m / given : 0) : m / (sheet * squares);
+    return conductance !== 0 ? 1 / conductance : Infinity;
   };
   return {
     drain: resistance(card.RD, instance?.NRD ?? 1),
@@ -2873,7 +2882,8 @@ export class Circuit {
         }
         if (model && (level === undefined || level === 1)) {
           // MOS1 (mos1set.c/mos1temp.c): RD/RS in front of the drain/source prime nodes, or
-          // RSH*NRD / RSH*NRS (one square by default) when RD/RS are not given (#719).
+          // RSH*NRD / RSH*NRS (one square by default) when RD/RS are not given (#719). An open
+          // terminal (#757) keeps its prime node but gets no resistor.
           const series = mos1SeriesResistances(model.params, desc.params);
           let [drain, gate, source] = desc.nodes;
           const bulk = desc.nodes[3] ?? source;
@@ -2883,12 +2893,16 @@ export class Circuit {
           }
           if (series.drain !== 0) {
             const prime = internalNodeName(desc.name, 'drain');
-            result.push({ type: 'R', name: `${desc.name}.RD`, nodes: [drain, prime], value: series.drain });
+            if (Number.isFinite(series.drain)) {
+              result.push({ type: 'R', name: `${desc.name}.RD`, nodes: [drain, prime], value: series.drain });
+            }
             drain = prime;
           }
           if (series.source !== 0) {
             const prime = internalNodeName(desc.name, 'source');
-            result.push({ type: 'R', name: `${desc.name}.RS`, nodes: [source, prime], value: series.source });
+            if (Number.isFinite(series.source)) {
+              result.push({ type: 'R', name: `${desc.name}.RS`, nodes: [source, prime], value: series.source });
+            }
             source = prime;
           }
           result.push({ ...desc, nodes: [drain, gate, source, bulk] });
