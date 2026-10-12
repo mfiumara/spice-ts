@@ -61,6 +61,8 @@ export interface ControlScriptOutcome {
   quit: boolean;
   /** Every `meas` command the script ran, in order; ngspice prints a failed one and continues. */
   measurements: MeasurementResult[];
+  /** Non-fatal warnings ngspice-47 prints while running the script (batch-mode `edit`). */
+  warnings: string[];
 }
 
 interface Plot {
@@ -75,6 +77,9 @@ interface Plot {
 type VariableValue = string | string[] | true;
 
 type Flow = 'next' | 'break' | 'continue';
+
+/** ngspice-47's batch-mode `edit` message ("Warning: " prefix dropped). */
+const EDIT_DISABLED_WARNING = "`edit' is disabled because 'interactive' has not been set";
 
 class QuitSignal {
   constructor(readonly status: number, readonly line: ControlSourceLine) {}
@@ -146,6 +151,7 @@ class ControlInterpreter {
   private readonly runs: ControlAnalysisRun[] = [];
   private readonly output: string[] = [];
   private readonly measurements: MeasurementResult[] = [];
+  private readonly warnings: string[] = [];
   /** inpcom.c `replaceno`: numbers the `vexprint<n>` vectors of `meas` operands. */
   private measureExpressionCount = 1;
   /**
@@ -163,9 +169,9 @@ class ControlInterpreter {
     } catch (signal) {
       if (!(signal instanceof QuitSignal)) throw signal;
       if (signal.status !== 0) throw new ControlScriptExitError(signal.status, signal.line.lineNumber, this.output);
-      return { runs: this.runs, output: this.output, quit: true, measurements: this.measurements };
+      return { runs: this.runs, output: this.output, quit: true, measurements: this.measurements, warnings: this.warnings };
     }
-    return { runs: this.runs, output: this.output, quit: false, measurements: this.measurements };
+    return { runs: this.runs, output: this.output, quit: false, measurements: this.measurements, warnings: this.warnings };
   }
 
   // -------------------------------------------------------------------------
@@ -295,6 +301,15 @@ class ControlInterpreter {
       }
       case 'echo':
         this.output.push(withoutRedirection(splitWords(rest)).map(unquote).join(' '));
+        return;
+      case 'edit':
+        // ngspice-47 batch mode: edit only opens an editor once `interactive` is set.
+        if (this.variables.has('interactive')) {
+          throw new UnsupportedControlCommandError(
+            'edit', 'the interactive netlist editor is not available', line.lineNumber, line.text,
+          );
+        }
+        this.warnings.push(EDIT_DISABLED_WARNING);
         return;
       case 'save':
         for (const word of splitWords(rest)) if (word.startsWith('@')) this.savedDeviceVectors.add(word.toLowerCase());

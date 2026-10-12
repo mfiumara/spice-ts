@@ -35,6 +35,8 @@ export const OUTPUT_ONLY_CONTROL_COMMANDS = new Set([
 const EXECUTED_CONTROL_COMMANDS = new Set([
   'run', 'let', 'unlet', 'set', 'unset', 'define', 'undefine', 'alter', 'altermod', 'option', 'options',
   'setplot', 'destroy', 'compose', 'strcmp', 'setscale', 'meas', 'linearize', 'fft', 'psd',
+  // Interactive editor: ngspice-47 batch mode warns and continues unless `interactive` is set.
+  'edit',
 ]);
 
 /** Why a known ngspice command is not executed, for the structured error. */
@@ -65,7 +67,7 @@ const STRUCTURE_KEYWORDS = new Set(['if', 'else', 'end', 'while', 'dowhile', 're
 /** The contract text listed in an unsupported-command error. */
 const CONTRACT = 'spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, '
   + 'option, setplot/destroy, compose, strcmp, setscale, meas, linearize, fft, psd, the sp and sens analyses, if/else/end, while/dowhile/repeat/foreach/break/continue, '
-  + 'and treats output-only commands (echo, print, plot, write, wrdata, save, ...) as no-ops';
+  + 'and treats output-only commands (echo, print, plot, write, wrdata, save, ...) and batch-mode edit as no-ops';
 
 /** Lower-cased command word of a control line. */
 export function commandName(text: string): string {

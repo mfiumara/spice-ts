@@ -396,6 +396,7 @@ function simulateControlScript(
     // Restore even on script/solver errors and non-zero quit statuses.
     restore();
   }
+  for (const message of outcome.warnings) warnings.push({ type: 'control', message });
   const result: SimulationResult = {
     warnings,
     convergence,
