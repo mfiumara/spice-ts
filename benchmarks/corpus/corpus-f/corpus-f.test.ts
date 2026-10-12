@@ -21,14 +21,14 @@ import {
   thirdPartyNotice,
 } from './lib.js';
 import { mergeReadme, outcomeDigest, packExecution, renderMarkdown, summarize, unpackExecution, type CorpusFReport } from './outcomes.js';
-import { CONTROL_SECTION, controlWrapperDeck, hasControlBlock, runControlReference } from './control-vectors.js';
+import { CONTROL_SECTION, controlWrapperDeck, hasControlBlock, noReferenceNote, runControlReference } from './control-vectors.js';
 
 const ROOT = 'benchmarks/corpus/corpus-f';
 const HAS_NGSPICE = spawnSync('ngspice', ['--version'], { encoding: 'utf8' }).status === 0;
 
 describe('corpus-f control wrapper (#521)', () => {
   it('sources a separate unchanged fixture and exports each declared type once', () => {
-    assert.equal(controlWrapperDeck(['dc', 'dc', 'ac']), '* corpus-f unmodified-fixture export wrapper\n.control\nsource fixture.cir\nsetplot dc1\nwrite dc.raw all\nsetplot ac1\nwrite ac.raw all\n.endc\n.end\n');
+    assert.equal(controlWrapperDeck(['dc', 'dc', 'ac']), '* corpus-f unmodified-fixture export wrapper\n.control\nalias quit echo corpus-f: deck quit deferred until export\nalias exit echo corpus-f: deck exit deferred until export\nsource fixture.cir\nsetplot dc1\nwrite dc.raw all\nsetplot ac1\nwrite ac.raw all\n.endc\n.end\n');
     assert.equal(hasControlBlock('.control in title\n.op\n.end\n'), false);
     assert.equal(hasControlBlock('title\n .CONTROL\nop\n.endc\n'), true);
   });
@@ -44,12 +44,31 @@ describe('corpus-f control wrapper (#521)', () => {
     assert.deepEqual(dc.signals['v(2)'].map(value => value.re), [0, 0.25, 0.5]);
     assert.equal(sha256(input), before);
   });
-  it('does not score a deck that quits before export as a match', { skip: !HAS_NGSPICE }, async () => {
+  it('exports vectors from a deck whose control block ends with quit or exit (#528)', { skip: !HAS_NGSPICE }, async () => {
+    const circuit = { localPath: 'toy.cir', analyses: ['op', 'tran'] } as CorpusFManifest['circuits'][number];
+    for (const stop of ['quit', 'quit 1', 'exit']) {
+      const input = Buffer.from(`quit toy\nV1 1 0 1\nR1 1 2 1k\nR2 2 0 3k\n.control\nop\ntran 1u 3u\n${stop}\necho never-reached-before-528\n.endc\n.end\n`);
+      const before = sha256(input);
+      const result = await runControlReference(input, circuit);
+      assert.equal(result.status, 'success', stop);
+      assert.deepEqual(result.execution.analyses.map(analysis => analysis.type), ['op', 'tran'], stop);
+      assert.equal(result.execution.analyses[0].series.signals['v(2)'][0].re, 0.75, stop);
+      assert.equal(result.note, undefined, stop);
+      assert.equal(sha256(input), before, stop);
+    }
+  });
+  it('does not score a deck that leaves no plot of its analysis type as a match', { skip: !HAS_NGSPICE }, async () => {
     const circuit = { localPath: 'toy.cir', analyses: ['op'] } as CorpusFManifest['circuits'][number];
-    const result = await runControlReference(Buffer.from('quit toy\nV1 1 0 1\nR1 1 0 1k\n.control\nop\nquit\n.endc\n.end\n'), circuit);
+    const result = await runControlReference(Buffer.from('destroy toy\nV1 1 0 1\nR1 1 0 1k\n.control\nop\ndestroy op1\n.endc\n.end\n'), circuit);
     assert.deepEqual(result.execution.analyses, []);
-    assert.match(result.note ?? '', /no reference vectors/);
-    assert.equal(outcome({ ngspice: result.status, spiceTs: 'success', comparedAnalyses: 0, spiceTsAnalyses: 1, worstNormalized: null, missingSignals: 0 }), 'not-compared');
+    assert.notEqual(result.status, 'success');
+    assert.match(result.firstErrorLine ?? '', /no such plot named op1/);
+    assert.equal(outcome({ ngspice: result.status, spiceTs: 'success', comparedAnalyses: 0, spiceTsAnalyses: 1, worstNormalized: null, missingSignals: 0 }), 'ngspice-failed');
+  });
+  it('names why a successful ngspice run left no reference (#528)', () => {
+    assert.match(noReferenceNote({ analyses: [], unmappedAnalyses: ['sens', 'sens'] }), /runs only sens analyses, which the comparison adapter does not map/);
+    assert.match(noReferenceNote({ analyses: ['tran'], unmappedAnalyses: [] }, ['tran.raw (ERR_STRING_TOO_LONG)']), /tran\.raw \(ERR_STRING_TOO_LONG\) could not be loaded/);
+    assert.match(noReferenceNote({ analyses: ['op'], unmappedAnalyses: [] }), /no plot of a declared analysis type was left to write/);
   });
   it('reports ngspice source failures rather than inventing a reference', { skip: !HAS_NGSPICE }, async () => {
     const circuit = { localPath: 'toy.cir', analyses: ['op'] } as CorpusFManifest['circuits'][number];
