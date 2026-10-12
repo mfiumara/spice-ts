@@ -76,7 +76,10 @@ export const GAP_ISSUES: Record<string, string> = {
 
 /** Findings beyond the gap buckets (correctness mismatches and harness defects) exposed by this batch. */
 export const FOLLOW_UP_ISSUES: ReadonlyArray<{ url: string; scope: string }> = [
-  { url: 'https://github.com/mfiumara/spice-ts/issues/719', scope: 'triage of the 14 decks where both engines succeed but spice-ts exceeds the 1% parity threshold' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/719', scope: 'triage of the 14 decks where both engines succeed but spice-ts exceeds the 1% parity threshold (TRIAGE-719.md)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/728', scope: 'node names are case-sensitive (ABM_FUNC/func.cir)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/733', scope: 'value-less L card: ngspice drops it and reports a floating node (INDUCTOR/ErrorMessageTest.cir)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/734', scope: 'unstable DC equilibrium decides the oscillator phase (WAMPDE/BLOCKING/simple_single_channel.cir)' },
 ];
 
 const OUTCOMES: Outcome[] = ['matched', 'mismatch', 'not-compared', 'spice-ts-loss', 'ngspice-failed', 'both-failed'];

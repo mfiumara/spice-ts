@@ -94,7 +94,9 @@ describe('BSIM3v3 charge model matches ngspice-47 b3ld.c (#626)', () => {
       }
     }
     expect(worst.error, worst.label).toBeLessThan(RELATIVE);
-  });
+    // A full 10 ps-step transient: 1.3-4.8 s under coverage on CI runners, so
+    // the 5 s vitest default timed out on loaded runners (#735).
+  }, 30_000);
 
   for (const c of reference.cases) {
     it(`${c.name}: intrinsic capacitances, state charges and junction capacitances`, () => {
