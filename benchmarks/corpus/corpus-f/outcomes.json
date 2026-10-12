@@ -27,7 +27,7 @@
     "fixtureAdaptation": "none",
     "perCircuitToleranceTuning": false,
     "matchThreshold": 0.01,
-    "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, 1e-12). Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
+    "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, floor). The floor is uniform per quantity (#593): 0.0001 V for node voltages v(...) and 1e-10 A for branch currents i(...), so a signal whose ngspice peak is zero or tiny matches when the absolute difference is at most the ngspice-47 default VNTOL (0.000001 V) or ABSTOL (1e-12 A); every other quantity (pole/zero roots, noise spectra) keeps 1e-12. Deck .options tolerances are not consulted. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
     "deterministicHashExcludes": [
       "environment",
       "tools.node",
@@ -43,15 +43,15 @@
       "unsupported": 12
     },
     "spiceTs": {
-      "success": 114,
+      "success": 118,
       "failed": 24,
-      "unsupported": 198
+      "unsupported": 194
     },
     "outcomes": {
-      "matched": 43,
-      "mismatch": 18,
+      "matched": 46,
+      "mismatch": 19,
       "not-compared": 53,
-      "spice-ts-loss": 192,
+      "spice-ts-loss": 188,
       "ngspice-failed": 0,
       "both-failed": 30
     }
@@ -59,8 +59,8 @@
   "gapBuckets": [
     {
       "bucket": "parse: other unsupported syntax",
-      "fixtures": 69,
-      "ngspiceSuccess": 63,
+      "fixtures": 64,
+      "ngspiceSuccess": 58,
       "ids": [
         "examples-control-structs-foreach-bjt-ft-sp",
         "examples-digital-auto-bridge-shared-line-cir",
@@ -91,10 +91,6 @@
         "examples-xspice-original-examples-analog-models2-dc-deck",
         "examples-xspice-original-examples-analog-models2-swept-dc-deck",
         "examples-xspice-original-examples-analog-models2-transient-deck",
-        "examples-xspice-original-examples-analog-models3-ac-deck",
-        "examples-xspice-original-examples-analog-models3-dc-deck",
-        "examples-xspice-original-examples-analog-models3-swept-dc-deck",
-        "examples-xspice-original-examples-analog-models3-transient-deck",
         "examples-xspice-original-examples-analog-models4-ac-deck",
         "examples-xspice-original-examples-analog-models4-dc-deck",
         "examples-xspice-original-examples-analog-models4-swept-dc-deck",
@@ -124,7 +120,6 @@
         "examples-xspice-various-astate-pulse-cir",
         "examples-xspice-various-astate-cir",
         "examples-xspice-various-pwlts1-cir",
-        "examples-xspice-various-ro-nand-digi-cir",
         "examples-xspice-various-x-fer-cir",
         "examples-xspice-various-xspice-c3-cir",
         "examples-xspice-verilator-delay-cir",
@@ -243,8 +238,8 @@
     },
     {
       "bucket": "model: VDMOS power MOSFET",
-      "fixtures": 10,
-      "ngspiceSuccess": 5,
+      "fixtures": 11,
+      "ngspiceSuccess": 6,
       "ids": [
         "examples-transmissionlines-urc-tm-sub-cir",
         "examples-various-transformers1-cir",
@@ -254,6 +249,7 @@
         "examples-xspice-original-examples-param-defaults-deck",
         "examples-xspice-original-examples-param-types-deck",
         "examples-xspice-original-examples-suffixes-deck",
+        "examples-xspice-various-ro-nand-digi-cir",
         "examples-xspice-various-vswitch-test-lin-cir",
         "examples-xspice-various-vswitch-test-log-cir"
       ],
@@ -277,6 +273,21 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/459"
     },
     {
+      "bucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)",
+      "fixtures": 7,
+      "ngspiceSuccess": 7,
+      "ids": [
+        "examples-measure-inv-meas-tran-auto-sp",
+        "examples-measure-inv-meas-tran-control-sp",
+        "examples-measure-inv-meas-tran-sp",
+        "examples-mos-ro-17-4-cir",
+        "examples-mos-ro-meas-cir",
+        "examples-p-to-n-examples-switch-oscillators-cir",
+        "tests-regression-misc-convergence-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/494"
+    },
+    {
       "bucket": "control: analysis commands inside .control (tran/dc/op/ac/...)",
       "fixtures": 6,
       "ngspiceSuccess": 6,
@@ -289,20 +300,6 @@
         "tests-regression-sens-sens-dc-2-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/489"
-    },
-    {
-      "bucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)",
-      "fixtures": 6,
-      "ngspiceSuccess": 6,
-      "ids": [
-        "examples-measure-inv-meas-tran-auto-sp",
-        "examples-measure-inv-meas-tran-control-sp",
-        "examples-measure-inv-meas-tran-sp",
-        "examples-mos-ro-17-4-cir",
-        "examples-mos-ro-meas-cir",
-        "examples-p-to-n-examples-switch-oscillators-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/494"
     },
     {
       "bucket": "convergence",
@@ -436,15 +433,6 @@
         "examples-shared-t-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/501"
-    },
-    {
-      "bucket": "syntax: µ (micro sign) scale suffix",
-      "fixtures": 1,
-      "ngspiceSuccess": 1,
-      "ids": [
-        "tests-regression-misc-convergence-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/508"
     },
     {
       "bucket": "timeout: spice-ts exceeded the 120 s bound",
@@ -1696,12 +1684,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:8041"
+          "tran:8028"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 4,
-      "worstNormalizedError": 2000000000000,
+      "worstNormalizedError": 20000,
       "worstSignal": "tran v(2)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -1750,7 +1738,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:30307"
+          "tran:30427"
         ]
       },
       "comparedAnalyses": 1,
@@ -1777,7 +1765,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 8: XSPICE code model 'd_inverter' (.model 'invert') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model invert d_inverter"
+        "firstErrorLine": "Parse error at line 8: XSPICE code model 'd_inverter' (.model 'invert') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model invert d_inverter"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1803,7 +1791,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: XSPICE code model 'd_buffer' (.model 'buf') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model buf d_buffer"
+        "firstErrorLine": "Parse error at line 11: XSPICE code model 'd_buffer' (.model 'buf') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model buf d_buffer"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1830,7 +1818,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:106289"
+          "tran:105701"
         ]
       },
       "comparedAnalyses": 1,
@@ -1884,7 +1872,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 20: XSPICE code model 'adc_bridge' (.model 'atod') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model atod adc_bridge"
+        "firstErrorLine": "Parse error at line 20: XSPICE code model 'adc_bridge' (.model 'atod') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model atod adc_bridge"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -2286,7 +2274,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 31: XSPICE code model 'memristor' (.model 'memr') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model memr memristor (rmin=1k rmax=10k rinit=7k alpha=0 beta=2000000000000 vt=1.6)"
+        "firstErrorLine": "Parse error at line 31: XSPICE code model 'memristor' (.model 'memr') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model memr memristor (rmin=1k rmax=10k "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -2385,7 +2373,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:243283"
+          "tran:244009"
         ]
       },
       "spiceTs": {
@@ -2737,7 +2725,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: XSPICE code model 'd_lut' (.model 'l_and') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model l_and d_lut table_values=and"
+        "firstErrorLine": "Parse error at line 7: XSPICE code model 'd_lut' (.model 'l_and') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model l_and d_lut table_values=and"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -3002,7 +2990,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:566"
+          "tran:541"
         ]
       },
       "comparedAnalyses": 1,
@@ -3057,7 +3045,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:2625"
+          "tran:2624"
         ]
       },
       "comparedAnalyses": 1,
@@ -3435,13 +3423,13 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:1667"
+          "tran:1531"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 90,
-      "worstNormalizedError": 0.755,
-      "worstSignal": "tran i(vin3a)",
+      "worstNormalizedError": 0.0451,
+      "worstSignal": "tran i(vcc)",
       "outcome": "mismatch",
       "gapBucket": null
     },
@@ -3671,18 +3659,18 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:3042"
+          "tran:3123"
         ]
       },
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:6575"
+          "tran:6675"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 10,
-      "worstNormalizedError": 1.14,
+      "worstNormalizedError": 1.4,
       "worstSignal": "tran v(9)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -3732,12 +3720,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:223853"
+          "tran:224376"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 5,
-      "worstNormalizedError": 5.44,
+      "worstNormalizedError": 4.04,
       "worstSignal": "tran v(3)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -3759,7 +3747,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:26350"
+          "tran:21896"
         ]
       },
       "comparedAnalyses": 0,
@@ -3812,7 +3800,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:1207"
+          "tran:1168"
         ]
       },
       "comparedAnalyses": 0,
@@ -3839,7 +3827,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:14554"
+          "tran:13792"
         ]
       },
       "comparedAnalyses": 0,
@@ -3866,7 +3854,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:8397"
+          "tran:9237"
         ]
       },
       "comparedAnalyses": 0,
@@ -3893,7 +3881,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:2523"
+          "tran:3057"
         ]
       },
       "comparedAnalyses": 0,
@@ -3920,7 +3908,7 @@
       "spiceTs": {
         "status": "failed",
         "analyses": [],
-        "firstErrorLine": "Timestep too small at t=3.049500659843922e-8: dt=1.9335714962913457e-16"
+        "firstErrorLine": "Timestep too small at t=2.3277023234941384e-8: dt=4.324896741631086e-16"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -3946,7 +3934,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:12037"
+          "tran:11137"
         ]
       },
       "comparedAnalyses": 0,
@@ -3973,7 +3961,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:690"
+          "tran:698"
         ]
       },
       "comparedAnalyses": 0,
@@ -4000,7 +3988,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:6359"
+          "tran:6220"
         ]
       },
       "comparedAnalyses": 0,
@@ -4027,7 +4015,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:710"
+          "tran:708"
         ]
       },
       "comparedAnalyses": 0,
@@ -4054,7 +4042,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:2203"
+          "tran:2191"
         ]
       },
       "comparedAnalyses": 0,
@@ -4081,7 +4069,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:2472"
+          "tran:2449"
         ]
       },
       "comparedAnalyses": 0,
@@ -4108,7 +4096,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:1021"
+          "tran:1014"
         ]
       },
       "comparedAnalyses": 0,
@@ -4135,7 +4123,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:4876"
+          "tran:3073"
         ]
       },
       "comparedAnalyses": 0,
@@ -4162,7 +4150,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:4053"
+          "tran:4063"
         ]
       },
       "comparedAnalyses": 0,
@@ -4189,7 +4177,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:666"
+          "tran:675"
         ]
       },
       "comparedAnalyses": 0,
@@ -4216,7 +4204,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:1026"
+          "tran:939"
         ]
       },
       "comparedAnalyses": 0,
@@ -4243,7 +4231,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:2499"
+          "tran:2506"
         ]
       },
       "comparedAnalyses": 0,
@@ -4270,7 +4258,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:574"
+          "tran:562"
         ]
       },
       "comparedAnalyses": 0,
@@ -5022,7 +5010,7 @@
         "status": "success",
         "analyses": [
           "dc:101",
-          "tran:1880"
+          "tran:1846"
         ]
       },
       "comparedAnalyses": 0,
@@ -5431,7 +5419,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 8: XSPICE code model 'd_osc' (.model 'd_osc1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model d_osc1 d_osc (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[1.0e6 1.0e6 4.0e6 4.0e6] rise_"
+        "firstErrorLine": "Parse error at line 8: XSPICE code model 'd_osc' (.model 'd_osc1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model d_osc1 d_osc (cntl_array=[-1.0 0.0 1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5457,7 +5445,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: XSPICE code model 'delay' (.model 'newdelay') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model newdelay delay(delay=400u)"
+        "firstErrorLine": "Parse error at line 7: XSPICE code model 'delay' (.model 'newdelay') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model newdelay delay(delay=400u)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5483,7 +5471,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 27: XSPICE code model 'd_cosim' (.model 'controller') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model controller d_cosim simulation=\"./mc\" sim_args=[\"./mc.so\" \"-gTarget=4500\"]"
+        "firstErrorLine": "Parse error at line 27: XSPICE code model 'd_cosim' (.model 'controller') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model controller d_cosim simulation"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5509,7 +5497,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model pwm_sin d_cosim simulation=\"./pwm\" sim_args = [ \"pwm\" ]"
+        "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model pwm_sin d_cosim simulation=\"./pwm"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5535,7 +5523,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'ring') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model ring d_cosim simulation=\"ivlng\" sim_args = [ \"delay\" ]"
+        "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'ring') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model ring d_cosim simulation=\"ivlng\" sim_"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5561,7 +5549,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model pwm_sin d_cosim simulation=\"ivlng\" sim_args = [ \"pwm\" ]"
+        "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model pwm_sin d_cosim simulation=\"ivlng"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5613,7 +5601,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: XSPICE code model 'ota' (.model 'newota') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model newota ota (gm=1m rout=1e12 rin=1Meg en=31n enk=100 in_noise=20p ink=2k incm=0 incmk=2k "
+        "firstErrorLine": "Parse error at line 7: XSPICE code model 'ota' (.model 'newota') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model newota ota (gm=1m rout=1e12 rin=1Meg e"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5752,7 +5740,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 27: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model filter1 s_xfer (in_offset=0.0 gain=1.0 num_coeff=[1.0] den_coeff=[1.0 1.414214 1.0]"
+        "firstErrorLine": "Parse error at line 27: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model filter1 s_xfer (in_offset=0.0 gai"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5779,7 +5767,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 27: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model filter1 s_xfer (in_offset=0.0 gain=1.0 num_coeff=[1.0] den_coeff=[1.0 1.425625 1.51"
+        "firstErrorLine": "Parse error at line 27: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model filter1 s_xfer (in_offset=0.0 gai"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5806,7 +5794,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 25: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model filter1 s_xfer (in_offset=0.0 gain=1.0 num_coeff=[1.0] den_coeff=[1.0 1.414214 1.0]"
+        "firstErrorLine": "Parse error at line 25: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model filter1 s_xfer (in_offset=0.0 gai"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5833,7 +5821,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 29: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model filter1 s_xfer (in_offset=0.0 gain=1.0 num_coeff=[1.0] den_coeff=[1.0 1.414214 1.0]"
+        "firstErrorLine": "Parse error at line 29: XSPICE code model 's_xfer' (.model 'filter1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model filter1 s_xfer (in_offset=0.0 gai"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5858,16 +5846,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 20: XSPICE code model 'hyst' (.model 'hyst1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model hyst1 hyst (in_low=0.0 in_high=1.0 hyst=0.1 out_lower_limit=0.0 out_upper_limit=1.0 inp"
+        "status": "success",
+        "analyses": [
+          "ac:21"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "comparedAnalyses": 1,
+      "comparedSignals": 15,
+      "worstNormalizedError": 1.11e-8,
+      "worstSignal": "ac v(2)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "examples-xspice-original-examples-analog-models3-dc-deck",
@@ -5885,16 +5874,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 18: XSPICE code model 'hyst' (.model 'hyst1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model hyst1 hyst (in_low=0.0 in_high=1.0 hyst=0.1 out_lower_limit=0.0 out_upper_limit=1.0 inp"
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "comparedAnalyses": 1,
+      "comparedSignals": 15,
+      "worstNormalizedError": 1.3e-15,
+      "worstSignal": "op i(v2)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "examples-xspice-original-examples-analog-models3-swept-dc-deck",
@@ -5912,16 +5902,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 18: XSPICE code model 'hyst' (.model 'hyst1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model hyst1 hyst (in_low=0.0 in_high=1.0 hyst=0.1 out_lower_limit=0.0 out_upper_limit=1.0 inp"
+        "status": "success",
+        "analyses": [
+          "dc:30"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "comparedAnalyses": 1,
+      "comparedSignals": 15,
+      "worstNormalizedError": 8.88e-13,
+      "worstSignal": "dc i(v2)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "examples-xspice-original-examples-analog-models3-transient-deck",
@@ -5939,16 +5930,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 19: XSPICE code model 'hyst' (.model 'hyst1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model hyst1 hyst (in_low=0.0 in_high=1.0 hyst=0.1 out_lower_limit=0.0 out_upper_limit=1.0 inp"
+        "status": "success",
+        "analyses": [
+          "tran:232"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "comparedAnalyses": 1,
+      "comparedSignals": 15,
+      "worstNormalizedError": 0.0181,
+      "worstSignal": "tran v(10)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "examples-xspice-original-examples-analog-models4-ac-deck",
@@ -5968,7 +5960,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 21: XSPICE code model 'sine' (.model 'sine1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model sine1 sine (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[1.0 1.0 100.0 100.0] out_low=-1.0"
+        "firstErrorLine": "Parse error at line 28: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model triangle1 triangle (cntl_arra"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5995,7 +5987,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: XSPICE code model 'sine' (.model 'sine1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model sine1 sine (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[1.0 1.0 100.0 100.0] out_low=-1.0"
+        "firstErrorLine": "Parse error at line 24: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model triangle1 triangle (cntl_arra"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6022,7 +6014,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: XSPICE code model 'sine' (.model 'sine1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model sine1 sine (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[1.0 1.0 100.0 100.0] out_low=-1.0"
+        "firstErrorLine": "Parse error at line 24: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model triangle1 triangle (cntl_arra"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6049,7 +6041,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 20: XSPICE code model 'sine' (.model 'sine1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model sine1 sine (cntl_array=[-1.0 0.0 10.0 20.0] freq_array=[500 500 2000 2000] out_low=-1.0"
+        "firstErrorLine": "Parse error at line 27: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model triangle1 triangle (cntl_arra"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6076,12 +6068,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:147"
+          "tran:144"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 4,
-      "worstNormalizedError": 0.00187,
+      "worstNormalizedError": 0.00113,
       "worstSignal": "tran i(v1)",
       "outcome": "matched",
       "gapBucket": null
@@ -6103,7 +6095,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 22: XSPICE code model 'dac_bridge' (.model 'dac') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model dac dac_bridge"
+        "firstErrorLine": "Parse error at line 22: XSPICE code model 'dac_bridge' (.model 'dac') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model dac dac_bridge"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6236,7 +6228,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: XSPICE code model 'adc_bridge' (.model 'adc') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model adc adc_bridge"
+        "firstErrorLine": "Parse error at line 9: XSPICE code model 'adc_bridge' (.model 'adc') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model adc adc_bridge"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6263,7 +6255,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: XSPICE code model 'adc_bridge' (.model 'atod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model atod1 adc_bridge (in_low=0.25 in_high=0.75 rise_delay=1e-9 fall_delay=1e-9)"
+        "firstErrorLine": "Parse error at line 14: XSPICE code model 'adc_bridge' (.model 'atod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model atod1 adc_bridge (in_low=0.25 i"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6290,7 +6282,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: XSPICE code model 'adc_bridge' (.model 'adc_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model adc_bridge1 adc_bridge (in_low=0.1 in_high=0.9 rise_delay=1.0e-12 fall_dela"
+        "firstErrorLine": "Parse error at line 17: XSPICE code model 'adc_bridge' (.model 'adc_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model adc_bridge1 adc_bridge (i"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6317,7 +6309,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 33: XSPICE code model 'adc_bridge' (.model 'adc_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model adc_bridge1 adc_bridge (in_low=0.1 in_high=0.9 rise_delay=1.0e-12 fall_dela"
+        "firstErrorLine": "Parse error at line 33: XSPICE code model 'adc_bridge' (.model 'adc_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model adc_bridge1 adc_bridge (i"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6344,7 +6336,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 41: XSPICE code model 'adc_bridge' (.model 'adc_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model adc_bridge1 adc_bridge (in_low=0.1 in_high=0.9 rise_delay=1.0e-12 fall_dela"
+        "firstErrorLine": "Parse error at line 41: XSPICE code model 'adc_bridge' (.model 'adc_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model adc_bridge1 adc_bridge (i"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6371,7 +6363,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 51: XSPICE code model 'adc_bridge' (.model 'adc_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model adc_bridge1 adc_bridge (in_low=0.1 in_high=0.9 rise_delay=1.0e-12 fall_dela"
+        "firstErrorLine": "Parse error at line 51: XSPICE code model 'adc_bridge' (.model 'adc_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model adc_bridge1 adc_bridge (i"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6426,7 +6418,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: XSPICE code model 'd_osc' (.model 'd_osc1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model d_osc1 d_osc (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[100 100 1000 1000] duty_cycle"
+        "firstErrorLine": "Parse error at line 14: XSPICE code model 'd_osc' (.model 'd_osc1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model d_osc1 d_osc (cntl_array=[-1.0 0.0 "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6453,7 +6445,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 16: XSPICE code model 'd_osc' (.model 'd_osc1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model d_osc1 d_osc (cntl_array=[-1.0 0.0 1.0 2.0] freq_array=[1.0 1.0 8.0 8.0] duty_cycle=0"
+        "firstErrorLine": "Parse error at line 16: XSPICE code model 'd_osc' (.model 'd_osc1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model d_osc1 d_osc (cntl_array=[-1.0 0.0 "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6534,7 +6526,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: XSPICE code model 'adc_bridge' (.model 'node_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model node_bridge1 adc_bridge"
+        "firstErrorLine": "Parse error at line 13: XSPICE code model 'adc_bridge' (.model 'node_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model node_bridge1 adc_bridge"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6617,7 +6609,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 15: XSPICE code model 'adc_bridge' (.model 'atod') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model atod adc_bridge"
+        "firstErrorLine": "Parse error at line 15: XSPICE code model 'adc_bridge' (.model 'atod') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model atod adc_bridge"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6644,7 +6636,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 20: XSPICE code model 'adc_bridge' (.model 'atod') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model atod adc_bridge"
+        "firstErrorLine": "Parse error at line 20: XSPICE code model 'adc_bridge' (.model 'atod') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model atod adc_bridge"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6671,7 +6663,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 33: XSPICE code model 'adc_bridge' (.model 'adc') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model adc adc_bridge"
+        "firstErrorLine": "Parse error at line 33: XSPICE code model 'adc_bridge' (.model 'adc') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model adc adc_bridge"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6778,7 +6770,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:142"
+          "tran:143"
         ]
       },
       "comparedAnalyses": 1,
@@ -6806,7 +6798,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:208"
+          "tran:209"
         ]
       },
       "comparedAnalyses": 1,
@@ -6860,7 +6852,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: XSPICE code model 'capacitoric' (.model 'cap') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model cap capacitoric (c=1000uf ic=1)"
+        "firstErrorLine": "Parse error at line 14: XSPICE code model 'capacitoric' (.model 'cap') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model cap capacitoric (c=1000uf ic=1)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6887,7 +6879,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: XSPICE code model 'adc_bridge' (.model 'node_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model node_bridge1 adc_bridge"
+        "firstErrorLine": "Parse error at line 13: XSPICE code model 'adc_bridge' (.model 'node_bridge1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model node_bridge1 adc_bridge"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6914,7 +6906,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 15: XSPICE code model 'd_osc' (.model 'var_clock') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model var_clock d_osc(cntl_array = [-2 -1 1 2] freq_array = [1e3 1e3 10e3 10e3] duty_cyc"
+        "firstErrorLine": "Parse error at line 15: XSPICE code model 'd_osc' (.model 'var_clock') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model var_clock d_osc(cntl_array = [-2"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6940,7 +6932,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: XSPICE code model 'd_pwm' (.model 'pwm') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model pwm d_pwm( frequency = 1.2Meg cntl_array = [-1 -0.99 0.99 1] dc_array = [0.01 0.01 0.99 0"
+        "firstErrorLine": "Parse error at line 6: XSPICE code model 'd_pwm' (.model 'pwm') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model pwm d_pwm( frequency = 1.2Meg cntl_arra"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6967,7 +6959,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 15: XSPICE code model 'seegen' (.model 'seemod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model seemod1 seegen (tdelay = 11n tperiod=25n let=10.5 cdepth=1.2 trise=2e-11 tfall=5e-1"
+        "firstErrorLine": "Parse error at line 15: XSPICE code model 'seegen' (.model 'seemod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model seemod1 seegen (tdelay = 11n tper"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6993,7 +6985,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: XSPICE code model 'seegen' (.model 'seemod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model seemod1 seegen (tdelay = 5n tperiod=4.5n)"
+        "firstErrorLine": "Parse error at line 4: XSPICE code model 'seegen' (.model 'seemod1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model seemod1 seegen (tdelay = 5n tperio"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7071,7 +7063,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: XSPICE code model 'cpline' (.model 'CPLINE1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .MODEL CPLINE1 CPLINE(ze=84.48 zo=53.99 l=25e-3 ere=3.34 ero=2.829 ao=0 ae=0)"
+        "firstErrorLine": "Parse error at line 9: XSPICE code model 'cpline' (.model 'CPLINE1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .MODEL CPLINE1 CPLINE(ze=84.48 zo=53.99 l"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7097,7 +7089,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 12: XSPICE code model 'cpline' (.model 'CPLINE1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .MODEL CPLINE1 CPLINE(ze=100 zo=50 l=100e-3 ere=1 ero=1 ao=0 ae=0)"
+        "firstErrorLine": "Parse error at line 12: XSPICE code model 'cpline' (.model 'CPLINE1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .MODEL CPLINE1 CPLINE(ze=100 zo=50 l=100"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7123,7 +7115,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: XSPICE code model 'cpmlin' (.model 'CPMLIN1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .MODEL CPMLIN1 CPMLIN(w=1e-3 l=20e-3 s=0.3e-3 er=9.8 h=1e-3 t=35e-6 tand=1e-3 rho=0.022e-6 "
+        "firstErrorLine": "Parse error at line 9: XSPICE code model 'cpmlin' (.model 'CPMLIN1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .MODEL CPMLIN1 CPMLIN(w=1e-3 l=20e-3 s=0."
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7149,7 +7141,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: XSPICE code model 'mlin' (.model 'MLIN1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .MODEL MLIN1 MLIN(w=1e-3 l=50e-3 er=9.8 h=1e-3 t=35e-6 tand=1e-3 rho=0.022e-6 d=0.15e-6 model="
+        "firstErrorLine": "Parse error at line 11: XSPICE code model 'mlin' (.model 'MLIN1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .MODEL MLIN1 MLIN(w=1e-3 l=50e-3 er=9.8 h=1e"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7176,7 +7168,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: XSPICE code model 'mlin' (.model 'MLIN1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .MODEL MLIN1 MLIN(w=1e-3 l=10e-3 er=9.8 h=1e-3 t=35e-6 tand=1e-3 rho=0.022e-6 d=0.15e-6 model=0"
+        "firstErrorLine": "Parse error at line 7: XSPICE code model 'mlin' (.model 'MLIN1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .MODEL MLIN1 MLIN(w=1e-3 l=10e-3 er=9.8 h=1e-"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7229,7 +7221,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: XSPICE code model 'astate' (.model 'newstate3') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model newstate3 astate(astate_no=3)"
+        "firstErrorLine": "Parse error at line 11: XSPICE code model 'astate' (.model 'newstate3') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model newstate3 astate(astate_no=3)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7255,7 +7247,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: XSPICE code model 'astate' (.model 'newstate') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model newstate astate(astate_no=2)"
+        "firstErrorLine": "Parse error at line 11: XSPICE code model 'astate' (.model 'newstate') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model newstate astate(astate_no=2)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7281,7 +7273,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: XSPICE code model 'pwlts' (.model 'pwlts1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model pwlts1 pwlts(x_array=[0 0.1 0.2 0.8 0.9 1 1.1] y_array=[0.1 0.1 1 1 0 0 0.2] input_do"
+        "firstErrorLine": "Parse error at line 11: XSPICE code model 'pwlts' (.model 'pwlts1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model pwlts1 pwlts(x_array=[0 0.1 0.2 0.8"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7307,14 +7299,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 49: '.endc' without a matching '.control' .endc"
+        "firstErrorLine": "Parse error at line 17: .model 'CM_NAND0' has unsupported type 'D_NAND' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model CM_NAND0 d_nand ( rise_delay= {riseDelay} fall_del"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "model: VDMOS power MOSFET"
     },
     {
       "id": "examples-xspice-various-simple-diode-cir",
@@ -7415,7 +7407,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: XSPICE code model 's_xfer' (.model 'cheby1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model cheby1 s_xfer(num_coeff=[1] den_coeff=[1 1.09773 1.10251] int_ic=[0 0] denormalized_f"
+        "firstErrorLine": "Parse error at line 7: XSPICE code model 's_xfer' (.model 'cheby1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model cheby1 s_xfer(num_coeff=[1] den_coe"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7442,7 +7434,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:208"
+          "tran:209"
         ]
       },
       "comparedAnalyses": 1,
@@ -7498,7 +7490,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 20: XSPICE code model 'adc_bridge' (.model 'atod') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model atod adc_bridge"
+        "firstErrorLine": "Parse error at line 20: XSPICE code model 'adc_bridge' (.model 'atod') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model atod adc_bridge"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7524,7 +7516,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 5: XSPICE code model 'd_cosim' (.model 'ring') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model ring d_cosim simulation=\"./delay\""
+        "firstErrorLine": "Parse error at line 5: XSPICE code model 'd_cosim' (.model 'ring') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model ring d_cosim simulation=\"./delay\""
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7550,7 +7542,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt) .model pwm_sin d_cosim simulation=\"./pwm\""
+        "firstErrorLine": "Parse error at line 4: XSPICE code model 'd_cosim' (.model 'pwm_sin') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model pwm_sin d_cosim simulation=\"./pwm"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7667,7 +7659,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 270,
-      "worstNormalizedError": 0.0677,
+      "worstNormalizedError": 0.0674,
       "worstSignal": "tran v(x1.x1.x1.x7.8)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -7692,12 +7684,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:161"
+          "tran:160"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 13,
-      "worstNormalizedError": 0.0025,
+      "worstNormalizedError": 0.00229,
       "worstSignal": "tran v(4)",
       "outcome": "matched",
       "gapBucket": null
@@ -7733,8 +7725,8 @@
       },
       "comparedAnalyses": 3,
       "comparedSignals": 63,
-      "worstNormalizedError": 0.0564,
-      "worstSignal": "ac v(2)",
+      "worstNormalizedError": 0.0511,
+      "worstSignal": "tran v(1)",
       "outcome": "mismatch",
       "gapBucket": null
     },
@@ -7761,12 +7753,12 @@
         "status": "success",
         "analyses": [
           "dc:101",
-          "tran:209"
+          "tran:207"
         ]
       },
       "comparedAnalyses": 2,
       "comparedSignals": 16,
-      "worstNormalizedError": 0.0527,
+      "worstNormalizedError": 0.0526,
       "worstSignal": "tran v(2)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -8075,8 +8067,8 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 8,
-      "worstNormalizedError": 0.00000569,
-      "worstSignal": "ac v(1)",
+      "worstNormalizedError": 0.00000185,
+      "worstSignal": "ac i(vds)",
       "outcome": "matched",
       "gapBucket": null
     },
@@ -8540,14 +8532,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 6: Cannot parse number: '2µ' I2 0 N01 pulse 2µ 20µ 50n 50n 50n 1µ 2µ"
+        "firstErrorLine": "Parse error at line 13: Unsupported .options field: 'savecurrents' set savecurrents"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "syntax: µ (micro sign) scale suffix"
+      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
     },
     {
       "id": "tests-regression-misc-empty-1-cir",
@@ -9353,7 +9345,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:1207"
+          "tran:1168"
         ]
       },
       "comparedAnalyses": 1,
@@ -9381,7 +9373,7 @@
       "spiceTs": {
         "status": "failed",
         "analyses": [],
-        "firstErrorLine": "Timestep too small at t=3.049500659843922e-8: dt=1.9335714962913457e-16"
+        "firstErrorLine": "Timestep too small at t=2.3277023234941384e-8: dt=4.324896741631086e-16"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -9408,12 +9400,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:710"
+          "tran:708"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 8,
-      "worstNormalizedError": 0.374,
+      "worstNormalizedError": 0.42,
       "worstSignal": "tran i(vs)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -9436,12 +9428,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:666"
+          "tran:675"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 6,
-      "worstNormalizedError": 0.371,
+      "worstNormalizedError": 0.422,
       "worstSignal": "tran i(vs)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -9464,12 +9456,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:1026"
+          "tran:939"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 9,
-      "worstNormalizedError": 0.0864,
+      "worstNormalizedError": 0.0875,
       "worstSignal": "tran v(6)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -9557,5 +9549,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "97a565c5b8ec823ea179eb3552dca517d0802192d3bd1a5ed5da06710351729e"
+  "outcomeSha256": "ca893382d57aad320a48a710a785c10b5a5a87fa7bc5ccb46a935459368c285e"
 }

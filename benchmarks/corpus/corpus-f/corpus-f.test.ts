@@ -14,10 +14,15 @@ import {
   fixtureId,
   gapBucket,
   hostCommand,
+  CURRENT_PEAK_FLOOR,
   MATCH_THRESHOLD,
   needsExternalInput,
+  NGSPICE_ABSTOL,
+  NGSPICE_VNTOL,
   normalizedSignalErrors,
   outcome,
+  PEAK_FLOOR,
+  VOLTAGE_PEAK_FLOOR,
   thirdPartyNotice,
 } from './lib.js';
 import { mergeReadme, outcomeDigest, packExecution, renderMarkdown, summarize, unpackExecution, type CorpusFReport } from './outcomes.js';
@@ -182,6 +187,34 @@ describe('corpus-f outcome rules', () => {
     assert.equal(outcome({ ...base, spiceTs: 'unsupported', worstNormalized: null }), 'spice-ts-loss');
     assert.equal(outcome({ ...base, ngspice: 'failed', worstNormalized: null }), 'ngspice-failed');
     assert.equal(outcome({ ...base, ngspice: 'failed', spiceTs: 'failed', worstNormalized: null }), 'both-failed');
+  });
+
+  it('scores zero and near-zero ngspice peaks against the ngspice VNTOL/ABSTOL absolute floor (#593)', () => {
+    const zeros = [{ re: 0, im: 0 }, { re: 0, im: 0 }];
+    const tiny = [{ re: 0, im: 0 }, { re: 1e-4, im: 0 }];
+    const reference = { grid: [0, 1], signals: { 'v(2)': zeros, 'v(8)': tiny, 'i(vs)': zeros, onoise_spectrum: zeros, 'v(pole(1))': zeros, 'v(big)': [{ re: 0, im: 0 }, { re: 5, im: 0 }] } };
+    const compared = (max: number) => ({ status: 'compared' as const, sampleCount: 2, absoluteError: { max, rms: max }, relativeError: { max: null, rms: null, sampleCount: 0, excludedZeroReferences: 2 } });
+    const grid = { spiceTsPoints: 2, ngspicePoints: 2, alignedPoints: 2, excludedOutOfRange: 0 };
+    const score = (analysis: string, signals: Record<string, number>) => Object.fromEntries(normalizedSignalErrors(
+      [{ analysis, metrics: { grid, signals: Object.fromEntries(Object.entries(signals).map(([name, max]) => [name, compared(max)])) } }],
+      () => reference,
+    ).errors.map(error => [error.signal, error.normalized]));
+    // Floors: voltage VNTOL / MATCH_THRESHOLD, current ABSTOL / MATCH_THRESHOLD, other quantities PEAK_FLOOR.
+    assert.deepEqual([NGSPICE_VNTOL, NGSPICE_ABSTOL, VOLTAGE_PEAK_FLOOR, CURRENT_PEAK_FLOOR], [1e-6, 1e-12, 1e-4, 1e-10]);
+    assert.ok(Math.abs(VOLTAGE_PEAK_FLOOR * MATCH_THRESHOLD - NGSPICE_VNTOL) < 1e-21);
+    assert.ok(Math.abs(CURRENT_PEAK_FLOOR * MATCH_THRESHOLD - NGSPICE_ABSTOL) < 1e-27);
+    // rca3040 AC v(2): exact answer 0, spice-ts roundoff 4.84e-14 V is far below VNTOL, so it matches.
+    const ac = score('ac', { 'v(2)': 4.84e-14, 'i(vs)': 5e-13, onoise_spectrum: 1e-15, 'v(big)': 0.04 });
+    assert.ok(ac['v(2)'] <= MATCH_THRESHOLD && Math.abs(ac['v(2)'] - 4.84e-10) < 1e-20, String(ac['v(2)']));
+    assert.ok(Math.abs(ac['i(vs)'] - 5e-3) < 1e-15, String(ac['i(vs)']));
+    // A difference at or above VNTOL on a zero-peak node is still a mismatch, not hidden by the floor.
+    assert.ok(score('tran', { 'v(2)': 2e-6 })['v(2)'] > MATCH_THRESHOLD);
+    // Signals whose peak exceeds the floor keep plain peak normalisation (fourbitadder-style 100 uV nodes).
+    assert.equal(score('tran', { 'v(8)': 6.7e-6 })['v(8)'], 6.7e-6 / 1e-4);
+    assert.equal(ac['v(big)'], 0.04 / 5);
+    // Quantities that are not node voltages or branch currents keep the 1e-12 floor.
+    assert.equal(ac.onoise_spectrum, 1e-15 / PEAK_FLOOR);
+    assert.equal(score('pz', { 'v(pole(1))': 1e-14 })['v(pole(1))'], 1e-14 / PEAK_FLOOR);
   });
 });
 
