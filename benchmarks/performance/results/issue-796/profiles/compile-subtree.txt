@@ -1,0 +1,48 @@
+== main resistor-mesh-op 10000 150 (dist build, 150 compile() calls)
+compile: 1667.2 ms sampled
+    398.1 ms  23.9%  resolveResistor main dist
+    374.0 ms  22.4%  set main dist
+    299.9 ms  18.0%  (anonymous) main dist
+    245.0 ms  14.7%  compile main dist
+    167.8 ms  10.1%  canonical main dist
+     87.6 ms   5.3%  add main dist
+     42.5 ms   2.6%  bindXspiceSources main dist
+     14.9 ms   0.9%  expandPassiveParasitics main dist
+      9.0 ms   0.5%  expandAllSubcircuits main dist
+      9.0 ms   0.5%  initWallace main dist
+== branch resistor-mesh-op 10000 150 (dist build, 150 compile() calls)
+compile: 1069.2 ms sampled
+    304.5 ms  28.5%  compile branch dist
+    302.8 ms  28.3%  set branch dist
+    157.9 ms  14.8%  (anonymous) branch dist
+    131.5 ms  12.3%  addCanonical branch dist
+     76.4 ms   7.1%  bindXspiceSources branch dist
+     20.2 ms   1.9%  resolveResistor branch dist
+     19.5 ms   1.8%  withRFPortNodes branch dist
+     16.8 ms   1.6%  polarGauss branch dist
+     16.8 ms   1.6%  expandAllSubcircuits branch dist
+      9.0 ms   0.8%  expandPassiveParasitics branch dist
+== main rc-ladder-tran 10000 150 (dist build, 150 compile() calls)
+compile: 1853.3 ms sampled
+    453.4 ms  24.5%  set main dist
+    306.6 ms  16.5%  (anonymous) main dist
+    202.7 ms  10.9%  compile main dist
+    193.9 ms  10.5%  resolveResistor main dist
+    136.7 ms   7.4%  add main dist
+    123.8 ms   6.7%  resolveCapacitorParallelResistance main dist
+    117.0 ms   6.3%  canonical main dist
+     64.6 ms   3.5%  firstParam main dist
+     53.8 ms   2.9%  lossFrequency main dist
+     51.3 ms   2.8%  bindXspiceSources main dist
+== branch rc-ladder-tran 10000 150 (dist build, 150 compile() calls)
+compile: 1459.6 ms sampled
+    417.5 ms  28.6%  set branch dist
+    407.4 ms  27.9%  compile branch dist
+    191.8 ms  13.1%  (anonymous) branch dist
+     95.1 ms   6.5%  addCanonical branch dist
+     64.1 ms   4.4%  bindXspiceSources branch dist
+     50.0 ms   3.4%  firstParam branch dist
+     48.2 ms   3.3%  mergedParams branch dist
+     40.5 ms   2.8%  resolveCapacitorParallelResistance branch dist
+     40.5 ms   2.8%  resolveCapacitorModel branch dist
+     32.6 ms   2.2%  lossFrequency branch dist

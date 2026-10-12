@@ -1112,6 +1112,145 @@ describe('concurrent running-job quota (#792)', () => {
   });
 });
 
+describe('finished-result stream jobs under unread caps (#794)', () => {
+  function dcSweepResult(pointCount: number): SimulationResultV1 {
+    const values = Array.from({ length: pointCount }, (_, index) => index / (pointCount - 1));
+    return {
+      status: 'complete',
+      analyses: [{
+        type: 'dc', analysisIndex: 0,
+        axis: { name: 'V1', unit: 'V', values },
+        voltagesV: { in: values },
+        currentsA: { V1: values.map(value => -value / 1000) },
+      }],
+    };
+  }
+
+  async function readToTerminal(
+    execute: ReturnType<typeof createToolExecutor>,
+    jobId: string,
+    cursor: string,
+    maxPoints?: number,
+  ): Promise<Array<{ cursor: string; data: SimulationReadDataV1 }>> {
+    const reads: Array<{ cursor: string; data: SimulationReadDataV1 }> = [];
+    let next: string | null = cursor;
+    for (let attempt = 0; next !== null && attempt < 5_000; attempt++) {
+      const args = { jobId, cursor: next, ...(maxPoints === undefined ? {} : { maxPoints }) };
+      const response = await execute('spice_simulation_read', args);
+      expect(response.isError).not.toBe(true);
+      const data = response.structuredContent as unknown as SimulationReadDataV1;
+      if (data.status === 'running' && data.events.length === 0) {
+        await new Promise<void>(resolve => setTimeout(resolve, 1));
+        continue;
+      }
+      reads.push({ cursor: next, data });
+      next = data.nextCursor;
+    }
+    expect(next).toBeNull();
+    return reads;
+  }
+
+  it('reads a 501-point DC sweep started via spice_simulation_start to complete with replayable cursors', async () => {
+    const execute = createToolExecutor();
+    const started = await execute('spice_simulation_start', {
+      request: {
+        apiVersion: '1',
+        input: { format: 'spice', source: 'V1 in 0 1\nR1 in 0 1k\n.dc V1 0 1 0.002' },
+      },
+    });
+    expect(started.isError).not.toBe(true);
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+
+    const reads = await readToTerminal(execute, jobId, cursor);
+    const last = reads.at(-1)!.data;
+    expect(last.status).toBe('complete');
+    const events = reads.flatMap(read => read.data.events);
+    const points = events.filter(event => event.type === 'point');
+    expect(points).toHaveLength(501);
+    expect(points.map(event => event.type === 'point' && event.pointIndex))
+      .toEqual(Array.from({ length: 501 }, (_, index) => index));
+    expect(events.at(0)).toMatchObject({ type: 'analysis-start', analysis: 'dc' });
+    expect(events.at(-1)).toMatchObject({ type: 'analysis-end', analysis: 'dc', pointCount: 501 });
+    if (last.status === 'complete') {
+      const analysis = last.terminal.data.analyses[0]!;
+      expect(analysis.type === 'dc' && analysis.axis.values).toHaveLength(501);
+    }
+
+    for (const { cursor: readCursor, data } of reads) {
+      const replay = await execute('spice_simulation_read', { jobId, cursor: readCursor });
+      expect(replay.structuredContent).toEqual(data);
+    }
+  });
+
+  it('releases a finished result in cap-sized batches as reads drain it', async () => {
+    const result = dcSweepResult(40);
+    const execute = createToolExecutor({
+      simulate: async () => result,
+      streamLimits: { maxUnreadEvents: 4, maxUnreadBytes: 1024 * 1024 },
+    });
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+
+    const reads = await readToTerminal(execute, jobId, cursor, 1024);
+    expect(reads.at(-1)!.data.status).toBe('complete');
+    for (const { data } of reads) expect(data.events.length).toBeLessThanOrEqual(4);
+    const events = reads.flatMap(read => read.data.events);
+    expect(events).toHaveLength(42);
+    expect(events.filter(event => event.type === 'point')).toHaveLength(40);
+  });
+
+  it('releases a finished result in batches bounded by maxUnreadBytes', async () => {
+    const result = dcSweepResult(30);
+    const pointBytes = Buffer.byteLength(JSON.stringify({
+      type: 'point', analysisIndex: 0, pointIndex: 10,
+      point: {
+        type: 'dc', axis: { name: 'V1', unit: 'V', value: 10 / 29 },
+        voltagesV: { in: 10 / 29 }, currentsA: { V1: -(10 / 29) / 1000 },
+      },
+    }));
+    const maxUnreadBytes = pointBytes * 3;
+    const execute = createToolExecutor({
+      simulate: async () => result,
+      streamLimits: { maxUnreadEvents: 256, maxUnreadBytes },
+    });
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+
+    const reads = await readToTerminal(execute, jobId, cursor, 1024);
+    expect(reads.at(-1)!.data.status).toBe('complete');
+    expect(reads.length).toBeGreaterThan(1);
+    for (const { data } of reads) {
+      expect(Buffer.byteLength(data.events.map(event => JSON.stringify(event)).join('')))
+        .toBeLessThanOrEqual(maxUnreadBytes);
+    }
+    expect(reads.flatMap(read => read.data.events).filter(event => event.type === 'point'))
+      .toHaveLength(30);
+  });
+
+  it('fails a finished result whose single event exceeds maxUnreadBytes', async () => {
+    const execute = createToolExecutor({
+      simulate: async () => dcSweepResult(3),
+      streamLimits: { maxUnreadEvents: 256, maxUnreadBytes: 1 },
+    });
+    const request = await fixture<SimulationRequestV1>('simulate-request.json');
+    const started = await execute('spice_simulation_start', { request });
+    const { jobId, cursor } = started.structuredContent as { jobId: string; cursor: string };
+
+    const reads = await readToTerminal(execute, jobId, cursor);
+    expect(reads.at(-1)!.data).toMatchObject({
+      status: 'failed', events: [], nextCursor: null,
+      terminal: {
+        error: {
+          code: 'RESOURCE_LIMIT', phase: 'transport',
+          details: { limit: 'maxUnreadBytes', maximum: 1 },
+        },
+      },
+    });
+  });
+});
+
 async function readWhenReady(
   execute: ReturnType<typeof createToolExecutor> | typeof executeTool,
   args: { jobId: string; cursor: string; maxPoints?: number },
