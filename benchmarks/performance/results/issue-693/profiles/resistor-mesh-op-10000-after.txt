@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/t693/prof-wip/resistor-mesh-op-10000.cpuprofile: 230 samples, 658.6 ms sampled
+
+Top self time
+     141.3 ms  21.4%  factorize packages/core/dist/chunk-3PWENTRC.js:27793
+      64.3 ms   9.8%  amdOrdering packages/core/dist/chunk-3PWENTRC.js:27417
+      46.3 ms   7.0%  (garbage collector)
+      40.6 ms   6.2%  analyzePattern packages/core/dist/chunk-3PWENTRC.js:27689
+      34.8 ms   5.3%  newtonRaphson packages/core/dist/chunk-3PWENTRC.js:28919
+      28.4 ms   4.3%  compile packages/core/dist/chunk-3PWENTRC.js:22354
+      23.7 ms   3.6%  resolveResistor packages/core/dist/chunk-3PWENTRC.js:1293
+      23.4 ms   3.6%  lockTopology packages/core/dist/chunk-3PWENTRC.js:28371
+      22.7 ms   3.4%  compileSourceTextModule node:internal/modules/esm/utils:344
+      21.8 ms   3.3%  collectStatements packages/core/dist/chunk-3PWENTRC.js:24166
+      12.6 ms   1.9%  preprocessSteps packages/core/dist/chunk-3PWENTRC.js:23799
+      12.3 ms   1.9%  extractControlBlocks packages/core/dist/chunk-3PWENTRC.js:24730
+
+Top inclusive time
+     658.6 ms 100.0%  (root)
+     514.1 ms  78.1%  simulate packages/core/dist/chunk-3PWENTRC.js:35674
+     374.3 ms  56.8%  solveDCOperatingPoint packages/core/dist/chunk-3PWENTRC.js:29146
+     374.3 ms  56.8%  solveCompiledAnalyses packages/core/dist/chunk-3PWENTRC.js:35729
+     367.0 ms  55.7%  newtonRaphson packages/core/dist/chunk-3PWENTRC.js:28919
+     144.0 ms  21.9%  factorize packages/core/dist/chunk-3PWENTRC.js:27793
+     120.2 ms  18.2%  parseAsync packages/core/dist/chunk-3PWENTRC.js:26238
+     111.4 ms  16.9%  getSparseSolver packages/core/dist/chunk-3PWENTRC.js:28499
+     106.3 ms  16.1%  analyzePattern packages/core/dist/chunk-3PWENTRC.js:27689
+      70.8 ms  10.8%  compile packages/core/dist/chunk-3PWENTRC.js:22354
+      64.4 ms   9.8%  amdOrdering packages/core/dist/chunk-3PWENTRC.js:27417
+      62.9 ms   9.5%  (anonymous) benchmarks/performance/profile-scaling-m2.mjs:1
