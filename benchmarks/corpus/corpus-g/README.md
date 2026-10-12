@@ -6,11 +6,11 @@ Every deck below is byte-identical to Xyce_Regression `7bb7e98f0ed3a81a7d1cf1d10
 
 ## Totals
 
-- Fixtures: 128. Outcome SHA-256: `38843c4115d70de7fd4448d65164d77609310ad741a4b71e4a1fbe8af80dc9e6`.
+- Fixtures: 128. Outcome SHA-256: `0654595d3ed44636d81d6eadeb1e97b491e9c189b3f7917f4c793ec93761d5e1`.
 - ngspice (ngspice-47): 128 success, 0 failed, 0 unsupported.
-- spice-ts (0.3.0): 62 success, 5 failed, 61 unsupported.
-- Outcomes: matched 49, mismatch 13, not-compared 0, spice-ts-loss 66, ngspice-failed 0, both-failed 0.
-- Of the 128 decks ngspice runs successfully, spice-ts matches 49, mismatches 13, produces no comparable result for 0 and fails 66.
+- spice-ts (0.3.0): 83 success, 6 failed, 39 unsupported.
+- Outcomes: matched 66, mismatch 17, not-compared 0, spice-ts-loss 45, ngspice-failed 0, both-failed 0.
+- Of the 128 decks ngspice runs successfully, spice-ts matches 66, mismatches 17, produces no comparable result for 0 and fails 45.
 
 ## Method
 
@@ -36,22 +36,20 @@ Grouped from spice-ts's own first error line (corpus-g rules, then corpus-f rule
 
 | Bucket | Fixtures | ngspice ok | Issue |
 |---|---|---|---|
-| directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...) | 22 | 22 | https://github.com/mfiumara/spice-ts/issues/713 |
 | output: expressions and output variables in .print lines | 11 | 11 | https://github.com/mfiumara/spice-ts/issues/714 |
-| model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9) | 7 | 7 | https://github.com/mfiumara/spice-ts/issues/715 |
+| parse: other unsupported syntax | 9 | 9 | none filed |
 | source: EXP/SFFM/AM waveforms and PWL TD= | 6 | 6 | https://github.com/mfiumara/spice-ts/issues/716 |
-| parse: other unsupported syntax | 5 | 5 | none filed |
+| model: other MOSFET levels (LEVEL=10, LEVEL=260) | 4 | 4 | none filed |
 | device: JFET forms (PJF model type, instance TEMP=, J card) | 3 | 3 | https://github.com/mfiumara/spice-ts/issues/717 |
+| execution: other failure | 3 | 3 | none filed |
+| expression: branch-current i() references in B-source expressions | 3 | 3 | https://github.com/mfiumara/spice-ts/issues/718 |
 | deck: element-free deck (ngspice runs an empty analysis) | 2 | 2 | none filed |
-| execution: other failure | 2 | 2 | none filed |
-| expression: branch-current i() references in B-source expressions | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/718 |
-| model: other MOSFET levels (LEVEL=10, LEVEL=260) | 2 | 2 | none filed |
 | convergence | 1 | 1 | none filed |
 | device: BJT instance IC= initial conditions | 1 | 1 | none filed |
 | device: lossless T-line NL=/F= electrical-length form | 1 | 1 | none filed |
 | directive: .four | 1 | 1 | none filed |
 
-## Losses (79)
+## Losses (62)
 
 Every fixture that is not matched: spice-ts failures, mismatches above the threshold, and results that could not be compared.
 
@@ -64,22 +62,15 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | [ABM_NINT_FMOD/fmod.cir](fixtures/ABM_NINT_FMOD/fmod.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 6: Unknown function 'fmod' .print dc V(1) {fmod(99.5,V(1))} |
 | [ABM/ddt.cir](fixtures/ABM/ddt.cir) | success | success | mismatch | 0.5 | tran i(v1) |  |
 | [ACSENS/ac-sens-current-obj_FD.cir](fixtures/ACSENS/ac-sens-current-obj_FD.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 35: Unknown function 'ir' + { ((ir(v1_r1)) - (ir(v1)))/dr } |
-| [ACtests/bsim3/gain-stage.cir](fixtures/ACtests/bsim3/gain-stage.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'M1' (model 'nmos') uses unsupported model LEVEL=9 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49) |
-| [BJT_ANALYTIC/ramp_test1.cir](fixtures/BJT_ANALYTIC/ramp_test1.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 59: Unsupported .options field: 'device' .options device gmin=0 voltlim=0 |
 | [BJT_IC/bjt_ic_nonzero.cir](fixtures/BJT_IC/bjt_ic_nonzero.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 21: Unsupported BJT instance parameter: 'IC=1' in 'Q1 7 3 5 BFT92 IC=1 0' Q1 7 3 5 BFT92 IC=1 0 |
-| [BJT_OFF/bjt_off.cir](fixtures/BJT_OFF/bjt_off.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 37: Unsupported .options field: 'nonlin' .options nonlin maxstep=200 reltol=1.0e-2 abstol=1.0e-6 rhstol=1.0e-4 |
-| [BSIMSOI3/b3soiTranDefaults.cir](fixtures/BSIMSOI3/b3soiTranDefaults.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'M1' (model 'nmos') uses unsupported model LEVEL=10 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49) |
-| [BUG_237/Bug_237_A1.cir](fixtures/BUG_237/Bug_237_A1.cir) | success | success | mismatch | 0.0308 | tran i(vdddev) |  |
-| [BUG_458/bug458.cir](fixtures/BUG_458/bug458.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 8: Unsupported .options field: 'LINSOL' .OPTIONS LINSOL TYPE=klu |
-| [COMPARATOR/comparator.cir](fixtures/COMPARATOR/comparator.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'M1' (model 'PMOS') uses unsupported model LEVEL=9 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49) |
-| [DIAGNOSTIC/DC_CurrentCheck1.cir](fixtures/DIAGNOSTIC/DC_CurrentCheck1.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 24: Unsupported .options field: 'diagnostic' .options diagnostic CURRENTLIMIT=3e-2 diagfilename=DC_CurrentCheck1.dia |
-| [DIODE_ANALYTIC/reverse_model.cir](fixtures/DIODE_ANALYTIC/reverse_model.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 55: Unsupported .options TIMEINT field: 'abstol-1e-6' .options TIMEINT reltol=1e-6 abstol-1e-6 |
-| [EKV26/inverter_transient_ekv26.cir](fixtures/EKV26/inverter_transient_ekv26.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'Xinv1.Mp1' (model 'pmos1') uses unsupported model LEVEL=260 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49) |
+| [BJT_OFF/bjt_off.cir](fixtures/BJT_OFF/bjt_off.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Unsupported BJT model parameter: 'PTF' (excess phase is not implemented) |
+| [BSIMSOI3/b3soiTranDefaults.cir](fixtures/BSIMSOI3/b3soiTranDefaults.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'M1' (model 'nmos') uses unsupported model LEVEL=10 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49) |
+| [BUG_237/Bug_237_A1.cir](fixtures/BUG_237/Bug_237_A1.cir) | success | success | mismatch | 0.0246 | tran i(vdddev) |  |
+| [EKV26/inverter_transient_ekv26.cir](fixtures/EKV26/inverter_transient_ekv26.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'Xinv1.Mp1' (model 'pmos1') uses unsupported model LEVEL=260 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49) |
 | [EMBEDDED/printLine_for_embedded_cmosInverter.cir](fixtures/EMBEDDED/printLine_for_embedded_cmosInverter.cir) | success | failed | spice-ts-loss |  |  | spice-ts: Circuit has no nodes |
 | [EXPPRINT/expPrint.cir](fixtures/EXPPRINT/expPrint.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 10: Unknown function 'I' .print DC v(4) {(abs(I(VT1)))} {(V(4)**2.0)} I(VT1) |
 | [FOURIER/bad_dot_four_line1.cir](fixtures/FOURIER/bad_dot_four_line1.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 21: Unsupported dot command: '.FOUR' .FOUR |
-| [GMIN_STEPPING/gstep_cont3a.cir](fixtures/GMIN_STEPPING/gstep_cont3a.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 36: Unsupported .options field: 'nonlin' .options nonlin nlstrategy=0 searchmethod=0 maxstep=200 continuation=3 reltol=1.0e-2 abstol=1.0e-6 rhstol=1.0e-4 |
-| [HOMOTOPY/schmidt.cir](fixtures/HOMOTOPY/schmidt.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 16: Unsupported .options field: 'device' .options device voltlim=1 debuglevel=-100 |
+| [GMIN_STEPPING/gstep_cont3a.cir](fixtures/GMIN_STEPPING/gstep_cont3a.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Unsupported BJT model parameter: 'PTF' (excess phase is not implemented) |
 | [IC_AND_NODESET/hussamp_par1.cir](fixtures/IC_AND_NODESET/hussamp_par1.cir) | success | success | mismatch | 0.0174 | tran i(vap) |  |
 | [IEXP/iexp.cir](fixtures/IEXP/iexp.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 17: Unsupported source waveform 'EXP' IEXP 0 1 EXP(1A 5A 1S 0.2S 2S 0.5S) |
 | [INDUCTOR/ErrorMessageTest.cir](fixtures/INDUCTOR/ErrorMessageTest.cir) | success | success | mismatch | 1 | tran v(1a) |  |
@@ -88,47 +79,37 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | [LTRA/ltra1.cir](fixtures/LTRA/ltra1.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 33: Unsupported LTRA model parameter: 'steplimit=1' .model lline ltra rel=1 r=0.2 g=0 l=9.13e-9 c=3.65e-12 len=24 steplimit=1 compactrel=1.0e-3 compactabs=1.0e-14 |
 | [MCNC_BJT_LATCH/latch.cir](fixtures/MCNC_BJT_LATCH/latch.cir) | success | success | mismatch | 0.236 | tran i(vref) |  |
 | [MCNC_BJT_OPAMPAL/opampal.cir](fixtures/MCNC_BJT_OPAMPAL/opampal.cir) | success | success | mismatch | 0.0189 | tran i(vvin) |  |
-| [MEASURE_CONT/DerivTest1DC.cir](fixtures/MEASURE_CONT/DerivTest1DC.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 9: Unsupported .options field: 'MEASURE' .OPTIONS MEASURE USE_CONT_FILES=0 |
 | [MEASURE/bad_dot_measure_line5.cir](fixtures/MEASURE/bad_dot_measure_line5.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 2: Unsupported device card: 'J' J1 Vout Vin Nsource J2N3819 |
 | [Message/Device/Core_SafeBarrier_1.cir](fixtures/Message/Device/Core_SafeBarrier_1.cir) | success | failed | spice-ts-loss |  |  | spice-ts: .noise does not support BJT model parameter 'VAR' for 'Q2' |
-| [MEXTRAM/acFreq_Gbb_noFlip_P.cir](fixtures/MEXTRAM/acFreq_Gbb_noFlip_P.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 2: Unsupported .options field: 'device' .options device temp=25 |
-| [MODEL_BINNING/comparatorBaseline_forGlobal.cir](fixtures/MODEL_BINNING/comparatorBaseline_forGlobal.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'M1' (model 'PMOS') uses unsupported model LEVEL=9 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49) |
-| [MOS13_IC/invert42_mos3.cir](fixtures/MOS13_IC/invert42_mos3.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'XINV1.MN1' (model 'CD4012_NMOS') uses unsupported model LEVEL=3 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49) |
+| [MEXTRAM/acFreq_Gbb_noFlip_P.cir](fixtures/MEXTRAM/acFreq_Gbb_noFlip_P.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Unsupported bounded BJT model parameter: 'DTA' |
+| [MOS13_IC/invert42_mos3.cir](fixtures/MOS13_IC/invert42_mos3.cir) | success | success | mismatch | 0.838 | tran v(vout) |  |
 | [MOS6/invert_mos6.cir](fixtures/MOS6/invert_mos6.cir) | success | failed | spice-ts-loss |  |  | spice-ts: MOSFET level 6 model 'CD4012_NMOS': series resistance parameter RD is not supported |
 | [MOSFET_ParamAliases/invert1_alt.cir](fixtures/MOSFET_ParamAliases/invert1_alt.cir) | success | success | mismatch | 0.211 | tran v(vout) |  |
-| [MPDE/invert1.cir](fixtures/MPDE/invert1.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 21: Unsupported .options TIMEINT field: 'maxord' .options TIMEINT maxord=5 debuglevel=-10 reltol=1.0e-4 |
+| [MPDE/invert1.cir](fixtures/MPDE/invert1.cir) | success | success | mismatch | 0.177 | tran i(vin1) |  |
 | [MULTIPLICITY_FACTOR/bjt_diffpair_noise_baseline.net](fixtures/MULTIPLICITY_FACTOR/bjt_diffpair_noise_baseline.net) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 25: Undefined parameter 'inoise' .PRINT noise {sqrt(abs(inoise))} {sqrt(abs(onoise))} |
-| [NMOS3_DC/mos3_dc.cir](fixtures/NMOS3_DC/mos3_dc.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'M1' (model 'NFET') uses unsupported model LEVEL=3 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49) |
 | [NOISE/cascodeBjtNOISE.cir](fixtures/NOISE/cascodeBjtNOISE.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 22: Undefined parameter 'inoise' .print noise {log(inoise)} {log(onoise)} |
-| [Nonlinear/ConvergenceTests/NLStrategy1.cir](fixtures/Nonlinear/ConvergenceTests/NLStrategy1.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 41: Unsupported .options field: 'nonlin' .options nonlin nlstrategy=1 searchmethod=0 |
-| [OP/comparator_op.cir](fixtures/OP/comparator_op.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'M1' (model 'PMOS') uses unsupported model LEVEL=9 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49) |
-| [PARAM_REFACTOR/paramHomotopy.cir](fixtures/PARAM_REFACTOR/paramHomotopy.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 12: Unsupported .options field: 'nonlin' .options nonlin continuation=1 |
 | [PCE/NI_REGRESSION/printLine_for_cmosInverter_regr.cir](fixtures/PCE/NI_REGRESSION/printLine_for_cmosInverter_regr.cir) | success | failed | spice-ts-loss |  |  | spice-ts: Circuit has no nodes |
 | [PJFET_DC/pjfet-2108.cir](fixtures/PJFET_DC/pjfet-2108.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 17: Unsupported JFET instance parameter: 'TEMP=27' Jtest 1a 2a 3 SA2108 TEMP=27 |
 | [PJFET_SWITCH/pjfet_tran.cir](fixtures/PJFET_SWITCH/pjfet_tran.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 8: .model '2N5114' has unsupported type 'PJF' (supported: D, NPN, PNP, NJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL 2N5114 PJF VTO = -5.288 BETA = 2.1897M LAMBDA = 9.946M R |
 | [POLYG/polyg.cir](fixtures/POLYG/polyg.cir) | success | failed | spice-ts-loss |  |  | spice-ts: Singular matrix: zero pivot at matrix column 0 (nodes: () |
 | [POWER/power_bjt_gear.cir](fixtures/POWER/power_bjt_gear.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 22: Unknown function 'i' + {abs(i(vic1)*(v(3)-v(1)))+abs(i(vib1)*(v(2)-v(1)))} p(q1) w(q1) |
-| [POWERNODE/resInner.cir](fixtures/POWERNODE/resInner.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 12: Unsupported .options field: 'nonlin' .options nonlin nox=1 |
-| [PSEUDO/pseudo.cir](fixtures/PSEUDO/pseudo.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 37: Unsupported .options field: 'device' .options device debuglevel=-10 voltlim=1 |
-| [PSP102/idvg0_Id_T27_pmos.cir](fixtures/PSP102/idvg0_Id_T27_pmos.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 2: Unsupported .options field: 'device' .options device temp=27 |
-| [PSP103/invert_psp_testDTA0.cir](fixtures/PSP103/invert_psp_testDTA0.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 15: Unsupported .options field: 'device' .options device temp=100 |
-| [RESISTOR_TD/temp_dep.cir](fixtures/RESISTOR_TD/temp_dep.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 48: Unsupported .options field: 'DEVICE' .OPTIONS DEVICE TEMP=-55 |
+| [POWERNODE/resInner.cir](fixtures/POWERNODE/resInner.cir) | success | failed | spice-ts-loss |  |  | spice-ts: DC sweep source 'R1a' not found |
+| [PSEUDO/pseudo.cir](fixtures/PSEUDO/pseudo.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Unsupported BJT model parameter: 'PTF' (excess phase is not implemented) |
+| [PSP102/idvg0_Id_T27_pmos.cir](fixtures/PSP102/idvg0_Id_T27_pmos.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'x1.m1' (model 'mymodel') uses unsupported model LEVEL=102 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49) |
+| [PSP103/invert_psp_testDTA0.cir](fixtures/PSP103/invert_psp_testDTA0.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'XINV1.MN1' (model 'pspqan') uses unsupported model LEVEL=103 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49) |
 | [RESISTOR/DefaultValueWarning.cir](fixtures/RESISTOR/DefaultValueWarning.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 12: Resistor 'R1' has no resistance value or model R1 1a 0 |
 | [SANDLER1/sandler1.cir](fixtures/SANDLER1/sandler1.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 7: Unsupported behavioral expression: branch current i(...) references BFIBN 2 4 I=(I(VIB)) |
 | [SANDLER2/sandler2.cir](fixtures/SANDLER2/sandler2.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 7: Unsupported behavioral expression: branch current i(...) references BIBN 2 4 I=(I(VIB)) |
 | [SANDLER21/sandler21.cir](fixtures/SANDLER21/sandler21.cir) | success | success | mismatch | 0.127 | tran i(v2) |  |
 | [SANDLER22/sandler22.cir](fixtures/SANDLER22/sandler22.cir) | success | success | mismatch | 0.86 | tran v(4) |  |
 | [SANDLER23/sandler23.cir](fixtures/SANDLER23/sandler23.cir) | success | success | mismatch | 0.0498 | tran v(x1.12) |  |
-| [SANDLER25/sandler25.cir](fixtures/SANDLER25/sandler25.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 32: Unsupported .options field: 'NONLIN-TRAN' .OPTIONS NONLIN-TRAN SEARCHMETHOD=0 |
+| [SANDLER25/sandler25.cir](fixtures/SANDLER25/sandler25.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 1: Unsupported behavioral expression: branch current i(...) references BF1 9 3 I=(I(V1)) |
 | [SENS/bsim4_issue694_FD.cir](fixtures/SENS/bsim4_issue694_FD.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 27: Unknown function 'v' .print tran v(vo) { (v(vo_w) - v(vo))/dW } |
 | [SOLN_DEP_RES/multSolDepRes.cir](fixtures/SOLN_DEP_RES/multSolDepRes.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 10: Unsupported parameter 'M=10' on behavioral resistor 'R2': a resistor whose value depends on v() or i() is simulated as an ngspice B-source, which carries only tc1= and tc2= R2 2 0 R={1.0+scalar*V(cntl)} M=10 |
-| [SUBCKT/subckt_a0.cir](fixtures/SUBCKT/subckt_a0.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: MOSFET 'MN1' (model 'CD4012_NMOS') uses unsupported model LEVEL=3 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49) |
-| [SUPERNODE/supernode1.cir](fixtures/SUPERNODE/supernode1.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 5: Unsupported .options field: 'topology' .options topology supernode=true |
-| [TESTJAC/testjac_comp.cir](fixtures/TESTJAC/testjac_comp.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 45: Unsupported .options field: 'device' .options device testjac=1 testjacwarn=1 TESTJACDEVICENAME=MQLO TJABSTOL=1.0e-19 TJRELTOL=1.0e-12 debuglevel=-100 |
-| [TIA/ERROROPTION/erroroption.cir](fixtures/TIA/ERROROPTION/erroroption.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 24: Unsupported .options TIMEINT field: 'erroption' .options TIMEINT method=7 erroption=1 nlmin=3 nlmax=5 timestepsreversal=0 |
+| [SUBCKT/subckt_a0.cir](fixtures/SUBCKT/subckt_a0.cir) | success | success | mismatch | 0.246 | tran i(vdddev) |  |
+| [TIA/ERROROPTION/erroroption.cir](fixtures/TIA/ERROROPTION/erroroption.cir) | success | success | mismatch | 0.225 | tran i(vin1) |  |
 | [TL1X/TL1X_mpi.cir](fixtures/TL1X/TL1X_mpi.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 6: Unsupported source waveform 'EXP' VSLOW 1 22 DC 0 EXP(0v 10v 3ms 10ms 200ms 10ms) |
 | [TRANSLINE/ErrorMessageTest2.cir](fixtures/TRANSLINE/ErrorMessageTest2.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 19: Unsupported lossless transmission line parameter; only Z0 and TD are supported (F/NL/IC/REL/ABS are unsupported) TLINE1 2 0 3 0 Z0=50 NL=10 |
-| [TwoLevelAPI/resInnerTran.cir](fixtures/TwoLevelAPI/resInnerTran.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 12: Unsupported .options TIMEINT field: 'debuglevel' .options timeint debuglevel=-100 |
 | [VANOISE/commonEmitterBjt_mextram.cir](fixtures/VANOISE/commonEmitterBjt_mextram.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 13: Undefined parameter 'onoise' .print noise {log(onoise)} {log(inoise)} |
 | [Verilog_POWER/power_juncap200_gear.cir](fixtures/Verilog_POWER/power_juncap200_gear.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 19: Unknown function 'i' + v(4) v(5) i(d2) {i(d2)*(v(4)-v(5))} p(d2) w(d2) |
 | [VEXP/vexp.cir](fixtures/VEXP/vexp.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 14: Unsupported source waveform 'EXP' VEXP 1 0 EXP(0V 5V 1US 1US 1S) |
@@ -137,7 +118,7 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | [VSTARTEST/vstarTest.cir](fixtures/VSTARTEST/vstarTest.cir) | success | success | mismatch | 0.202 | tran v(vout) |  |
 | [WAMPDE/BLOCKING/simple_single_channel.cir](fixtures/WAMPDE/BLOCKING/simple_single_channel.cir) | success | success | mismatch | 2.45 | tran i(l2) |  |
 
-## Wins (49)
+## Wins (66)
 
 Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every common signal.
 
@@ -152,21 +133,28 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [ABM_SCT/sct.cir](fixtures/ABM_SCT/sct.cir) | success | success | matched | 0.000805 | dc i(b5) |  |
 | [ABM_SQRT/sqrt.cir](fixtures/ABM_SQRT/sqrt.cir) | success | success | matched | 0.000595 | tran i(b3) |  |
 | [ABM_TIME/time.cir](fixtures/ABM_TIME/time.cir) | success | success | matched | 0.0000119 | tran v(2) |  |
+| [ACtests/bsim3/gain-stage.cir](fixtures/ACtests/bsim3/gain-stage.cir) | success | success | matched | 0.0000339 | ac v(vdd) |  |
 | [AGECAP/agecap_ref.cir](fixtures/AGECAP/agecap_ref.cir) | success | success | matched | 0.000379 | tran i(vmon) |  |
+| [BJT_ANALYTIC/ramp_test1.cir](fixtures/BJT_ANALYTIC/ramp_test1.cir) | success | success | matched | 4.8e-10 | tran i(v1) |  |
 | [BJT_EXTNODE/npn_rb_rc_re_1.cir](fixtures/BJT_EXTNODE/npn_rb_rc_re_1.cir) | success | success | matched | 0.000859 | dc v(1) |  |
 | [BJT_PSPICE_NK/bjt_test_nk.cir](fixtures/BJT_PSPICE_NK/bjt_test_nk.cir) | success | success | matched | 0.000226 | dc i(vmon1) |  |
 | [BSRC/Bsrc_A1.cir](fixtures/BSRC/Bsrc_A1.cir) | success | success | matched | 0.00039 | dc i(b1) |  |
 | [BUG_139/in_line_comment.cir](fixtures/BUG_139/in_line_comment.cir) | success | success | matched | 5.18e-9 | dc i(vmon) |  |
 | [BUG_374/capacitor-bug.cir](fixtures/BUG_374/capacitor-bug.cir) | success | success | matched | 0.00021 | tran i(vmon) |  |
+| [BUG_458/bug458.cir](fixtures/BUG_458/bug458.cir) | success | success | matched | 4.55e-14 | tran v(2) |  |
 | [CCCS/ftest.cir](fixtures/CCCS/ftest.cir) | success | success | matched | 3.54e-22 | tran i(vmon) |  |
 | [Certification_Tests/BUG_1011/sand23.cir](fixtures/Certification_Tests/BUG_1011/sand23.cir) | success | success | matched | 5.31e-16 | dc v(4) |  |
 | [CircuitSim90/BJT/vreg.cir](fixtures/CircuitSim90/BJT/vreg.cir) | success | success | matched | 0.000921 | dc v(5) |  |
 | [CommandLine/command_line.cir](fixtures/CommandLine/command_line.cir) | success | success | matched | 0.00379 | tran v(x1.12) |  |
+| [COMPARATOR/comparator.cir](fixtures/COMPARATOR/comparator.cir) | success | success | matched | 0.00034 | tran v(9) |  |
 | [COMPLEX_NUM/test1.cir](fixtures/COMPLEX_NUM/test1.cir) | success | success | matched | 3.7e-16 | ac v(1) |  |
+| [DIAGNOSTIC/DC_CurrentCheck1.cir](fixtures/DIAGNOSTIC/DC_CurrentCheck1.cir) | success | success | matched | 0.00000466 | dc v(node8) |  |
+| [DIODE_ANALYTIC/reverse_model.cir](fixtures/DIODE_ANALYTIC/reverse_model.cir) | success | success | matched | 7.54e-8 | tran v(1) |  |
 | [DIODE_CMC/DiodeClipper_AC.cir](fixtures/DIODE_CMC/DiodeClipper_AC.cir) | success | success | matched | 3.83e-11 | ac i(vin) |  |
 | [DIODE/diode_with_sidewall_fcs.cir](fixtures/DIODE/diode_with_sidewall_fcs.cir) | success | success | matched | 0.000631 | dc i(vin) |  |
 | [GenCoupAPI/rlc_series_vccs_AC_nogenext.cir](fixtures/GenCoupAPI/rlc_series_vccs_AC_nogenext.cir) | success | success | matched | 1.19e-15 | ac v(1c) |  |
 | [GLOBALNODE/global_hspice.cir](fixtures/GLOBALNODE/global_hspice.cir) | success | success | matched | 1.67e-16 | tran i(v3) |  |
+| [HOMOTOPY/schmidt.cir](fixtures/HOMOTOPY/schmidt.cir) | success | success | matched | 0.00000372 | dc v(5) |  |
 | [INVALID_CHARS/colon_fails_device_name.cir](fixtures/INVALID_CHARS/colon_fails_device_name.cir) | success | success | matched | 0 | dc i(v1) |  |
 | [IPULSE/ipulse.cir](fixtures/IPULSE/ipulse.cir) | success | success | matched | 3.54e-22 | tran i(vmon) |  |
 | [IPWL/ipwl.cir](fixtures/IPWL/ipwl.cir) | success | success | matched | 3.47e-23 | tran i(vmon) |  |
@@ -176,18 +164,28 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [LOAD/load.cir](fixtures/LOAD/load.cir) | success | success | matched | 0.000034 | dc v(9) |  |
 | [MCNC_BJT_RCA/rca.cir](fixtures/MCNC_BJT_RCA/rca.cir) | success | success | matched | 0.00114 | tran v(31) |  |
 | [MEASURE_AC/DotOpNoAC.cir](fixtures/MEASURE_AC/DotOpNoAC.cir) | success | success | matched | 0 | op i(v1) |  |
+| [MEASURE_CONT/DerivTest1DC.cir](fixtures/MEASURE_CONT/DerivTest1DC.cir) | success | success | matched | 0 | dc i(b2) |  |
 | [MEASURE_DC/AvgTest2DC.cir](fixtures/MEASURE_DC/AvgTest2DC.cir) | success | success | matched | 0 | dc i(vsrc1) |  |
 | [MEASURE_NOISE/DotOpNoNoise.cir](fixtures/MEASURE_NOISE/DotOpNoNoise.cir) | success | success | matched | 1.63e-8 | op i(eamp) |  |
 | [MINDUCTORS/InductorICBug.cir](fixtures/MINDUCTORS/InductorICBug.cir) | success | success | matched | 0.00343 | tran i(l2) |  |
+| [MODEL_BINNING/comparatorBaseline_forGlobal.cir](fixtures/MODEL_BINNING/comparatorBaseline_forGlobal.cir) | success | success | matched | 0.00034 | tran v(9) |  |
 | [NMESFET/nmesfet.cir](fixtures/NMESFET/nmesfet.cir) | success | success | matched | 8.52e-8 | dc i(vds) |  |
 | [NMOS_ANALYTIC/mosfet_level1.cir](fixtures/NMOS_ANALYTIC/mosfet_level1.cir) | success | success | matched | 1.73e-9 | tran i(vcc) |  |
+| [NMOS3_DC/mos3_dc.cir](fixtures/NMOS3_DC/mos3_dc.cir) | success | success | matched | 1.26e-15 | dc i(vds) |  |
+| [Nonlinear/ConvergenceTests/NLStrategy1.cir](fixtures/Nonlinear/ConvergenceTests/NLStrategy1.cir) | success | success | matched | 0.00034 | tran v(9) |  |
+| [OP/comparator_op.cir](fixtures/OP/comparator_op.cir) | success | success | matched | 0.00034 | tran v(9) |  |
 | [Output/AC/ac-csv.cir](fixtures/Output/AC/ac-csv.cir) | success | success | matched | 4.73e-16 | ac i(v1) |  |
+| [PARAM_REFACTOR/paramHomotopy.cir](fixtures/PARAM_REFACTOR/paramHomotopy.cir) | success | success | matched | 0 | dc i(v1) |  |
 | [PARAMS1/params_a0.cir](fixtures/PARAMS1/params_a0.cir) | success | success | matched | 0.000472 | tran i(v2) |  |
 | [PARAMS2/Params_A0.cir](fixtures/PARAMS2/Params_A0.cir) | success | success | matched | 1.08e-16 | dc i(v1) |  |
 | [PARSER/aAsAmp.cir](fixtures/PARSER/aAsAmp.cir) | success | success | matched | 0 | dc i(v1) |  |
+| [RESISTOR_TD/temp_dep.cir](fixtures/RESISTOR_TD/temp_dep.cir) | success | success | matched | 1.63e-16 | dc i(v1) |  |
 | [ROM/AUTOSIZE/RC_ladder100.cir](fixtures/ROM/AUTOSIZE/RC_ladder100.cir) | success | success | matched | 6.77e-12 | tran i(vs) |  |
 | [SEMIC_CAPACITOR/semicap_subc.cir](fixtures/SEMIC_CAPACITOR/semicap_subc.cir) | success | success | matched | 0.00000381 | tran i(vin) |  |
 | [SEMIC_RESISTOR/semic_resistor.cir](fixtures/SEMIC_RESISTOR/semic_resistor.cir) | success | success | matched | 8.67e-17 | dc i(vin) |  |
+| [SUPERNODE/supernode1.cir](fixtures/SUPERNODE/supernode1.cir) | success | success | matched | 0 | dc i(v1) |  |
+| [TESTJAC/testjac_comp.cir](fixtures/TESTJAC/testjac_comp.cir) | success | success | matched | 1.39e-7 | dc v(2) |  |
+| [TwoLevelAPI/resInnerTran.cir](fixtures/TwoLevelAPI/resInnerTran.cir) | success | success | matched | 2.78e-16 | tran i(vconnect0000) |  |
 | [USERS_GUIDE/DiodeClipper.cir](fixtures/USERS_GUIDE/DiodeClipper.cir) | success | success | matched | 4.42e-8 | tran i(vcc) |  |
 | [VPULSE/vpulse.cir](fixtures/VPULSE/vpulse.cir) | success | success | matched | 6.51e-16 | tran i(vpulse) |  |
 | [VSIN/bug1679.cir](fixtures/VSIN/bug1679.cir) | success | success | matched | 9.77e-12 | tran i(vvinp) |  |

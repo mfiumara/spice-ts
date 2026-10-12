@@ -1,6 +1,6 @@
 # corpus-g: triage of the 14 decks over the 1% parity threshold (#719)
 
-Hand-written companion to the generated [README.md](README.md). Scope: the 14 corpus-g decks where both engines succeed on the identical bytes but spice-ts exceeded the uniform threshold in the #711 report (main `45d6ea73`). No fixture, tolerance, threshold or metric was changed. "Before" is the committed #711 value; "After" is this branch (`outcomes.json` regenerated with `parity.ts`). Metric: corpus-f's, max|spice-ts - ngspice| / max(peak |ngspice|, floor) for the worst signal, ngspice interpolated onto spice-ts points.
+Hand-written companion to the generated [README.md](README.md). Scope: the 14 corpus-g decks where both engines succeed on the identical bytes but spice-ts exceeded the uniform threshold in the #711 report (main `45d6ea73`). No fixture, tolerance, threshold or metric was changed. "Before" is the committed #711 value; "After" is this branch merged with main `9048f8cf` (#713 Xyce .options, #715 MOS3/MOS9, #723), `outcomes.json` regenerated once with `parity.ts` (outcome SHA-256 `0654595d...`: matched 66, mismatch 17, spice-ts-loss 45 of 128). Metric: corpus-f's, max|spice-ts - ngspice| / max(peak |ngspice|, floor) for the worst signal, ngspice interpolated onto spice-ts points.
 
 ## Tool
 
@@ -36,7 +36,7 @@ Also found while fixing, not in this table: MOS1 instance `M` is ignored ([#731]
 | INDUCTOR/ErrorMessageTest.cir | 1 v(1a) | 1 v(1a) | #733. ngspice: `Warning: 'l1 1a 0' is not a valid inductor instance line, ignored!`, then gmin stepping and v(1) = v(1a) = -2.34e12 V. spice-ts shorts L1 (v(1) = -5 mV). L2 branch agrees to 1e-12. ngspice-side quirk; published loss. |
 | SANDLER22/sandler22.cir | 0.86 v(4) | 0.86 v(4) | #592. 555 output falls in a few ns. Both engines at TMAX 50 ns agree on every waveform; v(4) crosses 2.5 V at 599.865 us (ngspice) and 599.891 us (spice-ts). Default runs: spice-ts 599.890 us, ngspice 599.553 us, so the default-step ngspice edge is 0.31 us off its own fine-step value and spice-ts 0.025 us. The 0.86 is a vertical-edge timing difference. |
 | ABM/ddt.cir | 0.5 i(v1) | 0.5 i(v1) | #592 + #561. Both engines output the same staircase (ddt = 0 for the first two points, then pi); only the grid differs: ngspice 0, 1e-7, 2e-7, 4e-7, spice-ts 0, 1e-7, 3e-7, 7e-7. Interpolating ngspice's 0 -> pi step at 3e-7 gives 1.57. Values at common times are identical (v(1) 4.9e-12). |
-| BUG_237/Bug_237_A1.cir | 0.426 i(vdddev) | 0.0308 i(vdddev) | #729 fixed (most of the loss). Residual: supply-current spikes at the 5 ns edges are not step-converged in either engine (worst 0.071 / 0.019 / 0.047 at TMAX 0.2 / 0.05 / 0.02 ns on a 5 us window, peak still moving); both default runs are 0.28-0.31 from fine-step ngspice → #592. |
+| BUG_237/Bug_237_A1.cir | 0.426 i(vdddev) | 0.0246 i(vdddev) | #729 fixed (most of the loss; 0.0308 before #713 landed and changed `.options timeint abstol=` handling). Residual: supply-current spikes at the 5 ns edges are not step-converged in either engine (worst 0.071 / 0.019 / 0.047 at TMAX 0.2 / 0.05 / 0.02 ns on a 5 us window, peak still moving); both default runs are 0.28-0.31 from fine-step ngspice → #592. |
 | MOSFET_ParamAliases/invert1_alt.cir | 0.256 i(vdddev) | 0.211 v(vout) | #729 fixed. With every capacitance removed both engines now agree to 5e-5 (0.0557 before the fix). Residual: with both engines at TMAX 0.1 ns, 0 of 6 signals over 1% (worst 4.8e-4); the default runs are equally far from fine-step ngspice (0.254 spice-ts, 0.267 ngspice) → #592. |
 | MCNC_BJT_LATCH/latch.cir | 0.236 i(vref) | 0.236 i(vref) | #592. At TMAX 20 ps: 0.0107 (i(vset)). Against fine-step ngspice (TMAX 10 ps) the default runs score 0.484 (spice-ts) and 0.566 (ngspice). Residual 1.07% at matched fine steps not root-caused. |
 | VSTARTEST/vstarTest.cir | 0.218 v(vout) | 0.202 v(vout) | Same models and inverter as invert1_alt: #729 fixed; at TMAX 0.1 ns 0 of 6 over 1% (4.8e-4); default runs vs fine ngspice 0.143 (spice-ts) and 0.175 (ngspice) → #592. |
@@ -44,6 +44,10 @@ Also found while fixing, not in this table: MOS1 instance `M` is ignored ([#731]
 | SANDLER23/sandler23.cir | 0.0498 v(x1.12) | 0.0498 v(x1.12) | #592. Linear op-amp macro model. 1-1.3 ms window: 0.0265 at default steps, 2.3e-11 with both at TMAX 2 ns. |
 | MCNC_BJT_OPAMPAL/opampal.cir | 0.0189 i(vvin) | 0.0189 i(vvin) | #592. i(vvin) is a 0.14 uA input current; 0.0068 at ngspice points. Default runs vs fine ngspice: 0.334 (spice-ts) and 0.310 (ngspice). Every other of the 74 signals is <= 5.2e-4. |
 | IC_AND_NODESET/hussamp_par1.cir | 0.0174 i(vap) | 0.0174 i(vap) | #592 + #561. Worst point is at t = 3e-11, the first steps of the PULSE edge; 0.009 at ngspice points and 0.0028 at ngspice points with both at TMAX 10 ps. |
+
+## New mismatches after merging main (not in the 14, not triaged here)
+
+#713 and #715 made previously unsupported decks run, and four of them land above 1%: MOS13_IC/invert42_mos3.cir 0.838 v(vout), SUBCKT/subckt_a0.cir 0.246 i(vdddev), TIA/ERROROPTION/erroroption.cir 0.225 i(vin1), MPDE/invert1.cir 0.177 i(vin1). They are published in README.md as mismatches; their triage is follow-up work.
 
 ## What this does not claim
 

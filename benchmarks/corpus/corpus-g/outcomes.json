@@ -43,50 +43,20 @@
       "unsupported": 0
     },
     "spiceTs": {
-      "success": 62,
-      "failed": 5,
-      "unsupported": 61
+      "success": 83,
+      "failed": 6,
+      "unsupported": 39
     },
     "outcomes": {
-      "matched": 49,
-      "mismatch": 13,
+      "matched": 66,
+      "mismatch": 17,
       "not-compared": 0,
-      "spice-ts-loss": 66,
+      "spice-ts-loss": 45,
       "ngspice-failed": 0,
       "both-failed": 0
     }
   },
   "gapBuckets": [
-    {
-      "bucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)",
-      "fixtures": 22,
-      "ngspiceSuccess": 22,
-      "ids": [
-        "bjt-analytic-ramp-test1-cir",
-        "bjt-off-bjt-off-cir",
-        "bug-458-bug458-cir",
-        "diagnostic-dc-currentcheck1-cir",
-        "diode-analytic-reverse-model-cir",
-        "gmin-stepping-gstep-cont3a-cir",
-        "homotopy-schmidt-cir",
-        "measure-cont-derivtest1dc-cir",
-        "mextram-acfreq-gbb-noflip-p-cir",
-        "mpde-invert1-cir",
-        "nonlinear-convergencetests-nlstrategy1-cir",
-        "param-refactor-paramhomotopy-cir",
-        "powernode-resinner-cir",
-        "pseudo-pseudo-cir",
-        "psp102-idvg0-id-t27-pmos-cir",
-        "psp103-invert-psp-testdta0-cir",
-        "resistor-td-temp-dep-cir",
-        "sandler25-sandler25-cir",
-        "supernode-supernode1-cir",
-        "testjac-testjac-comp-cir",
-        "tia-erroroption-erroroption-cir",
-        "twolevelapi-resinnertran-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/713"
-    },
     {
       "bucket": "output: expressions and output variables in .print lines",
       "fixtures": 11,
@@ -107,19 +77,21 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/714"
     },
     {
-      "bucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)",
-      "fixtures": 7,
-      "ngspiceSuccess": 7,
+      "bucket": "parse: other unsupported syntax",
+      "fixtures": 9,
+      "ngspiceSuccess": 9,
       "ids": [
-        "actests-bsim3-gain-stage-cir",
-        "comparator-comparator-cir",
-        "model-binning-comparatorbaseline-forglobal-cir",
-        "mos13-ic-invert42-mos3-cir",
-        "nmos3-dc-mos3-dc-cir",
-        "op-comparator-op-cir",
-        "subckt-subckt-a0-cir"
+        "abm-freq-rc-simple-hertz-cir",
+        "bjt-off-bjt-off-cir",
+        "gmin-stepping-gstep-cont3a-cir",
+        "init-conds-inv1xic-cir",
+        "ltra-ltra1-cir",
+        "mextram-acfreq-gbb-noflip-p-cir",
+        "pseudo-pseudo-cir",
+        "resistor-defaultvaluewarning-cir",
+        "soln-dep-res-multsoldepres-cir"
       ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/715"
+      "issue": null
     },
     {
       "bucket": "source: EXP/SFFM/AM waveforms and PWL TD=",
@@ -136,15 +108,14 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/716"
     },
     {
-      "bucket": "parse: other unsupported syntax",
-      "fixtures": 5,
-      "ngspiceSuccess": 5,
+      "bucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)",
+      "fixtures": 4,
+      "ngspiceSuccess": 4,
       "ids": [
-        "abm-freq-rc-simple-hertz-cir",
-        "init-conds-inv1xic-cir",
-        "ltra-ltra1-cir",
-        "resistor-defaultvaluewarning-cir",
-        "soln-dep-res-multsoldepres-cir"
+        "bsimsoi3-b3soitrandefaults-cir",
+        "ekv26-inverter-transient-ekv26-cir",
+        "psp102-idvg0-id-t27-pmos-cir",
+        "psp103-invert-psp-testdta0-cir"
       ],
       "issue": null
     },
@@ -160,42 +131,34 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/717"
     },
     {
+      "bucket": "execution: other failure",
+      "fixtures": 3,
+      "ngspiceSuccess": 3,
+      "ids": [
+        "message-device-core-safebarrier-1-cir",
+        "mos6-invert-mos6-cir",
+        "powernode-resinner-cir"
+      ],
+      "issue": null
+    },
+    {
+      "bucket": "expression: branch-current i() references in B-source expressions",
+      "fixtures": 3,
+      "ngspiceSuccess": 3,
+      "ids": [
+        "sandler1-sandler1-cir",
+        "sandler2-sandler2-cir",
+        "sandler25-sandler25-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/718"
+    },
+    {
       "bucket": "deck: element-free deck (ngspice runs an empty analysis)",
       "fixtures": 2,
       "ngspiceSuccess": 2,
       "ids": [
         "embedded-printline-for-embedded-cmosinverter-cir",
         "pce-ni-regression-printline-for-cmosinverter-regr-cir"
-      ],
-      "issue": null
-    },
-    {
-      "bucket": "execution: other failure",
-      "fixtures": 2,
-      "ngspiceSuccess": 2,
-      "ids": [
-        "message-device-core-safebarrier-1-cir",
-        "mos6-invert-mos6-cir"
-      ],
-      "issue": null
-    },
-    {
-      "bucket": "expression: branch-current i() references in B-source expressions",
-      "fixtures": 2,
-      "ngspiceSuccess": 2,
-      "ids": [
-        "sandler1-sandler1-cir",
-        "sandler2-sandler2-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/718"
-    },
-    {
-      "bucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)",
-      "fixtures": 2,
-      "ngspiceSuccess": 2,
-      "ids": [
-        "bsimsoi3-b3soitrandefaults-cir",
-        "ekv26-inverter-transient-ekv26-cir"
       ],
       "issue": null
     },
@@ -696,16 +659,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'M1' (model 'nmos') uses unsupported model LEVEL=9 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+        "status": "success",
+        "analyses": [
+          "ac:71"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.0000339,
+      "worstSignal": "ac v(vdd)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "agecap-agecap-ref-cir",
@@ -751,16 +715,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 59: Unsupported .options field: 'device' .options device gmin=0 voltlim=0"
+        "status": "success",
+        "analyses": [
+          "tran:800007"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 2,
+      "worstNormalizedError": 4.8e-10,
+      "worstSignal": "tran i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "bjt-extnode-npn-rb-rc-re-1-cir",
@@ -835,14 +800,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 37: Unsupported .options field: 'nonlin' .options nonlin maxstep=200 reltol=1.0e-2 abstol=1.0e-6 rhstol=1.0e-4"
+        "firstErrorLine": "Unsupported BJT model parameter: 'PTF' (excess phase is not implemented)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "bjt-pspice-nk-bjt-test-nk-cir",
@@ -890,7 +855,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "MOSFET 'M1' (model 'nmos') uses unsupported model LEVEL=10 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+        "firstErrorLine": "MOSFET 'M1' (model 'nmos') uses unsupported model LEVEL=10 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -978,7 +943,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 8,
-      "worstNormalizedError": 0.0308,
+      "worstNormalizedError": 0.0246,
       "worstSignal": "tran i(vdddev)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -1027,16 +992,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 8: Unsupported .options field: 'LINSOL' .OPTIONS LINSOL TYPE=klu"
+        "status": "success",
+        "analyses": [
+          "tran:61"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 4.55e-14,
+      "worstSignal": "tran v(2)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "cccs-ftest-cir",
@@ -1169,16 +1135,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'M1' (model 'PMOS') uses unsupported model LEVEL=9 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+        "status": "success",
+        "analyses": [
+          "tran:120"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 16,
+      "worstNormalizedError": 0.00034,
+      "worstSignal": "tran v(9)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "complex-num-test1-cir",
@@ -1224,16 +1191,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 24: Unsupported .options field: 'diagnostic' .options diagnostic CURRENTLIMIT=3e-2 diagfilename=DC_CurrentCheck1.dia"
+        "status": "success",
+        "analyses": [
+          "dc:7"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 11,
+      "worstNormalizedError": 0.00000466,
+      "worstSignal": "dc v(node8)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "diode-analytic-reverse-model-cir",
@@ -1251,16 +1219,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 55: Unsupported .options TIMEINT field: 'abstol-1e-6' .options TIMEINT reltol=1e-6 abstol-1e-6"
+        "status": "success",
+        "analyses": [
+          "tran:9257"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 7.54e-8,
+      "worstSignal": "tran v(1)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "diode-cmc-diodeclipper-ac-cir",
@@ -1336,7 +1305,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "MOSFET 'Xinv1.Mp1' (model 'pmos1') uses unsupported model LEVEL=260 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+        "firstErrorLine": "MOSFET 'Xinv1.Mp1' (model 'pmos1') uses unsupported model LEVEL=260 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1500,14 +1469,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 36: Unsupported .options field: 'nonlin' .options nonlin nlstrategy=0 searchmethod=0 maxstep=200 continuation=3 reltol=1.0e-2 abstol=1.0e-6 rhstol=1.0e-4"
+        "firstErrorLine": "Unsupported BJT model parameter: 'PTF' (excess phase is not implemented)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "homotopy-schmidt-cir",
@@ -1525,16 +1494,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 16: Unsupported .options field: 'device' .options device voltlim=1 debuglevel=-100"
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 8,
+      "worstNormalizedError": 0.00000372,
+      "worstSignal": "dc v(5)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "ic-and-nodeset-hussamp-par1-cir",
@@ -2030,16 +2000,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 9: Unsupported .options field: 'MEASURE' .OPTIONS MEASURE USE_CONT_FILES=0"
+        "status": "success",
+        "analyses": [
+          "dc:10"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 5,
+      "worstNormalizedError": 0,
+      "worstSignal": "dc i(b2)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "measure-dc-avgtest2dc-cir",
@@ -2170,14 +2141,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 2: Unsupported .options field: 'device' .options device temp=25"
+        "firstErrorLine": "Unsupported bounded BJT model parameter: 'DTA'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "minductors-inductoricbug-cir",
@@ -2223,16 +2194,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'M1' (model 'PMOS') uses unsupported model LEVEL=9 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+        "status": "success",
+        "analyses": [
+          "tran:120"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 16,
+      "worstNormalizedError": 0.00034,
+      "worstSignal": "tran v(9)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "mos13-ic-invert42-mos3-cir",
@@ -2250,16 +2222,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'XINV1.MN1' (model 'CD4012_NMOS') uses unsupported model LEVEL=3 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+        "status": "success",
+        "analyses": [
+          "tran:5863"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 47,
+      "worstNormalizedError": 0.838,
+      "worstSignal": "tran v(vout)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "mos6-invert-mos6-cir",
@@ -2332,16 +2305,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 21: Unsupported .options TIMEINT field: 'maxord' .options TIMEINT maxord=5 debuglevel=-10 reltol=1.0e-4"
+        "status": "success",
+        "analyses": [
+          "tran:507"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.177,
+      "worstSignal": "tran i(vin1)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "multiplicity-factor-bjt-diffpair-noise-baseline-net",
@@ -2443,16 +2417,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'M1' (model 'NFET') uses unsupported model LEVEL=3 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+        "status": "success",
+        "analyses": [
+          "dc:2404"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 1.26e-15,
+      "worstSignal": "dc i(vds)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "noise-cascodebjtnoise-cir",
@@ -2498,16 +2473,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 41: Unsupported .options field: 'nonlin' .options nonlin nlstrategy=1 searchmethod=0"
+        "status": "success",
+        "analyses": [
+          "tran:120"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 16,
+      "worstNormalizedError": 0.00034,
+      "worstSignal": "tran v(9)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "op-comparator-op-cir",
@@ -2527,16 +2503,18 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'M1' (model 'PMOS') uses unsupported model LEVEL=9 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+        "status": "success",
+        "analyses": [
+          "op:1",
+          "tran:120"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)"
+      "comparedAnalyses": 2,
+      "comparedSignals": 32,
+      "worstNormalizedError": 0.00034,
+      "worstSignal": "tran v(9)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "output-ac-ac-csv-cir",
@@ -2582,16 +2560,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 12: Unsupported .options field: 'nonlin' .options nonlin continuation=1"
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 3,
+      "worstNormalizedError": 0,
+      "worstSignal": "dc i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "params1-params-a0-cir",
@@ -2828,16 +2807,16 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
+        "status": "failed",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 12: Unsupported .options field: 'nonlin' .options nonlin nox=1"
+        "firstErrorLine": "DC sweep source 'R1a' not found"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "gapBucket": "execution: other failure"
     },
     {
       "id": "pseudo-pseudo-cir",
@@ -2857,14 +2836,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 37: Unsupported .options field: 'device' .options device debuglevel=-10 voltlim=1"
+        "firstErrorLine": "Unsupported BJT model parameter: 'PTF' (excess phase is not implemented)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "psp102-idvg0-id-t27-pmos-cir",
@@ -2884,14 +2863,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 2: Unsupported .options field: 'device' .options device temp=27"
+        "firstErrorLine": "MOSFET 'x1.m1' (model 'mymodel') uses unsupported model LEVEL=102 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)"
     },
     {
       "id": "psp103-invert-psp-testdta0-cir",
@@ -2911,14 +2890,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 15: Unsupported .options field: 'device' .options device temp=100"
+        "firstErrorLine": "MOSFET 'XINV1.MN1' (model 'pspqan') uses unsupported model LEVEL=103 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)"
     },
     {
       "id": "resistor-td-temp-dep-cir",
@@ -2936,16 +2915,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 48: Unsupported .options field: 'DEVICE' .OPTIONS DEVICE TEMP=-55"
+        "status": "success",
+        "analyses": [
+          "dc:6"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 2,
+      "worstNormalizedError": 1.63e-16,
+      "worstSignal": "dc i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "resistor-defaultvaluewarning-cir",
@@ -3158,14 +3138,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 32: Unsupported .options field: 'NONLIN-TRAN' .OPTIONS NONLIN-TRAN SEARCHMETHOD=0"
+        "firstErrorLine": "Parse error at line 1: Unsupported behavioral expression: branch current i(...) references BF1 9 3 I=(I(V1))"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "gapBucket": "expression: branch-current i() references in B-source expressions"
     },
     {
       "id": "semic-capacitor-semicap-subc-cir",
@@ -3293,16 +3273,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "MOSFET 'MN1' (model 'CD4012_NMOS') uses unsupported model LEVEL=3 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+        "status": "success",
+        "analyses": [
+          "tran:2001"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "model: MOSFET LEVEL=3 (MOS3) and LEVEL=9 (MOS9)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 7,
+      "worstNormalizedError": 0.246,
+      "worstSignal": "tran i(vdddev)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "supernode-supernode1-cir",
@@ -3320,16 +3301,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 5: Unsupported .options field: 'topology' .options topology supernode=true"
+        "status": "success",
+        "analyses": [
+          "dc:6"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 2,
+      "worstNormalizedError": 0,
+      "worstSignal": "dc i(v1)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "testjac-testjac-comp-cir",
@@ -3347,16 +3329,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 45: Unsupported .options field: 'device' .options device testjac=1 testjacwarn=1 TESTJACDEVICENAME=MQLO TJABSTOL=1.0e-19 TJRELTOL=1.0e-12 debuglevel=-100"
+        "status": "success",
+        "analyses": [
+          "dc:1"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 16,
+      "worstNormalizedError": 1.39e-7,
+      "worstSignal": "dc v(2)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "tia-erroroption-erroroption-cir",
@@ -3374,16 +3357,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 24: Unsupported .options TIMEINT field: 'erroption' .options TIMEINT method=7 erroption=1 nlmin=3 nlmax=5 timestepsreversal=0"
+        "status": "success",
+        "analyses": [
+          "tran:358"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 6,
+      "worstNormalizedError": 0.225,
+      "worstSignal": "tran i(vin1)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "tl1x-tl1x-mpi-cir",
@@ -3455,16 +3439,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 12: Unsupported .options TIMEINT field: 'debuglevel' .options timeint debuglevel=-100"
+        "status": "success",
+        "analyses": [
+          "tran:1007"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "directive: Xyce .options packages that ngspice ignores (DEVICE, NONLIN, TIMEINT, LINSOL, ...)"
+      "comparedAnalyses": 1,
+      "comparedSignals": 7,
+      "worstNormalizedError": 2.78e-16,
+      "worstSignal": "tran i(vconnect0000)",
+      "outcome": "matched",
+      "gapBucket": null
     },
     {
       "id": "users-guide-diodeclipper-cir",
@@ -3771,5 +3756,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "38843c4115d70de7fd4448d65164d77609310ad741a4b71e4a1fbe8af80dc9e6"
+  "outcomeSha256": "0654595d3ed44636d81d6eadeb1e97b491e9c189b3f7917f4c793ec93761d5e1"
 }
