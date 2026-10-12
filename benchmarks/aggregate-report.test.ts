@@ -192,12 +192,12 @@ describe('aggregate report artifact verification', () => {
     assert.equal(mosAmp.spiceTs.status, 'success');
     assert.deepEqual(mosAmp.comparisons[0].metrics.grid, { spiceTsPoints: 2415, ngspicePoints: 2429, alignedPoints: 2414, excludedOutOfRange: 1 });
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #658') && text.includes('PR #667') && text.includes('PR #689') && text.includes('PR #623')
-      && text.includes('0.3029 to 0.5723 V v(6)') && text.includes('975815.5539797375 to 3560207.268294422') && text.includes('outcome-neutral here')));
+      && text.includes('0.3029 to 0.5723 V v(6)') && text.includes('975815.5539797375 to 3560207.268294422') && text.includes('outcome-neutral here') && text.includes('(#479, PR #703, main 3b9c836)') && text.includes('3560207.268294422 to 436123.2264933293')));
     assert.ok(report.comparisonToPrevious.metricTransitions.some((text: string) => text.includes('PR #552') && text.includes('#565') && text.includes('classic/mos-memory-cell (155 points) worst 1.906 V v(8) to 0.248 V v(3)')));
     const mos6Worst: Record<string, number> = {
-      'ngspice/mos6-inverter-transient': 0.284344229497401, // #664 and #677 (bisected, aggregate refresh after #689).
-      'ngspice/mos6-simple-inverter-transient': 0.10560974273955925, // #572 LU pivot order, then #664, at rounding level.
-      'classic/mos6-inverter-chain': 0.284344229497401,
+      'ngspice/mos6-inverter-transient': 0.2524346596766116, // #664 and #677, then #703 MOS6 convtest/MOS6trunc (aggregate refresh on 3b9c836).
+      'ngspice/mos6-simple-inverter-transient': 0.001279950155012921, // #572 LU pivot order, #664, then #703 MOS6 convtest/MOS6trunc.
+      'classic/mos6-inverter-chain': 0.2524346596766116,
     };
     for (const [key, expected] of Object.entries(mos6Worst)) {
       const mos6 = report.fixtures.find((fixture: { key: string }) => fixture.key === key);
@@ -254,7 +254,7 @@ describe('aggregate report artifact verification', () => {
 
     assert.deepEqual(report.provenance, {
       fixtureTreeSha256: '08296b6055fda62d69ae645fed5e9c9018dedd9fb5dc7daace6ced2e4f91f4f8',
-      sourcesSha256: 'bde00fbd00a6099c6550dcdec9ff66e8b4f64c84a9e40d40f97974b783075e96',
+      sourcesSha256: 'e9f5ea5a501a5ab85fff6df8b23a324fee36abf4e267e784fe080ee3534fec02',
     });
   });
 
@@ -267,8 +267,8 @@ describe('aggregate report artifact verification', () => {
     assert.equal(report.matchedPointEnvelope.relativeComparedSignals, 939);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteError, 7018.333251953125);
     assert.equal(report.matchedPointEnvelope.maximumAbsoluteRms, 7018.333251953125);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 3560207.268294422);
-    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 274347.24134489807);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeError, 436123.2264933293);
+    assert.equal(report.matchedPointEnvelope.maximumRelativeRms, 242534.0759815006);
   });
 
   it('commits runtime sums derived from all 100 engine receipts', async () => {

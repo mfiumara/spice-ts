@@ -89,9 +89,9 @@
     {
       "id": "tests-transmission-ltra2-2-line-cir",
       "issueTable": { "outcome": "mismatch", "worst": 1, "signal": "tran i(vs)" },
-      "current": { "outcome": "matched", "worst": 0.000468, "signal": "tran i(vs)" },
+      "current": { "outcome": "matched", "worst": 0.000796, "signal": "tran i(vs)" },
       "rootCauses": ["mos1-meyer-gate-capacitance", "reference-grid-artefact", "ckttrunc-step-control"],
-      "evidence": "At bf2e4169 i(vs) was 0 in spice-ts vs a 2.5 uA ngspice peak (0.974). Removing TOX=18000N from both cards made it agree, which led to #591, fixed by #601. Since #601: 0.374 (near t=16.1 ns spice-ts -42.5 nA vs ngspice -2.4 uA), 0.151 at ngspice points, 0.029 with both engines at TMAX 10 ps. #627 traced the residual to discretisation of a current that is discontinuous at the pulse corners (#629). Against ngspice-47 at TMAX 1 ps, spice-ts default is 0.0233 and ngspice-47 default is 0.0401. The post-breakpoint step rule differs from ngspice (#608). Routed to #592. Other signals (v(3) 0.0414, i(vdd) 0.0361, v(2) 0.0137) are <= 0.0071 at ngspice points and <= 0.0033 at TMAX 10 ps. On b1a1ff58 the published value is 0.42 (0.374 on 03706cc7): #677, the #608 post-breakpoint CKTsaveDelta step rule, moved it (bisected over every main commit after 03706cc7). The diagnostic values above were measured on earlier trees and were not rerun. Still a published loss under #592. On e2c73b29 it matches: 0.000468 on tran i(vs), after #689 ported ngspice-47 CKTtrunc step control (bisected over the three main commits after b1a1ff58). The residual was a spice-ts step-control difference, not only a reference-grid artefact."
+      "evidence": "At bf2e4169 i(vs) was 0 in spice-ts vs a 2.5 uA ngspice peak (0.974). Removing TOX=18000N from both cards made it agree, which led to #591, fixed by #601. Since #601: 0.374 (near t=16.1 ns spice-ts -42.5 nA vs ngspice -2.4 uA), 0.151 at ngspice points, 0.029 with both engines at TMAX 10 ps. #627 traced the residual to discretisation of a current that is discontinuous at the pulse corners (#629). Against ngspice-47 at TMAX 1 ps, spice-ts default is 0.0233 and ngspice-47 default is 0.0401. The post-breakpoint step rule differs from ngspice (#608). Routed to #592. Other signals (v(3) 0.0414, i(vdd) 0.0361, v(2) 0.0137) are <= 0.0071 at ngspice points and <= 0.0033 at TMAX 10 ps. On b1a1ff58 the published value is 0.42 (0.374 on 03706cc7): #677, the #608 post-breakpoint CKTsaveDelta step rule, moved it (bisected over every main commit after 03706cc7). The diagnostic values above were measured on earlier trees and were not rerun. Still a published loss under #592. On e2c73b29 it matches: 0.000468 on tran i(vs), after #689 ported ngspice-47 CKTtrunc step control (bisected over the three main commits after b1a1ff58); 0.000796 on 3b9c836f after #703 (MOS1 device convergence test), still matched. The residual was a spice-ts step-control difference, not only a reference-grid artefact."
     },
     {
       "id": "tests-bsim2-test-cir",
@@ -166,16 +166,16 @@
     {
       "id": "examples-transient-noise-simple-noise-cir",
       "issueTable": null,
-      "current": { "outcome": "mismatch", "worst": 3.49, "signal": "tran v(3)" },
+      "current": { "outcome": "mismatch", "worst": 3.83, "signal": "tran v(3)" },
       "rootCauses": ["stochastic-sources"],
-      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 4.71 on 4bdbe0c2, a triage-detail rerun gave 3.75, the b3f04506 regeneration gave 2.5 the 03706cc7 regeneration 5.44 the b1a1ff58 regeneration 1.49 (v(4)) the e2c73b29 regeneration 7.12 (v(3)) and the dc7cc4a3 regeneration 3.49 (v(3)). The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
+      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 4.71 on 4bdbe0c2, a triage-detail rerun gave 3.75, the b3f04506 regeneration gave 2.5 the 03706cc7 regeneration 5.44 the b1a1ff58 regeneration 1.49 (v(4)) the e2c73b29 regeneration 7.12 (v(3)) the dc7cc4a3 regeneration 3.49 (v(3)) and the 3b9c836f regeneration 3.83 (v(3)). The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
     },
     {
       "id": "examples-transient-noise-rts-1-cir",
       "issueTable": null,
-      "current": { "outcome": "mismatch", "worst": 1.37, "signal": "tran v(21)" },
+      "current": { "outcome": "mismatch", "worst": 1.53, "signal": "tran v(21)" },
       "rootCauses": ["stochastic-sources"],
-      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 1.55 (v(9)) on 4bdbe0c2, a triage-detail rerun gave 1.45, the b3f04506 regeneration gave 1.36 (v(21)) the 03706cc7 regeneration 1.14 (v(9)) the b1a1ff58 and e2c73b29 regenerations 1.52 (v(21)) and the dc7cc4a3 regeneration 1.37 (v(21)). The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
+      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 1.55 (v(9)) on 4bdbe0c2, a triage-detail rerun gave 1.45, the b3f04506 regeneration gave 1.36 (v(21)) the 03706cc7 regeneration 1.14 (v(9)) the b1a1ff58 and e2c73b29 regenerations 1.52 (v(21)) the dc7cc4a3 regeneration 1.37 (v(21)) and the 3b9c836f regeneration 1.53 (v(21)). The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
     }
   ],
   "deferredMismatches": {
