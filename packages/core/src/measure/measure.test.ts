@@ -98,7 +98,11 @@ describe('.meas port of ngspice-47 com_measure2.c, on ngspice vectors', () => {
 describe('simulate() evaluates .meas cards', () => {
   it('matches ngspice-47 on the edge cases of the parser (strtok-cut words, ignored WHEN failures, empty windows)', async () => {
     const result = await simulate(probes.quirk.deck);
-    expectNgspice(result.measurements ?? [], probes.quirk);
+    // Deliberate divergence (#811, ngspice ticket #574): v(1)=0.5u is first
+    // crossed between the first two time points, at t = 0.5u * 1m = 5e-10 s.
+    // ngspice-47 drops that crossing and prints the falling one near 2m.
+    expect(probes.quirk.expected.q8.value).toBe(0.002);
+    expectNgspice(result.measurements ?? [], { ...probes.quirk, expected: { ...probes.quirk.expected, q8: { value: 5e-10 } } });
     expect(result.measurements?.find(m => m.name === 'q9')?.error).toBe('measure  q9  when(WHEN) : Cannot evaluate x ');
   });
 

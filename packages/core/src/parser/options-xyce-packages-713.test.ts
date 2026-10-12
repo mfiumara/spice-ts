@@ -140,11 +140,19 @@ describe('Xyce .options packages follow ngspice-47 (#713)', () => {
     expect(() => parse(netlist)).toThrow(message);
   });
 
+  // A plain card follows the same ngspice-47 rule (#790): names it does not
+  // recognise are ignored with a warning, the rest stay strict.
   it.each([
-    '.options maxstep=200\n.op',
-    '.options voltlim=1\n.op',
-    '.options nonlinx reltol=1e-3\n.op',
-  ])('keeps plain .options cards strict: %s', netlist => {
-    expect(() => parse(netlist)).toThrow(ParseError);
+    ['.options maxstep=200\n.op', {}, 'maxstep=200'],
+    ['.options voltlim=1\n.op', {}, 'voltlim=1'],
+    ['.options nonlinx reltol=1e-3\n.op', { reltol: 1e-3 }, 'nonlinx'],
+  ])('ignores names ngspice-47 does not recognise on plain .options cards: %s', (netlist, options, ignored) => {
+    const circuit = parse(netlist);
+    expect(circuit.simulationOptions).toEqual(options);
+    expect(circuit.parseWarnings).toEqual([`Ignored .options fields ngspice-47 does not recognise: ${ignored}`]);
+  });
+
+  it('keeps ngspice-meaningful fields on plain .options cards strict', () => {
+    expect(() => parse('.options gminsteps=10\n.op')).toThrow(ParseError);
   });
 });

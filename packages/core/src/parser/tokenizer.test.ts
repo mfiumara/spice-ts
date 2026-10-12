@@ -118,6 +118,8 @@ describe('tokenizeNetlist', () => {
 // #496 keeps whitespace-free `{...}` groups whole (see referenceTokenizeNetlist).
 // #749 builds accepted values as ngspice-47 INPevaluate does (see
 // referenceParseNumber); which tokens are accepted is unchanged.
+// #790 accepts non-ASCII unit text after a number (`27°C`), which INPevaluate
+// skips like ASCII unit letters (see referenceParseNumber).
 // ---------------------------------------------------------------------------
 
 const REFERENCE_SI_SUFFIX_MAP: Record<string, string> = {
@@ -193,7 +195,7 @@ function referenceParseNumber(token: string): number {
     const val = Number(numStr + exp);
     if (!isNaN(val)) return cInpEvaluate(trimmed, true);
   }
-  const suffixMatch = trimmed.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)(meg|mil|[tgkmunpfa])?([a-z]*)$/i);
+  const suffixMatch = trimmed.match(/^([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)(meg|mil|[tgkmunpfa])?([a-z\u0080-\uffff]*)$/i);
   if (suffixMatch) {
     const suffix = suffixMatch[2]?.toLowerCase();
     const exp = suffix === 'meg' ? 'e6' : suffix && suffix !== 'mil' ? REFERENCE_SI_SUFFIX_MAP[suffix] : '';
@@ -322,7 +324,7 @@ describe('parseNumber behavior pins (#369)', () => {
 
   it('rejects malformed tokens with the original (untrimmed) token in the message', () => {
     for (const bad of ['', ' ', '.', '+', '-k', '--1', '1 k', '1e+', '3.3k3', '1e3k3', '1mil5', '1k5.3',
-      'NaN', 'Infinity', '0x10', '1_000', '\uff11', '1k\u00e9', 'k1', '1,5']) {
+      'NaN', 'Infinity', '0x10', '1_000', '\uff11', 'k1', '1,5']) {
       expect(() => parseNumber(bad), JSON.stringify(bad)).toThrow(`Cannot parse number: '${bad}'`);
     }
   });

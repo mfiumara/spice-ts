@@ -1,0 +1,15 @@
+HFETA instance-order test, order A
+* z1 is reverse biased (vds = -1 V), z2 is forward biased (vds = +1 V).
+* Each device is driven by its own sources, so both drain currents should
+* be independent of the order of the Z lines.
+vd1 d1 0 dc -1
+vd2 d2 0 dc 1
+vg  g  0 dc 0
+z1 d1 g 0 hf l=1u w=10u
+z2 d2 g 0 hf l=1u w=10u
+.model hf nhfet level=5 vt0=-0.3 rd=60 rs=60
+.control
+op
+print i(vd1) i(vd2)
+.endc
+.end

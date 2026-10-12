@@ -1,0 +1,5 @@
+*
+.tran 100m 5
+b1 1 0 v=sqrt(-2)
+.plot tran v(1)
+.end

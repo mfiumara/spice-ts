@@ -68,6 +68,7 @@ export interface CorpusHReport {
  */
 export const GAP_ISSUES: Record<string, string> = {
   'control: edit command and # comment lines inside .control': 'https://github.com/mfiumara/spice-ts/issues/787',
+  'control: failed setplot aborts the script (ngspice-47 continues)': 'https://github.com/mfiumara/spice-ts/issues/798',
   'expression: bare parameter names as values (X-card R=R1, M = 10)': 'https://github.com/mfiumara/spice-ts/issues/788',
   'crash: uncaught TypeError instead of a structured error': 'https://github.com/mfiumara/spice-ts/issues/789',
   'convergence': 'https://github.com/mfiumara/spice-ts/issues/772',
@@ -80,7 +81,10 @@ export const GAP_ISSUES: Record<string, string> = {
 
 /** Findings beyond the gap buckets (correctness mismatches and harness defects) exposed by this batch. */
 export const FOLLOW_UP_ISSUES: ReadonlyArray<{ url: string; scope: string }> = [
-  { url: 'https://github.com/mfiumara/spice-ts/issues/791', scope: 'triage of the 3 decks where both engines succeed but spice-ts exceeds the 1% parity threshold' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/791', scope: 'triage of the 3 SpiceSharpParser cookbook decks (astable-led-flasher, bjt-relay-driver, transmission-line-termination) where both engines succeed but spice-ts exceeds the 1% parity threshold' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/797', scope: 'SpiceSharpParser example01.cir op mismatch (comma-separated subcircuit instance parameter lists), runnable since #789' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/804', scope: 'WRspice mosamp2.cir residual transient mismatch after the MOS LEVEL=2 fix for #799 (transient step sequence across a fast edge)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/809', scope: 'KiCad QA tlines.spice and legacy_sources.spice mismatches, runnable since GND reads as ground (#772)' },
 ];
 
 const OUTCOMES: Outcome[] = ['matched', 'mismatch', 'not-compared', 'spice-ts-loss', 'ngspice-failed', 'both-failed'];

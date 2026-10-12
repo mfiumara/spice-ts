@@ -1,0 +1,10 @@
+* A loop of ideal current sources leaves every node with an admittance-free
+* (all-zero) matrix row, so ISRCload indexes CKTrhs past its allocated length
+* (sized by SMPmatSize).  The result is an out-of-bounds heap read+write that
+* crashes ngspice (SIGSEGV/SIGABRT; valgrind reports an invalid read+write of
+* size 8 at isrcload.c:457).
+I1 n1 n2 1m
+I2 n2 n3 1m
+I3 n3 n1 1m
+.op
+.end

@@ -11,3 +11,4 @@ test-results.xml
 .claire/
 .vercel/
 .vercel
+benchmarks/corpus/ngspice-bugs/fetched/

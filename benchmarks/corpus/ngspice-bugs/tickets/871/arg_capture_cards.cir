@@ -1,0 +1,17 @@
+* A function's formal argument is replaced by a global random parameter of the same name
+
+.param r1 = agauss(0, 1, 1)
+
+* Here, 'r1' should just be a dummy parameter name. Instead, it is substituted
+* with the agauss() declaration above to be interpreted as 'par < agauss(0,1,1)'
+* regardless of the parameter passed to choose_res()
+.param choose_res(par, r1) = 'par < r1 ? 1 : 2'
+
+* R1 should always be 1 ohm because 1e-7 < 2e-7. But sometimes, depending on
+* the random agauss() and the above bug, it comes out as 2 ohms.
+R1 a 0 {choose_res(1e-7, 2e-7)}
+V1 a 0 1
+
+.op
+.print op all
+.end

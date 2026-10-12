@@ -1,0 +1,40 @@
+* Qucs 24.2.1  C:/Users/m3nm49/Desktop/Qucs/Common Source_prj/CS.sch
+VDS _net0 0 DC 5
+VPr1 OUT _net1 DC 0
+MT1 _net1 _net2 0 0 MMOD_T1 L=5e-07 W=2e-05 Ad=0 As=0 Pd=0 Ps=0 Temp=26.85
+.MODEL MMOD_T1 NMOS (Vt0=1 Kp=2e-05 Gamma=0 Phi=0.6 Lambda=0 Rd=0 Rs=0 Is=1e-14 Ld=0 Tox=1e-07 Cgso=0 Cgdo=0 Cgbo=0 Cbd=0 Cbs=0 Pb=0.8 Mj=0.5 Fc=0.5 Cjsw=0 Mjsw=0.33 Tpg=1 Uo=600 Rsh=0 Cj=0 Js=0 Kf=0 Af=1 Tnom=26.85 )
+VGS _net2 0 DC 0 SIN(0 3 10K 0 0 0) AC 3 ACPHASE 0
+RL OUT _net0  {RL} tc1=0.0 tc2=0.0 
+
+.control
+
+op
+let RL = 10 kOhm
+print v(OUT) i(VPr1)  RL > spice4qucs.dc1.ngspice.dc.print
+destroy all
+reset
+
+let number_rl = 0
+echo "STEP sw1.rl" > spice4qucs.sw1.cir.res
+foreach  rl_act 1000 2514.87 6324.56 15905.4 40000 
+alter RL = $rl_act
+dc vgs 0 30 0.30303
+let RL = 10 kOhm
+write spice4qucs.sw1._swp.plot v(OUT) i(VPr1) RL
+set appendwrite
+echo "$&number_rl  $rl_act" >> spice4qucs.sw1.cir.res
+let number_rl = number_rl + 1
+end
+unset appendwrite
+destroy all
+reset
+
+tran 5.02513e-06 0.001 0 
+let RL = 10 kOhm
+write spice4qucs.tr1.plot v(OUT) i(VPr1) RL
+destroy all
+reset
+
+exit
+.endc
+.END

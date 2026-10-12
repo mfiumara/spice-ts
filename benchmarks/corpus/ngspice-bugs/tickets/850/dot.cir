@@ -1,0 +1,16 @@
+* CKTtopologyReduce prunes a node that is sensed by a behavioral
+* expression.  Node a's only stamped connection is R1 (degree 1), so the
+* topology-reduction pass removes R1 and pins a at 0 with a unit diagonal,
+* but Bx SENSES v(a), which is not a GENnode terminal and so is invisible
+* to the degree count.
+*
+*   ngspice-46:                        v(out) = 1  (correct)
+*   ngspice-47 pre-master:            v(out) = 0  (R1 pruned, v(a) forced 0)
+*   ngspice-47 + 'set no_topo_reduce': v(out) = 1  (correct)
+v1 in 0 1
+r1 in a 1k
+bx out 0 v = v(a)
+rl out 0 1k
+.op
+.print op v(a) v(out)
+.end

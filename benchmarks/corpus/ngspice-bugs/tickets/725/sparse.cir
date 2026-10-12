@@ -1,0 +1,7 @@
+* open switch control lines
+.options sparse
+V1 1 0 1
+SNEW 0 0 control_1 control_2 SW_NEW
+.MODEL SW_NEW SW(VT=0.3 VH=0.1 RON=25 ROFF=500K)
+.op
+.end

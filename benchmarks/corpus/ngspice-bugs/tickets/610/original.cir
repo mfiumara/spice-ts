@@ -1,0 +1,25 @@
+** sch_path: /foss/designs/eval_ip3.sch
+**.subckt eval_ip3
+E2 v2 GND VOL=' sin(2*3.1415*175Meg*time)^2 '
+R1 v2 GND 1k m=1
+E1 v3 GND VOL=' sin(2*3.1415*175Meg*time)^3 '
+R2 v3 GND 1k m=1
+E3 v3_1 GND VOL=' sin(2*3.1415*175Meg*time)*sin(2*3.1415*175Meg*time)*sin(2*3.1415*175Meg*time) '
+R3 v3_1 GND 1k m=1
+**** begin user architecture code
+
+
+.options savecurrents acct list opts warn=1
+.control
+save all
+
+tran 2p 20n
+plot v2
+plot v3
+plot v3_1
+.endc
+
+**** end user architecture code
+**.ends
+.GLOBAL GND
+.end
