@@ -23,9 +23,21 @@ import type { NoiseAnalysis, ResolvedOptions } from '../types.js';
 const BOLTZMANN_CONSTANT = 1.380649e-23;
 const ELEMENTARY_CHARGE = 1.602176634e-19;
 const DEFAULT_TEMPERATURE_KELVIN = 273.15 + 27;
+/**
+ * BJT model parameters whose effect on .noise matches ngspice-47. bjtnoise.c
+ * sources are RC/RB/RE thermal, cc/cb shot and KF/AF flicker noise; everything
+ * else here only shapes the operating point (cc, cb) or the bjtacld.c
+ * small-signal transfer (capacitances, transit times, Early voltages), which
+ * the DC solve and the AC stamp already model (#736). RBM/IRB (bias-dependent
+ * gx noise), the substrate diode and TNOM stay rejected; XTI/XTB/EG only act
+ * away from TNOM, and Circuit rejects .options TEMP with .noise (27 C sources).
+ */
 const BJT_NOISE_MODEL_PARAMETERS = new Set([
-  'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'IKF', 'ISE', 'NE', 'RB', 'RC', 'RE',
-  'KF', 'AF', 'polarity',
+  'LEVEL', 'BF', 'BR', 'IS', 'NF', 'NR', 'VAF', 'VA', 'IKF', 'IK', 'ISE', 'C2', 'NE',
+  'VAR', 'VB', 'IKR', 'ISC', 'C4', 'NC', 'NKF', 'NK', 'RB', 'RC', 'RE', 'KF', 'AF',
+  'CJE', 'VJE', 'PE', 'MJE', 'ME', 'TF', 'XTF', 'VTF', 'ITF',
+  'CJC', 'VJC', 'PC', 'MJC', 'MC', 'XCJC', 'TR', 'FC',
+  'XTI', 'XTB', 'EG', 'polarity',
 ]);
 
 /** Reject devices whose noise sources are not part of the bounded slice. */
