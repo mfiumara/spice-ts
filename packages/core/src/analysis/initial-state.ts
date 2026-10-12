@@ -1,6 +1,6 @@
 import type { CompiledCircuit } from '../circuit.js';
 import type { NodeInitialState } from '../types.js';
-import type { DeviceModel, StampContext } from '../devices/device.js';
+import type { NodeHold } from '../mna/assembler.js';
 import { InvalidCircuitError } from '../errors.js';
 
 export type NodeStateMode = 'guess' | 'conditions';
@@ -20,43 +20,28 @@ export function createNodeStateSolution(
 }
 
 /**
- * ngspice-47 cktload.c conductance (and RHS factor) that pins an `.ic` node
- * during the transient operating point.
+ * Row holds that pin every `.ic` node at its value during the transient
+ * operating point without UIC (ngspice MODETRANOP, SPICE3 semantics). The
+ * assembler applies them after each device load with ngspice-47 cktload.c
+ * `ZeroNoncurRow` semantics (see `MNAAssembler.applyNodeHolds`, #588); the
+ * hold is released at t=0 because only the operating-point solve sets them
+ * (#531).
+ *
+ * `.nodeset` stays a Newton initial guess only. ngspice-47 also forces
+ * nodeset rows the same way, but only in MODEINITJCT / MODEINITFIX — the
+ * first, junction-initialising iterations of an operating point — and
+ * releases them in MODEINITFLOAT, so the converged operating point is not
+ * held. spice-ts has no global MODEINITJCT/MODEINITFIX phase, so the nodeset
+ * hold is not modelled; it can only steer which solution a multistable
+ * circuit converges to.
  */
-export const IC_HOLD_CONDUCTANCE = 1e10;
-
-/**
- * Pseudo-devices that hold every `.ic` node at its value during the
- * transient operating point without UIC (ngspice MODETRANOP, SPICE3
- * semantics). ngspice cktload.c stamps `1e10` on the node diagonal and
- * `1e10 * ic * srcFact` on its RHS; the hold is released at t=0 because only
- * the operating-point solve stamps these devices (#531).
- */
-export function initialConditionHolds(compiled: CompiledCircuit): DeviceModel[] {
-  const holds: DeviceModel[] = [];
+export function initialConditionHolds(compiled: CompiledCircuit): NodeHold[] {
+  const holds: NodeHold[] = [];
   for (const state of compiled.initialConditions) {
-    const index = resolveNodeState(compiled, state);
-    if (index >= 0) holds.push(new InitialConditionHold(state.node, index, state.value));
+    const node = resolveNodeState(compiled, state);
+    if (node >= 0) holds.push({ node, value: state.value });
   }
   return holds;
-}
-
-class InitialConditionHold implements DeviceModel {
-  readonly name: string;
-  readonly nodes: number[];
-  readonly branches: number[] = [];
-  readonly isNonlinear = false;
-
-  constructor(node: string, index: number, private readonly value: number) {
-    this.name = `.ic V(${node})`;
-    this.nodes = [index];
-  }
-
-  stamp(ctx: StampContext): void {
-    const node = this.nodes[0];
-    ctx.stampG(node, node, IC_HOLD_CONDUCTANCE);
-    ctx.stampB(node, IC_HOLD_CONDUCTANCE * this.value * ctx.sourceScale);
-  }
 }
 
 function applyNodeState(
