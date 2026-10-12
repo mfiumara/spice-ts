@@ -60,6 +60,8 @@ export class BSIM3v3 implements DeviceModel {
   private lastVbs = 0;
   private lastVbd = 0;
   private lastVon: number;
+  /** b3v32temp.c (3.2, 3.2.2) instance whose size record supplies this instance's vth0/vfb/vfbzb/u0temp. */
+  private sizeRecordDonor?: BSIM3v3;
 
   constructor(
     readonly name: string,
@@ -82,11 +84,55 @@ export class BSIM3v3 implements DeviceModel {
     const model = resolveBsim3Model(this.modelParams, this.polarity, temperatureK, this.version);
     let size: BSIM3Size;
     try {
-      size = computeBsim3Size(model, this.instanceParams as Record<string, number>);
+      size = computeBsim3Size(
+        model, this.instanceParams as Record<string, number>,
+        this.sizeRecordDonor?.instanceParams as Record<string, number> | undefined,
+      );
     } catch (error) {
       throw new RangeError(`BSIM3 '${this.name}': ${(error as Error).message}`);
     }
     return [model, size, chargeParams(model, size)];
+  }
+
+  /**
+   * b3v32temp.c revisions 3.2 / 3.2.2 (#700): take the instance copies vth0,
+   * vfb, vfbzb and u0temp from `donor`'s size record, the record ngspice's
+   * `pParam` still points at when this instance reuses an earlier geometry.
+   * Set by {@link linkBsim3v32SizeRecordReuse}; survives {@link setTemperature}.
+   */
+  private reuseSizeRecordOf(donor: BSIM3v3): void {
+    this.sizeRecordDonor = donor;
+    [this.model, this.size, this.chargeInputs] = this.temperatureDependent(this.temperature + CTOK);
+    this.lastVon = this.polarity * this.size.instVth0;
+    this.lastDC.valid = false;
+    this.chargeKey.valid = false;
+  }
+
+  /**
+   * Link the BSIM3 instances of one ngspice model (in netlist order) the way
+   * ngspice-47 b3v32temp.c resolves `pParam` for revisions 3.2 and 3.2.2.
+   * ngspice prepends every new instance to its model's list (cktcrte.c), so
+   * b3v32temp.c visits them in reverse netlist order; an instance whose
+   * (L, W) matches an existing size record keeps `pParam` at the most
+   * recently allocated record, i.e. the last newly-seen geometry. Other
+   * revisions (3.2.3, 3.2.4, 3.3.0) assign `pParam = here->pParam` and are
+   * left unchanged.
+   */
+  static linkBsim3v32SizeRecordReuse(instances: readonly BSIM3v3[]): void {
+    const records: BSIM3v3[] = [];
+    let lastAllocated: BSIM3v3 | undefined;
+    for (let k = instances.length - 1; k >= 0; k--) {
+      const here = instances[k];
+      if (here.model.revision > BSIM3_REVISION.V322) continue;
+      const { length, width } = here.size;
+      const match = records.find(r => r.size.length === length && r.size.width === width);
+      if (!match) {
+        records.push(here);
+        lastAllocated = here;
+      } else if (lastAllocated!.size.length !== length || lastAllocated!.size.width !== width) {
+        here.reuseSizeRecordOf(lastAllocated!);
+      }
+    }
   }
 
   /** Circuit temperature in degrees Celsius (`.options TEMP=`): reruns b3temp.c at it. */
