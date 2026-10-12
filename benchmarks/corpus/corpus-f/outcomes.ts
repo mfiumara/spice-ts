@@ -38,12 +38,16 @@ import {
   firstSpiceTsErrorLine,
   gapBucket,
   MATCH_THRESHOLD,
+  NGSPICE_ABSTOL,
+  NGSPICE_VNTOL,
   normalizedSignalErrors,
   type Outcome,
   outcome,
+  CURRENT_PEAK_FLOOR,
   PEAK_FLOOR,
   scrub,
   sig3,
+  VOLTAGE_PEAK_FLOOR,
 } from './lib.js';
 
 export const REPORT_SCHEMA = 'spice-ts-corpus-f-outcomes/v1' as const;
@@ -156,8 +160,9 @@ export const FOLLOW_UP_ISSUES: ReadonlyArray<{ url: string; scope: string }> = [
   { url: 'https://github.com/mfiumara/spice-ts/issues/591', scope: 'closed by #601: MOS1 Meyer gate capacitance from TOX; residual i(vs) mismatch is grid discretisation per #627/#629, routed to #592' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/626', scope: 'BSIM3 4-bit NAND adder (examples/snapshot/adder_mos_circ.cir): internal-node mismatch 1.54 after #624/#648; root cause not established (#511 triage)' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/655', scope: 'TRNOISE/TRRANDOM decks compare independent random realisations; ngspice-47 reseeds each run, so these values are not reproducible (transient-noise simple-noise, rts-1)' },
-  { url: 'https://github.com/mfiumara/spice-ts/issues/592', scope: 'metric: ngspice\'s coarse default-step output is scored as spice-ts error (rca3040, rtlinv, mos-test, fourbitadder, switches-manual-p92, ltra2_2_line/txl1_1_line i(vs); #511 triage)' },
-  { url: 'https://github.com/mfiumara/spice-ts/issues/593', scope: 'metric: zero/near-zero ngspice peaks turn fV-uV residuals into mismatches (rca3040 AC v(2), fourbitadder; #511 triage)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/592', scope: 'metric: ngspice\'s coarse default-step output is scored as spice-ts error (rca3040, switches-manual-p92; rtlinv, mos-test, fourbitadder and ltra2_2_line match after the #689 step-control merge; #511 triage)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/593', scope: 'metric: zero/near-zero ngspice peaks turned fV-uV residuals into mismatches; fixed by the per-quantity VNTOL/ABSTOL peak floor in the match rule above (rca3040 AC v(2) now 5.64e-10; #511 triage)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/698', scope: 'fourbitadder TTL internal nodes kept 1-7 uV residuals above the VNTOL floor (split from #593); the deck matches (0.00313) on main 3b9c836f, re-check before closing' },
 ];
 
 const OUTCOMES: Outcome[] = ['matched', 'mismatch', 'not-compared', 'spice-ts-loss', 'ngspice-failed', 'both-failed'];
@@ -469,7 +474,7 @@ export async function buildReport(manifest: CorpusFManifest, jobs: number, only?
       fixtureAdaptation: 'none',
       perCircuitToleranceTuning: false,
       matchThreshold: MATCH_THRESHOLD,
-      matchRule: `matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= ${MATCH_THRESHOLD} x max(peak |ngspice signal|, ${PEAK_FLOOR}). Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).`,
+      matchRule: `matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= ${MATCH_THRESHOLD} x max(peak |ngspice signal|, floor). The floor is uniform per quantity (#593): ${VOLTAGE_PEAK_FLOOR} V for node voltages v(...) and ${CURRENT_PEAK_FLOOR} A for branch currents i(...), so a signal whose ngspice peak is zero or tiny matches when the absolute difference is at most the ngspice-47 default VNTOL (${NGSPICE_VNTOL} V) or ABSTOL (${NGSPICE_ABSTOL} A); every other quantity (pole/zero roots, noise spectra) keeps ${PEAK_FLOOR}. Deck .options tolerances are not consulted. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).`,
       deterministicHashExcludes: ['environment', 'tools.node', 'ngspice.analyses', 'spiceTs.analyses'],
     },
     ...summarize(results),
