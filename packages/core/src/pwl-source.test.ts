@@ -49,11 +49,13 @@ describe('ngspice PWL source parity', () => {
     expect(source.getCurrentAtTime(2.5e-6)).toBeCloseTo(-0.5, 12);
   });
 
-  it('collects each PWL corner as a transient breakpoint', async () => {
+  it('lands on each PWL corner as a transient breakpoint', async () => {
     const sim = await createTransientSim(PWL_NETLIST);
     const breakpoints = (sim as unknown as { breakpointTimes(): readonly number[] }).breakpointTimes();
 
-    expect(breakpoints).toEqual([1e-6, 2e-6, 3e-6]);
+    // ngspice-47 vsrcacct.c: only the first corner is queued up front; each
+    // later corner is requested when the step at the previous one is accepted.
+    expect(breakpoints).toEqual([1e-6]);
 
     const steps = sim.advanceUntil(3e-6);
     for (const [time, expected] of [[1e-6, 1], [2e-6, -1], [3e-6, 0]] as const) {
