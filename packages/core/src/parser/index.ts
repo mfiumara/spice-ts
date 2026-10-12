@@ -36,6 +36,7 @@ export { parseSourceWaveform } from './waveform-parser.js';
 export { SUPPORTED_MODEL_TYPES, UnsupportedModelTypeError } from './model-type.js';
 export { UnsupportedSourceWaveformError } from './waveform-parser.js';
 export { UnsupportedResistorParameterError } from './resistor-parser.js';
+export { UnsupportedModelFlagError } from './model-flags.js';
 
 /**
  * Parse a standard SPICE deck into a {@link Circuit} object.

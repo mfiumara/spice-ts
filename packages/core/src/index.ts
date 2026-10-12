@@ -94,6 +94,7 @@ export { UnsupportedSourceWaveformError } from './parser/waveform-parser.js';
 export type { ConvergenceFailureKind } from './errors.js';
 export { UnsupportedCodeModelError } from './parser/xspice-parser.js';
 export { UnsupportedResistorParameterError } from './parser/resistor-parser.js';
+export { UnsupportedModelFlagError } from './parser/model-flags.js';
 export {
   UnsupportedControlCommandError, ControlScriptError, ControlScriptExitError,
 } from './parser/control/errors.js';
