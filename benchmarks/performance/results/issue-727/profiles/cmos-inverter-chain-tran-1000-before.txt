@@ -1,0 +1,29 @@
+/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//prof727-before/cmos-inverter-chain-tran-1000.cpuprofile: 118 samples, 591.6 ms sampled
+
+Top self time
+     152.2 ms  25.7%  batchStamp packages/core/dist/chunk-7NIG2L2G.js:7172
+      70.1 ms  11.8%  (garbage collector)
+      52.6 ms   8.9%  bulkJunction packages/core/dist/chunk-7NIG2L2G.js:6344
+      38.3 ms   6.5%  attemptStep packages/core/dist/chunk-7NIG2L2G.js:31334
+      38.0 ms   6.4%  buildCompanionSystem packages/core/dist/chunk-7NIG2L2G.js:31137
+      17.6 ms   3.0%  refactorWithPivots packages/core/dist/chunk-7NIG2L2G.js:29805
+      17.4 ms   2.9%  convergenceTest packages/core/dist/chunk-7NIG2L2G.js:6974
+      15.2 ms   2.6%  stampPrevB packages/core/dist/chunk-7NIG2L2G.js:32255
+      11.6 ms   2.0%  newtonRaphson packages/core/dist/chunk-7NIG2L2G.js:30714
+      10.6 ms   1.8%  factorize packages/core/dist/chunk-7NIG2L2G.js:29588
+       9.1 ms   1.5%  compileSourceTextModule node:internal/modules/esm/utils:344
+       9.0 ms   1.5%  limitNewtonStep packages/core/dist/chunk-7NIG2L2G.js:6797
+
+Top inclusive time
+     591.6 ms 100.0%  (root)
+     479.6 ms  81.1%  simulate packages/core/dist/chunk-7NIG2L2G.js:37629
+     458.2 ms  77.5%  solveCompiledAnalyses packages/core/dist/chunk-7NIG2L2G.js:37684
+     341.9 ms  57.8%  solveTransient packages/core/dist/chunk-7NIG2L2G.js:32704
+     316.9 ms  53.6%  advanceSolution packages/core/dist/chunk-7NIG2L2G.js:31989
+     228.6 ms  38.6%  attemptStep packages/core/dist/chunk-7NIG2L2G.js:31334
+     215.3 ms  36.4%  batchStamp packages/core/dist/chunk-7NIG2L2G.js:7172
+     145.6 ms  24.6%  buildCompanionSystem packages/core/dist/chunk-7NIG2L2G.js:31137
+     126.0 ms  21.3%  stampStaticDevices packages/core/dist/chunk-7NIG2L2G.js:30629
+     116.3 ms  19.7%  newtonRaphson packages/core/dist/chunk-7NIG2L2G.js:30714
+     116.3 ms  19.7%  solveDCOperatingPoint packages/core/dist/chunk-7NIG2L2G.js:30941
+     116.3 ms  19.7%  transientInitialSolution packages/core/dist/chunk-7NIG2L2G.js:38079

@@ -32,6 +32,10 @@ export abstract class BehavioralSource implements DeviceModel {
   protected factor = 1;
   /** Expression value at the last linearisation (ngspice ASRCprev_value). */
   private previousValue = 0;
+  /** Branch indices of the `i()` sources, indexed like `expression.sources` (-1 until bound). */
+  private readonly controlBranches: number[];
+  /** MNA node count of the last stamp: branch unknown b sits at column numNodes + b. */
+  private numNodes = 0;
 
   constructor(
     readonly name: string,
@@ -39,12 +43,42 @@ export abstract class BehavioralSource implements DeviceModel {
     readonly expression: CompiledBehavioralExpression,
     readonly params: BehavioralInstanceParams = {},
   ) {
-    this.voltages = new Float64Array(expression.nodes.length);
-    this.gradient = new Float64Array(expression.nodes.length);
+    const controls = expression.nodes.length + expression.sources.length;
+    // `voltages` holds every control value: node voltages, then branch currents.
+    this.voltages = new Float64Array(controls);
+    this.gradient = new Float64Array(controls);
+    this.controlBranches = expression.sources.map(() => -1);
     this.setTemperature(NOMINAL_TEMPERATURE);
   }
 
   abstract stamp(ctx: StampContext): void;
+
+  /**
+   * Bind the `i()` sources (ngspice PT_CURRENT via CKTfndBranch) to their
+   * MNA branch indices, in `expression.sources` order.
+   */
+  bindControlBranches(branches: readonly number[]): void {
+    branches.forEach((branch, i) => { this.controlBranches[i] = branch; });
+  }
+
+  /**
+   * MNA column of control `i` (a node voltage or a branch current), or -1
+   * for ground. Valid after {@link evaluate}.
+   */
+  protected controlColumn(i: number): number {
+    const nodeCount = this.expression.nodes.length;
+    return i < nodeCount ? this.nodes[i + 2] : this.numNodes + this.controlBranch(i - nodeCount);
+  }
+
+  private controlBranch(source: number): number {
+    const branch = this.controlBranches[source];
+    if (branch < 0) {
+      throw new InvalidCircuitError(
+        `B-source '${this.name}': i(${this.expression.sources[source]}) is not bound to a source branch`,
+      );
+    }
+    return branch;
+  }
 
   setTemperature(value: number): void {
     this.environment.temperature = value;
@@ -66,10 +100,15 @@ export abstract class BehavioralSource implements DeviceModel {
 
   /** Evaluate the expression at the present solution, filling `voltages` and `gradient`. */
   protected evaluate(ctx: StampContext): number {
-    for (let i = 0; i < this.voltages.length; i++) {
+    const nodeCount = this.expression.nodes.length;
+    for (let i = 0; i < nodeCount; i++) {
       const node = this.nodes[i + 2];
       this.voltages[i] = node >= 0 ? ctx.getVoltage(node) : 0;
     }
+    for (let i = nodeCount; i < this.voltages.length; i++) {
+      this.voltages[i] = ctx.getCurrent(this.controlBranch(i - nodeCount));
+    }
+    this.numNodes = ctx.numNodes;
     this.environment.time = ctx.time;
     this.environment.transient = ctx.dt > 0;
     this.previousValue = this.evaluateExpression();
@@ -83,8 +122,8 @@ export abstract class BehavioralSource implements DeviceModel {
    */
   convergenceTest(solution: Float64Array, tolerances: ConvergenceTolerances): boolean {
     for (let i = 0; i < this.voltages.length; i++) {
-      const node = this.nodes[i + 2];
-      this.voltages[i] = node >= 0 ? solution[node] : 0;
+      const column = this.controlColumn(i);
+      this.voltages[i] = column >= 0 ? solution[column] : 0;
     }
     const value = this.evaluateExpression();
     const previous = this.previousValue;
@@ -120,7 +159,7 @@ export class BehavioralCurrentSource extends BehavioralSource {
     const { factor } = this;
     let equivalent = current;
     for (let i = 0; i < this.gradient.length; i++) {
-      const node = this.nodes[i + 2];
+      const node = this.controlColumn(i);
       const slope = this.gradient[i];
       equivalent -= slope * this.voltages[i];
       if (node < 0) continue;
@@ -171,7 +210,7 @@ export class BehavioralVoltageSource extends BehavioralSource {
     }
     let equivalent = voltage;
     for (let i = 0; i < this.gradient.length; i++) {
-      const node = this.nodes[i + 2];
+      const node = this.controlColumn(i);
       const slope = this.gradient[i];
       equivalent -= slope * this.voltages[i];
       if (node >= 0) ctx.stampG(branch, node, -slope * factor);

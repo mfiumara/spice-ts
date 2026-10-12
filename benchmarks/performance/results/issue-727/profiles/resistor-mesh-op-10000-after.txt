@@ -1,0 +1,29 @@
+/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//prof727-after/resistor-mesh-op-10000.cpuprofile: 171 samples, 478.2 ms sampled
+
+Top self time
+      47.1 ms   9.8%  amdOrdering packages/core/dist/chunk-W576SPR7.js:29212
+      44.0 ms   9.2%  factorize packages/core/dist/chunk-W576SPR7.js:29635
+      39.1 ms   8.2%  applySupernode packages/core/dist/chunk-W576SPR7.js:29997
+      24.6 ms   5.1%  analyzePattern packages/core/dist/chunk-W576SPR7.js:29513
+      23.5 ms   4.9%  compileSourceTextModule node:internal/modules/esm/utils:344
+      23.4 ms   4.9%  compile packages/core/dist/chunk-W576SPR7.js:23769
+      17.9 ms   3.7%  newtonRaphson packages/core/dist/chunk-W576SPR7.js:31042
+      17.5 ms   3.7%  (garbage collector)
+      17.0 ms   3.6%  lockTopology packages/core/dist/chunk-W576SPR7.js:30494
+      12.1 ms   2.5%  simulate packages/core/dist/chunk-W576SPR7.js:37957
+      12.0 ms   2.5%  resolveResistor packages/core/dist/chunk-W576SPR7.js:1313
+      11.0 ms   2.3%  collectStatements packages/core/dist/chunk-W576SPR7.js:25641
+
+Top inclusive time
+     478.2 ms 100.0%  (root)
+     374.3 ms  78.3%  simulate packages/core/dist/chunk-W576SPR7.js:37957
+     257.7 ms  53.9%  solveDCOperatingPoint packages/core/dist/chunk-W576SPR7.js:31269
+     257.7 ms  53.9%  solveCompiledAnalyses packages/core/dist/chunk-W576SPR7.js:38012
+     256.9 ms  53.7%  newtonRaphson packages/core/dist/chunk-W576SPR7.js:31042
+     101.2 ms  21.2%  factorize packages/core/dist/chunk-W576SPR7.js:29635
+      96.3 ms  20.1%  parseAsync packages/core/dist/chunk-W576SPR7.js:28042
+      78.8 ms  16.5%  analyzePattern packages/core/dist/chunk-W576SPR7.js:29513
+      78.8 ms  16.5%  getSparseSolver packages/core/dist/chunk-W576SPR7.js:30622
+      60.5 ms  12.6%  (anonymous) benchmarks/performance/profile-scaling-m2.mjs:1
+      52.4 ms  11.0%  compile packages/core/dist/chunk-W576SPR7.js:23769
+      48.4 ms  10.1%  applySupernode packages/core/dist/chunk-W576SPR7.js:29997

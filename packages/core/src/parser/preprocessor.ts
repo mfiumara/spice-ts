@@ -194,6 +194,8 @@ function newCollectState(): CollectState {
 const CONDITIONAL_CARD = /^\.(elseif|else|endif|if)(?![\w])/i;
 const FUNC_DIRECTIVE = /^\.func(?![\w])/i;
 const CSPARAM_DIRECTIVE = /^\.csparam(?![\w])/i;
+/** Output cards whose text ngspice-47 numparam never substitutes (#714). */
+const OUTPUT_CARD = /^\.(?:print|plot)(?![\w])/i;
 const PARAM_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*(\{[^}]+\}|'[^']*'|"[^"]*"|\S+)/g;
 
 /**
@@ -470,7 +472,6 @@ function evaluateParamExpression(
 }
 
 function substituteStatement(statement: PendingStatement, scopes: ParamScopes, measureNames: ReadonlySet<string>): string {
-  const preserveOutputFunctions = /^\.PRINT(?:\s|$)/i.test(statement.text.trim());
   try {
     if (MEASURE_CARD.test(statement.text)) return substituteMeasureCard(statement.text, scopes, measureNames);
     const behavioralResistor = behavioralResistorAsBSource(statement.text);
@@ -478,10 +479,10 @@ function substituteStatement(statement: PendingStatement, scopes: ParamScopes, m
     if (/^\s*b/i.test(text)) {
       // B-cards: `'...'`, `{...}` and bare `.param` names are substituted by
       // the B-card front end; `temper` stays a live ASRC variable.
-      const substituted = substituteExpressions(text, scopes.params, preserveOutputFunctions, true);
+      const substituted = substituteExpressions(text, scopes.params, true);
       return substituteBehavioralParameters(substituted, scopes.params);
     }
-    return substituteExpressions(quotedExpressionsAsBraces(text), scopes.numparam, preserveOutputFunctions);
+    return substituteExpressions(quotedExpressionsAsBraces(text), scopes.numparam);
   } catch (error) {
     if (error instanceof ParseError) throw error;
     throw toParseError(error, statement.line, statement.text.trim());
@@ -675,6 +676,7 @@ function* collectStatements(
   const lines = netlist.split('\n');
   let inSubckt = 0;
   let inControl = false;
+  let inOutputCard = false;
 
   for (const [index, line] of lines.entries()) {
     guard?.checkpoint('parse:line');
@@ -691,6 +693,8 @@ function* collectStatements(
       passThrough();
       continue;
     }
+    // A `+` continuation (blank and comment lines may sit in between) belongs to the preceding card.
+    if (trimmed !== '' && !trimmed.startsWith('+')) inOutputCard = OUTPUT_CARD.test(trimmed);
 
     const conditional = inControl ? null : CONDITIONAL_CARD.exec(trimmed);
     if (conditional) {
@@ -851,33 +855,30 @@ function* collectStatements(
       continue;
     }
 
+    // ngspice-47 numparam leaves `.print`/`.plot` cards and their `+`
+    // continuations verbatim: brace text is handed to the frontend print
+    // command, never evaluated as a parameter expression (#714).
+    if (inOutputCard) {
+      statements.push({ text: line, substitute: false, line: lineNumber, scope, ...guarded });
+      continue;
+    }
+
     statements.push({ text: line, substitute: true, line: lineNumber, ...guarded });
   }
 }
 
-// Output vectors are evaluated after simulation, not as scalar parameters.
 // `keepNodeDependent` leaves B-card `{...}` that read v()/i() to the B-card
 // front end, which keeps them as ASRC sub-expressions.
 function substituteExpressions(
   line: string,
   params: Record<string, number>,
-  preserveOutputFunctions = false,
   keepNodeDependent = false,
 ): string {
   return line.replace(/\{([^}]+)\}/g, (match, expr: string) => {
-    if (preserveOutputFunctions && isVoltageOrCurrentOutputExpression(expr)) return match;
     if (keepNodeDependent && NODE_DEPENDENT_EXPRESSION.test(expr)) return match;
     const value = evaluateExpression(expr, params);
     return formatNumber(value);
   });
-}
-
-function isVoltageOrCurrentOutputExpression(expression: string): boolean {
-  const functions = [...expression.matchAll(/([A-Za-z_]\w*)\s*\(/g)]
-    .map(match => match[1].toUpperCase());
-  if (functions.length === 0 || functions.some(name => name !== 'V' && name !== 'I')) return false;
-  const arithmetic = expression.replace(/\b[vi]\s*\([^()]*\)/gi, '0');
-  return /^[\d.eE+\-*/()\s]+$/.test(arithmetic);
 }
 
 function formatNumber(value: number): string {

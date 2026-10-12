@@ -60,9 +60,11 @@ describe('preprocessor', () => {
     it.each([
       '.print tran {abs(V(out))}',
       '.print tran {V(out)+gain}',
-    ])('keeps ambiguous output expressions explicit: %s', async directive => {
-      await expect(preprocess(directive))
-        .rejects.toThrow("Unknown function 'V'");
+      '.print dc {2*gain}',
+      '.plot noise {log(inoise)}',
+      '.print tran v(1)\n+ {int(v(1))}',
+    ])('leaves .print/.plot braces unsubstituted like ngspice-47 numparam (#714): %s', async directive => {
+      await expect(preprocess(`.param gain=3\n${directive}`)).resolves.toBe(`\n${directive}`);
     });
 
     it('resolves a device reference to a .param defined later (ngspice global .param scope)', async () => {

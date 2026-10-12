@@ -11,6 +11,7 @@ import {
 import { parsePassiveElement } from './passive-parser.js';
 import { parseDiodeInstanceParams } from './diode-parser.js';
 import { parseBJTInstance } from './bjt-parser.js';
+import { parseJFETInstance } from './jfet-parser.js';
 import { parsePoleZero } from './pole-zero-parser.js';
 import { parseSensitivity } from './sensitivity-parser.js';
 import {
@@ -682,10 +683,20 @@ function parseDotCommand(
       );
       break;
     case '.SAVE':
+      // spice-ts returns all computed vectors through its result API, so this
+      // ngspice output-selection directive is metadata-only.
+      break;
     case '.PRINT':
     case '.PLOT':
-      // spice-ts returns all computed vectors through its result API, so these
-      // ngspice output-selection and formatting directives are metadata-only.
+      // Metadata-only like .save. ngspice-47 numparam leaves their braces
+      // unsubstituted and its print command cannot parse them either, so the
+      // analyses run unchanged; each brace expression is reported (#714).
+      for (const expression of context.match(/\{[^}]*\}/g) ?? []) {
+        circuit.addParseWarning(
+          `.print/.plot expression '${expression}' is not evaluated: spice-ts returns every computed vector, ` +
+          'and ngspice-47 does not substitute braces on output cards either',
+        );
+      }
       break;
     case '.MEAS':
     case '.MEASURE': {
@@ -1161,15 +1172,13 @@ function parseDevice(circuit: Circuit, tokens: string[], lineNumber: number, raw
       );
       break;
     }
-    case 'J':
-      if (tokens.length !== 5) {
-        throw new ParseError(
-          `Unsupported JFET instance parameter: '${tokens.slice(5).join(' ')}'`,
-          lineNumber, tokens.join(' '),
-        );
-      }
-      circuit.addJFET(name, tokens[1], tokens[2], tokens[3], tokens[4]);
+    case 'J': {
+      const instance = parseJFETInstance(tokens, lineNumber);
+      circuit.addJFET(
+        name, instance.drain, instance.gate, instance.source, instance.modelName, instance.params,
+      );
       break;
+    }
     case 'M': {
       // SPICE MOSFET: M name D G S [B] modelName [W=x L=y ...]
       // tokens[4] is either the body node (4-terminal) or the model name (3-terminal).

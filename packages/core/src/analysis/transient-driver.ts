@@ -274,7 +274,7 @@ class TransientSimImpl implements TransientSim {
     this.options = options;
     this.config = config;
     this.convergenceTelemetry = config.convergence ?? createConvergenceTelemetry();
-    for (const device of compiled.devices) device.setTransientTimestep?.(config.timestep);
+    for (const device of compiled.devices) device.setTransientTimestep?.(config.timestep, config.stopTime);
     // Voltage-dependent capacitances stamped as C(v) need charge state, which
     // the C-matrix companion does not keep. Preserve their established
     // companion history while using the exact static residual for constant-C

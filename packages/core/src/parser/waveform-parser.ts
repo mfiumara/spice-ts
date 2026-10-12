@@ -2,11 +2,13 @@ import { parseNumber } from './tokenizer.js';
 import { ParseError } from '../errors.js';
 import type {
   ACExcitation, DistortionExcitation, SourceWaveform, PulseSource, SinSource, PWLSource, RFPort,
-  TransientNoiseSource, TransientRandomSource,
+  ExpSource, SffmSource, AmSource, TransientNoiseSource, TransientRandomSource,
 } from '../types.js';
 
-const UNSUPPORTED_WAVEFORMS = new Set(['EXP', 'SFFM', 'AM', 'EXTERNAL']);
-const TRANSIENT_WAVEFORMS = new Set(['PULSE', 'SIN', 'SINE', 'PWL', 'TRNOISE', 'TRRANDOM', ...UNSUPPORTED_WAVEFORMS]);
+const UNSUPPORTED_WAVEFORMS = new Set(['EXTERNAL']);
+const TRANSIENT_WAVEFORMS = new Set([
+  'PULSE', 'SIN', 'SINE', 'PWL', 'EXP', 'SFFM', 'AM', 'TRNOISE', 'TRRANDOM', ...UNSUPPORTED_WAVEFORMS,
+]);
 
 /** Why each unsupported source waveform keyword is rejected. */
 const UNSUPPORTED_WAVEFORM_REASONS: Record<string, string> = {
@@ -26,7 +28,7 @@ export class UnsupportedWaveformKeyword extends Error {
   }
 }
 
-/** A V/I card uses a source waveform keyword (`EXP`, `SFFM`, `AM`, `EXTERNAL`) spice-ts does not implement. */
+/** A V/I card uses a source waveform keyword (`EXTERNAL`) spice-ts does not implement. */
 export class UnsupportedSourceWaveformError extends ParseError {
   /** Stable machine-readable error code. */
   readonly code = 'UNSUPPORTED_SOURCE_WAVEFORM';
@@ -170,8 +172,13 @@ export function parseSourceWaveform(tokens: string[], startIdx: number): SourceW
   } as SourceWaveform;
 }
 
-function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWaveform {
-  if (startIdx >= tokens.length) return { type: 'dc', value: 0 };
+function parseBaseSourceWaveform(cardTokens: string[], startIdx: number): SourceWaveform {
+  if (startIdx >= cardTokens.length) return { type: 'dc', value: 0 };
+  // PWL `TD=`/`R=` are instance parameters anywhere after the PWL keyword.
+  const pwlIdx = cardTokens.findIndex((token, index) => index >= startIdx && token.toUpperCase() === 'PWL');
+  const { tokens, delay, repeat } = pwlIdx >= 0
+    ? extractPwlOptions(cardTokens, pwlIdx)
+    : { tokens: cardTokens, delay: undefined, repeat: undefined };
 
   // Scan for AC keyword anywhere in the remaining tokens (e.g. "DC 1.5 AC 1").
   // In SPICE syntax the DC operating-point value and AC small-signal
@@ -180,14 +187,7 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
   const upper = tokens.slice(startIdx).map(t => t.toUpperCase());
   const dcIdx = upper.indexOf('DC');
   const acIdx = upper.indexOf('AC');
-  const waveformOffset = upper.findIndex(token =>
-    token === 'PULSE'
-    || token === 'SIN'
-    || token === 'SINE'
-    || token === 'PWL'
-    || token === 'TRNOISE'
-    || token === 'TRRANDOM'
-    || UNSUPPORTED_WAVEFORMS.has(token));
+  const waveformOffset = upper.findIndex(token => TRANSIENT_WAVEFORMS.has(token));
   const ac = acIdx >= 0 ? parseACExcitation(tokens, startIdx + acIdx) : undefined;
   const dc = parseOperatingPoint(tokens, startIdx, dcIdx, acIdx, waveformOffset);
 
@@ -255,12 +255,28 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
       }
       points.push(point);
     }
+    if (repeat !== undefined) validatePwlRepeat(points, repeat);
     return {
       ...(dc !== undefined ? { dc } : {}),
       ...(ac ? { ac } : {}),
       type: 'pwl',
       points,
+      ...(delay !== undefined ? { delay } : {}),
+      ...(repeat !== undefined ? { repeat } : {}),
     } satisfies PWLSource;
+  }
+
+  if (keyword === 'EXP' || keyword === 'SFFM' || keyword === 'AM') {
+    const args = parseWaveformArguments(
+      tokens, waveformIdx, acIdx >= 0 ? startIdx + acIdx : -1, keyword === 'EXP' ? 6 : 8, keyword,
+    );
+    // ngspice-47 vsrcpar.c/isrcpar.c: fewer than two values is E_BADPARM.
+    if (args.length < 2) throw new Error(`${keyword} source requires at least two values, got ${args.length}`);
+    return {
+      ...(dc !== undefined ? { dc } : {}),
+      ...(ac ? { ac } : {}),
+      ...(keyword === 'EXP' ? expWaveform(args) : keyword === 'SFFM' ? sffmWaveform(args) : amWaveform(args)),
+    };
   }
 
   if (keyword === 'TRNOISE' || keyword === 'TRRANDOM') {
@@ -279,6 +295,83 @@ function parseBaseSourceWaveform(tokens: string[], startIdx: number): SourceWave
   }
 
   return { type: 'dc', value: parseNumber(tokens[startIdx]) };
+}
+
+/** Assign the given coefficients to their fields, leaving omitted ones undefined. */
+function given<T extends object>(base: T, fields: readonly string[], args: readonly number[]): T {
+  const result = { ...base } as Record<string, unknown>;
+  fields.forEach((field, index) => {
+    if (field !== '' && args[index] !== undefined) result[field] = args[index];
+  });
+  return result as T;
+}
+
+/** EXP coefficients `V1 V2 [TD1 [TAU1 [TD2 [TAU2]]]]` (ngspice-47 vsrcload.c order). */
+function expWaveform(args: readonly number[]): ExpSource {
+  return given<ExpSource>({ type: 'exp', v1: args[0], v2: args[1] }, ['', '', 'td1', 'tau1', 'td2', 'tau2'], args);
+}
+
+/** SFFM coefficients `VO VA [FC [MDI [FM [TD [PHASEM [PHASEC]]]]]]` (ngspice-47 vsrcload.c order). */
+function sffmWaveform(args: readonly number[]): SffmSource {
+  return given<SffmSource>(
+    { type: 'sffm', offset: args[0], amplitude: args[1] },
+    ['', '', 'carrierFrequency', 'modulationIndex', 'signalFrequency', 'delay', 'signalPhase', 'carrierPhase'],
+    args,
+  );
+}
+
+/** AM coefficients `VO VMO [VMA [FM [FC [TD [PHASEM [PHASEC]]]]]]` (ngspice-47 vsrcload.c order). */
+function amWaveform(args: readonly number[]): AmSource {
+  return given<AmSource>(
+    { type: 'am', offset: args[0], carrierAmplitude: args[1] },
+    ['', '', 'modulationAmplitude', 'modulationFrequency', 'carrierFrequency', 'delay', 'modulationPhase', 'carrierPhase'],
+    args,
+  );
+}
+
+/**
+ * Split the PWL instance parameters `TD=` (delay) and `R=` (repeat start)
+ * off the tokens after the PWL keyword (ngspice-47 VSRC_TD/VSRC_R; the last
+ * one given wins). `R` below -0.5 means no repetition, as in vsrcpar.c.
+ */
+function extractPwlOptions(
+  tokens: string[], waveformIdx: number,
+): { tokens: string[]; delay?: number; repeat?: number } {
+  const rest = tokens.slice(0, waveformIdx + 1);
+  let delay: number | undefined;
+  let repeat: number | undefined;
+  let repeatGiven = false;
+  for (let index = waveformIdx + 1; index < tokens.length; index++) {
+    const assignment = tokens[index].match(/^(TD|R)=(.*)$/i);
+    if (!assignment) {
+      rest.push(tokens[index]);
+      continue;
+    }
+    if (assignment[2] === '') throw new Error(`PWL parameter '${assignment[1].toLowerCase()}' requires a value`);
+    const value = parseNumber(assignment[2]);
+    if (assignment[1].toUpperCase() === 'TD') {
+      delay = value;
+    } else {
+      repeatGiven = true;
+      repeat = value < -0.5 ? undefined : value;
+    }
+  }
+  return {
+    tokens: rest,
+    ...(delay !== undefined ? { delay } : {}),
+    ...(repeatGiven && repeat !== undefined ? { repeat } : {}),
+  };
+}
+
+/** ngspice-47 vsrcpar.c: `R=` must match a PWL time point before the last one (E_PARMVAL otherwise). */
+function validatePwlRepeat(points: PWLSource['points'], repeat: number): void {
+  const end = points[points.length - 1].time;
+  if (repeat >= end) {
+    throw new Error(`PWL repeat start time ${repeat} must be smaller than the final time point ${end}`);
+  }
+  if (!points.some(point => point.time === repeat)) {
+    throw new Error(`PWL repeat start time ${repeat} does not match any time point`);
+  }
 }
 
 /**
@@ -331,8 +424,9 @@ function parseWaveformArguments(
   maximum: number,
   keyword: string,
 ): number[] {
-  // Arguments run to the next source keyword. A `KEY=value` token (e.g. the
-  // PWL `R=`/`TD=` repeat options) is not supported and ends the list.
+  // Arguments run to the next source keyword. A `KEY=value` token not
+  // consumed by the waveform (PWL `TD=`/`R=` are split off first) ends the
+  // list and is rejected.
   let end = waveformIdx + 1;
   while (
     end < tokens.length
@@ -380,10 +474,7 @@ function parseOperatingPoint(
   return undefined;
 }
 
-const SOURCE_KEYWORDS = new Set([
-  'DC', 'AC', 'PULSE', 'SIN', 'SINE', 'PWL', 'TRNOISE', 'TRRANDOM', 'DISTOF1', 'DISTOF2',
-  ...UNSUPPORTED_WAVEFORMS,
-]);
+const SOURCE_KEYWORDS = new Set(['DC', 'AC', 'DISTOF1', 'DISTOF2', ...TRANSIENT_WAVEFORMS]);
 
 /**
  * Normalize the value part of a source card the way ngspice-47 reads it:

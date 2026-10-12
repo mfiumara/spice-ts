@@ -1,6 +1,6 @@
 # corpus-g: triage of the 14 decks over the 1% parity threshold (#719)
 
-Hand-written companion to the generated [README.md](README.md). Scope: the 14 corpus-g decks where both engines succeed on the identical bytes but spice-ts exceeded the uniform threshold in the #711 report (main `45d6ea73`). No fixture, tolerance, threshold or metric was changed. "Before" is the committed #711 value; "After" is this branch merged with main `9048f8cf` (#713 Xyce .options, #715 MOS3/MOS9, #723), `outcomes.json` regenerated once with `parity.ts` (outcome SHA-256 `0654595d...`: matched 66, mismatch 17, spice-ts-loss 45 of 128). Metric: corpus-f's, max|spice-ts - ngspice| / max(peak |ngspice|, floor) for the worst signal, ngspice interpolated onto spice-ts points.
+Hand-written companion to the generated [README.md](README.md). Scope: the 14 corpus-g decks where both engines succeed on the identical bytes but spice-ts exceeded the uniform threshold in the #711 report (main `45d6ea73`). No fixture, tolerance, threshold or metric was changed. "Before" is the committed #711 value; "After" is this branch merged with main `9048f8cf` (#713 Xyce .options, #715 MOS3/MOS9, #723), `outcomes.json` regenerated once with `parity.ts` (outcome SHA-256 `0654595d...`: matched 66, mismatch 17, spice-ts-loss 45 of 128). Merged again with main `544bfffc` (#726, #737, #738) and regenerated once more (outcome SHA-256 `2a95fe8c...`: matched 77, mismatch 18, spice-ts-loss 33): every row below keeps its value; the extra mismatch is SANDLER25/sandler25.cir (0.838 v(34)), newly runnable after that merge and not triaged here. Merged a third time with main `219b04ee` (#741, #746, #744) and regenerated once (outcome SHA-256 `cc41c469...`: matched 85, mismatch 18, spice-ts-loss 25): every row below keeps its outcome and value; the 8 new matches are decks those PRs made runnable (EXP/SFFM/PWL sources, PJFET, one .measure deck) and four AC matches shift only in values below 1e-4. Metric: corpus-f's, max|spice-ts - ngspice| / max(peak |ngspice|, floor) for the worst signal, ngspice interpolated onto spice-ts points.
 
 ## Tool
 
@@ -48,7 +48,7 @@ Also found while fixing, not in this table: MOS1 instance `M` is ignored ([#731]
 
 ## New mismatches after merging main
 
-#713 and #715 made previously unsupported decks run, and four of them land above 1%. Same tool, same committed fixtures, same `outcomes.json` (SHA-256 `0654595d...`); the published values below are unchanged. For the two 30 us MOS3 decks some diagnostics use a variant deck with `.tran 20ns 7us` (first two input periods) so fine-step runs stay short; it is marked "7 us window".
+#713 and #715 made previously unsupported decks run, and four of them land above 1%. Same tool and committed fixtures; the published values below are those in `outcomes.json` at outcome SHA-256 `0654595d...` and are unchanged at `cc41c469...` (main after #735). For the two 30 us MOS3 decks some diagnostics use a variant deck with `.tran 20ns 7us` (first two input periods) so fine-step runs stay short; it is marked "7 us window".
 
 | Fixture | Published | Classification and evidence |
 |---|---|---|

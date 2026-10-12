@@ -358,7 +358,53 @@ describe('.noise analysis', () => {
     await expect(simulate(deck)).rejects.toThrow(expected);
   });
 
-  it.each(['CJE', 'CJC', 'RBM', 'IRB', 'TF'])(
+  // #736: capacitances, transit times, VAR and the reverse/leakage DC terms only
+  // change the AC small-signal transfer (bjtacld.c) and the operating point,
+  // not the bjtnoise.c sources.
+  it('matches ngspice-47 BJT noise with CJE/CJC/TF/TR, VAF/VAR and reverse leakage', async () => {
+    const result = (await simulate(`
+      VDD vdd 0 DC 5
+      Vinput in 0 DC 1 AC 1
+      Rbase in base 100k
+      Rload vdd out 2k
+      Q1 out base 0 QMOD
+      .model QMOD NPN (IS=1e-14 BF=100 BR=1 VAF=50 VAR=10 IKR=0.01 ISC=1e-13 NC=2
+      + RB=100 RC=10 RE=1 CJE=2p CJC=1p TF=0.3n TR=5n KF=1e-12 AF=1)
+      .noise v(out) Vinput dec 2 1k 10G
+    `)).noise!;
+    // ngspice-47 -b, set numdgt=12: onoise_spectrum / inoise_spectrum.
+    const ngspice47Output = [
+      1.126517404284e-05, 6.337371962875e-06, 3.568100381740e-06, 2.013577717058e-06,
+      1.141412029445e-06, 6.391745031558e-07, 2.973087036438e-07, 9.060416350883e-08,
+      2.577111776581e-08, 1.034454962080e-08, 7.569464947654e-09, 6.162997546321e-09,
+      3.152138082943e-09, 1.158381404231e-09, 5.473902590134e-10,
+    ];
+    const ngspice47Input = [
+      6.088895824538e-06, 3.425403388293e-06, 1.928672360568e-06, 1.088875883369e-06,
+      6.199110411045e-07, 3.617712729320e-07, 2.252915701606e-07, 1.598578692181e-07,
+      1.376082791711e-07, 1.742185962630e-07, 4.110451083694e-07, 1.246341548615e-06,
+      3.811842721271e-06, 9.819772937571e-06, 1.913661396824e-05,
+    ];
+    const relativeError = (actual: number, expected: number) => Math.abs(actual - expected) / expected;
+    expect(result.outputNoiseDensity).toHaveLength(ngspice47Output.length);
+    result.outputNoiseDensity.forEach((density, index) => {
+      expect(relativeError(density, ngspice47Output[index])).toBeLessThan(1e-4);
+    });
+    result.inputNoiseDensity.forEach((density, index) => {
+      expect(relativeError(density, ngspice47Input[index])).toBeLessThan(1e-4);
+    });
+    expect(relativeError(result.integratedOutputNoise!, 9.871437469264e-04)).toBeLessThan(1e-4);
+    expect(relativeError(result.integratedInputNoise!, 2.273517040781e+00)).toBeLessThan(1e-4);
+  });
+
+  it('keeps XTI/XTB/EG BJT noise at 27 C by rejecting .options TEMP', async () => {
+    const deck = bjtFixture.replace('NR=1)', 'NR=1 XTI=3 XTB=1.5 EG=1.11)');
+    await expect(simulate(`${deck}\n.options temp=50`)).rejects.toThrow(
+      ".options TEMP=50 is unsupported for '.noise'",
+    );
+  });
+
+  it.each(['RBM', 'IRB', 'ISS', 'TNOM'])(
     'rejects unsupported BJT noise model parameter %s explicitly',
     async parameter => {
       const deck = bjtFixture.replace('NR=1)', `NR=1 ${parameter}=1)`);
