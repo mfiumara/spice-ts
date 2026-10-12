@@ -151,6 +151,38 @@ describe('XSPICE slice 2 code models against ngspice-47', () => {
   });
 });
 
+describe('XSPICE slice 2 regressions found in review against ngspice-47', () => {
+  it('keeps the hyst leg the operating point converged on into the transient', async () => {
+    // INIT runs on the OP's first iteration (input 0 > x_rise_zero), so the leg is
+    // X_FALLING; -1.5 V sits on the falling leg's linear part. ngspice-47: op and
+    // every tran point v(2) = 0.6 (the rising leg would give 0.4).
+    const result = await simulate([
+      'hyst leg after OP when INIT leg is falling',
+      'V1 1 0 -1.5', 'a1 1 2 hy', 'R2 2 0 1k',
+      '.model hy hyst(in_low=-2 in_high=-1 hyst=0.1 out_lower_limit=0 out_upper_limit=1 input_domain=0.01 fraction=TRUE)',
+      '.op', '.tran 1u 5u', '.end',
+    ].join('\n'));
+    expect(result.dc!.voltage('2')).toBeCloseTo(0.6, 10);
+    const v2 = result.transient!.voltage('2');
+    expect(v2.length).toBeGreaterThan(2);
+    for (const value of v2) expect(value).toBeCloseTo(0.6, 10);
+  });
+
+  it('cmeter and lmeter read the instance value without m, as cmmeters.c reads CAPcapac/INDinduct', async () => {
+    const dc = (await simulate([
+      'meters ignore instance m',
+      'V1 1 0 0.3', 'C1 1 0 2p m=3', 'C2 1 5 1p', 'R5 5 0 1k', 'Vz 1 4 0', 'C3 4 0 4p',
+      'L1 1 6 1u m=2', 'R6 6 0 1k', 'L2 4 7 2u', 'R7 7 0 1k',
+      'a1 1 10 cm', 'a2 1 11 lm', 'R10 10 0 1k', 'R11 11 0 1k',
+      '.model cm cmeter(gain=1e12)', '.model lm lmeter(gain=1e6)',
+      '.op', '.end',
+    ].join('\n'))).dc!;
+    // ngspice-47: v(10) = 7.0 (2p + 1p + 4p), v(11) = 0.666666666667 (1u || 2u)
+    expect(dc.voltage('10')).toBeCloseTo(7.0, 9);
+    expect(dc.voltage('11')).toBeCloseTo(0.666666666667, 11);
+  });
+});
+
 describe('XSPICE slice 2 parsing and typed rejections', () => {
   it('reads %g/%gd ports and the ilimit null power ports', async () => {
     const dc = (await simulate([

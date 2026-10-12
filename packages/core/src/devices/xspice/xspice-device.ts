@@ -125,7 +125,10 @@ export class XspiceDevice implements DeviceModel {
   acceptTransientStep(ctx: StampContext): void {
     const transient = this.acceptedTime !== undefined && ctx.dt > 0 && ctx.time > this.acceptedTime;
     // The operating point that starts a transient run: drop any earlier run's history.
-    if (!transient) this.behavior.reset?.();
+    if (!transient) {
+      if (this.behavior.beginTransient) this.behavior.beginTransient();
+      else this.behavior.reset?.();
+    }
     const call = this.call(ctx, transient ? 'tran' : 'dc', transient ? this.lastIntegration : undefined, false);
     this.behavior.load(call);
     this.behavior.accept?.(call);

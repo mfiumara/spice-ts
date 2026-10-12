@@ -1950,8 +1950,8 @@ export class Circuit {
           if (desc.modelName && !model) {
             throw new InvalidCircuitError(`Capacitor '${desc.name}' references unknown model '${desc.modelName}'`);
           }
-          const { value } = resolveCapacitance(desc.value, model, desc.params);
-          devices.push(new Capacitor(desc.name, nodeIndices, value, desc.ic));
+          const { value, unitValue } = resolveCapacitance(desc.value, model, desc.params);
+          devices.push(new Capacitor(desc.name, nodeIndices, value, desc.ic, unitValue));
           break;
         }
         case 'L': {
@@ -1959,10 +1959,10 @@ export class Circuit {
           if (desc.modelName && !model) {
             throw new InvalidCircuitError(`Inductor '${desc.name}' references unknown model '${desc.modelName}'`);
           }
-          const { value } = resolveInductance(desc.value, model, desc.params);
+          const { value, unitValue } = resolveInductance(desc.value, model, desc.params);
           const bi = branchIndex++;
           branchNames.push(desc.name);
-          devices.push(new Inductor(desc.name, nodeIndices, bi, value, desc.ic));
+          devices.push(new Inductor(desc.name, nodeIndices, bi, value, desc.ic, unitValue));
           break;
         }
         case 'K': {

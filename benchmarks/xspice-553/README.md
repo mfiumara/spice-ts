@@ -129,6 +129,21 @@ Totals over these 8 decks:
     corner at 1.1 s, where ngspice steps from 1.028 s straight to 1.128 s.
   - This is the same artefact as the slice-1 `divide` loss.
 
+### Review fixes (identical netlists vs ngspice-47)
+
+- hyst leg after the operating point: `V1 1 0 -1.5` into
+  `hyst(in_low=-2 in_high=-1 hyst=0.1 ...)`. INIT runs on the operating
+  point's first iteration (input 0, so the falling leg). ngspice-47 gives
+  v(2) = 0.6 at the op and at every tran point. spice-ts gave 0.4 for t >= 0
+  because accepting the op re-ran INIT on -1.5 V. It now gives 0.6.
+- cmeter/lmeter with an instance m: `C1 1 0 2p m=3` and `L1 1 6 1u m=2`.
+  ngspice-47's cmmeters.c reads CAPcapac / INDinduct, which exclude m:
+  v(10) = 7.0 and v(11) = 0.666666666667. spice-ts gave 11.0 and 0.4. It now
+  gives 7.0 and 0.666666666667.
+- Both cases are tests in `xspice-analog2.test.ts`. Re-running the four
+  `analog_models3` corpus-f decks gives the same outcomes and worst errors as
+  the table above.
+
 ## Reproduce
 
 ```sh

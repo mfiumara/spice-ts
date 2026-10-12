@@ -325,7 +325,8 @@ const X_FALLING = false;
  * {@link CodeModelBehavior.accept} commits the leg of the accepted load. In
  * DC the leg carries from load to load, as ngspice's dctrcurv.c rotates the
  * state vectors from one sweep point to the next. INIT picks the leg from
- * the input of the first call.
+ * the input of the first call (the operating point's first iteration), and
+ * the transient starts from the leg the operating point converged on.
  */
 function hyst(params: ResolvedXspiceParams): CodeModelBehavior {
   const inLow = real(params, 'in_low');
@@ -402,6 +403,9 @@ function hyst(params: ResolvedXspiceParams): CodeModelBehavior {
     },
     reset() {
       committed = undefined;
+    },
+    beginTransient() {
+      // Keep the operating point's leg; INIT does not run again.
     },
   };
 }

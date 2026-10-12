@@ -62,6 +62,12 @@ export interface CodeModelBehavior {
   truncate?(call: CodeModelCall, truncation: ChargeTruncation): number;
   /** Forget transient history before a restart at t = 0. */
   reset?(): void;
+  /**
+   * Accepting the operating point that starts a transient run. Defaults to
+   * {@link reset}; a model whose state the operating point itself sets (the
+   * hyst leg) keeps it, as dctran.c copies state0 into state1 at MODEINITTRAN.
+   */
+  beginTransient?(): void;
 }
 
 export type ResolvedXspiceParams = ReadonlyMap<string, readonly XspiceParamValue[]>;

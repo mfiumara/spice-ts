@@ -99,7 +99,8 @@ export function createXspiceDevice(
  * ngspice cmmeters.c cm_netlist_get_c / cm_netlist_get_l over the compiled
  * devices: capacitors (inductors) with a terminal on the instance's first
  * positive node, plus those on the far node of a zero-valued DC voltage source
- * from it. Capacitances add; inductances combine in parallel from 1e12 H.
+ * from it. Capacitances add; inductances combine in parallel from 1e12 H. Each
+ * element counts once at CAPcapac / INDinduct: ngspice ignores the instance m.
  */
 class NetlistProbe implements XspiceNetlistProbe {
   /** The compiled device list, bound by {@link bindXspiceSources} once every device exists. */
@@ -111,7 +112,7 @@ class NetlistProbe implements XspiceNetlistProbe {
     let c = 0.0;
     for (const node of this.meteredNodes()) {
       for (const device of this.devices) {
-        if (device instanceof Capacitor && device.nodes.includes(node)) c += device.capacitance;
+        if (device instanceof Capacitor && device.nodes.includes(node)) c += device.unitCapacitance;
       }
     }
     return c;
@@ -121,7 +122,7 @@ class NetlistProbe implements XspiceNetlistProbe {
     let l = 1.0e12;
     for (const node of this.meteredNodes()) {
       for (const device of this.devices) {
-        if (device instanceof Inductor && device.nodes.includes(node)) l = 1.0 / (1.0 / l + 1.0 / device.inductance);
+        if (device instanceof Inductor && device.nodes.includes(node)) l = 1.0 / (1.0 / l + 1.0 / device.unitInductance);
       }
     }
     return l;

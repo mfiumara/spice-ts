@@ -7,6 +7,12 @@ const MU_0 = 1.25663706143592e-6;
 
 export interface ResolvedPassiveValue {
   value: number;
+  /**
+   * One element's value before the instance multiplier m: ngspice CAPcapac /
+   * INDinduct, which carry SCALE and the temperature factor but leave m to the
+   * load. The XSPICE cmeter/lmeter read this, as cmmeters.c does.
+   */
+  unitValue: number;
   params: Record<string, number>;
 }
 
@@ -185,11 +191,11 @@ export function resolveCapacitorModel(
   const m = multiplicity(params);
   const s = scale(params);
 
-  let cNom: number;
+  let cUnit: number;
   if (instanceValue !== undefined) {
-    cNom = instanceValue * s * m;
+    cUnit = instanceValue * s;
   } else if (params.CAP !== undefined) {
-    cNom = params.CAP * s * m;
+    cUnit = params.CAP * s;
   } else {
     const length = params.L ?? params.DEFL ?? 0;
     const width = params.W ?? params.DEFW ?? 1e-6;
@@ -201,15 +207,17 @@ export function resolveCapacitorModel(
       : 0);
     const cjsw = params.CJSW ?? 0;
 
-    cNom = (
+    cUnit = (
       cj * effectiveLength * effectiveWidth
       + 2 * cjsw * (effectiveLength + effectiveWidth)
-    ) * s * m;
+    ) * s;
   }
 
-  const capacitance = cNom * temperatureFactor(params);
+  const factor = temperatureFactor(params);
+  const capacitance = cUnit * m * factor;
   return {
     value: capacitance,
+    unitValue: cUnit * factor,
     capacitance,
     seriesResistance: resolveCapacitorSeriesResistance(capacitance, params),
     seriesInductance: scaledCapSeries(firstParam(params, ['ESL', 'LSER', 'LS']), params),
@@ -224,7 +232,7 @@ export function resolveCapacitance(
   instanceParams?: Record<string, number>,
 ): ResolvedPassiveValue {
   const resolved = resolveCapacitorModel(instanceValue, model, instanceParams);
-  return { value: resolved.capacitance, params: resolved.params };
+  return { value: resolved.capacitance, unitValue: resolved.unitValue, params: resolved.params };
 }
 
 export function resolveInductorModel(
@@ -237,38 +245,39 @@ export function resolveInductorModel(
   }
 
   const params = mergedParams(model, instanceParams);
-  const m = multiplicity(params);
   const s = scale(params);
   const divisor = multiplicityDivisor(params);
 
-  let lNom: number;
+  let lUnit: number;
   if (instanceValue !== undefined) {
-    lNom = instanceValue * s / divisor;
+    lUnit = instanceValue * s;
   } else if (params.IND !== undefined) {
-    lNom = params.IND * s / divisor;
+    lUnit = params.IND * s;
   } else if (params.L !== undefined) {
-    lNom = params.L * s / divisor;
+    lUnit = params.L * s;
   } else if (params.LENGTH !== undefined && params.LENGTH !== 0) {
     const nt = params.NT ?? 0;
     const mu = params.MU ?? 1;
     if (params.DIA !== undefined) {
-      lNom = (
+      lUnit = (
         mu * MU_0 * nt * nt * Math.PI * params.DIA * params.DIA
         / (4 * params.LENGTH)
-      ) * s / divisor;
+      ) * s;
     } else {
-      lNom = (
+      lUnit = (
         mu * MU_0 * nt * nt * (params.CSECT ?? 0)
         / params.LENGTH
-      ) * s / divisor;
+      ) * s;
     }
   } else {
-    lNom = 0;
+    lUnit = 0;
   }
 
-  const inductance = lNom * temperatureFactor(params);
+  const factor = temperatureFactor(params);
+  const inductance = lUnit / divisor * factor;
   return {
     value: inductance,
+    unitValue: lUnit * factor,
     inductance,
     seriesResistance: resolveInductorSeriesResistance(inductance, params),
     parallelResistance: resolveInductorParallelResistance(params),
@@ -283,5 +292,5 @@ export function resolveInductance(
   instanceParams?: Record<string, number>,
 ): ResolvedPassiveValue {
   const resolved = resolveInductorModel(instanceValue, model, instanceParams);
-  return { value: resolved.inductance, params: resolved.params };
+  return { value: resolved.inductance, unitValue: resolved.unitValue, params: resolved.params };
 }
