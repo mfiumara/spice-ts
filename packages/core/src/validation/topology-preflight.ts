@@ -10,6 +10,7 @@ import { CurrentSource } from '../devices/current-source.js';
 import { Inductor } from '../devices/inductor.js';
 import { MOSFET } from '../devices/mosfet.js';
 import { MOS2 } from '../devices/mos2.js';
+import { MOS3 } from '../devices/mos3.js';
 import { MOS6 } from '../devices/mos6.js';
 import { VCCS } from '../devices/vccs.js';
 import { VCVS } from '../devices/vcvs.js';
@@ -138,7 +139,8 @@ function dcConnectionGroups(device: DeviceModel): number[][] {
   }
 
   if (
-    device instanceof MOSFET || device instanceof MOS2 || device instanceof MOS6 || device instanceof BSIM3v3
+    device instanceof MOSFET || device instanceof MOS2 || device instanceof MOS3 || device instanceof MOS6
+    || device instanceof BSIM3v3
     || device instanceof ClassicBsimMosfet
   ) {
     return [[device.nodes[0]!, device.nodes[2]!, device.nodes[3] ?? device.nodes[2]!]];
