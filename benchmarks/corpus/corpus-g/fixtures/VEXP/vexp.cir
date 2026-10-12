@@ -1,0 +1,18 @@
+Voltage Source - Exponential Signal
+***********************************************************************
+* Tier No.:	1                                           
+* Description:	Test of Xyce model for an independent voltage source.
+*	The voltage source is described as:
+*	An exponential time dependent voltage signal that rises from 
+*	0 - 5V after a 1us delay time.  The rise time constant is 1us.
+*	The signal does not decay until after 1s.  Since the transient 
+*	analysis is from 0 - 5us, the signal will stay at 5V for the
+*	duration of the simulation.
+* Input/Output:	VEXP; a common simulation data output (.csd) file can 
+*	be generated for viewing the signal.
+***********************************************************************
+VEXP 1 0 EXP(0V 5V 1US 1US 1S)
+R 1 0 500
+.TRAN 0.1US 5US
+.PRINT TRAN V(1)
+.END

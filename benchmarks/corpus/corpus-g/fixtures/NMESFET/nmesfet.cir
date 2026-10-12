@@ -1,0 +1,37 @@
+N-Channel MESFET Circuit
+********************************************************************************
+* Tier No.:  2
+* Directory/Circuit Name:                                            
+* Description:  Test of a simple n channel MESFET circuit to examine the
+* subthreshold characteristics of the device.  Ideally, the drain current
+* of a FET device should should reduce to zero when the device is biased
+* below threshold.  However, a 
+*       residual subthreshold current exists in this regs/3)^3]
+*       For the saturation regime, where Vds>3/alpha,
+*       Id =  (1+lambda*VDS)*{(beta*(Vgs-Vto)^2)/(1+B(Vgs-Vto))}
+*
+*       alpha = 3,  beta=1.4E-3, lambda=0.03, Vto=-1.3, B=0.3 (default value)
+*
+*       for Vds = 0.1V, Vds  which is less than 3/alpha or 1V,
+*               @Vgs=-1.5V      Id=-1.6e-12 A
+*               @Vgs = -1V      Id=4.4e-8 A
+*       for Vds = 1.9V, which is greater than 3/alpha or 1V,
+*               @Vgs=-1.5V      Id=3.4e-12 A
+*               @Vgs = 0.0V     Id=1.8e-3 A
+*
+*       The drain current, Id, is measured through the VIDS zero volt source
+*       that acts as an ammeter.
+********************************************************************************
+VDS 1 0 0
+VIDS 1 2 0
+VGS 3 0 0
+Z1 2 3 0 MESMOD AREA=1.4
+.MODEL MESMOD NMF
++ LEVEL=1 BETA=1.4E-3
++ RD=46 RS=46 VTO=-1.3 LAMBDA=0.03 ALPHA=3
+.DC VGS -1.75V 0 50MV VDS 0.1V 1.9V 1.8V
+.PRINT DC V(3) V(1) I(VIDS)
+*.OPTIONS ACCT
+*COMP I(VIDS) zerotol=1.0e-11
+.END
+

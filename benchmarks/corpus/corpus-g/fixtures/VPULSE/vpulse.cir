@@ -1,0 +1,23 @@
+Netlist to Test the Xyce Pulse Voltage Source Model
+*********************************************************************
+* Tier No.:	1                                           
+* Description:	Test of Xyce model for an independent voltage source.
+*		The voltage source is described as:
+*		A time dependent voltage signal that generates a
+*		sawtooth waveform that rises linearly from 0V to 1V
+*		in 10us, with delay time.  The voltage remains at its
+*		peak value of 1V for 0.1us then decrease back to zero
+*		in 10us.
+* Input/Output:	VPULSE; a common simulation data output (.csd)
+*		file can be generated for viewing the signal in probe.
+*
+* NOTE: This netlist must currently be run with a constant time step. 
+*       When enhancements are made to the Xyce TimeIntegration 
+*       algorithm, this netlist will be run with out the timestep con-
+*	straint.
+********************************************************************** 
+VPULSE 1 0 PULSE(0V 1V 0S 10US 10US 0.1US 20.1US)
+R 1 0 500
+.TRAN 1US 20.1US
+.PRINT TRAN V(1)
+.END

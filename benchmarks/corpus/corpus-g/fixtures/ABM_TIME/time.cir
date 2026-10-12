@@ -1,0 +1,40 @@
+Test Circuit for the F(Y,T) Functionality
+*******************************************************************************
+* Tier No.:     1
+* Directory/Circuit Name: ABM_TIME/time.cir
+* Description:  Test of the analog behavioral modeling function
+*       for using time as a variable when defining a nonlinear dependent voltage
+*       source.
+* Input: VS=V(1)
+* Output: V(1), V(2)
+* Analysis:
+*       A piecewise linear  voltage source, VS or V(1),  is used as the circuit input.
+*       A nonlinear dependent voltage sources are used to define the function as follows:
+*               V(2)=B2=V(1) * TIME
+*       where, V(1) is the input voltage and time is the simulation time specified
+*       on the .tran line.  The resulting values for V(2) are the product of V(1),
+*
+*       This table is a set of hand calculations for the B1=V(2) function:
+*               TIME            VS=V(1)         V(2)=V(1)*TIME
+*               0s              0V              0V
+*               1s              5V              5V
+*               2s              10V             20V
+*               3s              10V             30V
+*               4s              5V              20V
+*               5s              0V              0V
+*               6s              0V              0V
+*
+*******************************************************************************
+VS 1 0 PWL(0S 0V  1S 5V  2S 10V  3S 10V  4S 5V  5S 0V  6S 0V)
+R1 1 0 1K
+B2 2 0 V={(V(1) * TIME)}
+R2 2 0 1K
+.TRAN 1S 6S
+
+* Xyce option needed when default is changed to 1 (Backward Euler).
+* Also serves as useful test of non-default method.
+*.OPTIONS TIMEINT METHOD=2
+
+.PRINT TRAN V(1) V(2)
+.END
+

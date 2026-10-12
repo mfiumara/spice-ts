@@ -1,0 +1,36 @@
+Test Circuit for the Tangent and Arctangent Functions
+*******************************************************************************
+* Tier No.:     1
+* Directory/Circuit Name: ABM_ATAN_TAN/atan_tan.cir
+* Description:  Test of the Xyce analog behavioral modeling tangent and arctangent 
+*	functions.
+* Input: VS
+* Output: V(1), V(2), V(3)
+* Analysis:
+*	A sinusoidal source voltage, VS or V(1),  with a 1V amplitude and 1KHZ  freq.  
+*	is the input to the circuit.  Two nonlinear dependent voltage sources are used 
+*	to define the functions as follows:
+*		V(2)=B2=TAN(V(1)) = tangent of input sine function = V(2)
+*		V(3)=B3=ATAN(V(2)) = inverse tangent of B2 (or TAN(VS))=V(1)
+*		        = value of the input source VS
+*	A transient analysis is performed and the output recorded is the node voltages 
+*	defined by the input source, V(1), the tangent, V(2),  and arctangent, V(3), 
+*	functions. 
+*
+*	This table is a set of hand calculations for the TAN and ATAN functions:	
+*	 	X		TAN(X)		ATAN(TAN(X)) 			
+*		-1.00		-1.56		-1.00				
+*		 0.00		 0.00		 0.00				
+*		 1.00		 1.56		 1.00			
+*
+*******************************************************************************
+VS  1  0  SIN(0 1 1KHZ 0 0)
+R1  1  0  1
+B2  2  0  V={TAN(V(1))}
+R2  2  0  1
+B3  3  0  V={ATAN(V(2))}
+R3  3  0  1
+.options timeint reltol=1e-4
+.TRAN 0.1MS 2MS
+.PRINT TRAN V(1) V(2) V(3)
+.END

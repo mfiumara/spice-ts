@@ -1,0 +1,8 @@
+test for ddt capability.
+V1 1 0 SIN(0 1 0.5 0.0)
+Bsrc 1 0 I={-ddt(V(1))}
+
+.tran 10us 0.25
+.print tran V(1) I(V1)
+*.options timeint method=8 newlte=0
+*reltol=1e-4

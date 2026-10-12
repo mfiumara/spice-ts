@@ -1,0 +1,15 @@
+Demonstration of broken G source.  (Morannon bug 696)
+
+V1 1 0 PULSE ( 0 5 0 1n 1n 1us 1s)
+R1 1 0 100meg
+
+V2 8 0 DC 5V
+G1 8 9 POLY(2) 8 9 1 0  0 0 0 0 1
+R2 9 0 100
+
+V3 10 0 DC 5V
+BG1 10 11 I={(V(10)-V(11))*V(1)}
+R3 11 0 100
+.tran 1ns 10us
+.print tran v(1) v(8) v(9) i(v2) v(10) v(11) i(v3)
+.end

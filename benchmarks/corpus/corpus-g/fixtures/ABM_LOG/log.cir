@@ -1,0 +1,44 @@
+Test of Log Base 10 Function
+********************************************************************************
+* Tier No.:     1
+* Directory/Circuit Name: ABM_LOG/log.cir
+* Description:  Test of analog behavioral modeling log function. 
+* Input: V1, V2
+* Output:  V(1), V(2), V(3), V(4)
+* Analysis:
+*	Two piece-wise linear sources are used to define voltages at various times. 
+*	These sources are defined as V1=V(1) and V2=V(2), respectively.
+*	Two nonlinear dependent voltage sources are used to define the function as 
+*	follows:
+*		V(3)=B3=LOG(V(1))
+*		V(4)=B4=LOG(V(2))
+*	The values for the PWL sources are chosen such that the log functions are 
+*	Evaluated for both large [V1=V(1)] and small [V2=V(2)] values. 
+*
+*This table is  a set of hand calculations for the Log10 function.
+*Note:  The results are the given and expected values for the indicated node voltages.
+*
+*			X	LOG10(X)	
+*	V(1)=>		100	2	 	<= V(3)=LOG10{V(1)}
+*		 	1000	3	
+*	 		1E+05	5		
+*		 	1	0	
+*			0.1	-1	
+*	V(2) =>		1	0	      	<= V(4)=LOG10{V(2)}
+*			2	0.301029996	
+*			3.77	0.57634135	
+*			6.49	0.812244697	
+*			13.1	1.117271296	                 
+********************************************************************************
+V1 1  0  PWL(0S 100V 1S 1000V 2S 1E5V 3S 1V 4S 0.1V)  
+R1 1  0  1
+V2 2  0  PWL(0S 1V 1S 2V 2S 3.77V 3S 6.49V 4S 13.1V)
+R2 2  0  1
+B3 3  0  V = {LOG(V(1))}
+R3 3  0  1
+B4 4  0  V = {LOG(V(2))}
+R4 4  0  1
+.TRAN 1S 5S 
+.PRINT TRAN V(1) V(2) V(3) V(4)
+.END
+

@@ -1,0 +1,94 @@
+HUSS CMOS OPAMP			
+
+* This opamp is a conventional 3-stage, internally compensated, CMOS opamp
+* designed using MCNC models.  The simulation file is set up for closed
+* loop (unity-gain feedback) analysis of transient and ac performance.
+
+*
+* SUPPLY VOLTAGES
+*
+VDD 1 0 DC 5
+VAP 34 99 PULSE ( 0.0 0.5 0 1E-9 1E-9 50E-9 100E-9 )
+VIN 99 0 DC 2.5 
+*
+* ANALOG INPUT
+*
+*
+* BIAS CIRCUIT
+*
+M65 0 0 7 1 PCH W=4.5U L=40U   
+M64 7 7 1 1 PCH W=71U L=10U
+M63 5 7 1 1 PCH W=69U L=10U
+M62 5 5 9 0 NCH W=35U L=10U
+M61 9 9 0 0 NCH W=12U L=10U
+* 
+* DIFFERENTIAL AMPLIFIER STAGE
+*
+M10 36 33 32 1 PCH W=11U L=2U  AD=24P AS=24P
+M20  3 34 32 1 PCH W=11U L=2U  AD=24P AS=24P
+M30 36 36  0 0 NCH W=6U  L=3U  AD=136P AS=136P
+M40  3 36  0 0 NCH W=6U  L=3U  AD=136P AS=136P
+M50 32  7  1 1 PCH W=14U L=2U  AD=24P AS=24P
+*
+*FOLDED CASCODE STAGE WITH COMPENSATION
+*
+M2 6 7 1 1 PCH W=80U L=2U  AD=24P AS=24P
+M3 6 5 4 0 NCH W=24U L=2U  AD=136P AS=136P
+M4 4 3 0 0 NCH W=46U L=2U  AD=136P AS=136P
+M80 11 5 3 0 NCH W=4U L=3U  
+CC 6 11 .22PF
+* 
+* COMMON DRAIN OUTPUT STAGE 
+*
+M7  1 6 12 12 NCH W=100U L=2U  AD=136P AS=136P 
+M8 12 9  0  0 NCH W=63U  L=2U  AD=136P AS=136P
+*
+* LOAD
+CL 12 0 10PF
+*
+* FEEDBACK CONNECTION
+RF 12 33 100
+*
+* MCNC MOSFET PROCESS MODELS
+*
+.MODEL NCH NMOS LEVEL=2  CGSO=2.89E-10 VTO=0.71 GAMMA=0.29
++ CGDO=2.89E-10 CJ=3.74E-4 MJ=0.4 TOX=225E-10 NSUB=3.5E16
++ XJ=0 LD=0 UO=411 UEXP=0 LAMBDA=0.02 
+*
+.MODEL PCH PMOS LEVEL=2 VTO=-0.76 GAMMA=0.6 CGSO=3.35E-10 
++ CGDO=3.35E-10 CJ=4.75E-4 MJ=0.4 TOX=225E-10 NSUB=1.6E16
++ XJ=0.2E-6 LD=0 UO=139 UEXP=0 LAMBDA=0.02
+*
+* ANALYSES
+*
+.param V1=5
+.param V3=1.0108
+.param V4=1.210
+.param V5=2.3765
+.param V6=3.6096
+.param V7=3.880
+.param V9=1.213
+.param V11=1.0108
+.param V12=2.5001
+.param V32=3.7752
+.param V36=1.0108
+
+.NODESET
++ V(1)={V1}
++ V(3)={V3}
++ V(4)={V4}
++ V(5)={V5}
++ V(6)={V6}
++ V(7)={V7}
++ V(9)={V9}
++ V(11)={V11}
++ V(12)={V12}
++ V(32)={V32}
++ V(36)={V36}
+
+.op
+*.options acct
+.tran 1N 100N 
+.print tran V(34) V(12)
+.end
+

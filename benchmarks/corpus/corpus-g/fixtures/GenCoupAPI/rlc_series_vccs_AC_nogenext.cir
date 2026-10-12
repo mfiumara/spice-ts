@@ -1,0 +1,21 @@
+Test of series RLC circuit
+* This version depends on the "general external" device to do the actual
+* evaluation of the equations, and as such it MUST be run through the
+* "GenCouplingSimulator" API with an appropriate "VectorComputeInterface"
+* implementation.
+*
+* This tests all three devices implemented by the test harness
+
+V1 1 0 SIN (5v 5v 20MEG) AC 1
+R1 1 1a 1k
+* RLC network implemented as external device
+R2 1a 1b 1K
+L1 1b 1c 1m
+C1 1c 0  1p
+
+G1 2 0 1a 0 1
+R3 2 0 1
+
+.ac dec 30 1 1e7
+.print ac v(1) v(1a) I(v1) V(2)
+.end

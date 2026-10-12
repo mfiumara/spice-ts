@@ -1,0 +1,10 @@
+Basic resistor circuit for baseline calculation
+* All this does is provide a standard against which alternate versions
+* of the circuit can be compared
+
+R1 1 0 10k
+V1 1 0 DC 5V
+
+.dc V1 0 5 1
+.print DC v(1) I(v1)
+.end

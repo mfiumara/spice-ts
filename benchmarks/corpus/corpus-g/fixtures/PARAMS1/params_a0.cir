@@ -1,0 +1,22 @@
+Test of PARAMS Functionality
+*****************************************************************************
+* Tier No.:     1
+* Directory/Circuit Name: PARAMS1/params_a0.cir
+* Description:  Test of Xyce .PARAMS code enhancements:
+* Input: V1 or V(1)
+* Output: V(2)
+* Analysis:  
+*	The capacitor voltage vs time is simulated for two full periods of
+*	a square wave input.  The capacitor voltage at time=0 is 3V and     
+*	increases to 13V V(1) increases to its maximum value.
+* This test is the base line case.  It uses no parameters.
+* 
+*****************************************************************************
+V1 1 0 PULSE(0 20 0 0 0 0.2 0.4)
+V2 3 0 6
+R1 1 2 22K
+R2 2 3 22K
+C  2 0 2U
+.TRAN 0.02 0.8
+.PRINT TRAN V(2)
+.END
