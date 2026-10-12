@@ -9,6 +9,8 @@ export class CurrentSource implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = false;
   private transientTimestep = 0;
+  /** Current at the last load: ngspice ISRCcurrent, the `@i[current]` readout (undefined before any load). */
+  lastCurrent: number | undefined;
   /** TRNOISE/TRRANDOM state (ngspice ISRCtrnoise_state/ISRCtrrandom_state). */
   private readonly noise?: NoiseHandle;
   /** Present only for TRNOISE/TRRANDOM, so other sources stay off the accept pass. */
@@ -34,6 +36,7 @@ export class CurrentSource implements DeviceModel {
   stamp(ctx: StampContext): void {
     const [nPlus, nMinus] = this.nodes;
     const current = this.getValue(ctx) * ctx.sourceScale;
+    this.lastCurrent = current;
 
     // SPICE defines positive current from the first node to the second.
     if (nPlus >= 0) ctx.stampB(nPlus, -current);
