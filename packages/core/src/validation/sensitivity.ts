@@ -2,7 +2,7 @@ import { InvalidCircuitError } from '../errors.js';
 import type { SensitivityAnalysis } from '../types.js';
 
 export const BOUNDED_SENSITIVITY_FORMS =
-  "'.sens v(node)' or '.sens v(node) ac dec points start stop'";
+  "'.sens v(node)' or '.sens v(node) ac {dec|oct|lin} points start stop'";
 
 /** Validate the native sensitivity slice for parsed and programmatic circuits. */
 export function assertSupportedSensitivity(analysis: SensitivityAnalysis): void {
@@ -19,7 +19,7 @@ export function assertSupportedSensitivity(analysis: SensitivityAnalysis): void 
     return;
   }
   if (
-    analysis.variation !== 'dec'
+    (analysis.variation !== 'dec' && analysis.variation !== 'oct' && analysis.variation !== 'lin')
     || !Number.isInteger(analysis.points)
     || analysis.points < 1
     || !Number.isFinite(analysis.startFreq)

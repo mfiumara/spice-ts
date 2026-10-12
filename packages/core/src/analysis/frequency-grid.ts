@@ -7,8 +7,9 @@ type FrequencySweep = Pick<ACAnalysis, 'variation' | 'points' | 'startFreq' | 's
  * span at least one decade so the last point lands on stop, and builds every grid by
  * accumulation (see {@link acanGrid}); `.noise` (noisean.c) always steps by 10^(1/N) up to stop
  * plus a reltol tolerance; `.sens` (cktsens.c `count_steps`) also steps
- * by 10^(1/N) but counts `(int)(N * log10(stop/start) + 1.01)` points. `.sp` (span.c) steps
- * DEC/OCT like `.noise` and LIN like `.ac`.
+ * by 10^(1/N) but counts `(int)(N * log10(stop/start) + 1.01)` points (see
+ * {@link sensitivityPointCount} for OCT and LIN). `.sp` (span.c) steps DEC/OCT like `.noise`
+ * and LIN like `.ac`.
  */
 export type FrequencySweepKind = 'ac' | 'noise' | 'sens' | 'sp';
 
@@ -34,8 +35,8 @@ export function frequencyPointCount(
   kind: FrequencySweepKind,
 ): number {
   if (kind === 'ac') return acanPointCount(sweep, relativeTolerance);
-  if (sweep.variation === 'lin') return kind === 'sp' && sweep.points === 2 ? 1 : sweep.points;
   if (kind === 'sens') return sensitivityPointCount(sweep);
+  if (sweep.variation === 'lin') return kind === 'sp' && sweep.points === 2 ? 1 : sweep.points;
   const { base, steps } = logStep(sweep);
   const tolerance = Math.pow(base, 1 / steps) * sweep.stopFreq * relativeTolerance;
   const span = Math.log((sweep.stopFreq + tolerance) / sweep.startFreq) / Math.log(base);
@@ -43,15 +44,39 @@ export function frequencyPointCount(
 }
 
 /**
- * cktsens.c `count_steps`: a non-increasing sweep spans one base period (decade/octave) from
- * start, and the count truncates `N * periods + 1.01`, so it may include one point past stop.
+ * cktsens.c `count_steps`: a non-increasing DEC/OCT sweep spans one base period (decade/octave)
+ * from start, and the count truncates `N * periods + 1.01`, so it may include one point past
+ * stop. ngspice-47 counts OCT periods as `log(stop/start) / M_LOG2E` (not `* M_LOG2E`), and a
+ * LIN sweep has exactly N points.
  */
 function sensitivityPointCount(sweep: FrequencySweep): number {
+  const steps = Math.max(1, sweep.points);
+  if (sweep.variation === 'lin') return steps;
   const base = sweep.variation === 'oct' ? 2 : 10;
   const stop = sweep.stopFreq > sweep.startFreq ? sweep.stopFreq : base * sweep.startFreq;
-  const periods = Math.log(stop / sweep.startFreq) / Math.log(base);
-  const count = Math.trunc(sweep.points * periods + 1.01);
+  const periods = sweep.variation === 'oct'
+    ? Math.log(stop / sweep.startFreq) / Math.LOG2E
+    : Math.log10(stop / sweep.startFreq);
+  const count = Math.trunc(steps * periods + 1.01);
   return Number.isFinite(count) ? Math.max(1, count) : 0;
+}
+
+/**
+ * cktsens.c sweep: the first point is start and each next one is `inc_freq(freq)`. ngspice-47
+ * `inc_freq` adds the step only for the noise/distortion `LINEAR` constant, never for
+ * `SENS_LINEAR`, so a LIN sweep multiplies by its step `(stop - start) / N` (`sens ac lin 3 1e6
+ * 1.3e6` gives 1e6, 1e11, 1e16). DEC/OCT points are `start * base^(i/N)`.
+ */
+function sensitivityGrid(sweep: FrequencySweep): number[] {
+  const count = sensitivityPointCount(sweep);
+  if (sweep.variation !== 'lin') {
+    const { base, steps } = logStep(sweep);
+    return Array.from({ length: count }, (_, index) => sweep.startFreq * Math.pow(base, index / steps));
+  }
+  const step = (sweep.stopFreq - sweep.startFreq) / Math.max(1, sweep.points);
+  const frequencies = [sweep.startFreq];
+  while (frequencies.length < count) frequencies.push(frequencies[frequencies.length - 1] * step);
+  return frequencies;
 }
 
 /** Frequencies of an ngspice `.ac`/`.noise`/`.sens` sweep; see {@link frequencyPointCount}. */
@@ -61,6 +86,7 @@ export function frequencyGrid(
   kind: FrequencySweepKind,
 ): number[] {
   if (kind === 'ac') return acanGrid(sweep, relativeTolerance);
+  if (kind === 'sens') return sensitivityGrid(sweep);
   const count = frequencyPointCount(sweep, relativeTolerance, kind);
   if (sweep.variation === 'lin') {
     if (count <= 1) return [sweep.startFreq];

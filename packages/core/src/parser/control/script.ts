@@ -19,7 +19,7 @@ export interface ControlScript {
 }
 
 /** Analysis commands; each runs one analysis and creates one plot (noise: two). */
-export const CONTROL_ANALYSIS_COMMANDS = new Set(['op', 'dc', 'ac', 'tran', 'noise']);
+export const CONTROL_ANALYSIS_COMMANDS = new Set(['op', 'dc', 'ac', 'tran', 'noise', 'sp', 'sens']);
 
 /**
  * Commands that only format, display, save or report already-computed vectors,
@@ -49,13 +49,11 @@ const UNSUPPORTED_REASONS: Record<string, string> = {
   label: 'goto/label jumps are not implemented',
   source: 'sourcing further netlists or scripts is not implemented',
   shell: 'shell commands are not executed',
-  sens: 'control-language sensitivity analysis is not implemented',
   pz: 'control-language pole-zero analysis is not implemented',
   tf: 'control-language transfer-function analysis is not implemented',
   disto: 'control-language distortion analysis is not implemented',
   pss: 'periodic steady-state analysis is not implemented',
   hbosc: 'harmonic-balance oscillator analysis is not implemented',
-  sp: 'S-parameter analysis is not implemented',
   load: 'loading raw files is not implemented',
   remcirc: 'circuit management is not implemented',
   circbyline: 'circuit management is not implemented',
@@ -66,7 +64,7 @@ const STRUCTURE_KEYWORDS = new Set(['if', 'else', 'end', 'while', 'dowhile', 're
 
 /** The contract text listed in an unsupported-command error. */
 const CONTRACT = 'spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, '
-  + 'option, setplot/destroy, compose, strcmp, setscale, meas, linearize, fft, psd, if/else/end, while/dowhile/repeat/foreach/break/continue, '
+  + 'option, setplot/destroy, compose, strcmp, setscale, meas, linearize, fft, psd, the sp and sens analyses, if/else/end, while/dowhile/repeat/foreach/break/continue, '
   + 'and treats output-only commands (echo, print, plot, write, wrdata, save, ...) as no-ops';
 
 /** Lower-cased command word of a control line. */

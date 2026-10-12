@@ -1,5 +1,5 @@
 import type { AnalysisDirective, TransientAnalysis } from '../../types.js';
-import type { MeasurementResult, SimulationResult } from '../../results.js';
+import type { MeasurementResult, SensitivityEntry, SimulationResult } from '../../results.js';
 import { getMeasure2, type MeasurePlot } from '../../measure/measure2.js';
 import { gettokWords } from '../../measure/dot-measure.js';
 import { inpEvaluate } from '../../measure/numparse.js';
@@ -241,7 +241,7 @@ class ControlInterpreter {
     const text = this.substitute(line.text, line);
     const rest = text.slice(/^\s*[^\s=(]*/.exec(text)![0].length).trim();
     switch (name) {
-      case 'op': case 'dc': case 'ac': case 'tran': case 'noise': {
+      case 'op': case 'dc': case 'ac': case 'tran': case 'noise': case 'sp': case 'sens': {
         const tokens = tokenizeNetlist(text)[0]?.tokens ?? [];
         const run = this.host.runAnalysis([`.${name.toUpperCase()}`, ...tokens.slice(1)], line);
         this.recordRun(run);
@@ -872,6 +872,40 @@ class ControlInterpreter {
         }
         return plot;
       }
+      case 'sp': {
+        // span.c: plot `sp<n>` with a `frequency` scale and one complex vector per S/Y/Z
+        // (and, with donoise, Cy/NF/SOpt/NFmin/Rn) result, under its ngspice name.
+        const sp = result.sParameters;
+        const scale = realVector('frequency', sp ? sp.frequencies : []);
+        const plot = this.newPlot('sp', 'SP Analysis', scale, saves);
+        for (const [name, values] of sp?.vectors ?? []) {
+          plot.vectors.set(name.toLowerCase(), complexVector(
+            name, values.map(value => value.real), values.map(value => value.imaginary), scale,
+          ));
+        }
+        return plot;
+      }
+      case 'sens': {
+        const sens = result.sensitivity;
+        const ac = directive.mode === 'ac';
+        // cktsens.c: an AC plot has a `frequency` scale; a DC plot holds one value per vector.
+        const scale = ac ? realVector('frequency', sens ? sens.frequencies : []) : undefined;
+        const plot = this.newPlot('sens', 'Sensitivity Analysis', scale, saves);
+        for (const entry of sens?.entries ?? []) {
+          const vector = entry.dc !== undefined
+            ? scalar(entry.dc, entry.device)
+            : complexVector(
+              entry.device,
+              (entry.ac ?? []).map(value => value.real),
+              (entry.ac ?? []).map(value => value.imaginary),
+              scale,
+            );
+          for (const name of sensitivityVectorNames(entry.device, entry.parameter, ac)) {
+            plot.vectors.set(name, renamed(vector, name));
+          }
+        }
+        return plot;
+      }
       default:
         return this.newPlot(directive.type, directive.type, undefined, saves);
     }
@@ -1106,6 +1140,23 @@ function gettokAt(text: string, start: number): { token: string; end: number } {
   let end = text.indexOf(token, start) + token.length;
   while (end < text.length && (/\s/.test(text[end]) || text[end] === ',')) end++;
   return { token, end };
+}
+
+/**
+ * Names of a sensitivity vector in ngspice-47's `sens<n>` plot (cktsens.c names
+ * each perturbed parameter `<device>` for its primary value, `<device>_<param>`
+ * otherwise). A resistor's AC resistance defaults to its resistance, so ngspice
+ * lists the same AC sensitivity as both `r1` and `r1_ac` (spice-ts rejects an
+ * explicit `ac=` resistance in AC sensitivity).
+ */
+function sensitivityVectorNames(device: string, parameter: SensitivityEntry['parameter'], ac: boolean): string[] {
+  const name = device.toLowerCase();
+  switch (parameter) {
+    case 'resistance': return ac ? [name, `${name}_ac`] : [name];
+    case 'acMagnitude': return [`${name}_acmag`];
+    case 'gain': return [`${name}_gain`];
+    default: return [name];
+  }
 }
 
 /** C `round()`: halves away from zero. */
