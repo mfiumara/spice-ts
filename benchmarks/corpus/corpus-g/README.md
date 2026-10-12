@@ -6,11 +6,11 @@ Every deck below is byte-identical to Xyce_Regression `7bb7e98f0ed3a81a7d1cf1d10
 
 ## Totals
 
-- Fixtures: 128. Outcome SHA-256: `1f27c5f0e5ab53b173603c5255aa6ba3538902f3646bb30ee8f8b1ca6ee7b4ab`.
+- Fixtures: 128. Outcome SHA-256: `f7badf6ab0644fe88a2db2dcf3fa705fe16842392594f92950bc3f14799b0831`.
 - ngspice (ngspice-47): 128 success, 0 failed, 0 unsupported.
-- spice-ts (0.3.0): 62 success, 5 failed, 61 unsupported.
-- Outcomes: matched 48, mismatch 14, not-compared 0, spice-ts-loss 66, ngspice-failed 0, both-failed 0.
-- Of the 128 decks ngspice runs successfully, spice-ts matches 48, mismatches 14, produces no comparable result for 0 and fails 66.
+- spice-ts (0.3.0): 64 success, 5 failed, 59 unsupported.
+- Outcomes: matched 50, mismatch 14, not-compared 0, spice-ts-loss 64, ngspice-failed 0, both-failed 0.
+- Of the 128 decks ngspice runs successfully, spice-ts matches 50, mismatches 14, produces no comparable result for 0 and fails 64.
 
 ## Method
 
@@ -41,14 +41,13 @@ Grouped from spice-ts's own first error line (corpus-g rules, then corpus-f rule
 | device: JFET forms (PJF model type, instance TEMP=, J card) | 3 | 3 | https://github.com/mfiumara/spice-ts/issues/717 |
 | deck: element-free deck (ngspice runs an empty analysis) | 2 | 2 | none filed |
 | execution: other failure | 2 | 2 | none filed |
-| expression: branch-current i() references in B-source expressions | 2 | 2 | https://github.com/mfiumara/spice-ts/issues/718 |
 | model: other MOSFET levels (LEVEL=10, LEVEL=260) | 2 | 2 | none filed |
 | convergence | 1 | 1 | none filed |
 | device: BJT instance IC= initial conditions | 1 | 1 | none filed |
 | device: lossless T-line NL=/F= electrical-length form | 1 | 1 | none filed |
 | directive: .four | 1 | 1 | none filed |
 
-## Losses (80)
+## Losses (78)
 
 Every fixture that is not matched: spice-ts failures, mismatches above the threshold, and results that could not be compared.
 
@@ -112,8 +111,6 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | [PSP103/invert_psp_testDTA0.cir](fixtures/PSP103/invert_psp_testDTA0.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 15: Unsupported .options field: 'device' .options device temp=100 |
 | [RESISTOR_TD/temp_dep.cir](fixtures/RESISTOR_TD/temp_dep.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 48: Unsupported .options field: 'DEVICE' .OPTIONS DEVICE TEMP=-55 |
 | [RESISTOR/DefaultValueWarning.cir](fixtures/RESISTOR/DefaultValueWarning.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 12: Resistor 'R1' has no resistance value or model R1 1a 0 |
-| [SANDLER1/sandler1.cir](fixtures/SANDLER1/sandler1.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 7: Unsupported behavioral expression: branch current i(...) references BFIBN 2 4 I=(I(VIB)) |
-| [SANDLER2/sandler2.cir](fixtures/SANDLER2/sandler2.cir) | success | unsupported | spice-ts-loss |  |  | spice-ts: Parse error at line 7: Unsupported behavioral expression: branch current i(...) references BIBN 2 4 I=(I(VIB)) |
 | [SANDLER21/sandler21.cir](fixtures/SANDLER21/sandler21.cir) | success | success | mismatch | 0.127 | tran i(v2) |  |
 | [SANDLER22/sandler22.cir](fixtures/SANDLER22/sandler22.cir) | success | success | mismatch | 0.86 | tran v(4) |  |
 | [SANDLER23/sandler23.cir](fixtures/SANDLER23/sandler23.cir) | success | success | mismatch | 0.0498 | tran v(x1.12) |  |
@@ -135,7 +132,7 @@ Every fixture that is not matched: spice-ts failures, mismatches above the thres
 | [VSTARTEST/vstarTest.cir](fixtures/VSTARTEST/vstarTest.cir) | success | success | mismatch | 0.218 | tran v(vout) |  |
 | [WAMPDE/BLOCKING/simple_single_channel.cir](fixtures/WAMPDE/BLOCKING/simple_single_channel.cir) | success | success | mismatch | 2.45 | tran i(l2) |  |
 
-## Wins (48)
+## Wins (50)
 
 Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every common signal.
 
@@ -155,34 +152,36 @@ Fixtures where spice-ts matches ngspice-47 within the uniform threshold on every
 | [BJT_PSPICE_NK/bjt_test_nk.cir](fixtures/BJT_PSPICE_NK/bjt_test_nk.cir) | success | success | matched | 0.000226 | dc i(vmon1) |  |
 | [BSRC/Bsrc_A1.cir](fixtures/BSRC/Bsrc_A1.cir) | success | success | matched | 0.00039 | dc i(b1) |  |
 | [BUG_139/in_line_comment.cir](fixtures/BUG_139/in_line_comment.cir) | success | success | matched | 5.18e-9 | dc i(vmon) |  |
-| [CCCS/ftest.cir](fixtures/CCCS/ftest.cir) | success | success | matched | 1.7e-17 | tran v(1) |  |
-| [Certification_Tests/BUG_1011/sand23.cir](fixtures/Certification_Tests/BUG_1011/sand23.cir) | success | success | matched | 4.29e-12 | dc v(x1.11) |  |
+| [CCCS/ftest.cir](fixtures/CCCS/ftest.cir) | success | success | matched | 3.54e-22 | tran i(vmon) |  |
+| [Certification_Tests/BUG_1011/sand23.cir](fixtures/Certification_Tests/BUG_1011/sand23.cir) | success | success | matched | 5.31e-16 | dc v(4) |  |
 | [CircuitSim90/BJT/vreg.cir](fixtures/CircuitSim90/BJT/vreg.cir) | success | success | matched | 0.000921 | dc v(5) |  |
 | [CommandLine/command_line.cir](fixtures/CommandLine/command_line.cir) | success | success | matched | 0.00379 | tran v(x1.12) |  |
 | [COMPLEX_NUM/test1.cir](fixtures/COMPLEX_NUM/test1.cir) | success | success | matched | 3.7e-16 | ac v(1) |  |
-| [DIODE_CMC/DiodeClipper_AC.cir](fixtures/DIODE_CMC/DiodeClipper_AC.cir) | success | success | matched | 0.000358 | ac v(1) |  |
+| [DIODE_CMC/DiodeClipper_AC.cir](fixtures/DIODE_CMC/DiodeClipper_AC.cir) | success | success | matched | 3.83e-11 | ac i(vin) |  |
 | [DIODE/diode_with_sidewall_fcs.cir](fixtures/DIODE/diode_with_sidewall_fcs.cir) | success | success | matched | 0.000631 | dc i(vin) |  |
 | [GenCoupAPI/rlc_series_vccs_AC_nogenext.cir](fixtures/GenCoupAPI/rlc_series_vccs_AC_nogenext.cir) | success | success | matched | 1.19e-15 | ac v(1c) |  |
 | [GLOBALNODE/global_hspice.cir](fixtures/GLOBALNODE/global_hspice.cir) | success | success | matched | 1.67e-16 | tran i(v3) |  |
 | [INVALID_CHARS/colon_fails_device_name.cir](fixtures/INVALID_CHARS/colon_fails_device_name.cir) | success | success | matched | 0 | dc i(v1) |  |
-| [IPULSE/ipulse.cir](fixtures/IPULSE/ipulse.cir) | success | success | matched | 1.7e-17 | tran v(1) |  |
-| [IPWL/ipwl.cir](fixtures/IPWL/ipwl.cir) | success | success | matched | 1.77e-18 | tran v(1) |  |
-| [ISIN/isin.cir](fixtures/ISIN/isin.cir) | success | success | matched | 1.49e-10 | tran i(vmon) |  |
+| [IPULSE/ipulse.cir](fixtures/IPULSE/ipulse.cir) | success | success | matched | 3.54e-22 | tran i(vmon) |  |
+| [IPWL/ipwl.cir](fixtures/IPWL/ipwl.cir) | success | success | matched | 3.47e-23 | tran i(vmon) |  |
+| [ISIN/isin.cir](fixtures/ISIN/isin.cir) | success | success | matched | 1.49e-12 | tran i(vmon) |  |
 | [JUNCAP200/DiodeClipper.cir](fixtures/JUNCAP200/DiodeClipper.cir) | success | success | matched | 5.42e-9 | tran v(4) |  |
-| [LEAD_CURRENTS/lead_bsrc_ac.cir](fixtures/LEAD_CURRENTS/lead_bsrc_ac.cir) | success | success | matched | 8.67e-7 | op i(eamp) |  |
+| [LEAD_CURRENTS/lead_bsrc_ac.cir](fixtures/LEAD_CURRENTS/lead_bsrc_ac.cir) | success | success | matched | 8.67e-9 | op i(eamp) |  |
 | [LOAD/load.cir](fixtures/LOAD/load.cir) | success | success | matched | 0.000034 | dc v(9) |  |
 | [MCNC_BJT_RCA/rca.cir](fixtures/MCNC_BJT_RCA/rca.cir) | success | success | matched | 0.00114 | tran v(31) |  |
 | [MEASURE_AC/DotOpNoAC.cir](fixtures/MEASURE_AC/DotOpNoAC.cir) | success | success | matched | 0 | op i(v1) |  |
 | [MEASURE_DC/AvgTest2DC.cir](fixtures/MEASURE_DC/AvgTest2DC.cir) | success | success | matched | 0 | dc i(vsrc1) |  |
-| [MEASURE_NOISE/DotOpNoNoise.cir](fixtures/MEASURE_NOISE/DotOpNoNoise.cir) | success | success | matched | 0.00000163 | op i(eamp) |  |
+| [MEASURE_NOISE/DotOpNoNoise.cir](fixtures/MEASURE_NOISE/DotOpNoNoise.cir) | success | success | matched | 1.63e-8 | op i(eamp) |  |
 | [MINDUCTORS/InductorICBug.cir](fixtures/MINDUCTORS/InductorICBug.cir) | success | success | matched | 0.00343 | tran i(l2) |  |
 | [NMESFET/nmesfet.cir](fixtures/NMESFET/nmesfet.cir) | success | success | matched | 8.52e-8 | dc i(vds) |  |
-| [NMOS_ANALYTIC/mosfet_level1.cir](fixtures/NMOS_ANALYTIC/mosfet_level1.cir) | success | success | matched | 0.00866 | tran v(2) |  |
+| [NMOS_ANALYTIC/mosfet_level1.cir](fixtures/NMOS_ANALYTIC/mosfet_level1.cir) | success | success | matched | 1.73e-9 | tran i(vcc) |  |
 | [Output/AC/ac-csv.cir](fixtures/Output/AC/ac-csv.cir) | success | success | matched | 4.73e-16 | ac i(v1) |  |
 | [PARAMS1/params_a0.cir](fixtures/PARAMS1/params_a0.cir) | success | success | matched | 0.000472 | tran i(v2) |  |
 | [PARAMS2/Params_A0.cir](fixtures/PARAMS2/Params_A0.cir) | success | success | matched | 1.08e-16 | dc i(v1) |  |
 | [PARSER/aAsAmp.cir](fixtures/PARSER/aAsAmp.cir) | success | success | matched | 0 | dc i(v1) |  |
 | [ROM/AUTOSIZE/RC_ladder100.cir](fixtures/ROM/AUTOSIZE/RC_ladder100.cir) | success | success | matched | 6.77e-12 | tran i(vs) |  |
+| [SANDLER1/sandler1.cir](fixtures/SANDLER1/sandler1.cir) | success | success | matched | 0.00029 | tran i(v4) |  |
+| [SANDLER2/sandler2.cir](fixtures/SANDLER2/sandler2.cir) | success | success | matched | 0.00468 | tran v(x4.14) |  |
 | [SEMIC_CAPACITOR/semicap_subc.cir](fixtures/SEMIC_CAPACITOR/semicap_subc.cir) | success | success | matched | 0.00000381 | tran i(vin) |  |
 | [SEMIC_RESISTOR/semic_resistor.cir](fixtures/SEMIC_RESISTOR/semic_resistor.cir) | success | success | matched | 8.67e-17 | dc i(vin) |  |
 | [USERS_GUIDE/DiodeClipper.cir](fixtures/USERS_GUIDE/DiodeClipper.cir) | success | success | matched | 4.42e-8 | tran i(vcc) |  |
