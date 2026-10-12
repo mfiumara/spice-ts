@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { describe, it } from 'node:test';
 import { resolve } from 'node:path';
+import { deserialize, serialize } from 'node:v8';
 import { existingCorpusIdentity, renderSources, selectDecks, type CorpusFManifest } from './ingest.js';
 import {
   classifyNgspiceFailure,
@@ -19,7 +20,7 @@ import {
   outcome,
   thirdPartyNotice,
 } from './lib.js';
-import { outcomeDigest, renderMarkdown, summarize, type CorpusFReport } from './outcomes.js';
+import { mergeReadme, outcomeDigest, packExecution, renderMarkdown, summarize, unpackExecution, type CorpusFReport } from './outcomes.js';
 import { CONTROL_SECTION, controlWrapperDeck, hasControlBlock, runControlReference } from './control-vectors.js';
 
 const ROOT = 'benchmarks/corpus/corpus-f';
@@ -66,6 +67,22 @@ function sha256(bytes: Buffer | string): string {
 async function manifest(): Promise<CorpusFManifest> {
   return JSON.parse(await readFile(resolve(ROOT, 'manifest.json'), 'utf8')) as CorpusFManifest;
 }
+
+describe('corpus-f spice-ts child transport', () => {
+  it('round-trips an execution through packed Float64Arrays bit-for-bit', () => {
+    const execution = {
+      status: 'success' as const,
+      convergence: 'converged' as const,
+      analyses: [
+        { type: 'tran' as const, plotName: 'tran1', series: { grid: [0, 1e-9, 0.1 + 0.2], signals: { 'v(1)': [{ re: 1 / 3, im: 0 }, { re: -0, im: 0 }, { re: Number.NaN, im: 0 }] } } },
+        { type: 'ac' as const, plotName: 'ac1', series: { grid: [1, 10], signals: { 'v(2)': [{ re: 5e-300, im: -2.5 }, { re: 1e300, im: Number.MIN_VALUE }] } } },
+      ],
+    };
+    assert.deepEqual(unpackExecution(deserialize(serialize(packExecution(execution))) as ReturnType<typeof packExecution>), execution);
+    const failed = { status: 'failed' as const, convergence: 'not-run' as const, analyses: [], error: 'boom' };
+    assert.deepEqual(unpackExecution(packExecution(failed)), failed);
+  });
+});
 
 describe('corpus-f deck classification', () => {
   it('reads dot-card and control-block analyses but never the title line', () => {
@@ -213,6 +230,13 @@ describe('corpus-f committed artifacts', () => {
     assert.deepEqual(report.gapBuckets, gapBuckets);
     const readme = await readFile(resolve(ROOT, 'README.md'), 'utf8');
     assert.equal(readme.split(CONTROL_SECTION)[0].trimEnd(), renderMarkdown(report).trimEnd());
+  });
+  it('regenerating the batch-1 README keeps the control-vector supplement', async () => {
+    const readme = await readFile(resolve(ROOT, 'README.md'), 'utf8');
+    const report = JSON.parse(await readFile(resolve(ROOT, 'outcomes.json'), 'utf8')) as CorpusFReport;
+    assert.equal(mergeReadme(readme, renderMarkdown(report)), readme);
+    assert.equal(mergeReadme('# old batch\n', '# new batch\n'), '# new batch\n');
+    assert.equal(mergeReadme(`# old\n${CONTROL_SECTION}rows\n`, '# new\n'), `# new\n${CONTROL_SECTION}rows\n`);
   });
   it('lists every control deck exactly once in the supplemental table', async () => {
     const readme = await readFile(resolve(ROOT, 'README.md'), 'utf8');

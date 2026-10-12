@@ -13,10 +13,10 @@ import { fileURLToPath } from 'node:url';
 import { parseNgspiceRaw } from '../../comparison-harness.js';
 import { analysisType, type EngineAnalysis } from '../classic/report.js';
 import type { CorpusFCircuit, CorpusFManifest } from './ingest.js';
-import { CORPUS_ROOT, MATCH_THRESHOLD, classifyNgspiceFailure, firstNgspiceErrorLine, gapBucket, scrub } from './lib.js';
+import { CONTROL_SECTION, CORPUS_ROOT, MATCH_THRESHOLD, classifyNgspiceFailure, firstNgspiceErrorLine, gapBucket, scrub } from './lib.js';
 import { GAP_ISSUES, runFixture, runNgspice, summarize, type FixtureOutcome } from './outcomes.js';
 
-export const CONTROL_SECTION = '\n## Control-vector supplement (#521)\n';
+export { CONTROL_SECTION };
 const CHILD = '--control-vector-child';
 const TIMEOUT_MS = 600_000;
 
