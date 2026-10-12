@@ -350,6 +350,9 @@ export async function parseTitlelessAsync(
 
 const OUTPUT_ONLY_OPTION_FLAGS = new Set([
   'nopage', 'acct', 'noacct', 'list', 'node', 'post', 'trans', 'noinit', 'seedinfo',
+  // ngspice-47 spiceif.c if_option: ft_nomod only skips com_showmod in the
+  // printed operating-point report (dotcards.c).
+  'nomod',
 ]);
 const BEHAVIOR_CHANGING_GNUCAP_OPTIONS = new Set([
   'cstray', 'dampstrategy', 'itermin', 'nobypass', 'noincmode', 'rstray', 'trsteporder',
@@ -618,8 +621,10 @@ function parseDotCommand(
     case '.OPTIONS': {
       const optionTokens = tokens.slice(1);
       const temperature = takeCircuitTemperatureOption(optionTokens, lineNumber, context);
+      const xspiceTrtol = takeXspiceTrtolOption(optionTokens, lineNumber, context);
       circuit.setSimulationOptions(parseSimulationOptions(optionTokens, lineNumber, context));
       if (temperature !== undefined) circuit.setTemperature(temperature);
+      if (xspiceTrtol !== undefined) circuit.setXspiceTrtol(xspiceTrtol);
       break;
     }
     case '.LIST':
@@ -776,6 +781,37 @@ function takeCircuitTemperatureOption(
     tokens.splice(index, 1);
   }
   return temperature;
+}
+
+/**
+ * Remove ngspice `XTRTOL=<n>` fields from `.options` tokens (in place) and
+ * return the last value. ngspice-47 inp.c turns every `.options` field into a
+ * circuit variable; cktdojob.c reads `xtrtol` with cp_getvar(CP_NUM), which
+ * truncates a real value to int, as the trtol of a circuit with 'A' devices.
+ * A value that truncates below 1 (ngspice then runs with trtol 0 and fails) or
+ * is not a number (ngspice silently falls back to 1) is rejected.
+ */
+function takeXspiceTrtolOption(
+  tokens: string[],
+  lineNumber: number,
+  context: string,
+): number | undefined {
+  if (tokens[0]?.toLowerCase() === 'timeint') return undefined;
+  let trtol: number | undefined;
+  for (let index = tokens.length - 1; index >= 0; index -= 1) {
+    const token = tokens[index];
+    const separator = token.indexOf('=');
+    const name = token.slice(0, separator < 0 ? token.length : separator).toLowerCase();
+    if (name !== 'xtrtol') continue;
+    const rawValue = separator < 0 ? '' : token.slice(separator + 1);
+    const value = rawValue === '' ? Number.NaN : Math.trunc(parseNumber(rawValue));
+    if (!Number.isFinite(value) || value < 1) {
+      throw new ParseError(`Invalid .options xtrtol value: '${rawValue}'`, lineNumber, context);
+    }
+    trtol ??= value;
+    tokens.splice(index, 1);
+  }
+  return trtol;
 }
 
 function parseSimulationOptions(

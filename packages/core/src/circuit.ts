@@ -601,6 +601,7 @@ export class Circuit {
   private _globalNodes = new Map<string, string>();
   private _simulationOptions: SimulationOptions = {};
   private _temperature: number | undefined;
+  private _xspiceTrtol: number | undefined;
   private _initialConditions: NodeInitialState[] = [];
   private _nodeSets: NodeInitialState[] = [];
   private nodeSet = new Set<string>();
@@ -641,6 +642,23 @@ export class Circuit {
       throw new InvalidCircuitError(`Invalid circuit temperature: ${celsius} C`);
     }
     this._temperature = celsius;
+  }
+
+  /**
+   * ngspice `.options XTRTOL=` (integer, at least 1), or `undefined` when not
+   * set. ngspice-47 cktdojob.c uses it instead of 1 as the trtol of a circuit
+   * with XSPICE 'A' devices whose trtol is above 1; otherwise it has no effect.
+   */
+  get xspiceTrtol(): number | undefined {
+    return this._xspiceTrtol;
+  }
+
+  /** Set the ngspice `.options XTRTOL=` value; see {@link xspiceTrtol}. */
+  setXspiceTrtol(trtol: number | undefined): void {
+    if (trtol !== undefined && (!Number.isInteger(trtol) || trtol < 1)) {
+      throw new InvalidCircuitError(`Invalid XSPICE trtol: ${trtol}`);
+    }
+    this._xspiceTrtol = trtol;
   }
 
   /**
@@ -1638,6 +1656,7 @@ export class Circuit {
       return value === undefined ? [] : [`${name}=${format(value)}`];
     });
     if (this._temperature !== undefined) serializedOptions.push(`temp=${this._temperature}`);
+    if (this._xspiceTrtol !== undefined) serializedOptions.push(`xtrtol=${this._xspiceTrtol}`);
     if (serializedOptions.length > 0) lines.push(`.options ${serializedOptions.join(' ')}`);
 
     for (const model of this._models.values()) {
@@ -2159,9 +2178,10 @@ export class Circuit {
       steps: this._steps,
       simulationOptions: {
         ...this._simulationOptions,
-        // ngspice cktdojob.c: with 'A' devices present, trtol above 1 is reduced to 1.
+        // ngspice cktdojob.c: with 'A' devices present, trtol above 1 becomes
+        // the `xtrtol` variable (set by `.options XTRTOL=`) or else 1.
         ...(xspiceInstances.size > 0 && (this._simulationOptions.trtol ?? DEFAULT_OPTIONS.trtol) > 1
-          ? { trtol: 1 }
+          ? { trtol: this._xspiceTrtol ?? 1 }
           : {}),
       },
       initialConditions: this._initialConditions.map(state => ({ ...state })),
