@@ -41,9 +41,22 @@ describe('BSIM model cards with dotted VERSION= values (#503)', () => {
     }
   });
 
+  it('runs LEVEL=8/49 VERSION=3.2.x as the ngspice bsim3v32 revisions (#594)', async () => {
+    const baseline = await simulate(inverter('.model n1 nmos level=8\n.model p1 pmos level=8'));
+    for (const level of [8, 49]) {
+      for (const version of ['3.2.2', '3.2.4', '3.2', '3.24']) {
+        const result = await simulate(inverter(
+          `.model n1 nmos level=${level} version=${version}\n.model p1 pmos level=${level} version=${version}`,
+        ));
+        // The all-default inverter has no revision-dependent DC branch: same OP as 3.3.0.
+        expect(result.dc!.voltage('out')).toBeCloseTo(baseline.dc!.voltage('out'), 12);
+      }
+    }
+  });
+
   it('rejects BSIM3 versions spice-ts does not implement with a typed error, not a parse error', async () => {
     for (const level of [8, 49]) {
-      for (const version of ['3.2.2', '3.1', '3.0', '5.0']) {
+      for (const version of ['3.1', '3.0', '5.0']) {
         const netlist = inverter(`.model n1 nmos level=${level} version=${version}\n.model p1 pmos level=${level} version=${version}`);
         await expect(simulate(netlist)).rejects.toBeInstanceOf(UnsupportedModelVersionError);
         await expect(simulate(netlist)).rejects.toMatchObject({
@@ -62,10 +75,18 @@ describe('BSIM model cards with dotted VERSION= values (#503)', () => {
   });
 
   it('preserves unsupported revisions through a netlist round trip', async () => {
+    const netlist = inverter('.model n1 nmos level=8 version=3.1\n.model p1 pmos level=8 version=3.1');
+    const serialized = parse(netlist).toNetlist();
+    expect(serialized).toContain('VERSION=3.1');
+    await expect(simulate(serialized)).rejects.toMatchObject({ code: 'UNSUPPORTED_MODEL_VERSION', version: '3.1' });
+  });
+
+  it('preserves 3.2.x revisions through a netlist round trip', async () => {
     const netlist = inverter('.model n1 nmos level=8 version=3.2.2\n.model p1 pmos level=8 version=3.2.2');
     const serialized = parse(netlist).toNetlist();
     expect(serialized).toContain('VERSION=3.2.2');
-    await expect(simulate(serialized)).rejects.toMatchObject({ code: 'UNSUPPORTED_MODEL_VERSION', version: '3.2.2' });
+    const [direct, roundTrip] = await Promise.all([simulate(netlist), simulate(serialized)]);
+    expect(roundTrip.dc!.voltage('out')).toBe(direct.dc!.voltage('out'));
   });
 
   it('checks revisions on models local to subcircuits', async () => {
@@ -75,7 +96,7 @@ V2 g 0 1
 X1 d g stage
 .subckt stage drain gate
 M1 drain gate 0 0 local W=2u L=1u
-.model local nmos level=49 version=3.2.2
+.model local nmos level=49 version=3.1
 .ends stage
 .op
 .end`;
