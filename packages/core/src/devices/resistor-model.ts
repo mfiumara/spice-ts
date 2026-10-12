@@ -46,11 +46,14 @@ export function resolveResistor(
     );
   }
   const card = model?.params ?? {};
-  const defaults: Record<string, number> = {};
-  for (const [key, target] of Object.entries(MODEL_INSTANCE_DEFAULTS)) {
-    if (card[key] !== undefined) defaults[target] = card[key];
+  let instance = instanceParams;
+  if (model) {
+    const defaults: Record<string, number> = {};
+    for (const [key, target] of Object.entries(MODEL_INSTANCE_DEFAULTS)) {
+      if (card[key] !== undefined) defaults[target] = card[key];
+    }
+    instance = { ...defaults, ...instanceParams };
   }
-  const instance = { ...defaults, ...instanceParams };
 
   const warnings: string[] = [];
   let resistance = instanceValue ?? instance.R;
