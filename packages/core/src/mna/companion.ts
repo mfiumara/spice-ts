@@ -146,20 +146,27 @@ export function buildCompanionSystem(
       gv[diag[i]] += gmin;
     }
 
+    // Each method makes one column-major pass over the non-zeros (issue
+    // #710). The passes it replaces (dynamic-row mask, G*x(n), G + kC,
+    // kC*x(n)) each read or write a slot, or accumulate into a row, in the
+    // same column-major order, so every accumulator sees the same additions
+    // in the same order and the system is bit-identical. G*x(n) reads each
+    // slot before the same iteration adds kC to it, as the separate pass did
+    // before the G + kC pass.
     if (effectiveMethod === 'euler') {
       // BE: G_eff = G + C/dt, b_eff = b(n+1) + (C/dt)*x(n)
       const factor = 1 / dt;
-      const nnz = colPtr[n];
-
-      // G_eff = G + C/dt (one tight loop over all non-zeros)
-      for (let i = 0; i < nnz; i++) gv[i] += factor * cv[i];
-
-      // b += (C/dt) * x(n)  — CSC SpMV
       for (let j = 0; j < n; j++) {
         const xj = prevSolution[j];
-        if (xj === 0) continue;
-        for (let p = colPtr[j]; p < colPtr[j + 1]; p++) {
-          b[rowIdx[p]] += factor * cv[p] * xj;
+        const end = colPtr[j + 1];
+        if (xj === 0) {
+          for (let p = colPtr[j]; p < end; p++) gv[p] += factor * cv[p];
+          continue;
+        }
+        for (let p = colPtr[j]; p < end; p++) {
+          const cp = cv[p];
+          gv[p] += factor * cp;
+          b[rowIdx[p]] += factor * cp * xj;
         }
       }
     } else if (effectiveMethod === 'gear2') {
@@ -168,33 +175,36 @@ export function buildCompanionSystem(
       const a1 = (2 + alpha) / ((1 + alpha) * dt);
       const a2 = (1 + alpha) / (alpha * dt);
       const a3 = 1 / (alpha * (1 + alpha) * dt);
-      const nnz = colPtr[n];
       const work = companionWorkspace(assembler);
 
-      // Dynamic-row mask (C has at least one non-zero entry in that row)
+      // Dynamic-row mask (C has at least one non-zero entry in that row),
+      // G_eff = G + a1 * C, and the history a2 * C * x(n) - a3 * C * x(n-1).
       const isDynamic = work.isDynamic.fill(0);
-      for (let p = 0; p < nnz; p++) {
-        if (cv[p] !== 0) isDynamic[rowIdx[p]] = 1;
-      }
-
-      // G_eff = G + a1 * C
-      for (let i = 0; i < nnz; i++) gv[i] += a1 * cv[i];
-
-      // Build b_eff: for dynamic rows use the BDF2 RHS; algebraic rows keep b(n+1)
-      // Compute (a2 * C * x(n) - a3 * C * x(n-1)) via two CSC SpMV passes
       const histDyn = work.history.fill(0);
       const xNm1 = prevPrevSolution!;
       for (let j = 0; j < n; j++) {
         const xj = prevSolution[j];
         const xjm1 = xNm1[j];
-        if (xj === 0 && xjm1 === 0) continue;
-        for (let p = colPtr[j]; p < colPtr[j + 1]; p++) {
+        const end = colPtr[j + 1];
+        if (xj === 0 && xjm1 === 0) {
+          for (let p = colPtr[j]; p < end; p++) {
+            const cp = cv[p];
+            if (cp !== 0) isDynamic[rowIdx[p]] = 1;
+            gv[p] += a1 * cp;
+          }
+          continue;
+        }
+        for (let p = colPtr[j]; p < end; p++) {
           const cp = cv[p];
+          gv[p] += a1 * cp;
           if (cp === 0) continue;
-          histDyn[rowIdx[p]] += a2 * cp * xj - a3 * cp * xjm1;
+          const row = rowIdx[p];
+          isDynamic[row] = 1;
+          histDyn[row] += a2 * cp * xj - a3 * cp * xjm1;
         }
       }
 
+      // Dynamic rows take the BDF2 RHS; algebraic rows keep b(n+1).
       for (let i = 0; i < n; i++) {
         if (isDynamic[i]) b[i] += histDyn[i];
       }
@@ -204,34 +214,41 @@ export function buildCompanionSystem(
       //   Dynamic: b(n+1) + (2C/dt)*x(n) - i_static(n)
       //   Algebraic: b(n+1) only
       const factor = 2 / dt;
-      const nnz = colPtr[n];
       const work = companionWorkspace(assembler);
 
-      // Determine which rows have dynamic (C≠0) entries
+      // Dynamic-row mask, G*x(n) (unless the history already holds the
+      // static current), G_eff = G + 2C/dt and b += (2C/dt)*x(n).
       const isDynamic = work.isDynamic.fill(0);
-      for (let p = 0; p < nnz; p++) {
-        if (cv[p] !== 0) isDynamic[rowIdx[p]] = 1;
-      }
-
       const Gx = work.history;
-      if (!staticCurrentHistory) {
-        Gx.fill(0);
-        for (let j = 0; j < n; j++) {
-          const xj = prevSolution[j];
-          if (xj === 0) continue;
-          for (let p = colPtr[j]; p < colPtr[j + 1]; p++) Gx[rowIdx[p]] += gv[p] * xj;
-        }
-      }
-
-      // G_eff = G + 2C/dt (one tight loop)
-      for (let i = 0; i < nnz; i++) gv[i] += factor * cv[i];
-
-      // Add (2C/dt)*x(n) — CSC SpMV (only affects dynamic rows via cv)
+      if (!staticCurrentHistory) Gx.fill(0);
       for (let j = 0; j < n; j++) {
         const xj = prevSolution[j];
-        if (xj === 0) continue;
-        for (let p = colPtr[j]; p < colPtr[j + 1]; p++) {
-          b[rowIdx[p]] += factor * cv[p] * xj;
+        const end = colPtr[j + 1];
+        if (xj === 0) {
+          for (let p = colPtr[j]; p < end; p++) {
+            const cp = cv[p];
+            if (cp !== 0) isDynamic[rowIdx[p]] = 1;
+            gv[p] += factor * cp;
+          }
+          continue;
+        }
+        if (staticCurrentHistory) {
+          for (let p = colPtr[j]; p < end; p++) {
+            const cp = cv[p];
+            const row = rowIdx[p];
+            if (cp !== 0) isDynamic[row] = 1;
+            gv[p] += factor * cp;
+            b[row] += factor * cp * xj;
+          }
+          continue;
+        }
+        for (let p = colPtr[j]; p < end; p++) {
+          const cp = cv[p];
+          const row = rowIdx[p];
+          if (cp !== 0) isDynamic[row] = 1;
+          Gx[row] += gv[p] * xj;
+          gv[p] += factor * cp;
+          b[row] += factor * cp * xj;
         }
       }
 

@@ -1,0 +1,29 @@
+/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//p710before/cmos-inverter-chain-tran-10000.cpuprofile: 1123 samples, 4505.5 ms sampled
+
+Top self time
+    1245.2 ms  27.6%  batchStamp packages/core/dist/chunk-S7ERMMP5.js:7172
+     358.7 ms   8.0%  (garbage collector)
+     352.9 ms   7.8%  mos1BulkJunctions packages/core/dist/chunk-S7ERMMP5.js:6372
+     259.9 ms   5.8%  convergenceTest packages/core/dist/chunk-S7ERMMP5.js:6974
+     244.9 ms   5.4%  limitNewtonStep packages/core/dist/chunk-S7ERMMP5.js:6797
+     216.5 ms   4.8%  refactorWithPivots packages/core/dist/chunk-S7ERMMP5.js:28594
+     188.7 ms   4.2%  buildCompanionSystem packages/core/dist/chunk-S7ERMMP5.js:29926
+     186.1 ms   4.1%  factorize packages/core/dist/chunk-S7ERMMP5.js:28377
+     131.7 ms   2.9%  chargeTruncationTimestep packages/core/dist/chunk-S7ERMMP5.js:31094
+     123.7 ms   2.7%  attemptStep packages/core/dist/chunk-S7ERMMP5.js:30102
+      84.9 ms   1.9%  newtonRaphson packages/core/dist/chunk-S7ERMMP5.js:29503
+      75.0 ms   1.7%  stampDynamicDevices packages/core/dist/chunk-S7ERMMP5.js:29459
+
+Top inclusive time
+    4505.5 ms 100.0%  (root)
+    4068.1 ms  90.3%  simulate packages/core/dist/chunk-S7ERMMP5.js:36368
+    3929.8 ms  87.2%  solveCompiledAnalyses packages/core/dist/chunk-S7ERMMP5.js:36423
+    2746.2 ms  61.0%  solveTransient packages/core/dist/chunk-S7ERMMP5.js:31444
+    2640.6 ms  58.6%  advanceSolution packages/core/dist/chunk-S7ERMMP5.js:30729
+    1930.1 ms  42.8%  attemptStep packages/core/dist/chunk-S7ERMMP5.js:30102
+    1698.8 ms  37.7%  batchStamp packages/core/dist/chunk-S7ERMMP5.js:7172
+    1251.2 ms  27.8%  buildCompanionSystem packages/core/dist/chunk-S7ERMMP5.js:29926
+    1183.6 ms  26.3%  transientInitialSolution packages/core/dist/chunk-S7ERMMP5.js:36818
+    1182.3 ms  26.2%  solveDCOperatingPoint packages/core/dist/chunk-S7ERMMP5.js:29730
+    1170.6 ms  26.0%  newtonRaphson packages/core/dist/chunk-S7ERMMP5.js:29503
+    1020.0 ms  22.6%  dynamicGminStepping packages/core/dist/chunk-S7ERMMP5.js:29802

@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/i710/prof-after/rc-ladder-tran-1000.cpuprofile: 77 samples, 213.8 ms sampled
+
+Top self time
+      20.2 ms   9.4%  compileSourceTextModule node:internal/modules/esm/utils:344
+      20.0 ms   9.4%  (garbage collector)
+      12.7 ms   5.9%  buildCompanionSystem packages/core/dist/chunk-AEZHCWLW.js:29926
+      11.8 ms   5.5%  attemptStep packages/core/dist/chunk-AEZHCWLW.js:30123
+      10.2 ms   4.8%  stampPrevB packages/core/dist/chunk-AEZHCWLW.js:31044
+      10.0 ms   4.7%  evaluate packages/core/dist/chunk-AEZHCWLW.js:30574
+       7.8 ms   3.7%  flush packages/core/dist/chunk-AEZHCWLW.js:31475
+       7.8 ms   3.6%  (program)
+       7.5 ms   3.5%  acceptAll packages/core/dist/chunk-AEZHCWLW.js:2947
+       7.0 ms   3.3%  recordSlot packages/core/dist/chunk-AEZHCWLW.js:29203
+       5.6 ms   2.6%  stampG packages/core/dist/chunk-AEZHCWLW.js:29147
+       5.6 ms   2.6%  solveLinearized packages/core/dist/chunk-AEZHCWLW.js:30226
+
+Top inclusive time
+     213.8 ms 100.0%  (root)
+     149.0 ms  69.7%  simulate packages/core/dist/chunk-AEZHCWLW.js:36417
+     119.5 ms  55.9%  solveCompiledAnalyses packages/core/dist/chunk-AEZHCWLW.js:36472
+     110.0 ms  51.5%  solveTransient packages/core/dist/chunk-AEZHCWLW.js:31493
+      91.4 ms  42.8%  advanceSolution packages/core/dist/chunk-AEZHCWLW.js:30778
+      48.2 ms  22.5%  attemptStep packages/core/dist/chunk-AEZHCWLW.js:30123
+      25.0 ms  11.7%  buildCompanionSystem packages/core/dist/chunk-AEZHCWLW.js:29926
+      24.9 ms  11.7%  loadAndTranslate node:internal/modules/esm/loader:608
+      24.9 ms  11.7%  #createModuleJob node:internal/modules/esm/loader:632
+      24.9 ms  11.7%  #getJobFromResolveResult node:internal/modules/esm/loader:347
+      24.9 ms  11.7%  getModuleJobForImport node:internal/modules/esm/loader:319
+      22.3 ms  10.4%  compile packages/core/dist/chunk-AEZHCWLW.js:22898

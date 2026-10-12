@@ -1,0 +1,29 @@
+/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//p710before/cmos-inverter-chain-tran-1000.cpuprofile: 196 samples, 586.0 ms sampled
+
+Top self time
+     133.7 ms  22.8%  batchStamp packages/core/dist/chunk-S7ERMMP5.js:7172
+      43.9 ms   7.5%  (garbage collector)
+      41.8 ms   7.1%  attemptStep packages/core/dist/chunk-S7ERMMP5.js:30102
+      36.4 ms   6.2%  buildCompanionSystem packages/core/dist/chunk-S7ERMMP5.js:29926
+      31.8 ms   5.4%  pnjlim4 packages/core/dist/chunk-S7ERMMP5.js:6354
+      26.6 ms   4.5%  bulkJunction packages/core/dist/chunk-S7ERMMP5.js:6344
+      21.6 ms   3.7%  refactorWithPivots packages/core/dist/chunk-S7ERMMP5.js:28594
+      20.0 ms   3.4%  convergenceTest packages/core/dist/chunk-S7ERMMP5.js:6974
+      19.6 ms   3.3%  newtonRaphson packages/core/dist/chunk-S7ERMMP5.js:29503
+      19.4 ms   3.3%  flush packages/core/dist/chunk-S7ERMMP5.js:31426
+      13.5 ms   2.3%  compileSourceTextModule node:internal/modules/esm/utils:344
+      12.6 ms   2.1%  factorize packages/core/dist/chunk-S7ERMMP5.js:28377
+
+Top inclusive time
+     586.0 ms 100.0%  (root)
+     508.5 ms  86.8%  simulate packages/core/dist/chunk-S7ERMMP5.js:36368
+     491.4 ms  83.9%  solveCompiledAnalyses packages/core/dist/chunk-S7ERMMP5.js:36423
+     360.5 ms  61.5%  solveTransient packages/core/dist/chunk-S7ERMMP5.js:31444
+     327.0 ms  55.8%  advanceSolution packages/core/dist/chunk-S7ERMMP5.js:30729
+     227.7 ms  38.9%  attemptStep packages/core/dist/chunk-S7ERMMP5.js:30102
+     193.7 ms  33.1%  batchStamp packages/core/dist/chunk-S7ERMMP5.js:7172
+     151.0 ms  25.8%  buildCompanionSystem packages/core/dist/chunk-S7ERMMP5.js:29926
+     130.9 ms  22.3%  solveDCOperatingPoint packages/core/dist/chunk-S7ERMMP5.js:29730
+     130.9 ms  22.3%  transientInitialSolution packages/core/dist/chunk-S7ERMMP5.js:36818
+     123.7 ms  21.1%  newtonRaphson packages/core/dist/chunk-S7ERMMP5.js:29503
+     109.7 ms  18.7%  stampStaticDevices packages/core/dist/chunk-S7ERMMP5.js:29418

@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/i710/prof-after/rc-ladder-tran-50000.cpuprofile: 1327 samples, 3956.6 ms sampled
+
+Top self time
+     340.4 ms   8.6%  (garbage collector)
+     271.4 ms   6.9%  stampStaticDevices packages/core/dist/chunk-AEZHCWLW.js:29418
+     264.7 ms   6.7%  evaluate packages/core/dist/chunk-AEZHCWLW.js:30574
+     232.3 ms   5.9%  stampPrevB packages/core/dist/chunk-AEZHCWLW.js:31044
+     197.3 ms   5.0%  attemptStep packages/core/dist/chunk-AEZHCWLW.js:30123
+     188.9 ms   4.8%  buildCompanionSystem packages/core/dist/chunk-AEZHCWLW.js:29926
+     158.3 ms   4.0%  flush packages/core/dist/chunk-AEZHCWLW.js:31475
+     144.3 ms   3.6%  lockTopology packages/core/dist/chunk-AEZHCWLW.js:28955
+     129.5 ms   3.3%  acceptAll packages/core/dist/chunk-AEZHCWLW.js:2947
+     123.2 ms   3.1%  solveLinearized packages/core/dist/chunk-AEZHCWLW.js:30226
+     112.3 ms   2.8%  stampDynamicDevices packages/core/dist/chunk-AEZHCWLW.js:29459
+      93.6 ms   2.4%  compile packages/core/dist/chunk-AEZHCWLW.js:22898
+
+Top inclusive time
+    3956.6 ms 100.0%  (root)
+    3344.6 ms  84.5%  simulate packages/core/dist/chunk-AEZHCWLW.js:36417
+    2823.4 ms  71.4%  solveCompiledAnalyses packages/core/dist/chunk-AEZHCWLW.js:36472
+    2464.9 ms  62.3%  solveTransient packages/core/dist/chunk-AEZHCWLW.js:31493
+    2141.4 ms  54.1%  advanceSolution packages/core/dist/chunk-AEZHCWLW.js:30778
+    1185.8 ms  30.0%  attemptStep packages/core/dist/chunk-AEZHCWLW.js:30123
+     531.3 ms  13.4%  buildCompanionSystem packages/core/dist/chunk-AEZHCWLW.js:29926
+     513.7 ms  13.0%  stampPrevB packages/core/dist/chunk-AEZHCWLW.js:31044
+     436.8 ms  11.0%  stampStaticDevices packages/core/dist/chunk-AEZHCWLW.js:29418
+     400.6 ms  10.1%  parseAsync packages/core/dist/chunk-AEZHCWLW.js:26818
+     353.7 ms   8.9%  transientInitialSolution packages/core/dist/chunk-AEZHCWLW.js:36867
+     349.6 ms   8.8%  solveDCOperatingPoint packages/core/dist/chunk-AEZHCWLW.js:29730
