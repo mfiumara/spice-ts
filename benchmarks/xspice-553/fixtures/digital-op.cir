@@ -1,0 +1,31 @@
+digital op
+v1 1 0 DC 0.8
+v2 2 0 DC 0.05
+v3 3 0 DC 0.5
+r1 1 0 1k
+a1 [1 2 3] [d1 d2 d3] adc
+.model adc adc_bridge (in_low=0.1 in_high=0.7)
+a2 d1 ~d4 inv
+.model inv d_inverter
+a3 [d1 ~d2] d5 nand
+.model nand d_nand
+a4 [d1 d2 d3 d4 d5] [10 20 30 40 50] dac
+.model dac dac_bridge (out_low=-1 out_high=2)
+v4 4 0 DC 0.6
+a5 [4] [m0 m1 m2] adcm
+.model adcm adc_bridge (in_low=0 in_high=1)
+a6 [m0 m1 m2] [60] dacm
+.model dacm dac_bridge (out_low=0 out_high=8 out_undef=3)
+r10 10 0 1k
+r20 20 0 1k
+r30 30 0 1k
+r40 40 0 1k
+r50 50 0 1k
+r60 60 0 1k
+.control
+set numdgt=12
+op
+print v(10) v(20) v(30) v(40) v(50) v(60)
+eprint d1 d2 d3 d4 d5 m0 m1 m2
+.endc
+.end

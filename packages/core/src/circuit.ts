@@ -52,6 +52,7 @@ import { LossyTransmissionLine, LtraModelState } from './devices/lossy-transmiss
 import {
   assertXspiceAnalyses,
   bindXspiceSources,
+  buildXspiceEventNetwork,
   createXspiceDevice,
   prepareXspiceInstance,
   type PreparedXspiceInstance,
@@ -2040,6 +2041,21 @@ export class Circuit {
     }
     const canonicalNode = (name: string): string => this.nodeSet.canonical(globalNode(name));
 
+    // XSPICE digital nodes live in the event-driven network, not the matrix.
+    // ngspice-47 would insert bridges where a digital node also touches an
+    // analog device (evtcheck_nodes.c); that auto-bridging is not supported.
+    const eventNetwork = buildXspiceEventNetwork([...xspiceInstances.values()]);
+    if (eventNetwork) {
+      const analogNodes = new Set([...this.nodeSet].map(n => n.toLowerCase()));
+      for (const name of eventNetwork.network.nodeNames) {
+        if (name === GROUND_NODE || analogNodes.has(name.toLowerCase())) {
+          throw new InvalidCircuitError(
+            `XSPICE digital node '${name}' is also an analog node; automatic analog/digital bridging is not supported`,
+          );
+        }
+      }
+    }
+
     const nodeNames = [...this.nodeSet].filter(n => n !== GROUND_NODE).sort();
     const nodeIndexMap = new Map<string, number>();
     nodeNames.forEach((name, i) => nodeIndexMap.set(name, i));
@@ -2425,10 +2441,12 @@ export class Circuit {
           break;
         }
         case 'A': {
-          devices.push(createXspiceDevice(xspiceInstances.get(desc)!, resolveNode, branchName => {
+          const prepared = xspiceInstances.get(desc)!;
+          const device = createXspiceDevice(prepared, resolveNode, branchName => {
             branchNames.push(branchName);
             return branchIndex++;
-          }));
+          }, eventNetwork?.analogHalves.get(prepared));
+          if (device) devices.push(device);
           break;
         }
         default:
@@ -2452,6 +2470,7 @@ export class Circuit {
       deviceMap.set(desc.name, devices[devices.length - 1]);
     }
 
+    if (eventNetwork) devices.push(eventNetwork.network);
     bindXspiceSources(devices, deviceMap);
     for (const instances of bsim3ModelInstances.values()) BSIM3v3.linkBsim3v32SizeRecordReuse(instances);
     for (const { device, controlSource } of pendingCurrentSwitches) {

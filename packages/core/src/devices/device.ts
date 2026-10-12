@@ -267,4 +267,33 @@ export interface DeviceModel {
    * should omit this method.
    */
   getBreakpoints?(stopTime: number): number[];
+  /**
+   * The XSPICE event-driven network of the circuit (ngspice evt/), present on
+   * one compiled device when the circuit has digital code-model instances.
+   */
+  readonly eventDriven?: EventDrivenNetwork;
+}
+
+/**
+ * How the analog solvers drive the XSPICE event-driven network: the
+ * operating point (ngspice EVTop) and the transient coordination of
+ * dctran.c (EVTnext_time/EVTdequeue/EVTiter before a step, EVTbackup on a
+ * rejected step, EVTcall_hybrids and EVTaccept after an accepted one).
+ */
+export interface EventDrivenNetwork {
+  /**
+   * Alternate event iterations with `solveAnalog` (the analog operating
+   * point; `first` is the first solve) until no event output changes.
+   */
+  operatingPoint(solveAnalog: (first: boolean) => void): void;
+  /** Start transient event processing after the operating point; `breakpoint` is CKTsetBreak. */
+  beginTransient(breakpoint: (time: number) => void, minBreak: number): void;
+  /** EVTnext_time: the earliest queued event, or Infinity. */
+  nextEventTime(): number;
+  /** EVTdequeue + EVTiter at event time `time`; `now` is the last accepted analog time (CKTtime). */
+  processEvents(time: number, now: number): void;
+  /** EVTbackup: drop every event processed after `time`. */
+  backup(time: number): void;
+  /** An accepted point: EVTcall_hybrids (unless the first step), then EVTaccept. */
+  acceptStep(time: number, callHybrids: boolean): void;
 }

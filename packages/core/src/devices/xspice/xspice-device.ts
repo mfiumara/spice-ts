@@ -47,6 +47,13 @@ export class XspiceDevice implements DeviceModel {
   readonly stampDynamic?: (ctx: StampContext) => void;
   readonly truncateTransientStep?: (ctx: StampContext, truncation: ChargeTruncation) => number;
   readonly modelWarnings?: readonly string[];
+  /**
+   * False for the analog half of a digital node bridge (adc_bridge,
+   * dac_bridge): ngspice MIFtrunc limits the step only through
+   * cm_analog_integrate, which the bridges never call, so their nodes take
+   * no truncation error.
+   */
+  readonly storesCharge?: boolean;
 
   private readonly inputs: Float64Array;
   private readonly outputs: Float64Array;
@@ -68,7 +75,9 @@ export class XspiceDevice implements DeviceModel {
     private readonly outputPorts: readonly XspiceOutputPort[],
     private readonly behavior: CodeModelBehavior,
     warnings: readonly string[] = [],
+    untruncated = false,
   ) {
+    if (untruncated) this.storesCharge = false;
     const nodes = new Set<number>();
     for (const port of [...inputPorts, ...outputPorts]) {
       nodes.add(port.positive);
