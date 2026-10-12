@@ -138,6 +138,7 @@ M1 d g 0 b N W=10U L=3U
     const sweep = result.dcSweep!;
     // [VIN, V(OUT), I(VDD)] from ngspice-47 with the same .OPTIONS.
     const reference: Array<[number, number, number]> = [
+      [0.25, 4.999999995725900, -5.009999969890214e-12],
       [0.75, 4.997049779475183, -3.022708981370248e-06],
       [1.5, 4.831077211758234, -1.306552403909605e-04],
       [2.0, 4.461057463003574, -3.017119749600902e-04],
