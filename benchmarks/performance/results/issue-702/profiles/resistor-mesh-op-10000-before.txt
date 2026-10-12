@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/prof702/resistor-mesh-op-10000.cpuprofile: 118 samples, 326.3 ms sampled
+
+Top self time
+      78.2 ms  24.0%  factorize packages/core/dist/chunk-7SQ7662G.js:28021
+      34.4 ms  10.5%  amdOrdering packages/core/dist/chunk-7SQ7662G.js:27645
+      29.0 ms   8.9%  (garbage collector)
+      14.1 ms   4.3%  compileSourceTextModule node:internal/modules/esm/utils:344
+      13.1 ms   4.0%  lockTopology packages/core/dist/chunk-7SQ7662G.js:28599
+      12.2 ms   3.7%  resolveResistor packages/core/dist/chunk-7SQ7662G.js:1313
+      10.0 ms   3.1%  resolveNode packages/core/dist/chunk-7SQ7662G.js:22642
+       9.5 ms   2.9%  stamp packages/core/dist/chunk-7SQ7662G.js:1732
+       9.3 ms   2.9%  analyzePattern packages/core/dist/chunk-7SQ7662G.js:27917
+       9.3 ms   2.8%  preprocessSteps packages/core/dist/chunk-7SQ7662G.js:24023
+       9.1 ms   2.8%  columnSingletonsFirst packages/core/dist/chunk-7SQ7662G.js:28374
+       8.4 ms   2.6%  compile packages/core/dist/chunk-7SQ7662G.js:22569
+
+Top inclusive time
+     326.3 ms 100.0%  (root)
+     250.0 ms  76.6%  simulate packages/core/dist/chunk-7SQ7662G.js:35998
+     184.2 ms  56.4%  solveDCOperatingPoint packages/core/dist/chunk-7SQ7662G.js:29374
+     184.2 ms  56.4%  solveCompiledAnalyses packages/core/dist/chunk-7SQ7662G.js:36053
+     183.6 ms  56.3%  newtonRaphson packages/core/dist/chunk-7SQ7662G.js:29147
+      79.4 ms  24.3%  factorize packages/core/dist/chunk-7SQ7662G.js:28021
+      53.6 ms  16.4%  getSparseSolver packages/core/dist/chunk-7SQ7662G.js:28727
+      52.9 ms  16.2%  analyzePattern packages/core/dist/chunk-7SQ7662G.js:27917
+      44.5 ms  13.6%  parseAsync packages/core/dist/chunk-7SQ7662G.js:26462
+      37.8 ms  11.6%  compile packages/core/dist/chunk-7SQ7662G.js:22569
+      34.5 ms  10.6%  amdOrdering packages/core/dist/chunk-7SQ7662G.js:27645
+      32.5 ms   9.9%  (anonymous) benchmarks/performance/profile-scaling-m2.mjs:1

@@ -86,6 +86,8 @@ interface VdmosTemperatureState {
 export class VDMOS implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (VDMOStrunc: qgs, qgd, body diode charge). */
+  readonly truncationCoversCharges = true;
   readonly integratesTransientCharge = true;
   readonly storesCharge: boolean;
   readonly modelWarnings: readonly string[];

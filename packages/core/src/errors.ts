@@ -197,9 +197,9 @@ export class UnsupportedModelLevelError extends InvalidCircuitError {
 
 /**
  * Thrown when a MOSFET model card selects, through its `VERSION=` string, a revision of a
- * supported `LEVEL` that spice-ts does not implement. ngspice picks BSIM3v0/v1/v32 for
- * `LEVEL=8/49 VERSION=3.0/3.1/3.2.x`; spice-ts implements only the default BSIM3 3.3 revision
- * and never runs those cards with the 3.3 equations silently.
+ * supported `LEVEL` that spice-ts does not implement. ngspice picks BSIM3v0/v1 for
+ * `LEVEL=8/49 VERSION=3.0/3.1`; spice-ts implements the BSIM3v32 (3.2.x) and default BSIM3
+ * 3.3 revisions only and never runs those cards with other equations silently.
  */
 export class UnsupportedModelVersionError extends InvalidCircuitError {
   /** Stable machine-readable error code. */

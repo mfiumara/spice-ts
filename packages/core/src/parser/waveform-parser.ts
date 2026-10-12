@@ -114,6 +114,39 @@ export function extractRFPort(tokens: string[], startIdx: number): { tokens: str
   return { tokens: rest, port };
 }
 
+/**
+ * Split the `m` instance multiplier (`m=2`, `m 2`; the last one wins) off an
+ * independent source card, as ngspice-47 inpdomod/INPdevParse reads ISRC_M.
+ * isrcload.c and isrcacld.c scale the source by it; vsrc has no `m`.
+ */
+export function extractSourceMultiplier(
+  tokens: string[], startIdx: number,
+): { tokens: string[]; multiplier?: number } {
+  const rest: string[] = tokens.slice(0, startIdx);
+  let multiplier: number | undefined;
+  for (let index = startIdx; index < tokens.length; index++) {
+    const token = tokens[index];
+    const assignment = token.match(/^m=(.*)$/i);
+    if (!assignment && token.toUpperCase() !== 'M') {
+      rest.push(token);
+      continue;
+    }
+    const raw = assignment ? assignment[1] : tokens[++index];
+    // ngspice-47 reads a bare trailing `m` as m=0; reject it rather than zero the source.
+    if (raw === undefined || raw === '') throw new Error("Source parameter 'm' requires a value");
+    multiplier = parseNumber(raw);
+  }
+  return multiplier === undefined ? { tokens: rest } : { tokens: rest, multiplier };
+}
+
+/** ngspice-47 vsrc has no `m` instance parameter and stops with "unknown parameter (m)". */
+export const VOLTAGE_SOURCE_MULTIPLIER_ERROR = "Unsupported voltage source parameter 'm': ngspice-47 voltage sources have no m multiplier";
+
+/** Whether a source card carries an `m` instance parameter (`m=2` or `m 2`). */
+export function hasSourceMultiplier(tokens: string[], startIdx: number): boolean {
+  return tokens.slice(startIdx).some(token => /^m(=.*)?$/i.test(token));
+}
+
 /** The DC value a source card states explicitly (`DC v`, `DC=v` or a leading value), if any. */
 function explicitDcValue(tokens: string[], startIdx: number): number | undefined {
   const normalized = normalizeSourceAssignments(tokens, startIdx);

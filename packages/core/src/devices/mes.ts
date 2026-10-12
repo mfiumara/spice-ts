@@ -19,6 +19,8 @@ import { stampCapacitance, stampChannel, stampJunction } from './mesa.js';
 export class MES implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (MEStrunc: qgs, qgd). */
+  readonly truncationCoversCharges = true;
   /** qgs/qgd advanced with the four-point qggnew difference of MESload. */
   readonly integratesTransientCharge = true;
   private readonly charges = new TransientChargeState(2);

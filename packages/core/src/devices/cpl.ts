@@ -880,12 +880,7 @@ class CplState {
  */
 export class CplLines implements DeviceModel {
   readonly isNonlinear = false;
-  /**
-   * ngspice-47 CPL has no DEVtrunc (cplinit.c `.DEVtrunc = NULL`): the line
-   * never bounds CKTtrunc, it only lowers CKTmaxStep in CPLload, which
-   * {@link truncateTransientStep} reproduces. So the node-voltage LTE must
-   * not run on the port nodes on the line's account (#549).
-   */
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (ngspice CPL has no DEVtrunc; its CPLload CKTmaxStep cap). */
   readonly truncationCoversCharges = true;
   readonly lines: number;
   private readonly committed: CplState;

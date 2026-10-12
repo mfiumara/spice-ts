@@ -1,0 +1,53 @@
+{
+  "engine": "ngspice-47",
+  "rows": [
+    {
+      "name": "nmos 3.2.2 default NRD=NRS=1",
+      "ngspice": -0.0216714305378721,
+      "spiceTs": -0.023779940629902192,
+      "relativeError": 0.09729445817364697
+    },
+    {
+      "name": "nmos 3.2.2 NRD=0 NRS=0",
+      "ngspice": -0.0237799406299022,
+      "spiceTs": -0.023779940629902192,
+      "relativeError": 2.917960987329751e-16
+    },
+    {
+      "name": "nmos 3.2.2 M=2",
+      "ngspice": -0.0433428610757442,
+      "spiceTs": -0.047559881259804385,
+      "relativeError": 0.09729445817364697
+    },
+    {
+      "name": "nmos 3.2.2 NRD=2 NRS=0.5",
+      "ngspice": -0.0224490681216255,
+      "spiceTs": -0.023779940629902192,
+      "relativeError": 0.05928408703052773
+    },
+    {
+      "name": "nmos 3.2.2 NRD=0 NRS=3",
+      "ngspice": -0.01879510677377,
+      "spiceTs": -0.023779940629902192,
+      "relativeError": 0.2652197678966586
+    },
+    {
+      "name": "nmos 3.3.0 default",
+      "ngspice": -0.0216714305378721,
+      "spiceTs": -0.023779940629902192,
+      "relativeError": 0.09729445817364697
+    },
+    {
+      "name": "nmos 3.2.4 default",
+      "ngspice": -0.0216714305378721,
+      "spiceTs": -0.023779940629902192,
+      "relativeError": 0.09729445817364697
+    },
+    {
+      "name": "pmos 3.2.2 default",
+      "ngspice": 0.009889677610980736,
+      "spiceTs": 0.01025817718583548,
+      "relativeError": 0.03726103007094889
+    }
+  ]
+}

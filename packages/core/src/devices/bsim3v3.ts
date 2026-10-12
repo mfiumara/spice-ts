@@ -2,9 +2,13 @@ import type {
   ChargeIntegration, ChargeTruncation, DeviceModel, StampContext,
 } from './device.js';
 import { DEVICE_GMIN } from './device.js';
+import { UnsupportedModelParameterError } from '../errors.js';
 import { stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import type { BSIM3Model, BSIM3Size, BSIM3v3InstanceParams } from './bsim3v3-params.js';
-import { CONST_VT0, computeBsim3Size, resolveBsim3Model } from './bsim3v3-params.js';
+import { BSIM3_REVISION, CONST_VT0, computeBsim3Size, resolveBsim3Model, NOMINAL_TEMPERATURE_K } from './bsim3v3-params.js';
+
+/** ngspice const.h CONSTCtoK. */
+const CTOK = 273.15;
 import { createChargeInputs, createDCResult, evaluateDC } from './bsim3v3-dc.js';
 import type { BSIM3ChargeParams, BSIM3TerminalCharges } from './bsim3v3-charge.js';
 import {
@@ -38,36 +42,110 @@ export class BSIM3v3 implements DeviceModel {
   /** Bias of the charges currently held in {@link terminalCharges}. */
   private readonly chargeKey = { valid: false, vgs: 0, vds: 0, vbs: 0 };
 
-  /** ngspice-47 BSIM3v3.3.0 model card (b3set.c defaults applied). */
-  readonly model: BSIM3Model;
+  /**
+   * ngspice-47 BSIM3 model card (b3set.c defaults applied). Its `revision`
+   * selects the 3.3.0 device (bsim3/) or a 3.2.x revision of bsim3v32/.
+   * Rebuilt by {@link setTemperature} (b3temp.c runs at CKTtemp).
+   */
+  model: BSIM3Model;
   /** b3temp.c size-dependent parameters of this instance. */
-  readonly size: BSIM3Size;
-  private readonly chargeInputs: BSIM3ChargeParams;
+  size: BSIM3Size;
+  private chargeInputs: BSIM3ChargeParams;
   private readonly polarity: number;
   /** Parallel multiplier M (ngspice BSIM3m). */
   private readonly multiplier: number;
+  /** Device temperature in degrees Celsius (ngspice CKTtemp; BSIM3 has no instance TEMP). */
+  private temperature = NOMINAL_TEMPERATURE_K - CTOK;
   /** Junction voltages and threshold of the previous stamp (ngspice CKTstate0 vbs/vbd, BSIM3von). */
   private lastVbs = 0;
   private lastVbd = 0;
   private lastVon: number;
+  /** b3v32temp.c (3.2, 3.2.2) instance whose size record supplies this instance's vth0/vfb/vfbzb/u0temp. */
+  private sizeRecordDonor?: BSIM3v3;
 
   constructor(
     readonly name: string,
     readonly nodes: number[],
-    modelParams: Record<string, number>,
-    instanceParams: BSIM3v3InstanceParams | Record<string, number>,
+    private readonly modelParams: Record<string, number>,
+    private readonly instanceParams: BSIM3v3InstanceParams | Record<string, number>,
     polarity: number,
+    /** The card's VERSION= string (absent: 3.3.0). */
+    private readonly version?: string,
   ) {
     this.polarity = polarity;
-    this.model = resolveBsim3Model(modelParams, polarity);
-    try {
-      this.size = computeBsim3Size(this.model, instanceParams as Record<string, number>);
-    } catch (error) {
-      throw new RangeError(`BSIM3 '${name}': ${(error as Error).message}`);
-    }
-    this.chargeInputs = chargeParams(this.model, this.size);
+    [this.model, this.size, this.chargeInputs] = this.temperatureDependent(NOMINAL_TEMPERATURE_K);
+    rejectNonQuasiStatic(name, modelParams, instanceParams as Record<string, number>, this.model.revision);
     this.multiplier = this.size.m;
     this.lastVon = polarity * this.size.instVth0;
+  }
+
+  /** b3temp.c (b3v32temp.c) model, size-dependent and charge constants at `temperatureK`. */
+  private temperatureDependent(temperatureK: number): [BSIM3Model, BSIM3Size, BSIM3ChargeParams] {
+    const model = resolveBsim3Model(this.modelParams, this.polarity, temperatureK, this.version);
+    let size: BSIM3Size;
+    try {
+      size = computeBsim3Size(
+        model, this.instanceParams as Record<string, number>,
+        this.sizeRecordDonor?.instanceParams as Record<string, number> | undefined,
+      );
+    } catch (error) {
+      throw new RangeError(`BSIM3 '${this.name}': ${(error as Error).message}`);
+    }
+    return [model, size, chargeParams(model, size)];
+  }
+
+  /**
+   * b3v32temp.c revisions 3.2 / 3.2.2 (#700): take the instance copies vth0,
+   * vfb, vfbzb and u0temp from `donor`'s size record, the record ngspice's
+   * `pParam` still points at when this instance reuses an earlier geometry.
+   * Set by {@link linkBsim3v32SizeRecordReuse}; survives {@link setTemperature}.
+   */
+  private reuseSizeRecordOf(donor: BSIM3v3): void {
+    this.sizeRecordDonor = donor;
+    [this.model, this.size, this.chargeInputs] = this.temperatureDependent(this.temperature + CTOK);
+    this.lastVon = this.polarity * this.size.instVth0;
+    this.lastDC.valid = false;
+    this.chargeKey.valid = false;
+  }
+
+  /**
+   * Link the BSIM3 instances of one ngspice model (in netlist order) the way
+   * ngspice-47 b3v32temp.c resolves `pParam` for revisions 3.2 and 3.2.2.
+   * ngspice prepends every new instance to its model's list (cktcrte.c), so
+   * b3v32temp.c visits them in reverse netlist order; an instance whose
+   * (L, W) matches an existing size record keeps `pParam` at the most
+   * recently allocated record, i.e. the last newly-seen geometry. Other
+   * revisions (3.2.3, 3.2.4, 3.3.0) assign `pParam = here->pParam` and are
+   * left unchanged.
+   */
+  static linkBsim3v32SizeRecordReuse(instances: readonly BSIM3v3[]): void {
+    const records: BSIM3v3[] = [];
+    let lastAllocated: BSIM3v3 | undefined;
+    for (let k = instances.length - 1; k >= 0; k--) {
+      const here = instances[k];
+      if (here.model.revision > BSIM3_REVISION.V322) continue;
+      const { length, width } = here.size;
+      const match = records.find(r => r.size.length === length && r.size.width === width);
+      if (!match) {
+        records.push(here);
+        lastAllocated = here;
+      } else if (lastAllocated!.size.length !== length || lastAllocated!.size.width !== width) {
+        here.reuseSizeRecordOf(lastAllocated!);
+      }
+    }
+  }
+
+  /** Circuit temperature in degrees Celsius (`.options TEMP=`): reruns b3temp.c at it. */
+  setTemperature(celsius: number): void {
+    this.temperature = celsius;
+    [this.model, this.size, this.chargeInputs] = this.temperatureDependent(celsius + CTOK);
+    this.lastVon = this.polarity * this.size.instVth0;
+    this.lastDC.valid = false;
+    this.chargeKey.valid = false;
+  }
+
+  getTemperature(): number {
+    return this.temperature;
   }
 
   /** Polarity-domain (NMOS convention) Vgs, Vds and Vbs at a solution. */
@@ -286,6 +364,40 @@ export class BSIM3v3 implements DeviceModel {
   }
 }
 
+/**
+ * b3set.c/b3v32set.c resolve nqsMod (and, 3.3.0 only, acnqsMod) per
+ * instance: an instance value of 0 or 1 wins, anything else falls back to the
+ * card's value, which itself falls back to 0 unless it is 0 or 1. spice-ts
+ * implements only the quasi-static charge model, so an effective 1 is
+ * rejected instead of silently simulating nqsMod = 0 (#594: on the corpus-f
+ * TSMC inverter chain NQSMOD=1 moves ngspice's output by 0.7 V of 2.5 V).
+ * Porting NQS is tracked in https://github.com/mfiumara/spice-ts/issues/692.
+ */
+function rejectNonQuasiStatic(
+  name: string, model: Readonly<Record<string, number>>, inst: Readonly<Record<string, number | undefined>>,
+  revision: number,
+): void {
+  const value = (record: Readonly<Record<string, number | undefined>>, key: string): number | undefined => {
+    for (const [k, v] of Object.entries(record)) if (k.toLowerCase() === key) return v;
+    return undefined;
+  };
+  const keys = revision >= BSIM3_REVISION.V330 ? ['nqsmod', 'acnqsmod'] : ['nqsmod'];
+  for (const key of keys) {
+    const card = value(model, key);
+    const modelValue = card === 0 || card === 1 ? card : 0;
+    const instance = value(inst, key);
+    const effective = instance === 0 || instance === 1 ? instance : modelValue;
+    if (effective === 1) {
+      throw new UnsupportedModelParameterError(
+        name, key.toUpperCase(),
+        `the BSIM3 ${key === 'nqsmod' ? 'non-quasi-static (NQS) charge model' : 'AC non-quasi-static model'} is not `
+          + 'implemented; spice-ts would simulate the quasi-static model (NQSMOD=0) instead',
+        { model: 'BSIM3' },
+      );
+    }
+  }
+}
+
 /** Terminals whose charge ngspice integrates (BSIM3qg, BSIM3qd, BSIM3qb), in state order. */
 const CHARGE_ROWS: readonly number[] = [TERMINAL.G, TERMINAL.D, TERMINAL.B];
 
@@ -318,7 +430,11 @@ function stampControlledCurrent(
   }
 }
 
-/** b3ld.c source/drain junction diode (acmMod = 0); writes [g, i] at `offset`. */
+/**
+ * b3ld.c source/drain junction diode (acmMod = 0); writes [g, i] at `offset`.
+ * Above vjm (IJTH > 0) revision 3.2 (b3v32ld.c) linearises with slope
+ * (Is + IJTH) / Nvtm through IJTH at vjm; later revisions use Is * exp(vjm / Nvtm).
+ */
 function junction(
   v: number, satCurrent: number, vjm: number, isEvjm: number, model: BSIM3Model,
   gmin: number, out: Float64Array, offset: number,
@@ -331,6 +447,10 @@ function junction(
     const ev = Math.exp(v / nvtm);
     out[offset] = satCurrent * ev / nvtm + gmin;
     out[offset + 1] = satCurrent * (ev - 1.0) + gmin * v;
+  } else if (model.revision === BSIM3_REVISION.V32) {
+    const t0 = (satCurrent + model.ijth) / nvtm;
+    out[offset] = t0 + gmin;
+    out[offset + 1] = model.ijth + gmin * v + t0 * (v - vjm);
   } else {
     const t0 = isEvjm / nvtm;
     out[offset] = t0 + gmin;

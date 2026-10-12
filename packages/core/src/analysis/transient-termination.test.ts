@@ -82,14 +82,25 @@ R1 1 2 1m
     const { sim, accepted, samples } = await runBounded(netlist, 20_000);
     expect(sim.isDone).toBe(true);
     expect(accepted).toBeLessThan(20_000);
-    // Away from the kink the response is V(2) = -L * 2*pi*f * A * cos(...)
-    // (the 1 mOhm drop is three orders of magnitude below 1e-2 V).
+    // Away from the kink the exact response is V(2) = -L * 2*pi*f * A *
+    // cos(...), but the trapezoidal ringing the kink starts is not damped:
+    // ngspice-47 (308 points, INDtrunc step control) stays up to 44% of the
+    // peak off that curve. spice-ts follows the same CKTtrunc control (#621),
+    // so compare with ngspice-47 on the identical deck at these times.
     const peak = 10e-6 * 2 * Math.PI * 1e6 * 0.01;
-    const settled = samples.filter(sample => sample.time > 1.2e-6);
-    expect(settled.length).toBeGreaterThan(0);
-    for (const sample of settled) {
-      const analytic = -peak * Math.cos(2 * Math.PI * 1e6 * (sample.time - 1e-6));
-      expect(Math.abs(sample.v2 - analytic)).toBeLessThan(0.02 * peak);
+    const ngspice: ReadonlyArray<readonly [number, number]> = [
+      [1.25e-6, -0.121696], [1.5e-6, 0.749974], [1.75e-6, -0.121701], [2e-6, -0.506577],
+      [2.25e-6, -0.121696], [2.5e-6, 0.749974], [2.75e-6, -0.121701], [3e-6, -0.351937],
+    ];
+    expect(accepted).toBeLessThan(2 * 308);
+    for (const [time, expected] of ngspice) {
+      const after = samples.findIndex(sample => sample.time >= time - 1e-18);
+      const before = samples[Math.max(after - 1, 0)]!;
+      const next = samples[after]!;
+      const v2 = next.time === before.time
+        ? next.v2
+        : before.v2 + (next.v2 - before.v2) * (time - before.time) / (next.time - before.time);
+      expect(Math.abs(v2 - expected)).toBeLessThan(0.03 * peak);
     }
     sim.dispose();
   });

@@ -176,6 +176,90 @@ export class TransientChargeState {
     return this.truncationBound;
   }
 
+  /**
+   * {@link accept} of every charge `charges[0..size)` in index order (at
+   * voltage 0 and capacitance 0), then {@link commit}: the accepted point of
+   * a device list whose charges are all computed up front (#702).
+   */
+  acceptAll(charges: Float64Array): void {
+    const size = this.size;
+    const integration = this.pending;
+    const integrate = integration !== undefined && this.hasAccepted;
+    // accept() reselects the pending rule for every charge; nothing between
+    // two charges changes it, so selecting once is the same.
+    if (integrate) this.select(integration);
+    for (let index = 0; index < size; index++) {
+      const charge = charges[index];
+      const current = integrate ? this.current(index, charge) : 0;
+      this.olderCharge[index] = this.previousCharge[index];
+      this.previousCharge[index] = this.acceptedCharge[index];
+      this.acceptedCharge[index] = charge;
+      this.acceptedCurrent[index] = current;
+      this.acceptedVoltage[index] = 0;
+      this.acceptedCapacitance[index] = 0;
+    }
+    this.commit();
+  }
+
+  /**
+   * {@link truncationTimestep} whose `evaluate` would {@link accept} every
+   * charge `charges[0..size)` in index order: the CKTterr bound over all of
+   * them, with no closure or per-charge dispatch (#702).
+   */
+  truncationTimestepAll(truncation: ChargeTruncation, charges: Float64Array): number {
+    const integration = this.pending;
+    if (integration === undefined || !this.hasAccepted) return Infinity;
+    this.select(integration);
+    if (this.historyLength < this.order() + 1) return Infinity;
+    // chargeTruncation() for every charge, with the rule and the tolerances
+    // read once: the same expressions as current() and
+    // chargeTruncationTimestep(), in the same order.
+    const { deltas, reltol, abstol, chgtol, trtol } = truncation;
+    const method = this.method;
+    const order = this.order();
+    const factor = this.factor;
+    const a2 = this.a2;
+    const a3 = this.a3;
+    const coefficient = (method === 'gear2' ? GEAR_COEFFICIENTS : TRAP_COEFFICIENTS)[order - 1];
+    const d0 = deltas[0];
+    const d1 = deltas[1];
+    const d2 = deltas[2];
+    const acceptedCharge = this.acceptedCharge;
+    const previousCharge = this.previousCharge;
+    const olderCharge = this.olderCharge;
+    const acceptedCurrent = this.acceptedCurrent;
+    let bound = Infinity;
+    for (let index = 0; index < this.size; index++) {
+      const charge = charges[index];
+      const accepted = acceptedCharge[index];
+      const previous = previousCharge[index];
+      const priorCurrent = acceptedCurrent[index];
+      const current = method === 'trapezoidal'
+        ? factor * (charge - accepted) - priorCurrent
+        : method === 'gear2'
+          ? factor * charge - a2 * accepted + a3 * previous
+          : factor * (charge - accepted);
+      const currentTolerance = abstol + reltol * Math.max(Math.abs(current), Math.abs(priorCurrent));
+      const chargeTolerance = reltol * Math.max(Math.abs(charge), Math.abs(accepted), chgtol) / d0;
+      const tolerance = Math.max(currentTolerance, chargeTolerance);
+      const first0 = (charge - accepted) / d0;
+      const first1 = (accepted - previous) / d1;
+      let diff0: number;
+      if (order === 1) {
+        diff0 = (first0 - first1) / (d1 + d0);
+      } else {
+        const first2 = (previous - olderCharge[index]) / d2;
+        const span1 = d2 + d1;
+        const second0 = (first0 - first1) / (d1 + d0);
+        const second1 = (first1 - first2) / span1;
+        diff0 = (second0 - second1) / (span1 + d0);
+      }
+      const limit = trtol * tolerance / Math.max(abstol, coefficient * Math.abs(diff0));
+      bound = Math.min(bound, order === 2 ? Math.sqrt(limit) : limit);
+    }
+    return bound;
+  }
+
   /** Integration order of the active rule. */
   private order(): 1 | 2 {
     return this.method === 'euler' ? 1 : 2;
@@ -183,25 +267,11 @@ export class TransientChargeState {
 
   /** ngspice CKTterr for one charge at trial value `charge`. */
   private chargeTruncation(index: number, charge: number, truncation: ChargeTruncation): number {
-    const { deltas, reltol, abstol, chgtol, trtol } = truncation;
-    const order = this.order();
-    const delta = deltas[0];
-    const current = this.current(index, charge);
-    const previous = this.acceptedCharge[index];
-    const currentTolerance = abstol + reltol * Math.max(Math.abs(current), Math.abs(this.acceptedCurrent[index]));
-    const chargeTolerance = reltol * Math.max(Math.abs(charge), Math.abs(previous), chgtol) / delta;
-    const tolerance = Math.max(currentTolerance, chargeTolerance);
-    // Divided differences of q over t(n+1), t(n), ..., t(n-order).
-    const diff = [charge, previous, this.previousCharge[index], this.olderCharge[index]];
-    const span = [deltas[0], deltas[1], deltas[2]];
-    for (let j: number = order; ; j--) {
-      for (let i = 0; i <= j; i++) diff[i] = (diff[i] - diff[i + 1]) / span[i];
-      if (j === 0) break;
-      for (let i = 0; i < j; i++) span[i] = span[i + 1] + deltas[i];
-    }
-    const factor = (this.method === 'gear2' ? GEAR_COEFFICIENTS : TRAP_COEFFICIENTS)[order - 1];
-    const bound = trtol * tolerance / Math.max(abstol, factor * Math.abs(diff[0]));
-    return order === 2 ? Math.sqrt(bound) : bound;
+    return chargeTruncationTimestep(
+      this.method, this.order(),
+      charge, this.acceptedCharge[index], this.previousCharge[index], this.olderCharge[index],
+      this.current(index, charge), this.acceptedCurrent[index], truncation,
+    );
   }
 
   private select({ method, dt, prevDt }: ChargeIntegration): void {
@@ -221,6 +291,53 @@ export class TransientChargeState {
     this.method = 'euler';
     this.factor = 1 / dt;
   }
+}
+
+/**
+ * ngspice cktterr.c CKTterr for one charge: the largest next timestep its
+ * local truncation error allows. `charge` is q(n+1) at the converged trial
+ * point, then the accepted q(n), q(n-1) and q(n-2); `current` and
+ * `acceptedCurrent` are its integrated capacitor currents at t(n+1) and t(n)
+ * (ngspice CKTstate0/1[ccap]). `order` is the integration order of the step.
+ */
+export function chargeTruncationTimestep(
+  method: ChargeIntegration['method'],
+  order: 1 | 2,
+  charge: number,
+  accepted: number,
+  previous: number,
+  older: number,
+  current: number,
+  acceptedCurrent: number,
+  { deltas, reltol, abstol, chgtol, trtol }: ChargeTruncation,
+): number {
+  const currentTolerance = abstol + reltol * Math.max(Math.abs(current), Math.abs(acceptedCurrent));
+  const chargeTolerance = reltol * Math.max(Math.abs(charge), Math.abs(accepted), chgtol) / deltas[0];
+  const tolerance = Math.max(currentTolerance, chargeTolerance);
+  // Divided differences of q over t(n+1), t(n), ..., t(n-order), in scalars
+  // (#702: this runs per charge per step). Same operations, same order as the
+  // array recurrence diff[i] = (diff[i] - diff[i + 1]) / span[i] with
+  // span[i] = span[i + 1] + deltas[i] between the passes.
+  const d0 = deltas[0];
+  const d1 = deltas[1];
+  let diff0: number;
+  if (order === 1) {
+    const first0 = (charge - accepted) / d0;
+    const first1 = (accepted - previous) / d1;
+    diff0 = (first0 - first1) / (d1 + d0);
+  } else {
+    const d2 = deltas[2];
+    const first0 = (charge - accepted) / d0;
+    const first1 = (accepted - previous) / d1;
+    const first2 = (previous - older) / d2;
+    const span1 = d2 + d1;
+    const second0 = (first0 - first1) / (d1 + d0);
+    const second1 = (first1 - first2) / span1;
+    diff0 = (second0 - second1) / (span1 + d0);
+  }
+  const factor = (method === 'gear2' ? GEAR_COEFFICIENTS : TRAP_COEFFICIENTS)[order - 1];
+  const bound = trtol * tolerance / Math.max(abstol, factor * Math.abs(diff0));
+  return order === 2 ? Math.sqrt(bound) : bound;
 }
 
 /**

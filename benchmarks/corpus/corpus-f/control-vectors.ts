@@ -24,8 +24,15 @@ export function hasControlBlock(text: string): boolean {
   return /^\s*\.control\b/im.test(text.split(/\r?\n/).slice(1).join('\n'));
 }
 
+/**
+ * #528: a deck's own `quit`/`exit` would end ngspice before the export lines run. The wrapper
+ * aliases both to an `echo` (an ngspice front-end command, not a fixture edit), so the deck's
+ * control block runs to completion exactly as written and only the process exit is deferred.
+ */
+export const DEFERRED_EXIT_ALIASES = ['quit', 'exit'].map(command => `alias ${command} echo corpus-f: deck ${command} deferred until export`);
+
 export function controlWrapperDeck(types: readonly string[]): string {
-  return ['* corpus-f unmodified-fixture export wrapper', '.control', 'source fixture.cir',
+  return ['* corpus-f unmodified-fixture export wrapper', '.control', ...DEFERRED_EXIT_ALIASES, 'source fixture.cir',
     ...[...new Set(types)].flatMap(type => [`setplot ${type}1`, `write ${type}.raw all`]),
     '.endc', '.end', ''].join('\n');
 }
@@ -51,9 +58,14 @@ export async function runControlReference(input: Buffer, circuit: CorpusFCircuit
         execution: { status: 'failed', convergence: 'failed', analyses: [], error: detail } };
     }
     const analyses: EngineAnalysis[] = [];
+    const unreadable: string[] = [];
     for (const type of new Set(circuit.analyses)) {
       let raw: string;
-      try { raw = await readFile(resolve(directory, `${type}.raw`), 'utf8'); } catch { continue; }
+      try { raw = await readFile(resolve(directory, `${type}.raw`), 'utf8'); } catch (readError) {
+        const code = (readError as NodeJS.ErrnoException).code;
+        if (code !== 'ENOENT') unreadable.push(`${type}.raw (${code ?? (readError as Error).message})`);
+        continue;
+      }
       for (const plot of parseNgspiceRaw(raw)) {
         const actualType = analysisType(plot.plotName);
         if (actualType === type) analyses.push({ type: actualType, plotName: plot.plotName, series: { grid: plot.grid, signals: plot.signals } });
@@ -62,17 +74,28 @@ export async function runControlReference(input: Buffer, circuit: CorpusFCircuit
     if (analyses.length === 0 && error) return { status: classifyNgspiceFailure(output), firstErrorLine: error,
       execution: { status: 'failed', convergence: 'failed', analyses: [], error } };
     return { status: 'success', execution: { status: 'success', convergence: 'converged', analyses },
-      ...(analyses.length === 0 ? { note: 'source/write wrapper exported no reference vectors (e.g. quit before export)' } : {}) };
+      ...(analyses.length === 0 ? { note: noReferenceNote(circuit, unreadable) } : {}) };
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
+}
+
+/** Why a successful ngspice run still left nothing to score (#528): published, never hidden. */
+export function noReferenceNote(circuit: Pick<CorpusFCircuit, 'analyses' | 'unmappedAnalyses'>, unreadable: readonly string[] = []): string {
+  const prefix = 'source/write wrapper exported no reference vectors';
+  if (circuit.analyses.length === 0) {
+    const unmapped = [...new Set(circuit.unmappedAnalyses ?? [])];
+    return `${prefix}: the deck runs only ${unmapped.length > 0 ? unmapped.join('/') : 'no'} analyses, which the comparison adapter does not map to a scored analysis type`;
+  }
+  if (unreadable.length > 0) return `${prefix}: ${unreadable.join(', ')} could not be loaded as one string (e.g. larger than the Node string limit)`;
+  return `${prefix}: no plot of a declared analysis type was left to write`;
 }
 
 /** Reporting links only. No issue mapping changes execution, scoring, or tolerances. */
 export function trackingIssue(fixture: FixtureOutcome): string {
   if (fixture.outcome === 'matched') return '—';
   let issue: string | number = 511;
-  if (fixture.outcome === 'not-compared' || fixture.ngspice.status !== 'success') issue = 528;
+  if (fixture.outcome === 'not-compared' || fixture.ngspice.status !== 'success') issue = 694;
   else if (fixture.outcome === 'mismatch') {
     if (/\/ltra\d/.test(fixture.sourcePath)) issue = 595;
     else if (fixture.sourcePath.endsWith('/inv_vdmos.sp')) issue = 596;
@@ -90,10 +113,10 @@ export function renderControlSection(fixtures: FixtureOutcome[], head: string, v
     'This supplement supersedes the historical batch-1 rows above for every `.control` deck. The original `outcomes.json` is deliberately unchanged.', '',
     `Measured with core tree \`${head}\` (\`git rev-parse HEAD:packages/core\`), ${version}, Node ${process.version}, ${platform()}/${arch()}, ${cpus()[0]?.model ?? 'unknown'}.`,
     '`pnpm build && pnpm exec tsx benchmarks/corpus/corpus-f/control-vectors.ts > control-receipt.json` regenerates this section and prints the full receipt. Add `--check` to rerun without changing files; `--jobs N` controls parallelism.', '',
-    'Every reference comes only from `ngspice -b wrapper.cir`. In a fresh temporary directory, the wrapper runs `source fixture.cir`, then `setplot <type>1` and `write <type>.raw all` for each declared analysis type. `fixture.cir` is a byte-identical copy, verified against the manifest. No rewritten decks or `-r` reference fallback.',
-    `Scoring reuses \`runFixture\`, \`compareExecutions\` and \`normalizedSignalErrors\` with MATCH_THRESHOLD = ${MATCH_THRESHOLD}. There is no per-circuit tuning. Only the first plot of each type is compared, matching the existing adapter; repeated analyses are not independently scored. A failed \`setplot\` cannot be mistaken for the requested analysis. Decks that quit before export remain unscored, not matches.`, '',
+    'Every reference comes only from `ngspice -b wrapper.cir`. In a fresh temporary directory, the wrapper first runs `alias quit echo ...` and `alias exit echo ...` (#528), so a deck whose control block calls `quit`/`exit` runs that block to completion exactly as written while ngspice stays alive for the export, then runs `source fixture.cir`, then `setplot <type>1` and `write <type>.raw all` for each declared analysis type. `fixture.cir` is a byte-identical copy, verified against the manifest. No rewritten decks or `-r` reference fallback.',
+    `Scoring reuses \`runFixture\`, \`compareExecutions\` and \`normalizedSignalErrors\` with MATCH_THRESHOLD = ${MATCH_THRESHOLD}. There is no per-circuit tuning. Only the first plot of each type is compared, matching the existing adapter; repeated analyses are not independently scored. A failed \`setplot\` cannot be mistaken for the requested analysis. Decks that leave no plot of a declared type (for example they \`destroy\` it) remain unscored, not matches.`, '',
     `All ${fixtures.length} control decks: ${Object.entries(totals.outcomes).map(([name, count]) => `${name} ${count}`).join(', ')}.`,
-    'Bucket “loss” includes numerical mismatches and typed-unsupported/failed spice-ts executions with an ngspice reference. “No reference” and “not compared” are explicitly unscored. Worst error/signal is — where no comparison exists. #511 tracks untriaged numerical losses; #528 tracks reference/export limitations. Links do not affect scoring.', '',
+    'Bucket “loss” includes numerical mismatches and typed-unsupported/failed spice-ts executions with an ngspice reference. “No reference” and “not compared” are explicitly unscored. Worst error/signal is — where no comparison exists. #511 tracks untriaged numerical losses; #694 tracks the remaining reference/export limitations. Links do not affect scoring.', '',
     '| Fixture | Bucket | Outcome | Worst normalized error | Worst signal | Tracking issue | Diagnostic |',
     '|---|---|---|---|---|---|---|',
     ...fixtures.map(fixture => {

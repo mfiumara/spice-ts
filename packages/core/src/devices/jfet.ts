@@ -78,6 +78,8 @@ export function resolveNJFETParams(params: Record<string, number>): JFETParams {
 export class JFET implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (JFETtrunc: qgs, qgd). */
+  readonly truncationCoversCharges = true;
   readonly params: JFETParams;
   /** Gate charges qgd/qgs integrated as ngspice jfetload.c (NIintegrate) when CGD or CGS is set. */
   readonly integratesTransientCharge: boolean;

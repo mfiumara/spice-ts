@@ -39,7 +39,7 @@ import {
   type BehavioralSourceKind,
 } from './parser/behavioral-expression.js';
 import { BSIM3v3 } from './devices/bsim3v3.js';
-import { isSupportedBsim3Version, SUPPORTED_BSIM3_VERSIONS } from './devices/bsim3v3-params.js';
+import { bsim3SeriesResistances, isSupportedBsim3Version, SUPPORTED_BSIM3_VERSIONS } from './devices/bsim3v3-params.js';
 import { VCCS } from './devices/vccs.js';
 import { VCVS } from './devices/vcvs.js';
 import { CCCS } from './devices/cccs.js';
@@ -63,7 +63,8 @@ import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
 import {
-  extractRFPort, parseSourceWaveform, parseInstanceParams, transientNoiseWaveform, transientRandomWaveform,
+  extractRFPort, extractSourceMultiplier, hasSourceMultiplier, parseSourceWaveform, parseInstanceParams,
+  transientNoiseWaveform, transientRandomWaveform, VOLTAGE_SOURCE_MULTIPLIER_ERROR,
 } from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
 import { locateSubcircuitCall } from './parser/subcircuit-syntax.js';
@@ -167,6 +168,8 @@ interface DeviceDescriptor {
   xspice?: XspiceInstanceCard;
   /** RF port of a V source (`portnum`/`z0`/`pwr`/`freq`). */
   port?: RFPort;
+  /** I-source `m` multiplier (ngspice ISRCmValue); absent means 1. */
+  multiplier?: number;
 }
 
 /** PULSE coefficients in ngspice `@vsrc[pulse]` order. */
@@ -467,8 +470,10 @@ function formatDevice(desc: DeviceDescriptor): string {
         + `${desc.modelName ?? ''}${length}`;
     }
     case 'V':
-    case 'I':
-      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatSourceValue(desc)}${formatRFPort(desc.port)}`;
+    case 'I': {
+      const multiplier = desc.multiplier === undefined ? '' : ` m=${formatNumber(desc.multiplier)}`;
+      return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${formatSourceValue(desc)}${formatRFPort(desc.port)}${multiplier}`;
+    }
     case 'D':
       return `${desc.name} ${desc.nodes[0]} ${desc.nodes[1]} ${desc.modelName ?? ''}${tail}`.trim();
     case 'Q':
@@ -640,6 +645,11 @@ export class Circuit {
   private _poleZeroAnalyses: PoleZeroAnalysis[] = [];
   private _steps: StepAnalysis[] = [];
   private _models: Map<string, ModelParams> = new ModelTable();
+  /**
+   * Upper-case names of `.model` cards defined inside a subcircuit body. ngspice
+   * gives every subcircuit instance its own copy of such a model (`x1:name`).
+   */
+  private readonly _subcircuitModelNames = new Set<string>();
   /** XSPICE code model cards, keyed by upper-case model name like {@link ModelTable}. */
   private _xspiceModels = new Map<string, XspiceModelCard>();
   private _subcircuits = new Map<string, SubcktDefinition>();
@@ -749,15 +759,17 @@ export class Circuit {
   snapshotControlState(): () => void {
     const descriptors = this.descriptors.map(descriptor => ({
       descriptor, value: descriptor.value, waveform: descriptor.waveform, params: descriptor.params,
+      multiplier: descriptor.multiplier,
     }));
     const models = Array.from(this._models.values(), model => ({ model, params: model.params }));
     const simulationOptions = this._simulationOptions;
     const temperature = this._temperature;
     return () => {
-      for (const { descriptor, value, waveform, params } of descriptors) {
+      for (const { descriptor, value, waveform, params, multiplier } of descriptors) {
         descriptor.value = value;
         descriptor.waveform = waveform;
         descriptor.params = params;
+        descriptor.multiplier = multiplier;
       }
       for (const { model, params } of models) model.params = params;
       this._simulationOptions = simulationOptions;
@@ -789,6 +801,13 @@ export class Circuit {
       const value = single();
       if (typeof value === 'string') return value;
       descriptor.value = value;
+      return undefined;
+    }
+    if (descriptor.type === 'I' && key === 'M') {
+      // ngspice-47 isrcpar.c: ISRC_M is settable.
+      const value = single();
+      if (typeof value === 'string') return value;
+      descriptor.multiplier = value;
       return undefined;
     }
     if (descriptor.type === 'V' || descriptor.type === 'I') {
@@ -831,6 +850,7 @@ export class Circuit {
     if (descriptor) {
       const primary: Record<string, string[]> = { R: ['R', 'RESISTANCE'], C: ['C', 'CAPACITANCE'], L: ['L', 'INDUCTANCE'] };
       if (primary[descriptor.type]?.includes(key)) return descriptor.value === undefined ? undefined : [descriptor.value];
+      if (descriptor.type === 'I' && key === 'M') return [descriptor.multiplier ?? 1];
       if (descriptor.type === 'V' || descriptor.type === 'I') return sourceParameter(descriptor.waveform, key);
       const value = descriptor.params?.[key];
       return value === undefined ? undefined : [value];
@@ -1059,14 +1079,20 @@ export class Circuit {
    * @param nodePos - Positive terminal node (current flows from pos to neg)
    * @param nodeNeg - Negative terminal node
    * @param waveform - Source waveform specification (DC, pulse, sine, or AC)
+   * @param multiplier - ngspice `m` instance multiplier: the DC, transient and
+   *   AC values are scaled by it (default 1); DISTOF terms are not.
    */
   addCurrentSource(
     name: string, nodePos: string, nodeNeg: string,
     waveform: Partial<SourceWaveform> & { dc?: number },
+    multiplier?: number,
   ): void {
     this.nodeSet.add(nodePos);
     this.nodeSet.add(nodeNeg);
-    this.descriptors.push({ type: 'I', name, nodes: [nodePos, nodeNeg], waveform });
+    this.descriptors.push({
+      type: 'I', name, nodes: [nodePos, nodeNeg], waveform,
+      ...(multiplier === undefined ? {} : { multiplier }),
+    });
   }
 
   /**
@@ -1927,6 +1953,8 @@ export class Circuit {
     const noiseContext = new TransientNoiseContext(this._simulationOptions.seed);
     const pendingCurrentSwitches: { device: CurrentSwitch; controlSource: string }[] = [];
     const ltraStates = new Map<string, LtraModelState>();
+    // BSIM3 instances per ngspice model, in netlist order (b3v32temp.c pParam reuse, #700).
+    const bsim3ModelInstances = new Map<string, BSIM3v3[]>();
 
     for (const desc of expandedDescriptors) {
       guard?.checkpoint('compile:device');
@@ -1957,7 +1985,9 @@ export class Circuit {
           break;
         }
         case 'I':
-          devices.push(new CurrentSource(desc.name, nodeIndices, resolveWaveform(desc.waveform), noiseContext));
+          devices.push(new CurrentSource(
+            desc.name, nodeIndices, resolveWaveform(desc.waveform), noiseContext, desc.multiplier,
+          ));
           break;
         case 'C': {
           const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
@@ -2119,7 +2149,7 @@ export class Circuit {
           const level = modelParams.LEVEL ?? 1;
 
           if (level === 49 || level === 8) {
-            // #503: VERSION=3.0/3.1/3.2.x select other BSIM3 revisions in ngspice; never run them as 3.3.
+            // #503/#594: VERSION=3.2.x runs the bsim3v32 revisions; 3.0/3.1 (BSIM3v0/v1) are not implemented.
             if (!isSupportedBsim3Version(model.version)) {
               throw new UnsupportedModelVersionError(
                 desc.name, desc.modelName, level, model.version!, SUPPORTED_BSIM3_VERSIONS,
@@ -2134,7 +2164,15 @@ export class Circuit {
               resolveNode(bulkNode),
             ];
             // Instance W/L/AD/AS/PD/PS/DELVTO/MULU0/M; b3set.c supplies the defaults.
-            devices.push(new BSIM3v3(desc.name, nodeIdxs, modelParams, desc.params ?? {}, polarity));
+            const bsim3 = new BSIM3v3(desc.name, nodeIdxs, modelParams, desc.params ?? {}, polarity, model.version);
+            devices.push(bsim3);
+            // A subcircuit-local card is a separate ngspice model per subcircuit instance.
+            const modelName = model.name.toUpperCase();
+            const scope = this._subcircuitModelNames.has(modelName)
+              ? desc.name.slice(0, Math.max(0, desc.name.lastIndexOf('.'))) : '';
+            const key = `${scope}\u0000${modelName}`;
+            const group = bsim3ModelInstances.get(key);
+            if (group) group.push(bsim3); else bsim3ModelInstances.set(key, [bsim3]);
           } else if (level === 6) {
             // MOS6 (Sakurai-Newton n-th power law) — 4-terminal, bulk defaults to source.
             const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];
@@ -2254,6 +2292,7 @@ export class Circuit {
     }
 
     bindXspiceSources(devices, deviceMap);
+    for (const instances of bsim3ModelInstances.values()) BSIM3v3.linkBsim3v32SizeRecordReuse(instances);
     for (const { device, controlSource } of pendingCurrentSwitches) {
       const control = deviceMap.get(controlSource);
       if (!control || !(control instanceof VoltageSource)) {
@@ -2292,8 +2331,8 @@ export class Circuit {
    * Only devices whose temperature model follows ngspice-47 are accepted:
    * resistors (TC1/TC2 around TNOM), the bounded VBIC (vbictemp.c mapping),
    * B sources (asrctemp.c tc1/tc2 and `temper`), diodes (diotemp.c), the
-   * Gummel-Poon BJT (bjttemp.c) and MOS level 1 (mos1temp.c).
-   * Every other temperature-dependent element is rejected instead of silently
+   * Gummel-Poon BJT (bjttemp.c), MOS level 1 (mos1temp.c) and BSIM3 (b3temp.c,
+   * b3v32temp.c). Every other temperature-dependent element is rejected instead of silently
    * running at 27 C.
    */
   private applyCircuitTemperature(
@@ -2323,7 +2362,8 @@ export class Circuit {
 
     for (const device of devices) {
       if (device instanceof Resistor || device instanceof VBIC || device instanceof BehavioralSource
-        || device instanceof Diode || device instanceof BJT || device instanceof MOSFET) {
+        || device instanceof Diode || device instanceof BJT || device instanceof MOSFET
+        || device instanceof BSIM3v3) {
         device.setTemperature(temperature);
       } else if (device.isNonlinear) {
         throw new UnsupportedTemperatureError(device.name, temperature);
@@ -2645,6 +2685,25 @@ export class Circuit {
           result.push({ ...desc, nodes: [drain, gate, source, bulk] });
           continue;
         }
+        if (model && (level === 8 || level === 49) && isSupportedBsim3Version(model.version)) {
+          // BSIM3, every revision (b3set.c/b3v32set.c, acmMod = 0): RSH*NRD and RSH*NRS,
+          // NRD = NRS = 1 square by default, in front of drain/source prime nodes (#691).
+          const series = bsim3SeriesResistances(desc.name, model.params, desc.params);
+          let [drain, gate, source] = desc.nodes;
+          const bulk = desc.nodes[3] ?? source;
+          if (series.drain !== 0) {
+            const prime = internalNodeName(desc.name, 'drain');
+            result.push({ type: 'R', name: `${desc.name}.RD`, nodes: [drain, prime], value: series.drain });
+            drain = prime;
+          }
+          if (series.source !== 0) {
+            const prime = internalNodeName(desc.name, 'source');
+            result.push({ type: 'R', name: `${desc.name}.RS`, nodes: [source, prime], value: series.source });
+            source = prime;
+          }
+          result.push({ ...desc, nodes: [drain, gate, source, bulk] });
+          continue;
+        }
       }
 
       if (desc.type === 'Z') {
@@ -2937,6 +2996,7 @@ export class Circuit {
           ?? parseModelCard(tokens, 0);
         // Register in the circuit's global model map so compile() can find it
         this.registerModel(modelParams);
+        this._subcircuitModelNames.add(modelParams.name.toUpperCase());
         continue;
       }
 
@@ -3014,6 +3074,7 @@ export class Circuit {
           for (let i = 3; i < tokens.length; i++) {
             mappedTokens.push(evalToken(tokens[i]));
           }
+          if (hasSourceMultiplier(mappedTokens, 3)) throw new Error(VOLTAGE_SOURCE_MULTIPLIER_ERROR);
           const { tokens: sourceTokens, port } = extractRFPort(mappedTokens, 3);
           const waveform = parseSourceWaveform(sourceTokens, 3);
           result.push({
@@ -3029,11 +3090,13 @@ export class Circuit {
           for (let i = 3; i < tokens.length; i++) {
             mappedTokens.push(evalToken(tokens[i]));
           }
-          const waveform = parseSourceWaveform(mappedTokens, 3);
+          const { tokens: sourceTokens, multiplier } = extractSourceMultiplier(mappedTokens, 3);
+          const waveform = parseSourceWaveform(sourceTokens, 3);
           result.push({
             type: 'I', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             waveform,
+            ...(multiplier === undefined ? {} : { multiplier }),
           });
           break;
         }

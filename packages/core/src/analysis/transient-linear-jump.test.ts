@@ -122,15 +122,25 @@ R1 1 2 0.001
 
     // SPICE current-source convention: I1 pushes 5 sin(...) A from node 1
     // through the source to ground, so the inductor current from 2 to 0 is
-    // -i(t) and V(2) = -L di/dt = -L * 5 * w * cos(w (t - td)).
-    const L = 10e-3;
-    const w = 2 * Math.PI * 1e3;
-    const td = 0.5e-3;
-    const late = samples.filter(sample => sample.time > 1.5e-3);
-    expect(late.length).toBeGreaterThan(10);
-    for (const { time, v2 } of late) {
-      const expected = -L * 5 * w * Math.cos(w * (time - td));
-      expect(Math.abs(v2 - expected)).toBeLessThan(0.02 * L * 5 * w);
+    // -i(t) and V(2) = -L di/dt = -L * 5 * w * cos(w (t - td)), amplitude
+    // 314 V. On this 0.1 ms TMAX grid ngspice-47 (59 points, bounded only by
+    // INDtrunc) is itself 156 V off that analytic curve; spice-ts follows
+    // ngspice's INDtrunc step control (#621), so compare with ngspice-47 on
+    // the identical deck, linearly interpolated at these times.
+    const amplitude = 10e-3 * 5 * 2 * Math.PI * 1e3;
+    const ngspice: ReadonlyArray<readonly [number, number]> = [
+      [1.75e-3, 21.9491], [2e-3, 195.557], [2.5e-3, -195.557], [3e-3, 195.557],
+      [3.5e-3, -195.557], [4e-3, 195.557], [4.5e-3, -195.557], [5e-3, 174.514],
+    ];
+    expect(samples.length).toBeLessThan(2 * 59);
+    for (const [time, expected] of ngspice) {
+      const after = samples.findIndex(sample => sample.time >= time - 1e-15);
+      const before = samples[Math.max(after - 1, 0)]!;
+      const next = samples[after]!;
+      const v2 = next.time === before.time
+        ? next.v2
+        : before.v2 + (next.v2 - before.v2) * (time - before.time) / (next.time - before.time);
+      expect(Math.abs(v2 - expected)).toBeLessThan(0.02 * amplitude);
     }
   });
 });

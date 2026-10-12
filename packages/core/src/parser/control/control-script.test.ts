@@ -567,7 +567,7 @@ end
 
   it.each([
     ['alter x1.r1 2k', 'alter', 'inside a subcircuit'],
-    ['op\nlet g = @r1[i]', 'let', "'@r1[i]' is not available"],
+    ['op\nlet g = @r1[p]', 'let', "'@r1[p]' is not available"],
     ['op\nlet tmp = v(2) > file', 'let', 'redirection'],
     ['op\nlet d = deriv(v(2))', 'let', "'deriv()'"],
     ['op\nrun out.raw', 'run', 'raw file'],

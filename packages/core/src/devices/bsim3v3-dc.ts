@@ -1,5 +1,5 @@
 import type { BSIM3Model, BSIM3Size } from './bsim3v3-params.js';
-import { EPSSI, CHARGE_Q, MAX_EXP, MIN_EXP, EXP_THRESHOLD } from './bsim3v3-params.js';
+import { BSIM3_REVISION, EPSSI, CHARGE_Q, MAX_EXP, MIN_EXP, EXP_THRESHOLD } from './bsim3v3-params.js';
 
 /** b3ld.c drain current and derivatives for one normal-mode (Vds >= 0) evaluation. */
 export interface BSIM3v3DCResult {
@@ -56,7 +56,9 @@ export function createChargeInputs(): BSIM3v3ChargeInputs {
 /**
  * Evaluate the BSIM3v3.3.0 DC drain current and its derivatives, a direct
  * port of ngspice-47 b3ld.c from "if (vds >= 0.0)" through the substrate
- * current. Voltages are in the NMOS convention (multiplied by type) and in
+ * current. For the 3.2.x revisions (`model.revision`) it follows
+ * bsim3v32/b3v32ld.c, whose DC section differs only in the revision-dependent
+ * blocks marked below. Voltages are in the NMOS convention (multiplied by type) and in
  * normal mode: the caller interchanges drain and source when Vds < 0 and
  * passes (Vgd, -Vds, Vbd), exactly as b3ld.c does for BSIM3mode = -1.
  */
@@ -324,7 +326,8 @@ export function evaluateDC(
     Abulk = (0.2 - Abulk) * T9;
     T10 = T9 * T9;
     dAbulk_dVb *= T10;
-    dAbulk_dVg *= T10;
+    // b3v32ld.c: revision 3.2 rescales dAbulk_dVb only.
+    if (model.revision > BSIM3_REVISION.V32) dAbulk_dVg *= T10;
   }
 
   T2 = p.keta * Vbseff;
@@ -490,7 +493,8 @@ export function evaluateDC(
   let dVdseff_dVg = dVdsat_dVg - 0.5 * (dT1_dVg + dT2_dVg);
   const dVdseff_dVd = dVdsat_dVd - 0.5 * (dT1_dVd + dT2_dVd);
   let dVdseff_dVb = dVdsat_dVb - 0.5 * (dT1_dVb + dT2_dVb);
-  if (Vds === 0.0) {
+  // b3v32ld.c: revision 3.2 keeps the smoothed (non-zero) Vdseff at Vds = 0.
+  if (Vds === 0.0 && model.revision >= BSIM3_REVISION.V322) {
     Vdseff = 0.0;
     dVdseff_dVg = 0.0;
     dVdseff_dVb = 0.0;

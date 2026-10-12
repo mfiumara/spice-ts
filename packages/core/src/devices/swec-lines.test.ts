@@ -35,18 +35,19 @@ type Reference = ReadonlyArray<readonly number[]>;
 // With the ngspice CKTsaveDelta step after breakpoints (#608) lossless/shunt-G
 // moves to 0.0044 on these samples while on every ngspice timepoint it improves
 // (max |err| v(b) 5.16e-3 -> 4.44e-3, v(d) 5.84e-3 -> 4.43e-3).
-// #549: the lines no longer bound the step through the node-voltage LTE, so
-// this deck takes ngspice's 520-point grid (1278 before). v(d) then matches to
-// 7.2e-8 V on every ngspice timepoint (was 4.43e-3). v(b) moves 4.44e-3 ->
-// 6.67e-3: one 1 ps slope of its 100 ps fall. The accepted times differ from
-// ngspice's by an ulp (spice-ts steps by nextTime - time, ngspice by
-// CKTdelta), and the history keys are integer picoseconds, so the delayed edge
-// lands 1 ps late. That is the step-controller gap #708, not the line model.
-const TXL1_BOUND = 0.04;
-const IBM2_BOUND = 7e-4;
-const LIN4_BOUND = 0.055;
+// Since #621 the node-voltage LTE no longer refines TXL/CPL nodes (ngspice
+// has no TXL/CPL DEVtrunc) and C/L/MOS1 steps follow ngspice CKTtrunc, so the
+// point counts match ngspice (txl1 491/492, lossless 519/520). On these
+// samples: txl1 0.0035 / 0.0609 (v(3) crosses the 33 ns edge 50 ps after
+// ngspice: one truncation step at 32.11 ns differs, the order-1 restart of
+// #561); cpl_ibm2 5.2e-4; 4-line 0.0038; lossless/shunt-G v(b) 0.0067 (same
+// grid as ngspice, the far-end edge of Y1 is 1 % lower) and v(d) 7e-8;
+// complex-pole + short TXL 7.2e-4.
+const TXL1_BOUND = 0.065;
+const IBM2_BOUND = 6e-4;
+const LIN4_BOUND = 0.005;
 const LOSSLESS_BOUND = 0.007;
-const COMPLEX_SHORT_BOUND = 0.0035;
+const COMPLEX_SHORT_BOUND = 1e-3;
 
 function rel(actual: number, expected: number): number {
   return Math.abs(actual - expected) / Math.max(Math.abs(expected), 1e-300);
@@ -653,7 +654,8 @@ describe('TXL/CPL transient waveforms against ngspice-47 on identical netlists',
 // CKTmaxStep in TXLload/CPLload. spice-ts used to count them as charge-storing
 // devices without a truncation port, so the node-voltage LTE ran on every port
 // node and cut the step at each reflected edge: 1278 points instead of
-// ngspice's 520 on the deck below, 1168 instead of 217 on cpl_ibm2.
+// ngspice's 520 on the deck below, 1168 instead of 217 on cpl_ibm2. #621 made
+// the lines truncation-covering; these tests pin that ngspice behaviour.
 describe('TXL/CPL leave step control to CKTmaxStep, as ngspice (DEVtrunc = NULL, #549)', () => {
   it('exempts line ports shared only with static elements from the node-voltage LTE', () => {
     const compiled = parse([
@@ -671,9 +673,8 @@ describe('TXL/CPL leave step control to CKTmaxStep, as ngspice (DEVtrunc = NULL,
     ].join('\n')).compile();
     const exempt = chargeTruncatedNodes(compiled.nodeCount, compiled.devices);
     const at = (node: string) => exempt[compiled.nodeIndexMap.get(node)!];
-    expect([at('a'), at('b'), at('c'), at('e')]).toEqual([1, 1, 1, 1]);
-    // The linear capacitor has no CAPtrunc-covering port, so its node keeps the LTE.
-    expect(at('d')).toBe(0);
+    // d also carries a linear capacitor, which CAPtrunc covers since #621.
+    expect([at('a'), at('b'), at('c'), at('d'), at('e')]).toEqual([1, 1, 1, 1, 1]);
   });
 
   it('takes the ngspice-47 grid on resistively terminated TXL lines', async () => {

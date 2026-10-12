@@ -1,0 +1,457 @@
+{
+ "schemaVersion": "spice-ts-bsim3v32-compare/v1",
+ "engine": "ngspice-47",
+ "core": "main e2c73b29 packages/core/dist",
+ "threshold": 0.01,
+ "totals": {
+  "within": 0,
+  "total": 7576,
+  "casesMatched": 0,
+  "cases": 43
+ },
+ "transient": {
+  "error": "MOSFET 'MN1' (model 'Nmod') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+ },
+ "cases": {
+  "tsmc025-322-nmos": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "tsmc025-322-pmos": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "tsmc025-322-nmos-t25": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "tsmc025-322-pmos-t25": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "tsmc025-322-nmos-t85": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "corner-nmos-v3.2": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   }
+  },
+  "corner-nmos-v3.2.2": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.2 (supported versions: 3.3)"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "corner2-nmos-v3.2": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   }
+  },
+  "corner2-nmos-v3.2.3": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.3 (supported versions: 3.3)"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.3 (supported versions: 3.3)"
+   }
+  },
+  "stress-nmos-v3.2": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   }
+  },
+  "stress-pmos-v3.2.4": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.4 (supported versions: 3.3)"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.4 (supported versions: 3.3)"
+   }
+  },
+  "corner-pmos-v3.2": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   }
+  },
+  "issue-589-nmos-v3.24": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.24 (supported versions: 3.3)"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.24 (supported versions: 3.3)"
+   }
+  },
+  "stress-nmos-v3.3.0-t85": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "Device 'M1' has no ngspice temperature model in spice-ts and cannot be simulated at TEMP=85 C"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "Device 'M1' has no ngspice temperature model in spice-ts and cannot be simulated at TEMP=85 C"
+   }
+  },
+  "stress-pmos-v3.3.0-t-20": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "Device 'M1' has no ngspice temperature model in spice-ts and cannot be simulated at TEMP=-20 C"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "Device 'M1' has no ngspice temperature model in spice-ts and cannot be simulated at TEMP=-20 C"
+   }
+  },
+  "corner-nmos-v3.2.2-t60": {
+   "operatingPoints": {
+    "within": 0,
+    "total": 84,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.2 (supported versions: 3.3)"
+   },
+   "sweep": {
+    "within": 0,
+    "total": 25,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:tsmc025-322-nmos": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:tsmc025-322-pmos": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:tsmc025-322-nmos-t25": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:tsmc025-322-pmos-t25": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod0-xpart0-nmos-v3.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod1-xpart0-nmos-v3.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod1-xpart1-pmos-v3.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod2-xpart1-nmos-v3.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod2-xpart0-pmos-v3.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod3-xpart1-nmos-v3.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod3-xpart05-pmos-v3.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod3-dlc-nmos-v3.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod0-xpart0-nmos-v3.2.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod1-xpart0-nmos-v3.2.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod1-xpart1-pmos-v3.2.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod2-xpart1-nmos-v3.2.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod2-xpart0-pmos-v3.2.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod3-xpart1-nmos-v3.2.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod3-xpart05-pmos-v3.2.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:capmod3-dlc-nmos-v3.2.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:issue-589-nmos-v3.2.4": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.4 (supported versions: 3.3)"
+   }
+  },
+  "charge:stress-pmos-v3.2.3": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=8 VERSION=3.2.3 (supported versions: 3.3)"
+   }
+  },
+  "charge:junction-temp-nmos-v3.2.2": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:junction-swg-pmos-v3.2.4": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.4 (supported versions: 3.3)"
+   }
+  },
+  "charge:junction-temp-nmos-v3.2.2-t90": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "MOSFET 'M1' (model 'MOD') uses unsupported LEVEL=49 VERSION=3.2.2 (supported versions: 3.3)"
+   }
+  },
+  "charge:junction-temp-nmos-v3.3.0-t90": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "Device 'M1' has no ngspice temperature model in spice-ts and cannot be simulated at TEMP=90 C"
+   }
+  },
+  "charge:capmod3-xpart1-nmos-v3.3.0-t-10": {
+   "ac": {
+    "within": 0,
+    "total": 216,
+    "worst": "failed",
+    "label": "Device 'M1' has no ngspice temperature model in spice-ts and cannot be simulated at TEMP=-10 C"
+   }
+  }
+ }
+}

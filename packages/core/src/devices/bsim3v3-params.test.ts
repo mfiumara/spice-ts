@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { computeBsim3Size, resolveBsim3Model, EPSOX, isSupportedBsim3Version } from './bsim3v3-params.js';
+import {
+  BSIM3_REVISION, bsim3Revision, computeBsim3Size, resolveBsim3Model, EPSOX, isSupportedBsim3Version,
+} from './bsim3v3-params.js';
 
 describe('BSIM3v3 model defaults (ngspice-47 b3set.c)', () => {
   it('applies the b3set.c defaults for an empty NMOS card', () => {
@@ -90,9 +92,43 @@ describe('BSIM3v3 size-dependent parameters (ngspice-47 b3temp.c)', () => {
 });
 
 describe('BSIM3 VERSION selection', () => {
-  it('accepts absent, default and 3.3.x versions only', () => {
+  it('accepts absent, default, 3.2.x and 3.3.x versions only (ngspice inpdomod.c)', () => {
     expect(isSupportedBsim3Version(undefined)).toBe(true);
     expect(isSupportedBsim3Version('3.3.0')).toBe(true);
-    expect(isSupportedBsim3Version('3.2.4')).toBe(false);
+    expect(isSupportedBsim3Version('3.2.4')).toBe(true);
+    for (const version of ['3.1', '3.0', '3.0.1', '5.0', '4.5']) expect(isSupportedBsim3Version(version)).toBe(false);
+  });
+
+  it('maps VERSION= strings to the b3v32set.c revisions', () => {
+    const cases: [string | undefined, number][] = [
+      [undefined, BSIM3_REVISION.V330], ['3.3.0', BSIM3_REVISION.V330], ['Default', BSIM3_REVISION.V330],
+      ['3.2.4', BSIM3_REVISION.V324], ['3.24', BSIM3_REVISION.V324], ['3.240', BSIM3_REVISION.V324],
+      ['3.2.3', BSIM3_REVISION.V323], ['3.23', BSIM3_REVISION.V323],
+      ['3.2.2', BSIM3_REVISION.V322], ['3.22', BSIM3_REVISION.V322],
+      // strcmp, not a prefix match, for the dotted forms: anything else starting with 3.2 is revision 3.2.
+      ['3.2', BSIM3_REVISION.V32], ['3.20', BSIM3_REVISION.V32], ['3.2.4.1', BSIM3_REVISION.V32],
+      ['3.2.1', BSIM3_REVISION.V32], ['3.21', BSIM3_REVISION.V32],
+    ];
+    for (const [version, revision] of cases) expect(bsim3Revision(version), version).toBe(revision);
+    expect(resolveBsim3Model({}, 1, undefined, '3.2.2').revision).toBe(BSIM3_REVISION.V322);
+    expect(() => resolveBsim3Model({}, 1, undefined, '3.1')).toThrow(RangeError);
+  });
+
+  it('scales L by LMLT for the 3.2.x revisions only (b3v32set.c)', () => {
+    const card = { LMLT: 0.9, LINT: 0 };
+    const v32 = computeBsim3Size(resolveBsim3Model(card, 1, undefined, '3.2.4'), { W: 1e-6, L: 1e-6 });
+    const v33 = computeBsim3Size(resolveBsim3Model(card, 1), { W: 1e-6, L: 1e-6 });
+    expect(v32.leff).toBeCloseTo(0.9e-6, 18);
+    expect(v33.leff).toBeCloseTo(1e-6, 18);
+  });
+
+  it('leaves IsEvjsm unset for revision 3.2 (b3v32temp.c)', () => {
+    const inst = { W: 1e-6, L: 1e-6, AS: 1e-12, AD: 1e-12 };
+    const v32 = computeBsim3Size(resolveBsim3Model({ IJTH: 1e-9 }, 1, undefined, '3.2'), inst);
+    const v322 = computeBsim3Size(resolveBsim3Model({ IJTH: 1e-9 }, 1, undefined, '3.2.2'), inst);
+    expect(v32.vjsm).toBe(v322.vjsm);
+    expect(v32.vjsm).toBeGreaterThan(0);
+    expect(v32.IsEvjsm).toBe(0);
+    expect(v322.IsEvjsm).toBeGreaterThan(0);
   });
 });

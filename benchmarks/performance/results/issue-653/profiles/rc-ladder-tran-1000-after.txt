@@ -1,0 +1,29 @@
+rc-ladder-tran-1000.cpuprofile (prof-after): 85 samples, 257.0 ms sampled
+
+Top self time
+      55.7 ms  21.7%  factorize packages/core/dist/chunk-FDMSLAUY.js:20328
+      27.0 ms  10.5%  buildCompanionSystem packages/core/dist/chunk-FDMSLAUY.js:21666
+      22.1 ms   8.6%  stampStaticDevices packages/core/dist/chunk-FDMSLAUY.js:21133
+      16.7 ms   6.5%  flush packages/core/dist/chunk-FDMSLAUY.js:22917
+      14.8 ms   5.8%  attemptStep packages/core/dist/chunk-FDMSLAUY.js:21842
+      13.4 ms   5.2%  compileSourceTextModule node:internal/modules/esm/utils:344
+       9.0 ms   3.5%  stampDynamicDevices packages/core/dist/chunk-FDMSLAUY.js:21174
+       8.0 ms   3.1%  (program)
+       6.0 ms   2.3%  (garbage collector)
+       5.0 ms   2.0%  tokenizeNetlist packages/core/dist/chunk-FDMSLAUY.js:414
+       5.0 ms   2.0%  simulate packages/core/dist/chunk-FDMSLAUY.js:27716
+       5.0 ms   2.0%  getStampContext packages/core/dist/chunk-FDMSLAUY.js:20921
+
+Top inclusive time
+     257.0 ms 100.0%  (root)
+     205.3 ms  79.9%  simulate packages/core/dist/chunk-FDMSLAUY.js:27716
+     186.7 ms  72.6%  solveCompiledAnalyses packages/core/dist/chunk-FDMSLAUY.js:27753
+     172.3 ms  67.1%  solveTransient packages/core/dist/chunk-FDMSLAUY.js:22942
+     143.5 ms  55.8%  advanceSolution packages/core/dist/chunk-FDMSLAUY.js:22345
+     137.9 ms  53.7%  attemptStep packages/core/dist/chunk-FDMSLAUY.js:21842
+      62.8 ms  24.4%  buildCompanionSystem packages/core/dist/chunk-FDMSLAUY.js:21666
+      60.7 ms  23.6%  factorize packages/core/dist/chunk-FDMSLAUY.js:20328
+      60.4 ms  23.5%  solveLinearized packages/core/dist/chunk-FDMSLAUY.js:21934
+      27.0 ms  10.5%  stampStaticDevices packages/core/dist/chunk-FDMSLAUY.js:21133
+      17.5 ms   6.8%  record packages/core/dist/chunk-FDMSLAUY.js:22907
+      17.5 ms   6.8%  save packages/core/dist/chunk-FDMSLAUY.js:22973

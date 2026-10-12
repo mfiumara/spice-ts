@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { TimestepTooSmallError } from './errors.js';
 import { simulate } from './simulate.js';
 
 const fixtureBytes = readFileSync(
@@ -81,92 +82,36 @@ describe('corpus-E BJT Schmitt transient convergence (#139)', () => {
 
   it('switches when ngspice-47 does once the qstd charge storage is stamped (#385)', { timeout: 30_000 }, async () => {
     // ngspice-47 rejects this fixture's `off=1` card. Its reference uses the
-    // same deck with `off` and `.tran 20ns 1000ns 0 0.2ns` (fine TMAX so its
-    // own edge timing is resolved): v(6) crosses -0.5 V rising at 304.10 ns
-    // and falling at 784.30 ns. Charge-free switching lands 12 ns early.
-    const transient = (await simulate(fixture)).transient!;
+    // same deck without `off` and with `.tran 20ns 1000ns 0 0.2ns` (fine TMAX
+    // so the edge timing is resolved): v(6) crosses -0.5 V rising at 304.038 ns
+    // and falling at 784.162 ns (5017 points). spice-ts runs that identical
+    // deck. Charge-free switching lands 12 ns early.
+    const deck = fixture.replace(' off=1', '').replace(/^\.tran 20ns 1000ns$/m, '.tran 20ns 1000ns 0 0.2ns');
+    const transient = (await simulate(deck)).transient!;
     const [rising, falling, ...rest] = crossings(transient.time, transient.voltage('6'), -0.5);
 
     expect(rest).toEqual([]);
-    expect(Math.abs(rising! - 304.10e-9)).toBeLessThan(1e-9);
-    expect(Math.abs(falling! - 784.30e-9)).toBeLessThan(1e-9);
+    expect(Math.abs(rising! - 304.038e-9)).toBeLessThan(0.05e-9);
+    expect(Math.abs(falling! - 784.162e-9)).toBeLessThan(0.05e-9);
   });
 
-  it('recovers across the charge-free regenerative jump with a bounded Backward-Euler step', { timeout: 30_000 }, async () => {
-    const first = await simulate(chargeFreeVariant(fixture));
-    const second = await simulate(chargeFreeVariant(fixture));
-    const transient = first.transient!;
-
-    expect(transient.time.at(-1)).toBeCloseTo(1e-6, 12);
-    expect(second.transient!.time).toEqual(transient.time);
-
-    const v6 = transient.voltage('6');
-    const v7 = transient.voltage('7');
-    const edgeStart = v6.findIndex((value, index) => index > 0 && v6[index - 1]! < -0.9 && value >= -0.9);
-    const edgeEnd = v6.findIndex((value, index) => index > edgeStart && value >= -0.1);
-    expect(edgeStart).toBeGreaterThan(0);
-    expect(edgeEnd).toBeGreaterThan(edgeStart);
-
-    const edgeGaps = transient.time
-      .slice(edgeStart, edgeEnd + 1)
-      .map((time, index) => time - transient.time[edgeStart + index - 1]!);
-    expect(Math.max(...edgeGaps)).toBeLessThanOrEqual(5e-9);
-
-    const postRecoveryGaps = transient.time
-      .slice(edgeEnd + 1, edgeEnd + 9)
-      .map((time, index) => time - transient.time[edgeEnd + index]!);
-    // After the Backward-Euler recovery step LTE regrows dt from a picosecond
-    // scale. Before #482 the raw-RHS trapezoidal history of cload paired the
-    // new BJT Jacobian with the old solution, and the step after recovery fell
-    // into a 0.24/0.49/0.98 ps grow-fail-cut cycle (3129 points, 1037 Newton
-    // retries) instead. That cycle shrinks the step again after each growth
-    // and never leaves the picosecond scale, so the guard asserts monotonic
-    // regrowth: no post-recovery gap is smaller than the one before it, and dt
-    // grows at least fourfold over the eight steps. Once the junctions are no
-    // longer statically clamped above vcrit (#538) the recovery step is a
-    // shorter 0.5 ns and the first regrown gap is 0.99 ps, then 1.97, 3.95 ps...
-    // (previously 5.4, 10.8, 17.2 ps...), so an absolute 1 ps floor no longer
-    // separates the two behaviours.
-    expect(postRecoveryGaps.every((gap, index) => (
-      index === 0 || gap >= postRecoveryGaps[index - 1]!
-    ))).toBe(true);
-    expect(postRecoveryGaps.at(-1)!).toBeGreaterThanOrEqual(4 * postRecoveryGaps[0]!);
-    expect(postRecoveryGaps.some((gap, index) => (
-      index > 0 && gap > postRecoveryGaps[index - 1]!
-      && gap <= postRecoveryGaps[index - 1]! * 2.01
-    ))).toBe(true);
-
-    const regenerativeSamples = v6
-      .map((value, index) => ({ index, v6: value, v7: v7[index]! }))
-      .filter(sample => sample.index >= edgeStart && sample.index <= edgeEnd);
-    expect(regenerativeSamples.length).toBeGreaterThanOrEqual(2);
-    expect(regenerativeSamples.every((sample, index) => (
-      index === 0
-      || (sample.v6 > regenerativeSamples[index - 1]!.v6
-        && sample.v7 > regenerativeSamples[index - 1]!.v7)
-    ))).toBe(true);
-    // spice-ts regression pins for the recovery step (no ngspice reference:
-    // ngspice-47 rejects the fixture's `off=1` card). The pre-edge sample
-    // reflects the Early factor using the true reverse VBC (#385). The same
-    // deck converged (RELTOL=1e-7, TMAX=10 ps) gives v6=-1.0125, v7=-1.8101
-    // at that time; the raw-RHS history (#482) had v7 0.6 mV high at -1.8095.
-    // The mid-jump v7 sample moved from -0.8945 to -0.8950 when the BJT
-    // thermal voltage became ngspice's kT/q at 300.15 K (#525). The mid-jump
-    // sample is wherever the recovery step lands: with the true exponential
-    // above vcrit (#538) the step is 287.62 -> 288.12 ns instead of
-    // 287.62 -> 291.62 ns, so it reads v6=-0.0604, v7=-0.9199.
-    // ngspice-47 on this charge-free deck (`off`, `.tran 20ns 1000ns 0 0.2ns`)
-    // aborts with "timestep too small" at 287.616 ns with v6=-1.0122,
-    // v7=-1.8102: the same onset as the pre-edge sample here.
-    expect(transient.time[edgeStart - 1]! / 287.616e-9).toBeCloseTo(1, 4);
-    expect(v6[edgeStart - 1]).toBeCloseTo(-1.0125, 3);
-    expect(v7[edgeStart - 1]).toBeCloseTo(-1.8101, 3);
-    expect(v6[edgeStart]).toBeCloseTo(-0.0604, 3);
-    expect(v7[edgeStart]).toBeCloseTo(-0.9199, 3);
-
-    const telemetry = first.convergence!.transient;
-    expect(telemetry.acceptedSteps).toBeLessThan(4_000);
-    expect(telemetry.rejectedSteps).toBeLessThan(1_500);
-    expect(telemetry.failure).toBeNull();
+  it('stops at the charge-free regenerative fold where ngspice-47 does', { timeout: 30_000 }, async () => {
+    // Without stored charge the regenerative transition is a fold: past
+    // 287.616 ns no state continues the trajectory for a short step, and
+    // ngspice-47 on this charge-free deck (`off`, `.tran 20ns 1000ns`, and with
+    // TMAX 0.2 ns too) aborts with "timestep too small" at 287.616 ns. With
+    // the node-voltage LTE spice-ts approached the fold on a different grid
+    // and its implicit-breakpoint recovery (#139/#147) happened to converge a
+    // 0.5 ns Backward-Euler step across it; on ngspice's CKTtrunc grid (#621)
+    // that recovery is still attempted from the same onset but fails like
+    // ngspice. The fixture itself stores charge (#385) and completes above.
+    let error: unknown;
+    try {
+      await simulate(chargeFreeVariant(fixture));
+    } catch (caught) {
+      error = caught;
+    }
+    expect(error).toBeInstanceOf(TimestepTooSmallError);
+    expect((error as TimestepTooSmallError).time! / 287.616e-9).toBeCloseTo(1, 5);
   });
 });
