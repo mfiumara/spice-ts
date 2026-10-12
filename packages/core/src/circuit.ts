@@ -601,6 +601,28 @@ function internalNodeName(deviceName: string, suffix: string): string {
 }
 
 /**
+ * MOS1 drain/source series resistances as ngspice-47 mos1temp.c computes them:
+ * a given RD (RS) wins, and RD = 0 means none; otherwise RSH * NRD (RSH * NRS)
+ * when RSH is given and non-zero, with NRD = NRS = 1 square by default
+ * (mos1set.c). Both are divided by the instance multiplier M.
+ */
+function mos1SeriesResistances(
+  card: Readonly<Record<string, number | undefined>>,
+  instance: Readonly<Record<string, number | undefined>> | undefined,
+): { drain: number; source: number } {
+  const m = instance?.M ?? 1;
+  const sheet = card.RSH ?? 0;
+  const resistance = (given: number | undefined, squares: number): number => {
+    if (given !== undefined) return given !== 0 ? given / m : 0;
+    return sheet !== 0 && squares !== 0 ? (sheet * squares) / m : 0;
+  };
+  return {
+    drain: resistance(card.RD, instance?.NRD ?? 1),
+    source: resistance(card.RS, instance?.NRS ?? 1),
+  };
+}
+
+/**
  * `.model` registry keyed case-insensitively, as in ngspice: `M1 ... PMOS`
  * must resolve `.model pmos pmos ...`. A miss silently falls back to default
  * device parameters, so a case mismatch would otherwise change the circuit.
@@ -2691,6 +2713,29 @@ export class Circuit {
           const series = bsim3SeriesResistances(desc.name, model.params, desc.params);
           let [drain, gate, source] = desc.nodes;
           const bulk = desc.nodes[3] ?? source;
+          if (series.drain !== 0) {
+            const prime = internalNodeName(desc.name, 'drain');
+            result.push({ type: 'R', name: `${desc.name}.RD`, nodes: [drain, prime], value: series.drain });
+            drain = prime;
+          }
+          if (series.source !== 0) {
+            const prime = internalNodeName(desc.name, 'source');
+            result.push({ type: 'R', name: `${desc.name}.RS`, nodes: [source, prime], value: series.source });
+            source = prime;
+          }
+          result.push({ ...desc, nodes: [drain, gate, source, bulk] });
+          continue;
+        }
+        if (model && (level === undefined || level === 1)) {
+          // MOS1 (mos1set.c/mos1temp.c): RD/RS in front of the drain/source prime nodes, or
+          // RSH*NRD / RSH*NRS (one square by default) when RD/RS are not given (#719).
+          const series = mos1SeriesResistances(model.params, desc.params);
+          let [drain, gate, source] = desc.nodes;
+          const bulk = desc.nodes[3] ?? source;
+          if (series.drain === 0 && series.source === 0) {
+            result.push(desc);
+            continue;
+          }
           if (series.drain !== 0) {
             const prime = internalNodeName(desc.name, 'drain');
             result.push({ type: 'R', name: `${desc.name}.RD`, nodes: [drain, prime], value: series.drain });

@@ -100,6 +100,16 @@ export function parsePassiveElement(
     } else if (!first.includes('=')) {
       modelName = first;
       idx++;
+      // inp2c.c/inp2l.c: INPdevParse reports an unlabeled number right after
+      // the model name ("waslead") and ngspice takes it as the capacitance or
+      // inductance, so `C1 a b CMOD 1pf` is a 1 pF capacitor (#719).
+      const lead = tokens[idx] !== undefined && !tokens[idx].includes('=')
+        ? parsePassiveNumberWithUnit(tokens, idx, kind)
+        : undefined;
+      if (lead) {
+        value = lead.value;
+        idx += lead.consumed;
+      }
     }
   }
 
