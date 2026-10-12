@@ -34,13 +34,12 @@ export const OUTPUT_ONLY_CONTROL_COMMANDS = new Set([
 /** Commands with an effect that the spice-ts interpreter executes. */
 const EXECUTED_CONTROL_COMMANDS = new Set([
   'run', 'let', 'unlet', 'set', 'unset', 'define', 'undefine', 'alter', 'altermod', 'option', 'options',
-  'setplot', 'destroy', 'compose', 'strcmp', 'setscale',
+  'setplot', 'destroy', 'compose', 'strcmp', 'setscale', 'meas',
 ]);
 
 /** Why a known ngspice command is not executed, for the structured error. */
 const UNSUPPORTED_REASONS: Record<string, string> = {
-  meas: 'control-language measurements are not implemented',
-  measure: 'control-language measurements are not implemented',
+  measure: "ngspice's control-language measurement command is 'meas'",
   fft: 'spectral analysis of vectors is not implemented',
   spec: 'spectral analysis of vectors is not implemented',
   fourier: 'Fourier analysis of vectors is not implemented',
@@ -69,7 +68,7 @@ const STRUCTURE_KEYWORDS = new Set(['if', 'else', 'end', 'while', 'dowhile', 're
 
 /** The contract text listed in an unsupported-command error. */
 const CONTRACT = 'spice-ts executes the analyses op/dc/ac/tran/noise/run, set/unset, let/unlet, define, alter/altermod, '
-  + 'option, setplot/destroy, compose, strcmp, setscale, if/else/end, while/dowhile/repeat/foreach/break/continue, '
+  + 'option, setplot/destroy, compose, strcmp, setscale, meas, if/else/end, while/dowhile/repeat/foreach/break/continue, '
   + 'and treats output-only commands (echo, print, plot, write, wrdata, save, ...) as no-ops';
 
 /** Lower-cased command word of a control line. */

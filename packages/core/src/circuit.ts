@@ -9,13 +9,15 @@ import { Resistor } from './devices/resistor.js';
 import { resolveResistor } from './devices/resistor-model.js';
 import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
+import { TransientNoiseContext } from './devices/transient-noise.js';
 import { Capacitor } from './devices/capacitor.js';
 import { Inductor } from './devices/inductor.js';
 import { MutualInductor } from './devices/mutual-inductor.js';
 import { Diode, diodeZeroBiasCapacitance } from './devices/diode.js';
-import { BJT } from './devices/bjt.js';
+import { BJT, hasBiasDependentBaseResistance } from './devices/bjt.js';
 import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
+import { MOS2, resolveMOS2Model } from './devices/mos2.js';
 import { MOS6, resolveMOS6Model } from './devices/mos6.js';
 import { VDMOS } from './devices/vdmos.js';
 import { isVdmosModelType, resolveVdmosModel } from './devices/vdmos-model.js';
@@ -61,8 +63,11 @@ import { evaluateExpression } from './parser/expression.js';
 import { parseNumber, tokenizeNetlist } from './parser/tokenizer.js';
 import { parseModelCard } from './parser/model-parser.js';
 import { assertDeviceModelType, normalizeModelType } from './parser/model-type.js';
-import { extractRFPort, parseSourceWaveform, parseInstanceParams } from './parser/waveform-parser.js';
+import {
+  extractRFPort, parseSourceWaveform, parseInstanceParams, transientNoiseWaveform, transientRandomWaveform,
+} from './parser/waveform-parser.js';
 import { parsePassiveElement } from './parser/passive-parser.js';
+import { locateSubcircuitCall } from './parser/subcircuit-syntax.js';
 import { parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
 import { parseSwitchInstance } from './parser/switch-parser.js';
@@ -95,8 +100,8 @@ import {
 } from './errors.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
-/** MOSFET model levels with a spice-ts implementation: MOS1, MOS6 and BSIM3v3 (8/49). */
-const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 6, 8, 49];
+/** MOSFET model levels with a spice-ts implementation: MOS1, MOS2, MOS6 and BSIM3v3 (8/49). */
+const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 2, 6, 8, 49];
 /** ngspice's default circuit temperature (and TNOM) in degrees Celsius. */
 const NOMINAL_TEMPERATURE_C = 27;
 /** ngspice CONSTCtoK. */
@@ -194,6 +199,22 @@ function alterSourceWaveform(
     descriptor.waveform = pulse as SourceDescriptorWaveform;
     return undefined;
   }
+  if (key === 'TRNOISE' || key === 'TRRANDOM') {
+    // ngspice-47 vsrcpar.c/isrcpar.c: the new coefficients replace the source
+    // function and re-initialise its noise state; DC and AC terms are kept.
+    let noise: SourceDescriptorWaveform;
+    try {
+      noise = key === 'TRNOISE' ? transientNoiseWaveform(values) : transientRandomWaveform(values);
+    } catch (error) {
+      return (error as Error).message;
+    }
+    const dc = waveform.type === 'dc' ? waveform.value : waveform.dc;
+    const ac = waveform.type === 'ac'
+      ? { magnitude: waveform.magnitude ?? 1, phase: waveform.phase ?? 0 }
+      : waveform.ac;
+    descriptor.waveform = { ...noise, ...(dc !== undefined ? { dc } : {}), ...(ac ? { ac } : {}) };
+    return undefined;
+  }
   if (values.length !== 1) return `parameter needs one value, got ${values.length}`;
   const [value] = values;
   if (key === undefined || key === 'DC') {
@@ -223,6 +244,13 @@ function sourceParameter(waveform: SourceDescriptorWaveform | undefined, key: st
   if (key === 'DC') return [sourceDc(source)];
   if (key === 'PULSE' && source.type === 'pulse') {
     return PULSE_FIELDS.map(field => (source as Record<string, number>)[field]);
+  }
+  if (key === 'TRNOISE' && source.type === 'trnoise') {
+    return [source.amplitude, source.ts, source.alpha, source.oneOverFAmplitude,
+      source.rtsAmplitude, source.rtsCaptureTime, source.rtsEmissionTime].map(value => value ?? 0);
+  }
+  if (key === 'TRRANDOM' && source.type === 'trrandom') {
+    return [source.distribution, source.ts, source.td, source.param1 ?? 1, source.param2].map(value => value ?? 0);
   }
   if (key === 'AC' || key === 'ACMAG') {
     return [source.type === 'ac' ? (source as { magnitude: number }).magnitude : source.ac?.magnitude ?? 0];
@@ -260,6 +288,13 @@ function formatParams(params?: Record<string, number>): string {
   if (!params) return '';
   return Object.entries(params)
     .map(([key, value]) => `${key}=${formatNumber(value)}`)
+    .join(' ');
+}
+
+/** Subcircuit defaults; expression defaults are written as `{expr}`. */
+function formatSubcircuitParams(params: Record<string, number | string>): string {
+  return Object.entries(params)
+    .map(([key, value]) => `${key}=${typeof value === 'number' ? formatNumber(value) : `{${value}}`}`)
     .join(' ');
 }
 
@@ -363,6 +398,17 @@ function formatWaveform(wf?: Partial<SourceWaveform> & { dc?: number }): string 
           .flatMap(point => [point.time, point.value])
           .map(formatNumber)
           .join(' ')})`;
+        break;
+      case 'trnoise':
+        base = `TRNOISE(${[
+          wf.amplitude ?? 0, wf.ts ?? 0, wf.alpha ?? 0, wf.oneOverFAmplitude ?? 0,
+          wf.rtsAmplitude ?? 0, wf.rtsCaptureTime ?? 0, wf.rtsEmissionTime ?? 0,
+        ].map(formatNumber).join(' ')})`;
+        break;
+      case 'trrandom':
+        base = `TRRANDOM(${[
+          wf.distribution ?? 0, wf.ts ?? 0, wf.td ?? 0, wf.param1 ?? 1, wf.param2 ?? 0,
+        ].map(formatNumber).join(' ')})`;
         break;
       default:
         base = 'DC 0';
@@ -600,8 +646,12 @@ export class Circuit {
   private _subcircuits = new Map<string, SubcktDefinition>();
   /** `.global` node names, keyed upper-case, valued with their first spelling. */
   private _globalNodes = new Map<string, string>();
+  /** Top-level `.param` values (upper-case names) visible inside subcircuits. */
+  private _parameters = new Map<string, number>();
+  private _parameterScope: Record<string, number> | undefined;
   private _simulationOptions: SimulationOptions = {};
   private _temperature: number | undefined;
+  private _xspiceTrtol: number | undefined;
   private _initialConditions: NodeInitialState[] = [];
   private _nodeSets: NodeInitialState[] = [];
   private nodeSet = new Set<string>();
@@ -642,6 +692,23 @@ export class Circuit {
       throw new InvalidCircuitError(`Invalid circuit temperature: ${celsius} C`);
     }
     this._temperature = celsius;
+  }
+
+  /**
+   * ngspice `.options XTRTOL=` (integer, at least 1), or `undefined` when not
+   * set. ngspice-47 cktdojob.c uses it instead of 1 as the trtol of a circuit
+   * with XSPICE 'A' devices whose trtol is above 1; otherwise it has no effect.
+   */
+  get xspiceTrtol(): number | undefined {
+    return this._xspiceTrtol;
+  }
+
+  /** Set the ngspice `.options XTRTOL=` value; see {@link xspiceTrtol}. */
+  setXspiceTrtol(trtol: number | undefined): void {
+    if (trtol !== undefined && (!Number.isInteger(trtol) || trtol < 1)) {
+      throw new InvalidCircuitError(`Invalid XSPICE trtol: ${trtol}`);
+    }
+    this._xspiceTrtol = trtol;
   }
 
   /**
@@ -1266,7 +1333,8 @@ export class Circuit {
   /**
    * Add a MOSFET to the circuit.
    *
-   * Supports Level 1 (Shichman-Hodges), Level 6 (Sakurai-Newton) and Level 49/8 (BSIM3v3) models.
+   * Supports Level 1 (Shichman-Hodges), Level 2 (Grove-Frohman), Level 6 (Sakurai-Newton) and
+   * Level 49/8 (BSIM3v3) models.
    * Any other `LEVEL` raises {@link UnsupportedModelLevelError} at compile time.
    *
    * @param name - Device name (e.g., `'M1'`)
@@ -1322,6 +1390,23 @@ export class Circuit {
   /** Declared `.global` node names, in declaration order. */
   get globalNodes(): string[] {
     return [...this._globalNodes.values()];
+  }
+
+  /**
+   * Set top-level `.param` values. As in ngspice numparam, subcircuit
+   * expressions (default parameter values, `{...}` values and B-source
+   * expressions) see them unless a subcircuit parameter or a `.param` inside
+   * the subcircuit shadows the name. {@link parseAsync} records the deck's
+   * top-level parameters here. Names are case-insensitive; later values win.
+   */
+  setParameters(values: Readonly<Record<string, number>>): void {
+    for (const [name, value] of Object.entries(values)) this._parameters.set(name.toUpperCase(), value);
+    this._parameterScope = undefined;
+  }
+
+  /** Top-level `.param` values visible inside subcircuits, keyed upper-case. */
+  get parameters(): Record<string, number> {
+    return Object.fromEntries(this._parameters);
   }
 
   /**
@@ -1639,6 +1724,7 @@ export class Circuit {
       return value === undefined ? [] : [`${name}=${format(value)}`];
     });
     if (this._temperature !== undefined) serializedOptions.push(`temp=${this._temperature}`);
+    if (this._xspiceTrtol !== undefined) serializedOptions.push(`xtrtol=${this._xspiceTrtol}`);
     if (serializedOptions.length > 0) lines.push(`.options ${serializedOptions.join(' ')}`);
 
     for (const model of this._models.values()) {
@@ -1649,8 +1735,10 @@ export class Circuit {
     }
 
     if (this._globalNodes.size > 0) lines.push(`.global ${this.globalNodes.join(' ')}`);
+    // Top-level parameters only reach the output through subcircuit bodies.
+    if (this._parameters.size > 0 && this._subcircuits.size > 0) lines.push(`.param ${formatParams(this.parameters)}`);
     for (const subckt of this._subcircuits.values()) {
-      const params = formatParams(subckt.params);
+      const params = formatSubcircuitParams(subckt.params);
       const header = `.subckt ${subckt.name} ${subckt.ports.join(' ')}${params ? ` ${params}` : ''}`;
       lines.push(header.trim());
       lines.push(...subckt.body);
@@ -1821,6 +1909,8 @@ export class Circuit {
 
     const devices: DeviceModel[] = [];
     const deviceMap = new Map<string, DeviceModel>();
+    // One random stream per compiled circuit for its TRNOISE/TRRANDOM sources (ngspice has one per process).
+    const noiseContext = new TransientNoiseContext(this._simulationOptions.seed);
     const pendingCurrentSwitches: { device: CurrentSwitch; controlSource: string }[] = [];
     const ltraStates = new Map<string, LtraModelState>();
 
@@ -1847,11 +1937,13 @@ export class Circuit {
         case 'V': {
           const bi = branchIndex++;
           branchNames.push(desc.name);
-          devices.push(new VoltageSource(desc.name, nodeIndices, bi, resolveWaveform(desc.waveform), desc.port));
+          devices.push(new VoltageSource(
+            desc.name, nodeIndices, bi, resolveWaveform(desc.waveform), desc.port, noiseContext,
+          ));
           break;
         }
         case 'I':
-          devices.push(new CurrentSource(desc.name, nodeIndices, resolveWaveform(desc.waveform)));
+          devices.push(new CurrentSource(desc.name, nodeIndices, resolveWaveform(desc.waveform), noiseContext));
           break;
         case 'C': {
           const model = desc.modelName ? this._models.get(desc.modelName) : undefined;
@@ -2057,6 +2149,20 @@ export class Circuit {
               resolveMOS6Model(desc.modelName!, modelParams, polarity),
               desc.params ?? {},
             ));
+          } else if (level === 2) {
+            // MOS2 (Grove-Frohman, ngspice mos2) — 4-terminal, bulk defaults to source.
+            const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];
+            const nodeIdxs = [
+              resolveNode(desc.nodes[0]),
+              resolveNode(desc.nodes[1]),
+              resolveNode(desc.nodes[2]),
+              resolveNode(bulkNode),
+            ];
+            devices.push(new MOS2(
+              desc.name, nodeIdxs,
+              resolveMOS2Model(desc.modelName!, modelParams, polarity),
+              desc.params ?? {},
+            ));
           } else if (level === 1) {
             // Level 1 (ngspice mos1); bulk defaults to source.
             const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];
@@ -2068,7 +2174,7 @@ export class Circuit {
             ];
             devices.push(new MOSFET(desc.name, nodeIdxs, { ...modelParams, ...desc.params, polarity }));
           } else {
-            // #530: never evaluate an unimplemented level (MOS2/3, BSIM1/2, ...) with Level-1 equations.
+            // #530: never evaluate an unimplemented level (MOS3, BSIM1/2, ...) with Level-1 equations.
             throw new UnsupportedModelLevelError(desc.name, desc.modelName, level, SUPPORTED_MOSFET_LEVELS);
           }
           break;
@@ -2164,9 +2270,10 @@ export class Circuit {
       steps: this._steps,
       simulationOptions: {
         ...this._simulationOptions,
-        // ngspice cktdojob.c: with 'A' devices present, trtol above 1 is reduced to 1.
+        // ngspice cktdojob.c: with 'A' devices present, trtol above 1 becomes
+        // the `xtrtol` variable (set by `.options XTRTOL=`) or else 1.
         ...(xspiceInstances.size > 0 && (this._simulationOptions.trtol ?? DEFAULT_OPTIONS.trtol) > 1
-          ? { trtol: 1 }
+          ? { trtol: this._xspiceTrtol ?? 1 }
           : {}),
       },
       initialConditions: this._initialConditions.map(state => ({ ...state })),
@@ -2218,6 +2325,12 @@ export class Circuit {
     }
   }
 
+  /** Top-level `.param` values as a prototype-free variable record for subcircuit scopes. */
+  private parameterScope(): Record<string, number> {
+    this._parameterScope ??= Object.assign(Object.create(null) as Record<string, number>, this.parameters);
+    return this._parameterScope;
+  }
+
   /** Collect top-level and reachable subcircuit `.global` declarations. */
   private collectGlobalNodes(guard?: ProtocolExecutionGuard): Map<string, string> {
     const globals = new Map(this._globalNodes);
@@ -2240,9 +2353,7 @@ export class Circuit {
             if (node !== GROUND_NODE && !globals.has(key)) globals.set(key, node);
           }
         } else if (tokens[0]?.[0].toUpperCase() === 'X') {
-          let index = tokens.length - 1;
-          while (index > 1 && tokens[index].includes('=')) index--;
-          pending.push(tokens[index]);
+          pending.push(tokens[locateSubcircuitCall(tokens).nameIndex]);
         }
       }
     }
@@ -2440,12 +2551,20 @@ export class Circuit {
             continue;
           }
           let [collector, base, emitter] = terminals;
+          // ngspice-47 bjtload.c: with RBM != RB the base resistance depends on
+          // the bias, so the device stamps it on a fifth (external base) node.
+          const variableBaseResistance = hasBiasDependentBaseResistance(model.params);
+          const externalBase = base;
           for (const [parameter, terminal] of [
             ['RC', collector], ['RB', base], ['RE', emitter],
           ] as const) {
             const resistance = model.params[parameter];
             if (!isPositiveFinite(resistance)) continue;
             const internal = internalNodeName(desc.name, parameter.toLowerCase());
+            if (parameter === 'RB' && variableBaseResistance) {
+              base = internal;
+              continue;
+            }
             result.push({
               type: 'R', name: `${desc.name}.${parameter}`, nodes: [terminal, internal],
               value: resistance / instanceScale,
@@ -2454,7 +2573,12 @@ export class Circuit {
             else if (parameter === 'RB') base = internal;
             else emitter = internal;
           }
-          result.push({ ...desc, nodes: [collector, base, emitter, ...terminals.slice(3)] });
+          result.push({
+            ...desc,
+            nodes: variableBaseResistance && base !== externalBase
+              ? [collector, base, emitter, terminals[3] ?? GROUND_NODE, externalBase]
+              : [collector, base, emitter, ...terminals.slice(3)],
+          });
         } else {
           result.push({ ...desc, nodes: terminals });
         }
@@ -2725,10 +2849,32 @@ export class Circuit {
       portMap.set(def.ports[i].toUpperCase(), connectedPorts[i]);
     }
 
-    // Merge parameters: definition defaults overridden by instance params
-    const mergedParams: Record<string, number> = { ...def.params };
-    for (const [k, v] of Object.entries(instanceParams)) {
-      mergedParams[k.toUpperCase()] = v;
+    // ngspice numparam scope: top-level .params, shadowed by the subcircuit's
+    // parameters and the .params of its body.
+    const localParams: Record<string, number> = Object.create(this.parameterScope()) as Record<string, number>;
+    const overrides = new Map(Object.entries(instanceParams).map(([k, v]) => [k.toUpperCase(), v]));
+    // Defaults are evaluated in declaration order after the instance
+    // overrides, so `p2={p1*2}` follows an overridden p1 (ngspice-47).
+    for (const [k, value] of Object.entries(def.params)) {
+      const name = k.toUpperCase();
+      const override = overrides.get(name);
+      if (override !== undefined) {
+        localParams[name] = override;
+      } else if (typeof value === 'number') {
+        localParams[name] = value;
+      } else {
+        try {
+          localParams[name] = evaluateExpression(value, localParams);
+        } catch (error) {
+          throw new Error(
+            `Subcircuit '${subcktName}' (instance '${instanceName}') parameter '${k}=${value}': ${(error as Error).message}`,
+          );
+        }
+      }
+    }
+    const declared = new Set(Object.keys(def.params).map(k => k.toUpperCase()));
+    for (const [name, value] of overrides) {
+      if (!declared.has(name)) localParams[name] = value;
     }
 
     // Map a node name from the subcircuit body to the actual circuit node
@@ -2761,9 +2907,6 @@ export class Circuit {
       }
       return token;
     };
-
-    // Local params from .param lines inside subcircuit body
-    const localParams: Record<string, number> = { ...mergedParams };
 
     const result: DeviceDescriptor[] = [];
 
@@ -2825,24 +2968,30 @@ export class Circuit {
         case 'C': {
           const evaluatedTokens = tokens.map(t => evalToken(t));
           const parsed = parsePassiveElement(evaluatedTokens, 3, 'C');
+          // IC= is the initial condition, as on a top-level card.
+          const { IC: ic, ...params } = parsed.params;
           result.push({
             type: 'C', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             value: parsed.value,
             modelName: parsed.modelName,
-            params: parsed.params,
+            params,
+            ...(ic === undefined ? {} : { ic }),
           });
           break;
         }
         case 'L': {
           const evaluatedTokens = tokens.map(t => evalToken(t));
           const parsed = parsePassiveElement(evaluatedTokens, 3, 'L');
+          // IC= is the initial condition, as on a top-level card.
+          const { IC: ic, ...params } = parsed.params;
           result.push({
             type: 'L', name: devName,
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             value: parsed.value,
             modelName: parsed.modelName,
-            params: parsed.params,
+            params,
+            ...(ic === undefined ? {} : { ic }),
           });
           break;
         }
@@ -3034,14 +3183,11 @@ export class Circuit {
         }
         case 'X': {
           // Nested subcircuit instance — recursively expand
-          let subcktIdx = tokens.length - 1;
-          while (subcktIdx > 1 && tokens[subcktIdx].includes('=')) {
-            subcktIdx--;
-          }
-          const nestedSubcktName = tokens[subcktIdx];
-          const nestedPorts = tokens.slice(1, subcktIdx).map(mapNode);
+          const call = locateSubcircuitCall(tokens);
+          const nestedSubcktName = tokens[call.nameIndex];
+          const nestedPorts = tokens.slice(1, call.nameIndex).map(mapNode);
           const evaluatedTokens = tokens.map(t => evalToken(t));
-          const nestedParams = parseInstanceParams(evaluatedTokens, subcktIdx + 1);
+          const nestedParams = parseInstanceParams(evaluatedTokens, call.paramStart);
 
           const newVisited = new Set(visited);
           newVisited.add(key);

@@ -46,7 +46,7 @@ import {
   ProtocolExecutionGuard,
   type ProtocolExecutionOptionsV1,
 } from './execution-guard.js';
-import { directedLinearPointCount } from '../analysis/directed-linear-grid.js';
+import { accumulatedLinearPointCount, directedLinearPointCount } from '../analysis/directed-linear-grid.js';
 import { frequencyPointCount } from '../analysis/frequency-grid.js';
 import { isValidMaxTimestepOption } from '../analysis/max-timestep.js';
 
@@ -344,10 +344,10 @@ function estimatedAnalysisPoints(analysis: AnalysisDirective, reltol: number): n
   switch (analysis.type) {
     case 'op': return 1;
     case 'dc': {
-      const primaryPoints = finiteLinearPoints(analysis.start, analysis.stop, analysis.step);
+      const primaryPoints = accumulatedLinearPointCount(analysis.start, analysis.stop, analysis.step);
       const secondaryPoints = analysis.secondary === undefined
         ? 1
-        : finiteLinearPoints(
+        : accumulatedLinearPointCount(
           analysis.secondary.start, analysis.secondary.stop, analysis.secondary.step,
         );
       return primaryPoints * secondaryPoints;

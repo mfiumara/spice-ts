@@ -21,6 +21,8 @@ const NOMINAL_TEMPERATURE = 27;
 export abstract class BehavioralSource implements DeviceModel {
   abstract readonly branches: number[];
   readonly isNonlinear = true;
+  /** asrcload.c applies no limiting and ngspice no node damping. */
+  readonly undampedNodes = true;
   protected readonly voltages: Float64Array;
   protected readonly gradient: Float64Array;
   private readonly environment: BehavioralEnvironment = {

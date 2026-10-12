@@ -131,17 +131,18 @@ function criticalVoltage(saturationCurrent: number, vt: number): number {
 }
 
 /**
- * Reused [gbs, ceqbs, gbd, ceqbd, vbs, vbd] buffer written by
+ * Reused [gbs, ceqbs, gbd, ceqbd, vbs, vbd, limited] buffer written by
  * {@link mos1BulkJunctions}; consumed immediately by each stamp.
  */
-const junctionScratch = new Float64Array(6);
+const junctionScratch = new Float64Array(7);
 
 /**
  * ngspice mos1load.c bulk junctions at terminal voltages vD, vS, vB. As in
  * mos1load.c, vbs is limited with DEVpnjlim when vds >= 0 (vbd otherwise)
  * against the previous stamp's lastVbs/lastVbd, so a converged Newton point
  * is evaluated without limiting. Writes [gbs, ceqbs, gbd, ceqbd] (companion
- * terms, polarity domain) and the limited [vbs, vbd] into `out`.
+ * terms, polarity domain), the limited [vbs, vbd] and whether DEVpnjlim
+ * changed the junction voltage (1, mos1load.c icheck) or not (0) into `out`.
  */
 function mos1BulkJunctions(
   out: Float64Array, vD: number, vS: number, vB: number, polarity: number,
@@ -151,11 +152,16 @@ function mos1BulkJunctions(
   const vds = polarity * (vD - vS);
   let vbs = polarity * (vB - vS);
   let vbd = vbs - vds;
+  let limited: number;
   if (vds >= 0) {
+    const raw = vbs;
     vbs = pnjlim(vbs, lastVbs, vt, sourceVcrit);
+    limited = vbs !== raw ? 1 : 0;
     vbd = vbs - vds;
   } else {
+    const raw = vbd;
     vbd = pnjlim(vbd, lastVbd, vt, drainVcrit);
+    limited = vbd !== raw ? 1 : 0;
     vbs = vbd + vds;
   }
   bulkJunction(vbs, sourceSatCur, vt, gmin, out, 0);
@@ -164,6 +170,7 @@ function mos1BulkJunctions(
   out[3] -= out[2] * vbd;
   out[4] = vbs;
   out[5] = vbd;
+  out[6] = limited;
 }
 
 /**
@@ -256,7 +263,9 @@ const mosfetBatches = new WeakMap<readonly MOSFET[], MosfetBatch>();
 const STATE_VBS = 0;
 const STATE_VBD = 1;
 const STATE_VON = 2;
-const STATE_STRIDE = 3;
+/** 1 when the last stamp limited a bulk junction (mos1load.c icheck -> CKTnoncon), else 0. */
+const STATE_LIMITED = 3;
+const STATE_STRIDE = 4;
 
 /** Bumped whenever MosfetStateStores merge, so batches re-resolve their state rows. */
 let stateStoreEpoch = 0;
@@ -336,7 +345,8 @@ export class MOSFET implements DeviceModel {
   private drainVcrit = 0;
   private sourceVcrit = 0;
   /**
-   * Newton linearisation state (ngspice CKTstate0 vbs/vbd and MOS1von):
+   * Newton linearisation state (ngspice CKTstate0 vbs/vbd, MOS1von and the
+   * mos1load.c icheck junction-limited flag):
    * STATE_STRIDE values at `stateBase` in a store shared with the other
    * instances batch-stamped alongside this one; see {@link MosfetStateStore}.
    */
@@ -577,6 +587,7 @@ export class MOSFET implements DeviceModel {
     );
     this.lastVbs = out[4];
     this.lastVbd = out[5];
+    this.stateStore.values[this.stateBase + STATE_LIMITED] = out[6];
     return out;
   }
 
@@ -586,6 +597,15 @@ export class MOSFET implements DeviceModel {
     return mos1Channel(
       channelScratch, vgs, vds, vbs, this.tPhi, this.sqrtPhi, this.builtInVon, GAMMA, LAMBDA, this.beta,
     );
+  }
+
+  /**
+   * Whether the last stamp limited a bulk junction with DEVpnjlim. As in
+   * ngspice (mos1load.c icheck), Newton cannot converge on such an iterate:
+   * the junction current was evaluated at a voltage the solution lacks.
+   */
+  limitedLastStamp(): boolean {
+    return this.stateStore.values[this.stateBase + STATE_LIMITED] !== 0;
   }
 
   limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {
@@ -962,6 +982,7 @@ export class MOSFET implements DeviceModel {
       const lastVbd = junction[5];
       state[r + STATE_VBS] = lastVbs;
       state[r + STATE_VBD] = lastVbd;
+      state[r + STATE_LIMITED] = junction[6];
       const gbs = junction[0];
       const gbd = junction[2];
       const ceqbs = polarity * junction[1];

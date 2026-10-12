@@ -106,6 +106,16 @@ describe('MOSFET.batchStamp struct-of-arrays state (#653)', () => {
       expectIdentical(actual.assembler.gValues, expected.assembler.gValues);
       expectIdentical(actual.assembler.b, expected.assembler.b);
 
+      // limitedLastStamp (mos1load.c icheck -> CKTnoncon, #664) reports what
+      // the last stamp of each instance did, batched or not.
+      for (let index = 0; index < all.length; index++) {
+        expect(actual.mosfets[index].limitedLastStamp())
+          .toBe(expected.mosfets[index].limitedLastStamp());
+      }
+      if (pass === 0) {
+        expect(indices.some(index => expected.mosfets[index].limitedLastStamp())).toBe(true);
+      }
+
       // limitNewtonStep reads the threshold (von) the last stamp stored.
       const previous = new Float64Array(actual.assembler.solution);
       const candidate = previous.map((value, i) => value + 0.8 * Math.cos(i + pass));
