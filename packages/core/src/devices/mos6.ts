@@ -222,7 +222,7 @@ export function resolveMOS6Model(
 }
 
 /** devsup.c DEVfetlim. */
-function fetlim(vnew: number, vold: number, vto: number): number {
+export function fetlim(vnew: number, vold: number, vto: number): number {
   const vtsthi = Math.abs(2 * (vold - vto)) + 2;
   const vtstlo = Math.abs(vold - vto) + 1;
   const vtox = vto + 3.5;
@@ -244,7 +244,7 @@ function fetlim(vnew: number, vold: number, vto: number): number {
 }
 
 /** devsup.c DEVlimvds. */
-function limvds(vnew: number, vold: number): number {
+export function limvds(vnew: number, vold: number): number {
   if (vold >= 3.5) {
     if (vnew > vold) return Math.min(vnew, 3 * vold + 2);
     return vnew < 3.5 ? Math.max(vnew, 2) : vnew;
@@ -253,7 +253,7 @@ function limvds(vnew: number, vold: number): number {
 }
 
 /** devsup.c DEVpnjlim. */
-function pnjlim(vnew: number, vold: number, vt: number, vcrit: number): number {
+export function pnjlim(vnew: number, vold: number, vt: number, vcrit: number): number {
   if (vnew > vcrit && Math.abs(vnew - vold) > vt + vt) {
     if (vold > 0) {
       const arg = (vnew - vold) / vt;
@@ -845,12 +845,12 @@ export class MOS6 implements DeviceModel {
   }
 }
 
-function branchVoltage(ctx: StampContext, positive: number, negative: number): number {
+export function branchVoltage(ctx: StampContext, positive: number, negative: number): number {
   return (positive >= 0 ? ctx.getVoltage(positive) : 0)
     - (negative >= 0 ? ctx.getVoltage(negative) : 0);
 }
 
-function stepScale(previous: number, proposed: number, limited: number): number {
+export function stepScale(previous: number, proposed: number, limited: number): number {
   const delta = proposed - previous;
   if (delta === 0) return 1;
   return Math.min(1, Math.max(0, (limited - previous) / delta));
@@ -861,7 +861,7 @@ function stepScale(previous: number, proposed: number, limited: number): number 
  * sparsity pattern captured on the first assembly already holds every
  * bias-dependent Meyer entry.
  */
-function stampCapacitance(ctx: StampContext, n1: number, n2: number, value: number): void {
+export function stampCapacitance(ctx: StampContext, n1: number, n2: number, value: number): void {
   if (n1 === n2) return;
   if (n1 >= 0) {
     ctx.stampC(n1, n1, value);

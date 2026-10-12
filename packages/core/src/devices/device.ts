@@ -188,6 +188,13 @@ export interface DeviceModel {
    */
   readonly limitsOwnJunctions?: boolean;
   /**
+   * True when transient Newton must not damp the device's nodes, because
+   * ngspice neither damps node voltages nor limits this device (ASRC `B`
+   * sources): a capped node cannot reach the large first-step jump of a UIC
+   * start, so Newton ratchets to the timestep floor.
+   */
+  readonly undampedNodes?: boolean;
+  /**
    * Start a transient Newton solve at a new or retried timepoint: limit the
    * first iterate against the last accepted junction state (ngspice
    * MODEINITPRED), not against an iterate of a rejected attempt.

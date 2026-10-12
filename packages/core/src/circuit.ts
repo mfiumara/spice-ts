@@ -17,6 +17,7 @@ import { Diode, diodeZeroBiasCapacitance } from './devices/diode.js';
 import { BJT, hasBiasDependentBaseResistance } from './devices/bjt.js';
 import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
+import { MOS2, resolveMOS2Model } from './devices/mos2.js';
 import { MOS6, resolveMOS6Model } from './devices/mos6.js';
 import { VDMOS } from './devices/vdmos.js';
 import { isVdmosModelType, resolveVdmosModel } from './devices/vdmos-model.js';
@@ -99,8 +100,8 @@ import {
 } from './errors.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
 
-/** MOSFET model levels with a spice-ts implementation: MOS1, MOS6 and BSIM3v3 (8/49). */
-const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 6, 8, 49];
+/** MOSFET model levels with a spice-ts implementation: MOS1, MOS2, MOS6 and BSIM3v3 (8/49). */
+const SUPPORTED_MOSFET_LEVELS: readonly number[] = [1, 2, 6, 8, 49];
 /** ngspice's default circuit temperature (and TNOM) in degrees Celsius. */
 const NOMINAL_TEMPERATURE_C = 27;
 /** ngspice CONSTCtoK. */
@@ -650,6 +651,7 @@ export class Circuit {
   private _parameterScope: Record<string, number> | undefined;
   private _simulationOptions: SimulationOptions = {};
   private _temperature: number | undefined;
+  private _xspiceTrtol: number | undefined;
   private _initialConditions: NodeInitialState[] = [];
   private _nodeSets: NodeInitialState[] = [];
   private nodeSet = new Set<string>();
@@ -690,6 +692,23 @@ export class Circuit {
       throw new InvalidCircuitError(`Invalid circuit temperature: ${celsius} C`);
     }
     this._temperature = celsius;
+  }
+
+  /**
+   * ngspice `.options XTRTOL=` (integer, at least 1), or `undefined` when not
+   * set. ngspice-47 cktdojob.c uses it instead of 1 as the trtol of a circuit
+   * with XSPICE 'A' devices whose trtol is above 1; otherwise it has no effect.
+   */
+  get xspiceTrtol(): number | undefined {
+    return this._xspiceTrtol;
+  }
+
+  /** Set the ngspice `.options XTRTOL=` value; see {@link xspiceTrtol}. */
+  setXspiceTrtol(trtol: number | undefined): void {
+    if (trtol !== undefined && (!Number.isInteger(trtol) || trtol < 1)) {
+      throw new InvalidCircuitError(`Invalid XSPICE trtol: ${trtol}`);
+    }
+    this._xspiceTrtol = trtol;
   }
 
   /**
@@ -1314,7 +1333,8 @@ export class Circuit {
   /**
    * Add a MOSFET to the circuit.
    *
-   * Supports Level 1 (Shichman-Hodges), Level 6 (Sakurai-Newton) and Level 49/8 (BSIM3v3) models.
+   * Supports Level 1 (Shichman-Hodges), Level 2 (Grove-Frohman), Level 6 (Sakurai-Newton) and
+   * Level 49/8 (BSIM3v3) models.
    * Any other `LEVEL` raises {@link UnsupportedModelLevelError} at compile time.
    *
    * @param name - Device name (e.g., `'M1'`)
@@ -1704,6 +1724,7 @@ export class Circuit {
       return value === undefined ? [] : [`${name}=${format(value)}`];
     });
     if (this._temperature !== undefined) serializedOptions.push(`temp=${this._temperature}`);
+    if (this._xspiceTrtol !== undefined) serializedOptions.push(`xtrtol=${this._xspiceTrtol}`);
     if (serializedOptions.length > 0) lines.push(`.options ${serializedOptions.join(' ')}`);
 
     for (const model of this._models.values()) {
@@ -2128,6 +2149,20 @@ export class Circuit {
               resolveMOS6Model(desc.modelName!, modelParams, polarity),
               desc.params ?? {},
             ));
+          } else if (level === 2) {
+            // MOS2 (Grove-Frohman, ngspice mos2) — 4-terminal, bulk defaults to source.
+            const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];
+            const nodeIdxs = [
+              resolveNode(desc.nodes[0]),
+              resolveNode(desc.nodes[1]),
+              resolveNode(desc.nodes[2]),
+              resolveNode(bulkNode),
+            ];
+            devices.push(new MOS2(
+              desc.name, nodeIdxs,
+              resolveMOS2Model(desc.modelName!, modelParams, polarity),
+              desc.params ?? {},
+            ));
           } else if (level === 1) {
             // Level 1 (ngspice mos1); bulk defaults to source.
             const bulkNode = desc.nodes.length >= 4 ? desc.nodes[3] : desc.nodes[2];
@@ -2139,7 +2174,7 @@ export class Circuit {
             ];
             devices.push(new MOSFET(desc.name, nodeIdxs, { ...modelParams, ...desc.params, polarity }));
           } else {
-            // #530: never evaluate an unimplemented level (MOS2/3, BSIM1/2, ...) with Level-1 equations.
+            // #530: never evaluate an unimplemented level (MOS3, BSIM1/2, ...) with Level-1 equations.
             throw new UnsupportedModelLevelError(desc.name, desc.modelName, level, SUPPORTED_MOSFET_LEVELS);
           }
           break;
@@ -2235,9 +2270,10 @@ export class Circuit {
       steps: this._steps,
       simulationOptions: {
         ...this._simulationOptions,
-        // ngspice cktdojob.c: with 'A' devices present, trtol above 1 is reduced to 1.
+        // ngspice cktdojob.c: with 'A' devices present, trtol above 1 becomes
+        // the `xtrtol` variable (set by `.options XTRTOL=`) or else 1.
         ...(xspiceInstances.size > 0 && (this._simulationOptions.trtol ?? DEFAULT_OPTIONS.trtol) > 1
-          ? { trtol: 1 }
+          ? { trtol: this._xspiceTrtol ?? 1 }
           : {}),
       },
       initialConditions: this._initialConditions.map(state => ({ ...state })),

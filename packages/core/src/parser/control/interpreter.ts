@@ -1,5 +1,8 @@
 import type { AnalysisDirective } from '../../types.js';
-import type { SimulationResult } from '../../results.js';
+import type { MeasurementResult, SimulationResult } from '../../results.js';
+import { getMeasure2, type MeasurePlot } from '../../measure/measure2.js';
+import { gettokWords } from '../../measure/dot-measure.js';
+import { inpEvaluate } from '../../measure/numparse.js';
 import { tokenizeNetlist } from '../tokenizer.js';
 import { ControlScriptError, ControlScriptExitError, UnsupportedControlCommandError } from './errors.js';
 import type { ControlScript, ControlStatement } from './script.js';
@@ -55,6 +58,8 @@ export interface ControlScriptOutcome {
   output: string[];
   /** True when the script ended with `quit`/`exit` (status 0): ngspice then skips the deck's own run. */
   quit: boolean;
+  /** Every `meas` command the script ran, in order; ngspice prints a failed one and continues. */
+  measurements: MeasurementResult[];
 }
 
 interface Plot {
@@ -136,6 +141,9 @@ class ControlInterpreter {
   private readonly savedDeviceVectors = new Set<string>();
   private readonly runs: ControlAnalysisRun[] = [];
   private readonly output: string[] = [];
+  private readonly measurements: MeasurementResult[] = [];
+  /** inpcom.c `replaceno`: numbers the `vexprint<n>` vectors of `meas` operands. */
+  private measureExpressionCount = 1;
 
   constructor(private readonly host: ControlHost) {}
 
@@ -145,9 +153,9 @@ class ControlInterpreter {
     } catch (signal) {
       if (!(signal instanceof QuitSignal)) throw signal;
       if (signal.status !== 0) throw new ControlScriptExitError(signal.status, signal.line.lineNumber, this.output);
-      return { runs: this.runs, output: this.output, quit: true };
+      return { runs: this.runs, output: this.output, quit: true, measurements: this.measurements };
     }
-    return { runs: this.runs, output: this.output, quit: false };
+    return { runs: this.runs, output: this.output, quit: false, measurements: this.measurements };
   }
 
   // -------------------------------------------------------------------------
@@ -258,6 +266,7 @@ class ControlInterpreter {
       case 'destroy': return this.destroy(rest, line);
       case 'compose': return this.compose(rest, line);
       case 'strcmp': return this.strcmp(rest, line);
+      case 'meas': return this.meas(rest, line);
       case 'setscale': {
         if (rest === '') return;
         this.current.scale = this.vector(rest, line);
@@ -500,6 +509,103 @@ class ControlInterpreter {
     if (words.length !== 3) throw new ControlScriptError('strcmp needs a variable and two strings', line.lineNumber, line.text);
     const [name, left, right] = words;
     this.variables.set(name.toLowerCase(), String(left < right ? -1 : left > right ? 1 : 0));
+  }
+
+  /**
+   * `meas`: ngspice-47 com_meas() (frontend/measure.c) after inpcom.c's
+   * inp_meas_control() rewrite, which moves every `=` operand with an
+   * arithmetic character into a temporary vector (`let vexprint<n> = operand`
+   * before the command, `unlet` after). A failed measurement is recorded, not
+   * thrown: ngspice prints it and runs on.
+   */
+  private meas(rest: string, line: ControlSourceLine): void {
+    // ngspice reads the deck lower-cased and inpcom.c inp_remove_excess_ws drops the blanks around `=`.
+    let text = rest.replace(/\s*=\s*/g, '=').toLowerCase();
+    const temporaries: { plot: Plot; name: string }[] = [];
+    let search = 0;
+    for (let equals = findAssignment(text, search); equals >= 0; equals = findAssignment(text, search)) {
+      const { token, end } = gettokAt(text, equals + 1);
+      if (!/[+\-*/()<>?:|&^!%\\]/.test(token)) {
+        search = end;
+        continue;
+      }
+      search = equals + 1;
+      const name = `vexprint${this.measureExpressionCount++}`;
+      try {
+        const plot = this.assignmentPlot(name);
+        plot.vectors.set(name, renamed(this.evaluate(token, line), name));
+        temporaries.push({ plot, name });
+      } catch (error) {
+        // ngspice prints the failed `let` and the measurement then misses the vector.
+        if (!(error instanceof ControlScriptError)) throw error;
+      }
+      text = `${text.slice(0, equals)}=${name} ${text.slice(end)}`;
+    }
+    try {
+      const result = this.measure(text.trim().split(/\s+/).filter(Boolean), line);
+      if (result) this.measurements.push(result);
+    } finally {
+      for (const { plot, name } of temporaries) plot.vectors.delete(name);
+    }
+  }
+
+  /** com_meas body: replace `=<single-valued vector>` by its value, measure, `let` the result. */
+  private measure(words: string[], line: ControlSourceLine): MeasurementResult | undefined {
+    if (words.length === 0) return undefined; // `meas` alone lists the vectors (com_display).
+    const failed = (error: string): MeasurementResult => ({
+      name: (words[1] ?? '').toLowerCase(), analysis: words[0].toLowerCase(), function: (words[2] ?? '').toLowerCase(),
+      line: line.lineNumber, status: 'failed', error,
+    });
+    const value = (operand: string): string | undefined => {
+      if (operand.toLowerCase() === 'last' || inpEvaluate(operand) !== undefined) return undefined;
+      const vector = this.measureVector(operand);
+      return vector && vector.re.length === 1 ? formatC(vector.re[0]) : undefined;
+    };
+    for (let index = 0; index < words.length; index++) {
+      const word = words[index];
+      if (word.endsWith('=')) {
+        if (++index >= words.length) return failed(`meas failed due to missing token in meas ${words.join(' ')}`);
+        words[index] = value(words[index]) ?? words[index];
+      } else if (word.includes('=')) {
+        const lhs = word.slice(0, word.indexOf('='));
+        const replaced = value(word.slice(word.indexOf('=') + 1));
+        if (replaced !== undefined) words[index] = `${lhs}=${replaced}`;
+      }
+    }
+    if (words.length < 2) return failed('unspecified output var name');
+    const outcome = getMeasure2(words, this.measurePlot());
+    if (!outcome.ok) return failed(outcome.error);
+    const name = words[1].toLowerCase();
+    const { ok: _ok, value: measured, ...details } = outcome;
+    // com_let(`%s = %e`): the vector holds the value printed with 7 significant digits.
+    this.assignmentPlot(name).vectors.set(name, scalar(Number(formatC(measured)), name));
+    return {
+      name, analysis: words[0].toLowerCase(), function: words[2].toLowerCase(), line: line.lineNumber, status: 'ok',
+      value: measured, ...details,
+    };
+  }
+
+  /** The current plot as `get_measure2` reads it. */
+  private measurePlot(): MeasurePlot {
+    return { type: this.current.name, scale: this.current.scale, vector: name => this.measureVector(name) };
+  }
+
+  /** ngspice vec_get for a measurement: the name, `v(node)` as `node`, `i(dev)` as `dev#branch`. */
+  private measureVector(rawName: string): ControlVector | undefined {
+    const name = rawName.toLowerCase();
+    const candidates = [name];
+    const voltage = /^v\((.+)\)$/.exec(name);
+    if (voltage) candidates.push(voltage[1]);
+    const current = /^i\((.+)\)$/.exec(name);
+    if (current) candidates.push(`${current[1]}#branch`);
+    for (const candidate of candidates) {
+      try {
+        return this.lookup(candidate);
+      } catch (error) {
+        if (!(error instanceof ExpressionError || error instanceof UnsupportedExpressionFeature)) throw error;
+      }
+    }
+    return undefined;
   }
 
   // -------------------------------------------------------------------------
@@ -807,6 +913,34 @@ function rejectRedirection(command: string, text: string, line: ControlSourceLin
       line.text,
     );
   }
+}
+
+/** inpcom.c find_assignment: the next `=` from `from` that is not part of `==`, `!=`, `<=` or `>=`. */
+function findAssignment(text: string, from: number): number {
+  for (let index = text.indexOf('=', from); index >= 0; index = text.indexOf('=', index + 1)) {
+    if (text[index + 1] === '=') {
+      index++;
+      continue;
+    }
+    if (index > 0 && '!<>'.includes(text[index - 1])) continue;
+    return index;
+  }
+  return -1;
+}
+
+/** misc/string.c gettok from `start`: the word and where the next one begins. */
+function gettokAt(text: string, start: number): { token: string; end: number } {
+  const [token = ''] = gettokWords(text.slice(start));
+  let end = text.indexOf(token, start) + token.length;
+  while (end < text.length && (/\s/.test(text[end]) || text[end] === ',')) end++;
+  return { token, end };
+}
+
+/** C `printf("%e")`. */
+function formatC(value: number): string {
+  if (Number.isNaN(value)) return 'nan';
+  if (!Number.isFinite(value)) return value > 0 ? 'inf' : '-inf';
+  return value.toExponential(6).replace(/e([+-])(\d)$/, 'e$10$2');
 }
 
 /** Index of the `=` that separates a `let` target from its expression. */
