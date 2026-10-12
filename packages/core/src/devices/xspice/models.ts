@@ -1,4 +1,5 @@
 import type { ChargeIntegration, ChargeTruncation } from '../device.js';
+import type { XspiceConnection } from './connections.js';
 import type { XspiceParamValue } from './spec.js';
 
 /**
@@ -25,6 +26,21 @@ export interface CodeModelCall {
   notConverged(): void;
 }
 
+/** Netlist values a code model reads at INIT (ngspice cm_netlist_get_c / cm_netlist_get_l). */
+export interface XspiceNetlistProbe {
+  /** Parallel capacitance on the instance's first port (cm_netlist_get_c). */
+  capacitance(): number;
+  /** Parallel inductance on the instance's first port (cm_netlist_get_l). */
+  inductance(): number;
+}
+
+/** What a code model sees of its instance besides parameters. */
+export interface XspiceBehaviorContext {
+  /** Resolved connections in port-table order; `isNull` marks PORT_NULL. */
+  readonly connections: readonly XspiceConnection[];
+  readonly netlist: XspiceNetlistProbe;
+}
+
 /** How a model's AC gain relates to its DC/TRAN partials. */
 export type CodeModelACForm =
   /** AC_GAIN equals the operating-point PARTIAL (gain, summer, mult, divide, pwl, limit). */
@@ -46,23 +62,29 @@ export interface CodeModelBehavior {
   truncate?(call: CodeModelCall, truncation: ChargeTruncation): number;
   /** Forget transient history before a restart at t = 0. */
   reset?(): void;
+  /**
+   * Accepting the operating point that starts a transient run. Defaults to
+   * {@link reset}; a model whose state the operating point itself sets (the
+   * hyst leg) keeps it, as dctran.c copies state0 into state1 at MODEINITTRAN.
+   */
+  beginTransient?(): void;
 }
 
 export type ResolvedXspiceParams = ReadonlyMap<string, readonly XspiceParamValue[]>;
 
-function real(params: ResolvedXspiceParams, name: string, index = 0): number {
+export function real(params: ResolvedXspiceParams, name: string, index = 0): number {
   return params.get(name)![index] as number;
 }
 
-function flag(params: ResolvedXspiceParams, name: string): boolean {
+export function flag(params: ResolvedXspiceParams, name: string): boolean {
   return params.get(name)![0] as boolean;
 }
 
-function reals(params: ResolvedXspiceParams, name: string): number[] {
+export function reals(params: ResolvedXspiceParams, name: string): number[] {
   return params.get(name)!.map(value => value as number);
 }
 
-const STATIC: CodeModelACForm = { kind: 'static' };
+export const STATIC: CodeModelACForm = { kind: 'static' };
 
 /** ngspice cmutil.c cm_smooth_corner: parabolic blend of two slopes about (x_center, y_center). */
 export function smoothCorner(
@@ -514,7 +536,7 @@ function differentiator(params: ResolvedXspiceParams): CodeModelBehavior {
   };
 }
 
-type BehaviorFactory = (params: ResolvedXspiceParams) => CodeModelBehavior;
+export type BehaviorFactory = (params: ResolvedXspiceParams, context: XspiceBehaviorContext) => CodeModelBehavior;
 
 /** Code model behaviors keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_BEHAVIORS: ReadonlyMap<string, BehaviorFactory> = new Map<string, BehaviorFactory>([

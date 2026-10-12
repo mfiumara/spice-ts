@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { InvalidCircuitError, ParseError } from '../errors.js';
-import { parse, parseTitleless } from '../parser/index.js';
+import { parse, parseTitleless, parseTitlelessAsync } from '../parser/index.js';
 import { UnsupportedResistorParameterError } from '../parser/resistor-parser.js';
 import { simulate } from '../simulate.js';
 import { Resistor } from './resistor.js';
@@ -191,7 +191,6 @@ describe('ngspice-47 resistor card forms (#498)', () => {
     ['instance TEMP', 'R1 1 0 1k temp=50', 'TEMP'],
     ['instance DTEMP', 'R1 1 0 1k dtemp=5', 'DTEMP'],
     ['unknown instance keyword', 'R1 1 0 1k foo=1', 'FOO'],
-    ['behavioral expression', "R2 4 6 R = 'res + 0.033 * res*V(r2)'", "'res"],
     ['unknown model parameter', 'R1 1 0 rx\n.model rx r r=1k xyz=2', 'XYZ'],
   ])('rejects %s with a typed error', (_label, card, parameter) => {
     let error: unknown;
@@ -204,6 +203,19 @@ describe('ngspice-47 resistor card forms (#498)', () => {
     expect(error).toBeInstanceOf(ParseError);
     expect((error as UnsupportedResistorParameterError).code).toBe('UNSUPPORTED_RESISTOR_PARAMETER');
     expect((error as UnsupportedResistorParameterError).parameters.join(' ')).toContain(parameter);
+  });
+
+  it('takes a v()-dependent resistor value to the B-source path in parse() as in simulate() (#510)', async () => {
+    const deck = "R2 4 6 R = 'res + 0.033 * res*V(r2)'\nV1 1 0 1\n.op";
+    let error: unknown;
+    try {
+      parseTitleless(deck);
+    } catch (caught) {
+      error = caught;
+    }
+    expect(error).toBeInstanceOf(ParseError);
+    expect((error as ParseError).message).toContain("Unsupported behavioral expression token 'res'");
+    await expect(parseTitlelessAsync(deck)).rejects.toThrow((error as ParseError).message);
   });
 
   it('rejects a resistor with neither value nor model, and an unresolvable model', () => {

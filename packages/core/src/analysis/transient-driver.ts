@@ -17,7 +17,7 @@ import {
 } from '../convergence-telemetry.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { Inductor } from '../devices/inductor.js';
-import { maxTimestepOption } from './max-timestep.js';
+import { maxTimestepOption, runnableTransient, transientStepCap } from './max-timestep.js';
 import { chargeTruncatedNodes } from './transient-node-truncation.js';
 import type { DeviceModel, TransientBreakpointSink } from '../devices/device.js';
 
@@ -57,11 +57,23 @@ const DT_CUT_FACTOR = 8;
  */
 const MIN_BREAK = 1e-14;
 
-/** dt is divided by this on the first step after a breakpoint (ngspice dctran.c). */
+/** The first timepoint of the run is cut by this after the t=0 breakpoint limit (ngspice dctran.c). */
 const POST_BREAK_DT_CUT = 10;
 
-/** First step after a t=0 breakpoint spans at most this fraction of the next gap (ngspice). */
+/**
+ * The step after a breakpoint spans at most this fraction of MIN(CKTsaveDelta,
+ * gap to the next breakpoint) (ngspice dctran.c).
+ */
 const START_BREAK_GAP_FRACTION = 0.1;
+
+/**
+ * ngspice dctran.c equalises the last two steps before a breakpoint when
+ * `CKTtime + 1.9 * CKTdelta > CKTbreaks[0]`, instead of leaving a short tail.
+ */
+const BREAK_EQUALISE_FACTOR = 1.9;
+
+/** ngspice AlmostEqualUlps(CKTtime + CKTdelta, CKTfinalTime, 100) tolerance in ulps. */
+const FINAL_TIME_ULPS = 100;
 
 /** ngspice dctran.c initial delta: MIN(TSTOP / 100, TSTEP) / 10. */
 const INITIAL_STEP_STOP_DIVISOR = 100;
@@ -134,20 +146,38 @@ export async function createTransientSim(
   const effectiveOptions = withNetlistOptions<TransientSimOptions>(compiled.simulationOptions, options);
   validateCircuit(compiled);
 
-  const tranAnalysis = compiled.analyses.find(a => a.type === 'tran');
-  const stopTime = effectiveOptions.stopTime ?? (tranAnalysis?.type === 'tran' ? tranAnalysis.stopTime : undefined);
-  const timestep = effectiveOptions.timestep ?? (tranAnalysis?.type === 'tran' ? tranAnalysis.timestep : undefined) ?? (stopTime ? stopTime / 50 : 1e-6);
-  const maxTimestep = maxTimestepOption(effectiveOptions.maxTimestep)
-    ?? (stopTime ? Math.min(timestep, stopTime / 50) : timestep * 10);
+  const found = compiled.analyses.find(a => a.type === 'tran');
+  const tranAnalysis = found?.type === 'tran' ? found : undefined;
+  let stopTime: number | undefined;
+  let timestep: number;
+  let maxTimestep: number;
+  if (tranAnalysis) {
+    // Same step grid as simulate() (#678): `.tran` TMAX wins over the
+    // maxTimestep option, which replaces the min(TSTEP, TSTOP/50) default;
+    // a zero TSTEP runs at that cap. stopTime/timestep options override the
+    // card's TSTOP/TSTEP before the cap is derived.
+    const runnable = runnableTransient({
+      ...tranAnalysis,
+      stopTime: effectiveOptions.stopTime ?? tranAnalysis.stopTime,
+      timestep: effectiveOptions.timestep ?? tranAnalysis.timestep,
+    }, effectiveOptions);
+    ({ stopTime, timestep } = runnable);
+    maxTimestep = transientStepCap(runnable);
+  } else {
+    stopTime = effectiveOptions.stopTime;
+    timestep = effectiveOptions.timestep ?? (stopTime ? stopTime / 50 : 1e-6);
+    maxTimestep = maxTimestepOption(effectiveOptions.maxTimestep)
+      ?? (stopTime ? Math.min(timestep, stopTime / 50) : timestep * 10);
+  }
 
   const resolved = resolveOptions(effectiveOptions, stopTime);
 
   return new TransientSimImpl(compiled, resolved, {
     stopTime, timestep, maxTimestep,
-    initialSolution: tranAnalysis?.type === 'tran' && tranAnalysis.useInitialConditions
+    initialSolution: tranAnalysis?.useInitialConditions
       ? computeUICInitialSolution(compiled)
       : undefined,
-    useInitialConditions: tranAnalysis?.type === 'tran' && tranAnalysis.useInitialConditions,
+    useInitialConditions: tranAnalysis?.useInitialConditions === true,
   });
 }
 
@@ -209,6 +239,12 @@ class TransientSimImpl implements TransientSim {
     },
   };
   private justCrossedBreakpoint = false;
+  /**
+   * ngspice CKTsaveDelta: the step size before it was cut to land on, or
+   * halved to equalise the approach to, the next breakpoint. The step after
+   * that breakpoint is limited by it rather than by the snapped step (#608).
+   */
+  private saveDelta = Infinity;
   /**
    * Take the next step at order 1 (Backward Euler) without higher-order
    * history. Set when a device reports a breakpoint at t=0: the DC operating
@@ -305,20 +341,9 @@ class TransientSimImpl implements TransientSim {
 
     const prevSol = new Float64Array(this.assembler.solution);
     let discontinuityRecoveryAttempted = false;
+    this.selectStep();
 
     while (true) {
-      if (this.justCrossedBreakpoint) {
-        // ngspice dctran.c convention: drop 2nd-order history and take a
-        // tiny Backward-Euler step to settle through the edge, then let LTE
-        // grow dt back up. Both prevB (trap) and secondPrevSol (gear2) being
-        // undefined makes the companion fall back to BE for one step.
-        this.secondPrevSol = undefined;
-        this.prevB = undefined;
-        this.lteRejectCount = 0;
-        this.dt = Math.max(this.dt / POST_BREAK_DT_CUT, MIN_TIMESTEP);
-        this.justCrossedBreakpoint = false;
-      }
-
       // Guard against dt=0 when caller advance()s past a done simulation.
       // stopTime clamping below can drive dt to 0 exactly at the boundary;
       // once past stopTime we just continue at the configured timestep.
@@ -478,16 +503,59 @@ class TransientSimImpl implements TransientSim {
       const remaining = this.config.stopTime !== undefined && this.config.stopTime > this.time
         ? this.config.stopTime - this.time
         : Infinity;
-      // When a breakpoint was just crossed, suppress the LTE-based grow so that
-      // the /POST_BREAK_DT_CUT at the top of the next iteration starts from the
-      // raw step size, not an already-doubled value. The next advance() will cut
-      // this.dt by POST_BREAK_DT_CUT and let LTE regrow from there.
       // ngspice CKTtrunc: the next step is at most the charge truncation bound.
-      const dtBase = this.justCrossedBreakpoint ? actualDt : Math.min(actualDt * growFactor, chargeBound);
+      // After a breakpoint the grown step is limited by CKTsaveDelta in
+      // selectStep (#608), not cut from the snapped step.
+      const dtBase = Math.min(actualDt * growFactor, chargeBound);
       this.dt = Math.min(dtBase, this.config.maxTimestep, remaining);
 
       return sol;
     }
+  }
+
+  /**
+   * ngspice dctran.c step selection at `resume:` (XSPICE build, as ngspice-47
+   * is shipped), applied once per accepted point; NR and truncation retries
+   * only shrink the selected step.
+   *
+   * At a breakpoint: order 1 and `delta = MIN(delta, .1 * MIN(CKTsaveDelta,
+   * next breakpoint - this one))`. Then, towards the next breakpoint (the
+   * final time is one in ngspice): cut the step to land on it, or halve the
+   * remaining gap when `CKTtime + 1.9 * CKTdelta` would cross it, saving the
+   * step before either cut as CKTsaveDelta.
+   */
+  private selectStep(): void {
+    this.dt = Math.min(this.dt, this.config.maxTimestep);
+    if (this.justCrossedBreakpoint) {
+      // Drop 2nd-order history: both prevB (trap) and secondPrevSol (gear2)
+      // undefined makes the companion fall back to BE for one step.
+      this.secondPrevSol = undefined;
+      this.prevB = undefined;
+      this.lteRejectCount = 0;
+      const gap = this.nextBreakTarget() - this.time;
+      this.dt = Math.max(Math.min(this.dt, START_BREAK_GAP_FRACTION * Math.min(this.saveDelta, gap)), MIN_TIMESTEP);
+      this.justCrossedBreakpoint = false;
+    }
+    const target = this.nextBreakTarget();
+    if (!Number.isFinite(target) || target <= this.time) return;
+    const stop = this.config.stopTime;
+    if (this.time + this.dt > target) {
+      this.saveDelta = this.dt;
+      this.dt = target - this.time;
+    } else if (
+      !(stop !== undefined && almostEqualUlps(this.time + this.dt, stop, FINAL_TIME_ULPS))
+      && this.time + BREAK_EQUALISE_FACTOR * this.dt > target
+    ) {
+      this.saveDelta = this.dt;
+      this.dt = (target - this.time) / 2;
+    }
+  }
+
+  /** ngspice CKTbreaks[0] after the passed ones are cleared: next breakpoint or the final time. */
+  private nextBreakTarget(): number {
+    const next = this.breakpoints.peek() ?? Infinity;
+    const stop = this.config.stopTime;
+    return stop !== undefined && stop > this.time ? Math.min(next, stop) : next;
   }
 
   advanceUntil(targetTime: number): TransientStep[] {
@@ -554,6 +622,8 @@ class TransientSimImpl implements TransientSim {
   private collectBreakpoints(): BreakpointQueue {
     const stop = this.config.stopTime;
     this.orderOnePending = false;
+    // ngspice dctran.c: CKTsaveDelta = CKTfinalTime / 50 before the first step.
+    this.saveDelta = stop === undefined ? Infinity : stop / SAVE_DELTA_STOP_DIVISOR;
     const times: number[] = [];
     // ngspice-47 dctran.c inserts RAMPTIME even in non-XSPICE_EXP builds,
     // where independent V/I sources are not ramped. capacitoric/inductoric
@@ -570,7 +640,7 @@ class TransientSimImpl implements TransientSim {
     const { timestep, maxTimestep } = this.config;
     const firstGap = queue.peek() ?? stop;
     const initial = Math.min(Math.min(stop / INITIAL_STEP_STOP_DIVISOR, timestep) / INITIAL_STEP_DIVISOR, maxTimestep);
-    const limited = Math.min(initial, START_BREAK_GAP_FRACTION * Math.min(stop / SAVE_DELTA_STOP_DIVISOR, firstGap));
+    const limited = Math.min(initial, START_BREAK_GAP_FRACTION * Math.min(this.saveDelta, firstGap));
     this.dt = Math.max(limited / POST_BREAK_DT_CUT, 2 * DELMIN_FRACTION * maxTimestep, MIN_TIMESTEP);
     return queue;
   }
@@ -719,6 +789,20 @@ class TransientSimImpl implements TransientSim {
 
 function validateCircuit(compiled: CompiledCircuit): void {
   if (compiled.nodeCount === 0) throw new InvalidCircuitError('Circuit has no nodes');
+}
+
+const ulpFloats = new Float64Array(2);
+const ulpInts = new BigInt64Array(ulpFloats.buffer);
+
+/** ngspice AlmostEqualUlps: same sign and at most `maxUlps` representable doubles apart. */
+function almostEqualUlps(a: number, b: number, maxUlps: number): boolean {
+  if (a === b) return true;
+  ulpFloats[0] = a;
+  ulpFloats[1] = b;
+  const x = ulpInts[0]!;
+  const y = ulpInts[1]!;
+  if ((x < 0n) !== (y < 0n)) return false;
+  return (x > y ? x - y : y - x) <= BigInt(maxUlps);
 }
 
 /**

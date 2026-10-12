@@ -56,6 +56,9 @@ export function newtonRaphson(
       stampStaticDevices(assembler, devices, ctx);
     }
 
+    // ngspice cktload.c forces held node rows after the device load.
+    assembler.applyNodeHolds();
+
     if (!assembler.isFastPath) {
       // First iteration: Map-based stamp completed. Add GMIN via Map, then lock topology.
       for (let i = 0; i < assembler.numNodes; i++) {

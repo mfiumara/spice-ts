@@ -6,8 +6,8 @@
  * MIF_INP2A and MIFgetMod use them.
  */
 
-/** Analog port types spice-ts can stamp (XSPICE `%v`, `%vd`, `%i`, `%id`, `%vnam`). */
-export type XspiceAnalogPortType = 'v' | 'vd' | 'i' | 'id' | 'vnam';
+/** Analog port types spice-ts can stamp (XSPICE `%v`, `%vd`, `%i`, `%id`, `%vnam`, `%g`, `%gd`). */
+export type XspiceAnalogPortType = 'v' | 'vd' | 'i' | 'id' | 'vnam' | 'g' | 'gd';
 
 /** Every port type the XSPICE grammar accepts after a `%`. */
 export const XSPICE_PORT_TYPES: ReadonlySet<string> = new Set([
@@ -175,9 +175,91 @@ const D_DT: XspiceCodeModelSpec = {
   ],
 };
 
+/** climit/ifspec.ifs */
+const CLIMIT: XspiceCodeModelSpec = {
+  name: 'climit',
+  connections: [input('in'), input('cntl_upper'), input('cntl_lower'), output('out')],
+  params: [
+    real('in_offset', 0), real('gain', 1),
+    real('upper_delta', 0), real('lower_delta', 0),
+    real('limit_range', 1e-6), boolean('fraction', false),
+  ],
+};
+
+/** hyst/ifspec.ifs */
+const HYST: XspiceCodeModelSpec = {
+  name: 'hyst',
+  connections: [input('in'), output('out')],
+  params: [
+    real('in_low', 0), real('in_high', 1),
+    real('hyst', 0.1, { limits: [0, undefined] }),
+    real('out_lower_limit', 0), real('out_upper_limit', 1),
+    real('input_domain', 0.01), boolean('fraction', true),
+  ],
+};
+
+/** A `%g`/`%gd` inout connection (ilimit power and output ports). */
+function conductance(name: string, nullAllowed: boolean): XspiceConnectionSpec {
+  return { name, direction: 'inout', defaultType: 'g', allowedTypes: ['g', 'gd'], vector: false, nullAllowed };
+}
+
+/** ilimit/ifspec.ifs */
+const ILIMIT: XspiceCodeModelSpec = {
+  name: 'ilimit',
+  connections: [input('in'), conductance('pos_pwr', true), conductance('neg_pwr', true), conductance('out', false)],
+  params: [
+    real('in_offset', 0), real('gain', 1),
+    real('r_out_source', 1, { limits: [1e-9, 1e9] }), real('r_out_sink', 1, { limits: [1e-9, 1e9] }),
+    real('i_limit_source', 10e-3, { limits: [1e-12, undefined] }),
+    real('i_limit_sink', 10e-3, { limits: [1e-12, undefined] }),
+    real('v_pwr_range', 1e-6, { limits: [1e-15, undefined] }),
+    real('i_source_range', 1e-9, { limits: [1e-15, undefined] }),
+    real('i_sink_range', 1e-9, { limits: [1e-15, undefined] }),
+    real('r_out_domain', 1e-9, { limits: [1e-15, undefined] }),
+  ],
+};
+
+/** slew/ifspec.ifs */
+const SLEW: XspiceCodeModelSpec = {
+  name: 'slew',
+  connections: [input('in'), output('out')],
+  params: [real('rise_slope', 1e-9), real('fall_slope', 1e-9)],
+};
+
+/** sine/ifspec.ifs: the control/frequency table and output levels. */
+const OSCILLATOR_TABLE: readonly XspiceParamSpec[] = [
+  { name: 'cntl_array', type: 'real', defaultValue: [0, 1], vector: true, vectorBounds: [2, undefined], nullAllowed: true },
+  {
+    name: 'freq_array', type: 'real', defaultValue: [1e3, 2e3], limits: [0, undefined],
+    vector: true, vectorBounds: [2, undefined], nullAllowed: true,
+  },
+  real('out_low', -1), real('out_high', 1),
+];
+
+/** sine/ifspec.ifs */
+const SINE: XspiceCodeModelSpec = {
+  name: 'sine',
+  connections: [input('cntl_in'), output('out')],
+  params: OSCILLATOR_TABLE,
+};
+
+/** A meter's input: ngspice xtradev cmeter/lmeter allow only `%v` and `%vd`. */
+const METER_IN: XspiceConnectionSpec = {
+  name: 'in', direction: 'in', defaultType: 'v', allowedTypes: ['v', 'vd'], vector: false, nullAllowed: false,
+};
+
+/** xtradev/cmeter/ifspec.ifs */
+const CMETER: XspiceCodeModelSpec = { name: 'cmeter', connections: [METER_IN, output('out')], params: [real('gain', 1)] };
+
+/** xtradev/lmeter/ifspec.ifs */
+const LMETER: XspiceCodeModelSpec = { name: 'lmeter', connections: [METER_IN, output('out')], params: [real('gain', 1)] };
+
 /** Implemented code models keyed by lower-case ngspice Spice_Model_Name. */
 export const XSPICE_CODE_MODEL_SPECS: ReadonlyMap<string, XspiceCodeModelSpec> = new Map(
-  [GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT].map(spec => [spec.name, spec]),
+  [
+    GAIN, SUMMER, MULT, DIVIDE, PWL, LIMIT, INT, D_DT,
+    CLIMIT, HYST, ILIMIT, SLEW, SINE, CMETER, LMETER,
+  ].map(spec => [spec.name, spec]),
 );
 
 /**

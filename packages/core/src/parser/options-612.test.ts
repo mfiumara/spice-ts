@@ -67,8 +67,8 @@ describe('ngspice-47 residual .options (#612)', () => {
     expect(() => parse('.options seed=random\n.op')).toThrow(ParseError);
   });
 
-  // simulate() stops both decks earlier (a misplaced second '.endc' in
-  // ro_nand_digi.cir, agauss() in rand_numb_test.cir), so the decks' own
+  // simulate() stops both decks earlier (the D_NAND model in ro_nand_digi.cir,
+  // #553; agauss() in rand_numb_test.cir), so the decks' own
   // .options lines are checked directly.
   const optionLine = (path: string, pattern: RegExp): string =>
     fixture(path).split(/\r?\n/).find(line => pattern.test(line))!;

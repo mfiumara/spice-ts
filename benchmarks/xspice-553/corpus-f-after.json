@@ -1,0 +1,158 @@
+[
+  {
+    "id": "examples-xspice-original-examples-analog-models3-ac-deck",
+    "sha256": "f3d3393e25fbc90f25674d2d5d4dea47d26e13b3d73a8dd26564d48de7fcec73",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "ac:21"
+      ]
+    },
+    "spiceTs": {
+      "status": "success",
+      "analyses": [
+        "ac:21"
+      ]
+    },
+    "comparedSignals": 15,
+    "worstNormalizedError": 1.11,
+    "worstSignal": "ac v(2)",
+    "outcome": "mismatch"
+  },
+  {
+    "id": "examples-xspice-original-examples-analog-models3-dc-deck",
+    "sha256": "458aacfe75c61cad38926ad87d9ba6c0a31be7f4663ee2189a86a992b7d8a182",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "op:1"
+      ]
+    },
+    "spiceTs": {
+      "status": "success",
+      "analyses": [
+        "op:1"
+      ]
+    },
+    "comparedSignals": 15,
+    "worstNormalizedError": 1.3e-15,
+    "worstSignal": "op i(v2)",
+    "outcome": "matched"
+  },
+  {
+    "id": "examples-xspice-original-examples-analog-models3-swept-dc-deck",
+    "sha256": "fe61bf8bef5eef6301bf7ace477d28c11beb63fefbf4162832ea566db5787436",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "dc:30"
+      ]
+    },
+    "spiceTs": {
+      "status": "success",
+      "analyses": [
+        "dc:30"
+      ]
+    },
+    "comparedSignals": 15,
+    "worstNormalizedError": 8.88e-13,
+    "worstSignal": "dc i(v2)",
+    "outcome": "matched"
+  },
+  {
+    "id": "examples-xspice-original-examples-analog-models3-transient-deck",
+    "sha256": "84c128d5f3a3a4ee658a169c7bf28114a6109ef02e3804cec0675ae182643d7d",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:158"
+      ]
+    },
+    "spiceTs": {
+      "status": "success",
+      "analyses": [
+        "tran:232"
+      ]
+    },
+    "comparedSignals": 15,
+    "worstNormalizedError": 0.0181,
+    "worstSignal": "tran v(10)",
+    "outcome": "mismatch"
+  },
+  {
+    "id": "examples-xspice-original-examples-analog-models4-ac-deck",
+    "sha256": "f7008d0ac656966f4f2817d36dcf3218198dc64251d61d8b7f0b05cc7d403120",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "ac:21"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 28: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model triangle1 triangle (cntl_arra"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-original-examples-analog-models4-dc-deck",
+    "sha256": "6c9a322704be922bb8eb48853ccc204a986edd5a026e6d66691990d1ec4de813",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "op:1"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 24: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model triangle1 triangle (cntl_arra"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-original-examples-analog-models4-swept-dc-deck",
+    "sha256": "d298f940bb53f85c458f6ee152b75da4473065ef192741bdeb65a82cd96ed053",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "dc:30"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 24: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model triangle1 triangle (cntl_arra"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  },
+  {
+    "id": "examples-xspice-original-examples-analog-models4-transient-deck",
+    "sha256": "1a4497ef16bd49a15fc74890afa4b40d085260806575b49b7ac9fcd13c4c4461",
+    "ngspice": {
+      "status": "success",
+      "analyses": [
+        "tran:292"
+      ]
+    },
+    "spiceTs": {
+      "status": "unsupported",
+      "analyses": [],
+      "firstErrorLine": "Parse error at line 27: XSPICE code model 'triangle' (.model 'triangle1') is not supported (supported: gain, summer, mult, divide, pwl, limit, int, d_dt, climit, hyst, ilimit, slew, sine, cmeter, lmeter) .model triangle1 triangle (cntl_arra"
+    },
+    "comparedSignals": 0,
+    "worstNormalizedError": null,
+    "worstSignal": null,
+    "outcome": "spice-ts-loss"
+  }
+]

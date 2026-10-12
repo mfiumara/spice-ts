@@ -212,8 +212,10 @@ describe('comparison metrics', () => {
       assert.ok(metric(comparison.metrics, name) < 1e-6, `${name} max ${metric(comparison.metrics, name)}`);
       // The pre-#445 metric is still published so the change hides nothing.
       // Its interpolation artifact was 31.65 V; with the ngspice first step
-      // (#532) the spice-ts grid near t=0 sits closer to ngspice's: 14.90 V.
-      assert.ok(metric(comparison.linearMetrics, name) > 10, `${name} linear max ${metric(comparison.linearMetrics, name)}`);
+      // (#532) the spice-ts grid near t=0 sat closer to ngspice's (14.90 V),
+      // and with the ngspice CKTsaveDelta step after the source corner (#608)
+      // the grids around it coincide, so the linear metric is exact as well.
+      assert.ok(metric(comparison.linearMetrics, name) < 1e-6, `${name} linear max ${metric(comparison.linearMetrics, name)}`);
     }
     assert.ok(metric(comparison.metrics, 'i(l1)') < 1e-9);
     assert.ok(metric(comparison.linearMetrics, 'i(l1)') < 1e-9);

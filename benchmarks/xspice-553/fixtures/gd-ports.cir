@@ -1,0 +1,13 @@
+gd ports
+v1 1 0 DC 0.5
+v2 2 0 DC 5
+r1 1 0 1k
+a1 1 %gd (2 0) null %gd (30 0) ilim
+.model ilim ilimit (gain=2 i_limit_source=1 i_limit_sink=1)
+r30 30 0 1k
+.control
+set numdgt=12
+op
+print v(30) i(v2)
+.endc
+.end

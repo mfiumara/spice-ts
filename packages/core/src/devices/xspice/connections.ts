@@ -20,8 +20,8 @@ export interface XspiceConnection {
   readonly ports: readonly XspicePort[];
 }
 
-const SINGLE_ENDED = new Set(['v', 'i']);
-const DIFFERENTIAL = new Set(['vd', 'id']);
+const SINGLE_ENDED = new Set(['v', 'i', 'g']);
+const DIFFERENTIAL = new Set(['vd', 'id', 'gd']);
 
 /**
  * Read an A-card's connection tokens against the code model's port table,
@@ -66,7 +66,7 @@ export function resolveXspiceConnections(
       if (second === undefined || second.kind !== 'string') return fail('Expected node identifier');
       return { type: type as XspiceAnalogPortType, positive: first.text, negative: second.text };
     }
-    return fail(`port type '%${type}' is not supported by spice-ts (supported: %v, %vd, %i, %id, %vnam)`);
+    return fail(`port type '%${type}' is not supported by spice-ts (supported: %v, %vd, %i, %id, %vnam, %g, %gd)`);
   };
 
   const connections: XspiceConnection[] = [];

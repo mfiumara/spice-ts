@@ -17,9 +17,12 @@ import {
   parseTransmissionLineModelCard,
   parseTxlLine,
 } from './transmission-line-parser.js';
-import { preprocessDeck } from './preprocessor.js';
+import { preprocessDeck, preprocessDeckSync } from './preprocessor.js';
+import { translateMicroSign } from './micro-sign.js';
 import { lowerControlScript } from './control-block.js';
-import { extractControlBlocks, type ControlSourceBlock, type ControlSourceLine } from './control/source.js';
+import {
+  extractControlBlocks, type ControlSourceBlock, type ControlSourceLine, type ControlSourceWarning,
+} from './control/source.js';
 import {
   CONTROL_ANALYSIS_COMMANDS, commandName, parseControlScript, type ControlScript, type ControlStatement,
 } from './control/script.js';
@@ -39,6 +42,7 @@ export { parseSourceWaveform } from './waveform-parser.js';
 export { SUPPORTED_MODEL_TYPES, UnsupportedModelTypeError } from './model-type.js';
 export { UnsupportedSourceWaveformError } from './waveform-parser.js';
 export { UnsupportedResistorParameterError } from './resistor-parser.js';
+export { UnsupportedModelFlagError } from './model-flags.js';
 
 /**
  * Parse a standard SPICE deck into a {@link Circuit} object.
@@ -49,8 +53,10 @@ export { UnsupportedResistorParameterError } from './resistor-parser.js';
  *
  * Handles device lines (R, C, L, V, I, D, Q, J, M, E, G, H, F, X),
  * dot commands (`.op`, `.dc`, `.tran`, `.ac`, `.model`, `.subckt`),
- * and subcircuit definitions. Does not resolve `.include` or `.lib`
- * directives -- use {@link parseAsync} for netlists with file includes.
+ * and subcircuit definitions. Runs the same `.param`/`.func`/`.if`
+ * preprocessing as {@link parseAsync} and `simulate()`, so a deck that
+ * `simulate()` accepts also parses here. Does not resolve `.include` or `.lib`
+ * file directives -- use {@link parseAsync} for netlists with file includes.
  *
  * @param netlist - SPICE netlist text (may include line continuations with `+`)
  * @returns A {@link Circuit} ready for compilation and simulation
@@ -67,7 +73,11 @@ export { UnsupportedResistorParameterError } from './resistor-parser.js';
  * ```
  */
 export function parse(netlist: string): Circuit {
-  return parseNetlist(netlist, true);
+  const { title, control } = splitTitledDeck(netlist);
+  const preprocessed = preprocessDeckSync(control.netlist, undefined, 1);
+  return parseNetlist(
+    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters, control.warnings,
+  );
 }
 
 /**
@@ -78,7 +88,21 @@ export function parse(netlist: string): Circuit {
  * standard SPICE title line.
  */
 export function parseTitleless(netlist: string): Circuit {
-  return parseNetlist(netlist, false);
+  const control = extractControlBlocks(translateMicroSign(netlist), false);
+  const preprocessed = preprocessDeckSync(control.netlist, undefined, 0);
+  return parseNetlist(preprocessed.text, false, undefined, control.blocks, preprocessed.parameters, control.warnings);
+}
+
+/**
+ * Split off the title line and take out the control blocks, which must not
+ * reach `.param` preprocessing: it would read their `{$var}` references as
+ * numparam expressions. The body starts on line 2 of the caller's netlist.
+ */
+function splitTitledDeck(netlist: string): { title: string; control: ReturnType<typeof extractControlBlocks> } {
+  const newline = netlist.indexOf('\n');
+  const title = newline < 0 ? netlist : netlist.slice(0, newline);
+  const body = translateMicroSign(newline < 0 ? '' : netlist.slice(newline + 1));
+  return { title, control: extractControlBlocks(body, false, 1) };
 }
 
 function parseNetlist(
@@ -87,14 +111,16 @@ function parseNetlist(
   guard?: ProtocolExecutionGuard,
   extractedBlocks: ControlSourceBlock[] = [],
   parameters: Record<string, number> = {},
+  controlWarnings: ControlSourceWarning[] = [],
 ): Circuit {
   // ngspice control-language lines are not netlist cards; read them from the raw text.
-  const extracted = extractControlBlocks(netlist, firstLineIsTitle);
+  const extracted = extractControlBlocks(translateMicroSign(netlist, firstLineIsTitle), firstLineIsTitle);
   const controlBlocks = [...extractedBlocks, ...extracted.blocks];
   const controlStartLine = controlBlocks[0]?.startLine;
   const lines = tokenizeNetlist(extracted.netlist, { firstLineIsTitle });
   const circuit = new Circuit();
   circuit.setParameters(parameters);
+  for (const warning of [...controlWarnings, ...extracted.warnings]) circuit.addParseWarning(warning.message);
 
   let subcktCollector: (SubcircuitHeader & { body: string[]; depth: number }) | null = null;
   let hasNoiseAnalysis = false;
@@ -322,15 +348,11 @@ export async function parseAsync(
   netlist: string,
   resolver?: IncludeResolver,
 ): Promise<Circuit> {
-  const newline = netlist.indexOf('\n');
-  const title = newline < 0 ? netlist : netlist.slice(0, newline);
-  const body = newline < 0 ? '' : netlist.slice(newline + 1);
-  // Control blocks are taken out before .param preprocessing, which would
-  // read their `{$var}` references as numparam expressions.
-  // The body starts on line 2 of the caller's netlist (after the title).
-  const control = extractControlBlocks(body, false, 1);
+  const { title, control } = splitTitledDeck(netlist);
   const preprocessed = await preprocessDeck(control.netlist, resolver, undefined, 1);
-  return parseNetlist(`${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters);
+  return parseNetlist(
+    `${title}\n${preprocessed.text}`, true, undefined, control.blocks, preprocessed.parameters, control.warnings,
+  );
 }
 
 /** Parse and preprocess a title-less SPICE fragment. */
@@ -339,9 +361,9 @@ export async function parseTitlelessAsync(
   resolver?: IncludeResolver,
   guard?: ProtocolExecutionGuard,
 ): Promise<Circuit> {
-  const control = extractControlBlocks(netlist, false);
+  const control = extractControlBlocks(translateMicroSign(netlist), false);
   const preprocessed = await preprocessDeck(control.netlist, resolver, guard, 0);
-  return parseNetlist(preprocessed.text, false, guard, control.blocks, preprocessed.parameters);
+  return parseNetlist(preprocessed.text, false, guard, control.blocks, preprocessed.parameters, control.warnings);
 }
 
 const OUTPUT_ONLY_OPTION_FLAGS = new Set([

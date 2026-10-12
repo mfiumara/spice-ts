@@ -8,9 +8,13 @@ export interface ParsedZInstance {
 }
 
 /**
- * Parse `Zname drain gate source model [L=..] [W=..]`. Both supported Z-card
- * model families (NHFET level 5 and NMF level 2) accept only L and W here.
+ * Z-card instance parameters of the supported families: L/W (HFET1, MESA),
+ * TS/TD/DTEMP (MESA instance temperatures) and AREA (MES). Each model
+ * family rejects the ones it does not define when the circuit is compiled.
  */
+const Z_INSTANCE_PARAMETERS = new Set(['L', 'W', 'AREA', 'TS', 'TD', 'DTEMP']);
+
+/** Parse `Zname drain gate source model [name=value ...]`. */
 export function parseZInstance(
   tokens: string[],
   lineNumber: number,
@@ -21,7 +25,7 @@ export function parseZInstance(
   }
   const params = parseInstanceParams(tokens, 5);
   for (const name of Object.keys(params)) {
-    if (name !== 'L' && name !== 'W') {
+    if (!Z_INSTANCE_PARAMETERS.has(name)) {
       throw new ParseError(`Unsupported Z-card instance parameter: '${name}'`, lineNumber, context);
     }
   }

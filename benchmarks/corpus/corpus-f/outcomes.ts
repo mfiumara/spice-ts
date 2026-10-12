@@ -31,6 +31,7 @@ import {
 import type { CorpusFCircuit, CorpusFManifest } from './ingest.js';
 import {
   classifyNgspiceFailure,
+  CONTROL_SECTION,
   CORPUS_ROOT,
   type EngineStatus,
   firstNgspiceErrorLine,
@@ -150,6 +151,12 @@ export const FOLLOW_UP_ISSUES: ReadonlyArray<{ url: string; scope: string }> = [
   { url: 'https://github.com/mfiumara/spice-ts/issues/510', scope: 'parse() rejects .param decks that simulate() accepts; the shared corpus adapter reports parse()\'s error (corpus-f calls simulate() only)' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/511', scope: 'triage of the 10 ngspice-successful decks that exceed the 1% parity threshold' },
   { url: HARNESS_ISSUE, scope: 'the ngspice harness exports no vectors for decks that run analyses from .control or quit inside it' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/590', scope: 'closed by #601: MOS1 depletion junction capacitance (tests/general/mosmem.cir now matches; #511 triage in TRIAGE-511.md)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/591', scope: 'closed by #601: MOS1 Meyer gate capacitance from TOX; residual i(vs) mismatch is grid discretisation per #627/#629, routed to #592' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/626', scope: 'BSIM3 4-bit NAND adder (examples/snapshot/adder_mos_circ.cir): internal-node mismatch 1.54 after #624/#648; root cause not established (#511 triage)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/655', scope: 'TRNOISE/TRRANDOM decks compare independent random realisations; ngspice-47 reseeds each run, so these values are not reproducible (transient-noise simple-noise, rts-1)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/592', scope: 'metric: ngspice\'s coarse default-step output is scored as spice-ts error (rca3040, rtlinv, mos-test, fourbitadder, switches-manual-p92, ltra2_2_line/txl1_1_line i(vs); #511 triage)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/593', scope: 'metric: zero/near-zero ngspice peaks turn fV-uV residuals into mismatches (rca3040 AC v(2), fourbitadder; #511 triage)' },
 ];
 
 const OUTCOMES: Outcome[] = ['matched', 'mismatch', 'not-compared', 'spice-ts-loss', 'ngspice-failed', 'both-failed'];
@@ -223,6 +230,49 @@ export async function runNgspice(input: Buffer, circuit: CorpusFCircuit): Promis
   }
 }
 
+interface PackedAnalysis {
+  type: EngineAnalysis['type'];
+  plotName: string;
+  grid: Float64Array;
+  signals: Array<[name: string, re: Float64Array, im: Float64Array]>;
+}
+
+/**
+ * Typed-array transport for the spice-ts child's result. v8-serialising one object per sample
+ * exhausts the parent's default heap on long transients (adder_bip: 106k points x 450 signals);
+ * packed Float64Arrays carry the same values bit-for-bit at a fraction of the cost.
+ */
+export function packExecution(execution: EngineExecution): Omit<EngineExecution, 'analyses'> & { analyses: PackedAnalysis[] } {
+  return {
+    ...execution,
+    analyses: execution.analyses.map(analysis => ({
+      type: analysis.type,
+      plotName: analysis.plotName,
+      grid: Float64Array.from(analysis.series.grid),
+      signals: Object.entries(analysis.series.signals).map(([name, samples]) => [
+        name,
+        Float64Array.from(samples, sample => sample.re),
+        Float64Array.from(samples, sample => sample.im),
+      ]),
+    })),
+  };
+}
+
+export function unpackExecution(packed: ReturnType<typeof packExecution>): EngineExecution {
+  return {
+    ...packed,
+    analyses: packed.analyses.map(analysis => ({
+      type: analysis.type,
+      plotName: analysis.plotName,
+      series: {
+        grid: Array.from(analysis.grid),
+        signals: Object.fromEntries(analysis.signals.map(([name, re, im]) =>
+          [name, Array.from(re, (value, index) => ({ re: value, im: im[index] }))])),
+      },
+    })),
+  };
+}
+
 /**
  * spice-ts on the identical bytes in a bounded child process (same 120 s bound as the aggregate
  * report). Calls `simulate()` only: unlike the aggregate adapter it skips the `parse()` pre-check,
@@ -249,7 +299,7 @@ export async function runBoundedSimulate(input: Buffer, circuit: ClassicCircuit)
           || `spice-ts child exited ${completed.status}`;
       return { status: 'failed', convergence: timedOut ? 'failed' : 'not-run', analyses: [], error: detail.slice(0, 1000) };
     }
-    return deserialize(await readFile(outputPath)) as EngineExecution;
+    return unpackExecution(deserialize(await readFile(outputPath)) as ReturnType<typeof packExecution>);
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
@@ -509,12 +559,25 @@ export function relabel(report: CorpusFReport): CorpusFReport {
   return { ...base, outcomeSha256: outcomeDigest(base) };
 }
 
+/**
+ * Rewrites the batch-1 part of README.md and keeps the control-vector supplement (#521), which
+ * control-vectors.ts measures separately, instead of silently dropping it.
+ */
+export function mergeReadme(existing: string, batch: string): string {
+  const supplement = existing.split(CONTROL_SECTION)[1];
+  return supplement === undefined ? batch : `${batch.trimEnd()}\n${CONTROL_SECTION}${supplement}`;
+}
+
+async function writeReadme(report: CorpusFReport): Promise<void> {
+  await writeFile(MARKDOWN_PATH, mergeReadme(await readFile(MARKDOWN_PATH, 'utf8'), renderMarkdown(report)));
+}
+
 async function main(): Promise<void> {
   const argv = process.argv.slice(2);
   if (argv.includes('--relabel')) {
     const report = relabel(JSON.parse(await readFile(JSON_PATH, 'utf8')) as CorpusFReport);
     await writeFile(JSON_PATH, stableReport(report));
-    await writeFile(MARKDOWN_PATH, renderMarkdown(report));
+    await writeReadme(report);
     process.stderr.write(`corpus-f --relabel: outcome ${report.outcomeSha256}\n`);
     return;
   }
@@ -536,12 +599,12 @@ async function main(): Promise<void> {
       await writeFile(regenerated, stableReport(report));
       throw new Error(`corpus-f outcome differs: committed ${committed.outcomeSha256}, regenerated ${report.outcomeSha256} (written to ${regenerated}); fixtures: ${differing.join(', ') || 'none (report-level fields differ)'}`);
     }
-    if (await readFile(MARKDOWN_PATH, 'utf8') !== renderMarkdown(committed)) {
+    if ((await readFile(MARKDOWN_PATH, 'utf8')).split(CONTROL_SECTION)[0].trimEnd() !== renderMarkdown(committed).trimEnd()) {
       throw new Error('corpus-f README.md differs from the committed report.json');
     }
   } else {
     await writeFile(JSON_PATH, stableReport(report));
-    await writeFile(MARKDOWN_PATH, renderMarkdown(report));
+    await writeReadme(report);
   }
   process.stderr.write(`corpus-f: ${report.totals.fixtures} fixtures; outcome ${report.outcomeSha256}; ${JSON.stringify(report.totals.outcomes)}\n`);
 }
@@ -550,7 +613,7 @@ if (process.argv[2] === SPICE_TS_CHILD_FLAG) {
   (async () => {
     const [inputPath, circuitPath, outputPath] = process.argv.slice(3);
     const circuit = JSON.parse(await readFile(circuitPath, 'utf8')) as ClassicCircuit;
-    await writeFile(outputPath, serialize(await runNativeSpiceTs(await readFile(inputPath), circuit, { parseFirst: false })));
+    await writeFile(outputPath, serialize(packExecution(await runNativeSpiceTs(await readFile(inputPath), circuit, { parseFirst: false }))));
   })().catch(error => {
     console.error(error);
     process.exitCode = 1;

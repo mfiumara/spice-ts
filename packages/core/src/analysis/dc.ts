@@ -23,15 +23,16 @@ export function solveDCOperatingPoint(
   guard?: ProtocolExecutionGuard,
 ): { result: DCResult; assembler: MNAAssembler; convergence: ConvergenceTelemetry } {
   const { nodeCount, branchCount, nodeNames, branchNames } = compiled;
-  // The transient operating point (ngspice MODETRANOP, never reached with
-  // UIC) holds `.ic` nodes at their values; a plain `.op` does not (#531).
-  const devices = sourceMode === 'transient' && compiled.initialConditions.length > 0
-    ? [...compiled.devices, ...initialConditionHolds(compiled)]
-    : compiled.devices;
+  const devices = compiled.devices;
   const assembler = new MNAAssembler(nodeCount, branchCount, {
     variables: createMatrixVariableIdentities(nodeNames, branchNames),
     useDcSourceValue: sourceMode === 'operating-point',
   });
+  // The transient operating point (ngspice MODETRANOP, never reached with
+  // UIC) holds `.ic` nodes at their values; a plain `.op` does not (#531).
+  if (sourceMode === 'transient' && compiled.initialConditions.length > 0) {
+    assembler.nodeHolds = initialConditionHolds(compiled);
+  }
 
   for (const device of devices) device.beginOperatingPoint?.();
 
