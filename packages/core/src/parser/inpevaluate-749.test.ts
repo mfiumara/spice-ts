@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { parseNumber } from './tokenizer.js';
 import { simulate } from '../simulate.js';
 import { parse } from './index.js';
+import { formatNumber } from '../circuit.js';
 
 // #749: ngspice-47 INPevaluate (src/spicelib/parser/inpeval.c) builds a literal
 // as sign * mantissa * pow(10, exponent), not as the correctly rounded value.
@@ -121,7 +122,62 @@ C1 2 0 0.05N
     expect(again.compile().devices.map(d => (d as { waveform?: unknown }).waveform))
       .toEqual(circuit.compile().devices.map(d => (d as { waveform?: unknown }).waveform));
     expect(again.toNetlist()).toBe(circuit.toNetlist());
-    // 10u is 10 * pow(10, -6) = 9.999999999999999e-6, which no shorter decimal reads back to.
-    expect(circuit.toNetlist()).toContain('PULSE(0 0.7 0.0000013 3e-9 3e-7 0.0000011 0.000009999999999999999)');
+    // 10u is 10 * pow(10, -6) = 9.999999999999999e-6, which no plain decimal reads back to.
+    expect(circuit.toNetlist()).toContain('PULSE(0 0.7 0.0000013 3e-9 3e-7 0.0000011 10e-6)');
+  });
+
+  it('is stable across repeated exports (30u, 90u, 370f drifted one ulp per export)', () => {
+    const first = parse('rt\nV1 1 0 PULSE(0 1 30u 90u 140u 780u 370f)\nR1 1 0 1k\n.tran 1u 1m\n.end\n');
+    const netlist = first.toNetlist();
+    expect(netlist).toContain('PULSE(0 1 30e-6 90e-6 140e-6 780e-6 370e-15)');
+    const second = parse(netlist);
+    expect(second.toNetlist()).toBe(netlist);
+    expect(second.compile().devices.map(d => (d as { waveform?: unknown }).waveform))
+      .toEqual(first.compile().devices.map(d => (d as { waveform?: unknown }).waveform));
+  });
+});
+
+/** Deterministic 31-bit LCG so a failure names a reproducible input. */
+function lcg(seed: number): () => number {
+  let state = seed;
+  return () => {
+    state = (state * 1103515245 + 12345) % 2147483648;
+    return state / 2147483648;
+  };
+}
+
+const expectReadsBack = (value: number, label: string) => {
+  const text = formatNumber(value);
+  // Object.is compares bitwise for finite doubles (and tells -0 from 0).
+  expect(Object.is(parseNumber(text), value), `${label} = ${value} written as ${text}`).toBe(true);
+};
+
+describe('formatNumber writes literals the parser reads back bitwise (#749)', () => {
+  it.each([
+    '30u', '90u', '140u', '780u', '370f', '776.330m', '45.650n', '10u', '1.3u', '0.3', '0.7', '2.675',
+    '0.05N', '1.380649e-23', '74mil', '766mil', '2.5mil', '1e3mil', '3.3meg', '4.7k', '1g', '2t', '7.1a',
+    '-30u', '-0.3', '0', '-0', '1e308', '1e-300', '123456789012345678901234',
+  ])('%s', literal => {
+    expectReadsBack(parseNumber(literal), literal);
+  });
+
+  it('round-trips 20k generated literals (1-4 digit mantissa, optional fraction, every scale factor)', () => {
+    const random = lcg(749);
+    const suffixes = ['', 'm', 'u', 'n', 'p', 'f', 'a', 'k', 'meg', 'g', 't', 'mil'];
+    for (let i = 0; i < 20000; i++) {
+      const digits = 1 + Math.floor(random() * 4);
+      let literal = String(Math.floor(random() * 10 ** digits));
+      if (random() < 0.5) literal += `.${String(Math.floor(random() * 1000)).padStart(3, '0')}`;
+      literal += suffixes[Math.floor(random() * suffixes.length)];
+      expectReadsBack(parseNumber(literal), literal);
+    }
+  });
+
+  it('round-trips 5k arbitrary doubles between 1e-30 and 1e30 (Circuit API and JSON values)', () => {
+    const random = lcg(772);
+    for (let i = 0; i < 5000; i++) {
+      const value = (random() - 0.5) * 10 ** (Math.floor(random() * 60) - 30);
+      expectReadsBack(value, `double #${i}`);
+    }
   });
 });

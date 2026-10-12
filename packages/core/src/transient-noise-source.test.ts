@@ -42,8 +42,9 @@ describe('TRNOISE / TRRANDOM source parsing', () => {
     const waveforms = circuit.toNetlist().split('\n').filter(line => /TRNOISE/i.test(line));
     expect(waveforms).toEqual([
       'V1 1 0 DC 0.5 TRNOISE(2e-8 5e-10 0 0 0.001 0.000002 0.000003)',
-      // 30u is 30 * pow(10, -6) in ngspice-47 INPevaluate (#749).
-      'V2 2 0 TRNOISE(0 0 0 0 0.005 0.000018 0.000029999999999999997)',
+      // 30u is 30 * pow(10, -6) = 2.9999999999999997e-5 in ngspice-47
+      // INPevaluate (#749); only the integer-mantissa form reads back to it.
+      'V2 2 0 TRNOISE(0 0 0 0 0.005 0.000018 30e-6)',
       'I3 3 0 DC 0 TRNOISE(0.05 8e-12 1 0.001 0 0 0)',
       'V4 4 0 TRNOISE(1e-9 1e-9 1 1e-9 0 0 0)',
     ]);
