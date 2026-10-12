@@ -259,6 +259,11 @@ function convergenceTestedDevices(compiled: CompiledCircuit): readonly DeviceMod
  * junction, the junction keeps stepping away from the node, and Newton
  * ratchets to the timestep floor (the boost converter in
  * transient-driver-integration.test.ts).
+ *
+ * Nodes of devices ngspice neither limits nor damps (`undampedNodes`, the
+ * ASRC `B` sources) are not capped either: a capped B-source node cannot take
+ * the first-step jump from a UIC seed, e.g. 0 V to a 7 kV capacitor IC
+ * across a 0 V source (issue #649).
  */
 function nonlinearTerminalNodes(compiled: CompiledCircuit): TerminalNodes {
   let nodes = nonlinearTerminalCache.get(compiled);
@@ -270,7 +275,7 @@ function nonlinearTerminalNodes(compiled: CompiledCircuit): TerminalNodes {
       for (const node of device.nodes) {
         if (node < 0 || node >= compiled.nodeCount) continue;
         marked[node] = 1;
-        if (!device.limitsOwnJunctions) needsDamping[node] = 1;
+        if (!device.limitsOwnJunctions && !device.undampedNodes) needsDamping[node] = 1;
       }
     }
     const watched: number[] = [];
