@@ -20,11 +20,7 @@ import { MOS6, resolveMOS6Model } from './devices/mos6.js';
 import { VDMOS } from './devices/vdmos.js';
 import { isVdmosModelType, resolveVdmosModel } from './devices/vdmos-model.js';
 import { JFET, resolveNJFETParams } from './devices/jfet.js';
-import { HFET1 } from './devices/hfet1.js';
-import { resolveHFET1Instance } from './devices/hfet1-model.js';
-import { MESA } from './devices/mesa.js';
-import { MESA_JUNCTION_GMIN, resolveMESAInstance } from './devices/mesa-model.js';
-import { resolveZModel } from './devices/z-device.js';
+import { createZDevice, expandZDevice, resolveZModel } from './devices/z-device.js';
 import { BehavioralCurrentSource, BehavioralSource, BehavioralVoltageSource } from './devices/behavioral-source.js';
 import {
   behavioralControlNodes,
@@ -1713,10 +1709,11 @@ export class Circuit {
       const unsupported = this._poleZeroAnalyses.length > 0
         ? 'pz'
         : this._analyses.find(analysis =>
-          analysis.type !== 'op' && analysis.type !== 'dc' && analysis.type !== 'tran')?.type;
+          analysis.type !== 'op' && analysis.type !== 'dc' && analysis.type !== 'tran'
+          && analysis.type !== 'ac')?.type;
       if (unsupported) {
         throw new InvalidCircuitError(
-          `NMF level-2 MESFET supports only .op, .dc and .tran analyses; '.${unsupported}' is unsupported`,
+          `NMF MESFET supports only .op, .dc, .tran and .ac analyses; '.${unsupported}' is unsupported`,
         );
       }
     }
@@ -1973,23 +1970,9 @@ export class Circuit {
         }
         case 'Z': {
           const model = this.requireModel('Z-card', desc);
-          const resolved = resolveZModel(model);
-          if (resolved.kind === 'hfet') {
-            devices.push(new HFET1(
-              desc.name,
-              nodeIndices,
-              resolved.model,
-              resolveHFET1Instance(desc.params),
-            ));
-          } else {
-            devices.push(new MESA(
-              desc.name,
-              nodeIndices,
-              resolved.model,
-              resolveMESAInstance(desc.params),
-              this._simulationOptions.gmin ?? MESA_JUNCTION_GMIN,
-            ));
-          }
+          devices.push(createZDevice(
+            desc.name, nodeIndices, resolveZModel(model), desc.params, this._simulationOptions.gmin,
+          ));
           break;
         }
         case 'B': {
@@ -2495,26 +2478,12 @@ export class Circuit {
         const modelName = desc.modelName!;
         const model = this._models.get(modelName);
         if (!model) throw new InvalidCircuitError(`Z-card '${desc.name}' references unknown model '${modelName}'`);
-        const resolved = resolveZModel(model);
-        if (resolved.kind === 'hfet') resolveHFET1Instance(desc.params);
-        else resolveMESAInstance(desc.params);
-        const params = resolved.model;
-        let [drain, gate, source] = desc.nodes;
-        if (params.RD > 0) {
-          const drainPrime = internalNodeName(desc.name, 'rd');
-          result.push({
-            type: 'R', name: `${desc.name}.RD`, nodes: [drain, drainPrime], value: params.RD,
-          });
-          drain = drainPrime;
-        }
-        if (params.RS > 0) {
-          const sourcePrime = internalNodeName(desc.name, 'rs');
-          result.push({
-            type: 'R', name: `${desc.name}.RS`, nodes: [source, sourcePrime], value: params.RS,
-          });
-          source = sourcePrime;
-        }
-        result.push({ ...desc, nodes: [drain, gate, source] });
+        const expansion = expandZDevice(
+          desc.name, [desc.nodes[0], desc.nodes[1], desc.nodes[2]], resolveZModel(model), desc.params,
+          suffix => internalNodeName(desc.name, suffix),
+        );
+        for (const resistor of expansion.resistors) result.push({ type: 'R', ...resistor });
+        result.push({ ...desc, nodes: expansion.nodes });
         continue;
       }
 
