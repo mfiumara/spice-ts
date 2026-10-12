@@ -1,0 +1,29 @@
+/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//prof727-before/rc-ladder-tran-10000.cpuprofile: 178 samples, 625.8 ms sampled
+
+Top self time
+      37.6 ms   6.0%  stampDynamicDevices packages/core/dist/chunk-7NIG2L2G.js:30670
+      37.0 ms   5.9%  compile packages/core/dist/chunk-7NIG2L2G.js:23769
+      36.2 ms   5.8%  buildCompanionSystem packages/core/dist/chunk-7NIG2L2G.js:31137
+      29.8 ms   4.8%  stampStaticDevices packages/core/dist/chunk-7NIG2L2G.js:30629
+      26.8 ms   4.3%  (garbage collector)
+      25.2 ms   4.0%  evaluate packages/core/dist/chunk-7NIG2L2G.js:31785
+      24.3 ms   3.9%  lockTopology packages/core/dist/chunk-7NIG2L2G.js:30166
+      22.7 ms   3.6%  factorize packages/core/dist/chunk-7NIG2L2G.js:29588
+      20.5 ms   3.3%  flush packages/core/dist/chunk-7NIG2L2G.js:32686
+      19.0 ms   3.0%  analyzePattern packages/core/dist/chunk-7NIG2L2G.js:29484
+      18.9 ms   3.0%  refactorWithPivots packages/core/dist/chunk-7NIG2L2G.js:29805
+      18.6 ms   3.0%  attemptStep packages/core/dist/chunk-7NIG2L2G.js:31334
+
+Top inclusive time
+     625.8 ms 100.0%  (root)
+     534.9 ms  85.5%  simulate packages/core/dist/chunk-7NIG2L2G.js:37629
+     435.4 ms  69.6%  solveCompiledAnalyses packages/core/dist/chunk-7NIG2L2G.js:37684
+     358.2 ms  57.2%  solveTransient packages/core/dist/chunk-7NIG2L2G.js:32704
+     293.0 ms  46.8%  advanceSolution packages/core/dist/chunk-7NIG2L2G.js:31989
+     205.4 ms  32.8%  attemptStep packages/core/dist/chunk-7NIG2L2G.js:31334
+     105.8 ms  16.9%  buildCompanionSystem packages/core/dist/chunk-7NIG2L2G.js:31137
+      77.3 ms  12.3%  solveDCOperatingPoint packages/core/dist/chunk-7NIG2L2G.js:30941
+      77.3 ms  12.3%  transientInitialSolution packages/core/dist/chunk-7NIG2L2G.js:38079
+      72.7 ms  11.6%  parseAsync packages/core/dist/chunk-7NIG2L2G.js:28042
+      68.7 ms  11.0%  newtonRaphson packages/core/dist/chunk-7NIG2L2G.js:30714
+      59.2 ms   9.5%  solveLinearized packages/core/dist/chunk-7NIG2L2G.js:31437

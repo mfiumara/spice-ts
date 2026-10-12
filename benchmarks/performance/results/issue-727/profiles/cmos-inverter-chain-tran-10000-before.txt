@@ -1,0 +1,29 @@
+/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T//prof727-before/cmos-inverter-chain-tran-10000.cpuprofile: 816 samples, 5171.8 ms sampled
+
+Top self time
+    1421.6 ms  27.5%  batchStamp packages/core/dist/chunk-7NIG2L2G.js:7172
+     539.0 ms  10.4%  (garbage collector)
+     331.0 ms   6.4%  mos1BulkJunctions packages/core/dist/chunk-7NIG2L2G.js:6372
+     321.8 ms   6.2%  convergenceTest packages/core/dist/chunk-7NIG2L2G.js:6974
+     277.5 ms   5.4%  refactorWithPivots packages/core/dist/chunk-7NIG2L2G.js:29805
+     251.2 ms   4.9%  limitNewtonStep packages/core/dist/chunk-7NIG2L2G.js:6797
+     182.5 ms   3.5%  chargeTruncationTimestep packages/core/dist/chunk-7NIG2L2G.js:32354
+     176.5 ms   3.4%  factorize packages/core/dist/chunk-7NIG2L2G.js:29588
+     175.3 ms   3.4%  buildCompanionSystem packages/core/dist/chunk-7NIG2L2G.js:31137
+     140.3 ms   2.7%  attemptStep packages/core/dist/chunk-7NIG2L2G.js:31334
+     119.0 ms   2.3%  newtonRaphson packages/core/dist/chunk-7NIG2L2G.js:30714
+     101.2 ms   2.0%  stampPrevB packages/core/dist/chunk-7NIG2L2G.js:32255
+
+Top inclusive time
+    5171.8 ms 100.0%  (root)
+    4550.0 ms  88.0%  simulate packages/core/dist/chunk-7NIG2L2G.js:37629
+    4411.1 ms  85.3%  solveCompiledAnalyses packages/core/dist/chunk-7NIG2L2G.js:37684
+    3084.2 ms  59.6%  solveTransient packages/core/dist/chunk-7NIG2L2G.js:32704
+    2982.2 ms  57.7%  advanceSolution packages/core/dist/chunk-7NIG2L2G.js:31989
+    2087.0 ms  40.4%  attemptStep packages/core/dist/chunk-7NIG2L2G.js:31334
+    1805.1 ms  34.9%  batchStamp packages/core/dist/chunk-7NIG2L2G.js:7172
+    1334.4 ms  25.8%  buildCompanionSystem packages/core/dist/chunk-7NIG2L2G.js:31137
+    1326.9 ms  25.7%  solveDCOperatingPoint packages/core/dist/chunk-7NIG2L2G.js:30941
+    1326.9 ms  25.7%  transientInitialSolution packages/core/dist/chunk-7NIG2L2G.js:38079
+    1318.4 ms  25.5%  newtonRaphson packages/core/dist/chunk-7NIG2L2G.js:30714
+    1145.1 ms  22.1%  dynamicGminStepping packages/core/dist/chunk-7NIG2L2G.js:31013
