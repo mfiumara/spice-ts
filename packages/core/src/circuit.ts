@@ -324,8 +324,19 @@ function formatBehavioralSource(desc: DeviceDescriptor): string {
   return [desc.name, desc.nodes[0], desc.nodes[1], assignment, ...instance].join(' ');
 }
 
+/**
+ * The shortest decimal that the netlist parser reads back as exactly `value`.
+ * Literals are read as ngspice-47 INPevaluate does (#749), which is not
+ * always the correctly rounded value, so Number#toString does not always
+ * round-trip (and 0.30000000000000004, the parsed `0.3`, prints back as `0.3`).
+ */
 function formatNumber(value: number): string {
-  return Number.isFinite(value) ? value.toString() : String(value);
+  if (!Number.isFinite(value)) return String(value);
+  for (let digits = 1; digits <= 17; digits++) {
+    const text = Number(value.toPrecision(digits)).toString();
+    if (Object.is(parseNumber(text), value)) return text;
+  }
+  return value.toString();
 }
 
 function formatParams(params?: Record<string, number>): string {

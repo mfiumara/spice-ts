@@ -54,7 +54,8 @@ describe('SPICE netlist parser', () => {
       .end
     `);
     const compiled = ckt.compile();
-    expect(compiled.analyses[0]).toEqual({ type: 'tran', timestep: 1e-9, stopTime: 10e-6 });
+    // 10u is 10 * pow(10, -6) in ngspice-47 INPevaluate (#749).
+    expect(compiled.analyses[0]).toEqual({ type: 'tran', timestep: 1e-9, stopTime: 9.999999999999999e-6 });
   });
 
   it('parses AC analysis command', () => {
@@ -290,7 +291,8 @@ describe('SPICE netlist parser', () => {
       start: 0,
       stop: 5,
       step: 0.05,
-      secondary: { source: 'VB', start: 0.7, stop: 1, step: 0.05 },
+      // 0.7 is 7 * pow(10, -1) in ngspice-47 INPevaluate (#749).
+      secondary: { source: 'VB', start: 0.7000000000000001, stop: 1, step: 0.05 },
     });
   });
 
