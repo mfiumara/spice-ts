@@ -1,0 +1,9 @@
+LEVEL=260 common-source amplifier AC (ngspice-47 inpfindl.c: level > 99 becomes 1)
+VDD vdd 0 DC 3
+VIN in 0 DC 1 AC 1
+M1 out in 0 0 NE W=10U L=2U
+RL vdd out 20K
+CL out 0 1P
+.MODEL NE NMOS (LEVEL=260 VTO=0.7 KP=110U GAMMA=0.4 PHI=0.65 LAMBDA=0.04 CGSO=2E-10 CGDO=2E-10 CJ=4E-4 TOX=20N)
+.AC DEC 5 1K 1G
+.END

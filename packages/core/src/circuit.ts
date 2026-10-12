@@ -3183,7 +3183,7 @@ export class Circuit {
       // Handle .model inside subcircuit — register locally AND globally
       if (first === '.MODEL') {
         const modelParams = parseTransmissionLineModelCard(tokens, 0)
-          ?? parseModelCard(tokens, 0);
+          ?? parseModelCard(tokens, 0, message => this.addParseWarning(message));
         // Register in the circuit's global model map so compile() can find it
         this.registerModel(modelParams);
         this._subcircuitModelNames.add(modelParams.name.toUpperCase());
