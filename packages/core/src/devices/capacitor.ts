@@ -9,6 +9,8 @@ export class Capacitor implements DeviceModel {
     readonly nodes: number[],
     public capacitance: number,
     readonly ic?: number,
+    /** One element's capacitance before the instance m (ngspice CAPcapac). */
+    readonly unitCapacitance: number = capacitance,
   ) {}
 
   setParameter(value: number): void {

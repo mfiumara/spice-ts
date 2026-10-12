@@ -1,0 +1,39 @@
+xspice slice 2 tran
+v1 1 0 DC 0 SIN(0.5 1 1k)
+v2 2 0 DC 0 PWL(0 0 2e-3 10)
+v3 3 0 DC 0 PULSE(0 1 0.2m 1u 1u 0.3m 1m)
+a1 1 10 hyst1
+.model hyst1 hyst (in_low=0.0 in_high=1.0 hyst=0.2 out_lower_limit=-1.0 out_upper_limit=1.0 input_domain=0.05 fraction=TRUE)
+a2 3 20 slew1
+.model slew1 slew (rise_slope=5e3 fall_slope=2e3)
+a3 2 30 sine1
+.model sine1 sine (cntl_array=[-1.0 0.0 10.0 20.0] freq_array=[500 500 2000 2000] out_low=-1.0 out_high=1.0)
+v4 4 0 DC 5
+a6 4 60 sine1
+r60 60 0 10k
+r1 1 0 10k
+r2 2 0 10k
+r3 3 0 10k
+r10 10 0 10k
+r20 20 0 10k
+r30 30 0 10k
+.control
+set numdgt=12
+tran 0.01ms 2ms
+wrdata ngspice-tran.txt v(10) v(20) v(30) v(60)
+meas tran m10_0 find v(10) at=0.0001
+meas tran m10_1 find v(10) at=0.0003
+meas tran m10_2 find v(10) at=0.00045
+meas tran m10_3 find v(10) at=0.0007
+meas tran m10_4 find v(10) at=0.0013
+meas tran m20_0 find v(20) at=0.00025
+meas tran m20_1 find v(20) at=0.00035
+meas tran m20_2 find v(20) at=0.00055
+meas tran m20_3 find v(20) at=0.0008
+meas tran m60_0 find v(60) at=0.0001
+meas tran m60_1 find v(60) at=0.00037
+meas tran m60_2 find v(60) at=0.0009
+meas tran m60_3 find v(60) at=0.00155
+meas tran m60_4 find v(60) at=0.002
+.endc
+.end

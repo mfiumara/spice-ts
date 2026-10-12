@@ -1,10 +1,14 @@
 import { ParseError } from '../errors.js';
 import { parseNumber } from './tokenizer.js';
 
-/** Per-instance BJT scaling; ngspice-47 bjtsetup.c/vbicsetup.c default both to 1. */
+/** Per-instance BJT scaling; ngspice-47 bjtsetup.c/vbicsetup.c default AREA and M to 1. */
 export interface BJTInstanceParams {
   /** Emitter area factor (ngspice `area`, positional or keyword). */
   AREA?: number;
+  /** Base area factor (ngspice `areab`); bjtsetup.c defaults it to AREA. */
+  AREAB?: number;
+  /** Collector area factor (ngspice `areac`); bjtsetup.c defaults it to AREA. */
+  AREAC?: number;
   /** Parallel multiplier (ngspice `m`). */
   M?: number;
 }
@@ -28,13 +32,15 @@ export interface ParsedBJTInstance {
  */
 const STRICT_NUMBER = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?[a-z]*$/i;
 
+const INSTANCE_KEYWORDS: readonly (keyof BJTInstanceParams)[] = ['AREA', 'AREAB', 'AREAC', 'M'];
+
 const isKeywordOrFlag = (token: string): boolean =>
   token.includes('=') || token.toUpperCase() === 'OFF';
 
 /**
  * Parse the ngspice-47 Q-card forms used by the public benchmark corpora:
  *
- *   Qname c b e [s [t]] model [area] [AREA=val] [M=val] [OFF]
+ *   Qname c b e [s [t]] model [area] [AREA=val] [AREAB=val] [AREAC=val] [M=val] [OFF]
  *
  * As in ngspice-47, a grounded substrate (`Qx c b e 0 MODEL`) is a node like
  * any other: the model is the last positional token (before an optional
@@ -42,12 +48,13 @@ const isKeywordOrFlag = (token: string): boolean =>
  * recognised only when it is a complete number following a non-numeric model
  * name, so `Q1 c b e QMOD 2` is area 2 while `Q1 c b e 0 2` keeps model `2`.
  *
- * AREA and M are returned in `params`; the circuit scales the device exactly
- * as ngspice bjttemp.c/bjtload.c and vbicload.c (SCALE = area * m) do. OFF
+ * AREA, AREAB, AREAC and M are returned in `params`; the circuit scales the
+ * device exactly as ngspice bjttemp.c/bjtload.c and vbicload.c (SCALE = area
+ * * m) do. AREAB/AREAC are Gummel-Poon only (bjt.c); VBIC rejects them. OFF
  * (or OFF=0/1) is consumed as an initial-state hint: the solver already starts
  * nonlinear devices from its zero solution, so it must not disable the
  * transistor at the converged operating point. Every other instance keyword
- * (AREAB, AREAC, IC, TEMP, DTEMP, ...) is rejected rather than ignored.
+ * (IC, TEMP, DTEMP, ...) is rejected rather than ignored.
  *
  * The substrate and thermal terminals are returned to the circuit, which
  * knows the model: bounded VBIC (LEVEL=4) stamps the substrate, the bounded
@@ -94,7 +101,7 @@ export function parseBJTInstance(
     if (value === undefined) {
       fail(`Unsupported BJT instance token after the model: '${token}' in '${line}'`);
     }
-    if (key !== 'AREA' && key !== 'M') {
+    if (!INSTANCE_KEYWORDS.includes(key as keyof BJTInstanceParams)) {
       fail(`Unsupported BJT instance parameter: '${token}' in '${line}'`);
     }
     const name = key as keyof BJTInstanceParams;
@@ -106,7 +113,7 @@ export function parseBJTInstance(
     }
     params[name] = parseNumber(value!);
   }
-  for (const name of ['AREA', 'M'] as const) {
+  for (const name of INSTANCE_KEYWORDS) {
     const value = params[name];
     if (value !== undefined && !(value > 0 && Number.isFinite(value))) {
       fail(`BJT ${name} must be a finite number greater than zero: '${line}'`);

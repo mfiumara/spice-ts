@@ -57,9 +57,12 @@ describe('diode thermal voltage is kT/q like ngspice (#402)', () => {
     const out = await operatingPointOut('IS=1e-14');
     // ngspice-47: v(out) = 6.928909752304e-01
     expectNear(out, 0.6928909752304, NGSPICE_NEWTON_RESIDUAL);
-    // Exact KCL residual with VT = kT/q at 300.15 K and GMIN = 1e-12.
-    const diodeCurrent = 1e-14 * Math.expm1(out / thermalVoltage(27)) + 1e-12 * out;
-    expect(Math.abs((5 - out) / 1000 - diodeCurrent) / diodeCurrent).toBeLessThan(1e-9);
+    // KCL with VT = kT/q at 300.15 K and GMIN = 1e-12, as the junction-voltage
+    // error it implies: within the Newton stop residual. (The old VT=0.02585
+    // misses the law by about 0.4 mV here.)
+    const vt = thermalVoltage(27);
+    const diodeCurrent = 1e-14 * Math.expm1(out / vt) + 1e-12 * out;
+    expect(Math.abs(vt * Math.log(((5 - out) / 1000) / diodeCurrent))).toBeLessThan(NGSPICE_NEWTON_RESIDUAL);
   });
 
   it('matches the ngspice forward operating point with N=1.8', async () => {
@@ -85,7 +88,8 @@ describe('diode thermal voltage is kT/q like ngspice (#402)', () => {
     const diode = new Diode('D1', [0, -1], { IS: 1e-14, TNOM: 50 });
     diode.setTemperature(50);
     const { current } = diode.noiseOperatingPoint(new Float64Array([voltage]));
-    const expected = 1e-14 * Math.expm1(voltage / thermalVoltage(50));
+    // dionoise.c reads DIOcurrent, which includes CKTgmin*vd (#643).
+    const expected = 1e-14 * Math.expm1(voltage / thermalVoltage(50)) + 1e-12 * voltage;
     expect(Math.abs(current - expected) / expected).toBeLessThan(1e-12);
     // Within ngspice's own Newton residual of the source current.
     expect(Math.abs(current - 4.25435381255e-3) / 4.25435381255e-3).toBeLessThan(5e-4);
@@ -349,5 +353,56 @@ describe('diode TBV1 is ngspice-47 TCV: BV(T) = BV - TCV*(T-TNOM) (#429)', () =>
       resistance: '1k',
     });
     expect(level2).toBe(nominal);
+  });
+});
+
+/**
+ * Breakdown deck with an instance line, run verbatim by both simulators. The
+ * tight options take ngspice's Newton stopping residual (up to ~3e-4 V on
+ * these decks at default RELTOL) out of the comparison.
+ */
+async function breakdownInstanceDeck(model: string, instance: string): Promise<number> {
+  const result = await simulate(`diode breakdown instance parity
+    V1 in 0 -10
+    R1 in out 1k
+    D1 out 0 DJ ${instance}
+    .model DJ D ${model}
+    .options reltol=1e-9 vntol=1e-15 abstol=1e-20
+    .op
+    .end
+  `);
+  return result.dc!.voltage('out');
+}
+
+describe('diode breakdown current scales with instance M like ngspice-47 (#662)', () => {
+  // ngspice-47 diotemp.c:216-219: cbv = M*IBV (LEVEL=1), so M parallel copies
+  // keep the breakdown knee where one diode has it. AREA does not scale IBV.
+  const KNEE_PARITY = 1e-6;
+  it.each([
+    // [instance, ngspice-47 v(out)]
+    ['m=2', -5.082823921069],
+    ['m=3', -5.072391417746],
+    ['area=2 m=3', -5.072391417789],
+    ['area=2', -5.100658134843],
+    ['', -5.100658134800],
+  ])('matches ngspice with instance "%s"', async (instance, expected) => {
+    expectNear(
+      await breakdownInstanceDeck('IS=1e-15 BV=5 IBV=1e-4', instance),
+      expected,
+      KNEE_PARITY,
+    );
+  });
+
+  // diotemp.c:221-228: when cbv < IS*BV/vt the knee is pinned at BV instead of
+  // iterating (the log argument would go negative).
+  it.each([
+    ['', -5.219137309524],
+    ['m=2', -5.201305408023],
+  ])('pins the knee at BV when IBV is below IS*BV/vt (instance "%s")', async (instance, expected) => {
+    expectNear(
+      await breakdownInstanceDeck('IS=1e-6 BV=5 IBV=1e-5', instance),
+      expected,
+      KNEE_PARITY,
+    );
   });
 });

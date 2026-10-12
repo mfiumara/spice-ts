@@ -195,6 +195,8 @@ export class MOSFET implements DeviceModel {
   /** Junction voltages used by the previous stamp (ngspice CKTstate0 vbs/vbd). */
   private lastVbs = 0;
   private lastVbd = 0;
+  /** The last stamp limited a bulk junction (ngspice mos1load.c icheck -> CKTnoncon). */
+  private junctionLimited = false;
   /** Effective channel length L - 2*LD (m), as used by mos1load.c and mos1noi.c. */
   readonly effectiveLength: number;
   /** Device temperature (C) and the mos1temp.c values derived from it. */
@@ -369,10 +371,14 @@ export class MOSFET implements DeviceModel {
     let vbs = polarity * (vB - vS);
     let vbd = vbs - vds;
     if (vds >= 0) {
+      const raw = vbs;
       vbs = pnjlim(vbs, this.lastVbs, this.vt, this.sourceVcrit);
+      this.junctionLimited = vbs !== raw;
       vbd = vbs - vds;
     } else {
+      const raw = vbd;
       vbd = pnjlim(vbd, this.lastVbd, this.vt, this.drainVcrit);
+      this.junctionLimited = vbd !== raw;
       vbs = vbd + vds;
     }
     this.lastVbs = vbs;
@@ -421,6 +427,15 @@ export class MOSFET implements DeviceModel {
     }
     out[3] = out[1] * arg;
     return out;
+  }
+
+  /**
+   * Whether the last stamp limited a bulk junction with DEVpnjlim. As in
+   * ngspice (mos1load.c icheck), Newton cannot converge on such an iterate:
+   * the junction current was evaluated at a voltage the solution lacks.
+   */
+  limitedLastStamp(): boolean {
+    return this.junctionLimited;
   }
 
   limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {
@@ -678,6 +693,19 @@ export class MOSFET implements DeviceModel {
     this.batchSlots = slots;
     this.batchSlotKey = stampIndex;
     return slots;
+  }
+
+  /**
+   * True when every G entry {@link batchStamp} writes for this instance lies
+   * in the locked topology behind `stampIndex` (resolving its slots).
+   */
+  canBatchStamp(stampIndex: (row: number, col: number) => number): boolean {
+    try {
+      this.resolveBatchSlots(stampIndex);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   /**

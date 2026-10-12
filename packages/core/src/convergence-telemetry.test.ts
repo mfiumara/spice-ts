@@ -3,7 +3,7 @@ import { createTransientSim, simulate } from './index.js';
 import { ConvergenceError, TimestepTooSmallError } from './errors.js';
 
 describe('convergence telemetry', () => {
-  it('reports deterministic DC Newton and source-stepping counters', async () => {
+  it('reports deterministic DC Newton counters (plain Newton converges, no homotopy)', async () => {
     const result = await simulate(`
 V1 in 0 DC 5
 D1 in out DTEST
@@ -14,15 +14,15 @@ R1 out 0 1k
 
     expect(result.convergence!.dc).toEqual({
       newtonIterations: expect.any(Number),
-      acceptedSolves: 14,
+      acceptedSolves: 1,
       rejectedSolves: 0,
-      sourceStepAttempts: 13,
+      sourceStepAttempts: 0,
       sourceStepFailures: 0,
       gminStepAttempts: 0,
       gminStepFailures: 0,
       failure: null,
     });
-    expect(result.convergence!.dc.newtonIterations).toBeGreaterThanOrEqual(14);
+    expect(result.convergence!.dc.newtonIterations).toBeGreaterThanOrEqual(2);
     expect(result.convergence!.transient).toEqual({
       acceptedSteps: 0,
       rejectedSteps: 0,

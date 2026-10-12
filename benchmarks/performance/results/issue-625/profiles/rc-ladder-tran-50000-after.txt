@@ -1,0 +1,29 @@
+<dir>/prof-after/rc-ladder-tran-50000.cpuprofile: 1782 samples, 6391.2 ms sampled
+
+Top self time
+    1160.7 ms  18.2%  factorize packages/core/dist/chunk-7SY35Y23.js:18259
+     970.1 ms  15.2%  attemptStep packages/core/dist/chunk-7SY35Y23.js:19773
+     632.5 ms   9.9%  buildCompanionSystem packages/core/dist/chunk-7SY35Y23.js:19597
+     614.1 ms   9.6%  stampStaticDevices packages/core/dist/chunk-7SY35Y23.js:19064
+     600.4 ms   9.4%  (garbage collector)
+     397.3 ms   6.2%  stampDynamicDevices packages/core/dist/chunk-7SY35Y23.js:19105
+     236.8 ms   3.7%  flush packages/core/dist/chunk-7SY35Y23.js:20804
+     143.1 ms   2.2%  checkLTE packages/core/dist/chunk-7SY35Y23.js:20518
+     113.4 ms   1.8%  compile packages/core/dist/chunk-7SY35Y23.js:14500
+     107.9 ms   1.7%  lockTopology packages/core/dist/chunk-7SY35Y23.js:18675
+      92.9 ms   1.5%  amdOrdering packages/core/dist/chunk-7SY35Y23.js:17943
+      91.9 ms   1.4%  stampPrevB packages/core/dist/chunk-7SY35Y23.js:20464
+
+Top inclusive time
+    6391.2 ms 100.0%  (root)
+    5514.1 ms  86.3%  simulate packages/core/dist/chunk-7SY35Y23.js:25584
+    5185.0 ms  81.1%  solveCompiledAnalyses packages/core/dist/chunk-7SY35Y23.js:25621
+    4897.0 ms  76.6%  solveTransient packages/core/dist/chunk-7SY35Y23.js:20829
+    4513.1 ms  70.6%  advanceSolution packages/core/dist/chunk-7SY35Y23.js:20233
+    4004.9 ms  62.7%  attemptStep packages/core/dist/chunk-7SY35Y23.js:19773
+    1629.7 ms  25.5%  buildCompanionSystem packages/core/dist/chunk-7SY35Y23.js:19597
+    1241.8 ms  19.4%  solveLinearized packages/core/dist/chunk-7SY35Y23.js:19865
+    1200.2 ms  18.8%  factorize packages/core/dist/chunk-7SY35Y23.js:18259
+     775.4 ms  12.1%  stampStaticDevices packages/core/dist/chunk-7SY35Y23.js:19064
+     600.4 ms   9.4%  (garbage collector)
+     438.2 ms   6.9%  stampDynamicDevices packages/core/dist/chunk-7SY35Y23.js:19105

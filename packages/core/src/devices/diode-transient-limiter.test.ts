@@ -49,7 +49,9 @@ describe('transient diode limiting keeps the exact diode law', () => {
   });
 
   it('holds a 1.5 A breakdown operating point through a DC transient', async () => {
-    // ngspice-47 v(out): t=0 -5.189410812, later points -5.189213894
+    // ngspice-47 v(out): t=0 -5.189410812, later points -5.189213894. The
+    // t=0 point is where ngspice's operating-point Newton stops on reltol;
+    // spice-ts runs the same CKTop order (#622) and stops on the same point.
     const out = await transientOut(`diode tran breakdown
       V1 in 0 DC -10
       R1 in out 3.2
@@ -57,7 +59,8 @@ describe('transient diode limiting keeps the exact diode law', () => {
       .model DM D IS=1e-14 BV=5 IBV=1m
       .tran 1u 10u
       .end`);
-    expect(maxDeviation(out, -5.189213894)).toBeLessThan(NEWTON_STOP_RESIDUAL);
+    expect(Math.abs(out[0] - -5.189410812)).toBeLessThan(1e-9);
+    expect(maxDeviation(out.slice(1), -5.189213894)).toBeLessThan(NEWTON_STOP_RESIDUAL);
   });
 
   it('reaches the forward law on a pulsed high-current diode with charge storage', async () => {

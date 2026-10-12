@@ -24,7 +24,7 @@ import { Diode } from './devices/diode.js';
 import { solveDCSweep } from './analysis/dc-sweep.js';
 import { solveStep, generateStepValues, resolveStepTarget } from './analysis/step.js';
 import type { StepStreamEvent, StepAnalysis } from './types.js';
-import type { SimulationResult, StepResult } from './results.js';
+import type { MeasurementResult, SimulationResult, StepResult } from './results.js';
 import { InvalidCircuitError } from './errors.js';
 import { createMatrixVariableIdentities, MNAAssembler } from './mna/assembler.js';
 import { toCsc } from './solver/csc-matrix.js';
@@ -36,6 +36,9 @@ import { frequencyGrid } from './analysis/frequency-grid.js';
 import { createConvergenceTelemetry } from './convergence-telemetry.js';
 import { solveStepInWorkers } from './analysis/step-parallel.js';
 import type { ProtocolExecutionGuard } from './protocol/execution-guard.js';
+import { evaluateMeasureCards, measuredAnalyses, measurePlot, type MeasureCard } from './measure/dot-measure.js';
+import { measureCards } from './measure/registry.js';
+import { UnsupportedMeasureError } from './measure/errors.js';
 
 class UnsupportedStreamAnalysisError extends InvalidCircuitError {
   readonly code = 'UNSUPPORTED_FEATURE' as const;
@@ -120,12 +123,13 @@ export async function simulate(
   } else {
     circuit = input;
   }
+  const measures = measureCards(circuit);
   if (circuit.controlScript) {
-    return simulateControlScript(circuit, circuit.controlScript, options, guard);
+    return simulateControlScript(circuit, circuit.controlScript, options, guard, measures);
   }
   const compiled = circuit.compile(guard);
   options = withNetlistOptions(compiled.simulationOptions, options);
-  const warnings: SimulationWarning[] = [];
+  const warnings: SimulationWarning[] = parseWarnings(circuit);
   const convergence = createConvergenceTelemetry();
   if (options.bypass) {
     warnings.push({
@@ -137,6 +141,13 @@ export async function simulate(
   validateCircuit(compiled, warnings);
 
   if (compiled.steps.length > 0) {
+    if (measures.length > 0) {
+      throw new UnsupportedMeasureError(
+        '.meas with .step is not implemented (ngspice measures each step run separately)',
+        measures[0].line,
+        measures[0].text,
+      );
+    }
     if (compiled.steps.length > 1) {
       throw new InvalidCircuitError(
         'Multiple .step directives are not supported; nested or multi-dimensional stepping is unsupported',
@@ -150,18 +161,47 @@ export async function simulate(
     return { steps: stepResults, warnings, convergence };
   }
 
-  return solveCompiledAnalyses(compiled, options, warnings, convergence, guard);
+  const result = solveCompiledAnalyses(compiled, options, warnings, convergence, guard, measures, new Map());
+  warnUnmeasuredAnalyses(measures, compiled.analyses, warnings);
+  return result;
 }
 
-/** Solve every analysis of a compiled circuit into one result. */
+/** ngspice silently skips `.meas` cards whose analysis never runs; say so. */
+function warnUnmeasuredAnalyses(
+  measures: readonly MeasureCard[],
+  analyses: readonly { type: string }[],
+  warnings: SimulationWarning[],
+): void {
+  const ran = new Set(analyses.map(analysis => analysis.type));
+  for (const type of measuredAnalyses(measures)) {
+    if (!ran.has(type)) {
+      warnings.push({ type: 'measure', message: `.meas ${type} cards were not evaluated: the deck runs no .${type} analysis` });
+    }
+  }
+}
+
+/**
+ * Solve every analysis of a compiled circuit into one result. `.meas` cards
+ * are evaluated after each tran/ac/dc analysis, as ngspice's dosim() calls
+ * do_measure(); `measureValues` is ngspice's dictionary of earlier results.
+ */
 function solveCompiledAnalyses(
   compiled: CompiledCircuit,
   options: SimulationOptions,
   warnings: SimulationWarning[],
   convergence: ConvergenceTelemetry,
-  guard?: ProtocolExecutionGuard,
+  guard: ProtocolExecutionGuard | undefined,
+  measures: readonly MeasureCard[],
+  measureValues: Map<string, number>,
 ): SimulationResult {
   const result: SimulationResult = { warnings, convergence };
+  const measure = (analysis: AnalysisDirective): void => {
+    if (measures.length === 0) return;
+    const plot = measurePlot(analysis, result);
+    if (!plot) return;
+    const measurements = evaluateMeasureCards(measures, analysis.type, plot, measureValues);
+    if (measurements.length > 0) result.measurements = [...(result.measurements ?? []), ...measurements];
+  };
 
   for (const analysis of compiled.analyses) {
     switch (analysis.type) {
@@ -177,6 +217,7 @@ function solveCompiledAnalyses(
       case 'dc': {
         const opts = resolveOptions(options);
         result.dcSweep = solveDCSweep(compiled, analysis, opts, convergence, guard);
+        measure(analysis);
         break;
       }
       case 'tran': {
@@ -185,6 +226,7 @@ function solveCompiledAnalyses(
         result.transient = solveTransient(
           compiled, runnableTransient(analysis, options), opts, seed, convergence, guard,
         );
+        measure(analysis);
         break;
       }
       case 'ac': {
@@ -193,6 +235,7 @@ function solveCompiledAnalyses(
           compiled, opts, undefined, convergence, 'operating-point', guard,
         );
         result.ac = solveAC(compiled, analysis, opts, dcAsm.solution, guard);
+        measure(analysis);
         break;
       }
       case 'noise': {
@@ -272,10 +315,12 @@ function simulateControlScript(
   circuit: Circuit,
   script: ControlScript,
   options: SimulationOptions | undefined,
-  guard?: ProtocolExecutionGuard,
+  guard: ProtocolExecutionGuard | undefined,
+  measures: readonly MeasureCard[],
 ): SimulationResult {
-  const warnings: SimulationWarning[] = [];
+  const warnings: SimulationWarning[] = parseWarnings(circuit);
   const convergence = createConvergenceTelemetry();
+  const measureValues = new Map<string, number>();
   const deckAnalyses = [...circuit.analyses];
   const deckPoleZero = [...circuit.poleZeroAnalyses];
 
@@ -293,7 +338,7 @@ function simulateControlScript(
     compiled = { ...compiled, analyses: [...analyses], poleZeroAnalyses: [...poleZero] };
     validateCircuit(compiled, warnings);
     const resolved = withNetlistOptions(compiled.simulationOptions, options);
-    return solveCompiledAnalyses(compiled, resolved, warnings, convergence, guard);
+    return solveCompiledAnalyses(compiled, resolved, warnings, convergence, guard, measures, measureValues);
   };
 
   const runDeck = (): ControlHostRun[] => [
@@ -342,13 +387,20 @@ function simulateControlScript(
   const result: SimulationResult = {
     warnings,
     convergence,
-    control: { runs: outcome.runs, output: outcome.output, quit: outcome.quit },
+    control: { runs: outcome.runs, output: outcome.output, quit: outcome.quit, measurements: outcome.measurements },
   };
+  // Like the analysis fields, measurements come from the latest run of each analysis type.
+  const latestMeasurements = new Map<string, MeasurementResult[]>();
   for (const { result: run } of [...outcome.runs, ...finalRuns]) {
     for (const field of ANALYSIS_RESULT_FIELDS) {
       if (run[field] !== undefined) Object.assign(result, { [field]: run[field] });
     }
+    for (const measurement of run.measurements ?? []) latestMeasurements.delete(measurement.analysis);
+    for (const measurement of run.measurements ?? []) {
+      latestMeasurements.set(measurement.analysis, [...(latestMeasurements.get(measurement.analysis) ?? []), measurement]);
+    }
   }
+  if (latestMeasurements.size > 0) result.measurements = [...latestMeasurements.values()].flat();
   const seen = new Set<string>();
   result.warnings = warnings.filter(warning => {
     const key = `${warning.type}:${warning.message}`;
@@ -542,6 +594,10 @@ function* streamWithSteps(
   } finally {
     target.restore();
   }
+}
+
+function parseWarnings(circuit: Circuit): SimulationWarning[] {
+  return circuit.parseWarnings.map(message => ({ type: 'parse', message }));
 }
 
 function validateCircuit(compiled: CompiledCircuit, warnings: SimulationWarning[]): void {

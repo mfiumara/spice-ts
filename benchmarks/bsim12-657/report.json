@@ -1,0 +1,202 @@
+{
+  "ngspice": "ngspice-47 : Circuit level simulation program",
+  "generatedBy": "benchmarks/bsim12-657/compare.ts",
+  "results": [
+    {
+      "deck": "benchmarks/corpus/classic/fixtures/spice3f5/bsim1tst.cir",
+      "sha256": "dffabf12d196b6b3d5ac058f7a402ee0dbb51c597c23599379f0502e84088062",
+      "kind": "dc",
+      "points": {
+        "ngspice": 501,
+        "spiceTs": 501
+      },
+      "perVector": {
+        "i(v1)": {
+          "peak": 0.000053495,
+          "maxAbs": 3.769e-13,
+          "maxAbsOverPeak": 7.046e-9
+        },
+        "i(v2)": {
+          "peak": 0.000048711,
+          "maxAbs": 4.121e-13,
+          "maxAbsOverPeak": 8.459e-9
+        },
+        "i(v3)": {
+          "peak": 0.000045389,
+          "maxAbs": 3.937e-13,
+          "maxAbsOverPeak": 8.673e-9
+        },
+        "i(v4)": {
+          "peak": 0.000042806,
+          "maxAbs": 4.048e-13,
+          "maxAbsOverPeak": 9.456e-9
+        },
+        "i(v5)": {
+          "peak": 0.0000407,
+          "maxAbs": 3.851e-13,
+          "maxAbsOverPeak": 9.462e-9
+        },
+        "i(vds)": {
+          "peak": 0.0002311,
+          "maxAbs": 4.987e-13,
+          "maxAbsOverPeak": 2.158e-9
+        }
+      }
+    },
+    {
+      "deck": "benchmarks/corpus/classic/fixtures/spice3f5/bsim2tst.cir",
+      "sha256": "ff2da08b0c8db25fe617c9f1ba2f99d5169c26b8167b30258a1631d93b79beee",
+      "kind": "dc",
+      "points": {
+        "ngspice": 501,
+        "spiceTs": 501
+      },
+      "perVector": {
+        "i(v1)": {
+          "peak": 0.000076057,
+          "maxAbs": 4.982e-14,
+          "maxAbsOverPeak": 6.551e-10
+        },
+        "i(v2)": {
+          "peak": 0.000071257,
+          "maxAbs": 4.988e-14,
+          "maxAbsOverPeak": 7e-10
+        },
+        "i(v3)": {
+          "peak": 0.000067429,
+          "maxAbs": 4.981e-14,
+          "maxAbsOverPeak": 7.387e-10
+        },
+        "i(v4)": {
+          "peak": 0.000064124,
+          "maxAbs": 4.973e-14,
+          "maxAbsOverPeak": 7.755e-10
+        },
+        "i(v5)": {
+          "peak": 0.000061151,
+          "maxAbs": 4.998e-14,
+          "maxAbsOverPeak": 8.174e-10
+        },
+        "i(vds)": {
+          "peak": 0.00034002,
+          "maxAbs": 4.981e-13,
+          "maxAbsOverPeak": 1.465e-9
+        }
+      }
+    },
+    {
+      "deck": "benchmarks/bsim12-657/fixtures/bsim1-output-inverse.cir",
+      "sha256": "cd43bb05281af718bba30494e2d0f89d33e0f49f767fbee81136e8c401b28e33",
+      "kind": "dc",
+      "points": {
+        "ngspice": 301,
+        "spiceTs": 301
+      },
+      "perVector": {
+        "i(v1)": {
+          "peak": 0.00069886,
+          "maxAbs": 7.167e-8,
+          "maxAbsOverPeak": 0.0001026
+        },
+        "i(v2)": {
+          "peak": 0.0025989,
+          "maxAbs": 6.249e-7,
+          "maxAbsOverPeak": 0.0002404
+        }
+      }
+    },
+    {
+      "deck": "benchmarks/bsim12-657/fixtures/bsim2-pmos-output.cir",
+      "sha256": "f679456c6f5128ca9fe1dd137a1579c3afb8e516b07c05022f5909ef6972411b",
+      "kind": "dc",
+      "points": {
+        "ngspice": 250,
+        "spiceTs": 250
+      },
+      "perVector": {
+        "i(v1)": {
+          "peak": 0.00023044,
+          "maxAbs": 4.998e-13,
+          "maxAbsOverPeak": 2.169e-9
+        },
+        "i(v2)": {
+          "peak": 0.0035435,
+          "maxAbs": 4.996e-12,
+          "maxAbsOverPeak": 1.41e-9
+        }
+      }
+    },
+    {
+      "deck": "benchmarks/bsim12-657/fixtures/bsim1-rload-tran.cir",
+      "sha256": "38fa0a1f2a79dd20239460a3ec1552c99b7c05b1752086cad9ef592b35c0a353",
+      "kind": "tran",
+      "points": {
+        "ngspice": 1032,
+        "spiceTs": 1334
+      },
+      "perVector": {
+        "v(out)": {
+          "peak": 5.035,
+          "maxAbsAtNgspicePoints": 0.002185,
+          "maxAbsOverPeak": 0.0004339
+        },
+        "i(vdd)": {
+          "peak": 0.00047973,
+          "maxAbsAtNgspicePoints": 2.185e-7,
+          "maxAbsOverPeak": 0.0004554
+        }
+      }
+    },
+    {
+      "deck": "benchmarks/bsim12-657/fixtures/bsim2-inverter-tran.cir",
+      "sha256": "c3a17fcf5f9ab545396036035e26c6314978e4fa7ad118673ba3c8b06c09af28",
+      "kind": "tran",
+      "points": {
+        "ngspice": 1036,
+        "spiceTs": 1152
+      },
+      "perVector": {
+        "v(out)": {
+          "peak": 5.6319,
+          "maxAbsAtNgspicePoints": 0.02504,
+          "maxAbsOverPeak": 0.004447
+        },
+        "i(vdd)": {
+          "peak": 0.0083544,
+          "maxAbsAtNgspicePoints": 0.001622,
+          "maxAbsOverPeak": 0.1941
+        }
+      }
+    },
+    {
+      "deck": "benchmarks/bsim12-657/fixtures/bsim1-cs-ac.cir",
+      "sha256": "1f920befee671bb6db30f94796fb214a01cd05a6d550bef4128434e07fda1640",
+      "kind": "ac",
+      "points": {
+        "ngspice": 71,
+        "spiceTs": 71
+      },
+      "perVector": {
+        "v(out)": {
+          "maxRelMagnitude": 2.935e-9,
+          "maxAbsPhaseDeg": 2.853e-7
+        }
+      }
+    },
+    {
+      "deck": "benchmarks/bsim12-657/fixtures/bsim2-cs-ac.cir",
+      "sha256": "8aa995325236c678e2c8289c1c88f1d4f5d4b67a72a9c1c1a394abdc8f5ad8be",
+      "kind": "ac",
+      "points": {
+        "ngspice": 71,
+        "spiceTs": 71
+      },
+      "perVector": {
+        "v(out)": {
+          "maxRelMagnitude": 5.658e-7,
+          "maxAbsPhaseDeg": 0.00001551
+        }
+      }
+    }
+  ]
+}

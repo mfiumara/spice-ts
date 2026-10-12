@@ -1,16 +1,23 @@
-import type { ACRHSContribution, DeviceModel, StampContext } from './device.js';
+import type { ACRHSContribution, DeviceModel, StampContext, TransientBreakpointSink } from './device.js';
 import type { SourceWaveform, PulseSource, SinSource, PWLSource, RFPort } from '../types.js';
 import { InvalidCircuitError } from '../errors.js';
+import { TransientNoiseContext, type NoiseHandle } from './transient-noise.js';
 
 export class VoltageSource implements DeviceModel {
   readonly branches: number[];
   readonly isNonlinear = false;
   private transientTimestep = 0;
+  /** TRNOISE/TRRANDOM state (ngspice VSRCtrnoise_state/VSRCtrrandom_state). */
+  private readonly noise?: NoiseHandle;
+  /** Present only for TRNOISE/TRRANDOM, so other sources stay off the accept pass. */
+  readonly acceptTransientStep?: (ctx: StampContext, breakpoints?: TransientBreakpointSink) => void;
 
   /**
    * @param nodes - `[+, -]`, or `[+, -, res]` for an RF port, whose ideal
    *   source sits between the internal `res` node and `-` with `z0` from `+`
    *   to `res` (ngspice-47 vsrcset.c/vsrcload.c RFSPICE).
+   * @param noiseContext - shared random stream of the circuit's TRNOISE and
+   *   TRRANDOM sources; a private one is created when absent.
    */
   constructor(
     readonly name: string,
@@ -18,8 +25,14 @@ export class VoltageSource implements DeviceModel {
     readonly branchIndex: number,
     public waveform: SourceWaveform,
     readonly port?: RFPort,
+    noiseContext?: TransientNoiseContext,
   ) {
     this.branches = [branchIndex];
+    if (waveform.type === 'trnoise' || waveform.type === 'trrandom') {
+      const noise = (noiseContext ?? new TransientNoiseContext()).register('V', name, waveform);
+      this.noise = noise;
+      this.acceptTransientStep = (ctx, breakpoints) => noise.accept(ctx.time, breakpoints);
+    }
   }
 
   /** The node the ideal source drives: the internal `res` node of an RF port, else `+`. */
@@ -70,6 +83,10 @@ export class VoltageSource implements DeviceModel {
         return evaluateSin(this.waveform, time);
       case 'pwl':
         return evaluatePwl(this.waveform, time);
+      case 'trnoise':
+      case 'trrandom':
+        // ngspice-47 vsrcload.c adds the DC value when one is given.
+        return (this.waveform.dc ?? 0) + this.noise!.value(time);
       case 'ac':
         return this.waveform.dc ?? 0;
     }
@@ -131,7 +148,12 @@ export class VoltageSource implements DeviceModel {
     if (this.waveform.type === 'pwl') {
       return pwlBreakpoints(this.waveform, stopTime);
     }
+    if (this.noise) return this.noise.breakpoints(stopTime);
     return [];
+  }
+
+  resetTransient(): void {
+    this.noise?.resetTransient();
   }
 }
 
