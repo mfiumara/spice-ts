@@ -302,10 +302,16 @@ export interface ComplexSensitivityValue {
   imaginary: number;
 }
 
-/** Sensitivity to one non-zero primary device parameter. */
+/**
+ * Sensitivity to one device parameter: a non-zero primary value, or the instance
+ * multiplier `m` (ngspice `<dev>_m`) or `scale` (ngspice `<dev>_scale`) of a
+ * resistor, capacitor, inductor or current source (`scale`: R, C and L only).
+ */
 export interface SensitivityEntry {
   device: string;
-  parameter: 'resistance' | 'capacitance' | 'inductance' | 'dc' | 'acMagnitude' | 'gain';
+  parameter:
+    | 'resistance' | 'capacitance' | 'inductance' | 'dc' | 'acMagnitude' | 'gain'
+    | 'multiplier' | 'scale';
   dc?: number;
   ac?: ComplexSensitivityValue[];
 }

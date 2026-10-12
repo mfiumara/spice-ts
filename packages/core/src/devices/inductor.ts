@@ -12,6 +12,10 @@ export class Inductor implements DeviceModel {
     readonly ic?: number,
     /** One element's inductance before the instance m (ngspice INDinduct). */
     readonly unitInductance: number = inductance,
+    /** Instance parallel multiplier `m` (ngspice INDm), already folded into `inductance`. */
+    readonly multiplier: number = 1,
+    /** Instance `SCALE` factor (ngspice INDscale), already folded into both values. */
+    readonly scale: number = 1,
   ) {
     this.branches = [branchIndex];
   }

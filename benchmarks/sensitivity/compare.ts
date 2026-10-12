@@ -216,6 +216,10 @@ function ngspiceName(entry: SensitivityEntry, mode: 'dc' | 'ac'): string {
       return `v(${device})`;
     case 'acMagnitude':
       return `v(${device}_acmag)`;
+    case 'multiplier':
+      return `v(${device}_m)`;
+    case 'scale':
+      return `v(${device}_scale)`;
   }
 }
 

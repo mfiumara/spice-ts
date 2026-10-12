@@ -1172,6 +1172,8 @@ function sensitivityVectorNames(
         : plain(name);
     case 'acMagnitude': return plain(`${name}_acmag`);
     case 'gain': return plain(`${name}_gain`);
+    case 'multiplier': return plain(`${name}_m`);
+    case 'scale': return plain(`${name}_scale`);
     default: return plain(name);
   }
 }

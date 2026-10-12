@@ -31,7 +31,10 @@ interface ParameterTarget {
   set(value: number): void;
 }
 
-/** Solve the bounded primary-device-value `.sens` slice by symmetric perturbation. */
+/**
+ * Solve the bounded `.sens` slice (primary device values plus the instance
+ * multiplier and scale of R, C, L and current sources) by symmetric perturbation.
+ */
 export function solveSensitivity(
   compiled: CompiledCircuit,
   analysis: SensitivityAnalysis,
@@ -101,11 +104,59 @@ function collectTargets(compiled: CompiledCircuit, mode: 'dc' | 'ac'): Parameter
   for (const device of compiled.devices) {
     const target = parameterTarget(device, mode);
     if (target && target.value !== 0) targets.push(target);
+    targets.push(...scalingTargets(device));
   }
+  // Stable sort: within a device the primary value precedes `m` and `scale`.
   return targets.sort((left, right) =>
-    left.device.localeCompare(right.device, 'en', { sensitivity: 'base' })
-      || left.parameter.localeCompare(right.parameter),
+    left.device.localeCompare(right.device, 'en', { sensitivity: 'base' }),
   );
+}
+
+/**
+ * Instance multiplier (`<dev>_m`) and `scale` (`<dev>_scale`) of R, C, L and
+ * current sources, which ngspice-47 cktsens.c lists for every such instance,
+ * also when the derivative is zero (C and L in DC). Each is perturbed directly,
+ * as ngspice does: R = R_nom * scale / m, C = C_unit * m, L = L_unit / m,
+ * I = m * I_value. Voltage sources have no instance m in ngspice-47.
+ */
+function scalingTargets(device: DeviceModel): ParameterTarget[] {
+  if (device instanceof Resistor) {
+    return [
+      mutable(device, 'multiplier', device.multiplier, value => device.setMultiplier(value)),
+      mutable(device, 'scale', device.scale, value => device.setScale(value)),
+    ];
+  }
+  if (device instanceof Capacitor) {
+    const capacitance = device.capacitance;
+    const { multiplier, scale } = device;
+    return [
+      mutable(device, 'multiplier', multiplier, value => device.setParameter(
+        rescaled(capacitance, value, multiplier),
+      )),
+      mutable(device, 'scale', scale, value => device.setParameter(rescaled(capacitance, value, scale))),
+    ];
+  }
+  if (device instanceof Inductor) {
+    const inductance = device.inductance;
+    const { multiplier, scale } = device;
+    return [
+      mutable(device, 'multiplier', multiplier, value => device.setParameter(
+        rescaled(inductance, multiplier, value),
+      )),
+      mutable(device, 'scale', scale, value => device.setParameter(rescaled(inductance, value, scale))),
+    ];
+  }
+  if (device instanceof CurrentSource) {
+    return [mutable(device, 'multiplier', device.multiplier, value => {
+      device.multiplier = value;
+    })];
+  }
+  return [];
+}
+
+/** `base * numerator / denominator`, exactly `base` when the ratio is one. */
+function rescaled(base: number, numerator: number, denominator: number): number {
+  return numerator === denominator ? base : base * numerator / denominator;
 }
 
 function parameterTarget(device: DeviceModel, mode: 'dc' | 'ac'): ParameterTarget | null {

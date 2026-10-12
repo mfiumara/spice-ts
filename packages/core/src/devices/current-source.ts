@@ -37,7 +37,7 @@ export class CurrentSource implements DeviceModel {
     readonly nodes: number[],
     public waveform: SourceWaveform,
     noiseContext?: TransientNoiseContext,
-    readonly multiplier = 1,
+    public multiplier = 1,
   ) {
     if (waveform.type === 'trnoise' || waveform.type === 'trrandom') {
       const noise = (noiseContext ?? new TransientNoiseContext()).register('I', name, waveform);
