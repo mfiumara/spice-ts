@@ -25,12 +25,12 @@ loop) and once more per `limitJunctionStep`.
 ## The fix
 
 The knee is now memoised in a 16-entry ring keyed on all five inputs of the fit
-(BV(T), IBV, NBV*vt, vt, IS). The fit itself (`solveBreakdownKneeVoltage`) is
-unchanged. A hit returns the same double the fit would return, so the
+(BV(T), IBV, NBV*vt, vt, IS). The fit itself is unchanged and stays in
+`breakdownKneeVoltage`; the lookup sits before it and the store after it. A hit returns the same double the fit would return, so the
 waveforms are bit-identical. This puts spice-ts closer to ngspice's structure
 (knee solved once per temperature) without changing the algorithm.
-`diode-breakdown-knee-memo.test.ts` checks that memoised and uncached knees are
-bit-equal across hits, misses and evictions (40 distinct knees, more than the
+`diode-breakdown-knee-memo.test.ts` checks that memoised knees and fresh solves
+(cache cleared) are bit-equal across hits, misses and evictions (40 distinct knees, more than the
 ring holds), and that changing any one key gives the new fit.
 
 ## Paired A/B (process CPU, user+sys)
@@ -42,10 +42,10 @@ axis and every node voltage and branch current (Float64).
 
 | deck | points | median CPU before | median CPU after | change | waveform sha256 before = after |
 |---|---|---|---|---|---|
-| examples/TransmissionLines/cpl4_txl_2_line.sp | 12224 | 1408.8 ms | 980.2 ms | **-30.4%** | yes (`498ef5a2caa9338f…`) |
-| tests/transmission/txl1_1_line.cir (control) | 684 | 11.8 ms | 11.8 ms | -0.4% (noise) | yes (`ea9196160129f9ba…`) |
-| tests/transmission/txl2_3_line.cir (control) | 1026 | 14.8 ms | 14.7 ms | -1.0% (noise) | yes (`0127952c37b55866…`) |
-| tests/transmission/cpl_ibm2.cir (control) | 1207 | 15.3 ms | 15.0 ms | -2.3% (noise) | yes (`f481479a70fea692…`) |
+| examples/TransmissionLines/cpl4_txl_2_line.sp | 12224 | 1333.4 ms | 936.2 ms | **-29.8%** | yes (`498ef5a2caa9338f…`) |
+| tests/transmission/txl1_1_line.cir (control) | 684 | 12.6 ms | 11.6 ms | -7.9% (noise) | yes (`ea9196160129f9ba…`) |
+| tests/transmission/txl2_3_line.cir (control) | 1026 | 14.3 ms | 14.2 ms | -0.7% (noise) | yes (`0127952c37b55866…`) |
+| tests/transmission/cpl_ibm2.cir (control) | 1207 | 15.0 ms | 14.9 ms | -0.3% (noise) | yes (`f481479a70fea692…`) |
 
 The three controls have no breakdown diodes, so no change is expected there.
 Their first samples in each round are 50-80 ms (JIT warm-up), so their medians
@@ -62,24 +62,25 @@ decks.
 
 | deck | ngspice-47 median wall / CPU | ngspice accepted points | spice-ts after, median CPU | spice-ts / ngspice CPU |
 |---|---|---|---|---|
-| cpl4_txl_2_line.sp | 17.8 ms / 16.0 ms | 285 | 980.2 ms | **61x slower (LOSS)**; was 88x before this change |
-| txl1_1_line.cir | 11.7 ms / 10.0 ms | — | 11.8 ms | 1.2x slower |
-| txl2_3_line.cir | 12.1 ms / 10.4 ms | — | 14.7 ms | 1.4x slower |
-| cpl_ibm2.cir | 11.3 ms / 9.5 ms | 217 | 15.0 ms | 1.6x slower |
+| cpl4_txl_2_line.sp | 17.8 ms / 16.0 ms | 285 | 936.2 ms | **59x slower (LOSS)**; was 83x before this change |
+| txl1_1_line.cir | 11.7 ms / 10.0 ms | — | 11.6 ms | 1.2x slower |
+| txl2_3_line.cir | 12.1 ms / 10.4 ms | — | 14.2 ms | 1.4x slower |
+| cpl_ibm2.cir | 11.3 ms / 9.5 ms | 217 | 14.9 ms | 1.6x slower |
 
 ## What is left (not fixed here)
 
 1. **Timepoint count is now the dominant factor.** On cpl4_txl_2_line, spice-ts
    accepts 12224 points to ngspice's 285 (ngspice `rusage all`: 360 attempted,
    1904 Newton iterations, 6.8 ms analysis time). Per accepted point spice-ts
-   costs about 80 µs and ngspice about 24 µs, so a ~3x per-point gap times a
+   costs about 77 µs and ngspice about 24 µs, so a ~3x per-point gap times a
    ~43x point-count gap. The point count is step control. The #549 thread shows
    ngspice's default-step run on this deck is 18-26% from its own TMAX=0.01n
    run, while spice-ts default is 1-2% from it (#592). Matching ngspice's step
    count would change accuracy behaviour, which this lane does not do. It
    belongs with the #592 step-control work.
 2. **Next per-point frames** after this fix (`profiles/cpl4_txl_2_line-after.txt`):
-   sparse `factorize` 17.1% and `stampG` 11.7% self time. These are generic
+   sparse `factorize` 16.3% and `stampG` 9.2% self time; `breakdownKneeVoltage`
+   is down to 0.9 ms of 6798 ms sampled. These are generic
    solver and stamping costs, not TXL/CPL. They are separate from the line
    models and should go to an M2 solver lane.
 3. The 27% default-step accuracy gap is unchanged by this PR (bit-identical
@@ -103,4 +104,6 @@ node benchmarks/performance/profile-summary.mjs CPU.*.cpuprofile 25
 ```
 
 The before profile is 1 warm-up plus 2 runs. The after profile is 1 warm-up
-plus 3 runs, so compare the percentages, not the absolute sampled totals.
+plus 3 runs and was taken while the full test suite ran in the other heavy
+slot, so its absolute times are inflated; compare the percentages, not the
+sampled totals. The A/B table above was measured without that contention.
