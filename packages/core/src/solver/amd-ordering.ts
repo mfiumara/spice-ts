@@ -15,7 +15,8 @@ import type { CscMatrix } from './csc-matrix.js';
  * degree ordering algorithm", SIAM J. Matrix Anal. Appl. 17(4), 1996):
  *
  * - Eliminated variables become *elements*; the fill they create is never
- *   materialised as explicit cliques, so memory stays O(nnz(A) + n).
+ *   materialised as explicit cliques, so memory stays O(nnz(A) + n) plus the
+ *   member lists of the elements created.
  * - Element absorption: every element adjacent to the pivot is merged into the
  *   new element, and any element whose remaining variables are a subset of the
  *   new element is absorbed aggressively.
@@ -31,6 +32,13 @@ import type { CscMatrix } from './csc-matrix.js';
  *
  * Ties are broken towards the lowest original index, so an already
  * fill-free natural order (diagonal, tridiagonal, ladder) is preserved.
+ *
+ * Storage is flat typed arrays (#693): variable adjacency lives in place in
+ * one array and shrinks by length only, element lists of each variable are
+ * per-variable buffers that grow by doubling, and the member list of every
+ * new element is appended to one arena. The pivot sequence is the same as
+ * with per-variable JS arrays and typed-array views; only the allocations
+ * per pivot are gone.
  */
 export function amdOrdering(A: CscMatrix): Int32Array {
   const n = A.size;
@@ -61,19 +69,21 @@ export function amdOrdering(A: CscMatrix): Int32Array {
   }
 
   // Deduplicate each row (A and Aᵀ both contribute symmetric entries).
+  // Variable i's adjacency is raw[start[i] .. start[i] + adjLen[i]).
   const mark = new Int32Array(n).fill(-1);
-  const varAdj: (Int32Array | null)[] = new Array(n);
+  const adjLen = new Int32Array(n);
   const degree = new Int32Array(n);
   for (let i = 0; i < n; i++) {
     let len = 0;
-    for (let p = start[i]; p < start[i + 1]; p++) {
+    const s0 = start[i];
+    for (let p = s0; p < start[i + 1]; p++) {
       const v = raw[p];
       if (mark[v] !== i) {
         mark[v] = i;
-        raw[start[i] + len++] = v;
+        raw[s0 + len++] = v;
       }
     }
-    varAdj[i] = raw.subarray(start[i], start[i] + len);
+    adjLen[i] = len;
     degree[i] = len;
   }
 
@@ -90,19 +100,27 @@ export function amdOrdering(A: CscMatrix): Int32Array {
   if (denseCount > 0) {
     for (let i = 0; i < n; i++) {
       if (status[i] === 3) continue;
-      const adj = varAdj[i]!;
+      const s0 = start[i];
+      const end = s0 + adjLen[i];
       let len = 0;
-      for (let t = 0; t < adj.length; t++) {
-        if (status[adj[t]] !== 3) adj[len++] = adj[t];
+      for (let t = s0; t < end; t++) {
+        if (status[raw[t]] !== 3) raw[s0 + len++] = raw[t];
       }
-      varAdj[i] = adj.subarray(0, len);
+      adjLen[i] = len;
       degree[i] = len;
     }
   }
 
-  const varElems: (number[] | null)[] = new Array(n);
-  const elemVars: (Int32Array | null)[] = new Array(n).fill(null);
-  for (let i = 0; i < n; i++) varElems[i] = [];
+  // Elements adjacent to each variable, in insertion order: varElems[i]
+  // holds elemCount[i] entries. Buffers are allocated on first use.
+  const varElems: (Int32Array | null)[] = new Array(n).fill(null);
+  const elemCount = new Int32Array(n);
+  // Member variables of each live element, ascending:
+  // arena[elemStart[e] .. elemStart[e] + elemLen[e]).
+  const elemStart = new Int32Array(n);
+  const elemLen = new Int32Array(n);
+  let arena = new Int32Array(Math.max(16, raw.length));
+  let arenaTop = 0;
 
   // ---- Degree buckets: doubly linked lists, head insertion. ----
   const head = new Int32Array(n).fill(-1);
@@ -133,7 +151,8 @@ export function amdOrdering(A: CscMatrix): Int32Array {
   let minDegree = 0;
   let k = 0;
   let live = n - denseCount;
-  const lp: number[] = [];
+  // Lₚ in discovery order (the w pass walks it in this order).
+  const lp = new Int32Array(n);
 
   while (live > 0) {
     // ---- Select the minimum-degree variable. ----
@@ -145,88 +164,109 @@ export function amdOrdering(A: CscMatrix): Int32Array {
     status[p] = 1;
 
     // ---- Lₚ = (Aₚ ∪ ⋃ Lₑ for e ∈ Eₚ) \ {p}; absorb every e ∈ Eₚ. ----
-    lp.length = 0;
+    let lpLen = 0;
     mark[p] = p;
-    const adjP = varAdj[p]!;
-    for (let t = 0; t < adjP.length; t++) {
-      const v = adjP[t];
+    const adjStartP = start[p];
+    const adjEndP = adjStartP + adjLen[p];
+    for (let t = adjStartP; t < adjEndP; t++) {
+      const v = raw[t];
       if (status[v] === 0 && mark[v] !== p) {
         mark[v] = p;
-        lp.push(v);
+        lp[lpLen++] = v;
       }
     }
-    const elemsP = varElems[p]!;
-    for (let t = 0; t < elemsP.length; t++) {
-      const e = elemsP[t];
+    const elemsP = varElems[p];
+    const elemsPCount = elemCount[p];
+    for (let t = 0; t < elemsPCount; t++) {
+      const e = elemsP![t];
       if (status[e] !== 1) continue;
-      const le = elemVars[e]!;
-      for (let s = 0; s < le.length; s++) {
-        const v = le[s];
+      const es = elemStart[e];
+      const ee = es + elemLen[e];
+      for (let s = es; s < ee; s++) {
+        const v = arena[s];
         if (status[v] === 0 && mark[v] !== p) {
           mark[v] = p;
-          lp.push(v);
+          lp[lpLen++] = v;
         }
       }
       status[e] = 2;
-      elemVars[e] = null;
     }
-    varAdj[p] = null;
+    adjLen[p] = 0;
     varElems[p] = null;
-    const lpLen = lp.length;
-    // Ascending variable order; the degree update below walks it backwards so
-    // head insertion leaves the lowest index first among equal degrees.
-    const lpSorted = Int32Array.from(lp).sort();
-    elemVars[p] = lpSorted;
+    elemCount[p] = 0;
+
+    // Element p's members, ascending, appended to the arena. The degree
+    // update below walks them backwards so head insertion leaves the lowest
+    // index first among equal degrees.
+    if (arenaTop + lpLen > arena.length) {
+      const grown = new Int32Array(Math.max(arenaTop + lpLen, 2 * arena.length));
+      grown.set(arena.subarray(0, arenaTop));
+      arena = grown;
+    }
+    const lpStart = arenaTop;
+    arena.set(lp.subarray(0, lpLen), lpStart);
+    sortInt32Range(arena, lpStart, lpStart + lpLen);
+    arenaTop += lpLen;
+    elemStart[p] = lpStart;
+    elemLen[p] = lpLen;
 
     // ---- w[e] = |Lₑ \ Lₚ| for every live element adjacent to Lₚ. ----
     // Live elements only ever contain live variables: eliminating a variable
     // absorbs every element it belongs to, so |Lₑ| is the stored length.
     for (let t = 0; t < lpLen; t++) {
-      const elems = varElems[lp[t]]!;
-      for (let s = 0; s < elems.length; s++) {
-        const e = elems[s];
+      const v = lp[t];
+      const elems = varElems[v];
+      const count = elemCount[v];
+      for (let s = 0; s < count; s++) {
+        const e = elems![s];
         if (status[e] !== 1) continue;
         if (wMark[e] !== p) {
           wMark[e] = p;
-          w[e] = elemVars[e]!.length;
+          w[e] = elemLen[e];
         }
         w[e]--;
       }
     }
 
     // ---- Update the quotient graph and approximate degrees of Lₚ. ----
-    for (let t = lpLen - 1; t >= 0; t--) {
-      const i = lpSorted[t];
+    for (let t = lpStart + lpLen - 1; t >= lpStart; t--) {
+      const i = arena[t];
       const oldDegree = degree[i];
       remove(i, oldDegree);
 
-      const elems = varElems[i]!;
-      let elemLen = 0;
+      let elems = varElems[i];
+      const count = elemCount[i];
+      let kept = 0;
       let d = lpLen - 1;
-      for (let s = 0; s < elems.length; s++) {
-        const e = elems[s];
+      for (let s = 0; s < count; s++) {
+        const e = elems![s];
         if (status[e] !== 1) continue;
         if (w[e] === 0) {
           // Lₑ ⊆ Lₚ: aggressive absorption into the new element.
           status[e] = 2;
-          elemVars[e] = null;
           continue;
         }
         d += w[e];
-        elems[elemLen++] = e;
+        elems![kept++] = e;
       }
-      elems.length = elemLen;
-      elems.push(p);
+      if (elems === null || kept === elems.length) {
+        const grown = new Int32Array(elems === null ? 4 : 2 * elems.length);
+        if (elems !== null) grown.set(elems.subarray(0, kept));
+        elems = varElems[i] = grown;
+      }
+      elems[kept++] = p;
+      elemCount[i] = kept;
 
       // Variables covered by Lₚ are now reached through element p.
-      const adj = varAdj[i]!;
-      let adjLen = 0;
-      for (let s = 0; s < adj.length; s++) {
-        const v = adj[s];
-        if (status[v] === 0 && mark[v] !== p) adj[adjLen++] = v;
+      const s0 = start[i];
+      const end = s0 + adjLen[i];
+      let len = 0;
+      for (let s = s0; s < end; s++) {
+        const v = raw[s];
+        if (status[v] === 0 && mark[v] !== p) raw[s0 + len++] = v;
       }
-      varAdj[i] = adj.subarray(0, adjLen);
-      d += adjLen;
+      adjLen[i] = len;
+      d += len;
 
       // The approximate degree never exceeds the remaining variable count
       // nor the previous degree plus the new element's contribution.
@@ -243,4 +283,21 @@ export function amdOrdering(A: CscMatrix): Int32Array {
     if (status[i] === 3) order[k++] = i;
   }
   return order;
+}
+
+/** Sort arr[from..to) ascending; the values are distinct variable indices. */
+function sortInt32Range(arr: Int32Array, from: number, to: number): void {
+  if (to - from > 32) {
+    arr.subarray(from, to).sort();
+    return;
+  }
+  for (let i = from + 1; i < to; i++) {
+    const val = arr[i];
+    let j = i - 1;
+    while (j >= from && arr[j] > val) {
+      arr[j + 1] = arr[j];
+      j--;
+    }
+    arr[j + 1] = val;
+  }
 }
