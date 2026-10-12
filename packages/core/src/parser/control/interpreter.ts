@@ -286,8 +286,8 @@ class ControlInterpreter {
       case 'options':
         if (rest !== '') this.host.setOptions(splitWords(rest).map(unquote), line);
         return;
-      case 'setplot': return this.setplot(rest, line);
-      case 'destroy': return this.destroy(rest, line);
+      case 'setplot': return this.setplot(rest);
+      case 'destroy': return this.destroy(rest);
       case 'compose': return this.compose(rest, line);
       case 'strcmp': return this.strcmp(rest, line);
       case 'meas': return this.meas(rest, line);
@@ -391,7 +391,7 @@ class ControlInterpreter {
       }
       if (name === 'curplot') {
         const target = rawValue === undefined ? '' : unquote(rawValue);
-        this.setplot(target, line);
+        this.setplot(target);
         continue;
       }
       if (name === 'curplottitle') {
@@ -468,29 +468,48 @@ class ControlInterpreter {
     return Array.from(vector.re);
   }
 
-  private setplot(rest: string, line: ControlSourceLine): void {
+  /**
+   * ngspice-47 plot_setcur (frontend/vectors.c). `this.plots` is in creation
+   * order, the reverse of ngspice's plot_list, so `previous` (pl_next, older)
+   * is one index down and `next` (newer) one index up. A failed selection
+   * prints ngspice's message, keeps the current plot and the script goes on.
+   */
+  private setplot(rest: string): void {
     const name = rest.trim().toLowerCase();
     if (name === '') return;
     if (name === 'new') {
       this.current = this.newPlot('unknown', 'anonymous', undefined);
       return;
     }
-    const plot = this.plots.find(candidate => candidate.name === name);
-    if (!plot) throw new ControlScriptError(`no such plot '${rest.trim()}'`, line.lineNumber, line.text);
+    if (name === 'previous' || name === 'next') {
+      const index = this.plots.indexOf(this.current) + (name === 'previous' ? -1 : 1);
+      const plot = this.plots[index];
+      if (index >= 0 && plot) this.current = plot;
+      else this.warnings.push(`No ${name} plot is available. Plot remains unchanged (${this.current.name})`);
+      return;
+    }
+    // get_plot: the newest plot whose type name `name` prefixes (plot_prefix).
+    const plot = [...this.plots].reverse().find(candidate => plotPrefix(name, candidate.name));
+    if (!plot) {
+      this.warnings.push(`no such plot named ${rest.trim()}`);
+      return;
+    }
     this.current = plot;
   }
 
-  private destroy(rest: string, line: ControlSourceLine): void {
+  /** ngspice-47 com_destroy (frontend/postcoms.c): a missing plot is reported, the rest destroyed. */
+  private destroy(rest: string): void {
     const names = splitWords(rest).map(word => word.toLowerCase());
-    const doomed = names.length === 0
-      ? [this.current]
-      : names.includes('all')
-        ? this.plots.filter(plot => plot.name !== 'const')
-        : names.map(name => {
-          const plot = this.plots.find(candidate => candidate.name === name);
-          if (!plot) throw new ControlScriptError(`no such plot '${name}'`, line.lineNumber, line.text);
-          return plot;
-        });
+    const doomed: Plot[] = [];
+    if (names.length === 0) doomed.push(this.current);
+    else if (names[0] === 'all') doomed.push(...this.plots.filter(plot => plot.name !== 'const'));
+    else {
+      for (const name of names) {
+        const plot = this.plots.find(candidate => candidate.name === name && !doomed.includes(candidate));
+        if (plot) doomed.push(plot);
+        else this.warnings.push(`no such plot ${name}`);
+      }
+    }
     for (const plot of doomed) {
       if (plot.name === 'const') continue;
       this.plots.splice(this.plots.indexOf(plot), 1);
@@ -1084,6 +1103,16 @@ class ControlInterpreter {
 // Word helpers
 
 /** Split on whitespace outside double quotes and parentheses. */
+/**
+ * ngspice-47 plot_prefix (frontend/vectors.c): `pre` names `plot` when it is a
+ * prefix of it, except that a prefix ending in a digit must match the whole
+ * name (`op` selects op2, `op1` never selects op12).
+ */
+function plotPrefix(pre: string, plot: string): boolean {
+  if (!plot.startsWith(pre)) return false;
+  return pre.length === plot.length || !/[0-9]$/.test(pre);
+}
+
 function splitWords(text: string): string[] {
   const words: string[] = [];
   let word = '';
