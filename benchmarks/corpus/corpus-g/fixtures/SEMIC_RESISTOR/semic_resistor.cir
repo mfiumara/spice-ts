@@ -1,0 +1,44 @@
+Semiconductor Resistor Circuit Netlist
+**************************************************************
+* Tier No.:  1                                                
+* Description:   Circuit netlist to test the validity of the 
+*                Xyce semiconductor resistor model.
+*                The 1K ohm resistor is specified by a length,
+*                width, and sheet resistance.
+* Input:  VIN=0-5V DC
+* Output: Resistance of R1, Current through R1
+* Circuit Elements: R1, VMON (zero volt source used to measure
+*                   the current through R1)
+* Analysis:
+*	
+*	The circuit consists of a DC voltage source, in parallel 
+*	with a semiconductor resistor, which has length and width  
+*	defined such that the resistance value is 1K ohm.
+*     The Chilespice equation for a semiconductor resistor is:
+*
+*          	R = RSH*(L-NARROW)/(W-NARROW)
+*           where, 
+*           RSH=1, L=1000U, W=1U, NARROW=0
+*
+*     The voltage is swept from 0-5V in 1V increments.  
+*	The measured output is the current through the resistor.  
+*	The resistance is calculated using Ohm's Law 
+*	(Voltage=Current*Resistance, therfore R=I/V).
+*
+*			V(volts)  |  I(mA)  |  R (kOhm) 
+*			  0       |    0	  |     
+*			  1       |    1    |     1
+*			  2       |    2    |     1
+*			  3       |    3    |     1
+*			  4       |    4    |     1
+*			  5       |    5    |     1
+*
+*		     	
+************************************************************** 
+R1 2 0 RMOD L=1000U W=1U
+VIN 1 0 5V
+VMON 1 2 0V
+.DC VIN 0 5V 1V
+.MODEL RMOD R (RSH=1)
+.PRINT DC V(1) I(VMON)
+.END

@@ -1,0 +1,17 @@
+***************************************************
+* This version will be run without the -hspice-ext
+* command line option.  So, the a and A on the R1
+* and R2 lines will be ignored.
+*
+* See SON Bugs 472 and 1136 for more details.
+*
+***************************************************
+V1 1 0 1
+R1 1 2 1a
+R2 2 0 1A
+
+.PRINT DC I(V1) R1:R R2:R
+.DC V1 1 5 1
+
+.END
+

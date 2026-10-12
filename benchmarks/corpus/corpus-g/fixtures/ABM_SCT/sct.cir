@@ -1,0 +1,53 @@
+Test Circuit for the Sine, Cosine and Tangent Functions
+********************************************************************************
+* Tier No.:     1
+* Directory/Circuit Name: ABM_SCT/sct.cir
+* Description:  Test of the ChileSPICE analog behavioral modeling sine, cosine 
+*	and tangent functions. 
+* Input:  VS 
+* Output: V(2), V(3), V(4), V(5)
+* Analysis:
+*	A DC voltage source, VS or V(1),  is used as the circuit input.  Four nonlinear dependent 
+*	voltage sources are used to define the functions as follows:
+*		V(2)=B2=SIN(V(1)) = sine of input source
+*		V(3)=B3=COS(V(1)) = cosine of input source
+*		V(4)=B4=TAN(V(1)) = tangent of input source
+*		V(5)=B5=V(2)/V(3) = mathematical evaluation of the tangent function =(SIN/COS)
+*
+*	This table is a set of hand calculations for the SIN, COS and TAN functions
+*	X		SIN(X)		COS(X)		TAN(X)
+*	0		0		1		0
+*	0.5		0.479425539	0.877582562	0.54630249
+*	1		0.841470985	0.540302306	1.557407725
+*	1.5		0.997494987	0.070737202	14.10141995
+*	1.6		0.999573603	-0.029199522	-34.23253274
+*	2		0.909297427	-0.416146837	-2.185039863
+*	2.5		0.598472144	-0.801143616	-0.747022297
+*	3		0.141120008	-0.989992497	-0.142546543
+*	3.1		0.041580662	-0.99913515	-0.041616655
+*	3.2		-0.058374143	-0.998294776	0.058473854
+*	4		-0.756802495	-0.653643621	1.157821282
+*	4.6		-0.993691004	-0.112152527	8.860174896
+*	4.62		-0.995735173	-0.092257602	10.7929878
+*	4.63		-0.996607947	-0.082295803	12.11007009
+*	4.69		-0.999749377	-0.02238711	44.65736663
+*	5		-0.958924275	0.283662185	-3.380515006
+*	5.5		-0.705540326	0.708669774	-0.995584052
+*	6		-0.279415498	0.960170287	-0.291006191
+*	6.2		-0.083089403	0.996542097	-0.083377715
+*	6.5		 0.215119988	0.976587626	 0.2202772
+********************************************************************************
+VS  1  0  0
+R1  1  0  1
+B2  2  0  V = {SIN(V(1))}
+R2  2  0  1
+B3  3  0  V = {COS(V(1))}
+R3  3  0  1
+B4  4  0  V = {TAN(V(1))}
+R4  4  0  1
+B5  5  0  V = {V(2)/V(3)}
+R5  5  0  1
+.DC VS 0 6.5 0.1
+.PRINT DC V(1) V(2) V(3) V(4) V(5)
+.END
+

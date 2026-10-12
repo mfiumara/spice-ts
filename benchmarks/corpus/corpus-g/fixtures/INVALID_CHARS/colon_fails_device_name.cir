@@ -1,0 +1,22 @@
+*******************************************************
+* For SON Bug 744
+*
+* Illustrate that a colon is not valid in a device name.
+*  
+* 
+*
+*
+*
+*******************************************************
+.print DC V(1) 
+
+.DC V1 1 1 1
+V1 1 0 1
+r1 1 0 1
+
+* both of these instance lines will fail.  Just 
+* testing one of them for now.
+v2: 2 0 1
+*v:  3 0 1
+
+.end

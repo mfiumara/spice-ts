@@ -1,0 +1,19 @@
+Current Source - Pulse Signal
+**********************************************************************
+* Tier No.:	1                                           
+* Description:	Test of Xyce model for an independent current source.
+*	The current source is described as:
+*	A pulse current signal that starts at 1A and stays there for
+*	1s.  Then the current increases linearly from 1A to 5A during
+*	the next 0.1s and stays at 5A for 0.5s.  It then decrases 
+*	linearly from 5A to 1A in 04.s.  It stays at 1A for 1s, and 
+*	then the cycle is repeated (except for the initial delay).
+* Input/Output:	IPULSE; a common simulation data output (.csd) file can
+*	be generated for viewing the signal.
+**********************************************************************
+IPULSE 0 1 PULSE(1A 5A 1S 0.1S 0.4S 0.5S 2S)
+R 2 0 500
+VMON 1 2 0
+.TRAN .1S 7S
+.PRINT TRAN I(VMON)
+.END

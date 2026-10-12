@@ -1,0 +1,36 @@
+COMPARATOR - BSIM3 Transient Analysis, Binning version
+
+M1 Anot A E1 E1  PMOS w=3.6u l=1.2u
+M2 Anot A 0 0 NMOS w=1.8u l=1.2u
+M3 Bnot B E1 E1  PMOS w=3.6u l=1.2u
+M4 Bnot B 0 0 NMOS w=1.8u l=1.2u
+M5 AorBnot 0 E1 E1 PMOS w=1.8u l=3.6u
+M6 AorBnot B 1 0 NMOS w=1.8u l=1.2u
+M7 1 Anot 0 0 NMOS w=1.8u l=1.2u
+M8 Lnot 0 E1 E1 PMOS w=1.8u l=3.6u
+M9 Lnot Bnot 2 0 NMOS w=1.8u l=1.2u
+M10 2 A 0 0 NMOS w=1.8u l=1.2u
+M11 Qnot 0 E1 E1  PMOS w=3.6u l=3.6u
+M12 Qnot AorBnot 3 0 NMOS w=1.8u l=1.2u
+M13 3 Lnot 0 0 NMOS w=1.8u l=1.2u
+MQLO 8 Qnot E1 E1  PMOS w=3.6u l=1.2u
+MQL1 8 Qnot 0 0 NMOS w=1.8u l=1.2u
+MLTO 9 Lnot E1 E1  PMOS w=3.6u l=1.2u
+MLT1 9 Lnot 0 0 NMOS w=1.8u l=1.2u
+CQ Qnot 0 30f
+CL Lnot 0 10f
+
+Vdd E1 0 5
+Va A 0  pulse(0 5 10ns .1ns .1ns 15ns 30ns)
+Vb B 0 0
+
+.model nmos nmos (level=9)
+.model pmos pmos (level=9)
+
+* transient analysis
+.tran 1ns 60ns
+*.print tran v(a) v(b) v(9) v(8)
+.print tran precision=12 width=21 v(a) v(b) {v(9)+0.2} {v(8)+0.2}
+
+.END
+

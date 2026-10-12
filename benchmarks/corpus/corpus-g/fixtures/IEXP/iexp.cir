@@ -1,0 +1,22 @@
+Current Source - Exponential Signal
+*###############################################################################
+* Tier No.:     1
+* Directory/Circuit Name:  IEXP/IEXP.cir
+* Description:  Test of model for an independent current source.
+* Input: IEXP
+* Output: I(VMON)
+* Analysis:
+*       The input is described as an exponential time dependent current source, 
+*	IEXP, that has an  initial value of 1A for the first 1s of the simulation.
+*       The current rises exponentially from 1A to 5A within 1us, with a 0.2s rise
+*       constant. It then decays from 5A to 1A with a 0.5s fall time constant.
+*       A zero volt source, VMON, is used as an ammeter to measure the current from
+*       the IEXP source.   A resistor is used to provide a closed loop for current 
+*	flow.
+*###############################################################################
+IEXP 0 1 EXP(1A 5A 1S 0.2S 2S 0.5S)
+R 2 0 500
+VMON 1 2 0
+.TRAN 1S 5S
+.PRINT TRAN I(VMON)
+.END

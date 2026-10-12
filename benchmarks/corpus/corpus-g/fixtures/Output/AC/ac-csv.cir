@@ -1,0 +1,21 @@
+****************************************************
+* AC test of FORMAT=CSV output format
+*
+* This test also tests SON Bug 942 and the fact
+* that the .TD.csv file should not be produced
+* since there is no .OP statement in this netlist.
+****************************************************
+
+* Trivial high-pass filter
+
+R1 b 0 2
+C1 a b 1u
+V1 a 0 DC 0V AC 1
+
+* The ordering of the .PRINT AC_IC and .PRINT AC lines
+* is intended to test SON Bug 942
+.print AC_IC FORMAT=CSV C1:C vm(a)
+.print AC FORMAT=CSV R1:R vm(b) 
+.ac dec 5 100Hz 1e6
+
+.end

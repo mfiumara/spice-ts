@@ -1,0 +1,26 @@
+Current Source - Piece Wise Linear Signal
+**************************************************************
+* Tier No.:	1                                           
+* Description:	Test of Xyce model for an independent current
+*	source.  The current source is described as:
+*	A piece wise linear current source which is described
+*	by a series  of time and current pairs of data points
+*	given by:
+*		  time(s), current(amps)	
+*			1    (0.0 , 0.0)
+*			2    (1.0 , 0.0)
+*			3    (1.2 , 5.0)
+*			4    (1.4 , 2.0)
+*			5    (2.0 , 4.0)
+*			6    (3.0 , 1.0)
+*
+* Input/Output:	IPWL; a common simulation data output (.csd)
+*	can be generated for viewing the signal. Plot the 
+*       current through the ammeter VMON.
+*************************************************************** 
+IPWL 0 1 PWL(0 0  1S 0A  1.2S 5A  1.4S 2A  2S 4A  3S 1A)
+R 2 0 500
+VMON 1 2 0
+.TRAN 0.1S 5S
+.PRINT TRAN I(VMON)
+.END

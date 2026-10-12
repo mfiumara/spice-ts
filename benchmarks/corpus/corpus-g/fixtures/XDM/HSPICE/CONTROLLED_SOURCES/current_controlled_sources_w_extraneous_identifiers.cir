@@ -1,0 +1,24 @@
+* current controlled sources with extraneous identifiers
+* Xyce netlist for corresponding HSPICE netlist
+* This netlist test XDM will strip out the extra
+* identifiers in the current controlled sources
+* (CCCS and CCVS) that can appear in HSPICE.
+
+IA IN 0 0
+VA IN 0 0
+F1 1 0 VA 0.1
+R1 1 2 10
+R2 2 0 10
+F2 3 0 VA 0.2
+R3 3 4 10
+R4 4 0 10
+H1 5 0 VA -0.1
+R5 5 6 10
+R6 6 0 10
+H2 7 0 VA -0.2
+R7 7 8 10
+R8 8 0 10
+
+
+.DC IA 0 10 1
+.PRINT DC FORMAT=PROBE I(IA) V(2) V(4) V(6) V(8)

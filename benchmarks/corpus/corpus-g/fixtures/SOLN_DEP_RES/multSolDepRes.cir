@@ -1,0 +1,41 @@
+Test for solution dependent resistor with a multiplier
+
+Vcontrol cntl 0 2.0
+Rcontrol cntl 0 1.0
+
+.param scalar=2.0
+
+V1 1 0 2.0
+R1 1 2 1.0
+R2 2 0 R={1.0+scalar*V(cntl)}  M=10
+
+V12 12 0 2.0
+R12 12 22 1.0
+R22a 22 0 R={1.0+scalar*V(cntl)}  
+R22b 22 0 R={1.0+scalar*V(cntl)}  
+R22c 22 0 R={1.0+scalar*V(cntl)}  
+R22d 22 0 R={1.0+scalar*V(cntl)}  
+R22e 22 0 R={1.0+scalar*V(cntl)}  
+R22f 22 0 R={1.0+scalar*V(cntl)}  
+R22g 22 0 R={1.0+scalar*V(cntl)}  
+R22h 22 0 R={1.0+scalar*V(cntl)}  
+R22i 22 0 R={1.0+scalar*V(cntl)}  
+R22j 22 0 R={1.0+scalar*V(cntl)}  
+
+V13 13 0 2.0
+R13 13 23 1.0
+R23 23 0 R={0.1*(1.0+scalar*V(cntl))}
+
+* I(V1), I(V12) and I(V13) should match.
+.DC V1 2 2 1
+.Print dc V(1) V(2) R2:R V(cntl) 
++ {1.0+scalar*V(cntl)}
++ {ddx(1.0+scalar*V(cntl),v(cntl))}
++ {1.0/(1.0+scalar*V(cntl))}
++ {ddx(1.0/(1.0+scalar*V(cntl)),v(cntl))}
++ I(V1)
++ {V(2)/(1.0+scalar*V(cntl))}
++ {ddx(V(2)/(1.0+scalar*V(cntl)),v(cntl))}
++ I(V12)
++ I(V13)
+

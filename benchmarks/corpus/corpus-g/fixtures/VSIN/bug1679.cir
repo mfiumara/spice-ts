@@ -1,0 +1,14 @@
+*
+* Bug 1679:  SIN source starts with incorrect value at time=0 
+*  
+* This makes sure that the phase value is handled correctly for the DCOP
+* part of the calculation.  DCOPValue = V0 + VA * sin (2.0*mpi*(PHASE/360));
+*
+
+.tran 1ns 1ms
+.print tran  {v(vinp) + 0.1}
+
+VVINP    VINP        0   DC 0 SIN ( 1.65 1.65 10000 0 0 -90 )
+RVINP    VINP        0   1e+8
+.end
+

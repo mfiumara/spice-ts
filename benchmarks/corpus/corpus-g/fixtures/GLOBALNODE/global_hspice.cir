@@ -1,0 +1,15 @@
+
+.tran 1ns 1ms
+.print tran v(1)
+.global g
+
+r1   1   0   1
+v3  g  0  1
+
+xg  g 1  abc
+
+.subckt abc g a
+r2  g a 2
+.ends
+
+.end

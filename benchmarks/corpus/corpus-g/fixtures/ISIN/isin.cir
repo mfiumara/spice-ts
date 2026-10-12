@@ -1,0 +1,29 @@
+Netlist to Test the Xyce Sinusoidal Current Source Model
+*****************************************************************************
+* Tier No.:	1                                           
+* Description:	Test of Xyce model for an independent 
+*		current source.  The current source is described
+*		as:
+*		A time dependent current source that supplies a
+*		sinusoidal signal of 0.3A initial current, 1A amplitude and
+*	        500Hz frequency with no initial time delay.  The transient
+*		analysis of 6ms will give 3 cycles of a damped sine wave. 
+*		The damping is 500.   
+* Input/Output:	ISIN; a common simulation data output (.csd)
+*		file can be generated for viewing the signal in probe.
+*****************************************************************************
+ISIN 0 1 SIN(0.3A 1A 500HZ 0 500 0)
+R1   2 0 1
+VMON 1 2 0
+.TRAN 0.06ms 6ms
+*
+* The first print statement is for a tabular output, the second is for a probe 
+* compatible output
+*
+.PRINT TRAN I(VMON)
+*
+* For a csd output to view in probe, use this print statement and then rename
+* the output file from a isin.cir.prn to isin.csd
+* 
+*.PRINT TRAN FORMAT=PROBE I(VMOM)
+.END

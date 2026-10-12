@@ -1,0 +1,19 @@
+***********************************************************
+* A Xyce netlist that has a .OP statement but not a .AC
+* statement will produce a fatal error during netlist
+* parsing.  That is not optimal, and should be changed.
+* The HSpice behavior is to simply ignore the .MEASURE 
+* AC statement in this case.
+***********************************************************
+
+* Trivial high-pass filter (V-C-R) circuit
+R1 b 0 2
+C1 a b 1u
+V1 a 0 DC 0V AC 1
+
+.op
+
+.MEASURE AC maxvmb max vm(b)
+
+.end
+
