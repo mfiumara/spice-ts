@@ -48,8 +48,11 @@ describe('BJT AREAB/AREAC B-C scaling matches ngspice-47 (#641)', () => {
     const { vc, vb } = await operatingPoint(
       deck('areab explicit', 'QN area=2 areab=1 areac=1', 'QN NPN IS=1e-14 BF=200'),
     );
-    expect(vc).toBeCloseTo(6.868815130751e-02, 9);
-    expect(vb).toBeCloseTo(6.823761498275e-01, 9);
+    // Saturated, so the Newton stop point depends on the iterate path: spice-ts
+    // runs ngspice's CKTop order (#622) but starts the junctions at 0 V rather
+    // than at MODEINITJCT vcrit and stops ~1 nV away (VNTOL is 1 uV).
+    expect(vc).toBeCloseTo(6.868815130751e-02, 8);
+    expect(vb).toBeCloseTo(6.823761498275e-01, 8);
   });
 
   it('applies the temperature law to the B-C current in forward-active at TEMP=85 TNOM=-10', async () => {
