@@ -354,10 +354,19 @@ export class GilbertPeierlsSolver implements SparseSolver {
         // Apply L column k: subtract L[i,k] * U[k,j] from workspace. Every
         // L[:,k] row was unpivoted at step k, so a pivoted row met here has
         // its pivot column strictly between k and j.
+        //
+        // Only a row whose value was exactly zero before this update can need
+        // a state change: untouched rows hold zero (the workspace is cleared
+        // between columns), and a dormant row is by definition a touched row
+        // holding zero. A nonzero value therefore belongs to a settled row,
+        // so the hot loop tests the value it already loaded and reads the
+        // row state only on the rare zero path.
         const pEnd = lColPtr[k + 1];
         for (let p = lColPtr[k]; p < pEnd; p++) {
           const origI = lRows[p];
-          workspace[origI] -= lValues[p] * ukj;
+          const before = workspace[origI];
+          workspace[origI] = before - lValues[p] * ukj;
+          if (before !== 0) continue;
 
           const state = nonzeroFlag[origI];
           if (state !== settled) {

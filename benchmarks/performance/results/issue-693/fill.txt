@@ -1,0 +1,3 @@
+{"side":32,"n":1025,"gpNnz":23498,"amdL":11239,"amdFlops":"2.313e+5","ndL":15142,"ndFlops":"3.564e+5","tAmd":"4.4","tFactor":"9.7"}
+{"side":100,"n":10001,"gpNnz":405588,"amdL":197796,"amdFlops":"1.270e+7","ndL":249041,"ndFlops":"1.510e+7","tAmd":"30.0","tFactor":"56.5"}
+{"side":224,"n":50177,"gpNnz":2812804,"amdL":1381316,"amdFlops":"1.788e+8","ndL":1661951,"ndFlops":"1.915e+8","tAmd":"56.9","tFactor":"524.2"}
