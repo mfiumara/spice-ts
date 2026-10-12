@@ -1,5 +1,6 @@
 import {
-  DEVICE_GMIN, type ChargeIntegration, type ChargeTruncation, type DeviceModel, type StampContext,
+  DEVICE_GMIN, type ChargeIntegration, type ChargeTruncation, type ConvergenceTolerances, type DeviceModel,
+  type StampContext,
 } from './device.js';
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import { meyerHalfCapacitances } from './mos6.js';
@@ -265,7 +266,49 @@ const STATE_VBD = 1;
 const STATE_VON = 2;
 /** 1 when the last stamp limited a bulk junction (mos1load.c icheck -> CKTnoncon), else 0. */
 const STATE_LIMITED = 3;
-const STATE_STRIDE = 4;
+/**
+ * The last load's linearisation, as mos1conv.c reads it from CKTstate0 and
+ * the instance: the unswapped polarity-domain vgs/vds, the mode (+1 normal,
+ * -1 inverse), MOS1cd = mode * cdrain - cbd and the junction currents cbs/cbd
+ * (transient junction charge currents folded in) with their conductances.
+ */
+const STATE_VGS = 4;
+const STATE_VDS = 5;
+const STATE_MODE = 6;
+const STATE_CD = 7;
+const STATE_CBS = 8;
+const STATE_CBD = 9;
+const STATE_GM = 10;
+const STATE_GDS = 11;
+const STATE_GMBS = 12;
+const STATE_GBS = 13;
+const STATE_GBD = 14;
+const STATE_STRIDE = 15;
+
+/**
+ * Record the load mos1conv.c tests against (see STATE_VGS). `junction` is the
+ * mos1BulkJunctions output of the same load; vgs/vds are unswapped.
+ */
+function recordMos1Load(
+  state: Float64Array, base: number, junction: Float64Array, vgs: number, vds: number,
+  cdrain: number, gm: number, gds: number, gmbs: number,
+): void {
+  const mode = vds < 0 ? -1 : 1;
+  const gbs = junction[0];
+  const gbd = junction[2];
+  const cbd = junction[3] + gbd * junction[5];
+  state[base + STATE_VGS] = vgs;
+  state[base + STATE_VDS] = vds;
+  state[base + STATE_MODE] = mode;
+  state[base + STATE_CD] = mode * cdrain - cbd;
+  state[base + STATE_CBS] = junction[1] + gbs * junction[4];
+  state[base + STATE_CBD] = cbd;
+  state[base + STATE_GM] = gm;
+  state[base + STATE_GDS] = gds;
+  state[base + STATE_GMBS] = gmbs;
+  state[base + STATE_GBS] = gbs;
+  state[base + STATE_GBD] = gbd;
+}
 
 /** Bumped whenever MosfetStateStores merge, so batches re-resolve their state rows. */
 let stateStoreEpoch = 0;
@@ -721,6 +764,10 @@ export class MOSFET implements DeviceModel {
     const gds = channel[2] + GMIN;
     const gmbs = channel[3];
     this.lastVon = channel[4];
+    recordMos1Load(
+      this.stateStore.values, this.stateBase, junction,
+      polarity * (vG - vS), polarity * (vD - vS), ID, gm, gds, gmbs,
+    );
 
     // NR companion: ID ~ ID0 + gm*dVGS + gds*dVDS + gmbs*dVBS around the
     // (possibly swapped) effective drain/source; physical current = polarity*ID.
@@ -766,11 +813,67 @@ export class MOSFET implements DeviceModel {
       const gate = index < 3;
       const charge = gate ? charges.incrementalCharge(index, voltage, capacitance, true) : this.junctionCharges[index];
       const effective = gate ? charges.incrementalCapacitance(index, capacitance, true) : capacitance;
-      stampChargeBranch(
-        ctx, positive, negative, charges.current(index, charge),
-        charges.factor * effective, voltage,
-      );
+      const current = charges.current(index, charge);
+      const conductance = charges.factor * effective;
+      stampChargeBranch(ctx, positive, negative, current, conductance, voltage);
+      if (!gate) this.foldJunctionChargeCurrent(index, current, conductance);
     }
+  }
+
+  /**
+   * mos1load.c folds the bulk junction charge currents into the currents
+   * mos1conv.c tests: cbd += cqbd, cd -= cqbd, gbd += geq, and cbs += cqbs,
+   * gbs += geq. `current` and `conductance` are node-domain.
+   */
+  private foldJunctionChargeCurrent(index: number, current: number, conductance: number): void {
+    const state = this.stateStore.values;
+    const base = this.stateBase;
+    const deviceCurrent = this.params.polarity * current;
+    if (index === 3) {
+      state[base + STATE_CBD] += deviceCurrent;
+      state[base + STATE_CD] -= deviceCurrent;
+      state[base + STATE_GBD] += conductance;
+    } else {
+      state[base + STATE_CBS] += deviceCurrent;
+      state[base + STATE_GBS] += conductance;
+    }
+  }
+
+  /**
+   * ngspice-47 mos1conv.c: the drain current and the bulk junction currents
+   * predicted at the new Newton solution from the last load's linearisation
+   * must match the loaded currents within RELTOL * max + ABSTOL.
+   */
+  convergenceTest(solution: Float64Array, tolerances: ConvergenceTolerances): boolean {
+    const state = this.stateStore.values;
+    const base = this.stateBase;
+    const { polarity } = this.params;
+    const [nD, nG, nS] = this.nodes;
+    const nB = this.bulkNode;
+    const vS = nS >= 0 ? solution[nS] : 0;
+    const vbs = polarity * ((nB >= 0 ? solution[nB] : 0) - vS);
+    const vgs = polarity * ((nG >= 0 ? solution[nG] : 0) - vS);
+    const vds = polarity * ((nD >= 0 ? solution[nD] : 0) - vS);
+    const vgsOld = state[base + STATE_VGS];
+    const vdsOld = state[base + STATE_VDS];
+    const delvbs = vbs - state[base + STATE_VBS];
+    const delvbd = vbs - vds - state[base + STATE_VBD];
+    const delvgs = vgs - vgsOld;
+    const delvds = vds - vdsOld;
+    const delvgd = vgs - vds - (vgsOld - vdsOld);
+    const cd = state[base + STATE_CD];
+    const gm = state[base + STATE_GM];
+    const gds = state[base + STATE_GDS];
+    const gmbs = state[base + STATE_GMBS];
+    const gbd = state[base + STATE_GBD];
+    const cdhat = state[base + STATE_MODE] >= 0
+      ? cd - gbd * delvbd + gmbs * delvbs + gm * delvgs + gds * delvds
+      : cd - (gbd - gmbs) * delvbd - gm * delvgd + gds * delvds;
+    const { reltol, abstol } = tolerances;
+    if (Math.abs(cdhat - cd) >= reltol * Math.max(Math.abs(cdhat), Math.abs(cd)) + abstol) return false;
+    const cb = state[base + STATE_CBS] + state[base + STATE_CBD];
+    const cbhat = cb + gbd * delvbd + state[base + STATE_GBS] * delvbs;
+    return Math.abs(cbhat - cb) <= reltol * Math.max(Math.abs(cbhat), Math.abs(cb)) + abstol;
   }
 
   stampAcceptedChargeCurrent(ctx: StampContext): void {
@@ -1037,6 +1140,7 @@ export class MOSFET implements DeviceModel {
       const gds = channel[2] + GMIN;
       const gmbs = channel[3];
       state[r + STATE_VON] = channel[4];
+      recordMos1Load(state, r, junction, polarity * (vG - vS), polarity * (vD - vS), ID, gm, gds, gmbs);
 
       const Ieq = ID - gm * vGS - gds * vDS - gmbs * vBS;
       if (nD >= 0) {

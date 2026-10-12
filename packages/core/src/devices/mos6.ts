@@ -1,4 +1,6 @@
-import type { ChargeIntegration, DeviceModel, StampContext } from './device.js';
+import type {
+  ChargeIntegration, ChargeTruncation, ConvergenceTolerances, DeviceModel, StampContext,
+} from './device.js';
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import { InvalidCircuitError } from '../errors.js';
 
@@ -349,14 +351,41 @@ const BULK_SOURCE = 3;
 const BULK_DRAIN = 4;
 /** Number of Meyer gate charges (indices below this use the averaged DEVqmeyer increment). */
 const GATE_CHARGES = 3;
+/** Charges ngspice-47 MOS6trunc bounds with CKTterr: the Meyer gate charges only. */
+const TRUNCATED_CHARGES: readonly number[] = [GATE_SOURCE, GATE_DRAIN, GATE_BULK];
 /** Terminal indices (D, G, S, B) of each charge, positive then negative, in charge-index order. */
 const CHARGE_BRANCHES: ReadonlyArray<readonly [number, number]> = [
   [1, 2], [1, 0], [1, 3], [3, 2], [3, 0],
 ];
 
+/**
+ * The linearisation of the last load, per instance (before the M multiplier),
+ * as ngspice-47 keeps it in CKTstate0 and the instance struct: the junction
+ * and terminal voltages it was evaluated at and the drain and bulk currents
+ * with their conductances, transient junction charge currents folded in.
+ */
+interface MOS6Load {
+  vbs: number;
+  vbd: number;
+  vgs: number;
+  vds: number;
+  mode: number;
+  /** MOS6cd = mode * cdrain - cbd (minus cqbd in transient). */
+  cd: number;
+  cbs: number;
+  cbd: number;
+  gm: number;
+  gds: number;
+  gmbs: number;
+  gbs: number;
+  gbd: number;
+}
+
 export class MOS6 implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (MOS6trunc: qgs, qgd, qgb). */
+  readonly truncationCoversCharges = true;
   readonly model: MOS6ModelParams;
   readonly instance: MOS6InstanceParams;
   private readonly effectiveLength: number;
@@ -371,6 +400,9 @@ export class MOS6 implements DeviceModel {
   private lastVbs = 0;
   private lastVbd = 0;
   private lastVon: number;
+  private readonly lastLoad: MOS6Load = {
+    vbs: 0, vbd: 0, vgs: 0, vds: 0, mode: 1, cd: 0, cbs: 0, cbd: 0, gm: 0, gds: 0, gmbs: 0, gbs: 0, gbd: 0,
+  };
   /** Transient gate and bulk-junction charges (ngspice MOS6qgs..MOS6qbd), integrated by the device. */
   readonly integratesTransientCharge = true;
   readonly storesCharge: boolean;
@@ -652,6 +684,20 @@ export class MOS6 implements DeviceModel {
     const channel = this.evaluateChannel(vgs, vds, vbs);
     this.lastVon = channel.von;
     const { mode, cdrain, gm, gds, gmbs } = channel;
+    const load = this.lastLoad;
+    load.vbs = vbs;
+    load.vbd = vbd;
+    load.vgs = vgs;
+    load.vds = vds;
+    load.mode = mode;
+    load.cd = mode * cdrain - cbd;
+    load.cbs = cbs;
+    load.cbd = cbd;
+    load.gm = gm;
+    load.gds = gds;
+    load.gmbs = gmbs;
+    load.gbs = gbs;
+    load.gbd = gbd;
 
     const ceqbs = type * (cbs - gbs * vbs);
     const ceqbd = type * (cbd - gbd * vbd);
@@ -741,12 +787,60 @@ export class MOS6 implements DeviceModel {
         const effective = charges.factor * charges.incrementalCapacitance(index, capacitance, true);
         stampChargeBranch(ctx, positive, negative, charges.current(index, charge), effective, voltage);
       } else {
-        stampChargeBranch(
-          ctx, positive, negative, charges.current(index, junctionCharges[index]),
-          charges.factor * capacitance, voltage,
-        );
+        const current = charges.current(index, junctionCharges[index]);
+        const conductance = charges.factor * capacitance;
+        stampChargeBranch(ctx, positive, negative, current, conductance, voltage);
+        this.foldJunctionChargeCurrent(index, current, conductance);
       }
     }
+  }
+
+  /**
+   * mos6load.c folds the bulk junction charge currents into the junction
+   * currents the convergence test reads: cbd += cqbd, cd -= cqbd, gbd += geq
+   * (and cbs, gbs for the source junction). `current` and `conductance` are
+   * node-domain and include the M multiplier; the load is per instance.
+   */
+  private foldJunctionChargeCurrent(index: number, current: number, conductance: number): void {
+    const load = this.lastLoad;
+    const m = this.instance.M;
+    const deviceCurrent = this.model.polarity * current / m;
+    const deviceConductance = conductance / m;
+    if (index === BULK_SOURCE) {
+      load.cbs += deviceCurrent;
+      load.gbs += deviceConductance;
+    } else {
+      load.cbd += deviceCurrent;
+      load.cd -= deviceCurrent;
+      load.gbd += deviceConductance;
+    }
+  }
+
+  /**
+   * ngspice-47 mos6conv.c: the drain current and the bulk junction currents
+   * predicted at the new Newton solution from the last load's linearisation
+   * must match the loaded currents within RELTOL * max + ABSTOL.
+   */
+  convergenceTest(solution: Float64Array, tolerances: ConvergenceTolerances): boolean {
+    const load = this.lastLoad;
+    const [vgs, vds, vbs] = this.terminalVoltages(node => (node >= 0 ? solution[node] : 0));
+    const vbd = vbs - vds;
+    const vgd = vgs - vds;
+    const delvbs = vbs - load.vbs;
+    const delvbd = vbd - load.vbd;
+    const delvgs = vgs - load.vgs;
+    const delvds = vds - load.vds;
+    const delvgd = vgd - (load.vgs - load.vds);
+    const cdhat = load.mode >= 0
+      ? load.cd - load.gbd * delvbd + load.gmbs * delvbs + load.gm * delvgs + load.gds * delvds
+      : load.cd - (load.gbd - load.gmbs) * delvbd - load.gm * delvgd + load.gds * delvds;
+    const { reltol, abstol } = tolerances;
+    if (Math.abs(cdhat - load.cd) >= reltol * Math.max(Math.abs(cdhat), Math.abs(load.cd)) + abstol) {
+      return false;
+    }
+    const cb = load.cbs + load.cbd;
+    const cbhat = cb + load.gbd * delvbd + load.gbs * delvbs;
+    return Math.abs(cbhat - cb) <= reltol * Math.max(Math.abs(cbhat), Math.abs(cb)) + abstol;
   }
 
   stampAcceptedChargeCurrent(ctx: StampContext): void {
@@ -772,6 +866,11 @@ export class MOS6 implements DeviceModel {
       charges.accept(index, charge, voltage, capacitance);
     }
     charges.commit();
+  }
+
+  /** ngspice MOS6trunc: CKTterr on the three Meyer gate charges. */
+  truncateTransientStep(ctx: StampContext, truncation: ChargeTruncation): number {
+    return this.charges.truncationTimestep(truncation, () => this.acceptTransientStep(ctx), TRUNCATED_CHARGES);
   }
 
   resetTransient(): void {
