@@ -14,10 +14,19 @@ export interface ControlSourceBlock {
   lines: ControlSourceLine[];
 }
 
+/** A non-fatal deck-structure diagnostic found while extracting control blocks. */
+export interface ControlSourceWarning {
+  message: string;
+  /** 1-based line number in the caller's netlist. */
+  line: number;
+}
+
 export interface ExtractedControlBlocks {
   /** The netlist with every `.control` … `.endc` line blanked (line numbers preserved). */
   netlist: string;
   blocks: ControlSourceBlock[];
+  /** Cards ngspice drops with a warning, such as a misplaced `.endc`. */
+  warnings: ControlSourceWarning[];
 }
 
 /**
@@ -30,8 +39,12 @@ export interface ExtractedControlBlocks {
  * end-of-line comments started by `;`, by `$` between whitespace, or by `//`
  * after whitespace (never inside double quotes).
  *
+ * A `.endc` with no open `.control` is dropped with ngspice-47's
+ * "misplaced .endc card" warning (src/frontend/inp.c, inp_spsource) and
+ * reading continues.
+ *
  * @param lineOffset - Number of lines before `netlist` in the caller's input
- * @throws {@link ParseError} for a nested, unterminated or stray block marker
+ * @throws {@link ParseError} for a nested or unterminated block
  */
 export function extractControlBlocks(
   netlist: string,
@@ -40,6 +53,7 @@ export function extractControlBlocks(
 ): ExtractedControlBlocks {
   const physical = netlist.split('\n');
   const blocks: ControlSourceBlock[] = [];
+  const warnings: ControlSourceWarning[] = [];
   let current: ControlSourceBlock | null = null;
   let currentRaw = '';
 
@@ -51,7 +65,11 @@ export function extractControlBlocks(
     const directive = /^\.(control|endc)(?=\s|$)/.exec(card)?.[1];
 
     if (current === null) {
-      if (directive === 'endc') throw new ParseError("'.endc' without a matching '.control'", lineNumber, raw.trim());
+      if (directive === 'endc') {
+        warnings.push({ message: `misplaced .endc card (line ${lineNumber})`, line: lineNumber });
+        physical[index] = '';
+        continue;
+      }
       if (directive !== 'control') continue;
       requireNoArguments(raw, lineNumber);
       current = { startLine: lineNumber, lines: [] };
@@ -83,7 +101,7 @@ export function extractControlBlocks(
   if (current !== null) {
     throw new ParseError("Unterminated .control block: missing '.endc'", current.startLine, currentRaw);
   }
-  return { netlist: physical.join('\n'), blocks };
+  return { netlist: physical.join('\n'), blocks, warnings };
 }
 
 function requireNoArguments(raw: string, lineNumber: number): void {
