@@ -21,9 +21,11 @@
  *
  * The TSMC instance lines carry NRD=0 NRS=0: the card has RSH = 4.5, and
  * ngspice (b3v32set.c) defaults NRD = NRS = 1 square, i.e. a 4.5 ohm series
- * resistance on each terminal that spice-ts does not model for any BSIM3
- * revision (https://github.com/mfiumara/spice-ts/issues/691). Zero squares
- * remove those resistors in ngspice, so both engines see the intrinsic device.
+ * resistance on each terminal that spice-ts did not model for any BSIM3
+ * revision when #594 landed (ported since by
+ * https://github.com/mfiumara/spice-ts/issues/691). Zero squares remove those
+ * resistors in both engines, so they see the intrinsic device and the #594
+ * receipts stay unchanged.
  */
 import { readFileSync } from 'node:fs';
 import { BSIM3_DC_CASES, type Bsim3DcCase } from '../bsim3-dc-589/cards.js';

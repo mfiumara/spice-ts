@@ -23,7 +23,7 @@ Not ported, and documented:
 
 - The `b3v32temp.c` `pParam` reuse of revisions 3.2 and 3.2.2 for repeated instance geometries. It is equal to spice-ts whenever geometries are distinct or the previously processed instance has the same geometry, which covers every deck here.
 - **TCJ compounding.** In revisions 3.2 and 3.2.2, `b3v32temp.c` scales CJ/CJSW/CJSWG by `1 + TCJ·(T − TNOM)` in place, and ngspice reruns that update before every analysis. Within one ngspice session the junction capacitance therefore compounds from one analysis to the next (capbd 2.1006e-15 → 2.0597e-15 → 2.0196e-15 F for repeated `ac` at one bias). spice-ts applies the factor once, as ngspice does for a deck with a single analysis. `reference.ts` runs the affected cases in a fresh ngspice session per analysis.
-- **RSH series resistance.** `RSH × NRD/NRS` is not modelled for any BSIM3 revision ([#691](https://github.com/mfiumara/spice-ts/issues/691)); ngspice defaults to NRD = NRS = 1 square. On the TSMC card that is a 9.7% current difference, so the parity decks set `NRD=0 NRS=0`.
+- **RSH series resistance.** When #594 landed, `RSH × NRD/NRS` was not modelled for any BSIM3 revision; ngspice defaults to NRD = NRS = 1 square, a 9.7% current difference on the TSMC card, so the parity decks set `NRD=0 NRS=0`. [#691](https://github.com/mfiumara/spice-ts/issues/691) has since ported it (`benchmarks/bsim3-rsh-691/`); the decks keep `NRD=0 NRS=0` so the receipts stay byte-identical.
 
 ## Files
 
@@ -60,4 +60,4 @@ Corpus-f (identical fixtures, ngspice side unchanged at success, tran:37049):
 | examples/tclspice/tcl-testbench2/example.cir | unsupported: `LEVEL=8 VERSION=3.2.2` | unsupported: `NQSMOD` (BSIM3 NQS, #692) |
 | examples/tclspice/tcl-testbench4/example.cir | unsupported: `LEVEL=8 VERSION=3.2.2` | unsupported: `NQSMOD` (BSIM3 NQS, #692) |
 
-Published losses: both corpus-f decks of #594 are still spice-ts losses. Every one of their 96 transistors sets `NQSMOD=1`, which spice-ts does not implement (#692). Their TSMC cards also need the RSH series resistance (#691). With `NQSMOD=0` the decks compile and run, but that is not the identical deck, so no parity is claimed for it. The committed corpus-f `outcomes.json` is not regenerated here; the new `NQSMOD` gap bucket is added to `lib.ts` for the next corpus run.
+Published losses: both corpus-f decks of #594 are still spice-ts losses. Every one of their 96 transistors sets `NQSMOD=1`, which spice-ts does not implement (#692). Their TSMC cards also needed the RSH series resistance, which #691 has since ported. With `NQSMOD=0` the decks compile and run, but that is not the identical deck, so no parity is claimed for it. The committed corpus-f `outcomes.json` is not regenerated here; the new `NQSMOD` gap bucket is added to `lib.ts` for the next corpus run.
