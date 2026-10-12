@@ -9,6 +9,9 @@ export interface HFET1Model {
   LEVEL: 5;
   RD: number;
   RS: number;
+  /** Intrinsic drain/source resistances inside the channel equations (hfetload.c RDI/RSI). */
+  RDI: number;
+  RSI: number;
   M: number;
   LAMBDA: number;
   VS: number;
@@ -36,7 +39,7 @@ export interface HFET1Evaluation {
 }
 
 const MODEL_PARAMETERS = new Set([
-  'LEVEL', 'RD', 'RS', 'M', 'LAMBDA', 'VS', 'MU', 'VT0', 'VTO', 'ETA',
+  'LEVEL', 'RD', 'RS', 'RDI', 'RSI', 'M', 'LAMBDA', 'VS', 'MU', 'VT0', 'VTO', 'ETA',
   'SIGMA0', 'VSIGMA', 'VSIGMAT', 'JS1S', 'JS1D', 'NMAX',
 ]);
 const BOLTZMANN = 1.380649e-23;
@@ -61,6 +64,8 @@ export function resolveHFET1Model(model: ModelParams): HFET1Model {
     LEVEL: 5,
     RD: model.params.RD ?? 0,
     RS: model.params.RS ?? 0,
+    RDI: model.params.RDI ?? 0,
+    RSI: model.params.RSI ?? 0,
     M: model.params.M ?? 3,
     LAMBDA: model.params.LAMBDA ?? 0.15,
     VS: model.params.VS ?? 1.5e5,
@@ -74,7 +79,7 @@ export function resolveHFET1Model(model: ModelParams): HFET1Model {
     JS1D: model.params.JS1D ?? 1,
     NMAX: model.params.NMAX ?? 2e16,
   };
-  if (resolved.RD < 0 || resolved.RS < 0 || resolved.M <= 0
+  if (resolved.RD < 0 || resolved.RS < 0 || resolved.RDI < 0 || resolved.RSI < 0 || resolved.M <= 0
     || resolved.VS <= 0 || resolved.MU <= 0 || resolved.ETA <= 0
     || resolved.VSIGMA <= 0 || resolved.JS1S < 0 || resolved.JS1D < 0
     || resolved.NMAX <= 0) {
@@ -119,8 +124,8 @@ function intrinsic(vGS: number, vDS: number, model: HFET1Model, instance: HFET1I
   const deltad = 4.5e-9;
   const delta = 3;
   const gamma = 3;
-  const rsi = 0;
-  const rdi = 0;
+  const rsi = model.RSI;
+  const rdi = model.RDI;
   const cf = 0.5 * EPSILON * W;
   const n0 = EPSILON * model.ETA * vt / (2 * CHARGE * (di + deltad));
   const gchi0 = CHARGE * W * model.MU / L;
