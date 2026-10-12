@@ -249,6 +249,8 @@ interface LoadState {
 export class ClassicBsimMosfet implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (B1trunc/B2trunc: qb, qg, qd). */
+  readonly truncationCoversCharges = true;
   readonly integratesTransientCharge = true;
   readonly storesCharge = true;
   private temperature = 27;

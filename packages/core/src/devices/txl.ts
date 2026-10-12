@@ -442,6 +442,8 @@ interface TxlLoad {
 export class TxlLine implements DeviceModel {
   readonly branches: number[];
   readonly isNonlinear = false;
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (ngspice TXL has no DEVtrunc; its TXLload CKTmaxStep cap). */
+  readonly truncationCoversCharges = true;
   private readonly committed = new TxlState();
   private readonly trial = new TxlState();
   private readonly history = new SwecHistory(1);

@@ -2,12 +2,27 @@
  * BSIM3v3.3.0 model and size-dependent parameters, ported from ngspice-47
  * (src/spicelib/devices/bsim3): model-card names from b3.c, defaults from
  * b3set.c, card value transforms from b3mpar.c and the size-dependent
- * (binned, temperature-adjusted) parameters from b3temp.c.
+ * (binned, temperature-adjusted) parameters from b3temp.c. The BSIM3v32
+ * revisions 3.2, 3.2.2, 3.2.3 and 3.2.4 (src/spicelib/devices/bsim3v32,
+ * b3v32*.c) share these names, defaults and equations except for the
+ * revision-dependent blocks marked with b3v32 citations here and in
+ * bsim3v3-dc.ts, bsim3v3-charge.ts and bsim3v3.ts.
+ *
+ * Known, deliberately unported b3v32temp.c behaviour: for revisions 3.2 and
+ * 3.2.2 an instance whose (L, W) matches an earlier instance of the same
+ * model reads its instance copies (vth0, vfb, vfbzb, u0temp) from whichever
+ * size-dependent record the previous loop iteration left in `pParam` (the
+ * "bug-fix" guarded by `BSIM3v32intVersion > BSIM3v32V322`). spice-ts always
+ * uses the instance's own record. The two agree when every geometry of a
+ * model is distinct (as in the corpus-f decks of #594) or when the previous
+ * instance ngspice processed has the same geometry.
  *
  * Model parameters are keyed by their ngspice card name in lower case. The
  * size-dependent parameters use the b3temp.c `pParam` field names so that
  * the DC evaluator reads like b3ld.c.
  */
+
+import { UnsupportedModelParameterError } from '../errors.js';
 
 /** b3temp.c / b3ld.c physical constants. */
 export const EPSOX = 3.453133e-11;
@@ -24,20 +39,41 @@ export const NOMINAL_TEMPERATURE_K = 27 + CTOK;
 /** ngspice const.h CONSTvt0 = CONSTboltz * (27 + CONSTCtoK) / CHARGE. */
 export const CONST_VT0 = 1.38064852e-23 * NOMINAL_TEMPERATURE_K / 1.6021766208e-19;
 
-/** BSIM3 `VERSION=` prefixes spice-ts implements: ngspice's default BSIM3 (3.3.0) revision. */
-export const SUPPORTED_BSIM3_VERSIONS: readonly string[] = ['3.3'];
+/**
+ * BSIM3 `VERSION=` prefixes spice-ts implements: ngspice's BSIM3v32 (3.2.x) device and its
+ * default BSIM3 (3.3.0) device.
+ */
+export const SUPPORTED_BSIM3_VERSIONS: readonly string[] = ['3.2', '3.3'];
 
 /**
- * Whether a LEVEL=8/49 card's `VERSION=` string selects the BSIM3 revision spice-ts implements.
- * Mirrors ngspice inpdomod.c: an absent version or one containing `default` or starting with
- * `3.3` selects BSIM3 (3.3.0); `3.0`, `3.1` and `3.2` select BSIM3v0/v1/v32, which spice-ts does
- * not implement, and any other string is unavailable in ngspice too. ngspice lower-cases the deck
- * before matching, so the comparison is case-insensitive.
+ * BSIM3 model revisions: ngspice-47 bsim3v32def.h `BSIM3v32intVersion` values (3.2, 3.2.2,
+ * 3.2.3, 3.2.4) of the bsim3v32 device, and 330 for the default bsim3 device (3.3.0).
  */
-export function isSupportedBsim3Version(version: string | undefined): boolean {
-  if (version === undefined) return true;
+export const BSIM3_REVISION = { V32: 32, V322: 322, V323: 323, V324: 324, V330: 330 } as const;
+
+/**
+ * The BSIM3 revision a LEVEL=8/49 card's `VERSION=` string selects, or undefined when spice-ts
+ * (like ngspice for 3.0/3.1 here) does not implement it. Mirrors ngspice-47 inpdomod.c: an absent
+ * version or one containing `default` or starting with `3.3` selects the bsim3 device (3.3.0), one
+ * starting with `3.2` the bsim3v32 device, and `3.0`/`3.1` BSIM3v0/v1, which spice-ts does not
+ * implement; any other string is unavailable in ngspice too. b3v32set.c then maps the string to
+ * its integer revision: exactly `3.2.4` or prefix `3.24` -> 3.2.4, likewise 3.2.3 and 3.2.2, and
+ * any other `3.2` string -> 3.2. ngspice lower-cases the deck first, so matching ignores case.
+ */
+export function bsim3Revision(version: string | undefined): number | undefined {
+  if (version === undefined) return BSIM3_REVISION.V330;
   const ver = version.toLowerCase();
-  return ver.includes('default') || SUPPORTED_BSIM3_VERSIONS.some((prefix) => ver.startsWith(prefix));
+  if (ver.includes('default') || ver.startsWith('3.3')) return BSIM3_REVISION.V330;
+  if (!ver.startsWith('3.2')) return undefined;
+  if (ver === '3.2.4' || ver.startsWith('3.24')) return BSIM3_REVISION.V324;
+  if (ver === '3.2.3' || ver.startsWith('3.23')) return BSIM3_REVISION.V323;
+  if (ver === '3.2.2' || ver.startsWith('3.22')) return BSIM3_REVISION.V322;
+  return BSIM3_REVISION.V32;
+}
+
+/** Whether a LEVEL=8/49 card's `VERSION=` string selects a BSIM3 revision spice-ts implements. */
+export function isSupportedBsim3Version(version: string | undefined): boolean {
+  return bsim3Revision(version) !== undefined;
 }
 
 /**
@@ -128,17 +164,28 @@ export interface BSIM3Model {
   readonly jctSidewallTempSatCurDensity: number;
   readonly jctEmissionCoeff: number;
   readonly ijth: number;
+  /** {@link BSIM3_REVISION} the card's VERSION= selects (330 for the default 3.3.0 device). */
+  readonly revision: number;
 }
 
 /**
  * Build the BSIM3 model from a `.model` card. `card` keys may be in any case
- * (the parser upper-cases them); LEVEL and VERSION are ignored here.
+ * (the parser upper-cases them); LEVEL is ignored here. `version` is the
+ * card's VERSION= string, which selects the revision ({@link bsim3Revision});
+ * the 3.2.x revisions are ngspice-47 bsim3v32 (b3v32set.c, b3v32temp.c,
+ * b3v32ld.c), whose card names and defaults are those of the 3.3.0 device
+ * plus LMLT.
  */
 export function resolveBsim3Model(
   card: Readonly<Record<string, number>>,
   type: number,
   temperatureK: number = NOMINAL_TEMPERATURE_K,
+  version?: string,
 ): BSIM3Model {
+  const revision = bsim3Revision(version);
+  if (revision === undefined) {
+    throw new RangeError(`BSIM3: VERSION=${version} is not an implemented revision (${SUPPORTED_BSIM3_VERSIONS.join(', ')})`);
+  }
   const supplied: Record<string, number> = {};
   for (const [key, value] of Object.entries(card)) {
     const lower = key.toLowerCase();
@@ -225,6 +272,7 @@ export function resolveBsim3Model(
     jctSidewallTempSatCurDensity: Math.max(jctSidewallTempSatCurDensity, 0),
     jctEmissionCoeff: values.nj,
     ijth: values.ijth,
+    revision,
   };
 }
 
@@ -259,7 +307,9 @@ export function computeBsim3Size(
 ): BSIM3Size {
   const m = model.values;
   const p: Record<string, number> = {};
-  const L = instanceValue(inst, 'L') ?? 5.0e-6;
+  let L = instanceValue(inst, 'L') ?? 5.0e-6;
+  // b3v32set.c: channel length scaling with the lmlt model parameter (bsim3v32 only).
+  if (model.revision < BSIM3_REVISION.V330 && model.given('lmlt')) L *= m.lmlt;
   const W = instanceValue(inst, 'W') ?? 5.0e-6;
   const tnom = model.tnom;
   const temp = model.temp;
@@ -408,13 +458,16 @@ export function computeBsim3Size(
   p.drainSatCurrent = saturationCurrent(model, p.drainArea, p.drainPerimeter);
   const nvtm = model.vtm * model.jctEmissionCoeff;
   p.vjsm = 0; p.IsEvjsm = 0; p.vjdm = 0; p.IsEvjdm = 0;
+  // b3v32temp.c: revision 3.2 leaves IsEvjsm/IsEvjdm unset; its b3v32ld.c
+  // linearises the junction above vjsm/vjdm without them (see bsim3v3.ts).
+  const isEvj = model.revision !== BSIM3_REVISION.V32;
   if (p.sourceSatCurrent > 0 && model.ijth > 0) {
     p.vjsm = nvtm * Math.log(model.ijth / p.sourceSatCurrent + 1.0);
-    p.IsEvjsm = p.sourceSatCurrent * Math.exp(p.vjsm / nvtm);
+    if (isEvj) p.IsEvjsm = p.sourceSatCurrent * Math.exp(p.vjsm / nvtm);
   }
   if (p.drainSatCurrent > 0 && model.ijth > 0) {
     p.vjdm = nvtm * Math.log(model.ijth / p.drainSatCurrent + 1.0);
-    p.IsEvjdm = p.drainSatCurrent * Math.exp(p.vjdm / nvtm);
+    if (isEvj) p.IsEvjdm = p.drainSatCurrent * Math.exp(p.vjdm / nvtm);
   }
   return Object.freeze(p);
 }
@@ -423,4 +476,46 @@ export function computeBsim3Size(
 function saturationCurrent(model: BSIM3Model, area: number, perimeter: number): number {
   if (area <= 0.0 && perimeter <= 0.0) return 1.0e-14;
   return area * model.jctTempSatCurDensity + perimeter * model.jctSidewallTempSatCurDensity;
+}
+
+/**
+ * Drain/source series resistances of one BSIM3 instance (every revision),
+ * from b3set.c / b3v32set.c and b3temp.c / b3v32temp.c with acmMod = 0:
+ * NRD and NRS default to 1 square, the resistances are RSH * NRD and
+ * RSH * NRS, and a prime node exists only when one is non-zero. b3ld.c stamps
+ * `m * drainConductance`, so the parallel multiplier divides the resistance.
+ * A non-positive product gives no conductance in b3temp.c and, here, no
+ * resistor. Card ACM > 0 (ACM_SourceDrainResistances, with NRD = NRS = 0
+ * defaults) is not implemented and is rejected instead of silently
+ * simulating acmMod = 0.
+ */
+export function bsim3SeriesResistances(
+  deviceName: string,
+  card: Readonly<Record<string, number>>,
+  inst: Readonly<Record<string, number | undefined>> | undefined,
+): { drain: number; source: number } {
+  const lookup = (record: Readonly<Record<string, number | undefined>>, key: string): number | undefined => {
+    for (const [k, v] of Object.entries(record)) if (k.toLowerCase() === key) return v;
+    return undefined;
+  };
+  const acmMod = lookup(card, 'acm') ?? 0;
+  if (acmMod !== 0) {
+    throw new UnsupportedModelParameterError(
+      deviceName, 'ACM',
+      'the BSIM3 ACM source/drain resistance and junction model (ACM > 0) is not implemented; '
+        + 'spice-ts would simulate ACM=0 instead',
+      { model: 'BSIM3' },
+    );
+  }
+  const instance = inst ?? {};
+  const sheetResistance = lookup(card, 'rsh') ?? 0;
+  const m = lookup(instance, 'm') ?? 1;
+  const resistance = (squares: number): number => {
+    const value = sheetResistance * squares;
+    return value > 0 ? value / m : 0;
+  };
+  return {
+    drain: resistance(lookup(instance, 'nrd') ?? 1),
+    source: resistance(lookup(instance, 'nrs') ?? 1),
+  };
 }

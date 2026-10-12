@@ -6,6 +6,7 @@ import type { ControlScript } from './parser/control/script.js';
 import type { ControlSourceLine } from './parser/control/source.js';
 import { runControlScript, type ControlHost, type ControlHostRun } from './parser/control/interpreter.js';
 import { ControlScriptError, UnsupportedControlCommandError } from './parser/control/errors.js';
+import { controlOperatingState, deviceOutputVector, type ControlOperatingState } from './control-device-output.js';
 import type { ConvergenceTelemetry, SimulationOptions, SimulationWarning, TransientStep, ACPoint } from './types.js';
 import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, SimulatorBackend } from './types.js';
 import { resolveOptions, withNetlistOptions } from './types.js';
@@ -325,6 +326,9 @@ function simulateControlScript(
   const deckAnalyses = [...circuit.analyses];
   const deckPoleZero = [...circuit.poleZeroAnalyses];
 
+  // ngspice reads `@device[i]` from the circuit's present state: the last analysis's last solution.
+  let operatingState: ControlOperatingState | undefined;
+
   const solve = (analyses: AnalysisDirective[], poleZero: PoleZeroAnalysis[]): SimulationResult => {
     const savedAnalyses = circuit.analyses.splice(0, circuit.analyses.length, ...analyses);
     const savedPoleZero = circuit.poleZeroAnalyses.splice(0, circuit.poleZeroAnalyses.length, ...poleZero);
@@ -339,7 +343,13 @@ function simulateControlScript(
     compiled = { ...compiled, analyses: [...analyses], poleZeroAnalyses: [...poleZero] };
     validateCircuit(compiled, warnings);
     const resolved = withNetlistOptions(compiled.simulationOptions, options);
-    return solveCompiledAnalyses(compiled, resolved, warnings, convergence, guard, measures, measureValues);
+    // Cleared first: a failed analysis leaves no state to read out.
+    operatingState = undefined;
+    const result = solveCompiledAnalyses(compiled, resolved, warnings, convergence, guard, measures, measureValues);
+    operatingState = analyses.length === 1 && poleZero.length === 0
+      ? controlOperatingState(compiled, analyses[0], result)
+      : undefined;
+    return result;
   };
 
   const runDeck = (): ControlHostRun[] => [
@@ -369,7 +379,8 @@ function simulateControlScript(
       const reason = circuit.alterModel(model, parameter, value);
       if (reason !== undefined) throw unsupported('altermod', reason, line);
     },
-    parameterVector: (device, parameter) => circuit.parameterVector(device, parameter),
+    parameterVector: (device, parameter) =>
+      deviceOutputVector(operatingState, device, parameter) ?? circuit.parameterVector(device, parameter),
     setOptions(tokens, line) {
       circuit.setSimulationOptions(parseControlOptions(tokens, line.lineNumber, line.text));
     },

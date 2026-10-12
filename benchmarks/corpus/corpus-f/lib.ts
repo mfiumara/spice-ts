@@ -228,6 +228,7 @@ const GAP_RULES: readonly GapRule[] = [
   [/\bvdmos\b/i, 'model: VDMOS power MOSFET'],
   [/Cannot parse number: '\d+\.\d+\.\d+'/, 'model: VERSION= strings on BSIM model cards'],
   [/uses unsupported LEVEL=(?:8|49) VERSION=/i, 'model: BSIM3 revisions other than 3.3 (VERSION=3.0/3.1/3.2.x)'],
+  [/uses unsupported model parameter '(?:NQSMOD|ACNQSMOD)'/i, 'model: BSIM3 non-quasi-static model (NQSMOD=1)'],
   [/uses unsupported model LEVEL=(?:14|54)\b/i, 'model: BSIM4 (LEVEL=14/54)'],
   [/Unsupported (?:NMF|NHFET)|Unsupported Z-card|NMF model level/i, 'model: MESFET/HFET levels and parameters (NMF/NHFET, Z-card)'],
   [/Unsupported BJT Q-card form|VBIC polarity|Unsupported diode parameter/i, 'device: Q/D instance forms (AREA=/M= keywords, thermal nodes, VBIC PNP)'],

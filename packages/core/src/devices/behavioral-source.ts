@@ -59,6 +59,11 @@ export abstract class BehavioralSource implements DeviceModel {
     return this.environment.temperature;
   }
 
+  /** Expression value at the last linearisation: ngspice ASRCprev_value, the `@b[i]` readout of the I= form. */
+  get lastValue(): number {
+    return this.previousValue;
+  }
+
   /** Evaluate the expression at the present solution, filling `voltages` and `gradient`. */
   protected evaluate(ctx: StampContext): number {
     for (let i = 0; i < this.voltages.length; i++) {

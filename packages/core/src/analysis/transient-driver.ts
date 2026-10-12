@@ -19,7 +19,8 @@ import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { Inductor } from '../devices/inductor.js';
 import { maxTimestepOption, runnableTransient, transientStepCap } from './max-timestep.js';
 import { chargeTruncatedNodes } from './transient-node-truncation.js';
-import type { DeviceModel, TransientBreakpointSink } from '../devices/device.js';
+import { LinearReactiveTruncation } from './transient-reactive-truncation.js';
+import type { ChargeIntegration, DeviceModel, TransientBreakpointSink } from '../devices/device.js';
 
 /**
  * Smallest allowed timestep (femtosecond). Must be small enough that LTE can
@@ -215,6 +216,8 @@ class TransientSimImpl implements TransientSim {
   private readonly chargeCurrentDevices: readonly DeviceModel[];
   /** Nodes a device sets algebraically (no truncation error in ngspice); skipped by the node LTE. */
   private readonly lteExemptNodes: Uint8Array;
+  /** ngspice CAPtrunc/INDtrunc for the linear C, L and K elements (#621). */
+  private readonly reactiveTruncation: LinearReactiveTruncation;
 
   private time = 0;
   private dt: number;
@@ -293,8 +296,9 @@ class TransientSimImpl implements TransientSim {
     this.chargeCurrentDevices = compiled.devices.filter(device => (
       device.integratesTransientCharge && device.stampAcceptedChargeCurrent !== undefined
     ));
-    // Nodes fully covered by device charge truncation (ngspice CKTtrunc) get
-    // no node-voltage LTE, which ngspice-47 does not have (#638).
+    // ngspice-47 has no node-voltage LTE, only CKTtrunc (#638, #621): the
+    // node check remains only on nodes of devices without a DEVtrunc port.
+    this.reactiveTruncation = new LinearReactiveTruncation(compiled.devices, compiled.nodeCount);
     this.lteExemptNodes = chargeTruncatedNodes(compiled.nodeCount, compiled.devices);
     for (const device of compiled.devices) {
       for (const node of device.algebraicNodes ?? []) this.lteExemptNodes[node] = 1;
@@ -435,9 +439,10 @@ class TransientSimImpl implements TransientSim {
       }
 
       const sol = result.solution;
+      const integration = this.stepIntegration(actualDt);
       const lteVerified = this.lteChecked(actualDt);
       const lteRatio = this.checkLTE(sol, prevSol, actualDt);
-      const chargeBound = this.chargeTruncationTimestep(actualDt);
+      const chargeBound = this.chargeTruncationTimestep(actualDt, integration);
       if (lteRatio > 1 || chargeBound < CHARGE_LTE_ACCEPT_FRACTION * actualDt) {
         const factor = lteRatio > 1 ? Math.max(0.25, 0.9 / Math.sqrt(lteRatio)) : 1;
         this.dt = Math.max(Math.min(actualDt * factor, chargeBound), MIN_TIMESTEP);
@@ -453,7 +458,7 @@ class TransientSimImpl implements TransientSim {
       // Device-owned histories must observe only committed solutions. In
       // particular, NR/LTE retries and the stampPrevB restamp below are not
       // accepted timepoints and must remain side-effect free.
-      this.acceptTransientStep(nextTime);
+      this.acceptTransientStep(nextTime, integration);
       // Update trapezoidal history.
       if (this.integrationMethod === 'trapezoidal') {
         this.stampPrevB();
@@ -570,6 +575,7 @@ class TransientSimImpl implements TransientSim {
   reset(): void {
     if (this.disposed) throw new InvalidCircuitError('TransientSim has been disposed');
     for (const device of this.compiled.devices) device.resetTransient?.();
+    this.reactiveTruncation.reset();
     this.assembler = this.createAssembler();
     this.time = 0;
     this.dt = Math.min(this.config.timestep, this.config.maxTimestep);
@@ -708,10 +714,29 @@ class TransientSimImpl implements TransientSim {
     this.prevB = current;
   }
 
-  private acceptTransientStep(time: number): void {
+  /**
+   * Commit an accepted point to device state. `integration` is the rule of
+   * the step that reached it; absent for the initial point.
+   */
+  private acceptTransientStep(time: number, integration?: ChargeIntegration): void {
     const ctx = this.assembler.getStampContext();
     this.acceptingTime = time;
     for (const device of this.acceptingDevices) device.acceptTransientStep!(ctx, this.breakpointSink);
+    this.reactiveTruncation.accept(this.assembler.solution, integration);
+  }
+
+  /**
+   * The integration rule the companion applies to a step from the current
+   * state (buildCompanionSystem): order 1 without trapezoidal or Gear-2 history.
+   */
+  private stepIntegration(dt: number): ChargeIntegration {
+    if (this.integrationMethod === 'trapezoidal' && !this.orderOnePending && this.prevB !== undefined) {
+      return { method: 'trapezoidal', dt };
+    }
+    if (this.integrationMethod === 'gear2' && this.secondPrevSol !== undefined) {
+      return { method: 'gear2', dt, prevDt: this.prevDt };
+    }
+    return { method: 'euler', dt };
   }
 
   private initDC(): void {
@@ -751,15 +776,15 @@ class TransientSimImpl implements TransientSim {
   }
 
   /**
-   * ngspice CKTtrunc over the devices that integrate their own charges: the
-   * smallest next timestep CKTterr allows on any device charge at the
+   * ngspice CKTtrunc: the smallest next timestep CKTterr allows on any
+   * device charge (DEVtrunc, plus CAPtrunc/INDtrunc on the linear C and L) at the
    * converged trial solution held by the assembler. Infinity when no device
    * bounds the step. Gated like the voltage LTE so the reject-bypass and the
    * femtosecond floor still terminate stiff shrink loops.
    */
-  private chargeTruncationTimestep(dt: number): number {
+  private chargeTruncationTimestep(dt: number, integration: ChargeIntegration): number {
     if (
-      this.truncatingDevices.length === 0
+      (this.truncatingDevices.length === 0 && this.reactiveTruncation.isEmpty)
       || dt <= MIN_LTE_TIMESTEP
       || this.lteRejectCount >= MAX_LTE_REJECTS_BEFORE_BYPASS
     ) {
@@ -770,7 +795,7 @@ class TransientSimImpl implements TransientSim {
     const truncation = {
       deltas: [dt, this.prevDt, this.prevPrevDt] as const, reltol, abstol, chgtol, trtol,
     };
-    let bound = Infinity;
+    let bound = this.reactiveTruncation.timestep(this.assembler.solution, integration, truncation);
     for (const device of this.truncatingDevices) {
       bound = Math.min(bound, device.truncateTransientStep!(ctx, truncation));
     }

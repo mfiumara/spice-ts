@@ -1,5 +1,6 @@
 import {
-  DEVICE_GMIN, type ChargeIntegration, type ChargeTruncation, type DeviceModel, type StampContext,
+  DEVICE_GMIN, type ChargeIntegration, type ChargeTruncation, type ConvergenceTolerances, type DeviceModel,
+  type StampContext,
 } from './device.js';
 import { stampChargeBranch, stampChargeCurrent, TransientChargeState } from './charge-state.js';
 import { meyerHalfCapacitances } from './mos6.js';
@@ -130,8 +131,202 @@ function criticalVoltage(saturationCurrent: number, vt: number): number {
     : Infinity;
 }
 
-/** Reused [gbs, ceqbs, gbd, ceqbd] buffer; consumed immediately by each stamp. */
-const junctionScratch = new Float64Array(4);
+/**
+ * Reused [gbs, ceqbs, gbd, ceqbd, vbs, vbd, limited] buffer written by
+ * {@link mos1BulkJunctions}; consumed immediately by each stamp.
+ */
+const junctionScratch = new Float64Array(7);
+
+/**
+ * ngspice mos1load.c bulk junctions at terminal voltages vD, vS, vB. As in
+ * mos1load.c, vbs is limited with DEVpnjlim when vds >= 0 (vbd otherwise)
+ * against the previous stamp's lastVbs/lastVbd, so a converged Newton point
+ * is evaluated without limiting. Writes [gbs, ceqbs, gbd, ceqbd] (companion
+ * terms, polarity domain), the limited [vbs, vbd] and whether DEVpnjlim
+ * changed the junction voltage (1, mos1load.c icheck) or not (0) into `out`.
+ */
+function mos1BulkJunctions(
+  out: Float64Array, vD: number, vS: number, vB: number, polarity: number,
+  lastVbs: number, lastVbd: number, vt: number, sourceVcrit: number, drainVcrit: number,
+  sourceSatCur: number, drainSatCur: number, gmin: number,
+): void {
+  const vds = polarity * (vD - vS);
+  let vbs = polarity * (vB - vS);
+  let vbd = vbs - vds;
+  let limited: number;
+  if (vds >= 0) {
+    const raw = vbs;
+    vbs = pnjlim(vbs, lastVbs, vt, sourceVcrit);
+    limited = vbs !== raw ? 1 : 0;
+    vbd = vbs - vds;
+  } else {
+    const raw = vbd;
+    vbd = pnjlim(vbd, lastVbd, vt, drainVcrit);
+    limited = vbd !== raw ? 1 : 0;
+    vbs = vbd + vds;
+  }
+  bulkJunction(vbs, sourceSatCur, vt, gmin, out, 0);
+  bulkJunction(vbd, drainSatCur, vt, gmin, out, 2);
+  out[1] -= out[0] * vbs;
+  out[3] -= out[2] * vbd;
+  out[4] = vbs;
+  out[5] = vbd;
+  out[6] = limited;
+}
+
+/**
+ * ngspice mos1load.c drain current in the polarity domain for a device in
+ * normal mode (vds >= 0; callers swap drain and source otherwise and pass vbd
+ * as vbs). Writes [cdrain, gm, gds, gmbs, von] into `out`.
+ */
+function mos1Channel(
+  out: Float64Array, vgs: number, vds: number, vbs: number,
+  tPhi: number, sqrtPhi: number, builtInVon: number, gamma: number, lambda: number, beta: number,
+): Float64Array {
+  let sarg: number;
+  if (vbs <= 0) {
+    sarg = Math.sqrt(tPhi - vbs);
+  } else {
+    sarg = sqrtPhi - vbs / (2 * sqrtPhi);
+    sarg = Math.max(0, sarg);
+  }
+  const von = builtInVon + gamma * sarg;
+  const vgst = vgs - von;
+  const arg = sarg <= 0 ? 0 : gamma / (2 * sarg);
+  out[4] = von;
+  if (vgst <= 0) {
+    out[0] = 0; out[1] = 0; out[2] = 0; out[3] = 0;
+    return out;
+  }
+  const betap = beta * (1 + lambda * vds);
+  if (vgst <= vds) {
+    out[0] = betap * vgst * vgst * 0.5;
+    out[1] = betap * vgst;
+    out[2] = lambda * beta * vgst * vgst * 0.5;
+  } else {
+    out[0] = betap * vds * (vgst - 0.5 * vds);
+    out[1] = betap * vds;
+    out[2] = betap * (vgst - vds) + lambda * beta * vds * (vgst - 0.5 * vds);
+  }
+  out[3] = out[1] * arg;
+  return out;
+}
+
+// MosfetBatch.params row layout: the per-instance constants batchStamp reads.
+const BP_POLARITY = 0;
+const BP_VT = 1;
+const BP_SOURCE_SAT = 2;
+const BP_DRAIN_SAT = 3;
+const BP_SOURCE_VCRIT = 4;
+const BP_DRAIN_VCRIT = 5;
+const BP_BETA = 6;
+const BP_TPHI = 7;
+const BP_SQRT_PHI = 8;
+const BP_BUILT_IN_VON = 9;
+const BP_GAMMA = 10;
+const BP_LAMBDA = 11;
+const BP_STRIDE = 12;
+const BATCH_SLOTS = 11;
+
+/**
+ * Bumped whenever any MOSFET's temperature-derived constants change, so every
+ * {@link MosfetBatch} copy of them is rebuilt before its next use.
+ */
+let constantsEpoch = 0;
+
+/**
+ * Struct-of-arrays copy of the constants {@link MOSFET.batchStamp} reads for
+ * one device list on one locked topology: terminal nodes, value slots and
+ * temperature-derived parameters, contiguous per device, so the hot loop
+ * does not chase a dozen heap objects per device.
+ */
+interface MosfetBatch {
+  readonly length: number;
+  readonly stampIndex: (row: number, col: number) => number;
+  readonly epoch: number;
+  /** jD, nG, jS, jB per device. */
+  readonly nodes: Int32Array;
+  /** BATCH_SLOTS value slots per device, SLOT_* order. */
+  readonly slots: Int32Array;
+  /** BP_STRIDE constants per device, BP_* order. */
+  readonly params: Float64Array;
+  /** {@link stateStoreEpoch} the state rows below were resolved at. */
+  readonly stateEpoch: number;
+  /** The shared {@link MosfetStateStore} values of every device in the list. */
+  readonly state: Float64Array;
+  /** Offset of each device's state in `state`. */
+  readonly stateBases: Int32Array;
+}
+
+const mosfetBatches = new WeakMap<readonly MOSFET[], MosfetBatch>();
+
+// MosfetStateStore.values layout per instance.
+const STATE_VBS = 0;
+const STATE_VBD = 1;
+const STATE_VON = 2;
+/** 1 when the last stamp limited a bulk junction (mos1load.c icheck -> CKTnoncon), else 0. */
+const STATE_LIMITED = 3;
+/**
+ * The last load's linearisation, as mos1conv.c reads it from CKTstate0 and
+ * the instance: the unswapped polarity-domain vgs/vds, the mode (+1 normal,
+ * -1 inverse), MOS1cd = mode * cdrain - cbd and the junction currents cbs/cbd
+ * (transient junction charge currents folded in) with their conductances.
+ */
+const STATE_VGS = 4;
+const STATE_VDS = 5;
+const STATE_MODE = 6;
+const STATE_CD = 7;
+const STATE_CBS = 8;
+const STATE_CBD = 9;
+const STATE_GM = 10;
+const STATE_GDS = 11;
+const STATE_GMBS = 12;
+const STATE_GBS = 13;
+const STATE_GBD = 14;
+const STATE_STRIDE = 15;
+
+/**
+ * Record the load mos1conv.c tests against (see STATE_VGS). `junction` is the
+ * mos1BulkJunctions output of the same load; vgs/vds are unswapped.
+ */
+function recordMos1Load(
+  state: Float64Array, base: number, junction: Float64Array, vgs: number, vds: number,
+  cdrain: number, gm: number, gds: number, gmbs: number,
+): void {
+  const mode = vds < 0 ? -1 : 1;
+  const gbs = junction[0];
+  const gbd = junction[2];
+  const cbd = junction[3] + gbd * junction[5];
+  state[base + STATE_VGS] = vgs;
+  state[base + STATE_VDS] = vds;
+  state[base + STATE_MODE] = mode;
+  state[base + STATE_CD] = mode * cdrain - cbd;
+  state[base + STATE_CBS] = junction[1] + gbs * junction[4];
+  state[base + STATE_CBD] = cbd;
+  state[base + STATE_GM] = gm;
+  state[base + STATE_GDS] = gds;
+  state[base + STATE_GMBS] = gmbs;
+  state[base + STATE_GBS] = gbs;
+  state[base + STATE_GBD] = gbd;
+}
+
+/** Bumped whenever MosfetStateStores merge, so batches re-resolve their state rows. */
+let stateStoreEpoch = 0;
+
+/**
+ * Newton linearisation state of a set of MOSFETs, STATE_STRIDE values per
+ * member in member order. Each instance starts in a store of its own; batch
+ * stamping merges the stores of a device list into one, so its hot loop reads
+ * and writes the state of consecutive devices contiguously instead of through
+ * per-instance heap fields.
+ */
+class MosfetStateStore {
+  readonly values: Float64Array;
+
+  constructor(readonly members: readonly MOSFET[]) {
+    this.values = new Float64Array(STATE_STRIDE * members.length);
+  }
+}
 
 /** ngspice devsup.c DEVfetlim: limit a gate voltage step around threshold `vto`. */
 function fetlim(vnew: number, vold: number, vto: number): number {
@@ -185,6 +380,8 @@ function branchVoltage(ctx: StampContext, positive: number, negative: number): n
 export class MOSFET implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (MOS1trunc: qgs, qgd, qgb). */
+  readonly truncationCoversCharges = true;
   readonly params: MOSFETParams;
   readonly suppliedParams: Readonly<Record<string, number>>;
   /** Bulk-drain / bulk-source junction saturation currents at the device temperature (mos1temp.c). */
@@ -192,11 +389,14 @@ export class MOSFET implements DeviceModel {
   sourceSatCur = 0;
   private drainVcrit = 0;
   private sourceVcrit = 0;
-  /** Junction voltages used by the previous stamp (ngspice CKTstate0 vbs/vbd). */
-  private lastVbs = 0;
-  private lastVbd = 0;
-  /** The last stamp limited a bulk junction (ngspice mos1load.c icheck -> CKTnoncon). */
-  private junctionLimited = false;
+  /**
+   * Newton linearisation state (ngspice CKTstate0 vbs/vbd, MOS1von and the
+   * mos1load.c icheck junction-limited flag):
+   * STATE_STRIDE values at `stateBase` in a store shared with the other
+   * instances batch-stamped alongside this one; see {@link MosfetStateStore}.
+   */
+  private stateStore: MosfetStateStore;
+  private stateBase = 0;
   /** Effective channel length L - 2*LD (m), as used by mos1load.c and mos1noi.c. */
   readonly effectiveLength: number;
   /** Device temperature (C) and the mos1temp.c values derived from it. */
@@ -211,8 +411,6 @@ export class MOSFET implements DeviceModel {
   private sqrtPhi = 0;
   private zeroBiasVon = 0;
   private builtInVon = 0;
-  /** Threshold of the previous stamp (ngspice MOS1von), the DEVfetlim pivot. */
-  private lastVon = 0;
   private readonly overlaps: Float64Array;
   private readonly oxideCap: number;
   private drainDepletion!: MOS1DepletionCharge;
@@ -233,6 +431,7 @@ export class MOSFET implements DeviceModel {
     readonly nodes: number[],
     params: Partial<MOSFETParams> & Record<string, number>,
   ) {
+    this.stateStore = new MosfetStateStore([this]);
     this.suppliedParams = { ...params };
     const level = params.LEVEL ?? 1;
     // #530: only ngspice mos1 is implemented here; other levels must not run these equations.
@@ -288,6 +487,68 @@ export class MOSFET implements DeviceModel {
     this.applyTemperature();
   }
 
+  /** Junction voltage vbs used by the previous stamp (ngspice CKTstate0 vbs). */
+  private get lastVbs(): number {
+    return this.stateStore.values[this.stateBase + STATE_VBS];
+  }
+
+  private set lastVbs(value: number) {
+    this.stateStore.values[this.stateBase + STATE_VBS] = value;
+  }
+
+  /** Junction voltage vbd used by the previous stamp (ngspice CKTstate0 vbd). */
+  private get lastVbd(): number {
+    return this.stateStore.values[this.stateBase + STATE_VBD];
+  }
+
+  private set lastVbd(value: number) {
+    this.stateStore.values[this.stateBase + STATE_VBD] = value;
+  }
+
+  /** Threshold of the previous stamp (ngspice MOS1von), the DEVfetlim pivot. */
+  private get lastVon(): number {
+    return this.stateStore.values[this.stateBase + STATE_VON];
+  }
+
+  private set lastVon(value: number) {
+    this.stateStore.values[this.stateBase + STATE_VON] = value;
+  }
+
+  /**
+   * The {@link MosfetStateStore} holding the state of every instance in
+   * `mosfets`. When they are spread over several stores, those stores are
+   * merged into one holding all their members (state values copied
+   * unchanged), so stores only ever grow and each instance has exactly one.
+   */
+  private static sharedStateStore(mosfets: readonly MOSFET[]): MosfetStateStore {
+    const first = mosfets[0].stateStore;
+    let shared = true;
+    for (let m = 1; m < mosfets.length; m++) {
+      if (mosfets[m].stateStore !== first) {
+        shared = false;
+        break;
+      }
+    }
+    if (shared) return first;
+    const involved = new Set<MosfetStateStore>();
+    for (const mosfet of mosfets) involved.add(mosfet.stateStore);
+    const members: MOSFET[] = [];
+    for (const store of involved) {
+      for (const member of store.members) members.push(member);
+    }
+    const merged = new MosfetStateStore(members);
+    for (let row = 0; row < members.length; row++) {
+      const member = members[row];
+      const base = STATE_STRIDE * row;
+      const from = member.stateStore.values;
+      for (let i = 0; i < STATE_STRIDE; i++) merged.values[base + i] = from[member.stateBase + i];
+      member.stateStore = merged;
+      member.stateBase = base;
+    }
+    stateStoreEpoch++;
+    return merged;
+  }
+
   getTemperature(): number {
     return this.temperature;
   }
@@ -314,6 +575,7 @@ export class MOSFET implements DeviceModel {
     const tVbi = VTO - polarity * GAMMA * Math.sqrt(PHI)
       + 0.5 * (egfet1 - egfet) + polarity * 0.5 * (tPhi - PHI);
     this.vt = vt;
+    constantsEpoch++;
     this.tPhi = tPhi;
     this.beta = KP / (ratio * Math.sqrt(ratio)) * W / this.effectiveLength;
     this.sqrtPhi = Math.sqrt(tPhi);
@@ -359,74 +621,27 @@ export class MOSFET implements DeviceModel {
   }
 
   /**
-   * Evaluate both bulk junctions at the given terminal voltages. Writes
-   * [gbs, ceqbs, gbd, ceqbd] (ngspice mos1load.c companion terms, polarity
-   * domain) into junctionScratch. As in mos1load.c, vbs is limited with
-   * DEVpnjlim when vds >= 0 (vbd otherwise) against the previous stamp, so a
-   * converged Newton point is evaluated without limiting.
+   * {@link mos1BulkJunctions} for this instance against its previous stamp,
+   * recording the limited vbs/vbd; writes into junctionScratch.
    */
   private evaluateBulkJunctions(vD: number, vS: number, vB: number, gmin: number): Float64Array {
-    const polarity = this.params.polarity;
-    const vds = polarity * (vD - vS);
-    let vbs = polarity * (vB - vS);
-    let vbd = vbs - vds;
-    if (vds >= 0) {
-      const raw = vbs;
-      vbs = pnjlim(vbs, this.lastVbs, this.vt, this.sourceVcrit);
-      this.junctionLimited = vbs !== raw;
-      vbd = vbs - vds;
-    } else {
-      const raw = vbd;
-      vbd = pnjlim(vbd, this.lastVbd, this.vt, this.drainVcrit);
-      this.junctionLimited = vbd !== raw;
-      vbs = vbd + vds;
-    }
-    this.lastVbs = vbs;
-    this.lastVbd = vbd;
     const out = junctionScratch;
-    bulkJunction(vbs, this.sourceSatCur, this.vt, gmin, out, 0);
-    bulkJunction(vbd, this.drainSatCur, this.vt, gmin, out, 2);
-    out[1] -= out[0] * vbs;
-    out[3] -= out[2] * vbd;
+    mos1BulkJunctions(
+      out, vD, vS, vB, this.params.polarity, this.lastVbs, this.lastVbd, this.vt,
+      this.sourceVcrit, this.drainVcrit, this.sourceSatCur, this.drainSatCur, gmin,
+    );
+    this.lastVbs = out[4];
+    this.lastVbd = out[5];
+    this.stateStore.values[this.stateBase + STATE_LIMITED] = out[6];
     return out;
   }
 
-  /**
-   * ngspice mos1load.c drain current in the polarity domain for a device in
-   * normal mode (vds >= 0; callers swap drain and source otherwise and pass vbd
-   * as vbs). Writes [cdrain, gm, gds, gmbs, von] into channelScratch.
-   */
+  /** {@link mos1Channel} for this instance; writes into channelScratch. */
   private evaluateChannel(vgs: number, vds: number, vbs: number): Float64Array {
     const { GAMMA, LAMBDA } = this.params;
-    let sarg: number;
-    if (vbs <= 0) {
-      sarg = Math.sqrt(this.tPhi - vbs);
-    } else {
-      sarg = this.sqrtPhi - vbs / (2 * this.sqrtPhi);
-      sarg = Math.max(0, sarg);
-    }
-    const von = this.builtInVon + GAMMA * sarg;
-    const vgst = vgs - von;
-    const arg = sarg <= 0 ? 0 : GAMMA / (2 * sarg);
-    const out = channelScratch;
-    out[4] = von;
-    if (vgst <= 0) {
-      out[0] = 0; out[1] = 0; out[2] = 0; out[3] = 0;
-      return out;
-    }
-    const beta = this.beta;
-    const betap = beta * (1 + LAMBDA * vds);
-    if (vgst <= vds) {
-      out[0] = betap * vgst * vgst * 0.5;
-      out[1] = betap * vgst;
-      out[2] = LAMBDA * beta * vgst * vgst * 0.5;
-    } else {
-      out[0] = betap * vds * (vgst - 0.5 * vds);
-      out[1] = betap * vds;
-      out[2] = betap * (vgst - vds) + LAMBDA * beta * vds * (vgst - 0.5 * vds);
-    }
-    out[3] = out[1] * arg;
-    return out;
+    return mos1Channel(
+      channelScratch, vgs, vds, vbs, this.tPhi, this.sqrtPhi, this.builtInVon, GAMMA, LAMBDA, this.beta,
+    );
   }
 
   /**
@@ -435,7 +650,7 @@ export class MOSFET implements DeviceModel {
    * the junction current was evaluated at a voltage the solution lacks.
    */
   limitedLastStamp(): boolean {
-    return this.junctionLimited;
+    return this.stateStore.values[this.stateBase + STATE_LIMITED] !== 0;
   }
 
   limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {
@@ -549,6 +764,10 @@ export class MOSFET implements DeviceModel {
     const gds = channel[2] + GMIN;
     const gmbs = channel[3];
     this.lastVon = channel[4];
+    recordMos1Load(
+      this.stateStore.values, this.stateBase, junction,
+      polarity * (vG - vS), polarity * (vD - vS), ID, gm, gds, gmbs,
+    );
 
     // NR companion: ID ~ ID0 + gm*dVGS + gds*dVDS + gmbs*dVBS around the
     // (possibly swapped) effective drain/source; physical current = polarity*ID.
@@ -594,11 +813,67 @@ export class MOSFET implements DeviceModel {
       const gate = index < 3;
       const charge = gate ? charges.incrementalCharge(index, voltage, capacitance, true) : this.junctionCharges[index];
       const effective = gate ? charges.incrementalCapacitance(index, capacitance, true) : capacitance;
-      stampChargeBranch(
-        ctx, positive, negative, charges.current(index, charge),
-        charges.factor * effective, voltage,
-      );
+      const current = charges.current(index, charge);
+      const conductance = charges.factor * effective;
+      stampChargeBranch(ctx, positive, negative, current, conductance, voltage);
+      if (!gate) this.foldJunctionChargeCurrent(index, current, conductance);
     }
+  }
+
+  /**
+   * mos1load.c folds the bulk junction charge currents into the currents
+   * mos1conv.c tests: cbd += cqbd, cd -= cqbd, gbd += geq, and cbs += cqbs,
+   * gbs += geq. `current` and `conductance` are node-domain.
+   */
+  private foldJunctionChargeCurrent(index: number, current: number, conductance: number): void {
+    const state = this.stateStore.values;
+    const base = this.stateBase;
+    const deviceCurrent = this.params.polarity * current;
+    if (index === 3) {
+      state[base + STATE_CBD] += deviceCurrent;
+      state[base + STATE_CD] -= deviceCurrent;
+      state[base + STATE_GBD] += conductance;
+    } else {
+      state[base + STATE_CBS] += deviceCurrent;
+      state[base + STATE_GBS] += conductance;
+    }
+  }
+
+  /**
+   * ngspice-47 mos1conv.c: the drain current and the bulk junction currents
+   * predicted at the new Newton solution from the last load's linearisation
+   * must match the loaded currents within RELTOL * max + ABSTOL.
+   */
+  convergenceTest(solution: Float64Array, tolerances: ConvergenceTolerances): boolean {
+    const state = this.stateStore.values;
+    const base = this.stateBase;
+    const { polarity } = this.params;
+    const [nD, nG, nS] = this.nodes;
+    const nB = this.bulkNode;
+    const vS = nS >= 0 ? solution[nS] : 0;
+    const vbs = polarity * ((nB >= 0 ? solution[nB] : 0) - vS);
+    const vgs = polarity * ((nG >= 0 ? solution[nG] : 0) - vS);
+    const vds = polarity * ((nD >= 0 ? solution[nD] : 0) - vS);
+    const vgsOld = state[base + STATE_VGS];
+    const vdsOld = state[base + STATE_VDS];
+    const delvbs = vbs - state[base + STATE_VBS];
+    const delvbd = vbs - vds - state[base + STATE_VBD];
+    const delvgs = vgs - vgsOld;
+    const delvds = vds - vdsOld;
+    const delvgd = vgs - vds - (vgsOld - vdsOld);
+    const cd = state[base + STATE_CD];
+    const gm = state[base + STATE_GM];
+    const gds = state[base + STATE_GDS];
+    const gmbs = state[base + STATE_GMBS];
+    const gbd = state[base + STATE_GBD];
+    const cdhat = state[base + STATE_MODE] >= 0
+      ? cd - gbd * delvbd + gmbs * delvbs + gm * delvgs + gds * delvds
+      : cd - (gbd - gmbs) * delvbd - gm * delvgd + gds * delvds;
+    const { reltol, abstol } = tolerances;
+    if (Math.abs(cdhat - cd) >= reltol * Math.max(Math.abs(cdhat), Math.abs(cd)) + abstol) return false;
+    const cb = state[base + STATE_CBS] + state[base + STATE_CBD];
+    const cbhat = cb + gbd * delvbd + state[base + STATE_GBS] * delvbs;
+    return Math.abs(cbhat - cb) <= reltol * Math.max(Math.abs(cbhat), Math.abs(cb)) + abstol;
   }
 
   stampAcceptedChargeCurrent(ctx: StampContext): void {
@@ -709,8 +984,66 @@ export class MOSFET implements DeviceModel {
   }
 
   /**
+   * The list's {@link MosfetBatch} for `stampIndex`, rebuilt when the
+   * topology, the list length or any MOSFET's constants changed.
+   */
+  private static batchFor(
+    mosfets: readonly MOSFET[], stampIndex: (row: number, col: number) => number,
+  ): MosfetBatch {
+    const cached = mosfetBatches.get(mosfets);
+    if (
+      cached !== undefined && cached.stampIndex === stampIndex
+      && cached.epoch === constantsEpoch && cached.stateEpoch === stateStoreEpoch
+      && cached.length === mosfets.length
+    ) {
+      return cached;
+    }
+    const length = mosfets.length;
+    // Merging stores bumps the epoch, so resolve them before recording it.
+    const store = MOSFET.sharedStateStore(mosfets);
+    const stateBases = new Int32Array(length);
+    const nodes = new Int32Array(4 * length);
+    const slots = new Int32Array(BATCH_SLOTS * length);
+    const params = new Float64Array(BP_STRIDE * length);
+    for (let m = 0; m < length; m++) {
+      const mosfet = mosfets[m];
+      const own = mosfet.batchSlotKey === stampIndex && mosfet.batchSlots !== null
+        ? mosfet.batchSlots
+        : mosfet.resolveBatchSlots(stampIndex);
+      slots.set(own, BATCH_SLOTS * m);
+      nodes[4 * m] = mosfet.nodes[0];
+      nodes[4 * m + 1] = mosfet.nodes[1];
+      nodes[4 * m + 2] = mosfet.nodes[2];
+      nodes[4 * m + 3] = mosfet.bulkNode;
+      const k = BP_STRIDE * m;
+      params[k + BP_POLARITY] = mosfet.params.polarity;
+      params[k + BP_VT] = mosfet.vt;
+      params[k + BP_SOURCE_SAT] = mosfet.sourceSatCur;
+      params[k + BP_DRAIN_SAT] = mosfet.drainSatCur;
+      params[k + BP_SOURCE_VCRIT] = mosfet.sourceVcrit;
+      params[k + BP_DRAIN_VCRIT] = mosfet.drainVcrit;
+      params[k + BP_BETA] = mosfet.beta;
+      params[k + BP_TPHI] = mosfet.tPhi;
+      params[k + BP_SQRT_PHI] = mosfet.sqrtPhi;
+      params[k + BP_BUILT_IN_VON] = mosfet.builtInVon;
+      params[k + BP_GAMMA] = mosfet.params.GAMMA;
+      params[k + BP_LAMBDA] = mosfet.params.LAMBDA;
+      stateBases[m] = mosfet.stateBase;
+    }
+    const batch: MosfetBatch = {
+      length, stampIndex, epoch: constantsEpoch, nodes, slots, params,
+      stateEpoch: stateStoreEpoch, state: store.values, stateBases,
+    };
+    mosfetBatches.set(mosfets, batch);
+    return batch;
+  }
+
+  /**
    * Batch-stamp multiple MOSFETs with direct typed-array writes,
    * bypassing StampContext closures for better performance on the fast path.
+   * Performs exactly the additions of {@link stamp} for each device, in list
+   * order, reading the per-device constants from the list's
+   * {@link MosfetBatch}.
    */
   static batchStamp(
     mosfets: MOSFET[],
@@ -720,39 +1053,59 @@ export class MOSFET implements DeviceModel {
     stampIndex: (row: number, col: number) => number,
     gmin: number = DEVICE_GMIN,
   ): void {
+    if (mosfets.length === 0) return;
+    const batch = MOSFET.batchFor(mosfets, stampIndex);
+    const nodes = batch.nodes;
+    const allSlots = batch.slots;
+    const params = batch.params;
+    const state = batch.state;
+    const stateBases = batch.stateBases;
+    const junction = junctionScratch;
+    const channel = channelScratch;
     for (let m = 0; m < mosfets.length; m++) {
-      const mosfet = mosfets[m];
-      const slots = mosfet.batchSlotKey === stampIndex && mosfet.batchSlots !== null
-        ? mosfet.batchSlots
-        : mosfet.resolveBatchSlots(stampIndex);
-      const polarity = mosfet.params.polarity;
-      const [jD, nG, jS] = mosfet.nodes;
-      const jB = mosfet.bulkNode;
+      const q = 4 * m;
+      const s = BATCH_SLOTS * m;
+      const k = BP_STRIDE * m;
+      const r = stateBases[m];
+      const jD = nodes[q];
+      const nG = nodes[q + 1];
+      const jS = nodes[q + 2];
+      const jB = nodes[q + 3];
+      const polarity = params[k + BP_POLARITY];
       const vD = jD >= 0 ? solution[jD] : 0;
       const vG = nG >= 0 ? solution[nG] : 0;
       const vS = jS >= 0 ? solution[jS] : 0;
       const vB = jB >= 0 ? solution[jB] : 0;
 
       // Bulk junctions first (limited vbs/vbd feed the drain current), on the unswapped terminals.
-      const junction = mosfet.evaluateBulkJunctions(vD, vS, vB, gmin);
+      mos1BulkJunctions(
+        junction, vD, vS, vB, polarity, state[r + STATE_VBS], state[r + STATE_VBD], params[k + BP_VT],
+        params[k + BP_SOURCE_VCRIT], params[k + BP_DRAIN_VCRIT],
+        params[k + BP_SOURCE_SAT], params[k + BP_DRAIN_SAT], gmin,
+      );
+      const lastVbs = junction[4];
+      const lastVbd = junction[5];
+      state[r + STATE_VBS] = lastVbs;
+      state[r + STATE_VBD] = lastVbd;
+      state[r + STATE_LIMITED] = junction[6];
       const gbs = junction[0];
       const gbd = junction[2];
       const ceqbs = polarity * junction[1];
       const ceqbd = polarity * junction[3];
       if (jB >= 0) {
-        gValues[slots[SLOT_BB]] += gbs + gbd;
-        if (jS >= 0) gValues[slots[SLOT_BS]] -= gbs;
-        if (jD >= 0) gValues[slots[SLOT_BD]] -= gbd;
+        gValues[allSlots[s + SLOT_BB]] += gbs + gbd;
+        if (jS >= 0) gValues[allSlots[s + SLOT_BS]] -= gbs;
+        if (jD >= 0) gValues[allSlots[s + SLOT_BD]] -= gbd;
         b[jB] -= ceqbs + ceqbd;
       }
       if (jS >= 0) {
-        gValues[slots[SLOT_SS]] += gbs;
-        if (jB >= 0) gValues[slots[SLOT_SB]] -= gbs;
+        gValues[allSlots[s + SLOT_SS]] += gbs;
+        if (jB >= 0) gValues[allSlots[s + SLOT_SB]] -= gbs;
         b[jS] += ceqbs;
       }
       if (jD >= 0) {
-        gValues[slots[SLOT_DD]] += gbd;
-        if (jB >= 0) gValues[slots[SLOT_DB]] -= gbd;
+        gValues[allSlots[s + SLOT_DD]] += gbd;
+        if (jB >= 0) gValues[allSlots[s + SLOT_DB]] -= gbd;
         b[jD] += ceqbd;
       }
 
@@ -761,25 +1114,33 @@ export class MOSFET implements DeviceModel {
       let nS = jS;
       let vGS = polarity * (vG - vS);
       let vDS = polarity * (vD - vS);
-      let vBS = mosfet.lastVbs;
-      let slotDG = slots[SLOT_DG], slotDD = slots[SLOT_DD], slotDS = slots[SLOT_DS], slotDB = slots[SLOT_DB];
-      let slotSG = slots[SLOT_SG], slotSD = slots[SLOT_SD], slotSS = slots[SLOT_SS], slotSB = slots[SLOT_SB];
+      let vBS = lastVbs;
+      let slotDG = allSlots[s + SLOT_DG], slotDD = allSlots[s + SLOT_DD];
+      let slotDS = allSlots[s + SLOT_DS], slotDB = allSlots[s + SLOT_DB];
+      let slotSG = allSlots[s + SLOT_SG], slotSD = allSlots[s + SLOT_SD];
+      let slotSS = allSlots[s + SLOT_SS], slotSB = allSlots[s + SLOT_SB];
       if (vDS < 0) {
         nD = jS;
         nS = jD;
         vGS -= vDS;
         vDS = -vDS;
-        vBS = mosfet.lastVbd;
-        slotDG = slots[SLOT_SG]; slotDD = slots[SLOT_SS]; slotDS = slots[SLOT_SD]; slotDB = slots[SLOT_SB];
-        slotSG = slots[SLOT_DG]; slotSD = slots[SLOT_DS]; slotSS = slots[SLOT_DD]; slotSB = slots[SLOT_DB];
+        vBS = lastVbd;
+        slotDG = allSlots[s + SLOT_SG]; slotDD = allSlots[s + SLOT_SS];
+        slotDS = allSlots[s + SLOT_SD]; slotDB = allSlots[s + SLOT_SB];
+        slotSG = allSlots[s + SLOT_DG]; slotSD = allSlots[s + SLOT_DS];
+        slotSS = allSlots[s + SLOT_DD]; slotSB = allSlots[s + SLOT_DB];
       }
 
-      const channel = mosfet.evaluateChannel(vGS, vDS, vBS);
+      mos1Channel(
+        channel, vGS, vDS, vBS, params[k + BP_TPHI], params[k + BP_SQRT_PHI],
+        params[k + BP_BUILT_IN_VON], params[k + BP_GAMMA], params[k + BP_LAMBDA], params[k + BP_BETA],
+      );
       const ID = channel[0];
       const gm = channel[1];
       const gds = channel[2] + GMIN;
       const gmbs = channel[3];
-      mosfet.lastVon = channel[4];
+      state[r + STATE_VON] = channel[4];
+      recordMos1Load(state, r, junction, polarity * (vG - vS), polarity * (vD - vS), ID, gm, gds, gmbs);
 
       const Ieq = ID - gm * vGS - gds * vDS - gmbs * vBS;
       if (nD >= 0) {

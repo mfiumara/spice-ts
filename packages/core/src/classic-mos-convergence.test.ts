@@ -36,7 +36,10 @@ describe('classic MOS transient convergence (issue #302)', () => {
     expect(result.convergence!.transient.failure).toBeNull();
     const transient = result.transient!;
     expect(transient.time.at(-1)).toBeCloseTo(10e-6, 12);
-    // ngspice-47 v(5) at 10 us (settled after the 5 us edge) is 9.463960706.
-    expect(transient.voltage('5').at(-1)).toBeCloseTo(9.463960706, 6);
+    // ngspice-47 (Homebrew, `-r` raw and `.print tran v(5)`) v(5) at 10 us,
+    // settled after the 5 us edge, is 9.46397521 (9.463975 printed); spice-ts
+    // is 9.463972 with ngspice's CKTtrunc step control (#621), and was
+    // 9.463961 (1.4e-5 off) with the node-voltage LTE.
+    expect(Math.abs(transient.voltage('5').at(-1)! - 9.46397521)).toBeLessThan(1e-5);
   });
 });

@@ -76,6 +76,8 @@ type LoadMode = 'init' | 'predict' | 'float';
 export abstract class SwitchBase implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (SWtrunc). */
+  readonly truncationCoversCharges = true;
   /**
    * ngspice never damps node voltages; the switch is decided from the raw
    * Newton iterate. Also routes beginTransientNewton / limitedLastStamp.

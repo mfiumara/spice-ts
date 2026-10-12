@@ -81,12 +81,17 @@ class QuitSignal {
 
 const MAX_LOOP_ITERATIONS = 1_000_000;
 
-/** `set` variables that ngspice forwards to the simulator as circuit options. */
+/**
+ * `set` variables that ngspice forwards to the simulator as circuit options.
+ * `savecurrents` is not one (ngspice-47 cktsopt.c has no such option): only the
+ * deck's `.option` cards are read for it, before the circuit is loaded
+ * (inp.c inp_savecurrents), so in `.control` it is a plain front-end variable.
+ */
 const OPTION_VARIABLES = new Set([
   'temp', 'tnom', 'gmin', 'reltol', 'abstol', 'vntol', 'trtol', 'chgtol', 'pivtol', 'pivrel',
   'itl1', 'itl2', 'itl3', 'itl4', 'itl5', 'itl6', 'srcsteps', 'gminsteps', 'gminfactor', 'method', 'maxord',
   'noinit', 'noopiter', 'keepopinfo', 'rshunt', 'cshunt', 'xmu', 'bypass', 'defl', 'defw', 'defad', 'defas',
-  'savecurrents', 'ramptime', 'seed',
+  'ramptime', 'seed',
 ]);
 
 /** Front-end variables that change computed vectors in ways spice-ts does not reproduce. */

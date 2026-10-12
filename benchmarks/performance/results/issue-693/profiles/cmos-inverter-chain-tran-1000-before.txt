@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/t693/prof-before/cmos-inverter-chain-tran-1000.cpuprofile: 238 samples, 794.1 ms sampled
+
+Top self time
+     256.5 ms  32.3%  batchStamp packages/core/dist/chunk-3CJLQBVC.js:6849
+      69.3 ms   8.7%  attemptStep packages/core/dist/chunk-3CJLQBVC.js:29477
+      52.3 ms   6.6%  buildCompanionSystem packages/core/dist/chunk-3CJLQBVC.js:29301
+      52.3 ms   6.6%  refactorWithPivots packages/core/dist/chunk-3CJLQBVC.js:27969
+      50.2 ms   6.3%  flush packages/core/dist/chunk-3CJLQBVC.js:30691
+      45.2 ms   5.7%  (garbage collector)
+      32.5 ms   4.1%  pnjlim4 packages/core/dist/chunk-3CJLQBVC.js:6120
+      29.0 ms   3.7%  bulkJunction packages/core/dist/chunk-3CJLQBVC.js:6110
+      14.7 ms   1.8%  compileSourceTextModule node:internal/modules/esm/utils:344
+      13.8 ms   1.7%  newtonRaphson packages/core/dist/chunk-3CJLQBVC.js:28878
+      11.5 ms   1.5%  factorize packages/core/dist/chunk-3CJLQBVC.js:27754
+      10.6 ms   1.3%  stampPrevB packages/core/dist/chunk-3CJLQBVC.js:30278
+
+Top inclusive time
+     794.1 ms 100.0%  (root)
+     716.4 ms  90.2%  simulate packages/core/dist/chunk-3CJLQBVC.js:35633
+     689.3 ms  86.8%  solveCompiledAnalyses packages/core/dist/chunk-3CJLQBVC.js:35688
+     581.6 ms  73.2%  solveTransient packages/core/dist/chunk-3CJLQBVC.js:30709
+     518.4 ms  65.3%  advanceSolution packages/core/dist/chunk-3CJLQBVC.js:30014
+     407.2 ms  51.3%  attemptStep packages/core/dist/chunk-3CJLQBVC.js:29477
+     319.4 ms  40.2%  batchStamp packages/core/dist/chunk-3CJLQBVC.js:6849
+     273.5 ms  34.4%  buildCompanionSystem packages/core/dist/chunk-3CJLQBVC.js:29301
+     123.0 ms  15.5%  stampStaticDevices packages/core/dist/chunk-3CJLQBVC.js:28793
+     107.7 ms  13.6%  newtonRaphson packages/core/dist/chunk-3CJLQBVC.js:28878
+     107.7 ms  13.6%  solveDCOperatingPoint packages/core/dist/chunk-3CJLQBVC.js:29105
+     107.7 ms  13.6%  transientInitialSolution packages/core/dist/chunk-3CJLQBVC.js:36083

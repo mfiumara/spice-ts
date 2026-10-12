@@ -59,6 +59,8 @@ function growTo(array: Float64Array, size: number): Float64Array {
 export class LossyTransmissionLine implements DeviceModel {
   readonly branches: number[];
   readonly isNonlinear = false;
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (LTRAtrunc). */
+  readonly truncationCoversCharges = true;
 
   private timePoints: Float64Array = new Float64Array(64);
   private v1: Float64Array = new Float64Array(64);
