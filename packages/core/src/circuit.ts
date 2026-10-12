@@ -6,6 +6,7 @@ import type {
 import type { CircuitIR } from './ir/types.js';
 import { buildIR } from './ir/builder.js';
 import { Resistor } from './devices/resistor.js';
+import { NodeShunt } from './devices/node-shunt.js';
 import { resolveResistor } from './devices/resistor-model.js';
 import { VoltageSource } from './devices/voltage-source.js';
 import { CurrentSource } from './devices/current-source.js';
@@ -70,7 +71,7 @@ import {
   transientNoiseWaveform, transientRandomWaveform, VOLTAGE_SOURCE_MULTIPLIER_ERROR,
 } from './parser/waveform-parser.js';
 import { invalidPassiveInstanceLine, parsePassiveElement } from './parser/passive-parser.js';
-import { locateSubcircuitCall } from './parser/subcircuit-syntax.js';
+import { locateSubcircuitCall, splitNestedSubcircuits } from './parser/subcircuit-syntax.js';
 import { parseResistorElement } from './parser/resistor-parser.js';
 import { parseZInstance } from './parser/z-device-parser.js';
 import { parseSwitchInstance } from './parser/switch-parser.js';
@@ -1962,6 +1963,7 @@ export class Circuit {
       ['integrationMethod', 'method', value => value === 'trapezoidal' ? 'trap' : value === 'gear2' ? 'gear' : String(value)],
       ['trtol', 'trtol', String],
       ['chgtol', 'chgtol', String],
+      ['rshunt', 'rshunt', String],
     ];
     const serializedOptions = optionNames.flatMap(([key, name, format]) => {
       const value = this._simulationOptions[key];
@@ -2557,6 +2559,24 @@ export class Circuit {
     }
 
     if (eventNetwork) devices.push(eventNetwork.network);
+    // ngspice-47 loads the RSHUNT conductances after every device (cktload.c).
+    const rshunt = this._simulationOptions.rshunt;
+    if (rshunt !== undefined) {
+      if (!Number.isFinite(rshunt) || rshunt <= 1e-30) {
+        throw new InvalidCircuitError(`Invalid rshunt: ${rshunt} (must be a finite resistance above 1e-30 ohm)`);
+      }
+      const line = expandedDescriptors.find(desc => desc.type === 'T' || desc.type === 'O');
+      if (line) {
+        // ngspice-47 trasetup.c (T: i1, i2, int1, int2) and ltraset.c (O: i1,
+        // i2) make the line's internal rows with CKTmkVolt, so RSHUNT shunts
+        // them too; spice-ts's line models have no such node rows.
+        throw new InvalidCircuitError(
+          `Unsupported .options rshunt with transmission line '${line.name}': `
+          + 'ngspice-47 also shunts the internal rows of T and O (LTRA) lines, which the spice-ts line models do not have',
+        );
+      }
+      devices.push(new NodeShunt(rshunt));
+    }
     bindXspiceSources(devices, deviceMap);
     for (const instances of bsim3ModelInstances.values()) BSIM3v3.linkBsim3v32SizeRecordReuse(instances);
     for (const { device, controlSource } of pendingCurrentSwitches) {
@@ -2772,7 +2792,11 @@ export class Circuit {
         const hasJunctionCharge = isPositiveFinite(junctionCapacitance)
           || (isPositiveFinite(sidewallCapacitance) && effectivePerimeter > 0)
           || isPositiveFinite(transitTime);
-        if (isPositiveFinite(seriesResistance) && hasJunctionCharge) {
+        // ngspice-47 diosetup.c gives every RS > 0 a prime node; spice-ts folds
+        // it into a two-terminal diode unless the junction stores charge or
+        // RSHUNT must shunt that node to ground too (#824).
+        const needsPrimeNode = hasJunctionCharge || this._simulationOptions.rshunt !== undefined;
+        if (isPositiveFinite(seriesResistance) && needsPrimeNode) {
           const [anode, cathode] = desc.nodes;
           const junction = internalNodeName(desc.name, 'rs');
           result.push({
@@ -3227,6 +3251,7 @@ export class Circuit {
     globalNodes: ReadonlyMap<string, string>,
     guard?: ProtocolExecutionGuard,
     depth = 1,
+    scopes: readonly ReadonlyMap<string, SubcktDefinition>[] = [],
   ): DeviceDescriptor[] {
     guard?.maximum('maxSubcircuitDepth', depth, 'compile');
     const key = subcktName.toUpperCase();
@@ -3235,7 +3260,12 @@ export class Circuit {
       throw new CycleError([...visited, key]);
     }
 
-    const def = this._subcircuits.get(key);
+    // Resolve innermost-first through the definitions nested in the enclosing
+    // subcircuits (#826), then the top level. A nested definition sees the
+    // scopes it was defined in.
+    const scopeIndex = scopes.findIndex(scope => scope.has(key));
+    const def = scopeIndex >= 0 ? scopes[scopeIndex].get(key) : this._subcircuits.get(key);
+    const definitionScopes = scopeIndex >= 0 ? scopes.slice(scopeIndex) : [];
     if (!def) {
       throw new Error(`Undefined subcircuit '${subcktName}'`);
     }
@@ -3313,8 +3343,9 @@ export class Circuit {
 
     const result: DeviceDescriptor[] = [];
 
-    // Tokenize body lines
-    const parsedLines = tokenizeNetlist(def.body.join('\n'));
+    // Tokenize body lines; nested .subckt blocks are definitions, not devices.
+    const { lines: parsedLines, definitions } = splitNestedSubcircuits(tokenizeNetlist(def.body.join('\n')));
+    const bodyScopes = definitions.size > 0 ? [definitions, ...definitionScopes] : definitionScopes;
 
     for (const { tokens, lineNumber, raw } of parsedLines) {
       guard?.checkpoint('compile:device');
@@ -3643,6 +3674,7 @@ export class Circuit {
             globalNodes,
             guard,
             depth + 1,
+            bodyScopes,
           );
           result.push(...nested);
           break;

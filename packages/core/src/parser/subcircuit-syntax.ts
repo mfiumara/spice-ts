@@ -1,4 +1,5 @@
-import { parseNumber } from './tokenizer.js';
+import type { SubcktDefinition } from '../types.js';
+import { parseNumber, type ParsedLine } from './tokenizer.js';
 
 /**
  * ngspice's `params:` keyword, which may separate the ports from the
@@ -65,6 +66,33 @@ function defaultValue(value: string): number | string {
   }
 }
 
+/**
+ * `name = value` on an X card whose value is a single bare token: not
+ * braced or quoted, and free of `,` (comma lists are a separate gap, #797).
+ */
+const CALL_ASSIGNMENT = /([A-Za-z_]\w*)\s*=\s*([^\s{}'",=]+)(?=\s|$)/g;
+
+/**
+ * ngspice-47 inpcom.c (`inp_fix_param_values`) wraps the bare right-hand side
+ * of every `name=value` on an X card in braces unless it is a number, so
+ * numparam evaluates `R=R1` (or `R=RB*2`) as `R={R1}` against the visible
+ * `.param` and subcircuit parameters (#788). Applied to the comment-free part
+ * of an X card or one of its `+` continuation lines; numbers are left as-is.
+ */
+export function bracedSubcircuitCallValues(line: string, commentStart: number): string {
+  const card = line.slice(0, commentStart);
+  if (!card.includes('=')) return line;
+  const braced = card.replace(CALL_ASSIGNMENT, (match, name: string, value: string) => {
+    try {
+      parseNumber(value);
+      return match;
+    } catch {
+      return `${name}={${value}}`;
+    }
+  });
+  return braced + line.slice(commentStart);
+}
+
 export interface SubcircuitCall {
   /** Index of the subcircuit-name token. */
   nameIndex: number;
@@ -82,4 +110,47 @@ export function locateSubcircuitCall(tokens: readonly string[]): SubcircuitCall 
   while (index > 1 && tokens[index].includes('=')) index--;
   if (index > 1 && PARAMS_KEYWORD.test(tokens[index])) return { nameIndex: index - 1, paramStart: index + 1 };
   return { nameIndex: index, paramStart: index + 1 };
+}
+
+/** A subcircuit body with its directly nested `.subckt` blocks split out. */
+export interface SubcircuitBodyScope {
+  /** Body lines of the enclosing definition, nested definitions removed. */
+  lines: ParsedLine[];
+  /** Directly nested definitions, keyed by upper-case name. */
+  definitions: Map<string, SubcktDefinition>;
+}
+
+/**
+ * Split the `.subckt ... .ends` blocks nested directly in a subcircuit body
+ * out of it. ngspice-47 (subckt.c) scopes such a definition to the enclosing
+ * subcircuit: X cards of that body (and of definitions nested deeper) see it,
+ * ahead of a top-level definition of the same name, while its own lines are
+ * never instantiated as devices of the enclosing body. Deeper levels stay in
+ * the nested definition's body and are split when it is expanded.
+ */
+export function splitNestedSubcircuits(lines: readonly ParsedLine[]): SubcircuitBodyScope {
+  const body: ParsedLine[] = [];
+  const definitions = new Map<string, SubcktDefinition>();
+  let nested: SubcktDefinition | null = null;
+  let depth = 0;
+  for (const line of lines) {
+    const first = line.tokens[0]?.toUpperCase();
+    if (nested === null) {
+      if (first === '.SUBCKT') nested = { ...parseSubcircuitHeader(line.raw), body: [] };
+      else body.push(line);
+      continue;
+    }
+    if (first === '.ENDS' && depth === 0) {
+      definitions.set(nested.name.toUpperCase(), nested);
+      nested = null;
+      continue;
+    }
+    if (first === '.SUBCKT') depth++;
+    else if (first === '.ENDS') depth--;
+    nested.body.push(line.raw);
+  }
+  if (nested !== null) {
+    throw new Error(`Missing .ends for subcircuit '${nested.name}'`);
+  }
+  return { lines: body, definitions };
 }

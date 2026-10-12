@@ -237,6 +237,13 @@ export interface SimulationOptions {
   chgtol?: number;
   /** Minimum conductance added to all node diagonals for gmin stepping. Default: 0 (disabled) */
   gmin?: number;
+  /**
+   * ngspice `.options rshunt=R` (ohms, above 1e-30): a noiseless resistor R
+   * from every node, device-internal nodes included, to ground in every
+   * analysis. Read from the circuit's own options (`.options` card or
+   * `Circuit.setSimulationOptions`) when it is compiled. Default: none.
+   */
+  rshunt?: number;
   /** Resolver for .include and .lib file directives */
   resolveInclude?: IncludeResolver;
   /**
