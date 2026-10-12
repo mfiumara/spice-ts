@@ -608,7 +608,9 @@ export class Diode implements DeviceModel {
         ? BV * (1 + TBV1 * delta + TBV2 * delta * delta)
         // ngspice-47 diotemp.c:211-212 (TLEV=0): BV(T) = BV - TCV*(T - TNOM).
         : BV - TBV1 * delta,
-      current: IBV,
+      // ngspice-47 diotemp.c:216-217 (LEVEL=1): cbv = M*IBV. The instance
+      // multiplier scales IBV like it scales IS; AREA does not scale IBV.
+      current: IBV * (this.instanceParams.M ?? 1),
       // ngspice-47 dioload.c:109/322: vtebrk = NBV*vt.
       thermalVoltage: NBV * thermalVoltage,
       junctionThermalVoltage: thermalVoltage,
