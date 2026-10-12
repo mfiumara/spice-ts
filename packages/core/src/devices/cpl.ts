@@ -880,6 +880,8 @@ class CplState {
  */
 export class CplLines implements DeviceModel {
   readonly isNonlinear = false;
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (ngspice CPL has no DEVtrunc; its CPLload CKTmaxStep cap). */
+  readonly truncationCoversCharges = true;
   readonly lines: number;
   private readonly committed: CplState;
   private readonly trial: CplState;

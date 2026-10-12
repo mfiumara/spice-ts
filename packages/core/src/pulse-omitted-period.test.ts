@@ -58,7 +58,9 @@ describe('PULSE with omitted TR/TF/PER parameters behaves like ngspice-47 (#469)
       worst = Math.max(worst, Math.abs(v3[i] - interpolate(referenceTime, reference, time[i])));
     }
     // main 3a7ad44: 0.341 V; with the corners: 3.8 mV. ngspice-47 default vs its
-    // own converged run on the same decks: 16 mV.
-    expect(worst).toBeLessThan(0.02);
+    // own converged run on the same decks: 16.1 mV. With ngspice's CKTtrunc
+    // step control (#621) spice-ts takes 79 points to ngspice's 80, is 9.4 mV
+    // from ngspice's default run and 20.7 mV from its converged one.
+    expect(worst).toBeLessThan(0.025);
   });
 });

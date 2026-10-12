@@ -337,6 +337,8 @@ function branchVoltage(ctx: StampContext, positive: number, negative: number): n
 export class MOSFET implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (MOS1trunc: qgs, qgd, qgb). */
+  readonly truncationCoversCharges = true;
   readonly params: MOSFETParams;
   readonly suppliedParams: Readonly<Record<string, number>>;
   /** Bulk-drain / bulk-source junction saturation currents at the device temperature (mos1temp.c). */

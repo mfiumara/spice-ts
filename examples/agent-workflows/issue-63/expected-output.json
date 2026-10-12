@@ -19,9 +19,9 @@
   "threshold": {
     "node": "out",
     "thresholdV": 0.2,
-    "pointIndex": 26,
-    "timeS": 2.5333420766195823e-7,
-    "voltageV": 0.22343741200220046
+    "pointIndex": 19,
+    "timeS": 2.3200799999999992e-7,
+    "voltageV": 0.20675113570434336
   },
   "cancelled": {
     "status": "cancelled",
@@ -45,11 +45,11 @@
           {
             "analysis": "tran",
             "analysisIndex": 0,
-            "emittedPointCount": 27,
+            "emittedPointCount": 20,
             "complete": false
           }
         ],
-        "partialEventSha256": "16b7466be8568a847785161cfc56fca1b9341d04db98c36f3eab41d45216b474"
+        "partialEventSha256": "a4fd3a82c6604f4fb1a94d6adb28a558fdb228944f57b0da0e9edacc4b486ae7"
       }
     }
   },

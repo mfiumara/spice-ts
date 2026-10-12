@@ -136,7 +136,9 @@ s1 o 0 c 0 sw1 ON
     expect(o2Close).toBeGreaterThan(3.9856e-4);
     expect(o2Close).toBeLessThanOrEqual(4.0056e-4);
     expect(o2Open).toBeGreaterThan(1.399e-3);
-    expect(o2Open).toBeLessThanOrEqual(1.401e-3);
+    // Since #621 (CKTtrunc step control) spice-ts samples 1.401e-3 as ngspice
+    // does and the interpolated crossing lands on it to within rounding.
+    expect(o2Open).toBeLessThanOrEqual(1.401e-3 * (1 + 1e-12));
 
     // w3 closes at 1.2 mA (ngspice: between 5.9856e-4 and 6.0056e-4) and,
     // with the control falling back to 0 A at 2 ms, stays closed above 0.8 mA.

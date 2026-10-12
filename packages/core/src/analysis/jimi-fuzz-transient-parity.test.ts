@@ -41,7 +41,10 @@ describe('jimi-fuzz transient parity', () => {
       }
       expect(Math.abs(interpolateVoltage(before, after, '6', sampleTime) - ngspiceV6))
         .toBeLessThan(1e-2);
-      expect(sim.convergence.transient.nrRetries).toBe(0);
+      // ngspice-47 rejects 85 timepoints (4872 accepted) up to 0.1 s; with
+      // its CKTtrunc step control (#621) spice-ts takes a few NR retries too
+      // (40 up to 0.1 s), far from the trapezoidal retry budget.
+      expect(sim.convergence.transient.nrRetries).toBeLessThan(100);
     } finally {
       sim.dispose();
     }

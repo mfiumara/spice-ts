@@ -34,11 +34,19 @@ type Reference = ReadonlyArray<readonly number[]>;
 // With the ngspice CKTsaveDelta step after breakpoints (#608) lossless/shunt-G
 // moves to 0.0044 on these samples while on every ngspice timepoint it improves
 // (max |err| v(b) 5.16e-3 -> 4.44e-3, v(d) 5.84e-3 -> 4.43e-3).
-const TXL1_BOUND = 0.04;
-const IBM2_BOUND = 7e-4;
-const LIN4_BOUND = 0.055;
-const LOSSLESS_BOUND = 0.0047;
-const COMPLEX_SHORT_BOUND = 0.0035;
+// Since #621 the node-voltage LTE no longer refines TXL/CPL nodes (ngspice
+// has no TXL/CPL DEVtrunc) and C/L/MOS1 steps follow ngspice CKTtrunc, so the
+// point counts match ngspice (txl1 491/492, lossless 519/520). On these
+// samples: txl1 0.0035 / 0.0609 (v(3) crosses the 33 ns edge 50 ps after
+// ngspice: one truncation step at 32.11 ns differs, the order-1 restart of
+// #561); cpl_ibm2 5.2e-4; 4-line 0.0038; lossless/shunt-G v(b) 0.0067 (same
+// grid as ngspice, the far-end edge of Y1 is 1 % lower) and v(d) 7e-8;
+// complex-pole + short TXL 7.2e-4.
+const TXL1_BOUND = 0.065;
+const IBM2_BOUND = 6e-4;
+const LIN4_BOUND = 0.005;
+const LOSSLESS_BOUND = 0.007;
+const COMPLEX_SHORT_BOUND = 1e-3;
 
 function rel(actual: number, expected: number): number {
   return Math.abs(actual - expected) / Math.max(Math.abs(expected), 1e-300);

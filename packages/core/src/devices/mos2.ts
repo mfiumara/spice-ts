@@ -271,6 +271,8 @@ const CHARGE_BRANCHES: ReadonlyArray<readonly [number, number]> = [
 export class MOS2 implements DeviceModel {
   readonly branches: number[] = [];
   readonly isNonlinear = true;
+  /** {@link truncateTransientStep} is the complete ngspice-47 step bound (MOS2trunc: qgs, qgd, qgb). */
+  readonly truncationCoversCharges = true;
   readonly model: MOS2ModelParams;
   readonly instance: MOS2InstanceParams;
   private readonly effectiveLength: number;
