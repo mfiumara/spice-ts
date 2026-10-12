@@ -27,7 +27,7 @@
     "fixtureAdaptation": "none",
     "perCircuitToleranceTuning": false,
     "matchThreshold": 0.01,
-    "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, 1e-12). Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
+    "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, floor). The floor is uniform per quantity (#593): 0.0001 V for node voltages v(...) and 1e-10 A for branch currents i(...), so a signal whose ngspice peak is zero or tiny matches when the absolute difference is at most the ngspice-47 default VNTOL (0.000001 V) or ABSTOL (1e-12 A); every other quantity (pole/zero roots, noise spectra) keeps 1e-12. Deck .options tolerances are not consulted. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
     "deterministicHashExcludes": [
       "environment",
       "tools.node",
@@ -76,17 +76,16 @@
       "issue": null
     },
     {
-      "bucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)",
-      "fixtures": 5,
-      "ngspiceSuccess": 5,
+      "bucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)",
+      "fixtures": 4,
+      "ngspiceSuccess": 4,
       "ids": [
         "bsimsoi3-b3soitrandefaults-cir",
         "ekv26-inverter-transient-ekv26-cir",
         "psp102-idvg0-id-t27-pmos-cir",
-        "psp103-invert-psp-testdta0-cir",
-        "sens-bsim4-issue694-fd-cir"
+        "psp103-invert-psp-testdta0-cir"
       ],
-      "issue": null
+      "issue": "https://github.com/mfiumara/spice-ts/issues/747"
     },
     {
       "bucket": "execution: other failure",
@@ -144,6 +143,15 @@
         "fourier-bad-dot-four-line1-cir"
       ],
       "issue": null
+    },
+    {
+      "bucket": "model: BSIM4 (LEVEL=14/54)",
+      "fixtures": 1,
+      "ngspiceSuccess": 1,
+      "ids": [
+        "sens-bsim4-issue694-fd-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/3"
     }
   ],
   "fixtures": [
@@ -813,7 +821,7 @@
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)"
+      "gapBucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)"
     },
     {
       "id": "bsrc-bsrc-a1-cir",
@@ -1263,7 +1271,7 @@
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)"
+      "gapBucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)"
     },
     {
       "id": "embedded-printline-for-embedded-cmosinverter-cir",
@@ -2832,7 +2840,7 @@
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)"
+      "gapBucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)"
     },
     {
       "id": "psp103-invert-psp-testdta0-cir",
@@ -2859,7 +2867,7 @@
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)"
+      "gapBucket": "model: compact MOSFET models B3SOI (LEVEL=10), PSP (LEVEL=102/103), EKV (LEVEL=260)"
     },
     {
       "id": "resistor-td-temp-dep-cir",
@@ -3193,7 +3201,7 @@
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "model: other MOSFET levels (LEVEL=10, LEVEL=260)"
+      "gapBucket": "model: BSIM4 (LEVEL=14/54)"
     },
     {
       "id": "soln-dep-res-multsoldepres-cir",
@@ -3726,5 +3734,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "8766e08970e041f09ef52c18f5bed7c6d9a0dbbbe50d4d29d3156e59eb5c9b44"
+  "outcomeSha256": "0b484fcdfef15067be515e52ea98c7b1b97d01c09243176a89b99c13cda0a52d"
 }
