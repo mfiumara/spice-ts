@@ -123,12 +123,13 @@ describe('evaluatePulse number of pulses (NP)', () => {
 });
 
 describe('pwlBreakpoints', () => {
-  it('keeps a corner declared at t=0 and drops corners past stopTime', () => {
+  it('returns only the first corner after t=0; later corners are scheduled on accept', () => {
     const pwl: PWLSource = {
       type: 'pwl',
       points: [{ time: 0, value: 0 }, { time: 1e-6, value: 1 }, { time: 3e-6, value: 0 }],
     };
-    expect(pwlBreakpoints(pwl, 2e-6)).toEqual([0, 1e-6]);
+    expect(pwlBreakpoints(pwl, 2e-6)).toEqual([1e-6]);
+    expect(pwlBreakpoints(pwl, 0.5e-6)).toEqual([]);
   });
 });
 

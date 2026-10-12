@@ -8,8 +8,11 @@ import { simulate } from './simulate.js';
 
 /** Linear interpolation of a waveform at `t`. */
 function at(time: readonly number[], values: ArrayLike<number>, t: number): number {
+  // 100u reads as 9.999999999999999e-5 (ngspice-47 INPevaluate, #749), so the
+  // stop time can sit one ulp below the requested t: clamp to the last point.
   const i = time.findIndex(x => x >= t);
-  if (i <= 0) return values[Math.max(i, 0)]!;
+  if (i < 0) return values[values.length - 1]!;
+  if (i === 0) return values[0]!;
   const f = (t - time[i - 1]!) / (time[i]! - time[i - 1]!);
   return values[i - 1]! + f * (values[i]! - values[i - 1]!);
 }

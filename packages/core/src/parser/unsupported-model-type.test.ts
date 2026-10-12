@@ -121,8 +121,9 @@ R1 a 0 1k
     ['NPN', 'BF=100 IS=1e-16', { BF: 100, IS: 1e-16 }],
     ['PNP', 'BF=50', { BF: 50 }],
     ['NJF', 'VTO=-2 BETA=1e-4', { VTO: -2, BETA: 1e-4 }],
-    ['NMOS', 'LEVEL=1 VTO=0.7 KP=2e-5', { LEVEL: 1, VTO: 0.7, KP: 2e-5 }],
-    ['PMOS', 'LEVEL=1 VTO=-0.7', { LEVEL: 1, VTO: -0.7 }],
+    // 0.7 is 7 * pow(10, -1) = 0.7000000000000001 in ngspice-47 INPevaluate (#749).
+    ['NMOS', 'LEVEL=1 VTO=0.7 KP=2e-5', { LEVEL: 1, VTO: 0.7000000000000001, KP: 2e-5 }],
+    ['PMOS', 'LEVEL=1 VTO=-0.7', { LEVEL: 1, VTO: -0.7000000000000001 }],
     ['NHFET', 'VTO=-1', { VTO: -1 }],
     ['NMF', 'VTO=-2', { VTO: -2 }],
     ['R', 'R=1k TC1=1m', { R: 1e3, TC1: 1e-3 }],

@@ -1,7 +1,8 @@
 import { Circuit } from '../circuit.js';
 import { assertControlledSourceCard } from './controlled-source.js';
 import { ParseError } from '../errors.js';
-import { tokenizeNetlist, parseNumber } from './tokenizer.js';
+import { tokenizeNetlist, tokenizeLine, parseNumber, type ParsedLine } from './tokenizer.js';
+import { fixGndName, hasGndToken } from './gnd-alias.js';
 import { parseModelCard } from './model-parser.js';
 import { assertSupportedModelType } from './model-type.js';
 import { assertSupportedResistorModel, parseResistorElement } from './resistor-parser.js';
@@ -123,9 +124,12 @@ function parseNetlist(
   const extracted = extractControlBlocks(translateMicroSign(netlist, firstLineIsTitle), firstLineIsTitle);
   const controlBlocks = [...extractedBlocks, ...extracted.blocks];
   const controlStartLine = controlBlocks[0]?.startLine;
-  const lines = tokenizeNetlist(extracted.netlist, { firstLineIsTitle });
+  const lines = tokenizeNetlist(extracted.netlist, { firstLineIsTitle }).map(withGndAsGround);
   const circuit = new Circuit();
   circuit.setParameters(parameters);
+  // ngspice-47 inserts `.global gnd`; it only matters for a `gnd` that
+  // inp_fix_gnd_name left in place (#772).
+  if (lines.some(line => hasGndToken(line.tokens))) circuit.addGlobalNodes(['gnd']);
   for (const warning of [...controlWarnings, ...extracted.warnings]) circuit.addParseWarning(warning.message);
 
   let subcktCollector: (SubcircuitHeader & { body: string[]; depth: number }) | null = null;
@@ -241,6 +245,12 @@ function parseNetlist(
   assertMaxOrderIsNoOp(circuit);
 
   return circuit;
+}
+
+/** A joined card with node `gnd` renamed to ground as ngspice-47 does (#772). */
+function withGndAsGround(line: ParsedLine): ParsedLine {
+  const raw = fixGndName(line.raw);
+  return raw === line.raw ? line : { ...line, raw, tokens: tokenizeLine(raw) };
 }
 
 /**

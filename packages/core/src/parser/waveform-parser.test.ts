@@ -48,7 +48,8 @@ describe('independent-source waveform grammar', () => {
       offset: 2,
       amplitude: 3,
       frequency: 4e3,
-      delay: 5e-6,
+      // 5u is 5 * pow(10, -6) in ngspice-47 INPevaluate (#749).
+      delay: 4.9999999999999996e-6,
       damping: 6,
       phase: 7,
     });
@@ -62,7 +63,8 @@ describe('independent-source waveform grammar', () => {
       type: 'sin',
       dc: 0,
       offset: 0,
-      amplitude: 0.3,
+      // 0.3 is 3 * pow(10, -1) in ngspice-47 INPevaluate (#749).
+      amplitude: 0.30000000000000004,
       frequency: 440,
       delay: 0,
       damping: 0,
@@ -76,7 +78,7 @@ describe('independent-source waveform grammar', () => {
       ['V1', '1', '0', 'PULSE', '(', '0', '5', '1n', '2n', '3n', '4n', '5n', ')'],
       3,
     )).toEqual({
-      type: 'pulse', v1: 0, v2: 5, delay: 1e-9, rise: 2e-9, fall: 3e-9,
+      type: 'pulse', v1: 0, v2: 5, delay: 1e-9, rise: 2e-9, fall: 3.0000000000000004e-9,
       width: 4e-9, period: 5e-9,
     });
     expect(parseSourceWaveform(
@@ -175,7 +177,7 @@ describe('jimi-fuzz source regression', () => {
       type: 'sin',
       dc: 0,
       offset: 0,
-      amplitude: 0.3,
+      amplitude: 0.30000000000000004, // 3 * pow(10, -1), ngspice-47 INPevaluate (#749)
       frequency: 440,
       delay: 0,
       damping: 0,
@@ -205,7 +207,7 @@ describe('ngspice parenthesised and extended source waveforms (#492)', () => {
 
   it('accepts parenthesised PWL and AC groups (cider/diode/diode.cir)', () => {
     expect(sourceOf('Vpp 1 0 0.7v (PWL 0ns 3.0v 0.01ns -6.0v) (AC 1v)')).toEqual({
-      type: 'pwl', dc: 0.7, ac: { magnitude: 1, phase: 0 },
+      type: 'pwl', dc: 0.7000000000000001, ac: { magnitude: 1, phase: 0 },
       points: [{ time: 0, value: 3 }, { time: 0.01e-9, value: -6 }],
     });
   });
@@ -233,11 +235,12 @@ describe('ngspice parenthesised and extended source waveforms (#492)', () => {
       '+ (20ns 5.0v) (21ns 0.0v) (30ns 0.0v) (31ns 5.0v)',
     ].join('\n'))).toEqual({
       type: 'pwl', dc: 0,
+      // mantissa * pow(10, -9), as ngspice-47 INPevaluate reads `11ns` (#749).
       points: [
         { time: 0, value: 5 }, { time: 1e-9, value: 0 },
-        { time: 10e-9, value: 0 }, { time: 11e-9, value: 5 },
-        { time: 20e-9, value: 5 }, { time: 21e-9, value: 0 },
-        { time: 30e-9, value: 0 }, { time: 31e-9, value: 5 },
+        { time: 10e-9, value: 0 }, { time: 11 * 1e-9, value: 5 },
+        { time: 20e-9, value: 5 }, { time: 21 * 1e-9, value: 0 },
+        { time: 30 * 1e-9, value: 0 }, { time: 31e-9, value: 5 },
       ],
     });
   });

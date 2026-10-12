@@ -3,7 +3,7 @@ import type { SourceWaveform } from '../types.js';
 import { TransientNoiseContext, type NoiseHandle } from './transient-noise.js';
 import {
   effectivePulse, evaluateAm, evaluateExp, evaluatePulse, evaluatePwl, evaluateSffm, evaluateSin,
-  PwlBreakpointSchedule, pulseBreakpoints, pwlBreakpoints, requireStopTimeForDefaults, usesPwlSchedule,
+  PwlBreakpointSchedule, pulseBreakpoints, pwlBreakpoints, requireStopTimeForDefaults,
 } from './voltage-source.js';
 
 export class CurrentSource implements DeviceModel {
@@ -19,11 +19,11 @@ export class CurrentSource implements DeviceModel {
   /** Present only for TRNOISE/TRRANDOM and PWL with TD=/R=, so other sources stay off the accept pass. */
   readonly acceptTransientStep?: (ctx: StampContext, breakpoints?: TransientBreakpointSink) => void;
   /**
-   * False for a PWL with TD=/R=: its accept hook only schedules breakpoints,
+   * False for a PWL: its accept hook only schedules breakpoints,
    * so it must not put its nodes under the node-voltage LTE.
    */
   readonly storesCharge?: boolean;
-  /** ngspice accept-time PWL corners for `TD=`/`R=` (isrcacct.c). */
+  /** ngspice accept-time PWL corners (isrcacct.c). */
   private readonly pwlSchedule?: PwlBreakpointSchedule;
 
   /**
@@ -43,7 +43,7 @@ export class CurrentSource implements DeviceModel {
       const noise = (noiseContext ?? new TransientNoiseContext()).register('I', name, waveform);
       this.noise = noise;
       this.acceptTransientStep = (ctx, breakpoints) => noise.accept(ctx.time, breakpoints);
-    } else if (waveform.type === 'pwl' && usesPwlSchedule(waveform)) {
+    } else if (waveform.type === 'pwl') {
       const schedule = new PwlBreakpointSchedule(waveform);
       this.pwlSchedule = schedule;
       this.storesCharge = false;

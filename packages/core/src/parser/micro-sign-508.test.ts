@@ -27,7 +27,8 @@ describe('micro sign scale suffix (#508)', () => {
       'C1 a 0 1µF',
       '.tran 1µs 10µs',
     ].join('\n'));
-    expect(circuit.analyses).toContainEqual(expect.objectContaining({ type: 'tran', timestep: 1e-6, stopTime: 10e-6 }));
+    // 10µs is 10 * pow(10, -6) = 9.999999999999999e-6 in ngspice-47 INPevaluate (#749).
+    expect(circuit.analyses).toContainEqual(expect.objectContaining({ type: 'tran', timestep: 1e-6, stopTime: 9.999999999999999e-6 }));
     const dc = await op(['micro', 'I1 0 a 20µ', 'R1 a 0 2k', '.op'].join('\n'));
     expect(dc.voltage('a')).toBeCloseTo(0.04, 12);
   });
