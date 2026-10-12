@@ -345,3 +345,15 @@ After #773 the #426 M2 decks were re-run on main against ngspice-47 KLU (identic
 - Paired fresh-process A/B: mesh 50k **1.14x** wall (1.10..1.27), 1.12x CPU; mesh 10k 1.02x and 1k 1.01x (noise); MOS chain 1.00x. **Loss published:** RC ladder 10k 0.98x wall (0.96..1.03), 0.99x CPU; it has no supernodes, so this reads as noise, but it is what was measured.
 
 ngspice-47 KLU still wins the resistor mesh (1.9x / 2.3x / 2.3x at 50k / 10k / 1k in the unpaired after-run), the RC ladder and the 1k MOS chain. On the 50k mesh spice-ts's AMD plus factorization (about 255 ms) is now within about 1.1x of KLU's reorder plus two refactorizations (about 225 ms); the remaining gap is `Circuit.compile` (case-folded name maps), AMD and assembly. Tables, profiles, JSONL, corpus comparison, mutants and remaining scope are in `benchmarks/performance/results/issue-779/README.md`.
+
+## Follow-up: case folding once per node spelling in `Circuit.compile` ([#796](https://github.com/mfiumara/spice-ts/issues/796))
+
+After #784 the M2 decks were re-run on main against ngspice-47 KLU (identical decks). The resistor mesh OP was again furthest behind (2.9x / 2.2x / 1.9x analysis time at 1k / 10k / 50k). With its LU already near KLU's, `Circuit.compile` was its largest in-process phase at 1k (39-40% of `simulate()`) and second at 10k / 50k (30% / 23%). Inside `compile`, every node reference was case-folded four times and every resistor without a model card merged an empty model-default table.
+
+`compile` now folds each distinct raw node spelling once, resolves a name that is already a display spelling straight from the index map, skips the `.global` lookup when there are no globals, and builds a resistor without a model card from its instance parameters directly. Node indices, device order and results are unchanged: 7 new guard tests (random mixed-case decks against an independent folding rule, K/F/H/W/B name binding), 6/6 mutants killed, 100/100 aggregate corpus digests identical, every A/B sample hash identical.
+
+- `compile()` alone: mesh 1.50-1.70x, RC ladder 1.23-1.42x, MOS chain 1.12-1.18x. Its share of the mesh `simulate()` drops to 30% / 18% / 17% at 1k / 10k / 50k.
+- Paired fresh-process A/B: mesh 1.03x / 1.06x / 1.07x, RC ladder 1.03-1.04x, MOS chain 1.00x / 1.01x (CPU down to 0.98x in one 10k pair).
+- **Measured and not kept:** filling the element-name map lazily gave 2.3-2.9x on mesh compile but made the MOS chain 10k transient 4-5% slower (0.96x, 7/7 pairs) through heap placement of the device objects; bisect in `issue-796/lazy-map-bisect/`.
+
+ngspice-47 KLU still wins the resistor mesh (1.65-3.3x across both unpaired runs), the RC ladder at 1k / 10k and the 1k MOS chain. Tables, profiles, JSONL, corpus comparison, mutants and remaining scope are in `benchmarks/performance/results/issue-796/README.md`.

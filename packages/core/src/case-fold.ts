@@ -12,12 +12,21 @@ export class CaseFoldedNameSet extends Set<string> {
   private readonly display = new Map<string, string>();
 
   override add(name: string): this {
-    const key = fold(name);
-    if (!this.display.has(key)) {
-      this.display.set(key, name);
-      super.add(name);
-    }
+    this.addCanonical(name);
     return this;
+  }
+
+  /**
+   * Add `name` and return its display spelling (the first spelling added),
+   * folding the name once: `add(name)` followed by `canonical(name)`.
+   */
+  addCanonical(name: string): string {
+    const key = fold(name);
+    const spelling = this.display.get(key);
+    if (spelling !== undefined) return spelling;
+    this.display.set(key, name);
+    super.add(name);
+    return name;
   }
 
   override has(name: string): boolean {
