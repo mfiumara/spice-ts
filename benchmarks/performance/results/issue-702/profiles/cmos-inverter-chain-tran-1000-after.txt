@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/prof702-final/cmos-inverter-chain-tran-1000.cpuprofile: 315 samples, 1079.9 ms sampled
+
+Top self time
+     286.0 ms  26.5%  batchStamp packages/core/dist/chunk-OUWSGK3L.js:7009
+      78.2 ms   7.2%  attemptStep packages/core/dist/chunk-OUWSGK3L.js:29829
+      55.8 ms   5.2%  (garbage collector)
+      52.8 ms   4.9%  buildCompanionSystem packages/core/dist/chunk-OUWSGK3L.js:29653
+      43.7 ms   4.0%  refactorWithPivots packages/core/dist/chunk-OUWSGK3L.js:28321
+      41.2 ms   3.8%  factorize packages/core/dist/chunk-OUWSGK3L.js:28104
+      39.0 ms   3.6%  limitNewtonStep packages/core/dist/chunk-OUWSGK3L.js:6693
+      35.0 ms   3.2%  chargeTruncationTimestep packages/core/dist/chunk-OUWSGK3L.js:30821
+      30.3 ms   2.8%  pnjlim4 packages/core/dist/chunk-OUWSGK3L.js:6278
+      30.2 ms   2.8%  newtonRaphson packages/core/dist/chunk-OUWSGK3L.js:29230
+      24.4 ms   2.3%  compile packages/core/dist/chunk-OUWSGK3L.js:22652
+      23.1 ms   2.1%  compileSourceTextModule node:internal/modules/esm/utils:344
+
+Top inclusive time
+    1079.9 ms 100.0%  (root)
+     963.5 ms  89.2%  simulate packages/core/dist/chunk-OUWSGK3L.js:36095
+     891.0 ms  82.5%  solveCompiledAnalyses packages/core/dist/chunk-OUWSGK3L.js:36150
+     623.5 ms  57.7%  solveTransient packages/core/dist/chunk-OUWSGK3L.js:31171
+     583.3 ms  54.0%  advanceSolution packages/core/dist/chunk-OUWSGK3L.js:30456
+     397.0 ms  36.8%  attemptStep packages/core/dist/chunk-OUWSGK3L.js:29829
+     334.8 ms  31.0%  batchStamp packages/core/dist/chunk-OUWSGK3L.js:7009
+     280.6 ms  26.0%  buildCompanionSystem packages/core/dist/chunk-OUWSGK3L.js:29653
+     267.5 ms  24.8%  solveDCOperatingPoint packages/core/dist/chunk-OUWSGK3L.js:29457
+     267.5 ms  24.8%  transientInitialSolution packages/core/dist/chunk-OUWSGK3L.js:36545
+     258.2 ms  23.9%  newtonRaphson packages/core/dist/chunk-OUWSGK3L.js:29230
+     206.5 ms  19.1%  (anonymous) packages/core/dist/chunk-OUWSGK3L.js:29535
