@@ -43,15 +43,15 @@
       "unsupported": 12
     },
     "spiceTs": {
-      "success": 122,
+      "success": 123,
       "failed": 21,
-      "unsupported": 193
+      "unsupported": 192
     },
     "outcomes": {
       "matched": 52,
-      "mismatch": 14,
+      "mismatch": 15,
       "not-compared": 56,
-      "spice-ts-loss": 184,
+      "spice-ts-loss": 183,
       "ngspice-failed": 0,
       "both-failed": 30
     }
@@ -59,8 +59,8 @@
   "gapBuckets": [
     {
       "bucket": "parse: other unsupported syntax",
-      "fixtures": 64,
-      "ngspiceSuccess": 58,
+      "fixtures": 65,
+      "ngspiceSuccess": 59,
       "ids": [
         "examples-control-structs-foreach-bjt-ft-sp",
         "examples-digital-auto-bridge-shared-line-cir",
@@ -76,6 +76,7 @@
         "examples-numparam-vector-param-cir",
         "examples-osdi-hicuml0-dff-y-ecl-vbic-sp",
         "examples-osdi-hicuml0-vbic-out-sp",
+        "examples-p-to-n-examples-switch-oscillators-cir",
         "examples-probe-cntrl-sources-cir",
         "examples-soa-diode-soa-sh-cir",
         "examples-various-bjt-ac-par-sp",
@@ -287,20 +288,6 @@
       "issue": "https://github.com/mfiumara/spice-ts/issues/489"
     },
     {
-      "bucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)",
-      "fixtures": 6,
-      "ngspiceSuccess": 6,
-      "ids": [
-        "examples-measure-inv-meas-tran-auto-sp",
-        "examples-measure-inv-meas-tran-control-sp",
-        "examples-measure-inv-meas-tran-sp",
-        "examples-mos-ro-17-4-cir",
-        "examples-mos-ro-meas-cir",
-        "examples-p-to-n-examples-switch-oscillators-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/494"
-    },
-    {
       "bucket": "device: XSPICE A-element code models",
       "fixtures": 5,
       "ngspiceSuccess": 4,
@@ -312,6 +299,19 @@
         "examples-xspice-pwm-osc-fmcw-dosc-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/487"
+    },
+    {
+      "bucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)",
+      "fixtures": 5,
+      "ngspiceSuccess": 5,
+      "ids": [
+        "examples-measure-inv-meas-tran-auto-sp",
+        "examples-measure-inv-meas-tran-control-sp",
+        "examples-measure-inv-meas-tran-sp",
+        "examples-mos-ro-17-4-cir",
+        "examples-mos-ro-meas-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/494"
     },
     {
       "bucket": "expression: quoted/brace expressions in values (TEMPER, functions)",
@@ -361,17 +361,6 @@
       "issue": null
     },
     {
-      "bucket": "expression: B-source V= and expression functions/operators",
-      "fixtures": 3,
-      "ngspiceSuccess": 1,
-      "ids": [
-        "examples-ddt-ddt-test2-cir",
-        "examples-p-to-n-examples-logic-cir",
-        "examples-transient-noise-shot-ng-cir"
-      ],
-      "issue": "https://github.com/mfiumara/spice-ts/issues/495"
-    },
-    {
       "bucket": "harness: analysis result not produced or not mapped",
       "fixtures": 3,
       "ngspiceSuccess": 3,
@@ -392,6 +381,16 @@
         "tests-regression-model-binning-1-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/3"
+    },
+    {
+      "bucket": "expression: B-source V= and expression functions/operators",
+      "fixtures": 2,
+      "ngspiceSuccess": 0,
+      "ids": [
+        "examples-ddt-ddt-test2-cir",
+        "examples-p-to-n-examples-logic-cir"
+      ],
+      "issue": "https://github.com/mfiumara/spice-ts/issues/495"
     },
     {
       "bucket": "model: BSIM3 non-quasi-static model (NQSMOD=1)",
@@ -2361,7 +2360,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:244248"
+          "tran:242637"
         ]
       },
       "spiceTs": {
@@ -2472,7 +2471,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "MOSFET 'M1' (model 'n1') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+        "firstErrorLine": "MOSFET 'M1' (model 'n1') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -2898,14 +2897,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: Unsupported .options field: 'maxord' .option method=gear maxord=3"
+        "firstErrorLine": "Parse error at line 14: Unsupported .options maxord=3 with method=gear (spice-ts implements Gear order 2 only) .option method=gear maxord=3"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "directive: other .options fields (noinit, bypass, warn, ramptime, seedinfo)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "examples-plot-inv-chain-pyplot-cir",
@@ -3647,7 +3646,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:3093"
+          "tran:3122"
         ]
       },
       "spiceTs": {
@@ -3658,8 +3657,8 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 10,
-      "worstNormalizedError": 1.24,
-      "worstSignal": "tran v(9)",
+      "worstNormalizedError": 1.53,
+      "worstSignal": "tran v(21)",
       "outcome": "mismatch",
       "gapBucket": null
     },
@@ -3679,16 +3678,17 @@
         ]
       },
       "spiceTs": {
-        "status": "unsupported",
-        "analyses": [],
-        "firstErrorLine": "Parse error at line 3: Unsupported behavioral expression: branch current i(...) references BI 1 3 I=sqrt(2*abs(i(v1))*1.6e-19*1e7)*v(11)"
+        "status": "success",
+        "analyses": [
+          "tran:100003"
+        ]
       },
-      "comparedAnalyses": 0,
-      "comparedSignals": 0,
-      "worstNormalizedError": null,
-      "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "expression: B-source V= and expression functions/operators"
+      "comparedAnalyses": 1,
+      "comparedSignals": 4,
+      "worstNormalizedError": 1.52,
+      "worstSignal": "tran v(x1.11)",
+      "outcome": "mismatch",
+      "gapBucket": null
     },
     {
       "id": "examples-transient-noise-simple-noise-cir",
@@ -3713,7 +3713,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 5,
-      "worstNormalizedError": 3.04,
+      "worstNormalizedError": 3.62,
       "worstSignal": "tran v(3)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -4541,7 +4541,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "MOSFET 'M1' (model 'N1') uses unsupported model LEVEL=14 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+        "firstErrorLine": "MOSFET 'M1' (model 'N1') uses unsupported model LEVEL=14 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -8709,7 +8709,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "MOSFET 'mx1' (model 'nmos0v7') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 2, 4, 5, 6, 8, 49)"
+        "firstErrorLine": "MOSFET 'mx1' (model 'nmos0v7') uses unsupported model LEVEL=54 (supported MOSFET levels: 1, 2, 3, 4, 5, 6, 8, 9, 49)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -9541,5 +9541,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "f0ca8fa8f9aed1f533ae25f6c04fff5ceebfc32a5eb2c7dec2326db524563111"
+  "outcomeSha256": "b1cd606dc84c2d6eefd734f387676abd7ca055a3f98e28802451617fef9f4ef2"
 }

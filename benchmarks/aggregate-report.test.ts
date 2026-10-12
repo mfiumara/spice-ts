@@ -123,10 +123,12 @@ describe('aggregate report artifact verification', () => {
         ['spiceTs', 'ngspice/mesa-oscillator', 'unsupported', 'success'],
         ['spiceTs', 'ngspice/vbic-temperature', 'unsupported', 'success'],
         ['spiceTs', 'ngspice/ac-zero-frequency', 'unsupported', 'success'],
+        ['spiceTs', 'xyce/capacitor-rc-transient-newlte', 'unsupported', 'success'],
+        ['spiceTs', 'xyce/diode-zener-5229', 'unsupported', 'success'],
       ],
     );
     assert.deepEqual(report.totals.ngspice, { success: 52, failed: 9, unsupported: 39 });
-    assert.deepEqual(report.totals.spiceTs, { success: 65, failed: 1, unsupported: 34 });
+    assert.deepEqual(report.totals.spiceTs, { success: 67, failed: 1, unsupported: 32 });
     assert.equal(report.totals.comparedAnalyses, 71);
     assert.equal(report.totals.comparedFixtures, 52);
     // .OPTIONS TEMP (#459): the unchanged tests/vbic/temp.cir DC sweep at 150 C, losses locked exactly.
@@ -254,7 +256,7 @@ describe('aggregate report artifact verification', () => {
 
     assert.deepEqual(report.provenance, {
       fixtureTreeSha256: '08296b6055fda62d69ae645fed5e9c9018dedd9fb5dc7daace6ced2e4f91f4f8',
-      sourcesSha256: '4bbaa86f19e148306d779c48fe66db4c8f9ab70b4f7b40db2c6bfe2c188ccfa4',
+      sourcesSha256: '906d89f2310e0930676d69804f568098947a78a71a09dc09a0a778fa9e086bf3',
     });
   });
 
