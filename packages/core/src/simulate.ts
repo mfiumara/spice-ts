@@ -11,6 +11,7 @@ import type { TransientAnalysis, ACAnalysis, ResolvedOptions, SimulatorAdapter, 
 import { resolveOptions, withNetlistOptions } from './types.js';
 import { solveDCOperatingPoint } from './analysis/dc.js';
 import { isSavedTransientPoint, runnableTransient, solveTransient } from './analysis/transient.js';
+import { transientStepCap } from './analysis/max-timestep.js';
 import { buildACRHS, solveAC } from './analysis/ac.js';
 import { assertNoiseDevicesSupported, solveNoise } from './analysis/noise.js';
 import { solveSParameters } from './analysis/s-parameter.js';
@@ -651,11 +652,9 @@ function* streamTransient(
     stopTime: analysis.stopTime,
     timestep: analysis.timestep,
     // SPICE convention: when `.tran` doesn't supply `tmax` (4th arg), bound
-    // dt by `min(tstep, tstop/50)`. The previous `tstop/50` alone let dt grow
-    // way past the user's tstep resolution hint — at long stop times that
-    // aliases lightly-damped oscillations (RLC, LC tank). Mirrors the same
-    // formula already used in the synchronous `transient.ts` path.
-    maxTimestep: analysis.maxTimestep ?? Math.min(analysis.timestep, analysis.stopTime / 50),
+    // dt by `min(tstep, tstop/50)` — shared with solveTransient and
+    // createTransientSim so every entry point steps the same grid.
+    maxTimestep: transientStepCap(analysis),
     initialSolution,
     useInitialConditions: analysis.useInitialConditions,
   });

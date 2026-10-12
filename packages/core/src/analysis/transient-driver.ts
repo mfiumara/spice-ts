@@ -17,7 +17,7 @@ import {
 } from '../convergence-telemetry.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
 import { Inductor } from '../devices/inductor.js';
-import { maxTimestepOption } from './max-timestep.js';
+import { maxTimestepOption, runnableTransient, transientStepCap } from './max-timestep.js';
 import type { DeviceModel, TransientBreakpointSink } from '../devices/device.js';
 
 /**
@@ -133,20 +133,38 @@ export async function createTransientSim(
   const effectiveOptions = withNetlistOptions<TransientSimOptions>(compiled.simulationOptions, options);
   validateCircuit(compiled);
 
-  const tranAnalysis = compiled.analyses.find(a => a.type === 'tran');
-  const stopTime = effectiveOptions.stopTime ?? (tranAnalysis?.type === 'tran' ? tranAnalysis.stopTime : undefined);
-  const timestep = effectiveOptions.timestep ?? (tranAnalysis?.type === 'tran' ? tranAnalysis.timestep : undefined) ?? (stopTime ? stopTime / 50 : 1e-6);
-  const maxTimestep = maxTimestepOption(effectiveOptions.maxTimestep)
-    ?? (stopTime ? Math.min(timestep, stopTime / 50) : timestep * 10);
+  const found = compiled.analyses.find(a => a.type === 'tran');
+  const tranAnalysis = found?.type === 'tran' ? found : undefined;
+  let stopTime: number | undefined;
+  let timestep: number;
+  let maxTimestep: number;
+  if (tranAnalysis) {
+    // Same step grid as simulate() (#678): `.tran` TMAX wins over the
+    // maxTimestep option, which replaces the min(TSTEP, TSTOP/50) default;
+    // a zero TSTEP runs at that cap. stopTime/timestep options override the
+    // card's TSTOP/TSTEP before the cap is derived.
+    const runnable = runnableTransient({
+      ...tranAnalysis,
+      stopTime: effectiveOptions.stopTime ?? tranAnalysis.stopTime,
+      timestep: effectiveOptions.timestep ?? tranAnalysis.timestep,
+    }, effectiveOptions);
+    ({ stopTime, timestep } = runnable);
+    maxTimestep = transientStepCap(runnable);
+  } else {
+    stopTime = effectiveOptions.stopTime;
+    timestep = effectiveOptions.timestep ?? (stopTime ? stopTime / 50 : 1e-6);
+    maxTimestep = maxTimestepOption(effectiveOptions.maxTimestep)
+      ?? (stopTime ? Math.min(timestep, stopTime / 50) : timestep * 10);
+  }
 
   const resolved = resolveOptions(effectiveOptions, stopTime);
 
   return new TransientSimImpl(compiled, resolved, {
     stopTime, timestep, maxTimestep,
-    initialSolution: tranAnalysis?.type === 'tran' && tranAnalysis.useInitialConditions
+    initialSolution: tranAnalysis?.useInitialConditions
       ? computeUICInitialSolution(compiled)
       : undefined,
-    useInitialConditions: tranAnalysis?.type === 'tran' && tranAnalysis.useInitialConditions,
+    useInitialConditions: tranAnalysis?.useInitialConditions === true,
   });
 }
 
