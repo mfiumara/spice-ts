@@ -41,8 +41,9 @@ describe('stdio transport', () => {
       structuredContent: {
         protocolVersion: '1',
         streaming: {
+          maxConcurrentJobs: 2,
           runningJobTtlMs: 30_000,
-          terminalJobTtlMs: 60_000,
+          terminalJobTtlMs: 300_000,
           maxUnreadEvents: 256,
           maxUnreadBytes: 1024 * 1024,
         },

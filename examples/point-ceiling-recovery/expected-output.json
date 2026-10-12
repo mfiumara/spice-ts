@@ -29,8 +29,9 @@
       "defaultChunkPoints": 256,
       "maxChunkPoints": 1024,
       "maxRetainedJobs": 16,
+      "maxConcurrentJobs": 2,
       "runningJobTtlMs": 30000,
-      "terminalJobTtlMs": 60000,
+      "terminalJobTtlMs": 300000,
       "maxUnreadEvents": 256,
       "maxUnreadBytes": 1048576
     }
