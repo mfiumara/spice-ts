@@ -122,7 +122,8 @@ X1 out 0 c 0 sw2
 
   it('linearises the switch resistance in AC (ngspice-47 loads a negative conductance there)', async () => {
     // Operating point (ngspice-47): v(out) = 1.145895e-01, so r = 1k * v / (1 - v).
-    // ngspice-47's pswitch AC_GAIN(out,out) = -1/r gives vr(out) = -1.45795 here; the
+    // ngspice-47's pswitch AC_GAIN(out,out) = -1/r gives vr(out) = -1.48659e-01 here
+    // (r = 129.4 ohm: 0.001 / (0.001 - 1/r)); the
     // small-signal model of the operating point, which spice-ts loads, is a positive 1/r
     // plus the control transconductance d(v/r)/d(vc).
     const result = await simulate(`vswitch ac
@@ -180,9 +181,16 @@ a2 (c 0) (out2 0) lin2
   });
 
   it('rejects a VSWITCH model with neither VON/VOFF nor VT/VH, like ngspice-47', () => {
-    expect(() => parse('bad\nS1 1 0 2 0 SBAD\n.MODEL SBAD VSWITCH RON=1 ROFF=1e6\n.op')).toThrow(ParseError);
-    expect(() => parse('bad\n.subckt s a b c d\nS1 a b c d SBAD\n.MODEL SBAD VSWITCH(RON=1)\n.ends\n.op'))
-      .toThrow(ParseError);
+    // ngspice-47 inpcompat.c: "Bad switch model". main rejected every VSWITCH with
+    // UnsupportedModelTypeError, so the message pins the new translation path.
+    const badSwitch = /bad PSpice VSWITCH switch model, expected VON\/VOFF or VT\/VH/;
+    for (const deck of [
+      'bad\nS1 1 0 2 0 SBAD\n.MODEL SBAD VSWITCH RON=1 ROFF=1e6\n.op',
+      'bad\n.subckt s a b c d\nS1 a b c d SBAD\n.MODEL SBAD VSWITCH(RON=1)\n.ends\n.op',
+    ]) {
+      expect(() => parse(deck)).toThrow(ParseError);
+      expect(() => parse(deck)).toThrow(badSwitch);
+    }
   });
 
   it('keeps the VSWITCH card through toNetlist() and refuses it on an A instance', async () => {
