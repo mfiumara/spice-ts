@@ -14,7 +14,7 @@
  *
  * Prerequisites: bash benchmarks/rust-lu-spike/build.sh
  * Run (heavy): spice-heavy pnpm exec tsx benchmarks/rust-lu-spike/op-swap.ts
- *   [--decks=...] [--runs=5] [--warmups=2] [--slow-decks=cmos-chain-50k] [--output=path]
+ *   [--decks=...] [--runs=5] [--warmups=5] [--slow-decks=cmos-chain-50k] [--output=path]
  * Slow decks run min(runs, 3) timed runs and no warm-up.
  */
 import { spawnSync } from 'node:child_process';
@@ -63,9 +63,20 @@ interface RustLuLike {
   analyze(c: Int32Array, r: Int32Array): void;
   factorize(v: Float64Array): void;
   solve(b: Float64Array): void;
+  dispose?(): void; // napi addon
+  free?(): void; // wasm-bindgen
 }
 
 let luMs = 0;
+// Native/WASM solver memory is invisible to V8's GC, so solvers of finished
+// runs are released explicitly before the next run (see docs/spikes/rust-lu.md).
+const liveSolvers: RustLuLike[] = [];
+function releaseSolvers(): void {
+  for (const s of liveSolvers.splice(0)) {
+    if (s.free) s.free();
+    else s.dispose?.();
+  }
+}
 
 /** Route GilbertPeierlsSolver through a Rust backend (this process only). */
 function installRust(backend: Backend): void {
@@ -82,6 +93,7 @@ function installRust(backend: Backend): void {
   proto.analyzePattern = function (this: Self, A: CscMatrix, variables: readonly MatrixVariableIdentity[] = []): void {
     const t0 = performance.now();
     this.rust = new RustLu();
+    liveSolvers.push(this.rust);
     this.nnz = A.colPtr[A.size];
     this.rust.analyze(A.colPtr.subarray(0, A.size + 1), A.rowIdx.subarray(0, this.nnz));
     this.analyzed = true;
@@ -135,6 +147,7 @@ async function child(backend: Backend, deck: string, runs: number, warmups: numb
   const lu: number[] = [];
   let voltages: [string, number][] = [];
   for (let run = 0; run < warmups + runs; run++) {
+    releaseSolvers();
     luMs = 0;
     const t0 = performance.now();
     const result = await simulate(await parseAsync(netlist));
@@ -170,7 +183,9 @@ function compare(deck: string, backend: Backend): { nodes: number; bitIdentical:
 async function parent(): Promise<void> {
   const decks = (arg('decks') ?? ALL_DECKS.join(',')).split(',');
   const runs = Number(arg('runs') ?? 5);
-  const warmups = Number(arg('warmups') ?? 2);
+  // Five untimed OPs: on single-factorization decks the first runs still
+  // measure V8 tiering of the TS kernel (the 50k mesh needed 3-4 runs).
+  const warmups = Number(arg('warmups') ?? 5);
   // Decks whose single OP takes ~100 s in TS: fewer runs, no warm-up (the
   // >1000 Newton factorizations inside one OP already warm the JIT).
   const slow = new Set((arg('slow-decks') ?? 'cmos-chain-50k').split(',').filter(Boolean));
