@@ -51,6 +51,7 @@
     "perCircuitToleranceTuning": false,
     "matchThreshold": 0.01,
     "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, floor), with the corpus-f floor: 0.0001 V for node voltages, 1e-10 A for branch currents, 1e-12 otherwise. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
+    "fineReference": "Fine-step reference (#592): ngspice-47 runs the same deck with every active .tran card rewritten to TMAX_fine = min(TSTEP, (TSTOP - TSTART)/50, deck TMAX if given) / 10, i.e. the ngspice default step ceiling divided by 10; TSTEP, TSTOP, TSTART, UIC and every other card are unchanged. The rule is the same for every transient fixture. No reference is generated when the deck has no parsable .tran card outside .control, or when TSTOP/TMAX_fine exceeds 1000000 steps; the ngspice run is bounded at 600 s. Each default run (spice-ts, ngspice) is scored by the same procedure: at the reference's output points, with the default run linearly interpolated onto them, over the transient signals of the headline comparison, normalised by the reference peak with the same per-quantity floors. The headline's one-sided breakpoint alignment applies at every default-run time point within ngspice's breakpoint merge distance (CKTminBreak = 0.00005 x TMAX_fine) of a reference time point; the headline matches breakpoints bit for bit, which here would favour ngspice, whose default run lands on its own reference's breakpoint times exactly while spice-ts's land a few ulps away. This charges each engine for its own published waveform, so a coarse output grid counts against whichever engine produced it. Status (matched/mismatch) is defined by the headline column only. One fine reference is not a convergence proof, and neither column is an accuracy ranking of the engines.",
     "deterministicHashExcludes": [
       "environment",
       "tools.node",
@@ -71,8 +72,8 @@
       "unsupported": 5
     },
     "outcomes": {
-      "matched": 17,
-      "mismatch": 1,
+      "matched": 18,
+      "mismatch": 0,
       "not-compared": 0,
       "spice-ts-loss": 7,
       "ngspice-failed": 0,
@@ -88,8 +89,8 @@
         "both-failed": 0
       },
       "vacask": {
-        "matched": 9,
-        "mismatch": 1,
+        "matched": 10,
+        "mismatch": 0,
         "not-compared": 0,
         "spice-ts-loss": 2,
         "ngspice-failed": 0,
@@ -192,7 +193,25 @@
       "worstNormalizedError": 2e-12,
       "worstSignal": "tran v(out)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "6e-8"
+        ],
+        "headline": {
+          "worst": 2e-12,
+          "signal": "v(out)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.964,
+          "signal": "v(out)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.964,
+          "signal": "v(out)"
+        }
+      }
     },
     {
       "id": "esim-examples-fulladder-half-adder-cir-out",
@@ -358,7 +377,25 @@
       "worstNormalizedError": 1.45e-14,
       "worstSignal": "tran i(v1)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.0002"
+        ],
+        "headline": {
+          "worst": 1.45e-14,
+          "signal": "i(v1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00323,
+          "signal": "i(v1)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00323,
+          "signal": "i(v1)"
+        }
+      }
     },
     {
       "id": "esim-examples-rl-rl-cir-out",
@@ -386,7 +423,25 @@
       "worstNormalizedError": 1.44e-14,
       "worstSignal": "tran v(out)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.0002"
+        ],
+        "headline": {
+          "worst": 1.44e-14,
+          "signal": "v(out)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00323,
+          "signal": "v(out)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00323,
+          "signal": "v(out)"
+        }
+      }
     },
     {
       "id": "esim-examples-rlc-rlc-cir-out",
@@ -414,7 +469,25 @@
       "worstNormalizedError": 2.26e-13,
       "worstSignal": "tran i(v1)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.0002"
+        ],
+        "headline": {
+          "worst": 2.26e-13,
+          "signal": "i(v1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0771,
+          "signal": "i(v1)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0771,
+          "signal": "i(v1)"
+        }
+      }
     },
     {
       "id": "esim-examples-series-resonance-series-resonance-cir-out",
@@ -524,7 +597,20 @@
       "worstNormalizedError": 2.1e-7,
       "worstSignal": "tran i(vs)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "unavailable",
+        "tmax": [
+          "1e-7"
+        ],
+        "reason": "TSTOP/TMAX_fine = 10000000 steps exceeds the 1000000-step budget",
+        "headline": {
+          "worst": 2.1e-7,
+          "signal": "i(vs)"
+        },
+        "spiceTsVsFine": null,
+        "ngspiceDefaultVsFine": null
+      }
     },
     {
       "id": "vacask-benchmark-mul-xyce-runme-sim",
@@ -549,10 +635,23 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 7,
-      "worstNormalizedError": 0.0392,
+      "worstNormalizedError": 0.000563,
       "worstSignal": "tran i(vs)",
-      "outcome": "mismatch",
-      "gapBucket": null
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "unavailable",
+        "tmax": [
+          "1e-9"
+        ],
+        "reason": "TSTOP/TMAX_fine = 5000000 steps exceeds the 1000000-step budget",
+        "headline": {
+          "worst": 0.000563,
+          "signal": "i(vs)"
+        },
+        "spiceTsVsFine": null,
+        "ngspiceDefaultVsFine": null
+      }
     },
     {
       "id": "vacask-benchmark-rc-xyce-runme-sim",
@@ -580,7 +679,20 @@
       "worstNormalizedError": 1.11e-10,
       "worstSignal": "tran i(vs)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "unavailable",
+        "tmax": [
+          "1e-7"
+        ],
+        "reason": "TSTOP/TMAX_fine = 10000000 steps exceeds the 1000000-step budget",
+        "headline": {
+          "worst": 1.11e-10,
+          "signal": "i(vs)"
+        },
+        "spiceTsVsFine": null,
+        "ngspiceDefaultVsFine": null
+      }
     },
     {
       "id": "vacask-benchmark-vadistiller-bjtring-xyce-runme-sim",
@@ -635,7 +747,25 @@
       "worstNormalizedError": 0,
       "worstSignal": "tran i(vin)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 0,
+          "signal": "i(vin)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0,
+          "signal": "i(vin)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0,
+          "signal": "i(vin)"
+        }
+      }
     },
     {
       "id": "vacask-test-spice-diode-cir",
@@ -663,7 +793,25 @@
       "worstNormalizedError": 0.000193,
       "worstSignal": "tran v(2)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.000001"
+        ],
+        "headline": {
+          "worst": 0.000193,
+          "signal": "v(2)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00539,
+          "signal": "i(vin)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00539,
+          "signal": "v(2)"
+        }
+      }
     },
     {
       "id": "vacask-test-spice-mos-cir",
@@ -691,7 +839,25 @@
       "worstNormalizedError": 0.0000617,
       "worstSignal": "tran i(vin)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 0.0000617,
+          "signal": "i(vin)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.783,
+          "signal": "i(vin)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.783,
+          "signal": "i(vin)"
+        }
+      }
     },
     {
       "id": "vacask-test-spice-rc-cir",
@@ -719,7 +885,25 @@
       "worstNormalizedError": 1.1e-12,
       "worstSignal": "tran i(v1)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 1.1e-12,
+          "signal": "i(v1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0000139,
+          "signal": "v(2)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0000139,
+          "signal": "v(2)"
+        }
+      }
     },
     {
       "id": "vacask-test-spice-regressions-cir",
@@ -747,7 +931,25 @@
       "worstNormalizedError": 2.81e-12,
       "worstSignal": "tran v(out)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-9"
+        ],
+        "headline": {
+          "worst": 2.81e-12,
+          "signal": "v(out)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0342,
+          "signal": "v(out)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0342,
+          "signal": "v(out)"
+        }
+      }
     },
     {
       "id": "vacask-test-spice-subckt-cir",
@@ -802,7 +1004,25 @@
       "worstNormalizedError": 8.98e-15,
       "worstSignal": "tran v(1)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 8.98e-15,
+          "signal": "v(1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00000493,
+          "signal": "v(2)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00000493,
+          "signal": "i(e1)"
+        }
+      }
     },
     {
       "id": "vacask-test-spice-warnonly-cir",
@@ -830,8 +1050,26 @@
       "worstNormalizedError": 1.78e-16,
       "worstSignal": "tran v(mid)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 1.78e-16,
+          "signal": "v(mid)"
+        },
+        "spiceTsVsFine": {
+          "worst": 1.78e-16,
+          "signal": "v(mid)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 3.47e-16,
+          "signal": "i(l2)"
+        }
+      }
     }
   ],
-  "outcomeSha256": "c20af5496a780b1461fe93da395173b28fa562b9332facd77776bccde43fb08f"
+  "outcomeSha256": "f69354a3460bcca55a2ae9220cf1ad06ad4403db55b5d7d3c2b68bad557f817c"
 }

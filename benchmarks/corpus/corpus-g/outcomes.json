@@ -826,7 +826,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 2,
-      "worstNormalizedError": 4.75e-10,
+      "worstNormalizedError": 2.62e-14,
       "worstSignal": "tran i(v1)",
       "outcome": "matched",
       "gapBucket": null,
@@ -837,7 +837,7 @@
         ],
         "reason": "TSTOP/TMAX_fine = 8000001 steps exceeds the 1000000-step budget",
         "headline": {
-          "worst": 4.75e-10,
+          "worst": 2.62e-14,
           "signal": "i(v1)"
         },
         "spiceTsVsFine": null,
@@ -1654,7 +1654,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 5,
-      "worstNormalizedError": 0.00157,
+      "worstNormalizedError": 0.000899,
       "worstSignal": "tran i(vin)",
       "outcome": "matched",
       "gapBucket": null,
@@ -1664,7 +1664,7 @@
           "1e-10"
         ],
         "headline": {
-          "worst": 0.00157,
+          "worst": 0.000899,
           "signal": "i(vin)"
         },
         "spiceTsVsFine": {
@@ -2312,7 +2312,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 23,
-      "worstNormalizedError": 0.0225,
+      "worstNormalizedError": 0.0222,
       "worstSignal": "tran i(vset)",
       "outcome": "mismatch",
       "gapBucket": null,
@@ -2322,7 +2322,7 @@
           "1e-10"
         ],
         "headline": {
-          "worst": 0.0225,
+          "worst": 0.0222,
           "signal": "i(vset)"
         },
         "spiceTsVsFine": {
@@ -2562,7 +2562,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 6,
-      "worstNormalizedError": 0.0000902,
+      "worstNormalizedError": 0.0000907,
       "worstSignal": "tran i(vdd)",
       "outcome": "matched",
       "gapBucket": null,
@@ -2572,7 +2572,7 @@
           "1e-9"
         ],
         "headline": {
-          "worst": 0.0000902,
+          "worst": 0.0000907,
           "signal": "i(vdd)"
         },
         "spiceTsVsFine": {
@@ -2751,12 +2751,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:5813"
+          "tran:5807"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 47,
-      "worstNormalizedError": 0.707,
+      "worstNormalizedError": 0.744,
       "worstSignal": "tran i(vdddev)",
       "outcome": "mismatch",
       "gapBucket": null,
@@ -2766,7 +2766,7 @@
           "2e-9"
         ],
         "headline": {
-          "worst": 0.707,
+          "worst": 0.744,
           "signal": "i(vdddev)"
         },
         "spiceTsVsFine": {
@@ -2824,12 +2824,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:1933"
+          "tran:1957"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 6,
-      "worstNormalizedError": 0.201,
+      "worstNormalizedError": 0.243,
       "worstSignal": "tran v(vout)",
       "outcome": "mismatch",
       "gapBucket": null,
@@ -2839,11 +2839,11 @@
           "2e-9"
         ],
         "headline": {
-          "worst": 0.201,
+          "worst": 0.243,
           "signal": "v(vout)"
         },
         "spiceTsVsFine": {
-          "worst": 0.22,
+          "worst": 0.235,
           "signal": "v(vout)"
         },
         "ngspiceDefaultVsFine": {
@@ -2889,7 +2889,7 @@
           "signal": "i(vin1)"
         },
         "spiceTsVsFine": {
-          "worst": 0.0772,
+          "worst": 0.0978,
           "signal": "i(vin1)"
         },
         "ngspiceDefaultVsFine": {
@@ -3464,7 +3464,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 6,
-      "worstNormalizedError": 1.12e-7,
+      "worstNormalizedError": 6.45e-8,
       "worstSignal": "tran i(vie1)",
       "outcome": "matched",
       "gapBucket": null,
@@ -3474,11 +3474,11 @@
           "1e-10"
         ],
         "headline": {
-          "worst": 1.12e-7,
+          "worst": 6.45e-8,
           "signal": "i(vie1)"
         },
         "spiceTsVsFine": {
-          "worst": 0.00000118,
+          "worst": 0.00000116,
           "signal": "i(vie1)"
         },
         "ngspiceDefaultVsFine": {
@@ -3821,12 +3821,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:7046"
+          "tran:6985"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 32,
-      "worstNormalizedError": 0.0676,
+      "worstNormalizedError": 0.0724,
       "worstSignal": "tran i(v2)",
       "outcome": "mismatch",
       "gapBucket": null,
@@ -3836,11 +3836,11 @@
           "1e-7"
         ],
         "headline": {
-          "worst": 0.0676,
+          "worst": 0.0724,
           "signal": "i(v2)"
         },
         "spiceTsVsFine": {
-          "worst": 0.258,
+          "worst": 0.284,
           "signal": "i(v2)"
         },
         "ngspiceDefaultVsFine": {
@@ -3867,13 +3867,13 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:1559"
+          "tran:1513"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 36,
-      "worstNormalizedError": 0.865,
-      "worstSignal": "tran v(4)",
+      "worstNormalizedError": 0.359,
+      "worstSignal": "tran v(x2.29)",
       "outcome": "mismatch",
       "gapBucket": null,
       "fineReference": {
@@ -3882,12 +3882,12 @@
           "1e-7"
         ],
         "headline": {
-          "worst": 0.865,
-          "signal": "v(4)"
+          "worst": 0.359,
+          "signal": "v(x2.29)"
         },
         "spiceTsVsFine": {
-          "worst": 0.39,
-          "signal": "v(x2.26)"
+          "worst": 0.693,
+          "signal": "v(4)"
         },
         "ngspiceDefaultVsFine": {
           "worst": 0.752,
@@ -3959,7 +3959,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:10153"
+          "tran:10151"
         ]
       },
       "comparedAnalyses": 1,
@@ -4133,12 +4133,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:1983"
+          "tran:1992"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 7,
-      "worstNormalizedError": 0.304,
+      "worstNormalizedError": 0.235,
       "worstSignal": "tran v(out)",
       "outcome": "mismatch",
       "gapBucket": null,
@@ -4148,11 +4148,11 @@
           "2e-9"
         ],
         "headline": {
-          "worst": 0.304,
+          "worst": 0.235,
           "signal": "v(out)"
         },
         "spiceTsVsFine": {
-          "worst": 0.31,
+          "worst": 0.349,
           "signal": "i(vdddev)"
         },
         "ngspiceDefaultVsFine": {
@@ -4235,12 +4235,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:358"
+          "tran:359"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 6,
-      "worstNormalizedError": 0.225,
+      "worstNormalizedError": 0.224,
       "worstSignal": "tran i(vin1)",
       "outcome": "mismatch",
       "gapBucket": null,
@@ -4250,7 +4250,7 @@
           "2e-9"
         ],
         "headline": {
-          "worst": 0.225,
+          "worst": 0.224,
           "signal": "i(vin1)"
         },
         "spiceTsVsFine": {
@@ -4405,7 +4405,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 6,
-      "worstNormalizedError": 2.69e-8,
+      "worstNormalizedError": 2.37e-8,
       "worstSignal": "tran i(vcc)",
       "outcome": "matched",
       "gapBucket": null,
@@ -4416,7 +4416,7 @@
         ],
         "reason": "TSTOP/TMAX_fine = 10000000 steps exceeds the 1000000-step budget",
         "headline": {
-          "worst": 2.69e-8,
+          "worst": 2.37e-8,
           "signal": "i(vcc)"
         },
         "spiceTsVsFine": null,
@@ -4783,12 +4783,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:30012"
+          "tran:30008"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 7,
-      "worstNormalizedError": 2.45,
+      "worstNormalizedError": 2.47,
       "worstSignal": "tran i(l2)",
       "outcome": "mismatch",
       "gapBucket": null,
@@ -4798,11 +4798,11 @@
           "1e-9"
         ],
         "headline": {
-          "worst": 2.45,
+          "worst": 2.47,
           "signal": "i(l2)"
         },
         "spiceTsVsFine": {
-          "worst": 2.45,
+          "worst": 2.47,
           "signal": "i(l2)"
         },
         "ngspiceDefaultVsFine": {
@@ -4840,5 +4840,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "8f5f2285328a6d34521783262b7b912d551e2a24b93984482dc31df176bdc01d"
+  "outcomeSha256": "bd8d3e1727aa3609be0b9300100d6c46c94497b3de11733d64da10d2f87146ef"
 }

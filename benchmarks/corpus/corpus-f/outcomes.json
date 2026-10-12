@@ -44,15 +44,15 @@
       "unsupported": 12
     },
     "spiceTs": {
-      "success": 135,
-      "failed": 17,
+      "success": 138,
+      "failed": 14,
       "unsupported": 184
     },
     "outcomes": {
       "matched": 60,
       "mismatch": 16,
-      "not-compared": 59,
-      "spice-ts-loss": 171,
+      "not-compared": 62,
+      "spice-ts-loss": 168,
       "ngspice-failed": 0,
       "both-failed": 30
     }
@@ -205,8 +205,8 @@
     },
     {
       "bucket": "execution: other failure",
-      "fixtures": 15,
-      "ngspiceSuccess": 12,
+      "fixtures": 12,
+      "ngspiceSuccess": 9,
       "ids": [
         "examples-control-structs-if-test-1-cir",
         "examples-measure-mos-meas-dc-control-file-sp",
@@ -215,9 +215,6 @@
         "examples-vbic-vbic99-tran-sp",
         "examples-xspice-noise-noise-gain-cir",
         "examples-xspice-original-examples-bad-io-deck",
-        "tests-regression-lib-processing-scope-1-cir",
-        "tests-regression-lib-processing-scope-2-cir",
-        "tests-regression-lib-processing-scope-3-cir",
         "tests-regression-misc-empty-1-cir",
         "tests-regression-subckt-processing-model-scope-5-cir",
         "tests-regression-temper-temper-2-cir",
@@ -431,7 +428,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node"
+        "firstErrorLine": "Parse error at line 18: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -458,7 +455,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 16: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node"
+        "firstErrorLine": "Parse error at line 16: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -485,7 +482,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUMERICAL"
+        "firstErrorLine": "Parse error at line 14: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUME"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -512,7 +509,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 21: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node"
+        "firstErrorLine": "Parse error at line 21: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -539,7 +536,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 52: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node"
+        "firstErrorLine": "Parse error at line 52: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -568,7 +565,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node"
+        "firstErrorLine": "Parse error at line 13: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -595,7 +592,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 26: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh node"
+        "firstErrorLine": "Parse error at line 26: .model 'qmod' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model qmod nbjt level=1 x.mesh node=1 loc=0.0 x.mesh"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -626,7 +623,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: .model 'M_PN' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model M_PN numd level=1 *********************************"
+        "firstErrorLine": "Parse error at line 13: .model 'M_PN' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model M_PN numd level=1 ****************************"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -653,7 +650,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: .model 'M_PN' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_PN numd level=1 *********************************"
+        "firstErrorLine": "Parse error at line 11: .model 'M_PN' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_PN numd level=1 ****************************"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -734,7 +731,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 8: .model 'M_NJF' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NJF NBJT LEVEL=2 options jfet defw=10.0um output "
+        "firstErrorLine": "Parse error at line 8: .model 'M_NJF' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NJF NBJT LEVEL=2 options jfet defw=10.0um ou"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -761,7 +758,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: .model 'M_NMOS' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model M_NMOS numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x"
+        "firstErrorLine": "Parse error at line 14: .model 'M_NMOS' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model M_NMOS numos x.mesh l=0.0 n=1 x.mesh l=0.6 "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -788,7 +785,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: .model 'mmod' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model mmod numos x.mesh n=1 l=0 x.mesh n=3 l=0.4 x.mesh "
+        "firstErrorLine": "Parse error at line 17: .model 'mmod' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model mmod numos x.mesh n=1 l=0 x.mesh n=3 l=0.4 x."
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -815,7 +812,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 26: .model 'M_NMOS' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model M_NMOS numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x"
+        "firstErrorLine": "Parse error at line 26: .model 'M_NMOS' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model M_NMOS numos x.mesh l=0.0 n=1 x.mesh l=0.6 "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -842,7 +839,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: .model 'mmod' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model mmod numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x.mes"
+        "firstErrorLine": "Parse error at line 10: .model 'mmod' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model mmod numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -869,7 +866,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: .model 'mmod' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model mmod numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x.mes"
+        "firstErrorLine": "Parse error at line 17: .model 'mmod' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model mmod numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -896,7 +893,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 33: .model 'M_NMOS' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model M_NMOS numos x.mesh l=0.0 n=1 x.mesh l=0.6 n=4 x"
+        "firstErrorLine": "Parse error at line 33: .model 'M_NMOS' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model M_NMOS numos x.mesh l=0.0 n=1 x.mesh l=0.6 "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -923,7 +920,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 33: .model 'M_NMOS' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NMOS NUMOS X.MESH L=0.0 N=1 X.MESH L=0.6 N=4 X"
+        "firstErrorLine": "Parse error at line 33: .model 'M_NMOS' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NMOS NUMOS X.MESH L=0.0 N=1 X.MESH L=0.6 "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -950,7 +947,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: .model 'M_RES' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_RES numd level=1 options resistor defa=1p x.mesh"
+        "firstErrorLine": "Parse error at line 14: .model 'M_RES' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_RES numd level=1 options resistor defa=1p x"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -977,7 +974,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: .model 'M_RES' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_RES numd level=1 options resistor defa=1p x.mesh"
+        "firstErrorLine": "Parse error at line 10: .model 'M_RES' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_RES numd level=1 options resistor defa=1p x"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1004,7 +1001,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE"
+        "firstErrorLine": "Parse error at line 18: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1031,7 +1028,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: .model 'MMOD' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL MMOD NUMOS X.MESH N=1 L=0 X.MESH N=3 L=0.4 X.MESH "
+        "firstErrorLine": "Parse error at line 17: .model 'MMOD' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL MMOD NUMOS X.MESH N=1 L=0 X.MESH N=3 L=0.4 X."
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1058,7 +1055,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 16: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE"
+        "firstErrorLine": "Parse error at line 16: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1085,7 +1082,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 11: .model 'M_PN' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_PN NUMD LEVEL=1 *********************************"
+        "firstErrorLine": "Parse error at line 11: .model 'M_PN' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_PN NUMD LEVEL=1 ****************************"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1112,7 +1109,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 21: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE"
+        "firstErrorLine": "Parse error at line 21: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1139,7 +1136,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 52: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE"
+        "firstErrorLine": "Parse error at line 52: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1166,7 +1163,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 10: .model 'MMOD' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL MMOD NUMOS X.MESH L=0.0 N=1 X.MESH L=0.6 N=4 X.MES"
+        "firstErrorLine": "Parse error at line 10: .model 'MMOD' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL MMOD NUMOS X.MESH L=0.0 N=1 X.MESH L=0.6 N=4 "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1193,7 +1190,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: .model 'MMOD' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL MMOD NUMOS X.MESH L=0.0 N=1 X.MESH L=0.6 N=4 X.MES"
+        "firstErrorLine": "Parse error at line 17: .model 'MMOD' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL MMOD NUMOS X.MESH L=0.0 N=1 X.MESH L=0.6 N=4 "
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1220,7 +1217,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 23: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NPN NBJT LEVEL=2 TITLE TWO-DIMENSIONAL NUMERICAL"
+        "firstErrorLine": "Parse error at line 23: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NPN NBJT LEVEL=2 TITLE TWO-DIMENSIONAL NUME"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1247,7 +1244,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 9: .model 'M_PIN' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_PIN NUMD LEVEL=2 OPTIONS DEFW=100U X.MESH N=1 L=0"
+        "firstErrorLine": "Parse error at line 9: .model 'M_PIN' has unsupported type 'NUMD' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_PIN NUMD LEVEL=2 OPTIONS DEFW=100U X.MESH N="
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1276,7 +1273,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE"
+        "firstErrorLine": "Parse error at line 13: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1303,7 +1300,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 26: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH NODE"
+        "firstErrorLine": "Parse error at line 26: .model 'QMOD' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL QMOD NBJT LEVEL=1 X.MESH NODE=1 LOC=0.0 X.MESH"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1330,7 +1327,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: .model 'CD4007UBENUMOSN' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model CD4007UBENUMOSN numos x.mesh (location ="
+        "firstErrorLine": "Parse error at line 7: .model 'CD4007UBENUMOSN' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model CD4007UBENUMOSN numos x.mesh (locat"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1357,7 +1354,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 7: .model 'CD4007UBENUMOSN' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model CD4007UBENUMOSN numos y.mesh (location ="
+        "firstErrorLine": "Parse error at line 7: .model 'CD4007UBENUMOSN' has unsupported type 'NUMOS' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model CD4007UBENUMOSN numos y.mesh (locat"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1384,7 +1381,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 25: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUMERICAL"
+        "firstErrorLine": "Parse error at line 25: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUME"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1411,7 +1408,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 25: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUMERICAL"
+        "firstErrorLine": "Parse error at line 25: .model 'M_NPN' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NPN nbjt level=2 title TWO-DIMENSIONAL NUME"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1438,7 +1435,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: .model 'M_NPNS' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NPNS nbjt level=2 title TWO-DIMENSIONAL NUMERIC"
+        "firstErrorLine": "Parse error at line 18: .model 'M_NPNS' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NPNS nbjt level=2 title TWO-DIMENSIONAL NU"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1465,7 +1462,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 18: .model 'M_NPNS' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NPNS nbjt level=2 title TWO-DIMENSIONAL NUMERIC"
+        "firstErrorLine": "Parse error at line 18: .model 'M_NPNS' has unsupported type 'NBJT' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL M_NPNS nbjt level=2 title TWO-DIMENSIONAL NU"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1840,12 +1837,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:13663"
+          "tran:13670"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 13,
-      "worstNormalizedError": 0.0167,
+      "worstNormalizedError": 0.0163,
       "worstSignal": "tran v(9)",
       "outcome": "mismatch",
       "gapBucket": null,
@@ -1855,11 +1852,11 @@
           "1e-10"
         ],
         "headline": {
-          "worst": 0.0167,
+          "worst": 0.0163,
           "signal": "v(9)"
         },
         "spiceTsVsFine": {
-          "worst": 0.0241,
+          "worst": 0.024,
           "signal": "v(10)"
         },
         "ngspiceDefaultVsFine": {
@@ -1912,7 +1909,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 28: .model 'DLY_XYZ' has unsupported type 'UGATE' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL DLY_XYZ UGATE (TPLHMN=8US TPLHTY=10US TPLHMX=15"
+        "firstErrorLine": "Parse error at line 28: .model 'DLY_XYZ' has unsupported type 'UGATE' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL DLY_XYZ UGATE (TPLHMN=8US TPLHTY=10US TPLH"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -2468,7 +2465,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:244174"
+          "tran:243896"
         ]
       },
       "spiceTs": {
@@ -3795,7 +3792,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 12,
-      "worstNormalizedError": 0.00153,
+      "worstNormalizedError": 0.00158,
       "worstSignal": "tran v(1)",
       "outcome": "matched",
       "gapBucket": null,
@@ -3806,7 +3803,7 @@
         ],
         "reason": "TSTOP/TMAX_fine = 2500000 steps exceeds the 1000000-step budget",
         "headline": {
-          "worst": 0.00153,
+          "worst": 0.00158,
           "signal": "v(1)"
         },
         "spiceTsVsFine": null,
@@ -3825,7 +3822,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:3077"
+          "tran:3040"
         ]
       },
       "spiceTs": {
@@ -3836,8 +3833,8 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 10,
-      "worstNormalizedError": 1.24,
-      "worstSignal": "tran v(21)",
+      "worstNormalizedError": 1.41,
+      "worstSignal": "tran v(9)",
       "outcome": "mismatch",
       "gapBucket": null,
       "fineReference": {
@@ -3846,15 +3843,15 @@
           "1e-7"
         ],
         "headline": {
-          "worst": 1.24,
-          "signal": "v(21)"
+          "worst": 1.41,
+          "signal": "v(9)"
         },
         "spiceTsVsFine": {
-          "worst": 1.52,
-          "signal": "v(21)"
+          "worst": 1.51,
+          "signal": "v(9)"
         },
         "ngspiceDefaultVsFine": {
-          "worst": 1.57,
+          "worst": 1.83,
           "signal": "v(21)"
         }
       }
@@ -3882,7 +3879,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 4,
-      "worstNormalizedError": 1.5,
+      "worstNormalizedError": 1.48,
       "worstSignal": "tran v(x1.11)",
       "outcome": "mismatch",
       "gapBucket": null,
@@ -3892,15 +3889,15 @@
           "1e-10"
         ],
         "headline": {
-          "worst": 1.5,
+          "worst": 1.48,
           "signal": "v(x1.11)"
         },
         "spiceTsVsFine": {
-          "worst": 1.37,
+          "worst": 1.46,
           "signal": "v(x1.11)"
         },
         "ngspiceDefaultVsFine": {
-          "worst": 1.61,
+          "worst": 1.48,
           "signal": "v(x1.11)"
         }
       }
@@ -3928,7 +3925,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 5,
-      "worstNormalizedError": 3.87,
+      "worstNormalizedError": 2.63,
       "worstSignal": "tran v(3)",
       "outcome": "mismatch",
       "gapBucket": null,
@@ -3938,15 +3935,15 @@
           "8e-13"
         ],
         "headline": {
-          "worst": 3.87,
+          "worst": 2.63,
           "signal": "v(3)"
         },
         "spiceTsVsFine": {
-          "worst": 12.4,
+          "worst": 2.31,
           "signal": "v(3)"
         },
         "ngspiceDefaultVsFine": {
-          "worst": 2.69,
+          "worst": 1.72,
           "signal": "v(3)"
         }
       }
@@ -3968,7 +3965,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:389"
+          "tran:390"
         ]
       },
       "comparedAnalyses": 0,
@@ -3995,7 +3992,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:389"
+          "tran:390"
         ]
       },
       "comparedAnalyses": 0,
@@ -4049,7 +4046,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:125"
+          "tran:124"
         ]
       },
       "comparedAnalyses": 0,
@@ -4157,7 +4154,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:271"
+          "tran:272"
         ]
       },
       "comparedAnalyses": 0,
@@ -4454,7 +4451,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:267"
+          "tran:258"
         ]
       },
       "comparedAnalyses": 0,
@@ -4508,7 +4505,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 5: .model 'URCMOD' has unsupported type 'URC' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model URCMOD URC CPERL=100p RPERL=100k FMAX=10G"
+        "firstErrorLine": "Parse error at line 5: .model 'URCMOD' has unsupported type 'URC' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model URCMOD URC CPERL=100p RPERL=100k FMAX=10G"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -4992,7 +4989,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 45: .model 'primary1' has unsupported type 'LCOUPLE' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model primary1 lcouple(num_turns=120)"
+        "firstErrorLine": "Parse error at line 45: .model 'primary1' has unsupported type 'LCOUPLE' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model primary1 lcouple(num_turns=120)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -5024,7 +5021,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 8,
-      "worstNormalizedError": 0.00338,
+      "worstNormalizedError": 0.00119,
       "worstSignal": "tran i(v1)",
       "outcome": "matched",
       "gapBucket": null,
@@ -5035,7 +5032,7 @@
         ],
         "reason": "TSTOP/TMAX_fine = 1280000 steps exceeds the 1000000-step budget",
         "headline": {
-          "worst": 0.00338,
+          "worst": 0.00119,
           "signal": "i(v1)"
         },
         "spiceTsVsFine": null,
@@ -5650,7 +5647,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 24: .model 'todig_3v' has unsupported type 'ADC_BRIDGE' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL todig_3v adc_bridge(in_high=0.7 in_low=0."
+        "firstErrorLine": "Parse error at line 24: .model 'todig_3v' has unsupported type 'ADC_BRIDGE' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .MODEL todig_3v adc_bridge(in_high=0.7 in_l"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6458,7 +6455,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: .model 'gain_block' has unsupported type 'THIS_MODEL_DOESNT_EXIST' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model gain_block this_model_does"
+        "firstErrorLine": "Parse error at line 13: .model 'gain_block' has unsupported type 'THIS_MODEL_DOESNT_EXIST' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model gain_block this_model"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -6875,7 +6872,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 12: .model 'cap' has unsupported type 'CAPACITOR' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model cap capacitor (c=1000uf ic=1)"
+        "firstErrorLine": "Parse error at line 12: .model 'cap' has unsupported type 'CAPACITOR' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model cap capacitor (c=1000uf ic=1)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7185,7 +7182,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 14: .model 'mod' has unsupported type 'PRINT_PARAM_TYPES' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model mod print_param_types"
+        "firstErrorLine": "Parse error at line 14: .model 'mod' has unsupported type 'PRINT_PARAM_TYPES' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model mod print_param_types"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7211,7 +7208,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 13: .model 'mod' has unsupported type 'PRINT_PARAM_TYPES' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model mod print_param_types integer=2 real=3."
+        "firstErrorLine": "Parse error at line 13: .model 'mod' has unsupported type 'PRINT_PARAM_TYPES' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model mod print_param_types integer=2 re"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7375,7 +7372,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 15: .model 'mod' has unsupported type 'PRINT_PARAM_TYPES' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model mod print_param_types integer=2k real=3"
+        "firstErrorLine": "Parse error at line 15: .model 'mod' has unsupported type 'PRINT_PARAM_TYPES' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model mod print_param_types integer=2k r"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7850,7 +7847,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 17: .model 'CM_NAND0' has unsupported type 'D_NAND' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model CM_NAND0 d_nand ( rise_delay= {riseDelay} fal"
+        "firstErrorLine": "Parse error at line 17: .model 'CM_NAND0' has unsupported type 'D_NAND' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model CM_NAND0 d_nand ( rise_delay= {riseDelay"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7904,7 +7901,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 34: .model 'aswswitch' has unsupported type 'PSWITCH' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model aswswitch pswitch( log=false cntl_on=1.5 cn"
+        "firstErrorLine": "Parse error at line 34: .model 'aswswitch' has unsupported type 'PSWITCH' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model aswswitch pswitch( log=false cntl_on=1"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -7931,7 +7928,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 34: .model 'aswswitch' has unsupported type 'PSWITCH' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model aswswitch pswitch( log=true cntl_on=1.5 cnt"
+        "firstErrorLine": "Parse error at line 34: .model 'aswswitch' has unsupported type 'PSWITCH' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model aswswitch pswitch( log=true cntl_on=1."
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -8399,7 +8396,7 @@
       },
       "comparedAnalyses": 2,
       "comparedSignals": 16,
-      "worstNormalizedError": 0.00147,
+      "worstNormalizedError": 0.00148,
       "worstSignal": "tran v(2)",
       "outcome": "matched",
       "gapBucket": null,
@@ -8409,7 +8406,7 @@
           "2e-10"
         ],
         "headline": {
-          "worst": 0.00147,
+          "worst": 0.00148,
           "signal": "v(2)"
         },
         "spiceTsVsFine": {
@@ -8977,16 +8974,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": "Undefined subcircuit 'sub'"
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "execution: other failure"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "tests-regression-lib-processing-scope-2-cir",
@@ -9003,16 +9001,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": ".control script exited with status 1 at line 73 ERROR, test failure, v(n1001_t) = 1.2 but should be 2 ERROR, test failure, v(n1002_t) = 0.75 but should be 1 ERROR: 2 of 3 tests failed"
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "execution: other failure"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "tests-regression-lib-processing-scope-3-cir",
@@ -9029,16 +9028,17 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "failed",
-        "analyses": [],
-        "firstErrorLine": ".control script exited with status 1 at line 76 ERROR, test failure, v(n1001_t) = 4.87685 but should be 11.25 ERROR, test failure, v(n1002_t) = 7.372 but should be 47.6667 ERROR: 2 of 3 tests failed"
+        "status": "success",
+        "analyses": [
+          "op:1"
+        ]
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
-      "outcome": "spice-ts-loss",
-      "gapBucket": "execution: other failure"
+      "outcome": "not-compared",
+      "gapBucket": null
     },
     {
       "id": "tests-regression-misc-alter-vec-cir",
@@ -9751,7 +9751,7 @@
       "spiceTs": {
         "status": "failed",
         "analyses": [],
-        "firstErrorLine": "Undefined subcircuit 'sub3'"
+        "firstErrorLine": ".control script exited with status 1 at line 76 ERROR, test failure, v(n1001_t) = 8000 but should be 2000 ERROR, test failure, v(n1002_t) = 8000 but should be 4000 ERROR: 2 of 7 tests failed"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -10336,5 +10336,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "e6f06e7ecaba31e52042ebf9ce9029452643ea7191e277496f096ea6d7e6edc0"
+  "outcomeSha256": "bcf75a8aecd3882757409680fd47fe4e7767c35251c76eca5542cf8d01d5ae51"
 }

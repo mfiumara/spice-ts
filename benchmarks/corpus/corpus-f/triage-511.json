@@ -117,7 +117,7 @@
     {
       "id": "tests-general-rtlinv-cir",
       "issueTable": { "outcome": "mismatch", "worst": 0.432, "signal": "dc v(4)" },
-      "current": { "outcome": "matched", "worst": 0.00147, "signal": "tran v(2)" },
+      "current": { "outcome": "matched", "worst": 0.00148, "signal": "tran v(2)" },
       "rootCauses": ["reference-grid-artefact"],
       "evidence": "At ngspice points: 0.0013. Both engines at TMAX 20 ps: all 16 signals <= 8.5e-4. spice-ts default transient vs fine-step ngspice: 5.24e-4 on its grid (DC remains 8.43e-4); ngspice default vs the same reference: 0.00173 on its grid. On main 3b9c836f (merge of #593 with main after #689 ngspice CKTtrunc step control, #686, #691, #696, #479; not bisected): matched, 0.00238 tran v(2)."
     },
@@ -166,21 +166,21 @@
     {
       "id": "examples-transient-noise-simple-noise-cir",
       "issueTable": null,
-      "current": { "outcome": "mismatch", "worst": 3.87, "signal": "tran v(3)" },
+      "current": { "outcome": "mismatch", "worst": 2.63, "signal": "tran v(3)" },
       "rootCauses": ["stochastic-sources"],
       "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 4.71 on 4bdbe0c2, a triage-detail rerun gave 3.75, the b3f04506 regeneration gave 2.5 and the 03706cc7 regeneration 5.44. The value is not reproducible and says nothing about parity. Kept as a published loss → #655. On main 3b9c836f (merge of #593 with main after #689 ngspice CKTtrunc step control, #686, #691, #696, #479; not bisected): 3.04 (stochastic, #655)."
     },
     {
       "id": "examples-transient-noise-rts-1-cir",
       "issueTable": null,
-      "current": { "outcome": "mismatch", "worst": 1.24, "signal": "tran v(21)" },
+      "current": { "outcome": "mismatch", "worst": 1.41, "signal": "tran v(9)" },
       "rootCauses": ["stochastic-sources"],
       "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 1.55 (v(9)) on 4bdbe0c2, a triage-detail rerun gave 1.45, the b3f04506 regeneration gave 1.36 (v(21)) and the 03706cc7 regeneration 1.14 (v(9)). The value is not reproducible and says nothing about parity. Kept as a published loss → #655. On main 3b9c836f (merge of #593 with main after #689 ngspice CKTtrunc step control, #686, #691, #696, #479; not bisected): 1.24 (stochastic, #655)."
     }
   ],
   "deferredMismatches": {
     "issue": "https://github.com/mfiumara/spice-ts/issues/597",
-    "reason": "Newly runnable after prior feature merges, not rows of #511 or mismatches in the imported report. Published losses, root causes not established; follow-up investigation required. adder_bip (completes inside the 120 s bound on 03706cc7, 0.0242) and measure/func-cap (runnable since #647 .measure, 0.5) were added on the 03706cc7 refresh on the same basis. original-examples/analog-models3-transient (runnable since #670 XSPICE hyst, 0.0181 tran v(10)) was added on the b1a1ff58 refresh on the same basis. On the 3b9c836f refresh, res-array (0.000452) and cpl-ibm2 (0.00669) became matches and left this list (not root-caused here), and tests/transmission/cpl3_4_line (no longer fails with timestep too small after a merge after b1a1ff58, not bisected; 0.116 tran v(9)) was added on the same basis. On the 30145e8c refresh (#592), txl1_1_line (0.0036) and cpl3_4_line (2.44e-11) became matches and left this list (not root-caused here), and four decks that had been spice-ts losses became runnable after merges after 3b9c836f (not bisected) and were added on the same basis: transient-noise/shot_ng (1.5 tran v(x1.11), a TRNOISE deck whose realisations are not reproducible, #655), original-examples digital_models (1 tran i(v1)), mixed_io_size (0.208 tran v(4)) and mixed_ref (0.0123 tran v(10)).",
+    "reason": "Newly runnable after prior feature merges, not rows of #511 or mismatches in the imported report. Published losses, root causes not established; follow-up investigation required. adder_bip (completes inside the 120 s bound on 03706cc7, 0.0242) and measure/func-cap (runnable since #647 .measure, 0.5) were added on the 03706cc7 refresh on the same basis. original-examples/analog-models3-transient (runnable since #670 XSPICE hyst, 0.0181 tran v(10)) was added on the b1a1ff58 refresh on the same basis. On the 3b9c836f refresh, res-array (0.000452) and cpl-ibm2 (0.00669) became matches and left this list (not root-caused here), and tests/transmission/cpl3_4_line (no longer fails with timestep too small after a merge after b1a1ff58, not bisected; 0.116 tran v(9)) was added on the same basis. On the 449ce900 refresh (#592), txl1_1_line (0.0036) and cpl3_4_line (2.44e-11) became matches and left this list (not root-caused here), and four decks that had been spice-ts losses became runnable after merges after 3b9c836f (not bisected) and were added on the same basis: transient-noise/shot_ng (1.48 tran v(x1.11), a TRNOISE deck whose realisations are not reproducible, #655), original-examples digital_models (1 tran i(v1)), mixed_io_size (0.208 tran v(4)) and mixed_ref (0.0123 tran v(10)).",
     "fixtures": [
       "examples-ddt-ddt-test1-cir",
       "examples-ddt-ddt-test3-cir",

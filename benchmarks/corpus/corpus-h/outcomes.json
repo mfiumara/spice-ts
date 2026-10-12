@@ -61,6 +61,7 @@
     "perCircuitToleranceTuning": false,
     "matchThreshold": 0.01,
     "matchRule": "matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= 0.01 x max(peak |ngspice signal|, floor), with the corpus-f floor: 0.0001 V for node voltages, 1e-10 A for branch currents, 1e-12 otherwise. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).",
+    "fineReference": "Fine-step reference (#592): ngspice-47 runs the same deck with every active .tran card rewritten to TMAX_fine = min(TSTEP, (TSTOP - TSTART)/50, deck TMAX if given) / 10, i.e. the ngspice default step ceiling divided by 10; TSTEP, TSTOP, TSTART, UIC and every other card are unchanged. The rule is the same for every transient fixture. No reference is generated when the deck has no parsable .tran card outside .control, or when TSTOP/TMAX_fine exceeds 1000000 steps; the ngspice run is bounded at 600 s. Each default run (spice-ts, ngspice) is scored by the same procedure: at the reference's output points, with the default run linearly interpolated onto them, over the transient signals of the headline comparison, normalised by the reference peak with the same per-quantity floors. The headline's one-sided breakpoint alignment applies at every default-run time point within ngspice's breakpoint merge distance (CKTminBreak = 0.00005 x TMAX_fine) of a reference time point; the headline matches breakpoints bit for bit, which here would favour ngspice, whose default run lands on its own reference's breakpoint times exactly while spice-ts's land a few ulps away. This charges each engine for its own published waveform, so a coarse output grid counts against whichever engine produced it. Status (matched/mismatch) is defined by the headline column only. One fine reference is not a convergence proof, and neither column is an accuracy ranking of the engines.",
     "deterministicHashExcludes": [
       "environment",
       "tools.node",
@@ -81,8 +82,8 @@
       "unsupported": 1
     },
     "outcomes": {
-      "matched": 39,
-      "mismatch": 12,
+      "matched": 40,
+      "mismatch": 11,
       "not-compared": 0,
       "spice-ts-loss": 1,
       "ngspice-failed": 0,
@@ -122,8 +123,8 @@
         "both-failed": 0
       },
       "xictools": {
-        "matched": 11,
-        "mismatch": 2,
+        "matched": 12,
+        "mismatch": 1,
         "not-compared": 0,
         "spice-ts-loss": 0,
         "ngspice-failed": 0,
@@ -169,7 +170,25 @@
       "worstNormalizedError": 3.65e-13,
       "worstSignal": "tran i(vin1)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.00001"
+        ],
+        "headline": {
+          "worst": 3.65e-13,
+          "signal": "i(vin1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.561,
+          "signal": "i(vin1)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.561,
+          "signal": "i(vin1)"
+        }
+      }
     },
     {
       "id": "kicad-qa-data-eeschema-issue13431-spice",
@@ -189,7 +208,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 22: .model 'ctest' has unsupported type 'CMETER' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, C, L, LTRA, TXL, CPL, SW, CSW) .model ctest cmeter(gain=1.0)"
+        "firstErrorLine": "Parse error at line 22: .model 'ctest' has unsupported type 'CMETER' (supported: D, NPN, PNP, NJF, PJF, NMOS, PMOS, VDMOS, VDMOSN, VDMOSP, NHFET, NMF, R, RES, C, L, LTRA, TXL, CPL, SW, CSW) .model ctest cmeter(gain=1.0)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -249,10 +268,28 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 27,
-      "worstNormalizedError": 2.49,
-      "worstSignal": "tran v(/itrrandom)",
+      "worstNormalizedError": 2.43,
+      "worstSignal": "tran i(v9)",
       "outcome": "mismatch",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-10"
+        ],
+        "headline": {
+          "worst": 2.43,
+          "signal": "i(v9)"
+        },
+        "spiceTsVsFine": {
+          "worst": 1.95,
+          "signal": "i(v9)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 2.19,
+          "signal": "v(/itrrandom)"
+        }
+      }
     },
     {
       "id": "kicad-qa-data-eeschema-spice-netlists-tlines-tlines-spice",
@@ -280,7 +317,25 @@
       "worstNormalizedError": 0.0453,
       "worstSignal": "tran v(/z0_out)",
       "outcome": "mismatch",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 0.0453,
+          "signal": "v(/z0_out)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00234,
+          "signal": "v(/rlgc_out)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0433,
+          "signal": "v(/rlgc_out)"
+        }
+      }
     },
     {
       "id": "pyspice-examples-c-examples-ngspice-cb-examples-adder-mos-cir",
@@ -311,7 +366,25 @@
       "worstNormalizedError": 1.7e-13,
       "worstSignal": "tran v(1)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "5e-11"
+        ],
+        "headline": {
+          "worst": 1.7e-13,
+          "signal": "v(1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 2.19e-13,
+          "signal": "v(3)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 3.39e-13,
+          "signal": "v(4)"
+        }
+      }
     },
     {
       "id": "pyspice-examples-spice-examples-ac-coupled-transistor-amplifier-cir",
@@ -339,7 +412,25 @@
       "worstNormalizedError": 0.00000806,
       "worstSignal": "tran v(emit)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 0.00000806,
+          "signal": "v(emit)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00000845,
+          "signal": "i(vin)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00000494,
+          "signal": "i(vin)"
+        }
+      }
     },
     {
       "id": "pyspice-examples-spice-examples-low-pass-rc-filter-cir",
@@ -423,10 +514,28 @@
       },
       "comparedAnalyses": 2,
       "comparedSignals": 34,
-      "worstNormalizedError": 0.000193,
+      "worstNormalizedError": 0.000194,
       "worstSignal": "tran v(xop.8)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-8"
+        ],
+        "headline": {
+          "worst": 0.000194,
+          "signal": "v(xop.8)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.000194,
+          "signal": "v(xop.8)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 1.56e-8,
+          "signal": "v(xop.10)"
+        }
+      }
     },
     {
       "id": "pyspice-examples-spice-examples-small-signal-amplifier-cir",
@@ -454,7 +563,25 @@
       "worstNormalizedError": 4.9e-14,
       "worstSignal": "tran i(vin)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 4.9e-14,
+          "signal": "i(vin)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0000127,
+          "signal": "i(vin)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0000127,
+          "signal": "i(vin)"
+        }
+      }
     },
     {
       "id": "pyspice-examples-spice-examples-voltage-divider-cir",
@@ -510,7 +637,25 @@
       "worstNormalizedError": 2.47e-21,
       "worstSignal": "tran i(bsource)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 2.47e-21,
+          "signal": "i(bsource)"
+        },
+        "spiceTsVsFine": {
+          "worst": 2.31e-13,
+          "signal": "i(bsource)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 2.31e-13,
+          "signal": "i(bsource)"
+        }
+      }
     },
     {
       "id": "spicelib-examples-testfiles-dc-rawtest-net",
@@ -591,10 +736,28 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 3,
-      "worstNormalizedError": 0.0000642,
+      "worstNormalizedError": 0.0000127,
       "worstSignal": "tran v(primary_input)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 0.0000127,
+          "signal": "v(primary_input)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00764,
+          "signal": "v(primary_input)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00772,
+          "signal": "v(primary_input)"
+        }
+      }
     },
     {
       "id": "spicesharpparser-circuits-cookbook-pure-spice-active-anti-alias-filter-active-anti-alias-filter-cir",
@@ -625,7 +788,25 @@
       "worstNormalizedError": 8.67e-13,
       "worstSignal": "tran v(source)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-8"
+        ],
+        "headline": {
+          "worst": 8.67e-13,
+          "signal": "v(source)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0000136,
+          "signal": "v(pole1)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0000136,
+          "signal": "v(pole1)"
+        }
+      }
     },
     {
       "id": "spicesharpparser-circuits-cookbook-pure-spice-astable-led-flasher-astable-led-flasher-cir",
@@ -645,7 +826,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:51317"
+          "tran:51266"
         ]
       },
       "comparedAnalyses": 1,
@@ -653,7 +834,25 @@
       "worstNormalizedError": 1.27,
       "worstSignal": "tran v(base2)",
       "outcome": "mismatch",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.00001"
+        ],
+        "headline": {
+          "worst": 1.27,
+          "signal": "v(base2)"
+        },
+        "spiceTsVsFine": {
+          "worst": 1.27,
+          "signal": "v(base1)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 1.27,
+          "signal": "v(base1)"
+        }
+      }
     },
     {
       "id": "spicesharpparser-circuits-cookbook-pure-spice-bjt-audio-preamplifier-bjt-audio-preamplifier-cir",
@@ -687,7 +886,25 @@
       "worstNormalizedError": 0.000574,
       "worstSignal": "tran v(output)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "2e-7"
+        ],
+        "headline": {
+          "worst": 0.000574,
+          "signal": "v(output)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.000588,
+          "signal": "v(output)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0000197,
+          "signal": "v(source)"
+        }
+      }
     },
     {
       "id": "spicesharpparser-circuits-cookbook-pure-spice-bjt-relay-driver-bjt-relay-driver-cir",
@@ -707,15 +924,33 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:11368"
+          "tran:11365"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 4,
-      "worstNormalizedError": 0.0224,
+      "worstNormalizedError": 0.0215,
       "worstSignal": "tran v(collector)",
       "outcome": "mismatch",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 0.0215,
+          "signal": "v(collector)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.467,
+          "signal": "v(base)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.385,
+          "signal": "v(collector)"
+        }
+      }
     },
     {
       "id": "spicesharpparser-circuits-cookbook-pure-spice-diode-envelope-detector-diode-envelope-detector-cir",
@@ -743,7 +978,25 @@
       "worstNormalizedError": 0.000146,
       "worstSignal": "tran v(diode_input)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 0.000146,
+          "signal": "v(diode_input)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.5,
+          "signal": "v(input)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.000555,
+          "signal": "v(envelope)"
+        }
+      }
     },
     {
       "id": "spicesharpparser-circuits-cookbook-pure-spice-loaded-voltage-divider-loaded-voltage-divider-cir",
@@ -774,7 +1027,25 @@
       "worstNormalizedError": 0.0000168,
       "worstSignal": "tran v(buffered)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 0.0000168,
+          "signal": "v(buffered)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.000214,
+          "signal": "v(buffered)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.000205,
+          "signal": "v(buffered)"
+        }
+      }
     },
     {
       "id": "spicesharpparser-circuits-cookbook-pure-spice-pwm-dac-pwm-dac-cir",
@@ -802,7 +1073,25 @@
       "worstNormalizedError": 0.00033,
       "worstSignal": "tran v(pole1)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "5e-8"
+        ],
+        "headline": {
+          "worst": 0.00033,
+          "signal": "v(pole1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0000034,
+          "signal": "v(pole1)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.000332,
+          "signal": "v(pole1)"
+        }
+      }
     },
     {
       "id": "spicesharpparser-circuits-cookbook-pure-spice-rc-sensor-input-filter-rc-sensor-input-filter-cir",
@@ -833,7 +1122,25 @@
       "worstNormalizedError": 0.00000306,
       "worstSignal": "tran v(filtered)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-7"
+        ],
+        "headline": {
+          "worst": 0.00000306,
+          "signal": "v(filtered)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00027,
+          "signal": "v(filtered)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00027,
+          "signal": "v(filtered)"
+        }
+      }
     },
     {
       "id": "spicesharpparser-circuits-cookbook-pure-spice-rectifier-power-supply-rectifier-power-supply-cir",
@@ -853,15 +1160,33 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:15038"
+          "tran:15092"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 5,
-      "worstNormalizedError": 0.00236,
+      "worstNormalizedError": 0.00467,
       "worstSignal": "tran v(output)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.000002"
+        ],
+        "headline": {
+          "worst": 0.00467,
+          "signal": "v(output)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.000817,
+          "signal": "v(output)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00236,
+          "signal": "v(output)"
+        }
+      }
     },
     {
       "id": "spicesharpparser-circuits-cookbook-pure-spice-transmission-line-termination-transmission-line-termination-cir",
@@ -889,7 +1214,25 @@
       "worstNormalizedError": 0.0625,
       "worstSignal": "tran v(open_out)",
       "outcome": "mismatch",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "2.5e-11"
+        ],
+        "headline": {
+          "worst": 0.0625,
+          "signal": "v(open_out)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.0271,
+          "signal": "v(open_out)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0563,
+          "signal": "v(open_out)"
+        }
+      }
     },
     {
       "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example04-cir",
@@ -1057,7 +1400,25 @@
       "worstNormalizedError": 1.5e-13,
       "worstSignal": "tran v(out)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-9"
+        ],
+        "headline": {
+          "worst": 1.5e-13,
+          "signal": "v(out)"
+        },
+        "spiceTsVsFine": {
+          "worst": 1.27e-10,
+          "signal": "v(out)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 1.27e-10,
+          "signal": "v(out)"
+        }
+      }
     },
     {
       "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example09-cir",
@@ -1088,7 +1449,25 @@
       "worstNormalizedError": 2.16e-16,
       "worstSignal": "ac v(1)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "0.003"
+        ],
+        "headline": {
+          "worst": 0,
+          "signal": "v(1)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0,
+          "signal": "v(1)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0,
+          "signal": "v(1)"
+        }
+      }
     },
     {
       "id": "spicesharpparser-src-spicesharpparser-integrationtests-examples-circuits-example10-cir",
@@ -1442,7 +1821,25 @@
       "worstNormalizedError": 0.00798,
       "worstSignal": "tran v(xndinv4.14)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "5e-11"
+        ],
+        "headline": {
+          "worst": 0.00798,
+          "signal": "v(xndinv4.14)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.083,
+          "signal": "i(vin)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0831,
+          "signal": "i(vin)"
+        }
+      }
     },
     {
       "id": "xictools-wrspice-examples-mosamp2-cir",
@@ -1464,15 +1861,33 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:3052"
+          "tran:2735"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 24,
-      "worstNormalizedError": 0.0161,
+      "worstNormalizedError": 0.00627,
       "worstSignal": "tran v(6)",
-      "outcome": "mismatch",
-      "gapBucket": null
+      "outcome": "matched",
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-8"
+        ],
+        "headline": {
+          "worst": 0.00627,
+          "signal": "v(6)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.028,
+          "signal": "v(6)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.0273,
+          "signal": "v(6)"
+        }
+      }
     },
     {
       "id": "xictools-wrspice-examples-mosmem-cir",
@@ -1503,7 +1918,25 @@
       "worstNormalizedError": 0.000636,
       "worstSignal": "tran i(vdd)",
       "outcome": "matched",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "2e-9"
+        ],
+        "headline": {
+          "worst": 0.000636,
+          "signal": "i(vdd)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.00265,
+          "signal": "v(4)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.00262,
+          "signal": "v(4)"
+        }
+      }
     },
     {
       "id": "xictools-wrspice-examples-pz2-cir",
@@ -1620,15 +2053,33 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:145"
+          "tran:136"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 10,
-      "worstNormalizedError": 0.708,
+      "worstNormalizedError": 0.107,
       "worstSignal": "tran i(vin)",
       "outcome": "mismatch",
-      "gapBucket": null
+      "gapBucket": null,
+      "fineReference": {
+        "status": "compared",
+        "tmax": [
+          "1e-9"
+        ],
+        "headline": {
+          "worst": 0.107,
+          "signal": "i(vin)"
+        },
+        "spiceTsVsFine": {
+          "worst": 0.897,
+          "signal": "i(vin)"
+        },
+        "ngspiceDefaultVsFine": {
+          "worst": 0.92,
+          "signal": "i(vin)"
+        }
+      }
     },
     {
       "id": "xictools-wrspice-examples-simplepz-cir",
@@ -1662,5 +2113,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "7716492cb1a4771ded806943b2245e5cba98ab4abaa858a66d1a50228708af53"
+  "outcomeSha256": "12df0645881703295931656693dc74d0004fa194ecaa46181ac8e13f2d47f16e"
 }
