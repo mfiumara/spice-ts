@@ -2,7 +2,7 @@
   "schemaVersion": "spice-ts-corpus-f-triage/v1",
   "issue": "https://github.com/mfiumara/spice-ts/issues/511",
   "measuredOn": {
-    "spiceTsCommit": "4bdbe0c2db7aacbdaf8862c2133c15ed8c3b7cfc",
+    "spiceTsCommit": "b3f045063a53a5c1183ed3890bc6f6c042c63ec7",
     "ngspice": "ngspice-47",
     "metric": "corpus-f published metric (lib.ts normalizedSignalErrors, MATCH_THRESHOLD 0.01), unchanged",
     "tool": "pnpm exec tsx benchmarks/corpus/corpus-f/triage-detail.ts <fixture-id> [--tmax s] [--deck variant] [--reference-tmax s [--candidate ngspice]]",
@@ -127,14 +127,14 @@
       "issueTable": { "outcome": "mismatch", "worst": 0.0439, "signal": "tran v(emit)" },
       "current": { "outcome": "matched", "worst": 2.26e-05, "signal": "tran i(vin)" },
       "rootCauses": [],
-      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and 4bdbe0c2 give 0.0000226 after #531 initial-condition handling."
+      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169, 4bdbe0c2 and b3f04506 give 0.0000226 after #531 initial-condition handling."
     },
     {
       "id": "examples-xspice-original-examples-spice3-deck",
       "issueTable": { "outcome": "mismatch", "worst": 0.0439, "signal": "tran v(emit)" },
       "current": { "outcome": "matched", "worst": 2.26e-05, "signal": "tran i(vin)" },
       "rootCauses": [],
-      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169 and 4bdbe0c2 give 0.0000226 after #531 initial-condition handling."
+      "evidence": "Already matched in the imported outcomes.json (0.000493). Fresh runs on bf2e4169, 4bdbe0c2 and b3f04506 give 0.0000226 after #531 initial-condition handling."
     },
     {
       "id": "examples-probe-mos-test-cir",
@@ -160,16 +160,16 @@
     {
       "id": "examples-transient-noise-simple-noise-cir",
       "issueTable": null,
-      "current": { "outcome": "mismatch", "worst": 4.71, "signal": "tran v(3)" },
+      "current": { "outcome": "mismatch", "worst": 2.5, "signal": "tran v(3)" },
       "rootCauses": ["stochastic-sources"],
-      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. A triage-detail rerun gave 3.75 against the published 4.71. The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
+      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 4.71 on 4bdbe0c2, a triage-detail rerun gave 3.75, and the b3f04506 regeneration gave 2.5 with no simulator change to this deck. The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
     },
     {
       "id": "examples-transient-noise-rts-1-cir",
       "issueTable": null,
-      "current": { "outcome": "mismatch", "worst": 1.55, "signal": "tran v(9)" },
+      "current": { "outcome": "mismatch", "worst": 1.36, "signal": "tran v(21)" },
       "rootCauses": ["stochastic-sources"],
-      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. A triage-detail rerun gave 1.45 against the published 1.55. The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
+      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 1.55 (v(9)) on 4bdbe0c2, a triage-detail rerun gave 1.45, and the b3f04506 regeneration gave 1.36 (v(21)). The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
     }
   ],
   "deferredMismatches": {

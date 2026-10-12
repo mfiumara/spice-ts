@@ -44,8 +44,8 @@
     },
     "spiceTs": {
       "success": 101,
-      "failed": 22,
-      "unsupported": 213
+      "failed": 23,
+      "unsupported": 212
     },
     "outcomes": {
       "matched": 32,
@@ -59,8 +59,8 @@
   "gapBuckets": [
     {
       "bucket": "parse: other unsupported syntax",
-      "fixtures": 73,
-      "ngspiceSuccess": 68,
+      "fixtures": 72,
+      "ngspiceSuccess": 67,
       "ids": [
         "examples-control-structs-foreach-bjt-ft-sp",
         "examples-digital-auto-bridge-shared-line-cir",
@@ -73,9 +73,7 @@
         "examples-measure-inv-meas-tran-sp",
         "examples-measure-rc-meas-ac-sp",
         "examples-memristor-memristor-x-sp",
-        "examples-memristor-memristor-sp",
         "examples-mos-nmos-out-bsim330-plainwrite-sp",
-        "examples-noise-bipolar-noise-cir",
         "examples-numparam-vector-param-cir",
         "examples-osdi-hicuml0-dff-y-ecl-vbic-sp",
         "examples-osdi-hicuml0-vbic-out-sp",
@@ -134,6 +132,7 @@
         "examples-xspice-verilator-pwm-cir",
         "tests-bsim1-test-cir",
         "tests-bsim2-test-cir",
+        "tests-regression-func-func-1-cir",
         "tests-vbic-noise-scale-test-cir"
       ],
       "issue": null
@@ -185,10 +184,11 @@
     },
     {
       "bucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)",
-      "fixtures": 31,
-      "ngspiceSuccess": 27,
+      "fixtures": 32,
+      "ngspiceSuccess": 28,
       "ids": [
         "examples-control-structs-new-check-4-sp",
+        "examples-control-structs-s-param-cir",
         "examples-digital-compare-adder-mos-cir",
         "examples-loops-loop-param-cir",
         "examples-measure-mos-meas-dc-control-file-sp",
@@ -224,11 +224,12 @@
     },
     {
       "bucket": "execution: other failure",
-      "fixtures": 16,
-      "ngspiceSuccess": 14,
+      "fixtures": 17,
+      "ngspiceSuccess": 15,
       "ids": [
         "examples-control-structs-if-test-1-cir",
-        "examples-control-structs-s-param-cir",
+        "examples-memristor-memristor-sp",
+        "examples-noise-bipolar-noise-cir",
         "examples-rf-sp-tschebyschef-lp-cir",
         "examples-various-bjtnoise-cir",
         "examples-various-todo-temper-3-cir",
@@ -283,8 +284,8 @@
     },
     {
       "bucket": "expression: quoted/brace expressions in values (TEMPER, functions)",
-      "fixtures": 8,
-      "ngspiceSuccess": 7,
+      "fixtures": 7,
+      "ngspiceSuccess": 6,
       "ids": [
         "examples-measure-buggy-meas-tran-sp",
         "examples-measure-meas-expression-cir",
@@ -292,7 +293,6 @@
         "examples-monte-carlo-rand-numb-test-cir",
         "examples-rf-sp-file-cir",
         "examples-vdmos-dcdc-sp",
-        "tests-regression-func-func-1-cir",
         "tests-regression-parser-bxpressn-1-cir"
       ],
       "issue": "https://github.com/mfiumara/spice-ts/issues/493"
@@ -1564,7 +1564,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Unsupported bounded BJT model parameter: 'VAR'"
+        "firstErrorLine": "Unsupported BJT model parameter: 'PTF' (excess phase is not implemented)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -1696,16 +1696,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "failed",
+        "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Undefined variable 'Vbias_in'"
+        "firstErrorLine": "Parse error at line 79: Unsupported .control command 'alter': device 'R.X1.RS1' is inside a subcircuit; only top-level devices can be altered alter R.X1.RS1=1e12"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "execution: other failure"
+      "gapBucket": "control: ngspice control-language scripting (set/let/save/foreach/meas/...)"
     },
     {
       "id": "examples-ddt-ddt-test1-cir",
@@ -2335,16 +2335,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
+        "status": "failed",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 26: Cannot parse number: '20e3/stime' .subckt memristor plus minus PARAMS: Ron=1K Roff=10K Rinit=7.0K alpha=0 beta=20e3/stime Vt=1.6"
+        "firstErrorLine": "Control script error at line 38: no such vector 'stime' in plot 'const' let deltime = stime/100"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "execution: other failure"
     },
     {
       "id": "examples-monte-carlo-mc-ring-sp",
@@ -2410,7 +2410,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:243317"
+          "tran:243884"
         ]
       },
       "spiceTs": {
@@ -2678,16 +2678,16 @@
         "note": "ran its .control block (analyses run from .control, or the block ends with quit), so -r exported no vectors to compare"
       },
       "spiceTs": {
-        "status": "unsupported",
+        "status": "failed",
         "analyses": [],
-        "firstErrorLine": "Unsupported bounded BJT model parameter: 'VAR'"
+        "firstErrorLine": ".noise does not support BJT model parameter 'VAR' for 'q1'"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "parse: other unsupported syntax"
+      "gapBucket": "execution: other failure"
     },
     {
       "id": "examples-noise-resdiv-gain-cir",
@@ -3696,7 +3696,7 @@
       "ngspice": {
         "status": "success",
         "analyses": [
-          "tran:3116"
+          "tran:3039"
         ]
       },
       "spiceTs": {
@@ -3707,8 +3707,8 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 10,
-      "worstNormalizedError": 1.55,
-      "worstSignal": "tran v(9)",
+      "worstNormalizedError": 1.36,
+      "worstSignal": "tran v(21)",
       "outcome": "mismatch",
       "gapBucket": null
     },
@@ -3762,7 +3762,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 5,
-      "worstNormalizedError": 4.71,
+      "worstNormalizedError": 2.5,
       "worstSignal": "tran v(3)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -3784,7 +3784,7 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:19942"
+          "tran:25295"
         ]
       },
       "comparedAnalyses": 0,
@@ -4427,7 +4427,7 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Unsupported bounded BJT model parameter: 'VAR'"
+        "firstErrorLine": "Unsupported BJT model parameter: 'PTF' (excess phase is not implemented)"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
@@ -8318,14 +8318,14 @@
       "spiceTs": {
         "status": "unsupported",
         "analyses": [],
-        "firstErrorLine": "Parse error at line 36: Unknown function 'v' b1004_t n1004_t 0 v = '(v((17.0))+(17.0))'"
+        "firstErrorLine": "Parse error at line 36: v() takes one or two node names b1004_t n1004_t 0 v = ((v((17.0))+(17.0)))"
       },
       "comparedAnalyses": 0,
       "comparedSignals": 0,
       "worstNormalizedError": null,
       "worstSignal": null,
       "outcome": "spice-ts-loss",
-      "gapBucket": "expression: quoted/brace expressions in values (TEMPER, functions)"
+      "gapBucket": "parse: other unsupported syntax"
     },
     {
       "id": "tests-regression-lib-processing-scope-1-cir",
@@ -9573,5 +9573,5 @@
       "gapBucket": "parse: other unsupported syntax"
     }
   ],
-  "outcomeSha256": "bca8f348770b9c4cf883697be243829447171e5f892dc0a78cbbe70e5c1005df"
+  "outcomeSha256": "832172f09e69e8e5c7d5ef4782c5361abc85687f13afc380cc921411fd076082"
 }

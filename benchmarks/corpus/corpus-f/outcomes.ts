@@ -230,6 +230,49 @@ export async function runNgspice(input: Buffer, circuit: CorpusFCircuit): Promis
   }
 }
 
+interface PackedAnalysis {
+  type: EngineAnalysis['type'];
+  plotName: string;
+  grid: Float64Array;
+  signals: Array<[name: string, re: Float64Array, im: Float64Array]>;
+}
+
+/**
+ * Typed-array transport for the spice-ts child's result. v8-serialising one object per sample
+ * exhausts the parent's default heap on long transients (adder_bip: 106k points x 450 signals);
+ * packed Float64Arrays carry the same values bit-for-bit at a fraction of the cost.
+ */
+export function packExecution(execution: EngineExecution): Omit<EngineExecution, 'analyses'> & { analyses: PackedAnalysis[] } {
+  return {
+    ...execution,
+    analyses: execution.analyses.map(analysis => ({
+      type: analysis.type,
+      plotName: analysis.plotName,
+      grid: Float64Array.from(analysis.series.grid),
+      signals: Object.entries(analysis.series.signals).map(([name, samples]) => [
+        name,
+        Float64Array.from(samples, sample => sample.re),
+        Float64Array.from(samples, sample => sample.im),
+      ]),
+    })),
+  };
+}
+
+export function unpackExecution(packed: ReturnType<typeof packExecution>): EngineExecution {
+  return {
+    ...packed,
+    analyses: packed.analyses.map(analysis => ({
+      type: analysis.type,
+      plotName: analysis.plotName,
+      series: {
+        grid: Array.from(analysis.grid),
+        signals: Object.fromEntries(analysis.signals.map(([name, re, im]) =>
+          [name, Array.from(re, (value, index) => ({ re: value, im: im[index] }))])),
+      },
+    })),
+  };
+}
+
 /**
  * spice-ts on the identical bytes in a bounded child process (same 120 s bound as the aggregate
  * report). Calls `simulate()` only: unlike the aggregate adapter it skips the `parse()` pre-check,
@@ -256,7 +299,7 @@ export async function runBoundedSimulate(input: Buffer, circuit: ClassicCircuit)
           || `spice-ts child exited ${completed.status}`;
       return { status: 'failed', convergence: timedOut ? 'failed' : 'not-run', analyses: [], error: detail.slice(0, 1000) };
     }
-    return deserialize(await readFile(outputPath)) as EngineExecution;
+    return unpackExecution(deserialize(await readFile(outputPath)) as ReturnType<typeof packExecution>);
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
@@ -570,7 +613,7 @@ if (process.argv[2] === SPICE_TS_CHILD_FLAG) {
   (async () => {
     const [inputPath, circuitPath, outputPath] = process.argv.slice(3);
     const circuit = JSON.parse(await readFile(circuitPath, 'utf8')) as ClassicCircuit;
-    await writeFile(outputPath, serialize(await runNativeSpiceTs(await readFile(inputPath), circuit, { parseFirst: false })));
+    await writeFile(outputPath, serialize(packExecution(await runNativeSpiceTs(await readFile(inputPath), circuit, { parseFirst: false }))));
   })().catch(error => {
     console.error(error);
     process.exitCode = 1;
