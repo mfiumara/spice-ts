@@ -359,6 +359,11 @@ interface StreamJob {
   emitted: SimulationEventV1[];
   producedPointCount: number;
   liveEventsProduced: boolean;
+  /**
+   * Events of a finished, non-live result not yet admitted to the unread window. They are
+   * produced lazily and admitted in cap-sized batches as reads drain `events` (#794).
+   */
+  backlog?: { source: Iterator<SimulationEventV1>; pending?: { event: SimulationEventV1; bytes: number } };
   releaseBatch?: () => void;
   batchEndOffset?: number;
   terminal?: SimulationReadDataV1;
@@ -502,6 +507,14 @@ class StreamStore {
       job.unreadBytes -= serializedEventBytes(consumed);
       job.eventBaseOffset = nextOffset;
     }
+    if (job.backlog && consumedCount > 0) {
+      try {
+        this.admitBacklog(job);
+      } catch (error) {
+        job.backlog = undefined;
+        job.state = { status: 'failed', error: publicError(error) };
+      }
+    }
     if (events.length > 0 && job.batchEndOffset !== undefined && nextOffset >= job.batchEndOffset) {
       job.releaseBatch?.();
       job.releaseBatch = undefined;
@@ -509,7 +522,7 @@ class StreamStore {
     }
 
     let data: SimulationReadDataV1;
-    if (nextOffset < eventEndOffset || job.state.status === 'pending') {
+    if (nextOffset < job.eventBaseOffset + job.events.length || job.state.status === 'pending') {
       const nextCursor = streamCursor(args.jobId, nextOffset);
       job.cursorOffsets.set(nextCursor, nextOffset);
       data = { status: 'running', events, nextCursor };
@@ -533,6 +546,7 @@ class StreamStore {
     job.controller.abort();
     job.releaseBatch?.();
     job.releaseBatch = undefined;
+    job.backlog = undefined;
     job.events = [];
     job.unreadBytes = 0;
     const data = failureRead(jobId, job.emitted, {
@@ -568,7 +582,10 @@ class StreamStore {
         });
       enforceResultBounds(result, limits);
       if (!job.terminal) {
-        if (!job.liveEventsProduced) this.retainEvents(resultEvents(result), job);
+        if (!job.liveEventsProduced) {
+          job.backlog = { source: resultEvents(result) };
+          this.admitBacklog(job);
+        }
         job.state = { status: 'ready', result };
         this.enterTerminal(jobId, job);
       }
@@ -591,11 +608,44 @@ class StreamStore {
     job.unreadBytes = unreadBytes;
   }
 
+  /**
+   * Move backlog events into the unread window while both unread caps still hold. A finished
+   * result is already bounded by `maxResultPoints`/`maxSerializedResultBytes`; the caps here only
+   * bound how much of it is materialised as unread events at once. An event that cannot fit even
+   * into an empty window fails the job, as an over-limit live batch does.
+   */
+  private admitBacklog(job: StreamJob): void {
+    const backlog = job.backlog;
+    if (!backlog) return;
+    for (;;) {
+      let pending = backlog.pending;
+      if (!pending) {
+        const next = backlog.source.next();
+        if (next.done) {
+          job.backlog = undefined;
+          return;
+        }
+        pending = { event: next.value, bytes: serializedEventBytes([next.value]) };
+      }
+      const fits = job.events.length + 1 <= this.limits.maxUnreadEvents
+        && job.unreadBytes + pending.bytes <= this.limits.maxUnreadBytes;
+      if (!fits) {
+        if (job.events.length === 0) this.retainEvents([pending.event], job);
+        backlog.pending = pending;
+        return;
+      }
+      backlog.pending = undefined;
+      job.events.push(pending.event);
+      job.unreadBytes += pending.bytes;
+    }
+  }
+
   private expireRunning(jobId: string, job: StreamJob): void {
     if (this.jobs.get(jobId) !== job || job.terminalAt !== undefined) return;
     job.controller.abort();
     job.releaseBatch?.();
     job.releaseBatch = undefined;
+    job.backlog = undefined;
     job.events = [];
     job.unreadBytes = 0;
     const error = apiError(
@@ -710,34 +760,50 @@ function streamCursor(jobId: string, offset: number): string {
   return Buffer.from(`${jobId}:${offset}`, 'utf8').toString('base64url');
 }
 
-function resultEvents(result: SimulationResultV1): SimulationEventV1[] {
-  const events: SimulationEventV1[] = [];
+/** Lazily derive the stream events of a finished result, so only the unread window is materialised. */
+function* resultEvents(result: SimulationResultV1): Generator<SimulationEventV1, void, undefined> {
   for (const analysis of result.analyses) {
     const common = { analysisIndex: analysis.analysisIndex, ...(analysis.step ? { step: analysis.step } : {}) };
-    events.push({ type: 'analysis-start', analysis: analysis.type, ...common });
-    const points = analysisPoints(analysis);
-    points.forEach((point, pointIndex) => events.push({ type: 'point', ...common, pointIndex, point }));
-    events.push({ type: 'analysis-end', analysis: analysis.type, ...common, pointCount: points.length });
+    yield { type: 'analysis-start', analysis: analysis.type, ...common };
+    let pointCount = 0;
+    if (analysis.type !== 'op') {
+      pointCount = analysisPointCount(analysis);
+      for (let pointIndex = 0; pointIndex < pointCount; pointIndex++) {
+        yield { type: 'point', ...common, pointIndex, point: analysisPoint(analysis, pointIndex) };
+      }
+    }
+    yield { type: 'analysis-end', analysis: analysis.type, ...common, pointCount };
   }
-  return events;
 }
 
-function analysisPoints(analysis: AnalysisResultV1): Array<Extract<SimulationEventV1, { type: 'point' }>['point']> {
+type PointAnalysisV1 = Exclude<AnalysisResultV1, { type: 'op' }>;
+
+function analysisPointCount(analysis: PointAnalysisV1): number {
   switch (analysis.type) {
-    case 'op': return [];
-    case 'dc': return analysis.axis.values.map((value, index) => ({
-      type: 'dc', axis: { name: analysis.axis.name, unit: analysis.axis.unit, value },
+    case 'dc': return analysis.axis.values.length;
+    case 'tran': return analysis.timeS.length;
+    case 'ac': return analysis.frequencyHz.length;
+  }
+}
+
+function analysisPoint(
+  analysis: PointAnalysisV1,
+  index: number,
+): Extract<SimulationEventV1, { type: 'point' }>['point'] {
+  switch (analysis.type) {
+    case 'dc': return {
+      type: 'dc', axis: { name: analysis.axis.name, unit: analysis.axis.unit, value: analysis.axis.values[index]! },
       voltagesV: indexedRecord(analysis.voltagesV, index), currentsA: indexedRecord(analysis.currentsA, index),
-    }));
-    case 'tran': return analysis.timeS.map((timeS, index) => ({
-      type: 'tran', timeS,
+    };
+    case 'tran': return {
+      type: 'tran', timeS: analysis.timeS[index]!,
       voltagesV: indexedRecord(analysis.voltagesV, index), currentsA: indexedRecord(analysis.currentsA, index),
-    }));
-    case 'ac': return analysis.frequencyHz.map((frequencyHz, index) => ({
-      type: 'ac', frequencyHz,
+    };
+    case 'ac': return {
+      type: 'ac', frequencyHz: analysis.frequencyHz[index]!,
       voltagePhasors: indexedRecord(analysis.voltagePhasors, index),
       currentPhasors: indexedRecord(analysis.currentPhasors, index),
-    }));
+    };
   }
 }
 
