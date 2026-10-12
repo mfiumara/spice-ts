@@ -121,7 +121,9 @@ Targeted suites run locally: `src/solver`, `src/mna`, `src/analysis`,
 - Aggregate corpus: `issue-486/corpus-hash.mts` digests of all 100 fixtures'
   spice-ts `EngineExecution` are byte-identical between main `9048f8cf` and this
   branch (`corpus-digests-before.json`, `corpus-digests-after.json`): 100/100
-  identical, no child failed.
+  identical, no child failed. After rebasing onto main `544bfffc`, again 100/100
+  identical between that main and the rebased branch
+  (`corpus-digests-before-544bfffc.json`, `corpus-digests-after-rebased.json`).
 - Waveform SHA-256 hashes (`issue-486/sample.mjs`: time axis, every node voltage
   and branch current as Float64 bytes) are identical in every A/B pair below,
   and equal to the #710 hashes for the RC ladder, mesh and MOS chain cells.
