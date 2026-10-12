@@ -1,0 +1,145 @@
+{
+  "spiceTsPoints": 2123,
+  "ngspicePoints": 1533,
+  "spiceTsEnd": 0.000001,
+  "ngspiceEnd": 0.000001,
+  "threshold": 0.01,
+  "worst": {
+    "signal": "i(vin4a)",
+    "absoluteMax": 0.000016224683901485095,
+    "ngspicePeak": 0.00001441484832339432,
+    "normalized": 1.125553563761995,
+    "match": false,
+    "oppositeLevelFraction": 0.0045662100456621
+  },
+  "signals": [
+    {
+      "signal": "v(1)",
+      "absoluteMax": 6.394884621840902e-14,
+      "ngspicePeak": 3,
+      "normalized": 2.1316282072803006e-14,
+      "match": true,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "v(10)",
+      "absoluteMax": 3.8232655342867887,
+      "ngspicePeak": 3.797304097595216,
+      "normalized": 1.0068368073834313,
+      "match": false,
+      "oppositeLevelFraction": 0.05348988910632746
+    },
+    {
+      "signal": "v(11)",
+      "absoluteMax": 3.8435718162523296,
+      "ngspicePeak": 3.799649024290621,
+      "normalized": 1.0115596971406875,
+      "match": false,
+      "oppositeLevelFraction": 0.023483365949119372
+    },
+    {
+      "signal": "v(12)",
+      "absoluteMax": 3.871193235327417,
+      "ngspicePeak": 3.798921488082115,
+      "normalized": 1.0190242803048262,
+      "match": false,
+      "oppositeLevelFraction": 0.015003261578604044
+    },
+    {
+      "signal": "v(13)",
+      "absoluteMax": 3.788259689482712,
+      "ngspicePeak": 3.750113788955685,
+      "normalized": 1.0101719314862843,
+      "match": false,
+      "oppositeLevelFraction": 0.003913894324853229
+    },
+    {
+      "signal": "v(2)",
+      "absoluteMax": 4.168887457467463e-14,
+      "ngspicePeak": 3,
+      "normalized": 1.3896291524891543e-14,
+      "match": true,
+      "oppositeLevelFraction": 0
+    },
+    {
+      "signal": "v(9)",
+      "absoluteMax": 3.8187198239184026,
+      "ngspicePeak": 3.779249534440561,
+      "normalized": 1.0104439490216632,
+      "match": false,
+      "oppositeLevelFraction": 0.06979778212654925
+    },
+    {
+      "signal": "i(vcc)",
+      "absoluteMax": 0.0001419898608312061,
+      "ngspicePeak": 0.0002748277406070551,
+      "normalized": 0.5166503953260716,
+      "match": false,
+      "oppositeLevelFraction": 0.0006523157208088715
+    },
+    {
+      "signal": "i(vin1a)",
+      "absoluteMax": 0.000016614704260769518,
+      "ngspicePeak": 0.00001502039915372986,
+      "normalized": 1.106142659107948,
+      "match": false,
+      "oppositeLevelFraction": 0.033920417482061316
+    },
+    {
+      "signal": "i(vin1b)",
+      "absoluteMax": 0.000012776893070253945,
+      "ngspicePeak": 0.00001511650947988085,
+      "normalized": 0.8452277350971273,
+      "match": false,
+      "oppositeLevelFraction": 0.025440313111545987
+    },
+    {
+      "signal": "i(vin2a)",
+      "absoluteMax": 0.000013483078083698747,
+      "ngspicePeak": 0.0000146796341629209,
+      "normalized": 0.9184886989728588,
+      "match": false,
+      "oppositeLevelFraction": 0.009784735812133072
+    },
+    {
+      "signal": "i(vin2b)",
+      "absoluteMax": 0.000012732676431249808,
+      "ngspicePeak": 0.00001451606058283933,
+      "normalized": 0.8771440680195417,
+      "match": false,
+      "oppositeLevelFraction": 0.0091324200913242
+    },
+    {
+      "signal": "i(vin3a)",
+      "absoluteMax": 0.000013468792219229618,
+      "ngspicePeak": 0.00001466043227300869,
+      "normalized": 0.9187172634757163,
+      "match": false,
+      "oppositeLevelFraction": 0.003913894324853229
+    },
+    {
+      "signal": "i(vin3b)",
+      "absoluteMax": 0.00001273267432297087,
+      "ngspicePeak": 0.00001436293731105725,
+      "normalized": 0.8864951539660814,
+      "match": false,
+      "oppositeLevelFraction": 0.003913894324853229
+    },
+    {
+      "signal": "i(vin4a)",
+      "absoluteMax": 0.000016224683901485095,
+      "ngspicePeak": 0.00001441484832339432,
+      "normalized": 1.125553563761995,
+      "match": false,
+      "oppositeLevelFraction": 0.0045662100456621
+    },
+    {
+      "signal": "i(vin4b)",
+      "absoluteMax": 0.00001273248706569005,
+      "ngspicePeak": 0.00001355970020807136,
+      "normalized": 0.93899473220736,
+      "match": false,
+      "oppositeLevelFraction": 0.0045662100456621
+    }
+  ]
+}
