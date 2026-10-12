@@ -100,10 +100,12 @@ describe('MOS1 instance multiplier M (#731)', () => {
       return values[i - 1] + fraction * (values[i] - values[i - 1]);
     };
     for (const [node, t, expected] of references) {
-      // 5 mV: ngspice's 6-digit meas output plus the step-control difference on the 1 ns edges.
-      close(sample(tran.voltage(node), t), expected, 0, 5e-3);
+      // 0.5 mV: ngspice's 6-digit meas output plus the step-control difference on the 1 ns
+      // edges. spice-ts is within 0.11 mV at every sample; M=1 vs M=4 moves v(g) by 0.73 V.
+      close(sample(tran.voltage(node), t), expected, 0, 5e-4);
     }
-    for (const [t, expected] of gateCurrent) close(sample(tran.current('VIN'), t), expected, 0.01, 0);
+    // spice-ts is within 6e-5 relative of both gate-current samples.
+    for (const [t, expected] of gateCurrent) close(sample(tran.current('VIN'), t), expected, 1e-3, 0);
 
     // M=4 is exactly four parallel M=1 instances (same charges, same conductances).
     const parallel = (await simulate(deck('').replace(
