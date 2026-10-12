@@ -50,6 +50,9 @@ import {
   VOLTAGE_PEAK_FLOOR,
 } from './lib.js';
 
+/** The published match rule: the per-quantity peak floor (#593) applied by normalizedSignalErrors. Shared with corpus-g. */
+export const MATCH_RULE = `matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= ${MATCH_THRESHOLD} x max(peak |ngspice signal|, floor). The floor is uniform per quantity (#593): ${VOLTAGE_PEAK_FLOOR} V for node voltages v(...) and ${CURRENT_PEAK_FLOOR} A for branch currents i(...), so a signal whose ngspice peak is zero or tiny matches when the absolute difference is at most the ngspice-47 default VNTOL (${NGSPICE_VNTOL} V) or ABSTOL (${NGSPICE_ABSTOL} A); every other quantity (pole/zero roots, noise spectra) keeps ${PEAK_FLOOR}. Deck .options tolerances are not consulted. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).`;
+
 export const REPORT_SCHEMA = 'spice-ts-corpus-f-outcomes/v1' as const;
 const MANIFEST_PATH = resolve(CORPUS_ROOT, 'manifest.json');
 const JSON_PATH = resolve(CORPUS_ROOT, 'outcomes.json');
@@ -474,7 +477,7 @@ export async function buildReport(manifest: CorpusFManifest, jobs: number, only?
       fixtureAdaptation: 'none',
       perCircuitToleranceTuning: false,
       matchThreshold: MATCH_THRESHOLD,
-      matchRule: `matched = both engines succeed, every spice-ts analysis has an ngspice counterpart, and for every common signal max|spice-ts - ngspice| <= ${MATCH_THRESHOLD} x max(peak |ngspice signal|, floor). The floor is uniform per quantity (#593): ${VOLTAGE_PEAK_FLOOR} V for node voltages v(...) and ${CURRENT_PEAK_FLOOR} A for branch currents i(...), so a signal whose ngspice peak is zero or tiny matches when the absolute difference is at most the ngspice-47 default VNTOL (${NGSPICE_VNTOL} V) or ABSTOL (${NGSPICE_ABSTOL} A); every other quantity (pole/zero roots, noise spectra) keeps ${PEAK_FLOOR}. Deck .options tolerances are not consulted. Errors are taken at spice-ts points with ngspice interpolated (transient breakpoint alignment as in the aggregate report).`,
+      matchRule: MATCH_RULE,
       deterministicHashExcludes: ['environment', 'tools.node', 'ngspice.analyses', 'spiceTs.analyses'],
     },
     ...summarize(results),
