@@ -301,7 +301,7 @@ function solveCompiledAnalyses(
 
 /** Analysis result fields a control-script run contributes to the top-level result. */
 const ANALYSIS_RESULT_FIELDS = [
-  'dc', 'dcSweep', 'transient', 'ac', 'noise', 'distortion', 'transferFunction', 'poleZero', 'sensitivity',
+  'dc', 'dcSweep', 'transient', 'ac', 'noise', 'sParameters', 'distortion', 'transferFunction', 'poleZero', 'sensitivity',
 ] as const;
 
 /**

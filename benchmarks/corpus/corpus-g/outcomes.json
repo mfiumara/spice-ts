@@ -48,8 +48,8 @@
       "unsupported": 13
     },
     "outcomes": {
-      "matched": 92,
-      "mismatch": 16,
+      "matched": 93,
+      "mismatch": 15,
       "not-compared": 0,
       "spice-ts-loss": 20,
       "ngspice-failed": 0,
@@ -341,9 +341,9 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 8,
-      "worstNormalizedError": 1,
-      "worstSignal": "tran i(bf)",
-      "outcome": "mismatch",
+      "worstNormalizedError": 0.00032,
+      "worstSignal": "tran v(f)",
+      "outcome": "matched",
       "gapBucket": null
     },
     {
@@ -649,7 +649,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 5,
-      "worstNormalizedError": 5.09e-14,
+      "worstNormalizedError": 5.04e-14,
       "worstSignal": "tran i(v1)",
       "outcome": "matched",
       "gapBucket": null
@@ -926,8 +926,8 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 5,
-      "worstNormalizedError": 7.81e-12,
-      "worstSignal": "tran i(vmon)",
+      "worstNormalizedError": 7.93e-12,
+      "worstSignal": "tran i(vin)",
       "outcome": "matched",
       "gapBucket": null
     },
@@ -1069,7 +1069,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 16,
-      "worstNormalizedError": 6.56e-15,
+      "worstNormalizedError": 6.1e-15,
       "worstSignal": "tran v(x1.12)",
       "outcome": "matched",
       "gapBucket": null
@@ -1739,7 +1739,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 6,
-      "worstNormalizedError": 6.31e-9,
+      "worstNormalizedError": 2.65e-8,
       "worstSignal": "tran v(4)",
       "outcome": "matched",
       "gapBucket": null
@@ -2133,7 +2133,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 4,
-      "worstNormalizedError": 2.49e-14,
+      "worstNormalizedError": 2.52e-14,
       "worstSignal": "tran i(l2)",
       "outcome": "matched",
       "gapBucket": null
@@ -2184,12 +2184,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:5903"
+          "tran:5737"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 47,
-      "worstNormalizedError": 0.703,
+      "worstNormalizedError": 0.898,
       "worstSignal": "tran v(vout)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -2559,7 +2559,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 5,
-      "worstNormalizedError": 5.39e-15,
+      "worstNormalizedError": 2.47e-15,
       "worstSignal": "tran i(v2)",
       "outcome": "matched",
       "gapBucket": null
@@ -2946,7 +2946,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 102,
-      "worstNormalizedError": 6.77e-12,
+      "worstNormalizedError": 3.8e-12,
       "worstSignal": "tran i(vs)",
       "outcome": "matched",
       "gapBucket": null
@@ -3025,12 +3025,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:7003"
+          "tran:7020"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 32,
-      "worstNormalizedError": 0.135,
+      "worstNormalizedError": 0.152,
       "worstSignal": "tran i(v2)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -3247,12 +3247,12 @@
       "spiceTs": {
         "status": "success",
         "analyses": [
-          "tran:2010"
+          "tran:2002"
         ]
       },
       "comparedAnalyses": 1,
       "comparedSignals": 7,
-      "worstNormalizedError": 0.342,
+      "worstNormalizedError": 0.295,
       "worstSignal": "tran v(out)",
       "outcome": "mismatch",
       "gapBucket": null
@@ -3364,8 +3364,8 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 84,
-      "worstNormalizedError": 7.73e-12,
-      "worstSignal": "tran v(xtstcir.xcouple1.24)",
+      "worstNormalizedError": 8.32e-12,
+      "worstSignal": "tran i(vslow)",
       "outcome": "matched",
       "gapBucket": null
     },
@@ -3447,7 +3447,7 @@
       },
       "comparedAnalyses": 1,
       "comparedSignals": 6,
-      "worstNormalizedError": 2.73e-8,
+      "worstNormalizedError": 2.69e-8,
       "worstSignal": "tran i(vcc)",
       "outcome": "matched",
       "gapBucket": null
@@ -3735,5 +3735,5 @@
       "gapBucket": null
     }
   ],
-  "outcomeSha256": "bd98418b0198946b18c7d9b249b3256b605488824ab698264822f7fb563421ef"
+  "outcomeSha256": "7b94f0076c0944b2e55892050d364b730c2fd0c244577d1878cf6c73cb30ac33"
 }

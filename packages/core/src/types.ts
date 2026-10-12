@@ -171,12 +171,12 @@ export interface DCSensitivityAnalysis {
   mode: 'dc';
 }
 
-/** DEC small-signal AC sensitivity (`.sens v(node) ac dec ...`). */
+/** Small-signal AC sensitivity (`.sens v(node) ac {dec|oct|lin} ...`). */
 export interface ACSensitivityAnalysis {
   type: 'sens';
   outputNode: string;
   mode: 'ac';
-  variation: 'dec';
+  variation: 'dec' | 'oct' | 'lin';
   points: number;
   startFreq: number;
   stopFreq: number;

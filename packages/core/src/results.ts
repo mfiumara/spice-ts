@@ -1,3 +1,4 @@
+import { getCaseInsensitive } from './case-fold.js';
 import type { ConvergenceTelemetry, SimulationWarning } from './types.js';
 
 /**
@@ -19,7 +20,7 @@ export class DCResult {
    * @throws Error if the node name is not found in the result
    */
   voltage(node: string): number {
-    const v = this.voltageMap.get(node);
+    const v = getCaseInsensitive(this.voltageMap, node);
     if (v === undefined) throw new Error(`Unknown node: ${node}`);
     return v;
   }
@@ -32,7 +33,7 @@ export class DCResult {
    * @throws Error if the branch name is not found in the result
    */
   current(source: string): number {
-    const i = this.currentMap.get(source);
+    const i = getCaseInsensitive(this.currentMap, source);
     if (i === undefined) throw new Error(`Unknown branch: ${source}`);
     return i;
   }
@@ -69,7 +70,7 @@ export class TransientResult {
    * @throws Error if the node name is not found in the result
    */
   voltage(node: string): number[] {
-    const v = this.voltageArrays.get(node);
+    const v = getCaseInsensitive(this.voltageArrays, node);
     if (v === undefined) throw new Error(`Unknown node: ${node}`);
     return v;
   }
@@ -82,7 +83,7 @@ export class TransientResult {
    * @throws Error if the branch name is not found in the result
    */
   current(source: string): number[] {
-    const i = this.currentArrays.get(source);
+    const i = getCaseInsensitive(this.currentArrays, source);
     if (i === undefined) throw new Error(`Unknown branch: ${source}`);
     return i;
   }
@@ -119,7 +120,7 @@ export class ACResult {
    * @throws Error if the node name is not found in the result
    */
   voltage(node: string): { magnitude: number; phase: number }[] {
-    const v = this.voltageArrays.get(node);
+    const v = getCaseInsensitive(this.voltageArrays, node);
     if (v === undefined) throw new Error(`Unknown node: ${node}`);
     return v;
   }
@@ -132,7 +133,7 @@ export class ACResult {
    * @throws Error if the branch name is not found in the result
    */
   current(source: string): { magnitude: number; phase: number }[] {
-    const i = this.currentArrays.get(source);
+    const i = getCaseInsensitive(this.currentArrays, source);
     if (i === undefined) throw new Error(`Unknown branch: ${source}`);
     return i;
   }
@@ -245,7 +246,7 @@ export class DistortionResult {
   voltage(node: string, product: DistortionProduct): ComplexDistortionValue[] {
     const arrays = this.voltageArrays.get(product);
     if (!arrays) throw new Error(`Distortion product ${product} is unavailable for this analysis`);
-    const values = arrays.get(node);
+    const values = getCaseInsensitive(arrays, node);
     if (!values) throw new Error(`Unknown node: ${node}`);
     return values.map(value => ({ ...value }));
   }
@@ -253,7 +254,7 @@ export class DistortionResult {
   current(branch: string, product: DistortionProduct): ComplexDistortionValue[] {
     const arrays = this.currentArrays.get(product);
     if (!arrays) throw new Error(`Distortion product ${product} is unavailable for this analysis`);
-    const values = arrays.get(branch);
+    const values = getCaseInsensitive(arrays, branch);
     if (!values) throw new Error(`Unknown branch: ${branch}`);
     return values.map(value => ({ ...value }));
   }
@@ -342,7 +343,7 @@ export class DCSweepResult {
    * @throws Error if the node name is not found in the result
    */
   voltage(node: string): Float64Array {
-    const v = this.voltageArrays.get(node);
+    const v = getCaseInsensitive(this.voltageArrays, node);
     if (v === undefined) throw new Error(`Unknown node: ${node}`);
     return v;
   }
@@ -355,7 +356,7 @@ export class DCSweepResult {
    * @throws Error if the branch name is not found in the result
    */
   current(source: string): Float64Array {
-    const i = this.currentArrays.get(source);
+    const i = getCaseInsensitive(this.currentArrays, source);
     if (i === undefined) throw new Error(`Unknown branch: ${source}`);
     return i;
   }

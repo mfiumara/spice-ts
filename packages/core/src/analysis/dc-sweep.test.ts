@@ -107,7 +107,8 @@ describe('DC Sweep', () => {
     }, resolveOptions());
 
     expect([...result.current('Vinput')]).toEqual([0, -0.001]);
-    expect(() => result.current('vINPUT')).toThrow('Unknown branch: vINPUT');
+    // Result lookups fold case like ngspice (#728); the key keeps its spelling.
+    expect([...result.current('vINPUT')]).toEqual([0, -0.001]);
   });
 
   it('resolves a mixed-case current-source sweep', () => {

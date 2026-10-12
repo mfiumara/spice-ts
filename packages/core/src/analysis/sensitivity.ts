@@ -152,6 +152,15 @@ function parameterTarget(device: DeviceModel, mode: 'dc' | 'ac'): ParameterTarge
         },
       );
     }
+    if (device.waveform.type === 'ac') {
+      // `dc=... ac=...`: the DC value is the waveform's `dc`, as for a voltage source.
+      return mutable(
+        device, 'dc', device.waveform.dc ?? 0,
+        value => {
+          if (device.waveform.type === 'ac') device.waveform.dc = value;
+        },
+      );
+    }
     if (device.waveform.type !== 'dc') {
       throw unsupported(device, 'DC current-source sensitivity requires a DC waveform');
     }
