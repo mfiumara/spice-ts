@@ -154,9 +154,9 @@ export const FOLLOW_UP_ISSUES: ReadonlyArray<{ url: string; scope: string }> = [
   { url: HARNESS_ISSUE, scope: 'the ngspice harness exports no vectors for decks that run analyses from .control or quit inside it' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/590', scope: 'closed by #601: MOS1 depletion junction capacitance (tests/general/mosmem.cir now matches; #511 triage in TRIAGE-511.md)' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/591', scope: 'closed by #601: MOS1 Meyer gate capacitance from TOX; residual i(vs) mismatch is grid discretisation per #627/#629, routed to #592' },
-  { url: 'https://github.com/mfiumara/spice-ts/issues/626', scope: 'BSIM3 4-bit NAND adder (examples/snapshot/adder_mos_circ.cir): internal-node mismatch 1.54 after #624/#648; root cause not established (#511 triage)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/626', scope: 'BSIM3 4-bit NAND adder (examples/snapshot/adder_mos_circ.cir): mismatch 1.54 after #624/#648, 0.755 after #661 and 0.0451 (i(vcc)) after #677; root cause not established (#511 triage)' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/655', scope: 'TRNOISE/TRRANDOM decks compare independent random realisations; ngspice-47 reseeds each run, so these values are not reproducible (transient-noise simple-noise, rts-1)' },
-  { url: 'https://github.com/mfiumara/spice-ts/issues/592', scope: 'metric: ngspice\'s coarse default-step output is scored as spice-ts error (rca3040, rtlinv, mos-test, fourbitadder, switches-manual-p92, ltra2_2_line/txl1_1_line i(vs); #511 triage)' },
+  { url: 'https://github.com/mfiumara/spice-ts/issues/592', scope: 'metric: ngspice\'s coarse default-step output is scored as spice-ts error (rca3040, switches-manual-p92, txl1_1_line; rtlinv, mos-test, fourbitadder and ltra2_2_line match since #689 CKTtrunc step control; #511 triage)' },
   { url: 'https://github.com/mfiumara/spice-ts/issues/593', scope: 'metric: zero/near-zero ngspice peaks turn fV-uV residuals into mismatches (rca3040 AC v(2), fourbitadder; #511 triage)' },
 ];
 

@@ -2,7 +2,7 @@
   "schemaVersion": "spice-ts-corpus-f-triage/v1",
   "issue": "https://github.com/mfiumara/spice-ts/issues/511",
   "measuredOn": {
-    "spiceTsCommit": "03706cc7d6cf1949c92fc60fb2c8ca308b370f91",
+    "spiceTsCommit": "dc7cc4a32d490ae1da49e05047abef18444cbc13",
     "ngspice": "ngspice-47",
     "metric": "corpus-f published metric (lib.ts normalizedSignalErrors, MATCH_THRESHOLD 0.01), unchanged",
     "tool": "pnpm exec tsx benchmarks/corpus/corpus-f/triage-detail.ts <fixture-id> [--tmax s] [--deck variant] [--reference-tmax s [--candidate ngspice]]",
@@ -25,13 +25,19 @@
       "id": "bsim3-adder-supply-current",
       "kind": "simulator",
       "issue": "https://github.com/mfiumara/spice-ts/issues/626",
-      "summary": "BSIM3 (level 8, version 3.3.0, default parameters) 4-bit NAND adder. Before #624, supply and source currents were 10-40x ngspice-47. Between #624 and #648 it exceeded the 120 s bound. Since #648 it completes again with internal NAND nodes up to 1.54 off. Not root-caused; tracked in #626."
+      "summary": "BSIM3 (level 8, version 3.3.0, default parameters) 4-bit NAND adder. Before #624, supply and source currents were 10-40x ngspice-47. Between #624 and #648 it exceeded the 120 s bound. Since #648 it completes again with internal NAND nodes up to 1.54 off; 0.755 after #661 and 0.0451 (i(vcc)) after #677. Not root-caused; tracked in #626."
     },
     {
       "id": "reference-grid-artefact",
       "kind": "metric",
       "issue": "https://github.com/mfiumara/spice-ts/issues/592",
       "summary": "The transient metric interpolates ngspice's coarse default-step output onto spice-ts points, so ngspice's own truncation and interpolation error is scored as a spice-ts mismatch."
+    },
+    {
+      "id": "ckttrunc-step-control",
+      "kind": "fixed",
+      "issue": "https://github.com/mfiumara/spice-ts/issues/621",
+      "summary": "spice-ts sized transient steps from a node-voltage LTE instead of ngspice-47 CKTtrunc, so its output grid differed from ngspice's and the interpolated metric scored the difference. #689 (#621, #646) ports CKTtrunc; on e2c73b29 ltra2_2_line, rtlinv, fourbitadder and mos-test match the unchanged 1% rule. Part of what was attributed to the reference-grid metric (#592) was therefore a spice-ts step-control difference."
     },
     {
       "id": "near-zero-peak-normalisation",
@@ -69,23 +75,23 @@
     {
       "id": "examples-vdmos-ro-11-vdmos-sp",
       "issueTable": null,
-      "current": { "outcome": "matched", "worst": 0.00348, "signal": "tran i(vdd)" },
+      "current": { "outcome": "matched", "worst": 0.00694, "signal": "tran i(vdd)" },
       "rootCauses": ["vdmos-model-drop-fixed"],
-      "evidence": "Listed as a mismatch (3.19) in the committed outcomes.json, not in the #511 table. 11 tran signals now compared, worst 0.00348."
+      "evidence": "Listed as a mismatch (3.19) in the committed outcomes.json, not in the #511 table. 11 tran signals now compared, worst 0.00348. On e2c73b29 it still matches, worst 0.00694 (0.00348 before #689 CKTtrunc step control, bisected): a published loss of margin."
     },
     {
       "id": "tests-general-fourbitadder-cir",
       "issueTable": { "outcome": "mismatch", "worst": 8.64, "signal": "tran v(x1.x1.x1.x7.8)" },
-      "current": { "outcome": "mismatch", "worst": 0.0677, "signal": "tran v(x1.x1.x1.x7.8)" },
-      "rootCauses": ["near-zero-peak-normalisation", "reference-grid-artefact"],
-      "evidence": "Worst signals are TTL NAND internal nodes x*.8 with 75-125 uV peaks on a 5 V circuit (abs 6.7 uV). At ngspice points: 0.0377. spice-ts default vs fine-step ngspice (TMAX 10 ps): 0.0107 on its grid; ngspice default vs the same reference: 0.0415 on its grid. Residual 1.1 uV (1.02-1.07% of a ~100 uV peak) on 5/270 signals at t~13 ps with both engines at TMAX 10 ps is not yet root-caused; tracked in #593."
+      "current": { "outcome": "matched", "worst": 0.00313, "signal": "tran v(x1.x2.x1.x6.8)" },
+      "rootCauses": ["near-zero-peak-normalisation", "reference-grid-artefact", "ckttrunc-step-control"],
+      "evidence": "Worst signals are TTL NAND internal nodes x*.8 with 75-125 uV peaks on a 5 V circuit (abs 6.7 uV). At ngspice points: 0.0377. spice-ts default vs fine-step ngspice (TMAX 10 ps): 0.0107 on its grid; ngspice default vs the same reference: 0.0415 on its grid. Residual 1.1 uV (1.02-1.07% of a ~100 uV peak) on 5/270 signals at t~13 ps with both engines at TMAX 10 ps is not yet root-caused; tracked in #593. On e2c73b29 it matches (0.00313 tran v(x1.x2.x1.x6.8)) after #689 CKTtrunc step control (bisected)."
     },
     {
       "id": "tests-transmission-ltra2-2-line-cir",
       "issueTable": { "outcome": "mismatch", "worst": 1, "signal": "tran i(vs)" },
-      "current": { "outcome": "mismatch", "worst": 0.374, "signal": "tran i(vs)" },
-      "rootCauses": ["mos1-meyer-gate-capacitance", "reference-grid-artefact"],
-      "evidence": "At bf2e4169 i(vs) was 0 in spice-ts vs a 2.5 uA ngspice peak (0.974). Removing TOX=18000N from both cards made it agree, which led to #591, fixed by #601. Since #601: 0.374 (near t=16.1 ns spice-ts -42.5 nA vs ngspice -2.4 uA), 0.151 at ngspice points, 0.029 with both engines at TMAX 10 ps. #627 traced the residual to discretisation of a current that is discontinuous at the pulse corners (#629). Against ngspice-47 at TMAX 1 ps, spice-ts default is 0.0233 and ngspice-47 default is 0.0401. The post-breakpoint step rule differs from ngspice (#608). Routed to #592. Other signals (v(3) 0.0414, i(vdd) 0.0361, v(2) 0.0137) are <= 0.0071 at ngspice points and <= 0.0033 at TMAX 10 ps."
+      "current": { "outcome": "matched", "worst": 0.000468, "signal": "tran i(vs)" },
+      "rootCauses": ["mos1-meyer-gate-capacitance", "reference-grid-artefact", "ckttrunc-step-control"],
+      "evidence": "At bf2e4169 i(vs) was 0 in spice-ts vs a 2.5 uA ngspice peak (0.974). Removing TOX=18000N from both cards made it agree, which led to #591, fixed by #601. Since #601: 0.374 (near t=16.1 ns spice-ts -42.5 nA vs ngspice -2.4 uA), 0.151 at ngspice points, 0.029 with both engines at TMAX 10 ps. #627 traced the residual to discretisation of a current that is discontinuous at the pulse corners (#629). Against ngspice-47 at TMAX 1 ps, spice-ts default is 0.0233 and ngspice-47 default is 0.0401. The post-breakpoint step rule differs from ngspice (#608). Routed to #592. Other signals (v(3) 0.0414, i(vdd) 0.0361, v(2) 0.0137) are <= 0.0071 at ngspice points and <= 0.0033 at TMAX 10 ps. On b1a1ff58 the published value is 0.42 (0.374 on 03706cc7): #677, the #608 post-breakpoint CKTsaveDelta step rule, moved it (bisected over every main commit after 03706cc7). The diagnostic values above were measured on earlier trees and were not rerun. Still a published loss under #592. On e2c73b29 it matches: 0.000468 on tran i(vs), after #689 ported ngspice-47 CKTtrunc step control (bisected over the three main commits after b1a1ff58). The residual was a spice-ts step-control difference, not only a reference-grid artefact."
     },
     {
       "id": "tests-bsim2-test-cir",
@@ -97,9 +103,9 @@
     {
       "id": "tests-general-mosmem-cir",
       "issueTable": { "outcome": "mismatch", "worst": 0.714, "signal": "tran v(8)" },
-      "current": { "outcome": "matched", "worst": 0.0025, "signal": "tran v(4)" },
+      "current": { "outcome": "matched", "worst": 0.00999, "signal": "tran i(vdd)" },
       "rootCauses": ["mos1-junction-capacitance"],
-      "evidence": "At bf2e4169: 9/13 signals over 1% (i(vdd) 0.227, v(6) 0.103, i(vw) 0.0994, v(3) 0.0618, v(8) 0.0311), unchanged at TMAX 0.1 ns. Adding mj=0 to both cards brought all 13 signals to <= 3.95e-4, which led to #590. After #601 the unchanged deck matches: 0/13 signals over 1%, worst v(4) 0.0025, i(vdd) 0.00205."
+      "evidence": "At bf2e4169: 9/13 signals over 1% (i(vdd) 0.227, v(6) 0.103, i(vw) 0.0994, v(3) 0.0618, v(8) 0.0311), unchanged at TMAX 0.1 ns. Adding mj=0 to both cards brought all 13 signals to <= 3.95e-4, which led to #590. After #601 the unchanged deck matches: 0/13 signals over 1%, worst v(4) 0.0025, i(vdd) 0.00205. On b1a1ff58: worst v(4) 0.00229 (0.0025 on 03706cc7; #677, bisected). On e2c73b29 it still matches but the worst rises to i(vdd) 0.00999 (#689 CKTtrunc step control, bisected), just under the 0.01 threshold: a published regression in margin, not a loss."
     },
     {
       "id": "tests-bsim1-test-cir",
@@ -111,9 +117,9 @@
     {
       "id": "tests-general-rtlinv-cir",
       "issueTable": { "outcome": "mismatch", "worst": 0.432, "signal": "dc v(4)" },
-      "current": { "outcome": "mismatch", "worst": 0.0527, "signal": "tran v(2)" },
-      "rootCauses": ["reference-grid-artefact"],
-      "evidence": "At ngspice points: 0.0013. Both engines at TMAX 20 ps: all 16 signals <= 8.5e-4. spice-ts default transient vs fine-step ngspice: 5.24e-4 on its grid (DC remains 8.43e-4); ngspice default vs the same reference: 0.00173 on its grid."
+      "current": { "outcome": "matched", "worst": 0.00238, "signal": "tran v(2)" },
+      "rootCauses": ["reference-grid-artefact", "ckttrunc-step-control"],
+      "evidence": "At ngspice points: 0.0013. Both engines at TMAX 20 ps: all 16 signals <= 8.5e-4. spice-ts default transient vs fine-step ngspice: 5.24e-4 on its grid (DC remains 8.43e-4); ngspice default vs the same reference: 0.00173 on its grid. On b1a1ff58 the published value is 0.0526 (0.0527 on 03706cc7; #677, bisected); the diagnostics above are from earlier trees. On e2c73b29 it matches (0.00238 tran v(2)) after #689 CKTtrunc step control (bisected)."
     },
     {
       "id": "tests-general-rca3040-cir",
@@ -139,52 +145,53 @@
     {
       "id": "examples-probe-mos-test-cir",
       "issueTable": null,
-      "current": { "outcome": "mismatch", "worst": 0.176, "signal": "tran v(out)" },
-      "rootCauses": ["reference-grid-artefact"],
-      "evidence": "Capacitance-free inverter (default MOS1, no TOX/CJ, lambda 0, equal KP): v(out) jumps vertically at vin = 2.5 V (t = 5 ns); interpolating ngspice's 135-point grid across it gives 0.176 (spice-ts 3.64 V is the analytic value at vin = 2.33 V). At ngspice points: 0.0023; spice-ts default vs fine-step ngspice (TMAX 0.1 ns): 0.0030 at reference points."
+      "current": { "outcome": "matched", "worst": 0.00811, "signal": "tran v(out)" },
+      "rootCauses": ["reference-grid-artefact", "ckttrunc-step-control"],
+      "evidence": "Capacitance-free inverter (default MOS1, no TOX/CJ, lambda 0, equal KP): v(out) jumps vertically at vin = 2.5 V (t = 5 ns); interpolating ngspice's 135-point grid across it gives 0.176 (spice-ts 3.64 V is the analytic value at vin = 2.33 V). At ngspice points: 0.0023; spice-ts default vs fine-step ngspice (TMAX 0.1 ns): 0.0030 at reference points. On e2c73b29 it matches (0.00811 tran v(out)) after #689 CKTtrunc step control (bisected)."
     },
     {
       "id": "examples-probe-switches-manual-p92-cir",
       "issueTable": null,
-      "current": { "outcome": "mismatch", "worst": 0.865, "signal": "tran v(10)" },
+      "current": { "outcome": "mismatch", "worst": 0.74, "signal": "tran v(10)" },
       "rootCauses": ["reference-grid-artefact"],
-      "evidence": "spice-ts-loss (unsupported S card) at bf2e4169; runnable since #579. Ideal S/W switches make v(10), v(20), v(30), v(40) jump between consecutive output points. ngspice-47's default output on the unchanged deck has 2 us between the points that bracket every edge, and spice-ts places each edge inside that interval: v(10) crosses 0.5 V at 1.20029/3.20006 ms (spice-ts) and at 1.19856-1.20056/3.19900-3.20100 ms (ngspice). Interpolating that 2 us chord gives 0.865 (abs 0.865 V, spice-ts 1 vs ngspice 0.135 at t=1.2 ms). At ngspice points: 2.7e-20. With both engines at TMAX 0.1 us, crossing times agree within 1e-8 s, but the metric still reports 1.0 because the edge is vertical. Its max over a step edge is set by sub-step timing, not by the waveform. 8/13 signals agree to <= 5.4e-16. Recorded under #592 (metric); not counted as a match."
+      "evidence": "spice-ts-loss (unsupported S card) at bf2e4169; runnable since #579. Ideal S/W switches make v(10), v(20), v(30), v(40) jump between consecutive output points. ngspice-47's default output on the unchanged deck has 2 us between the points that bracket every edge, and spice-ts places each edge inside that interval: v(10) crosses 0.5 V at 1.20029/3.20006 ms (spice-ts) and at 1.19856-1.20056/3.19900-3.20100 ms (ngspice). Interpolating that 2 us chord gives 0.865 (abs 0.865 V, spice-ts 1 vs ngspice 0.135 at t=1.2 ms). At ngspice points: 2.7e-20. With both engines at TMAX 0.1 us, crossing times agree within 1e-8 s, but the metric still reports 1.0 because the edge is vertical. Its max over a step edge is set by sub-step timing, not by the waveform. 8/13 signals agree to <= 5.4e-16. Recorded under #592 (metric); not counted as a match. On e2c73b29 the published value is 0.74 (0.865 before #689 CKTtrunc step control, bisected). Still a published loss under #592."
     },
     {
       "id": "examples-snapshot-adder-mos-circ-cir",
       "issueTable": null,
-      "current": { "outcome": "mismatch", "worst": 0.755, "signal": "tran i(vin3a)" },
+      "current": { "outcome": "mismatch", "worst": 0.0451, "signal": "tran i(vcc)" },
       "rootCauses": ["bsim3-adder-supply-current"],
-      "evidence": "spice-ts-loss at bf2e4169 (dotted VERSION=3.3.0 rejected); runnable since #599. On 68b64909 it was a mismatch of 42: i(vcc) near 8.95 ns spice-ts -11.6 mA vs ngspice -25 uA, 40.6 at ngspice points. On c317324f, after #624, it exceeded the 120 s bound. On 4bdbe0c2, after #648, it completes again: 81/90 signals over 1%, worst v(x1.x2.x1.x8.net.1) 1.54 (spice-ts 2.94 V vs ngspice 0.20 V near 0.985 us), 1.44 at ngspice points. This is a real device-level loss, tracked in #626, root cause not established. On 03706cc7 (after #661, ngspice-47 BSIM3v3.3 b3ld.c charge model for #626; not bisected against the other merges) it is still a mismatch, worst now tran i(vin3a) 0.755. Still a published loss, root cause not established."
+      "evidence": "spice-ts-loss at bf2e4169 (dotted VERSION=3.3.0 rejected); runnable since #599. On 68b64909 it was a mismatch of 42: i(vcc) near 8.95 ns spice-ts -11.6 mA vs ngspice -25 uA, 40.6 at ngspice points. On c317324f, after #624, it exceeded the 120 s bound. On 4bdbe0c2, after #648, it completes again: 81/90 signals over 1%, worst v(x1.x2.x1.x8.net.1) 1.54 (spice-ts 2.94 V vs ngspice 0.20 V near 0.985 us), 1.44 at ngspice points. This is a real device-level loss, tracked in #626, root cause not established. On 03706cc7 (after #661, ngspice-47 BSIM3v3.3 b3ld.c charge model for #626; not bisected against the other merges) it is still a mismatch, worst now tran i(vin3a) 0.755. Still a published loss, root cause not established. On b1a1ff58 the worst falls to tran i(vcc) 0.0451 (from i(vin3a) 0.755). Bisected over every main commit after 03706cc7, the change comes from #677 (post-breakpoint step from CKTsaveDelta, #608). Still over the 1% rule, so still a published loss under #626, root cause not established."
     },
     {
       "id": "examples-transient-noise-simple-noise-cir",
       "issueTable": null,
-      "current": { "outcome": "mismatch", "worst": 5.44, "signal": "tran v(3)" },
+      "current": { "outcome": "mismatch", "worst": 3.49, "signal": "tran v(3)" },
       "rootCauses": ["stochastic-sources"],
-      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 4.71 on 4bdbe0c2, a triage-detail rerun gave 3.75, the b3f04506 regeneration gave 2.5 and the 03706cc7 regeneration 5.44. The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
+      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 4.71 on 4bdbe0c2, a triage-detail rerun gave 3.75, the b3f04506 regeneration gave 2.5 the 03706cc7 regeneration 5.44 the b1a1ff58 regeneration 1.49 (v(4)) the e2c73b29 regeneration 7.12 (v(3)) and the dc7cc4a3 regeneration 3.49 (v(3)). The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
     },
     {
       "id": "examples-transient-noise-rts-1-cir",
       "issueTable": null,
-      "current": { "outcome": "mismatch", "worst": 1.14, "signal": "tran v(9)" },
+      "current": { "outcome": "mismatch", "worst": 1.37, "signal": "tran v(21)" },
       "rootCauses": ["stochastic-sources"],
-      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 1.55 (v(9)) on 4bdbe0c2, a triage-detail rerun gave 1.45, the b3f04506 regeneration gave 1.36 (v(21)) and the 03706cc7 regeneration 1.14 (v(9)). The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
+      "evidence": "Runnable since #640 (TRNOISE/TRRANDOM). The metric compares independent random waveforms. spice-ts gives identical values on repeated runs; two ngspice-47 batch runs of the same deck differ. Published 1.55 (v(9)) on 4bdbe0c2, a triage-detail rerun gave 1.45, the b3f04506 regeneration gave 1.36 (v(21)) the 03706cc7 regeneration 1.14 (v(9)) the b1a1ff58 and e2c73b29 regenerations 1.52 (v(21)) and the dc7cc4a3 regeneration 1.37 (v(21)). The value is not reproducible and says nothing about parity. Kept as a published loss → #655."
     }
   ],
   "deferredMismatches": {
     "issue": "https://github.com/mfiumara/spice-ts/issues/597",
-    "reason": "Newly runnable after prior feature merges, not rows of #511 or mismatches in the imported report. Published losses, root causes not established; follow-up investigation required. adder_bip (completes inside the 120 s bound on 03706cc7, 0.0242) and measure/func-cap (runnable since #647 .measure, 0.5) were added on the 03706cc7 refresh on the same basis.",
+    "reason": "Newly runnable after prior feature merges, not rows of #511 or mismatches in the imported report. Published losses, root causes not established; follow-up investigation required. adder_bip (completes inside the 120 s bound on 03706cc7, 0.0242) and measure/func-cap (runnable since #647 .measure, 0.5) were added on the 03706cc7 refresh on the same basis. analog_models3_ac (1.11 ac v(2)) and analog_models3_transient (0.0181 tran v(10)), runnable since the XSPICE hyst code model (#670), were added on the b1a1ff58 refresh on the same basis. On the e2c73b29 refresh, res_array and cpl_ibm2 left this list because they match after #689 (CKTtrunc step control), and tests/transmission/cpl3_4_line (0.116 tran v(9)), which #689 made runnable (it failed with timestep too small before), was added on the same basis.",
     "fixtures": [
       "examples-ddt-ddt-test1-cir",
       "examples-ddt-ddt-test3-cir",
       "examples-xspice-original-examples-analog-models1-transient-deck",
-      "tests-resistance-res-array-cir",
-      "tests-transmission-cpl-ibm2-cir",
       "tests-transmission-txl1-1-line-cir",
       "tests-transmission-txl2-3-line-cir",
       "examples-digital-compare-adder-bip-cir",
-      "examples-measure-func-cap-sp"
+      "examples-measure-func-cap-sp",
+      "examples-xspice-original-examples-analog-models3-ac-deck",
+      "examples-xspice-original-examples-analog-models3-transient-deck",
+      "tests-transmission-cpl3-4-line-cir"
     ]
   }
 }

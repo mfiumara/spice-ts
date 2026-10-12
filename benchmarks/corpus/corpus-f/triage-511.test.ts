@@ -101,11 +101,11 @@ describe('triage-detail --tmax rewrite', () => {
   });
 });
 
-// This is a triage card, not a simulator fix. mosmem was fixed by #601 (#590) and is now a
-// regression guard. The ltra2_2_line i(vs) residual (grid discretisation, #627 -> #592) is still a loss: the opt-in parity
-// assertion must stay RED until it is fixed, and the normal test verifies the documented loss.
+// This is a triage card, not a simulator fix. mosmem was fixed by #601 (#590) and ltra2_2_line's
+// i(vs) residual (grid discretisation, #627) closed when #689 ported ngspice-47 CKTtrunc step
+// control (#621). Both are now regression guards against the unchanged 1% rule.
 const ngspiceVersion = spawnSync('ngspice', ['--version'], { encoding: 'utf8' });
-describe('unchanged-deck MOS1 triage rows (#590 fixed, ltra2 residual under #592)', { skip: !/ngspice-47\b/.test(ngspiceVersion.stdout ?? '') }, () => {
+describe('unchanged-deck MOS1 triage rows (#590 fixed by #601, ltra2 residual fixed by #689)', { skip: !/ngspice-47\b/.test(ngspiceVersion.stdout ?? '') }, () => {
   async function run(id: string) {
     const manifest = JSON.parse(await readFile(resolve(ROOT, 'manifest.json'), 'utf8')) as CorpusFManifest;
     const fixture = manifest.circuits.find(candidate => candidate.id === id);
@@ -124,14 +124,9 @@ describe('unchanged-deck MOS1 triage rows (#590 fixed, ltra2 residual under #592
     assert.ok(worst <= MATCH_THRESHOLD, `${worst} > ${MATCH_THRESHOLD}`);
   });
 
-  it('tests-transmission-ltra2-2-line-cir', async () => {
-    const id = 'tests-transmission-ltra2-2-line-cir';
-    const { result, worst } = await run(id);
-    if (process.env.CORPUS_F_REQUIRE_PARITY === '1') {
-      assert.ok(worst <= MATCH_THRESHOLD, `${id}: ${worst} > ${MATCH_THRESHOLD}`);
-    } else {
-      assert.equal(result.outcome, 'mismatch');
-      assert.ok(worst > MATCH_THRESHOLD, 'loss resolved; update the triage and linked issue');
-    }
+  it('tests-transmission-ltra2-2-line-cir matches after #689 (#621)', async () => {
+    const { result, worst } = await run('tests-transmission-ltra2-2-line-cir');
+    assert.equal(result.outcome, 'matched');
+    assert.ok(worst <= MATCH_THRESHOLD, `${worst} > ${MATCH_THRESHOLD}`);
   });
 });
