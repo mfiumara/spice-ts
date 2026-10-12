@@ -766,10 +766,17 @@ export class GilbertPeierlsSolver implements SparseSolver {
     state[1] = nonzeroCount;
 
     // Triangular part: U entries of the members and their mutual updates.
+    // Row-oriented: member m receives the updates of the earlier applied
+    // members in ascending order (the order the column-oriented form applies
+    // them in), accumulated in a register over its contiguous block row.
     let up = state[0];
     let count = 0;
     for (let m = first - s0; m < size; m++) {
-      const u = workspace[perm[s0 + m]];
+      const row = perm[s0 + m];
+      const base = valPtr + (len - m) * width;
+      let u = workspace[row];
+      for (let t = 0; t < count; t++) u -= snValues[base + applied[t]] * appliedU[t];
+      workspace[row] = u;
       if (u === 0) continue;
       if (up === this.uValues.length) this.growUFactors(up + 1);
       this.uRows[up] = s0 + m;
@@ -778,17 +785,23 @@ export class GilbertPeierlsSolver implements SparseSolver {
       applied[count] = m;
       appliedU[count] = u;
       count++;
-      for (let m2 = m + 1; m2 < size; m2++) {
-        const row = perm[s0 + m2];
-        workspace[row] = workspace[row] - snValues[valPtr + (len - m2) * width + m] * u;
-      }
     }
     state[0] = up;
     this.supernodeCount++;
 
     // Rows below the supernode. Each row is one dependent chain of
     // subtractions, so four rows advance together to keep the FPU busy.
+    //
+    // The zero-activation step is a no-op for a settled row, and a settled
+    // row stays settled for the rest of the column. So each group runs the
+    // checked loop only until all of its rows are settled (normally after
+    // the first member, which settles the rows this column touches for the
+    // first time), then the same subtractions without any checks. When every
+    // member is applied, their slots are consecutive and need no lookup.
+    // The arithmetic and its order are unchanged.
     let activeCount = state[2];
+    const firstSlot = first - s0;
+    const allApplied = count === size - firstSlot;
     let r = 0;
     for (; r + 4 <= below; r += 4) {
       const row0 = snRows[rowPtr + r];
@@ -803,7 +816,12 @@ export class GilbertPeierlsSolver implements SparseSolver {
       let v1 = workspace[row1];
       let v2 = workspace[row2];
       let v3 = workspace[row3];
-      for (let t = 0; t < count; t++) {
+      let t = 0;
+      for (; t < count; t++) {
+        if (
+          nonzeroFlag[row0] === settled && nonzeroFlag[row1] === settled
+          && nonzeroFlag[row2] === settled && nonzeroFlag[row3] === settled
+        ) break;
         const m = applied[t];
         const u = appliedU[t];
         const n0 = v0 - snValues[base0 + m] * u;
@@ -821,6 +839,25 @@ export class GilbertPeierlsSolver implements SparseSolver {
         v2 = n2;
         v3 = n3;
       }
+      if (allApplied) {
+        // Slot of member t is firstSlot + t.
+        for (let s = firstSlot + t, sEnd = firstSlot + count; s < sEnd; s++, t++) {
+          const u = appliedU[t];
+          v0 -= snValues[base0 + s] * u;
+          v1 -= snValues[base1 + s] * u;
+          v2 -= snValues[base2 + s] * u;
+          v3 -= snValues[base3 + s] * u;
+        }
+      } else {
+        for (; t < count; t++) {
+          const m = applied[t];
+          const u = appliedU[t];
+          v0 -= snValues[base0 + m] * u;
+          v1 -= snValues[base1 + m] * u;
+          v2 -= snValues[base2 + m] * u;
+          v3 -= snValues[base3 + m] * u;
+        }
+      }
       workspace[row0] = v0;
       workspace[row1] = v1;
       workspace[row2] = v2;
@@ -830,13 +867,15 @@ export class GilbertPeierlsSolver implements SparseSolver {
       const row = snRows[rowPtr + r];
       const base = valPtr + r * width;
       let value = workspace[row];
-      for (let t = 0; t < count; t++) {
+      let t = 0;
+      for (; t < count && nonzeroFlag[row] !== settled; t++) {
         const before = value;
         value = before - snValues[base + applied[t]] * appliedU[t];
         if (before === 0) {
           activeCount = activateRow(row, value, settled, dormant, nonzeroFlag, pinv, activeK, activeCount);
         }
       }
+      for (; t < count; t++) value -= snValues[base + applied[t]] * appliedU[t];
       workspace[row] = value;
     }
     state[2] = activeCount;
