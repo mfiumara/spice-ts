@@ -17,6 +17,8 @@ export interface DeviceDescriptor {
   modelName?: string;
   params?: Record<string, number>;
   controlSource?: string;
+  /** I-source `m` multiplier; absent means 1. */
+  multiplier?: number;
 }
 
 /* ------------------------------------------------------------------ */
@@ -308,8 +310,11 @@ function buildParams(
         return result;
       }
     case 'V':
-    case 'I':
       return flattenWaveform(desc.waveform);
+    case 'I': {
+      const params = flattenWaveform(desc.waveform);
+      return desc.multiplier === undefined ? params : { ...params, m: desc.multiplier };
+    }
     case 'D':
       return { modelName: desc.modelName ?? '' };
     case 'Q': {
