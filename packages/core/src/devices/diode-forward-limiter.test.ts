@@ -90,11 +90,15 @@ describe('diode junction limiter keeps the exact diode law (#430)', () => {
     expect(Math.abs(out - 0.8154379093524)).toBeLessThan(NEWTON_STOP_RESIDUAL);
   });
 
-  it('converges onto the breakdown law at 1.5 A of reverse current', async () => {
+  it('stops on the breakdown law at 1.5 A of reverse current like ngspice-47', async () => {
     // ngspice-47: tight -5.18882816996e+00. With default options ngspice stops
     // at -5.18906514978e+00, 0.24 mV (a 0.9% KCL residual) short of its own law.
+    // spice-ts runs the same CKTop order (plain Newton first, #622) and takes
+    // the same Newton iterates here, so it stops on the same default-option
+    // point.
     const out = await operatingPointOut(10, 'IS=1e-14 BV=5 IBV=1m', -20);
-    expect(Math.abs(out - -5.18882816996)).toBeLessThan(NEWTON_STOP_RESIDUAL);
+    expect(Math.abs(out - -5.18906514978)).toBeLessThan(1e-9);
+    expect(Math.abs(out - -5.18882816996)).toBeLessThan(3e-4);
   });
 
   it('linearises AC at the converged high-current junction', async () => {
@@ -110,7 +114,14 @@ describe('diode junction limiter keeps the exact diode law (#430)', () => {
       .end
     `);
     const magnitude = result.ac!.voltage('out')[0]!.magnitude;
-    expect(Math.abs(magnitude - 6.137000810025e-3) / 6.137000810025e-3).toBeLessThan(1e-4);
+    // |v(out)| ~ 1/(R*gd), and gd follows the operating point as exp(v/VT):
+    // a junction within NEWTON_STOP_RESIDUAL of ngspice's moves the gain by
+    // up to NEWTON_STOP_RESIDUAL/VT. spice-ts stops ~6 uV from ngspice on this
+    // deck because the diode starts Newton at 0 V instead of ngspice's
+    // MODEINITJCT vcrit.
+    const tolerance = NEWTON_STOP_RESIDUAL / VT;
+    expect(Math.abs(magnitude - 6.136998127594e-3) / 6.136998127594e-3).toBeLessThan(tolerance);
+    expect(Math.abs(magnitude - 6.137000810025e-3) / 6.137000810025e-3).toBeLessThan(tolerance);
   });
 
   it('follows the exact diode law across a high-current DC sweep', async () => {

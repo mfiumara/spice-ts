@@ -9,6 +9,11 @@ function solveTanhLoad(drive: number): number {
   return v;
 }
 
+// ngspice-47 `.op` of tanhLoad('.op') (`set numdgt=14`). Both simulators stop
+// Newton on the reltol/vntol test from the same start, a few nV short of the
+// exact root that solveTanhLoad returns.
+const NGSPICE_47_TANH_LOAD_OP = 0.521298455206876;
+
 const tanhLoad = (analysis: string, source = 'v1 1 0 dc 1 ac 1') => [
   'b-source tanh load',
   source,
@@ -21,7 +26,8 @@ const tanhLoad = (analysis: string, source = 'v1 1 0 dc 1 ac 1') => [
 describe('B-source I= current expressions', () => {
   it('solves a nonlinear operating point exactly', async () => {
     const result = await simulate(tanhLoad('.op'));
-    expect(result.dc!.voltage('2')).toBeCloseTo(solveTanhLoad(1), 9);
+    expect(result.dc!.voltage('2')).toBeCloseTo(NGSPICE_47_TANH_LOAD_OP, 12);
+    expect(result.dc!.voltage('2')).toBeCloseTo(solveTanhLoad(1), 8);
   });
 
   it('tracks the expression through a DC sweep', async () => {
@@ -46,6 +52,6 @@ describe('B-source I= current expressions', () => {
     const line = circuit.toNetlist().split('\n').find(text => text.startsWith('b1 '));
     expect(line).toBe('b1 2 0 I=(0.001*tanh(v(2)))');
     const reparsed = await simulate(circuit.toNetlist().replace('* spice-ts generated netlist', 'title'));
-    expect(reparsed.dc!.voltage('2')).toBeCloseTo(solveTanhLoad(1), 9);
+    expect(reparsed.dc!.voltage('2')).toBeCloseTo(NGSPICE_47_TANH_LOAD_OP, 12);
   });
 });
