@@ -1,0 +1,7 @@
+spice
+V1 1 0 dc -10v
+R1 1 0 1k
+L1 1 0 1m
+.dc V1 -10v 10v 0.1v
+.plot I(L1)
+.end

@@ -1,0 +1,9 @@
+.TITLE (current) Transfer Function
+
+R1  in   N001 {99*50}
+R2  N001 0    50
+R3  out  N001 50
+Iin 0    in   dc=0 ac=1
+.tf V(out) Iin
+
+.end

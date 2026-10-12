@@ -1,0 +1,15 @@
+.title TEST 
+
+    V_Vss vss 0 DC 3.3
+    
+    A_PD zero PD           $ ENDLINE COMMENT \\
+        .model PD d_pulldown // ENDLINE COMMENT \\
+        
+***** ENTIRE COMMENTED LINE  *****
+
+    A_PU up PU
+        .model PU d_pullup
+
+.tran 1m 1m
+.print tran all
+.end

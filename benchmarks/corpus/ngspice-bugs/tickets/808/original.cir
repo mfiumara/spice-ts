@@ -1,0 +1,10 @@
+.title KiCad schematic
+.save all
+.probe alli
+.probe p(R1)
+.probe p(V1)
+.tran 100u 2m
+R1 /20 0 1
+E1 /20 0 /10 0 TABLE {V(/10,0)} = (-5mV, 0) (5mV,1)
+V1 /10 0 DC 0 SIN( 0 1 1k 0 0 0 ) AC 1
+.end

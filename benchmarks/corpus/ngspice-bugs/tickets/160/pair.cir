@@ -1,0 +1,29 @@
+S2-cm-wf.cir -- A cmos pair (nmos loaded by pmos)
+
+* Analysis of responses V(2) for sinusoidal excitations
+* We can apply one of three amplitudes of the excitation
+*    0.1V   almost small signal operation 
+*    0.5V   mean distortion
+*    1V     strongly nonlinear effects
+* uncomment one of the following three lines
+VIN  1 0 AC 1 SIN(2.5,0.1,1K,0,0)
+*VIN 1 0 AC 1 SIN(2.5,0.5,1K,0,0)
+*VIN 1 0 AC 1 SIN(2.5,1,1K,0,0)
+
+M1 2 1 0 0 MODN
+M2 3 1 2 3 MODP
+.MODEL MODN NMOS KP 80e-6 VTO 0.75
+.MODEL MODP PMOS KP 30e-6 VTO -1
+VDD 3 0 5
+
+* time-domain analysis of waveforms
+.options
+*.TRAN 0.01M 10M 0 0.01M
+
+* a.c. analysis
+*.AC DEC 10 100 1000MEG
+.TF V(2) VIN
+
+* we observe the output waveform V(2) and input V(1)
+.PROBE V(1) V(2)
+.END

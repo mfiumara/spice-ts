@@ -1,0 +1,9 @@
+.TITLE (Voltage) Transfer Function
+
+Vin in   0    dc=0 AC=1
+R1  in   N001 {99*50}
+R2  N001 0    50
+R3  out  N001 50
+.tf V(out) Vin
+
+.end

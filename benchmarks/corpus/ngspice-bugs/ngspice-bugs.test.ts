@@ -1,0 +1,129 @@
+import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { describe, it } from 'node:test';
+import {
+  CATEGORIES,
+  EXPECTED_BASES,
+  HERE,
+  NGSPICE_VERDICTS,
+  REPRODUCES,
+  SPICE_TS_VERDICTS,
+  type Manifest,
+  type TicketEntry,
+  hasReadme,
+  loadManifest,
+  outcome,
+  renderAll,
+} from './render.js';
+
+const MAX_COMMITTED_DECK_BYTES = 3072;
+
+async function deck(path: string): Promise<string> {
+  return readFile(resolve(HERE, path), 'utf8');
+}
+
+async function core(): Promise<{ simulate: (netlist: string) => Promise<any> }> {
+  return import(pathToFileURL(resolve(HERE, '../../../packages/core/dist/index.js')).href);
+}
+
+function entry(manifest: Manifest, ticket: number): TicketEntry {
+  const found = manifest.tickets.find(e => e.ticket === ticket);
+  assert.ok(found, `ticket #${ticket} in manifest`);
+  return found;
+}
+
+describe('ngspice-bugs manifest', () => {
+  it('lists every harvested ticket once, sorted, with valid enums', async () => {
+    const manifest = await loadManifest();
+    assert.equal(manifest.tickets.length, manifest.harvest.count);
+    const numbers = manifest.tickets.map(e => e.ticket);
+    assert.deepEqual(numbers, [...numbers].sort((a, b) => a - b));
+    assert.equal(new Set(numbers).size, numbers.length);
+    for (const e of manifest.tickets) {
+      assert.match(e.url, /^https:\/\/sourceforge\.net\/p\/ngspice\/bugs\/\d+\/$/);
+      assert.ok(['open', 'open-accepted'].includes(e.status), `#${e.ticket} status`);
+      assert.ok((CATEGORIES as readonly string[]).includes(e.category), `#${e.ticket} category`);
+      assert.ok((NGSPICE_VERDICTS as readonly string[]).includes(e.ngspice47.verdict), `#${e.ticket} ngspice47`);
+      assert.ok((NGSPICE_VERDICTS as readonly string[]).includes(e.ngspiceMaster.verdict), `#${e.ticket} master`);
+      assert.ok((SPICE_TS_VERDICTS as readonly string[]).includes(e.spiceTs.verdict), `#${e.ticket} spice-ts`);
+      assert.ok((EXPECTED_BASES as readonly string[]).includes(e.expectedBasis), `#${e.ticket} basis`);
+      assert.ok((REPRODUCES as readonly string[]).includes(e.reproducesOnNgspice47), `#${e.ticket} reproduces`);
+      // A spice-ts "wrong" verdict must be tracked by an issue (charter: file every case where spice-ts is also wrong).
+      if (e.spiceTs.verdict === 'wrong') assert.match(e.spiceTsIssue ?? '', /^https:\/\/github\.com\/mfiumara\/spice-ts\/issues\/\d+$/, `#${e.ticket} issue`);
+      if (!e.simulatorRelevant || !e.runnableDeck) assert.equal(outcome(e), 'not-simulated');
+    }
+  });
+
+  it('commits only small decks, byte-identical to the recorded hashes', async () => {
+    const manifest = await loadManifest();
+    for (const e of manifest.tickets) {
+      for (const file of e.committedDecks) {
+        assert.ok(file.path.startsWith(`tickets/${e.ticket}/`), file.path);
+        const bytes = await readFile(resolve(HERE, file.path));
+        assert.ok(bytes.length <= MAX_COMMITTED_DECK_BYTES, `${file.path} is ${bytes.length} B`);
+        assert.equal(bytes.length, file.bytes, file.path);
+        assert.equal(createHash('sha256').update(bytes).digest('hex'), file.sha256, file.path);
+      }
+      if (e.committedDecks.length > 0) assert.ok(hasReadme(e), `#${e.ticket} commits decks but is not a runnable simulator ticket`);
+    }
+  });
+
+  it('generated NGSPICE_BUGS.md and ticket READMEs are up to date', async () => {
+    const files = renderAll(await loadManifest());
+    for (const [path, text] of files) {
+      assert.equal(await readFile(path, 'utf8').catch(() => ''), text, `${path} is stale: run render.ts`);
+    }
+  });
+});
+
+/**
+ * Pins the spice-ts side of the verdicts that the summary reports as "ngspice defective, spice-ts correct",
+ * against the expected answers (not against ngspice). Requires `pnpm build` (imports packages/core/dist).
+ */
+describe('ngspice-bugs spice-ts verdicts', () => {
+  for (const [ticket, a, b] of [
+    [877, 'tickets/877/repro_a_cards.cir', 'tickets/877/repro_b_cards.cir'],
+    [878, 'tickets/878/repro_l2_a_cards.cir', 'tickets/878/repro_l2_b_cards.cir'],
+  ] as const) {
+    it(`#${ticket}: drain currents do not depend on the order of the Z cards`, async () => {
+      const manifest = await loadManifest();
+      assert.equal(outcome(entry(manifest, ticket)), 'spice-ts-correct');
+      const { simulate } = await core();
+      const first = await simulate(await deck(a));
+      const second = await simulate(await deck(b));
+      for (const source of ['vd1', 'vd2']) {
+        const x = first.dc.current(source);
+        const y = second.dc.current(source);
+        assert.ok(Number.isFinite(x) && Number.isFinite(y));
+        assert.ok(Math.abs(x - y) <= 1e-12 * Math.max(Math.abs(x), Math.abs(y)), `${source}: ${x} vs ${y}`);
+      }
+      // The forward-biased device (vds = +1 V) absorbs power: its source current is negative.
+      assert.ok(first.dc.current('vd2') < 0);
+    });
+  }
+
+  it('#651: VDMOS with a small ksubthres sweeps to the analytic strong-inversion current', async () => {
+    const manifest = await loadManifest();
+    assert.equal(outcome(entry(manifest, 651)), 'spice-ts-correct');
+    const { simulate } = await core();
+    const result = await simulate(await deck('tickets/651/ksubthres_nch_cards.sp'));
+    const current = result.dcSweep.current('VD') as Float64Array;
+    assert.equal(current.length, 401);
+    assert.ok(current.every(Number.isFinite));
+    // ID = (Kp/2)(Vgs - Vto - Rs ID)^2 (1 + lambda (Vds - (Rd + Rs) ID)) at VG = 4 V, VD = 10 V.
+    const expected = 5.827026843146154;
+    assert.ok(Math.abs(-current[400] - expected) <= 1e-6 * expected, `I(VD) = ${current[400]}`);
+  });
+
+  for (const [ticket, path] of [[688, 'tickets/688/print.cir'], [849, 'tickets/849/rhs_size_bare_current_node_repro.cir']] as const) {
+    it(`#${ticket}: an ill-posed topology is diagnosed instead of producing numbers`, async () => {
+      const manifest = await loadManifest();
+      assert.equal(entry(manifest, ticket).spiceTs.verdict, 'right');
+      const { simulate } = await core();
+      await assert.rejects(simulate(await deck(path)), /[Ss]ingular/);
+    });
+  }
+});

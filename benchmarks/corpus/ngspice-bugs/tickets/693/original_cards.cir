@@ -1,0 +1,29 @@
+* multiplicities
+i1 1 0 DC 1
+r1 1 0 1 m=10
+
+i2 2 0 DC 1
+.subckt rx2 a b
+r2 a b 1
+.ends
+x2 2 0 rx2 m=10
+
+i3 3 0 DC 1
+.subckt rx3 a b
+r3 a b 1 m=2
+.ends
+x3 3 0 rx3 m=5
+
+i4 4 0 DC 1
+.subckt rx4 a b m=10
+r4 a b 1 m=m
+.ends
+x4 4 0 rx4 m=10
+
+i5 5 0 DC 1
+.subckt rx5 a b m=10
+r5 a b 1
+.ends
+x5 5 0 rx5 m=10
+.op
+.print op v(1) v(2) v(3) v(4) v(5)
