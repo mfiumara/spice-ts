@@ -14,7 +14,7 @@ import { TransientNoiseContext } from './devices/transient-noise.js';
 import { Capacitor } from './devices/capacitor.js';
 import { Inductor } from './devices/inductor.js';
 import { MutualInductor } from './devices/mutual-inductor.js';
-import { Diode, diodeZeroBiasCapacitance } from './devices/diode.js';
+import { Diode, canonicalDiodeModelParams, diodeZeroBiasCapacitance } from './devices/diode.js';
 import { BJT, hasBiasDependentBaseResistance } from './devices/bjt.js';
 import { VBIC, resolveVBICParams, vbicNodeCount } from './devices/vbic.js';
 import { MOSFET } from './devices/mosfet.js';
@@ -2816,11 +2816,19 @@ export class Circuit {
         if (isPositiveFinite(seriesResistance) && needsPrimeNode) {
           const [anode, cathode] = desc.nodes;
           const junction = internalNodeName(desc.name, 'rs');
+          // ngspice-47 diotemp.c:253-258 scales RS by 1 + TRS1*dT + TRS2*dT^2
+          // around the diode TNOM: the resistor TC1/TC2 law with the same TNOM.
+          const card = model ? canonicalDiodeModelParams(desc.name, model.params) : {};
+          const trs1 = card.TRS1 ?? 0;
+          const trs2 = card.TRS2 ?? 0;
           result.push({
             type: 'R',
             name: `${desc.name}.RS`,
             nodes: [anode, junction],
             value: seriesResistance / effectiveArea,
+            ...(trs1 !== 0 || trs2 !== 0
+              ? { params: { TC1: trs1, TC2: trs2, TNOM: card.TNOM ?? NOMINAL_TEMPERATURE_C } }
+              : {}),
           });
           result.push({
             ...desc,

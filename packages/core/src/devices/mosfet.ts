@@ -262,6 +262,22 @@ interface MosfetBatch {
 
 const mosfetBatches = new WeakMap<readonly MOSFET[], MosfetBatch>();
 
+/**
+ * What {@link MOSFET.batchNewtonStepScale} reads for one device list: D, G, S
+ * nodes and polarity per device, and each device's row in the shared
+ * {@link MosfetStateStore}, valid while {@link stateStoreEpoch} is unchanged.
+ */
+interface MosfetStepLimitBatch {
+  readonly length: number;
+  readonly stateEpoch: number;
+  readonly nodes: Int32Array;
+  readonly polarity: Float64Array;
+  readonly state: Float64Array;
+  readonly stateBases: Int32Array;
+}
+
+const stepLimitBatches = new WeakMap<readonly MOSFET[], MosfetStepLimitBatch>();
+
 // MosfetStateStore.values layout per instance.
 const STATE_VBS = 0;
 const STATE_VBD = 1;
@@ -354,6 +370,40 @@ function fetlim(vnew: number, vold: number, vto: number): number {
   const vtemp = vto + 0.5;
   if (vnew <= vtemp) return delv > vtstlo ? vold + vtstlo : vnew;
   return vtemp;
+}
+
+/**
+ * Scale on a whole Newton step proposed for one MOS1 instance (D, G, S nodes,
+ * -1 for ground): no terminal voltage may move by more than
+ * MAX_NEWTON_TERMINAL_STEP, and, as mos1load.c applies DEVfetlim to vgs
+ * (vds >= 0) or vgd (vds < 0) against the previous threshold `von`, spice-ts
+ * turns the limited gate voltage into a scale on the step. Allocation-free:
+ * it runs for every device on every Newton iteration.
+ */
+function mos1NewtonStepScale(
+  previous: Float64Array, candidate: Float64Array,
+  nD: number, nG: number, nS: number, polarity: number, von: number,
+): number {
+  const prevD = nD >= 0 ? previous[nD] : 0;
+  const prevG = nG >= 0 ? previous[nG] : 0;
+  const prevS = nS >= 0 ? previous[nS] : 0;
+  const candD = nD >= 0 ? candidate[nD] : 0;
+  const candG = nG >= 0 ? candidate[nG] : 0;
+  const candS = nS >= 0 ? candidate[nS] : 0;
+  const vgsStep = Math.abs((candG - candS) - (prevG - prevS));
+  const vdsStep = Math.abs((candD - candS) - (prevD - prevS));
+  const largestStep = Math.max(vgsStep, vdsStep);
+  const terminalScale = largestStep > MAX_NEWTON_TERMINAL_STEP
+    ? MAX_NEWTON_TERMINAL_STEP / largestStep
+    : 1;
+  const previousVds = polarity * (prevD - prevS);
+  const reverse = !(previousVds >= 0);
+  const previousGate = polarity * (prevG - (reverse ? prevD : prevS));
+  const proposedGate = polarity * (candG - (reverse ? candD : candS));
+  const delta = proposedGate - previousGate;
+  if (delta === 0) return Math.min(terminalScale, 1);
+  const limited = fetlim(proposedGate, previousGate, von);
+  return Math.min(terminalScale, Math.min(1, Math.max(0, (limited - previousGate) / delta)));
 }
 
 // batchStamp value-slot layout over the unswapped D, G, S and bulk terminals.
@@ -661,37 +711,51 @@ export class MOSFET implements DeviceModel {
   }
 
   limitNewtonStep(previous: Float64Array, candidate: Float64Array): number {
-    const [nD, nG, nS] = this.nodes;
-    const voltage = (solution: Float64Array, node: number): number =>
-      node >= 0 ? solution[node] : 0;
-    const terminal = (solution: Float64Array, positive: number, negative: number): number =>
-      voltage(solution, positive) - voltage(solution, negative);
-    const vgsStep = Math.abs(terminal(candidate, nG, nS) - terminal(previous, nG, nS));
-    const vdsStep = Math.abs(terminal(candidate, nD, nS) - terminal(previous, nD, nS));
-    const largestStep = Math.max(vgsStep, vdsStep);
-    const terminalScale = largestStep > MAX_NEWTON_TERMINAL_STEP
-      ? MAX_NEWTON_TERMINAL_STEP / largestStep
-      : 1;
-    return Math.min(terminalScale, this.gateStepScale(previous, candidate));
+    const nodes = this.nodes;
+    return mos1NewtonStepScale(
+      previous, candidate, nodes[0], nodes[1], nodes[2], this.params.polarity, this.lastVon,
+    );
   }
 
   /**
-   * mos1load.c applies DEVfetlim to vgs (vds >= 0) or vgd (vds < 0). spice-ts
-   * turns the limited gate voltage into a scale on the whole Newton step.
+   * Math.min of {@link limitNewtonStep} over `mosfets` (in any order, so the
+   * same value), reading terminal nodes, polarity and the previous threshold
+   * from the list's {@link MosfetStepLimitBatch} instead of per-instance
+   * fields: no allocation and contiguous reads on every Newton iteration.
    */
-  private gateStepScale(previous: Float64Array, candidate: Float64Array): number {
-    const { polarity } = this.params;
-    const [nD, nG, nS] = this.nodes;
-    const voltage = (solution: Float64Array, node: number): number =>
-      node >= 0 ? solution[node] : 0;
-    const previousVds = polarity * (voltage(previous, nD) - voltage(previous, nS));
-    const reference = previousVds >= 0 ? nS : nD;
-    const previousGate = polarity * (voltage(previous, nG) - voltage(previous, reference));
-    const proposedGate = polarity * (voltage(candidate, nG) - voltage(candidate, reference));
-    const delta = proposedGate - previousGate;
-    if (delta === 0) return 1;
-    const limited = fetlim(proposedGate, previousGate, this.lastVon);
-    return Math.min(1, Math.max(0, (limited - previousGate) / delta));
+  static batchNewtonStepScale(
+    mosfets: readonly MOSFET[], previous: Float64Array, candidate: Float64Array,
+  ): number {
+    const length = mosfets.length;
+    if (length === 0) return 1;
+    let batch = stepLimitBatches.get(mosfets);
+    if (batch === undefined || batch.stateEpoch !== stateStoreEpoch || batch.length !== length) {
+      // Merging stores bumps the epoch, so resolve them before recording it.
+      const store = MOSFET.sharedStateStore(mosfets);
+      const nodes = new Int32Array(3 * length);
+      const polarity = new Float64Array(length);
+      const stateBases = new Int32Array(length);
+      for (let m = 0; m < length; m++) {
+        const mosfet = mosfets[m];
+        nodes[3 * m] = mosfet.nodes[0];
+        nodes[3 * m + 1] = mosfet.nodes[1];
+        nodes[3 * m + 2] = mosfet.nodes[2];
+        polarity[m] = mosfet.params.polarity;
+        stateBases[m] = mosfet.stateBase;
+      }
+      batch = { length, stateEpoch: stateStoreEpoch, nodes, polarity, state: store.values, stateBases };
+      stepLimitBatches.set(mosfets, batch);
+    }
+    const { nodes, polarity, state, stateBases } = batch;
+    let scale = 1;
+    for (let m = 0; m < length; m++) {
+      const q = 3 * m;
+      scale = Math.min(scale, mos1NewtonStepScale(
+        previous, candidate, nodes[q], nodes[q + 1], nodes[q + 2],
+        polarity[m], state[stateBases[m] + STATE_VON],
+      ));
+    }
+    return scale;
   }
 
   /** Level-1 DC quantities used by the small-signal noise generators. */

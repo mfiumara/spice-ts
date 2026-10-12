@@ -1,0 +1,15 @@
+{"build":"base","nodes":10000,"ms":2192.6,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}
+{"build":"step1","nodes":10000,"ms":2116.5,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}
+{"build":"branch","nodes":10000,"ms":2121,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}
+{"build":"base","nodes":10000,"ms":2220.4,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}
+{"build":"step1","nodes":10000,"ms":2114.1,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}
+{"build":"branch","nodes":10000,"ms":2188.6,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}
+{"build":"base","nodes":10000,"ms":2095.6,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}
+{"build":"step1","nodes":10000,"ms":2051.7,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}
+{"build":"branch","nodes":10000,"ms":2224.8,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}
+{"build":"base","nodes":10000,"ms":2328.8,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}
+{"build":"step1","nodes":10000,"ms":2065.6,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}
+{"build":"branch","nodes":10000,"ms":2013.7,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}
+{"build":"base","nodes":10000,"ms":2176.6,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}
+{"build":"step1","nodes":10000,"ms":2059.7,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}
+{"build":"branch","nodes":10000,"ms":1986.4,"points":214,"sha256":"5195996b4d1fedd3bf8459f78e02183b7ac8188653b3b1f7b6e7c6caf1cbe9c5"}

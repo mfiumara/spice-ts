@@ -1,0 +1,35 @@
+cmos-op-10000-after.cpuprofile: 2373.3 ms sampled
+      748.9 ms  31.6%  device load (MOS1 eval + stamp)
+      518.5 ms  21.8%  other (Newton loop, idle, runtime)
+      448.8 ms  18.9%  sparse LU
+      272.8 ms  11.5%  garbage collector
+      196.0 ms   8.3%  step limit + convergence tests
+      188.3 ms   7.9%  parse + compile
+cmos-op-10000-before.cpuprofile: 2730.4 ms sampled
+      746.4 ms  27.3%  device load (MOS1 eval + stamp)
+      579.5 ms  21.2%  other (Newton loop, idle, runtime)
+      468.5 ms  17.2%  step limit + convergence tests
+      417.7 ms  15.3%  sparse LU
+      380.6 ms  13.9%  garbage collector
+      137.7 ms   5.0%  parse + compile
+cmos-op-50000-after.cpuprofile: 8956.8 ms sampled
+     4200.8 ms  46.9%  device load (MOS1 eval + stamp)
+     1800.6 ms  20.1%  sparse LU
+     1177.6 ms  13.1%  garbage collector
+      866.6 ms   9.7%  other (Newton loop, idle, runtime)
+      766.3 ms   8.6%  step limit + convergence tests
+      144.9 ms   1.6%  parse + compile
+cmos-op-50000-before.cpuprofile: 15056.9 ms sampled
+     5147.7 ms  34.2%  step limit + convergence tests
+     4207.7 ms  27.9%  device load (MOS1 eval + stamp)
+     2394.8 ms  15.9%  garbage collector
+     1720.9 ms  11.4%  other (Newton loop, idle, runtime)
+     1401.9 ms   9.3%  sparse LU
+      183.9 ms   1.2%  parse + compile
+cmos-tran-10000-after.cpuprofile: 4142.2 ms sampled
+     1851.5 ms  44.7%  device load (MOS1 eval + stamp)
+      836.8 ms  20.2%  other (Newton loop, idle, runtime)
+      532.0 ms  12.8%  step limit + convergence tests
+      519.4 ms  12.5%  sparse LU
+      303.7 ms   7.3%  garbage collector
+       98.8 ms   2.4%  parse + compile

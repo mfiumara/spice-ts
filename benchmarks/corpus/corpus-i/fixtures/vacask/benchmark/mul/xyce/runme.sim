@@ -1,0 +1,25 @@
+Diode cascade
+
+.model D1N4007 D IS=76.9p RS=42.0m BV=1.00k IBV=5.00u CJO=26.5p  M=0.333 N=1.45 
+* TT=4.32u
+
+vs a 0 0 sin 0 50 100k
+r1 a 1 0.01
+c1 1 2 100n
+d1 0 2 d1n4007
+c2 0 10 100n
+d2 2 10 d1n4007
+c3 2 3  100n
+d3 10 3 d1n4007
+c4 10 20 100n
+d4 3 20 d1n4007
+
+.options timeint method=gear maxord=2
+*.print tran file=xy.tran1.raw format=raw v(1) v(20)
+.tran 0.01u 5m 0 0.01u
+
+*.print tran file=out.dat format=std v(1) v(20)
+*.tran 1u 5m 0
+* gnuplot -e "plot \"out.dat\" using 2:3 with lines, \"out.dat\" using 2:4 with lines" -p
+
+.end
