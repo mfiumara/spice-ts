@@ -18,6 +18,7 @@ import {
   parseTxlLine,
 } from './transmission-line-parser.js';
 import { preprocess, preprocessLines } from './preprocessor.js';
+import { translateMicroSign } from './micro-sign.js';
 import { lowerControlScript } from './control-block.js';
 import { extractControlBlocks, type ControlSourceBlock, type ControlSourceLine } from './control/source.js';
 import {
@@ -83,7 +84,7 @@ function parseNetlist(
   extractedBlocks: ControlSourceBlock[] = [],
 ): Circuit {
   // ngspice control-language lines are not netlist cards; read them from the raw text.
-  const extracted = extractControlBlocks(netlist, firstLineIsTitle);
+  const extracted = extractControlBlocks(translateMicroSign(netlist, firstLineIsTitle), firstLineIsTitle);
   const controlBlocks = [...extractedBlocks, ...extracted.blocks];
   const controlStartLine = controlBlocks[0]?.startLine;
   const lines = tokenizeNetlist(extracted.netlist, { firstLineIsTitle });
@@ -328,7 +329,7 @@ export async function parseAsync(
 ): Promise<Circuit> {
   const newline = netlist.indexOf('\n');
   const title = newline < 0 ? netlist : netlist.slice(0, newline);
-  const body = newline < 0 ? '' : netlist.slice(newline + 1);
+  const body = translateMicroSign(newline < 0 ? '' : netlist.slice(newline + 1));
   // Control blocks are taken out before .param preprocessing, which would
   // read their `{$var}` references as numparam expressions.
   // The body starts on line 2 of the caller's netlist (after the title).
@@ -343,7 +344,7 @@ export async function parseTitlelessAsync(
   resolver?: IncludeResolver,
   guard?: ProtocolExecutionGuard,
 ): Promise<Circuit> {
-  const control = extractControlBlocks(netlist, false);
+  const control = extractControlBlocks(translateMicroSign(netlist), false);
   const preprocessed = await preprocess(control.netlist, resolver, guard);
   return parseNetlist(preprocessed, false, guard, control.blocks);
 }

@@ -2,6 +2,7 @@ import { evaluateExpression } from './expression.js';
 import { conditionExpression, expandUserFunctions, parseFuncCard, type FunctionScope, type UserFunction } from './numparam.js';
 import { substituteBehavioralParameters } from './behavioral-expression.js';
 import { parseNumber } from './tokenizer.js';
+import { translateMicroSign } from './micro-sign.js';
 import { CycleError, ParseError } from '../errors.js';
 import type { IncludeResolver } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -625,7 +626,7 @@ async function collectStatements(
         throw new CycleError([...chain, path]);
       }
       visited.add(path);
-      const content = await resolver(path);
+      const content = translateMicroSign(await resolver(path));
       await collectStatements(
         content, resolver, visited, [...chain, path], depth + 1, state, guard,
       );
@@ -655,7 +656,7 @@ async function collectStatements(
         }
         visited.add(visitKey);
         const content = await resolver(filePath);
-        const extracted = extractLibSection(content, section);
+        const extracted = translateMicroSign(extractLibSection(content, section));
         await collectStatements(
           extracted, resolver, visited, [...chain, visitKey], depth + 1, state, guard,
         );
