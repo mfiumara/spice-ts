@@ -12,7 +12,8 @@ import { simulate } from '../simulate.js';
  * XTRTOL: inp.c inp_dodeck turns every .options field into a circuit variable;
  *   cktdojob.c then uses `xtrtol` (cp_getvar CP_NUM, so truncated to int)
  *   instead of 1 as trtol when 'A' devices are present and trtol > 1.
- * SEED: no random-function consumer exists in spice-ts, so it stays rejected.
+ * SEED: accepted on main since #501 (TRNOISE/TRRANDOM); pinned here for the
+ *   rand_numb_test.cir line.
  */
 
 const fixture = (path: string): string => readFileSync(
@@ -61,9 +62,9 @@ describe('ngspice-47 residual .options (#612)', () => {
     expect(() => parseDeck(xspiceDeck(`.options ${option}`))).toThrow();
   });
 
-  it('keeps rejecting seed=N: no random-function consumer exists', () => {
-    expect(() => parse('.options seed=55\n.op')).toThrow(ParseError);
-    expect(() => parse('.options seed=55\n.op')).toThrow(/seed/);
+  it('accepts seed=N (wired to the TRNOISE/TRRANDOM streams by #501) but not seed=random', () => {
+    expect(parse('.options seed=55\n.op').simulationOptions).toEqual({ seed: 55 });
+    expect(() => parse('.options seed=random\n.op')).toThrow(ParseError);
   });
 
   // simulate() stops both decks earlier (a misplaced second '.endc' in
@@ -80,8 +81,8 @@ describe('ngspice-47 residual .options (#612)', () => {
     expect(circuit.xspiceTrtol).toBe(7);
   });
 
-  it('still rejects the .option seed line of rand_numb_test.cir', () => {
+  it('accepts the unchanged .option seed line of rand_numb_test.cir', () => {
     const line = optionLine('examples/Monte_Carlo/rand_numb_test.cir', /^\.option seed = 55/);
-    expect(() => parse(`${line}\n.op`)).toThrow(/seed/i);
+    expect(parse(`${line}\n.op`).simulationOptions).toEqual({ seed: 55 });
   });
 });
