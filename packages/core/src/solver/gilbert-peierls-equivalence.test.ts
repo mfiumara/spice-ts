@@ -382,6 +382,8 @@ describe('GilbertPeierlsSolver numeric kernel equivalence (#669)', () => {
  * U entry is exactly zero.
  */
 describe('GilbertPeierlsSolver supernodal updates (#727)', () => {
+  // Each case runs the unbounded frozen kernel on hundreds of matrices; under
+  // CI coverage instrumentation that takes several seconds.
   it('matches the frozen kernel on grids large enough to form supernodes, and uses them', () => {
     for (const side of [24, 41]) {
       for (const graded of [false, true]) {
@@ -393,7 +395,7 @@ describe('GilbertPeierlsSolver supernodal updates (#727)', () => {
         expect(solver.supernodalUpdates, `grid ${side} supernodal updates`).toBeGreaterThan(side);
       }
     }
-  });
+  }, 60_000);
 
   it('matches the frozen kernel when members cancel to exact zeros and pivots move', () => {
     let supernodal = 0;
@@ -441,5 +443,5 @@ describe('GilbertPeierlsSolver supernodal updates (#727)', () => {
       }
     }
     expect(supernodal).toBeGreaterThan(1000);
-  });
+  }, 60_000);
 });
