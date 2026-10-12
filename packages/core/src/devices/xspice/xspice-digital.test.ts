@@ -259,12 +259,12 @@ describe('XSPICE event-driven digital models against ngspice-47 (#553 slice 3)',
     ].join('\n'))).rejects.toThrow(UnsupportedCodeModelError);
   });
 
-  it('rejects a digital node that is also analog, analyses other than .op/.tran, and UIC', async () => {
+  it('rejects a digital node that is also analog, analyses other than .op/.tran/.ac, and UIC', async () => {
     const base = ['v1 1 0 1', 'r1 1 0 1k', 'a1 [1] [d] adc', '.model adc adc_bridge'];
     await expect(simulate(['mixed node', ...base, 'a2 d 1 inv', '.model inv d_inverter', '.tran 1n 10n', '.end'].join('\n')))
       .rejects.toThrow(InvalidCircuitError);
-    await expect(simulate(['ac', ...base, '.ac dec 1 1 10', '.end'].join('\n')))
-      .rejects.toThrow(/supported in \.op and \.tran only, not \.ac/);
+    await expect(simulate(['noise', ...base, '.noise v(1) v1 dec 1 1 10', '.end'].join('\n')))
+      .rejects.toThrow(/supported in \.op, \.tran and \.ac only, not \.noise/);
     await expect(simulate(['uic', ...base, '.tran 1n 10n uic', '.end'].join('\n')))
       .rejects.toThrow(/UIC/);
   });

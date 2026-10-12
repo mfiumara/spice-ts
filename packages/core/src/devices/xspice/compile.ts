@@ -236,10 +236,12 @@ export function assertXspiceAnalyses(
     throw new InvalidCircuitError('XSPICE A devices do not support .disto (no distortion terms)');
   }
   const digital = instances.find(instance => DIGITAL_MODELS.has(instance.model.codeModel));
-  const unsupportedEvent = digital && analyses.find(analysis => analysis !== 'op' && analysis !== 'tran');
+  // .ac follows ngspice-47 acan.c: EVTop sets the digital state, the sweep
+  // loads only analog instances (the analog halves of the bridges).
+  const unsupportedEvent = digital && analyses.find(analysis => analysis !== 'op' && analysis !== 'tran' && analysis !== 'ac');
   if (digital && unsupportedEvent) {
     throw new InvalidCircuitError(
-      `XSPICE event-driven instance '${digital.card.name}' (${digital.model.codeModel}) is supported in .op and .tran only, not .${unsupportedEvent}`,
+      `XSPICE event-driven instance '${digital.card.name}' (${digital.model.codeModel}) is supported in .op, .tran and .ac only, not .${unsupportedEvent}`,
     );
   }
   for (const instance of instances) {
