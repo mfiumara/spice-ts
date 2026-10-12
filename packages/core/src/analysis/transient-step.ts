@@ -156,10 +156,12 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
     for (const device of selfLimiting) device.observeTransientNewton?.(x);
 
     // Damp only nodes a nonlinear device reads (issue #376); see nonlinearTerminalNodes.
+    let damped = false;
     for (const i of dampedNodes) {
       const delta = rawDelta[i];
       if (Math.abs(delta) > voltageLimit) {
         x[i] = prev[i] + Math.sign(delta) * voltageLimit;
+        damped = true;
       }
     }
 
@@ -167,7 +169,13 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
 
     // ngspice CKTnoncon: an iterate a device had to limit was linearised at a
     // junction voltage the solution does not have, so it cannot converge.
-    const limited = selfLimiting.some(device => device.limitedLastStamp?.() === true);
+    // The same holds for a node the damping cap clipped: the clipped iterate
+    // is not the linear solve's answer and can violate KVL across linear
+    // branches (a 0 V source between a capped and an uncapped node, #650).
+    // Above |v| = voltageLimit / reltol the cap is inside the relative
+    // tolerance, so without this check such an iterate is accepted.
+    const limited = damped
+      || selfLimiting.some(device => device.limitedLastStamp?.() === true);
     if (
       !limited
       && isConvergedTransient(x, prev, nodeCount, options)
