@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/prof702/rc-ladder-tran-1000.cpuprofile: 52 samples, 143.4 ms sampled
+
+Top self time
+      23.8 ms  16.6%  (garbage collector)
+      10.0 ms   7.0%  advanceSolution packages/core/dist/chunk-7SQ7662G.js:30359
+       9.8 ms   6.8%  record packages/core/dist/chunk-7SQ7662G.js:30162
+       7.8 ms   5.4%  compileSourceTextModule node:internal/modules/esm/utils:344
+       7.4 ms   5.1%  read
+       5.6 ms   3.9%  attemptStep packages/core/dist/chunk-7SQ7662G.js:29746
+       5.6 ms   3.9%  record packages/core/dist/chunk-7SQ7662G.js:31046
+       5.2 ms   3.7%  stampDynamicDevices packages/core/dist/chunk-7SQ7662G.js:29103
+       5.0 ms   3.5%  nonlinearTerminalNodes packages/core/dist/chunk-7SQ7662G.js:29873
+       5.0 ms   3.5%  solveLinearized packages/core/dist/chunk-7SQ7662G.js:29840
+       5.0 ms   3.5%  chargeTruncationTimestep packages/core/dist/chunk-7SQ7662G.js:2978
+       5.0 ms   3.5%  preprocessSteps packages/core/dist/chunk-7SQ7662G.js:24023
+
+Top inclusive time
+     143.4 ms 100.0%  (root)
+      89.5 ms  62.4%  simulate packages/core/dist/chunk-7SQ7662G.js:35998
+      72.3 ms  50.4%  solveCompiledAnalyses packages/core/dist/chunk-7SQ7662G.js:36053
+      64.9 ms  45.2%  solveTransient packages/core/dist/chunk-7SQ7662G.js:31074
+      54.9 ms  38.3%  advanceSolution packages/core/dist/chunk-7SQ7662G.js:30359
+      30.0 ms  20.9%  attemptStep packages/core/dist/chunk-7SQ7662G.js:29746
+      23.8 ms  16.6%  (garbage collector)
+      15.1 ms  10.5%  loadAndTranslate node:internal/modules/esm/loader:608
+      15.1 ms  10.5%  #createModuleJob node:internal/modules/esm/loader:632
+      15.1 ms  10.5%  #getJobFromResolveResult node:internal/modules/esm/loader:347
+      15.1 ms  10.5%  getModuleJobForImport node:internal/modules/esm/loader:319
+      14.8 ms  10.3%  record packages/core/dist/chunk-7SQ7662G.js:30162

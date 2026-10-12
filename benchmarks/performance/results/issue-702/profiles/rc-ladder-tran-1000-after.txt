@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/prof702-final/rc-ladder-tran-1000.cpuprofile: 87 samples, 260.8 ms sampled
+
+Top self time
+      30.5 ms  11.7%  attemptStep packages/core/dist/chunk-OUWSGK3L.js:29829
+      22.9 ms   8.8%  compileSourceTextModule node:internal/modules/esm/utils:344
+      16.1 ms   6.2%  (garbage collector)
+      15.1 ms   5.8%  buildCompanionSystem packages/core/dist/chunk-OUWSGK3L.js:29653
+      11.8 ms   4.5%  advanceSolution packages/core/dist/chunk-OUWSGK3L.js:30456
+       8.9 ms   3.4%  solveLinearized packages/core/dist/chunk-OUWSGK3L.js:29923
+       8.5 ms   3.3%  (program)
+       8.1 ms   3.1%  stampDynamicDevices packages/core/dist/chunk-OUWSGK3L.js:29186
+       7.0 ms   2.7%  TransientSimImpl packages/core/dist/chunk-OUWSGK3L.js:30406
+       6.6 ms   2.5%  record packages/core/dist/chunk-OUWSGK3L.js:31143
+       6.5 ms   2.5%  truncationTimestepAll packages/core/dist/chunk-OUWSGK3L.js:2969
+       6.1 ms   2.3%  factorize packages/core/dist/chunk-OUWSGK3L.js:28104
+
+Top inclusive time
+     260.8 ms 100.0%  (root)
+     198.8 ms  76.2%  simulate packages/core/dist/chunk-OUWSGK3L.js:36095
+     163.8 ms  62.8%  solveCompiledAnalyses packages/core/dist/chunk-OUWSGK3L.js:36150
+     147.3 ms  56.5%  solveTransient packages/core/dist/chunk-OUWSGK3L.js:31171
+     130.0 ms  49.8%  advanceSolution packages/core/dist/chunk-OUWSGK3L.js:30456
+      96.1 ms  36.8%  attemptStep packages/core/dist/chunk-OUWSGK3L.js:29829
+      37.0 ms  14.2%  buildCompanionSystem packages/core/dist/chunk-OUWSGK3L.js:29653
+      27.7 ms  10.6%  getModuleJobForImport node:internal/modules/esm/loader:319
+      24.7 ms   9.5%  compile packages/core/dist/chunk-OUWSGK3L.js:22652
+      22.9 ms   8.8%  compileSourceTextModule node:internal/modules/esm/utils:344
+      22.9 ms   8.8%  moduleStrategy node:internal/modules/esm/translators:102
+      22.9 ms   8.8%  #translate node:internal/modules/esm/loader:550

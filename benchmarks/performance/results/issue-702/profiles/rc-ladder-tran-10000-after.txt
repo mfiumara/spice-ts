@@ -1,0 +1,29 @@
+/Users/mattiafiumara/.hermes/profiles/spice-ts-engineer/cache/scratch/prof702-final/rc-ladder-tran-10000.cpuprofile: 352 samples, 1056.0 ms sampled
+
+Top self time
+     114.1 ms  10.8%  buildCompanionSystem packages/core/dist/chunk-OUWSGK3L.js:29653
+      97.9 ms   9.3%  attemptStep packages/core/dist/chunk-OUWSGK3L.js:29829
+      81.5 ms   7.7%  (garbage collector)
+      64.3 ms   6.1%  stampStaticDevices packages/core/dist/chunk-OUWSGK3L.js:29145
+      36.7 ms   3.5%  flush packages/core/dist/chunk-OUWSGK3L.js:31153
+      34.6 ms   3.3%  lockTopology packages/core/dist/chunk-OUWSGK3L.js:28682
+      32.7 ms   3.1%  newtonRaphson packages/core/dist/chunk-OUWSGK3L.js:29230
+      32.5 ms   3.1%  evaluate packages/core/dist/chunk-OUWSGK3L.js:30252
+      30.9 ms   2.9%  acceptAll packages/core/dist/chunk-OUWSGK3L.js:2947
+      29.1 ms   2.8%  stampDynamicDevices packages/core/dist/chunk-OUWSGK3L.js:29186
+      26.7 ms   2.5%  stampPrevB packages/core/dist/chunk-OUWSGK3L.js:30722
+      22.3 ms   2.1%  compileSourceTextModule node:internal/modules/esm/utils:344
+
+Top inclusive time
+    1056.0 ms 100.0%  (root)
+     885.9 ms  83.9%  simulate packages/core/dist/chunk-OUWSGK3L.js:36095
+     757.8 ms  71.8%  solveCompiledAnalyses packages/core/dist/chunk-OUWSGK3L.js:36150
+     655.8 ms  62.1%  solveTransient packages/core/dist/chunk-OUWSGK3L.js:31171
+     550.4 ms  52.1%  advanceSolution packages/core/dist/chunk-OUWSGK3L.js:30456
+     424.8 ms  40.2%  attemptStep packages/core/dist/chunk-OUWSGK3L.js:29829
+     233.8 ms  22.1%  buildCompanionSystem packages/core/dist/chunk-OUWSGK3L.js:29653
+     104.9 ms   9.9%  stampStaticDevices packages/core/dist/chunk-OUWSGK3L.js:29145
+     100.8 ms   9.5%  solveDCOperatingPoint packages/core/dist/chunk-OUWSGK3L.js:29457
+     100.8 ms   9.5%  transientInitialSolution packages/core/dist/chunk-OUWSGK3L.js:36545
+      93.9 ms   8.9%  newtonRaphson packages/core/dist/chunk-OUWSGK3L.js:29230
+      84.8 ms   8.0%  compile packages/core/dist/chunk-OUWSGK3L.js:22652

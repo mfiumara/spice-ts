@@ -228,3 +228,26 @@ After #648, `MOSFET.batchStamp` was the largest self-time frame on any M2 deck: 
 After #660 the deck furthest behind ngspice-47 KLU was the resistor-mesh OP, and on it the sparse LU was the cost. At 50k nodes, `GilbertPeierlsSolver.factorize` was 50.4% of self time and `amdOrdering` 9.8%. At 10k they were 25.2% and 13.5%, the top two frames. The fill is not the problem: the AMD order gives fewer factor entries than a geometric nested dissection of the same grid. Two other costs are. The left-looking update loop read a per-row state word on every multiply-subtract to detect fill (12% of factorize ticks). `amdOrdering` allocated a typed-array view per updated variable and resized JS element lists on every pivot. The update loop now reads the row state only when the value it just loaded was exactly zero, which is the only case where the state can change. `amdOrdering` keeps the same algorithm and decisions but stores everything in flat typed arrays. Factors and order are bit-identical: the #669 frozen-kernel oracle passes, and a new frozen-copy test of the pre-#693 `amdOrdering` checks grids, rails and random patterns. Waveform hashes match in all 114 A/B samples, 100/100 aggregate corpus digests are identical, and `accuracy.ts --ci` passes.
 
 Paired concurrent A/B results: the mesh OP is 1.17x / 1.10x / 1.07x faster wall at 50k / 10k / 1k (1.12x / 1.04x / 1.02x CPU; 5, 7 and 7 rounds). The transient decks are unchanged at 0.98-1.02x, and the 50k MOS chain reads 0.98x CPU with a 0.97..1.01 spread. In the unpaired after run against ngspice-47 KLU (5 samples), spice-ts analysis time is 2.84x / 2.71x / 2.05x slower on the RC ladder, 3.32x / 2.37x / 2.80x on the mesh OP, and 2.32x / 1.32x on the MOS chain at 1k / 10k. The 50k MOS cell reads 0.87x, but it is unpaired, inside both engines' historical spread, and not moved by this change, so it is not a claimed win. Profiles, JSONL, the ngspice table, component A/Bs and remaining scope (a supernodal or dense-block kernel layout for the mesh, parse/compile/GC share) are in `benchmarks/performance/results/issue-693/README.md`.
+
+## Follow-up: batched CAPtrunc/INDtrunc charge truncation ([#702](https://github.com/mfiumara/spice-ts/issues/702))
+
+After #693 and #689 (ngspice CKTtrunc step control), the RC ladder takes 119 timepoints against ngspice's 120, and the MOS1 chain 213 against 214, so the step-count gap is gone. #689 added a per-step cost in its place: `LinearReactiveTruncation`, the CAPtrunc/INDtrunc estimate over every linear capacitor and inductor. It runs once per trial point and once per accepted point, and on the 10k RC ladder it was about a fifth of `simulate()` (`timestep` 10.2% plus the `record`/`accept` path 9.9% inclusive). Per capacitor it went through a closure and `TransientChargeState.accept`, which branches on the mode, runs `Array.includes`, and re-selects the integration rule for every charge. Then `chargeTruncationTimestep` allocated two JS arrays on every call.
+
+The charges are now evaluated into one reused `Float64Array`. The new `TransientChargeState.acceptAll` / `truncationTimestepAll` process them in one loop, with the same expressions in the same index order. CKTterr's divided differences are computed in scalars, with the same operations in the same order. Results are bit-identical:
+
+- a new frozen-copy test of the pre-#702 code compares with `Object.is` on 20k random CKTterr inputs, random accept/reject/reset histories, and a C/L/K circuit;
+- waveform hashes match in all 114 A/B samples;
+- 100/100 aggregate corpus digests are identical;
+- `accuracy.ts --ci` passes.
+
+Paired concurrent A/B results (7 rounds at 1k/10k, 5 at 50k): the RC ladder is 1.07x / 1.14x / 1.18x faster wall at 1k / 10k / 50k (1.02x / 1.05x / 1.17x CPU). The MOS1 chain is 1.05x / 1.09x wall at 1k / 10k (1.04x / 1.10x CPU). Its 50k cell is faster too, but its 5-pair spread (1.03..1.44) is too wide to put a number on. The mesh OP control is unchanged at 0.98-1.01x.
+
+Against ngspice-47 KLU in the unpaired after run (5 samples), spice-ts analysis time is:
+
+| deck | 1k | 10k | 50k |
+|---|---|---|---|
+| RC ladder | 1.95x slower | 1.74x slower | 1.52x slower |
+| mesh OP | 2.43x slower | 2.43x slower | 2.72x slower |
+| MOS1 chain | 1.02x slower | 0.73x | 0.56x |
+
+Most of the drop since the #693 table comes from #689's step-count change, not this PR. The paired A/B above is this PR's attribution. The MOS chain 10k/50k cells read spice-ts faster, and the probe agrees to 1.1e-3. They are not a claimed win: the engines were not load-paired, and ngspice's own time on that cell has varied by 20% across runs. The mesh OP is now the deck furthest behind KLU. Profiles, JSONL, the ngspice table and remaining scope (mesh `factorize` kernel layout, fused companion passes, a batched MOSFET truncation path, a load-paired engine run) are in `benchmarks/performance/results/issue-702/README.md`.
