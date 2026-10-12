@@ -6,6 +6,10 @@ import { buildCompanionSystem } from '../mna/companion.js';
 import type { SparseSolver } from '../solver/sparse-solver.js';
 import { SingularMatrixError } from '../errors.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
+import { Resistor } from '../devices/resistor.js';
+import { Capacitor } from '../devices/capacitor.js';
+import { VoltageSource } from '../devices/voltage-source.js';
+import { CurrentSource } from '../devices/current-source.js';
 
 /**
  * When sign-flip oscillation is detected on any node, the per-iteration
@@ -188,6 +192,22 @@ export function attemptStep(ctx: StepContext, attempt: StepAttempt): StepResult 
         oscillated,
       };
     }
+    // Issue #710: when every device's stamp is independent of the Newton
+    // iterate, the next iteration would rebuild exactly this system (same
+    // time, dt, history and device state), skip the factorisation as an
+    // unchanged input, and solve it to exactly this x. Its delta is then
+    // zero, nothing is damped or limited, so it converges with this x and
+    // `iter + 2` iterations. Return that result without the rebuild and
+    // solve. The guard still sees the iteration's checkpoint.
+    if (!limited && iter + 1 < options.maxTransientIterations && isIterationInvariant(compiled)) {
+      ctx.guard?.checkpoint('solve:newton-iteration');
+      return {
+        ok: true,
+        solution: new Float64Array(x),
+        iterations: iter + 2,
+        oscillated,
+      };
+    }
     prevIterSolution = prev;
     prevDelta = rawDelta;
   }
@@ -242,6 +262,38 @@ function selfLimitingDevices(compiled: CompiledCircuit): readonly DeviceModel[] 
 }
 
 const convergenceTestedCache = new WeakMap<CompiledCircuit, readonly DeviceModel[]>();
+const iterationInvariantCache = new WeakMap<CompiledCircuit, boolean>();
+
+/** Exactly an instance of `type`: no subclass and no own `stamp` override. */
+function isPlainInstance(device: DeviceModel, type: { prototype: object }): boolean {
+  return Object.getPrototypeOf(device) === type.prototype
+    && !Object.hasOwn(device, 'stamp')
+    && !Object.hasOwn(device, 'stampDynamic');
+}
+
+/**
+ * True when no device's transient stamp depends on the Newton iterate, so two
+ * companion builds within one step attempt give bit-identical systems (issue
+ * #710). Only device classes whose `stamp`/`stampDynamic` read nothing but
+ * their own parameters and the stamp time qualify: plain resistors,
+ * capacitors, and independent sources other than TRNOISE/TRRANDOM. Any other
+ * device, subclass or instance override disables the shortcut.
+ */
+export function isIterationInvariant(compiled: CompiledCircuit): boolean {
+  let invariant = iterationInvariantCache.get(compiled);
+  if (invariant === undefined) {
+    invariant = compiled.devices.every(device => {
+      if (isPlainInstance(device, Resistor) || isPlainInstance(device, Capacitor)) return true;
+      if (isPlainInstance(device, VoltageSource) || isPlainInstance(device, CurrentSource)) {
+        const { type } = (device as VoltageSource | CurrentSource).waveform;
+        return type !== 'trnoise' && type !== 'trrandom';
+      }
+      return false;
+    });
+    iterationInvariantCache.set(compiled, invariant);
+  }
+  return invariant;
+}
 
 /** Devices with their own ngspice DEVconvTest (e.g. B sources). */
 function convergenceTestedDevices(compiled: CompiledCircuit): readonly DeviceModel[] {

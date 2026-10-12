@@ -251,3 +251,26 @@ Against ngspice-47 KLU in the unpaired after run (5 samples), spice-ts analysis 
 | MOS1 chain | 1.02x slower | 0.73x | 0.56x |
 
 Most of the drop since the #693 table comes from #689's step-count change, not this PR. The paired A/B above is this PR's attribution. The MOS chain 10k/50k cells read spice-ts faster, and the probe agrees to 1.1e-3. They are not a claimed win: the engines were not load-paired, and ngspice's own time on that cell has varied by 20% across runs. The mesh OP is now the deck furthest behind KLU. Profiles, JSONL, the ngspice table and remaining scope (mesh `factorize` kernel layout, fused companion passes, a batched MOSFET truncation path, a load-paired engine run) are in `benchmarks/performance/results/issue-702/README.md`.
+
+## Follow-up: reusing the converged Newton iterate on linear transients ([#710](https://github.com/mfiumara/spice-ts/issues/710))
+
+After #704, the companion build was the largest cost inside the transient Newton loop on the RC ladder: `buildCompanionSystem` was 20.5% / 24.9% of `simulate()` inclusive at 10k / 50k nodes, against 6-7% for the LU factor and solve. The ladder is linear, but every accepted step ran two Newton iterations: 236 companion builds for 119 points at 50k. The second iteration rebuilt the same system, skipped the factorisation as unchanged, solved it to the same `x`, and then passed the convergence test with a zero delta.
+
+`attemptStep` now returns that converged result directly when every device is a plain resistor, capacitor or independent source (not TRNOISE/TRRANDOM), whose stamps never read the Newton iterate: same solution bits, same `iterations` count, the guard checkpoint still runs. Any other device, subclass or instance override keeps the full loop. The BE / trapezoidal / Gear-2 history terms in `buildCompanionSystem` are also fused into one column pass, with the same additions in the same order. Results are bit-identical:
+
+- a new test compares with `Object.is` against the same circuits with the shortcut disabled (attempt results, solve counts, and full waveforms for trap, Gear-2 and a UIC/0 Ω deck), and against a frozen copy of the pre-#710 companion fast path on MOS1 and diode/inductor decks;
+- waveform hashes match in all 114 A/B samples;
+- 100/100 aggregate corpus digests are identical;
+- `accuracy.ts --ci` passes.
+
+Paired concurrent A/B results (7 rounds at 1k/10k, 5 at 50k, heavily shared machine): the RC ladder is 1.21x / 1.16x / 1.20x faster wall at 1k / 10k / 50k (1.08x / 1.10x / 1.20x CPU). The MOS1 chain is not iteration-invariant and is unchanged at 1.00-1.01x. The mesh OP control reads 0.95x / 1.03x / 1.01x wall; its 1k cell (26-40 ms samples, 0.89..1.30 spread) is load noise around 1.00x.
+
+Against ngspice-47 KLU in the unpaired after run (5 samples), spice-ts analysis time is:
+
+| deck | 1k | 10k | 50k |
+|---|---|---|---|
+| RC ladder | 1.36x slower | 1.22x slower | 1.33x slower |
+| mesh OP | 2.49x slower | 2.18x slower | 2.42x slower |
+| MOS1 chain | 1.33x slower | 1.12x slower | 0.43x |
+
+These ratios are not load-paired and moved with machine load: ngspice's own 10k RC analysis time was 140 ms in the #702 run and 109 ms here. The MOS chain reads slower at 1k / 10k than in the #702 table although this PR leaves it unchanged in paired A/B; #703 (MOS1 device convergence test) landed on main in between. Its 50k cell reads spice-ts faster but is not a claimed win (unpaired; spice-ts's own paired samples on it ranged 26.9-37.8 s in this card). The mesh OP is still the deck furthest behind KLU. Profiles, JSONL, the ngspice table and remaining scope (mesh `factorize` kernel layout, the trapezoidal `stampPrevB` restamp on linear decks, MOS1 stamping, a load-paired engine run) are in `benchmarks/performance/results/issue-710/README.md`.

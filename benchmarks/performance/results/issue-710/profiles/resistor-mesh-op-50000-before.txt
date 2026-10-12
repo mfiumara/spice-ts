@@ -1,0 +1,29 @@
+/var/folders/6z/w66pxg8s31s53844b3pp9wx00000gn/T/p710before/resistor-mesh-op-50000.cpuprofile: 773 samples, 2680.3 ms sampled
+
+Top self time
+    1307.1 ms  48.8%  factorize packages/core/dist/chunk-S7ERMMP5.js:28377
+     295.5 ms  11.0%  (garbage collector)
+     176.5 ms   6.6%  amdOrdering packages/core/dist/chunk-S7ERMMP5.js:28001
+      99.6 ms   3.7%  compile packages/core/dist/chunk-S7ERMMP5.js:22898
+      56.3 ms   2.1%  lockTopology packages/core/dist/chunk-S7ERMMP5.js:28955
+      49.8 ms   1.9%  resolveResistor packages/core/dist/chunk-S7ERMMP5.js:1313
+      48.8 ms   1.8%  analyzePattern packages/core/dist/chunk-S7ERMMP5.js:28273
+      45.4 ms   1.7%  extractControlBlocks packages/core/dist/chunk-S7ERMMP5.js:25310
+      42.3 ms   1.6%  resolveNode packages/core/dist/chunk-S7ERMMP5.js:22971
+      36.5 ms   1.4%  parseNetlist packages/core/dist/chunk-S7ERMMP5.js:26634
+      36.5 ms   1.4%  newtonRaphson packages/core/dist/chunk-S7ERMMP5.js:29503
+      31.5 ms   1.2%  addResistor packages/core/dist/chunk-S7ERMMP5.js:22144
+
+Top inclusive time
+    2680.3 ms 100.0%  (root)
+    2185.1 ms  81.5%  simulate packages/core/dist/chunk-S7ERMMP5.js:36368
+    1816.0 ms  67.8%  solveDCOperatingPoint packages/core/dist/chunk-S7ERMMP5.js:29730
+    1816.0 ms  67.8%  solveCompiledAnalyses packages/core/dist/chunk-S7ERMMP5.js:36423
+    1794.5 ms  67.0%  newtonRaphson packages/core/dist/chunk-S7ERMMP5.js:29503
+    1317.1 ms  49.1%  factorize packages/core/dist/chunk-S7ERMMP5.js:28377
+     295.5 ms  11.0%  (garbage collector)
+     286.5 ms  10.7%  parseAsync packages/core/dist/chunk-S7ERMMP5.js:26818
+     245.3 ms   9.2%  compile packages/core/dist/chunk-S7ERMMP5.js:22898
+     243.8 ms   9.1%  getSparseSolver packages/core/dist/chunk-S7ERMMP5.js:29083
+     242.8 ms   9.1%  analyzePattern packages/core/dist/chunk-S7ERMMP5.js:28273
+     184.6 ms   6.9%  amdOrdering packages/core/dist/chunk-S7ERMMP5.js:28001
