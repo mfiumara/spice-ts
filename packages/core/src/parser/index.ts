@@ -38,6 +38,7 @@ import { parseZInstance } from './z-device-parser.js';
 import { locateSubcircuitCall, parseSubcircuitHeader, type SubcircuitHeader } from './subcircuit-syntax.js';
 import { parseSwitchInstance } from './switch-parser.js';
 import { parseXspiceInstance, parseXspiceModelCard, xspiceModelType } from './xspice-parser.js';
+import { isPspiceVswitchModel, translatePspiceVswitchModel } from './pspice-switch.js';
 import { isNgspiceOptionField, splitXyceOptionPackage } from './xyce-option-packages.js';
 import type { AnalysisDirective, IncludeResolver, IntegrationMethod, SimulationOptions } from '../types.js';
 import type { ProtocolExecutionGuard } from '../protocol/execution-guard.js';
@@ -172,8 +173,12 @@ function parseNetlist(
           // Subcircuit bodies are compiled later; reject unsupported model types now,
           // while the source line is still known.
           if (first === '.MODEL') {
-            assertSupportedModelType(tokens, lineNumber, raw);
-            assertSupportedResistorModel(tokens, lineNumber, raw);
+            if (isPspiceVswitchModel(tokens)) {
+              translatePspiceVswitchModel(raw, lineNumber);
+            } else {
+              assertSupportedModelType(tokens, lineNumber, raw);
+              assertSupportedResistorModel(tokens, lineNumber, raw);
+            }
           }
           subcktCollector.body.push(raw);
         }
@@ -639,14 +644,23 @@ function parseDotCommand(
       break;
     }
     case '.MODEL': {
-      if (xspiceModelType(tokens) !== undefined) {
+      let modelTokens = tokens;
+      if (isPspiceVswitchModel(tokens)) {
+        const translated = translatePspiceVswitchModel(context, lineNumber);
+        if (translated.kind === 'pswitch') {
+          circuit.addXspiceModel(translated.card);
+          break;
+        }
+        modelTokens = tokenizeLine(translated.raw);
+      }
+      if (xspiceModelType(modelTokens) !== undefined) {
         circuit.addXspiceModel(parseXspiceModelCard(context, lineNumber));
         break;
       }
-      assertSupportedModelType(tokens, lineNumber, context);
-      assertSupportedResistorModel(tokens, lineNumber, context);
-      const model = parseTransmissionLineModelCard(tokens, lineNumber)
-        ?? parseModelCard(tokens, lineNumber, message => circuit.addParseWarning(message));
+      assertSupportedModelType(modelTokens, lineNumber, context);
+      assertSupportedResistorModel(modelTokens, lineNumber, context);
+      const model = parseTransmissionLineModelCard(modelTokens, lineNumber)
+        ?? parseModelCard(modelTokens, lineNumber, message => circuit.addParseWarning(message));
       circuit.addModel(model);
       break;
     }

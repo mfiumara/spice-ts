@@ -29,6 +29,26 @@
     {
       "issue": "https://github.com/mfiumara/spice-ts/issues/825",
       "summary": "PSpice VSWITCH switch model type, the next blocker of the 9 decks unblocked from RES by #823 (ngspice tickets 683, 685, 737, 738, 745, 764, 791, 794, 795)"
+    },
+    {
+      "issue": "https://github.com/mfiumara/spice-ts/issues/843",
+      "summary": "MicroCap ':Label' lines that ngspice-47 drops with a warning, the next blocker after VSWITCH (#825) of ngspice tickets 685, 738, 791, 794, 795"
+    },
+    {
+      "issue": "https://github.com/mfiumara/spice-ts/issues/844",
+      "summary": "BJT IKR=0 (infinite in ngspice-47) rejected, the next blocker after VSWITCH (#825) of ngspice ticket 764"
+    },
+    {
+      "issue": "https://github.com/mfiumara/spice-ts/issues/845",
+      "summary": "SPICE2 POLY(n) controlled sources, the next blocker after VSWITCH (#825) of ngspice ticket 737"
+    },
+    {
+      "issue": "https://github.com/mfiumara/spice-ts/issues/846",
+      "summary": "PSpice T_ABS on .model RES, the next blocker after VSWITCH (#825) of ngspice ticket 784"
+    },
+    {
+      "issue": "https://github.com/mfiumara/spice-ts/issues/854",
+      "summary": ".model inside .subckt is global in spice-ts (last wins) but subcircuit-scoped in ngspice-47; spice-ts wrong on ngspice #745 (i(V1) 2.1% off ngspice-47's completing run)"
     }
   ],
   "tickets": [
@@ -1035,7 +1055,7 @@
     {
       "ticket": 429,
       "url": "https://sourceforge.net/p/ngspice/bugs/429/",
-      "title": " Issues with documentation of the edit command in the User\u2019s Manual",
+      "title": " Issues with documentation of the edit command in the User’s Manual",
       "status": "open",
       "created": "2019-09-13",
       "category": "docs",
@@ -2349,7 +2369,7 @@
           "sha256": "0e6d631b245574373c433d5c0ff9c9d2bcfd70f8dbab72f8f56231efb31066a0"
         }
       ],
-      "expected": "For s>0, u=s*log(1+exp((Vgs-Vto)/s)) has a finite strong-inversion limit u\u2248Vgs-Vto even when the exponential overflows an implementation. At external VG=4V, ID satisfies ID=(7.1/2)*(4-2.2-0.1ID)^2*(1+0.03*(10-1.1ID)); its physical saturation root is 5.827026843146154A, so the small-slope sweep should remain finite.",
+      "expected": "For s>0, u=s*log(1+exp((Vgs-Vto)/s)) has a finite strong-inversion limit u≈Vgs-Vto even when the exponential overflows an implementation. At external VG=4V, ID satisfies ID=(7.1/2)*(4-2.2-0.1ID)^2*(1+0.03*(10-1.1ID)); its physical saturation root is 5.827026843146154A, so the small-slope sweep should remain finite.",
       "expectedBasis": "analytic",
       "ngspice47": {
         "verdict": "error",
@@ -2840,7 +2860,7 @@
     {
       "ticket": 674,
       "url": "https://sourceforge.net/p/ngspice/bugs/674/",
-      "title": "Using \u201c.probe alli\u201d results in \"run simulation aborted\"",
+      "title": "Using “.probe alli” results in \"run simulation aborted\"",
       "status": "open",
       "created": "2024-05-30",
       "category": "frontend-ui",
@@ -2993,7 +3013,7 @@
         "evidence": "Error Cannot parse number: '1 dtemp=0 Ny=1 le=0.96e-6 we=0.12e-6 El=le*1e6 selft=1' (multi-parameter .param unsupported)."
       },
       "reproducesOnNgspice47": "no",
-      "reproCheck": "At supplied zero biases, check terminal currents \u22480 and absence of unexpected q.x1.qnpn13g2#branch vector.",
+      "reproCheck": "At supplied zero biases, check terminal currents ≈0 and absence of unexpected q.x1.qnpn13g2#branch vector.",
       "spiceTsIssue": null,
       "upstreamCandidate": "",
       "notes": "Attachment has VB=VC=0, unlike nonzero-bias developer discussion. Did not alter those biases; cannot exercise the historically wrong ic reporting at 0.7/1V. Fix commits explicitly discussed. Model is IHP-derived third-party text, fetch-only."
@@ -3026,8 +3046,8 @@
           "sha256": "597345dbf8fa3eacd25d788de70851806b9390864bdfd70dc07e78a7dc3a98f4"
         }
       ],
-      "expected": "undetermined: supplied interconnected nonlinear vendor model library does not admit a simple independently derived waveform; reproducing timestep failure proves run failure, not its physical root cause.",
-      "expectedBasis": "undetermined",
+      "expected": "The deck's only source is V1 = 89 V DC and the transient starts from the DC operating point (no UIC), so the exact transient solution is that operating point at every time point; ngspice-47 .op on the same deck in ltps mode gives v(net-_v1-e1_) = 71.19997 V, v(net-_v1-e2_) = v(net-_r1-pad1_) = -17.8 V and ~0 V on the LED/MOSFET nodes. The timestep failure at 1.95 fs is therefore a solver failure, not circuit behaviour.",
+      "expectedBasis": "first-principles",
       "ngspice47": {
         "verdict": "error",
         "evidence": "Timestep too small at 1.95313e-15s, timestep=1.25e-22, LED_GENERAL d1; 2 rows; native and ps."
@@ -3037,14 +3057,14 @@
         "evidence": "Same failure as 47: \"Timestep too small ... trouble with led_general-instance d1\" (at 1.25e-13 s instead of 1.95e-15 s). [ngspice pre-master-48 HEAD 3ef069fb (2026-10-09), built in scratch]"
       },
       "spiceTs": {
-        "verdict": "unsupported",
-        "evidence": "PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it to an XSPICE aswitch in LTPS mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: With filesystem resolver: UnsupportedModelTypeError .model 'Rmod11' has unsupported type 'RES'."
+        "verdict": "right",
+        "evidence": "PSpice `RES` (#823) and `VSWITCH` (#825) accepted: the 100 ns transient completes (1008 points). Its t = 0 operating point matches ngspice-47 .op (v(net-_v1-e1_) = 71.199966 V, v(net-_v1-e2_) = -17.800034 V, v(net-_r1-pad1_) = -17.799982 V, LED/MOSFET nodes 0 V) and every node stays within 2.2e-5 V of its t = 0 value over 0-100 ns (largest drift on net-_v1-e1_/net-_d1-a_). [spice-ts at the #825 branch, simulate() with a filesystem include resolver mapping the D:/spice_lib paths to the attached libraries] Before #825: PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it in PSpice compatibility mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: With filesystem resolver: UnsupportedModelTypeError .model 'Rmod11' has unsupported type 'RES'."
       },
       "reproducesOnNgspice47": "yes",
       "reproCheck": "Transient aborts after only 2 rows, far short of the requested 100ns.",
       "spiceTsIssue": null,
       "upstreamCandidate": "",
-      "notes": "Native and PSpice modes both fail in ngspice-47. Model libraries are third-party and fetch-only; no parameter or topology changes. "
+      "notes": "Native and PSpice modes both fail in ngspice-47. Model libraries are third-party and fetch-only; no parameter or topology changes. Expected answer revised in #825 from \"undetermined\": the deck has only a DC source, so the operating point is the exact transient solution."
     },
     {
       "ticket": 685,
@@ -3086,7 +3106,7 @@
       },
       "spiceTs": {
         "verdict": "unsupported",
-        "evidence": "PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1a' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it to an XSPICE aswitch in LTPS mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: With filesystem resolver: UnsupportedModelTypeError .model 'Rdmod' has unsupported type 'RES'."
+        "evidence": "PSpice `VSWITCH` accepted since #825 (ngspice-47 inpcompat.c: VON/VOFF -> XSPICE pswitch, VT/VH -> SW); the deck now stops at the next vendor-library construct: ParseError Unsupported device card ':' (`:NewMosfets`, a MicroCap label line in the supplied DiodesInc_MOSFET.LIB that ngspice-47 drops with an \"Unusual leading characters\" warning; https://github.com/mfiumara/spice-ts/issues/843). [spice-ts at the #825 branch, simulate() with a filesystem include resolver mapping the D:/spice_lib paths to the attached libraries] Before #825: PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1a' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it in PSpice compatibility mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: With filesystem resolver: UnsupportedModelTypeError .model 'Rdmod' has unsupported type 'RES'."
       },
       "reproducesOnNgspice47": "yes",
       "reproCheck": "Transient aborts after only 4 rows, far short of the requested 100ns.",
@@ -3755,7 +3775,7 @@
       },
       "spiceTs": {
         "verdict": "unsupported",
-        "evidence": "PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it to an XSPICE aswitch in LTPS mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library)"
+        "evidence": "PSpice `VSWITCH` accepted since #825 (ngspice-47 inpcompat.c: VON/VOFF -> XSPICE pswitch, VT/VH -> SW); the deck now stops at the next vendor-library construct: ParseError Unsupported POLY form on controlled source 'E_E2' (`E_E2 39 0 POLY(1) V- V+ 1.0 .5 0 0` in the supplied OPA690.LIB; https://github.com/mfiumara/spice-ts/issues/845). [spice-ts at the #825 branch, simulate() with a filesystem include resolver mapping the D:/spice_lib paths to the attached libraries] Before #825: PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it in PSpice compatibility mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library)"
       },
       "reproducesOnNgspice47": "yes",
       "reproCheck": "LTPS run aborts with Timestep too small at t=2.9e-10 s.",
@@ -3803,7 +3823,7 @@
       },
       "spiceTs": {
         "verdict": "unsupported",
-        "evidence": "PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1a' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it to an XSPICE aswitch in LTPS mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rdmod' has unsupported type 'RES' (vendor PSpice library)"
+        "evidence": "PSpice `VSWITCH` accepted since #825 (ngspice-47 inpcompat.c: VON/VOFF -> XSPICE pswitch, VT/VH -> SW); the deck now stops at the next vendor-library construct: ParseError Unsupported device card ':' (`:NewMosfets`, a MicroCap label line in the supplied DiodesInc_MOSFET.LIB that ngspice-47 drops with an \"Unusual leading characters\" warning; https://github.com/mfiumara/spice-ts/issues/843). [spice-ts at the #825 branch, simulate() with a filesystem include resolver mapping the D:/spice_lib paths to the attached libraries] Before #825: PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1a' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it in PSpice compatibility mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rdmod' has unsupported type 'RES' (vendor PSpice library)"
       },
       "reproducesOnNgspice47": "yes",
       "reproCheck": "LTPS run aborts with Timestep too small at t=1.3e-5 s.",
@@ -3944,12 +3964,12 @@
         "evidence": "mycircuit: \"Timestep too small; time = 3.58009e-11 ... node net-_c1-pad2_\", aborted after 51 rows; mycircuitSplit completes (1008 rows). Same in LTPS. [ngspice pre-master-48 HEAD 3ef069fb, same command as 47, default and LTPS]"
       },
       "spiceTs": {
-        "verdict": "unsupported",
-        "evidence": "PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it to an XSPICE aswitch in LTPS mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library)"
+        "verdict": "wrong",
+        "evidence": "Both decks complete to 100 ns (1008 points each) since the diode RS temperature law landed (https://github.com/mfiumara/spice-ts/issues/829), so spice-ts does not show the ngspice failure; but the waveform is off because spice-ts treats a .model inside a .subckt as global (last definition wins) while ngspice-47 scopes it to the subcircuit, and IGBT.LIB (APT100G2) and DiodesInc_FET.lib (DMG4435SSS) both define local DSUB, DCGD, SW and PMOS models (https://github.com/mfiumara/spice-ts/issues/854). Against ngspice-47's complete mycircuitSplit run (1008 rows) the spice-ts i(V1) differs by a median 1.76e-9 A and at most 2.16e-9 A (2.1% of max |i(V1)| = 1.04e-7 A, at t=64 ps); t=0 i(V1): mycircuitSplit -1.056456e-7 A vs ngspice-47 -1.039089e-7 A, mycircuit -8.456459e-8 A vs ngspice-47's -8.354474e-8 A before its abort. Cause check: with the APT100G2 and DMG4435SSS local models renamed to unique names (ngspice-47 output byte-identical before and after), spice-ts matches ngspice-47's mycircuitSplit run to a median 3.2e-12 A, max 1.8e-10 A (0.18%), t=0 -1.039088e-7 A, and mycircuit t=0 -8.354497e-8 A. The two variants are not identical with .options rshunt=1G: the extra node NewPin79 (-26 V) gets its own 1 GOhm shunt, so i(V1) differs by about 20.4 nA between them in both simulators. [spice-ts at the #825 branch merged with main 449ce900 (#829 diode TRS1/TRS2, #824 rshunt), simulate() on the same *.local.cir bytes with a filesystem include resolver] Before #829: both decks stopped at Error: Unsupported bounded diode breakdown-temperature model parameter: 'TRS1' (SnapLED150.mod). Before #825: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library)"
       },
       "reproducesOnNgspice47": "yes",
       "reproCheck": "mycircuit aborts (Timestep too small) while the equivalent mycircuitSplit completes.",
-      "spiceTsIssue": null,
+      "spiceTsIssue": "https://github.com/mfiumara/spice-ts/issues/854",
       "upstreamCandidate": "",
       "notes": ""
     },
@@ -4271,7 +4291,7 @@
       },
       "spiceTs": {
         "verdict": "unsupported",
-        "evidence": "PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it to an XSPICE aswitch in LTPS mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library)"
+        "evidence": "PSpice `VSWITCH` accepted since #825 (ngspice-47 inpcompat.c: VON/VOFF -> XSPICE pswitch, VT/VH -> SW); both decks now stop at the supplied PN2222.mod: Error: Invalid bounded BJT model parameter value: expected VAR, IKR, NC, NKF > 0 and ISC >= 0 (`Ikr=0`, which ngspice-47 bjttemp.c treats as infinite; https://github.com/mfiumara/spice-ts/issues/844). [spice-ts at the #825 branch, simulate() with a filesystem include resolver mapping the D:/spice_lib paths to the attached libraries] Before #825: PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it in PSpice compatibility mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library)"
       },
       "reproducesOnNgspice47": "partially",
       "reproCheck": "Both decks run past 120 s.",
@@ -4904,7 +4924,7 @@
       },
       "spiceTs": {
         "verdict": "unsupported",
-        "evidence": "UnsupportedModelTypeError: .model 'BB_SW' has unsupported type 'VSWITCH' (vendor PSpice library)"
+        "evidence": "PSpice `VSWITCH` accepted since #825 (ngspice-47 inpcompat.c: VON/VOFF -> XSPICE pswitch, VT/VH -> SW); both decks now stop at UnsupportedResistorParameterError: Unsupported resistor parameters: 'T_ABS' (`.model R_NOISELESS RES(T_ABS=-273.15)` in the supplied AD620.mod; https://github.com/mfiumara/spice-ts/issues/846). [spice-ts at the #825 branch, simulate() with a filesystem include resolver mapping the D:/spice_lib paths to the attached libraries] Before #825: UnsupportedModelTypeError: .model 'BB_SW' has unsupported type 'VSWITCH' (vendor PSpice library)"
       },
       "reproducesOnNgspice47": "no",
       "reproCheck": "",
@@ -5053,7 +5073,7 @@
       },
       "spiceTs": {
         "verdict": "unsupported",
-        "evidence": "PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1a' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it to an XSPICE aswitch in LTPS mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rdmod' has unsupported type 'RES' (vendor PSpice library)"
+        "evidence": "PSpice `VSWITCH` accepted since #825 (ngspice-47 inpcompat.c: VON/VOFF -> XSPICE pswitch, VT/VH -> SW); the deck now stops at the next vendor-library construct: ParseError Unsupported device card ':' (`:NewMosfets`, a MicroCap label line in the supplied DiodesInc_MOSFET.LIB that ngspice-47 drops with an \"Unusual leading characters\" warning; https://github.com/mfiumara/spice-ts/issues/843). [spice-ts at the #825 branch, simulate() with a filesystem include resolver mapping the D:/spice_lib paths to the attached libraries] Before #825: PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1a' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it in PSpice compatibility mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rdmod' has unsupported type 'RES' (vendor PSpice library)"
       },
       "reproducesOnNgspice47": "yes",
       "reproCheck": "AC operating point aborts with Timestep too small.",
@@ -5106,7 +5126,7 @@
       },
       "spiceTs": {
         "verdict": "unsupported",
-        "evidence": "PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1a' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it to an XSPICE aswitch in LTPS mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rdmod' has unsupported type 'RES' (vendor PSpice library)"
+        "evidence": "PSpice `VSWITCH` accepted since #825 (ngspice-47 inpcompat.c: VON/VOFF -> XSPICE pswitch, VT/VH -> SW); both decks now stop at the next vendor-library construct: ParseError Unsupported device card ':' (`:NewMosfets`, a MicroCap label line in the supplied DiodesInc_MOSFET.LIB that ngspice-47 drops with an \"Unusual leading characters\" warning; https://github.com/mfiumara/spice-ts/issues/843). [spice-ts at the #825 branch, simulate() with a filesystem include resolver mapping the D:/spice_lib paths to the attached libraries] Before #825: PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1a' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it in PSpice compatibility mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rdmod' has unsupported type 'RES' (vendor PSpice library)"
       },
       "reproducesOnNgspice47": "yes",
       "reproCheck": "AC operating point aborts with Timestep too small.",
@@ -5159,7 +5179,7 @@
       },
       "spiceTs": {
         "verdict": "unsupported",
-        "evidence": "PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it to an XSPICE aswitch in LTPS mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library)"
+        "evidence": "PSpice `VSWITCH` accepted since #825 (ngspice-47 inpcompat.c: VON/VOFF -> XSPICE pswitch, VT/VH -> SW); both decks now stop at the next vendor-library construct: ParseError Unsupported device card ':' (`:NewMosfets`, a MicroCap label line in the supplied DiodesInc_MOSFET.LIB that ngspice-47 drops with an \"Unusual leading characters\" warning; https://github.com/mfiumara/spice-ts/issues/843). [spice-ts at the #825 branch, simulate() with a filesystem include resolver mapping the D:/spice_lib paths to the attached libraries] Before #825: PSpice `RES` model type accepted since #823; every deck now stops at the next vendor-library construct: UnsupportedModelTypeError .model 'SMOD1' has unsupported type 'VSWITCH' (PSpice switch model, ngspice translates it in PSpice compatibility mode; tracked in https://github.com/mfiumara/spice-ts/issues/825). Before #823: UnsupportedModelTypeError: .model 'Rmod11' has unsupported type 'RES' (vendor PSpice library)"
       },
       "reproducesOnNgspice47": "yes",
       "reproCheck": "variant_37 OP aborts while base_37 completes.",
@@ -5430,7 +5450,7 @@
           "sha256": "0cb5e4e1e577321eb05422b6adbb6fc6f79fa57e37b744ffe855044ff963e972"
         }
       ],
-      "expected": "The internal unit capacitor uses I=C*dV/dt with C=1F, so about 1.4V/ns legitimately corresponds to about 1.4GA; its physical terminal current is scaled by the ~112fF behavioral coefficient. Capacitive division gives V2\u22483*200/(200+112.2+112.2)=1.41376V, not a GA terminal source current.",
+      "expected": "The internal unit capacitor uses I=C*dV/dt with C=1F, so about 1.4V/ns legitimately corresponds to about 1.4GA; its physical terminal current is scaled by the ~112fF behavioral coefficient. Capacitive division gives V2≈3*200/(200+112.2+112.2)=1.41376V, not a GA terminal source current.",
       "expectedBasis": "first-principles",
       "ngspice47": {
         "verdict": "right",
@@ -5856,7 +5876,7 @@
     {
       "ticket": 848,
       "url": "https://sourceforge.net/p/ngspice/bugs/848/",
-      "title": "`.options rshunt` + behavioral capacitor (Q=) silently defeats transient LTE timestep refinement \u2014 XSPICE builds only",
+      "title": "`.options rshunt` + behavioral capacitor (Q=) silently defeats transient LTE timestep refinement — XSPICE builds only",
       "status": "open",
       "created": "2026-07-12",
       "category": "docs",
