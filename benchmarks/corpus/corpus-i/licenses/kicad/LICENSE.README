@@ -1,0 +1,71 @@
+The majority of KiCad's source code is developed and distributed under the terms
+of the GPLv3 or later. However, it does include some third-party code licensed
+under other licenses (see below for details).
+
+These licenses are compatible, but a combined works as is will be governed under
+the terms of the GPLv3 (or later). This includes any binary distribution of the
+KiCad EDA suite by the KiCad project or any third party, e.g. Linux distributor.
+
+You are free to use the *sources* under the terms of their respective licenses.
+
+Licensed under Apache License, Version 2.0
+ - portions of code in libs/kimath/include/math/util.h
+Licensed under BOOSTv1:
+- clipper2 in thirdparty/clipper2
+- libcontext [https://github.com/boostorg/context] in thirdparty/libcontext
+- pegtl in thirdparty/pegtl
+- picosha2 in thirdparty/picosha2
+- turtle in thirdparty/turtle
+Licensed under ISC:
+- portions of code in include/geometry/polygon_triangulation.h
+Licensed under MIT:
+- argparse in thirdparty/argparse
+- compoundfilereader in thirdparty/compoundfilereader
+- delaunator in thirdparty/delaunator
+- dynamic_bitset in thirdparty/dynamic_bitset
+- fast_float in thirdparty/fast_float
+- fmt in thirdparty/fmt
+- glad in thirdparty/glad
+- json_schema_validator in thirdparty/json_schema_validator
+- magic_enum in thirdparty/magic_enum
+- nanodbc in thirdparty/nanodbc
+- nlohmann/json in thirdparty/nlohmann_json
+- nlohmann/fifo_map in thirdparty/nlohmann_json
+- pboettch/json-schema-validator in thirdparty/json_schema_validator
+- picoSHA2 in thirdparty/picosha2
+- rectpack2d in thirdparty/rectpack2d
+- sentry-native in thirdparty/sentry-native
+- thread-pool in thirdparty/thread-pool
+- tinyspline_lib in thirdparty/tinyspline_lib
+Licensed under BSD2:
+- gzip-hpp in thirdparty/gzip-hpp
+- libpopcnt in thirdparty/libpopcnt
+- nanoflann in thirdparty/nanoflann
+Licensed under GPLv2 (or later):
+- dxflib in thirdparty/dxflib_qcad
+- math_for_graphics in thirdparty/other_math
+- potrace in thirdparty/potrace
+- SutherlandHodgmanClipPoly in thirdparty/other_math
+Licensed under LGPLv2 (or later):
+- libwmf in thirdparty/libwmf
+Licensed under LGPLv2.1 (or later):
+- planegcs in thirdparty/planegcs
+Licensed under MPL 2.0:
+- eigen in thirdparty/eigen
+Licensed under ZLib:
+- nanosvg in thirdparty/nanosvg
+Licensed in the public domain:
+- lemon in thirdparty/lemon
+Licensed under CC BY-SA 4.0:
+- All the demo files provided in demos/*
+Licensed under clause-3 BSD:
+- ibis / kibis files in eeschema/sim/kibis
+- rapidcsv in thirdparty/rapidcsv
+Licensed under CC0:
+- expected in thirdparty/expected
+- uopamp.lib.spice in some directories in qa/data/eeschema/spice_netlists/
+Licensed under GPLv3 (or later):
+- 3dxware_sdk [Copyright 3Dconnexion] in thirdparty/3dxware_sdk
+- zint (fork of https://github.com/zint/zint) in thirdparty/zint
+- GIMP/GEGL in portions of common
+- All remaining code not listed above
