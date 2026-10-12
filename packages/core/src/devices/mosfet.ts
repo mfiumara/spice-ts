@@ -28,6 +28,8 @@ export interface MOSFETParams {
   AF: number;
   NLEV: number;
   TOX: number | undefined;
+  /** Instance multiplier M (mos1temp.c MOS1m, default 1): M parallel copies of the device. */
+  M: number;
   polarity: number; // 1 for NMOS, -1 for PMOS
 }
 
@@ -458,6 +460,7 @@ export class MOSFET implements DeviceModel {
       AF: params.AF ?? 1,
       NLEV: params.NLEV ?? 2,
       TOX: params.TOX,
+      M: params.M ?? 1,
       polarity,
     };
     const { PHI, LD, L } = this.params;
@@ -469,13 +472,15 @@ export class MOSFET implements DeviceModel {
     }
     if (!(PHI > 0)) throw new InvalidCircuitError(`MOSFET '${name}' requires PHI > 0, got ${PHI}`);
     this.effectiveLength = effectiveLength;
+    // mos1load.c: the overlaps, OxideCap and Beta all carry the instance multiplier M.
+    const multiplier = this.params.M;
     const width = this.params.W;
     this.overlaps = Float64Array.of(
-      (this.suppliedParams.CGDO ?? 0) * width,
-      (this.suppliedParams.CGSO ?? 0) * width,
-      (this.suppliedParams.CGBO ?? 0) * effectiveLength,
+      (this.suppliedParams.CGDO ?? 0) * multiplier * width,
+      (this.suppliedParams.CGSO ?? 0) * multiplier * width,
+      (this.suppliedParams.CGBO ?? 0) * multiplier * effectiveLength,
     );
-    this.oxideCap = params.TOX ? OXIDE_PERMITTIVITY / params.TOX * width * effectiveLength : 0;
+    this.oxideCap = params.TOX ? OXIDE_PERMITTIVITY / params.TOX * multiplier * width * effectiveLength : 0;
     this.applyTemperature();
     this.storesCharge = this.oxideCap !== 0 || this.overlaps.some(value => value !== 0)
       || this.drainDepletion.active || this.sourceDepletion.active;
@@ -562,7 +567,7 @@ export class MOSFET implements DeviceModel {
    */
   private applyTemperature(): void {
     const supplied = this.suppliedParams;
-    const { KP, VTO, GAMMA, PHI, W, polarity } = this.params;
+    const { KP, VTO, GAMMA, PHI, W, M, polarity } = this.params;
     const kelvin = this.temperature + CONSTCTOK;
     const nominalKelvin = this.nominalKelvin;
     const vt = CONSTKOVERQ * kelvin;
@@ -577,21 +582,22 @@ export class MOSFET implements DeviceModel {
     this.vt = vt;
     constantsEpoch++;
     this.tPhi = tPhi;
-    this.beta = KP / (ratio * Math.sqrt(ratio)) * W / this.effectiveLength;
+    this.beta = KP / (ratio * Math.sqrt(ratio)) * M * W / this.effectiveLength;
     this.sqrtPhi = Math.sqrt(tPhi);
     this.builtInVon = polarity * tVbi;
     this.zeroBiasVon = this.builtInVon + GAMMA * this.sqrtPhi;
     this.lastVon = this.zeroBiasVon;
 
-    // mos1load.c: JS*AD / JS*AS only when JS and both areas are non-zero.
+    // mos1load.c: JS*AD / JS*AS only when JS and both areas are non-zero, times M; mos1temp.c
+    // takes the critical voltages from the same M-scaled currents.
     const saturationScale = kelvin === nominalKelvin ? 1 : Math.exp(-egfet / vt + egfet1 / vtnom);
     const saturationCurrent = (supplied.IS ?? 1e-14) * saturationScale;
     const saturationDensity = (supplied.JS ?? 0) * saturationScale;
     const drainArea = supplied.AD ?? 0;
     const sourceArea = supplied.AS ?? 0;
     const useDensity = saturationDensity !== 0 && drainArea !== 0 && sourceArea !== 0;
-    this.drainSatCur = useDensity ? saturationDensity * drainArea : saturationCurrent;
-    this.sourceSatCur = useDensity ? saturationDensity * sourceArea : saturationCurrent;
+    this.drainSatCur = M * (useDensity ? saturationDensity * drainArea : saturationCurrent);
+    this.sourceSatCur = M * (useDensity ? saturationDensity * sourceArea : saturationCurrent);
     this.drainVcrit = criticalVoltage(this.drainSatCur, vt);
     this.sourceVcrit = criticalVoltage(this.sourceSatCur, vt);
 
@@ -604,8 +610,9 @@ export class MOSFET implements DeviceModel {
     const sidewall = kelvin === nominalKelvin
       ? 1
       : temperatureJunction(potential, 1, sideGrading, kelvin, nominalKelvin).capacitance;
+    // mos1temp.c czbd/czbdsw (czbs/czbssw) carry M.
     const junction = (zeroBias: number, sidewallCap: number) => new MOS1DepletionCharge(
-      zeroBias * bottom.capacitance, sidewallCap * sidewall,
+      M * zeroBias * bottom.capacitance, M * sidewallCap * sidewall,
       bottom.potential, grading, sideGrading, supplied.FC ?? 0.5,
     );
     this.drainDepletion = junction(

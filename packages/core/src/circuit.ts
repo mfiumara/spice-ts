@@ -683,6 +683,37 @@ function internalNodeName(deviceName: string, suffix: string): string {
 }
 
 /**
+ * MOS1 drain/source series resistances as ngspice-47 mos1set.c/mos1temp.c
+ * resolve them: 0 when the terminal has no prime node (shorted), `Infinity`
+ * when the prime node exists but its conductance is 0 (open terminal), else
+ * the resistance.
+ *
+ * mos1set.c creates the drain prime node when RD != 0 || (RSH != 0 && NRD != 0)
+ * (NRD = NRS = 1 square by default). mos1temp.c then sets the conductance to
+ * M / RD when RD is given (0 when RD = 0), else M / (RSH * NRD) when RSH is
+ * non-zero; the source likewise with RS and NRS. RD = 0 given with RSH != 0 and
+ * NRD != 0 thus leaves the drain open (#757). With RD not given, RSH != 0 and
+ * NRD = 0 ngspice divides by zero and its operating point fails; spice-ts keeps
+ * that zero-square terminal shorted.
+ */
+function mos1SeriesResistances(
+  card: Readonly<Record<string, number | undefined>>,
+  instance: Readonly<Record<string, number | undefined>> | undefined,
+): { drain: number; source: number } {
+  const m = instance?.M ?? 1;
+  const sheet = card.RSH ?? 0;
+  const resistance = (given: number | undefined, squares: number): number => {
+    if ((given ?? 0) === 0 && (sheet === 0 || squares === 0)) return 0;
+    const conductance = given !== undefined ? (given !== 0 ? m / given : 0) : m / (sheet * squares);
+    return conductance !== 0 ? 1 / conductance : Infinity;
+  };
+  return {
+    drain: resistance(card.RD, instance?.NRD ?? 1),
+    source: resistance(card.RS, instance?.NRS ?? 1),
+  };
+}
+
+/**
  * `.model` registry keyed case-insensitively, as in ngspice: `M1 ... PMOS`
  * must resolve `.model pmos pmos ...`. A miss silently falls back to default
  * device parameters, so a case mismatch would otherwise change the circuit.
@@ -2050,6 +2081,7 @@ export class Circuit {
     const ltraStates = new Map<string, LtraModelState>();
     // BSIM3 instances per ngspice model, in netlist order (b3v32temp.c pParam reuse, #700).
     const bsim3ModelInstances = new Map<string, BSIM3v3[]>();
+    const pendingCouplings: DeviceDescriptor[] = [];
 
     for (const desc of expandedDescriptors) {
       guard?.checkpoint('compile:device');
@@ -2108,9 +2140,10 @@ export class Circuit {
           const indA = deviceMap.get(desc.coupledA!);
           const indB = deviceMap.get(desc.coupledB!);
           if (!(indA instanceof Inductor) || !(indB instanceof Inductor)) {
-            throw new Error(
-              `K-element '${desc.name}' references unknown or non-inductor device(s): ${desc.coupledA}, ${desc.coupledB}`,
-            );
+            // ngspice binds K after every instance exists (MUTsetup), so the
+            // inductors may follow the K card; resolve those after the loop.
+            pendingCouplings.push(desc);
+            break;
           }
           devices.push(new MutualInductor(desc.name, indA, indB, desc.value!));
           break;
@@ -2401,6 +2434,18 @@ export class Circuit {
       if (devices.length > prevLength) {
         deviceMap.set(desc.name, devices[devices.length - 1]);
       }
+    }
+
+    for (const desc of pendingCouplings) {
+      const indA = deviceMap.get(desc.coupledA!);
+      const indB = deviceMap.get(desc.coupledB!);
+      if (!(indA instanceof Inductor) || !(indB instanceof Inductor)) {
+        throw new Error(
+          `K-element '${desc.name}' references unknown or non-inductor device(s): ${desc.coupledA}, ${desc.coupledB}`,
+        );
+      }
+      devices.push(new MutualInductor(desc.name, indA, indB, desc.value!));
+      deviceMap.set(desc.name, devices[devices.length - 1]);
     }
 
     bindXspiceSources(devices, deviceMap);
@@ -2830,6 +2875,34 @@ export class Circuit {
           if (series.source !== 0) {
             const prime = internalNodeName(desc.name, 'source');
             result.push({ type: 'R', name: `${desc.name}.RS`, nodes: [source, prime], value: series.source });
+            source = prime;
+          }
+          result.push({ ...desc, nodes: [drain, gate, source, bulk] });
+          continue;
+        }
+        if (model && (level === undefined || level === 1)) {
+          // MOS1 (mos1set.c/mos1temp.c): RD/RS in front of the drain/source prime nodes, or
+          // RSH*NRD / RSH*NRS (one square by default) when RD/RS are not given (#719). An open
+          // terminal (#757) keeps its prime node but gets no resistor.
+          const series = mos1SeriesResistances(model.params, desc.params);
+          let [drain, gate, source] = desc.nodes;
+          const bulk = desc.nodes[3] ?? source;
+          if (series.drain === 0 && series.source === 0) {
+            result.push(desc);
+            continue;
+          }
+          if (series.drain !== 0) {
+            const prime = internalNodeName(desc.name, 'drain');
+            if (Number.isFinite(series.drain)) {
+              result.push({ type: 'R', name: `${desc.name}.RD`, nodes: [drain, prime], value: series.drain });
+            }
+            drain = prime;
+          }
+          if (series.source !== 0) {
+            const prime = internalNodeName(desc.name, 'source');
+            if (Number.isFinite(series.source)) {
+              result.push({ type: 'R', name: `${desc.name}.RS`, nodes: [source, prime], value: series.source });
+            }
             source = prime;
           }
           result.push({ ...desc, nodes: [drain, gate, source, bulk] });
@@ -3383,6 +3456,20 @@ export class Circuit {
             nodes: [mapNode(tokens[1]), mapNode(tokens[2])],
             controlSource: `${instanceName}.${tokens[3]}`,
             value: parseNumber(valStr),
+          });
+          break;
+        }
+        case 'K': {
+          // ngspice prefixes the coupled inductor names with the instance path,
+          // so a K card only reaches inductors of its own instance (#739).
+          if (tokens.length < 4) {
+            throw new ParseError(`K-element '${tokens[0]}' needs two inductors and a coupling`, lineNumber, raw);
+          }
+          result.push({
+            type: 'K', name: devName, nodes: [],
+            value: parseNumber(evalToken(tokens[3])),
+            coupledA: `${instanceName}.${tokens[1]}`,
+            coupledB: `${instanceName}.${tokens[2]}`,
           });
           break;
         }
